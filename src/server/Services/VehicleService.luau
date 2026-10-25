@@ -62,6 +62,7 @@ local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
 local Craft = require(script.Parent:WaitForChild("Vehicle"):WaitForChild("Craft"))
+local CrewHireService = require(script.Parent:WaitForChild("CrewHireService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local DockService = require(script.Parent:WaitForChild("DockService"))
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
@@ -957,8 +958,8 @@ local function spawnLocked(
 		not quick
 		and DockService.GetLevel(player) < 4
 		and lastSpawn[player]
-		and now - lastSpawn[player] < SPAWN_COOLDOWN
-	then -- Lv 4 dock: no relaunch cooldown (docs/23 d.2)
+		and now - lastSpawn[player] < SPAWN_COOLDOWN * CrewHireService.MechanicCooldown(player)
+	then -- Lv 4 dock: no relaunch cooldown (docs/23 d.2); a Mechanic shortens it (WP-15)
 		return false, "Cooldown"
 	end
 	if not canUse(player, vehicleId) then

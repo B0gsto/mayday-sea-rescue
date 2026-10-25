@@ -37,6 +37,7 @@ export type Item = {
 	vehicle: string?, -- vehicle passes: the VehicleConfig id it owns (any rank)
 	dockLevel: number?, -- dock levels (DockConfig): builds your dock to this level; sold at the dock only
 	dockBuilding: string?, -- dock buildings (DockConfig.Buildings key); sold at the dock only
+	crewHire: boolean?, -- crew hire (docs/23 (j), WP-15): Robux skips Cash and the rank gate
 }
 
 local MonetizationConfig = {
@@ -208,6 +209,16 @@ local MonetizationConfig = {
 			order = 37,
 			ready = true,
 			dockBuilding = "SubPen",
+		},
+		-- docs/23 (j), WP-15: one hire from the job-seeker line, no Cash and no rank gate.
+		CrewHire = {
+			id = 0,
+			name = "Crew Hire",
+			description = "Hire the job seeker you are standing beside for Robux, without the Cash price or the rank.",
+			price = 99,
+			order = 38,
+			ready = false, -- WP-15: the Robux grant path is not built yet; flip when it lands
+			crewHire = true,
 		},
 	} :: { [string]: Item },
 

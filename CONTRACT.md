@@ -45,7 +45,7 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
 (UpgradeService), `Vehicle_QuickLaunch` (VehicleService), `PIW_Rescue` (Ops/PiwRescue), `Ops_*` (below), `Streak_State` / `Streak_Get` /
 `Streak_Open`, `Pet_State` / `Pet_Get` / `Pet_Equip`, `Dock_Upgrade` / `Dock_Build`, `Cosmetics_Equip` / `Cosmetics_Action` /
 `Cosmetics_Event`, `Monetization_GetCatalogue` / `Monetization_Purchased`, `PlatformPrompt_Ask` / `_Offer` /
-`_OptIn`, `Telemetry_Client`, `Dev_Grant` / `Dev_Action`.
+`_OptIn`, `Crew_Hire` / `Crew_Fire` (CrewHireService), `Telemetry_Client`, `Dev_Grant` / `Dev_Action`.
 
 ## Weather and storms
 
@@ -293,6 +293,12 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   `AssetLoader.define`; client-drawn by ScatterController, trunk hulls on the server).
   The old Port Haven harbour (Harbour.luau, breakwaters, slipway, hospital, moorings) is gone.
 - Pets and sanctuary: `PetService`, `PetRules`, `PetSeat`, `PetAccessory`, `PetController`.
+- Crew hire (docs/23 (j), WP-15): `src/shared/Crew/CrewHire.luau` (pure, `tests/CrewHire.spec.luau`: 20-minute
+  groups, seeded lineup, Cash price / daily wage, dock Lv 5 + Coxswain gate, effect knobs) and
+  `CrewHireService` (R15 seekers via `NpcFactory` outside your station, `Crew_Hire` / `Crew_Fire`, `data.crew`,
+  wage at session start; `CrewHireController` billboards, Hire / Fire card, next-group clock). Hooks:
+  VehicleService relaunch, AmbientRescueService +1 swimmer, OperationService offer factor. Robux product
+  `CrewHire` (`id = 0`, `ready = false`).
 - Exploration album and map fog (docs/21 §3): `Config/DiscoveryConfig` (pages, ranges, Cash, fog grid),
   `DiscoveryRules` (pure: sighted / reached / stickers, flags `isles` and `fog`), `DiscoveryService`
   (server-observed positions only; `Workspace.Discovery` placeholder props; remotes `Discovery_State`,
