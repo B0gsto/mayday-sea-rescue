@@ -273,8 +273,9 @@ CallTypes.CraftReach = {
 } :: { [string]: number }
 CallTypes.BASE_REACH = 2000
 
--- Pay x (distance / PayPerStuds), clamped to 1..PayMax (CallLogic.distancePay). -- tune
-CallTypes.Distance = { PayPerStuds = 1200, PayMax = 4 }
+-- Pay x (distance / PayPerStuds), clamped to 1..PayMax (CallLogic.distancePay). x1 inside ~1,500 studs (the harbour
+-- approaches), then about pays for the extra travel (docs/23 (i), tests/Pacing.spec.luau). -- tune
+CallTypes.Distance = { PayPerStuds = 1500, PayMax = 4 }
 
 -- Island call zones: a ring of open water just off each island (WorldConfig.Islands), offered from this
 -- reach (must be a ring's reach: its fallback). Not St Elowen's Mount or The Arches: Great Gale blocks

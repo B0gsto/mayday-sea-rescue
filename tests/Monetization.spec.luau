@@ -33,7 +33,7 @@ return function(t)
 			HarbourGTPass = 179,
 			LighthouseCruiserPass = 149,
 			-- docs/23 (h) craft
-			RescueHelicopterPass = 299,
+			RescueHelicopterPass = 399,
 			SeaplanePass = 299,
 			SubmarinePass = 249,
 		},
@@ -51,9 +51,9 @@ return function(t)
 			-- dock levels: docs/23 d.2 first guesses (g.3)
 			DockLevel2 = 49,
 			DockLevel3 = 99,
-			DockLevel4 = 149,
-			DockLevel5 = 249,
-			DockGarage = 99, -- docs/23 h (WP-10b)
+			DockLevel4 = 199,
+			DockLevel5 = 399,
+			DockGarage = 75, -- docs/23 h (WP-10b), prices docs/23 (i)
 			DockHangar = 199,
 			DockSubPen = 149,
 		},

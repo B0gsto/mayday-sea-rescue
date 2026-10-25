@@ -6,58 +6,28 @@ return function(t)
 	local ProgressionConfig = t.load("src/shared/Config/ProgressionConfig.luau")
 	local Progression = t.load("src/shared/ProgressionRules.luau")
 	local StreakRules = t.load("src/shared/StreakRules.luau")
-	local MonetizationConfig = t.load("src/shared/Config/MonetizationConfig.luau")
 	local CallTypes = t.load("src/shared/Calls/CallTypes.luau")
 	local Operations = t.load("src/shared/Ops/Operations.luau")
 	local Grading = t.load("src/shared/Ops/Grading.luau")
 	local FriendBonus = t.load("src/shared/FriendBonus.luau")
 	local VehicleUpgrades = t.load("src/shared/VehicleUpgrades.luau")
 
+	local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
+	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
+	local DockConfig = t.load("src/shared/Config/DockConfig.luau")
+
 	local SESSION_MIN = 25
 	local MAX_PLAY_MIN = 40 * 60
 	local HOUR = 60
 
-	-- docs/03 section 2.1: operations per hour by zone (same order as the zone rows).
-	local OPS_PER_HOUR = { 9, 8, 7, 6, 5.5 }
 	-- docs/03 section 10.1: the three-operation cold open chain is about 13 minutes.
 	local TUTORIAL_MIN = { 1.5, 5.75, 5.75 }
-
-	-- Zone rows: the docs 03 section 2 payout bases paired with the docs 03 Cash rates
-	-- (MonetizationConfig), in zone order. Ranks come from CashPackZones (the real zone gates).
-	local CASH_ZONES = MonetizationConfig.CashPackZones
-	local BASES = {
-		{ cash = 550, rep = 135 },
-		{ cash = 900, rep = 200 },
-		{ cash = 1500, rep = 280 },
-		{ cash = 2400, rep = 390 },
-		{ cash = 3300, rep = 500 },
-	}
+	-- docs/23 (2026-10-25): every later call is a real CallLogic call (zone tier by the best craft, pay x
+	-- distancePay). Its clock: per call the radio, the offer gap and the debrief; per trip out and back to
+	-- the dock at the docs/02 cruise (CallLogic.travelSeconds) plus slow down, climb on and climb off; a
+	-- land call adds the walk up the beach. Victims over the craft's seats mean another trip. -- tune
+	local CALL_S, TRIP_S, LAND_S = 45, 35, 30
 	local START_UTC = 1792800000 -- 2026-10-24 00:00:00 UTC
-
-	local function zoneAt(rank: number): number
-		local index = 1
-		for i, zone in CASH_ZONES do
-			if rank >= zone.rankIndex then
-				index = i
-			end
-		end
-		return index
-	end
-
-	local function picks(weights: { [string]: number }, keys: { string }, roll: number): string
-		local total = 0
-		for _, key in keys do
-			total += weights[key]
-		end
-		local target = roll * total
-		for _, key in keys do
-			target -= weights[key]
-			if target < 0 then
-				return key
-			end
-		end
-		return keys[#keys]
-	end
 
 	local function run(friends: number, legacy: boolean?)
 		local data = Progression.defaultData()
@@ -103,52 +73,102 @@ return function(t)
 			end
 		end
 
+		-- the free ladder: RIB, lifeboat, then the helicopter, bought at the hangar board (docs/23 h), so
+		-- its bill includes the hangar (which stands on the dock Lv 3 boathouse)
+		local dockLevel = 1
+		local built = {}
+		local LADDER = {
+			{ "RIB", "RIB bought" },
+			{ "Lifeboat", "Lifeboat bought" },
+			{ "RescueHelicopter", "Helicopter bought" },
+		}
+
+		local function bill(id: string): number
+			local home = DockConfig.buildingOf(id)
+			local extra = if home and not built[home] then DockConfig.Buildings[home].cash else 0
+			return ProgressionConfig.Vehicles[id].price + extra
+		end
+
 		local function vehicles()
-			local r = rank()
-			if not owned.RIB and r >= ProgressionConfig.Vehicles.RIB.rankIndex then
-				local price = ProgressionConfig.Vehicles.RIB.price
-				if data.cash >= price then
-					data.cash -= price
-					owned.RIB = true
-					mark("RIB bought")
-				end
-			end
-			if not owned.Lifeboat and r >= ProgressionConfig.Vehicles.Lifeboat.rankIndex then
-				local price = ProgressionConfig.Vehicles.Lifeboat.price
-				if data.cash >= price then
-					data.cash -= price
-					owned.Lifeboat = true
-					mark("Lifeboat bought")
-				end
-			end
-			if
-				not owned.RescueHelicopter
-				and r >= ProgressionConfig.Vehicles.RescueHelicopter.rankIndex
-			then
-				local price = ProgressionConfig.Vehicles.RescueHelicopter.price
-				if data.cash >= price then
-					data.cash -= price
-					owned.RescueHelicopter = true
-					mark("Helicopter bought")
+			for _, step in LADDER do
+				local id = step[1]
+				if not owned[id] then
+					local home = DockConfig.buildingOf(id)
+					if
+						rank() >= ProgressionConfig.Vehicles[id].rankIndex
+						and data.cash >= bill(id)
+					then
+						if
+							home
+							and not built[home]
+							and dockLevel >= DockConfig.Buildings[home].needs
+						then
+							data.cash -= DockConfig.Buildings[home].cash
+							built[home] = true
+							mark(home .. " built")
+						end
+						if not home or built[home] then
+							data.cash -= ProgressionConfig.Vehicles[id].price
+							owned[id] = true
+							mark(step[2])
+						end
+					end
+					return -- one ladder step at a time
 				end
 			end
 		end
 
 		local function reserve(): number
-			local r = rank()
-			if not owned.RIB and r >= ProgressionConfig.Vehicles.RIB.rankIndex then
-				return ProgressionConfig.Vehicles.RIB.price
-			end
-			if not owned.Lifeboat and r >= ProgressionConfig.Vehicles.Lifeboat.rankIndex then
-				return ProgressionConfig.Vehicles.Lifeboat.price
-			end
-			if
-				not owned.RescueHelicopter
-				and r >= ProgressionConfig.Vehicles.RescueHelicopter.rankIndex
-			then
-				return ProgressionConfig.Vehicles.RescueHelicopter.price
+			for _, step in LADDER do
+				local id = step[1]
+				if not owned[id] then
+					return if rank() >= ProgressionConfig.Vehicles[id].rankIndex
+						then bill(id)
+						else 0
+				end
 			end
 			return 0
+		end
+
+		-- docs/23 d.2 and h: dock levels, the other buildings and their craft, with Cash left over after
+		-- the next ladder bill (the dock never delays a vehicle)
+		local function dockNext()
+			local r = rank()
+			local ok, _, price =
+				DockConfig.canBuy(dockLevel, dockLevel + 1, data.cash - reserve(), r)
+			if ok then
+				data.cash -= price
+				dockLevel += 1
+				mark("Dock Lv " .. dockLevel)
+			end
+			for _, key in DockConfig.BUILDINGS do
+				local can, _, cost = DockConfig.canBuyBuilding(
+					key,
+					built[key] == true,
+					dockLevel,
+					data.cash - reserve(),
+					r
+				)
+				if can then
+					data.cash -= cost
+					built[key] = true
+					mark(key .. " built")
+				end
+			end
+			for _, id in { "Submarine", "Seaplane" } do
+				local v = ProgressionConfig.Vehicles[id]
+				local home = DockConfig.buildingOf(id) :: string
+				if
+					not owned[id]
+					and built[home]
+					and r >= v.rankIndex
+					and data.cash - reserve() >= v.price
+				then
+					data.cash -= v.price
+					owned[id] = true
+					mark(id .. " bought")
+				end
+			end
 		end
 
 		-- docs 03 section 10: RIB engine at 1:05, jet ski storm hull at 1:55, lifeboat engine at
@@ -193,6 +213,7 @@ return function(t)
 		local function purchases()
 			vehicles()
 			upgradesNext()
+			dockNext()
 		end
 
 		local sources = { op = 0, other = 0 }
@@ -224,39 +245,57 @@ return function(t)
 			checkRank()
 		end
 
-		local function canTow(): boolean
-			return owned.RIB == true
-		end
-
-		local function runOperation(minutes: number, planned: number, now: number)
-			local r = rank()
-			local z = zoneAt(r)
-			local base = BASES[z]
-			local kind
-			if totalOps < #Grading.Payout.Tutorial then
-				kind = CallTypes.TutorialChain[totalOps + 1].kind
-			else
-				local kinds = {}
-				for _, k in CallTypes.NormalKinds do
-					if k ~= "Tow" or canTow() then
-						table.insert(kinds, k)
+		-- the next real call (docs/23 e.2): its pay weight x distancePay and minutes
+		local perCraft = {}
+		local function nextCall(storm: boolean): (number, number)
+			local ids = { "JetSki" }
+			for id in owned do
+				table.insert(ids, id)
+			end
+			local choice = CallLogic.chooseCall(
+				totalOps,
+				if storm then "Storm" else "Calm",
+				random,
+				CallLogic.craftReach(ids)
+			)
+			local spec = CallTypes.Kinds[choice.kind]
+			local site = if spec.land then CallLogic.landSite(nil, random, choice.zone) else nil
+			local at = if site then site.beach else CallLogic.pickSpawnPoint(choice.zone, random)
+			local distance = CallLogic.flatDistance(at, CallTypes.STATION)
+			-- the reach comes from every owned craft; the player takes whichever owned boat is quickest
+			local seconds, best = math.huge, "JetSki"
+			for _, id in { "JetSki", "RIB", "Lifeboat" } do
+				if id == "JetSki" or owned[id] then
+					local craft = VehicleConfig[id]
+					local trips =
+						math.ceil((choice.victims or spec.victims) / craft.survivorCapacity)
+					local s = CALL_S
+						+ (if site then LAND_S else 0)
+						+ trips
+							* (TRIP_S + 2 * CallLogic.travelSeconds(distance, craft.topSpeed))
+					if s < seconds then
+						seconds, best = s, id
 					end
 				end
-				kind = picks(CallTypes.KindWeights, kinds, random())
 			end
-			local def = Operations.Defs[Operations.FromCallKind[kind]]
+			local pay = CallLogic.distancePay(distance)
+			local row = perCraft[best] or { calls = 0, minutes = 0, pay = 0 }
+			perCraft[best] = row
+			row.calls += 1
+			row.minutes += seconds / 60
+			row.pay += pay
+			return Operations.Defs[Operations.FromCallKind[choice.kind]].weight * pay, seconds / 60
+		end
+
+		local function runOperation(minutes: number, planned: number, now: number, weight: number?)
 			local completeAt = now + minutes * 60
 			playMin += minutes
 			local scale = if minutes < planned - 1e-6 then minutes / planned else 1
 			local great = isGreat(completeAt)
 			local storm = great or opIndex % 5 == 4
-			local reward
-			if totalOps < #Grading.Payout.Tutorial then
-				reward = Grading.Payout.Tutorial[totalOps + 1]
-			else
-				local weight = def.weight
-				reward = { cash = base.cash * weight, rep = base.rep * weight }
-			end
+			local reward = if weight
+				then Grading.payout(weight, "Silver", 1, nil)
+				else Grading.Payout.Tutorial[totalOps + 1]
 			award(reward.cash * scale, reward.rep * scale, completeAt, storm, great, "op")
 
 			totalOps += 1
@@ -281,12 +320,12 @@ return function(t)
 				local remaining = SESSION_MIN
 				local cashAtStart = data.cash
 				while remaining > 0.01 do
-					local z = zoneAt(rank())
-					local planned = if totalOps < #Grading.Payout.Tutorial
-						then TUTORIAL_MIN[totalOps + 1]
-						else 60 / OPS_PER_HOUR[z]
+					local planned, weight = TUTORIAL_MIN[totalOps + 1], nil
+					if not planned then
+						weight, planned = nextCall(opIndex % 5 == 4)
+					end
 					local minutes = math.min(planned, remaining)
-					runOperation(minutes, planned, now)
+					runOperation(minutes, planned, now, weight)
 					now += minutes * 60
 					remaining -= minutes
 				end
@@ -326,6 +365,7 @@ return function(t)
 			rep = data.rep,
 			totalOps = totalOps,
 			playMin = playMin,
+			perCraft = perCraft,
 		}
 	end
 
@@ -374,6 +414,20 @@ return function(t)
 				result.totalOps
 			)
 		)
+		for _, id in { "JetSki", "RIB", "Lifeboat" } do
+			local row = result.perCraft[id]
+			if row then
+				print(
+					string.format(
+						"  %-8s %4d calls, %.1f min/call, distance pay x%.2f",
+						id,
+						row.calls,
+						row.minutes / row.calls,
+						row.pay / row.calls
+					)
+				)
+			end
+		end
 	end
 
 	local before = run(0, true)
@@ -410,14 +464,16 @@ return function(t)
 
 	-- docs/16 cut the dailies, weeklies, the season track and Crew Pay: Rep now comes from rescues
 	-- (and the crate's Cash), so the mid and late ranks sit later than docs 03 section 10 until WP2 retunes.
-	t.test("Coxswain and the lifeboat at about 1:15-2:00", function()
-		between(solo, "Rank 4 Coxswain", 60, 110)
+	-- docs/23 calls take 3.5 to 4.5 minutes (not docs 03's 6.5), so Coxswain lands early in session 3
+	t.test("Coxswain and the lifeboat at about 1:00-2:00", function()
+		between(solo, "Rank 4 Coxswain", 50, 110)
 		between(solo, "Lifeboat bought", 60, 150)
 	end)
 
 	t.test("helicopter in week 1", function()
 		between(solo, "Rank 5 Rescue Pilot", 140, 280)
-		between(solo, "Helicopter bought", 170, 9 * 60)
+		-- docs 03 section 10.2: past 8 hours, cut its price (the bill includes the docs/23 hangar)
+		between(solo, "Helicopter bought", 170, 8 * 60)
 	end)
 
 	t.test("the first 2 hours still carry the early unlocks", function()
@@ -439,7 +495,7 @@ return function(t)
 	end)
 
 	t.test("vehicle upgrades land when docs 03 section 10 expects", function()
-		between(solo, "RIB Tuned engine", 55, 75)
+		between(solo, "RIB Tuned engine", 55, 100) -- after dock Lv 2 and the garage (docs/23)
 		between(solo, "Jet ski Storm hull", 100, 160)
 		between(solo, "Lifeboat Tuned engine", 115, 170)
 	end)
@@ -454,16 +510,32 @@ return function(t)
 		t.expect(solo.sessions[1].cash >= 1500 and solo.sessions[1].cash <= 4000).toBe(true)
 	end)
 
-	t.test("Commodore at about 23 hours; Admiral not before 25", function()
-		between(solo, "Rank 7 Commodore", 15 * 60, 30 * 60)
-		local admiral = find(solo, "Rank 8 Admiral")
-		t.expect(admiral == nil or admiral.at >= 25 * 60).toBe(true)
-	end)
+	t.test(
+		"Commodore at about day 16 (docs 03 section 10.1); Admiral not before 25 hours",
+		function()
+			between(solo, "Rank 7 Commodore", 12 * 60, 30 * 60)
+			local admiral = find(solo, "Rank 8 Admiral")
+			t.expect(admiral == nil or admiral.at >= 25 * 60).toBe(true)
+		end
+	)
 
 	t.test("one friend only speeds Cash, never Rep", function()
-		t.expect(friend.rep).toBe(solo.rep)
+		-- Rep moves only through earlier craft (reach sets distance pay), never the friend bonus itself
+		t.expect(math.abs(friend.rep - solo.rep) <= solo.rep * 0.03).toBe(true)
 		local friendRib = minutes(friend, "RIB bought")
 		local soloRib = minutes(solo, "RIB bought")
 		t.expect(friendRib <= soloRib).toBe(true)
+	end)
+
+	t.test("docs/23: a free player reaches every dock level, building and craft", function()
+		-- a dock piece never comes before the RIB, and the last (dock Lv 5) is a long goal, not a wall
+		t.expect(minutes(solo, "Dock Lv 2") >= minutes(solo, "RIB bought")).toBe(true)
+		for _, label in { "Dock Lv 3", "Dock Lv 4", "Garage built", "Hangar built", "SubPen built" } do
+			t.expect(minutes(solo, label) <= 20 * 60).toBe(true)
+		end
+		for _, label in { "Submarine bought", "Seaplane bought", "Dock Lv 5" } do
+			t.expect(minutes(solo, label) <= 30 * 60).toBe(true)
+		end
+		t.expect(minutes(solo, "Dock Lv 5") >= 10 * 60).toBe(true)
 	end)
 end

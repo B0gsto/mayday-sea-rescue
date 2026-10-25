@@ -65,8 +65,8 @@ bigger craft.** The dock is home, garage, shop and trophy case. Everyone in the 
 | 1 | Bare jetty, name board, jet ski at the berth | — | free | — |
 | 2 | Pontoon, lamp posts, flag in your colour, rescue-count board | 2nd berth (2 craft out) | 2,500 / Lifeguard | 49 |
 | 3 | Boathouse (roof, roll-up door), boat board, paint booth | Choose/paint boats at the dock | 10,000 / Rescue Swimmer | 99 |
-| 4 | Lookout tower + slipway crane | Faster relaunch (no cooldown), lifeboat-size berth | 30,000 / Coxswain | 149 |
-| 5 | Lit station front, beacon you see across the harbour at night | Trophy hall, Harbour Master eligible | 100,000 / Rescue Pilot | 249 |
+| 4 | Lookout tower + slipway crane | Faster relaunch (no cooldown), lifeboat-size berth | 30,000 / Coxswain | 199 |
+| 5 | Lit station front, beacon you see across the harbour at night | Trophy hall, Harbour Master eligible | 100,000 / Rescue Pilot | 399 |
 | Later | **Car garage** on the shore strip | Cars, ATV, 4x4 from the dock | rank-gated | priced then |
 | Later | **Hangar + helipad** | Helicopter, seaplane | rank-gated | priced then |
 | Later | **Sub pen** | Submarine | rank-gated | priced then |
@@ -131,8 +131,7 @@ sign-off at the end, then publish to the test place.
 
 1. Land calls (e.3) or just shrink the walkable land?
 2. Lifebuoy throw as the skill move, or ring only?
-3. Robux prices in d.2 are first guesses at the docs/04 §2.1 launch level; confirm before the products are
-   created.
+3. ~~Robux prices in d.2 are first guesses~~ Answered by (i) (2026-10-25).
 
 ## (h) The "Later" items (owner, 2026-10-25: "implement also the Later items")
 
@@ -141,8 +140,8 @@ Robux, choose the vehicle at an in-world board inside the building (scale models
 
 | Building | Vehicles | Their job in the loop | Rank (Cash) / Robux (tune) |
 |---|---|---|---|
-| **Car garage** | Existing land vehicles (LifeguardPickup, BeachATV, CoastguardResponse, HarbourGT, LighthouseCruiser) | Reach land calls and island interiors by road (St Elowen's causeway) | Lifeguard (5,000) / 99 |
-| **Hangar + helipad** | Rescue helicopter (new), seaplane (new) | Helicopter: hovers, reaches cliffs and land calls; hover steady inside the ring and the winch lifts the survivor (same hold-steady rule as boats), seats 2. Seaplane: fastest to far islands, lands on water inside the ring to pick up, seats 4 | Rescue Pilot (75,000 heli / 60,000 seaplane) / 299 each, hangar 199 |
+| **Car garage** | Existing land vehicles (LifeguardPickup, BeachATV, CoastguardResponse, HarbourGT, LighthouseCruiser) | Reach land calls and island interiors by road (St Elowen's causeway) | Lifeguard (5,000) / 75 |
+| **Hangar + helipad** | Rescue helicopter (new), seaplane (new) | Helicopter: hovers, reaches cliffs and land calls; hover steady inside the ring and the winch lifts the survivor (same hold-steady rule as boats), seats 2. Seaplane: fastest to far islands, lands on water inside the ring to pick up, seats 4 | Rescue Pilot (75,000 heli / 60,000 seaplane, hangar 25,000) / heli 399, seaplane 299, hangar 199 |
 | **Sub pen** | Submarine (new) | Dives under the mesh ocean to the seabed (`Ocean/Seabed`, `Underwater`); new call: a diver stuck at a wreck (Skerry seaplane wreck, *Gannet Star*, Wreck Reef) inside a ring on the seabed; plus wreck exploration with stickers | Coxswain (40,000) / 249, pen 149 |
 
 **Land calls** (e.3, implemented as recommended): Stranded on a beach by the tide, stuck on a cliff ledge, lost on
@@ -157,3 +156,39 @@ foot inside the ring, they follow you, board, home.
 - **WP-9 · Land calls**: after WP-3 lands (same call files).
 - **WP-10 · Dock buildings**: car garage, hangar + helipad, sub pen on the plot, in-world vehicle boards, wiring
   the new vehicles into VehicleService/VehicleConfig/ProgressionConfig, prices. After WP-1, WP-4 and WP-6..8.
+
+## (i) Economy check (2026-10-25)
+
+`tests/Pacing.spec.luau` now plays real calls: from call 4 `CallLogic.chooseCall` with the reach of every owned
+craft, pay `distancePay`, and a clock of 45 s per call + per trip (out and back at the docs/02 cruise, 35 s to
+board and drop; a land call +30 s), taking whichever owned boat is quickest. Free player, solo, 2 x 25 min a day.
+
+**Distance pay:** x1 up to 1,500 studs, then distance / 1,500, cap x4 (was / 1,200). Jet ski calls average x2.2,
+RIB x1.6; Cash ~15 to 17k an hour, Rep ~3.5k an hour. Ranks: Lifeguard 0:13, RIB 0:17, Coxswain 0:59,
+Rescue Pilot 2:22 (docs/03 2:42), Commodore 12.9 h (day 16), Admiral 35 h (docs/03 ~32 h).
+
+| Item | Cash | Rank | R$ | Packs for that Cash (R$) | R$ vs packs | Free: earn time / bought at |
+|---|---|---|---|---|---|---|
+| Dock Lv 2 | 2,500 | Lifeguard | 49 | 20 | 2.5x | 9 min / 0:29 |
+| Car garage | 5,000 | Lifeguard | 75 (was 99) | 35 | 2.1x | 19 min / 0:46 |
+| Dock Lv 3 | 10,000 | Rescue Swimmer | 99 | 60 | 1.7x | 38 min / 2:00 |
+| Sub pen | 20,000 | Coxswain | 149 | 100 | 1.5x | 1.3 h / 8.7 h |
+| Hangar | 25,000 (was 40,000) | Rescue Pilot | 199 | 125 | 1.6x | 1.6 h / 7.1 h |
+| Dock Lv 4 | 30,000 | Coxswain | 199 (was 149) | 149 | 1.3x | 1.9 h / 10.3 h |
+| Submarine | 40,000 | Coxswain | 249 | 149 | 1.7x | 2.5 h / 12.3 h |
+| Seaplane | 60,000 | Rescue Pilot | 299 | 209 | 1.4x | 3.8 h / 15.4 h |
+| Helicopter | 75,000 | Rescue Pilot | 399 (was 299) | 274 | 1.5x | 4.7 h / 7.1 h (with hangar) |
+| Dock Lv 5 | 100,000 | Rescue Pilot | 399 (was 249) | 298 | 1.3x | 6.3 h / 20.6 h |
+| RIB / Lifeboat pass (for scale) | 2,500 / 12,000 | Lifeguard / Coxswain | 49 / 129 | 20 / 70 | 2.5x / 1.8x | 9 / 45 min |
+
+Packs = the cheapest mix of live Cash packs (Calm Bay rate: 1,500 / 4,500 / 16,500 / 50,400 Cash for 10 / 25 / 75 /
+149 R$, at most 5 a day). "Bought at" = play time in the sim, which keeps Cash for the next craft first.
+
+1. No Robux price is a cheaper way to Cash than the packs (the old Lv 5 at 249 and Lv 4 at 149 were); every R$
+   price is 1.3x to 2.5x its pack Cash, and the extra is the rank skip.
+2. The hangar is part of the helicopter's bill, so 40k pushed the helicopter to 8.3 h (docs/03 10.2: past 8 h, cut
+   the price); at 25k it lands at 7.1 h. The heli pass (399) sits above every Robux boat (max 249) and below a
+   Night Hawk-style Signature (499).
+3. Distance pay / 1,200 made far calls pay more per minute than near ones and ran ranks ~20% ahead of docs/03; /
+   1,500 keeps far calls about even per minute. Calls are now 3.5 to 4.5 min, not docs/03's 6.5, so early ranks
+   still land ~15 min early.

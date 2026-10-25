@@ -7,7 +7,7 @@ local ProgressionConfig = require(script.Parent.ProgressionConfig)
 export type Level = {
 	cash: number,
 	rank: string, -- ProgressionConfig.Ranks id
-	robux: number, -- launch price (tune); the product's `price`
+	robux: number, -- launch price, docs/23 (i): at least the Cash packs' price for the Cash, plus a rank-skip premium
 	product: string, -- MonetizationConfig.Products key
 	adds: { string },
 	unlocks: { string },
@@ -37,7 +37,7 @@ DockConfig.Levels = {
 	[4] = {
 		cash = 30000,
 		rank = "Coxswain",
-		robux = 149,
+		robux = 199,
 		product = "DockLevel4",
 		adds = { "LookoutTower", "SlipwayCrane" },
 		unlocks = { "NoRelaunchCooldown", "LifeboatBerth" },
@@ -45,7 +45,7 @@ DockConfig.Levels = {
 	[5] = {
 		cash = 100000,
 		rank = "RescuePilot",
-		robux = 249,
+		robux = 399,
 		product = "DockLevel5",
 		adds = { "StationFront", "Beacon" },
 		unlocks = { "TrophyHall", "HarbourMaster" },
@@ -62,7 +62,7 @@ DockConfig.Buildings = {
 	Garage = {
 		cash = 5000,
 		rank = "Lifeguard",
-		robux = 99,
+		robux = 75,
 		product = "DockGarage",
 		adds = { "Garage", "GarageBoard" },
 		unlocks = { "CarsAtDock" },
@@ -76,7 +76,7 @@ DockConfig.Buildings = {
 		},
 	},
 	Hangar = {
-		cash = 40000,
+		cash = 25000,
 		rank = "RescuePilot",
 		robux = 199,
 		product = "DockHangar",
