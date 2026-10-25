@@ -25,6 +25,8 @@ before touching.
 
 Merged since: WP-23b UI kit (`src/client/UI/Kit/`, FredokaOne, icons in `UiImages.Kit`; art director "ship" on round 3; leftover polish: portrait panels shrink to content, clearer Owned state, stronger studs/tab/subtitle contrast, bigger desktop labels, desktop panel ~50% width); docs rewrite first half (05/06/08/10/12/13/18/19 + archive); flaky Waves timing test fixed. WP-16 asset diet (asset ids 1,478 → 259, texture-pack surfaces 455 → 195, no look changes). Not yet seen in Studio: WP-14c blueprint table + `BuildSeq` Lego build; WP-15 crew lineup (gate dock Lv5 + Coxswain; Mechanic/Lifeguard/Dispatcher 12k/9k/15k Cash, wages 400/300/500 per session). Mechanic now cuts the "Boat to me" cooldown 60 → 42 s. `check.sh` failed once then passed 3× (possible flaky test).
 
+When merging WP-23c: the mechanic fix put the shortened cooldown into the old phone `VehiclesApp` ring (`MonetizationEffects` cooldown arg + the `CrewMechanic` player attribute); make sure the new left-bar "Boat to me" ring uses the same rule.
+
 ## 2. Queued (in order)
 
 1. **WP-14d build tablet**: replace the blueprint table with a tablet on a stand at a Lego build station near the
