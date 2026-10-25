@@ -25,6 +25,7 @@ export type PriceButton = {
 	root: ImageButton,
 	setState: (State) -> (),
 	setPrice: (number) -> (),
+	setText: (string?) -> (),
 }
 
 local PriceButton = {}
@@ -80,6 +81,7 @@ function PriceButton.new(parent: Instance?, props: Props): PriceButton
 
 	local price = props.price
 	local state: State = props.state or "buy"
+	local override: string? = nil
 	local function paint()
 		Style.recolor(holder, Style.grad(if state == "buy" then "buy" else "disabled"))
 		root.Active = state == "buy"
@@ -89,7 +91,7 @@ function PriceButton.new(parent: Instance?, props: Props): PriceButton
 				c.Visible = (c.Name == "Check") == (state == "owned")
 			end
 		end
-		num.Text = if state == "owned" then "Owned" else Theme.short(price)
+		num.Text = override or (if state == "owned" then "Owned" else Theme.short(price))
 	end
 	paint()
 	Style.press(root, props.onActivate)
@@ -102,6 +104,10 @@ function PriceButton.new(parent: Instance?, props: Props): PriceButton
 		end,
 		setPrice = function(n: number)
 			price = n
+			paint()
+		end,
+		setText = function(text: string?)
+			override = text
 			paint()
 		end,
 	}

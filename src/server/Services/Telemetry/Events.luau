@@ -48,7 +48,7 @@ Events.Funnel = {
 	{ step = 6, name = "Call2Accepted" }, -- the first station call is theirs
 	{ step = 7, name = "Call2Delivered" },
 	{ step = 8, name = "Call3Delivered" },
-	{ step = 9, name = "PhoneOpened" }, -- the first app opened on the phone
+	{ step = 9, name = "PhoneOpened" }, -- the first kit panel opened (legacy funnel name)
 	{ step = 10, name = "FirstUpgrade" }, -- the first vehicle upgrade bought with Cash
 	{ step = 11, name = "FirstRank" },
 	{ step = 12, name = "FirstVehicle" }, -- the first vehicle bought with Cash

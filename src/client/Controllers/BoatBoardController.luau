@@ -3,8 +3,8 @@
 -- boat board and the hangar and sub pen boards, all tagged BoatBoard).
 -- On your own rack, owned models stay lit with Launch (the server's crane does the rest); locked ones go
 -- dark with a padlock, a Cash chip (coin + price, or the rank's colour + name) and an R$ chip, and their
--- prompt reads Buy. Buy and Upgrade open the phone's card for that craft (VehiclesApp, only = id), the
--- same Cash / Robux buttons and upgrade tiles the Vehicles app had. Other players' racks: prompts off.
+-- prompt reads Buy. Buy and Upgrade open the kit Boat card for that craft (UI/BoatCard), with the
+-- Cash / Robux buttons and upgrade tiles. Other players' racks: prompts off.
 local CollectionService = game:GetService("CollectionService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -24,8 +24,7 @@ local UiImages = require(Config:WaitForChild("UiImages"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
-local Phone = require(UI:WaitForChild("Phone"))
-local VehiclesApp = require(UI:WaitForChild("VehiclesApp"))
+local Menu = require(UI:WaitForChild("Menu"))
 
 local C = HudTheme.Colors
 local TAG = "BoatBoard"
@@ -255,7 +254,7 @@ local function watch(rack: Instance)
 	end)
 end
 
--- Buy (a locked model) or Upgrade (an owned one): the phone opens on that craft's card
+-- Buy (a locked model) or Upgrade (an owned one): the kit opens on that craft's card
 local function onTriggered(prompt: ProximityPrompt)
 	local id = prompt:GetAttribute("VehicleId")
 	local pad = prompt.Parent
@@ -268,9 +267,7 @@ local function onTriggered(prompt: ProximityPrompt)
 		return
 	end
 	if prompt.Name == "BoardCard" or (prompt.Name == "BoardLaunch" and usable(id) == false) then
-		Phone.openApp("Boat", function(page: Frame, close: () -> ())
-			return VehiclesApp.mount(page, close, id)
-		end)
+		Menu.openBoat(id)
 	end
 end
 

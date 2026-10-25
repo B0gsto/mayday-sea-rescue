@@ -5,7 +5,7 @@
 -- (OpsTaskingCard.KIND) with its distance under it, pinned to the screen edge with its tip pointing
 -- the way while off screen. Close in (NEAR) it never hides: it bobs over the target, tip down, until
 -- the goal is done (docs/20 rule 2). The strip shows the same icon and distance (onGoal); the minimap
--- has no pill. Hidden under the phone or the full map, and in cinematics (OpsUiHidden). Mounted by OpsHud.
+-- has no pill. Hidden under a panel or the full map, and in cinematics (OpsUiHidden). Mounted by OpsHud.
 --   Waypoint.start(ops, map, onGoal)  onGoal(label, glyph, colour, "240 m") or onGoal(nil) each frame
 --   Waypoint.metres(studs) -> "240 m" | "1.2 km"
 local Players = game:GetService("Players")
@@ -15,6 +15,7 @@ local Workspace = game:GetService("Workspace")
 local Glyph = require(script.Parent.Glyph)
 local HudTheme = require(script.Parent.HudTheme)
 local Layout = require(script.Parent.Layout)
+local Menu = require(script.Parent.Menu)
 local OpsTaskingCard = require(script.Parent.OpsTaskingCard)
 
 local Waypoint = {}
@@ -168,11 +169,6 @@ function Waypoint.start(
 		disc.BackgroundColor3, tip.BackgroundColor3 = color, color
 	end
 
-	local function phoneUp(): boolean
-		local phone = playerGui:FindFirstChild("Phone")
-		return phone ~= nil and phone:IsA("ScreenGui") and phone.Enabled
-	end
-
 	RunService.RenderStepped:Connect(function()
 		local cam = Workspace.CurrentCamera
 		local char = player.Character
@@ -191,7 +187,7 @@ function Waypoint.start(
 		end
 		local glyph, color = style(label :: string)
 		onGoal(label, glyph, color, Waypoint.metres(flat))
-		if hidden or map.IsOpen() or phoneUp() then
+		if hidden or map.IsOpen() or Menu.isAnyPanelOpen() then
 			mark.Visible = false
 			return
 		end

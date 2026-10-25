@@ -8,13 +8,13 @@
 --     the station, quay desk, your vehicles, other crew, storm areas, your
 --     waypoint) with objective blips clamped to the rim, a dotted line to the current objective (its
 --     distance lives on UI/Waypoint's marker and the strip, one readout: playtest 2). Tap / click it to open the full map.
---   * Full map (M, gamepad View/Select, the MAP button): pan (drag / left stick), zoom (wheel,
---     pinch, + / -, triggers), click / tap / A to set your own waypoint (again on it, or X, clears
---     it), close with M, Esc, Backspace, B or the close button. Every control sits in a "safe"
---     frame inset by GuiService:GetGuiInset() (clear of the Roblox top-bar buttons): the title top
---     left, close top right, zoom / Me / Clear bottom left and a small collapsible legend (tap its
---     header, or gamepad Y) bottom right. Place names (MapConfig.Places) are live labels at a fixed
---     screen size; one that would touch a panel, the top bar or a name drawn before it is skipped.
+--   * Full map (M, gamepad View/Select, the MAP button): a kit Panel window. Pan (drag / left stick),
+--     zoom (wheel, pinch, + / -, triggers), click / tap / A to set your own waypoint (again on it,
+--     or X, clears it), close with M, Esc, Backspace, B or the panel's X. Zoom / Me / Clear sit bottom
+--     left and a small collapsible legend (tap its header, or gamepad Y) bottom right. Place names
+--     (MapConfig.Places) are live labels at a fixed screen size; one that would touch a control or a
+--     name drawn before it is skipped. Fog (DiscoveryConfig) covers the unexplored map, with the hub's
+--     finer grid drawn in a clipped copy so the forest stays hidden until walked.
 --   * Hidden while LocalPlayer attribute CinematicPlaying is true.
 --   * Drop-off pads (Workspace.Map.DropOffs) are hidden locally (LocalTransparencyModifier) while
 --     ReplicatedStorage attribute UseMapWaypoints is true (MapService sets it on the server).
@@ -25,7 +25,6 @@
 --      attribute), then a call offer, then your own waypoint. An offer never takes the pin from a quest.
 --      GetTargets(): { Vector3 }
 local ContextActionService = game:GetService("ContextActionService")
-local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -33,12 +32,20 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local DiscoveryConfig = require(Shared:WaitForChild("Config"):WaitForChild("DiscoveryConfig"))
 local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
-local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
-local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 local MapConfig = require(Shared:WaitForChild("Config"):WaitForChild("MapConfig"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local Weather = require(Shared:WaitForChild("Weather"))
+local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
+local UI = script.Parent.Parent:WaitForChild("UI")
+local Kit = UI:WaitForChild("Kit")
+local DiscoveryController = require(script.Parent:WaitForChild("DiscoveryController"))
+local HudTheme = require(UI:WaitForChild("HudTheme"))
+local Layout = require(UI:WaitForChild("Layout"))
+local Panel = require(Kit:WaitForChild("Panel"))
+local Style = require(Kit:WaitForChild("Style"))
+local Theme = require(Kit:WaitForChild("Theme"))
 
 local MapController = {}
 MapController.Priority = 120
@@ -75,6 +82,16 @@ local targets: { Vector3 } = {} -- the pulsing call blips (survivors, vessels, o
 local extraBlips: { [string]: { BlipDraw } } = {}
 local RING = 1.08 -- bezel size / minimap square
 local MAP_HALF = 0.395 -- map canvas radius / square side (just past the bezel hole, RING * 0.72 / 2)
+local S = Theme.Size
+
+-- the map fog grids (DiscoveryConfig): coarse over the whole map, fine inside the hub
+local FOG = DiscoveryConfig.Fog
+local HUB = FOG.Hub
+local HUB_HALF = math.ceil((WorldConfig.Hub.radius + HUB.radius + HUB.cell) / HUB.cell) * HUB.cell
+local HUB_COUNT = math.floor(2 * HUB_HALF / HUB.cell)
+local HUB_X0 = WorldConfig.Hub.center.X - HUB_HALF
+local HUB_Z0 = WorldConfig.Hub.center.Z - HUB_HALF
+local FOG_COLOR = Color3.fromRGB(7, 18, 34)
 
 -- ---------------------------------------------------------------- small UI helpers
 
@@ -304,7 +321,7 @@ end
 
 -- Every blip this frame, plus the objective (where the route line goes).
 local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
-	local S = MapConfig.Styles
+	local St = MapConfig.Styles
 	local list: { BlipDraw } = {}
 	for _, b in MapConfig.Blips do
 		if b.position then
@@ -333,7 +350,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 		for i, c in s.casualties or {} do
 			if typeof(c.position) == "Vector3" and not c.delivered and not c.takenOver then
 				if c.inWater ~= false then
-					local style = S.Casualty
+					local style = St.Casualty
 					table.insert(list, {
 						id = `Cas{i}`,
 						pos = c.position,
@@ -360,7 +377,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			table.insert(list, {
 				id = "OpPos",
 				pos = s.position,
-				style = S.Vessel,
+				style = St.Vessel,
 				pulse = true,
 				clamp = true,
 				size = 26,
@@ -371,7 +388,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			for name, p in dropOffs() do
 				table.insert(
 					list,
-					{ id = `Drop{name}`, pos = p, style = S.DropOff, clamp = true, size = 24 }
+					{ id = `Drop{name}`, pos = p, style = St.DropOff, clamp = true, size = 24 }
 				)
 			end
 			objective, objectiveLabel = nearestDropOff(me), "Drop-off"
@@ -391,7 +408,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 	end
 	local quest = player:GetAttribute("QuestTarget") -- WP-21b: the thing, then the giver
 	if typeof(quest) == "Vector3" then
-		table.insert(list, { id = "Quest", pos = quest, style = S.Quest, clamp = true, size = 24 })
+		table.insert(list, { id = "Quest", pos = quest, style = St.Quest, clamp = true, size = 24 })
 		if not objective then
 			objective, objectiveLabel = quest, "Quest"
 		end
@@ -404,7 +421,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			table.insert(list, {
 				id = `Offer{id}`,
 				pos = o.position,
-				style = S.Casualty,
+				style = St.Casualty,
 				pulse = true,
 				clamp = true,
 				size = 24,
@@ -417,7 +434,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 	if waypoint then
 		table.insert(
 			list,
-			{ id = "Waypoint", pos = waypoint, style = S.Waypoint, clamp = true, size = 24 }
+			{ id = "Waypoint", pos = waypoint, style = St.Waypoint, clamp = true, size = 24 }
 		)
 		if not objective then
 			objective, objectiveLabel = waypoint, "Waypoint"
@@ -427,7 +444,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 	if typeof(home) == "CFrame" then
 		table.insert(
 			list,
-			{ id = "Home", pos = home.Position, style = S.Home, clamp = true, size = 20 }
+			{ id = "Home", pos = home.Position, style = St.Home, clamp = true, size = 20 }
 		)
 	end
 	for _, folderName in { "Vehicles" } do
@@ -437,7 +454,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 				table.insert(list, {
 					id = `Veh{m:GetFullName()}`,
 					pos = m:GetPivot().Position,
-					style = S.Vehicle,
+					style = St.Vehicle,
 					clamp = true,
 					size = 20,
 				})
@@ -451,7 +468,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 		if r then
 			table.insert(
 				list,
-				{ id = `Crew{p.UserId}`, pos = r.Position, style = S.Crew, size = 16 }
+				{ id = `Crew{p.UserId}`, pos = r.Position, style = St.Crew, size = 16 }
 			)
 		end
 	end
@@ -700,20 +717,79 @@ local function legendRow(parent: Instance, style: Style, order: number)
 	t.TextTruncate = Enum.TextTruncate.AtEnd
 end
 
+local function kitButton(
+	parent: Instance,
+	name: string,
+	str: string,
+	size: UDim2,
+	grad: string,
+	onActivate: (() -> ())?
+): TextButton
+	local b = Style.button(parent, size) :: any
+	b.Name = name
+	b.Text = ""
+	local _, face = Style.block(b, Style.grad(grad), { radius = S.cornerSmall, lip = 4 })
+	local l = Style.label(face, str, Theme.Text.small, true)
+	l.TextWrapped = false
+	l.TextXAlignment = Enum.TextXAlignment.Center
+	if onActivate then
+		Style.press(b, onActivate, S.cornerSmall)
+	end
+	return b
+end
+
 local function buildFullMap()
-	local root = frame("FullMap", gui, {
-		Size = UDim2.fromScale(1, 1),
-		BackgroundTransparency = 0,
-		BackgroundColor3 = DEEP,
-		Visible = false,
-		ZIndex = 20,
+	local mapCanvas = Style.canvas(gui)
+	full.canvas = mapCanvas
+	local panel = Panel.new(mapCanvas, {
+		title = "Map",
+		icon = "map",
+		size = Vector2.new(1160, 640),
+		onClose = function()
+			if isOpen then
+				MapController.Close()
+			end
+		end,
 	})
+	full.panel = panel
+	panel.body.Visible = false
+
+	local root = frame("View", panel.root, {
+		Position = UDim2.fromOffset(S.pad, S.titleBar * 0.5 + S.pad),
+		Size = UDim2.new(1, -2 * S.pad, 1, -(S.titleBar * 0.5 + 2 * S.pad)),
+		BackgroundColor3 = DEEP,
+		BackgroundTransparency = 0,
+		ClipsDescendants = true,
+		Visible = false,
+		ZIndex = 6,
+	})
+	Style.corner(root, S.corner + 2)
+	Style.stroke(root, S.border, true)
 	full.root = root
-	local canvas = frame("Canvas", root, { Size = UDim2.fromScale(1, 1), ClipsDescendants = true })
-	local img = frame("Map", canvas)
+
+	local canvas = frame("Canvas", root, {
+		Size = UDim2.fromScale(1, 1),
+		ClipsDescendants = true,
+		ZIndex = 1,
+	})
+	local img = frame("Map", canvas, { ZIndex = 1 })
 	makeTiles(img)
 	full.img = img
-	full.areas = frame("Areas", canvas, { Size = UDim2.fromScale(1, 1) })
+
+	-- fog: coarse cells over the whole map; inside the hub a clipped copy of the map shows the fine grid
+	local fog = frame("Fog", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 3 })
+	full.fog = fog
+	local hubClip = frame("HubClip", canvas, {
+		BackgroundTransparency = 1,
+		ClipsDescendants = true,
+		ZIndex = 4,
+	})
+	local hubMap = frame("HubMap", hubClip, { ZIndex = 1 })
+	makeTiles(hubMap)
+	local hubFog = frame("HubFog", hubClip, { Size = UDim2.fromScale(1, 1), ZIndex = 2 })
+	full.hubClip, full.hubMap, full.hubFog = hubClip, hubMap, hubFog
+
+	full.areas = frame("Areas", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 5 })
 	local hit = Instance.new("TextButton")
 	hit.Name = "Hit"
 	hit.Size = UDim2.fromScale(1, 1)
@@ -721,16 +797,19 @@ local function buildFullMap()
 	hit.Text = ""
 	hit.AutoButtonColor = false
 	hit.Modal = true -- frees the mouse in first person while the map is open
+	hit.ZIndex = 9
 	hit.Parent = canvas
 	full.hit = hit
-	full.blips = frame("Blips", canvas, { Size = UDim2.fromScale(1, 1) })
+	full.blips = frame("Blips", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 6 })
 	full.pool = poolNew(full.blips)
+
 	-- you: a big white arrow on a blue disc, outlined, turned to your heading
 	local me = text("Player", canvas, "▲", 34, Color3.fromRGB(255, 255, 255))
 	me.AnchorPoint = Vector2.new(0.5, 0.5)
 	me.Size = UDim2.fromOffset(44, 44)
 	me.BackgroundTransparency = 0.1
 	me.BackgroundColor3 = Color3.fromRGB(30, 120, 255)
+	me.ZIndex = 8
 	corner(me)
 	stroke(me, Color3.fromRGB(255, 255, 255), 3)
 	me.TextStrokeTransparency = 0.2
@@ -741,10 +820,11 @@ local function buildFullMap()
 	cross.Size = UDim2.fromOffset(34, 34)
 	cross.TextStrokeTransparency = 0.3
 	cross.Visible = false
+	cross.ZIndex = 8
 	full.cross = cross
 
 	-- place names: live labels under the blips (MapConfig.Places)
-	local names = frame("Places", canvas, { Size = UDim2.fromScale(1, 1) })
+	local names = frame("Places", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 7 })
 	full.places = {}
 	for i, pl in MapConfig.Places do
 		local st = PLACE_STYLE[pl.kind] or PLACE_STYLE.place
@@ -760,6 +840,7 @@ local function buildFullMap()
 		t.AutomaticSize = Enum.AutomaticSize.XY
 		t.AnchorPoint = Vector2.new(if pl.left then 0 else 0.5, 0.5)
 		t.Visible = false
+		t.ZIndex = 7
 		local halo = Instance.new("UIStroke")
 		halo.Color = st.halo
 		halo.Thickness = 3 -- thick enough to read over the baked road lines
@@ -775,75 +856,65 @@ local function buildFullMap()
 		end
 		table.insert(full.places, { label = t, x = pl.x, z = pl.z, kind = pl.kind, left = pl.left })
 	end
-	-- the blips, you and the crosshair draw over the names
-	for _, o in { full.blips, me, cross } :: { GuiObject } do
-		o.ZIndex = 2
-	end
 
-	-- every control lives in "safe": inset by GuiService:GetGuiInset() (the Roblox top bar)
-	local safe = frame("Safe", root, { Size = UDim2.fromScale(1, 1), ZIndex = 2 })
+	-- controls, inside the map view (the panel already sits in the safe area)
+	local safe = root
 	full.safe = safe
 
-	-- header and buttons
-	local title = HudTheme.panel("Title", UDim2.fromOffset(220, 44), safe)
-	title.Position = UDim2.fromOffset(16, 12)
-	local tt = text("Text", title, "GALE ISLES", 22)
-	tt.Font = HudTheme.HeaderFont
-	tt.Size = UDim2.fromScale(1, 1)
-	full.title = title
-	local close = button("Close", safe, "X", UDim2.fromOffset(52, 52))
-	close.AnchorPoint = Vector2.new(1, 0)
-	close.Position = UDim2.new(1, -16, 0, 12)
-	close.Activated:Connect(function()
-		MapController.Close()
-	end)
-	full.close = close
-	local zin = button("ZoomIn", safe, "+", UDim2.fromOffset(52, 52))
-	zin.AnchorPoint = Vector2.new(0, 1)
-	zin.Position = UDim2.new(0, 16, 1, -200)
-	local zout = button("ZoomOut", safe, "-", UDim2.fromOffset(52, 52))
-	zout.AnchorPoint = Vector2.new(0, 1)
-	zout.Position = UDim2.new(0, 16, 1, -140)
-	zin.Activated:Connect(function()
+	local zin = kitButton(safe, "ZoomIn", "+", UDim2.fromOffset(52, 52), "blue", function()
 		full.radius = math.max(MapConfig.FullMap.minRadius, full.radius * 0.7)
 	end)
-	zout.Activated:Connect(function()
+	zin.AnchorPoint = Vector2.new(0, 1)
+	zin.Position = UDim2.new(0, 12, 1, -200)
+	local zout = kitButton(safe, "ZoomOut", "-", UDim2.fromOffset(52, 52), "blue", function()
 		full.radius = math.min(MapConfig.FullMap.maxRadius, full.radius / 0.7)
 	end)
-	local clear = button("ClearWaypoint", safe, "Clear waypoint", UDim2.fromOffset(180, 48))
+	zout.AnchorPoint = Vector2.new(0, 1)
+	zout.Position = UDim2.new(0, 12, 1, -140)
+	local clear = kitButton(
+		safe,
+		"ClearWaypoint",
+		"Clear waypoint",
+		UDim2.fromOffset(190, 48),
+		"orange",
+		function()
+			MapController.SetWaypoint(nil)
+		end
+	)
 	clear.AnchorPoint = Vector2.new(0, 1)
-	clear.Position = UDim2.new(0, 16, 1, -16)
-	clear.TextSize = 19
-	clear.Activated:Connect(function()
-		MapController.SetWaypoint(nil)
-	end)
+	clear.Position = UDim2.new(0, 12, 1, -12)
 	full.clear = clear
-	local recentre = button("Recentre", safe, "Me", UDim2.fromOffset(52, 52))
-	recentre.AnchorPoint = Vector2.new(0, 1)
-	recentre.Position = UDim2.new(0, 16, 1, -80)
-	recentre.TextSize = 20
-	recentre.Activated:Connect(function()
+	local recentre = kitButton(safe, "Recentre", "Me", UDim2.fromOffset(52, 52), "blue", function()
 		local r = rootPart()
 		if r then
 			full.center = Vector2.new(r.Position.X, r.Position.Z)
 		end
 	end)
+	recentre.AnchorPoint = Vector2.new(0, 1)
+	recentre.Position = UDim2.new(0, 12, 1, -80)
 	full.controls = { zin, zout, recentre }
 
-	-- legend: a small collapsible panel, bottom right (collapsed: just its header)
-	local legend = HudTheme.panel("Legend", UDim2.fromOffset(LEGEND_WIDTH, LEGEND_HEAD), safe)
+	-- legend: a small collapsible kit panel, bottom right (collapsed: just its header)
+	local legend = Style.button(safe, UDim2.fromOffset(LEGEND_WIDTH, LEGEND_HEAD)) :: any
+	legend.Name = "Legend"
 	legend.AnchorPoint = Vector2.new(1, 1)
-	legend.Position = UDim2.new(1, -16, 1, -16)
+	legend.Position = UDim2.new(1, -12, 1, -12)
 	legend.ClipsDescendants = true
+	legend.ZIndex = 10
+	local _, legendFace =
+		Style.block(legend, Style.grad("ink"), { radius = S.cornerSmall, lip = 4 })
+	legendFace.ZIndex = 1
 	local head = Instance.new("TextButton")
 	head.Name = "Head"
 	head.BackgroundTransparency = 1
 	head.AutoButtonColor = false
 	head.Size = UDim2.new(1, 0, 0, LEGEND_HEAD)
-	head.Font = HudTheme.HeaderFont
-	head.TextSize = 16
-	head.TextColor3 = C.gold
+	head.FontFace = Font.new(Theme.FONT, Enum.FontWeight.Regular)
+	head.Text = "LEGEND  ▸"
+	head.TextSize = 20
+	head.TextColor3 = Color3.fromRGB(255, 248, 232)
 	head.TextXAlignment = Enum.TextXAlignment.Left
+	head.ZIndex = 2
 	head.Parent = legend
 	local headPad = Instance.new("UIPadding")
 	headPad.PaddingLeft = UDim.new(0, 12)
@@ -858,6 +929,7 @@ local function buildFullMap()
 	body.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	body.ScrollBarThickness = 4
 	body.ScrollingDirection = Enum.ScrollingDirection.Y
+	body.ZIndex = 2
 	body.Parent = legend
 	HudTheme.padding(body, 8)
 	local layout = Instance.new("UIListLayout")
@@ -888,13 +960,99 @@ local function buildFullMap()
 	local hint = text("Hint", safe, "", 15, C.textDim)
 	hint.Font = HudTheme.BodyFont
 	hint.AnchorPoint = Vector2.new(0.5, 1)
-	hint.Position = UDim2.new(0.5, 0, 1, -18)
+	hint.Position = UDim2.new(0.5, 0, 1, -16)
 	hint.Size = UDim2.fromOffset(420, 20)
 	hint.TextStrokeTransparency = 0.5
+	hint.ZIndex = 10
 	full.hint = hint
 
 	full.radius = MapConfig.FullMap.startRadius
 	full.center = Vector2.new(0, 200)
+end
+
+local function fogRun(parent: Instance): Frame
+	local f = Instance.new("Frame")
+	f.BorderSizePixel = 0
+	f.BackgroundColor3 = FOG_COLOR
+	f.BackgroundTransparency = 0.08
+	f.Parent = parent
+	return f
+end
+
+local function rebuildRuns(
+	layer: Frame,
+	originX: number,
+	originZ: number,
+	cell: number,
+	count: number,
+	revealed: (number) -> boolean
+): { { f: Frame, x: number, z: number, w: number, h: number } }
+	layer:ClearAllChildren()
+	local runs = {}
+	for iz = 0, count - 1 do
+		local ix = 0
+		while ix < count do
+			if not revealed(iz * count + ix + 1) then
+				local j = ix
+				while j + 1 < count and not revealed(iz * count + j + 2) do
+					j += 1
+				end
+				table.insert(runs, {
+					f = fogRun(layer),
+					x = originX + ix * cell,
+					z = originZ + iz * cell,
+					w = (j - ix + 1) * cell,
+					h = cell,
+				})
+				ix = j + 1
+			else
+				ix += 1
+			end
+		end
+	end
+	return runs
+end
+
+local function refreshFog()
+	if not full.fog or not full.hubFog then
+		return
+	end
+	full.fogRuns = rebuildRuns(
+		full.fog,
+		FOG.origin,
+		FOG.origin,
+		FOG.cell,
+		FOG.count,
+		DiscoveryController.IsRevealed
+	)
+	full.hubRuns =
+		rebuildRuns(full.hubFog, 0, 0, HUB.cell, HUB_COUNT, DiscoveryController.IsHubRevealed)
+end
+
+local function placeFog(scale: number, size: Vector2, c: Vector2)
+	for _, r in full.fogRuns or {} do
+		local f = r.f
+		f.Position =
+			UDim2.fromOffset(size.X / 2 + (r.x - c.X) * scale, size.Y / 2 + (r.z - c.Y) * scale)
+		f.Size = UDim2.fromOffset(r.w * scale + 1, r.h * scale + 1)
+	end
+	local clip = full.hubClip :: Frame
+	local hubPx = HUB_COUNT * HUB.cell * scale
+	clip.Position =
+		UDim2.fromOffset(size.X / 2 + (HUB_X0 - c.X) * scale, size.Y / 2 + (HUB_Z0 - c.Y) * scale)
+	clip.Size = UDim2.fromOffset(hubPx, hubPx)
+	local mapPx = MapConfig.Extent * scale
+	local hm = full.hubMap :: Frame
+	hm.Size = UDim2.fromOffset(mapPx, mapPx)
+	hm.Position = UDim2.fromOffset(
+		(HUB_X0 - MapConfig.Origin.X) * scale,
+		(HUB_Z0 - MapConfig.Origin.Y) * scale
+	)
+	for _, r in full.hubRuns or {} do
+		local f = r.f
+		f.Position = UDim2.fromOffset((r.x - HUB_X0) * scale, (r.z - HUB_Z0) * scale)
+		f.Size = UDim2.fromOffset(r.w * scale + 1, r.h * scale + 1)
+	end
 end
 
 local function fullScale(): (number, Vector2)
@@ -922,17 +1080,11 @@ local function placeWaypointAt(screen: Vector2)
 	MapController.SetWaypoint(Vector3.new(w.X, 0, w.Y))
 end
 
--- The safe frame (inset by the Roblox top bar) and the legend's size (collapsed: its header;
--- open: as many rows as fit above the zoom stack, the rest scroll).
-local function layoutSafe(size: Vector2)
-	local tl, br = GuiService:GetGuiInset()
-	local safe = full.safe :: Frame
-	safe.Position = UDim2.fromOffset(tl.X, tl.Y)
-	safe.Size = UDim2.new(1, -(tl.X + br.X), 1, -(tl.Y + br.Y))
+-- The legend's size (collapsed: its header; open: as many rows as fit, the rest scroll).
+local function layoutLegend(size: Vector2)
 	local open = full.legendOpen == true
 	local rowsH = full.legendRows * LEGEND_ROW + 16
-	local room =
-		math.max(size.Y - tl.Y - br.Y - 12 - 52 - 12 - 16 - LEGEND_HEAD - 12, LEGEND_ROW * 3)
+	local room = math.max(size.Y - 24 - LEGEND_HEAD, LEGEND_ROW * 3)
 	local h = if open then LEGEND_HEAD + math.min(rowsH, room) else LEGEND_HEAD
 	full.legend.Size = UDim2.fromOffset(LEGEND_WIDTH, h)
 	full.legendHead.Text = if open then "LEGEND  ▾" else "LEGEND  ▸"
@@ -945,16 +1097,13 @@ local function rectsTouch(a0: Vector2, a1: Vector2, b0: Vector2, b1: Vector2): b
 	return a0.X < b1.X and b0.X < a1.X and a0.Y < b1.Y and b0.Y < a1.Y
 end
 
--- Place names at a fixed screen size; a name is drawn only where it touches no panel, the top bar
--- or a name placed before it (MapConfig.Places order = priority). Region names show zoomed out,
--- minor places zoomed in.
+-- Place names at a fixed screen size; a name is drawn only where it touches no control or a name
+-- placed before it (MapConfig.Places order = priority). Region names show zoomed out, minor
+-- places zoomed in.
 local function placeNames(c: Vector2, scale: number, size: Vector2, marks: { { Vector2 } })
 	local origin = full.root.AbsolutePosition
-	local tl = GuiService:GetGuiInset()
-	local blocked: { { Vector2 } } = {
-		{ Vector2.zero, Vector2.new(size.X, tl.Y + 8) }, -- the Roblox top bar
-	}
-	local panels: { GuiObject } = { full.title, full.close, full.legend, full.clear, full.hint }
+	local blocked: { { Vector2 } } = {}
+	local panels: { GuiObject } = { full.legend, full.clear, full.hint }
 	for _, g in full.controls do
 		table.insert(panels, g)
 	end
@@ -1025,6 +1174,7 @@ local function updateFullMap(now: number)
 	local u, v = MapConfig.worldToUV(c.X, c.Y)
 	full.img.Size = UDim2.fromOffset(mapPx, mapPx)
 	full.img.Position = UDim2.fromOffset(size.X / 2 - u * mapPx, size.Y / 2 - v * mapPx)
+	placeFog(scale, size, c)
 	local function at(p: Vector3): (number, number)
 		return size.X / 2 + (p.X - c.X) * scale, size.Y / 2 + (p.Z - c.Y) * scale
 	end
@@ -1093,7 +1243,7 @@ local function updateFullMap(now: number)
 	poolFlush(pool)
 	pulseAll(pool, now)
 	full.clear.Visible = waypoint ~= nil
-	layoutSafe(size)
+	layoutLegend(size)
 	placeNames(c, scale, size, marks)
 	local pad = UserInputService.GamepadEnabled and not UserInputService.MouseEnabled
 	full.cross.Visible = pad
@@ -1303,7 +1453,9 @@ function MapController.Open()
 	if r then
 		full.center = Vector2.new(r.Position.X, r.Position.Z)
 	end
+	refreshFog()
 	full.root.Visible = true
+	full.panel.open()
 	mini.root.Visible = false
 	gui.DisplayOrder = 40 -- above the Ops cards while the full map is up
 	player:SetAttribute("MapOpen", true)
@@ -1329,6 +1481,7 @@ function MapController.Close()
 	isOpen = false
 	drag, pinchStart, padPan, padZoom = nil, nil, Vector2.zero, 0
 	full.root.Visible = false
+	full.panel.close()
 	gui.DisplayOrder = 16
 	player:SetAttribute("MapOpen", false)
 	ContextActionService:UnbindAction("MapFullPad")
@@ -1390,6 +1543,12 @@ function MapController.Init()
 	miniGui.Parent = player:WaitForChild("PlayerGui")
 	buildMinimap()
 	buildFullMap()
+	refreshFog()
+	DiscoveryController.Changed:Connect(function()
+		if full.fog then
+			refreshFog()
+		end
+	end)
 	bindFullMapInput()
 	gui.Parent = player:WaitForChild("PlayerGui")
 end

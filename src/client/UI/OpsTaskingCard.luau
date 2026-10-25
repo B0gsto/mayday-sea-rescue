@@ -20,6 +20,7 @@ local Hud = require(
 local HudTheme = require(script.Parent.HudTheme)
 local InputGlyph = require(script.Parent.InputGlyph)
 local Layout = require(script.Parent.Layout)
+local Menu = require(script.Parent.Menu)
 
 export type Card = {
 	show: (data: { [string]: any }, onAccept: (opId: string) -> ()) -> (),
@@ -190,10 +191,8 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 			local t = 0
 			conn = RunService.Heartbeat:Connect(function(dt)
 				t += dt
-				-- the phone covers the HUD: hide the pager and free R for the phone's own keys
-				local pg = Players.LocalPlayer:FindFirstChild("PlayerGui")
-				local phone = pg and pg:FindFirstChild("Phone") -- UI/Phone's ScreenGui, Enabled while up
-				local shown = not (phone and phone:IsA("ScreenGui") and phone.Enabled)
+				-- a panel covers the HUD: hide the pager and free R for the panel's own keys
+				local shown = not Menu.isAnyPanelOpen()
 				if shown ~= body.Visible then
 					body.Visible = shown
 					if shown then
@@ -225,6 +224,7 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 				-- the alert strip flashes and the accept button pulses like a DSC alarm
 				strip.BackgroundTransparency = if math.floor(t * 2.5) % 2 == 0 then 0 else 0.5
 				pulse.Scale = 1 + 0.05 * math.sin(t * 5)
+				local pg = Players.LocalPlayer:FindFirstChild("PlayerGui")
 				local wp = pg and pg:FindFirstChild("Waypoint")
 				local mark = wp and wp:FindFirstChild("Mark") :: GuiObject?
 				way.Visible = shown and mark ~= nil and mark.Visible

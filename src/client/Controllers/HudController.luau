@@ -1,13 +1,13 @@
 --!strict
 -- HudController: the progression HUD (docs 05 section 9 style, mobile first).
---   Placement: UI/Layout regions. Top left ("wallet", under the phone button): Cash with a round
---   "+" that opens the phone's Store app, and the rank with its Rep bar to the next rank. The
---   phone button has its own region (UI/Phone: every menu, the crew's faces and Leave).
+--   Placement: UI/Layout regions. Top left ("wallet"): Cash with a round "+" that opens the kit
+--   Shop, and the rank with its Rep bar to the next rank. UI/Menu owns the left button bar and the
+--   panels (every menu, the crew's faces and Leave).
 --   Top centre ("notice"): "+Cash +Rep" award pops (with the friends bonus as "+20%") and the
 --   rank-up toast with the new unlocks.
 --   Cold open (Layout.coldOpen): wallet, rank and pops stay hidden until it ends.
---   No shop buttons or world shops (docs/16 C4, C5, K10): vehicles, upgrades and Robux items are on
---   the phone (VehiclesApp, StoreApp).
+--   No world shops (docs/16 C4, C5, K10): vehicles, upgrades and Robux items are in the kit panels
+--   (BoatCard, Shop).
 --   Stock CoreGui that clashes with the HUD is off: the leaderboard (PlayerList, it sat over the
 --   status strip; rank and Cash live there), Backpack (no Tools in the game), Health (casualty
 --   and crew condition are the game's own readouts) and the Emotes menu. Chat stays on (crew
@@ -25,7 +25,7 @@ local UI = script.Parent.Parent:WaitForChild("UI")
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local Layout = require(UI:WaitForChild("Layout"))
-local Phone = require(UI:WaitForChild("Phone"))
+local Menu = require(UI:WaitForChild("Menu"))
 local Hud = require(Shared:WaitForChild("Config"):WaitForChild("UiImages")).Hud
 
 local C = HudTheme.Colors
@@ -192,7 +192,7 @@ local function buildWallet(region: Frame)
 	cashLabel.TextTruncate = Enum.TextTruncate.None
 	HudTheme.outline(cashLabel)
 
-	-- (+): the Store app on the phone; a 48 du hit area around the 42 du button sprite
+	-- (+): the kit Shop; a 48 du hit area around the 42 du button sprite
 	local plus = Instance.new("TextButton")
 	plus.Name = "StoreButton"
 	plus.Text = ""
@@ -229,7 +229,7 @@ local function buildWallet(region: Frame)
 	end)
 	plus.Activated:Connect(function()
 		to(1)
-		Phone.openApp("Store")
+		Menu.open("Shop")
 	end)
 
 	-- the rank over its Rep bar, no numbers
@@ -314,8 +314,7 @@ function HudController.Init()
 	buildWallet(walletRegion)
 	buildAward()
 	buildToast(noticeRegion)
-	require(UI:WaitForChild("SettingsPanel")).mount() -- the panel (the phone's Settings app shows it)
-	Phone.mount(statusRegion) -- phone button, P / gamepad L1
+	Menu.mount() -- button bar, panel registry, Boat to me
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)
 	Layout.onColdOpen(applyColdOpen)
 
@@ -346,10 +345,10 @@ function HudController.Init()
 	ProximityPromptService.PromptHidden:Connect(function(prompt: ProximityPrompt)
 		shown[prompt] = nil
 	end)
-	-- the hub shop counter (map/Build.luau buildHub) opens the phone Store
+	-- the hub shop counter (map/Build.luau buildHub) opens the kit Shop
 	ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt)
 		if prompt:HasTag("ShopCounter") then
-			Phone.openApp("Store")
+			Menu.open("Shop")
 		end
 	end)
 	local function watchSeat(char: Model)

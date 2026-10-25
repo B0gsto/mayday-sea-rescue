@@ -1,27 +1,20 @@
 --!strict
--- CosmeticPicker (RP-M5 spine): one row that cycles a cosmetic slot through the options the local
--- player may equip:  [Slot label]  [<]  [option name]  [>]. Touch and mouse tap the arrows; gamepad
--- selects them with the D-pad and presses A. Each step calls Net.Cosmetics_Equip(slot, id)
--- (CosmeticsService checks the pass); the row shows the player's "Cos_<Slot>" attribute, so a server
--- refusal snaps back. Used by the settings panel's "Owned items" section and by owned product cards.
---
---   CosmeticPicker.new(parent, slot, opts?) -> Picker
---     opts = { label: string?, height: number? (du, default 44), labelWidth: number? (scale, 0.36),
---              layoutOrder: number? }
---   picker.frame: Frame            the row (size: full width x height)
---   picker.first: GuiObject        the first selectable button (gamepad focus)
---   picker.refresh()               re-read ownership and the equipped option
---   picker.destroy()
+-- CosmeticPicker: one kit row that cycles a cosmetic slot through the options the player may
+-- equip. Used by Settings (owned items) and the dock's boat booth.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local CosmeticLoadout =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("CosmeticLoadout"))
 local Cosmetics = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Cosmetics"))
-local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 
-local C = HudTheme.Colors
+local Kit = script.Parent:WaitForChild("Kit")
+local Style = require(Kit:WaitForChild("Style"))
+local Theme = require(Kit:WaitForChild("Theme"))
+
+local S = Theme.Size
 local player = Players.LocalPlayer
+local EQUIP_TIMEOUT = 8
 
 export type Options = {
 	label: string?,
@@ -35,8 +28,6 @@ export type Picker = {
 	refresh: () -> (),
 	destroy: () -> (),
 }
-
-local EQUIP_TIMEOUT = 8
 
 local CosmeticPicker = {}
 
@@ -58,7 +49,6 @@ local function owns(key: string): boolean
 	return ownedSet[key] == true
 end
 
--- A readable slot name ("LightBar" -> "Light bar", "DogWear" -> "Dog wear").
 function CosmeticPicker.slotLabel(slot: string): string
 	local s = Cosmetics.slot(slot)
 	if s and type(s.label) == "string" then
@@ -76,8 +66,8 @@ end
 
 function CosmeticPicker.new(parent: Instance, slot: string, opts: Options?): Picker
 	local o: Options = opts or {}
-	local height = o.height or 44
-	local labelW = o.labelWidth or 0.36
+	local height = o.height or 76
+	local labelW = o.labelWidth or 0.42
 
 	local row = Instance.new("Frame")
 	row.Name = "Cosmetic_" .. slot
@@ -85,47 +75,34 @@ function CosmeticPicker.new(parent: Instance, slot: string, opts: Options?): Pic
 	row.BackgroundTransparency = 1
 	row.LayoutOrder = o.layoutOrder or 0
 	row.Parent = parent
+	local holder, face = Style.block(row, Style.grad("body"), { lip = 5, radius = S.cornerSmall })
+	holder.Name = "Row"
 
-	local label = HudTheme.label(
-		"Label",
-		o.label or CosmeticPicker.slotLabel(slot),
-		UDim2.new(labelW, -8, 1, 0),
-		HudTheme.BodyFont,
-		HudTheme.TextSize.body,
-		row
-	)
-	label.TextColor3 = C.text
+	local label =
+		Style.label(face, o.label or CosmeticPicker.slotLabel(slot), Theme.Text.body, true)
+	label.Position = UDim2.fromOffset(14, 0)
+	label.Size = UDim2.new(labelW, -18, 1, 0)
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.TextWrapped = false
+	label.TextTruncate = Enum.TextTruncate.AtEnd
 
-	local control = Instance.new("Frame")
-	control.Name = "Control"
-	control.AnchorPoint = Vector2.new(1, 0)
-	control.Position = UDim2.fromScale(1, 0)
-	control.Size = UDim2.fromScale(1 - labelW, 1)
-	control.BackgroundTransparency = 1
-	control.Parent = row
-
-	local function arrow(name: string, text: string): TextButton
-		local b = HudTheme.button(name, text, UDim2.fromOffset(height, height), control)
-		b.BackgroundColor3 = C.panelLight
-		b.TextSize = HudTheme.TextSize.body
-		return b
-	end
-	local prev = arrow("Prev", "<")
-	local nextButton = arrow("Next", ">")
-	nextButton.AnchorPoint = Vector2.new(1, 0)
-	nextButton.Position = UDim2.fromScale(1, 0)
-
-	local value = HudTheme.label(
-		"Value",
-		"",
-		UDim2.new(1, -2 * (height + 6), 1, 0),
-		HudTheme.HeaderFont,
-		HudTheme.TextSize.body,
-		control
-	)
-	value.Position = UDim2.fromOffset(height + 6, 0)
+	local prev = Style.button(face, UDim2.fromOffset(64, height - 14))
+	prev.AnchorPoint = Vector2.new(0, 0.5)
+	prev.Position = UDim2.fromScale(labelW, 0.5)
+	local _, lFace = Style.block(prev, Style.grad("blue"), { lip = 4, radius = S.cornerSmall })
+	Style.label(lFace, "<", Theme.Text.button)
+	local nextButton = Style.button(face, UDim2.fromOffset(64, height - 14))
+	nextButton.AnchorPoint = Vector2.new(1, 0.5)
+	nextButton.Position = UDim2.new(1, -10, 0.5, 0)
+	local _, rFace =
+		Style.block(nextButton, Style.grad("blue"), { lip = 4, radius = S.cornerSmall })
+	Style.label(rFace, ">", Theme.Text.button)
+	local value = Style.label(face, "", Theme.Text.small, true)
+	value.Position = UDim2.new(labelW, 70, 0, 0)
+	value.Size = UDim2.new(1 - labelW, -150, 1, 0)
 	value.TextXAlignment = Enum.TextXAlignment.Center
-	value.TextColor3 = C.text
+	value.TextWrapped = false
+	value.TextTruncate = Enum.TextTruncate.AtEnd
 
 	local pending: string? = nil
 	local token = 0
@@ -137,14 +114,12 @@ function CosmeticPicker.new(parent: Instance, slot: string, opts: Options?): Pic
 			or Cosmetics.default(slot)
 		local option = if current then Cosmetics.option(slot, current) else nil
 		value.Text = if option then option.name else "-"
-		value.TextColor3 = if pending then C.textDim else C.text
+		value.TextColor3 = if pending then Theme.Colors.textDark else Theme.Colors.textDark
 		local many = #Cosmetics.ownedOptions(slot, owns) > 1
 		prev.Active = many
 		nextButton.Active = many
-		prev.AutoButtonColor = many
-		nextButton.AutoButtonColor = many
-		prev.TextColor3 = if many then C.text else C.textDim
-		nextButton.TextColor3 = if many then C.text else C.textDim
+		prev.ImageTransparency = if many then 0 else 0.4
+		nextButton.ImageTransparency = if many then 0 else 0.4
 	end
 
 	local function step(dir: number)
@@ -177,12 +152,12 @@ function CosmeticPicker.new(parent: Instance, slot: string, opts: Options?): Pic
 		end)
 	end
 
-	prev.Activated:Connect(function()
+	Style.press(prev, function()
 		step(-1)
-	end)
-	nextButton.Activated:Connect(function()
+	end, S.cornerSmall)
+	Style.press(nextButton, function()
 		step(1)
-	end)
+	end, S.cornerSmall)
 	table.insert(
 		connections,
 		player:GetAttributeChangedSignal(Cosmetics.attribute(slot)):Connect(function()

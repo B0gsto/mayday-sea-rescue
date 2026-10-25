@@ -44,8 +44,8 @@ HudLayout.WALLET_WIDTH = 236 -- the Cash + rank card (HudController), bottom lef
 HudLayout.WALLET_HEIGHT = 96
 HudLayout.PILL_HEIGHT = 36 -- desktop: clear space above the square (the minimap bezel overhangs it)
 HudLayout.TOUCH_SIDE = 130 -- final px: the touch minimap square
-HudLayout.PHONE_SIZE = 72 -- the phone button (UI/Phone), top left
-HudLayout.PHONE_MIN_PX = 64 -- final px: the phone button never draws smaller
+HudLayout.PHONE_SIZE = 72 -- legacy phone-button region (UI/Menu draws its own bar)
+HudLayout.PHONE_MIN_PX = 64 -- final px: that region's minimum
 
 -- usable px at which the HUD draws 1:1 (1080p draws 1.6x: wallet ~380x150 px, minimap ~335 px)
 local REF_HEIGHT = 620

@@ -1,5 +1,5 @@
 --!strict
--- ProductShelves (RP-M3): the rules behind every Robux item card in the phone's Store app (UI/StoreApp):
+-- ProductShelves (RP-M3): the rules behind every Robux item card in the kit Shop (UI/Panels/Shop):
 -- which items list, what a card says and when its Buy button may open a Roblox purchase prompt (never for
 -- an item with id 0 or one the server did not offer). Pure, no requires: tests/StoreCards.spec runs it
 -- under Lune. The in-world shelves are gone (docs/16 C5): the Store app sells every launch id.
@@ -69,7 +69,7 @@ function ProductShelves.listed(item: any, studio: boolean): boolean
 	return item.ready ~= false or studio
 end
 
--- The phone Store's tabs (UI/StoreApp): game passes, day passes (Products with dayPassFor), the other
+-- The kit Shop's tabs (UI/Panels/Shop): game passes, day passes (Products with dayPassFor), the other
 -- products; each in config order, listed by the shelf rule.
 function ProductShelves.storeItems(config: any, tab: string, studio: boolean): { ItemRef }
 	local out: { ItemRef } = {}

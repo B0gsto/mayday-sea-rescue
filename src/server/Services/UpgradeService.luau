@@ -1,6 +1,6 @@
 --!strict
 -- UpgradeService: fits boatyard upgrades to a player's boats (docs 03 section 4.1).
--- Bought from the phone's Vehicles app (VehiclesApp, from anywhere); this service owns the pure rules'
+-- Bought from the kit Boat card (UI/BoatCard, from anywhere); this service owns the pure rules'
 -- checks (owned vehicle, fit order, rank gate, Cash) and the persistence.
 -- Fitted levels live in data.vehicleUpgrades[vehicleId] as a VehicleUpgrades bitmask.
 -- Remote (ReplicatedStorage.Net, created here): Upgrade_Buy C->S function (vehicleId, upgradeId) -> ok, reason.
