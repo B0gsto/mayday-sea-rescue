@@ -35,7 +35,10 @@ export type SpawnZone = {
 	area: "Inside" | "Outside", -- Inside = Calm Bay behind the breakwater, Outside = beyond it
 	timerMultiplier: number, -- longer timers for storm beginner calls (docs 02 section 8)
 	fallback: Vector3, -- used if random picks keep landing on land or walls
+	reach: number?, -- distance-tier zones (docs/23 e.2): offered once the player's craft reach is at least this
 }
+
+local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
 local CallTypes = {}
 
@@ -197,13 +200,43 @@ CallTypes.KindWeights = {
 -- Fixed chain for a player's first calls (docs/16 B3, B4, B9), each { kind, zone, victims? }. The
 -- cold open is call 1, so a new player meets the chain from entry 2: one aboard a drifting dinghy, then
 -- two (a jet ski holds one: the second waits for another trip or a bigger boat), then the seal pup.
+-- docs/23 e.2: only calls 1-2 stay in the harbour; from call 3 the zone is a distance tier (no zone here).
 CallTypes.TutorialChain = {
 	{ kind = "Swimmer", zone = "Near" },
 	{ kind = "DriftingCraft", zone = "CalmBay", victims = 1 },
-	{ kind = "DriftingCraft", zone = "CalmBay", victims = 2 },
-	{ kind = "Swimmer", zone = "CalmBay" },
-	{ kind = "WildlifeRescue", zone = "Near" },
-}
+	{ kind = "DriftingCraft", victims = 2 },
+	{ kind = "Swimmer" },
+	{ kind = "WildlifeRescue" },
+} :: { { kind: string, zone: string?, victims: number? } }
+
+-- Distance tiers (docs/23 e.2): how far out (studs from the station) a player's best craft takes calls.
+-- Keyed by craft, not top speed: the RIB and lifeboat are slower than the jet ski but are the bigger
+-- earned craft, and every Robux craft goes the farthest. No other craft: the jet ski. -- tune
+CallTypes.CraftReach = {
+	JetSki = 2000,
+	RIB = 3500,
+	Lifeboat = 5500,
+	StormRunner = 5500,
+	Tidewalker = 5500,
+	RiptideX = 5500,
+	GildedGull = 5500,
+} :: { [string]: number }
+CallTypes.BASE_REACH = 2000
+
+-- Pay x (distance / PayPerStuds), clamped to 1..PayMax (CallLogic.distancePay). -- tune
+CallTypes.Distance = { PayPerStuds = 1200, PayMax = 4 }
+
+-- Island call zones: a ring of open water just off each island (WorldConfig.Islands), offered from this
+-- reach (must be a ring's reach: its fallback). Not St Elowen's Mount or The Arches: Great Gale blocks
+-- every straight sea line from the harbour mouth (Studio-sampled 2026-10-25).
+CallTypes.IslandReach = {
+	SkerryIsle = 2000,
+	PuffinIsle = 3500,
+	GannetRock = 5500,
+	Penwyn = 5500,
+	WreckReef = 5500,
+	MermaidLagoon = 5500,
+} :: { [string]: number }
 
 local OUTER_MAX = CallTypes.TRAVEL_SECONDS * 75 * CallTypes.CRUISE_FACTOR -- JetSki topSpeed 75
 
@@ -298,6 +331,43 @@ CallTypes.SpawnZones = {
 		fallback = Vector3.new(150, 0, 260),
 	},
 } :: { [string]: SpawnZone }
+
+-- Open-sea rings around the station, one per tier (the backup when an island's near side is blocked).
+local RINGS: { [string]: { number } } =
+	{ Offshore = { 600, 2000 }, FarSea = { 2000, 3500 }, DeepSea = { 3500, 5500 } }
+local ringFallback: { [number]: Vector3 } = {}
+for id, ring in RINGS do
+	local minR, maxR = ring[1], ring[2]
+	ringFallback[maxR] = CallTypes.STATION + Vector3.new(0, 0, (minR + maxR) / 2) -- due south: open sea
+	CallTypes.SpawnZones[id] = {
+		id = id,
+		displayName = "Open Water",
+		center = CallTypes.STATION,
+		minRadius = minR,
+		maxRadius = maxR,
+		area = "Outside",
+		timerMultiplier = 1.3,
+		fallback = ringFallback[maxR],
+		reach = maxR,
+	}
+end
+-- only islands that exist in the map data get a zone
+for _, island in WorldConfig.Islands do
+	local reach = CallTypes.IslandReach[island.id]
+	if reach then
+		CallTypes.SpawnZones[island.id] = {
+			id = island.id,
+			displayName = island.name,
+			center = island.center,
+			minRadius = island.radius + 60,
+			maxRadius = island.radius + 400,
+			area = "Outside",
+			timerMultiplier = 1.3,
+			fallback = ringFallback[reach], -- its tier's open sea (Studio-checked routable)
+			reach = reach,
+		}
+	end
+end
 
 -- Water areas (studs) used to reject spawn points on land, the dock or the breakwater.
 CallTypes.Areas = {

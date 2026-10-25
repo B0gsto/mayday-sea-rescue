@@ -548,6 +548,9 @@ local function newOp(
 		id = id,
 		kind = kind,
 		def = def,
+		-- pay weight: farther calls pay more (docs/23 e.2)
+		weight = def.weight
+			* CallLogic.distancePay(CallLogic.flatDistance(position, CallTypes.STATION)),
 		isBig = def.isBig,
 		zone = zone,
 		zoneId = CallLogic.zoneIdAt(position),
@@ -1045,11 +1048,11 @@ finish = function(op: any, reason: string)
 				paidAs = "Op:CapsizedFerry"
 			elseif op.takeover then
 				-- 2026-10-21: no pay for failing; only casualties brought home pay
-				reward = Grading.takeoverPayout(op.def.weight, op.saved, #op.casualties, humans)
+				reward = Grading.takeoverPayout(op.weight, op.saved, #op.casualties, humans)
 				paidAs = `Op:{op.kind}:Takeover`
 			else
 				local tut = if st.completed < #Grading.Payout.Tutorial then st.completed else nil
-				reward = Grading.payout(op.def.weight, grade, humans, tut)
+				reward = Grading.payout(op.weight, grade, humans, tut)
 				paidAs = `Op:{op.kind}`
 			end
 			st.completed += 1
@@ -1057,7 +1060,7 @@ finish = function(op: any, reason: string)
 		else
 			reward = if op.takeover
 				then { cash = 0, rep = 0 }
-				else Grading.shareWithoutStep(op.def.weight)
+				else Grading.shareWithoutStep(op.weight)
 			paidAs = "Op:Share"
 		end
 		if reward.cash > 0 or reward.rep > 0 then
@@ -1369,7 +1372,7 @@ end
 local function offerPayload(op: any, tutorialIndex: number?): { [string]: any }
 	local preview = if op.isBig
 		then Grading.bigCompletionBonus(1, 1)
-		else Grading.payout(op.def.weight, "Silver", 1, tutorialIndex)
+		else Grading.payout(op.weight, "Silver", 1, tutorialIndex)
 	return {
 		opId = op.id,
 		kind = op.kind,
@@ -1466,10 +1469,22 @@ local function raceStart(player: Player): (Vector3?, number, boolean)
 		not afloat
 end
 
+-- docs/23 e.2: how far out this player's calls go, from the best craft they can launch.
+local function callReach(player: Player): number
+	local owned = {}
+	for id in CallTypes.CraftReach do
+		local ok, can = try("ProgressionService", "CanUseVehicle", player, id)
+		if ok and can == true then
+			table.insert(owned, id)
+		end
+	end
+	return CallLogic.craftReach(owned)
+end
+
 -- forcedKind: an operation id, or "EasyCall" (the idle nudge: a swimmer close in, in calm water).
 local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	local st = stateOf(player)
-	local choice = CallLogic.chooseCall(st.completed, weatherState())
+	local choice = CallLogic.chooseCall(st.completed, weatherState(), nil, callReach(player))
 	local kind = Operations.FromCallKind[choice.kind]
 	local sceneKind, zone, victims = choice.kind, choice.zone, choice.victims
 	if forcedKind == "EasyCall" then
@@ -1482,7 +1497,7 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 		zone, victims = CallTypes.Kinds[sceneKind].zones[1], nil
 	end
 	if sceneKind == "WildlifeRescue" then
-		sceneKind, zone = "Swimmer", "Near" -- the animal rides the swimmer scene (SanctuaryService)
+		sceneKind = "Swimmer" -- the animal rides the swimmer scene (SanctuaryService)
 	end
 	if opts and CallTypes.SpawnZones[opts.zone] then
 		zone = opts.zone -- Studio: OpsDev start <kind> <zone>
@@ -1954,24 +1969,31 @@ local function stepBoarding(op: any, dt: number)
 end
 
 -- Server-side transport: the client Mechanics/transport rule (home = a shore point at any speed, within
--- PAD_RANGE of a drop-off pad slow or on foot), checked on the server's own view of the player.
+-- PAD_RANGE of a drop-off pad or the player's own dock (BayCFrame, docs/23 e.2) slow or on foot),
+-- checked on the server's own view of the player.
 local PAD_RANGE = 60 -- studs, client Transport.PAD_RANGE
-local function isHome(pos: Vector3, slowOrOnFoot: boolean): boolean
+local function isHome(player: Player, pos: Vector3, slowOrOnFoot: boolean): boolean
 	local _, shore = BoatColdOpen.nearestShore(pos)
 	if shore <= BoatColdOpen.SHORE_RADIUS then
 		return true
 	end
+	if not slowOrOnFoot then
+		return false
+	end
+	local points = {}
+	local bay = player:GetAttribute("BayCFrame")
+	if typeof(bay) == "CFrame" then
+		table.insert(points, bay.Position)
+	end
 	local map = Workspace:FindFirstChild("Map")
 	local folder = map and map:FindFirstChild("DropOffs")
-	for _, pad in if folder and slowOrOnFoot then folder:GetChildren() else {} do
+	for _, pad in if folder then folder:GetChildren() else {} do
 		if pad:IsA("BasePart") and pad:GetAttribute("DropOff") ~= nil then
-			local d = (pad.Position - pos) * Vector3.new(1, 0, 1)
-			if d.Magnitude <= PAD_RANGE then
-				return true
-			end
+			table.insert(points, pad.Position)
 		end
 	end
-	return false
+	local near = CallLogic.nearestDropOff(pos, points)
+	return near ~= nil and CallLogic.flatDistance(near, pos) <= PAD_RANGE
 end
 
 local function stepHome(op: any)
@@ -1989,7 +2011,7 @@ local function stepHome(op: any)
 			continue -- fell off on the way: stepBoarding takes them back aboard first
 		end
 		local onFoot = hum.SeatPart == nil
-		if isHome(root.Position, onFoot or root.AssemblyLinearVelocity.Magnitude < 8) then
+		if isHome(player, root.Position, onFoot or root.AssemblyLinearVelocity.Magnitude < 8) then
 			serverDone(op, track, inst, player, {
 				elapsed = now() - inst.startedAt,
 				conditionAtEnd = if ci then op.casualties[ci].condition else nil,
