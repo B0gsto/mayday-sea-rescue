@@ -8,9 +8,10 @@ local Board = require(script.Parent.Parent.Ops.Board)
 
 local Dive = {}
 
-Dive.TOP_SPEED = 14 -- studs/s ahead (boats run 40+) -- tune
+Dive.TOP_SPEED = 40 -- studs/s ahead at the surface, like a slow boat (jet ski 75) -- tune
+Dive.SUBMERGED_SPEED = 22 -- studs/s ahead under water: calm near the seabed -- tune
 Dive.REVERSE_SPEED = 5 -- tune
-Dive.ACCEL = 4 -- studs/s^2 under throttle -- tune
+Dive.ACCEL = 5 -- studs/s^2 under throttle, also easing down to SUBMERGED_SPEED on a dive -- tune
 Dive.DECEL = 3 -- studs/s^2 coasting -- tune
 Dive.TURN_RATE = math.rad(40) -- rad/s at full steer -- tune
 Dive.TURN_EASE = 2.5 -- rad/s^2 -- tune
@@ -70,7 +71,8 @@ function Dive.step(
 	floorY: number,
 	dt: number
 ): State
-	local want = if throttle >= 0 then throttle * Dive.TOP_SPEED else throttle * Dive.REVERSE_SPEED
+	local top = if s.submerged then Dive.SUBMERGED_SPEED else Dive.TOP_SPEED
+	local want = if throttle >= 0 then throttle * top else throttle * Dive.REVERSE_SPEED
 	s.speed = approach(s.speed, want, if throttle ~= 0 then Dive.ACCEL else Dive.DECEL, dt)
 	s.yawRate = approach(s.yawRate, -steer * Dive.TURN_RATE, Dive.TURN_EASE, dt)
 	s.yaw += s.yawRate * dt

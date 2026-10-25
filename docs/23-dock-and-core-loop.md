@@ -192,3 +192,10 @@ Packs = the cheapest mix of live Cash packs (Calm Bay rate: 1,500 / 4,500 / 16,5
 3. Distance pay / 1,200 made far calls pay more per minute than near ones and ran ranks ~20% ahead of docs/03; /
    1,500 keeps far calls about even per minute. Calls are now 3.5 to 4.5 min, not docs/03's 6.5, so early ranks
    still land ~15 min early.
+4. Reach is capped by rank (`CallLogic.craftReach`): the tier of the best free craft the rank unlocks (Recruit
+   2,000, Lifeguard 3,500, Coxswain 5,500). A Robux boat no longer hands a Recruit x3+ calls; it buys the boat and
+   its speed. Submarine (Coxswain) and helicopter / seaplane (Rescue Pilot) reach 5,500, capped the same way.
+5. A call landed away from Port Haven (Haven Sands slipway, ~1,100 east; the only far drop-off) pays for half the
+   trip sailed, station → scene → Sands, never more (`CallLogic.deliveredPay`): a Skerry call landed there was x1.70,
+   now ~x1.41. The submarine runs 40 surfaced / 22 submerged (was 14), so the Diver timer is 600 s (x1.3 = 13 min).
+   Free-player sim unchanged (ranks as above).

@@ -730,6 +730,12 @@ local function deliverCasualty(op: any, ci: number, actor: Player?)
 	end
 	c.delivered = true
 	op.saved += 1
+	-- landed away from Port Haven (Haven Sands): pay for the trip sailed, not the far call's trip home
+	local root = actor and actor.Character and actor.Character:FindFirstChild("HumanoidRootPart")
+	if root and root:IsA("BasePart") and not op.isBig then
+		op.weight =
+			math.min(op.weight, op.def.weight * CallLogic.deliveredPay(op.position, root.Position))
+	end
 	-- they climb off (a jet ski carries one: the next survivor needs the seat)
 	pcall(RescueService.RemoveVictim, op.scene, ci)
 	if op.isBig then
@@ -1482,7 +1488,8 @@ local function callReach(player: Player): number
 			table.insert(owned, id)
 		end
 	end
-	return CallLogic.craftReach(owned)
+	local rank = player:GetAttribute("RankIndex") -- server-set (ProgressionService)
+	return CallLogic.craftReach(owned, if type(rank) == "number" then rank else 1)
 end
 
 -- forcedKind: an operation id, or "EasyCall" (the idle nudge: a swimmer close in, in calm water).

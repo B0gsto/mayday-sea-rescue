@@ -10,7 +10,7 @@ local def: Types.OperationDef = {
 	displayName = "Diver at a Wreck",
 	radioLine = "Haven Rescue, Gale Isles Coastguard. Diver trapped at a wreck, one casualty. Over.",
 	weight = 1.4, -- tune
-	capSeconds = 1000,
+	capSeconds = 780, -- CallTypes Diver timer 600 x the islands' 1.3; the sub runs 40 surfaced (was 14)
 	isBig = false,
 	casualtyKind = "Person",
 	states = { Alert = 0.5, Exhausted = 0.5 },
