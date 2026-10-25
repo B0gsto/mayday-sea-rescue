@@ -167,6 +167,14 @@ return function(t)
 		t.expect(CallLogic.craftReach({ "JetSki", "RIB" })).toBe(3500)
 		t.expect(CallLogic.craftReach({ "RIB", "Lifeboat" })).toBe(5500)
 		t.expect(CallLogic.craftReach({ "RiptideX" })).toBe(5500)
+		-- capped by rank: a Robux boat buys speed, not the far (high-pay) calls
+		t.expect(CallLogic.craftReach({ "RiptideX" }, 1)).toBe(2000) -- Recruit
+		t.expect(CallLogic.craftReach({ "RiptideX" }, 2)).toBe(3500) -- Lifeguard: the RIB's tier
+		t.expect(CallLogic.craftReach({ "RiptideX" }, 4)).toBe(5500) -- Coxswain: the lifeboat's
+		t.expect(CallLogic.craftReach({ "Submarine" }, 4)).toBe(5500)
+		t.expect(CallLogic.craftReach({ "RescueHelicopter" }, 3)).toBe(3500)
+		t.expect(CallLogic.craftReach({ "Seaplane" }, 5)).toBe(5500)
+		t.expect(CallLogic.craftReach({ "JetSki" }, 5)).toBe(2000) -- the cap never adds reach
 		local function zones(reach: number): { [string]: boolean }
 			local seen, rng = {}, makeRng(9)
 			for _ = 1, 400 do
@@ -203,6 +211,19 @@ return function(t)
 		t.expect(CallLogic.distancePay(1500)).toBe(1)
 		t.expect(CallLogic.distancePay(3000)).toBeCloseTo(2, 1e-6)
 		t.expect(CallLogic.distancePay(20000)).toBe(4)
+	end)
+
+	t.test("landed away from Port Haven, a far call pays for the trip sailed", function()
+		local scene = CallTypes.STATION + Vector3.new(3000, 0, 0)
+		local berth = Vector3.new(-500, 0, 300) -- a marina dock
+		t.expect(CallLogic.deliveredPay(scene, berth)).toBeCloseTo(2, 1e-6)
+		local sands = Vector3.new(1000, 0, 282)
+		local half = (3000 + CallLogic.flatDistance(scene, sands)) / 2
+		t.expect(CallLogic.deliveredPay(scene, sands)).toBeCloseTo(half / 1500, 1e-6)
+		t.expect(CallLogic.deliveredPay(scene, sands) < 1.7).toBeTruthy()
+		-- never more than the scene's own pay
+		local west = CallTypes.STATION + Vector3.new(-3000, 0, 0)
+		t.expect(CallLogic.deliveredPay(west, sands)).toBeCloseTo(2, 1e-6)
 	end)
 
 	t.test("drop-off is the nearest of your dock and the harbour pads", function()

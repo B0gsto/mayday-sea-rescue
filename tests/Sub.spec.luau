@@ -64,7 +64,7 @@ return function(t)
 	t.test("slow ahead, slower astern, turns and leans into the turn", function()
 		local s = run(Dive.new(0), FLOAT, 1, 0, 0, 10)
 		t.expect(math.abs(s.speed - Dive.TOP_SPEED) < 1e-6).toBe(true)
-		t.expect(Dive.TOP_SPEED <= 20).toBe(true) -- calm
+		t.expect(Dive.TOP_SPEED <= 45).toBe(true) -- a slow boat (jet ski 75)
 		s = run(s, FLOAT, -1, 0, 0, 20)
 		t.expect(math.abs(s.speed + Dive.REVERSE_SPEED) < 1e-6).toBe(true)
 		s = run(Dive.new(0), FLOAT, 1, 1, 0, 3)
@@ -72,6 +72,19 @@ return function(t)
 		t.expect(s.roll < 0).toBe(true) -- starboard down
 		s = run(s, FLOAT, 0, 0, 0, 10)
 		t.expect(s.speed == 0 and s.yawRate == 0 and s.roll == 0).toBe(true)
+	end)
+
+	t.test("slower submerged: eases down on a dive, back up on surfacing", function()
+		local s, y = run(Dive.new(0), FLOAT, 1, 0, 0, 10)
+		s, y = run(s, y, 1, 0, -1, 1)
+		t.expect(s.speed > Dive.SUBMERGED_SPEED).toBe(true) -- no sudden brake
+		s, y = run(s, y, 1, 0, -1, 10)
+		t.expect(s.submerged).toBe(true)
+		t.expect(math.abs(s.speed - Dive.SUBMERGED_SPEED) < 1e-6).toBe(true)
+		t.expect(Dive.SUBMERGED_SPEED <= 25).toBe(true) -- calm near the seabed
+		s = run(s, y, 1, 0, 1, 40)
+		t.expect(s.submerged).toBe(false)
+		t.expect(math.abs(s.speed - Dive.TOP_SPEED) < 1e-6).toBe(true)
 	end)
 
 	t.test("pick-up: inside the ring, steady, with room, held long enough", function()

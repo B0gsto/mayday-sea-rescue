@@ -3,6 +3,7 @@
 -- Tested by tests/Call.spec.luau.
 local CallTypes = require(script.Parent.CallTypes)
 local GameConfig = require(script.Parent.Parent.Config.GameConfig)
+local ProgressionConfig = require(script.Parent.Parent.Config.ProgressionConfig)
 
 export type Rng = () -> number -- uniform in [0, 1)
 export type Reward = { cash: number, rep: number, grade: string }
@@ -229,13 +230,20 @@ end
 
 export type KindChoice = { kind: string, zone: string, victims: number? }
 
--- How far out a player's calls go: the best CallTypes.CraftReach among the craft ids they own.
-function CallLogic.craftReach(owned: { string }): number
-	local reach = CallTypes.BASE_REACH
+-- How far out a player's calls go: the best CallTypes.CraftReach among the craft ids they own, capped (unless
+-- rankIndex is nil) at the best tier of the free craft that rank unlocks: Robux buys a craft and its speed,
+-- not the Rep of farther calls (docs/23 (i)).
+function CallLogic.craftReach(owned: { string }, rankIndex: number?): number
+	local reach, cap = CallTypes.BASE_REACH, CallTypes.BASE_REACH
 	for _, id in owned do
 		reach = math.max(reach, CallTypes.CraftReach[id] or 0)
 	end
-	return reach
+	for id, v in ProgressionConfig.Vehicles do
+		if not v.passOnly and v.rankIndex <= (rankIndex or math.huge) then
+			cap = math.max(cap, CallTypes.CraftReach[id] or 0)
+		end
+	end
+	return math.min(reach, cap)
 end
 
 -- A distance-tier zone (docs/23 e.2), uniform over every zone the reach covers (the pool widens).
@@ -282,6 +290,16 @@ end
 function CallLogic.distancePay(distance: number): number
 	local D = CallTypes.Distance
 	return math.clamp(distance / D.PayPerStuds, 1, D.PayMax)
+end
+
+-- Pay multiplier for a call at `scene` landed at `at`: distancePay from the station, but landed away from
+-- Port Haven (Haven Sands) it pays for half the round trip sailed (station -> scene -> `at`), never more.
+function CallLogic.deliveredPay(scene: Vector3, at: Vector3): number
+	local out = flatDistance(scene, CallTypes.STATION)
+	if flatDistance(at, CallTypes.STATION) <= CallTypes.PORT_HAVEN_RADIUS then
+		return CallLogic.distancePay(out)
+	end
+	return CallLogic.distancePay(math.min(out, (out + flatDistance(scene, at)) / 2))
 end
 
 -- Where to take a survivor: the nearest of the drop-off points (the player's own dock, harbour pads).

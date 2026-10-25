@@ -212,7 +212,7 @@ CallTypes.Kinds = {
 		displayName = "Diver at a Wreck",
 		radioLine = "Diver trapped at a wreck, one casualty.",
 		weight = 1.4, -- tune
-		timer = 900, -- the sub is slow (14 studs/s) -- tune
+		timer = 600, -- x1.3 at the islands = 13 min; the sub runs 40 surfaced, a far wreck ~2.5 min -- tune
 		victims = 1,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = {}, -- the islands of CallTypes.DiveSites (filled below)
@@ -261,11 +261,15 @@ CallTypes.TutorialChain = {
 
 -- Distance tiers (docs/23 e.2): how far out (studs from the station) a player's best craft takes calls.
 -- Keyed by craft, not top speed: the RIB and lifeboat are slower than the jet ski but are the bigger
--- earned craft, and every Robux craft goes the farthest. No other craft: the jet ski. -- tune
+-- earned craft. Capped by rank (CallLogic.craftReach): a Robux craft goes no farther than the free craft
+-- the player's rank has unlocked. No other craft: the jet ski. -- tune
 CallTypes.CraftReach = {
 	JetSki = 2000,
 	RIB = 3500,
 	Lifeboat = 5500,
+	Submarine = 5500, -- the lifeboat's tier (both Coxswain)
+	RescueHelicopter = 5500, -- top tier (Rescue Pilot)
+	Seaplane = 5500,
 	StormRunner = 5500,
 	Tidewalker = 5500,
 	RiptideX = 5500,
@@ -276,6 +280,9 @@ CallTypes.BASE_REACH = 2000
 -- Pay x (distance / PayPerStuds), clamped to 1..PayMax (CallLogic.distancePay). x1 inside ~1,500 studs (the harbour
 -- approaches), then about pays for the extra travel (docs/23 (i), tests/Pacing.spec.luau). -- tune
 CallTypes.Distance = { PayPerStuds = 1500, PayMax = 4 }
+-- Drop-offs within this of the station are Port Haven (pads, marina docks, station slip); a call landed beyond
+-- it (Haven Sands slipway, ~1,100 out) pays for the trip sailed (CallLogic.deliveredPay). -- tune
+CallTypes.PORT_HAVEN_RADIUS = 800
 
 -- Island call zones: a ring of open water just off each island (WorldConfig.Islands), offered from this
 -- reach (must be a ring's reach: its fallback). Not St Elowen's Mount or The Arches: Great Gale blocks

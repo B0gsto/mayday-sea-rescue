@@ -256,7 +256,7 @@ return function(t)
 				totalOps,
 				if storm then "Storm" else "Calm",
 				random,
-				CallLogic.craftReach(ids)
+				CallLogic.craftReach(ids, rank())
 			)
 			local spec = CallTypes.Kinds[choice.kind]
 			local site = if spec.land then CallLogic.landSite(nil, random, choice.zone) else nil
