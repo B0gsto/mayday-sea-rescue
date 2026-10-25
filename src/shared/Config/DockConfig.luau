@@ -10,6 +10,7 @@ export type Level = {
 	rank: string, -- ProgressionConfig.Ranks id
 	robux: number, -- launch price, docs/23 (i): at least the Cash packs' price for the Cash, plus a rank-skip premium
 	product: string, -- MonetizationConfig.Products key
+	desc: string, -- the build tablet's focus line, <= 10 words
 	adds: { string },
 	unlocks: { string },
 }
@@ -20,6 +21,7 @@ DockConfig.MAX = 5
 
 DockConfig.Levels = {
 	[2] = {
+		desc = "Moors a second boat beside your jetty.",
 		cash = 2500,
 		rank = "Lifeguard",
 		robux = 49,
@@ -28,6 +30,7 @@ DockConfig.Levels = {
 		unlocks = { "SecondBerth" },
 	},
 	[3] = {
+		desc = "A boathouse to pick and paint your boats.",
 		cash = 10000,
 		rank = "RescueSwimmer",
 		robux = 99,
@@ -36,6 +39,7 @@ DockConfig.Levels = {
 		unlocks = { "ChooseAtDock" },
 	},
 	[4] = {
+		desc = "A lookout tower and crane; relaunch with no wait.",
 		cash = 30000,
 		rank = "Coxswain",
 		robux = 199,
@@ -44,6 +48,7 @@ DockConfig.Levels = {
 		unlocks = { "NoRelaunchCooldown", "LifeboatBerth" },
 	},
 	[5] = {
+		desc = "A lit station front and a beacon for the harbour.",
 		cash = 100000,
 		rank = "RescuePilot",
 		robux = 399,
@@ -61,6 +66,7 @@ DockConfig.BUILDINGS = { "Hangar", "SubPen" } -- the car Garage was cut 2026-10-
 
 DockConfig.Buildings = {
 	Hangar = {
+		desc = "A helipad and hangar for your rescue helicopter.",
 		cash = 25000,
 		rank = "RescuePilot",
 		robux = 199,
@@ -72,6 +78,7 @@ DockConfig.Buildings = {
 		lot = "Hangar",
 	},
 	SubPen = {
+		desc = "A sub pen to launch your submarine.",
 		cash = 20000,
 		rank = "Coxswain",
 		robux = 149,
@@ -87,15 +94,15 @@ DockConfig.Buildings = {
 -- Blueprints (docs/23 (j) "Exploration feeds the plot", WP-21b): cosmetic buildings a quest chain unlocks (never
 -- sold). Owned ones are data.dockBuildings[key]; DockService raises them on their island lot (Marina.LOTS[lot]).
 DockConfig.Blueprints = {
-	Lighthouse = { lot = "Spare1" }, -- Keeper Ives' lamp chain (Quests/Data Lamp3)
-} :: { [string]: { lot: string } }
+	Lighthouse = { lot = "Spare1", desc = "Keeper Ives' lamp, earned on his quest." }, -- Quests/Data Lamp3
+} :: { [string]: { lot: string, desc: string } }
 
 -- Decorations (WP-14d): Cash-only Lego set pieces on the free lots by the spawn. Bought from the build
 -- tablet's Decor tab and kept in data.dockBuildings like buildings, so the save migration accepts them.
 export type Decor = {
 	name: string,
 	cash: number,
-	icon: string, -- UiImages.Kit key
+	desc: string, -- the build tablet's focus line, <= 10 words
 	color: string, -- Theme.Grad accent for the build card
 	lot: string, -- Marina.LOTS key
 	offset: Vector2, -- studs from the lot centre, x / z
@@ -108,7 +115,7 @@ DockConfig.Decorations = {
 	FlowerBed = {
 		name = "Flower bed",
 		cash = 2000,
-		icon = "gift",
+		desc = "Bright Lego flowers by your spawn.",
 		color = "pink",
 		lot = "Spare2",
 		offset = Vector2.new(-10, 0),
@@ -117,7 +124,7 @@ DockConfig.Decorations = {
 	PicnicTable = {
 		name = "Picnic table",
 		cash = 5000,
-		icon = "daily",
+		desc = "A picnic table for crew breaks.",
 		color = "green",
 		lot = "Spare2",
 		offset = Vector2.new(0, 0),
@@ -126,7 +133,7 @@ DockConfig.Decorations = {
 	LampRow = {
 		name = "Lamp row",
 		cash = 9000,
-		icon = "boost",
+		desc = "A row of lamps that glow at night.",
 		color = "yellow",
 		lot = "Spare2",
 		offset = Vector2.new(10, 0),
@@ -135,7 +142,7 @@ DockConfig.Decorations = {
 	FlagPole = {
 		name = "Flag pole",
 		cash = 15000,
-		icon = "rank",
+		desc = "A tall flag pole flying your colours.",
 		color = "blue",
 		lot = "Spare3",
 		offset = Vector2.new(9, -8),
@@ -144,7 +151,7 @@ DockConfig.Decorations = {
 	Statue = {
 		name = "Statue",
 		cash = 25000,
-		icon = "vip",
+		desc = "A hero statue for your island.",
 		color = "orange",
 		lot = "Spare3",
 		offset = Vector2.new(9, 0),
@@ -153,7 +160,7 @@ DockConfig.Decorations = {
 	Fountain = {
 		name = "Fountain",
 		cash = 40000,
-		icon = "lifebuoy",
+		desc = "A splashing fountain in the square.",
 		color = "teal",
 		lot = "Spare3",
 		offset = Vector2.new(9, 8),

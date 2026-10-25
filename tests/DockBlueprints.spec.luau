@@ -80,4 +80,42 @@ return function(t)
 			.toBe(true)
 		t.expect(D.locked({ kind = "Decor", key = "Statue" }, 1)).toBe(false)
 	end)
+
+	t.test("WP-14e: the island blueprints are what is for sale now and not owned", function()
+		local items = D.onIsland(1, {})
+		t.expect(items[1].kind).toBe("Level")
+		t.expect(items[1].key).toBe(2)
+		t.expect(items[2].key).toBe("SubPen")
+		t.expect(#items).toBe(2 + #DockConfig.DECOR) -- no quest lighthouse
+		for _, item in items do
+			t.expect(D.buyable(item)).toBe(true)
+		end
+		local owned = { SubPen = true, FlowerBed = true }
+		for _, item in D.onIsland(1, owned) do
+			t.expect(owned[item.key]).toBeNil()
+		end
+		t.expect(#D.onIsland(5, { Hangar = true, SubPen = true })).toBe(#DockConfig.DECOR)
+	end)
+
+	t.test(
+		"WP-14e: every item has a short desc and its own drawing inside the unit square",
+		function()
+			for _, item in D.catalog() do
+				local desc = D.desc(item)
+				t.expect(type(desc)).toBe("string")
+				local words = 0
+				for _ in string.gmatch(desc, "%S+") do
+					words += 1
+				end
+				t.expect(words >= 3 and words <= 10).toBe(true)
+				local key = if item.kind == "Level" then `Level{item.key}` else item.key
+				local boxes = D.GLYPHS[key]
+				t.expect(boxes ~= nil).toBe(true)
+				for _, box in boxes do
+					t.expect(box.x >= 0 and box.y >= 0 and box.w > 0 and box.h > 0).toBe(true)
+					t.expect(box.x + box.w <= 1 + 1e-6 and box.y + box.h <= 1 + 1e-6).toBe(true)
+				end
+			end
+		end
+	)
 end

@@ -89,4 +89,41 @@ return function(t)
 		t.expect(math.abs(localCf.X) + st.size.X / 2 <= lot.size.X / 2 + 1e-3).toBe(true)
 		t.expect(math.abs(localCf.Z) + st.size.Y / 2 <= lot.size.Y / 2 + 1e-3).toBe(true)
 	end)
+
+	t.test(
+		"WP-14e: a paper blueprint lies just above its lot, turned to the berth frame",
+		function()
+			for _, item in DB.catalog() do
+				local cf, size = B.paper(item, frame)
+				local spot, raw = B.spot(item)
+				local want = (frame * spot).Position + Vector3.new(0, B.PAPER_LIFT, 0)
+				t.expect((cf.Position - want).Magnitude < 1e-3).toBe(true)
+				t.expect(cf.LookVector:Dot(frame.LookVector) > 0.999).toBe(true)
+				t.expect(math.abs(size.X * size.Y - raw.X * raw.Y) < 1e-3).toBe(true)
+			end
+			-- the boathouse lot is turned 90 degrees: its footprint swaps
+			local _, raw = B.spot({ kind = "Level", key = 3 })
+			local _, size = B.paper({ kind = "Level", key = 3 }, frame)
+			t.expect(size.X).toBe(raw.Y)
+		end
+	)
+
+	t.test(
+		"WP-14e: the focus view keeps the pitch, comes closer and sets the spot left of centre",
+		function()
+			local spot = (frame * M.LOTS.Spare3.cf).Position
+			local island = B.camera(frame, B.ISLAND_RADIUS, 16 / 9, nil)
+			local cam = B.focus(frame, spot, Vector2.new(7, 7), 16 / 9)
+			t.expect((cam.Position - spot).Magnitude < (island.Position - centre).Magnitude)
+				.toBe(true)
+			t.expect((cam.Position - spot).Magnitude >= B.FOCUS_MIN).toBe(true)
+			t.expect(math.abs(math.asin(-cam.LookVector.Y) - B.PITCH) < 0.01).toBe(true)
+			local rel = cam:PointToObjectSpace(spot)
+			t.expect(rel.Z < 0).toBe(true) -- in front
+			t.expect(rel.X < 0).toBe(true) -- left of the right-hand list
+			t.expect(rel.Y > 0).toBe(true) -- above the bottom strip
+			local big = B.focus(frame, spot, Vector2.new(60, 44), 16 / 9)
+			t.expect((big.Position - spot).Magnitude > (cam.Position - spot).Magnitude).toBe(true)
+		end
+	)
 end
