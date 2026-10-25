@@ -361,6 +361,10 @@ Lego-like animations when built." And: "do not redesign the assets that we alrea
 - **Player islands are plain Lego baseplates** (owner: "do not use the land on the player's islands, I want a simple
   plain Lego island, a simple 2D land"): flat green stud plates with a berth notch, no terrain, no scatter (WP-24).
   The hub forest and outer islands stay terrain.
-- **Build station:** the blueprint table sits in a small Lego builder's yard near your island spawn (open roof,
-  tools, a little crane): the tycoon "build here" spot, with a table instead of pads (follow-up to WP-14c).
+- **Build station with a tablet** (owner: "I want it to be a tablet; when accessing it, the camera goes in from the
+  top and there you can build the necessary things"): a small Lego builder's yard near your island spawn with a
+  tablet on a stand. Using it tweens the camera up to a top-down view of your island (build mode). A bottom bar of
+  kit cards lists what you can build (icon, Cash + rank or R$, padlock if locked); picking one makes its empty lot
+  pulse (a flat outline on the ground, never a 3D preview); buying plays the Lego build from above. Exit returns the
+  camera. Replaces the paper-blueprint table (WP-14d, after WP-14c and the UI kit).
 - **Builders from now on: multiple DeepSeek V4 Pro agents** (owner); Opus reviews.
