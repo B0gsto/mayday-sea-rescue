@@ -61,6 +61,7 @@ local Crowding = require(Shared:WaitForChild("Crowding"))
 local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
 local Helm = require(Shared:WaitForChild("Boat"):WaitForChild("Helm"))
 local NavLights = require(Shared:WaitForChild("Boat"):WaitForChild("NavLights"))
+local PickupRingController = require(script.Parent.PickupRingController)
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local Unstick = require(Shared:WaitForChild("Boat"):WaitForChild("Unstick"))
@@ -475,9 +476,14 @@ local function step(dt: number)
 							* launchSpeed
 					end
 					engageControls(seat)
-					local throttle = coldOpenThrottle(child, seat.ThrottleFloat, now)
 					local id = child:GetAttribute("VehicleId")
 					local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
+					local throttle =
+						PickupRingController.Assist( -- the pick-up ring's docking assist
+							child,
+							coldOpenThrottle(child, seat.ThrottleFloat, now),
+							if spec then spec.brakeDecel else nil
+						)
 					local root = child.PrimaryPart
 					local speed = if root then root.AssemblyLinearVelocity.Magnitude else 0
 					helm = Helm.step(

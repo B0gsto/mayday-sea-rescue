@@ -25,6 +25,9 @@ git and docs/16 section 2, not here.
 A call goes up, you drive a craft near the survivors, they climb aboard by themselves, you bring them to a
 drop-off pad and get Cash and Rep. Cash buys vehicles and upgrades in the phone; Rep raises your rank, and
 rank unlocks bigger boats.
+Pick-up ring (docs/23 e.1): `PickupRingController` draws an orange `Board.RING` ring on the water round every
+survivor still in the water (grey while your craft is full) and `BoatController` runs the throttle through its
+`Assist` (`Board.assistThrottle`: eases to `ASSIST_SPEED` by the ring). Ram knock-back only from `Board.KNOCK_RANK`.
 
 ## Shared remotes (`src/shared/Net.luau`)
 

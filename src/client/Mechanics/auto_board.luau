@@ -6,9 +6,12 @@
 --   room    a full craft (SurvivorCount = Capacity: jet ski 1, RIB 3, lifeboat 8) takes nobody: they wait
 --           5 m off and wave (PiwRescue); full shows on the craft's seat pips, never on them (docs/20 rule 5)
 --   steady  under STEADY_SPEED and pitching / rolling under STEADY_TILT: big waves make it a skill
---   ramming coming in fast on top of them knocks them back (a "bump" event, PiwRescue pushes them off)
+--   ramming coming in fast on top of them knocks them back (a "bump" event, PiwRescue pushes them off),
+--           from rank KNOCK_RANK up only (docs/23 e.1)
+--   ring    PickupRingController draws the orange pick-up ring and eases the craft's throttle inside it
 -- Their outline shows white in reach, green while they get ready, none with no room. Metrics: none (the server times
 -- it, elapsed); events: bump.
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Step = require(script.Parent.PIW.Step)
@@ -77,7 +80,10 @@ function AutoBoard.start(
 		local tilt = math.deg(math.acos(math.clamp(h.cframe.UpVector.Y, -1, 1)))
 		local craft = h.root:FindFirstAncestorOfClass("Model")
 		local room = Board.hasRoom(craft)
-		if Board.rammed(gap, speed) and os.clock() - lastBump > Board.BUMP_GAP then
+		if
+			Board.rammed(gap, speed, Players.LocalPlayer:GetAttribute("RankIndex"))
+			and os.clock() - lastBump > Board.BUMP_GAP
+		then
 			lastBump = os.clock()
 			bumps += 1
 			held = 0
