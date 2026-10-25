@@ -3,14 +3,13 @@
 -- server placement (src/server/World/Seamarks.luau) and the client motion / flash (SeamarkController). Unit-tested
 -- in tests/Seamarks.spec.luau. No requires: safe to load in Lune.
 --
--- IALA Region A (art/reference/M_Hbr_NavMark_*/dims.md). The harbour (map/Build.luau buildBreakwater) opens south:
--- the 60-stud mouth at x = +-30, z 352..368, the dredged channel |x| < 40 inside it (tools/world/layout.py
--- HARBOUR.channelHalf). A vessel entering from seaward steers north (-Z), so its port hand is west (-X): red cans
+-- IALA Region A (art/reference/M_Hbr_NavMark_*/dims.md). The hub harbour (docs/23 (k), HubLayout) opens south:
+-- the notch |x| < 40 from z 100 to the rim, the dredged channel straight out from it (tools/world/layout.py
+-- _basins). A vessel entering from seaward steers north (-Z), so its port hand is west (-X): red cans
 -- (even numbers) on the west of the channel, green cones (odd numbers) on the east, numbered from seaward. The
 -- fairway buoy (safe water) is the landfall mark at the head of the channel and the bell buoy the outer port-hand
 -- mark. Cardinals sit on the named side of the danger they mark (a West mark: pass to the west of it), with
--- depths read off map/generated/terrain_height.i16. Moorings: yellow swing moorings in the harbour pool off the
--- channel, each with its pick-up buoy streamed the same way (the tide sets them all alike).
+-- depths read off map/generated/terrain_height.i16. (The old Port Haven swing moorings went with the harbour, WP-19a.)
 --
 --   SeamarkRules.Marks                   { Mark }: id, asset, name, x, z, yaw (deg), light?, map? (blip style)
 --   SeamarkRules.Lights[characteristic]  { color, seq = { on, off, on, off, ... } } seconds, one period
@@ -144,7 +143,7 @@ local marks: { Mark } = {
 		light = "Fl G 5s",
 		map = "SeamarkStarboard",
 	},
-	-- inside the mouth: the edges of the dredged channel up to the station slipway
+	-- the last pair, just off the hub harbour mouth
 	{
 		id = "No8",
 		asset = PORT,
@@ -230,36 +229,6 @@ local marks: { Mark } = {
 		map = "SeamarkDanger",
 	},
 }
-
--- swing moorings in the harbour pool (west and east of the channel, clear of the -165, 30 slipway, the pontoons
--- by the hospital and the dock, and the Admiralty anchor by the east wall), each with its pick-up buoy
-local MOORINGS = {
-	{ -232, 168 },
-	{ -186, 214 },
-	{ -252, 256 },
-	{ -204, 300 },
-	{ 168, 186 },
-	{ 214, 292 },
-}
-local PICKUP_OFFSET = { 3.2, 2.4 } -- studs (x, z) from the mooring buoy: all streamed the same way
-for i, m in MOORINGS do
-	table.insert(marks, {
-		id = `Mooring{i}`,
-		asset = MOOR,
-		name = `Visitors' mooring {i}`,
-		x = m[1],
-		z = m[2],
-		yaw = (i * 47) % 360,
-	})
-	table.insert(marks, {
-		id = `Pickup{i}`,
-		asset = PICK,
-		name = `Pick-up buoy {i}`,
-		x = m[1] + PICKUP_OFFSET[1],
-		z = m[2] + PICKUP_OFFSET[2],
-		yaw = (i * 83) % 360,
-	})
-end
 
 SeamarkRules.Marks = marks
 

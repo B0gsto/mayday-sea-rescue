@@ -47,9 +47,6 @@ end
 for _, poi in WorldConfig.POIs do
 	table.insert(spots, { id = poi.id, label = poi.name, position = poi.position })
 end
-for _, point in WorldConfig.Points do
-	table.insert(spots, { id = point.id, label = point.id, position = point.position })
-end
 for _, place in MapConfig.Places do
 	if place.kind == "town" then
 		table.insert(spots, {

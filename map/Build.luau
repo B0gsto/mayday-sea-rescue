@@ -6,20 +6,15 @@
 --
 -- Terrain: Lune cannot write voxels, but it can move a whole Terrain instance. map/terrain/Terrain.rbxm (written in
 -- Studio by tools/world/studio_terrain.py from the bake in map/generated, see tools/world/README.md) is parented into
--- Workspace as-is (SmoothGrid + PhysicsGrid). Without it the old part-built OceanFloor and land are built instead.
+-- Workspace as-is (SmoothGrid + PhysicsGrid). Without it only the part-built OceanFloor is built (no land).
 --
 -- Builds Workspace.Map (sea level Y = 0, no Terrain water: the ocean is a client mesh):
 --   OceanFloor   (fallback only) sand base, top at Y = -40
---   PortHaven    quay, station, dock (bollards; launches are at the marina, DockService), hospital (land and hill only as fallback)
---   DropOffs     DropOff_Hospital, DropOff_Dock (water-level pads, attribute DropOff)
---   Breakwater   two arms enclosing Calm Bay; the 60-stud gap is Harbour Mouth
---   Slipways     the station slipway (concrete ramp into the harbour)
---   HavenSands   lifeguard tower
+--   Hub          the hub island's spawn, Coastguard HQ greybox, call board, shop counter and quay (buildHub)
+--   DropOffs     DropOff_Dock, the hub drop-off pad (water level, attribute DropOff)
 --   Seabed       wrecks and finds from WorldConfig.POIs (Morwenna, the mail seaplane, the Admiralty anchor)
---   WorldPoints  invisible markers with attributes: launch, vehicle spawn, handover, discoveries (Discoverable)
---   HarbourLight lighthouse greybox on the east breakwater head
+--   WorldPoints  invisible discovery markers with attributes (Discoverable)
 -- and Workspace.Zones (invisible, non-collide cylinders with attribute Zone = "<id>", from GameConfig).
--- Spawn is on the quay.
 
 local SMOOTH = Enum.SurfaceType.Smooth
 local M = Enum.Material
@@ -29,19 +24,13 @@ local function rgb(r: number, g: number, b: number): Color3
 end
 
 local COLORS = {
-	sand = rgb(214, 196, 150),
 	seabed = rgb(150, 140, 110),
-	grass = rgb(106, 140, 82),
-	concrete = rgb(170, 170, 165),
-	stone = rgb(120, 120, 118),
 	wood = rgb(120, 90, 60),
 	white = rgb(236, 236, 230),
 	red = rgb(196, 48, 40),
 	roof = rgb(70, 72, 80),
-	bay = rgb(255, 200, 40),
 	dropoff = rgb(60, 200, 110),
 	glass = rgb(255, 240, 180),
-	signBlue = rgb(0, 82, 160),
 }
 
 local function part(props: { [string]: any }): Part
@@ -63,25 +52,6 @@ local function part(props: { [string]: any }): Part
 	end
 	p.Parent = props.Parent
 	return p
-end
-
--- A box given its min and max corners (handy for greybox layout).
-local function box(
-	parent: Instance,
-	name: string,
-	min: Vector3,
-	max: Vector3,
-	color: Color3,
-	material: any?
-): Part
-	return part({
-		Name = name,
-		Size = max - min,
-		CFrame = CFrame.new((min + max) / 2),
-		Color = color,
-		Material = material or M.SmoothPlastic,
-		Parent = parent,
-	})
 end
 
 local function folder(parent: Instance, name: string, className: string?): Instance
@@ -106,285 +76,6 @@ local function buildOceanFloor(map: Instance, floorY: number)
 			})
 		end
 	end
-end
-
--- White text on the +Z (street) face of a hospital sign board.
-local function hospitalSign(board: Part, text: string)
-	local gui = Instance.new("SurfaceGui")
-	gui.Name = "Sign"
-	gui.Face = Enum.NormalId.Back
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = 30
-	gui.LightInfluence = 1
-	gui.Parent = board
-	local label = Instance.new("TextLabel")
-	label.Name = "Text"
-	label.Size = UDim2.fromScale(1, 1)
-	label.BackgroundTransparency = 1
-	label.Text = text
-	label.TextScaled = true
-	label.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold)
-	label.TextColor3 = Color3.new(1, 1, 1)
-	label.Parent = gui
-end
-
-local function buildPortHaven(map: Instance, landTop: number, floorY: number, hasTerrain: boolean)
-	local town = folder(map, "PortHaven", "Model")
-	-- land the town sits on (north of the quay) and a hill behind it: Terrain when it is baked
-	local land = if hasTerrain then Instance.new("Folder") else town
-	box(
-		land,
-		"Land",
-		Vector3.new(-600, floorY, -500),
-		Vector3.new(600, landTop, -20),
-		COLORS.grass,
-		M.Grass
-	)
-	box(
-		land,
-		"Hill",
-		Vector3.new(-600, landTop, -500),
-		Vector3.new(600, landTop + 30, -360),
-		COLORS.grass,
-		M.Grass
-	)
-	part({
-		ClassName = "WedgePart",
-		Name = "HillSlope",
-		Size = Vector3.new(1200, 30, 60),
-		-- tall side toward -Z (the hill), sloping down toward the town
-		CFrame = CFrame.new(0, landTop + 15, -330) * CFrame.Angles(0, math.pi, 0),
-		Color = COLORS.grass,
-		Material = M.Grass,
-		Parent = land,
-	})
-
-	-- quay: concrete harbour front, z -20..4
-	box(
-		town,
-		"Quay",
-		Vector3.new(-180, floorY, -20),
-		Vector3.new(180, landTop, 4),
-		COLORS.concrete,
-		M.Concrete
-	)
-	local spawn = Instance.new("SpawnLocation")
-	spawn.Name = "QuaySpawn"
-	spawn.Anchored = true
-	spawn.Neutral = true
-	spawn.Duration = 0
-	spawn.TopSurface = SMOOTH
-	spawn.BottomSurface = SMOOTH
-	spawn.Size = Vector3.new(12, 1, 12)
-	spawn.CFrame = CFrame.new(-60, landTop + 0.5, -8)
-	spawn.Color = rgb(176, 170, 160) -- quay stone, not a white slab (r2 art review)
-	spawn.Material = M.Granite
-	spawn.Parent = town
-
-	-- coast guard station by the dock
-	local station = folder(town, "Station", "Model")
-	box(
-		station,
-		"Building",
-		Vector3.new(-140, landTop, -90),
-		Vector3.new(-80, landTop + 24, -40),
-		COLORS.white
-	)
-	box(
-		station,
-		"Roof",
-		Vector3.new(-142, landTop + 24, -92),
-		Vector3.new(-78, landTop + 26, -38),
-		COLORS.red
-	)
-	box(
-		station,
-		"Doors",
-		Vector3.new(-120, landTop, -40),
-		Vector3.new(-100, landTop + 14, -39.6),
-		COLORS.red
-	)
-	box(
-		station,
-		"Tower",
-		Vector3.new(-90, landTop + 26, -60),
-		Vector3.new(-80, landTop + 40, -50),
-		COLORS.white
-	)
-
-	-- dock: a pier from the quay out into Calm Bay, deck at Y = 3
-	local dock = folder(town, "Dock", "Model")
-	box(dock, "Deck", Vector3.new(-118, 2, 4), Vector3.new(-102, 3, 104), COLORS.wood, M.WoodPlanks)
-	for z = 14, 104, 18 do
-		for _, x in { -117, -103 } do
-			part({
-				Name = "Piling",
-				Shape = Enum.PartType.Cylinder,
-				Size = Vector3.new(2 - floorY + 2, 1.6, 1.6),
-				CFrame = CFrame.new(x, (2 + floorY) / 2, z) * CFrame.Angles(0, 0, math.pi / 2),
-				Color = COLORS.wood,
-				Material = M.Wood,
-				Parent = dock,
-			})
-		end
-	end
-	-- bollards where the old launch bays were (players launch from their own berth at the marina now: DockService)
-	for i = 1, 4 do
-		local z = 4 + i * 22 - 8
-		box(
-			dock,
-			`Bay{i}Bollard`,
-			Vector3.new(-102.5, 3, z - 0.5),
-			Vector3.new(-101.5, 4.5, z + 0.5),
-			COLORS.bay
-		)
-	end
-
-	-- hospital up from the quay, east side, with an ambulance bay on the quay
-	local hospital = folder(town, "Hospital", "Model")
-	box(
-		hospital,
-		"Building",
-		Vector3.new(100, landTop, -140),
-		Vector3.new(160, landTop + 20, -100),
-		COLORS.white
-	)
-	-- no red cross anywhere (a protected emblem, docs/05): a white "H" on blue and the name board
-	local hBoard = box(
-		hospital,
-		"SignH",
-		Vector3.new(125, landTop + 8, -99.8),
-		Vector3.new(135, landTop + 18, -99.4),
-		COLORS.signBlue
-	)
-	hospitalSign(hBoard, "H")
-	local nameBoard = box(
-		hospital,
-		"SignName",
-		Vector3.new(112, landTop + 3.5, -99.8),
-		Vector3.new(148, landTop + 6.5, -99.4),
-		COLORS.signBlue
-	)
-	hospitalSign(nameBoard, "COTTAGE HOSPITAL")
-	box(
-		hospital,
-		"Ambulance",
-		Vector3.new(124, landTop, -14),
-		Vector3.new(136, landTop + 6, -6),
-		COLORS.white
-	)
-
-	return town
-end
-
-local function buildDropOffs(map: Instance)
-	local drop = folder(map, "DropOffs")
-	part({
-		Name = "DropOff_Hospital",
-		Size = Vector3.new(24, 0.4, 16),
-		CFrame = CFrame.new(130, 0.2, 12),
-		Color = COLORS.dropoff,
-		Transparency = 0.5,
-		CanCollide = false,
-		Parent = drop,
-		Attributes = { DropOff = "Hospital" },
-	})
-	part({
-		Name = "DropOff_Dock",
-		Size = Vector3.new(12, 0.4, 20),
-		CFrame = CFrame.new(-125, 0.2, 92),
-		Color = COLORS.dropoff,
-		Transparency = 0.5,
-		CanCollide = false,
-		Parent = drop,
-		Attributes = { DropOff = "Dock" },
-	})
-end
-
-local function buildBreakwater(map: Instance, floorY: number, mouthHalf: number)
-	local wall = folder(map, "Breakwater", "Model")
-	local top, w, far = 6, 16, 360
-	for side = -1, 1, 2 do
-		local tag = if side < 0 then "West" else "East"
-		local x = side * 320
-		box(
-			wall,
-			`{tag}Arm`,
-			Vector3.new(x - w / 2, floorY, -20),
-			Vector3.new(x + w / 2, top, far + w / 2),
-			COLORS.stone,
-			M.Slate
-		)
-		local inner, outer = side * mouthHalf, x
-		box(
-			wall,
-			`{tag}Head`,
-			Vector3.new(math.min(inner, outer), floorY, far - w / 2),
-			Vector3.new(math.max(inner, outer), top, far + w / 2),
-			COLORS.stone,
-			M.Slate
-		)
-	end
-	return top, far
-end
-
-local function buildBeach(map: Instance, landTop: number)
-	local beach = folder(map, "Beach", "Model")
-	-- sand slopes from the land edge (z = -20, Y = landTop) down under the water toward +Z
-	part({
-		ClassName = "WedgePart",
-		Name = "Sand",
-		Size = Vector3.new(128, landTop + 8, 120),
-		CFrame = CFrame.new(248, (landTop - 8) / 2, 40) * CFrame.Angles(0, math.pi, 0),
-		Color = COLORS.sand,
-		Material = M.Sand,
-		Parent = beach,
-	})
-	box(
-		beach,
-		"LifeguardHut",
-		Vector3.new(230, landTop, -60),
-		Vector3.new(242, landTop + 9, -50),
-		COLORS.red
-	)
-end
-
-local function buildLighthouse(map: Instance, base: Vector3)
-	local lh = folder(map, "HarbourLight", "Model")
-	local segment = 10
-	for i = 0, 3 do
-		part({
-			Name = `Tower{i + 1}`,
-			Shape = Enum.PartType.Cylinder,
-			Size = Vector3.new(segment, 10 - i, 10 - i),
-			CFrame = CFrame.new(base + Vector3.new(0, segment * (i + 0.5), 0))
-				* CFrame.Angles(0, 0, math.pi / 2),
-			Color = if i % 2 == 0 then COLORS.white else COLORS.red,
-			Parent = lh,
-		})
-	end
-	local lampY = base.Y + segment * 4
-	local lamp = box(
-		lh,
-		"Lantern",
-		base + Vector3.new(-3, segment * 4, -3),
-		base + Vector3.new(3, segment * 4 + 6, 3),
-		COLORS.glass,
-		M.Neon
-	)
-	lamp.Transparency = 0.2
-	local light = Instance.new("PointLight")
-	light.Range = 60
-	light.Brightness = 2
-	light.Color = COLORS.glass
-	light.Parent = lamp
-	box(
-		lh,
-		"Cap",
-		base + Vector3.new(-4, segment * 4 + 6, -4),
-		Vector3.new(base.X + 4, lampY + 8, base.Z + 4),
-		COLORS.red
-	)
 end
 
 local function buildZones(zonesFolder: Instance, zones: { any })
@@ -846,229 +537,182 @@ local function buildSeabed(map: Instance, points: Instance, world: any)
 	end
 end
 
-local function buildShore(map: Instance, points: Instance, world: any)
-	local slips = folder(map, "Slipways", "Model")
-	-- station slipway: 20-stud concrete ramp from the quay (Y 4) down to 2 m under water
-	local run, drop = 66, 10
-	part({
-		Name = "StationSlipway",
-		Size = Vector3.new(20, 1, math.sqrt(run * run + drop * drop)),
-		CFrame = CFrame.new(-165, (4 - 6) / 2 - 0.5, 4 + run / 2)
-			* CFrame.Angles(math.atan2(drop, run), 0, 0),
-		Color = COLORS.concrete,
-		Material = M.Concrete,
-		Parent = slips,
-		Attributes = { Slipway = "Station" },
-	})
-	local sands = folder(map, "HavenSands", "Model")
-	for _, pt in world.Points do
-		marker(
-			points,
-			pt.id,
-			pt.position + Vector3.new(0, 2, 0),
-			{ PointKind = pt.kind, PointId = pt.id }
-		)
-		if pt.kind == "LifeguardTower" then
-			local base = pt.position
-			for _, c in
-				{
-					Vector3.new(-3.5, 0, -3.5),
-					Vector3.new(3.5, 0, -3.5),
-					Vector3.new(-3.5, 0, 3.5),
-					Vector3.new(3.5, 0, 3.5),
-				}
-			do
-				box(
-					sands,
-					"Leg",
-					base + c - Vector3.new(0.4, 2, 0.4),
-					base + c + Vector3.new(0.4, 9, 0.4),
-					COLORS.white
-				)
-			end
-			box(
-				sands,
-				"LifeguardHut",
-				base + Vector3.new(-5, 9, -5),
-				base + Vector3.new(5, 17, 5),
-				COLORS.red
-			)
-			box(
-				sands,
-				"Roof",
-				base + Vector3.new(-5.5, 17, -5.5),
-				base + Vector3.new(5.5, 17.6, 5.5),
-				COLORS.white
-			)
-			box(
-				sands,
-				"FlagPole",
-				base + Vector3.new(6, 0, 0),
-				base + Vector3.new(6.4, 24, 0.4),
-				COLORS.white
-			)
-			box(
-				sands,
-				"FlagRed",
-				base + Vector3.new(6.4, 21.5, 0),
-				base + Vector3.new(10.4, 23.5, 0.2),
-				COLORS.red
-			)
-			box(
-				sands,
-				"FlagYellow",
-				base + Vector3.new(6.4, 19.5, 0),
-				base + Vector3.new(10.4, 21.5, 0.2),
-				COLORS.bay
-			)
+-- An image on one face of a board (the call icon, the Store icon).
+local function decal(board: Part, image: string, face: any)
+	local d = Instance.new("Decal")
+	d.Texture = image
+	d.Face = face
+	d.Parent = board
+end
+
+-- The hub (docs/23 (k), WP-19a): a small coastguard hub, not a town. Everything sits on HubLayout's lots; the hub
+-- frame looks out of the harbour (+Z), so (right, fwd) here are HubLayout's (right, fwd) and world x = -right.
+--   Hub.HubSpawn      the newcomer spawn on the plaza, facing the HQ door
+--   Hub.Station       greybox Coastguard HQ (Swaps.Station puts M_Bld_Station on it; StationRig adds the radio)
+--   Hub.CallBoard     noticeboard with the call icon (tag CallBoard)
+--   Hub.ShopCounter   solid counter with the Store icon; its prompt (tag ShopCounter) opens the phone Store
+--   Hub.Quay          plaza paving, quay coping, bollards, the green drop-off band, benches, flags, lamps
+--   DropOffs.DropOff_Dock  the hub drop-off pad in the harbour (attribute DropOff = "Dock")
+local function buildHub(map: Instance, H: any, ui: any)
+	local hub = folder(map, "Hub", "Model")
+	local function at(right: number, fwd: number, y: number?, yaw: number?): CFrame
+		return H.Hub.frame * CFrame.new(right, y or 0, -fwd) * CFrame.Angles(0, math.rad(yaw or 0), 0)
+	end
+	local function block(
+		parent: Instance,
+		name: string,
+		size: Vector3,
+		cf: CFrame,
+		color: Color3,
+		mat: any?,
+		extra: { [string]: any }?
+	): Part
+		local props: { [string]: any } = {
+			Name = name,
+			Size = size,
+			CFrame = cf,
+			Color = color,
+			Material = mat or M.SmoothPlastic,
+			Parent = parent,
+		}
+		for k, v in extra or {} do
+			props[k] = v
+		end
+		return part(props)
+	end
+	local STONE, COPING = rgb(176, 170, 160), rgb(206, 200, 188)
+	local NAVY, ORANGE, IRON = rgb(30, 48, 86), rgb(255, 107, 26), rgb(40, 42, 46)
+
+	local spawn = Instance.new("SpawnLocation")
+	spawn.Name = "HubSpawn"
+	spawn.Anchored = true
+	spawn.Neutral = true
+	spawn.Duration = 0
+	spawn.TopSurface = SMOOTH
+	spawn.BottomSurface = SMOOTH
+	spawn.Size = Vector3.new(12, 1, 12)
+	spawn.CFrame = H.Hub.spawn + Vector3.new(0, 0.05, 0)
+	spawn.Color = STONE
+	spawn.Material = M.Granite
+	spawn.Parent = hub
+
+	-- greybox HQ: white hall, red roof, red bay door on the harbour face
+	local lot = H.Hub.lots.HQ
+	local station = folder(hub, "Station", "Model")
+	local w, d = lot.size.X - 4, lot.size.Y
+	block(station, "Building", Vector3.new(w, 24, d), lot.cframe * CFrame.new(0, 12, 0), COLORS.white)
+	block(station, "Roof", Vector3.new(w + 4, 2, d + 4), lot.cframe * CFrame.new(0, 25, 0), COLORS.red)
+	block(station, "Doors", Vector3.new(20, 14, 0.4), lot.cframe * CFrame.new(-10, 7, -d / 2 - 0.2), COLORS.red)
+	block(station, "Tower", Vector3.new(10, 14, 10), lot.cframe * CFrame.new(20, 33, 0), COLORS.white)
+
+	-- the quay: plaza paving from the HQ front to the harbour head, coping round the harbour, bollards
+	local quay = folder(hub, "Quay", "Model")
+	local notch = H.Notch.hub
+	local function bollard(right: number, fwd: number)
+		block(quay, "Bollard", Vector3.new(1.6, 1.4, 1.4), at(right, fwd, 0.8) * CFrame.Angles(0, 0, math.pi / 2), IRON, M.Metal, { Shape = Enum.PartType.Cylinder })
+	end
+	block(quay, "Plaza", Vector3.new(124, 1, notch.head - 2), at(0, notch.head / 2 + 1, -0.45), STONE, M.Granite)
+	block(quay, "CopingHead", Vector3.new(notch.halfWidth * 2 + 4, 0.6, 2), at(0, notch.head - 1.5, 0.3), COPING, M.Granite)
+	for _, s in { -1, 1 } do
+		local x = s * (notch.halfWidth + 1.5)
+		local len = H.HubRadius - notch.head - 12
+		block(quay, "CopingSide", Vector3.new(2, 0.6, len), at(x, notch.head + len / 2, 0.3), COPING, M.Granite)
+		for k = 0, 2 do
+			bollard(x, notch.head + 18 + k * 26)
 		end
 	end
-end
+	-- the drop-off berth: two bollards and a green band on the coping at the harbour head (the pad's colour)
+	bollard(-12, notch.head - 4)
+	bollard(12, notch.head - 4)
+	block(quay, "DropOffBand", Vector3.new(20, 0.08, 2), at(0, notch.head - 1.5, 0.64), COLORS.dropoff, M.SmoothPlastic, { CanCollide = false })
+	-- life ring on a post by the steps
+	block(quay, "RingPost", Vector3.new(0.4, 5, 0.4), at(notch.halfWidth - 4, notch.head - 4, 2.5), COLORS.white)
+	block(quay, "LifeRing", Vector3.new(0.6, 3, 3), at(notch.halfWidth - 4, notch.head - 3.6, 3.6, 90), ORANGE, M.SmoothPlastic, { Shape = Enum.PartType.Cylinder })
 
--- A SurfaceGui sign on one face of a board part.
-local function sign(board: Part, text: string, face: any, color: Color3)
-	local gui = Instance.new("SurfaceGui")
-	gui.Name = "Sign"
-	gui.Face = face
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = 30
-	gui.LightInfluence = 1
-	gui.Parent = board
-	local label = Instance.new("TextLabel")
-	label.Name = "Text"
-	label.Size = UDim2.fromScale(1, 1)
-	label.BackgroundTransparency = 1
-	label.Text = text
-	label.TextScaled = true
-	-- P2: TextScaled came back false in play from the Lune-built place (8 px text), so size it explicitly too
-	local w = if face == Enum.NormalId.Left or face == Enum.NormalId.Right
-		then board.Size.Z
-		else board.Size.X
-	label.TextSize = math.floor(math.min(board.Size.Y * 30 * 0.75, w * 30 / (#text * 0.62)))
-	label.FontFace = Font.new("rbxasset://fonts/families/FredokaOne.json")
-	label.TextColor3 = color
-	label.Parent = gui
-end
+	-- benches facing the harbour along the plaza sides
+	for _, spot in { { -30, 60 }, { 30, 60 }, { -30, 82 }, { 30, 82 } } do
+		local cf = at(spot[1], spot[2]) -- front (+fwd) to the harbour, the back rest behind
+		block(quay, "Bench", Vector3.new(6, 0.4, 1.8), cf * CFrame.new(0, 1.6, 0), COLORS.wood, M.Wood)
+		block(quay, "BenchBack", Vector3.new(6, 1.6, 0.3), cf * CFrame.new(0, 2.8, 0.9), COLORS.wood, M.Wood)
+		for _, x in { -2.5, 2.5 } do
+			block(quay, "BenchLeg", Vector3.new(0.4, 1.4, 1.6), cf * CFrame.new(x, 0.7, 0), IRON, M.Metal)
+		end
+	end
 
--- Harbourmaster's desk (docs/04 sections 1.1 and 5, RP-M3): a greybox stand-in on the quay just east
--- of the Chandlery until the H4 office building exists. A desk with a brass storm barometer behind it
--- and a chalkboard by the side panel showing the server's storm queue (StormBoard: the client writes
--- its Sign.Text from ReplicatedStorage.Weather SummonQueue). Dressing only: storms are sold in the phone Store.
-local function buildHarbourmasterDesk(parent: Instance, g: number)
-	local desk = folder(parent, "HarbourmasterDesk", "Model")
-	local navy = rgb(28, 50, 86)
-	local brass = rgb(176, 140, 72)
-	local x0, x1, zb, zf = -14, -4, -18, -12 -- back wall (north) and desk front (south, the water)
-	box(
-		desk,
-		"BackWall",
-		Vector3.new(x0, g, zb - 1),
-		Vector3.new(x1, g + 10, zb),
-		COLORS.white,
-		M.Concrete
-	)
-	box(
-		desk,
-		"SideWest",
-		Vector3.new(x0, g, zb),
-		Vector3.new(x0 + 1, g + 10, zf),
-		COLORS.white,
-		M.Concrete
-	)
-	box(
-		desk,
-		"SideEast",
-		Vector3.new(x1 - 1, g, zb),
-		Vector3.new(x1, g + 10, zf),
-		COLORS.white,
-		M.Concrete
-	)
-	box(
-		desk,
-		"Desk",
-		Vector3.new(x0 + 1, g, zf - 1.5),
-		Vector3.new(x1 - 1, g + 3.5, zf),
-		navy,
-		M.Wood
-	)
-	box(
-		desk,
-		"DeskTop",
-		Vector3.new(x0 + 0.8, g + 3.5, zf - 1.7),
-		Vector3.new(x1 - 0.8, g + 3.8, zf + 0.4),
-		COLORS.wood,
-		M.WoodPlanks
-	)
-	box(
-		desk,
-		"Canopy",
-		Vector3.new(x0 - 1, g + 10, zb - 2),
-		Vector3.new(x1 + 1, g + 10.6, zf + 3),
-		navy,
-		M.SmoothPlastic
-	)
-	local board = box(
-		desk,
-		"SignBoard",
-		Vector3.new(x0 + 1, g + 10.6, zf + 2.4),
-		Vector3.new(x1 - 1, g + 12.6, zf + 2.8),
-		navy,
-		M.Wood
-	)
-	sign(board, "HARBOURMASTER", Enum.NormalId.Back, COLORS.white)
-	-- the storm barometer: a brass case with a white dial on the back wall, behind the desk
-	local cx = (x0 + x1) / 2
+	-- lamps round the plaza (warm, always on: placeholder, no day/night rig)
+	for _, spot in { { -56, 12 }, { 56, 12 }, { -56, 50 }, { 56, 50 }, { -44, 96 }, { 44, 96 } } do
+		block(quay, "LampPost", Vector3.new(0.5, 11, 0.5), at(spot[1], spot[2], 5.5), IRON, M.Metal)
+		local head = block(quay, "LampHead", Vector3.new(1.4, 1.2, 1.4), at(spot[1], spot[2], 11.4), COLORS.glass, M.Neon)
+		local light = Instance.new("PointLight")
+		light.Range = 26
+		light.Brightness = 1.4
+		light.Color = rgb(255, 196, 140)
+		light.Shadows = false
+		light.Parent = head
+	end
+
+	-- flags: two by the HQ front (coastguard orange and navy), one tall at the harbour head
+	for _, f in { { -40, 6, 20, ORANGE }, { 40, 6, 20, NAVY }, { -notch.halfWidth - 8, notch.head - 6, 30, COLORS.red } } do
+		local h = f[3]
+		block(quay, "FlagPole", Vector3.new(0.5, h, 0.5), at(f[1], f[2], h / 2), COLORS.white)
+		block(quay, "Flag", Vector3.new(6.5, 4, 0.05), at(f[1] + 3.5, f[2], h - 2.4), f[4], M.Fabric, { CanCollide = false })
+	end
+
+	-- call board: a framed noticeboard on two posts, the call icon on its face, pinned notes
+	local cb = H.Hub.lots.CallBoard
+	local board = folder(hub, "CallBoard", "Model")
+	board:AddTag("CallBoard")
+	for _, x in { -5.4, 5.4 } do
+		block(board, "Post", Vector3.new(0.6, 9, 0.6), cb.cframe * CFrame.new(x, 4.5, 0), COLORS.wood, M.Wood)
+	end
+	block(board, "Board", Vector3.new(10.4, 6, 0.5), cb.cframe * CFrame.new(0, 5.6, 0), rgb(176, 132, 84), M.Wood)
+	block(board, "Header", Vector3.new(11, 1.2, 0.7), cb.cframe * CFrame.new(0, 9.1, 0), COLORS.red)
+	block(board, "Cap", Vector3.new(12, 0.4, 1.6), cb.cframe * CFrame.new(0, 9.9, 0), COLORS.roof)
+	local icon = block(board, "Icon", Vector3.new(3.6, 3.6, 0.1), cb.cframe * CFrame.new(-2.6, 5.6, -0.3), COLORS.white, M.SmoothPlastic, { CanCollide = false })
+	decal(icon, ui.Hud.MissionPiw, Enum.NormalId.Front)
+	for i, note in { { 1.2, 6.6, -6 }, { 3.6, 6.2, 5 }, { 1.6, 4.2, 3 }, { 3.8, 4.0, -4 } } do
+		block(board, "Note", Vector3.new(1.8, 2.2, 0.05), cb.cframe * CFrame.new(note[1], note[2], -0.28) * CFrame.Angles(0, 0, math.rad(note[3])), if i % 2 == 0 then COLORS.white else COLORS.glass, M.SmoothPlastic, { CanCollide = false })
+	end
+
+	-- shop counter: a solid counter under a striped awning, the Store icon over it; the prompt opens the phone Store
+	local sc = H.Hub.lots.ShopCounter
+	local shop = folder(hub, "ShopCounter", "Model")
+	local sw, sd = sc.size.X, sc.size.Y
+	local counter = block(shop, "Counter", Vector3.new(sw - 4, 3.6, 2.4), sc.cframe * CFrame.new(0, 1.8, -sd / 2 + 1.6), COLORS.white)
+	block(shop, "CounterTop", Vector3.new(sw - 3, 0.3, 3), sc.cframe * CFrame.new(0, 3.75, -sd / 2 + 1.6), COLORS.wood, M.Wood)
+	block(shop, "Kiosk", Vector3.new(sw, 12, sd - 4), sc.cframe * CFrame.new(0, 6, 2), NAVY)
+	for k = 0, 4 do
+		block(shop, "Awning", Vector3.new(sw / 5, 0.3, 4), sc.cframe * CFrame.new(-sw / 2 + sw / 10 + k * sw / 5, 9.6, -3) * CFrame.Angles(math.rad(-15), 0, 0), if k % 2 == 0 then COLORS.white else COLORS.red, M.Fabric)
+	end
+	local sign = block(shop, "Sign", Vector3.new(5, 5, 0.3), sc.cframe * CFrame.new(0, 13, -1.2), COLORS.white)
+	decal(sign, ui.Phone.Store, Enum.NormalId.Front)
+	local prompt = Instance.new("ProximityPrompt")
+	prompt.Name = "ShopPrompt"
+	prompt.ActionText = "Shop"
+	prompt.ObjectText = ""
+	prompt.HoldDuration = 0
+	prompt.MaxActivationDistance = 10
+	prompt.RequiresLineOfSight = false
+	prompt:AddTag("ShopCounter")
+	prompt.Parent = counter
+
+	-- the hub drop-off pad, in the harbour off the quay head
+	local drop = folder(map, "DropOffs")
 	part({
-		Name = "Barometer",
-		Shape = Enum.PartType.Cylinder,
-		Size = Vector3.new(0.4, 3, 3),
-		CFrame = CFrame.new(cx, g + 7, zb + 0.2) * CFrame.Angles(0, math.pi / 2, 0),
-		Color = brass,
-		Material = M.Metal,
-		Parent = desk,
+		Name = "DropOff_Dock",
+		Size = Vector3.new(20, 0.4, 16),
+		CFrame = CFrame.new(H.Hub.dropOff + Vector3.new(0, 0.2, 0)),
+		Color = COLORS.dropoff,
+		Transparency = 0.5,
+		CanCollide = false,
+		Parent = drop,
+		Attributes = { DropOff = "Dock" },
 	})
-	part({
-		Name = "BarometerDial",
-		Shape = Enum.PartType.Cylinder,
-		Size = Vector3.new(0.1, 2.4, 2.4),
-		CFrame = CFrame.new(cx, g + 7, zb + 0.45) * CFrame.Angles(0, math.pi / 2, 0),
-		Color = rgb(236, 230, 214),
-		Material = M.SmoothPlastic,
-		Parent = desk,
-	})
-	-- the storm queue chalkboard on the outside of the east side panel, facing the quay
-	local chalk = box(
-		desk,
-		"StormBoard",
-		Vector3.new(x1, g + 3, zf - 4.5),
-		Vector3.new(x1 + 0.3, g + 7, zf - 0.5),
-		rgb(34, 40, 38),
-		M.Slate
-	)
-	local gui = Instance.new("SurfaceGui")
-	gui.Name = "Sign"
-	gui.Face = Enum.NormalId.Right
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = 40
-	gui.LightInfluence = 1
-	gui.Parent = chalk
-	local label = Instance.new("TextLabel")
-	label.Name = "Text"
-	label.Size = UDim2.fromScale(0.9, 0.85)
-	label.Position = UDim2.fromScale(0.05, 0.075)
-	label.BackgroundTransparency = 1
-	label.Text = "STORM QUEUE\nNone waiting"
-	label.TextScaled = true
-	label.FontFace = Font.new("rbxasset://fonts/families/PatrickHand.json")
-	label.TextColor3 = rgb(226, 226, 216)
-	label.Parent = gui
-	return desk
 end
 
 -- Instance streaming (I1): the gameplay map (Map, Zones) stays Persistent, so every client script that reads
 -- Workspace.Map works as before; the run-time dressing (WorldDressingService: the building Packages, the K1 rocks and
 -- G1 plants from map/generated/props.json) lives in Workspace.Dressing as Atomic models that stream by distance.
--- Every greybox model that remains carries the CollectionService tag GREYBOX.
 local function setupStreaming(ws: any, map: Instance, zones: Instance)
 	ws.StreamingEnabled = true
 	ws.StreamingMinRadius = 384
@@ -1084,39 +728,21 @@ local function setupStreaming(ws: any, map: Instance, zones: Instance)
 			d.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
 		end
 	end
-	local town = map:FindFirstChild("PortHaven")
-	for _, root in { town, map:FindFirstChild("HarbourLight"), map:FindFirstChild("Breakwater") } do
-		for _, child in if root then root:GetChildren() else {} do
-			if child:IsA("Model") or child:IsA("Folder") then
-				child:AddTag("GREYBOX")
-			end
-		end
-	end
 end
 
 return function(place: any, ctx: any)
 	local GameConfig = ctx.require("Config/GameConfig")
 	local WorldConfig = ctx.require("Config/WorldConfig")
 	local ws = place:GetService("Workspace")
-	local landTop, floorY = GameConfig.LandTopY, GameConfig.OceanFloorY
-
 	ws:SetAttribute("SeaLevel", GameConfig.SeaLevel)
 	local hasTerrain = loadTerrain(ws, ctx)
 	ws:SetAttribute("WorldTerrain", hasTerrain)
 	local map = folder(ws, "Map", "Model")
 	if not hasTerrain then
-		buildOceanFloor(map, floorY)
+		buildOceanFloor(map, GameConfig.OceanFloorY)
 	end
-	local town = buildPortHaven(map, landTop, floorY, hasTerrain)
-	buildHarbourmasterDesk(town, landTop)
-	buildDropOffs(map)
-	local wallTop, wallFar = buildBreakwater(map, floorY, 30)
-	if not hasTerrain then
-		buildBeach(map, landTop)
-	end
-	buildLighthouse(map, Vector3.new(44, wallTop, wallFar))
+	buildHub(map, ctx.require("Config/HubLayout"), ctx.require("Config/UiImages"))
 	local points = folder(map, "WorldPoints")
-	buildShore(map, points, WorldConfig)
 	buildSeabed(map, points, WorldConfig)
 	local zones = folder(ws, "Zones", "Model")
 	buildZones(zones, GameConfig.Zones)

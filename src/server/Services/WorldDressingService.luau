@@ -338,7 +338,7 @@ local function swap(key: string, authored: Swaps.Swap): boolean
 	elseif greybox then
 		local folder = greybox.Parent
 		greybox:Destroy()
-		-- a greybox group emptied by its swaps (Map.PortHaven.Houses, tagged GREYBOX) goes too
+		-- a greybox group emptied by its swaps goes too
 		if folder and folder:IsA("Folder") and #folder:GetChildren() == 0 then
 			folder:Destroy()
 		end
@@ -545,10 +545,6 @@ function WorldDressingService.Start()
 			warn(`[WorldDressing] swap {key} failed: {err}`)
 		end
 	end
-	local hOk, hErr = pcall(require(script.Parent.Parent.World:WaitForChild("Harbour")).apply, base) -- RP-I1b-1
-	if not hOk then
-		warn(`[WorldDressing] harbour failed: {hErr}`)
-	end
 	local seamarks = script.Parent.Parent.World:FindFirstChild("Seamarks") -- RP-I1b-2 buoyage, Morwenna, anchor
 	if seamarks then
 		task.spawn((require :: any)(seamarks).place, base)
@@ -559,7 +555,6 @@ function WorldDressingService.Start()
 			"CoastArt",
 			"SeabedLife",
 			"SkerryLight",
-			"StationYard",
 			"Islands", -- docs/21 archipelago: World/Islands/<Id>.luau, one per island
 			"Bridges", -- docs/23 (k): the hub -> player island suspension bridges
 		}
