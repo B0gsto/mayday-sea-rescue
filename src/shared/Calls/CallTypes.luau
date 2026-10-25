@@ -21,7 +21,6 @@ export type CallKind = {
 	victims: number, -- people to pick up
 	interaction: Interaction,
 	zones: { string }, -- spawn zone ids (SpawnZones below) this kind may use
-	dropOffs: { string }, -- DropOff attribute values that complete it (the hub pad: "Dock")
 	isBig: boolean,
 	dive: boolean?, -- a diver on the seabed at a CallTypes.DiveSites wreck (zones = their islands)
 }
@@ -108,7 +107,6 @@ CallTypes.Kinds = {
 		victims = 1,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "Near", "CalmBay", "Outer", "HarbourMouth" },
-		dropOffs = { "Dock" },
 		isBig = false,
 	},
 	DriftingCraft = {
@@ -119,7 +117,6 @@ CallTypes.Kinds = {
 		victims = 2,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "CalmBay", "Outer", "HarbourMouth" },
-		dropOffs = { "Dock" },
 		isBig = false,
 	},
 	CapsizedFerry = {
@@ -130,7 +127,6 @@ CallTypes.Kinds = {
 		victims = 4, -- base; scaled to at least one per player (CallLogic.bigCallVictimCount)
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "FerrySite" },
-		dropOffs = { "Dock" },
 		isBig = true,
 	},
 	RipCurrent = {
@@ -141,7 +137,6 @@ CallTypes.Kinds = {
 		victims = 1,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "HubRip" },
-		dropOffs = { "Dock" },
 		isBig = false,
 	},
 	Sinking = {
@@ -152,7 +147,6 @@ CallTypes.Kinds = {
 		victims = 3,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "Offshore", "FarSea", "DeepSea" }, -- a distance tier (CallLogic.chooseCall)
-		dropOffs = { "Dock" },
 		isBig = false,
 	},
 	VesselFire = {
@@ -163,7 +157,6 @@ CallTypes.Kinds = {
 		victims = 2,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "Offshore", "FarSea", "DeepSea" },
-		dropOffs = { "Dock" },
 		isBig = false,
 	},
 	WildlifeRescue = {
@@ -174,7 +167,6 @@ CallTypes.Kinds = {
 		victims = 1,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "Near", "CalmBay" },
-		dropOffs = { "Dock" },
 		isBig = false,
 	},
 	-- docs/23 (h) "Sub pen": a diver trapped at a wreck on the seabed; only the submarine reaches them.
@@ -187,7 +179,6 @@ CallTypes.Kinds = {
 		victims = 1,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = {}, -- the islands of CallTypes.DiveSites (filled below)
-		dropOffs = { "Dock" },
 		isBig = false,
 		dive = true,
 	},

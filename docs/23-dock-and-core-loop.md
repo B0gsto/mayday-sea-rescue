@@ -380,3 +380,93 @@ Lego-like animations when built." And: "do not redesign the assets that we alrea
   pulse (a flat outline on the ground, never a 3D preview); buying plays the Lego build from above. Exit returns the
   camera. Replaces the paper-blueprint table (WP-14d, after WP-14c and the UI kit).
 - **Builders from now on: multiple DeepSeek V4 Pro agents** (owner); Opus reviews.
+
+## (o) Rescued people become your workers (owner, 2026-10-25 night)
+
+Owner: "You have your own island. You rescue people that help. There are categories — builders, gatherers,
+rescuers and so on — and you build a mini empire on your island." Decisions: **4–5 categories at launch** (more
+as updates), **Cash is the only currency**, **small capped offline earnings**, **the crew lineup (WP-15) is
+replaced** by rescued workers. This reverses the earlier "rescued survivors don't become crew" rule.
+
+- **On pick-up** each survivor shows a category icon and a rarity (common / rare / legendary stars) over their head.
+  Delivered to your island, they walk to the matching building and work there, visibly. No management menus:
+  assignment is automatic (best workers fill the building's slots; extras idle at a "bunkhouse").
+- **Launch categories (one building + one clear effect each, tune):**
+  | Category | Building | Effect |
+  |---|---|---|
+  | Builder | Workshop | builds cost less Cash and finish faster |
+  | Gatherer | Fish & salvage shed | passive Cash per minute |
+  | Rescuer | Rescue boathouse | NPC boats bring in small rescues near your island (Cash + occasional new worker) |
+  | Mechanic | Boat yard | faster craft, shorter "Boat to me" cooldown |
+  | Medic | Clinic | bigger call payouts (survivors arrive healthier) |
+- Each building has worker slots that grow with its level (built at the tablet). Rarity multiplies a worker's effect.
+- **Offline**: Gatherers and Rescuers earn a small capped amount while you're away (tune: up to 2 h at a reduced
+  rate), collected with a coin burst when you return.
+- Robux: no paid randomness; worker rarity only comes from rescues. Possible later: a paid slot expansion.
+- Flex: your island fills with named people you saved; legendaries glow.
+
+**Work packages.** WP-26 workers (after the current batch lands): survivor category + rarity roll, delivery →
+worker spawn and walk-to-building, 5 buildings in DockConfig/tablet, effects, offline earnings, remove the crew
+lineup, pacing/economy check. Then WP-25 art pass covers the worker buildings too.
+
+## (p) No middle island: a tight ring of six islands (owner, 2026-10-25 night)
+
+Owner: "remove the inner island and have the islands closer to each other so the flex element is there."
+Decisions: **quest NPCs come to you** (they arrive by boat at your own jetty), **bridges between neighbours**,
+**~80 stud gaps**. This wins over (k) and (l) on the hub.
+
+- **Layout:** the 6 Lego-plate islands (~300 across) sit in a ring ~380 studs from the centre, ~80 studs of water
+  between neighbours; the centre is an open lagoon (no island, no calls in it). Each island's berth notch faces
+  outward to the sea. Short walkable bridges join each island to its two neighbours (a full ring), high enough for
+  boats to pass under between islands.
+- **Gone with the hub:** the forest island, its camps, HQ hut, market stall, harbourmaster's shack, campfire stage,
+  monument, visitor jetty, hidden ruin/wreck stickers and the fine forest fog. Shop = the left-button Shop panel;
+  calls = the pager card; drop-off = your own berth (the generous zone); newcomers spawn on their own island.
+- **Quests come to you, with their own tablet** (owner: "a separate tablet like with quests, and visually there
+  are boats that come in at that pontoon"): each island has a small **quest pontoon** (separate from your berth) and
+  a **quest tablet** on a stand beside it. Quest-giver NPCs visibly sail in on small boats and moor at the pontoon
+  ("!" over them); the tablet lists the quests on offer and your active one (UI-kit cards, same style as the build
+  tablet: tap a quest to focus its giver/boat, accept, hand in). You can also talk to the moored NPC directly (zoom +
+  numbered replies). When a quest is handed in the boat sails off and a new one arrives on the daily rotation.
+  Same quest kinds and chains as before.
+- **Rescue scenes that sat at the hub** (rip current beach, ferry spot off the hub harbour) move to the outer
+  islands / open sea. The loading flyover circles the ring centre.
+- Leaderboard: a small board on each island's jetty, or the left-button panel (builder's choice; no centre).
+
+**Work package.** WP-27 ring layout (after WP-24 plates land): generator removes the hub terrain; HubLayout →
+ring positions; neighbour bridges; delete hub camps/HQ/fog/stickers code; quest NPC boats to your jetty; move
+hub-based call sites; loading-flyover centre; map image refresh.
+
+## (q) No ranks: a linear unlock tree (owner, 2026-10-25 night)
+
+Owner: "remove all of the recruit and rank stuff ... look at it linearly: if the player did not unlock X he cannot
+build Y, clearly stated in the UI ... we can scale that." This wins over every rank/Rep rule elsewhere.
+
+- **Removed:** ranks (Recruit → Admiral), Reputation, rank-ups and the rank ceremony, the rank bar/badge, rank
+  gates, rank-based badges and leaderboards (badges/leaderboards switch to people rescued), dock levels 2–5 as a
+  ladder (their pieces become separate tree buildings). Saved profile keys stay (unused).
+- **Unlock tree (data-driven, so it scales):** every buildable item lists its prerequisites (`needs = {...}`) in one
+  config; adding content = adding a row. First tree (tune):
+  ```
+  Jetty (start)
+  ├─ Pontoon (2nd berth) ── Lookout tower ── Helipad ── Hangar → Helicopter
+  │                              └─ Rescue boathouse (Rescuers)
+  ├─ Workshop (Builders) ─┬─ Boathouse → RIB, boat board, paint booth
+  │                       │     ├─ Lifeboat slip → Lifeboat
+  │                       │     └─ Crane ── Sub pen → Submarine
+  │                       └─ Boat yard (Mechanics)
+  ├─ Fish shed (Gatherers)
+  └─ Station (needs Boathouse + Lookout) ── Clinic (Medics), trophy hall
+  Decor: needs Jetty only
+  ```
+- **UI:** a locked card shows a padlock + the missing prerequisite's icon and name ("Needs: Crane"); tapping it
+  focuses that item's blueprint. In-world blueprints of locked items are greyed with a chain icon. Max ~4 steps deep.
+- **Craft unlock through their building** (RIB ← Boathouse, Lifeboat ← slip, Sub ← Sub pen, Helicopter ← Hangar);
+  Robux boats need the Boathouse. **Call reach** = the best craft you can launch.
+- **Robux skips the Cash, never the order** (replaces rule c.4's "skips rank"): an item can be bought with Robux once
+  its prerequisites exist.
+- Economy: re-tune the pacing sim on the tree (Cash only), keep free players reaching everything.
+
+**Work package.** WP-28 (after the current batch lands, before WP-27 ring): remove ranks/Rep; unlock tree config +
+rules + specs; tablet cards and blueprints show prerequisites; craft/building gates; call reach; badges/leaderboard
+to rescues; pacing re-tune; docs (00, 02, 03, 04) updated.

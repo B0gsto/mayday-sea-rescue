@@ -15,10 +15,12 @@ each other's islands). 6 players per server.
 
 | Place | What it is |
 |---|---|
-| **Hub island** (centre, ~800 studs) | A wild forest the coastguard has only just landed on: rough trails, frontier camps (lookout-hut HQ with the call board, market stall = shop counter, harbourmaster's shack, campfire stage, rescuer monument, visitor jetty), 6 quest-NPC camps, hidden spots (ruin, overgrown wreck) with stickers; map fog lifts as you walk. Newcomer spawn and a drop-off quay. Terrain. |
-| **6 player islands** (ring, ~1,100 studs out) | One per player. A flat **Lego baseplate** (green stud plate, berth notch for boat and sub), no terrain. Your plot: everything you build stands here. Unclaimed ones are bare plates with a jetty. |
-| **6 suspension bridges** | Walkable, hub to each island, high enough for every boat and the helicopter to pass under. No cars. |
-| **Outer ring** | Exploration and rescues: Skerry, Puffin Isle, Gannet Rock, Wreck Reef, the Arches, Mermaid Lagoon, Penwyn; wrecks on the seabed; open sea. Calls spawn here. |
+| **6 player islands** in a tight ring (~380 studs from the centre, ~80 studs of water between neighbours) | One per player. A flat **Lego baseplate** (green stud plate, berth notch facing the open sea), no terrain. Your plot: everything you build stands here, and your neighbours' empires are right next to it. Unclaimed ones are bare plates with a jetty. You spawn on your own island. |
+| **Ring bridges** | Short walkable bridges join each island to its two neighbours; boats pass under. No cars. |
+| **Centre lagoon** | Open water inside the ring; no island. |
+| **Outer sea** | Exploration and rescues: Skerry, Puffin Isle, Gannet Rock, Wreck Reef, the Arches, Mermaid Lagoon, Penwyn; wrecks on the seabed; open sea. Calls spawn here. |
+
+(Layout change in progress, WP-27: the old middle forest island is being removed; docs/23 (p).)
 
 ## 3. The loop
 
@@ -31,9 +33,10 @@ each other's islands). 6 players per server.
 - **Pick-up is simple:** an orange ring on the water marks each survivor; inside it your craft eases to boarding
   speed by itself; they swim over and climb aboard in view, "+1". Full craft shows on its seat pips. Helicopter
   winches from a hover; submarine picks up divers on the seabed.
-- **Drop-off:** your own berth or the hub quay, nearest wins. Calls never fail: a slow rescue just earns a lower
+- **Drop-off:** your own berth (a generous zone around your jetty). Calls never fail: a slow rescue just earns a lower
   grade (bronze) and less pay.
-- **Quests:** 6 NPCs at the hub camps (talk = camera zoom + numbered replies, voiced). Find, deliver, salvage (sub),
+- **Quests:** quest-giver NPCs sail in on small boats and moor at your island's quest pontoon with a "!"; a quest
+  tablet beside it lists offers and your active quest (or talk to the NPC: camera zoom + numbered replies, voiced). Find, deliver, salvage (sub),
   special rescue, and chains that unlock a unique building for your island (e.g. a lighthouse). One new quest a
   day per NPC; a chain's next step unlocks as soon as the previous one is done.
 - **Free-roam swimmers** between the islands for anyone sailing around.
@@ -48,8 +51,10 @@ each other's islands). 6 players per server.
   in progress, WP-14d.)
 - What you build: dock levels 2–5 (pontoon + lamps + rescue board, boathouse + boat board + paint booth, lookout
   tower + crane, station + beacon + trophy hall), helipad + hangar, sub pen, quest-chain buildings, spare lots.
-- **Crew (late game):** job seekers line up outside your station; a new group every 20 minutes; hire a mechanic,
-  lifeguard or dispatcher for small boosts and a daily wage (unlocks at dock Lv5 + Coxswain).
+- **Your people:** survivors you rescue get a category (Builder, Gatherer, Rescuer, Mechanic, Medic) and a rarity;
+  delivered home they walk to the matching building on your island and work there (cheaper builds, passive Cash,
+  NPC rescues, faster craft, bigger payouts). Small capped offline earnings. (In progress, WP-26; replaces the crew
+  lineup.)
 - **Flex:** everything is visible to the server; the top-ranked Lv5 player's island gets a gold beacon.
 - **New things are Lego-style** (chunky bricks, bright colours, studs). Existing finished models keep their look.
 
@@ -64,14 +69,15 @@ far your calls go.
 
 ## 6. Progression and economy
 
-Ranks: Recruit → Lifeguard → Rescue Swimmer → Coxswain → Rescue Pilot → Captain → Commodore → Admiral (Rep from
-calls and quests). Cash from calls, quests, the daily chest and streaks; spent on craft, island buildings, crew
-wages, cosmetics, and island decorations/expansions on the build tablet (the late-game Cash sink, planned). Free players reach everything (docs/03 pacing; checked by the pacing sim in `tests/`). Prices and
-the economy check: docs/23 (i).
+No ranks and no Reputation. Progress is a **linear unlock tree** on your island: each building lists what it needs
+("Needs: Crane"), craft unlock through their building (RIB ← Boathouse, Lifeboat ← slip, Sub ← Sub pen, Helicopter ←
+Hangar), and call reach follows the best craft you can launch. Cash (from calls, quests, workers, the daily chest,
+streaks) is the only currency; it pays for buildings, craft, decor and cosmetics. Free players reach everything
+(pacing sim in `tests/`). The tree is data-driven so new content is a new row. (In progress, WP-28; docs/23 (q).)
 
 ## 7. Money (Robux)
 
-Robux can buy anything a player lacks Cash or rank for (never skill: grades and promotions stay earned). Passes:
+Robux can skip the Cash for anything whose prerequisites you already have, never the order of the tree (and never skill). Passes:
 2x Cash, VIP, Quick Launch, Starter Kit, Robux boats and craft, cosmetics; products: Cash packs, boosts, Storm
 Summons, dock levels and buildings, day passes. Paid random Sea Chests come after the first public launch (cosmetics only, odds shown, pity, one Cash chest).
 No pressure, no timers on offers, the player opens every prompt. Details: docs/04.
