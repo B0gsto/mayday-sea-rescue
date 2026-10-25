@@ -251,3 +251,34 @@ data). WP-14b move the dock code onto the big plots (Marina/DockService/DockPiec
 merge near-duplicate PBR surfaces (455 texture packs now; they hit the upload rate limit) into shared materials,
 measure client memory and load time on a phone before/after. 14a first; 14b and 14c after it and after
 WP-13 lands.
+
+## (k) The hub and six islands (owner, 2026-10-25: "love the plan, do it")
+
+Owner: "development is going slowly cause there is bloat ... and too many mechanics. Remove the cars and city for
+now (don't publish them). 6 islands, one for each player, and a middle one, the city, that we can go to by boat or
+by suspended highways. The rest exploratory." This section wins over (j) on layout and server size, and over
+docs/10 / docs/21 where they place Great Gale, Port Haven and the town.
+
+**Layout (tune).**
+- **Hub island** at the centre (~400 studs across): newcomer spawn, Coastguard HQ (the station), radio + call
+  board, leaderboard, a shop counter. Small and readable, not a town.
+- **6 player islands** in a ring around the hub (~900 studs out, 60° apart, ~300 studs across each): one per
+  player (server size **6**), land + a sheltered berth cove. Your island is your plot: everything in (j)
+  (blueprint table, builders, station, boathouse, paint booth, helipad, sub pen, crew quarters, spare land) is
+  built on it. Unclaimed islands stay plain (sand, grass, a bare jetty).
+- **Suspension bridges** from the hub to each island, walkable, arched high enough for every boat to pass under.
+  No cars for now.
+- **Outer ring = exploration and rescues:** the docs/21 islands that don't need the town (Skerry, Puffin, Gannet,
+  Wreck Reef, the Arches, Mermaid Lagoon; Penwyn and St Elowen's only if they stand without the town), wrecks,
+  open sea. Calls spawn out here; distance tiers count from your island; you deliver to your island or the hub.
+
+**Cut (deleted from main; restorable from git tag `pre-hub-cut`).** Cars and all land vehicles, the car garage,
+roads, streets, traffic, the town (Port Haven buildings, cottages, chandlery, town NPCs and extras), Great Gale's
+terrain. Kept: the station rig (re-homed on the hub), boats, helicopter, submarine, rescues, phone, dock/plot code.
+
+**Next cut review:** a one-page keep/cut list of every remaining mechanic with its code size (owner marks it).
+Candidates named so far: the seaplane (overlaps the helicopter), land calls (need big land).
+
+**Work packages.** WP-17 tag + cut cars and town. WP-18 new map: hub, 6 islands, bridges, outer islands (terrain
+generator + bake + layout data). WP-19 plots → islands (dock code, server size 6, calls/drop-off from your island).
+Then WP-14c blueprint table, WP-15 crew, WP-16 asset diet. WP-14a (coast plots) is cancelled.
