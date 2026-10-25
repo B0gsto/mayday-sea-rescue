@@ -555,8 +555,12 @@ end
 --   DropOffs.DropOff_Dock  the hub drop-off pad in the harbour (attribute DropOff = "Dock")
 local function buildHub(map: Instance, H: any, ui: any)
 	local hub = folder(map, "Hub", "Model")
+	-- the baked plateau renders about 2 studs above PlateauY (Studio raycast: Y 6 on the hub); Lune cannot raycast
+	local LIFT = Vector3.new(0, 2, 0)
 	local function at(right: number, fwd: number, y: number?, yaw: number?): CFrame
-		return H.Hub.frame * CFrame.new(right, y or 0, -fwd) * CFrame.Angles(0, math.rad(yaw or 0), 0)
+		return H.Hub.frame
+			* CFrame.new(right, (y or 0) + LIFT.Y, -fwd)
+			* CFrame.Angles(0, math.rad(yaw or 0), 0)
 	end
 	local function block(
 		parent: Instance,
@@ -580,7 +584,7 @@ local function buildHub(map: Instance, H: any, ui: any)
 		end
 		return part(props)
 	end
-	local STONE, COPING = rgb(176, 170, 160), rgb(206, 200, 188)
+	local STONE, COPING = rgb(132, 128, 122), rgb(196, 190, 178)
 	local NAVY, ORANGE, IRON = rgb(30, 48, 86), rgb(255, 107, 26), rgb(40, 42, 46)
 
 	local spawn = Instance.new("SpawnLocation")
@@ -591,58 +595,144 @@ local function buildHub(map: Instance, H: any, ui: any)
 	spawn.TopSurface = SMOOTH
 	spawn.BottomSurface = SMOOTH
 	spawn.Size = Vector3.new(12, 1, 12)
-	spawn.CFrame = H.Hub.spawn + Vector3.new(0, 0.05, 0)
+	spawn.CFrame = H.Hub.spawn + LIFT + Vector3.new(0, 0.05, 0)
 	spawn.Color = STONE
 	spawn.Material = M.Granite
 	spawn.Parent = hub
 
 	-- greybox HQ: white hall, red roof, red bay door on the harbour face
 	local lot = H.Hub.lots.HQ
+	local hq = lot.cframe + LIFT
 	local station = folder(hub, "Station", "Model")
 	local w, d = lot.size.X - 4, lot.size.Y
-	block(station, "Building", Vector3.new(w, 24, d), lot.cframe * CFrame.new(0, 12, 0), COLORS.white)
-	block(station, "Roof", Vector3.new(w + 4, 2, d + 4), lot.cframe * CFrame.new(0, 25, 0), COLORS.red)
-	block(station, "Doors", Vector3.new(20, 14, 0.4), lot.cframe * CFrame.new(-10, 7, -d / 2 - 0.2), COLORS.red)
-	block(station, "Tower", Vector3.new(10, 14, 10), lot.cframe * CFrame.new(20, 33, 0), COLORS.white)
+	block(station, "Building", Vector3.new(w, 24, d), hq * CFrame.new(0, 12, 0), COLORS.white)
+	block(station, "Roof", Vector3.new(w + 4, 2, d + 4), hq * CFrame.new(0, 25, 0), COLORS.red)
+	block(
+		station,
+		"Doors",
+		Vector3.new(20, 14, 0.4),
+		hq * CFrame.new(-10, 7, -d / 2 - 0.2),
+		COLORS.red
+	)
+	block(station, "Tower", Vector3.new(10, 14, 10), hq * CFrame.new(20, 33, 0), COLORS.white)
 
 	-- the quay: plaza paving from the HQ front to the harbour head, coping round the harbour, bollards
 	local quay = folder(hub, "Quay", "Model")
 	local notch = H.Notch.hub
 	local function bollard(right: number, fwd: number)
-		block(quay, "Bollard", Vector3.new(1.6, 1.4, 1.4), at(right, fwd, 0.8) * CFrame.Angles(0, 0, math.pi / 2), IRON, M.Metal, { Shape = Enum.PartType.Cylinder })
+		block(
+			quay,
+			"Bollard",
+			Vector3.new(1.6, 1.4, 1.4),
+			at(right, fwd, 0.8) * CFrame.Angles(0, 0, math.pi / 2),
+			IRON,
+			M.Metal,
+			{ Shape = Enum.PartType.Cylinder }
+		)
 	end
-	block(quay, "Plaza", Vector3.new(124, 1, notch.head - 2), at(0, notch.head / 2 + 1, -0.45), STONE, M.Granite)
-	block(quay, "CopingHead", Vector3.new(notch.halfWidth * 2 + 4, 0.6, 2), at(0, notch.head - 1.5, 0.3), COPING, M.Granite)
+	block(
+		quay,
+		"Plaza",
+		Vector3.new(124, 3, notch.head - 2), -- deep enough to meet the ground where the rim slopes
+		at(0, notch.head / 2 + 1, -1.45),
+		STONE,
+		M.Granite
+	)
+	block(
+		quay,
+		"CopingHead",
+		Vector3.new(notch.halfWidth * 2 + 4, 4, 2),
+		at(0, notch.head - 1.5, -1.4),
+		COPING,
+		M.Granite
+	)
 	for _, s in { -1, 1 } do
 		local x = s * (notch.halfWidth + 1.5)
 		local len = H.HubRadius - notch.head - 12
-		block(quay, "CopingSide", Vector3.new(2, 0.6, len), at(x, notch.head + len / 2, 0.3), COPING, M.Granite)
+		block(
+			quay,
+			"CopingSide",
+			Vector3.new(2, 4, len),
+			at(x, notch.head + len / 2, -1.4),
+			COPING,
+			M.Granite
+		)
 		for k = 0, 2 do
-			bollard(x, notch.head + 18 + k * 26)
+			bollard(x + s * 2.5, notch.head + 18 + k * 26)
 		end
 	end
 	-- the drop-off berth: two bollards and a green band on the coping at the harbour head (the pad's colour)
 	bollard(-12, notch.head - 4)
 	bollard(12, notch.head - 4)
-	block(quay, "DropOffBand", Vector3.new(20, 0.08, 2), at(0, notch.head - 1.5, 0.64), COLORS.dropoff, M.SmoothPlastic, { CanCollide = false })
+	block(
+		quay,
+		"DropOffBand",
+		Vector3.new(20, 0.08, 2),
+		at(0, notch.head - 1.5, 0.64),
+		COLORS.dropoff,
+		M.SmoothPlastic,
+		{ CanCollide = false }
+	)
 	-- life ring on a post by the steps
-	block(quay, "RingPost", Vector3.new(0.4, 5, 0.4), at(notch.halfWidth - 4, notch.head - 4, 2.5), COLORS.white)
-	block(quay, "LifeRing", Vector3.new(0.6, 3, 3), at(notch.halfWidth - 4, notch.head - 3.6, 3.6, 90), ORANGE, M.SmoothPlastic, { Shape = Enum.PartType.Cylinder })
+	block(
+		quay,
+		"RingPost",
+		Vector3.new(0.4, 5, 0.4),
+		at(notch.halfWidth - 4, notch.head - 4, 2.5),
+		COLORS.white
+	)
+	block(
+		quay,
+		"LifeRing",
+		Vector3.new(0.6, 3, 3),
+		at(notch.halfWidth - 4, notch.head - 3.6, 3.6, 90),
+		ORANGE,
+		M.SmoothPlastic,
+		{ Shape = Enum.PartType.Cylinder }
+	)
 
 	-- benches facing the harbour along the plaza sides
 	for _, spot in { { -30, 60 }, { 30, 60 }, { -30, 82 }, { 30, 82 } } do
 		local cf = at(spot[1], spot[2]) -- front (+fwd) to the harbour, the back rest behind
-		block(quay, "Bench", Vector3.new(6, 0.4, 1.8), cf * CFrame.new(0, 1.6, 0), COLORS.wood, M.Wood)
-		block(quay, "BenchBack", Vector3.new(6, 1.6, 0.3), cf * CFrame.new(0, 2.8, 0.9), COLORS.wood, M.Wood)
+		block(
+			quay,
+			"Bench",
+			Vector3.new(6, 0.4, 1.8),
+			cf * CFrame.new(0, 1.6, 0),
+			COLORS.wood,
+			M.Wood
+		)
+		block(
+			quay,
+			"BenchBack",
+			Vector3.new(6, 1.6, 0.3),
+			cf * CFrame.new(0, 2.8, 0.9),
+			COLORS.wood,
+			M.Wood
+		)
 		for _, x in { -2.5, 2.5 } do
-			block(quay, "BenchLeg", Vector3.new(0.4, 1.4, 1.6), cf * CFrame.new(x, 0.7, 0), IRON, M.Metal)
+			block(
+				quay,
+				"BenchLeg",
+				Vector3.new(0.4, 1.4, 1.6),
+				cf * CFrame.new(x, 0.7, 0),
+				IRON,
+				M.Metal
+			)
 		end
 	end
 
 	-- lamps round the plaza (warm, always on: placeholder, no day/night rig)
 	for _, spot in { { -56, 12 }, { 56, 12 }, { -56, 50 }, { 56, 50 }, { -44, 96 }, { 44, 96 } } do
 		block(quay, "LampPost", Vector3.new(0.5, 11, 0.5), at(spot[1], spot[2], 5.5), IRON, M.Metal)
-		local head = block(quay, "LampHead", Vector3.new(1.4, 1.2, 1.4), at(spot[1], spot[2], 11.4), COLORS.glass, M.Neon)
+		local head = block(
+			quay,
+			"LampHead",
+			Vector3.new(1.4, 1.2, 1.4),
+			at(spot[1], spot[2], 11.4),
+			COLORS.glass,
+			M.Neon
+		)
 		local light = Instance.new("PointLight")
 		light.Range = 26
 		light.Brightness = 1.4
@@ -652,39 +742,107 @@ local function buildHub(map: Instance, H: any, ui: any)
 	end
 
 	-- flags: two by the HQ front (coastguard orange and navy), one tall at the harbour head
-	for _, f in { { -40, 6, 20, ORANGE }, { 40, 6, 20, NAVY }, { -notch.halfWidth - 8, notch.head - 6, 30, COLORS.red } } do
+	for _, f in
+		{
+			{ -40, 6, 20, ORANGE },
+			{ 40, 6, 20, NAVY },
+			{ -notch.halfWidth - 8, notch.head - 6, 30, COLORS.red },
+		}
+	do
 		local h = f[3]
 		block(quay, "FlagPole", Vector3.new(0.5, h, 0.5), at(f[1], f[2], h / 2), COLORS.white)
-		block(quay, "Flag", Vector3.new(6.5, 4, 0.05), at(f[1] + 3.5, f[2], h - 2.4), f[4], M.Fabric, { CanCollide = false })
+		block(
+			quay,
+			"Flag",
+			Vector3.new(6.5, 4, 0.05),
+			at(f[1] + 3.5, f[2], h - 2.4),
+			f[4],
+			M.Fabric,
+			{ CanCollide = false }
+		)
 	end
 
 	-- call board: a framed noticeboard on two posts, the call icon on its face, pinned notes
-	local cb = H.Hub.lots.CallBoard
+	local cbf = H.Hub.lots.CallBoard.cframe + LIFT
 	local board = folder(hub, "CallBoard", "Model")
 	board:AddTag("CallBoard")
 	for _, x in { -5.4, 5.4 } do
-		block(board, "Post", Vector3.new(0.6, 9, 0.6), cb.cframe * CFrame.new(x, 4.5, 0), COLORS.wood, M.Wood)
+		block(
+			board,
+			"Post",
+			Vector3.new(0.6, 9, 0.6),
+			cbf * CFrame.new(x, 4.5, 0),
+			COLORS.wood,
+			M.Wood
+		)
 	end
-	block(board, "Board", Vector3.new(10.4, 6, 0.5), cb.cframe * CFrame.new(0, 5.6, 0), rgb(176, 132, 84), M.Wood)
-	block(board, "Header", Vector3.new(11, 1.2, 0.7), cb.cframe * CFrame.new(0, 9.1, 0), COLORS.red)
-	block(board, "Cap", Vector3.new(12, 0.4, 1.6), cb.cframe * CFrame.new(0, 9.9, 0), COLORS.roof)
-	local icon = block(board, "Icon", Vector3.new(3.6, 3.6, 0.1), cb.cframe * CFrame.new(-2.6, 5.6, -0.3), COLORS.white, M.SmoothPlastic, { CanCollide = false })
+	block(
+		board,
+		"Board",
+		Vector3.new(10.4, 6, 0.5),
+		cbf * CFrame.new(0, 5.6, 0),
+		rgb(176, 132, 84),
+		M.Wood
+	)
+	block(board, "Header", Vector3.new(11, 1.2, 0.7), cbf * CFrame.new(0, 9.1, 0), COLORS.red)
+	block(board, "Cap", Vector3.new(12, 0.4, 1.6), cbf * CFrame.new(0, 9.9, 0), COLORS.roof)
+	local icon = block(
+		board,
+		"Icon",
+		Vector3.new(3.6, 3.6, 0.1),
+		cbf * CFrame.new(-2.6, 5.6, -0.3),
+		COLORS.white,
+		M.SmoothPlastic,
+		{ CanCollide = false }
+	)
 	decal(icon, ui.Hud.MissionPiw, Enum.NormalId.Front)
 	for i, note in { { 1.2, 6.6, -6 }, { 3.6, 6.2, 5 }, { 1.6, 4.2, 3 }, { 3.8, 4.0, -4 } } do
-		block(board, "Note", Vector3.new(1.8, 2.2, 0.05), cb.cframe * CFrame.new(note[1], note[2], -0.28) * CFrame.Angles(0, 0, math.rad(note[3])), if i % 2 == 0 then COLORS.white else COLORS.glass, M.SmoothPlastic, { CanCollide = false })
+		block(
+			board,
+			"Note",
+			Vector3.new(1.8, 2.2, 0.05),
+			cbf * CFrame.new(note[1], note[2], -0.28) * CFrame.Angles(0, 0, math.rad(note[3])),
+			if i % 2 == 0 then COLORS.white else COLORS.glass,
+			M.SmoothPlastic,
+			{ CanCollide = false }
+		)
 	end
 
 	-- shop counter: a solid counter under a striped awning, the Store icon over it; the prompt opens the phone Store
 	local sc = H.Hub.lots.ShopCounter
+	local scf = sc.cframe + LIFT
 	local shop = folder(hub, "ShopCounter", "Model")
 	local sw, sd = sc.size.X, sc.size.Y
-	local counter = block(shop, "Counter", Vector3.new(sw - 4, 3.6, 2.4), sc.cframe * CFrame.new(0, 1.8, -sd / 2 + 1.6), COLORS.white)
-	block(shop, "CounterTop", Vector3.new(sw - 3, 0.3, 3), sc.cframe * CFrame.new(0, 3.75, -sd / 2 + 1.6), COLORS.wood, M.Wood)
-	block(shop, "Kiosk", Vector3.new(sw, 12, sd - 4), sc.cframe * CFrame.new(0, 6, 2), NAVY)
+	local counter = block(
+		shop,
+		"Counter",
+		Vector3.new(sw - 4, 3.6, 2.4),
+		scf * CFrame.new(0, 1.8, -sd / 2 + 1.6),
+		COLORS.white
+	)
+	block(
+		shop,
+		"CounterTop",
+		Vector3.new(sw - 3, 0.3, 3),
+		scf * CFrame.new(0, 3.75, -sd / 2 + 1.6),
+		COLORS.wood,
+		M.Wood
+	)
+	block(shop, "Kiosk", Vector3.new(sw, 12, sd - 4), scf * CFrame.new(0, 6, 2), NAVY)
 	for k = 0, 4 do
-		block(shop, "Awning", Vector3.new(sw / 5, 0.3, 4), sc.cframe * CFrame.new(-sw / 2 + sw / 10 + k * sw / 5, 9.6, -3) * CFrame.Angles(math.rad(-15), 0, 0), if k % 2 == 0 then COLORS.white else COLORS.red, M.Fabric)
+		block(
+			shop,
+			"Awning",
+			Vector3.new(sw / 5, 0.3, 4),
+			scf
+				* CFrame.new(-sw / 2 + sw / 10 + k * sw / 5, 9.6, -3)
+				* CFrame.Angles(math.rad(-15), 0, 0),
+			if k % 2 == 0 then COLORS.white else COLORS.red,
+			M.Fabric
+		)
 	end
-	local sign = block(shop, "Sign", Vector3.new(5, 5, 0.3), sc.cframe * CFrame.new(0, 13, -1.2), COLORS.white)
+	local sign =
+		block(shop, "Sign", Vector3.new(5, 5, 0.3), scf * CFrame.new(0, 13, -1.2), COLORS.white)
 	decal(sign, ui.Phone.Store, Enum.NormalId.Front)
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "ShopPrompt"

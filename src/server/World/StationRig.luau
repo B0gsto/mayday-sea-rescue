@@ -223,7 +223,7 @@ function StationRig.apply(shell: Model): () -> ()
 	end
 	local done = false
 	-- the station's lifeboat on its launch trailer in the boat hall, bow to the roller bay door: the hall reads
-	-- as the boathouse (static display, collides; launches still go from the BoatDesk and the slipway)
+	-- as the boathouse (static display, collides; launches go from each player's island berth)
 	local hall = marker(shell, "ATT_BoatHall")
 	if hall then
 		-- docs/22: a painted floor and a painted-block dado with a navy band over the hall's bare stone (Plaster and
@@ -235,7 +235,7 @@ function StationRig.apply(shell: Model): () -> ()
 			at: Vector3,
 			color: Color3,
 			material: Enum.Material
-		)
+		): Part
 			local p = Instance.new("Part")
 			p.Name = "Rig_Hall" .. name
 			p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch = true, false, false, false
@@ -246,6 +246,7 @@ function StationRig.apply(shell: Model): () -> ()
 			p:SetAttribute(RIG_ATTR, true)
 			p.Parent = shell.Parent
 			table.insert(created, p)
+			return p
 		end
 		local H = HALL
 		local midX, w = (H.x0 + H.x1) / 2, H.x1 - H.x0
@@ -304,6 +305,37 @@ function StationRig.apply(shell: Model): () -> ()
 				end
 			end
 		end
+		-- WP-19a: the HQ radio on a desk against the hall's side wall near the back (tag StationRadio for call code)
+		local rx, rz = H.x1 - 1.4, H.z - 6
+		local RADIO = Color3.fromRGB(36, 38, 42)
+		panel(
+			"RadioDesk",
+			Vector3.new(2.6, 2.6, 6),
+			Vector3.new(rx, 1.3, rz),
+			HALL_BAND,
+			Enum.Material.SmoothPlastic
+		)
+		panel(
+			"Radio",
+			Vector3.new(1.4, 1.2, 2.4),
+			Vector3.new(rx + 0.3, 3.2, rz),
+			RADIO,
+			Enum.Material.Metal
+		):AddTag("StationRadio")
+		panel(
+			"RadioDial",
+			Vector3.new(0.1, 0.5, 1.6),
+			Vector3.new(rx - 0.42, 3.3, rz),
+			Color3.fromRGB(90, 255, 140),
+			Enum.Material.Neon
+		)
+		panel(
+			"RadioMast",
+			Vector3.new(0.12, 2.4, 0.12),
+			Vector3.new(rx + 0.6, 5, rz + 0.9),
+			RADIO,
+			Enum.Material.Metal
+		)
 		task.spawn(function()
 			local trailer = AssetLoader.cloneStatic("M_Veh_BoatTrailer_RIB", "LOD0")
 			local boat = AssetLoader.cloneStatic("M_Veh_RIB", "LOD0")

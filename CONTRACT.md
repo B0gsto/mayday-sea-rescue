@@ -269,7 +269,11 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   CallBoard / ShopCounter, dropOff), `Islands` / `byId` (Plot1..6: center, facing, frame, spawn, berths Boat / Sub,
   lots Station, Boathouse, PaintBooth, Helipad (clearRadius 45), Hangar, SubPen, Jetty, BlueprintTable,
   CrewQuarters, LifeguardTower, Spare1..3), `Bridges` + `deckY` / `deckAt`. `server/World/Bridges` builds the six
-  suspension bridges from it (WorldDressingService I2 list).
+  suspension bridges from it (WorldDressingService I2 list). WP-19a: `map/Build.luau` builds `Map.Hub` (HubSpawn,
+  greybox Station under `Swaps.Station`, CallBoard model tag `CallBoard`, ShopCounter whose prompt tag `ShopCounter`
+  opens the phone Store via HudController, Quay dressing) and the only drop-off pad `Map.DropOffs.DropOff_Dock`
+  (`DropOff = "Dock"`) at `HubLayout.Hub.dropOff`; StationRig puts the HQ radio in the hall (tag `StationRadio`).
+  The old Port Haven harbour (Harbour.luau, breakwaters, slipway, hospital, moorings) is gone.
 - Pets and sanctuary: `PetService`, `PetRules`, `PetSeat`, `PetAccessory`, `PetController`.
 - Exploration album and map fog (docs/21 §3): `Config/DiscoveryConfig` (pages, ranges, Cash, fog grid),
   `DiscoveryRules` (pure: sighted / reached / stickers, flags `isles` and `fog`), `DiscoveryService`

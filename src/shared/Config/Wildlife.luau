@@ -358,7 +358,7 @@ W.RareEvery = 8 -- one rescue in eight brings the rare colour variant -- tune
 
 -- The station spot a pet naps at when the player idles there (PetController; the yard itself was removed).
 W.Sanctuary = {
-	position = Vector3.new(-158, 5.8, -48),
+	position = Vector3.new(-48, 6, -3), -- beside the HQ on the hub
 }
 
 -- The pet follows at this offset behind the player; the animal's pivot sits on the ground.

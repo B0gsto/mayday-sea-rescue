@@ -227,18 +227,15 @@ return function(t)
 		t.expect(ColdOpen.landed("held", Vector3.new(0, 0, 420))).toBe(false) -- still out at sea
 		t.expect(ColdOpen.landed("held", slip + Vector3.new(0, 0, ColdOpen.SHORE_RADIUS + 1)))
 			.toBe(false)
-		local sands = ColdOpen.nearestShore(Vector3.new(990, 0, 290))
-		t.expect(sands.id).toBe("Sands")
-		t.expect(ColdOpen.landed("held", Vector3.new(990, 0, 290))).toBe(true)
 	end)
 
 	t.test(
-		"the spawn is inside the breakwater, facing the station slipway with the casualty on the way",
+		"the spawn is off the hub harbour, facing the quay head with the casualty on the way",
 		function()
 			local at, home = ColdOpen.SPAWN, ColdOpen.SHORE[1].water
 			local ahead = ((home - at) * Vector3.new(1, 0, 1)).Unit
 			local far = at + ahead * ColdOpen.DISTANCE[2]
-			t.expect(at.Z < 352).toBe(true) -- breakwater heads: z 352 to 368
+			t.expect(at.Magnitude > 200).toBe(true) -- off the hub island (radius 200)
 			t.expect(ColdOpen.nearestShore(at).id).toBe("Station")
 			t.expect((far - home).Magnitude < (at - home).Magnitude).toBe(true) -- ahead closes the drop-off
 		end

@@ -86,8 +86,8 @@ local GULL_LOOPS: { GullPath.Loop } = {
 		drift = 8,
 	},
 }
--- Harbour.luau pier-head cannon bollards (head centre (-110, 103), radius 7.2, angles -0.8 / 0.8)
-local GULL_PERCHES = { Vector3.new(-115.17, 0, 108.02), Vector3.new(-104.83, 0, 108.02) }
+-- the hub quay head berth bollards (map/Build.luau buildHub: right +-12, fwd 96 in the hub frame)
+local GULL_PERCHES = { Vector3.new(-12, 0, 96), Vector3.new(12, 0, 96) }
 
 type Kind = "Hauled" | "Bottling" | "Glide" | "Perch"
 type Animal = {
