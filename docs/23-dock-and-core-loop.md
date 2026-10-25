@@ -323,3 +323,39 @@ is the usual swimmer (named only in the giver's line); carried things ride on yo
 **Order update (owner, 2026-10-25):** publish speed first. (1) `tools/studio/publish_studio.py` re-triggers only the
 texture packs that failed, not all ~455 (~28 min of the publish today). (2) WP-16 asset diet right after WP-21a
 (fewer unique PBR textures, unused asset ids out). Then WP-21b quests, WP-14c blueprint table, WP-15 crew.
+
+**Radio cut (owner, 2026-10-25):** "remove the radio, I want voices only for NPCs". The dispatch radio, its voice lines and
+the HQ radio prop go (WP-22); calls read from the card, pin, flare and sound. NPCs keep their voices; the Sea Shanty
+Radio music item stays.
+
+## (m) UI redesign: no phone, Roblox simulator style (owner, 2026-10-25)
+
+Owner: "redesign the UI also, so no phone, and I want a more Roblox-like UI", with simulator-shop references (bright
+gradient cards, chunky rounded bold font with a black outline, thick dark borders, red square X, big green price
+buttons, coloured square icon buttons with a label underneath). This wins over the "all UI on the phone" direction.
+
+- **No phone.** A column of big square icon buttons on the left (Shop, Quests, Album, Companion, Crew, Settings) plus
+  a "Boat to me" button; each opens a centred panel. The full map stays on M / its button.
+- **One UI kit** (`src/client/UI/Kit/`): Panel (title bar with icon + name, red X), IconButton (coloured square,
+  icon, short label under it, press bounce), Card (gradient row: icon/art left, title, price button right),
+  PriceButton (green, Robux glyph or Cash icon + number), Tabs, Toast, counters (Cash, rank). Font: a chunky
+  rounded display font (FredokaOne / LuckiestGuy class) with a black UIStroke; thick dark borders; vertical
+  gradients; drop shadows; pop-in animation. Works on keyboard, touch and gamepad (selection ring).
+- **Icons are generated art** (Antigravity Gemini, transparent PNGs, thick outline cartoon style), not code-drawn.
+- Still show-don't-tell: icons and 1–3 word labels; shop cards may carry a 2–5 word line, never paragraphs.
+- Every existing screen moves onto the kit: HUD counters, call card/debrief, dock price card, boat/craft boards'
+  cards, quest talk replies, settings, album, store, companion, crew.
+
+**Work packages.** WP-23a icons (Antigravity). WP-23b UI kit + style-guide screen + art-director critique (≤3
+rounds). WP-23c delete the phone, left button bar + panels. WP-23d restyle every remaining screen on the kit.
+
+## (n) Lego style for new things (owner, 2026-10-25)
+
+Owner: "Do the blocky Lego stuff for things that we have not built yet. I want when building the base/dock to have
+Lego-like animations when built." And: "do not redesign the assets that we already have."
+- **New** buildings, outposts and props are made in a blocky, Lego-like style (chunky bricks, bright colours, studs
+  on big flat tops, modest part counts). Existing finished models and art keep their look.
+- **Building on your island** plays a Lego build: pieces drop in brick by brick, bottom to top, with a small bounce
+  and a snap sound, builders standing by, a dust puff at the end (WP-14c).
+- The UI kit can carry a subtle stud texture on title bars and price buttons (docs/23 (m)).
+- **Builders from now on: multiple DeepSeek V4 Pro agents** (owner); Opus reviews.
