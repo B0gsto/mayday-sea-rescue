@@ -6,7 +6,7 @@
 --
 -- Funnels: Onboarding (one-time, Events.Funnel) and the recurring TelemetryNames.Funnels Call, Shop,
 -- Vehicle, Explore and Companion. Economy: currency "Cash" (sources from ProgressionService push()
--- extra.award, sinks from vehicle and upgrade buys). Progression: Rank (rank-ups), Explorer (stamps).
+-- extra.award, sinks from vehicle and upgrade buys). Progression: Explorer (stamps).
 -- Custom: the fixed TelemetryNames.Custom list.
 --
 --   TelemetryService.Funnel(player, stepName)                         onboarding step (once per player)
@@ -37,7 +37,6 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
-local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
 local TelemetryNames = require(Shared:WaitForChild("TelemetryNames"))
 local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
@@ -170,16 +169,6 @@ local function progression(player: Player, path: string, level: number, levelNam
 			levelName
 		)
 	end)
-end
-
--- Rank progression (Creator Dashboard > Analytics > Progression): one Complete per promotion, with
--- the rank index and display name (never the player's name).
-local function rankProgression(player: Player, rankIndex: number)
-	local def = ProgressionConfig.Ranks[rankIndex]
-	local name = if def and type(def.displayName) == "string"
-		then def.displayName
-		else `Rank{rankIndex}`
-	progression(player, "Rank", rankIndex, name)
 end
 
 local function economy(
@@ -664,16 +653,6 @@ end
 
 function TelemetryService.Start()
 	devHook()
-	local progressionService = service("ProgressionService")
-	local signal = progressionService and progressionService.RankChanged
-	if typeof(signal) == "RBXScriptSignal" then
-		signal:Connect(function(player: Player, newRank: number, oldRank: number)
-			if newRank > oldRank then
-				TelemetryService.Funnel(player, "FirstRank")
-				rankProgression(player, newRank)
-			end
-		end)
-	end
 	task.spawn(function()
 		local weather = ReplicatedStorage:WaitForChild("Weather", 60)
 		if weather then

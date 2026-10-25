@@ -20,7 +20,7 @@
 --                                        (coldOpenDone) also gets that craft docked beside them.
 --   Vehicle_QuickLaunch (RemoteFunction, ReplicatedStorage.Net)  Quick Launch pass owners (RP-M2, docs/04
 --     section 3): vehicleId -> (ok, reasonOrVehicle). From anywhere (the phone's Vehicles app Spawn), no
---     launch cooldown, seated at the helm at once. Same rank and occupancy checks.
+--     launch cooldown, seated at the helm at once. Same ownership and occupancy checks.
 --
 -- Vehicle states:
 --   Dock    nobody driving and the hull is at a bay: HullRoot anchored (clients bob it visually)
@@ -145,7 +145,7 @@ VehicleService.VehicleSpawned = spawnedEvent.Event
 
 local records: { [Model]: Record } = {}
 local byPlayer: { [Player]: Record } = {} -- the player's current vehicle (GetVehicle)
-local seconds: { [Player]: Record } = {} -- Lv 2+ dock: the other craft kept out (docs/23 d.2, 2nd berth)
+local seconds: { [Player]: Record } = {} -- with the pontoon: the other craft kept out (docs/23 (q), 2nd berth)
 local owned: { [Player]: { [string]: Record } } = {} -- one record per player per vehicle class
 local towTargets: { [Model]: Record } = {} -- towed model -> tower record
 local lastSpawn: { [Player]: number } = {}
@@ -780,12 +780,12 @@ local function planSpawn(
 	return plan :: any, existing, why
 end
 
--- Lv 2+ dock (docs/23 d.2, 2nd berth): the craft to keep out beside a new one of `spec`: the current one.
+-- The pontoon (docs/23 (q), 2nd berth): the craft to keep out beside a new one of `spec`: the current one.
 local function secondKeep(player: Player, spec: VehicleSpec): Record?
 	local current = byPlayer[player]
 	return if current
 			and current.spec.id ~= spec.id
-			and DockService.GetLevel(player) >= 2
+			and DockService.Owns(player, "Pontoon")
 		then current
 		else nil
 end
@@ -907,10 +907,10 @@ local function createVehicle(
 	return model, seat
 end
 
--- docs/23 d.2: from Lv 2 a second craft moors along the pontoon's inner side (DockPieces level2, x 13).
+-- docs/23 (q): with the pontoon a second craft moors along its inner side (DockPieces pontoon, x 13).
 local PONTOON_EDGE = 12.5
 
--- Where a docked `spec` goes at berth `at`, and the craft kept out beside it: the berth, or (Lv 2+, the
+-- Where a docked `spec` goes at berth `at`, and the craft kept out beside it: the berth, or (pontoon, the
 -- kept craft in the berth) along the pontoon. When neither is clear of it, the kept one goes instead.
 local function dockSpot(player: Player, spec: VehicleSpec, at: BasePart): (CFrame, Record?)
 	-- a hull longer than the bay slides seaward along it so its stern clears the quay (a RIB on Bay1
@@ -956,10 +956,10 @@ local function spawnLocked(
 	local now = os.clock()
 	if
 		not quick
-		and DockService.GetLevel(player) < 4
+		and not DockService.Owns(player, "Crane")
 		and lastSpawn[player]
 		and now - lastSpawn[player] < SPAWN_COOLDOWN
-	then -- Lv 4 dock: no relaunch cooldown (docs/23 d.2)
+	then -- the crane: no relaunch cooldown (docs/23 (q))
 		return false, "Cooldown"
 	end
 	if not canUse(player, vehicleId) then
@@ -1760,7 +1760,7 @@ function VehicleService.SpawnColdOpen(player: Player, cframe: CFrame): Model?
 end
 
 -- Quick Launch (docs/04 section 3): convenience only. It skips the walk and the launch cooldown; it never
--- touches a casualty, a step or a grade, and rank still gates every vehicle (canUse in spawnVehicle).
+-- touches a casualty, a step or a grade, and ownership still gates every vehicle (canUse in spawnVehicle).
 function VehicleService.QuickLaunch(player: Player, vehicleId: string): (boolean, string | Model)
 	local allowed, why = MonetizationEffects.quickLaunchAllowed(
 		ownsQuickLaunch(player),
@@ -1787,7 +1787,7 @@ function VehicleService.DockLaunch(
 	return spawnVehicle(player, vehicleId, nil, nil, true, "Board", nil, target)
 end
 
--- The boat board's crane (WP-11a): where `vehicleId` will dock at the player's berth (the berth or the Lv 2
+-- The boat board's crane (WP-11a): where `vehicleId` will dock at the player's berth (the berth or the
 -- pontoon). The hulls the launch replaces go now, so the crane never lowers the new one onto the old one.
 -- nil: it can't launch (locked, no berth, or someone is aboard the old one).
 function VehicleService.DockSpot(player: Player, vehicleId: string): CFrame?
@@ -1817,7 +1817,7 @@ function VehicleService.RefreshUpgrades(player: Player, vehicleId: string)
 		local spec = if record.mode == "Dock" then VehicleConfig.get(vehicleId) else nil
 		if spec then
 			local other = if byPlayer[player] == record then seconds[player] else byPlayer[player]
-			local keep = if DockService.GetLevel(player) >= 2 then other else nil
+			local keep = if DockService.Owns(player, "Pontoon") then other else nil
 			createVehicle(player, spec, record.root.CFrame, "Request", keep)
 		else
 			despawnModel(record.model, "Replaced")

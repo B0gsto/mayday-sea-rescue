@@ -46,7 +46,6 @@ return {
 		lock = "rbxassetid://135893459775435",
 		map = "rbxassetid://111196679015076",
 		quests = "rbxassetid://123511018979555",
-		rank = "rbxassetid://82021247159806",
 		settings = "rbxassetid://83062960203156",
 		shop = "rbxassetid://133652722448118",
 		vip = "rbxassetid://89629681853633",

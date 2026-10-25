@@ -1342,6 +1342,13 @@ local function unloadVictims(vehicle: Model, victims: { any }, patrol: boolean?)
 	if data then
 		data.totalRescues += #victims
 		DataService.MarkDirty(driver :: Player)
+		local who = driver :: Player
+		who:SetAttribute("Rescued", data.totalRescues) -- BadgeService's rescued badges
+		local stat = who:FindFirstChild("leaderstats")
+		local board = stat and stat:FindFirstChild("Rescued")
+		if board and board:IsA("IntValue") then
+			board.Value = data.totalRescues
+		end
 	end
 	local svc = service("VehicleService")
 	if svc and type(svc.RemoveSurvivors) == "function" then

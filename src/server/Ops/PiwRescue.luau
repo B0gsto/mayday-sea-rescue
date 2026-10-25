@@ -3,7 +3,7 @@
 -- client: src/client/Mechanics/auto_board.luau). Remote Net.PIW_Rescue, C->S (opId, casualtyIndex, action):
 --   "arm"    the recovery step started: the casualty now answers this rescuer (10 s rule)
 --   "bump"   auto_board: the boat ran into them (checked: fast and close), they are knocked back (from
---            rank Board.KNOCK_RANK up)
+--            boathouse owners only, Board.knocks)
 -- A full craft (docs/20 change 8) takes nobody: they tread water WAIT_GAP off and wave (mode "wait")
 -- instead of clinging to its side, and come in once there is a seat again.
 -- RescueService's drift step asks `velocity` for each victim and moves the floater with it.
@@ -156,7 +156,7 @@ local function onEvent(
 		return
 	end
 	local cas = Vector3.new(victim.floater.x, 0, victim.floater.z)
-	if action == "bump" and Board.knocks(player:GetAttribute("RankIndex")) then
+	if action == "bump" and Board.knocks(player:GetAttribute("DockBoathouse")) then
 		local away = cas - Vector3.new(pos.X, 0, pos.Z)
 		if onBoat and speed > PiwWays.STOPPED and away.Magnitude < 16 and away.Magnitude > 1e-3 then
 			e.bumpUntil = now + 0.8

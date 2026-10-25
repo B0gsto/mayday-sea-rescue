@@ -23,8 +23,8 @@ files without a reason. History of cut systems lives in git and `docs/archive/16
 ## Core loop (docs/00 §3)
 
 A call goes up, you drive a craft near the survivors, they climb aboard by themselves, you bring them to a
-drop-off pad and get Cash and Rep. Cash buys vehicles and upgrades in the phone; Rep raises your rank, and
-rank unlocks bigger boats.
+drop-off and get Cash. Cash builds your island's unlock tree (docs/23 (q)); each building unlocks the next and
+its craft. No ranks, no Rep (WP-28).
 Pick-up ring (docs/23 e.1): `PickupRingController` draws an orange `Board.RING` ring on the water round every
 survivor still in the water (grey while your craft is full) and `BoatController` runs the throttle through its
 `Assist` (`Board.assistThrottle`: eases to `ASSIST_SPEED` by the ring). Ram knock-back only from `Board.KNOCK_RANK`.
@@ -35,7 +35,7 @@ survivor still in the water (grey while your craft is full) and `BoatController`
 |---|---|---|
 | `VehicleSpawned` | S->C | VehicleService: `(model, bayName)` |
 | `CrewJoin` / `CrewLeave` | both | CrewService: join `{ targetUserId }`; echo `{ leader, members }` |
-| `PlayerDataChanged` | S->C | ProgressionService: the progression snapshot (plus `rankUp`, `award`, `bought` extras) |
+| `PlayerDataChanged` | S->C | ProgressionService: the progression snapshot (plus `award`, `bought` extras) |
 | `StormChanged` | S->C | StormService: one-shot cue per phase change |
 | `DogPoint` | S->C | DogService: Bosun points at a survivor or flare |
 | `RequestVehicle` | C->S fn | VehicleService: `(vehicleId, docked?, near?) -> (ok, reasonOrVehicle)`; `near` = Boat to me (id ignored) |
@@ -64,42 +64,40 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
 - `DockService` (docs/23 WP-1, WP-19b): your island is your plot. `src/shared/Marina.luau` (pure,
   `tests/Marina.spec.luau`): the 6 plots = `HubLayout.Islands` (server size 6); `Marina.LOTS[name]` = each lot in
   the berth frame (the same on every island), `Marina.SUB`, `Marina.ISLAND`, `Marina.spawn(i)`. Every island has a
-  bare jetty down its cove + a finger beside the boat berth; Lv 1 adds a name arch and flag (unclaimed: no sign).
-  A joining player gets the lowest free island, freed on leave; `data.dockLevel` (default 1).
-  API: `GetBerth(player) -> BasePart?`, `GetPlot`, `GetSpawn` (VehicleService stands every spawn there), `GetLevel`,
+  bare jetty down its cove + a finger beside the boat berth; an owner adds a name sign and flag (unclaimed: no sign).
+  A joining player gets the lowest free island, freed on leave; what they built is `data.dockBuildings`.
+  API: `GetBerth(player) -> BasePart?`, `GetPlot`, `GetSpawn` (VehicleService stands every spawn there),
+  `Owns(player, key)` (the pontoon's 2nd berth, the crane's no-wait relaunch),
   `Berths()`. Player attributes `DockPlot`, `BayCFrame` (the berth CFrame); berth part attributes `LaunchBay`,
   `PlotIndex`, `Owner`.
-- Dock levels 2..5 (WP-4): `src/shared/Config/DockConfig.luau` (pure, `tests/DockConfig.spec.luau`: Cash, rank,
-  Robux, `canBuy`, `BOARD_SLOT` = the boat board's spot in the Lv 3 boathouse, berth frame) and
-  `src/shared/DockPieces.luau` (`build(level, berthCFrame) -> Model`, placeholder Parts). DockService builds each
-  owner's levels on their plot (everyone sees them) and sets player attribute
-  `DockLevel`; remote `Dock_Upgrade` C->S fn `(level) -> ok, reason` (Cash + rank); Robux = products
-  `DockLevel2..5` (`MonetizationConfig`, `dockLevel` field, kept off the phone Store); rescue boards show
-  `badgeCounters.Rescue100`. Blueprint table (WP-14c, docs/23 (j) rule 4): `DockPieces.blueprintTable` +
-  `blueprintSheet` on the owner's jetty lot, one paper sheet per available upgrade (`shared/DockBlueprints`:
-  next level, Hangar / SubPen, quest blueprints; locked = greyed + padlock). `DockController` (client) puts a
-  prompt on each sheet and opens the price card (Cash / Robux). A buy plays the Lego build beat: `Dock_Build`
-  S->C `{ plot, parent, name }`, `shared/BuildSeq` drops the pieces client-side (server keeps the final state),
-  two crew builders stand by; instant on rejoin. No ghost, no `Build` prompt. Lv 4 skips VehicleService's
-  relaunch cooldown. Studio: `ServerStorage.DockDev:Invoke("level", n)`. Build tablet (WP-14d/e): the station
-  tablet opens `DockController`'s top-down build mode: paper blueprints on the empty lots for sale
-  (`DockBlueprints.onIsland`, `DockBuild.paper`, drawings `DockBlueprints.GLYPHS`), a right-hand Kit list, and a
-  focus view (`DockBuild.focus`) with a strip of name + `DockConfig` `desc` + Cash / Robux buttons.
-- Dock buildings (docs/23 h, WP-10b): `DockConfig.Buildings` Hangar / SubPen (Cash + rank or Robux
-  products `DockHangar` / `DockSubPen`, `dockBuilding` field; `canBuyBuilding`; the helipad needs
-  Lv 3), owned in `data.dockBuildings`, geometry `DockPieces.building(key, frame)` + `DockPieces.Buildings`
-  (board rack, spawn targets). Helipad + hangar on their island lots, sub pen over the sub berth.
-  `Dock_Upgrade(key)` buys one; berth attributes and player attributes `Dock<key>`; its sheet on the
-  blueprint table, its build the same Lego beat.
-  `server/Dock/BoatBoard` builds every board (boat, hangar, sub) from one def list: the heli on the pad and the
-  sub in the pen (`VehicleService.DockLaunch(player, id, target?)`), the seaplane at the berth. The car garage
-  (`DockGarage`, data key `Garage`) was cut 2026-10-25: product kept with `ready = false`. Studio:
-  `DockDev:Invoke("building", key | "all")`.
+- Unlock tree (docs/23 (q), WP-28; replaced dock levels 2..5 and ranks): `src/shared/Config/DockConfig.luau`
+  `Buildings` (one row per building: `name`, `desc`, `cash`, `needs = { keys }`, optional `product` / `robux`,
+  `spot` + `size` in the berth frame, `vehicles` = its own board's craft, `worker` = a WP-26 worker building),
+  `BUILDINGS` (card order), `LEVEL_ITEMS` (old dock level -> tree items, the save migration). Rules:
+  `src/shared/UnlockTree.luau` (pure, `tests/UnlockTree.spec.luau`): `missing`, `canBuy(key, owned, cash)` ->
+  ok, "Owned" | "Needs" | "Cash", price, need; `canRobux` (Robux skips the Cash, never the order); `craftMissing`;
+  `migrate(level, owned)`. Craft gates: `ProgressionConfig.Vehicles[id].needs` (RIB / Robux boats <- Boathouse,
+  Lifeboat <- LifeboatSlip, Submarine <- SubPen, RescueHelicopter <- Hangar); owned craft always launch.
+  `src/shared/DockPieces.luau` `building(key, berthCFrame) -> Model` (placeholder Parts; worker buildings and the
+  lifeboat slip are plain Lego huts). DockService builds each owner's buildings on their plot (everyone sees
+  them), berth attribute `<key>` and player attribute `Dock<key>` per building; remote `Dock_Upgrade` C->S fn
+  `(key) -> ok, reason`; Robux = products with `dockBuilding` (the old `DockLevel2..5`, `DockHangar`,
+  `DockSubPen` ids), granted only once the prerequisites stand (else the receipt waits). A buy plays the Lego
+  build beat: `Dock_Build` S->C `{ plot, parent, name }`, `shared/BuildSeq` drops the pieces client-side, two
+  crew builders stand by. Build tablet (WP-14d/e): the station tablet opens `DockController`'s top-down build
+  mode: a paper blueprint on every spot not built (`DockBlueprints.onIsland`; locked = grey + chain + padlock),
+  a right-hand Kit list (locked cards: padlock + "Needs: X" chip with X's drawing; tapping it focuses X;
+  `DockBlueprints.needs`), and a focus view with name + `desc` + Cash / Robux buttons; Escape / B / sea tap backs
+  out. Drawings: `DockBlueprints.GLYPHS`, drawn by `client/UI/BuildGlyph`. `server/Dock/BoatBoard` builds every
+  board (boat, hangar, sub): the heli on the pad, the sub in the pen (`VehicleService.DockLaunch`); the boat
+  board moves into the boathouse (`DockConfig.BOARD_SLOT`) once it stands; a craft whose building is missing
+  shows its padlock + the building (drawing + name) and a greyed R$ chip. Studio:
+  `DockDev:Invoke("building", key | "all")`, DevBoard "Build (target)".
 - Dock WP-13: plots are claimed when the profile loads (`GetBerth` claims earlier; nil before Init). Harbour
-  Master = `Marina.harbourMaster` (highest rank among Lv 5 docks, ties keep the holder) on join / leave / level
-  change: gold name board + tall gold beacon on their island, berth attribute `HarbourMaster`; nobody's island moves.
-  Lv 5 trophy hall on the station's front wall: `BadgeRules.trophies`
-  cups + island-stamp plaques (`DockPieces.trophies`). Lv 3 paint booth (`DockConfig.PAINT_BOOTH`): seated in it
+  Master = `Marina.harbourMaster` (most people rescued among islands with a Station, ties keep the holder) on
+  join / leave / a build: gold name board + tall gold beacon on their island, berth attribute `HarbourMaster`; nobody's island moves.
+  The trophy hall (its own building) on the station's front wall: `BadgeRules.trophies`
+  cups + island-stamp plaques (`DockPieces.trophies`). The boathouse's paint booth (`DockConfig.PAINT_BOOTH`): seated in it
   on your own plot → `DockController` paint card (CosmeticPicker Livery + Decal). `MonetizationEffects.passActive`
   = pass or day pass (server `OwnsPass` and the client's Boat to me ring).
 - `VehicleService` (boats and jet skis): one vehicle per player, always launched at the player's own berth
@@ -229,7 +227,7 @@ casualty shouts in CasualtyController).
   by a flare, the beacon and the minimap blip; `failsafeCall(n)` holds condition above Critical for the
   cold open and the next three calls. No text, no station walk, nothing holds offers.
 - Beats: B4 capacity (red ring when the jet ski is full, RIB on the goal chip), B5 first upgrade (phone
-  red dot, Vehicles opens on the affordable card), B7 rank-up (`RankCeremony`), B8 daily crate at the bay,
+  red dot, Vehicles opens on the affordable card), B7 the first island building (the Workshop), B8 daily crate at the bay,
   B9 first pet. `tests/NewPlayerPace.spec.luau` checks the pace.
 - Bosun (K14): `DogService` / `DogController` (`Shared/Dog/BosunMotion`); he points and barks at the
   nearest survivor or flare when the player is idle (`DogPoint`).
@@ -239,14 +237,15 @@ casualty shouts in CasualtyController).
 - `DataService`: `Get`, `MarkDirty`, `Save(player, release?, deadline?)`, `OnLoaded(fn)`,
   `CommitReceipt(player, purchaseId, grantFn)` (idempotent receipt ledger), `HasReceipt`; session locks;
   `tests/Data.spec.luau`.
-- `ProgressionRules` (pure): `PlayerData { cash, rep, vehicles, vehicleUpgrades, totalRescues, coldOpenDone,
-  flags, cosmetics, badgeCounters?, badgesAwarded? }` (retired `certs` / `certLive` / `exercises` are kept
-  as saved, never read), `migrate` (retired gear is paid back), `snapshot`, `rankIndex` (Rep only, K7),
-  `canBuyVehicle`. `ProgressionConfig`: ranks Recruit to Admiral, Service Stars, vehicle unlocks (RIB rank
-  2 for 2,500 Cash).
-- `ProgressionService`: `Award(player, cash, rep, reason, flat?)` (storm, pass, friend and crew
+- `ProgressionRules` (pure): `PlayerData { cash, vehicles, vehicleUpgrades, totalRescues, coldOpenDone,
+  dockBuildings, crew, flags, cosmetics, badgeCounters?, badgesAwarded? }` (retired `rep`, `dockLevel`, `certs`,
+  `certLive`, `exercises` are kept as saved, never read), `migrate` (retired gear is paid back; old dock levels
+  map onto the tree), `snapshot` (cash, totalRescues, dockBuildings, vehicles, ...), `canBuyVehicle` (its
+  building first), `vehicleLock`. `ProgressionConfig`: vehicle unlocks (`needs` building, Cash price).
+- `ProgressionService`: `Award(player, cash, reason, flat?)` (storm, pass, friend and crew
   multipliers on Cash), `GetData`, `CanUseVehicle`, `OwnsVehiclePass`, `SetFlag`, `RecordTraining(player,
-  grade)`, `Refresh`, `RankChanged`. Studio: `ServerStorage.ProgressionDev`.
+  grade)`, `Refresh`. leaderstats Cash + Rescued; player attribute `Rescued` (= totalRescues, the rescued
+  badges). Studio: `ServerStorage.ProgressionDev`.
 - Affordable (B5/B6): `src/shared/Affordable.luau` (pure, `tests/Affordable.spec.luau`): `cheapest(snapshot,
   passOwned)` is the cheapest unowned vehicle or upgrade the player can buy now; the Vehicles app's
   pulsing card reads it.
@@ -269,7 +268,7 @@ Player attribute `MenuOpen` while a panel is up.
 
 ## HUD and map
 
-- HUD (K10): menu column, wallet, rank bar, objective strip, minimap (no radio strip, no goal chip).
+- HUD (K10): menu column, wallet (Cash), objective strip, minimap (no radio strip, no goal chip).
   `src/shared/HudLayout.luau` (pure) places the regions per device.
 - `MapController` (minimap and full map on M / Select / tap), `MapService`, `MapConfig` (styles, blips);
   `SetBlips(group, items)` for static blips (seamarks). Player attributes `MapWaypoint`, `MapOpen`.
@@ -280,8 +279,7 @@ Player attribute `MenuOpen` while a panel is up.
 
 - `MonetizationConfig` (`Products` / `GamePasses`, `id = 0` or `ready = false` = not for sale),
   `MonetizationService` (`OnProduct`, `OnPassOwned`, `OwnsPass`; receipts through
-  `DataService.CommitReceipt`), effects in `src/shared/MonetizationEffects.luau` (Cash only, never Rep or
-  rank). Player attributes `Pass_<Key>`, `PassesChecked`.
+  `DataService.CommitReceipt`), effects in `src/shared/MonetizationEffects.luau` (Cash only). Player attributes `Pass_<Key>`, `PassesChecked`.
 - Cosmetics: `src/shared/Config/Cosmetics/*` (one slot per file), `src/shared/Cosmetics.luau` registry,
   `CosmeticsService` (`Cos_<Slot>` attributes), `CosmeticsController`, `CosmeticLoadout` (earned rewards).
 
@@ -321,7 +319,7 @@ Player attribute `MenuOpen` while a panel is up.
   `quest`, `talk(npc, active, stage, offer)` -> a Dialogue tree whose replies carry `action`). `QuestService` stands
   the givers at `HubLayout.Hub.questSpots` (NpcFactory R15, a small camp each), runs pick-up / drop / sub-salvage by
   proximity and the rescue quest's call (`OperationService.OfferCall(player, "PersonInWater", { zone })`, done on
-  `OperationCompleted` with a survivor saved), pays flat Cash + Rep on hand-in and adds the chain's blueprint to
+  `OperationCompleted` with a survivor saved), pays flat Cash on hand-in and adds the chain's blueprint to
   `data.dockBuildings` (`DockConfig.Blueprints`, built by `DockService.Refresh`). Remote `Quest_Talk` C->S
   `(npcId, "accept" | "handIn" | "drop")`. Player attributes `QuestId`, `QuestStage`, `QuestTarget`,
   `QuestOffer_<npcId>`. `QuestController` draws the "!" / "?" over givers; `TalkController` builds a giver's tree

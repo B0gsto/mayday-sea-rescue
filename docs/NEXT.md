@@ -55,6 +55,12 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
 
 Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-27 ring → WP-26 workers → WP-25 art pass.
 
+- **WP-28 done (awaiting merge)**: ranks/Rep gone; tree in `DockConfig.Buildings`, rules `shared/UnlockTree`;
+  old dock levels migrate. Follow-ups: sync the renamed dock products (DockLevel2..5 = Pontoon / Boathouse / Lookout
+  / Station, new prices) and rename the 5 rank badges in Creator Hub (now 10/50/200/500/2,000 rescued); Robux
+  products for the Cash-only buildings (workshop, crane, helipad, workers) if wanted; worker-building spots need a
+  look after the WP-24/27 plates.
+
 - **WP-27 ring layout** (docs/23 (p)), right after WP-24 plates merge: remove the middle island; 6 plates in a tight
   ring (~80 stud gaps) with neighbour bridges; quests arrive by boat at a quest pontoon with its own quest tablet; move hub call sites; flyover
   centre; map refresh. Then WP-26 workers, then WP-25 art pass.

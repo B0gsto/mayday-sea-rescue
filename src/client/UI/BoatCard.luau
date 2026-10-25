@@ -9,6 +9,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local BoatBuilder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
+local DockConfig = require(Config:WaitForChild("DockConfig"))
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
@@ -153,7 +154,9 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 	local function buyPass(craft: string)
 		local key = passKey(craft)
 		local item = if key then MonetizationConfig.GamePasses[key] else nil
-		if not (item and item.ready and item.id > 0) then
+		local d = data or snapshot()
+		-- Robux skips the Cash, never the order (docs/23 (q)): the building comes first
+		if not (item and item.ready and item.id > 0) or not d or Rules.vehicleLock(d, craft) then
 			return
 		end
 		pcall(function()
@@ -244,6 +247,7 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 		local d = data or snapshot()
 		local owned = d ~= nil and Rules.ownsVehicle(d, craft, ownsPass(craft))
 		local unlock = ProgressionConfig.Vehicles[craft]
+		local need = if d and not owned then Rules.vehicleLock(d, craft) else nil
 		local order = 0
 
 		local hero = Instance.new("Frame")
@@ -285,6 +289,7 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 			face,
 			if owned
 				then "Owned"
+				elseif need then `Needs: {DockConfig.Buildings[need].name}`
 				else if unlock and unlock.price > 0
 					then `{Theme.short(unlock.price)} Cash`
 					else "Locked",
@@ -312,6 +317,7 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 			local buy = PriceButton.new(face, {
 				price = if unlock then unlock.price else 0,
 				currency = "Cash",
+				state = if need then "disabled" else nil,
 				onActivate = buyVehicle,
 			})
 			buy.root.AnchorPoint = Vector2.new(1, 0.5)
@@ -321,6 +327,7 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 			local robux = PriceButton.new(face, {
 				price = 0,
 				currency = "Robux",
+				state = if need then "disabled" else nil,
 				onActivate = function()
 					buyPass(craft)
 				end,

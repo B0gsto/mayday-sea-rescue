@@ -1,5 +1,5 @@
 --!strict
--- LeaderboardService: weekly and all-time rescue boards (docs/03 section 9.1: rescues only, never Cash, Rep
+-- LeaderboardService: weekly and all-time rescue boards (docs/03 section 9.1: rescues only, never Cash
 -- or Robux; weekly boards reset Monday 00:00 UTC) on OrderedDataStores, shown on a physical service board
 -- at the hub's rescuer monument (docs/23 (l): a varnished, signwritten board on two posts beside the statue, lit
 -- by a brass picture lamp; no HUD panel).

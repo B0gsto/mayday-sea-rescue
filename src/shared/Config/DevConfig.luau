@@ -3,12 +3,12 @@
 -- accepts. Pure (Lune-tested in tests/DevBoard.spec.luau). The server checks every Dev_Action
 -- against isAllowed and validate; the client only uses the lists to draw the panel.
 local Config = script.Parent
+local DockConfig = require(Config.DockConfig)
 local GameConfig = require(Config.GameConfig)
 local LiveOps = require(Config.Parent.LiveOps)
 local MapConfig = require(Config.MapConfig)
 local MonetizationConfig = require(Config.MonetizationConfig)
 local Operations = require(Config.Parent.Ops.Operations)
-local ProgressionConfig = require(Config.ProgressionConfig)
 local VehicleConfig = require(Config.VehicleConfig)
 local Wildlife = require(Config.Wildlife)
 local WorldConfig = require(Config.WorldConfig)
@@ -91,7 +91,7 @@ DevConfig.Ops = table.freeze(concat(keys(Operations.Defs), { "ColdOpen" }))
 DevConfig.Events = LiveOps.Order
 DevConfig.Species = table.freeze(table.clone(Wildlife.SpeciesOrder))
 DevConfig.Passes = table.freeze(concat(keys(MonetizationConfig.GamePasses), { "All" }))
-DevConfig.RankCount = #ProgressionConfig.Ranks
+DevConfig.Buildings = table.freeze(concat(DockConfig.BUILDINGS, { "All" }))
 DevConfig.MaxAmount = 10_000_000
 
 ---------------------------------------------------------------- actions
@@ -124,8 +124,8 @@ DevConfig.Actions = table.freeze({
 	storm = { enum({ "Storm", "GreatStorm", "Calm" }) },
 	clock = { num(7, 17) }, -- daylight only: the night look is buggy (2026-10-22)
 	event = { enum(DevConfig.Events), BOOL },
-	award = { PLAYER, num(0, DevConfig.MaxAmount), num(0, DevConfig.MaxAmount) },
-	rank = { PLAYER, num(1, DevConfig.RankCount) },
+	award = { PLAYER, num(0, DevConfig.MaxAmount) },
+	build = { PLAYER, enum(DevConfig.Buildings) }, -- island buildings (the unlock tree)
 	unlockAll = { PLAYER },
 	pass = { PLAYER, enum(DevConfig.Passes) },
 	reset = { PLAYER },

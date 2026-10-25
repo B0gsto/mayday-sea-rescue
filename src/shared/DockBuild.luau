@@ -14,14 +14,6 @@ DockBuild.FOV = 45 -- camera FieldOfView
 DockBuild.MARGIN = 1.12 -- breathing room round the island
 DockBuild.MAX_DISTANCE = 1600
 
--- Outline footprints that differ from their lot (the jetty is a long finger; the tower lot is tight).
-local LEVEL_SPOT = {
-	[2] = { lot = "Jetty", size = Vector2.new(10, 44) },
-	[3] = { lot = "Boathouse", size = Vector2.new(34, 40) },
-	[4] = { lot = "LifeguardTower", size = Vector2.new(10, 10) },
-	[5] = { lot = "Station", size = Vector2.new(60, 44) },
-} :: { [number]: { lot: string, size: Vector2 } }
-
 -- Camera distance that fits `radius` in both axes for the given viewport aspect and FOV.
 function DockBuild.distance(radius: number, aspect: number, fov: number?): number
 	local vf = math.tan(math.rad(fov or DockBuild.FOV) / 2)
@@ -44,12 +36,9 @@ end
 
 -- Where an item would stand, in the berth frame, and the footprint to outline -> CFrame, Vector2.
 function DockBuild.spot(item: any): (CFrame, Vector2)
-	if item.kind == "Level" then
-		local s = LEVEL_SPOT[item.key] or LEVEL_SPOT[2]
-		return Marina.LOTS[s.lot].cf, s.size
-	elseif item.kind == "Building" then
+	if item.kind == "Building" then
 		local b = DockConfig.Buildings[item.key]
-		return Marina.LOTS[b.lot].cf, Marina.LOTS[b.lot].size
+		return b.spot, b.size
 	elseif item.kind == "Blueprint" then
 		local bp = DockConfig.Blueprints[item.key]
 		return Marina.LOTS[bp.lot].cf, Marina.LOTS[bp.lot].size

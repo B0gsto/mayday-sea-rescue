@@ -15,7 +15,7 @@
 --   +------------------------------------------------------------------+
 --
 -- Touch: the menu strip (UI/Menu, 2 icon columns) on the left edge, the 130 px minimap right of
--- it (tap it for the full map), the objective strip right of that, the wallet (Cash and rank)
+-- it (tap it for the full map), the objective strip right of that, the wallet (Cash)
 -- under the objective and the notice band beside the wallet. The mission card column stops above
 -- the bottom-right jump / action buttons.
 --

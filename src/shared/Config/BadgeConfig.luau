@@ -4,13 +4,14 @@
 -- Badge ids: paste each badge's Creator Hub id into `id` (U-6 in docs/13). id 0 = off: BadgeService never
 -- calls AwardBadge for it, but still keeps its progress counter, so a badge switched on later is awarded
 -- to anyone who already qualifies the next time the trigger fires (counted badges) or on their next join
--- (rank badges). tools/deploy.py cannot create badges (Open Cloud covers passes and products only there),
+-- (rescued badges). tools/deploy.py cannot create badges (Open Cloud covers passes and products only there),
 -- so the ids are entered by hand.
 --
 --   name, description   the Creator Hub text (keep them in sync when creating the badge)
 --   icon                one-line icon concept for the Creator Hub image
 --   count               counted badges: awarded when the counter reaches this (1 = the first time)
---   rank                rank badges: awarded on reaching this ProgressionConfig rank id
+--   rescued             rescued badges: awarded once this many people are delivered home (data.totalRescues;
+--                       WP-28: the old rank badges, same keys and ids, now people-rescued milestones)
 --   awardedBy           who calls BadgeService.Award for it, when it is not OperationService's debrief
 
 export type Badge = {
@@ -19,7 +20,7 @@ export type Badge = {
 	description: string,
 	icon: string?,
 	count: number?,
-	rank: string?,
+	rescued: number?,
 	awardedBy: string?,
 }
 
@@ -73,29 +74,29 @@ BadgeConfig.Badges = table.freeze({
 	},
 	RankLifeguard = {
 		id = 4175264142830449,
-		name = "Lifeguard",
-		description = "Reach the rank of Lifeguard.",
-		rank = "Lifeguard",
+		name = "Ten Rescued",
+		description = "Bring 10 people home.",
+		rescued = 10,
 	},
 	RankRescueSwimmer = {
 		id = 2536652141146668,
-		name = "Rescue Swimmer (rank)",
-		description = "Reach the rank of Rescue Swimmer.",
-		rank = "RescueSwimmer",
+		name = "Fifty Rescued",
+		description = "Bring 50 people home.",
+		rescued = 50,
 	},
 	RankCoxswain = {
 		id = 679044961405564,
-		name = "Coxswain",
-		description = "Reach the rank of Coxswain.",
-		icon = "A coxswain's cap over a lifeboat bow",
-		rank = "Coxswain",
+		name = "Two Hundred Rescued",
+		description = "Bring 200 people home.",
+		icon = "A life ring with 200 on it",
+		rescued = 200,
 	},
 	RankCaptain = {
 		id = 3988634187712861,
-		name = "Captain",
-		description = "Reach the rank of Captain.",
-		icon = "A captain's cap with a gold anchor",
-		rank = "Captain",
+		name = "Five Hundred Rescued",
+		description = "Bring 500 people home.",
+		icon = "A gold life ring with 500 on it",
+		rescued = 500,
 	},
 	Rescue100 = {
 		id = 2256878015580327,
@@ -155,10 +156,10 @@ BadgeConfig.Badges = table.freeze({
 	},
 	RankAdmiral = {
 		id = 0,
-		name = "Admiral",
-		description = "Reach the rank of Admiral.",
-		icon = "An admiral's shoulder board with four stars",
-		rank = "Admiral",
+		name = "Two Thousand Rescued",
+		description = "Bring 2,000 people home.",
+		icon = "A gold life ring with a crown, 2000 on it",
+		rescued = 2000,
 	},
 	FriendCrew = {
 		id = 0,
@@ -176,7 +177,7 @@ BadgeConfig.Badges = table.freeze({
 	},
 } :: { [string]: Badge })
 
--- Station boards (docs/03 section 9.1): rescues only, never Cash, Rep or Robux. Weekly boards reset
+-- Station boards (docs/03 section 9.1): rescues only, never Cash or Robux. Weekly boards reset
 -- Monday 00:00 UTC (a new OrderedDataStore per ISO-style week index), so new players can place.
 export type Board = {
 	key: string,

@@ -3,7 +3,7 @@
 -- marketing/liveops.md). Pure and Lune-tested (tests/LiveOps.spec.luau): the message rules, the
 -- pending/active window and which multipliers apply. The services only publish and read state.
 --
---   GoldenHour     2x Cash and Rep from live awards (ProgressionService.Award's multiplier path;
+--   GoldenHour     2x Cash from live awards (ProgressionService.Award's multiplier path;
 --                  flat/passive awards stay flat)
 --   CalmSeas       no new storms for the hour (kid-friendly, relaxed)
 --
@@ -43,7 +43,6 @@ export type EventDef = {
 
 export type Multipliers = {
 	cash: number,
-	rep: number,
 }
 
 local LiveOps = {}
@@ -59,7 +58,6 @@ LiveOps.MaxNonce = 64
 
 -- The LiveOps contribution caps: one event at a time, so 2 is the ceiling for each benefit.
 LiveOps.MaxCash = 2
-LiveOps.MaxRep = 2
 
 LiveOps.Events = table.freeze({
 	GoldenHour = table.freeze({
@@ -168,16 +166,14 @@ end
 
 -- The active event's multiplier contribution, 1 by default; never above the caps.
 function LiveOps.multipliers(state: State?, now: number): Multipliers
-	local out: Multipliers = { cash = 1, rep = 1 }
+	local out: Multipliers = { cash = 1 }
 	if not state or LiveOps.phase(state, now) ~= "Active" then
 		return out
 	end
 	if state.event == "GoldenHour" then
 		out.cash = LiveOps.MaxCash
-		out.rep = LiveOps.MaxRep
 	end
 	out.cash = math.min(out.cash, LiveOps.MaxCash)
-	out.rep = math.min(out.rep, LiveOps.MaxRep)
 	return out
 end
 

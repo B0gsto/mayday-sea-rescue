@@ -20,7 +20,6 @@ export type Quest = {
 	ask: string,
 	thanks: string,
 	cash: number,
-	rep: number,
 	needs: string?, -- a vehicle the player must be able to use (salvage: Submarine)
 	after: string?,
 	blueprint: string?,
@@ -30,9 +29,9 @@ export type Npc =
 
 local Data = {}
 
--- pay (docs/23 (i): a call is ~300 x distance up to x4, ~1,100 Cash / 250 Rep in ~4.5 min). A quest is a trip
+-- pay (docs/23 (i): a call is ~300 x distance up to x4, ~1,100 Cash in ~4.5 min). A quest is a trip
 -- out to an outer island and back (~1.5 calls); a rescue quest also pays the call itself.
-local FIND, SALVAGE, RESCUE = { 1500, 250 }, { 2500, 400 }, { 1000, 200 }
+local FIND, SALVAGE, RESCUE = 1500, 2500, 1000
 
 Data.Npcs = {
 	{
@@ -85,8 +84,8 @@ Data.Npcs = {
 	},
 } :: { Npc }
 
-local function q(row: { [string]: any }, pay: { number }): Quest
-	row.cash, row.rep = pay[1], pay[2]
+local function q(row: { [string]: any }, cash: number): Quest
+	row.cash = cash
 	return row :: any
 end
 
@@ -198,7 +197,7 @@ Data.Quests = {
 		ask = "The old lens is up at the Arches. Bring it home.",
 		thanks = "Done! Build your own lighthouse at home.",
 		blueprint = "Lighthouse",
-	}, { 2000, 400 }),
+	}, 2000),
 	q({
 		id = "Kite",
 		npc = "QuestPip",

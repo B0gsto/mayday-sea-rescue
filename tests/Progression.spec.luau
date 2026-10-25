@@ -1,85 +1,68 @@
--- Progression: rank thresholds, storm Cash multipliers, purchase checks and save migration.
+-- Progression: storm Cash multipliers, purchase checks and save migration (no ranks: docs/23 (q), WP-28).
 return function(t)
 	local Rules = t.load("src/shared/ProgressionRules.luau")
 	local Config = t.load("src/shared/Config/ProgressionConfig.luau")
 	local U = t.load("src/shared/VehicleUpgrades.luau")
 
-	local function data(cash, rep, vehicles)
+	local function data(cash, buildings, vehicles)
 		local d = Rules.defaultData()
 		d.cash = cash
-		d.rep = rep
+		d.dockBuildings = buildings or {}
 		d.vehicles = vehicles or {}
 		return d
 	end
 
-	t.test("rank from Rep follows the docs 03 thresholds", function()
-		t.expect(Rules.rankIndexForRep(0)).toBe(1)
-		t.expect(Rules.rankIndexForRep(399)).toBe(1)
-		t.expect(Rules.rankIndexForRep(400)).toBe(2)
-		t.expect(Rules.rankIndexForRep(899)).toBe(2)
-		t.expect(Rules.rankIndexForRep(900)).toBe(3)
-		t.expect(Rules.rankIndexForRep(1e9)).toBe(#Config.Ranks)
-		t.expect(Rules.rankForRep(950).displayName).toBe("Rescue Swimmer")
-	end)
-
-	t.test("progress to next rank", function()
-		local nextRank, progress = Rules.progressToNext(200)
-		t.expect(nextRank.id).toBe("Lifeguard")
-		t.expect(progress).toBeCloseTo(0.5, 1e-9)
-		local top, full = Rules.progressToNext(Config.Ranks[#Config.Ranks].rep)
-		t.expect(top).toBeNil()
-		t.expect(full).toBe(1)
-	end)
-
-	t.test("storm multipliers boost Cash only", function()
+	t.test("storm multipliers boost Cash", function()
 		t.expect(Rules.stormCashMultiplier("Calm", false)).toBe(1)
 		t.expect(Rules.stormCashMultiplier("Warning", true)).toBe(1)
 		t.expect(Rules.stormCashMultiplier("Storm", false)).toBe(1.5)
 		t.expect(Rules.stormCashMultiplier("Storm", true)).toBe(2)
-		local cash, rep = Rules.applyAward(250, 60, "Storm", false)
-		t.expect(cash).toBe(375)
-		t.expect(rep).toBe(60)
-		local gCash, gRep = Rules.applyAward(250, 60, "Storm", true)
-		t.expect(gCash).toBe(500)
-		t.expect(gRep).toBe(60)
-		local zero = Rules.applyAward(-10, 5, "Calm", false)
-		t.expect(zero).toBe(0)
+		t.expect((Rules.applyAward(250, "Storm", false))).toBe(375)
+		t.expect((Rules.applyAward(250, "Storm", true))).toBe(500)
+		t.expect((Rules.applyAward(-10, "Calm", false))).toBe(0)
 	end)
 
 	t.test("flat passive awards ignore every multiplier; op awards still stack", function()
-		-- normal op: x2.2 paid Cash (2x Cash + 10% friend), x2 storm, Great Storm doubles Rep
-		local cash, rep, mult = Rules.applyAward(250, 60, "Storm", true, 2.2, 2)
+		-- normal op: x2.2 paid Cash (2x Cash + 10% friend), x2 storm
+		local cash, mult = Rules.applyAward(250, "Storm", true, 2.2)
 		t.expect(cash).toBe(1100)
-		t.expect(rep).toBe(120)
 		t.expect(mult).toBeCloseTo(4.4, 1e-9)
-		local flatCash, flatRep, flatMult = Rules.applyAward(250, 60, "Storm", true, 2.2, 2, true)
+		local flatCash, flatMult = Rules.applyAward(250, "Storm", true, 2.2, true)
 		t.expect(flatCash).toBe(250)
-		t.expect(flatRep).toBe(60)
 		t.expect(flatMult).toBe(1)
 	end)
 
-	t.test("vehicle gates: jet ski free, RIB needs rank and Cash", function()
-		t.expect((Rules.canUseVehicle(data(0, 0), "JetSki"))).toBe(true)
-		local ok, why = Rules.canUseVehicle(data(99999, 0), "RIB")
+	t.test("vehicle gates: jet ski free, the RIB needs the boathouse then Cash", function()
+		t.expect((Rules.canUseVehicle(data(0), "JetSki"))).toBe(true)
+		local ok, why = Rules.canUseVehicle(data(99999), "RIB")
 		t.expect(ok).toBe(false)
-		t.expect(why).toBe("Needs Lifeguard")
-		t.expect((Rules.canUseVehicle(data(99999, 400), "RIB"))).toBe(false)
-		t.expect((Rules.canBuyVehicle(data(2499, 400), "RIB"))).toBe(false)
-		local buy, _, price = Rules.canBuyVehicle(data(2500, 400), "RIB")
+		t.expect(why).toBe("Not owned")
+		local buy, reason = Rules.canBuyVehicle(data(99999), "RIB")
+		t.expect(buy).toBe(false)
+		t.expect(reason).toBe("Needs Boathouse")
+		t.expect(Rules.vehicleLock(data(0), "RIB")).toBe("Boathouse")
+		t.expect(Rules.vehicleLock(data(0, { Boathouse = true }), "RIB")).toBeNil()
+		t.expect((Rules.canBuyVehicle(data(2499, { Boathouse = true }), "RIB"))).toBe(false)
+		local price
+		buy, _, price = Rules.canBuyVehicle(data(2500, { Boathouse = true }), "RIB")
 		t.expect(buy).toBe(true)
 		t.expect(price).toBe(2500)
-		t.expect((Rules.canUseVehicle(data(0, 400, { RIB = true }), "RIB"))).toBe(true)
-		t.expect((Rules.canUseVehicle(data(0, 900), "Helicopter"))).toBe(false)
+		-- owned craft keep launching without the building (bought before WP-28, or a website pass)
+		t.expect((Rules.canUseVehicle(data(0, {}, { RIB = true }), "RIB"))).toBe(true)
+		t.expect(Rules.vehicleLock(data(0), "Lifeboat")).toBe("LifeboatSlip")
+		t.expect(Rules.vehicleLock(data(0), "Submarine")).toBe("SubPen")
+		t.expect(Rules.vehicleLock(data(0), "RescueHelicopter")).toBe("Hangar")
+		t.expect(Rules.vehicleLock(data(0), "StormRunner")).toBe("Boathouse")
+		t.expect(Rules.vehicleLock(data(0), "JetSki")).toBeNil()
 	end)
 
 	t.test("vehicle ownership: Cash-owned OR pass-owned; Robux-only needs the pass", function()
 		t.expect(Rules.vehiclePass("RIB")).toBe("RIBPass")
-		t.expect(Rules.vehiclePass("JetSki")).toBeNil() -- free at Recruit
-		-- the RIB: Cash-owned, or pass-owned at any rank
-		t.expect(Rules.ownsVehicle(data(0, 0), "RIB")).toBe(false)
-		t.expect(Rules.ownsVehicle(data(0, 0, { RIB = true }), "RIB")).toBe(true)
-		t.expect(Rules.ownsVehicle(data(0, 0), "RIB", true)).toBe(true)
-		t.expect((Rules.canUseVehicle(data(0, 0), "RIB", true))).toBe(true)
+		t.expect(Rules.vehiclePass("JetSki")).toBeNil() -- free from the start
+		t.expect(Rules.ownsVehicle(data(0), "RIB")).toBe(false)
+		t.expect(Rules.ownsVehicle(data(0, {}, { RIB = true }), "RIB")).toBe(true)
+		t.expect(Rules.ownsVehicle(data(0), "RIB", true)).toBe(true)
+		t.expect((Rules.canUseVehicle(data(0), "RIB", true))).toBe(true)
 		-- a Robux-only vehicle: never from Cash or a stale profile entry
 		for _, id in
 			{
@@ -90,11 +73,12 @@ return function(t)
 			}
 		do
 			t.expect(Rules.vehiclePass(id) ~= nil).toBe(true)
-			local ok, why = Rules.canUseVehicle(data(1e9, 1e6, { [id] = true }), id)
+			local ok, why =
+				Rules.canUseVehicle(data(1e9, { Boathouse = true }, { [id] = true }), id)
 			t.expect(ok).toBe(false)
 			t.expect(why).toBe("Robux only")
-			t.expect((Rules.canBuyVehicle(data(1e9, 1e6), id))).toBe(false)
-			t.expect((Rules.canUseVehicle(data(0, 0), id, true))).toBe(true)
+			t.expect((Rules.canBuyVehicle(data(1e9, { Boathouse = true }), id))).toBe(false)
+			t.expect((Rules.canUseVehicle(data(0), id, true))).toBe(true)
 		end
 	end)
 
@@ -106,6 +90,34 @@ return function(t)
 		t.expect(d.dockBuildings.Lighthouse).toBe(true)
 		t.expect(d.dockBuildings.SubPen).toBe(true)
 		t.expect(d.dockBuildings.Junk).toBeNil()
+	end)
+
+	t.test("old dock levels map onto the tree; Rep and the level stay saved", function()
+		local lv3 = Rules.migrate({ dockLevel = 3, rep = 4200 })
+		t.expect(lv3.dockBuildings).toEqual({ Pontoon = true, Workshop = true, Boathouse = true })
+		t.expect(lv3.dockLevel).toBe(3)
+		t.expect(lv3.rep).toBe(4200)
+		local lv5 = Rules.migrate({ dockLevel = 5, dockBuildings = { Hangar = true } })
+		for _, key in
+			{
+				"Pontoon",
+				"Workshop",
+				"Boathouse",
+				"LookoutTower",
+				"Crane",
+				"Station",
+				"TrophyHall",
+				"Hangar",
+				"Helipad", -- the old hangar came with its pad
+			}
+		do
+			t.expect(lv5.dockBuildings[key]).toBe(true)
+		end
+		t.expect(lv5.dockBuildings.SubPen).toBeNil()
+		t.expect(next(Rules.migrate({ dockLevel = 1 }).dockBuildings)).toBeNil()
+		-- idempotent: saving re-runs migrate on the live table
+		t.expect(Rules.migrate(Rules.migrate({ dockLevel = 2 })).dockBuildings)
+			.toEqual({ Pontoon = true })
 	end)
 
 	t.test("a fresh profile starts with the docs 03 starting Cash", function()
@@ -161,10 +173,15 @@ return function(t)
 		end
 	)
 
-	t.test("snapshot carries rank and next threshold", function()
-		local s = Rules.snapshot(data(10, 450))
-		t.expect(s.rank).toBe("Lifeguard")
-		t.expect(s.rankIndex).toBe(2)
-		t.expect(s.nextRankRep).toBe(900)
+	t.test("snapshot carries Cash, people rescued and the island's buildings, no rank", function()
+		local d = data(10, { Pontoon = true })
+		d.totalRescues = 7
+		local s = Rules.snapshot(d)
+		t.expect(s.cash).toBe(10)
+		t.expect(s.totalRescues).toBe(7)
+		t.expect(s.dockBuildings).toEqual({ Pontoon = true })
+		t.expect(s.rank).toBeNil()
+		t.expect(s.rep).toBeNil()
+		t.expect(Rules.fromSnapshot(s).dockBuildings).toEqual({ Pontoon = true })
 	end)
 end

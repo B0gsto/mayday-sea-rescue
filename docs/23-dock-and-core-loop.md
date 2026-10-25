@@ -207,6 +207,12 @@ Packs = the cheapest mix of live Cash packs (Calm Bay rate: 1,500 / 4,500 / 16,5
    WP-20), so the timeline is unchanged: Lifeguard 0:13, RIB 0:18, Coxswain 0:55, Rescue Pilot 2:22, Commodore
    13.7 h, Admiral 36.4 h.
 
+8. **WP-28 (2026-10-26): no ranks, the unlock tree, Cash only.** The sim walks the tree in plan order (Workshop →
+   Boathouse → RIB → Pontoon → Lifeboat slip → Lifeboat → Lookout → Helipad → Hangar → Helicopter → the rest), a
+   due upgrade first. Solo: Workshop 0:07, Boathouse 0:24, RIB 0:33, Pontoon 0:46, Lifeboat 2:07, Helicopter 7:38
+   (now 55,000; helipad 10,000, hangar 20,000), Submarine 12:37, Station 15:25, the whole tree 17:52 (Clinic); ~380k
+   Cash unspent at 40 h. Reach = the best craft you launch; the Robux boats sit on the RIB's tier (3,500).
+
 ## (j) Plots v2: big land plots, blueprint table, crew (owner, 2026-10-25)
 
 Owner, after seeing the blue wireframe ghost on the dock: "I don't want anything holographic or 'what could it be'.

@@ -67,7 +67,7 @@ HudTheme.Colors = {
 	ready = Color3.fromHex("6FBF8E"), -- muted green ("ready" states)
 	locked = Color3.fromHex("2A3239"), -- slate
 	gold = Color3.fromHex("E3C88F"), -- pale brass (Cash)
-	bar = Color3.fromHex("8FB7BC"), -- grey-teal (Rep)
+	bar = Color3.fromHex("8FB7BC"), -- grey-teal (progress bars)
 	edge = Color3.fromHex("FFFFFF"), -- hairline panel edge (drawn at EdgeTransparency)
 }
 

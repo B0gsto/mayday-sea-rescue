@@ -1,15 +1,14 @@
 --!strict
 -- HudController: the progression HUD (docs 05 section 9 style, mobile first).
 --   Placement: UI/Layout regions. Top left ("wallet"): Cash with a round "+" that opens the kit
---   Shop, and the rank with its Rep bar to the next rank. UI/Menu owns the left button bar and the
+--   Shop (no rank: docs/23 (q)). UI/Menu owns the left button bar and the
 --   panels (every menu, the crew's faces and Leave).
---   Top centre ("notice"): "+Cash +Rep" award pops (with the friends bonus as "+20%") and the
---   rank-up toast with the new unlocks.
---   Cold open (Layout.coldOpen): wallet, rank and pops stay hidden until it ends.
+--   Top centre ("notice"): "+Cash" award pops (with the friends bonus as "+20%").
+--   Cold open (Layout.coldOpen): wallet and pops stay hidden until it ends.
 --   No world shops (docs/16 C4, C5, K10): vehicles, upgrades and Robux items are in the kit panels
 --   (BoatCard, Shop).
 --   Stock CoreGui that clashes with the HUD is off: the leaderboard (PlayerList, it sat over the
---   status strip; rank and Cash live there), Backpack (no Tools in the game), Health (casualty
+--   status strip; Cash lives there), Backpack (no Tools in the game), Health (casualty
 --   and crew condition are the game's own readouts) and the Emotes menu. Chat stays on (crew
 --   talk and the TextChatService commands StormService registers).
 -- Data arrives as PlayerDataChanged snapshots; the first one is pulled via Progression_GetData.
@@ -28,7 +27,6 @@ local Layout = require(UI:WaitForChild("Layout"))
 local Menu = require(UI:WaitForChild("Menu"))
 local Hud = require(Shared:WaitForChild("Config"):WaitForChild("UiImages")).Hud
 
-local C = HudTheme.Colors
 local player = Players.LocalPlayer
 
 local HudController = {}
@@ -36,46 +34,20 @@ HudController.Priority = 50
 
 local gui: ScreenGui
 local cashLabel: TextLabel
-local rankLabel: TextLabel
-local repFill: ImageLabel
 local coinPop: UIScale
 local awardLabel: TextLabel
-local toast: Frame
-local toastTitle: TextLabel
-local toastBody: TextLabel
 local statusRegion: Frame
 local walletRegion: Frame
 local noticeRegion: Frame
 local snapshot: { [string]: any }? = nil
-local toastSerial = 0
 local awardSerial = 0
 local cashShown: number? = nil
 local rolls: { [TextLabel]: number } = {}
 
-local function showToast(title: string, body: string, color: Color3, seconds: number)
-	toastSerial += 1
-	local serial = toastSerial
-	toastTitle.Text = title
-	toastTitle.TextColor3 = color
-	toastBody.Text = body
-	toast.Position = UDim2.new(0.5, 0, 0, 30)
-	toast.Visible = true
-	TweenService:Create(toast, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-		Position = UDim2.new(0.5, 0, 0, 38),
-	}):Play()
-	task.delay(seconds, function()
-		if serial == toastSerial then
-			toast.Visible = false
-		end
-	end)
-end
-
 local function showAward(award: { [string]: any })
 	awardSerial += 1
 	local serial = awardSerial
-	local text = `+{HudTheme.formatNumber(award.cash or 0)} Cash   +{HudTheme.formatNumber(
-		award.rep or 0
-	)} Rep`
+	local text = `+{HudTheme.formatNumber(award.cash or 0)} Cash`
 	-- the friends bonus shows only here, as "+20%" (docs/16 K10); FriendService sets the percent
 	local friends = player:GetAttribute("FriendBonus")
 	if typeof(friends) == "number" and friends > 0 and (award.cash or 0) > 0 then
@@ -122,13 +94,6 @@ local function render(data: { [string]: any })
 	end
 	roll(cashLabel, cashShown or cash, cash, HudTheme.formatNumber)
 	cashShown = cash
-	rankLabel.Text = data.rank or "Recruit"
-	local progress = math.clamp(
-		tonumber(if data.nextRankRep then data.rankProgress else data.starProgress) or 0,
-		0,
-		1
-	)
-	TweenService:Create(repFill, TweenInfo.new(0.4), { Size = UDim2.fromScale(progress, 1) }):Play()
 end
 
 local function onDataChanged(data: any)
@@ -139,16 +104,9 @@ local function onDataChanged(data: any)
 	if type(data.award) == "table" then
 		showAward(data.award)
 	end
-	if type(data.rankUp) == "table" then
-		local unlocks = data.rankUp.unlocks
-		local body = if type(unlocks) == "table"
-			then "Unlocked: " .. table.concat(unlocks, ", ")
-			else ""
-		showToast(`RANK UP!  {data.rankUp.rank}`, body, C.accent, 5)
-	end
 end
 
--- Top left (assets/ui/hud/mockup.png): [coin] amount (+) on top, [star] rank over the Rep bar.
+-- Top left (assets/ui/hud/mockup.png): [coin] amount (+).
 local function buildWallet(region: Frame)
 	local W, H = Layout.WALLET_WIDTH, Layout.WALLET_HEIGHT
 	local wallet = HudTheme.image(
@@ -231,26 +189,6 @@ local function buildWallet(region: Frame)
 		to(1)
 		Menu.open("Shop")
 	end)
-
-	-- the rank over its Rep bar, no numbers
-	local star = HudTheme.image("Star", Hud.XpStar, UDim2.fromOffset(36, 36), wallet)
-	star.Position = UDim2.fromOffset(10, 52)
-	rankLabel =
-		HudTheme.label("Rank", "Recruit", UDim2.new(1, -64, 0, 22), HudTheme.LabelFont, 20, wallet)
-	rankLabel.Position = UDim2.fromOffset(52, 48)
-	HudTheme.outline(rankLabel)
-
-	local track = HudTheme.image(
-		"RepBar",
-		Hud.BarTrack,
-		UDim2.new(1, -64, 0, 18),
-		wallet,
-		HudTheme.Slice.Bar,
-		0.28
-	)
-	track.Position = UDim2.fromOffset(52, 72)
-	repFill =
-		HudTheme.image("Fill", Hud.BarFill, UDim2.fromScale(0, 1), track, HudTheme.Slice.Bar, 0.28)
 end
 
 local function buildAward()
@@ -261,22 +199,6 @@ local function buildAward()
 	awardLabel.TextXAlignment = Enum.TextXAlignment.Center
 	HudTheme.outline(awardLabel)
 	awardLabel.Visible = false
-end
-
-local function buildToast(parent: Instance)
-	toast = HudTheme.panel("Toast", UDim2.new(1, 0, 0, 68), parent)
-	toast.AnchorPoint = Vector2.new(0.5, 0)
-	toast.Position = UDim2.new(0.5, 0, 0, 38)
-	toast.Visible = false
-	toast.ZIndex = 5
-	HudTheme.padding(toast, 10)
-	HudTheme.skin(toast)
-	toastTitle = HudTheme.label("Title", "", UDim2.new(1, 0, 0, 24), HudTheme.HeaderFont, 20, toast)
-	toastTitle.TextXAlignment = Enum.TextXAlignment.Center
-	toastBody = HudTheme.label("Body", "", UDim2.new(1, 0, 0, 20), HudTheme.BodyFont, 16, toast)
-	toastBody.Position = UDim2.fromOffset(0, 26)
-	toastBody.TextXAlignment = Enum.TextXAlignment.Center
-	toastBody.TextColor3 = C.textDim
 end
 
 local function applyColdOpen(active: boolean)
@@ -313,7 +235,6 @@ function HudController.Init()
 	walletRegion = Layout.region(gui, "wallet")
 	buildWallet(walletRegion)
 	buildAward()
-	buildToast(noticeRegion)
 	Menu.mount() -- button bar, panel registry, Boat to me
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)
 	Layout.onColdOpen(applyColdOpen)

@@ -1,19 +1,22 @@
 --!strict
--- DockController (docs/23 (j) rule 4, WP-14d): the owner's build station by the spawn carries a tablet
--- whose prompt opens the top-down build mode. The camera lifts to a Scriptable island view (shared/DockBuild),
--- movement locks, every empty lot for sale gets a flat paper blueprint (WP-14e: blue sheet, white grid, the
--- item's Lego line drawing; never a 3D preview), and a Kit panel docked on the right lists every level,
--- building, quest blueprint and decor as a card (Build / Decor tabs). Tapping a paper or a card focuses it:
--- the camera eases in to its lot (0.6 s), a flat outline pulses and a bottom strip shows its name, one line
--- (DockConfig desc) and the buy buttons. Cash buys through Dock_Upgrade (greyed when the rank or the Cash is
--- short); Robux opens Roblox's purchase prompt (skips both). Escape / B / tapping empty sea backs out of the
--- focus, then out of build mode; the red X or a teleport closes and restores the camera and controls. On a buy the pieces already exist in their final state; Dock_Build tells this controller to play
+-- DockController (docs/23 (j) rule 4, WP-14d; the unlock tree, docs/23 (q), WP-28): the owner's build station by
+-- the spawn carries a tablet whose prompt opens the top-down build mode. The camera lifts to a Scriptable island
+-- view (shared/DockBuild), movement locks, every building and decor not owned yet gets a flat paper blueprint
+-- on its spot (WP-14e: blue sheet, white grid, the item's Lego line drawing; never a 3D preview; one still
+-- locked behind a prerequisite is grey with a chain and a padlock), and a Kit panel docked on the right lists
+-- every building, quest blueprint and decor as a card (Build / Decor tabs). A locked card shows a padlock and a
+-- "Needs: <item>" chip with that item's drawing; tapping the chip focuses the prerequisite. Tapping a paper or a
+-- card focuses it: the camera eases in to its spot (0.6 s), a flat outline pulses and a bottom strip shows its
+-- name, one line (DockConfig desc) and the buy buttons. Cash buys through Dock_Upgrade (greyed when the Cash
+-- is short); Robux opens Roblox's purchase prompt (skips the Cash, never the prerequisites). Escape / B /
+-- tapping empty sea backs out of the focus, then out of build mode (Escape is read from UserInputService:
+-- Roblox keeps it from ContextActionService); the red X or a teleport closes and restores the camera and
+-- controls. On a buy the pieces already exist in their final state; Dock_Build tells this controller to play
 -- the Lego build beat (shared/BuildSeq): each piece drops in, staggered, with a snap and a squash, then dust.
--- Reads player attributes DockPlot, DockLevel, DockHangar / DockSubPen / Decor<key> and the PlayerDataChanged
--- snapshot. Paint booth (docs/23 d.3, WP-13): sitting in a craft inside your own Lv 3+ booth
+-- Reads player attributes DockPlot, Dock<key> / Decor<key> (owned) and the PlayerDataChanged snapshot (Cash).
+-- Paint booth (docs/23 d.3, WP-13): sitting in a craft inside your own boathouse's booth
 -- (DockConfig.PAINT_BOOTH) opens the paint card: a swatch strip and the existing cosmetic pickers for Livery
--- and Decal (the same rows as the phone's Settings). Leaving the booth or B / the X button closes it.
-local ContextActionService = game:GetService("ContextActionService")
+-- and Decal. Leaving the booth or B / the X button closes it.
 local GuiService = game:GetService("GuiService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -29,10 +32,10 @@ local DockBuild = require(Shared:WaitForChild("DockBuild"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
-local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
 
 local UI = script.Parent.Parent:WaitForChild("UI")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
 local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local CashBurst = require(UI:WaitForChild("CashBurst"))
 local CosmeticPicker = require(UI:WaitForChild("CosmeticPicker"))
@@ -59,6 +62,7 @@ local CARD_H = 104 -- owned / not for sale yet
 local STRIP_H = 160 -- the focus strip: name, a two-line desc, the badge row
 local OUTLINE = Color3.fromRGB(255, 214, 60)
 local PAPER = Color3.fromRGB(38, 102, 190) -- blueprint blue
+local PAPER_LOCKED = Color3.fromRGB(112, 120, 132) -- a locked item's paper: grey, with a chain
 local PAPER_PPS = 20 -- SurfaceGui pixels per stud on the paper
 
 local snapshot: { [string]: any } = {}
@@ -93,28 +97,29 @@ local humConn: RBXScriptConnection? = nil
 type Movement = { walk: number, jump: number, jumpHeight: number }
 local savedMovement: Movement? = nil
 
-local function currentLevel(): number
-	local level = player:GetAttribute("DockLevel")
-	return if type(level) == "number" then level else 1
-end
-
 local function entryOf(item: DockBlueprints.Item): any
-	if item.kind == "Level" then
-		return DockConfig.Levels[item.key :: number]
-	elseif item.kind == "Building" then
-		return DockConfig.Buildings[item.key :: string]
+	if item.kind == "Building" then
+		return DockConfig.Buildings[item.key]
 	elseif item.kind == "Decor" then
-		return DockConfig.Decorations[item.key :: string]
+		return DockConfig.Decorations[item.key]
 	end
 	return nil
 end
 
 local function ownedOf(item: DockBlueprints.Item): boolean
-	if item.kind == "Level" then
-		return currentLevel() >= (item.key :: number)
-	end
 	local prefix = if item.kind == "Decor" then "Decor" else "Dock"
-	return player:GetAttribute(prefix .. tostring(item.key)) == true
+	return player:GetAttribute(prefix .. item.key) == true
+end
+
+-- What the island has: every catalog key owned (the unlock tree reads it).
+local function ownedMap(): { [string]: boolean }
+	local owned: { [string]: boolean } = {}
+	for _, item in DockBlueprints.catalog() do
+		if ownedOf(item) then
+			owned[item.key] = true
+		end
+	end
+	return owned
 end
 
 local function sameItem(a: DockBlueprints.Item?, b: DockBlueprints.Item?): boolean
@@ -225,42 +230,17 @@ local function outlineSpot(world: CFrame, size: Vector2)
 	outline = m
 end
 
--- The item's Lego line drawing (DockBlueprints.GLYPHS) inside `parent` (a square frame). Card art: white
--- bricks with an ink edge, holes in ink. Paper: white lines only.
-local function drawGlyph(parent: GuiObject, item: DockBlueprints.Item, line: number?)
-	for _, box in DockBlueprints.glyph(item) do
-		local f = Instance.new("Frame")
-		f.Name = "Brick"
-		f.BorderSizePixel = 0
-		f.Position = UDim2.fromScale(box.x, box.y)
-		f.Size = UDim2.fromScale(box.w, box.h)
-		f.BackgroundColor3 = if box.hole then Theme.Colors.ink else Color3.new(1, 1, 1)
-		f.BackgroundTransparency = if line then 1 else 0
-		f.ZIndex = if box.hole then 3 else 2
-		local corner = Instance.new("UICorner")
-		corner.CornerRadius = if box.round
-			then UDim.new(0.5, 0)
-			else UDim.new(0, if line then 2 else 4)
-		corner.Parent = f
-		local stroke = Instance.new("UIStroke")
-		stroke.Color = if line then Color3.new(1, 1, 1) else Theme.Colors.ink
-		stroke.Thickness = line or 2.5
-		stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		stroke.Parent = f
-		f.Parent = parent
-	end
-end
+local drawGlyph = BuildGlyph
 
 -- Why an item is not for sale (or that it is owned): an icon (Kit name or asset id) and a 1-3 word label. A
--- reason with `item` names a prerequisite: its chip draws that item and tapping it focuses that item, so a
--- "Needs: <building>" tree (docs/23 (q)) only has to fill this in.
+-- reason with `item` names a prerequisite (docs/23 (q)): its chip shows a padlock and that item's drawing, and
+-- tapping it focuses that item.
 type Reason = { icon: string, text: string, item: DockBlueprints.Item? }
 
 -- What an item's card and strip show: owned / for sale (Cash and Robux buttons) / why it is locked.
 type Status = {
 	owned: boolean,
-	forSale: boolean, -- not owned, the dock level allows it, not a quest reward
-	cashLock: boolean, -- for sale with Robux only (the rank gate; Robux skips it, docs/23 (c) rule 4)
+	forSale: boolean, -- not owned, its prerequisites stand, not a quest reward
 	cash: number,
 	productId: number, -- 0: no Robux product
 	robux: number,
@@ -270,39 +250,25 @@ type Status = {
 local function statusOf(item: DockBlueprints.Item): Status
 	local entry = entryOf(item)
 	local owned = ownedOf(item)
-	local needLevel = if item.kind == "Level"
-		then (item.key :: number) - 1
-		elseif item.kind == "Building" then DockConfig.Buildings[item.key :: string].needs
-		else 1
-	local levelLock = currentLevel() < needLevel
-	local rankLock = item.kind ~= "Decor"
-		and item.kind ~= "Blueprint"
-		and entry ~= nil
-		and DockConfig.rankIndex(entry.rank) > (snapshot.rankIndex or 1)
-	local forSale = not owned and not levelLock and DockBlueprints.buyable(item)
+	local need = if owned then nil else DockBlueprints.needs(item, ownedMap())
+	local forSale = not owned and need == nil and DockBlueprints.buyable(item)
 	local product = entry and entry.product and MonetizationConfig.Products[entry.product]
-	local id = if product then product.id else 0
+	local id = if product and product.ready then product.id else 0
 	local reason: Reason? = nil
 	if owned then
 		reason = { icon = UiImages.VehicleArt.Check, text = "Owned" }
 	elseif item.kind == "Blueprint" then
 		reason = { icon = "quests", text = "Quest" }
-	elseif levelLock then
+	elseif need then
 		reason = {
 			icon = "lock",
-			text = `Level {needLevel}`,
-			item = { kind = "Level", key = needLevel },
-		}
-	elseif rankLock then
-		reason = {
-			icon = "rank",
-			text = ProgressionConfig.Ranks[DockConfig.rankIndex(entry.rank)].displayName,
+			text = `Needs: {DockConfig.Buildings[need].name}`,
+			item = { kind = "Building", key = need },
 		}
 	end
 	return {
 		owned = owned,
 		forSale = forSale,
-		cashLock = rankLock,
 		cash = if entry and type(entry.cash) == "number" then entry.cash else 0,
 		productId = id,
 		robux = livePrice[id] or (entry and entry.robux) or 0,
@@ -329,8 +295,8 @@ local function robuxBuy(id: number)
 	MarketplaceService:PromptProductPurchase(player, id)
 end
 
--- The Cash button (greyed when the rank or the Cash is short) and the Robux button (skips both), side by
--- side in `parent`. Items without a Robux product (decor) get the Cash button alone.
+-- The Cash button (greyed when the Cash is short) and the Robux button (skips the Cash), side by side in
+-- `parent`; only shown once the prerequisites stand. Items without a Robux product get the Cash button alone.
 local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Status)
 	local row = Instance.new("Frame")
 	row.Name = "Buy"
@@ -343,7 +309,7 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 	local cashButton = PriceButtonUI.new(row, {
 		price = st.cash,
 		currency = "Cash",
-		state = if st.cashLock or st.cash > (snapshot.cash or 0) then "disabled" else "buy",
+		state = if st.cash > (snapshot.cash or 0) then "disabled" else "buy",
 		onActivate = function()
 			cashBuy(item)
 		end,
@@ -380,9 +346,7 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 end
 
 local function colorOf(item: DockBlueprints.Item): string
-	if item.kind == "Level" then
-		return "blue"
-	elseif item.kind == "Building" then
+	if item.kind == "Building" then
 		return "teal"
 	elseif item.kind == "Blueprint" then
 		return "purple"
@@ -424,6 +388,15 @@ local function badgeRow(parent: GuiObject, st: Status): GuiObject?
 	row.Parent = parent
 	local list = Style.list(row, true, 6)
 	list.VerticalAlignment = Enum.VerticalAlignment.Center
+	if need then
+		local lock = Instance.new("Frame")
+		lock.Name = "Lock"
+		lock.BackgroundTransparency = 1
+		lock.Size = UDim2.fromOffset(24, 24)
+		lock.LayoutOrder = -1
+		lock.Parent = row
+		Style.icon(lock, "lock")
+	end
 	local mark = Instance.new("Frame")
 	mark.BackgroundTransparency = 1
 	mark.Size = UDim2.fromOffset(26, 26)
@@ -443,7 +416,7 @@ local function badgeRow(parent: GuiObject, st: Status): GuiObject?
 	label.TextWrapped = false
 	label.TextTruncate = Enum.TextTruncate.AtEnd
 	label.TextXAlignment = Enum.TextXAlignment.Left
-	label.Size = UDim2.new(1, -32, 1, 0)
+	label.Size = UDim2.new(1, if need then -62 else -32, 1, 0)
 	label.LayoutOrder = 1
 	if need and row:IsA("GuiButton") then
 		Style.press(row, function()
@@ -566,13 +539,63 @@ end
 
 -- A flat paper blueprint on an empty lot: blue sheet, white grid and border, the item's line drawing.
 -- Solid and only lifted off the plate, never a 3D preview (docs/23 (n), no holograms).
-local function makePaper(item: DockBlueprints.Item, frame: CFrame, parent: Instance)
+-- A locked item's chain: oval links across the sheet and a padlock in the middle (docs/23 (q)).
+local function chain(gui: SurfaceGui, size: Vector2)
+	local holder = Instance.new("Frame")
+	holder.Name = "Chain"
+	holder.BackgroundTransparency = 1
+	holder.AnchorPoint = Vector2.new(0.5, 0.5)
+	holder.Position = UDim2.fromScale(0.5, 0.5)
+	local long = math.min(size.X, size.Y) * PAPER_PPS
+	holder.Size = UDim2.fromOffset(long, long)
+	holder.ZIndex = 4
+	holder.Parent = gui
+	local n = 7
+	local link = long / (n - 1)
+	for i = 0, n - 1 do
+		local f = Instance.new("Frame")
+		f.Name = "Link"
+		f.BackgroundTransparency = 1
+		f.AnchorPoint = Vector2.new(0.5, 0.5)
+		f.Position = UDim2.fromScale(i / (n - 1), i / (n - 1))
+		-- alternate links: one seen flat (an oval), the next on edge (a slim bar)
+		f.Size = UDim2.fromOffset(link * 0.95, link * (if i % 2 == 0 then 0.5 else 0.22))
+		f.Rotation = 45
+		f.ZIndex = 4
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = UDim.new(0.5, 0)
+		corner.Parent = f
+		local stroke = Instance.new("UIStroke")
+		stroke.Color = Color3.fromRGB(235, 235, 240)
+		stroke.Thickness = math.max(0.3 * PAPER_PPS, link * 0.09)
+		stroke.Parent = f
+		f.Parent = holder
+	end
+	local lock = Instance.new("Frame")
+	lock.Name = "Padlock"
+	lock.BackgroundTransparency = 1
+	lock.AnchorPoint = Vector2.new(0.5, 0.5)
+	lock.Position = UDim2.fromScale(0.5, 0.5)
+	lock.Size = UDim2.fromOffset(long * 0.34, long * 0.34)
+	lock.Rotation = 90 -- upright from the build camera, like the drawing
+	lock.ZIndex = 5
+	lock.Parent = holder
+	local icon = Style.icon(lock, "lock")
+	icon.ZIndex = 5
+end
+
+local function makePaper(
+	item: DockBlueprints.Item,
+	frame: CFrame,
+	parent: Instance,
+	locked: boolean
+)
 	local cf, size = DockBuild.paper(item, frame)
 	local p = Instance.new("Part")
 	p.Name = "Blueprint"
 	p.Size = Vector3.new(size.X, 0.2, size.Y)
 	p.CFrame = cf
-	p.Color = PAPER
+	p.Color = if locked then PAPER_LOCKED else PAPER
 	p.Material = Enum.Material.SmoothPlastic
 	p.Anchored, p.CanCollide, p.CanTouch, p.CanQuery, p.CastShadow = true, false, false, true, false
 	local gui = Instance.new("SurfaceGui")
@@ -616,6 +639,9 @@ local function makePaper(item: DockBlueprints.Item, frame: CFrame, parent: Insta
 	art.Rotation = 90 -- a Top-face SurfaceGui's up is the paper's -X; this turns the drawing upright from the build camera
 	art.Parent = gui
 	drawGlyph(art, item, math.max(0.25 * PAPER_PPS, side / 30))
+	if locked then
+		chain(gui, size)
+	end
 	p.Parent = parent
 	paperItems[p] = item
 end
@@ -634,16 +660,11 @@ local function refreshPapers()
 	if not b then
 		return
 	end
-	local owned: { [string]: boolean } = {}
-	for _, item in DockBlueprints.catalog() do
-		if item.kind ~= "Level" and ownedOf(item) then
-			owned[item.key :: string] = true
-		end
-	end
+	local owned = ownedMap()
 	local folder = Instance.new("Folder")
 	folder.Name = "BuildBlueprints"
-	for _, item in DockBlueprints.onIsland(currentLevel(), owned) do
-		makePaper(item, b, folder)
+	for _, item in DockBlueprints.onIsland(owned) do
+		makePaper(item, b, folder, DockBlueprints.needs(item, owned) ~= nil)
 	end
 	folder.Parent = Workspace
 	papers = folder
@@ -714,7 +735,6 @@ local function closeBuild()
 		ui.Enabled = false
 	end
 	modal.close()
-	ContextActionService:UnbindAction("BuildModeExit")
 	if humConn then
 		humConn:Disconnect()
 		humConn = nil
@@ -807,16 +827,6 @@ local function buildUI(): ScreenGui
 	return gui
 end
 
-local function bindExit()
-	ContextActionService:BindActionAtPriority("BuildModeExit", function(_, state)
-		if state == Enum.UserInputState.Begin then
-			back()
-			return Enum.ContextActionResult.Sink
-		end
-		return Enum.ContextActionResult.Pass
-	end, false, Enum.ContextActionPriority.High.Value + 6, Enum.KeyCode.Escape)
-end
-
 local function openBuild()
 	if displayed then
 		return
@@ -853,7 +863,6 @@ local function openBuild()
 	if InputGlyph.device() == "Gamepad" and cards[1] then
 		GuiService.SelectedObject = cards[1]
 	end
-	bindExit()
 	islandView(0.8)
 	AudioController.play("UI_Click")
 end
@@ -987,13 +996,12 @@ local function playBuild(model: Model)
 	end)
 end
 
--- A purchase (a level, building or decor landed, seen through the attributes): the till and the coin burst.
+-- A purchase (a building or decor landed, seen through the attributes): the till and the coin burst.
 local function refresh()
-	local level = player:GetAttribute("DockLevel")
-	if type(level) ~= "number" then
+	if type(player:GetAttribute("DockPlot")) ~= "number" then
 		return
 	end
-	local count = level
+	local count = 0
 	for _, key in DockConfig.BUILDINGS do
 		if player:GetAttribute("Dock" .. key) == true then
 			count += 1
@@ -1101,12 +1109,12 @@ end
 
 -- seated (driving or aboard) with the seat inside your own booth
 local function boothCheck()
-	local level, b = player:GetAttribute("DockLevel"), player:GetAttribute("BayCFrame")
+	local b = player:GetAttribute("BayCFrame")
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 	local seat = humanoid and humanoid.SeatPart
 	local now = false
-	if seat and type(level) == "number" and level >= 3 and typeof(b) == "CFrame" then
+	if seat and player:GetAttribute("DockBoathouse") == true and typeof(b) == "CFrame" then
 		local zone = DockConfig.PAINT_BOOTH
 		local d = ((b :: CFrame) * zone.cf):PointToObjectSpace(seat.Position)
 		local h = zone.size / 2
@@ -1156,7 +1164,7 @@ function DockController.Start()
 			redraw()
 		end
 	end
-	player:GetAttributeChangedSignal("DockLevel"):Connect(onProgress)
+	player:GetAttributeChangedSignal("DockPlot"):Connect(onProgress)
 	for _, key in DockConfig.BUILDINGS do
 		player:GetAttributeChangedSignal("Dock" .. key):Connect(onProgress)
 	end
@@ -1165,6 +1173,12 @@ function DockController.Start()
 	end
 	refresh()
 	UserInputService.InputBegan:Connect(onWorldTap)
+	-- Escape backs out (focus first, then build mode); ContextActionService never sees it, so read it here
+	UserInputService.InputBegan:Connect(function(input: InputObject)
+		if displayed and input.KeyCode == Enum.KeyCode.Escape then
+			back()
+		end
+	end)
 	-- the Lego build beat, from DockService (the model is already in its final state)
 	local buildEvent = Net.init():WaitForChild("Dock_Build", 30) :: RemoteEvent?
 	if buildEvent then

@@ -48,11 +48,11 @@ return function(t)
 			CallTheGreatStorm = 149,
 			DayDoubleCash = 15, -- day passes: proposed, not in docs/04 yet
 			DayQuickLaunch = 10,
-			-- dock levels: docs/23 d.2 first guesses (g.3)
+			-- island buildings (the old dock-level keys, WP-28): pontoon, boathouse, lookout tower, station
 			DockLevel2 = 49,
 			DockLevel3 = 99,
-			DockLevel4 = 199,
-			DockLevel5 = 399,
+			DockLevel4 = 79,
+			DockLevel5 = 199,
 			DockGarage = 75, -- docs/23 h (WP-10b), prices docs/23 (i)
 			DockHangar = 199,
 			DockSubPen = 149,

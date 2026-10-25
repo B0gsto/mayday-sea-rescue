@@ -15,7 +15,6 @@
 --   CrewService.Join(player, target) -> (ok, reason) / CrewService.Leave(player)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
@@ -36,14 +35,6 @@ local crews: { [Player]: { Player } } = {}
 local leaderOf: { [Player]: Player } = {}
 local lastJoin: { [Player]: number } = {}
 local leftAt: { [Player]: { [Player]: number } } = {}
-
-local function rankAllowsCrew(player: Player): boolean
-	if RunService:IsStudio() then
-		return true -- solo/2-player Studio tests start at Recruit
-	end
-	local rankIndex = player:GetAttribute("RankIndex")
-	return type(rankIndex) == "number" and rankIndex >= ProgressionConfig.CrewJoinRankIndex
-end
 
 local function broadcast(leader: Player)
 	local members = crews[leader]
@@ -120,10 +111,6 @@ end
 function CrewService.Join(player: Player, target: Player): (boolean, string)
 	if player == target or not target.Parent then
 		return false, "No target"
-	end
-	if not rankAllowsCrew(player) then
-		local rank = ProgressionConfig.Ranks[ProgressionConfig.CrewJoinRankIndex]
-		return false, `Crew joining opens at {rank.displayName}`
 	end
 	local leader = leaderOf[target] or target
 	if leaderOf[player] == leader then

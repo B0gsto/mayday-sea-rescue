@@ -1,6 +1,6 @@
 --!strict
 -- PlatformPromptService: Roblox's own re-engagement prompts, offered once at a good moment
--- (docs/15 hooks). The client asks after a trigger (first crate open, first rank-up ceremony, first
+-- (docs/15 hooks). The client asks after a trigger (first crate open, first island building, first
 -- crew rescue); this service holds the request until PlatformPrompts allows it (3 min into the
 -- session, not on an operation, 10 min since the last prompt) and only then tells the client to
 -- show Roblox's prompt. Asked timestamps persist in data.flags.platformPrompts.
@@ -53,7 +53,8 @@ local function triggered(player: Player, kind: PlatformPrompts.Kind): boolean
 	if kind == "notify" then
 		return player:GetAttribute("StreakClaim") ~= nil
 	elseif kind == "favorite" then
-		return (player:GetAttribute("RankIndex") or 1) >= 2
+		local data: any = DataService.Get(player) -- after the first island building (WP-28: no rank-ups)
+		return data ~= nil and next(data.dockBuildings) ~= nil
 	elseif kind == "invite" then
 		return player:GetAttribute("CrewOpDone") == true
 	end

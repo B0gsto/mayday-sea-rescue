@@ -1,8 +1,8 @@
 # 02 · Core loop and mechanics
 
 Last rewrite: 2026-10-25. This file owns how the game plays: the loop, calls, pick-up, craft, building, quests,
-the hub and the interface. `docs/00-design.md` is canon; if this file disagrees, 00 wins. Pay, rank and pacing
-numbers are in `docs/03-progression.md`; Robux items in `docs/04-monetization.md`.
+the hub and the interface. `docs/00-design.md` is canon; if this file disagrees, 00 wins. Pay, the unlock tree and
+pacing numbers are in `docs/03-progression.md`; Robux items in `docs/04-monetization.md`.
 
 ## 1. The loop
 
@@ -12,7 +12,7 @@ flowchart LR
   B --> C[Sail out]
   C --> D[Pick up]
   D --> E[Bring them home]
-  E --> F[Cash + Rep]
+  E --> F[Cash]
   F --> G[Build your island]
   G --> H[Farther calls, bigger craft]
   H --> B
@@ -25,7 +25,7 @@ Every system either feeds a step or makes the island worth returning to.
 - The call is the action. It starts with a pager card, a flare, a pin and a beep, and ends with a survivor
   stepping off at a berth.
 - The return trip is the quiet part: the sea, the bridges, the outer islands, the next call waiting.
-- Progress is horizontal and vertical: farther calls and bigger craft (reach), plus a taller island (dock levels).
+- Progress is horizontal and vertical: farther calls and bigger craft (reach), plus a bigger island (the unlock tree).
 
 ## 2. The first session
 
@@ -33,9 +33,9 @@ Every system either feeds a step or makes the island worth returning to.
 |---|---|---|
 | 0:00 | Spawn at the hub visitor jetty. Bosun is beside you. The pager beeps within three seconds. | The game starts with a job, not a tutorial menu. |
 | 0:00–1:30 | First call: one swimmer just off your cove. Drive the jet ski through the orange ring; the swimmer climbs aboard; "+1". | The core verb is taught by doing it once. |
-| 1:30 | Drop off at your berth or the hub quay. Cash and Rep counters tick up. | The reward is immediate and visible. |
-| 2:00–13:00 | Four more tutorial calls: a drifting dinghy, two survivors, a swimmer, a wildlife rescue. First rank at about 13 minutes. | A short, escalating chain; the second survivor shows that seats matter. |
-| 5:00–15:00 | First dock level and the first quest pin. The island starts to change. | The tycoon hook lands before the first session ends. |
+| 1:30 | Drop off at your berth or the hub quay. The Cash counter ticks up. | The reward is immediate and visible. |
+| 2:00–13:00 | Four more tutorial calls: a drifting dinghy, two survivors, a swimmer, a wildlife rescue. The first building (the workshop) at about 8 minutes. | A short, escalating chain; the second survivor shows that seats matter. |
+| 5:00–25:00 | The workshop, then the boathouse, and the first quest pin. The island starts to change. | The tycoon hook lands before the first session ends. |
 | 15:00 | The RIB is close. Calls move out of the cove; the map opens up. | A clear reason to come back tomorrow. |
 
 There is no cold open, no cutscene and no dialogue box before the first call. The first call cannot be missed: it
@@ -44,7 +44,7 @@ is in the cove, the weather is calm, and the ring is visible from the jetty.
 ## 3. Calls
 
 A call is one rescue job. The pager shows a card; a flare and a pin mark it in the world; the same card stays on
-the HUD until the job ends. The card shows the kind, the distance, the survivors, and a Cash/Rep preview.
+the HUD until the job ends. The card shows the kind, the distance, the survivors, and a Cash preview.
 
 ### 3.1 Kinds
 
@@ -63,7 +63,7 @@ the HUD until the job ends. The card shows the kind, the distance, the survivors
   fail. A call with a survivor already aboard gets 90 seconds of grace to deliver.
 - **No accept button.** Steer for the flare. The call is yours once it is offered; nobody else can take it.
 - Calls 1–2 spawn in the player's own cove. From call 3 they use open-water distance tiers: 500–2,000,
-  2,000–3,500 and 3,500–5,500 studs from the player's berth. The tier is capped by rank, not by a Robux craft.
+  2,000–3,500 and 3,500–5,500 studs from the player's berth. The tier follows the best craft the player can launch (a Robux boat sits on the RIB's tier).
 - The first offer comes 3 seconds after the player is free; later offers about 9 seconds after the last one ends.
   A free-roam swimmer between calls keeps the sea alive.
 - Big calls are public and server-wide. Every helper is credited at drop-off; the player who delivers a survivor
@@ -77,14 +77,14 @@ The card is a small bright panel, not a phone. It shows:
 - the call name in one to three words;
 - distance and a direction arrow;
 - survivor pips (filled = aboard);
-- a Cash/Rep preview at Silver, solo.
+- a Cash preview at Silver, solo.
 
 The card has no Accept or Decline. It fades to a compact strip once the player is moving, and returns when a
 survivor is picked up.
 
 ### 3.3 Failure
 
-When the timer runs out, the harbour patrol takes over. The player keeps 10% of the call's Cash, earns no Rep,
+When the timer runs out, the harbour patrol takes over. The player keeps 10% of the call's Cash,
 and the call clears. There is no lost survivor, no penalty pile and no retry button. The next call comes normally.
 A late delivery is a Bronze at worst; a call only fails when the player never reaches it.
 
@@ -125,7 +125,7 @@ kind.
 ### 4.4 Drop-off
 
 Drop off at **your own berth** or the **hub quay**; whichever is nearer counts. Hand-over is automatic inside the
-drop zone. Cash and Rep are paid on the spot, with a short card: grade, base, distance, crew bonus, total. The
+drop zone. Cash is paid on the spot, with a short card: grade, base, distance, crew bonus, total. The
 drop-off is also where the next call can be offered.
 
 ## 5. Craft
@@ -161,37 +161,41 @@ visible from the water and from the hub; everything the player builds stands on 
 ### 6.2 Building
 
 - The build station is a Lego builder's yard with a tablet on a stand. Using it moves the camera to a top-down
-  view of the island. A bar of cards shows what can be built at each lot: Cash and rank, or Robux.
+  view of the island. A list of cards shows every building: Cash and Robux buttons, Owned, or a padlock with
+  "Needs: X" and X's drawing (tapping it jumps to X). Every spot not built has a flat paper blueprint; a locked
+  one is grey with a chain.
 - Choosing a lot pulses a flat outline on the plate. There is no 3D ghost of the finished building.
 - Buying plays the **Lego build**: bricks drop in from bottom to top with a bounce and a snap, builders standing
   by. The build is the reward animation.
-- Tablet build mode is in progress (WP-14d). Until it ships, dock upgrades are bought at the dock lot and the lot
-  builds in view.
-- What can be built: dock levels 2–5, helipad + hangar, sub pen, quest-chain buildings (the lighthouse), and spare
-  lots for later.
+- Escape, B or tapping the sea backs out of the focus view, then out of build mode.
 
-### 6.3 Dock levels
+### 6.3 The unlock tree (docs/23 (q))
 
-| Level | Adds | Unlocks |
-|---|---|---|
-| **1** | Jetty, berth notch | Jet ski, free. |
-| **2** | Pontoon, lamp posts, flag, rescue board | Second berth. |
-| **3** | Boathouse, boat board, paint booth | Choose a craft at the dock. |
-| **4** | Lookout tower, slipway crane | No relaunch cooldown; lifeboat berth. |
-| **5** | Station front, beacon, trophy hall | Harbourmaster; the gold beacon if top-ranked. |
+No ranks. Each building lists what it needs; craft unlock through their building. The tree, the prices and the
+old-save mapping are in `docs/03-progression.md` §3.
 
-Prices and rank requirements are in `docs/03-progression.md`; the Robux version is in `docs/04-monetization.md`.
+| Building | Unlocks |
+|---|---|
+| Pontoon | Second berth, rescue board. |
+| Workshop → Boathouse | Boat board, paint booth, the RIB and the Robux boats. |
+| Lifeboat slip | The lifeboat. |
+| Crane | No relaunch cooldown; opens the sub pen → submarine. |
+| Lookout tower → Helipad → Hangar | The helicopter. |
+| Station (boathouse + lookout) | Beacon, crew hire, the Harbour Master race; opens the clinic and trophy hall. |
+| Workshop, fish shed, boat yard, rescue boathouse, clinic | Worker buildings (WP-26 adds the workers). |
+
+The Robux version is in `docs/04-monetization.md`: Robux skips the Cash, never the order.
 
 ### 6.4 Crew (in progress, WP-15)
 
 Job seekers line up outside the station. A new group arrives every 20 minutes. Hire a mechanic, a lifeguard or a
 dispatcher for a small boost and a daily wage. The crew lives on the island and is visible at the station. This is
-the late-game Cash sink; it does not gate calls or ranks.
+the late-game Cash sink; it does not gate calls or buildings. It opens with the Station.
 
 ### 6.5 Flex
 
-Everything is visible to the server: the dock, the hangar, the lighthouse, the trophy hall. The top-ranked Lv5
-player's island carries a gold beacon seen across the harbour at night. The hub's rescuer monument names the
+Everything is visible to the server: the dock, the hangar, the lighthouse, the trophy hall. The island with a Station
+and the most people rescued carries a gold beacon seen across the harbour at night. The hub's rescuer monument names the
 week's top rescuer. Flex is the point of building; it is never sold as a stat.
 
 ## 7. Quests and the Album
@@ -201,12 +205,12 @@ week's top rescuer. Flex is the point of building; it is never sold as a stat.
 - Six givers at six hub camps. Each offers one quest a day.
 - Kinds: **find** (pick an item up on an outer island), **deliver** (carry it from the camp to a drop spot),
   **salvage** (submarine, from a wreck), **rescue** (a call in a named zone, then bring the survivor home).
-- A completed quest returns to the giver. The reward is Cash and Rep; the lamp chain also unlocks the lighthouse
+- A completed quest returns to the giver. The reward is Cash; the lamp chain also unlocks the lighthouse
   blueprint.
 - Pins appear in the world and on the map. The Quests panel lists the pins, not a story.
 - Talk zooms the camera and shows a short voiced line plus numbered replies. This is the only choice UI in
   gameplay.
-- A quest never gates a rank, a call or a craft. The player can ignore all six givers and still reach Admiral.
+- A quest never gates a building, a call or a craft. The player can ignore all six givers and still build everything.
 
 ### 7.2 Album and fog
 
@@ -232,7 +236,7 @@ week's top rescuer. Flex is the point of building; it is never sold as a stat.
 
 - **Left column:** seven big square icon buttons: Shop, Quests, Album, Companion, Crew, Settings, Boat to me.
   Each opens a centred panel. The map is on M. The build tablet is its own top-down mode.
-- **HUD:** Cash, Rep and rank at the top; the call card at the side; seat pips on the craft; a small quest pin
+- **HUD:** Cash at the top; the call card at the side; seat pips on the craft; a small quest pin
   compass. Icons and one to three words; no paragraphs.
 - **No phone, no radio, no first-person cockpit.** The pager card and the flare are the call; the left column is
   the menu.

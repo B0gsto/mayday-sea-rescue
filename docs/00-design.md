@@ -27,7 +27,7 @@ each other's islands). 6 players per server.
 **Your island → a call → sail out → pick up → bring them home → build your island → farther calls, bigger craft.**
 
 - **Calls** arrive as a pager card + flare + pin + beep (no radio). Calls 1–2 spawn just off your own cove; later
-  calls out among the outer islands, farther as your craft and rank grow (rank caps reach). Pay grows with
+  calls out among the outer islands, farther as your craft grow (reach = the best craft you can launch). Pay grows with
   distance (from 1,500 studs, cap ×4). Kinds: swimmer, drifting craft, capsized ferry (big call), rip current,
   sinking vessel, vessel fire, wildlife rescue, diver at a wreck (submarine only).
 - **Pick-up is simple:** an orange ring on the water marks each survivor; inside it your craft eases to boarding
@@ -45,27 +45,31 @@ each other's islands). 6 players per server.
 
 - Start: a bare plate, a jetty, a jet ski.
 - **Build station:** a Lego builder's yard with a **tablet** on a stand. Using it moves the camera to a top-down
-  view of your island; a bar of cards shows what you can build (Cash + rank, or Robux); the chosen lot pulses as a
+  view of your island; a bar of cards shows what you can build (Cash, or Robux; a locked card shows a padlock and
+  "Needs: X" with X's drawing, tapping it jumps to X); every spot not built has a paper blueprint (grey with a chain
+  while locked); the chosen lot pulses as a
   flat outline (never a 3D preview); buying plays a **Lego build**: bricks drop in bottom to top with a bounce and
   a snap, builders standing by. (Today a blueprint table on the jetty does this; the tablet build mode replaces it,
   in progress, WP-14d.)
-- What you build: dock levels 2–5 (pontoon + lamps + rescue board, boathouse + boat board + paint booth, lookout
-  tower + crane, station + beacon + trophy hall), helipad + hangar, sub pen, quest-chain buildings, spare lots.
+- What you build: the **unlock tree** (§6): pontoon (2nd berth, lamps, rescue board), workshop, boathouse (boat
+  board, paint booth), lookout tower, crane (no relaunch wait), lifeboat slip, helipad, hangar, sub pen, station
+  (beacon), trophy hall, worker buildings (workshop, fish shed, boat yard, rescue boathouse, clinic: plain Lego
+  for now), quest-chain buildings, decor.
 - **Your people:** survivors you rescue get a category (Builder, Gatherer, Rescuer, Mechanic, Medic) and a rarity;
   delivered home they walk to the matching building on your island and work there (cheaper builds, passive Cash,
   NPC rescues, faster craft, bigger payouts). Small capped offline earnings. (In progress, WP-26; replaces the crew
   lineup.)
-- **Flex:** everything is visible to the server; the top-ranked Lv5 player's island gets a gold beacon.
+- **Flex:** everything is visible to the server; the island with a Station and the most people rescued gets a gold
+  beacon.
 - **New things are Lego-style** (chunky bricks, bright colours, studs). Existing finished models keep their look.
 
 ## 5. Craft
 
-Jet ski (free, 1 seat) → RIB (Lifeguard) → Lifeboat (Coxswain) → Rescue helicopter (Rescue Pilot, hangar) and
-Submarine (Coxswain, sub pen). Robux boats: Storm Runner, Tidewalker, Riptide X, Gilded Gull. Choose a craft at the
+Jet ski (free, 1 seat) → RIB (boathouse) → Lifeboat (lifeboat slip) → Rescue helicopter (hangar) and Submarine
+(sub pen). Robux boats (boathouse): Storm Runner, Tidewalker, Riptide X, Gilded Gull. Choose a craft at the
 boat board in your boathouse; "Boat to me" brings yours to you (60 s cooldown; a hired Mechanic cuts it to 42 s;
 Quick Launch removes it). A free craft bought early with Robux (RIB, Lifeboat passes) handles the same as the earned
-one. The Robux-only boats are their own, faster boats: speed is sold, skill never is, and your rank still caps how
-far your calls go.
+one. The Robux-only boats are their own, faster boats on the RIB's call reach: speed is sold, skill never is.
 
 ## 6. Progression and economy
 
@@ -73,13 +77,14 @@ No ranks and no Reputation. Progress is a **linear unlock tree** on your island:
 ("Needs: Crane"), craft unlock through their building (RIB ← Boathouse, Lifeboat ← slip, Sub ← Sub pen, Helicopter ←
 Hangar), and call reach follows the best craft you can launch. Cash (from calls, quests, workers, the daily chest,
 streaks) is the only currency; it pays for buildings, craft, decor and cosmetics. Free players reach everything
-(pacing sim in `tests/`). The tree is data-driven so new content is a new row. (In progress, WP-28; docs/23 (q).)
+(pacing sim in `tests/`: the whole tree in ~18 h of play). The tree is one config (`DockConfig.Buildings`, rules
+`shared/UnlockTree`), so new content is a new row. Badges and leaderboards count people rescued. docs/23 (q), (i).
 
 ## 7. Money (Robux)
 
 Robux can skip the Cash for anything whose prerequisites you already have, never the order of the tree (and never skill). Passes:
 2x Cash, VIP, Quick Launch, Starter Kit, Robux boats and craft, cosmetics; products: Cash packs, boosts, Storm
-Summons, dock levels and buildings, day passes. Paid random Sea Chests come after the first public launch (cosmetics only, odds shown, pity, one Cash chest).
+Summons, island buildings (once their prerequisites stand), day passes. Paid random Sea Chests come after the first public launch (cosmetics only, odds shown, pity, one Cash chest).
 No pressure, no timers on offers, the player opens every prompt. Details: docs/04.
 
 ## 8. UI and feel

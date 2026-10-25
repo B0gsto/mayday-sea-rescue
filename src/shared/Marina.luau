@@ -33,8 +33,6 @@ function Marina.spawn(i: number): CFrame
 	return HubLayout.Islands[i].spawn
 end
 
-Marina.MASTER_LEVEL = 5 -- dock level that makes a player eligible (DockConfig Lv 5 "HarbourMaster")
-
 -- The lowest free plot (taken[i] truthy = in use), nil when all are taken.
 function Marina.assign(taken: { [number]: any }): number?
 	for i = 1, Marina.COUNT do
@@ -45,14 +43,19 @@ function Marina.assign(taken: { [number]: any }): number?
 	return nil
 end
 
--- The Harbour Master: the highest rank among the Lv 5 docks; a tie keeps `current`, else the first listed.
-export type Candidate = { key: any, rank: number, level: number }
+-- The Harbour Master: the most people rescued among islands with a Station (docs/23 (q)); a tie keeps
+-- `current`, else the first listed.
+export type Candidate = { key: any, rescued: number, station: boolean }
 function Marina.harbourMaster(candidates: { Candidate }, current: any?): any?
 	local best: Candidate? = nil
 	for _, c in candidates do
 		if
-			c.level >= Marina.MASTER_LEVEL
-			and (not best or c.rank > best.rank or (c.rank == best.rank and c.key == current))
+			c.station
+			and (
+				not best
+				or c.rescued > best.rescued
+				or (c.rescued == best.rescued and c.key == current)
+			)
 		then
 			best = c
 		end

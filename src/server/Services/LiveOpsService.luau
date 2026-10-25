@@ -4,7 +4,7 @@
 -- and writes the MemoryStore sorted map "LiveOpsActive", so servers that boot mid-event adopt it.
 --
 -- This service owns only the schedule. The effects read the replicated state:
---   GoldenHour      ProgressionService.Award multiplies Cash and Rep (flat awards stay flat)
+--   GoldenHour      ProgressionService.Award multiplies Cash (flat awards stay flat)
 --   CalmSeas        StormService holds new storms (LiveOpsService also clears a running one)
 --
 -- Message: { event, startsAt (UTC epoch s), duration (s), nonce }; "Cancel" clears it. Ignore

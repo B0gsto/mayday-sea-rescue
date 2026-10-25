@@ -126,8 +126,7 @@ return function(t)
 		for _, kind in { "GamePasses", "Products" } do
 			for key, item in Config[kind] do
 				-- Studio lists everything once; dock levels sell only at the dock
-				t.expect(seen[`{kind}/{key}`] == true)
-					.toBe(item.dockLevel == nil and item.dockBuilding == nil)
+				t.expect(seen[`{kind}/{key}`] == true).toBe(item.dockBuilding == nil)
 			end
 		end
 		for _, ref in Shelves.storeItems(Config, "Passes", false) do
@@ -145,7 +144,7 @@ return function(t)
 		for _, kind in { "GamePasses", "Products" } do
 			for key, item in Config[kind] do
 				-- dock levels and buildings sell at the dock's ghost, not in the Store (docs/23 c.3)
-				local atDock = item.dockLevel ~= nil or item.dockBuilding ~= nil
+				local atDock = item.dockBuilding ~= nil
 				if
 					type(item.id) == "number"
 					and item.id > 0

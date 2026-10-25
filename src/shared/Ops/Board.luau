@@ -11,7 +11,8 @@ Board.HOLD = 0.6 -- s close and steady before they climb
 Board.RAM_SPEED = 14 -- studs/s
 Board.CONTACT = 4 -- studs from the hull side
 Board.BUMP_GAP = 2 -- s between bumps
-Board.KNOCK_RANK = 3 -- a ram knocks them back only from this rank (RankIndex) up (docs/23 e.1)
+-- docs/23 e.1: a ram knocks them back only once you own a boathouse (the DockBoathouse attribute): new
+-- players are never punished for a clumsy first pick-up (WP-28: was rank 3).
 -- The pick-up ring (docs/23 e.1, PickupRingController): drawn on the water round a survivor; a craft with room
 -- eases its throttle so it is down to ASSIST_SPEED by the ring and holds it inside, under STEADY_SPEED.
 Board.RING = 12 -- studs, radius from the survivor to the hull centre -- tune
@@ -29,14 +30,14 @@ function Board.ready(gap: number, speed: number, tiltDeg: number, room: boolean)
 		and tiltDeg <= Board.STEADY_TILT
 end
 
--- May a ram knock them back for this RankIndex? (nil: a new player)
-function Board.knocks(rank: any): boolean
-	return (tonumber(rank) or 1) >= Board.KNOCK_RANK
+-- May a ram knock them back? `veteran` = the rescuer's DockBoathouse attribute (nil: a new player)
+function Board.knocks(veteran: any): boolean
+	return veteran == true
 end
 
--- Did the boat just run into them (hard enough to knock them back at this rank)?
-function Board.rammed(gap: number, speed: number, rank: any): boolean
-	return Board.knocks(rank) and gap <= Board.CONTACT and speed >= Board.RAM_SPEED
+-- Did the boat just run into them (hard enough to knock them back, for a veteran)?
+function Board.rammed(gap: number, speed: number, veteran: any): boolean
+	return Board.knocks(veteran) and gap <= Board.CONTACT and speed >= Board.RAM_SPEED
 end
 
 -- The throttle a craft with room gets near a survivor (docking assist). dist: hull centre to them (flat);

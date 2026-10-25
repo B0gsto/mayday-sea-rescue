@@ -4,7 +4,7 @@
 -- runs it under Lune and the client cards can read the same numbers.
 --
 -- Fairness (docs/04 sections 1 and 7): every effect here is Cash or a server-wide storm. Nothing
--- touches Reputation, rank, grades, timing windows or a casualty's condition.
+-- touches grades, timing windows or a casualty's condition.
 --
 -- Saved state: one flat profile flag `shop` (ProgressionRules flag rules: scalars only, |n| <= 1e6):
 --   cashBoost, crewBoost   seconds of boost playtime left (tick only while the player is in a server)
@@ -30,30 +30,26 @@ Effects.Summon = {
 	CallerTitleHours = 24,
 }
 
-export type Zone = { id: string, rankIndex: number, cashPerHour: number, live: boolean }
+export type Zone = { id: string, cashPerHour: number, live: boolean }
 export type Shop = { [string]: any }
 
 local function num(v: any): number
 	return if type(v) == "number" and v == v then v else 0
 end
 
--- The highest live zone the rank has opened (docs/04 4.1: packs scale with the top open zone).
-function Effects.topZone(zones: { Zone }, rankIndex: number): Zone?
+-- The best-paying live zone (docs/04 4.1: packs scale with the top open zone; no ranks gate it, WP-28).
+function Effects.topZone(zones: { Zone }): Zone?
 	local best: Zone? = nil
 	for _, zone in zones do
-		if
-			zone.live
-			and zone.rankIndex <= rankIndex
-			and (best == nil or zone.rankIndex > best.rankIndex)
-		then
+		if zone.live and (best == nil or zone.cashPerHour > best.cashPerHour) then
 			best = zone
 		end
 	end
 	return best
 end
 
-function Effects.cashPerMinute(zones: { Zone }, rankIndex: number): number
-	local zone = Effects.topZone(zones, rankIndex)
+function Effects.cashPerMinute(zones: { Zone }): number
+	local zone = Effects.topZone(zones)
 	return if zone then zone.cashPerHour / 60 else 0
 end
 
@@ -123,7 +119,7 @@ end
 
 -- The Cash multiplier from paid items (the storm multiplier is applied separately by ProgressionRules).
 -- 2x Cash and Cash Boost do not stack with each other (docs/04 4.2); a Crew Boost adds +50% of the base
--- on top of either. Rep is never multiplied.
+-- on top of either.
 function Effects.cashMultiplier(
 	ownsDoubleCash: boolean,
 	cashBoostLeft: number,
@@ -215,7 +211,7 @@ end
 
 -- Quick Launch (docs/04 section 3): launch an owned vehicle straight into the seat from anywhere, without
 -- the walk and the launch cooldown. Never during the cold open; never while seated with someone (planSpawn
--- refuses); rank still gates every vehicle (spawnVehicle).
+-- refuses); ownership still gates every vehicle (spawnVehicle).
 function Effects.quickLaunchAllowed(ownsPass: boolean, coldOpenDone: boolean): (boolean, string)
 	if not ownsPass then
 		return false, "NotOwned"

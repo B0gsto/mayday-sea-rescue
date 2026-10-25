@@ -129,7 +129,7 @@ AudioConfig.Clips = {
 	UI_Click = rl(9119717529, 0.18, "Switch Click On Or Off Toggle Button 1 (SFX)"),
 	UI_Back = rl(9119717523, 0.16, "Switch Click On Or Off Toggle Button 2 (SFX)"),
 	UI_Prompt = rl(9118138365, 0.12, "Relay Clicks 9 (SFX)", "world prompt tick"),
-	UI_Pickup = rl(9116729826, 0.2, "Metallic Beeps Quick Tones 2 (SFX)", "Cash / Rep pickup"),
+	UI_Pickup = rl(9116729826, 0.2, "Metallic Beeps Quick Tones 2 (SFX)", "Cash pickup"),
 	UI_Step = rl(9116729822, 0.22, "Metallic Beeps Quick Tones 1 (SFX)", "step complete"),
 	UI_Success = rl(9113399926, 0.3, "Beeps Simple Multiple Variations 5 (SFX)"),
 	UI_Fail = rl(9113085665, 0.26, "Alarm Buzzer 3 (SFX)"),
@@ -163,7 +163,6 @@ AudioConfig.Clips = {
 		"Water Splash Big Water Splash Dive In 1 (SFX)",
 		"reused from Splash_Entry"
 	),
-	Rank_Cheer = rl(9113137529, 0.45, "Applause Nightclub 1 (SFX)"),
 	UI_FriendPop = rl(9112752910, 0.22, "Bubble Wobble Comic Bloops Slight Rhythm 4 (SFX)"),
 
 	-- Music (APM via Roblox). Two cues: an operation underway, and the debrief.

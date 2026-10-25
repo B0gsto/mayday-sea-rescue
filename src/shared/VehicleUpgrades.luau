@@ -12,7 +12,6 @@ export type Upgrade = {
 	id: string,
 	name: string, -- 1-3 words on the stand tag and the next-goal chip
 	price: number,
-	rankIndex: number,
 	effect: string, -- short line on the tag
 }
 
@@ -43,7 +42,6 @@ for _, vehicleId in VehicleUpgrades.VehicleOrder do
 				price = if unlock.price > 0
 					then math.floor(unlock.price * base.share + 0.5)
 					else base.fixed,
-				rankIndex = unlock.rankIndex,
 				effect = base.effect,
 			})
 		end
@@ -102,7 +100,6 @@ function VehicleUpgrades.canBuy(
 	upgradeId: string,
 	mask: number,
 	cash: number,
-	rankIndex: number,
 	owned: boolean
 ): (boolean, string, number)
 	local upgrade = VehicleUpgrades.entry(vehicleId, upgradeId)
@@ -114,10 +111,6 @@ function VehicleUpgrades.canBuy(
 	end
 	if VehicleUpgrades.has(mask, upgradeId) then
 		return false, "Fitted", upgrade.price
-	end
-	if rankIndex < upgrade.rankIndex then
-		local rank = ProgressionConfig.Ranks[upgrade.rankIndex]
-		return false, `Needs {if rank then rank.displayName else upgrade.rankIndex}`, upgrade.price
 	end
 	if cash < upgrade.price then
 		return false, "Need Cash", upgrade.price

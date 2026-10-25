@@ -24,15 +24,14 @@ return function(t)
 				.toBe(Shelves.packCash(Config.Products[key], cpm))
 		end
 		-- zones that have not shipped do not raise the rate; ones that have do
-		t.expect(Effects.cashPerMinute(Config.CashPackZones, 8)).toBe(100)
+		t.expect(Effects.cashPerMinute(Config.CashPackZones)).toBe(100)
 		local zones = {
-			{ id = "CalmBay", rankIndex = 1, cashPerHour = 6000, live = true },
-			{ id = "StormFront", rankIndex = 6, cashPerHour = 17300, live = true },
+			{ id = "CalmBay", cashPerHour = 6000, live = true },
+			{ id = "StormFront", cashPerHour = 17300, live = true },
 		}
-		t.expect(Effects.packCash(Config.Products.SmallBonus, Effects.cashPerMinute(zones, 6)))
+		t.expect(Effects.packCash(Config.Products.SmallBonus, Effects.cashPerMinute(zones)))
 			.toBe(4325)
-		t.expect(Effects.cashPerMinute(zones, 5)).toBe(100)
-		t.expect(Effects.cashPerMinute({}, 3)).toBe(0)
+		t.expect(Effects.cashPerMinute({})).toBe(0)
 		t.expect(Effects.packCash(Config.Products.SmallBonus, 0)).toBe(0)
 	end)
 

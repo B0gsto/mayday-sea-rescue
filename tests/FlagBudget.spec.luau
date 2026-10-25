@@ -76,10 +76,9 @@ return function(t)
 		t.expect(saved.badgesAwarded).toEqual({ FirstRescue = true })
 	end)
 
-	t.test("an award never turns Cash or Rep into NaN, inf or a negative", function()
+	t.test("an award never turns Cash into NaN, inf or a negative", function()
 		for _, bad in { 0 / 0, math.huge, -math.huge, -50 } do
-			local cash, rep = Rules.applyAward(bad, bad, "Calm", false)
-			t.expect({ cash, rep }).toEqual({ 0, 0 })
+			t.expect((Rules.applyAward(bad, "Calm", false))).toBe(0)
 		end
 	end)
 end

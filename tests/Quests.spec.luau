@@ -38,7 +38,7 @@ return function(t)
 				t.expect(DockConfig.Blueprints[q.blueprint] ~= nil).toBe(true)
 			end
 			-- sane against a call (~1,100 Cash, docs/23 (i))
-			t.expect(q.cash >= 500 and q.cash <= 3000 and q.rep > 0 and q.rep <= 500).toBe(true)
+			t.expect(q.cash >= 500 and q.cash <= 3000).toBe(true)
 		end
 		for _, k in { "find", "deliver", "salvage", "rescue" } do
 			t.expect(`{k} {kinds[k] == true}`).toBe(`{k} true`)

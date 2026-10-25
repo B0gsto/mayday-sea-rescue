@@ -2,8 +2,8 @@
 -- BadgeService: Roblox badge awards (docs/03 section 8, MVP set; ids in Shared.Config.BadgeConfig, 0 = off).
 --
 -- Triggers: OperationService.OperationCompleted (the debrief snapshot: grade and step grades per
--- userId) through Shared.BadgeRules; the RankIndex player attribute (rank badges, also re-checked on
--- join); and BadgeService.Award / BadgeService.Count for other systems.
+-- userId) through Shared.BadgeRules; the Rescued player attribute (people delivered home, ProgressionService /
+-- RescueService: the rescued badges, also re-checked on join); and BadgeService.Award / BadgeService.Count for other systems.
 --
 -- Profile fields (DataService, extra keys on the player's data): badgeCounters { [key]: number } and
 -- badgesAwarded { [key]: true }. Counters run even while a badge's id is 0, so switching a badge on later
@@ -23,7 +23,6 @@ local RunService = game:GetService("RunService")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeConfig"))
 local BadgeRules = require(Shared:WaitForChild("BadgeRules"))
-local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
 
 local BadgeService = {}
 BadgeService.Priority = 60
@@ -31,7 +30,6 @@ BadgeService.Priority = 60
 local DataService: any = nil
 local Telemetry: any = nil -- required in Init: TelemetryService requires this module
 local busy: { [Player]: { [string]: boolean } } = {}
-local rankIds: { string } = {}
 
 type Store = { badgeCounters: { [string]: number }, badgesAwarded: { [string]: boolean } }
 
@@ -130,13 +128,13 @@ function BadgeService.Once(player: Player, key: string, token: string)
 	end
 end
 
-local function checkRank(player: Player)
-	local idx = player:GetAttribute("RankIndex")
-	if type(idx) ~= "number" then
+local function checkRescued(player: Player)
+	local n = player:GetAttribute("Rescued")
+	if type(n) ~= "number" then
 		return
 	end
 	local s = store(player)
-	for _, key in BadgeRules.rankBadges(idx, rankIds) do
+	for _, key in BadgeRules.rescuedBadges(n) do
 		if not (s and s.badgesAwarded[key]) then
 			task.spawn(award, player, key)
 		end
@@ -169,15 +167,12 @@ end
 
 local function onPlayer(player: Player)
 	busy[player] = {}
-	player:GetAttributeChangedSignal("RankIndex"):Connect(function()
-		checkRank(player)
+	player:GetAttributeChangedSignal("Rescued"):Connect(function()
+		checkRescued(player)
 	end)
 end
 
 function BadgeService.Init()
-	for _, r in ProgressionConfig.Ranks do
-		table.insert(rankIds, r.id)
-	end
 	DataService = require(script.Parent:WaitForChild("DataService")) :: any
 	Telemetry = (require :: any)(script.Parent:WaitForChild("TelemetryService"))
 	Players.PlayerAdded:Connect(onPlayer)
@@ -193,7 +188,7 @@ function BadgeService.Start()
 	local OperationService: any = require(script.Parent:WaitForChild("OperationService"))
 	OperationService.OperationCompleted:Connect(onOperationCompleted)
 	DataService.OnLoaded(function(player: Player)
-		task.defer(checkRank, player)
+		task.defer(checkRescued, player)
 		-- counted badges switched on since the last session
 		local s = store(player)
 		if s then

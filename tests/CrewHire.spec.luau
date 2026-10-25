@@ -3,7 +3,6 @@
 -- unlock, and the three effect knobs.
 return function(t)
 	local C = t.load("src/shared/Crew/CrewHire.luau")
-	local ProgressionConfig = t.load("src/shared/Config/ProgressionConfig.luau")
 
 	t.test("a new group lines up every 20 minutes on the server clock", function()
 		t.expect(C.ROTATE_SECONDS).toBe(20 * 60)
@@ -45,15 +44,10 @@ return function(t)
 		end
 	end)
 
-	t.test("unlock needs the dock Lv 5 station built and rank Coxswain or higher", function()
-		local cox = C.COXSWAIN_INDEX
-		t.expect(cox).toBe(4)
-		t.expect(ProgressionConfig.Ranks[cox].id).toBe("Coxswain")
-		t.expect(C.unlocked(5, cox)).toBe(true)
-		t.expect(C.unlocked(5, cox + 2)).toBe(true) -- a higher rank unlocks too
-		t.expect(C.unlocked(4, cox + 3)).toBe(false) -- the station is not built
-		t.expect(C.unlocked(5, cox - 1)).toBe(false) -- rank too low
-		t.expect(C.unlocked(1, cox)).toBe(false)
+	t.test("unlock needs the Station built (no ranks)", function()
+		t.expect(C.unlocked({ Station = true })).toBe(true)
+		t.expect(C.unlocked({ Boathouse = true, LookoutTower = true })).toBe(false)
+		t.expect(C.unlocked({})).toBe(false)
 	end)
 
 	t.test("hire costs Cash, one per role", function()

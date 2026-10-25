@@ -1,23 +1,25 @@
 --!strict
--- ProgressionRules: the pure progression math (rank from Rep, storm multipliers, purchase checks,
--- save-data defaults and migration). No services, safe to load in Lune (tests/Progression.spec.luau,
--- tests/Ranks.spec.luau). Server services and HUD both use it so they agree.
+-- ProgressionRules: the pure progression math (storm multipliers, vehicle checks, save-data defaults and
+-- migration). No ranks and no Reputation (docs/23 (q), WP-28): craft unlock through their island building
+-- (shared/UnlockTree). No services, safe to load in Lune (tests/Progression.spec.luau). Server services and
+-- the HUD both use it so they agree.
 local DockConfig = require(script.Parent.Config.DockConfig)
 local MonetizationConfig = require(script.Parent.Config.MonetizationConfig)
 local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
+local UnlockTree = require(script.Parent.UnlockTree)
 local VehicleUpgrades = require(script.Parent.VehicleUpgrades)
 
 export type PlayerData = {
 	version: number,
 	cash: number,
-	rep: number,
+	rep: number, -- retired Reputation (WP-28): kept as saved, never read
 	vehicles: { [string]: boolean },
 	-- Fitted vehicle upgrades (docs 03 section 4.1): boat id -> bitmask of VehicleUpgrades levels.
 	vehicleUpgrades: { [string]: number },
-	totalRescues: number,
+	totalRescues: number, -- people delivered home (badges, leaderboards, the rescue board)
 	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
-	dockLevel: number, -- your dock at the marina, 1..5 (docs/23 d.2; DockService)
-	dockBuildings: { [string]: boolean }, -- DockConfig buildings, blueprints (Lighthouse) and decor
+	dockLevel: number, -- retired dock level 1..5 (WP-28): kept as saved; migrate maps it onto the tree
+	dockBuildings: { [string]: boolean }, -- the unlock tree (DockConfig.Buildings), blueprints and decor
 	-- Hired crew roles (docs/23 (j), WP-15; CrewHireService), max one per role.
 	crew: { [string]: boolean },
 	-- Small persisted flags and settings (ProgressionService.SetFlag). A value is a boolean, a
@@ -37,59 +39,7 @@ export type PlayerData = {
 
 local Rules = {}
 
--- Index of the highest rank whose Rep threshold is met.
-function Rules.rankIndexForRep(rep: number): number
-	local index = 1
-	for i, rank in ProgressionConfig.Ranks do
-		if rep >= rank.rep then
-			index = i
-		end
-	end
-	return index
-end
-
-function Rules.rankForRep(rep: number): ProgressionConfig.Rank
-	return ProgressionConfig.Ranks[Rules.rankIndexForRep(rep)]
-end
-
--- The player's rank: Rep only (docs/16 K7, no certification gates).
-function Rules.rankIndex(data: PlayerData): number
-	return Rules.rankIndexForRep(data.rep)
-end
-
--- Next rank, plus 0..1 progress from the current threshold to the next. nil next at max rank.
-function Rules.progressToNext(rep: number): (ProgressionConfig.Rank?, number)
-	local index = Rules.rankIndexForRep(rep)
-	local current = ProgressionConfig.Ranks[index]
-	local nextRank = ProgressionConfig.Ranks[index + 1]
-	if not nextRank then
-		return nil, 1
-	end
-	local span = nextRank.rep - current.rep
-	return nextRank, math.clamp((rep - current.rep) / span, 0, 1)
-end
-
--- Service Stars: one per ServiceStarStep Rep past the top rank (docs 03 section 3).
-function Rules.serviceStarsFromRep(rep: number): number
-	local top = ProgressionConfig.Ranks[#ProgressionConfig.Ranks]
-	return math.max(0, math.floor((rep - top.rep) / ProgressionConfig.ServiceStarStep))
-end
-
-function Rules.serviceStars(data: PlayerData): number
-	return Rules.serviceStarsFromRep(data.rep)
-end
-
--- stars, Rep of the next star, 0..1 progress into the current star.
-function Rules.starProgress(data: PlayerData): (number, number, number)
-	local top = ProgressionConfig.Ranks[#ProgressionConfig.Ranks]
-	local stars = Rules.serviceStars(data)
-	local base = top.rep + stars * ProgressionConfig.ServiceStarStep
-	return stars,
-		base + ProgressionConfig.ServiceStarStep,
-		math.clamp((data.rep - base) / ProgressionConfig.ServiceStarStep, 0, 1)
-end
-
--- Cash multiplier for the weather state. Rep is never multiplied (docs 03 section 2).
+-- Cash multiplier for the weather state (docs 03 section 2).
 function Rules.stormCashMultiplier(state: string?, isGreatStorm: boolean?): number
 	if state ~= "Storm" then
 		return 1
@@ -112,24 +62,18 @@ local function num(value: any, default: number): number
 	return default
 end
 
--- Final whole-number award after multipliers. Negative inputs are clamped to 0. `paid` is the
--- Cash multiplier from boosts and friends, `repMult` the Great Storm Rep bonus; `flat` skips all
--- of them, weather included, for passive rewards.
+-- Final whole-number Cash after multipliers -> cash, multiplier. Negative inputs are clamped to 0. `paid` is
+-- the Cash multiplier from boosts and friends; `flat` skips all of them, weather included, for passive rewards.
 function Rules.applyAward(
 	cash: number,
-	rep: number,
 	state: string?,
 	isGreatStorm: boolean?,
 	paid: number?,
-	repMult: number?,
 	flat: boolean?
-): (number, number, number)
+): (number, number)
 	local mult = if flat then 1 else Rules.stormCashMultiplier(state, isGreatStorm) * num(paid, 1)
 	-- NaN or inf would poison data.cash and the next load would reset the profile to defaults
-	local finalCash = math.floor(math.clamp(num(cash, 0), 0, 1e9) * mult + 0.5)
-	local finalRep =
-		math.floor(math.clamp(num(rep, 0), 0, 1e9) * (if flat then 1 else num(repMult, 1)) + 0.5)
-	return finalCash, finalRep, mult
+	return math.floor(math.clamp(num(cash, 0), 0, 1e9) * mult + 0.5), mult
 end
 
 -- The GamePasses key that owns this vehicle (MonetizationConfig item with `vehicle` = id), or nil.
@@ -158,7 +102,8 @@ function Rules.ownsVehicle(data: PlayerData, vehicleId: string, passOwned: boole
 	return unlock.price <= 0 or data.vehicles[vehicleId] == true
 end
 
--- ok, reason: may this player launch this vehicle? A pass owner skips the rank gate.
+-- ok, reason: may this player launch this vehicle? Owning it is enough: the building gate is on the buy
+-- (UnlockTree), so a craft bought before WP-28 (or a pass bought on the website) keeps launching.
 function Rules.canUseVehicle(
 	data: PlayerData,
 	vehicleId: string,
@@ -168,50 +113,33 @@ function Rules.canUseVehicle(
 	if not unlock then
 		return false, "Unknown vehicle"
 	end
-	if passOwned == true then
+	if Rules.ownsVehicle(data, vehicleId, passOwned) then
 		return true, "ok"
 	end
-	if unlock.passOnly then
-		return false, "Robux only"
-	end
-	if Rules.rankIndex(data) < unlock.rankIndex then
-		return false, `Needs {ProgressionConfig.Ranks[unlock.rankIndex].displayName}`
-	end
-	if not Rules.ownsVehicle(data, vehicleId) then
-		return false, "Not owned"
-	end
-	return true, "ok"
+	return false, if unlock.passOnly then "Robux only" else "Not owned"
 end
 
--- Why a vehicle is rank-locked for this player ("Rank: Lifeguard"), or nil when the rank is there.
+-- The building a vehicle still needs on this player's island (a DockConfig.Buildings key), or nil.
 function Rules.vehicleLock(data: PlayerData, vehicleId: string): string?
-	local unlock = ProgressionConfig.Vehicles[vehicleId]
-	if not unlock or Rules.rankIndex(data) >= unlock.rankIndex then
-		return nil
-	end
-	return `Rank: {ProgressionConfig.Ranks[unlock.rankIndex].displayName}`
+	return UnlockTree.craftMissing(vehicleId, data.dockBuildings)
 end
 
--- The PlayerData a client can rebuild from a Rules.snapshot (the HUD and the phone apps use it so
--- their gates match the server's): Rep, Cash, owned vehicles and their upgrades.
+-- The PlayerData a client can rebuild from a Rules.snapshot (the HUD and the boards use it so their gates
+-- match the server's): Cash, owned vehicles and their upgrades, the island's buildings.
 function Rules.fromSnapshot(snap: { [string]: any }): PlayerData
 	local data = Rules.defaultData()
 	data.cash = if type(snap.cash) == "number" then snap.cash else 0
-	data.rep = if type(snap.rep) == "number" then snap.rep else 0
 	data.coldOpenDone = snap.coldOpenDone == true
-	if type(snap.vehicles) == "table" then
-		data.vehicles = table.clone(snap.vehicles)
-	end
-	if type(snap.vehicleUpgrades) == "table" then
-		data.vehicleUpgrades = table.clone(snap.vehicleUpgrades)
-	end
-	if type(snap.crew) == "table" then
-		data.crew = table.clone(snap.crew)
+	data.totalRescues = if type(snap.totalRescues) == "number" then snap.totalRescues else 0
+	for _, key in { "vehicles", "vehicleUpgrades", "crew", "dockBuildings" } do
+		if type(snap[key]) == "table" then
+			(data :: any)[key] = table.clone(snap[key])
+		end
 	end
 	return data
 end
 
--- ok, reason, price for buying a vehicle.
+-- ok, reason, price for buying a vehicle with Cash: its building first (UnlockTree), then the Cash.
 function Rules.canBuyVehicle(
 	data: PlayerData,
 	vehicleId: string,
@@ -227,8 +155,9 @@ function Rules.canBuyVehicle(
 	if unlock.passOnly then
 		return false, "Robux only", 0
 	end
-	if Rules.rankIndex(data) < unlock.rankIndex then
-		return false, `Needs {ProgressionConfig.Ranks[unlock.rankIndex].displayName}`, unlock.price
+	local need = Rules.vehicleLock(data, vehicleId)
+	if need then
+		return false, `Needs {DockConfig.Buildings[need].name}`, unlock.price
 	end
 	if data.cash < unlock.price then
 		return false, "Not enough Cash", unlock.price
@@ -371,6 +300,7 @@ function Rules.migrate(raw: any): PlayerData
 			end
 		end
 	end
+	UnlockTree.migrate(data.dockLevel, data.dockBuildings) -- WP-28: old dock levels -> tree items
 	if type(raw.crew) == "table" then
 		for role, hired in raw.crew do
 			if type(role) == "string" and #role <= 24 and hired == true then
@@ -418,20 +348,10 @@ end
 
 -- What the client sees (PlayerDataChanged and Progression_GetData).
 function Rules.snapshot(data: PlayerData): { [string]: any }
-	local index = Rules.rankIndex(data)
-	local nextRank, progress = Rules.progressToNext(data.rep)
-	local stars, nextStarRep, starProgress = Rules.starProgress(data)
-	local rankName = ProgressionConfig.Ranks[index].displayName
 	return {
 		cash = data.cash,
-		rep = data.rep,
-		rank = if stars > 0 then `{rankName} ★{stars}` else rankName,
-		rankIndex = index,
-		nextRankRep = if nextRank then nextRank.rep else nil,
-		rankProgress = progress,
-		stars = stars,
-		nextStarRep = nextStarRep,
-		starProgress = starProgress,
+		totalRescues = data.totalRescues,
+		dockBuildings = table.clone(data.dockBuildings),
 		vehicles = table.clone(data.vehicles),
 		vehicleUpgrades = table.clone(data.vehicleUpgrades),
 		crew = table.clone(data.crew),

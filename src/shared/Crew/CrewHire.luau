@@ -1,15 +1,13 @@
 --!strict
 -- CrewHire (docs/23 (j), WP-15): the late-game crew rules. Pure data + math, safe to load in
--- Lune (tests/CrewHire.spec.luau). Hiring unlocks with the dock Lv 5 station built AND rank
--- Coxswain or higher; the job-seeker line outside the player's station is replaced by a new
+-- Lune (tests/CrewHire.spec.luau). Hiring unlocks with the Station built (docs/23 (q): no ranks);
+-- the job-seeker line outside the player's station is replaced by a new
 -- group every ROTATE_SECONDS of the server clock (group = floor(now / ROTATE_SECONDS); the
 -- client clock on the station door counts down with the same os.time epochs). Each role has a
 -- Cash hire price and a daily wage (the late-game Cash sink, docs/23 (i)): CrewHireService
 -- takes the wage off data.cash at the start of each play session, never below 0. Max one per
 -- role. The three effect knobs below are read by one-liners in VehicleService,
 -- AmbientRescueService and OperationService; they only apply while the owner is in the server.
-local ProgressionConfig = require(script.Parent.Parent.Config.ProgressionConfig)
-
 export type Role = {
 	id: string,
 	glyph: string, -- client Glyph kind (src/client/UI/Glyph)
@@ -36,20 +34,9 @@ CrewHire.MechanicCooldown = 0.7 -- Boat to me cooldown x0.7 (VehicleService, UI/
 CrewHire.DispatchFactor = 0.8 -- call offers 20% sooner (OperationService)
 CrewHire.LifeguardSwimmers = 1 -- one extra free-roam swimmer near the owner's island
 
-CrewHire.STATION_LEVEL = 5 -- the dock Lv 5 station (DockConfig.MAX)
-
-CrewHire.COXSWAIN_INDEX = (function()
-	for i, r in ProgressionConfig.Ranks do
-		if r.id == "Coxswain" then
-			return i
-		end
-	end
-	return 4
-end)()
-
--- Unlock: the dock Lv 5 station built and rank Coxswain or higher (tune).
-function CrewHire.unlocked(dockLevel: number, rankIndex: number): boolean
-	return dockLevel >= CrewHire.STATION_LEVEL and rankIndex >= CrewHire.COXSWAIN_INDEX
+-- Unlock: the Station built (`owned` = data.dockBuildings).
+function CrewHire.unlocked(owned: { [string]: boolean }): boolean
+	return owned.Station == true
 end
 
 -- Which 20-minute group `now` (os.time) belongs to, and when the next one arrives.

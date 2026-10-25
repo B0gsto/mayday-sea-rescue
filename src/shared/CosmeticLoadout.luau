@@ -1,20 +1,19 @@
 --!strict
 -- CosmeticLoadout (pure, shared): what a player has actually earned, read from the profile flags
 -- that used to be data only (docs/15 H3 stock trims, H8 season rewards, the monthly livery) and the
--- rank. Earned cosmetic options carry an
+-- people rescued. Earned cosmetic options carry an
 -- `earn` key in their slot config
 -- (src/shared/Config/Cosmetics/*); this module turns data.flags into the set of those keys and
 -- picks the latest earned option per slot so the player notices it once (Earned service feature).
 --
---   CosmeticLoadout.owned(flags, rep?): { [earnKey]: true }
---   CosmeticLoadout.show(flags, rep?): { owned, newest = { [slot]: { id, earn } }, decor = { earnKey } }
+--   CosmeticLoadout.owned(flags, rescued?): { [earnKey]: true }
+--   CosmeticLoadout.show(flags, rescued?): { owned, newest = { [slot]: { id, earn } }, decor = { earnKey } }
 --   CosmeticLoadout.encode(set) / decode(raw)   the "CosOwned" player attribute (newline list)
 --
 -- `show` needs the real cosmetics registry (options name their `earn` key), so this is not a
 -- no-Roblox pure module; it stays service-free and Lune-tested in tests/CosmeticLoadout.spec.luau.
 
 local Cosmetics = require(script.Parent.Cosmetics)
-local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
 
 local CosmeticLoadout = {}
 
@@ -41,13 +40,9 @@ local SEASON = {
 	{ tier = 12, cosmetic = "Title_Season1" },
 	{ tier = 30, cosmetic = "Livery_Season1" },
 }
--- The monthly liveries came from weekly challenges (cut, docs/16 C12): Commodore unlocks them now.
-local MONTHLY_REP = math.huge
-for _, rank in ProgressionConfig.Ranks do
-	if rank.id == "Commodore" then
-		MONTHLY_REP = rank.rep
-	end
-end
+-- The monthly liveries came from weekly challenges (cut, docs/16 C12), then Commodore rank (cut, WP-28): 500
+-- people rescued unlocks them now (data.totalRescues; about where Commodore was). -- tune
+CosmeticLoadout.MONTHLY_RESCUED = 500
 
 -- Stock keys then season tiers, then monthly liveries, then the group reward.
 -- Flags carry no earn time, so this fixed order is the "latest" order.
@@ -95,9 +90,9 @@ local function flagMap(value: any): { [string]: boolean }
 	return out
 end
 
-function CosmeticLoadout.owned(flags: any, rep: number?): { [string]: boolean }
+function CosmeticLoadout.owned(flags: any, rescued: number?): { [string]: boolean }
 	local set: { [string]: boolean } = {}
-	if (tonumber(rep) or 0) >= MONTHLY_REP then
+	if (tonumber(rescued) or 0) >= CosmeticLoadout.MONTHLY_RESCUED then
 		for month = 1, 12 do
 			set["monthly:" .. string.format("2026-%02d", month)] = true
 		end
@@ -135,8 +130,8 @@ export type Loadout = {
 	decor: { string },
 }
 
-function CosmeticLoadout.show(flags: any, rep: number?): Loadout
-	local owned = CosmeticLoadout.owned(flags, rep)
+function CosmeticLoadout.show(flags: any, rescued: number?): Loadout
+	local owned = CosmeticLoadout.owned(flags, rescued)
 	local newest: Newest = {}
 	for _, slot in Cosmetics.slots() do
 		local entry = Cosmetics.slot(slot)

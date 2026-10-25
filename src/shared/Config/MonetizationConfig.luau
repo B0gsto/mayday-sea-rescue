@@ -14,7 +14,7 @@
 -- * `paidRandom` marks a random-outcome item (none at launch; docs/04 section 8). Such items are hidden
 --   wherever PolicyService restricts paid random items, or when the policy check failed.
 -- * Developer Products are consumables (bought again and again); Game Passes are owned forever.
---   Nothing here changes Reputation, rank, call timers, step grades or a casualty's condition (docs/04 §7).
+--   Nothing here changes call timers, step grades or a casualty's condition (docs/04 §7).
 
 export type Item = {
 	id: number,
@@ -34,10 +34,10 @@ export type Item = {
 	stormTier: string?, -- Storm Summons: "Storm" or "GreatStorm" (docs/04 section 5)
 	dayPassFor: string?, -- day passes: the GamePasses key whose effect this product lends
 	dayPassHours: number?, -- day passes: hours of real time (the clock runs while away; buying again adds)
-	vehicle: string?, -- vehicle passes: the VehicleConfig id it owns (any rank)
-	dockLevel: number?, -- dock levels (DockConfig): builds your dock to this level; sold at the dock only
-	dockBuilding: string?, -- dock buildings (DockConfig.Buildings key); sold at the dock only
-	crewHire: boolean?, -- crew hire (docs/23 (j), WP-15): Robux skips Cash and the rank gate
+	vehicle: string?, -- vehicle passes: the VehicleConfig id it owns (offered once its building stands)
+	dockBuilding: string?, -- island buildings (DockConfig.Buildings key); sold at the build tablet only, once
+	-- the building's prerequisites stand (Robux skips the Cash, never the order: docs/23 (q))
+	crewHire: boolean?, -- crew hire (docs/23 (j), WP-15): Robux skips the Cash
 }
 
 local MonetizationConfig = {
@@ -46,7 +46,7 @@ local MonetizationConfig = {
 		SmallBonus = {
 			id = 3719524891,
 			name = "Small Bonus",
-			description = "Cash equal to 15 minutes of your top open zone's Cash rate. Cash only, no Reputation.",
+			description = "Cash equal to 15 minutes of your top open zone's Cash rate. Cash only.",
 			price = 10,
 			order = 1,
 			ready = true,
@@ -56,7 +56,7 @@ local MonetizationConfig = {
 		CrewPayroll = {
 			id = 3719524897,
 			name = "Crew Payroll",
-			description = "Cash equal to 45 minutes of your top open zone's Cash rate. Cash only, no Reputation.",
+			description = "Cash equal to 45 minutes of your top open zone's Cash rate. Cash only.",
 			price = 25,
 			order = 2,
 			ready = true,
@@ -66,7 +66,7 @@ local MonetizationConfig = {
 		StationBudget = {
 			id = 3719524917,
 			name = "Station Budget",
-			description = "Cash equal to 2.5 hours of your top open zone's Cash rate, plus 10%. Cash only, no Reputation.",
+			description = "Cash equal to 2.5 hours of your top open zone's Cash rate, plus 10%. Cash only.",
 			price = 75,
 			order = 3,
 			ready = true,
@@ -76,7 +76,7 @@ local MonetizationConfig = {
 		HarborFund = {
 			id = 3719524924,
 			name = "Harbor Fund",
-			description = "Cash equal to 7 hours of your top open zone's Cash rate, plus 20%. Cash only, no Reputation.",
+			description = "Cash equal to 7 hours of your top open zone's Cash rate, plus 20%. Cash only.",
 			price = 149,
 			order = 4,
 			ready = true,
@@ -144,49 +144,49 @@ local MonetizationConfig = {
 			dayPassFor = "QuickLaunch",
 			dayPassHours = 24,
 		},
-		-- docs/23 WP-4: one per dock level (DockConfig), sold at the blueprint table on your island, granted by DockService.
-		-- Prices: docs/23 (i) economy check (never a better Cash deal than the Cash packs; rank skip costs extra).
+		-- docs/23 WP-4, WP-28: island buildings of the unlock tree (DockConfig.Buildings `product`), sold at the build
+		-- tablet, granted by DockService once their prerequisites stand. The keys and ids are the old dock levels'.
+		-- Prices: docs/23 (i) economy check (never a better Cash deal than the Cash packs).
 		DockLevel2 = {
 			id = 3722223190,
-			name = "Dock Level 2",
-			description = "Builds your dock to level 2 now, no Cash or rank needed: a pontoon, lamp posts, your flag and a rescue board.",
+			name = "Pontoon",
+			description = "Builds the pontoon on your island now, no Cash needed: a second berth, lamp posts, your flag and a rescue board.",
 			price = 49,
 			order = 31,
 			ready = true,
-			dockLevel = 2,
+			dockBuilding = "Pontoon",
 		},
 		DockLevel3 = {
 			id = 3722223199,
-			name = "Dock Level 3",
-			description = "Builds your dock to level 3 now, no Cash or rank needed: a boathouse with a roll-up door.",
+			name = "Boathouse",
+			description = "Builds the boathouse on your island now, no Cash needed (needs the workshop): pick and paint boats.",
 			price = 99,
 			order = 32,
 			ready = true,
-			dockLevel = 3,
+			dockBuilding = "Boathouse",
 		},
 		DockLevel4 = {
 			id = 3722223208,
-			name = "Dock Level 4",
-			description = "Builds your dock to level 4 now, no Cash or rank needed: a lookout tower and a slipway crane, and no relaunch cooldown.",
-			price = 199,
+			name = "Lookout Tower",
+			description = "Builds the lookout tower on your island now, no Cash needed (needs the pontoon).",
+			price = 79,
 			order = 33,
 			ready = true,
-			dockLevel = 4,
+			dockBuilding = "LookoutTower",
 		},
 		DockLevel5 = {
 			id = 3722223223,
-			name = "Dock Level 5",
-			description = "Builds your dock to level 5 now, no Cash or rank needed: a lit station front and a beacon seen across the harbour at night.",
-			price = 399,
+			name = "Station",
+			description = "Builds the lit station and its beacon now, no Cash needed (needs the boathouse and the lookout tower).",
+			price = 199,
 			order = 34,
 			ready = true,
-			dockLevel = 5,
+			dockBuilding = "Station",
 		},
-		-- docs/23 h (WP-10b): the dock buildings (DockConfig.Buildings), sold at their blueprint sheet, granted by DockService.
 		DockGarage = {
 			id = 3722223237,
 			name = "Car Garage",
-			description = "Builds your garage now, no Cash or rank needed: pick a car at its board and drive it out.",
+			description = "Builds your garage now, no Cash needed: pick a car at its board and drive it out.",
 			price = 75,
 			order = 35,
 			ready = false, -- cut 2026-10-25 (pre-hub-cut)
@@ -194,8 +194,8 @@ local MonetizationConfig = {
 		},
 		DockHangar = {
 			id = 3722223246,
-			name = "Helipad and Hangar",
-			description = "Builds a helipad and hangar on your boathouse roof now, no Cash or rank needed (needs the dock level 3 boathouse).",
+			name = "Hangar",
+			description = "Builds the hangar on your island now, no Cash needed (needs the helipad).",
 			price = 199,
 			order = 36,
 			ready = true,
@@ -204,17 +204,17 @@ local MonetizationConfig = {
 		DockSubPen = {
 			id = 3722223257,
 			name = "Sub Pen",
-			description = "Builds a sub pen beside your berth now, no Cash or rank needed.",
+			description = "Builds a sub pen beside your berth now, no Cash needed (needs the crane).",
 			price = 149,
 			order = 37,
 			ready = true,
 			dockBuilding = "SubPen",
 		},
-		-- docs/23 (j), WP-15: one hire from the job-seeker line, no Cash and no rank gate.
+		-- docs/23 (j), WP-15: one hire from the job-seeker line, no Cash.
 		CrewHire = {
 			id = 0,
 			name = "Crew Hire",
-			description = "Hire the job seeker you are standing beside for Robux, without the Cash price or the rank.",
+			description = "Hire the job seeker you are standing beside for Robux, without the Cash price.",
 			price = 99,
 			order = 38,
 			ready = false, -- WP-15: the Robux grant path is not built yet; flip when it lands
@@ -226,7 +226,7 @@ local MonetizationConfig = {
 		DoubleCash = {
 			id = 2040015521,
 			name = "2x Cash",
-			description = "Doubles Cash from every rescue. Does not change Reputation or rank.",
+			description = "Doubles Cash from every rescue.",
 			price = 75,
 			order = 1,
 			ready = true,
@@ -330,12 +330,12 @@ local MonetizationConfig = {
 			order = 13,
 			ready = false,
 		},
-		-- Vehicle passes (2026-10-21, user): own the vehicle at any rank (ProgressionRules.vehiclePass);
+		-- Vehicle passes (2026-10-21, user): own the vehicle (ProgressionRules.vehiclePass); offered once its building stands;
 		-- the premium six are Robux only (ProgressionConfig.Vehicles passOnly). Prices proposed -- tune.
 		RIBPass = {
 			id = 2044851404,
 			name = "RIB Inflatable",
-			description = "The RIB Inflatable: 3 crew, room for 3 survivors, fast and tough. Yours at any rank.",
+			description = "The RIB Inflatable: 3 crew, room for 3 survivors, fast and tough.",
 			price = 49,
 			order = 14,
 			ready = true,
@@ -344,7 +344,7 @@ local MonetizationConfig = {
 		LifeboatPass = {
 			id = 2046219317,
 			name = "All-Weather Lifeboat",
-			description = "The All-Weather Lifeboat: room for 8 survivors, steady and self-righting. Yours at any rank.",
+			description = "The All-Weather Lifeboat: room for 8 survivors, steady and self-righting.",
 			price = 129,
 			order = 15,
 			ready = true,
@@ -353,7 +353,7 @@ local MonetizationConfig = {
 		BeachATVPass = {
 			id = 2044899375,
 			name = "Beach ATV",
-			description = "The Beach ATV quad bike for the sand. Yours at any rank.",
+			description = "The Beach ATV quad bike for the sand.",
 			price = 25,
 			order = 16,
 			ready = false, -- cut 2026-10-25 (pre-hub-cut)
@@ -362,7 +362,7 @@ local MonetizationConfig = {
 		CoastguardResponsePass = {
 			id = 2044617374,
 			name = "Coastguard Response 4x4",
-			description = "The Coastguard Response 4x4 with blue lights and a boat trailer. Yours at any rank.",
+			description = "The Coastguard Response 4x4 with blue lights and a boat trailer.",
 			price = 49,
 			order = 17,
 			ready = false, -- cut 2026-10-25 (pre-hub-cut)
@@ -422,11 +422,11 @@ local MonetizationConfig = {
 			ready = false, -- cut 2026-10-25 (pre-hub-cut)
 			vehicle = "LighthouseCruiser",
 		},
-		-- docs/23 (h): the hangar and sub pen craft, any rank. deploy.py creates them (id 0 until then).
+		-- docs/23 (h): the hangar and sub pen craft. deploy.py creates them (id 0 until then).
 		RescueHelicopterPass = {
 			id = 2053992047,
 			name = "Rescue Helicopter",
-			description = "The Rescue Helicopter: hover over anyone in the sea and winch them up. Yours at any rank.",
+			description = "The Rescue Helicopter: hover over anyone in the sea and winch them up.",
 			price = 399,
 			order = 24,
 			ready = true,
@@ -435,7 +435,7 @@ local MonetizationConfig = {
 		SeaplanePass = {
 			id = 2055467922,
 			name = "Seaplane",
-			description = "The Seaplane: the fastest way to far islands, lands on the water for 4 survivors. Yours at any rank.",
+			description = "The Seaplane: the fastest way to far islands, lands on the water for 4 survivors.",
 			price = 299,
 			order = 25,
 			ready = false, -- cut 2026-10-25 (pre-hub-cut)
@@ -444,7 +444,7 @@ local MonetizationConfig = {
 		SubmarinePass = {
 			id = 2052480096,
 			name = "Submarine",
-			description = "The Submarine: dive to the seabed and the wrecks, bring divers home. Yours at any rank.",
+			description = "The Submarine: dive to the seabed and the wrecks, bring divers home.",
 			price = 249,
 			order = 26,
 			ready = true,
@@ -456,14 +456,14 @@ local MonetizationConfig = {
 	CashPackDailyLimit = 5,
 	CashPacks = { "SmallBonus", "CrewPayroll", "StationBudget", "HarborFund" },
 
-	-- docs/03 section 2.1 Cash per hour by zone; Cash packs pay minutes of the top `live` zone the
-	-- player's rank has opened (docs/03 section 3). Flip `live` when a zone's operations ship.
+	-- docs/03 section 2.1 Cash per hour by zone; Cash packs pay minutes of the best `live` zone
+	-- (WP-28: no ranks gate it). Flip `live` when a zone's operations ship.
 	CashPackZones = {
-		{ id = "CalmBay", rankIndex = 1, cashPerHour = 6000, live = true },
-		{ id = "Skerries", rankIndex = 2, cashPerHour = 8700, live = false },
-		{ id = "OpenSea", rankIndex = 4, cashPerHour = 12700, live = false },
-		{ id = "StormFront", rankIndex = 6, cashPerHour = 17300, live = false },
-		{ id = "IcebergNorth", rankIndex = 7, cashPerHour = 21800, live = false },
+		{ id = "CalmBay", cashPerHour = 6000, live = true },
+		{ id = "Skerries", cashPerHour = 8700, live = false },
+		{ id = "OpenSea", cashPerHour = 12700, live = false },
+		{ id = "StormFront", cashPerHour = 17300, live = false },
+		{ id = "IcebergNorth", cashPerHour = 21800, live = false },
 	},
 }
 

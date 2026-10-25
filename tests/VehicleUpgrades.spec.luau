@@ -2,7 +2,6 @@
 return function(t)
 	local U = t.load("src/shared/VehicleUpgrades.luau")
 	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
-	local ProgressionConfig = t.load("src/shared/Config/ProgressionConfig.luau")
 	local Rules = t.load("src/shared/ProgressionRules.luau")
 
 	local function prices(vehicleId)
@@ -33,27 +32,23 @@ return function(t)
 				end
 				for _, upgrade in list do
 					t.expect(upgrade.name ~= "" and upgrade.effect ~= "").toBe(true)
-					t.expect(upgrade.rankIndex)
-						.toBe(ProgressionConfig.Vehicles[vehicleId].rankIndex)
 				end
 			end
 		end
 	)
 
-	t.test("a purchase needs the vehicle, the rank and the Cash", function()
-		local ok, reason = U.canBuy("RIB", "Engine", 0, 5000, 3, false)
+	t.test("a purchase needs the vehicle and the Cash", function()
+		local ok, reason = U.canBuy("RIB", "Engine", 0, 5000, false)
 		t.expect({ ok, reason }).toEqual({ false, "Not owned" })
-		ok, reason = U.canBuy("RIB", "Engine", 0, 5000, 1, true)
-		t.expect({ ok, reason }).toEqual({ false, "Needs Lifeguard" })
-		ok, reason = U.canBuy("RIB", "Engine", 0, 624, 3, true)
+		ok, reason = U.canBuy("RIB", "Engine", 0, 624, true)
 		t.expect({ ok, reason }).toEqual({ false, "Need Cash" })
-		ok = U.canBuy("RIB", "Engine", 0, 625, 2, true)
+		ok = U.canBuy("RIB", "Engine", 0, 625, true)
 		t.expect(ok).toBe(true)
-		ok = U.canBuy("RIB", "Hull", 0, 1250, 3, true) -- independent fits: no fixed order
+		ok = U.canBuy("RIB", "Hull", 0, 1250, true) -- independent fits: no fixed order
 		t.expect(ok).toBe(true)
-		ok, reason = U.canBuy("JetSki", "Fit", 0, 9000, 1, true) -- the jet ski holds one
+		ok, reason = U.canBuy("JetSki", "Fit", 0, 9000, true) -- the jet ski holds one
 		t.expect({ ok, reason }).toEqual({ false, "Unknown upgrade" })
-		ok, reason = U.canBuy("RIB", "Engine", 1, 9000, 3, true)
+		ok, reason = U.canBuy("RIB", "Engine", 1, 9000, true)
 		t.expect({ ok, reason }).toEqual({ false, "Fitted" })
 	end)
 

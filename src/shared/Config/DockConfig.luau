@@ -1,95 +1,218 @@
 --!strict
--- DockConfig (docs/23 d.2, WP-4): dock levels 2..5, and the WP-10b buildings (hangar, sub pen). Each has two prices: Cash + rank, or Robux (the
--- MonetizationConfig product `product`, which skips both). Pure (tests/DockConfig.spec.luau).
--- Piece geometry lives in shared/DockPieces; DockService builds it, the blueprint table prices it.
+-- DockConfig (docs/23 (q), WP-28): the unlock tree. Every buildable thing on your island is one row of
+-- `Buildings`: its Cash price, what it `needs` (other rows; {} = only the bare jetty you start with), an optional
+-- Robux product (skips the Cash, never `needs`), where it stands (`spot`, berth frame) and its footprint. Adding
+-- content = adding a row (and its key to BUILDINGS). The rules that read it: shared/UnlockTree
+-- (tests/UnlockTree.spec.luau). Piece geometry lives in shared/DockPieces; DockService builds it, the build
+-- tablet prices it.
+--   Jetty (start)
+--   +- Pontoon (2nd berth) -- Lookout tower -- Helipad -- Hangar -> Helicopter
+--   |                              +- Rescue boathouse
+--   +- Workshop -+- Boathouse -> RIB, boat board, paint booth, Robux boats
+--   |            |    +- Lifeboat slip -> Lifeboat
+--   |            |    +- Crane -- Sub pen -> Submarine
+--   |            +- Boat yard
+--   +- Fish shed
+--   +- Station (Boathouse + Lookout tower) -- Clinic, Trophy hall
+--   Decor: the jetty only.
 local Marina = require(script.Parent.Parent:WaitForChild("Marina"))
-local ProgressionConfig = require(script.Parent.ProgressionConfig)
 
-export type Level = {
-	cash: number,
-	rank: string, -- ProgressionConfig.Ranks id
-	robux: number, -- launch price, docs/23 (i): at least the Cash packs' price for the Cash, plus a rank-skip premium
-	product: string, -- MonetizationConfig.Products key
+export type Building = {
+	name: string, -- the card's 1-3 words
 	desc: string, -- the build tablet's focus line, <= 10 words
-	adds: { string },
-	unlocks: { string },
+	cash: number,
+	needs: { string }, -- DockConfig.Buildings keys that must be owned first
+	product: string?, -- MonetizationConfig.Products key
+	robux: number?, -- its launch price (docs/23 (i): never a cheaper way to Cash than the packs)
+	spot: CFrame, -- berth frame, on the ground: the paper blueprint and the build camera's focus
+	size: Vector2, -- footprint (x / z of `spot`)
+	vehicles: { string }?, -- its own vehicle board's craft, in order (BoatBoard)
+	worker: string?, -- a worker building (WP-26 adds the workers): a plain Lego placeholder for now
+	color: Color3?, -- the placeholder's wall colour
 }
 
 local DockConfig = {}
 
-DockConfig.MAX = 5
+local LOTS = Marina.LOTS
+-- a spot on the island, `right` / `fwd` studs from its centre (HubLayout's island frame), turned `yaw` degrees
+local function isle(right: number, fwd: number, yaw: number?): CFrame
+	return Marina.ISLAND * CFrame.new(right, 0, -fwd) * CFrame.Angles(0, math.rad(yaw or 0), 0)
+end
 
-DockConfig.Levels = {
-	[2] = {
-		desc = "Moors a second boat beside your jetty.",
-		cash = 2500,
-		rank = "Lifeguard",
-		robux = 49,
-		product = "DockLevel2",
-		adds = { "Pontoon", "LampPosts", "Flag", "RescueBoard" },
-		unlocks = { "SecondBerth" },
-	},
-	[3] = {
-		desc = "A boathouse to pick and paint your boats.",
-		cash = 10000,
-		rank = "RescueSwimmer",
-		robux = 99,
-		product = "DockLevel3",
-		adds = { "Boathouse", "BoatBoard", "PaintBooth" },
-		unlocks = { "ChooseAtDock" },
-	},
-	[4] = {
-		desc = "A lookout tower and crane; relaunch with no wait.",
-		cash = 30000,
-		rank = "Coxswain",
-		robux = 199,
-		product = "DockLevel4",
-		adds = { "LookoutTower", "SlipwayCrane" },
-		unlocks = { "NoRelaunchCooldown", "LifeboatBerth" },
-	},
-	[5] = {
-		desc = "A lit station front and a beacon for the harbour.",
-		cash = 100000,
-		rank = "RescuePilot",
-		robux = 399,
-		product = "DockLevel5",
-		adds = { "StationFront", "Beacon", "TrophyHall" },
-		unlocks = { "TrophyHall", "HarbourMaster" },
-	},
-} :: { [number]: Level }
-
--- docs/23 h (WP-10b): buildings bought apart from the level, same two prices. `needs` = the lowest dock level
--- that may buy it (each stands on its own island lot, WP-19b). `vehicles` = its board's craft, in order.
-export type Building = Level & { needs: number, vehicles: { string }, lot: string }
-
-DockConfig.BUILDINGS = { "Hangar", "SubPen" } -- the car Garage was cut 2026-10-25 (pre-hub-cut)
+-- card order (roughly the tree's, left to right)
+DockConfig.BUILDINGS = {
+	"Pontoon",
+	"Workshop",
+	"FishShed",
+	"Boathouse",
+	"LookoutTower",
+	"BoatYard",
+	"LifeboatSlip",
+	"Crane",
+	"Helipad",
+	"RescueBoathouse",
+	"SubPen",
+	"Hangar",
+	"Station",
+	"TrophyHall",
+	"Clinic",
+}
 
 DockConfig.Buildings = {
-	Hangar = {
-		desc = "A helipad and hangar for your rescue helicopter.",
-		cash = 25000,
-		rank = "RescuePilot",
-		robux = 199,
-		product = "DockHangar",
-		adds = { "Helipad", "Hangar", "HangarBoard" },
-		unlocks = { "AircraftAtDock" },
-		needs = 3,
-		vehicles = { "RescueHelicopter" },
-		lot = "Hangar",
+	Pontoon = {
+		name = "Pontoon",
+		desc = "Moors a second boat beside your jetty.",
+		cash = 2500, -- tune
+		needs = {},
+		product = "DockLevel2",
+		robux = 49,
+		spot = CFrame.new(16, 2.1, 2),
+		size = Vector2.new(8, 50),
+	},
+	Workshop = {
+		name = "Workshop",
+		desc = "Builders work here. Unlocks the boathouse.",
+		cash = 1000, -- tune: the first build, ~8 min in (tests/NewPlayerPace)
+		needs = {},
+		spot = isle(80, -60),
+		size = Vector2.new(20, 16),
+		worker = "Builder",
+		color = Color3.fromRGB(250, 208, 40),
+	},
+	FishShed = {
+		name = "Fish shed",
+		desc = "Gatherers work here.",
+		cash = 3000, -- tune
+		needs = {},
+		spot = isle(45, 28),
+		size = Vector2.new(16, 12),
+		worker = "Gatherer",
+		color = Color3.fromRGB(40, 96, 208),
+	},
+	Boathouse = {
+		name = "Boathouse",
+		desc = "Pick and paint boats. Unlocks the RIB.",
+		cash = 2500, -- tune
+		needs = { "Workshop" },
+		product = "DockLevel3",
+		robux = 99,
+		spot = LOTS.Boathouse.cf,
+		size = Vector2.new(34, 40),
+	},
+	LookoutTower = {
+		name = "Lookout tower",
+		desc = "A tall tower to spot calls from.",
+		cash = 8000, -- tune
+		needs = { "Pontoon" },
+		product = "DockLevel4",
+		robux = 79,
+		spot = LOTS.LifeguardTower.cf,
+		size = Vector2.new(10, 10),
+	},
+	BoatYard = {
+		name = "Boat yard",
+		desc = "Mechanics work here.",
+		cash = 8000, -- tune
+		needs = { "Workshop" },
+		spot = isle(45, -48, 180),
+		size = Vector2.new(18, 14),
+		worker = "Mechanic",
+		color = Color3.fromRGB(250, 140, 30),
+	},
+	LifeboatSlip = {
+		name = "Lifeboat slip",
+		desc = "A slipway for the big lifeboat.",
+		cash = 10000, -- tune
+		needs = { "Boathouse" },
+		spot = isle(88, 20),
+		size = Vector2.new(16, 22),
+		color = Color3.fromRGB(60, 160, 220),
+	},
+	Crane = {
+		name = "Crane",
+		desc = "A slipway crane: relaunch with no wait.",
+		cash = 15000, -- tune
+		needs = { "Boathouse" },
+		spot = CFrame.new(16, Marina.DECK_TOP, 66),
+		size = Vector2.new(8, 8),
+	},
+	Helipad = {
+		name = "Helipad",
+		desc = "A landing pad for a helicopter.",
+		cash = 10000, -- tune
+		needs = { "LookoutTower" },
+		spot = LOTS.Helipad.cf,
+		size = LOTS.Helipad.size,
+	},
+	RescueBoathouse = {
+		name = "Rescue boathouse",
+		desc = "Rescuers work here.",
+		cash = 12000, -- tune
+		needs = { "LookoutTower" },
+		spot = isle(-45, 12),
+		size = Vector2.new(18, 14),
+		worker = "Rescuer",
+		color = Color3.fromRGB(224, 56, 40),
 	},
 	SubPen = {
+		name = "Sub pen",
 		desc = "A sub pen to launch your submarine.",
-		cash = 20000,
-		rank = "Coxswain",
-		robux = 149,
+		cash = 20000, -- tune
+		needs = { "Crane" },
 		product = "DockSubPen",
-		adds = { "SubPen", "SubBoard" },
-		unlocks = { "SubAtDock" },
-		needs = 1,
+		robux = 149,
+		spot = LOTS.SubPen.cf,
+		size = LOTS.SubPen.size,
 		vehicles = { "Submarine" },
-		lot = "SubPen",
+	},
+	Hangar = {
+		name = "Hangar",
+		desc = "A hangar for your rescue helicopter.",
+		cash = 20000, -- tune
+		needs = { "Helipad" },
+		product = "DockHangar",
+		robux = 199,
+		spot = LOTS.Hangar.cf,
+		size = LOTS.Hangar.size,
+		vehicles = { "RescueHelicopter" },
+	},
+	Station = {
+		name = "Station",
+		desc = "A lit station and a beacon for the harbour.",
+		cash = 40000, -- tune
+		needs = { "Boathouse", "LookoutTower" },
+		product = "DockLevel5",
+		robux = 199,
+		spot = LOTS.Station.cf,
+		size = Vector2.new(60, 44),
+	},
+	TrophyHall = {
+		name = "Trophy hall",
+		desc = "Cups and island stamps on the station wall.",
+		cash = 20000, -- tune
+		needs = { "Station" },
+		spot = LOTS.Station.cf * CFrame.new(-15.5, 0, -18),
+		size = Vector2.new(20, 6),
+	},
+	Clinic = {
+		name = "Clinic",
+		desc = "Medics work here.",
+		cash = 30000, -- tune
+		needs = { "Station" },
+		spot = isle(-25, -70, 180),
+		size = Vector2.new(16, 14),
+		worker = "Medic",
+		color = Color3.fromRGB(242, 240, 232),
 	},
 } :: { [string]: Building }
+
+-- Old saves (the dock-level ladder before WP-28): what each old level owns in the tree (ProgressionRules.migrate).
+DockConfig.LEVEL_ITEMS = {
+	[2] = { "Pontoon" },
+	[3] = { "Workshop", "Boathouse" },
+	[4] = { "LookoutTower", "Crane" },
+	[5] = { "Station", "TrophyHall" },
+} :: { [number]: { string } }
 
 -- Blueprints (docs/23 (j) "Exploration feeds the plot", WP-21b): cosmetic buildings a quest chain unlocks (never
 -- sold). Owned ones are data.dockBuildings[key]; DockService raises them on their island lot (Marina.LOTS[lot]).
@@ -168,30 +291,6 @@ DockConfig.Decorations = {
 	},
 } :: { [string]: Decor }
 
--- Can a player buy building `key` with Cash? -> ok, reason ("Owned" | "Level" | "Rank" | "Cash"), price.
-function DockConfig.canBuyBuilding(
-	key: string,
-	owned: boolean,
-	level: number,
-	cash: number,
-	rankIndex: number
-): (boolean, string?, number?)
-	local b = DockConfig.Buildings[key]
-	if not b or owned then
-		return false, "Owned", nil
-	end
-	if level < b.needs then
-		return false, "Level", b.cash
-	end
-	if rankIndex < DockConfig.rankIndex(b.rank) then
-		return false, "Rank", b.cash
-	end
-	if cash < b.cash then
-		return false, "Cash", b.cash
-	end
-	return true, nil, b.cash
-end
-
 -- The building a MonetizationConfig product key builds, or nil.
 function DockConfig.buildingFor(productKey: string): string?
 	for key, b in DockConfig.Buildings do
@@ -205,7 +304,7 @@ end
 -- Which building's board holds craft `id` (nil: the boat board's).
 function DockConfig.buildingOf(id: string): string?
 	for key, b in DockConfig.Buildings do
-		if table.find(b.vehicles, id) then
+		if b.vehicles and table.find(b.vehicles, id) then
 			return key
 		end
 	end
@@ -213,7 +312,7 @@ function DockConfig.buildingOf(id: string): string?
 end
 
 -- Where the boat board (WP-5) stands, in the berth frame (Marina.berth): on the boathouse floor (its lot)
--- by the back wall, facing the roll-up door and the cove. The Lv 3 boathouse keeps a clear
+-- by the back wall, facing the roll-up door and the cove. The boathouse keeps a clear
 -- BOARD_SIZE x BOARD_SIZE floor area centred here.
 DockConfig.BOARD_SLOT = Marina.LOTS.Boathouse.cf * CFrame.new(0, 0, 14)
 DockConfig.BOARD_SIZE = 6
@@ -222,7 +321,7 @@ DockConfig.BOARD_SIZE = 6
 DockConfig.BUILD_STATION =
 	{ lot = "Spare3", offset = Vector2.new(-11, 0), size = Vector2.new(16, 12) }
 
--- The Lv 3 paint booth (docs/23 d.3), in the berth frame: the gantry over the berth's inshore half. A craft
+-- The boathouse's paint booth (docs/23 d.3), in the berth frame: the gantry over the berth's inshore half. A craft
 -- seated inside this box opens its owner's paint card (DockController). The docked spot (z <= 0) stays out.
 DockConfig.PAINT_BOOTH = { cf = CFrame.new(1.5, 6, 15), size = Vector3.new(23, 20, 26) }
 
@@ -255,46 +354,6 @@ function DockConfig.canBuyDecor(
 		return false, "Cash", d.cash
 	end
 	return true, nil, d.cash
-end
-
-function DockConfig.rankIndex(rankId: string): number
-	for i, r in ProgressionConfig.Ranks do
-		if r.id == rankId then
-			return i
-		end
-	end
-	error(`DockConfig: unknown rank {rankId}`)
-end
-
--- Can a player at dock level `current` buy `target` with Cash? -> ok, reason ("Level" | "Rank" |
--- "Cash"), price. Only the next level is for sale.
-function DockConfig.canBuy(
-	current: number,
-	target: number,
-	cash: number,
-	rankIndex: number
-): (boolean, string?, number?)
-	local lv = DockConfig.Levels[target]
-	if not lv or target ~= current + 1 then
-		return false, "Level", nil
-	end
-	if rankIndex < DockConfig.rankIndex(lv.rank) then
-		return false, "Rank", lv.cash
-	end
-	if cash < lv.cash then
-		return false, "Cash", lv.cash
-	end
-	return true, nil, lv.cash
-end
-
--- The level a MonetizationConfig product key builds, or nil.
-function DockConfig.levelFor(productKey: string): number?
-	for n, lv in DockConfig.Levels do
-		if lv.product == productKey then
-			return n
-		end
-	end
-	return nil
 end
 
 return DockConfig

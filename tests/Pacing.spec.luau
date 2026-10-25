@@ -1,6 +1,7 @@
 -- Pacing: the docs/03 section 10 player (25-minute sessions, two a day, Silver grades,
 -- occasional storm, solo or with one friend) against the real config and pure rules. Prints the
--- unlock timeline and the Cash at each session end, then asserts the section 10 targets.
+-- unlock timeline and the Cash at each session end, then asserts the targets. No ranks (docs/23 (q)):
+-- progress is the island's unlock tree, bought with Cash only.
 -- Every number comes from a config or a pure rule module; only the play pattern below is assumed.
 return function(t)
 	local ProgressionConfig = t.load("src/shared/Config/ProgressionConfig.luau")
@@ -11,6 +12,7 @@ return function(t)
 	local Grading = t.load("src/shared/Ops/Grading.luau")
 	local FriendBonus = t.load("src/shared/FriendBonus.luau")
 	local VehicleUpgrades = t.load("src/shared/VehicleUpgrades.luau")
+	local UnlockTree = t.load("src/shared/UnlockTree.luau")
 
 	local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
 	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
@@ -22,6 +24,31 @@ return function(t)
 	for _, island in HubLayout.Islands do
 		table.insert(HOMES, CallLogic.homeOf(island.berths.Boat))
 	end
+
+	-- The free player's walk through the tree (docs/23 (q)): the boathouse and RIB first, the lifeboat, the
+	-- helicopter's branch, then the rest. Every prerequisite comes before its item (planNext asserts it).
+	local PLAN = {
+		"Workshop",
+		"Boathouse",
+		"RIB",
+		"Pontoon",
+		"LifeboatSlip",
+		"Lifeboat",
+		"LookoutTower",
+		"Helipad",
+		"Hangar",
+		"RescueHelicopter",
+		"FishShed",
+		"BoatYard",
+		"Crane",
+		"SubPen",
+		"Submarine",
+		"RescueBoathouse",
+		"Station",
+		"TrophyHall",
+		"Clinic",
+	}
+	local LABEL = { RescueHelicopter = "Helicopter" }
 
 	local SESSION_MIN = 25
 	local MAX_PLAY_MIN = 40 * 60
@@ -53,15 +80,13 @@ return function(t)
 		local function mark(label: string)
 			if not seen[label] then
 				seen[label] = true
-				table.insert(
-					timeline,
-					{ at = playMin, label = label, cash = data.cash, rep = data.rep }
-				)
+				table.insert(timeline, { at = playMin, label = label, cash = data.cash })
 			end
 		end
 
 		local streak = StreakRules.newState()
-		local owned = {}
+		local owned = data.vehicles -- the craft bought (the jet ski is free)
+		local built = data.dockBuildings -- the island's buildings (the unlock tree, docs/23 (q))
 		local upgrades = { JetSki = 0, RIB = 0, Lifeboat = 0 }
 		local totalOps = 0
 
@@ -69,117 +94,36 @@ return function(t)
 			return false -- the hourly Great Storm clock was cut (always sunny)
 		end
 
-		local function rank(): number
-			return Progression.rankIndex(data)
-		end
-
-		local function checkRank()
-			local r = rank()
-			if r > 1 then
-				mark("Rank " .. r .. " " .. ProgressionConfig.Ranks[r].displayName)
-			end
-		end
-
-		-- the free ladder: RIB, lifeboat, then the helicopter, bought at the hangar board (docs/23 h), so
-		-- its bill includes the hangar (which stands on the dock Lv 3 boathouse)
-		local dockLevel = 1
-		local built = {}
-		local LADDER = {
-			{ "RIB", "RIB bought" },
-			{ "Lifeboat", "Lifeboat bought" },
-			{ "RescueHelicopter", "Helicopter bought" },
-		}
-
-		local function bill(id: string): number
-			local home = DockConfig.buildingOf(id)
-			local extra = if home and not built[home] then DockConfig.Buildings[home].cash else 0
-			return ProgressionConfig.Vehicles[id].price + extra
-		end
-
-		local function vehicles()
-			for _, step in LADDER do
-				local id = step[1]
-				if not owned[id] then
-					local home = DockConfig.buildingOf(id)
-					if
-						rank() >= ProgressionConfig.Vehicles[id].rankIndex
-						and data.cash >= bill(id)
-					then
-						if
-							home
-							and not built[home]
-							and dockLevel >= DockConfig.Buildings[home].needs
-						then
-							data.cash -= DockConfig.Buildings[home].cash
-							built[home] = true
-							mark(home .. " built")
-						end
-						if not home or built[home] then
-							data.cash -= ProgressionConfig.Vehicles[id].price
-							owned[id] = true
-							mark(step[2])
-						end
+		-- docs/23 (q): a free player walks the unlock tree in PLAN order with Cash only, each item as soon
+		-- as it is affordable (a due upgrade goes first: they are cheap and make the craft better)
+		local planIndex = 1
+		local function planNext()
+			while PLAN[planIndex] do
+				local key = PLAN[planIndex]
+				if DockConfig.Buildings[key] then
+					local ok, reason, price = UnlockTree.canBuy(key, built, data.cash)
+					assert(reason ~= "Needs", `PLAN buys {key} before its prerequisites`)
+					if not ok or not price then
+						return
 					end
-					return -- one ladder step at a time
-				end
-			end
-		end
-
-		local function reserve(): number
-			for _, step in LADDER do
-				local id = step[1]
-				if not owned[id] then
-					return if rank() >= ProgressionConfig.Vehicles[id].rankIndex
-						then bill(id)
-						else 0
-				end
-			end
-			return 0
-		end
-
-		-- docs/23 d.2 and h: dock levels, the other buildings and their craft, with Cash left over after
-		-- the next ladder bill (the dock never delays a vehicle)
-		local function dockNext()
-			local r = rank()
-			local ok, _, price =
-				DockConfig.canBuy(dockLevel, dockLevel + 1, data.cash - reserve(), r)
-			if ok then
-				data.cash -= price
-				dockLevel += 1
-				mark("Dock Lv " .. dockLevel)
-			end
-			for _, key in DockConfig.BUILDINGS do
-				local can, _, cost = DockConfig.canBuyBuilding(
-					key,
-					built[key] == true,
-					dockLevel,
-					data.cash - reserve(),
-					r
-				)
-				if can then
-					data.cash -= cost
+					data.cash -= price
 					built[key] = true
 					mark(key .. " built")
+				else
+					local ok, reason, price = Progression.canBuyVehicle(data, key)
+					assert(not string.find(reason, "Needs", 1, true), `PLAN buys {key} first`)
+					if not ok then
+						return
+					end
+					data.cash -= price
+					owned[key] = true
+					mark((LABEL[key] or key) .. " bought")
 				end
-			end
-			for _, id in { "Submarine" } do
-				local v = ProgressionConfig.Vehicles[id]
-				local home = DockConfig.buildingOf(id) :: string
-				if
-					not owned[id]
-					and built[home]
-					and r >= v.rankIndex
-					and data.cash - reserve() >= v.price
-				then
-					data.cash -= v.price
-					owned[id] = true
-					mark(id .. " bought")
-				end
+				planIndex += 1
 			end
 		end
 
-		-- docs 03 section 10: RIB engine at 1:05, jet ski storm hull at 1:55, lifeboat engine at
-		-- 2:05; week 1 fits the rest. A vehicle's next bill is still reserved first.
+		-- docs 03 section 10: RIB engine, jet ski storm hull, lifeboat engine; week 1 fits the rest.
 		local UPGRADE_AT = {
 			{ "RIB", "Engine", 65 },
 			{ "JetSki", "Hull", 110 },
@@ -200,10 +144,9 @@ return function(t)
 						upgradeId,
 						upgrades[vehicleId],
 						data.cash,
-						rank(),
 						isOwned
 					)
-					if ok and data.cash >= price + reserve() then
+					if ok then
 						data.cash -= price
 						upgrades[vehicleId] += VehicleUpgrades.bit(upgradeId)
 						local upgrade = VehicleUpgrades.entry(vehicleId, upgradeId)
@@ -217,39 +160,14 @@ return function(t)
 			end
 		end
 
-		local function purchases()
-			vehicles()
-			upgradesNext()
-			dockNext()
-		end
-
-		local sources = { op = 0, other = 0 }
-		local function award(
-			cash: number,
-			rep: number,
-			_now: number,
-			storm: boolean?,
-			great: boolean?,
-			source: string?
-		)
-			local finalCash, finalRep = Progression.applyAward(
+		local function award(cash: number, storm: boolean?, great: boolean?)
+			data.cash += (Progression.applyAward(
 				cash * friendMult,
-				rep,
 				if storm then "Storm" else "Calm",
 				great == true
-			)
-			if great then
-				finalRep *= 2
-			end
-			data.cash += finalCash
-			local beforeRep = data.rep
-			data.rep += finalRep
-			if data.rep < beforeRep then
-				error(string.format("rep fell at %.1f: %d -> %d", playMin, beforeRep, data.rep))
-			end
-			sources[source or "other"] += data.rep - beforeRep
-			purchases()
-			checkRank()
+			))
+			upgradesNext()
+			planNext()
 		end
 
 		-- the next real call (docs/23 e.2): its pay weight x distancePay and minutes
@@ -264,7 +182,7 @@ return function(t)
 				totalOps,
 				if storm then "Storm" else "Calm",
 				random,
-				CallLogic.craftReach(ids, rank()),
+				CallLogic.craftReach(ids),
 				false,
 				home
 			)
@@ -304,7 +222,7 @@ return function(t)
 			local reward = if weight
 				then Grading.payout(weight, "Silver", 1, nil)
 				else Grading.Payout.Tutorial[totalOps + 1]
-			award(reward.cash * scale, reward.rep * scale, completeAt, storm, great, "op")
+			award(reward.cash * scale, storm, great)
 
 			totalOps += 1
 			opIndex += 1
@@ -342,7 +260,7 @@ return function(t)
 						local crate = StreakRules.claim(streak, now)
 						if crate then
 							streak = crate.state
-							award(crate.cash, 0, now, false, isGreat(now))
+							award(crate.cash, false, isGreat(now))
 							mark("Streak crate")
 						end
 					end
@@ -353,7 +271,6 @@ return function(t)
 					session = s,
 					cash = data.cash,
 					gained = data.cash - cashAtStart,
-					rep = data.rep,
 				})
 			end
 			if playMin >= MAX_PLAY_MIN then
@@ -361,16 +278,11 @@ return function(t)
 			end
 		end
 
-		for label, entry in seen do
-			assert(entry, label)
-		end
 		return {
 			timeline = timeline,
-			sources = sources,
 			legacy = legacy == true,
 			sessions = sessions,
 			cash = data.cash,
-			rep = data.rep,
 			totalOps = totalOps,
 			playMin = playMin,
 			perCraft = perCraft,
@@ -389,36 +301,26 @@ return function(t)
 	local function report(result: any, name: string)
 		print(`\nPacing: {name} (Cash at session end; unlock timeline)`)
 		for _, entry in result.timeline do
-			print(
-				string.format(
-					"  %5.1f min  %-26s cash %7d  rep %6d",
-					entry.at,
-					entry.label,
-					entry.cash,
-					entry.rep
-				)
-			)
+			print(string.format("  %5.1f min  %-26s cash %7d", entry.at, entry.label, entry.cash))
 		end
 		for i, session in result.sessions do
 			if i <= 12 or i % 10 == 0 then
 				print(
 					string.format(
-						"  session %2d (day %d): cash %7d (+%d), rep %d",
+						"  session %2d (day %d): cash %7d (+%d)",
 						i,
 						session.day,
 						session.cash,
-						session.gained,
-						session.rep
+						session.gained
 					)
 				)
 			end
 		end
 		print(
 			string.format(
-				"  end: %.1f h, cash %d, rep %d, ops %d",
+				"  end: %.1f h, cash %d, ops %d",
 				result.playMin / 60,
 				result.cash,
-				result.rep,
 				result.totalOps
 			)
 		)
@@ -441,7 +343,7 @@ return function(t)
 	local before = run(0, true)
 	local solo = run(0)
 	local friend = run(1)
-	report(before, "before (no streak, Great Storm)")
+	report(before, "before (no streak crate)")
 	report(solo, "after, solo")
 	report(friend, "after, one friend")
 
@@ -456,38 +358,48 @@ return function(t)
 		t.expect(at >= low and at <= high).toBe(true)
 	end
 
+	t.test("the plan covers the whole tree and every free craft", function()
+		local inPlan = {}
+		for _, key in PLAN do
+			t.expect(inPlan[key]).toBeNil()
+			inPlan[key] = true
+		end
+		for key in DockConfig.Buildings do
+			t.expect(inPlan[key]).toBe(true)
+		end
+		for id, v in ProgressionConfig.Vehicles do
+			t.expect(inPlan[id] == true or v.price == 0).toBe(true)
+		end
+	end)
+
 	t.test("first rescue under 3 minutes", function()
 		t.expect(minutes(solo, "First rescue") < 3).toBe(true)
 	end)
 
-	t.test("first rank at about 7-16 minutes", function()
-		-- ranks are Rep only (docs/16 K7); the onboarding clock is tests/NewPlayerPace.spec.luau
-		between(solo, "Rank 2 Lifeguard", 7, 16)
+	t.test(
+		"the first island building in session 1 (the onboarding clock: NewPlayerPace)",
+		function()
+			between(solo, "Workshop built", 3, 20)
+		end
+	)
+
+	t.test("boathouse and RIB in the first hour", function()
+		between(solo, "Boathouse built", 15, 45)
+		between(solo, "RIB bought", 20, 60)
+		between(friend, "RIB bought", 15, 60)
 	end)
 
-	t.test("RIB at about 15-25 minutes (docs/16 K7)", function()
-		between(solo, "RIB bought", 15, 25)
-		between(friend, "RIB bought", 15, 25)
-	end)
-
-	-- docs/16 cut the dailies, weeklies, the season track and Crew Pay: Rep now comes from rescues
-	-- (and the crate's Cash), so the mid and late ranks sit later than docs 03 section 10 until WP2 retunes.
-	-- docs/23 calls take 3.5 to 4.5 minutes (not docs 03's 6.5), so Coxswain lands early in session 3
-	t.test("Coxswain and the lifeboat at about 1:00-2:00", function()
-		between(solo, "Rank 4 Coxswain", 50, 110)
-		between(solo, "Lifeboat bought", 60, 150)
+	t.test("the lifeboat at about 1:30-3:00", function()
+		between(solo, "Lifeboat bought", 90, 180)
 	end)
 
 	t.test("helicopter in week 1", function()
-		between(solo, "Rank 5 Rescue Pilot", 130, 280) -- 2026-10-25: 142 in the current sim
-		-- docs 03 section 10.2: past 8 hours, cut its price (the bill includes the docs/23 hangar)
-		between(solo, "Helicopter bought", 170, 8 * 60)
+		-- docs 03 section 10.2: past 8 hours, cut its price (the bill includes the helipad and hangar)
+		between(solo, "Helicopter bought", 180, 8 * 60)
 	end)
 
 	t.test("the first 2 hours still carry the early unlocks", function()
-		-- docs 03 also fills this window with lighthouse missions and vehicle upgrades; neither is
-		-- config-backed yet, so this checks the unlocks the config can time: at least six, and no
-		-- modeled gap over half an hour before the lifeboat.
+		-- at least six unlocks the config can time, and no modeled gap over half an hour before the lifeboat
 		local anchors = {}
 		for _, entry in solo.timeline do
 			if entry.at <= 75 then
@@ -503,9 +415,9 @@ return function(t)
 	end)
 
 	t.test("vehicle upgrades land when docs 03 section 10 expects", function()
-		between(solo, "RIB Tuned engine", 55, 100) -- after dock Lv 2 (docs/23)
-		between(solo, "Jet ski Storm hull", 100, 160)
-		between(solo, "Lifeboat Tuned engine", 115, 170)
+		between(solo, "RIB Tuned engine", 55, 130)
+		between(solo, "Jet ski Storm hull", 100, 200)
+		between(solo, "Lifeboat Tuned engine", 115, 240)
 	end)
 
 	t.test("week 1 fits the planned upgrades", function()
@@ -514,36 +426,19 @@ return function(t)
 		t.expect(minutes(solo, "Lifeboat Storm hull") <= 10 * 60).toBe(true)
 	end)
 
-	t.test("session 1 buys the RIB (docs/16 K7) and still ends with Cash", function()
-		t.expect(solo.sessions[1].cash >= 1500 and solo.sessions[1].cash <= 4000).toBe(true)
+	t.test("one friend only speeds things up", function()
+		t.expect(minutes(friend, "RIB bought") <= minutes(solo, "RIB bought")).toBe(true)
+		t.expect(minutes(friend, "Clinic built") <= minutes(solo, "Clinic built")).toBe(true)
 	end)
 
-	t.test(
-		"Commodore at about day 16 (docs 03 section 10.1); Admiral not before 25 hours",
-		function()
-			between(solo, "Rank 7 Commodore", 12 * 60, 30 * 60)
-			local admiral = find(solo, "Rank 8 Admiral")
-			t.expect(admiral == nil or admiral.at >= 25 * 60).toBe(true)
-		end
-	)
-
-	t.test("one friend only speeds Cash, never Rep", function()
-		-- Rep moves only through earlier craft (reach sets distance pay), never the friend bonus itself
-		t.expect(math.abs(friend.rep - solo.rep) <= solo.rep * 0.03).toBe(true)
-		local friendRib = minutes(friend, "RIB bought")
-		local soloRib = minutes(solo, "RIB bought")
-		t.expect(friendRib <= soloRib).toBe(true)
-	end)
-
-	t.test("docs/23: a free player reaches every dock level, building and craft", function()
-		-- a dock piece never comes before the RIB, and the last (dock Lv 5) is a long goal, not a wall
-		t.expect(minutes(solo, "Dock Lv 2") >= minutes(solo, "RIB bought")).toBe(true)
-		for _, label in { "Dock Lv 3", "Dock Lv 4", "Hangar built", "SubPen built" } do
-			t.expect(minutes(solo, label) <= 20 * 60).toBe(true)
-		end
-		for _, label in { "Submarine bought", "Dock Lv 5" } do
+	t.test("docs/23 (q): a free player reaches every building and craft on Cash alone", function()
+		for _, key in PLAN do
+			local label = if DockConfig.Buildings[key]
+				then key .. " built"
+				else (LABEL[key] or key) .. " bought"
 			t.expect(minutes(solo, label) <= 30 * 60).toBe(true)
 		end
-		t.expect(minutes(solo, "Dock Lv 5") >= 10 * 60).toBe(true)
+		-- the last building is a long goal, not a wall
+		t.expect(minutes(solo, PLAN[#PLAN] .. " built") >= 10 * 60).toBe(true)
 	end)
 end
