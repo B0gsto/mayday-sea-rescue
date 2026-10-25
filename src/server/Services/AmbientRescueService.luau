@@ -4,9 +4,10 @@
 -- (the same rigged swimmer, drift, waving and VehicleService climb-aboard), boarded by the server with the
 -- auto_board rule (Ops/Board.ready: close, slow, level, room aboard; the server reads the boat itself, no
 -- client input) and paid on delivery to a pad via the scene's onDelivered hook. Smaller pay than a call.
--- K13 (docs/16): one is always in view of the harbour mouth (checked every MOUTH_CHECK s, so an idle
--- player sees one within ~45 s); at the cap the oldest one nobody is near makes way for it. Not while a
--- cold open runs (that player's own swimmer comes first); the cold open's end seeds it in Calm Bay.
+-- They swim in the open water between the six islands and the outer islands (CallTypes zone Outer, docs/23
+-- (k)), never in the hub harbour or a cove. K13 (docs/16): one is always in view off each player's cove mouth
+-- (checked every MOUTH_CHECK s, so an idle player sees one within ~45 s); at the cap the oldest one nobody is
+-- near makes way for it. Not while a cold open runs (that player's own swimmer comes first).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -17,7 +18,6 @@ local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local CraftBoard = require(Shared:WaitForChild("Ops"):WaitForChild("CraftBoard"))
-local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 
 local ProgressionService = require(script.Parent.ProgressionService) :: any
@@ -25,23 +25,17 @@ local RescueService = require(script.Parent.RescueService) :: any
 
 local AmbientRescueService = {}
 
-AmbientRescueService.CAP = 4 -- free-roam swimmers in the water server-wide -- tune
+AmbientRescueService.CAP = 8 -- free-roam swimmers in the water server-wide (one off each of 6 coves + 2) -- tune
 AmbientRescueService.RESPAWN = 45 -- s between spawns while under the cap -- tune
 AmbientRescueService.MAX_AGE = 360 -- s unrescued before they are swept off (a fresh one spawns elsewhere)
 AmbientRescueService.CLEAR = 120 -- studs from any player when one appears (no pop-in beside you)
 AmbientRescueService.SPACING = 150 -- studs between free-roam swimmers
 AmbientRescueService.CASH = 120 -- per survivor delivered (a Silver call pays 550)
 AmbientRescueService.REP = 25
-AmbientRescueService.ZONES = { "Near", "CalmBay", "CalmBay", "Outer" }
-AmbientRescueService.MOUTH_VIEW = 220 -- studs from the harbour mouth: in view from it -- tune
+AmbientRescueService.ZONES = { "Outer" }
+AmbientRescueService.MOUTH_OUT = 350 -- studs straight out from a player's berth: just past their cove -- tune
+AmbientRescueService.MOUTH_VIEW = 220 -- studs from that point: in view from the cove -- tune
 AmbientRescueService.MOUTH_CHECK = 5 -- s
-
-local MOUTH = Vector3.new(0, 0, 368)
-for _, zone in GameConfig.Zones do
-	if zone.id == "HarbourMouth" then
-		MOUTH = zone.center
-	end
-end
 
 type Scene = { [string]: any }
 
@@ -158,29 +152,56 @@ local function swimmingScenes(): { Scene }
 	return out
 end
 
--- K13: keep one swimmer in view of the harbour mouth, inside the breakwater, within the cap.
+-- K13: keep one swimmer in view off each player's cove mouth (open water past it), within the cap.
 local function stepMouth()
-	if #Players:GetPlayers() == 0 then
-		return
-	end
-	local swimming = swimmingScenes()
-	local oldest: Scene? = nil
-	for _, scene in swimming do
-		if CallLogic.flatDistance(scene.position, MOUTH) <= AmbientRescueService.MOUTH_VIEW then
-			return
-		end
-		if playersClear(scene.position) and (not oldest or scene.bornAt < oldest.bornAt) then
-			oldest = scene
-		end
-	end
+	local mouths = {}
 	for _, player in Players:GetPlayers() do
 		if player:GetAttribute("ColdOpenActive") == true then
 			return
 		end
+		local bay = player:GetAttribute("BayCFrame")
+		if typeof(bay) == "CFrame" then
+			local home = CallLogic.homeOf(bay)
+			table.insert(
+				mouths,
+				home + (home - CallTypes.STATION).Unit * AmbientRescueService.MOUTH_OUT
+			)
+		end
+	end
+	local swimming = swimmingScenes()
+	local oldest: Scene? = nil
+	local mouth: Vector3? = nil
+	for _, m in mouths do
+		local seen = false
+		for _, scene in swimming do
+			seen = seen
+				or CallLogic.flatDistance(scene.position, m) <= AmbientRescueService.MOUTH_VIEW
+		end
+		if not seen then
+			mouth = m
+			break
+		end
+	end
+	if not mouth then
+		return
+	end
+	for _, scene in swimming do
+		local inView = false
+		for _, m in mouths do
+			inView = inView
+				or CallLogic.flatDistance(scene.position, m) <= AmbientRescueService.MOUTH_VIEW
+		end
+		if
+			not inView
+			and playersClear(scene.position)
+			and (not oldest or scene.bornAt < oldest.bornAt)
+		then
+			oldest = scene
+		end
 	end
 	for _ = 1, 20 do
-		local pos = CallLogic.ringPoint(MOUTH, 40, AmbientRescueService.MOUTH_VIEW - 20, roll)
-		if CallLogic.isWater(pos, "Inside") and clearSpot(pos) then
+		local pos = CallLogic.ringPoint(mouth, 40, AmbientRescueService.MOUTH_VIEW - 20, roll)
+		if CallLogic.isWater(pos, "Outer") and clearSpot(pos) then
 			if #swimming >= AmbientRescueService.CAP then
 				if not oldest then
 					return

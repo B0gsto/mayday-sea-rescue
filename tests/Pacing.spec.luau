@@ -15,6 +15,13 @@ return function(t)
 	local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
 	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
 	local DockConfig = t.load("src/shared/Config/DockConfig.luau")
+	local HubLayout = t.load("src/shared/Config/HubLayout.luau")
+	-- docs/23 (k): calls count from the player's island berth; the sim plays every island in turn (the east
+	-- island has Skerry Isle on its doorstep, the west one sails farther), so the averages are the server's
+	local HOMES = {}
+	for _, island in HubLayout.Islands do
+		table.insert(HOMES, CallLogic.homeOf(island.berths.Boat))
+	end
 
 	local SESSION_MIN = 25
 	local MAX_PLAY_MIN = 40 * 60
@@ -252,15 +259,18 @@ return function(t)
 			for id in owned do
 				table.insert(ids, id)
 			end
+			local home = HOMES[totalOps % #HOMES + 1]
 			local choice = CallLogic.chooseCall(
 				totalOps,
 				if storm then "Storm" else "Calm",
 				random,
-				CallLogic.craftReach(ids, rank())
+				CallLogic.craftReach(ids, rank()),
+				false,
+				home
 			)
 			local spec = CallTypes.Kinds[choice.kind]
-			local at = CallLogic.pickSpawnPoint(choice.zone, random)
-			local distance = CallLogic.flatDistance(at, CallTypes.STATION)
+			local at = CallLogic.pickSpawnPoint(choice.zone, random, nil, home)
+			local distance = CallLogic.flatDistance(at, home)
 			-- the reach comes from every owned craft; the player takes whichever owned boat is quickest
 			local seconds, best = math.huge, "JetSki"
 			for _, id in { "JetSki", "RIB", "Lifeboat" } do

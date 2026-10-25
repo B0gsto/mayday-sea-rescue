@@ -146,37 +146,21 @@ return function(t)
 		end
 	)
 
-	t.test(
-		"the breakwaters dog-leg to the unchanged mouth; call spawns keep off the leg",
-		function()
-			local B = Harbour.BREAKWATER
-			local e = t.load("src/shared/Calls/CallTypes.luau").Areas.Inside.elbow
-			t.expect(e.x == B.x and e.far == B.far).toBe(true)
-			for _, k in { "kneeW", "headW", "kneeE", "headE" } do
-				t.expect(e[k]).toBe(B[k])
+	t.test("the breakwaters dog-leg to the unchanged mouth", function()
+		for _, side in { -1, 1 } do
+			local P = Harbour.breakwaterLine(side)
+			t.expect(P[#P].X).toBe(side * 30) -- the 60-stud mouth
+			-- the kit faces the basin and sits 8 studs in from the centreline, the arm's from the quay line
+			local slots = Harbour.breakwaterSlots(side)
+			t.expect(#slots > 50).toBe(true)
+			t.expect(near(slots[1].cf.Position.Z, 4 + 4.5)).toBe(true)
+			for _, s in slots do
+				local p = s.cf.Position
+				t.expect((Vector3.new(0, p.Y, 180) - p):Dot(s.cf.LookVector) > 0).toBe(true)
 			end
-			local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
-			for _, side in { -1, 1 } do
-				local P = Harbour.breakwaterLine(side)
-				t.expect(P[#P].X).toBe(side * 30) -- the 60-stud mouth
-				-- the kit faces the basin and sits 8 studs in from the centreline, the arm's from the quay line
-				local slots = Harbour.breakwaterSlots(side)
-				t.expect(#slots > 50).toBe(true)
-				t.expect(near(slots[1].cf.Position.Z, 4 + 4.5)).toBe(true)
-				for _, s in slots do
-					local p = s.cf.Position
-					t.expect((Vector3.new(0, p.Y, 180) - p):Dot(s.cf.LookVector) > 0).toBe(true)
-				end
-				-- the middle of the dog-leg (on the wall) and just seaward of it are not open water inside
-				local mid = (P[2] + P[3]) / 2
-				t.expect(CallLogic.isWater(mid, "Inside")).toBe(false)
-				-- (the west arm's short clipped corner lies outside Calm Bay's sheltered circle: no calls there)
-				t.expect(CallLogic.isWater(mid + Harbour.inward(P[2], P[3]) * 30, "Inside"))
-					.toBe(side > 0)
-			end
-			t.expect(#Harbour.armourRuns()).toBe(6)
 		end
-	)
+		t.expect(#Harbour.armourRuns()).toBe(6)
+	end)
 
 	t.test(
 		"station rail: open at the gangway, pier root and steps, a gap at each ladder",

@@ -15,6 +15,7 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local Net = require(Shared:WaitForChild("Net"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
 
@@ -76,22 +77,10 @@ local function victimPoint(): Vector3?
 	return opPosition
 end
 
--- The drop-off the transport step lights (mirrors Mechanics/transport homePad).
+-- The tutorial calls' drop-off: your berth, just behind the cove they spawn off (docs/23 (k)); else the hub's.
 local function padPoint(): Vector3?
-	local map = Workspace:FindFirstChild("Map")
-	local folder = map and map:FindFirstChild("DropOffs")
-	local dock: Vector3? = nil
-	for _, pad in if folder then folder:GetChildren() else {} do
-		if pad:IsA("BasePart") then
-			local name = pad:GetAttribute("DropOff")
-			if name == "Hospital" then
-				return pad.Position
-			elseif name == "Dock" then
-				dock = pad.Position
-			end
-		end
-	end
-	return dock
+	local bay = player:GetAttribute("BayCFrame")
+	return if typeof(bay) == "CFrame" then bay.Position else HubLayout.Hub.dropOff
 end
 
 -- Inside a tutorial call (SimpleSteps ids): your craft while on foot, the survivor, then the drop-off.

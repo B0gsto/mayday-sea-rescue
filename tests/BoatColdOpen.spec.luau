@@ -220,27 +220,38 @@ return function(t)
 		t.expect(ColdOpen.nudge(k, 30, 40)).toBe(false)
 	end)
 
-	t.test("the first mission ends on land: held and at a shore point, not before", function()
-		local slip = ColdOpen.SHORE[1].water
-		t.expect(ColdOpen.landed("held", slip + Vector3.new(5, 3, 10))).toBe(true)
-		t.expect(ColdOpen.landed("swim", slip)).toBe(false) -- not holding on
+	t.test("the first mission ends at a drop-off: held and at a shore point, not before", function()
+		local hub = ColdOpen.SHORE[1].water
+		t.expect(ColdOpen.landed("held", hub + Vector3.new(5, 3, 10))).toBe(true)
+		t.expect(ColdOpen.landed("swim", hub)).toBe(false) -- not holding on
 		t.expect(ColdOpen.landed("held", Vector3.new(0, 0, 420))).toBe(false) -- still out at sea
-		t.expect(ColdOpen.landed("held", slip + Vector3.new(0, 0, ColdOpen.SHORE_RADIUS + 1)))
+		t.expect(ColdOpen.landed("held", hub + Vector3.new(0, 0, ColdOpen.SHORE_RADIUS + 1)))
 			.toBe(false)
-		local sands = ColdOpen.nearestShore(Vector3.new(990, 0, 290))
-		t.expect(sands.id).toBe("Sands")
-		t.expect(ColdOpen.landed("held", Vector3.new(990, 0, 290))).toBe(true)
+		-- every island's berth is a shore point (the cold open starts at yours)
+		local HubLayout = t.load("src/shared/Config/HubLayout.luau")
+		for _, island in HubLayout.Islands do
+			local berth = island.berths.Boat.Position
+			t.expect(ColdOpen.nearestShore(berth).id).toBe(island.id)
+			t.expect(ColdOpen.landed("held", berth + Vector3.new(10, 1, 10))).toBe(true)
+		end
 	end)
 
 	t.test(
-		"the spawn is inside the breakwater, facing the station slipway with the casualty on the way",
+		"from a berth the casualty is just off the cove, dead ahead, and home is behind",
 		function()
-			local at, home = ColdOpen.SPAWN, ColdOpen.SHORE[1].water
-			local ahead = ((home - at) * Vector3.new(1, 0, 1)).Unit
-			local far = at + ahead * ColdOpen.DISTANCE[2]
-			t.expect(at.Z < 352).toBe(true) -- breakwater heads: z 352 to 368
-			t.expect(ColdOpen.nearestShore(at).id).toBe("Station")
-			t.expect((far - home).Magnitude < (at - home).Magnitude).toBe(true) -- ahead closes the drop-off
+			local HubLayout = t.load("src/shared/Config/HubLayout.luau")
+			for _, island in HubLayout.Islands do
+				local berth = island.berths.Boat
+				for _, d in ColdOpen.DISTANCE do
+					local cas = berth.Position + berth.LookVector * d
+					-- past the island's rim (the cove mouth), and its nearest shore is this berth
+					t.expect((cas - island.center):Dot(island.facing) > HubLayout.IslandRadius)
+						.toBe(true)
+					t.expect(ColdOpen.nearestShore(cas).id).toBe(island.id)
+				end
+			end
+			-- no berth: the hub harbour, facing out, home behind
+			t.expect(ColdOpen.nearestShore(ColdOpen.SPAWN).id).toBe("Hub")
 		end
 	)
 

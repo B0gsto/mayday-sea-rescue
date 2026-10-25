@@ -2,7 +2,6 @@
 return function(t)
 	local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
 	local CallTypes = t.load("src/shared/Calls/CallTypes.luau")
-	local GameConfig = t.load("src/shared/Config/GameConfig.luau")
 
 	-- deterministic LCG so the spec never flakes
 	local function makeRng(seed: number)
@@ -13,43 +12,76 @@ return function(t)
 		end
 	end
 
-	t.test("every spawn zone yields open-water points inside its ring", function()
+	local HubLayout = t.load("src/shared/Config/HubLayout.luau")
+	-- every player island's berth (BayCFrame), and no berth (the hub drop-off)
+	local homes = { CallLogic.homeOf(nil) }
+	for _, island in HubLayout.Islands do
+		table.insert(homes, CallLogic.homeOf(island.berths.Boat))
+	end
+
+	t.test("every spawn zone yields open-water points in its ring, from every home", function()
 		local rng = makeRng(7)
-		for id, zone in CallTypes.SpawnZones do
-			for _ = 1, 200 do
-				local p = CallLogic.pickSpawnPoint(id, rng)
-				t.expect(CallLogic.isWater(p, zone.area)).toBeTruthy()
-				if p ~= zone.fallback then
-					local d = CallLogic.flatDistance(p, zone.center)
-					t.expect(d >= zone.minRadius - 0.01 and d <= zone.maxRadius + 0.01).toBeTruthy()
+		for _, home in homes do
+			for id, zone in CallTypes.SpawnZones do
+				local fallback = zone.fallback or CallLogic.homeFallback(home)
+				t.expect(CallLogic.isWater(fallback, zone.area)).toBeTruthy()
+				for _ = 1, 40 do
+					local p = CallLogic.pickSpawnPoint(id, rng, nil, home)
+					t.expect(CallLogic.isWater(p, zone.area)).toBeTruthy()
+					t.expect(p.Y).toBe(0)
+					if p ~= fallback then
+						local c = if zone.cove or zone.fromHome then home else zone.center
+						local d = CallLogic.flatDistance(p, c)
+						t.expect(d >= zone.minRadius - 0.01 and d <= zone.maxRadius + 0.01)
+							.toBeTruthy()
+					end
 				end
-				t.expect(p.Y).toBe(0)
 			end
 		end
 	end)
 
-	t.test("the first call is a Swimmer close to the harbour", function()
+	t.test("open water: never on the hub, an island, under a bridge or past the map", function()
+		t.expect(CallLogic.isWater(Vector3.new(0, 0, 0), "Open")).toBe(false) -- the hub
+		t.expect(CallLogic.isWater(HubLayout.Islands[1].center, "Open")).toBe(false)
+		local mid = HubLayout.deckAt(HubLayout.Bridges[2], 0.5)
+		t.expect(CallLogic.isWater(Vector3.new(mid.X, 0, mid.Z), "Open")).toBe(false)
+		t.expect(CallLogic.isWater(Vector3.new(1800, 0, 1750), "Open")).toBe(false) -- Skerry Isle
+		t.expect(CallLogic.isWater(Vector3.new(0, 0, 7000), "Open")).toBe(false)
+		t.expect(CallLogic.isWater(Vector3.new(0, 0, 500), "Open")).toBe(true) -- off the hub harbour
+		t.expect(CallLogic.isWater(Vector3.new(0, 0, 500), "Outer")).toBe(false) -- inside the ring
+		t.expect(CallLogic.isWater(Vector3.new(0, 0, 1300), "Outer")).toBe(true)
+	end)
+
+	t.test("calls 1-2 spawn just off your own cove, straight out to sea", function()
 		local choice = CallLogic.chooseCall(0, "Calm", makeRng(1))
 		t.expect(choice.kind).toBe("Swimmer")
 		t.expect(choice.zone).toBe("Near")
+		t.expect(CallLogic.chooseCall(1, "Calm").zone).toBe("CalmBay")
 		local rng = makeRng(3)
-		for _ = 1, 100 do
-			local p = CallLogic.pickSpawnPoint("Near", rng)
-			t.expect(CallLogic.flatDistance(p, CallTypes.STATION) <= 220.01).toBeTruthy()
-			t.expect(CallLogic.zoneIdAt(p) ~= "OpenSea").toBeTruthy()
+		for i, island in HubLayout.Islands do
+			local home = homes[i + 1]
+			for _, zone in { "Near", "CalmBay" } do
+				for _ = 1, 50 do
+					local p = CallLogic.pickSpawnPoint(zone, rng, nil, home)
+					local d = CallLogic.flatDistance(p, home)
+					t.expect(d >= 150 and d <= 300).toBeTruthy()
+					-- out past the island's rim, on its sea side
+					t.expect(CallLogic.flatDistance(p, island.center) > HubLayout.IslandRadius + 40)
+						.toBeTruthy()
+					t.expect((p - island.center):Dot(island.facing) > 150).toBeTruthy()
+				end
+			end
 		end
 	end)
 
-	t.test("outer calls sit about 45 s out at jet ski cruise speed", function()
+	t.test("free-roam water lies between the six islands and the outer ring", function()
 		local rng = makeRng(11)
 		for _ = 1, 200 do
 			local p = CallLogic.pickSpawnPoint("Outer", rng)
-			local s = CallLogic.travelSeconds(CallLogic.flatDistance(p, CallTypes.STATION), 75)
-			t.expect(s >= 20 and s <= 46).toBeTruthy()
-			t.expect(math.sqrt(p.X * p.X + p.Z * p.Z) <= GameConfig.MapRadius).toBeTruthy()
+			local d = CallLogic.flatDistance(p, CallTypes.STATION)
+			t.expect(d >= 1200 and d <= 1900).toBeTruthy()
 		end
 	end)
-
 	t.test("storm triples the call rate; first offer is quick", function()
 		local calm = CallLogic.offerDelay("Calm")
 		t.expect(calm <= 10).toBeTruthy()
@@ -111,8 +143,7 @@ return function(t)
 		t.expect(rep).toBe(90)
 		local vc = CallLogic.bigVictimPay()
 		t.expect(vc).toBe(150)
-		local pts =
-			CallLogic.scatterPoints(Vector3.new(60, 0, 500), 9, 14, 34, "Outside", makeRng(9))
+		local pts = CallLogic.scatterPoints(Vector3.new(60, 0, 500), 9, 14, 34, "Open", makeRng(9))
 		t.expect(#pts).toBe(9)
 	end)
 
@@ -135,32 +166,35 @@ return function(t)
 		t.expect(h(target, Vector3.new(0, 0, -20), target, 8, 35)).toBe(false) -- already there
 	end)
 
-	-- docs/23 e.2 distance tiers
-	local function dist(p: Vector3): number
-		return CallLogic.flatDistance(p, CallTypes.STATION)
-	end
-
-	t.test("calls 1-2 stay in the harbour; call 3 on is at least 600 studs out", function()
-		local rng = makeRng(21)
-		for completed = 0, 1 do
-			local c = CallLogic.chooseCall(completed, "Calm", rng)
-			for _ = 1, 50 do
-				t.expect(dist(CallLogic.pickSpawnPoint(c.zone, rng)) <= 420.01).toBeTruthy()
-			end
-		end
-		local jetSki = CallLogic.craftReach({ "JetSki" })
-		for completed = 2, 40 do
-			local c = CallLogic.chooseCall(completed, "Calm", rng, jetSki)
-			local zone = CallTypes.SpawnZones[c.zone]
-			if #CallTypes.Kinds[c.kind].zones > 1 then -- not a fixed-site scene
-				t.expect(zone.reach ~= nil and zone.reach <= 2000).toBeTruthy()
-				for _ = 1, 20 do
-					local d = dist(CallLogic.pickSpawnPoint(c.zone, rng))
-					t.expect(d >= 600 and d <= 3400).toBeTruthy() -- Skerry's far side, unroutable in game
+	-- docs/23 e.2 distance tiers, counted from your berth (docs/23 (k))
+	t.test(
+		"from call 3 on, calls sit out past the six islands, within reach of your berth",
+		function()
+			local rng = makeRng(21)
+			local jetSki = CallLogic.craftReach({ "JetSki" })
+			for i = 2, #homes do
+				local home = homes[i]
+				for completed = 2, 30 do
+					local c = CallLogic.chooseCall(completed, "Calm", rng, jetSki, false, home)
+					local zone = CallTypes.SpawnZones[c.zone]
+					if #CallTypes.Kinds[c.kind].zones > 1 then -- not the fixed rip
+						t.expect(
+							(zone.reach ~= nil and zone.reach <= 2000)
+								or (
+									zone.island
+									and CallLogic.flatDistance(home, zone.center) <= 2000
+								)
+						).toBeTruthy()
+						for _ = 1, 10 do
+							local p = CallLogic.pickSpawnPoint(c.zone, rng, nil, home)
+							t.expect(CallLogic.flatDistance(p, CallTypes.STATION) >= 1200)
+								.toBeTruthy()
+						end
+					end
 				end
 			end
 		end
-	end)
+	)
 
 	t.test("the zone pool widens with the best owned craft", function()
 		t.expect(CallLogic.craftReach({})).toBe(2000)
@@ -174,35 +208,31 @@ return function(t)
 		t.expect(CallLogic.craftReach({ "Submarine" }, 4)).toBe(5500)
 		t.expect(CallLogic.craftReach({ "RescueHelicopter" }, 3)).toBe(3500)
 		t.expect(CallLogic.craftReach({ "JetSki" }, 5)).toBe(2000) -- the cap never adds reach
-		local function zones(reach: number): { [string]: boolean }
+		local plot1 = homes[2] -- the east island: Skerry Isle is the near outer island
+		local function zones(reach: number, home: Vector3): { [string]: boolean }
 			local seen, rng = {}, makeRng(9)
 			for _ = 1, 400 do
-				seen[CallLogic.distanceZone(reach, rng)] = true
+				seen[CallLogic.distanceZone(reach, rng, home)] = true
 			end
 			return seen
 		end
-		local ski, rib, big = zones(2000), zones(3500), zones(5500)
+		local ski, rib, big = zones(2000, plot1), zones(3500, plot1), zones(5500, plot1)
 		t.expect(ski.Offshore and ski.SkerryIsle and not ski.FarSea and not ski.DeepSea)
 			.toBeTruthy()
-		t.expect(rib.FarSea and rib.PuffinIsle and rib.Offshore and not rib.DeepSea).toBeTruthy()
-		t.expect(big.DeepSea and big.MermaidLagoon and big.WreckReef and big.Offshore).toBeTruthy()
+		t.expect(rib.FarSea and rib.Offshore and not rib.DeepSea and not rib.GannetRock)
+			.toBeTruthy()
+		t.expect(big.DeepSea and big.TheArches and big.GannetRock and big.Offshore).toBeTruthy()
+		-- from the west island Skerry is a RIB trip
+		t.expect(zones(2000, homes[5]).SkerryIsle).toBeFalsy()
 	end)
 
-	t.test("island zones come from the map data, and sit off the island", function()
+	t.test("every outer island has a zone, off its shore", function()
 		local WorldConfig = t.load("src/shared/Config/WorldConfig.luau")
-		local ids = {}
 		for _, island in WorldConfig.Islands do
-			ids[island.id] = island
-		end
-		for id in CallTypes.IslandReach do
-			local zone, island = CallTypes.SpawnZones[id], ids[id]
-			t.expect(zone ~= nil and island ~= nil and zone.fallback ~= nil).toBeTruthy()
+			local zone = CallTypes.SpawnZones[island.id]
+			t.expect(zone ~= nil and zone.island == true).toBeTruthy()
 			t.expect(zone.minRadius > island.radius).toBeTruthy()
 		end
-		t.expect(
-			CallTypes.SpawnZones.StElowensMount == nil and CallTypes.SpawnZones.TheArches == nil
-		)
-			.toBeTruthy()
 	end)
 
 	t.test("pay scales with distance", function()
@@ -212,26 +242,24 @@ return function(t)
 		t.expect(CallLogic.distancePay(20000)).toBe(4)
 	end)
 
-	t.test("landed away from Port Haven, a far call pays for the trip sailed", function()
-		local scene = CallTypes.STATION + Vector3.new(3000, 0, 0)
-		local berth = Vector3.new(-500, 0, 300) -- a marina dock
-		t.expect(CallLogic.deliveredPay(scene, berth)).toBeCloseTo(2, 1e-6)
-		local sands = Vector3.new(1000, 0, 282)
-		local half = (3000 + CallLogic.flatDistance(scene, sands)) / 2
-		t.expect(CallLogic.deliveredPay(scene, sands)).toBeCloseTo(half / 1500, 1e-6)
-		t.expect(CallLogic.deliveredPay(scene, sands) < 1.7).toBeTruthy()
+	t.test("landed away from your berth, a far call pays for the trip sailed", function()
+		local home, hub = homes[2], HubLayout.Hub.dropOff -- the east island
+		-- a call west of the hub: landed at your berth it pays its full x2, at the hub half the trip sailed
+		local west = home + Vector3.new(-3000, 0, 0)
+		t.expect(CallLogic.deliveredPay(west, home + Vector3.new(0, 0, 40), home))
+			.toBeCloseTo(2, 1e-6)
+		local half = (3000 + CallLogic.flatDistance(west, hub)) / 2
+		t.expect(CallLogic.deliveredPay(west, hub, home)).toBeCloseTo(half / 1500, 1e-6)
+		t.expect(CallLogic.deliveredPay(west, hub, home) < 1.8).toBeTruthy()
 		-- never more than the scene's own pay
-		local west = CallTypes.STATION + Vector3.new(-3000, 0, 0)
-		t.expect(CallLogic.deliveredPay(west, sands)).toBeCloseTo(2, 1e-6)
+		local east = home + Vector3.new(3000, 0, 0)
+		t.expect(CallLogic.deliveredPay(east, hub, home)).toBeCloseTo(2, 1e-6)
 	end)
 
-	t.test("drop-off is the nearest of your dock and the harbour pads", function()
-		local pads = { Vector3.new(130, 0, 12), Vector3.new(-125, 0, 92) }
-		local from = Vector3.new(-300, 0, 500)
-		t.expect(CallLogic.nearestDropOff(from, pads)).toBe(pads[2])
-		local dock = Vector3.new(-280, 0, 400)
-		table.insert(pads, dock)
-		t.expect(CallLogic.nearestDropOff(from, pads)).toBe(dock)
-		t.expect(CallLogic.nearestDropOff(from, {})).toBe(nil)
+	t.test("drop-off is the nearest of your berth and the hub", function()
+		local hub, berth = HubLayout.Hub.dropOff, homes[2]
+		t.expect(CallLogic.nearestDropOff(Vector3.new(1400, 0, 0), { hub, berth })).toBe(berth)
+		t.expect(CallLogic.nearestDropOff(Vector3.new(0, 0, 600), { hub, berth })).toBe(hub)
+		t.expect(CallLogic.nearestDropOff(berth, {})).toBe(nil)
 	end)
 end

@@ -11,12 +11,12 @@ return function(t)
 		end
 	end
 
-	t.test("dive sites: deep, beside their wreck, off a routable island", function()
+	t.test("dive sites: deep, beside their wreck, off an outer island", function()
 		t.expect(#CallTypes.DiveSites).toBe(3)
 		for _, site in CallTypes.DiveSites do
 			t.expect(site.at.Y <= -25).toBe(true)
 			t.expect(CallLogic.flatDistance(site.at, site.wreck) <= 40).toBe(true)
-			t.expect(CallTypes.IslandReach[site.island] ~= nil).toBe(true)
+			t.expect(CallTypes.SpawnZones[site.island].island).toBe(true)
 			t.expect(CallTypes.SpawnZones[site.island] ~= nil).toBe(true)
 			t.expect(table.find(CallTypes.Kinds.Diver.zones, site.island) ~= nil).toBe(true)
 		end
@@ -33,7 +33,7 @@ return function(t)
 				local c = CallLogic.chooseCall(completed, "Calm", rng, reach or 5500, sub)
 				if c.kind == "Diver" then
 					n += 1
-					t.expect(CallTypes.IslandReach[c.zone] <= (reach or 5500)).toBe(true)
+					t.expect(CallLogic.diveSite(reach or 5500, nil, c.zone) ~= nil).toBe(true)
 				end
 			end
 			return n

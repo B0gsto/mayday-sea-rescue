@@ -31,7 +31,7 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
-local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
+local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
 local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 local MapConfig = require(Shared:WaitForChild("Config"):WaitForChild("MapConfig"))
@@ -268,9 +268,9 @@ local function stormAreas(): { { center: Vector3, radius: number } }
 	return MapConfig.StormAreas
 end
 
--- The harbour pads plus your own dock (BayCFrame): deliveries count at any of them (docs/23 e.2).
+-- The hub drop-off plus your own berth (BayCFrame): the nearest wins (docs/23 (k)).
 local function dropOffs(): { [string]: Vector3 }
-	local out = table.clone(MapConfig.DropOffs)
+	local out = { Hub = HubLayout.Hub.dropOff }
 	local bay = player:GetAttribute("BayCFrame")
 	if typeof(bay) == "CFrame" then
 		out.MyDock = bay.Position
@@ -279,7 +279,7 @@ local function dropOffs(): { [string]: Vector3 }
 end
 
 local function nearestDropOff(from: Vector3): Vector3
-	local best, bd = MapConfig.DropOffs.Dock, math.huge
+	local best, bd = HubLayout.Hub.dropOff, math.huge
 	for _, p in dropOffs() do
 		local d = (p - from).Magnitude
 		if d < bd then
@@ -287,33 +287,6 @@ local function nearestDropOff(from: Vector3): Vector3
 		end
 	end
 	return best
-end
-
--- The cold open's way home: the next open-water turn toward the nearest shore point (ColdOpen.nextHop),
--- hull-height raycasts against the world (moored boats, jetties), worked out twice a second.
-local seaParams = RaycastParams.new()
-seaParams.IgnoreWater = true
-seaParams.RespectCanCollide = true
-local hopAt, hop = 0, Vector3.zero
-local function seaClear(a: Vector3, b: Vector3): boolean
-	local d = Vector3.new(b.X - a.X, 0, b.Z - a.Z)
-	return not (
-		Workspace:Raycast(Vector3.new(a.X, 1.5, a.Z), d, seaParams)
-		or Workspace:Raycast(Vector3.new(a.X, 3.5, a.Z), d, seaParams)
-	)
-end
-local function coldOpenHop(me: Vector3): Vector3
-	if os.clock() - hopAt >= 0.5 then
-		hopAt = os.clock()
-		local ignore: { Instance } = { player.Character :: Instance }
-		for _, name in { "Vehicles", "CallProps", "AmbientLocal" } do
-			table.insert(ignore, Workspace:FindFirstChild(name) :: Instance)
-		end
-		seaParams.FilterDescendantsInstances = ignore
-		local shore = ColdOpen.nearestShore(me)
-		hop = ColdOpen.nextHop(me, shore.water, shore.via or {}, seaClear)
-	end
-	return hop
 end
 
 -- Your own boat in Workspace.Vehicles (VehicleService sets Owner = UserId).
@@ -392,20 +365,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			})
 			target = target or s.position
 		end
-		if onBoard and player:GetAttribute("ColdOpenActive") == true then
-			-- the first mission heads for its shore cue (the station slipway) through open water: the line to
-			-- the Dock pad ran into the moored crabber and pinned the jet ski against the jetty
-			for _, sp in ColdOpen.SHORE do
-				table.insert(list, {
-					id = `Drop{sp.id}`,
-					pos = sp.water,
-					style = S.DropOff,
-					clamp = true,
-					size = 24,
-				})
-			end
-			objective, objectiveLabel = coldOpenHop(me), "Drop-off"
-		elseif onBoard then
+		if onBoard then -- the cold open too: its home is your berth (ColdOpen.SHORE)
 			for name, p in dropOffs() do
 				table.insert(
 					list,
