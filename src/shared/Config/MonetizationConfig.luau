@@ -146,7 +146,7 @@ local MonetizationConfig = {
 		-- docs/23 WP-4: one per dock level (DockConfig), sold at the ghost on your dock, granted by DockService.
 		-- Prices: docs/23 (i) economy check (never a better Cash deal than the Cash packs; rank skip costs extra).
 		DockLevel2 = {
-			id = 0,
+			id = 3722223190,
 			name = "Dock Level 2",
 			description = "Builds your dock to level 2 now, no Cash or rank needed: a pontoon, lamp posts, your flag and a rescue board.",
 			price = 49,
@@ -155,7 +155,7 @@ local MonetizationConfig = {
 			dockLevel = 2,
 		},
 		DockLevel3 = {
-			id = 0,
+			id = 3722223199,
 			name = "Dock Level 3",
 			description = "Builds your dock to level 3 now, no Cash or rank needed: a boathouse with a roll-up door.",
 			price = 99,
@@ -164,7 +164,7 @@ local MonetizationConfig = {
 			dockLevel = 3,
 		},
 		DockLevel4 = {
-			id = 0,
+			id = 3722223208,
 			name = "Dock Level 4",
 			description = "Builds your dock to level 4 now, no Cash or rank needed: a lookout tower and a slipway crane, and no relaunch cooldown.",
 			price = 199,
@@ -173,7 +173,7 @@ local MonetizationConfig = {
 			dockLevel = 4,
 		},
 		DockLevel5 = {
-			id = 0,
+			id = 3722223223,
 			name = "Dock Level 5",
 			description = "Builds your dock to level 5 now, no Cash or rank needed: a lit station front and a beacon seen across the harbour at night.",
 			price = 399,
@@ -183,7 +183,7 @@ local MonetizationConfig = {
 		},
 		-- docs/23 h (WP-10b): the dock buildings (DockConfig.Buildings), sold at their ghost, granted by DockService.
 		DockGarage = {
-			id = 0,
+			id = 3722223237,
 			name = "Car Garage",
 			description = "Builds your garage now, no Cash or rank needed: pick a car at its board and drive it out.",
 			price = 75,
@@ -192,7 +192,7 @@ local MonetizationConfig = {
 			dockBuilding = "Garage",
 		},
 		DockHangar = {
-			id = 0,
+			id = 3722223246,
 			name = "Helipad and Hangar",
 			description = "Builds a helipad and hangar on your boathouse roof now, no Cash or rank needed (needs the dock level 3 boathouse).",
 			price = 199,
@@ -201,7 +201,7 @@ local MonetizationConfig = {
 			dockBuilding = "Hangar",
 		},
 		DockSubPen = {
-			id = 0,
+			id = 3722223257,
 			name = "Sub Pen",
 			description = "Builds a sub pen beside your berth now, no Cash or rank needed.",
 			price = 149,
@@ -413,7 +413,7 @@ local MonetizationConfig = {
 		},
 		-- docs/23 (h): the hangar and sub pen craft, any rank. deploy.py creates them (id 0 until then).
 		RescueHelicopterPass = {
-			id = 0,
+			id = 2053992047,
 			name = "Rescue Helicopter",
 			description = "The Rescue Helicopter: hover over anyone, sea or cliff, and winch them up. Yours at any rank.",
 			price = 399,
@@ -422,7 +422,7 @@ local MonetizationConfig = {
 			vehicle = "RescueHelicopter",
 		},
 		SeaplanePass = {
-			id = 0,
+			id = 2055467922,
 			name = "Seaplane",
 			description = "The Seaplane: the fastest way to far islands, lands on the water for 4 survivors. Yours at any rank.",
 			price = 299,
@@ -431,7 +431,7 @@ local MonetizationConfig = {
 			vehicle = "Seaplane",
 		},
 		SubmarinePass = {
-			id = 0,
+			id = 2052480096,
 			name = "Submarine",
 			description = "The Submarine: dive to the seabed and the wrecks, bring divers home. Yours at any rank.",
 			price = 249,

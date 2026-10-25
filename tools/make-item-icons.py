@@ -306,12 +306,17 @@ def finish(key, src, dst):
 # ------------------------------------------------------------------ vehicle / day pass cards
 # Blender renders these as transparent cut-outs; finish_card lays them on a bright rounded-square gradient.
 SEA, JET, LAND = ((96, 232, 220), (0, 96, 128)), ((255, 204, 80), (236, 84, 18)), ((255, 206, 92), (206, 36, 64))
+SKY, DOCK = ((150, 220, 255), (24, 104, 200)), ((255, 222, 150), (240, 128, 64))
 CARDS = {  # key -> (top/bottom colours, premium)
     "RIBPass": (SEA, False), "LifeboatPass": (SEA, False), "StormRunnerPass": (SEA, True), "TidewalkerPass": (SEA, True),
     "RiptideXPass": (JET, True), "GildedGullPass": (JET, True),
     "BeachATVPass": (LAND, False), "CoastguardResponsePass": (LAND, False), "HarbourGTPass": (LAND, True),
     "LighthouseCruiserPass": (LAND, True),
     "DayDoubleCash": (((150, 120, 255), (58, 28, 150)), False), "DayQuickLaunch": (((110, 214, 255), (18, 84, 196)), False),
+    "RescueHelicopterPass": (SKY, True), "SeaplanePass": (SKY, False), "SubmarinePass": (SKY, False),
+    "DockLevel2": (DOCK, False), "DockLevel3": (DOCK, False), "DockLevel4": (DOCK, False),
+    "DockLevel5": (((70, 80, 170), (14, 18, 52)), True), "DockGarage": (DOCK, False), "DockHangar": (DOCK, False),
+    "DockSubPen": (DOCK, False),
 }
 GOLD = (255, 208, 96)
 

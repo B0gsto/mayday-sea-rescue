@@ -1753,6 +1753,361 @@ def s_day_launch():
     frame_tight(objs, -48, 20, lens=50, fill=0.9)
 
 
+# ------------------------------------------------------------------ hangar / sub pen craft and dock dioramas (docs/23)
+# Code-built product models after the in-game greyboxes (src/shared/{Heli,Plane,Sub}/Builder.luau), Blender
+# coords: bow/nose to -Y, Z up. Rescue livery: red, white, yellow.
+def craft_mats():
+    return {"red": mat("Red", (0.8, 0.045, 0.02), rough=0.3, coat=0.6), "white": mat("White", (0.85, 0.86, 0.88), rough=0.35, coat=0.4),
+            "yellow": mat("Yellow", (1.0, 0.55, 0.0), rough=0.3, coat=0.5), "dark": mat("Dark", (0.03, 0.035, 0.04), rough=0.45, metal=0.4),
+            "glass": mat("Glass", (0.01, 0.02, 0.03), rough=0.05, coat=1.0), "navy": mat("Navy", (0.01, 0.03, 0.1), rough=0.35, coat=0.5)}
+
+
+def paint(o, mats, pick):
+    """Per-face material by world-space face centre: pick(Vector) -> index into mats."""
+    for m in mats:
+        o.data.materials.append(m)
+    mw = o.matrix_world
+    for p in o.data.polygons:
+        p.material_index = pick(mw @ p.center)
+    return o
+
+
+def rod(a, b, r, m, name="Rod", verts=12):
+    a, b = Vector(a), Vector(b)
+    o = obj_from("cylinder", name, m, loc=(a + b) / 2, scale=(r, r, (b - a).length / 2), vertices=verts, smooth=True)
+    o.rotation_euler = Vector((0, 0, 1)).rotation_difference(b - a).to_euler()
+    return o
+
+
+def loft(name, secs, segs=24):
+    """Closed tube through elliptical sections (y, half width, half height, centre z)."""
+    import bmesh
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    rings = [[bm.verts.new((w * math.cos(t), y, zc + h * math.sin(t))) for t in (i / segs * math.tau for i in range(segs))]
+             for y, w, h, zc in secs]
+    for a, b in zip(rings, rings[1:]):
+        for j in range(segs):
+            bm.faces.new((a[j], a[(j + 1) % segs], b[(j + 1) % segs], b[j]))
+    bm.faces.new(rings[0][::-1])
+    bm.faces.new(rings[-1])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me)
+    o = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(o)
+    for p in me.polygons:
+        p.use_smooth = True
+    return o
+
+
+def helicopter():
+    M = craft_mats()
+    body = obj_from("uv_sphere", "HeliBody", None, scale=(3.2, 5.6, 2.7), segments=48, ring_count=24, smooth=True)
+    paint(body, [M["red"], M["white"], M["glass"]], lambda c: 2 if (c.y < -2.0 and c.z > -0.3) or (abs(c.x) > 2.4 and 0.2 < c.z < 1.6 and -1.8 < c.y < 1.2)
+          else 1 if -1.7 < c.z < -0.9 else 0)
+    objs = [body, obj_from("cone", "Boom", M["red"], loc=(0, 10, 0.6), rot=(-math.pi / 2, 0, 0), radius1=1.0, radius2=0.42, depth=12, vertices=32, smooth=True),
+            obj_from("cube", "Engine", M["white"], loc=(0, 1.2, 2.6), scale=(1.5, 2.6, 0.7), bevel=0.45),
+            obj_from("cylinder", "Mast", M["dark"], loc=(0, 0.6, 3.6), scale=(0.3, 0.3, 0.45), vertices=16),
+            obj_from("cylinder", "Hub", M["dark"], loc=(0, 0.6, 4.05), scale=(0.65, 0.65, 0.18), vertices=24, bevel=0.06),
+            obj_from("cube", "Fin", M["red"], loc=(0, 16.4, 2.3), rot=(-0.3, 0, 0), scale=(0.2, 1.2, 2.1), bevel=0.12),
+            obj_from("cube", "Stabiliser", M["white"], loc=(0, 15.0, 0.75), scale=(2.3, 0.7, 0.12), bevel=0.08),
+            obj_from("cylinder", "TailHub", M["dark"], loc=(0.35, 16.9, 3.1), rot=(0, math.pi / 2, 0), scale=(0.3, 0.3, 0.15), vertices=12),
+            obj_from("cube", "TailBlade", M["dark"], loc=(0.5, 16.9, 3.1), rot=(0.5, 0, 0), scale=(0.05, 0.22, 1.6), bevel=0.04),
+            obj_from("cube", "WinchArm", M["dark"], loc=(3.5, 0.6, 1.4), scale=(1.0, 0.2, 0.2), bevel=0.05),
+            obj_from("cylinder", "Winch", M["yellow"], loc=(4.3, 0.6, 1.1), scale=(0.3, 0.3, 0.3), vertices=16, bevel=0.05),
+            obj_from("uv_sphere", "Beacon", mat("BeaconRed", (1, 0.05, 0.02), emit=(1, 0.05, 0.02), emit_strength=20),
+                     loc=(0, 6.5, 1.6), scale=(0.25, 0.25, 0.2), smooth=True)]
+    for k in range(4):
+        a = math.radians(20 + 90 * k)
+        d = Vector((math.sin(a), math.cos(a), 0))
+        objs.append(obj_from("cube", "Blade", M["dark"], loc=Vector((0, 0.6, 4.1)) + d * 5.6, rot=(0, 0, -a), scale=(0.42, 5.2, 0.05), bevel=0.03))
+        objs.append(obj_from("cube", "BladeTip", M["yellow"], loc=Vector((0, 0.6, 4.1)) + d * 11.0, rot=(0, 0, -a), scale=(0.43, 0.35, 0.055), bevel=0.03))
+    for sx in (-1, 1):
+        objs.append(rod((sx * 2.5, -5.2, -3.6), (sx * 2.5, 4.6, -3.6), 0.18, M["dark"], "Skid"))
+        objs.append(rod((sx * 2.5, -5.2, -3.6), (sx * 2.5, -6.0, -3.0), 0.18, M["dark"], "SkidTip"))
+        for y in (-2.2, 2.2):
+            objs.append(rod((sx * 2.5, y, -3.6), (sx * 1.7, y, -2.0), 0.13, M["dark"], "Strut"))
+    return objs
+
+
+def seaplane():
+    M = craft_mats()
+    fus = loft("Fuselage", [(-9.0, 1.2, 1.2, 0.0), (-8.4, 1.9, 2.0, 0.1), (-7.0, 2.1, 2.2, 0.2), (3.0, 2.1, 2.2, 0.2),
+                            (7.0, 1.4, 1.6, 0.6), (11.0, 0.7, 0.9, 1.1), (14.0, 0.3, 0.5, 1.5)])
+    paint(fus, [M["red"], M["navy"], M["glass"], M["white"]], lambda c: 1 if c.z < -1.1 + 0.08 * max(0, c.y)
+          else 2 if (-8.6 < c.y < -6.6 and c.z > 0.9) or (abs(c.x) > 1.6 and 0.5 < c.z < 1.7 and -6.2 < c.y < 1.5)
+          else 3 if -0.75 < c.z - 0.06 * max(0, c.y) < -0.35 else 0)
+    objs = [fus, obj_from("cube", "Wing", M["white"], loc=(0, -3.5, 2.6), scale=(22, 2.75, 0.28), bevel=0.25),
+            obj_from("cube", "Fin", M["red"], loc=(0, 13.0, 3.6), rot=(-0.26, 0, 0), scale=(0.2, 1.9, 2.5), bevel=0.15),
+            obj_from("cube", "Tailplane", M["white"], loc=(0, 13.6, 1.6), scale=(6.5, 1.5, 0.15), bevel=0.1),
+            obj_from("cylinder", "Cowl", M["white"], loc=(0, -9.5, 0.05), rot=(math.pi / 2, 0, 0), scale=(1.45, 1.45, 0.8), vertices=32, bevel=0.2, smooth=True),
+            obj_from("cone", "Spinner", M["red"], loc=(0, -10.8, 0.05), rot=(math.pi / 2, 0, 0), radius1=0.6, radius2=0.08, depth=1.2, vertices=24, smooth=True),
+            obj_from("cube", "Prop", M["dark"], loc=(0, -10.6, 0.05), rot=(0, 0.35, 0), scale=(0.24, 0.06, 3.1), bevel=0.04)]
+    for sx in (-1, 1):
+        objs.append(obj_from("cube", "WingTip", M["red"], loc=(sx * 22.4, -3.5, 2.6), scale=(0.8, 2.78, 0.3), bevel=0.25))
+        objs.append(rod((sx * 2.0, -3.5, -1.4), (sx * 9.0, -3.5, 2.3), 0.16, M["dark"], "WingStrut"))
+        fl = loft("Float", [(-10.5, 0.15, 0.2, -6.4), (-9.6, 0.7, 0.6, -6.7), (-8.0, 0.95, 0.9, -7.0), (6.0, 0.95, 0.9, -7.0),
+                            (9.5, 0.5, 0.5, -7.1)], segs=20)
+        fl.location.x = sx * 4.5
+        bpy.context.view_layer.update()
+        paint(fl, [M["white"], M["navy"]], lambda c: 1 if c.y < -8.6 or c.z < -7.65 else 0)
+        objs.append(fl)
+        for y in (-5.0, 4.0):
+            objs.append(rod((sx * 4.5, y, -6.3), (sx * 1.6, y, -1.6), 0.15, M["dark"], "FloatStrut"))
+    return objs
+
+
+def submarine(s=1.0, off=(0, 0, 0)):
+    M = craft_mats()
+    lamp = mat("Headlamp", (1, 0.95, 0.8), emit=(1, 0.93, 0.78), emit_strength=25)
+    objs = [obj_from("cylinder", "Hull", M["yellow"], rot=(math.pi / 2, 0, 0), scale=(2.5, 2.5, 5.5), vertices=48, smooth=True),
+            obj_from("uv_sphere", "Bow", M["yellow"], loc=(0, -5.5, 0), scale=(2.5, 2.5, 2.5), segments=48, ring_count=24, smooth=True),
+            obj_from("cone", "Stern", M["yellow"], loc=(0, 7.0, 0), rot=(-math.pi / 2, 0, 0), radius1=2.5, radius2=0.9, depth=3, vertices=48, smooth=True),
+            obj_from("cylinder", "BandW", M["white"], loc=(0, 1.6, 0), rot=(math.pi / 2, 0, 0), scale=(2.53, 2.53, 0.35), vertices=48, smooth=True),
+            obj_from("cylinder", "BandR", M["red"], loc=(0, 2.4, 0), rot=(math.pi / 2, 0, 0), scale=(2.53, 2.53, 0.35), vertices=48, smooth=True),
+            obj_from("uv_sphere", "Dome", M["glass"], loc=(0, -2.6, 1.75), scale=(1.9, 1.9, 1.9), segments=48, ring_count=24, smooth=True),
+            obj_from("torus", "DomeRing", M["dark"], loc=(0, -2.6, 2.0), major_radius=1.85, minor_radius=0.18, smooth=True),
+            obj_from("cylinder", "Hatch", M["dark"], loc=(0, 3.4, 2.45), scale=(0.8, 0.8, 0.18), vertices=24, bevel=0.06),
+            obj_from("torus", "Shroud", M["dark"], loc=(0, 8.8, 0), rot=(math.pi / 2, 0, 0), major_radius=1.3, minor_radius=0.22, smooth=True),
+            obj_from("cube", "Prop", M["dark"], loc=(0, 8.8, 0), rot=(0, 0.6, 0), scale=(0.18, 0.06, 1.1), bevel=0.03),
+            obj_from("cube", "FinTop", M["yellow"], loc=(0, 6.6, 2.4), rot=(-0.3, 0, 0), scale=(0.15, 0.9, 1.1), bevel=0.1),
+            obj_from("cube", "FinSide", M["yellow"], loc=(0, 6.6, 0), scale=(3.2, 0.8, 0.13), bevel=0.1),
+            obj_from("cube", "BowPlanes", M["dark"], loc=(0, -3.8, -0.7), scale=(3.4, 0.55, 0.12), bevel=0.08)]
+    for sx in (-1, 1):
+        objs.append(obj_from("uv_sphere", "Lamp", lamp, loc=(sx * 1.25, -7.3, -0.9), scale=(0.32, 0.2, 0.32), smooth=True))
+        objs.append(rod((sx * 1.5, -4.5, -2.9), (sx * 1.5, 4.5, -2.9), 0.2, M["dark"], "Rail"))
+        for y in (-3.0, 3.0):
+            objs.append(rod((sx * 1.5, y, -2.9), (sx * 1.0, y, -2.0), 0.14, M["dark"], "Leg"))
+    if s != 1.0 or any(off):
+        bpy.context.view_layer.update()
+        for o in objs:
+            o.location = o.location * s + Vector(off)
+            o.scale = o.scale * s
+    return objs
+
+
+def s_craft(build, az, el, fill=0.86, lens=50):
+    reset()
+    objs = build()
+    cutout_studio(objs, az)
+    frame_tight(objs, az, el, lens=lens, fill=fill)
+
+
+# dioramas: a square of sea with the quay behind (+Y), the jetty out toward the camera (-Y)
+def dock_mats():
+    wood = mat("Wood", (0.30, 0.16, 0.07), rough=0.75)
+    add_noise_bump(wood, scale=8.0, strength=0.25, dist=0.02)
+    water = mat("Water", (0.01, 0.26, 0.32), rough=0.06, coat=0.6)
+    add_noise_bump(water, scale=1.2, strength=0.35, dist=0.15)
+    return {"wood": wood, "water": water, "stone": mat("Stone", (0.42, 0.42, 0.40), rough=0.8),
+            "grass": mat("Grass", (0.12, 0.34, 0.06), rough=0.9), "wall": mat("Wall", (0.86, 0.82, 0.72), rough=0.6),
+            "roof": mat("Roof", (0.6, 0.06, 0.03), rough=0.5), "metal": mat("Metal", (0.4, 0.42, 0.45), rough=0.35, metal=0.8),
+            "lamp": mat("Lamp", (1, 0.85, 0.5), emit=(1, 0.78, 0.4), emit_strength=18), **craft_mats()}
+
+
+def dock_base(M, jetty=True, quay=3.0):
+    objs = [obj_from("cube", "Sea", M["water"], loc=(0, -quay / 2, -0.7), scale=(9, 9 - quay / 2, 0.7), bevel=0.25),
+            obj_from("cube", "Quay", M["stone"], loc=(0, 9 - quay, -0.1), scale=(9, quay, 1.3), bevel=0.2),
+            obj_from("cube", "Lawn", M["grass"], loc=(0, 9 - quay, 1.23), scale=(8.9, quay - 0.1, 0.05), bevel=0.04)]
+    if jetty:
+        objs += planks(M, 0, 9 - 2 * quay, -7.5)
+    return objs
+
+
+def planks(M, x, y0, y1, w=1.6, z=0.75):
+    objs = []
+    n = int(abs(y1 - y0) / 0.5)
+    for i in range(n):
+        objs.append(obj_from("cube", "Plank", M["wood"], loc=(x, y0 + (y1 - y0) * (i + 0.5) / n, z), rot=(0, 0, random.uniform(-0.01, 0.01)),
+                             scale=(w, 0.22, 0.08), bevel=0.03))
+    for i in range(int(abs(y1 - y0) / 3) + 1):
+        y = y0 + math.copysign(3 * i + 0.3, y1 - y0)
+        for sx in (-1, 1):
+            objs.append(obj_from("cylinder", "Pile", M["wood"], loc=(x + sx * (w - 0.1), y, 0.1), scale=(0.2, 0.2, 0.95), vertices=12, smooth=True))
+    return objs
+
+
+def lamp_post(M, x, y, z=0.8, h=3.0):
+    return [obj_from("cylinder", "Post", M["dark"], loc=(x, y, z + h / 2), scale=(0.09, 0.09, h / 2), vertices=12),
+            obj_from("uv_sphere", "LampHead", M["lamp"], loc=(x, y, z + h + 0.15), scale=(0.28, 0.28, 0.32), smooth=True),
+            obj_from("cone", "LampCap", M["dark"], loc=(x, y, z + h + 0.55), radius1=0.38, radius2=0.05, depth=0.3, vertices=16)]
+
+
+def gable(name, m, cx, cy, w, d, z0, h, eave=0.3):
+    """Pitched roof prism, ridge along Y."""
+    import bmesh
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    hw, hd = w / 2 + eave, d / 2 + eave
+    ends = [[bm.verts.new((cx + x, cy + y, z)) for x, z in ((-hw, z0), (hw, z0), (0, z0 + h))] for y in (-hd, hd)]
+    bm.faces.new(ends[0][::-1])
+    bm.faces.new(ends[1])
+    for j in range(3):
+        bm.faces.new((ends[0][j], ends[0][(j + 1) % 3], ends[1][(j + 1) % 3], ends[1][j]))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me)
+    o = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(o)
+    me.materials.append(m)
+    sol = o.modifiers.new("Solid", "SOLIDIFY")
+    sol.thickness = 0.15
+    return o
+
+
+def shed(M, cx, cy, w, d, h, door=None, roof="gable", door_w=None):
+    """Walls, a slatted roll-up door on the -Y face, side windows, gable or flat roof."""
+    objs = [obj_from("cube", "Walls", M["wall"], loc=(cx, cy, 0.8 + h / 2), scale=(w / 2, d / 2, h / 2), bevel=0.06)]
+    dw = door_w or w * 0.7
+    if door:
+        dh = h * 0.78
+        objs.append(obj_from("cube", "DoorFrame", M["dark"], loc=(cx, cy - d / 2 - 0.02, 0.8 + dh / 2 + 0.1), scale=(dw / 2 + 0.15, 0.06, dh / 2 + 0.15)))
+        for i in range(8):
+            objs.append(obj_from("cube", "Slat", door, loc=(cx, cy - d / 2 - 0.1, 0.8 + dh * (i + 0.5) / 8), scale=(dw / 2, 0.06, dh / 16 - 0.03), bevel=0.02))
+    for sx in (-1, 1):
+        for k in (-1, 1):
+            objs.append(obj_from("cube", "Window", M["glass"], loc=(cx + sx * (w / 2 + 0.02), cy + k * d * 0.22, 0.8 + h * 0.62),
+                                 scale=(0.05, d * 0.12, h * 0.16), bevel=0.02))
+    if roof == "gable":
+        objs.append(gable("Roof", M["roof"], cx, cy, w, d, 0.8 + h, h * 0.45))
+    else:
+        objs.append(obj_from("cube", "RoofSlab", M["stone"], loc=(cx, cy, 0.8 + h + 0.12), scale=(w / 2 + 0.2, d / 2 + 0.2, 0.12), bevel=0.04))
+    return objs
+
+
+def deck(M, cx, cy, w, d):
+    """Wooden platform a shed stands on over the water."""
+    return obj_from("cube", "Deck", M["wood"], loc=(cx, cy, 0.4), scale=(w / 2 + 0.4, d / 2 + 0.4, 0.4), bevel=0.05)
+
+
+def flag(M, x, y, z=0.8):
+    return [obj_from("cylinder", "FlagPole", M["white"], loc=(x, y, z + 2.5), scale=(0.07, 0.07, 2.5), vertices=12),
+            obj_from("cube", "Flag", M["red"], loc=(x + 0.75, y, z + 4.5), rot=(0, 0, 0.15), scale=(0.7, 0.03, 0.45), bevel=0.02)]
+
+
+def rescue_board(M, x, y, z):
+    return [obj_from("cube", "Board", M["red"], loc=(x, y, z + 1.6), scale=(1.0, 0.1, 0.8), bevel=0.05),
+            obj_from("torus", "Ring", M["white"], loc=(x, y - 0.18, z + 1.6), rot=(math.pi / 2, 0, 0), major_radius=0.45, minor_radius=0.13, smooth=True),
+            rod((x - 0.7, y + 0.05, z), (x - 0.7, y + 0.05, z + 1.0), 0.06, M["dark"]), rod((x + 0.7, y + 0.05, z), (x + 0.7, y + 0.05, z + 1.0), 0.06, M["dark"])]
+
+
+def lookout(M, x, y, z=1.3, h=6.0):
+    objs = []
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            objs.append(rod((x + sx * 1.1, y + sy * 1.1, z), (x + sx * 0.8, y + sy * 0.8, z + h), 0.12, M["white"], "Leg"))
+    objs += [obj_from("cube", "Cabin", M["glass"], loc=(x, y, z + h + 0.7), scale=(1.1, 1.1, 0.7), bevel=0.05),
+             obj_from("cube", "CabinBase", M["red"], loc=(x, y, z + h), scale=(1.25, 1.25, 0.15), bevel=0.04),
+             obj_from("cone", "Cap", M["red"], loc=(x, y, z + h + 1.85), rot=(0, 0, math.pi / 4), radius1=1.9, radius2=0.1, depth=0.9, vertices=4)]
+    return objs
+
+
+def crane(M, x, y, z=1.3):
+    objs = [obj_from("cube", "CraneMast", M["yellow"], loc=(x, y, z + 3), scale=(0.3, 0.3, 3), bevel=0.04),
+            obj_from("cube", "Jib", M["yellow"], loc=(x - 0.2, y - 2.6, z + 6.1), rot=(0.12, 0, 0), scale=(0.22, 3.6, 0.22), bevel=0.04),
+            obj_from("cube", "Counter", M["dark"], loc=(x, y + 1.0, z + 6.0), scale=(0.4, 0.5, 0.35), bevel=0.04),
+            rod((x - 0.2, y - 5.9, z + 6.4), (x - 0.2, y - 5.9, z + 2.0), 0.03, M["dark"], "Cable"),
+            obj_from("cube", "Hook", M["red"], loc=(x - 0.2, y - 5.9, z + 1.85), scale=(0.25, 0.25, 0.25), bevel=0.05)]
+    return objs
+
+
+def car(M, x, y, z, rz=0.0):
+    body = mat("CarRed", (0.75, 0.04, 0.02), rough=0.25, coat=1.0)
+    parts = [obj_from("cube", "CarBody", body, loc=(0, 0, 0.55), scale=(0.9, 2.0, 0.35), bevel=0.15),
+             obj_from("cube", "CarCabin", M["glass"], loc=(0, 0.2, 1.1), scale=(0.75, 1.0, 0.3), bevel=0.15)]
+    for sx in (-1, 1):
+        for sy in (-1.2, 1.2):
+            parts.append(obj_from("cylinder", "Wheel", M["dark"], loc=(sx * 0.85, sy, 0.35), rot=(0, math.pi / 2, 0), scale=(0.35, 0.35, 0.15), vertices=20, smooth=True))
+    rot = Euler((0, 0, rz)).to_matrix()
+    for o in parts:
+        o.location = rot @ o.location + Vector((x, y, z))
+        o.rotation_euler.rotate(Euler((0, 0, rz)))
+    return parts
+
+
+def s_dock(build, az=-32, el=30, fill=0.9, night=False):
+    reset()
+    random.seed(4)
+    M = dock_mats()
+    objs = build(M)
+    cutout_studio(objs, az, premium=night)
+    if night:  # dusk: dim the sky and the sun so the windows and beacon carry the picture
+        for n in bpy.context.scene.world.node_tree.nodes:
+            if n.type == "BACKGROUND":
+                n.inputs["Strength"].default_value *= 0.25
+        for o in bpy.context.scene.objects:
+            if o.type == "LIGHT":
+                o.data.energy *= 0.3
+    frame_tight(objs, az, el, lens=50, fill=fill)
+
+
+def d_lv2(M):
+    objs = dock_base(M)
+    objs.append(obj_from("cube", "PontoonEdge", M["yellow"], loc=(3.3, -4.0, 0.1), scale=(1.6, 2.6, 0.2), bevel=0.08))
+    objs.append(obj_from("cube", "Pontoon", M["stone"], loc=(3.3, -4.0, 0.32), scale=(1.45, 2.45, 0.08), bevel=0.04))
+    for y in (1.5, -4.5):
+        for sx in (-1, 1):
+            objs += lamp_post(M, sx * 1.75, y)
+    return objs + flag(M, -1.6, -7.2) + rescue_board(M, -4.5, 5.0, 1.3)
+
+
+def d_lv3(M):
+    return dock_base(M) + [deck(M, 4.2, 0.5, 5.0, 7.0)] + shed(M, 4.2, 0.5, 5.0, 7.0, 3.6, door=M["white"]) + lamp_post(M, -1.75, -3.0)
+
+
+def d_lv4(M):
+    return dock_base(M) + lookout(M, -4.8, 5.4) + crane(M, 4.6, 5.0) + lamp_post(M, 1.75, -3.0)
+
+
+def d_lv5(M):
+    objs = dock_base(M) + shed(M, 0, 6.0, 9.0, 3.4, 3.2, roof="gable")
+    for i in range(5):
+        for row in (0.45, 0.8):
+            if row == 0.45 and i == 2:
+                continue
+            objs.append(obj_from("cube", "LitWindow", M["lamp"], loc=(-3.4 + 1.7 * i, 4.27, 0.8 + 3.2 * row), scale=(0.45, 0.05, 0.42)))
+    objs.append(obj_from("cube", "StationDoor", M["red"], loc=(0, 4.27, 1.9), scale=(0.7, 0.06, 1.1), bevel=0.04))
+    tower = [obj_from("cylinder", "Tower", M["white"], loc=(-6.8, 4.4, 3.8), scale=(0.75, 0.75, 2.5), vertices=32, smooth=True)]
+    for z in (2.4, 4.6):
+        tower.append(obj_from("cylinder", "TowerBand", M["red"], loc=(-6.8, 4.4, z), scale=(0.77, 0.77, 0.4), vertices=32, smooth=True))
+    beacon = mat("Beacon", (1, 0.8, 0.3), emit=(1, 0.75, 0.25), emit_strength=60)
+    tower += [obj_from("cylinder", "Gallery", M["dark"], loc=(-6.8, 4.4, 6.4), scale=(1.0, 1.0, 0.1), vertices=32),
+              obj_from("uv_sphere", "BeaconLamp", beacon, loc=(-6.8, 4.4, 7.0), scale=(0.55, 0.55, 0.55), smooth=True),
+              obj_from("cone", "LanternCap", M["red"], loc=(-6.8, 4.4, 7.85), radius1=0.8, radius2=0.08, depth=0.7, vertices=24, smooth=True)]
+    for y in (1.5, -4.5):
+        for sx in (-1, 1):
+            objs += lamp_post(M, sx * 1.75, y)
+    return objs + tower
+
+
+def d_garage(M):
+    objs = dock_base(M, jetty=False, quay=7.0) + shed(M, 0, 5.0, 6.0, 5.0, 3.4, door=M["white"], roof="flat", door_w=4.4)
+    return objs + car(M, 0.4, -0.6, 1.28, rz=0.25)
+
+
+def d_hangar(M):
+    objs = dock_base(M) + [deck(M, 4.0, 0.8, 6.6, 7.0)] + shed(M, 4.0, 0.8, 6.6, 7.0, 3.6, door=M["white"], roof="flat")
+    top = 0.8 + 3.6 + 0.24
+    objs += [obj_from("cylinder", "Pad", M["dark"], loc=(4.0, 0.8, top + 0.05), scale=(3.0, 3.0, 0.06), vertices=48),
+             obj_from("torus", "PadRing", M["yellow"], loc=(4.0, 0.8, top + 0.12), scale=(1, 1, 0.25), major_radius=2.5, minor_radius=0.12),
+             obj_from("cube", "H1", M["white"], loc=(4.0 - 0.75, 0.8, top + 0.12), scale=(0.18, 1.1, 0.03)),
+             obj_from("cube", "H2", M["white"], loc=(4.0 + 0.75, 0.8, top + 0.12), scale=(0.18, 1.1, 0.03)),
+             obj_from("cube", "H3", M["white"], loc=(4.0, 0.8, top + 0.12), scale=(0.75, 0.16, 0.03)),
+             rod((7.0, 4.0, top), (7.0, 4.0, top + 1.8), 0.05, M["dark"], "SockPole"),
+             obj_from("cone", "Windsock", M["yellow"], loc=(6.55, 4.0, top + 1.65), rot=(0, -math.pi / 2, 0), radius1=0.22, radius2=0.1, depth=0.9, vertices=16)]
+    return objs
+
+
+def d_subpen(M):
+    objs = dock_base(M, jetty=False) + planks(M, -4.2, 6.0, -6.5) + planks(M, 4.2, 6.0, -6.5)
+    for y in (-3.0, 2.0):
+        for sx in (-1, 1):
+            objs.append(obj_from("cube", "LiftLeg", M["yellow"], loc=(sx * 2.9, y, 2.3), scale=(0.22, 0.22, 2.3), bevel=0.04))
+        objs.append(obj_from("cube", "LiftBeam", M["yellow"], loc=(0, y, 4.75), scale=(3.12, 0.25, 0.22), bevel=0.04))
+        objs.append(rod((0, y, 4.5), (0, y, 1.9), 0.04, M["dark"], "LiftCable"))
+        objs.append(obj_from("cube", "Cradle", M["yellow"], loc=(0, y, 0.5), scale=(1.2, 0.18, 0.12), bevel=0.03))
+    return objs + submarine(0.32, (0, -0.5, 1.45))
+
+
 SCENES = {
     "SmallBonus": s_small,
     "CrewPayroll": s_payroll,
@@ -1790,6 +2145,16 @@ SCENES = {
     "LighthouseCruiserPass": lambda: s_pass("M_Veh_LighthouseCruiser", premium=True),
     "DayDoubleCash": s_day_cash,
     "DayQuickLaunch": s_day_launch,
+    "RescueHelicopterPass": lambda: s_craft(helicopter, -38, 20),
+    "SeaplanePass": lambda: s_craft(seaplane, -35, 22, fill=0.92),
+    "SubmarinePass": lambda: s_craft(submarine, -62, 14, lens=85),
+    "DockLevel2": lambda: s_dock(d_lv2),
+    "DockLevel3": lambda: s_dock(d_lv3),
+    "DockLevel4": lambda: s_dock(d_lv4),
+    "DockLevel5": lambda: s_dock(d_lv5, night=True),
+    "DockGarage": lambda: s_dock(d_garage),
+    "DockHangar": lambda: s_dock(d_hangar),
+    "DockSubPen": lambda: s_dock(d_subpen),
 }
 
 os.makedirs(OUT, exist_ok=True)

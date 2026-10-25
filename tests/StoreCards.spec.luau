@@ -140,7 +140,14 @@ return function(t)
 		end
 		for _, kind in { "GamePasses", "Products" } do
 			for key, item in Config[kind] do
-				if type(item.id) == "number" and item.id > 0 and item.ready ~= false then
+				-- dock levels and buildings sell at the dock's ghost, not in the Store (docs/23 c.3)
+				local atDock = item.dockLevel ~= nil or item.dockBuilding ~= nil
+				if
+					type(item.id) == "number"
+					and item.id > 0
+					and item.ready ~= false
+					and not atDock
+				then
 					t.expect(listed[`{kind}/{key}`]).toBe(true)
 				end
 			end

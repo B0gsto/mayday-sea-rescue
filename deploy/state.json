@@ -12,7 +12,14 @@
       "CallTheStorm": 3719524960,
       "CallTheGreatStorm": 3719525027,
       "DayDoubleCash": 3721024854,
-      "DayQuickLaunch": 3721024872
+      "DayQuickLaunch": 3721024872,
+      "DockLevel2": 3722223190,
+      "DockLevel3": 3722223199,
+      "DockLevel4": 3722223208,
+      "DockLevel5": 3722223223,
+      "DockGarage": 3722223237,
+      "DockHangar": 3722223246,
+      "DockSubPen": 3722223257
     },
     "GamePasses": {
       "DoubleCash": 2040015521,
@@ -27,7 +34,10 @@
       "RiptideXPass": 2047802677,
       "GildedGullPass": 2044329361,
       "HarbourGTPass": 2045541334,
-      "LighthouseCruiserPass": 2046003338
+      "LighthouseCruiserPass": 2046003338,
+      "RescueHelicopterPass": 2053992047,
+      "SeaplanePass": 2055467922,
+      "SubmarinePass": 2052480096
     }
   },
   "placeVersion": 40
