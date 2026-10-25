@@ -1689,32 +1689,12 @@ local function stepBoarding(op: any, dt: number)
 	end)
 end
 
--- Server-side transport: the client Mechanics/transport rule (home = a shore point at any speed, within
--- PAD_RANGE of a drop-off pad or the player's own dock (BayCFrame, docs/23 e.2) slow or on foot),
--- checked on the server's own view of the player.
-local PAD_RANGE = 60 -- studs, client Transport.PAD_RANGE
-local function isHome(player: Player, pos: Vector3, slowOrOnFoot: boolean): boolean
+-- Server-side transport: the client Mechanics/transport rule (home = a shore point, or the drop-off zone round
+-- the player's own berth (BayCFrame, docs/23 e.2), at any speed or on foot), checked on the server's own view.
+local function isHome(player: Player, pos: Vector3): boolean
 	local _, shore = BoatColdOpen.nearestShore(pos)
-	if shore <= BoatColdOpen.SHORE_RADIUS then
-		return true
-	end
-	if not slowOrOnFoot then
-		return false
-	end
-	local points = {}
-	local bay = player:GetAttribute("BayCFrame")
-	if typeof(bay) == "CFrame" then
-		table.insert(points, bay.Position)
-	end
-	local map = Workspace:FindFirstChild("Map")
-	local folder = map and map:FindFirstChild("DropOffs")
-	for _, pad in if folder then folder:GetChildren() else {} do
-		if pad:IsA("BasePart") and pad:GetAttribute("DropOff") ~= nil then
-			table.insert(points, pad.Position)
-		end
-	end
-	local near = CallLogic.nearestDropOff(pos, points)
-	return near ~= nil and CallLogic.flatDistance(near, pos) <= PAD_RANGE
+	return shore <= BoatColdOpen.SHORE_RADIUS
+		or BoatColdOpen.atDropOff(pos, player:GetAttribute("BayCFrame"))
 end
 
 local function stepHome(op: any)
@@ -1731,8 +1711,7 @@ local function stepHome(op: any)
 		if ci and op.casualties[ci].inWater then
 			continue -- fell off on the way: stepBoarding takes them back aboard first
 		end
-		local onFoot = hum.SeatPart == nil
-		if isHome(player, root.Position, onFoot or root.AssemblyLinearVelocity.Magnitude < 8) then
+		if isHome(player, root.Position) then
 			serverDone(op, track, inst, player, {
 				elapsed = now() - inst.startedAt,
 				conditionAtEnd = if ci then op.casualties[ci].condition else nil,

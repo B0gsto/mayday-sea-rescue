@@ -213,11 +213,11 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 	end
 end
 
-local HOME_RANGE = 180 -- studs (60 m): the drop-off starts to pulse -- tune
-local HOME_MARK = 14 -- studs across the steady ring
+local HOME_RANGE = ColdOpen.DROP_RADIUS + 180 -- studs: the drop-off starts to pulse 60 m out from its zone -- tune
+local HOME_MARK = 14 -- studs across the centre ring; the pulse spreads from it to the zone's edge
 
 -- Where the craft's survivors land: the nearest cold-open slipway while the cold open runs (the
--- server lands them there, OperationService isHome), else the nearest drop-off pad's top.
+-- server lands them there, OperationService isHome), else your berth's drop-off zone.
 local function homePoint(from: Vector3): Vector3?
 	local best: Vector3?, bestD = nil, math.huge
 	local function consider(p: Vector3)
@@ -232,14 +232,8 @@ local function homePoint(from: Vector3): Vector3?
 		end
 		return best
 	end
-	local map = Workspace:FindFirstChild("Map")
-	local folder = map and map:FindFirstChild("DropOffs")
-	for _, pad in if folder then folder:GetChildren() else {} do
-		if pad:IsA("BasePart") and pad:GetAttribute("DropOff") ~= nil then
-			consider(pad.Position + Vector3.new(0, pad.Size.Y / 2 + 0.08, 0))
-		end
-	end
-	return best
+	local p = ColdOpen.dropOff(Players.LocalPlayer:GetAttribute("BayCFrame"))
+	return if p then Vector3.new(p.X, waterY(p) + 0.08, p.Z) else nil
 end
 
 -- The local player's craft while they carry survivors, else nil.
@@ -257,12 +251,13 @@ local function carryingCraft(): Model?
 	return nil
 end
 
--- Every delivery (started once by OnboardingController): a green steady ring and a pulse spreading
--- from the drop-off while your craft carries someone and is within HOME_RANGE of it.
+-- Every delivery (started once by OnboardingController): a green steady ring on the drop-off zone's edge (land
+-- anywhere inside it) and a pulse spreading out to it while your craft carries someone within HOME_RANGE.
 function ColdOpenCue.home(): () -> ()
 	local folder: Folder? = nil
 	local mark: Ring? = nil
 	local pulse: Ring? = nil
+	local edge: Ring? = nil
 	local conn = RunService.Heartbeat:Connect(function()
 		local craft = carryingCraft()
 		local at = craft and homePoint(craft:GetPivot().Position)
@@ -270,7 +265,7 @@ function ColdOpenCue.home(): () -> ()
 		if not (at and near and near.Magnitude <= HOME_RANGE) then
 			if folder then
 				folder:Destroy()
-				folder, mark, pulse = nil, nil, nil
+				folder, mark, pulse, edge = nil, nil, nil, nil
 			end
 			return
 		end
@@ -281,11 +276,14 @@ function ColdOpenCue.home(): () -> ()
 			folder = f
 			mark = ring("Mark", GREEN, f)
 			pulse = ring("Pulse", GREEN, f)
+			edge = ring("Edge", GREEN, f)
 		end
 		local k = (os.clock() % PULSE) / PULSE
-		if mark and pulse then
+		if mark and pulse and edge then
+			local zone = ColdOpen.DROP_RADIUS * 2
 			setRing(mark, at, HOME_MARK, 0.1)
-			setRing(pulse, at, HOME_MARK + k * (RING_MAX * 1.5 - HOME_MARK), 0.2 + 0.8 * k)
+			setRing(pulse, at, HOME_MARK + k * (zone - HOME_MARK), 0.2 + 0.8 * k)
+			setRing(edge, at, zone, 0.35)
 		end
 	end)
 	return function()

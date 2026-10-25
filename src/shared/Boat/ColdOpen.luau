@@ -175,6 +175,24 @@ end
 ColdOpen.SHORE_RADIUS = 40 -- studs, flat, casualty to the shore point (28 left a jet ski stalled on the slip short of it) -- tune
 ColdOpen.NEXT_CALL_DELAY = 15 -- s after the cold open before call 2: the reward burst and debrief, still seated (docs/16 B2) -- tune
 
+-- Every delivery (docs/00 section 3, docs/23 (p)): survivors climb off any of your craft, moving or docked,
+-- anywhere within DROP_RADIUS of `bay` (your berth, player attribute BayCFrame: a CFrame or Vector3).
+ColdOpen.DROP_RADIUS = 80 -- studs, flat: your whole cove, jetty and quay (owner: "make the save box larger") -- tune
+
+-- The drop-off point (sea level) of `bay`, or nil with no berth.
+function ColdOpen.dropOff(bay: any): Vector3?
+	local p = if typeof(bay) == "CFrame"
+		then bay.Position
+		elseif typeof(bay) == "Vector3" then bay
+		else nil
+	return if p then Vector3.new(p.X, 0, p.Z) else nil
+end
+
+function ColdOpen.atDropOff(pos: Vector3, bay: any): boolean
+	local p = ColdOpen.dropOff(bay)
+	return p ~= nil and Vector3.new(pos.X - p.X, 0, pos.Z - p.Z).Magnitude <= ColdOpen.DROP_RADIUS
+end
+
 -- The nearest shore point to `pos` (flat) and its distance.
 function ColdOpen.nearestShore(pos: Vector3): (any, number)
 	local best, bestD = ColdOpen.SHORE[1], math.huge
