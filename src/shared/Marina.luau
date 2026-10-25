@@ -3,7 +3,7 @@
 -- (tests/Marina.spec.luau). Plot i = HubLayout.Islands[i] (Plot1..Plot6): its boat berth in the cove, its lots.
 -- Berth frame (what VehicleService, BayLaunch and DockPieces read): the island's boat berth at sea level,
 -- LookVector = out of the cove, local -X = the jetty (the finger beside the craft), local +Z = the quay.
--- Every island is the same shape turned round the hub, so a lot sits at the same place in its berth frame:
+-- Every island is the same shape turned round the ring centre, so a lot sits at the same place in its berth frame:
 -- Marina.LOTS[name] = { cf = the lot's CFrame in the berth frame (on the plateau), size = Vector2 }.
 local HubLayout = require(script.Parent:WaitForChild("Config"):WaitForChild("HubLayout"))
 
@@ -21,7 +21,7 @@ for name, lot in ISLE.lots do
 	Marina.LOTS[name] = { cf = B0:ToObjectSpace(lot.cframe), size = lot.size }
 end
 Marina.SUB = B0:ToObjectSpace(ISLE.berths.Sub) -- the sub berth (in the sub pen), at sea level
-Marina.ISLAND = B0:ToObjectSpace(ISLE.frame) -- the island's centre on the plateau, LookVector = out from the hub
+Marina.ISLAND = B0:ToObjectSpace(ISLE.frame) -- the island's centre on the plateau, LookVector = out from the ring centre
 
 -- The berth CFrame of plot i (1..COUNT), at sea level.
 function Marina.berth(i: number): CFrame

@@ -121,10 +121,9 @@ end
 -- (transport): at the berth they climb off and wave
 ColdOpen.PLAN = { "tasking", "recovery", "transport" }
 -- The jet ski starts at your berth, bow out of the cove (VehicleService.BerthLaunch), the casualty dead ahead
--- just off the cove mouth; home is the berth behind you (SHORE). With no berth: the hub drop-off (SHORE[1]),
--- facing out of the hub harbour (south, +Z).
-ColdOpen.SPAWN = HubLayout.Hub.dropOff
-ColdOpen.SPAWN_FACING = HubLayout.Hub.frame.LookVector
+-- just off the cove mouth; home is the berth behind you (SHORE). With no berth: Plot1's berth, bow out.
+ColdOpen.SPAWN = HubLayout.Islands[1].berths.Boat.Position
+ColdOpen.SPAWN_FACING = HubLayout.Islands[1].facing
 ColdOpen.DISTANCE = { 100, 120 } -- studs dead ahead: past the cove mouth, outside NUDGE_NEAR, so they drive in to board (docs/16 B0) -- tune
 ColdOpen.NUDGE_AFTER = 10 -- s without headway before the world helps (docs/14 10 s rule)
 ColdOpen.NUDGE_PROGRESS = 6 -- studs closer that count as headway
@@ -151,9 +150,8 @@ function ColdOpen.nudge(n: Nudge, now: number, distance: number): boolean
 end
 
 -- 5. The first mission ends at a drop-off (docs/14 section 3, docs/23 (k)). The recovery only completes once
---    the casualty holds on (PiwMode "held") and is within SHORE_RADIUS of a shore point: the hub drop-off in its
---    harbour, or an island's berth (HubLayout; the cold open starts at yours). Every call's delivery counts
---    there at any speed too. `water` is the drop-off, `dry` the quay at the head of the harbour / cove where the
+--    the casualty holds on (PiwMode "held") and is within SHORE_RADIUS of a shore point: an island's berth
+--    (HubLayout; the cold open starts at yours, and OperationService only takes your own). `water` is the drop-off, `dry` the quay at the head of the harbour / cove where the
 --    shore party takes them over. `via`: open-water turns the minimap route may go through (ColdOpen.nextHop)
 --    when something blocks the straight line (none on the new map: coves open straight out to sea).
 export type Shore = { id: string, water: Vector3, dry: Vector3, via: { Vector3 }? }
@@ -161,9 +159,7 @@ local function quay(frame: CFrame, fwd: number): Vector3
 	local p = (frame * CFrame.new(0, 0, -fwd)).Position
 	return Vector3.new(p.X, 0, p.Z)
 end
-ColdOpen.SHORE = {
-	{ id = "Hub", water = HubLayout.Hub.dropOff, dry = quay(HubLayout.Hub.frame, 90) },
-} :: { Shore }
+ColdOpen.SHORE = {} :: { Shore }
 for _, island in HubLayout.Islands do
 	local berth = island.berths.Boat.Position
 	table.insert(ColdOpen.SHORE, {
@@ -176,7 +172,8 @@ ColdOpen.SHORE_RADIUS = 40 -- studs, flat, casualty to the shore point (28 left 
 ColdOpen.NEXT_CALL_DELAY = 15 -- s after the cold open before call 2: the reward burst and debrief, still seated (docs/16 B2) -- tune
 
 -- Every delivery (docs/00 section 3, docs/23 (p)): survivors climb off any of your craft, moving or docked,
--- anywhere within DROP_RADIUS of `bay` (your berth, player attribute BayCFrame: a CFrame or Vector3).
+-- anywhere within DROP_RADIUS of `bay` (your berth, player attribute BayCFrame: a CFrame or Vector3). Only your
+-- own island's berth counts as home.
 ColdOpen.DROP_RADIUS = 80 -- studs, flat: your whole cove, jetty and quay (owner: "make the save box larger") -- tune
 
 -- The drop-off point (sea level) of `bay`, or nil with no berth.

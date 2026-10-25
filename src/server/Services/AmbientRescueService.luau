@@ -5,7 +5,7 @@
 -- auto_board rule (Ops/Board.ready: close, slow, level, room aboard; the server reads the boat itself, no
 -- client input) and paid on delivery to a pad via the scene's onDelivered hook. Smaller pay than a call.
 -- They swim in the open water between the six islands and the outer islands (CallTypes zone Outer, docs/23
--- (k)), never in the hub harbour or a cove. K13 (docs/16): one is always in view off each player's cove mouth
+-- (p)), never in the lagoon or a cove. K13 (docs/16): one is always in view off each player's cove mouth
 -- (checked every MOUTH_CHECK s, so an idle player sees one within ~45 s); at the cap the oldest one nobody is
 -- near makes way for it. Not while a cold open runs (that player's own swimmer comes first).
 local Players = game:GetService("Players")

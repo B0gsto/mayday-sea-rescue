@@ -54,9 +54,11 @@ Merged 2026-10-25 night, live in v44 (except plates): phone removed + left menu 
 
 Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-27 ring → WP-26 workers → WP-25 art pass.
 
-- **WP-27 ring layout** (docs/23 (p)), right after WP-24 plates merge: remove the middle island; 6 plates in a tight
-  ring (~80 stud gaps) with neighbour bridges; quests arrive by boat at a quest pontoon with its own quest tablet; move hub call sites; flyover
-  centre; map refresh. Then WP-26 workers, then WP-25 art pass.
+- ~~**WP-27 ring layout**~~ done on branch `worktree-agent-ab2f6537443b69f26` (awaiting merge; docs/23 (p) "Done"):
+  hub removed, ring at 470, neighbour bridges, quest pontoon + tablet + boats, rip/ferry moved, own-berth home, map
+  tiles re-uploaded (moderation "Reviewing"). Open: the cold-open arrival cinematic was hub-only (deleted), pet nap
+  spot now your island's station; Dialogue still holds Chief Aggie's / the crew's unused trees. Then WP-26 workers,
+  then WP-25 art pass.
 
 - **WP-26 rescued people become workers** (docs/23 (o)): 5 categories, rarity, worker buildings at the tablet,
   effects, capped offline earnings, remove the crew lineup. Before the art pass.

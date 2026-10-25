@@ -35,8 +35,8 @@ export type Swap = {
 	ramps: { { number } }?, -- {x0, x1, yLow, zLow, yHigh, zHigh}: a stair ramp across x, metres
 }
 
--- WP-21a (docs/23 (l)): the hub HQ is a code-built lookout hut now (map/Build.luau buildHub); the H1 station swap
--- (M_Bld_Station on the HQ lot, its colliders and StationRig) is in git history before WP-21a, for a player island.
+-- The H1 station swap (M_Bld_Station on the old hub HQ lot, its colliders and StationRig) is in git history before
+-- WP-21a (docs/23 (l)), for a player island; the hub itself went in docs/23 (p).
 local Swaps: { [string]: Swap } = {}
 
 return Swaps

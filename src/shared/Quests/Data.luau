@@ -1,8 +1,9 @@
 --!strict
--- Quests/Data (docs/23 (l), WP-21b): the six quest givers at the hub's quest camps (HubLayout.Hub.questSpots, in
--- order) and their quests. Pure data, Lune-safe; Quests/Rules reads it, tests/Quests.spec.luau checks it.
+-- Quests/Data (docs/23 (l) + (p), WP-21b / WP-27): the six quest givers (they sail in to each player's own quest
+-- pontoon, QuestService / World/QuestPontoons) and their quests. Pure data, Lune-safe; Quests/Rules reads it,
+-- tests/Quests.spec.luau checks it.
 --   kind  find     pick the item up on an outer island (walk into it), carry it back to the giver
---         deliver  you carry the item from the camp; walk it to the spot, then back to the giver
+--         deliver  you carry the item from the pontoon; walk it to the spot, then back to the giver
 --         salvage  in the submarine, reach the item at a CallTypes.DiveSites wreck, bring it back
 --         rescue   a call is offered at the `zone` (CallTypes.SpawnZones); deliver the survivor as usual, then back
 --   at    find / deliver: { island (WorldConfig.Islands id), from (its point: landing / stamp / dock), offset }

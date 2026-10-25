@@ -10,9 +10,7 @@
 --   reached   on foot (not seated, above the sea) within the island radius (horizontal)
 --   sticker   within DiscoveryConfig.Range[kind] of its point (3D)
 -- Fog: a buffer, one byte per cell of the DiscoveryConfig.Fog grid (1 = revealed), saved as flag "fog"
--- (64-char base64 chunks f1..f9). Cell index = iz * count + ix + 1. docs/23 (l): a second, finer buffer
--- covers the hub island only (DiscoveryConfig.Fog.Hub, saved as flag "foghub", chunks h1..hn) so the
--- forest fog is not cleared by the coarse 400-stud reveal; inside the hub grid the coarse grid is skipped.
+-- (64-char base64 chunks f1..f9). Cell index = iz * count + ix + 1.
 local CallTypes = require(script.Parent.Calls.CallTypes)
 local DiscoveryConfig = require(script.Parent.Config.DiscoveryConfig)
 local WorldConfig = require(script.Parent.Config.WorldConfig)
@@ -52,34 +50,10 @@ local CELLS = FOG.count * FOG.count
 local CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
 local CHUNK = 64
 
--- the hub's fine grid: a square of Hub.cell cells centred on the hub, wide enough that a reveal at the
--- island's rim stays inside the domain
-local HUB = DiscoveryConfig.Fog.Hub
-local HUB_HALF = math.ceil((WorldConfig.Hub.radius + HUB.radius + HUB.cell) / HUB.cell) * HUB.cell
-local HUB_COUNT = math.floor(2 * HUB_HALF / HUB.cell)
-local HUB_CELLS = HUB_COUNT * HUB_COUNT
-local HUB_X0 = WorldConfig.Hub.center.X - HUB_HALF
-local HUB_Z0 = WorldConfig.Hub.center.Z - HUB_HALF
-
 -- pages in WorldConfig.Islands order, every sticker's bit and unsettled world point
 Rules.Pages = {} :: { Page }
 Rules.ById = {} :: { [string]: Page }
--- docs/23 (l): the hub forest gets a page too (last, so the islands keep their order). Its row carries every hub
--- clearing's centre by id, so a sticker's `from` can name one (Ruin, Wreck); the stamp is by the monument.
-local hubRow: { [string]: any } = {
-	id = "Hub",
-	name = "Coastguard Hub",
-	center = WorldConfig.Hub.center,
-	radius = WorldConfig.Hub.radius,
-}
-for _, c in WorldConfig.Hub.clearings do
-	hubRow[c.id] = c.center
-end
-hubRow.stamp = hubRow.Monument + Vector3.new(-12, 0, 8)
-local rows = table.clone(WorldConfig.Islands) :: { any }
-table.insert(rows, hubRow)
-
-for _, island in rows do
+for _, island in WorldConfig.Islands :: { any } do
 	local cfg = DiscoveryConfig.Pages[island.id]
 	local page: Page = {
 		id = island.id,
@@ -302,32 +276,8 @@ local function clearCells(
 	return changed
 end
 
-function Rules.reveal(fog: buffer, pos: Vector3, hub: buffer?): boolean
-	-- inside the hub island the fine grid stands in for the coarse one (docs/23 (l)): the forest fog
-	-- reads from it, and the coarse 400-stud reveal would clear the whole island at spawn
-	if hub and Rules.hubCellOf(pos) then
-		return clearCells(hub, HUB_COUNT, HUB.cell, HUB_X0, HUB_Z0, pos, HUB.radius)
-	end
+function Rules.reveal(fog: buffer, pos: Vector3): boolean
 	return clearCells(fog, FOG.count, FOG.cell, FOG.origin, FOG.origin, pos, FOG.radius)
-end
-
--- the hub's fine fog (docs/23 (l)) ---------------------------------------------------------------------
-
-function Rules.newHubFog(): buffer
-	return buffer.create(HUB_CELLS)
-end
-
-function Rules.hubCellOf(pos: Vector3): number?
-	local ix = math.floor((pos.X - HUB_X0) / HUB.cell)
-	local iz = math.floor((pos.Z - HUB_Z0) / HUB.cell)
-	if ix < 0 or iz < 0 or ix >= HUB_COUNT or iz >= HUB_COUNT then
-		return nil
-	end
-	return iz * HUB_COUNT + ix + 1
-end
-
-function Rules.hubRevealed(hub: buffer, index: number): boolean
-	return index >= 1 and index <= HUB_CELLS and buffer.readu8(hub, index - 1) == 1
 end
 
 -- six cells per base64 character, 64 characters per flag field
@@ -381,14 +331,6 @@ end
 
 function Rules.decodeFog(flag: any): buffer
 	return decodeBits(flag, CELLS)
-end
-
-function Rules.encodeHubFog(hub: buffer): { [string]: string }
-	return encodeBits(hub, HUB_CELLS)
-end
-
-function Rules.decodeHubFog(flag: any): buffer
-	return decodeBits(flag, HUB_CELLS)
 end
 
 return Rules

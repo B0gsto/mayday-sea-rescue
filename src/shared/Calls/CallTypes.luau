@@ -3,8 +3,8 @@
 -- Payout numbers: docs 03 section 2 (Calm Bay base 250 Cash / 60 Rep, weights from docs 02
 -- section 3, tutorial chain, fail-safe 10%, big-call shares). Numbers without a doc source: -- tune.
 --
--- World frame (WorldConfig, docs/23 (k)): sea level Y = 0, the hub island at the origin (its harbour opens south,
--- +Z), six player islands 1,100 out (HubLayout), the outer islands beyond. Calls count from the player's berth.
+-- World frame (WorldConfig, docs/23 (p)): sea level Y = 0, an open lagoon at the origin ringed by the six player
+-- islands 470 out (HubLayout, coves facing out), the outer islands beyond. Calls count from the player's berth.
 
 export type Interaction = {
 	kind: "Pull",
@@ -42,7 +42,7 @@ export type SpawnZone = {
 	center: Vector3, -- ring centre (cove / fromHome zones: the player's berth instead)
 	minRadius: number,
 	maxRadius: number,
-	area: "Open" | "Outer", -- Open = any open water, Outer = also Areas.OuterMin from the hub (CallLogic.isWater)
+	area: "Open" | "Outer", -- Open = any open water, Outer = also Areas.OuterMin from the ring centre (CallLogic.isWater)
 	timerMultiplier: number, -- longer timers for storm beginner calls (docs 02 section 8)
 	fallback: Vector3?, -- fixed sites; nil: CallLogic.homeFallback (open water out past your island)
 	reach: number?, -- distance-tier zones (docs/23 e.2): offered once the player's craft reach is at least this
@@ -57,13 +57,13 @@ local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
 local CallTypes = {}
 
--- Where calls are measured from: the hub island's centre (docs/23 (k); HubLayout.Hub.center at sea level).
-CallTypes.STATION = Vector3.new(HubLayout.Hub.center.X, 0, HubLayout.Hub.center.Z)
+-- Where calls are measured from: the centre of the ring of islands (docs/23 (p); HubLayout.Center at sea level).
+CallTypes.STATION = Vector3.new(HubLayout.Center.X, 0, HubLayout.Center.Z)
 
--- the fixed scenes, from the hub's size (it may grow): the ferry off its harbour mouth, the rip off its beach
-local FERRY_AT = (HubLayout.Hub.frame * CFrame.new(0, 0, -(HubLayout.HubRadius + 300))).Position
-FERRY_AT = Vector3.new(FERRY_AT.X, 0, FERRY_AT.Z)
-local RIP_AT = RipCurrent.point(RipCurrent.HubBeach, 120, 0)
+-- the fixed scenes (docs/23 (p)): the ferry in open sea south of the ring (between Plot2 and Plot3, 1,000 studs out
+-- from the centre), the rip off Puffin Isle's beach (shared/RipCurrent.Beach)
+local FERRY_AT = Vector3.new(0, 0, 1000)
+local RIP_AT = RipCurrent.point(RipCurrent.Beach, 120, 0)
 
 -- Travel budget (docs 02 section 4.1): about 45 s out with the zone's intended vehicle (jet ski).
 -- Cruise is below top speed: waves, turns and the trip out through the harbour mouth. -- tune
@@ -136,7 +136,7 @@ CallTypes.Kinds = {
 		timer = 600,
 		victims = 1,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
-		zones = { "HubRip" },
+		zones = { "BeachRip" },
 		isBig = false,
 	},
 	Sinking = {
@@ -237,10 +237,10 @@ CallTypes.BASE_REACH = 2000
 -- Pay x (distance / PayPerStuds), clamped to 1..PayMax (CallLogic.distancePay). x1 inside ~1,500 studs (the harbour
 -- approaches), then about pays for the extra travel (docs/23 (i), tests/Pacing.spec.luau). -- tune
 CallTypes.Distance = { PayPerStuds = 1500, PayMax = 4 }
--- A call landed farther than this from your berth (the hub drop-off, another island) pays for the trip sailed
+-- A call landed farther than this from your berth pays for the trip sailed
 -- from your berth (CallLogic.deliveredPay). -- tune
 CallTypes.HOME_RADIUS = 150
--- Tutorial calls spawn in a cone this many degrees either side of straight out of your cove (hub -> berth).
+-- Tutorial calls spawn in a cone this many degrees either side of straight out of your cove (ring centre -> berth).
 CallTypes.COVE_HALF_ANGLE = 35
 
 CallTypes.SpawnZones = {
@@ -287,10 +287,10 @@ CallTypes.SpawnZones = {
 		area = "Outer",
 		timerMultiplier = 1.3,
 	},
-	-- The big call, 300 studs off the hub's harbour mouth (it opens south, between the Plot2 and Plot3 bridges).
+	-- The big call, in open sea south of the ring.
 	FerrySite = {
 		id = "FerrySite",
-		displayName = "Harbour Mouth",
+		displayName = "Ferry Lane",
 		center = FERRY_AT,
 		minRadius = 0,
 		maxRadius = 0,
@@ -298,11 +298,11 @@ CallTypes.SpawnZones = {
 		timerMultiplier = 1,
 		fallback = FERRY_AT,
 	},
-	-- Rip-current beach rescue (docs/09 section 8.4): one place, the channel off the hub's north-east beach
-	-- (shared/RipCurrent.HubBeach); the casualty starts 120 studs down the rip: origin + direction * 120.
-	HubRip = {
-		id = "HubRip",
-		displayName = "Hub Beach",
+	-- Rip-current beach rescue (docs/09 section 8.4): one place, the channel off Puffin Isle's beach
+	-- (shared/RipCurrent.Beach); the casualty starts 120 studs down the rip: origin + direction * 120.
+	BeachRip = {
+		id = "BeachRip",
+		displayName = "Puffin Beach",
 		center = RIP_AT,
 		minRadius = 0,
 		maxRadius = 0,
@@ -312,7 +312,7 @@ CallTypes.SpawnZones = {
 	},
 } :: { [string]: SpawnZone }
 
--- Open-sea rings round your berth, one per tier (CraftReach), kept Areas.OuterMin from the hub.
+-- Open-sea rings round your berth, one per tier (CraftReach), kept Areas.OuterMin from the ring centre.
 local RINGS: { [string]: { number } } =
 	{ Offshore = { 500, 2000 }, FarSea = { 2000, 3500 }, DeepSea = { 3500, 5500 } }
 for id, ring in RINGS do
@@ -377,9 +377,9 @@ end
 
 -- Open water on the new map (CallLogic.isWater; the server adds its terrain / route raycasts on top).
 CallTypes.Areas = {
-	Shore = 40, -- studs off the hub's and the player islands' rims (HubLayout radii)
-	BridgeClear = 37, -- studs from a bridge's centre line: half its deck + 30 (its towers stand on the rims)
-	OuterMin = 1200, -- "Outer" area: this far from the hub, past the six islands
+	Shore = 40, -- studs off the player islands' rims (HubLayout radii)
+	BridgeClear = 36, -- studs from a bridge's centre line: half its deck + 30
+	OuterMin = 1200, -- "Outer" area: this far from the ring centre, well past the six islands
 	MapMargin = 120, -- stay this far inside GameConfig.MapRadius
 }
 

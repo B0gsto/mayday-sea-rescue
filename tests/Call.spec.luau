@@ -13,7 +13,7 @@ return function(t)
 	end
 
 	local HubLayout = t.load("src/shared/Config/HubLayout.luau")
-	-- every player island's berth (BayCFrame), and no berth (the hub drop-off)
+	-- every player island's berth (BayCFrame), and no berth (Plot1's berth)
 	local homes = { CallLogic.homeOf(nil) }
 	for _, island in HubLayout.Islands do
 		table.insert(homes, CallLogic.homeOf(island.berths.Boat))
@@ -23,6 +23,9 @@ return function(t)
 		local rng = makeRng(7)
 		for _, home in homes do
 			for id, zone in CallTypes.SpawnZones do
+				if id == "BeachRip" then
+					continue -- a fixed, bake-sampled site inside Puffin Isle's zone circle (tests/RipCurrent.spec)
+				end
 				local fallback = zone.fallback or CallLogic.homeFallback(home)
 				t.expect(CallLogic.isWater(fallback, zone.area)).toBeTruthy()
 				for _ = 1, 40 do
@@ -40,17 +43,21 @@ return function(t)
 		end
 	end)
 
-	t.test("open water: never on the hub, an island, under a bridge or past the map", function()
-		t.expect(CallLogic.isWater(Vector3.new(0, 0, 0), "Open")).toBe(false) -- the hub
-		t.expect(CallLogic.isWater(HubLayout.Islands[1].center, "Open")).toBe(false)
-		local mid = HubLayout.deckAt(HubLayout.Bridges[2], 0.5)
-		t.expect(CallLogic.isWater(Vector3.new(mid.X, 0, mid.Z), "Open")).toBe(false)
-		t.expect(CallLogic.isWater(Vector3.new(1800, 0, 1750), "Open")).toBe(false) -- Skerry Isle
-		t.expect(CallLogic.isWater(Vector3.new(0, 0, 7000), "Open")).toBe(false)
-		t.expect(CallLogic.isWater(Vector3.new(0, 0, 500), "Open")).toBe(true) -- off the hub harbour
-		t.expect(CallLogic.isWater(Vector3.new(0, 0, 500), "Outer")).toBe(false) -- inside the ring
-		t.expect(CallLogic.isWater(Vector3.new(0, 0, 1300), "Outer")).toBe(true)
-	end)
+	t.test(
+		"open water: never in the lagoon, on an island, under a bridge or past the map",
+		function()
+			t.expect(CallLogic.isWater(Vector3.new(0, 0, 0), "Open")).toBe(false) -- the lagoon
+			t.expect(CallLogic.isWater(Vector3.new(0, 0, 300), "Open")).toBe(false)
+			t.expect(CallLogic.isWater(HubLayout.Islands[1].center, "Open")).toBe(false)
+			local mid = HubLayout.deckAt(HubLayout.Bridges[2], 0.5)
+			t.expect(CallLogic.isWater(Vector3.new(mid.X, 0, mid.Z), "Open")).toBe(false)
+			t.expect(CallLogic.isWater(Vector3.new(1800, 0, 1750), "Open")).toBe(false) -- Skerry Isle
+			t.expect(CallLogic.isWater(Vector3.new(0, 0, 7000), "Open")).toBe(false)
+			t.expect(CallLogic.isWater(Vector3.new(0, 0, 500), "Open")).toBe(true) -- past the Plot2-Plot3 bridge
+			t.expect(CallLogic.isWater(Vector3.new(0, 0, 500), "Outer")).toBe(false) -- inside the ring
+			t.expect(CallLogic.isWater(Vector3.new(0, 0, 1300), "Outer")).toBe(true)
+		end
+	)
 
 	t.test("calls 1-2 spawn just off your own cove, straight out to sea", function()
 		local choice = CallLogic.chooseCall(0, "Calm", makeRng(1))
@@ -208,7 +215,7 @@ return function(t)
 		t.expect(CallLogic.craftReach({ "Submarine" }, 4)).toBe(5500)
 		t.expect(CallLogic.craftReach({ "RescueHelicopter" }, 3)).toBe(3500)
 		t.expect(CallLogic.craftReach({ "JetSki" }, 5)).toBe(2000) -- the cap never adds reach
-		local plot1 = homes[2] -- the east island: Skerry Isle is the near outer island
+		local plot1 = homes[3] -- Plot2, the south-east island: Skerry Isle is the near outer island
 		local function zones(reach: number, home: Vector3): { [string]: boolean }
 			local seen, rng = {}, makeRng(9)
 			for _ = 1, 400 do
@@ -243,8 +250,8 @@ return function(t)
 	end)
 
 	t.test("landed away from your berth, a far call pays for the trip sailed", function()
-		local home, hub = homes[2], HubLayout.Hub.dropOff -- the east island
-		-- a call west of the hub: landed at your berth it pays its full x2, at the hub half the trip sailed
+		local home, hub = homes[2], homes[5] -- the east island; the west island's berth
+		-- a call far west: landed at your berth it pays its full x2, at another island half the trip sailed
 		local west = home + Vector3.new(-3000, 0, 0)
 		t.expect(CallLogic.deliveredPay(west, home + Vector3.new(0, 0, 40), home))
 			.toBeCloseTo(2, 1e-6)
@@ -254,12 +261,5 @@ return function(t)
 		-- never more than the scene's own pay
 		local east = home + Vector3.new(3000, 0, 0)
 		t.expect(CallLogic.deliveredPay(east, hub, home)).toBeCloseTo(2, 1e-6)
-	end)
-
-	t.test("drop-off is the nearest of your berth and the hub", function()
-		local hub, berth = HubLayout.Hub.dropOff, homes[2]
-		t.expect(CallLogic.nearestDropOff(Vector3.new(1400, 0, 0), { hub, berth })).toBe(berth)
-		t.expect(CallLogic.nearestDropOff(Vector3.new(0, 0, 600), { hub, berth })).toBe(hub)
-		t.expect(CallLogic.nearestDropOff(berth, {})).toBe(nil)
 	end)
 end

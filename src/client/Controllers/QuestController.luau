@@ -1,7 +1,9 @@
 --!strict
--- QuestController (docs/23 (l), WP-21b): the glyph over each quest giver (Quests/Data, Workspace.Npcs), local to
--- you: a gold "!" when they have a quest for you today and you have none, a "?" over your quest's giver when it is
--- ready to hand in. Reads QuestService's player attributes (QuestOffer_<npcId>, QuestId, QuestStage).
+-- QuestController (docs/23 (l) + (p), WP-21b / WP-27): the glyph over each quest giver whose boat is at your own
+-- pontoon (Workspace.Npcs rigs with QuestIsland = your DockPlot, not Leaving), local to you: a gold "!" when they have
+-- a quest for you today and you have none, a "?" over your quest's giver when it is ready to hand in. Reads
+-- QuestService's player attributes (QuestOffer_<npcId>, QuestId, QuestStage). Also puts the "Quests" prompt on your
+-- own island's QuestTablet (Workspace.QuestPontoons.Island<plot>), which opens UI/QuestTablet.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -9,17 +11,23 @@ local Workspace = game:GetService("Workspace")
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
 local QuestData =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Quests"):WaitForChild("Data"))
+local QuestTablet = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("QuestTablet"))
 
 local QuestController = {}
 
 local player = Players.LocalPlayer
 local GOLD = Color3.fromRGB(255, 196, 40)
-local boards: { [string]: { board: BillboardGui, model: Model } } = {}
+local boards: { [Model]: BillboardGui } = {} -- several islands can each have a rig for the same giver
 
-local function glyphFor(npcId: string): string?
-	if player:GetAttribute("CinematicPlaying") == true then
-		return nil -- the talk shot (and any cutscene): it filled the top of the frame
+local function glyphFor(m: Model): string?
+	if
+		player:GetAttribute("CinematicPlaying") == true -- the talk shot (and any cutscene): it filled the top of the frame
+		or m:GetAttribute("QuestIsland") ~= player:GetAttribute("DockPlot") -- someone else's givers
+		or m:GetAttribute("Leaving") == true
+	then
+		return nil
 	end
+	local npcId = m.Name
 	local active = player:GetAttribute("QuestId")
 	local quest = active and QuestData.byId[active :: string]
 	if quest then
@@ -31,15 +39,14 @@ local function glyphFor(npcId: string): string?
 end
 
 local function refresh()
-	for id, b in boards do
-		local board = b.board
+	for model, board in boards do
 		if not (board.Adornee and board.Adornee:IsDescendantOf(Workspace)) then
-			local head = b.model:FindFirstChild("Head") -- streamed back in: a new head
+			local head = model:FindFirstChild("Head") -- streamed back in: a new head
 			if head then
 				board.Adornee = head
 			end
 		end
-		local g = glyphFor(id)
+		local g = glyphFor(model)
 		board.Enabled = g ~= nil
 		local label = board:FindFirstChild("Glyph", true)
 		if g and label and label:IsA("TextLabel") then
@@ -49,7 +56,7 @@ local function refresh()
 end
 
 local function attach(m: Instance)
-	if not (m:IsA("Model") and QuestData.npcById[m.Name]) or boards[m.Name] then
+	if not (m:IsA("Model") and QuestData.npcById[m.Name]) or boards[m] then
 		return
 	end
 	local head = m:FindFirstChild("Head") -- not streamed in yet: the next sweep tries again
@@ -76,18 +83,46 @@ local function attach(m: Instance)
 	label.TextXAlignment = Enum.TextXAlignment.Center
 	label.TextColor3 = Color3.fromRGB(40, 30, 10)
 	board.Parent = player:WaitForChild("PlayerGui") -- not under the head: it outlives a stream-out
-	boards[m.Name] = { board = board, model = m }
+	boards[m] = board
 	m.Destroying:Connect(function()
-		if boards[m.Name] and boards[m.Name].board == board then
-			boards[m.Name] = nil
-			board:Destroy()
-		end
+		boards[m] = nil
+		board:Destroy()
 	end)
+end
+
+-- the "Quests" prompt on my own island's tablet only (streams in late; a moved plot drops the old one)
+local function tabletPrompt()
+	local plot = player:GetAttribute("DockPlot")
+	local folder = Workspace:FindFirstChild("QuestPontoons")
+	for _, isl in if folder then folder:GetChildren() else {} do
+		local tablet = isl:FindFirstChild("QuestTablet")
+		local prompt = tablet and tablet:FindFirstChild("QuestPrompt")
+		local mine = isl.Name == `Island{plot}`
+		if prompt and not mine then
+			prompt:Destroy()
+		elseif mine and tablet and tablet:IsA("BasePart") and not prompt then
+			local p = Instance.new("ProximityPrompt")
+			p.Name = "QuestPrompt"
+			p.ActionText = "Quests"
+			p.ObjectText = "Tablet"
+			p.HoldDuration = 0
+			p.MaxActivationDistance = 12
+			p.RequiresLineOfSight = false
+			p.Triggered:Connect(function()
+				QuestTablet.open(tablet)
+			end)
+			p.Parent = tablet
+		end
+	end
 end
 
 function QuestController.Start()
 	player.AttributeChanged:Connect(function(name)
-		if string.sub(name, 1, 5) == "Quest" or name == "CinematicPlaying" then
+		if
+			string.sub(name, 1, 5) == "Quest"
+			or name == "CinematicPlaying"
+			or name == "DockPlot"
+		then
 			refresh()
 		end
 	end)
@@ -98,6 +133,7 @@ function QuestController.Start()
 				attach(c)
 			end
 			refresh()
+			tabletPrompt()
 			task.wait(1)
 		end
 	end)

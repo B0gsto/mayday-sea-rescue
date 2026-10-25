@@ -4,7 +4,9 @@
 usage: python3 tools/world/make_map_image.py [--out art/map/gale_isles_map.png] [--size 4096] [--preview PATH] [--labels]
 
 Inputs (read only): map/generated/terrain.json + the main and island-window height / material grids
-(gen_terrain.py). The hub and islands come from the bake; place names from MapConfig.Places (--labels).
+(gen_terrain.py). The outer islands come from the bake; the six player islands are Lego plates (Parts, not
+terrain), drawn from layout.RING with the neighbour bridges (mirroring HubLayout); place names from MapConfig.Places
+(--labels).
 
 World -> image (north up, the same frame as the bake: rows are +Z = south), the whole archipelago canvas:
     u = (x + 7168) / 14336,  v = (z + 7168) / 14336
@@ -23,6 +25,8 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 GEN = os.path.join(ROOT, "map", "generated")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import layout as L  # noqa: E402
 
 
 def arg(name, default):
@@ -241,6 +245,27 @@ def main():
         px, pz = to_px(x, z)
         d.ellipse([px - r, pz - r, px + r, pz + r], fill=colour, outline=(20, 20, 20, 255), width=2)
 
+    # docs/23 (p): the ring of six Lego-plate islands (HubLayout.IslandPlate rects) and the bridges between neighbours
+    # (HubLayout.BRIDGE: crossing each bisector 400 out, 91 studs either side)
+    e, ch, hw, head = L.RING["islandRadius"], 47, L.RING["notch"]["halfWidth"], L.RING["notch"]["head"]
+    rects = [(-e + ch, -hw, -e + ch, e - ch), (hw, e - ch, -e + ch, e - ch), (-hw, hw, -e + ch, head),
+             (-e + ch, e - ch, -e, -e + ch), (-e, -e + ch, -e + ch, e - ch), (e - ch, e, -e + ch, e - ch),
+             (-e + ch, -hw, e - ch, e), (hw, e - ch, e - ch, e)]
+    isl = L.PLAYER_ISLANDS
+    for k, a in enumerate(isl):
+        b = isl[(k + 1) % len(isl)]
+        mx, mz = L.local(*L.CENTER, a["bearing"] + 30, 0, 400)
+        dx, dz = a["center"][0] - b["center"][0], a["center"][1] - b["center"][1]
+        n = math.hypot(dx, dz)
+        d.line([to_px(mx + dx / n * 91, mz + dz / n * 91), to_px(mx - dx / n * 91, mz - dz / n * 91)],
+               fill=(105, 64, 40, 255), width=max(2, round(12 * px_per_stud)))
+    for grow, colour in ((3, (39, 92, 46, 255)), (0, (75, 151, 75, 255))):  # the trim, then the green slab
+        for a in isl:
+            for r0, r1, f0, f1 in rects:
+                pts = [to_px(*L.local(*a["center"], a["bearing"], r, f))
+                       for r, f in ((r0 - grow, f0 - grow), (r1 + grow, f0 - grow), (r1 + grow, f1 + grow),
+                                    (r0 - grow, f1 + grow))]
+                d.polygon(pts, fill=colour)
     dot(1800, 1750, (255, 214, 90, 255))
     # Place names are drawn live by MapController from MapConfig.Places (so they stay screen-size,
     # dodge the legend / title / top bar and never sit under a panel). --labels bakes them in too,

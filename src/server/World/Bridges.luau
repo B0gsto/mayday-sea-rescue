@@ -1,184 +1,130 @@
 --!strict
--- Bridges (docs/23 (k), WP-18): six walkable suspension bridges from the hub to the player islands, code-built
--- placeholder Parts from HubLayout.Bridges: an arched Wood deck (sine arch, max grade ~12 deg, underside 45.8 studs
--- over the sea at mid-span so every boat and the helicopter pass under), landing on each Lego plate's back edge,
--- Metal rails with an invisible anti-fall
--- fence above them, two red-and-white towers per bridge on the rims, Metal main cables, hangers and back-stays.
--- WorldDressingService calls Bridges.place(base) once at server start.
+-- Bridges (docs/23 (p), WP-27): six short walkable Lego bridges joining each island to its two neighbours (a full
+-- ring), code-built placeholder Parts from HubLayout.Bridges: a reddish-brown deck climbing at 11.3 deg from both
+-- plates to a rounded crest (underside ~20 studs over the sea at mid-span, so boats pass under), red rails on white
+-- posts with an invisible anti-fall fence above them, and a grey pier at each plate's edge. WorldDressingService
+-- calls Bridges.place(base) once at server start.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local HubLayout = require(
 	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("HubLayout")
 )
 
-local SEG = 16 -- deck segment length (studs along the arch)
+local SEG = 6 -- deck segment length (studs along the deck; short so the crest reads round)
 local THICK = 1.2
-local RAIL_H = 4
+local RAIL_H = 3.5
 local FENCE_H = 12 -- invisible: no jumping off
-local CABLE_OUT = 1.5 -- main cables this far outside the rails
-local LEG = 3
+local POST_EVERY = 3 -- a post every this many segments
+local PIER = 3
+local SEABED_Y = -40
 
-local WOOD = Color3.fromRGB(120, 90, 60)
-local WHITE = Color3.fromRGB(236, 236, 230)
-local RED = Color3.fromRGB(196, 48, 40)
-local STEEL = Color3.fromRGB(60, 62, 68)
+local DECK = Color3.fromRGB(105, 64, 40) -- Lego reddish brown
+local RED = Color3.fromRGB(196, 40, 28)
+local WHITE = Color3.fromRGB(242, 243, 242)
+local GREY = Color3.fromRGB(99, 95, 98) -- dark stone grey
+local MAT = Enum.Material.SmoothPlastic
 
 local Bridges = {}
 
-local function part(
-	parent: Instance,
-	name: string,
-	size: Vector3,
-	cf: CFrame,
-	color: Color3,
-	mat: Enum.Material
-): Part
+local function part(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): Part
 	local p = Instance.new("Part")
 	p.Name = name
 	p.Anchored = true
 	p.Size = size
 	p.CFrame = cf
 	p.Color = color
-	p.Material = mat
+	p.Material = MAT
 	p.TopSurface = Enum.SurfaceType.Smooth
 	p.BottomSurface = Enum.SurfaceType.Smooth
 	p.Parent = parent
 	return p
 end
 
--- a thin piece from a to b (non-colliding: cables, hangers)
-local function strut(parent: Instance, name: string, a: Vector3, b: Vector3, w: number)
-	local p = part(
-		parent,
-		name,
-		Vector3.new(w, w, (b - a).Magnitude),
-		CFrame.lookAt((a + b) / 2, b),
-		STEEL,
-		Enum.Material.Metal
-	)
-	p.CanCollide = false
-	p.CanQuery = false
-	p.CastShadow = false
-end
-
 local function build(br: HubLayout.Bridge, parent: Instance)
 	local model = Instance.new("Model")
 	model.Name = br.id
+	model:SetAttribute("Islands", `{br.a} {br.b}`)
 	local flat = Vector3.new(br.to.X - br.from.X, 0, br.to.Z - br.from.Z)
 	local span = flat.Magnitude
 	local dir = flat.Unit
 	local right = dir:Cross(Vector3.yAxis)
 	local half = br.width / 2
 
-	-- deck, rails, fence: one set per segment along the arch
+	-- deck, rails, fence: one set per segment along the profile
 	local n = math.ceil(span / SEG)
 	for k = 0, n - 1 do
 		local a, b = HubLayout.deckAt(br, k / n), HubLayout.deckAt(br, (k + 1) / n)
-		local len = (b - a).Magnitude + 0.4 -- overlap: no seams to trip on
+		local len = (b - a).Magnitude + 0.3 -- overlap: no seams to trip on
 		local cf = CFrame.lookAt((a + b) / 2, b)
 		part(
 			model,
 			"Deck",
 			Vector3.new(br.width, THICK, len),
 			cf * CFrame.new(0, -THICK / 2, 0),
-			WOOD,
-			Enum.Material.Wood
+			DECK
 		)
 		for _, side in { -1, 1 } do
 			part(
 				model,
 				"Rail",
-				Vector3.new(0.6, RAIL_H, len),
-				cf * CFrame.new(side * (half + 0.3), RAIL_H / 2, 0),
-				WHITE,
-				Enum.Material.Metal
+				Vector3.new(0.8, 0.8, len),
+				cf * CFrame.new(side * (half - 0.4), RAIL_H, 0),
+				RED
 			)
 			local fence = part(
 				model,
 				"Fence",
 				Vector3.new(0.6, FENCE_H, len),
-				cf * CFrame.new(side * (half + 0.3), RAIL_H + FENCE_H / 2, 0),
-				WHITE,
-				Enum.Material.SmoothPlastic
+				cf * CFrame.new(side * (half - 0.4), RAIL_H + FENCE_H / 2, 0),
+				WHITE
 			)
 			fence.Transparency = 1
 			fence.CanQuery = false
 			fence.CastShadow = false
-		end
-	end
-
-	-- towers: two legs either side of the deck, a crossbeam at the top and one under the deck
-	local legOff = half + CABLE_OUT + LEG / 2
-	local tops = {}
-	for i, foot in br.towers do
-		local t = (Vector3.new(foot.X - br.from.X, 0, foot.Z - br.from.Z)):Dot(dir) / span
-		local deckY = HubLayout.deckY(br, t)
-		local baseY = foot.Y - 12 -- sunk into the rim
-		local h = br.towerTopY - baseY
-		local tower = Instance.new("Model")
-		tower.Name = `Tower{i}`
-		for _, side in { -1, 1 } do
-			local p = Vector3.new(foot.X, baseY + h / 2, foot.Z) + right * side * legOff
-			part(
-				tower,
-				"Leg",
-				Vector3.new(LEG, h, LEG),
-				CFrame.lookAt(p, p + dir),
-				RED,
-				Enum.Material.SmoothPlastic
-			)
-		end
-		local top = Vector3.new(foot.X, br.towerTopY - 1.5, foot.Z)
-		part(
-			tower,
-			"Crossbeam",
-			Vector3.new(2 * legOff + LEG, 3, LEG),
-			CFrame.lookAt(top, top + dir),
-			WHITE,
-			Enum.Material.SmoothPlastic
-		)
-		local under = Vector3.new(foot.X, deckY - THICK - 1.5, foot.Z)
-		part(
-			tower,
-			"Crossbeam",
-			Vector3.new(2 * legOff + LEG, 3, LEG),
-			CFrame.lookAt(under, under + dir),
-			WHITE,
-			Enum.Material.SmoothPlastic
-		)
-		tower.Parent = model
-		tops[i] = { pos = Vector3.new(foot.X, br.towerTopY, foot.Z), t = t }
-	end
-
-	-- main cables (a parabola between the tower tops, low at mid-span), hangers down to the deck, back-stays to the ends
-	local t0, t1 = tops[1].t, tops[2].t
-	local function cableAt(t: number, side: number): Vector3
-		local u = (t - t0) / (t1 - t0)
-		local p = br.from:Lerp(br.to, t)
-		local y = br.cableLowY + (br.towerTopY - br.cableLowY) * (2 * u - 1) ^ 2
-		return Vector3.new(p.X, y, p.Z) + right * side * (half + CABLE_OUT)
-	end
-	local m = 24
-	for _, side in { -1, 1 } do
-		for k = 0, m - 1 do
-			strut(
-				model,
-				"Cable",
-				cableAt(t0 + (t1 - t0) * k / m, side),
-				cableAt(t0 + (t1 - t0) * (k + 1) / m, side),
-				0.8
-			)
-		end
-		for k = 1, n - 1, 2 do
-			local t = k / n
-			if t > t0 and t < t1 then
-				local d = HubLayout.deckAt(br, t) + right * side * (half + CABLE_OUT)
-				strut(model, "Hanger", d, cableAt(t, side), 0.3)
+			if k % POST_EVERY == 0 then
+				part(
+					model,
+					"Post",
+					Vector3.new(0.8, RAIL_H, 0.8),
+					CFrame.new(a)
+						* CFrame.new(right * side * (half - 0.4))
+						* CFrame.new(0, RAIL_H / 2, 0),
+					WHITE
+				)
 			end
 		end
-		local off = right * side * (half + CABLE_OUT)
-		strut(model, "BackStay", cableAt(t0, side), br.from + off, 0.8)
-		strut(model, "BackStay", cableAt(t1, side), br.to + off, 0.8)
+	end
+
+	-- a pier under the deck at each plate edge (the water span between them stays open for boats)
+	local a, b = HubLayout.byId[br.a], HubLayout.byId[br.b]
+	for _, isl in { a, b } do
+		local t0, t1 = 0, 1 -- the deck point where it leaves the plate: bisect along the deck
+		local inside = function(t: number): boolean
+			local p = br.from:Lerp(br.to, t)
+			return HubLayout.onPlate(isl, p.X, p.Z)
+		end
+		if not inside(0) then
+			t0, t1 = 1, 0
+		end
+		for _ = 1, 20 do
+			local m = (t0 + t1) / 2
+			if inside(m) then
+				t0 = m
+			else
+				t1 = m
+			end
+		end
+		local p = HubLayout.deckAt(br, t0)
+		local top = p.Y - THICK
+		local foot = Vector3.new(p.X, (top + SEABED_Y) / 2, p.Z)
+			+ dir * (if t1 > t0 then PIER else -PIER)
+		part(
+			model,
+			"Pier",
+			Vector3.new(br.width - 2, top - SEABED_Y, PIER),
+			CFrame.lookAt(foot, foot + dir),
+			GREY
+		)
 	end
 	model.Parent = parent
 end
