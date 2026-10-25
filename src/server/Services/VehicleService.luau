@@ -145,11 +145,24 @@ VehicleService.VehicleSpawned = spawnedEvent.Event
 
 local records: { [Model]: Record } = {}
 local byPlayer: { [Player]: Record } = {} -- the player's current vehicle (GetVehicle)
+local seconds: { [Player]: Record } = {} -- Lv 2+ dock: the other craft kept out (docs/23 d.2, 2nd berth)
 local owned: { [Player]: { [string]: Record } } = {} -- one record per player per vehicle class
 local towTargets: { [Model]: Record } = {} -- towed model -> tower record
 local lastSpawn: { [Player]: number } = {}
 local spawning: { [BasePart]: boolean } = {} -- per-berth spawn lock (docs/23 c.1)
 local folder: Folder
+
+-- The Quick Launch pass (MonetizationService, optional at boot).
+local function ownsQuickLaunch(player: Player): boolean
+	local module = script.Parent:FindFirstChild("MonetizationService")
+	if module and module:IsA("ModuleScript") then
+		local ok, monetization = pcall(require, module)
+		if ok and type(monetization) == "table" then
+			return (monetization :: any).OwnsPass(player, "QuickLaunch") == true
+		end
+	end
+	return false
+end
 
 -- ProgressionService (stream E), loaded lazily; false once a load failed.
 local progression: any = nil
@@ -453,6 +466,9 @@ local function onDriverChanged(record: Record)
 	if player then
 		record.driver = player
 		if player == record.owner then
+			if seconds[player] == record then -- boarding the second craft: the other one stays out
+				seconds[player] = byPlayer[player]
+			end
 			byPlayer[player] = record -- riding an older craft of theirs makes it current again
 			Telemetry.Vehicle(player, "Boarded", record.spec.id) -- analytics H5
 		end
@@ -627,6 +643,9 @@ local function despawnModel(model: Model, reason: string?)
 	if byPlayer[record.owner] == record then
 		byPlayer[record.owner] = nil
 	end
+	if seconds[record.owner] == record then
+		seconds[record.owner] = nil
+	end
 	local classes = owned[record.owner]
 	if classes and classes[record.spec.id] == record then
 		classes[record.spec.id] = nil
@@ -666,7 +685,7 @@ local function policyState(record: Record): RespawnPolicy.State
 		lastOccupiedAt = record.lastOccupiedAt,
 		spawnedAt = record.spawnedAt,
 		docked = record.mode == "Dock",
-		current = byPlayer[record.owner] == record,
+		current = byPlayer[record.owner] == record or seconds[record.owner] == record,
 		wrecked = record.model:GetAttribute("Wrecked") == true
 			or (record.spec.craft == nil and pos.Y < MIN_Y)
 			or Vector2.new(pos.X, pos.Z).Magnitude > GameConfig.MapRadius + 200,
@@ -761,14 +780,34 @@ local function planSpawn(
 	return plan :: any, existing, why
 end
 
-local function clearOtherClasses(player: Player, spec: VehicleSpec, reason: RespawnPolicy.Reason)
+-- Lv 2+ dock (docs/23 d.2, 2nd berth): the craft to keep out beside a new one of `spec`: the current one.
+local function secondKeep(player: Player, spec: VehicleSpec): Record?
+	local current = byPlayer[player]
+	return if current
+			and current.spec.id ~= spec.id
+			and DockService.GetLevel(player) >= 2
+		then current
+		else nil
+end
+
+local function clearOtherClasses(
+	player: Player,
+	spec: VehicleSpec,
+	reason: RespawnPolicy.Reason,
+	keep: Record?
+)
+	seconds[player] = keep :: any
 	local classes = owned[player]
 	if not classes then
 		return
 	end
 	local now = os.clock()
 	for id, record in table.clone(classes) do
-		if id ~= spec.id and RespawnPolicy.mayRemove(reason, policyState(record), now) then
+		if
+			id ~= spec.id
+			and record ~= keep
+			and RespawnPolicy.mayRemove(reason, policyState(record), now)
+		then
 			despawnModel(record.model, "Replaced")
 		end
 	end
@@ -779,10 +818,11 @@ local function createVehicle(
 	player: Player,
 	spec: VehicleSpec,
 	at: CFrame,
-	reason: RespawnPolicy.Reason
+	reason: RespawnPolicy.Reason,
+	keep: Record?
 ): (Model, VehicleSeat)
 	local visuals = visualsFor(spec)
-	clearOtherClasses(player, spec, reason)
+	clearOtherClasses(player, spec, reason, keep)
 	local classes = owned[player]
 	local old = classes and classes[spec.id]
 	if old then
@@ -867,6 +907,33 @@ local function createVehicle(
 	return model, seat
 end
 
+-- docs/23 d.2: from Lv 2 a second craft moors along the pontoon's east side (DockPieces level2, x -13).
+local PONTOON_EDGE = -12.5
+
+-- Where a docked `spec` goes at berth `at`, and the craft kept out beside it: the berth, or (Lv 2+, the
+-- kept craft in the berth) along the pontoon. When neither is clear of it, the kept one goes instead.
+local function dockSpot(player: Player, spec: VehicleSpec, at: BasePart): (CFrame, Record?)
+	-- a hull longer than the bay slides seaward along it so its stern clears the quay (a RIB on Bay1
+	-- sat with its stern on the quay road)
+	local out = math.max(0, spec.hullSize.Z / 2 - at.Size.Z / 2)
+	local main = at.CFrame * CFrame.new(0, 0, -out)
+	local keep = secondKeep(player, spec)
+	if not keep then
+		return main, nil
+	end
+	local second = at.CFrame * CFrame.new(PONTOON_EDGE + spec.hullSize.X / 2, 0, -out)
+	for _, spot in { main, second } do
+		local d = spot:PointToObjectSpace(keep.root.Position)
+		if
+			math.abs(d.X) >= (spec.hullSize.X + keep.spec.hullSize.X) / 2
+			or math.abs(d.Z) >= (spec.hullSize.Z + keep.spec.hullSize.Z) / 2
+		then
+			return spot, keep
+		end
+	end
+	return main, nil
+end
+
 -- Open water off `bay` for a seated launch, bow to sea (set below, after the open-water search).
 local launchCFrame: (bay: BasePart, spec: VehicleSpec, player: Player) -> CFrame?
 -- Boat to me: open water nearest the player (set below too).
@@ -922,15 +989,13 @@ local function spawnLocked(
 		pcall(p.SetFlag, player, BayLaunch.FLAG, vehicleId)
 	end
 
-	-- a hull longer than the bay slides seaward along it so its stern clears the quay (a RIB on Bay1
-	-- sat with its stern on the quay road)
-	local out = math.max(0, spec.hullSize.Z / 2 - at.Size.Z / 2)
-	local model, seat = createVehicle(
-		player,
-		spec,
-		launchAt or target or at.CFrame * CFrame.new(0, 0, -out),
-		"Request"
-	)
+	local spot: CFrame, keep: Record?
+	if launchAt or target then
+		spot, keep = (launchAt or target) :: CFrame, secondKeep(player, spec)
+	else
+		spot, keep = dockSpot(player, spec, at)
+	end
+	local model, seat = createVehicle(player, spec, spot, "Request", keep)
 	if not docked then
 		sitDriver(player, seat)
 	end
@@ -1493,7 +1558,19 @@ function VehicleService.Init()
 		near: unknown
 	)
 		if near == true then
-			-- Boat to me (docs/23 c.5): the phone no longer chooses a craft; yours comes to you
+			-- Boat to me (docs/23 c.5): the phone no longer chooses a craft; yours comes to you. Free calls
+			-- wait out a cooldown (player attribute BoatToMeAt, server time); Quick Launch skips it
+			local now = Workspace:GetServerTimeNow()
+			local last = player:GetAttribute("BoatToMeAt")
+			if
+				MonetizationEffects.boatToMeWait(
+					ownsQuickLaunch(player),
+					if type(last) == "number" then last else nil,
+					now
+				) > 0
+			then
+				return false, "Cooldown"
+			end
 			local current, bay = byPlayer[player], bayFor(player)
 			local id = if current and current.model.Parent
 				then current.spec.id
@@ -1502,7 +1579,11 @@ function VehicleService.Init()
 			if not id then
 				return false, "NoBay"
 			end
-			return spawnVehicle(player, id, nil, nil, nil, "Phone", true)
+			local ok, result = spawnVehicle(player, id, nil, nil, nil, "Phone", true)
+			if ok then
+				player:SetAttribute("BoatToMeAt", now)
+			end
+			return ok, result
 		end
 		if type(vehicleId) ~= "string" then
 			return false, "BadRequest"
@@ -1630,7 +1711,7 @@ function VehicleService.SpawnSeated(
 		print(`[VehicleService] SpawnSeated: reusing {existing.model.Name} ({detail})`)
 		return existing.model
 	end
-	local model, seat = createVehicle(player, spec, cframe, why)
+	local model, seat = createVehicle(player, spec, cframe, why, secondKeep(player, spec))
 	local speed = math.clamp(initialSpeed or 0, 0, spec.topSpeed)
 	local root = model.PrimaryPart :: BasePart
 	if speed > 0 then
@@ -1678,16 +1759,10 @@ end
 -- Quick Launch (docs/04 section 3): convenience only. It skips the walk and the launch cooldown; it never
 -- touches a casualty, a step or a grade, and rank still gates every vehicle (canUse in spawnVehicle).
 function VehicleService.QuickLaunch(player: Player, vehicleId: string): (boolean, string | Model)
-	local owns = false
-	local module = script.Parent:FindFirstChild("MonetizationService")
-	if module and module:IsA("ModuleScript") then
-		local ok, monetization = pcall(require, module)
-		if ok and type(monetization) == "table" then
-			owns = (monetization :: any).OwnsPass(player, "QuickLaunch") == true
-		end
-	end
-	local allowed, why =
-		MonetizationEffects.quickLaunchAllowed(owns, player:GetAttribute("ColdOpenDone") == true)
+	local allowed, why = MonetizationEffects.quickLaunchAllowed(
+		ownsQuickLaunch(player),
+		player:GetAttribute("ColdOpenDone") == true
+	)
 	if not allowed then
 		return false, why
 	end
@@ -1709,6 +1784,26 @@ function VehicleService.DockLaunch(
 	return spawnVehicle(player, vehicleId, nil, nil, true, "Board", nil, target)
 end
 
+-- The boat board's crane (WP-11a): where `vehicleId` will dock at the player's berth (the berth or the Lv 2
+-- pontoon). The hulls the launch replaces go now, so the crane never lowers the new one onto the old one.
+-- nil: it can't launch (locked, no berth, or someone is aboard the old one).
+function VehicleService.DockSpot(player: Player, vehicleId: string): CFrame?
+	local spec, at = VehicleConfig.get(vehicleId), bayFor(player)
+	if not (spec and at and canUse(player, vehicleId)) then
+		return nil
+	end
+	local plan, existing = planSpawn(player, spec, "Request")
+	if plan == "Refuse" then
+		return nil
+	end
+	local spot, keep = dockSpot(player, spec, at)
+	clearOtherClasses(player, spec, "Request", keep)
+	if existing then
+		despawnModel(existing.model, "Replaced")
+	end
+	return spot
+end
+
 -- G66: a just-fitted upgrade applies on the next launch. Despawn the empty docked hull of that
 -- class so it rebuilds with the new parts and handling (a crewed hull is left until it is empty).
 function VehicleService.RefreshUpgrades(player: Player, vehicleId: string)
@@ -1718,7 +1813,9 @@ function VehicleService.RefreshUpgrades(player: Player, vehicleId: string)
 		-- docked at a bay: rebuild it in place with the new kit, so the player never loses their boat
 		local spec = if record.mode == "Dock" then VehicleConfig.get(vehicleId) else nil
 		if spec then
-			createVehicle(player, spec, record.root.CFrame, "Request")
+			local other = if byPlayer[player] == record then seconds[player] else byPlayer[player]
+			local keep = if DockService.GetLevel(player) >= 2 then other else nil
+			createVehicle(player, spec, record.root.CFrame, "Request", keep)
 		else
 			despawnModel(record.model, "Replaced")
 		end

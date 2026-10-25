@@ -96,14 +96,17 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   their jetty; a returning player (`coldOpenDone`) also gets that craft docked beside them (K11). API: `GetBay`
   (the berth), `BerthLaunch(player, vehicleId) -> CFrame?`, `GetVehicle`, `GetDriver`,
   `GetOccupants`, `AddSurvivor(model, survivor) -> boolean` (false when full), `RemoveSurvivors`, `Climb`,
-  `SpawnSeated`, `SpawnColdOpen`, `QuickLaunch`, `DockLaunch(player, id)`, `Stow`, `RefreshUpgrades`, `AttachTow` / `DetachTow`
+  `SpawnSeated`, `SpawnColdOpen`, `QuickLaunch`, `DockLaunch(player, id)`, `DockSpot(player, id) -> CFrame?` (the
+  crane's spot; clears the hulls the launch replaces first), `Stow`, `RefreshUpgrades`, `AttachTow` / `DetachTow`
   (scripted scenes only), signal `VehicleSpawned (player, model)`. Model attributes `VehicleId`, `Owner`,
   `Capacity`, `SurvivorCount`; hull attachments `SurvivorSlot1..n`, `PetSeat`, `TowHitch`, `BowPoint`.
 - Capacity is the depth: jet ski 1, RIB 3, lifeboat 8 (`VehicleConfig`). `Boat/Buoyancy`,
   `Boat/Simulator`, `Boat/Unstick`, `Boat/Helm` are pure and tested in `tests/Boat*.spec.luau`.
 - Seated launches (berth Launch, Quick Launch; the phone's Boat to me `RequestVehicle(nil, false, true)` brings
-  your current or last craft to the open water nearest you first) float the craft in open water off the player's berth, bow to sea, never overlapping a vehicle. Off your craft: `[E] Board` from 30
-  studs and a `CraftPin` billboard (seat pips); berth Launch hides locally while you have a craft out and on
+  your current or last craft to the open water nearest you first; free calls wait
+  `MonetizationEffects.BOAT_TO_ME_COOLDOWN`, player attribute `BoatToMeAt`, Quick Launch skips it) float the craft in open water off the player's berth, bow to sea, never overlapping a vehicle. Off your craft: `[E] Board` from 30
+  studs and a `CraftPin` billboard (seat pips). Dock Lv 2+ (WP-11a): your current craft stays out beside a new
+  one (2 craft; a docked second moors along the pontoon when the berth is taken); berth Launch hides locally while you have a craft out and on
   other players' berths. With no craft, point the craft pin at `BayCFrame`.
 - Hangar and sub pen craft (docs/23 h): `VehicleConfig.CraftOrder` (RescueHelicopter, Seaplane, Submarine;
   `spec.craft` = Heli / Plane / Sub; `VehicleConfig.Order` stays boats only). Built and idled by
@@ -223,8 +226,8 @@ says the full line; `tests/RadioSubtitle.spec.luau`), lines in `RadioLines`, voi
   grade)`, `Refresh`, `RankChanged`. Studio: `ServerStorage.ProgressionDev`.
 - Next goal (K6): `src/shared/NextGoal.luau`: the next rank or the next vehicle, nearest first.
 - Affordable (B5/B6): `src/shared/Affordable.luau` (pure, `tests/Affordable.spec.luau`): `cheapest(snapshot,
-  passOwned)` is the cheapest unowned vehicle or upgrade the player can buy now; the phone's red dot and
-  the Vehicles app's pulsing card read it.
+  passOwned)` is the cheapest unowned vehicle or upgrade the player can buy now; the Vehicles app's
+  pulsing card reads it.
 - Crew: `CrewService` (`GetCrew`, `IsCrewmate`, `Join`, `Leave`; "Join crew" prompt on multi-seat boats).
   Friends: `FriendService.Count(player)`, attributes `FriendCount` / `FriendBonus` (+% Cash,
   `Shared/FriendBonus`). Group reward: `GroupRewardService.IsMember` (+10% daily crate, checked on join).
@@ -234,8 +237,8 @@ says the full line; `tests/RadioSubtitle.spec.luau`), lines in `RadioLines`, voi
 ## Phone (all menus)
 
 `src/client/UI/Phone.luau`: a portrait iPhone (P, gamepad L1, or the phone button left of the HUD). Seven
-apps (K9): Map, Vehicles, Store, Crew, Pets, Camera, Settings; dock Map, Vehicles, Store, Camera. The red dot and
-bounce mean "something is affordable" and badge the Vehicles icon. `UI/VehiclesApp` (phone: Boat to me + the
+apps (K9): Map, Vehicles, Store, Crew, Pets, Camera, Settings; dock Map, Vehicles, Store, Camera. The red dot is
+off since buys moved to the dock boards (WP-11a). `UI/VehiclesApp` (phone: Boat to me + the
 Boat to me only since WP-10b; a dock board opens one craft's card: Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), `UI/PetsApp` (pick the one companion: Bosun or a
 recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings borrows
 `SettingsPanel`, Map opens `MapController`, Camera opens `PhotoMode`. `UI/AlbumApp` is the sticker album

@@ -35,6 +35,9 @@ local BoatBoard = {}
 local SLOT = 4.4 -- studs between models
 local MODEL_LEN = 3.6 -- a scale model's longest side
 local SHELF_H = 2.6
+-- Lv 3+: the boat board stands in the boathouse (DockConfig.BOARD_SLOT, 17 studs between its walls): rows of
+-- ROW_N, each STEP higher and further back
+local ROW_N, ROW_SLOT, STEP_UP, STEP_BACK = 4, 4, 1.8, 1.4
 local CRANE = Vector3.new(17, 0, -12) -- the boat crane post, on the jetty's outer edge (berth frame)
 local JIB_Y = 24
 local AFLOAT = 1.5 -- a lowered craft's pivot over the water at the end of the beat
@@ -60,6 +63,7 @@ type Def = {
 	from: Vector3,
 	hook: number?,
 	ground: boolean?, -- rests on a floor (bounding box on the target), not afloat
+	boathouse: boolean?, -- moves into the boathouse at dock Lv 3 (the boat board)
 	launch: (Player, string, CFrame?) -> (boolean, any),
 }
 
@@ -197,6 +201,14 @@ local function play(board: Board, berth: BasePart, player: Player, id: string)
 	local frame = frameOf(def, berth)
 	local offset = def.targets[id]
 	local target = if offset then frame * offset else nil
+	if not target and not def.garage then
+		-- the berth or the Lv 2 pontoon spot; the hulls this launch replaces go first, so the copy never
+		-- comes down on them (required here: VehicleService requires this module)
+		target = (require(Services:WaitForChild("VehicleService")) :: any).DockSpot(player, id)
+		if not target then
+			return
+		end
+	end
 	local spot = target or berth.CFrame
 	local previews = ReplicatedStorage:FindFirstChild("VehiclePreviews")
 	local source = previews and previews:FindFirstChild(id)
@@ -298,33 +310,41 @@ local function build(def: Def, berth: BasePart)
 	rack:SetAttribute("Owner", berth:GetAttribute("Owner"))
 	rack:SetAttribute("PlotIndex", berth:GetAttribute("PlotIndex"))
 
-	-- the rack: a shelf on legs with a navy backboard
+	-- the rack: shelves on legs (stepped rows in the boathouse) with a navy backboard
 	local order = def.vehicles
-	local width = #order * SLOT + 1
-	local base = frame * def.rack
-	part(
-		rack,
-		"Shelf",
-		Vector3.new(width, 0.4, 3),
-		base * CFrame.new(0, SHELF_H - 0.2, 0),
-		WOOD,
-		Enum.Material.Wood
-	)
-	for _, dx in { -width / 2 + 0.4, width / 2 - 0.4 } do
+	local level = (berth.Parent :: Instance):GetAttribute("DockLevel")
+	local inside = def.boathouse == true and type(level) == "number" and level >= 3
+	local perRow = if inside then ROW_N else #order
+	local step = if inside then ROW_SLOT else SLOT
+	local rows = math.ceil(#order / perRow)
+	local width = perRow * step + 1
+	local base = frame * (if inside then DockConfig.BOARD_SLOT else def.rack)
+	for r = 0, rows - 1 do
+		local row = base * CFrame.new(0, r * STEP_UP, r * STEP_BACK)
 		part(
 			rack,
-			"Leg",
-			Vector3.new(0.5, SHELF_H, 2.6),
-			base * CFrame.new(dx, SHELF_H / 2 - 0.2, 0),
+			"Shelf",
+			Vector3.new(width, 0.4, 3),
+			row * CFrame.new(0, SHELF_H - 0.2, 0),
 			WOOD,
 			Enum.Material.Wood
 		)
+		for _, dx in { -width / 2 + 0.4, width / 2 - 0.4 } do
+			part(
+				rack,
+				"Leg",
+				Vector3.new(0.5, SHELF_H + r * STEP_UP, 2.6),
+				base * CFrame.new(dx, (SHELF_H + r * STEP_UP) / 2 - 0.2, r * STEP_BACK),
+				WOOD,
+				Enum.Material.Wood
+			)
+		end
 	end
 	part(
 		rack,
 		"Back",
 		Vector3.new(width, 4, 0.3),
-		base * CFrame.new(0, SHELF_H + 1.8, 1.4),
+		base * CFrame.new(0, SHELF_H + 1.8 + (rows - 1) * STEP_UP, 1.4 + (rows - 1) * STEP_BACK),
 		NAVY,
 		Enum.Material.SmoothPlastic
 	)
@@ -361,11 +381,14 @@ local function build(def: Def, berth: BasePart)
 	end
 
 	for i, id in order do
-		local slot = base * CFrame.new((i - (#order + 1) / 2) * SLOT, SHELF_H, 0)
+		local r, c = (i - 1) // perRow, (i - 1) % perRow + 1
+		local n = math.min(perRow, #order - r * perRow)
+		local slot = base
+			* CFrame.new((c - (n + 1) / 2) * step, SHELF_H + r * STEP_UP, r * STEP_BACK)
 		local pad = part(
 			rack,
 			`Pad_{id}`,
-			Vector3.new(SLOT - 0.6, 0.1, 2.6),
+			Vector3.new(step - 0.6, 0.1, 2.6),
 			slot * CFrame.new(0, 0.05, 0),
 			NAVY,
 			Enum.Material.SmoothPlastic
@@ -462,6 +485,7 @@ function BoatBoard.start(launch: Launch)
 			targets = {},
 			from = Vector3.new(0, 14.5, 0),
 			hook = JIB_Y,
+			boathouse = true,
 			launch = water,
 		},
 		{
@@ -505,6 +529,9 @@ function BoatBoard.start(launch: Launch)
 			berth:GetAttributeChangedSignal("Owner"):Connect(resync)
 			if def.building then
 				berth:GetAttributeChangedSignal(def.building):Connect(resync)
+			end
+			if def.boathouse then
+				(berth.Parent :: Instance):GetAttributeChangedSignal("DockLevel"):Connect(resync)
 			end
 			resync()
 		end

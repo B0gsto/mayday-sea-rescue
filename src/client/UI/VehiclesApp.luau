@@ -3,7 +3,7 @@
 -- the dock's boards, so the phone page is just one big Boat to me (RequestVehicle(nil, false, true): your
 -- current or last craft comes to the open water nearest you, seated); cars are chosen at the dock's garage
 -- board since docs/23 WP-10b. A board opens one card through Phone.openApp(_, mount) with `only` = that craft
--- (buy, upgrades, Spawn = docked at the berth; a car at the nearest road spawn point).
+-- (buy, upgrades, Spawn = docked at the berth; a car in your dock garage, else the nearest road spawn point).
 -- Cards: a swipeable carousel of big navy cards (Hud.Panel skin): a slowly turning 3D preview of the real
 -- model (the server's ReplicatedStorage.VehiclePreviews.<id>, the exact build the spawner makes; else a
 -- live one of that kind; else the shared builder's greybox), the name (gold for the Robux-only premium
@@ -21,7 +21,7 @@
 --                   server's CanUseVehicle reads it: Cash-owned OR pass-owned)
 --   Fit upgrade     Upgrade_Buy(vehicleId, upgradeId)    (UpgradeService)
 --   Spawn a boat    (the board's card) RequestVehicle(vehicleId, true): docked at your berth
---   Spawn a car     CarController.Request(vehicleId)     (Land_Request: the nearest road spawn point)
+--   Spawn a car     CarController.Request(vehicleId)     (Land_Request: your garage bay, else the nearest road spawn point)
 -- Spawning closes the phone and FootTrail walks you to it. Data: PlayerDataChanged snapshots.
 --   VehiclesApp.mount(page: Frame, close?, only: string?) -> cleanup
 local ContextActionService = game:GetService("ContextActionService")
@@ -41,6 +41,7 @@ local BoatBuilder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
 local CarBuilder = require(Shared:WaitForChild("Car"):WaitForChild("Builder"))
 local LandVehicleConfig = require(Config:WaitForChild("LandVehicleConfig"))
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
+local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProductShelves = require(Shared:WaitForChild("ProductShelves"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
@@ -1223,12 +1224,45 @@ function VehiclesApp.mount(page: Frame, _close: (() -> ())?, only: string?): () 
 		local go = button(root, "BoatToMe", C.accent)
 		go.Size = UDim2.new(1, 0, 0, BOAT_TO_ME_H)
 		list(go, true, 10)
-		drawIcon("boat", square(go, "Icon", 40), C.text)
+		local icon = square(go, "Icon", 40)
+		drawIcon("boat", icon, C.text)
 		local text = label(go, "Label", 24, C.text)
 		text.Text = "Boat to me"
 		text.LayoutOrder = 1
 		text.AutomaticSize = Enum.AutomaticSize.X
 		text.Size = UDim2.fromOffset(0, BOAT_TO_ME_H)
+		-- the free call's cooldown (WP-11a): a ring of ticks round the boat fills back up; Quick Launch: the bolt
+		local fast = bolt(go, 24)
+		fast.LayoutOrder = 2
+		local ticks: { Frame } = {}
+		for i = 1, 24 do
+			local a = (i - 0.5) / 24 * 2 * math.pi
+			local t = Instance.new("Frame")
+			t.Name = "CooldownTick"
+			t.AnchorPoint = Vector2.new(0.5, 0.5)
+			t.Position = UDim2.fromScale(0.5 + 0.68 * math.sin(a), 0.5 - 0.68 * math.cos(a))
+			t.Size = UDim2.fromOffset(5, 5)
+			t.BackgroundColor3 = C.gold
+			t.BorderSizePixel = 0
+			Instance.new("UICorner", t).CornerRadius = UDim.new(1, 0)
+			t.Parent = icon
+			ticks[i] = t
+		end
+		local function paintCooldown()
+			local last = player:GetAttribute("BoatToMeAt")
+			local left = MonetizationEffects.boatToMeWait(
+				ownsQuick(),
+				if type(last) == "number" then last else nil,
+				Workspace:GetServerTimeNow()
+			)
+			local lit = math.floor((1 - left / MonetizationEffects.BOAT_TO_ME_COOLDOWN) * #ticks)
+			for i, t in ticks do
+				t.Visible = left > 0 and i <= lit
+			end
+			fast.Visible = ownsQuick()
+		end
+		paintCooldown()
+		table.insert(conns, RunService.Heartbeat:Connect(paintCooldown))
 		local sending = false
 		go.Activated:Connect(function()
 			if sending then

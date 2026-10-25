@@ -220,4 +220,14 @@ function Effects.quickLaunchAllowed(ownsPass: boolean, coldOpenDone: boolean): (
 	return true, "ok"
 end
 
+-- Boat to me (docs/23 c.5, WP-11a): the phone's free call waits BOAT_TO_ME_COOLDOWN between uses; the Quick
+-- Launch pass skips the wait. -> seconds left (0 = ready). lastAt: the last call's server time (nil: never).
+Effects.BOAT_TO_ME_COOLDOWN = 60 -- s -- tune
+function Effects.boatToMeWait(ownsPass: boolean, lastAt: number?, now: number): number
+	if ownsPass or not lastAt then
+		return 0
+	end
+	return math.max(0, lastAt + Effects.BOAT_TO_ME_COOLDOWN - now)
+end
+
 return Effects
