@@ -2,8 +2,10 @@
 -- VehicleService (stream B): launches boats from the player's own berth at the marina (DockService, docs/23),
 -- one vehicle per player.
 --
---   RequestVehicle (RemoteFunction, Net)  (vehicleId, docked?, near?) -> (ok, reasonOrVehicle); always at the
---                                        player's berth; near (the phone) is always seated (docs/20 rule 7)
+--   RequestVehicle (RemoteFunction, Net)  (vehicleId, docked?, near?) -> (ok, reasonOrVehicle); at the
+--                                        player's berth. near = the phone's Boat to me (docs/23 c.5): vehicleId is
+--                                        ignored, your current (else last) craft comes to the open water nearest
+--                                        you (else off your berth), seated (docs/20 rule 7)
 --   Seated launches (phone, berth Launch, Quick Launch, cold open) float the craft in open water off the
 --   berth, bow to sea, never overlapping another vehicle (launchCFrame); the seat is retried until it holds.
 --   Spawns are serialized per berth (Marina.lock): two requests in the same moment never place two hulls.
@@ -12,7 +14,8 @@
 --   empty on land for VehicleRecovery.MISPLACED_TIME, goes with a poof and its riders stand up beside
 --   it; idle timers shrink with the player count (Crowding.scale).
 --   Berth ProximityPrompts               one "Launch" per berth (K3), owner only: the player's last-launched
---                                        craft (data.flags.lastVehicle); switching craft is the phone's Vehicles app
+--                                        craft (data.flags.lastVehicle); switching craft is the boat board
+--                                        (server/Dock/BoatBoard: DockLaunch, docked at the berth)
 --   Every spawn (K11)                    stands the player on their jetty (BayLaunch.STAND); a returning player
 --                                        (coldOpenDone) also gets that craft docked beside them.
 --   Vehicle_QuickLaunch (RemoteFunction, ReplicatedStorage.Net)  Quick Launch pass owners (RP-M2, docs/04
@@ -44,6 +47,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
+local BoatBoard = require(script.Parent.Parent:WaitForChild("Dock"):WaitForChild("BoatBoard"))
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
 local Crowding = require(Shared:WaitForChild("Crowding"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
@@ -857,6 +861,8 @@ end
 
 -- Open water off `bay` for a seated launch, bow to sea (set below, after the open-water search).
 local launchCFrame: (bay: BasePart, spec: VehicleSpec, player: Player) -> CFrame?
+-- Boat to me: open water nearest the player (set below too).
+local nearLaunch: (spec: VehicleSpec, player: Player) -> CFrame?
 
 local function spawnLocked(
 	player: Player,
@@ -864,7 +870,8 @@ local function spawnLocked(
 	bay: BasePart?,
 	quick: boolean?,
 	docked: boolean?,
-	where: string -- analytics H4: Phone / Quick / Bay
+	where: string, -- analytics H4: Phone / Quick / Bay / Board
+	near: boolean?
 ): (boolean, string | Model)
 	local spec = VehicleConfig.get(vehicleId)
 	if not spec then
@@ -890,7 +897,9 @@ local function spawnLocked(
 		return false, "BayNotAllowed"
 	end
 	-- seated: afloat in open water off the bay, clear of every other vehicle (docs/20 rule 7)
-	local launchAt = if docked then nil else launchCFrame(at, spec, player)
+	local launchAt = if docked
+		then nil
+		else (near and nearLaunch(spec, player)) or launchCFrame(at, spec, player)
 	if not launchAt and bayBusy(at, player) then
 		return false, "BayBusy"
 	end
@@ -927,13 +936,14 @@ local function spawnVehicle(
 	bay: BasePart?,
 	quick: boolean?,
 	docked: boolean?,
-	where: string
+	where: string,
+	near: boolean?
 ): (boolean, string | Model)
 	local key = bay or bayFor(player)
 	if key and not Marina.lock(spawning, key) then
 		return false, "Busy"
 	end
-	local ok, result, model = pcall(spawnLocked, player, vehicleId, bay, quick, docked, where)
+	local ok, result, model = pcall(spawnLocked, player, vehicleId, bay, quick, docked, where, near)
 	if key then
 		spawning[key] = nil
 	end
@@ -1118,6 +1128,28 @@ launchCFrame = function(bay: BasePart, spec: VehicleSpec, player: Player): CFram
 	local from = bay.Position + look * math.max(0, spec.hullSize.Z / 2 - bay.Size.Z / 2)
 	local at, face = nearestOpenWater(
 		from,
+		look,
+		spec.hullSize,
+		spec.hullSize.Y + 3,
+		solidParams(),
+		0,
+		function(p)
+			return spotFree(p, spec.hullSize, player)
+		end
+	)
+	return if at and face then CFrame.lookAt(at, at + face) else nil
+end
+
+nearLaunch = function(spec: VehicleSpec, player: Player): CFrame?
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	if not (root and root:IsA("BasePart")) then
+		return nil
+	end
+	local look = Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z)
+	look = if look.Magnitude > 1e-3 then look.Unit else Vector3.zAxis
+	local at, face = nearestOpenWater(
+		root.Position,
 		look,
 		spec.hullSize,
 		spec.hullSize.Y + 3,
@@ -1435,11 +1467,22 @@ function VehicleService.Init()
 		docked: unknown,
 		near: unknown
 	)
+		if near == true then
+			-- Boat to me (docs/23 c.5): the phone no longer chooses a craft; yours comes to you
+			local current, bay = byPlayer[player], bayFor(player)
+			local id = if current and current.model.Parent
+				then current.spec.id
+				elseif bay then bayCraft(player, bay)
+				else nil
+			if not id then
+				return false, "NoBay"
+			end
+			return spawnVehicle(player, id, nil, nil, nil, "Phone", true)
+		end
 		if type(vehicleId) ~= "string" then
 			return false, "BadRequest"
 		end
-		-- always at your own berth; the phone (near) always seats you afloat: docs/20 rule 7
-		return spawnVehicle(player, vehicleId, nil, nil, docked == true and near ~= true, "Phone")
+		return spawnVehicle(player, vehicleId, nil, nil, docked == true, "Phone")
 	end
 
 	local quickRemote = Instance.new("RemoteFunction")
@@ -1521,6 +1564,7 @@ function VehicleService.Start()
 	end
 	AssetLoader.preload(preload)
 	task.spawn(publishPreviews)
+	BoatBoard.start(VehicleService.DockLaunch)
 end
 
 -- API (CONTRACT.md, B) ---------------------------------------------------------------------------
@@ -1628,6 +1672,11 @@ end
 -- Dev board: launches the boat from the player's bay, seated (Quick Launch without the pass check).
 function VehicleService.DevLaunch(player: Player, vehicleId: string): (boolean, string | Model)
 	return spawnVehicle(player, vehicleId, bayFor(player), true, nil, "Quick")
+end
+
+-- The boat board's launch (docs/23 d.3): `vehicleId` docked at the player's berth, afloat, not seated.
+function VehicleService.DockLaunch(player: Player, vehicleId: string): (boolean, string | Model)
+	return spawnVehicle(player, vehicleId, nil, nil, true, "Board")
 end
 
 -- G66: a just-fitted upgrade applies on the next launch. Despawn the empty docked hull of that
