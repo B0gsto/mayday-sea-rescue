@@ -138,6 +138,10 @@ return function(t)
 				CrewBoost = true,
 				DayDoubleCash = true, -- OwnsPass accepts a running day pass
 				DayQuickLaunch = true,
+				DockLevel2 = true, -- DockService grants dock levels (docs/23 WP-4)
+				DockLevel3 = true,
+				DockLevel4 = true,
+				DockLevel5 = true,
 			},
 			GamePasses = { DoubleCash = true, StarterKit = true, QuickLaunch = true }, -- QuickLaunch: RP-A1 use card
 		}

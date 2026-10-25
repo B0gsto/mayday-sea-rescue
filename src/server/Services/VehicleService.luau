@@ -871,7 +871,12 @@ local function spawnLocked(
 		return false, "UnknownVehicle"
 	end
 	local now = os.clock()
-	if not quick and lastSpawn[player] and now - lastSpawn[player] < SPAWN_COOLDOWN then
+	if
+		not quick
+		and DockService.GetLevel(player) < 4
+		and lastSpawn[player]
+		and now - lastSpawn[player] < SPAWN_COOLDOWN
+	then -- Lv 4 dock: no relaunch cooldown (docs/23 d.2)
 		return false, "Cooldown"
 	end
 	if not canUse(player, vehicleId) then

@@ -78,6 +78,7 @@ function ProductShelves.storeItems(config: any, tab: string, studio: boolean): {
 		local day = type(item) == "table" and item.dayPassFor ~= nil
 		if
 			ProductShelves.listed(item, studio)
+			and item.dockLevel == nil -- dock levels sell at the dock's ghost (docs/23 c.3)
 			and (kind == "GamePasses" or day == (tab == "DayPasses"))
 		then
 			table.insert(out, { kind = kind, key = key })

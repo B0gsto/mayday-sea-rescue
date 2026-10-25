@@ -65,6 +65,15 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   gets the lowest free plot, freed on leave; `data.dockLevel` (default 1) is the level later packages build.
   API: `GetBerth(player) -> BasePart?`, `GetPlot`, `GetLevel`, `Berths()`. Player attributes `DockPlot`,
   `BayCFrame` (the berth CFrame); berth part attributes `LaunchBay`, `PlotIndex`, `Owner`.
+- Dock levels 2..5 (WP-4): `src/shared/Config/DockConfig.luau` (pure, `tests/DockConfig.spec.luau`: Cash, rank,
+  Robux, `canBuy`, `BOARD_SLOT` = the boat board's spot in the Lv 3 boathouse, berth frame) and
+  `src/shared/DockPieces.luau` (`build(level, berthCFrame) -> Model`, placeholder Parts). DockService builds each
+  owner's levels on their plot (everyone sees them, the new pieces rise in) and sets player attribute
+  `DockLevel`; remote `Dock_Upgrade` C->S fn `(level) -> ok, reason` (Cash + rank); Robux = products
+  `DockLevel2..5` (`MonetizationConfig`, `dockLevel` field, kept off the phone Store); rescue boards show
+  `badgeCounters.Rescue100`. `DockController` (client): the next level as a blue ghost on your own plot only, a
+  `Build` prompt and the price card (Cash / Robux). Lv 4 skips VehicleService's relaunch cooldown. Studio:
+  `ServerStorage.DockDev:Invoke("level", n)`.
 - `VehicleService` (boats and jet skis): one vehicle per player, always launched at the player's own berth
   (phone, Quick Launch, berth `Launch` prompt, the cold open via `BerthLaunch`). Spawns are serialized per berth
   (`Marina.lock`). Each berth has one owner-only `Launch` prompt that spawns the player's last-launched craft
