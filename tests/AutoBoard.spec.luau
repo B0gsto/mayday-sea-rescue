@@ -27,10 +27,25 @@ return function(t)
 		t.expect(assist(1, 60, 2, 40, 16)).toBe(1) -- passing by, not closing: untouched
 		t.expect(assist(1, 5, 30, 30, 16)).toBe(-1) -- inside, far too fast: full brake
 		t.expect(assist(1, 5, 0, AutoBoard.ASSIST_SPEED + 2, 16) < 0).toBe(true)
-		local slow = assist(1, 5, 0, AutoBoard.ASSIST_SPEED - 3, 16) -- inside, near the speed: part throttle
+		local slow = assist(1, 5, 0, AutoBoard.ASSIST_SPEED - 1, 16) -- inside, near the speed: part throttle
 		t.expect(slow > 0 and slow < 1).toBe(true)
 		t.expect(assist(-1, 5, 0, 1, 16)).toBe(-1) -- astern is always the player's
 		t.expect(assist(0.3, 5, 0, 1, 16)).toBe(0.3) -- never more than they asked
+	end)
+
+	t.test("a jet ski at full throttle reaches the ring edge at <= 8 studs/s", function()
+		local B = t.load("src/shared/Boat/Buoyancy.luau")
+		local h = t.load("src/shared/Config/VehicleConfig.luau").JetSki
+		local grip = 0.7 -- the hull skipping on the chop: thrust and drag both lose grip
+		local x, v, dt = 200, h.topSpeed, 1 / 60
+		local lag = { 1, 1, 1, 1, 1, 1 } -- 0.1 s from the assist to the water
+		while x > AutoBoard.RING do
+			table.insert(lag, AutoBoard.assistThrottle(1, x, v, v, h.brakeDecel))
+			v += (B.thrust(table.remove(lag, 1), v, 1, h, grip, 1) - B.forwardDecel(v, h, 1) * grip) * dt
+			x -= v * dt
+		end
+		t.expect(v <= 8).toBe(true)
+		t.expect(v >= AutoBoard.ASSIST_SPEED - 1).toBe(true) -- not stopped short either
 	end)
 
 	t.test("a craft held at the assist speed inside the ring boards them", function()
