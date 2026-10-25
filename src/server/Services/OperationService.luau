@@ -43,6 +43,7 @@ local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local RipFlow = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("RipFlow"))
 -- the listing fishing boat, the burning cruiser.
 local FireScene = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("FireScene"))
+local LandRescue = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("LandRescue"))
 local NpcPickup = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("NpcPickup"))
 local SinkingScene = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("SinkingScene"))
 
@@ -964,6 +965,7 @@ local function closeOp(op: any)
 	ops[op.id] = nil
 	pcall(SinkingScene.Cleanup, op.scene)
 	pcall(FireScene.Cleanup, op.scene)
+	pcall(LandRescue.Cleanup, op)
 	pcall(RescueService.Cleanup, op.scene)
 	for _, p in op.members do
 		p:SetAttribute("RacerAt", nil)
@@ -1502,8 +1504,19 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	if opts and CallTypes.SpawnZones[opts.zone] then
 		zone = opts.zone -- Studio: OpsDev start <kind> <zone>
 	end
-	local op =
-		newOp(kind, sceneKind, zone, CallLogic.pickSpawnPoint(zone, nil, clearSpawn), victims)
+	-- docs/23 e.3: a land call's position is its beach (the pin); the survivor waits up the shore
+	local site = if CallTypes.Kinds[sceneKind].land
+		then CallLogic.landSite(nil, nil, opts and opts.zone or zone) -- Studio: an island or a site id
+		else nil
+	zone = if site then site.island else zone
+	local op = newOp(
+		kind,
+		sceneKind,
+		zone,
+		if site then site.beach else CallLogic.pickSpawnPoint(zone, nil, clearSpawn),
+		victims
+	)
+	op.land = site
 	if kind == "WildlifeRescue" then
 		try("SanctuaryService", "DressOffer", op, player)
 	end
@@ -1582,7 +1595,11 @@ local function activate(op: any, player: Player)
 			c.driftScale = OperationService.FAST_TIRING
 		end
 	end
-	RescueService.SpawnCall(op.scene)
+	if op.land then
+		LandRescue.Spawn(op) -- the casualty spawns in RescueService once they reach a craft (landBoard)
+	else
+		RescueService.SpawnCall(op.scene)
+	end
 	if op.scene.kind == "RipCurrent" then
 		pcall(RipFlow.Spawn, op.scene) -- the rip is the current; tag the body-boarder's board
 	elseif op.scene.kind == "Sinking" then
@@ -1604,6 +1621,7 @@ local function activate(op: any, player: Player)
 	if
 		service("VehicleService")
 		and not op.isBig
+		and not op.land -- no NPC boat can reach someone ashore
 		and type(total) == "number"
 		and not Onboarding.failsafeCall(total)
 		and grace <= 0
@@ -1918,54 +1936,75 @@ local function boardingStep(track: Track): StepInst?
 	return if inst.def.effect == "deliver" then inst else nil
 end
 
+-- One survivor reached by `player`'s craft: the recovery step's board effect plays the climb, or one more
+-- aboard while carrying (landed with the rest).
+local function boardOne(op: any, i: number, player: Player)
+	local track = trackOf(op, player)
+	local inst = track and boardingStep(track)
+	if not (track and inst) or op.state ~= "Active" then
+		return
+	end
+	local c: CasualtyState = op.casualties[i]
+	local old = inst.casualtyIndex
+	if inst.def.effect == "board" and old ~= i then
+		-- they reached another survivor than the one claimed: that one is free again
+		if old then
+			op.casualties[old].claimedBy = nil
+		end
+		inst.casualtyIndex = i
+		track.casualtyIndex = i
+	end
+	c.claimedBy = track.id
+	if inst.def.effect == "board" then
+		-- the board effect plays the climb
+		serverDone(op, track, inst, player, { elapsed = now() - inst.startedAt })
+	else
+		-- one more while carrying: aboard now, landed with the rest
+		c.inWater = false
+		c.aboard = true
+		c.panicking = false
+		pcall(RescueService.BoardVictim, op.scene, i, player)
+		broadcast(op)
+	end
+end
+
+local function mayTake(op: any, player: Player, i: number): boolean
+	local track = trackOf(op, player)
+	local inst = track and boardingStep(track)
+	return track ~= nil
+		and inst ~= nil
+		and op.casualties[i] ~= nil
+		and Board.mayTake(op.casualties[i], track.id)
+end
+
+-- docs/23 e.3: the land survivor followed `player` to their craft; the scene's casualty spawns where they
+-- stand and climbs aboard like any other.
+local function landBoard(op: any, player: Player, at: Vector3): boolean
+	if not mayTake(op, player, 1) then
+		return false
+	end
+	op.scene.position = at
+	RescueService.SpawnCall(op.scene)
+	boardOne(op, 1, player)
+	return true
+end
+
 local function stepBoarding(op: any, dt: number)
+	if op.land then
+		LandRescue.Step(op, dt, function(player: Player, at: Vector3)
+			return landBoard(op, player, at)
+		end)
+		return
+	end
 	local ambient = service("AmbientRescueService")
 	if not op.scene or not ambient then
 		return
 	end
-	local function may(player: Player, i: number): boolean
-		local track = trackOf(op, player)
-		local inst = track and boardingStep(track)
-		return track ~= nil
-			and inst ~= nil
-			and op.casualties[i] ~= nil
-			and Board.mayTake(op.casualties[i], track.id)
-	end
-	ambient.StepBoarding(
-		op.scene,
-		dt,
-		ambient.SeatedBoats(),
-		may,
-		function(i: number, player: Player)
-			local track = trackOf(op, player)
-			local inst = track and boardingStep(track)
-			if not (track and inst) or op.state ~= "Active" then
-				return
-			end
-			local c: CasualtyState = op.casualties[i]
-			local old = inst.casualtyIndex
-			if inst.def.effect == "board" and old ~= i then
-				-- they reached another survivor than the one claimed: that one is free again
-				if old then
-					op.casualties[old].claimedBy = nil
-				end
-				inst.casualtyIndex = i
-				track.casualtyIndex = i
-			end
-			c.claimedBy = track.id
-			if inst.def.effect == "board" then
-				-- the board effect plays the climb
-				serverDone(op, track, inst, player, { elapsed = now() - inst.startedAt })
-			else
-				-- one more while carrying: aboard now, landed with the rest
-				c.inWater = false
-				c.aboard = true
-				c.panicking = false
-				pcall(RescueService.BoardVictim, op.scene, i, player)
-				broadcast(op)
-			end
-		end
-	)
+	ambient.StepBoarding(op.scene, dt, ambient.SeatedBoats(), function(player: Player, i: number)
+		return mayTake(op, player, i)
+	end, function(i: number, player: Player)
+		boardOne(op, i, player)
+	end)
 end
 
 -- Server-side transport: the client Mechanics/transport rule (home = a shore point at any speed, within

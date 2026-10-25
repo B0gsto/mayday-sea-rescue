@@ -123,6 +123,12 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
 - Kinds (`Ops/Definitions`): PersonInWater, RipCurrent, SinkingVessel, VesselFire, CliffCasualty (sea
   side), WildlifeRescue, CapsizedFerry (big call; relay -> [pickup -> movement]* -> account). The scene is
   spectacle only: `server/Ops/{SinkingScene,FireScene,RipFlow}`, `RescueDressing` (rare variants).
+- Land calls (docs/23 e.3): kind `Stranded` at a `CallTypes.LandSites` site (~1 in 5 after the tutorial
+  chain, within the craft's island reach). `server/Ops/LandRescue` builds the beach marker, an orange
+  ring and an R15 survivor; walk into the ring and they follow (`shared/Ops/LandFollow`, pure, tested),
+  stop at the water's edge, and climb aboard once you sit in a boat within 25 studs (the scene casualty
+  spawns there: normal board and Home). Player attribute `LandCall` (Vector3) pins the survivor while
+  you are off your craft. No NPC racer; cars don't carry them.
 - Shared data: `Ops/Types`, `Operations` (registry, `plan`), `Condition` (0-100 meter; survivors tire),
   `Grading` (step and op grades, `payout`), `Board` (pure auto_board rule: close, slow, level, room).
 - `OperationService` (server): offers and pacing (`Calls/CallLogic`, `Calls/OfferPacing`), tracks, the

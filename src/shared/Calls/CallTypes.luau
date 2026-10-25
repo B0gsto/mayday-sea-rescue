@@ -24,7 +24,11 @@ export type CallKind = {
 	zones: { string }, -- spawn zone ids (SpawnZones below) this kind may use
 	dropOffs: { string }, -- DropOff attribute values that complete it ("Dock", "Hospital")
 	isBig: boolean,
+	land: boolean?, -- the survivor is ashore at a CallTypes.LandSites site (zones = their islands)
 }
+
+-- A land call site (docs/23 e.3): `at` is the survivor's feet, `beach` the shore point the craft runs to.
+export type LandSite = { id: string, island: string, beach: Vector3, at: Vector3 }
 
 export type SpawnZone = {
 	id: string,
@@ -175,6 +179,20 @@ CallTypes.Kinds = {
 		dropOffs = { "Dock" },
 		isBig = false,
 	},
+	-- docs/23 e.3: ashore (cut off by the tide, on a ledge, lost inland); reached on foot, they follow you aboard
+	Stranded = {
+		id = "Stranded",
+		displayName = "Stranded Ashore",
+		radioLine = "Walker cut off on the shore, one casualty.",
+		weight = 1.3, -- tune
+		timer = 600,
+		victims = 1,
+		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
+		zones = {}, -- the islands of CallTypes.LandSites (filled below)
+		dropOffs = { "Dock", "Hospital" },
+		isBig = false,
+		land = true,
+	},
 } :: { [string]: CallKind }
 
 -- Normal (non-big) kinds, in offer-weight order.
@@ -182,6 +200,7 @@ CallTypes.NormalKinds = {
 	"Swimmer",
 	"DriftingCraft",
 	"Cliff",
+	"Stranded",
 	"RipCurrent",
 	"Sinking",
 	"VesselFire",
@@ -195,6 +214,7 @@ CallTypes.KindWeights = {
 	Sinking = 0.16,
 	VesselFire = 0.2,
 	WildlifeRescue = 0.16,
+	Stranded = 0.41, -- about 1 call in 5 once past the tutorial chain
 } -- tune
 
 -- Fixed chain for a player's first calls (docs/16 B3, B4, B9), each { kind, zone, victims? }. The
@@ -366,6 +386,69 @@ for _, island in WorldConfig.Islands do
 			fallback = ringFallback[reach], -- its tier's open sea (Studio-checked routable)
 			reach = reach,
 		}
+	end
+end
+
+-- Land call sites (docs/23 e.3), Studio-sampled 2026-10-25 (build/wp9 terrain raycasts): `beach` is the
+-- first dry terrain coming in from water over 2 deep, `at` is up a path whose every 3-stud step rises under
+-- 2.4 studs. Only islands with a CallTypes.IslandReach (routable from the harbour); offered within it.
+CallTypes.LandSites = {
+	-- cut off by the tide
+	{
+		id = "SkerryCove",
+		island = "SkerryIsle",
+		beach = Vector3.new(1606, 1, 1911),
+		at = Vector3.new(1625, 5.1, 1896),
+	},
+	{
+		id = "PuffinStrand",
+		island = "PuffinIsle",
+		beach = Vector3.new(-2511, 1.1, 3069),
+		at = Vector3.new(-2517, 5.6, 3092),
+	},
+	{
+		id = "GannetLanding",
+		island = "GannetRock",
+		beach = Vector3.new(3390, 1.7, 3460),
+		at = Vector3.new(3413, 7.5, 3468),
+	},
+	-- on a ledge
+	{
+		id = "SkerryLedge",
+		island = "SkerryIsle",
+		beach = Vector3.new(1550, 1.4, 1894),
+		at = Vector3.new(1592, 21.1, 1870),
+	},
+	{
+		id = "PuffinLedge",
+		island = "PuffinIsle",
+		beach = Vector3.new(-2411, 0.6, 3072),
+		at = Vector3.new(-2442, 16, 3127),
+	},
+	{
+		id = "WreckReefLedge",
+		island = "WreckReef",
+		beach = Vector3.new(-3777, 0.9, 4285),
+		at = Vector3.new(-3800, 33.8, 4198),
+	},
+	-- lost inland
+	{
+		id = "PenwynMoor",
+		island = "Penwyn",
+		beach = Vector3.new(-4244, 0.9, -621),
+		at = Vector3.new(-4399, 7.1, -531),
+	},
+	{
+		id = "LagoonDunes",
+		island = "MermaidLagoon",
+		beach = Vector3.new(172, 0.8, 4875),
+		at = Vector3.new(203, 5.1, 5052),
+	},
+} :: { LandSite }
+for _, site in CallTypes.LandSites do
+	local zones = CallTypes.Kinds.Stranded.zones
+	if not table.find(zones, site.island) then
+		table.insert(zones, site.island)
 	end
 end
 
