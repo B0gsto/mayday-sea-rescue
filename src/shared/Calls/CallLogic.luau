@@ -251,6 +251,24 @@ function CallLogic.distanceZone(reach: number?, rng: Rng?): string
 	return pool[math.floor(roll() * #pool) + 1] or "Offshore"
 end
 
+-- A land call site (docs/23 e.3) whose island is within `reach` (nil: any) and, if given, on island `where`
+-- (or with that site id). nil when none fits.
+function CallLogic.landSite(reach: number?, rng: Rng?, where: string?): CallTypes.LandSite?
+	local roll: Rng = rng or (math.random :: any)
+	local pool = {}
+	for _, site in CallTypes.LandSites do
+		local r = CallTypes.IslandReach[site.island]
+		if
+			r
+			and r <= (reach or math.huge)
+			and (where == nil or where == site.island or where == site.id)
+		then
+			table.insert(pool, site)
+		end
+	end
+	return pool[math.floor(roll() * #pool) + 1]
+end
+
 -- Pay multiplier for a call this far (flat studs) from the station: 1 close in, rising with distance.
 function CallLogic.distancePay(distance: number): number
 	local D = CallTypes.Distance
@@ -299,6 +317,13 @@ function CallLogic.chooseCall(
 		end
 	end
 	local spec = CallTypes.Kinds[kind]
+	if spec.land then
+		local site = CallLogic.landSite(reach or CallTypes.BASE_REACH, roll)
+		if site then
+			return { kind = kind, zone = site.island }
+		end
+		kind, spec = "Swimmer", CallTypes.Kinds.Swimmer
+	end
 	-- one-place scenes (the cliff foot, the rip, the sinking boat; a fire is never in Calm Bay)
 	if #spec.zones == 1 then
 		return { kind = kind, zone = spec.zones[1] }
