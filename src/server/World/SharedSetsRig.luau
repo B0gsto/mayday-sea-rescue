@@ -1,7 +1,6 @@
 --!strict
--- SharedSetsRig (I2a): buildings whose parts use shared texture sets AssetLoader cannot see from each asset's own
--- Appearances folder (only the Details atlas lives there) get theirs here from the Appearances model's prebuilt
--- SurfaceAppearances (SETS), and cottages get their render and slate (SharedSetsRig.cottage).
+-- SharedSetsRig (I2a): cottages get the shared texture sets AssetLoader cannot see from their own Appearances folder
+-- (render, slate, the trim sheet) from the Appearances model's prebuilt SurfaceAppearances (SharedSetsRig.cottage).
 
 local CollectionService = game:GetService("CollectionService")
 
@@ -9,24 +8,6 @@ local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForC
 -- Rojo builds the shared sets as SurfaceAppearances (map ids cannot be written by a game script)
 local appearances =
 	script.Parent.Parent:WaitForChild("Assets"):WaitForChild("Appearances") :: Instance
-
--- asset -> MeshPart token -> shared texture set (each asset's build.py mats)
-local SETS: { [string]: { [string]: { string } } } = {
-	-- own sets, but several part names do not carry the set name (AssetLoader's only fallback is a single set)
-	M_Bld_BoatyardShed = {
-		Clad = { "M_Bld_BoatyardShed", "Clad" },
-		Roof = { "M_Bld_BoatyardShed", "Clad" },
-		RoofLight = { "M_Bld_BoatyardShed", "Details" },
-		Inner = { "M_Bld_BoatyardShed", "Details" },
-		Doors = { "M_Bld_BoatyardShed", "Details" },
-		Signs = { "M_Bld_BoatyardShed", "Details" },
-		Glass = { "M_Bld_BoatyardShed", "Details" },
-		Steel = { "M_Bld_BoatyardShed", "Metal" },
-		Trim = { "M_Bld_BoatyardShed", "Metal" },
-		Timber = { "M_Bld_BoatyardShed", "Details" },
-		Lit = { "M_Bld_BoatyardShed", "Details" },
-	},
-}
 
 local function apply(part: MeshPart, asset: string, set: string)
 	local folder = appearances:FindFirstChild(asset)
@@ -98,21 +79,6 @@ function SharedSetsRig.cottage(shell: Model, colour: string?)
 				part.Color = SLATES[math.floor(math.abs(p.X * 7 + p.Z * 3)) % #SLATES + 1]
 			elseif token and COTTAGE_SETS[token] then
 				apply(part, COTTAGE_SETS[token][1], COTTAGE_SETS[token][2])
-			end
-		end
-	end
-end
-
-function SharedSetsRig.apply(shell: Model)
-	for _, part in shell:GetDescendants() do
-		if part:IsA("MeshPart") then
-			local asset, token = string.match(part.Name, "^(M_Bld_%a+)_(%a+)_LOD%d$")
-			if asset and token then
-				local sets = SETS[asset]
-				local spec = sets and sets[token]
-				if spec then
-					apply(part, spec[1], spec[2])
-				end
 			end
 		end
 	end

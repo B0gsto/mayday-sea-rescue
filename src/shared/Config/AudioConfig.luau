@@ -70,13 +70,6 @@ AudioConfig.Clips = {
 		0.7,
 		"outboard motor boat onboard high speed (kyles, CC0)"
 	),
-	-- Pickup / response car (diesel stand-ins).
-	Eng_Car_Idle = rl(9112988114, 0.5, "1988 Chevy Pickup Truck Idle 1 (SFX)"),
-	Eng_Car_Load = rl(9112736090, 0.55, "1988 Gmc Suburban 2 (SFX)", "driving layer"),
-	Car_Horn = rl(9113014312, 0.6, "1998 Ford Expedition V8 Suv Horn Honks 6 (SFX)"),
-	Tyre_Asphalt = rl(9112886237, 0.45, "Tire Constant 1 (SFX)"),
-	Tyre_Cobble = rl(9112886780, 0.45, "Tires Cobblestones 2 (SFX)"),
-	Tyre_Gravel = rl(9126157444, 0.45, "Vehicle Gravel Tires Crunch Constant (SFX)"),
 
 	-- Hull and water.
 	Hull_Lap = rl(9112737677, 0.5, "Active Water Lap 1 (SFX)", "slow or stopped hull"),

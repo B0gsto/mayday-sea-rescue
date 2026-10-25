@@ -56,48 +56,6 @@ AssetLoader.PART_SETS = {
 		Fittings = "Sled",
 		Bars = "Sled",
 	},
-	-- land fleet (I2b): art/source/vehicles/<asset>/build.py `build_set` calls
-	M_Veh_LifeguardPickup = {
-		Body = "Body",
-		BodyDetail = "Body",
-		Cab = "Cab",
-		Glass = "Cab",
-		Wheel = "Wheels",
-		Underbody = "Wheels",
-		Rack = "Rack",
-	},
-	M_Veh_Coastguard4x4 = {
-		Body = "Body",
-		BodyDetail = "Body",
-		Rack = "Rack",
-		Cab = "Cab",
-		Glass = "Cab",
-		Wheel = "Wheels",
-		Spare = "Wheels",
-		Underbody = "Wheels",
-	},
-	M_Veh_Ambulance = {
-		Body = "Body",
-		BodyDetail = "Body",
-		Box = "Box",
-		BoxDetail = "Box",
-		Cab = "Cab",
-		Glass = "Cab",
-		Windscreen = "Cab",
-		Wheel = "Wheels",
-		Underbody = "Wheels",
-	},
-	M_Veh_ATV = {
-		Body = "Body",
-		BodyDetail = "Body",
-		Fenders = "Body",
-		Wheel = "Gear",
-		Chassis = "Gear",
-		Rack = "Gear",
-		Sled = "Gear",
-	},
-	M_Veh_BoatTrailer_RIB = { Frame = "Galv", Wheel = "Galv" },
-	M_Veh_BoatTrailer_JetSki = { Frame = "Galv", Wheel = "Galv" },
 	-- art/source/vessels/M_Veh_GaleQueen/build.py `mats` (RP-I1c)
 	M_Veh_GaleQueen = {
 		Hull = "Hull",
@@ -119,18 +77,9 @@ AssetLoader.PART_SETS = {
 		Undamaged = "Fittings",
 		Damage = "Fittings",
 	},
-	-- art/source/vehicles/M_Veh_HarbourGT|LighthouseCruiser|StormRunner/build.py build_set calls: parts whose set
-	-- is not in their name rendered plain grey (no SurfaceAppearance)
-	M_Veh_HarbourGT = { Glass = "Cab", Wheel = "Wheels" },
-	M_Veh_LighthouseCruiser = { Glass = "Cab", Wheel = "Wheels" },
+	-- art/source/vehicles/M_Veh_StormRunner/build.py build_set calls: parts whose set is not in their name rendered
+	-- plain grey (no SurfaceAppearance)
 	M_Veh_StormRunner = { Deck = "Hull", Screen = "Interior", RollBar = "Rig", Rails = "Rig" },
-	-- art/source/vessels/M_Veh_Optimist/build.py SETS map
-	M_Veh_Optimist = {
-		Cabin = "Hull",
-		SamsonPost = "Fittings",
-		Outboard = "Fittings",
-		TrailingRope = "Fittings",
-	},
 	-- art/source/vehicles/M_Veh_Tidewalker/build.py build_set calls (only Flybridge/HullS matched by name before)
 	M_Veh_Tidewalker = {
 		HullP = "Hulls",
@@ -150,7 +99,6 @@ AssetLoader.PART_SETS = {
 	-- sets in build.py) is applied as Material + MaterialVariant. Without these the parts rendered plain white.
 	-- art/source/harbour/_hp1/kit.py quay_spec (keyed by the shared folder, so every QuayKit piece uses it)
 	M_Hbr_QuayKit = { Wall = "Tide", Top = "Cobbles" },
-	M_Hbr_QuayKit_Armour = { Wall = "Armour", Top = "Cobbles" },
 	-- art/source/harbour/M_Hbr_PropAtlas/props.py PROPS (one shared atlas, Metal | Rope)
 	M_Hbr_PropAtlas = {
 		Bollard = "Metal",
@@ -165,55 +113,7 @@ AssetLoader.PART_SETS = {
 		Coil = "Rope",
 		Flaked = "Rope",
 	},
-	-- art/source/buildings/M_Bld_Slipway/build.py mats (Steel / Tide / WallTide match by name)
-	M_Bld_Slipway = {
-		Ramp = "Concrete",
-		Weedy = "WeedyConcrete",
-		Wall = "QuayStone",
-		Rock = "KelpRock",
-	},
-	-- art/source/buildings/M_Bld_Station/build.py mats
-	M_Bld_Station = {
-		Trim = "M_Bld_TrimSheet/Sheet",
-		Stone = "Granite",
-		Plinth = "GraniteBase",
-		Roof = "Slate",
-		BayDoor = "Details",
-		GlassLit = "Details",
-	},
-	-- art/source/buildings/M_Bld_Chandlery_Ext|Int/build.py mats (Granite is the B02 MaterialVariant)
-	M_Bld_Chandlery_Ext = {
-		Granite = "Granite",
-		Roof = "Slate",
-		Trim = "M_Bld_TrimSheet/Sheet",
-		Shopfront = "Details",
-		Glass = "Details",
-		Door = "Details",
-		DoorGlass = "Details",
-		Glow = "Details",
-	},
-	M_Bld_Chandlery_Int = {
-		Floor = "Pine",
-		Structure = "Joinery",
-		Trim = "M_Bld_TrimSheet/Sheet",
-		Glow = "Details",
-		Hardware = "Details",
-	},
 } :: { [string]: { [string]: string } }
--- art/source/roads/M_Road_ParkedCar_01/build.py build_set calls (the three cars share the part names)
-local PARKED_CAR = {
-	Detail = "Body",
-	Glass = "Body",
-	Interior = "Body",
-	WheelFL = "Wheels",
-	WheelFR = "Wheels",
-	WheelRL = "Wheels",
-	WheelRR = "Wheels",
-	Underbody = "Wheels",
-}
-for k = 1, 3 do
-	AssetLoader.PART_SETS[`M_Road_ParkedCar_0{k}`] = PARKED_CAR
-end
 
 local appearances = script.Parent:FindFirstChild("Appearances")
 local templates: Folder? = nil
@@ -243,11 +143,7 @@ end
 AssetLoader.SHARED_SETS = {
 	M_Veg_ = "M_Veg_FoliageLand",
 	M_Veg_Strand_ = "M_Veg_StrandLine",
-	M_Road_Bench = "M_Road_StreetLamp",
-	M_Road_Bin = "M_Road_StreetLamp",
-	M_Road_Bollard = "M_Road_StreetLamp",
 	M_Hbr_QuayKit_ = "M_Hbr_QuayKit",
-	M_Hbr_Pontoon_ = "M_Hbr_Pontoon",
 	M_Hbr_Bollard_ = "M_Hbr_PropAtlas",
 	M_Hbr_Cleat_ = "M_Hbr_PropAtlas",
 	M_Hbr_Fender_ = "M_Hbr_PropAtlas",
