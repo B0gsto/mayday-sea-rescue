@@ -50,6 +50,13 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
 
 Merged 2026-10-25 night, live in v44 (except plates): phone removed + left menu (WP-23c), build mode v2 (WP-14e), loading flyover, 80-stud drop-off zone, Lego baseplate islands (WP-24, merged after v44). Merged 2026-10-26: WP-27 ring layout (plates 470 studs out, ring bridges, quest pontoon + quest tablet with sail-in givers, rip moved to Puffin Isle, ferry 1,000 S, own-berth-only home; open: chain giver arrives twice, moored boats don't bob, debrief showed +0 twice, unused Aggie/crew dialogue). In flight: WP-28 no ranks + unlock tree (Opus).
 
+## 2a. Goal (owner, 2026-10-26): finish the whole game, fully playable and polished
+
+Path: WP-28 (no ranks + tree, running) → WP-26 workers → quest follow-ups (double giver boat, bobbing, debrief +0,
+unused Aggie/crew dialogue) → WP-25 art pass every stage + phone layout (menu vs thumbstick) → code sweep + CONTRACT
+refresh → decor Robux products (prices per docs/23 (i) rule) → real-client Opus playtest + fix loop → publish test,
+then launch place (server size 6, products created there). In parallel now: ocean far-plane fix (Opus), 3 icons (Gemini).
+
 ## 2b. Queued next (owner, 2026-10-25 night)
 
 Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-27 ring → WP-26 workers → WP-25 art pass.
