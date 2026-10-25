@@ -76,19 +76,13 @@ return function(t)
 		t.expect(next(BadgeRules.opProgress(snap(), ME, false))).toBeNil()
 	end)
 
-	t.test("ferry, Legendary and Golden Gull badges", function()
+	t.test("ferry badge", function()
 		local p = BadgeRules.opProgress(snap(), ME, true)
 		t.expect(p.FerryHero).toBeNil()
-		t.expect(p.LegendaryRescue).toBeNil()
 		local ferry = snap({ kind = "CapsizedFerry", isBig = true, saved = 3 })
 		t.expect(BadgeRules.opProgress(ferry, ME, true).FerryHero).toBe(1)
 		ferry.saved = 0
 		t.expect(BadgeRules.opProgress(ferry, ME, true).FerryHero).toBeNil()
-		local gull = BadgeRules.opProgress(snap({ variant = "GoldenGull" }), ME, true)
-		t.expect(gull.LegendaryRescue).toBe(1)
-		t.expect(gull.GoldenGull).toBe(1)
-		t.expect(BadgeRules.opProgress(snap({ variant = "Swimmer" }), ME, true).LegendaryRescue)
-			.toBeNil()
 	end)
 
 	t.test("failed, timed-out and taken-over ops give nothing", function()
@@ -162,10 +156,7 @@ return function(t)
 				"RankCaptain",
 				"RankAdmiral",
 				"FriendCrew",
-				"PhotoFirst",
 				"FerryHero",
-				"LegendaryRescue",
-				"GoldenGull",
 			}
 		do
 			local b = BadgeConfig.Badges[key]
@@ -189,9 +180,7 @@ return function(t)
 		t.expect(#BadgeRules.trophies({}, {})).toBe(0)
 		t.expect(BadgeRules.trophies({ Rescue100 = 99, FirstRescue = 1, Streak7 = 7 }, {}))
 			.toEqual({ "FirstRescue" })
-		t.expect(
-			BadgeRules.trophies({ Rescue100 = 100 }, { GoldenGull = true, RankAdmiral = true })
-		)
-			.toEqual({ "Rescue100", "GoldenGull" })
+		t.expect(BadgeRules.trophies({ Rescue100 = 100 }, { RankAdmiral = true }))
+			.toEqual({ "Rescue100" })
 	end)
 end

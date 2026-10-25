@@ -113,13 +113,12 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   studs and a `CraftPin` billboard (seat pips). Dock Lv 2+ (WP-11a): your current craft stays out beside a new
   one (2 craft; a docked second moors along the pontoon when the berth is taken); berth Launch hides locally while you have a craft out and on
   other players' berths. With no craft, point the craft pin at `BayCFrame`.
-- Hangar and sub pen craft (docs/23 h): `VehicleConfig.CraftOrder` (RescueHelicopter, Seaplane, Submarine;
-  `spec.craft` = Heli / Plane / Sub; `VehicleConfig.Order` stays boats only). Built and idled by
-  `Services/Vehicle/Craft` (an empty heli auto-lands to its hover floor, an empty sub holds depth, a parked
-  seaplane floats on the boat rig); a heli launches hovering over the berth. Who boards which craft:
-  `Ops/CraftBoard.ready` (heli winch, seaplane only on the water, sub ring; boats `Board.ready`), used by
-  `AmbientRescueService.StepBoarding` and `auto_board`. A local `Airborne` model attribute (Heli/Plane
-  controllers) blocks stepping out mid-air (VehicleExitController, OpsController).
+- Hangar and sub pen craft (docs/23 h): `VehicleConfig.CraftOrder` (RescueHelicopter, Submarine;
+  `spec.craft` = Heli / Sub; `VehicleConfig.Order` stays boats only). Built and idled by
+  `Services/Vehicle/Craft` (an empty heli auto-lands to its hover floor, an empty sub holds depth); a heli
+  launches hovering over the berth. Who boards which craft: `Ops/CraftBoard.ready` (heli winch, sub ring;
+  boats `Board.ready`), used by `AmbientRescueService.StepBoarding` and `auto_board`. A local `Airborne`
+  model attribute (HeliController) blocks stepping out mid-air (VehicleExitController, OpsController).
 - Crowding (`src/shared/Crowding.luau`, `tests/Crowding.spec.luau`): player boats are collision group
   `PlayerBoat` (ghost through each other, BoatController eases them apart); idle-despawn
   timers, NPC traffic and small moored boats scale by `Crowding.scale(players)`; a boat on land
@@ -132,6 +131,10 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
 - Cut 2026-10-25 (docs/23 k, restorable from tag `pre-hub-cut`): cars and land vehicles, the car garage, roads,
   streets, traffic, the town (Port Haven buildings, cottages, chandlery, ambient town crowd). Their Robux passes
   stay in `MonetizationConfig` with `ready = false`.
+- Second cut 2026-10-25 (WP-20, same tag): the seaplane (`SeaplanePass` stays, `ready = false`), land and
+  cliff calls, the NPC racer, the first-person camera and viewmodel (the camera is third-person only),
+  photo mode, rare rescue variants and their dressing (and the Legendary sky flare, PhotoFirst /
+  LegendaryRescue / GoldenGull badges). Saved profile keys are untouched.
 
 ## Operations (simple rescue)
 
@@ -146,15 +149,9 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
 
 `recovery` and `transport` loop per survivor (`perCasualty`): a full craft goes home and comes back.
 
-- Kinds (`Ops/Definitions`): PersonInWater, RipCurrent, SinkingVessel, VesselFire, CliffCasualty (sea
-  side), WildlifeRescue, CapsizedFerry (big call; relay -> [pickup -> movement]* -> account). The scene is
-  spectacle only: `server/Ops/{SinkingScene,FireScene,RipFlow}`, `RescueDressing` (rare variants).
-- Land calls (docs/23 e.3): kind `Stranded` at a `CallTypes.LandSites` site (~1 in 5 after the tutorial
-  chain, within the craft's island reach). `server/Ops/LandRescue` builds the beach marker, an orange
-  ring and an R15 survivor; walk into the ring and they follow (`shared/Ops/LandFollow`, pure, tested),
-  stop at the water's edge, and climb aboard once you sit in a boat within 25 studs (the scene casualty
-  spawns there: normal board and Home). Player attribute `LandCall` (Vector3) pins the survivor while
-  you are off your craft. No NPC racer; cars don't carry them.
+- Kinds (`Ops/Definitions`): PersonInWater, RipCurrent, SinkingVessel, VesselFire, WildlifeRescue, Diver,
+  CapsizedFerry (big call; relay -> [pickup -> movement]* -> account). The scene is spectacle only:
+  `server/Ops/{SinkingScene,FireScene,RipFlow}`.
 - Diver at a Wreck (docs/23 (h) "Sub pen", WP-10c): kind `Diver` at a `CallTypes.DiveSites` wreck (mail
   seaplane, *Gannet Star*, Wreck Reef hulk; 25+ studs down). Offered only to Submarine owners from call 3
   (`CallLogic.chooseCall(..., sub)`, `DIVER_CHANCE` ~1 in 6, within reach). Pin = the surface over the wreck.
@@ -174,16 +171,9 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
   (`timescale`, `start`, `coldopen`, `status`); `python3 tools/studio/smoke.py ops`.
 - `RescueService`: the scene (rigged swimmers, drift, waving, boarding, pad delivery); `PiwRescue` /
   `PiwWays` make a survivor answer the boat (`PIW_Rescue` C->S `arm` / `bump`).
-- NPC racer (K15): `server/Ops/NpcPickup.luau`, balance in `shared/Calls/RaceRules.luau` (Lune-tested).
-  From the player's 4th call, once they are seated and over 15 km/h (docs/20; no clock before), an NPC RIB
-  appears ahead of them on their route with its siren on, casts off after a head start that leaves a
-  straight-driving player at most 70% of its time, runs below every base craft's speed through the harbour
-  mouth toward the first casualty; if it gets there first it takes them and the call ends unpaid. Player
-  attributes: `RacerAt` (Vector3, the racer; client `RacerController` draws the red minimap blip) and
-  `RacerTaking` (Vector3, an NPC boat is taking the survivor: 2 s camera cut, then the "Too slow" debrief).
-  No offers while a player has a call, carries a survivor or is in the cold open. No racer for 2 calls after a loss or where the water route is
-  blocked (call spots must be reachable from the bays: `clearSpawn`). Studio: `OpsDev` `start <kind>
-  <zone>`, `victims`; the server prints `[Race]` start delay and both arrival times. A taken-over call is always picked up by an NPC boat (never a drowning).
+- Takeover: a casualty at Critical or the cap ends a normal call unpaid at once (`finish(op, "Takeover")`,
+  the "Too slow" debrief); never on the cold open and the next three calls. Call spots must be reachable by
+  water from the bays (`clearSpawn`). Studio: `OpsDev` `start <kind> <zone>`, `victims`.
 - Free-roam swimmers (K13): `AmbientRescueService` keeps up to 4 mission-less swimmers; one is always
   visible from the harbour mouth; boarded server-side with `Ops/Board`, paid on delivery.
 - Wildlife (K16): `SanctuaryService` dresses the WildlifeRescue survivor as an animal (`WildlifeRig`); it
@@ -248,13 +238,13 @@ says the full line; `tests/RadioSubtitle.spec.luau`), lines in `RadioLines`, voi
 
 ## Phone (all menus)
 
-`src/client/UI/Phone.luau`: a portrait iPhone (P, gamepad L1, or the phone button left of the HUD). Seven
-apps (K9): Map, Vehicles, Store, Crew, Pets, Camera, Settings; dock Map, Vehicles, Store, Camera. The red dot is
+`src/client/UI/Phone.luau`: a portrait iPhone (P, gamepad L1, or the phone button left of the HUD). Six
+apps (K9): Map, Vehicles, Store, Crew, Pets, Settings; dock Map, Vehicles, Store, Settings. The red dot is
 off since buys moved to the dock boards (WP-11a). `UI/VehiclesApp` (phone: Boat to me + the
 Boat to me only since WP-10b; a dock board opens one craft's card: Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), `UI/PetsApp` (pick the one companion: Bosun or a
 recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings borrows
-`SettingsPanel`, Map opens `MapController`, Camera opens `PhotoMode`. `UI/AlbumApp` is the sticker album
-(docs/21 §3; an eighth app on the grid).
+`SettingsPanel`, Map opens `MapController`. `UI/AlbumApp` is the sticker album
+(docs/21 §3; a seventh app on the grid).
 
 ## HUD and map
 
@@ -292,13 +282,13 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   (`Award`, `Count`, `Once`, `Has`), `LeaderboardService`.
 - Analytics: `TelemetryNames` (fixed name lists), `Telemetry/Events` (pure funnel and economy mapping),
   `TelemetryService` (the only `AnalyticsService` caller), client `src/client/Telemetry.luau` (`once`,
-  `send`, `shop` over `Telemetry_Client`: RewardSeen, PhotoModeOpen, PhotoTaken, Device, Shop, InputDead,
+  `send`, `shop` over `Telemetry_Client`: RewardSeen, Device, Shop, InputDead,
   StuckReset; values checked server-side). Spec and Phase 2 hook list: `docs/research/analytics.md`.
 - Settings: `SettingsRules` (pure), `Camera/Comfort` (saved in `flags.cameraSettings`), `SettingsPanel`,
   `A11yPalette` (colour-blind palette and glyphs).
 - Re-engagement: `PlatformPrompts` + `PlatformPromptService`; `NotifyDue` + `NotifyService`.
 - Swimming: `SwimController` with `src/shared/Explore/Snorkel.luau` (surface float, face-down look).
-- Photo mode: `PhotoMath` + `UI/PhotoMode`. Audio: `AudioConfig`, `AudioController`, `VoiceTTS`.
+- Audio: `AudioConfig`, `AudioController`, `VoiceTTS`.
 - World: `WorldService`, `server/World/*` (dressing, swaps, rigs; `TownBuildings` / `CottageRig` /
   `StreetFurniture` now only dress the islands), `map/Build.luau` (greybox), `TerrainOnly`, ambient wildlife
   services. `StreetController` turns the lighthouse beams and waves the beach flag.

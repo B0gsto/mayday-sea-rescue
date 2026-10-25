@@ -24,12 +24,8 @@ export type CallKind = {
 	zones: { string }, -- spawn zone ids (SpawnZones below) this kind may use
 	dropOffs: { string }, -- DropOff attribute values that complete it ("Dock", "Hospital")
 	isBig: boolean,
-	land: boolean?, -- the survivor is ashore at a CallTypes.LandSites site (zones = their islands)
 	dive: boolean?, -- a diver on the seabed at a CallTypes.DiveSites wreck (zones = their islands)
 }
-
--- A land call site (docs/23 e.3): `at` is the survivor's feet, `beach` the shore point the craft runs to.
-export type LandSite = { id: string, island: string, beach: Vector3, at: Vector3 }
 
 -- A wreck on the seabed (docs/23 (h) "Sub pen"): `wreck` its centre on the seabed, `at` the diver's feet
 -- beside it, `hull` = build a placeholder hull there (no wreck in the world yet), `yaw` its heading (deg).
@@ -131,18 +127,6 @@ CallTypes.Kinds = {
 		dropOffs = { "Dock", "Hospital" },
 		isBig = true,
 	},
-	Cliff = {
-		id = "Cliff",
-		displayName = "Cliff Casualty",
-		radioLine = "Walker in the water below Haven Head, one casualty.",
-		weight = 1.4, -- docs/02 section 3: cliff is a Skerries-rate rescue
-		timer = 600,
-		victims = 1,
-		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
-		zones = { "HavenHeadCliff" },
-		dropOffs = { "Dock", "Hospital" },
-		isBig = false,
-	},
 	RipCurrent = {
 		id = "RipCurrent",
 		displayName = "Rip Current",
@@ -191,20 +175,6 @@ CallTypes.Kinds = {
 		dropOffs = { "Dock" },
 		isBig = false,
 	},
-	-- docs/23 e.3: ashore (cut off by the tide, on a ledge, lost inland); reached on foot, they follow you aboard
-	Stranded = {
-		id = "Stranded",
-		displayName = "Stranded Ashore",
-		radioLine = "Walker cut off on the shore, one casualty.",
-		weight = 1.3, -- tune
-		timer = 600,
-		victims = 1,
-		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
-		zones = {}, -- the islands of CallTypes.LandSites (filled below)
-		dropOffs = { "Dock", "Hospital" },
-		isBig = false,
-		land = true,
-	},
 	-- docs/23 (h) "Sub pen": a diver trapped at a wreck on the seabed; only the submarine reaches them.
 	-- Not in NormalKinds: CallLogic.chooseCall offers it to sub owners (DIVER_CHANCE, from DIVER_FROM_CALL).
 	Diver = {
@@ -229,8 +199,6 @@ CallTypes.DIVER_FROM_CALL = 3 -- the first call number a diver can be
 CallTypes.NormalKinds = {
 	"Swimmer",
 	"DriftingCraft",
-	"Cliff",
-	"Stranded",
 	"RipCurrent",
 	"Sinking",
 	"VesselFire",
@@ -239,12 +207,10 @@ CallTypes.NormalKinds = {
 CallTypes.KindWeights = {
 	Swimmer = 0.45,
 	DriftingCraft = 0.3,
-	Cliff = 0.18,
 	RipCurrent = 0.2,
 	Sinking = 0.16,
 	VesselFire = 0.2,
 	WildlifeRescue = 0.16,
-	Stranded = 0.41, -- about 1 call in 5 once past the tutorial chain
 } -- tune
 
 -- Fixed chain for a player's first calls (docs/16 B3, B4, B9), each { kind, zone, victims? }. The
@@ -269,7 +235,6 @@ CallTypes.CraftReach = {
 	Lifeboat = 5500,
 	Submarine = 5500, -- the lifeboat's tier (both Coxswain)
 	RescueHelicopter = 5500, -- top tier (Rescue Pilot)
-	Seaplane = 5500,
 	StormRunner = 5500,
 	Tidewalker = 5500,
 	RiptideX = 5500,
@@ -352,18 +317,6 @@ CallTypes.SpawnZones = {
 		timerMultiplier = 1,
 		fallback = Vector3.new(60, 0, 500),
 	},
-	-- Cliff casualty: in the surf off the ledge at the foot of Haven Head (the shelf is at (1740, 22, 890),
-	-- facing +Z out to sea; docs/09 section 8.5).
-	HavenHeadCliff = {
-		id = "HavenHeadCliff",
-		displayName = "Haven Head",
-		center = Vector3.new(1740, 0, 925),
-		minRadius = 0,
-		maxRadius = 0,
-		area = "Outside",
-		timerMultiplier = 1,
-		fallback = Vector3.new(1740, 0, 925),
-	},
 	-- Rip-current beach rescue (docs/09 section 8.4): one place, the channel off Haven Sands.
 	-- The casualty starts about 120 studs down the rip and is carried seaward (shared/RipCurrent):
 	-- origin + direction * 120, in the water off the Haven Sands waterline.
@@ -424,69 +377,6 @@ for _, island in WorldConfig.Islands do
 			fallback = ringFallback[reach], -- its tier's open sea (Studio-checked routable)
 			reach = reach,
 		}
-	end
-end
-
--- Land call sites (docs/23 e.3), Studio-sampled 2026-10-25 (build/wp9 terrain raycasts): `beach` is the
--- first dry terrain coming in from water over 2 deep, `at` is up a path whose every 3-stud step rises under
--- 2.4 studs. Only islands with a CallTypes.IslandReach (routable from the harbour); offered within it.
-CallTypes.LandSites = {
-	-- cut off by the tide
-	{
-		id = "SkerryCove",
-		island = "SkerryIsle",
-		beach = Vector3.new(1606, 1, 1911),
-		at = Vector3.new(1625, 5.1, 1896),
-	},
-	{
-		id = "PuffinStrand",
-		island = "PuffinIsle",
-		beach = Vector3.new(-2511, 1.1, 3069),
-		at = Vector3.new(-2517, 5.6, 3092),
-	},
-	{
-		id = "GannetLanding",
-		island = "GannetRock",
-		beach = Vector3.new(3390, 1.7, 3460),
-		at = Vector3.new(3413, 7.5, 3468),
-	},
-	-- on a ledge
-	{
-		id = "SkerryLedge",
-		island = "SkerryIsle",
-		beach = Vector3.new(1550, 1.4, 1894),
-		at = Vector3.new(1592, 21.1, 1870),
-	},
-	{
-		id = "PuffinLedge",
-		island = "PuffinIsle",
-		beach = Vector3.new(-2411, 0.6, 3072),
-		at = Vector3.new(-2442, 16, 3127),
-	},
-	{
-		id = "WreckReefLedge",
-		island = "WreckReef",
-		beach = Vector3.new(-3777, 0.9, 4285),
-		at = Vector3.new(-3800, 33.8, 4198),
-	},
-	-- lost inland
-	{
-		id = "PenwynMoor",
-		island = "Penwyn",
-		beach = Vector3.new(-4244, 0.9, -621),
-		at = Vector3.new(-4399, 7.1, -531),
-	},
-	{
-		id = "LagoonDunes",
-		island = "MermaidLagoon",
-		beach = Vector3.new(172, 0.8, 4875),
-		at = Vector3.new(203, 5.1, 5052),
-	},
-} :: { LandSite }
-for _, site in CallTypes.LandSites do
-	local zones = CallTypes.Kinds.Stranded.zones
-	if not table.find(zones, site.island) then
-		table.insert(zones, site.island)
 	end
 end
 

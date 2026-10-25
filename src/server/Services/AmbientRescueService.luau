@@ -245,7 +245,7 @@ function AmbientRescueService.StepBoarding(
 			local speed = Vector3.new(vel.X, 0, vel.Z).Magnitude
 			local tilt = math.deg(math.acos(math.clamp(b.root.CFrame.UpVector.Y, -1, 1)))
 			if
-				CraftBoard.ready( -- boats close and steady; heli winch, seaplane on the water, sub ring
+				CraftBoard.ready( -- boats close and steady; heli winch, sub ring
 					b.vehicle:GetAttribute("VehicleId"),
 					at,
 					b.root.Size.X / 2,

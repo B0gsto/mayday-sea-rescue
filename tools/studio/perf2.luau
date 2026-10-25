@@ -10,7 +10,7 @@ local spot = tostring(player:GetAttribute("PerfSpot") or "town")
 local tier = player:GetAttribute("PerfTier")
 if spot == "jetski" then
 	local wait = 0
-	while player:GetAttribute("CameraMode") ~= "VehicleFP" and wait < 60 do
+	while player:GetAttribute("CameraMode") ~= "Chase" and wait < 60 do
 		task.wait(2)
 		wait += 2
 	end

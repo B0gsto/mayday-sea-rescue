@@ -24,9 +24,9 @@ return function(t)
 	local TUTORIAL_MIN = { 1.5, 5.75, 5.75 }
 	-- docs/23 (2026-10-25): every later call is a real CallLogic call (zone tier by the best craft, pay x
 	-- distancePay). Its clock: per call the radio, the offer gap and the debrief; per trip out and back to
-	-- the dock at the docs/02 cruise (CallLogic.travelSeconds) plus slow down, climb on and climb off; a
-	-- land call adds the walk up the beach. Victims over the craft's seats mean another trip. -- tune
-	local CALL_S, TRIP_S, LAND_S = 45, 35, 30
+	-- the dock at the docs/02 cruise (CallLogic.travelSeconds) plus slow down, climb on and climb off.
+	-- Victims over the craft's seats mean another trip. -- tune
+	local CALL_S, TRIP_S = 45, 35
 	local START_UTC = 1792800000 -- 2026-10-24 00:00:00 UTC
 
 	local function run(friends: number, legacy: boolean?)
@@ -155,7 +155,7 @@ return function(t)
 					mark(key .. " built")
 				end
 			end
-			for _, id in { "Submarine", "Seaplane" } do
+			for _, id in { "Submarine" } do
 				local v = ProgressionConfig.Vehicles[id]
 				local home = DockConfig.buildingOf(id) :: string
 				if
@@ -259,8 +259,7 @@ return function(t)
 				CallLogic.craftReach(ids, rank())
 			)
 			local spec = CallTypes.Kinds[choice.kind]
-			local site = if spec.land then CallLogic.landSite(nil, random, choice.zone) else nil
-			local at = if site then site.beach else CallLogic.pickSpawnPoint(choice.zone, random)
+			local at = CallLogic.pickSpawnPoint(choice.zone, random)
 			local distance = CallLogic.flatDistance(at, CallTypes.STATION)
 			-- the reach comes from every owned craft; the player takes whichever owned boat is quickest
 			local seconds, best = math.huge, "JetSki"
@@ -270,7 +269,6 @@ return function(t)
 					local trips =
 						math.ceil((choice.victims or spec.victims) / craft.survivorCapacity)
 					local s = CALL_S
-						+ (if site then LAND_S else 0)
 						+ trips
 							* (TRIP_S + 2 * CallLogic.travelSeconds(distance, craft.topSpeed))
 					if s < seconds then
@@ -533,7 +531,7 @@ return function(t)
 		for _, label in { "Dock Lv 3", "Dock Lv 4", "Hangar built", "SubPen built" } do
 			t.expect(minutes(solo, label) <= 20 * 60).toBe(true)
 		end
-		for _, label in { "Submarine bought", "Seaplane bought", "Dock Lv 5" } do
+		for _, label in { "Submarine bought", "Dock Lv 5" } do
 			t.expect(minutes(solo, label) <= 30 * 60).toBe(true)
 		end
 		t.expect(minutes(solo, "Dock Lv 5") >= 10 * 60).toBe(true)

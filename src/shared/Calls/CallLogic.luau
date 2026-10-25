@@ -259,7 +259,7 @@ function CallLogic.distanceZone(reach: number?, rng: Rng?): string
 	return pool[math.floor(roll() * #pool) + 1] or "Offshore"
 end
 
--- A site (land or dive) whose island is within `reach` (nil: any) and, if given, on island `where`
+-- A dive site whose island is within `reach` (nil: any) and, if given, on island `where`
 -- (or with that site id). nil when none fits.
 local function pickSite(sites: { any }, reach: number?, rng: Rng?, where: string?): any?
 	local roll: Rng = rng or (math.random :: any)
@@ -277,11 +277,7 @@ local function pickSite(sites: { any }, reach: number?, rng: Rng?, where: string
 	return pool[math.floor(roll() * #pool) + 1]
 end
 
-function CallLogic.landSite(reach: number?, rng: Rng?, where: string?): CallTypes.LandSite?
-	return pickSite(CallTypes.LandSites, reach, rng, where)
-end
-
--- A wreck dive site (docs/23 (h)), the same filter as landSite.
+-- A wreck dive site (docs/23 (h)).
 function CallLogic.diveSite(reach: number?, rng: Rng?, where: string?): CallTypes.DiveSite?
 	return pickSite(CallTypes.DiveSites, reach, rng, where)
 end
@@ -352,14 +348,7 @@ function CallLogic.chooseCall(
 		end
 	end
 	local spec = CallTypes.Kinds[kind]
-	if spec.land then
-		local site = CallLogic.landSite(reach or CallTypes.BASE_REACH, roll)
-		if site then
-			return { kind = kind, zone = site.island }
-		end
-		kind, spec = "Swimmer", CallTypes.Kinds.Swimmer
-	end
-	-- one-place scenes (the cliff foot, the rip, the sinking boat; a fire is never in Calm Bay)
+	-- one-place scenes (the rip, the sinking boat; a fire is never in Calm Bay)
 	if #spec.zones == 1 then
 		return { kind = kind, zone = spec.zones[1] }
 	end

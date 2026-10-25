@@ -4,7 +4,7 @@
 --   PC: mouse aim, left click (hold to charge), left/right click two-hand rhythm, number keys.
 --   Mobile: big Action button (hold to charge), two rhythm pads, tap cards, drag on the right half.
 --   Gamepad: right stick aim (camera), A / RT action, LB / RB rhythm, A B X Y cards.
--- Panels are compact and sit low on the screen so the first-person view stays clear; Assist mode
+-- Panels are compact and sit low on the screen so the view stays clear; Assist mode
 -- may add one subtle hint line and glow the right card after 5 s of hesitation (docs 09 9.3).
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
@@ -287,33 +287,6 @@ function Ui.callout(bag: Bag, gui: ScreenGui): (string, number?) -> ()
 			end
 		end)
 	end
-end
-
--- Hands on screen: the camera stream's viewmodel (may not exist yet). opts: { loop: boolean? }.
-local function withViewmodel(fn: (any) -> ())
-	task.spawn(function()
-		pcall(function()
-			local client = script.Parent.Parent.Parent
-			local cam = client:FindFirstChild("Camera")
-			local vm = cam and cam:FindFirstChild("Viewmodel")
-			if vm and vm:IsA("ModuleScript") then
-				fn((require :: any)(vm))
-			end
-		end)
-	end)
-end
-
-function Ui.hands(name: string, opts: { loop: boolean? }?)
-	withViewmodel(function(Viewmodel)
-		Viewmodel.playAction(name, opts)
-	end)
-end
-
--- Ends a looping hands clip (back to hidden arms).
-function Ui.handsStop()
-	withViewmodel(function(Viewmodel)
-		Viewmodel.stopAction()
-	end)
 end
 
 -- Two-hand rhythm: left/right click, LB/RB, or two touch pads. onTap("L" | "R").

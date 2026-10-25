@@ -3,12 +3,11 @@
 -- "a portrait iPhone"). P, gamepad L1 or the phone button on the left of the HUD opens it: an
 -- upright handset (thin bezel, Dynamic Island, status bar, home indicator) centred and nearly as
 -- tall as the screen slides up with a spring, the screen wakes and the icons pop in; closing plays
--- it back (a short fade with reduced motion). The phone-in-hand Viewmodel loop plays and a Modal
--- backdrop frees the cursor. The home screen is stock iOS: a painted harbour wallpaper, a 4-column
+-- it back (a short fade with reduced motion). A Modal backdrop frees the cursor. The home screen is stock iOS: a painted harbour wallpaper, a 4-column
 -- clock widget over a grid of big squircle icons (UiImages.Phone art, shadowed white label) and a frosted
--- dock of 4 (Map, Vehicles, Store, Camera). Every app lays out on the upright phone and zooms out of
+-- dock of 4 (Map, Vehicles, Store, Settings). Every app lays out on the upright phone and zooms out of
 -- its icon (and back into it), as on iOS. Seven apps (docs/16 K9):
---   Map, Camera          close the phone and run (MapController.Open, PhotoMode)
+--   Map                  closes the phone and runs MapController.Open
 --   Settings             the existing SettingsPanel: its frame is borrowed onto the phone screen
 --   Crew                 the crew's faces (leader ringed in brass), Invite and Leave
 --   Vehicles, Store, Pets sibling modules UI/VehiclesApp, UI/StoreApp, UI/PetsApp (OPTIONAL): each
@@ -38,7 +37,6 @@ local InputGlyph = require(script.Parent:WaitForChild("InputGlyph"))
 local Layout = require(script.Parent:WaitForChild("Layout"))
 local Net = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net"))
 local Telemetry = require(Client:WaitForChild("Telemetry"))
-local Viewmodel = require(Client:WaitForChild("Camera"):WaitForChild("Viewmodel"))
 
 local C = HudTheme.Colors
 local W = Color3.new(1, 1, 1)
@@ -57,7 +55,7 @@ local OPTIONAL = {
 	{ module = "PetsApp", name = "Pets", label = "Pets" },
 	{ module = "AlbumApp", name = "Album", label = "Album" },
 }
-local DOCK = { Map = 1, Vehicles = 2, Store = 3, Camera = 4 } -- the dock's 4, in order
+local DOCK = { Map = 1, Vehicles = 2, Store = 3, Settings = 4 } -- the dock's 4, in order
 local RED = Color3.fromHex("FF3B30") -- iOS badge red
 local CANVAS = 300 -- du: the upright screen's width; home and apps lay out on it
 local ICON = 66 -- du, the squircle: 22% of the screen, as on a real home screen
@@ -115,7 +113,6 @@ local serial = 0
 local current: string? = nil
 local cleanup: (() -> ())? = nil
 local relayout: (() -> ())? = nil
-local hand: Viewmodel.Handle? = nil
 local crew: { number } = {}
 local leader = 0
 local drawCrew: (() -> ())? = nil
@@ -540,13 +537,6 @@ local function appList(): { App }
 			end,
 		},
 		{
-			name = "Camera",
-			label = "Camera",
-			run = function()
-				require(script.Parent:WaitForChild("PhotoMode")).setOpen(true)
-			end,
-		},
-		{
 			name = "Crew",
 			label = "Crew",
 			mount = crewApp,
@@ -560,7 +550,7 @@ local function appList(): { App }
 	for i, spec in OPTIONAL do
 		local mod = optionalApp(spec.module)
 		if mod then
-			table.insert(list, 3 + i, {
+			table.insert(list, 2 + i, {
 				name = spec.name,
 				label = spec.label,
 				mount = mod.mount,
@@ -584,7 +574,6 @@ function Phone.openApp(name: string, mount: Mount?)
 	local run = app.run
 	if run then
 		Phone.setOpen(false)
-		-- off at once: PhotoMode snapshots which ScreenGuis are enabled
 		if gui then
 			gui.Enabled = false
 		end
@@ -683,7 +672,6 @@ function Phone.setOpen(value: boolean)
 		clockLabel.Visible = true
 		tickClock()
 		g.Enabled = true
-		hand = Viewmodel.playAction("phone")
 		UserInputService.MouseIconEnabled = true
 		ContextActionService:BindActionAtPriority(
 			"PhoneBack",
@@ -713,11 +701,6 @@ function Phone.setOpen(value: boolean)
 		focus(tiles[1] and tiles[1].button)
 	else
 		ContextActionService:UnbindAction("PhoneBack")
-		local h = hand
-		if h then
-			h.stop() -- only ends our clip if it is still the one playing
-			hand = nil
-		end
 		local sel = GuiService.SelectedObject
 		if sel and sel:IsDescendantOf(g) then
 			GuiService.SelectedObject = nil

@@ -119,7 +119,7 @@ local part = tostring(player:GetAttribute("PerfPart") or "all")
 -- 1. the cold-open jet ski offshore (the storm was forced before this call)
 if part ~= "land" then
 local wait = 0
-while player:GetAttribute("CameraMode") ~= "VehicleFP" and wait < 60 do
+while player:GetAttribute("CameraMode") ~= "Chase" and wait < 60 do
 	task.wait(2)
 	wait += 2
 end

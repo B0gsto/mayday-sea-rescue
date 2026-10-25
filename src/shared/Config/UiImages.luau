@@ -19,7 +19,6 @@ return {
 	Phone = {
 		Button = "rbxassetid://97328188378860",
 		Map = "rbxassetid://90931029466891",
-		Camera = "rbxassetid://102410072009100",
 		Crew = "rbxassetid://123697054940337",
 		Settings = "rbxassetid://85411600136649",
 		Vehicles = "rbxassetid://140273799789221",

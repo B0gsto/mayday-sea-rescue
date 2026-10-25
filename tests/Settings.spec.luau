@@ -43,10 +43,10 @@ return function(t)
 		end
 	end)
 
-	t.test("seasick preset: level horizon, no bob, no FOV kick; detected after apply", function()
-		t.expect(S.SEASICK.horizonStab).toBe(1)
-		t.expect(S.SEASICK.headBob).toBe(0)
+	t.test("seasick preset: no FOV kick; detected after apply", function()
 		t.expect(S.SEASICK.speedFov).toBe(false)
+		-- first-person keys from old saves (cut 2026-10-25) are dropped, not errors
+		t.expect(S.clean("horizonStab", 0.4)).toBeNil()
 		local v = table.clone(S.Defaults)
 		t.expect(S.isPreset(v, S.SEASICK)).toBe(false)
 		for k, x in S.SEASICK do

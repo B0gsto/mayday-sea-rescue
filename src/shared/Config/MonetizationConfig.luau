@@ -415,7 +415,7 @@ local MonetizationConfig = {
 		RescueHelicopterPass = {
 			id = 2053992047,
 			name = "Rescue Helicopter",
-			description = "The Rescue Helicopter: hover over anyone, sea or cliff, and winch them up. Yours at any rank.",
+			description = "The Rescue Helicopter: hover over anyone in the sea and winch them up. Yours at any rank.",
 			price = 399,
 			order = 24,
 			ready = true,
@@ -427,7 +427,7 @@ local MonetizationConfig = {
 			description = "The Seaplane: the fastest way to far islands, lands on the water for 4 survivors. Yours at any rank.",
 			price = 299,
 			order = 25,
-			ready = true,
+			ready = false, -- cut 2026-10-25 (pre-hub-cut)
 			vehicle = "Seaplane",
 		},
 		SubmarinePass = {
