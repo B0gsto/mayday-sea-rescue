@@ -10,8 +10,7 @@
 -- pitches about ATT_Hinge until its roller sits on the pontoon deck; the rock armour pivot is the seabed plane
 -- (crest +12 studs at scale 1). Props (HP2a) have their pivot at the base.
 --
--- Gameplay markers kept: Map.PortHaven.Dock.Bay1..Bay4 (LaunchBay) stay where they are (the stone pier replaces
--- the deck around them); the BoatDesk and the harbourmaster desk stay on the quay top; DropOff_Dock (the tow berth
+-- Gameplay markers kept (the launch bays moved to the marina, DockService; the stone pier replaces the old deck); the BoatDesk and the harbourmaster desk stay on the quay top; DropOff_Dock (the tow berth
 -- and "alongside the pontoon") moves 10 studs west to lie alongside the new dock pontoon, DropOff_Hospital moves
 -- seaward alongside the new hospital pontoon. The greybox stays when a kit piece fails to load.
 -- Tide: Workspace attribute TideHeight (studs above mean sea level, default 0) re-floats the pontoons and pitches

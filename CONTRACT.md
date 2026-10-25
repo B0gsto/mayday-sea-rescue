@@ -59,20 +59,28 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
 
 ## Vehicles
 
-- `VehicleService` (boats and jet skis): one vehicle per player. Each bay has one `Launch` prompt that
-  spawns the player's last-launched craft (`data.flags.lastVehicle`, K3); switching craft is the phone's
-  Vehicles app. A returning player (`coldOpenDone`) spawns on the pier at their bay with that craft docked
-  beside them (K11); player attribute `BayCFrame`. API: `GetBay`, `GetVehicle`, `GetDriver`,
+- `DockService` (docs/23 WP-1): the marina west of the west breakwater (`src/shared/Marina.luau`, pure,
+  `tests/Marina.spec.luau`): 16 plots in two rows of 8 off a pontoon spine, each a deck strip + a water berth
+  (Lv 1: bare jetty, name board, flag in the player's colour; empty plots are a plain jetty). A joining player
+  gets the lowest free plot, freed on leave; `data.dockLevel` (default 1) is the level later packages build.
+  API: `GetBerth(player) -> BasePart?`, `GetPlot`, `GetLevel`, `Berths()`. Player attributes `DockPlot`,
+  `BayCFrame` (the berth CFrame); berth part attributes `LaunchBay`, `PlotIndex`, `Owner`.
+- `VehicleService` (boats and jet skis): one vehicle per player, always launched at the player's own berth
+  (phone, Quick Launch, berth `Launch` prompt, the cold open via `BerthLaunch`). Spawns are serialized per berth
+  (`Marina.lock`). Each berth has one owner-only `Launch` prompt that spawns the player's last-launched craft
+  (`data.flags.lastVehicle`, K3); switching craft is the phone's Vehicles app. Every spawn stands the player on
+  their jetty; a returning player (`coldOpenDone`) also gets that craft docked beside them (K11). API: `GetBay`
+  (the berth), `BerthLaunch(player, vehicleId) -> CFrame?`, `GetVehicle`, `GetDriver`,
   `GetOccupants`, `AddSurvivor(model, survivor) -> boolean` (false when full), `RemoveSurvivors`, `Climb`,
   `SpawnSeated`, `SpawnColdOpen`, `QuickLaunch`, `Stow`, `RefreshUpgrades`, `AttachTow` / `DetachTow`
   (scripted scenes only), signal `VehicleSpawned (player, model)`. Model attributes `VehicleId`, `Owner`,
   `Capacity`, `SurvivorCount`; hull attachments `SurvivorSlot1..n`, `PetSeat`, `TowHitch`, `BowPoint`.
 - Capacity is the depth: jet ski 1, RIB 3, lifeboat 8 (`VehicleConfig`). `Boat/Buoyancy`,
   `Boat/Simulator`, `Boat/Unstick`, `Boat/Helm` are pure and tested in `tests/Boat*.spec.luau`.
-- Seated launches (phone `RequestVehicle(id, _, true)`, bay Launch, Quick Launch) float the craft in open
-  water off the nearest free bay / WorldConfig `Launch` or `Dock` point, bow to sea, never overlapping a
-  vehicle. Off your craft: `[E] Board` from 30 studs and a `CraftPin` billboard (seat pips); bay Launch
-  hides locally while you have a craft out. With no craft, point the craft pin at `BayCFrame`.
+- Seated launches (phone `RequestVehicle(id, _, true)`, berth Launch, Quick Launch) float the craft in open
+  water off the player's berth, bow to sea, never overlapping a vehicle. Off your craft: `[E] Board` from 30
+  studs and a `CraftPin` billboard (seat pips); berth Launch hides locally while you have a craft out and on
+  other players' berths. With no craft, point the craft pin at `BayCFrame`.
 - Crowding (`src/shared/Crowding.luau`, `tests/Crowding.spec.luau`): player boats are collision group
   `PlayerBoat` (ghost through each other and cars, BoatController eases them apart); idle-despawn
   timers, NPC traffic and small moored boats scale by `Crowding.scale(players)`; a boat on land / car

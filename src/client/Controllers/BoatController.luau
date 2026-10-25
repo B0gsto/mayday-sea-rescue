@@ -655,14 +655,15 @@ end
 
 local launchHidden: { [ProximityPrompt]: boolean } = {}
 
+-- A berth's Launch hides while you have a craft out, and always on other players' berths (docs/23).
 local function hideLaunch(prompt: ProximityPrompt)
 	local bay = prompt.Parent
 	if
-		next(craftPins)
-		and prompt.Name == "Launch"
+		prompt.Name == "Launch"
 		and bay
 		and bay:GetAttribute("LaunchBay") ~= nil
 		and prompt.Enabled
+		and (next(craftPins) or bay:GetAttribute("Owner") ~= localPlayer.UserId)
 	then
 		prompt.Enabled = false
 		launchHidden[prompt] = true
@@ -685,11 +686,14 @@ updateCraftPins = function()
 			end
 		end
 	end
-	if not next(craftPins) and next(launchHidden) then
+	if not next(craftPins) then
 		for prompt in launchHidden do
-			prompt.Enabled = true
+			local bay = prompt.Parent
+			if bay and bay:GetAttribute("Owner") == localPlayer.UserId then
+				prompt.Enabled = true
+				launchHidden[prompt] = nil
+			end
 		end
-		table.clear(launchHidden)
 	end
 end
 

@@ -464,6 +464,13 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			objective, objectiveLabel = waypoint, "Waypoint"
 		end
 	end
+	local home = player:GetAttribute("BayCFrame") -- your dock at the marina (docs/23)
+	if typeof(home) == "CFrame" then
+		table.insert(
+			list,
+			{ id = "Home", pos = home.Position, style = S.Home, clamp = true, size = 20 }
+		)
+	end
 	for _, folderName in { "Vehicles", "LandVehicles" } do
 		local folder = Workspace:FindFirstChild(folderName)
 		for _, m in if folder then folder:GetChildren() else {} do
@@ -899,7 +906,9 @@ local function buildFullMap()
 	layout.Padding = UDim.new(0, 0)
 	layout.Parent = body
 	local order = 1
-	for _, key in { "Casualty", "Vessel", "DropOff", "Waypoint", "Vehicle", "Crew", "Storm" } do
+	for _, key in
+		{ "Casualty", "Vessel", "DropOff", "Waypoint", "Vehicle", "Home", "Crew", "Storm" }
+	do
 		legendRow(body, MapConfig.Styles[key], order)
 		order += 1
 	end

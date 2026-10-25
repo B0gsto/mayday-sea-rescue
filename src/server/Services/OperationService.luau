@@ -2286,8 +2286,12 @@ function OperationService.StartColdOpen(
 		withdrawOffer(ops[st.offerOpId])
 	end
 	local at, home = BoatColdOpen.SPAWN, BoatColdOpen.SHORE[1].water
-	-- facing the slipway: the casualty is on the way home, so straight ahead always closes the drop-off
-	local cf = spawnCFrame or CFrame.lookAt(at, Vector3.new(home.X, at.Y, home.Z))
+	-- docs/23: at your own berth, bow to sea (no two new players share a spawn); the casualty is dead ahead and
+	-- the marina beach (ColdOpen.SHORE Marina) is home. Fallback: Calm Bay, facing the station slipway.
+	local okBerth, berth = try("VehicleService", "BerthLaunch", player, "JetSki")
+	local cf = spawnCFrame
+		or (if okBerth and typeof(berth) == "CFrame" then berth else nil)
+		or CFrame.lookAt(at, Vector3.new(home.X, at.Y, home.Z))
 	-- CONTRACT: VehicleService.SpawnColdOpen(player, cframe): Model? spawns a jet ski at `cframe`,
 	-- seats the player and gives it some forward speed (stream B). Called through pcall.
 	local okSpawn, spawnErr = try("VehicleService", "SpawnColdOpen", player, cf)

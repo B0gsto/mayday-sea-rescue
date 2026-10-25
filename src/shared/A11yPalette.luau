@@ -41,6 +41,7 @@ local SYMBOLS: { [string]: { [string]: string } } = {
 		DropOff = "D",
 		Waypoint = "W",
 		Vehicle = "V",
+		Home = "⌂",
 		Crew = "C",
 		Racer = "✚",
 		Storm = "◉",

@@ -166,6 +166,8 @@ ColdOpen.SHORE = {
 		via = { Vector3.new(-165, 0, 120), Vector3.new(-112, 0, 130), Vector3.new(-80, 0, 120) },
 	},
 	{ id = "Sands", water = Vector3.new(1000, 0, 282), dry = Vector3.new(970, 0, 250) },
+	-- docs/23: the marina beach by the spine root (shared/Marina), home for a cold open that starts at your berth
+	{ id = "Marina", water = Vector3.new(-460, 0, 45), dry = Vector3.new(-460, 0, 10) },
 } :: { Shore }
 ColdOpen.SHORE_RADIUS = 40 -- studs, flat, casualty to the shore point (28 left a jet ski stalled on the slip short of it) -- tune
 ColdOpen.SHORE_RADIO = { from = "Chief Aggie", text = "Over here!" } -- slow on the way in

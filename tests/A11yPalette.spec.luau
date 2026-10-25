@@ -59,6 +59,7 @@ return function(t)
 				"DropOff",
 				"Waypoint",
 				"Vehicle",
+				"Home",
 				"Crew",
 				"Racer",
 				"Storm",

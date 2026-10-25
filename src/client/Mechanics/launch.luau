@@ -51,11 +51,11 @@ function Launch.start(
 			end
 		end)
 	)
-	-- the boatyard upgrade stands and the bays' Launch prompts go quiet while the craft is the next step
+	-- the boatyard upgrade stands and the berths' Launch prompts go quiet while the craft is the next step
 	local bays: { Instance } = {}
-	local map = Workspace:FindFirstChild("Map")
-	if map then
-		for _, d in map:GetDescendants() do
+	local marina = Workspace:FindFirstChild("Marina")
+	if marina then
+		for _, d in marina:GetDescendants() do
 			if d:IsA("BasePart") and d:GetAttribute("LaunchBay") then
 				table.insert(bays, d)
 			end

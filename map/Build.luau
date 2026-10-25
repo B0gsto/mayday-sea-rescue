@@ -10,7 +10,7 @@
 --
 -- Builds Workspace.Map (sea level Y = 0, no Terrain water: the ocean is a client mesh):
 --   OceanFloor   (fallback only) sand base, top at Y = -40
---   PortHaven    quay, station, dock with launch bays Bay1..Bay4, hospital, houses (land and hill only as fallback),
+--   PortHaven    quay, station, dock (bollards; launches are at the marina, DockService), hospital, houses (land and hill only as fallback),
 --                the Chandlery (walk-in store, dressing)
 --   DropOffs     DropOff_Hospital, DropOff_Dock (water-level pads, attribute DropOff)
 --   Breakwater   two arms enclosing Calm Bay; the 60-stud gap is Harbour Mouth
@@ -275,23 +275,9 @@ local function buildPortHaven(map: Instance, landTop: number, floorY: number, ha
 			})
 		end
 	end
-	-- launch bays on the east side of the dock, on the water, facing out to sea (+Z)
+	-- bollards where the old launch bays were (players launch from their own berth at the marina now: DockService)
 	for i = 1, 4 do
 		local z = 4 + i * 22 - 8
-		part({
-			Name = `Bay{i}`,
-			Size = Vector3.new(12, 0.4, 18),
-			CFrame = CFrame.new(-95, 0.2, z) * CFrame.Angles(0, math.pi, 0),
-			Color = COLORS.bay,
-			-- spawn marker only (VehicleService reads its CFrame): never drawn over the boat/water
-			Transparency = 1,
-			CastShadow = false,
-			CanCollide = false,
-			CanTouch = false,
-			CanQuery = false,
-			Parent = dock,
-			Attributes = { LaunchBay = true, BayIndex = i, AllowedVehicles = "JetSki,RIB,Lifeboat" },
-		})
 		box(
 			dock,
 			`Bay{i}Bollard`,
