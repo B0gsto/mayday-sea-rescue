@@ -4,11 +4,13 @@ Bakes the Gale Isles terrain (docs/10-world-and-map.md) and merges it into `buil
 
 **Hub ring (docs/23 (k), WP-18; supersedes the Great Gale passes below).** Great Gale, Port Haven, the town ground,
 roads, farms, St Elowen's Mount and its causeway are gone. The main window is x +-1,536, z +-1,280
-(`layout.HUB_WINDOW`, baked by `bake_island()` like every island): the hub island (radius 400) at the centre and six
-player islands (`Plot1..6`, radius 160) 1,100 studs out at bearings 0, 60 .. 300, each a flat `plateau` (Y 4 rendered:
-baked `RENDER_BIAS` 2 lower, since voxels render about half a voxel over the bake) with a 25-stud beach / rocky rim and
-a `notch` in its outward face (hub: the harbour, 100 wide, facing south; islands: the berth cove, 90 wide), dredged to
-Y -30 with a channel straight out; `edgeRamp` 120 keeps the outer rims dry. **Hub forest (docs/23 (l), WP-21a):**
+(`layout.HUB_WINDOW`, baked by `bake_island()` like every island): the hub island (radius 400) at the centre, a flat
+`plateau` (Y 4 rendered: baked `RENDER_BIAS` 2 lower, since voxels render about half a voxel over the bake) with a
+`notch` in its outward face (the harbour, 100 wide, facing south), dredged to Y -30 with a channel straight out;
+`edgeRamp` 120 keeps the outer rims dry. **WP-24: the six player islands (`Plot1..6`, 1,100 studs out at bearings
+0, 60 .. 300) are not terrain.** Each is a flat Lego baseplate built from Parts at run time by
+`src/server/World/IslandPlates.luau` from `HubLayout.IslandPlate` (320 across, top at Y 4, 2 thick, a U cut-out over
+the berth cove), so the bake leaves open water deep enough for boats and the submarine all round each plate. **Hub forest (docs/23 (l), WP-21a):**
 `forest()` adds gentle hills (`HUB_HILLS`, up to about Y 37) and a rough floor over the hub plateau, flattens the
 `HUB_CLEARINGS` (outposts, bridge heads, quest camps, hidden spots) and wears meandering dirt `HUB_TRAILS` between
 them (`trail_distance()`); the hub rim is rocky with one beach (north-east, the rip). `scatter_props.forest()` puts
@@ -16,7 +18,8 @@ about 1,400 placeholder trees (`trees` rows) and 650 undergrowth plants on it, c
 `WorldConfig.Hub` carries the geometry and the clearings; `src/shared/Config/HubLayout.luau` lays out lots, berths,
 spawns and the bridges (`src/server/World/Bridges.luau`) from it, and `tests/HubLayout.spec.luau` checks them against
 the bake. Skerry Isle has its own window now (1,024..2,560 x 1,280..2,304, the Skerries reefs as shoals); the other
-outer windows are unchanged. `check_zones.py` checks the plateaus, hub clearings, notches and outer islands; `scatter_props.py`
+outer windows are unchanged. `check_zones.py` checks the hub plateau / clearings / harbour notch, the plate rings' open water and the outer
+islands; `scatter_props.py`
 dresses only the rims (rocks, sea pinks, strand debris: unbuilt plots stay bare, docs/23 (j) rule 1).
 
 | Step | Command | Output |

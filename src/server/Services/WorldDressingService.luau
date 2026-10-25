@@ -560,6 +560,7 @@ function WorldDressingService.Start()
 			"SkerryLight",
 			"Islands", -- docs/21 archipelago: World/Islands/<Id>.luau, one per island
 			"Bridges", -- docs/23 (k): the hub -> player island suspension bridges
+			"IslandPlates", -- WP-24: the six player islands are flat Lego baseplates, not terrain
 		}
 	do
 		local mod = script.Parent.Parent.World:FindFirstChild(name)

@@ -284,7 +284,9 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   radius }, questSpots = { { id, cframe, radius } }), `Islands` / `byId` (Plot1..6: center, facing, frame, spawn, berths Boat / Sub,
   lots Station, Boathouse, PaintBooth, Helipad (clearRadius 45), Hangar, SubPen, Jetty, BlueprintTable,
   CrewQuarters, LifeguardTower, Spare1..3), `Bridges` + `deckY` / `deckAt`. `server/World/Bridges` builds the six
-  suspension bridges from it (WorldDressingService I2 list). WP-21a (docs/23 (l)): the hub is a forest island ~800
+  suspension bridges from it (WorldDressingService I2 list). WP-24: the islands are flat Lego plates, not terrain:
+  `IslandPlate` (footprint rects, topY, thick, notch) + `onPlate` / `plateContains`; `server/World/IslandPlates` builds
+  one Persistent `Plate<n>` model per `Islands` entry (I2 list). WP-21a (docs/23 (l)): the hub is a forest island ~800
   across (ring 1,100); `map/Build.luau` builds `Map.Hub` (HubSpawn, the Lookout HQ hut, CallBoard model tag `CallBoard`, the market-stall ShopCounter whose prompt tag `ShopCounter` opens
   the phone Store via HudController, Quay, Jetty, Harbourmaster, Campfire, Monument (LeaderboardService hangs the
   rescue board there; the album StampPost), QuestCamps (tag `QuestCamp`, attribute `QuestSpot`), the hidden Ruin and

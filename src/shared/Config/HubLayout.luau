@@ -14,6 +14,7 @@
 --       cframe at the camp centre facing the hub centre
 --   HubLayout.Islands   { Island } in WorldConfig order (Plot1..Plot6); HubLayout.byId[id]
 --   HubLayout.Bridges   { Bridge } hub -> island; HubLayout.deckY(bridge, t) deck top at t (0 hub end, 1 island end)
+--   HubLayout.IslandPlate the Lego plate footprint (WP-24: the islands are no longer terrain); onPlate / plateContains
 local WorldConfig = require(script.Parent.WorldConfig)
 
 export type Lot = { cframe: CFrame, size: Vector2, clearRadius: number? }
@@ -51,12 +52,58 @@ HubLayout.IslandRadius = Hub.islandRadius
 HubLayout.HubRadius = Hub.radius
 HubLayout.Notch = { hub = Hub.notch, island = Hub.islandNotch }
 
+-- WP-24: a player island is no longer terrain: it is a flat Lego plate built from Parts
+-- (src/server/World/IslandPlates.luau), a chamfered square within the island's old radius with a U cut-out (the
+-- berth notch, from WorldConfig.Hub.islandNotch) where the berths are. `rects` are island-frame { r0, r1, f0, f1 }
+-- along right / fwd (frame:PointToObjectSpace's (X, -Z)); the plate top is at Y (the plateau the lots already
+-- use), the green slab `thick` studs below it. The rects are disjoint, inside |right|, |fwd| <= edge, and leave
+-- the notch open (|right| < halfWidth, fwd > head). tests/HubLayout.spec.luau checks lots and bridges against it.
+local CHAMFER = 47
+local EDGE = Hub.islandRadius -- 160: the old island's radius
+HubLayout.IslandPlate = {
+	topY = Y,
+	thick = 2,
+	edge = EDGE,
+	notch = { halfWidth = Hub.islandNotch.halfWidth, head = Hub.islandNotch.head },
+	rects = {
+		{ -EDGE + CHAMFER, -Hub.islandNotch.halfWidth, -EDGE + CHAMFER, EDGE - CHAMFER }, -- centre-left
+		{ Hub.islandNotch.halfWidth, EDGE - CHAMFER, -EDGE + CHAMFER, EDGE - CHAMFER }, -- centre-right
+		{
+			-Hub.islandNotch.halfWidth,
+			Hub.islandNotch.halfWidth,
+			-EDGE + CHAMFER,
+			Hub.islandNotch.head,
+		}, -- centre-back
+		{ -EDGE + CHAMFER, EDGE - CHAMFER, -EDGE, -EDGE + CHAMFER }, -- back edge (the bridge lands on it)
+		{ -EDGE, -EDGE + CHAMFER, -EDGE + CHAMFER, EDGE - CHAMFER }, -- left edge
+		{ EDGE - CHAMFER, EDGE, -EDGE + CHAMFER, EDGE - CHAMFER }, -- right edge
+		{ -EDGE + CHAMFER, -Hub.islandNotch.halfWidth, EDGE - CHAMFER, EDGE }, -- fwd-left wing (notch mouth)
+		{ Hub.islandNotch.halfWidth, EDGE - CHAMFER, EDGE - CHAMFER, EDGE }, -- fwd-right wing
+	},
+}
+
+-- a world point on island `isl`'s plate
+function HubLayout.onPlate(isl: Island, worldX: number, worldZ: number): boolean
+	local l = isl.frame:PointToObjectSpace(Vector3.new(worldX, Y, worldZ))
+	return HubLayout.plateContains(l.X, -l.Z)
+end
+
+-- island-frame (right, fwd) inside the plate's rects
+function HubLayout.plateContains(right: number, fwd: number): boolean
+	for _, r in HubLayout.IslandPlate.rects do
+		if right >= r[1] and right <= r[2] and fwd >= r[3] and fwd <= r[4] then
+			return true
+		end
+	end
+	return false
+end
+
 local BRIDGE = {
 	hubR = 320, -- deck ends this far from the hub centre (in its bridge-head clearing)
-	islandBack = 90, -- and this far behind an island's centre (both on the plateau)
+	islandBack = HubLayout.IslandPlate.edge, -- and this far behind an island's centre (the plate's back edge)
 	towerHubR = 372, -- towers on the rims, so the span between them is all water
-	towerIslandBack = 145,
-	apexY = 50, -- deck top at mid-span: underside 48.8 over the sea, every boat and the helicopter pass under
+	towerIslandBack = HubLayout.IslandPlate.edge, -- the island tower stands on the plate's back edge
+	apexY = 47, -- deck top at mid-span: underside 45.8 over the sea, every boat and the helicopter pass under
 	towerTopY = 74,
 	cableLowY = 57,
 	width = 14,
@@ -129,7 +176,8 @@ do
 end
 
 -- a player island, in its local frame (right, fwd; fwd = out from the hub, the cove's mouth). The cove is the
--- notch (|right| < 45, fwd > 30); the bridge lands on the back (fwd < 0). Buildings stand on the plateau.
+-- plate's U cut-out (|right| < 45, fwd > 30); the bridge lands on the plate's back edge (fwd = -160). Buildings
+-- stand on the plate.
 local function islandLots(frame: CFrame): { [string]: Lot }
 	local lots: { [string]: Lot } = {
 		Station = lot(frame, 0, -35, 180, 60, 44), -- front toward the bridge
