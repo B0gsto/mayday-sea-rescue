@@ -10,7 +10,6 @@ return function(t)
 	t.test("registered with rank, Cash and a Robux pass", function()
 		local want = {
 			RescueHelicopter = { kind = "Heli", rank = 5, price = 75000 },
-			Seaplane = { kind = "Plane", rank = 5, price = 60000 },
 			Submarine = { kind = "Sub", rank = 4, price = 40000 },
 		}
 		for _, id in VehicleConfig.CraftOrder do
@@ -37,12 +36,6 @@ return function(t)
 		t.expect(ready("RescueHelicopter", Vector3.new(5, 13, 0), 30)).toBe(false) -- not steady
 	end)
 
-	t.test("seaplane: only sitting on the water", function()
-		local floating = 1.5 - 1 -- root centre: half the 3-stud hull over a 1-stud draft
-		t.expect(ready("Seaplane", Vector3.new(8, floating, 0))).toBe(true)
-		t.expect(ready("Seaplane", Vector3.new(8, 20, 0))).toBe(false) -- airborne
-	end)
-
 	t.test("sub: inside its ring at their depth; boats keep Board's rule", function()
 		t.expect(ready("Submarine", Vector3.new(6, -2, 0))).toBe(true)
 		t.expect(ready("Submarine", Vector3.new(6, -20, 0))).toBe(false)
@@ -59,6 +52,5 @@ return function(t)
 		t.expect(deep("Submarine", Vector3.new(4, 0, 0))).toBe(false) -- floating above: out of the ring
 		t.expect(deep("RIB", Vector3.new(3, 0, 0))).toBe(false)
 		t.expect(deep("RescueHelicopter", Vector3.new(2, 4, 0))).toBe(false)
-		t.expect(deep("Seaplane", Vector3.new(4, 0.5, 0))).toBe(false)
 	end)
 end

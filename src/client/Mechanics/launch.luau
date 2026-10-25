@@ -90,7 +90,6 @@ function Launch.start(
 			mute(bay)
 		end
 		if World.seated() then
-			Ui.hands("cast_off")
 			Step.finish(s, { metrics = {} })
 			return
 		end

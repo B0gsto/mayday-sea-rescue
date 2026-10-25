@@ -26,7 +26,6 @@ REPORT = os.path.join(smoke.OUT, "sweep.txt")
 OP_KINDS = (
     "PersonInWater",
     "CapsizedFerry",
-    "CliffCasualty",
     "RipCurrent",
     "SinkingVessel",
     "VesselFire",
@@ -236,26 +235,6 @@ def main():
                         detail = "%.0fs %s" % (time.monotonic() - t0, (last or started_text).split("lastGrade=")[-1])
                         system(kind, ok, detail)
                         pump(s)
-
-                    server(s, 'game:GetService("Workspace"):SetAttribute("RescueVariantForce", "GoldenGull") return "ok"')
-                    ok, last = False, ""
-                    for _attempt in range(2):
-                        # a follow-up call can be auto-accepted the moment the last op ends; wait it out
-                        wait_for(lambda: "op=nil" in status(s)[1], 30, 1)
-                        time.sleep(2)
-                        done_before, _ = status(s)
-                        server(s, 'return tostring(game:GetService("ServerStorage").OpsDev:Invoke("start", "PersonInWater"))')
-                        end = time.monotonic() + OP_WAIT
-                        while time.monotonic() < end:
-                            done, last = status(s)
-                            if done != done_before and "op=nil" in last:
-                                ok = "lastKind=PersonInWater" in last
-                                break
-                            time.sleep(2)
-                        if ok:
-                            break
-                    server(s, 'game:GetService("Workspace"):SetAttribute("RescueVariantForce", nil) return "ok"')
-                    system("LegendaryVariant", ok, last)
 
                     # ---- dev-hook systems ---------------------------------------------------
                     server(s, UNSEAT)

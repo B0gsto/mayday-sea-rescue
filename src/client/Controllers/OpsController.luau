@@ -275,7 +275,7 @@ function OpsController.Init()
 		end
 		local craft = seat.Parent
 		local carrying = craft ~= nil and (tonumber(craft:GetAttribute("SurvivorCount")) or 0) > 0
-		-- Airborne: a flying heli or seaplane (local attribute, docs/23 h): land first
+		-- Airborne: a flying heli (local attribute, docs/23 h): land first
 		local flying = craft ~= nil and craft:GetAttribute("Airborne") == true
 		if carrying or flying or player:GetAttribute("ColdOpenDone") ~= true then
 			humanoid.Jump = false

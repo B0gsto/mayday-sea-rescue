@@ -90,7 +90,6 @@ function AutoBoard.start(
 			lastBump = os.clock()
 			bumps += 1
 			held = 0
-			Ui.hands("wave_off")
 			if r then
 				r:FireServer(opId, index, "bump")
 			end
@@ -99,7 +98,7 @@ function AutoBoard.start(
 		ring.OutlineColor = if held > 0 then GREEN else WHITE
 		local at = h.position
 		if
-			CraftBoard.ready( -- the server's rule (AmbientRescueService): heli winch, seaplane on the water
+			CraftBoard.ready( -- the server's rule (AmbientRescueService): heli winch, sub ring
 				craft and craft:GetAttribute("VehicleId"),
 				at,
 				h.beam / 2,
@@ -112,7 +111,6 @@ function AutoBoard.start(
 		then
 			held += dt
 			if held >= Board.HOLD then
-				Ui.hands("reach_casualty")
 				Step.finish(
 					s,
 					{ metrics = {}, events = if bumps > 0 then { bump = bumps } else nil }

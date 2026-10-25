@@ -30,7 +30,6 @@ local BadgeConfig = {}
 BadgeConfig.OpKinds = table.freeze({
 	"PersonInWater",
 	"CapsizedFerry",
-	"CliffCasualty",
 	"RipCurrent",
 	"SinkingVessel",
 	"VesselFire",
@@ -55,10 +54,7 @@ BadgeConfig.Order = table.freeze({
 	"RankCaptain",
 	"RankAdmiral",
 	"FriendCrew",
-	"PhotoFirst",
 	"FerryHero",
-	"LegendaryRescue",
-	"GoldenGull",
 })
 
 BadgeConfig.Badges = table.freeze({
@@ -146,9 +142,9 @@ BadgeConfig.Badges = table.freeze({
 	EveryCall = {
 		id = 0,
 		name = "Every Call",
-		description = "Complete every call type once: person in the water, capsized ferry, cliff, rip current, sinking boat, boat on fire and wildlife.",
-		icon = "Seven small icons in a ring",
-		count = 7,
+		description = "Complete every call type once: person in the water, capsized ferry, rip current, sinking boat, boat on fire and wildlife.",
+		icon = "Six small icons in a ring",
+		count = 6,
 	},
 	LifeboatBought = {
 		id = 0,
@@ -171,33 +167,11 @@ BadgeConfig.Badges = table.freeze({
 		icon = "Two clasped hands over a boat deck",
 		count = 1,
 	},
-	PhotoFirst = {
-		id = 0,
-		name = "First Shot",
-		description = "Take your first photo in photo mode.",
-		icon = "A camera shutter with a wave inside",
-		count = 1,
-		awardedBy = "TelemetryService (the client's PhotoTaken step)",
-	},
 	FerryHero = {
 		id = 0,
 		name = "Ferry Hero",
 		description = "Bring a survivor home from the capsized ferry.",
 		icon = "A ferry with a life ring",
-		count = 1,
-	},
-	LegendaryRescue = {
-		id = 0,
-		name = "Legendary Rescue",
-		description = "Finish a Legendary rarity call.",
-		icon = "A gold star over a rescue boat",
-		count = 1,
-	},
-	GoldenGull = {
-		id = 0,
-		name = "Golden Gull",
-		description = "Bring in the Golden Gull.",
-		icon = "A golden gull with spread wings",
 		count = 1,
 	},
 } :: { [string]: Badge })

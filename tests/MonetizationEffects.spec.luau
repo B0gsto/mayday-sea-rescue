@@ -162,13 +162,14 @@ return function(t)
 			},
 			GamePasses = { DoubleCash = true, StarterKit = true, QuickLaunch = true }, -- QuickLaunch: RP-A1 use card
 		}
-		-- cut 2026-10-25 (pre-hub-cut): the cars and the car garage stay recorded but are never sold
+		-- cut 2026-10-25 (pre-hub-cut): the cars, the car garage and the seaplane stay recorded but are never sold
 		local cut = {
 			DockGarage = true,
 			BeachATVPass = true,
 			CoastguardResponsePass = true,
 			HarbourGTPass = true,
 			LighthouseCruiserPass = true,
+			SeaplanePass = true,
 		}
 		for kind, items in { Products = Config.Products, GamePasses = Config.GamePasses } do
 			for key, item in items do

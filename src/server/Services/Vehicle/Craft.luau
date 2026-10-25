@@ -1,10 +1,9 @@
 --!strict
 -- VehicleService's docs/23 (h) craft (WP-10a): builds them, places a launched helicopter, and runs the
--- server's half for an empty one (the pilot's client flies them: Heli/Plane/SubController).
+-- server's half for an empty one (the pilot's client flies them: Heli/SubController).
 --   Heli   lands itself: hands-off Heli/Flight sinking at AUTO_LAND to its floor (the ground under the
 --          skids, or hovering Flight.WATER_CLEARANCE over the sea), then holds there.
 --   Sub    holds on Sub/Rig with no input (the sea has no Terrain water: without it, it sinks).
---   Plane  nothing here: an empty seaplane is a hull on the boat rig (VehicleService's Simulator.step).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -12,8 +11,6 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local HeliBuilder = require(Shared:WaitForChild("Heli"):WaitForChild("Builder"))
 local HeliFlight = require(Shared:WaitForChild("Heli"):WaitForChild("Flight"))
-local PlaneBuilder = require(Shared:WaitForChild("Plane"):WaitForChild("Builder"))
-local PlaneFlight = require(Shared:WaitForChild("Plane"):WaitForChild("Flight"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local SubBuilder = require(Shared:WaitForChild("Sub"):WaitForChild("Builder"))
 local SubRig = require(Shared:WaitForChild("Sub"):WaitForChild("Rig"))
@@ -32,9 +29,6 @@ local heliStates: { [Model]: HeliFlight.State } = setmetatable({}, { __mode = "k
 function Craft.build(spec: VehicleConfig.VehicleSpec): Model
 	local model = if spec.craft == "Heli"
 		then HeliBuilder.build(spec.id)
-		elseif spec.craft == "Plane" then PlaneBuilder.build(
-			PlaneFlight.get(spec.id) :: PlaneFlight.Spec
-		)
 		else SubBuilder.build(spec.id)
 	model.Name = spec.id;
 	(model.PrimaryPart :: BasePart).Anchored = true
@@ -75,7 +69,7 @@ function Craft.heliLaunch(model: Model, at: CFrame): CFrame
 	return CFrame.lookAt(pos, pos + (if look.Magnitude > 1e-3 then look else Vector3.zAxis))
 end
 
--- One server step for an empty, server-owned craft. False: not ours (a seaplane: the caller floats it).
+-- One server step for an empty, server-owned craft. False: not ours.
 function Craft.idle(model: Model, spec: VehicleConfig.VehicleSpec, dt: number): boolean
 	local root = model.PrimaryPart
 	if spec.craft == "Sub" then

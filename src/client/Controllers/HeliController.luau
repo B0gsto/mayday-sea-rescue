@@ -176,7 +176,7 @@ local function fly(model: Model, spec: Flight.Spec, dt: number)
 	local move = moveVector()
 	local now = Workspace:GetServerTimeNow()
 	local floor = floorY(model, root, spec, now)
-	-- local only (like the seaplane's): no stepping out mid-air (VehicleExitController, OpsController)
+	-- local only: no stepping out mid-air (VehicleExitController, OpsController)
 	model:SetAttribute("Airborne", root.Position.Y > floor + AIRBORNE_GAP)
 	Flight.step(
 		s,

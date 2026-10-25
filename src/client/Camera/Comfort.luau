@@ -19,14 +19,9 @@ local SettingsRules =
 -- The keys, defaults, ranges and choices live in shared/SettingsRules (comfort, graphics
 -- override, audio volumes, voice); this module is the client store.
 export type Settings = {
-	horizonStab: number, -- 0 hull locked .. 1 horizon locked (vehicle first person)
 	fov: number, -- base field of view, degrees
-	headBob: number, -- 0 off .. 1 full (on foot)
-	motionBlur: boolean, -- off by default
 	shake: number, -- camera shake intensity 0..1
 	speedFov: boolean, -- the FOV kick at speed
-	gLean: number, -- 0..1 head lean in turns and under acceleration
-	lensSpray: boolean, -- spray drops on the lens (jet ski)
 	sensitivity: number, -- look sensitivity multiplier
 	oceanQuality: string, -- "Auto" | "High" | "Medium" | "Low"
 	scatterQuality: string,
