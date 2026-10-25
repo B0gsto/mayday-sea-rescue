@@ -212,6 +212,12 @@ casualty shouts in CasualtyController).
 
 ## First 10 minutes (docs/00 §3, docs/23 (a)-(e))
 
+- Loading screen (`src/first/LoadingScreen.client.luau`, ReplicatedFirst): overlay + bar while it preloads
+  and streams the hub and the player's island, the camera circling the hub; then a flyover
+  (`src/shared/LoadingPath.luau`, `tests/LoadingPath.spec.luau`) down past the name sign to behind the
+  character, or behind the cold-open jet ski on a first session. While it runs the LocalPlayer has
+  `LoadingScreenActive` (CameraController stands down, no cold-open cinematic) and `CinematicPlaying` (the
+  HUD hides). Reduced motion: a plain fade.
 - Cold open (B0, B1): `StartColdOpen` seats a new player on a jet ski (`VehicleService.SpawnColdOpen`) with
   a swimmer ahead; auto_board, the slipway pad, `ColdOpenCue` world cues, `OnboardingReward` coins. The
   jet ski stays with the player after (`ColdOpenFlow` handover `Ride`). Profile `coldOpenDone`.

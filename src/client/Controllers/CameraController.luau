@@ -319,6 +319,9 @@ end
 
 local function update(dt: number)
 	local camera = Workspace.CurrentCamera
+	if player:GetAttribute("LoadingScreenActive") == true then
+		return -- src/first/LoadingScreen flies the camera; it hands back a Custom camera when done
+	end
 	if override then
 		if mode ~= "None" then
 			exitMode(mode)
@@ -407,6 +410,9 @@ local function connectTriggers()
 				end
 				if model:GetAttribute("Owner") ~= player.UserId then
 					return
+				end
+				if player:GetAttribute("LoadingScreenActive") == true then
+					return -- the loading flyover already ends behind this craft
 				end
 				if reason == "ColdOpen" then
 					-- where am I, what is going on: town and station, then the casualty, then control
