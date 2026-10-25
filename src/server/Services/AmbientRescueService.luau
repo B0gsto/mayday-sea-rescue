@@ -20,7 +20,6 @@ local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes")
 local CraftBoard = require(Shared:WaitForChild("Ops"):WaitForChild("CraftBoard"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 
-local CrewHireService = require(script.Parent.CrewHireService) :: any
 local ProgressionService = require(script.Parent.ProgressionService) :: any
 local RescueService = require(script.Parent.RescueService) :: any
 
@@ -165,10 +164,6 @@ local function stepMouth()
 			local home = CallLogic.homeOf(bay)
 			local out = (home - CallTypes.STATION).Unit * AmbientRescueService.MOUTH_OUT
 			table.insert(mouths, home + out)
-			-- a hired Lifeguard (WP-15): one extra swimmer kept near their island
-			if CrewHireService.ExtraSwimmers(player) > 0 then
-				table.insert(mouths, home + Vector3.new(-out.Z, 0, out.X))
-			end
 		end
 	end
 	local swimming = swimmingScenes()

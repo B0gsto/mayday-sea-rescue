@@ -49,6 +49,7 @@ local FerryRig = require(Shared:WaitForChild("Ferry"):WaitForChild("FerryRig"))
 local HullKnock = require(Shared:WaitForChild("Ferry"):WaitForChild("HullKnock"))
 local Wake = require(Shared:WaitForChild("Boat"):WaitForChild("Wake"))
 local Waves = require(Shared:WaitForChild("Waves"))
+local WorkerRules = require(Shared:WaitForChild("WorkerRules"))
 
 local RescueService = {}
 RescueService.Priority = 60
@@ -81,6 +82,7 @@ type Floater = {
 }
 
 local floaters: { Floater } = {}
+local workerRng = Random.new() -- the seed of each survivor's worker roll (WorkerRules.roll)
 local victimsByModel: { [Model]: any } = {}
 local liveCalls: { [any]: boolean } = {}
 local mapFolder: Folder
@@ -977,6 +979,14 @@ onPull = function(victim: any, player: Player, forced: boolean?)
 	victim.state = "Aboard"
 	victim.carrier = vehicle
 	victim.model:SetAttribute("PrivateTo", nil) -- aboard: everyone sees them
+	-- WP-26: a person picked up rolls the worker they become at home (the client draws the badge)
+	if not call.wildlifeSpecies and victim.model:GetAttribute("WorkerCategory") == nil then
+		local category, rarity, name = WorkerRules.roll(workerRng:NextInteger(1, 2147483646))
+		victim.model:SetAttribute("WorkerCategory", category)
+		victim.model:SetAttribute("WorkerRarity", rarity)
+		victim.model:SetAttribute("WorkerName", name)
+		CollectionService:AddTag(victim.model, "WorkerBadge")
+	end
 	if victim.prompt then
 		victim.prompt:Destroy()
 		victim.prompt = nil
@@ -1363,7 +1373,20 @@ local function unloadVictims(vehicle: Model, victims: { any }, patrol: boolean?)
 		end
 	end
 	local from = vehicle:GetPivot().Position
+	-- WP-26: landed at your own berth, each person becomes one of your workers
+	local home = driver ~= nil and ColdOpen.atDropOff(from, driver:GetAttribute("BayCFrame"))
 	for _, v in victims do
+		local category = v.model:GetAttribute("WorkerCategory")
+		if home and type(category) == "string" then
+			try(
+				"WorkerService",
+				"Recruit",
+				driver,
+				category,
+				v.model:GetAttribute("WorkerRarity"),
+				v.model:GetAttribute("WorkerName")
+			)
+		end
 		v.state = "Delivered"
 		victimsByModel[v.model] = nil
 		task.spawn(climbOff, v, from)

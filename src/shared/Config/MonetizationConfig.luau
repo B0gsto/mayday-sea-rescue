@@ -210,14 +210,14 @@ local MonetizationConfig = {
 			ready = true,
 			dockBuilding = "SubPen",
 		},
-		-- docs/23 (j), WP-15: one hire from the job-seeker line, no Cash.
+		-- Retired (WP-26): the job-seeker line is gone, rescued people are the workers now. Kept, never sold.
 		CrewHire = {
 			id = 0,
 			name = "Crew Hire",
 			description = "Hire the job seeker you are standing beside for Robux, without the Cash price.",
 			price = 99,
 			order = 38,
-			ready = false, -- WP-15: the Robux grant path is not built yet; flip when it lands
+			ready = false, -- WP-26: retired with the crew lineup; never flip
 			crewHire = true,
 		},
 	} :: { [string]: Item },

@@ -613,7 +613,12 @@ local busy: { [Player]: boolean } = {}
 -- Cash purchase of tree building `key` once its prerequisites stand (Robux goes through its product).
 local function buyBuilding(player: Player, data: any, key: string): (boolean, string)
 	data.dockBuildings = if type(data.dockBuildings) == "table" then data.dockBuildings else {}
-	local ok, reason, price = UnlockTree.canBuy(key, data.dockBuildings, data.cash)
+	local ok, reason, price = UnlockTree.canBuy(
+		key,
+		data.dockBuildings,
+		data.cash,
+		tonumber(player:GetAttribute("WorkerBuildDiscount")) -- Builders at work (WorkerService)
+	)
 	if not ok or not price then
 		return false, reason or "Owned"
 	end

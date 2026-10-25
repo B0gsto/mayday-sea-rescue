@@ -43,6 +43,7 @@ local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
 
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
+local WorkerRules = require(Shared:WaitForChild("WorkerRules"))
 
 local Kit = UI:WaitForChild("Kit")
 local PanelUI = require(Kit:WaitForChild("Panel"))
@@ -269,7 +270,15 @@ local function statusOf(item: DockBlueprints.Item): Status
 	return {
 		owned = owned,
 		forSale = forSale,
-		cash = if entry and type(entry.cash) == "number" then entry.cash else 0,
+		-- Builders at work take their share off buildings (WP-26, the server's rule)
+		cash = if entry and type(entry.cash) == "number"
+			then if item.kind == "Building"
+				then WorkerRules.price(
+					entry.cash,
+					tonumber(player:GetAttribute("WorkerBuildDiscount"))
+				)
+				else entry.cash
+			else 0,
 		productId = id,
 		robux = livePrice[id] or (entry and entry.robux) or 0,
 		reason = reason,
@@ -931,7 +940,8 @@ local function dustPuff(at: Vector3)
 	game:GetService("Debris"):AddItem(p, 3)
 end
 
-local function playBuild(model: Model)
+-- `pace` < 1 plays it faster (the owner's Builders, WP-26)
+local function playBuild(model: Model, pace: number)
 	local parts: { BasePart } = {}
 	local ys: { number } = {}
 	local base = Vector3.zero
@@ -955,6 +965,7 @@ local function playBuild(model: Model)
 		local part = parts[step.i]
 		local final = part.CFrame
 		part.CFrame = final + Vector3.new(0, step.drop, 0)
+		step.delay *= pace
 		local tween = TweenService:Create(
 			part,
 			TweenInfo.new(
@@ -1197,7 +1208,13 @@ function DockController.Start()
 				local holder = if typeof(parent) == "string" then pm:WaitForChild(parent, 3) else pm
 				local model = holder and holder:WaitForChild(name, 3)
 				if model and model:IsA("Model") then
-					playBuild(model)
+					local discount = 0
+					for _, p in Players:GetPlayers() do
+						if p:GetAttribute("DockPlot") == plot then
+							discount = tonumber(p:GetAttribute("WorkerBuildDiscount")) or 0
+						end
+					end
+					playBuild(model, 1 - discount)
 				end
 			end)
 		end)

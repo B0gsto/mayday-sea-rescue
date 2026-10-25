@@ -73,8 +73,13 @@ Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-2
   spot now your island's station; Dialogue still holds Chief Aggie's / the crew's unused trees. Then WP-26 workers,
   then WP-25 art pass.
 
-- **WP-26 rescued people become workers** (docs/23 (o)): 5 categories, rarity, worker buildings at the tablet,
-  effects, capped offline earnings, remove the crew lineup. Before the art pass.
+- **WP-26 workers done (awaiting merge)** (docs/23 (o), numbers (i) 9): survivors roll category + rarity on pick-up
+  (badge billboard), become workers at your berth (`WorkerRules`, `WorkerService`, `data.workers`), walk to their
+  building or idle on the jetty, effects via player attributes, Gatherer pay, Rescuer NPC boat, 2 h offline pay; the
+  crew lineup is gone (old hires paid back). Follow-ups: real bunkhouse + worker idle art in WP-25 (placeholder
+  Lego boat, stock Idle loops, NPCs walk straight lines through walls); the cap fills in ~1:20 of play (then only a
+  rarer rescue replaces the first lowest-rarity worker: owner to confirm); ~31 R15 NPCs per full island (x6 servers:
+  watch perf); a paid slot expansion if wanted.
 
 - **WP-25 island art pass** (after WP-24 plates and WP-14e build mode v2 merge): the island/dock must look good at
   EVERY stage (Lv1 bare plate → Lv5 + hangar + sub pen + decor). Owner screenshot issues: the name-sign arch reads

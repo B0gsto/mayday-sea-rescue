@@ -213,6 +213,16 @@ Packs = the cheapest mix of live Cash packs (Calm Bay rate: 1,500 / 4,500 / 16,5
    (now 55,000; helipad 10,000, hangar 20,000), Submarine 12:02, Station 14:42, the whole tree 17:17 (Clinic); ~420k
    Cash unspent at 40 h. Reach = the best craft you launch; the Robux boats sit on the RIB's tier (3,500).
 
+9. **WP-26 (2026-10-26): workers** (`shared/WorkerRules`). Every person delivered home becomes a worker (5
+   categories, 80/17/3 common/rare/legendary = x1 / x1.5 / x2.5 units), cap 30 (full at ~1:19 of play; past it only a
+   rarer one stays, replacing the first of the lowest rarity); 3 slots per worker building (5 with the Station), best
+   rarity first. Per unit: Builder -3% build Cash (cap -40%), Gatherer 2 Cash/min, Rescuer 20 Cash per 5-min boat
+   trip (10% bring a worker), Mechanic -10% Boat to me (cap -50%) and +2% craft speed (cap +10%), Medic +4% call pay
+   (cap +30%); offline Gatherers + Rescuers at 10%, capped at 2 h. The sim builds the fish shed after the pontoon and
+   the rescue boathouse after the lookout: Workshop 0:07, Boathouse 0:24, RIB 0:34, Pontoon 0:44, Lifeboat 2:17,
+   Helicopter 7:21 (was 7:35), Submarine 10:39 (12:02), Station 11:56 (14:42), the whole tree 13:24 (17:17, -22%:
+   the Builders' discount most, then rarer workers over time); ~844k Cash at 40 h (no-worker run ~424k).
+
 ## (j) Plots v2: big land plots, blueprint table, crew (owner, 2026-10-25)
 
 Owner, after seeing the blue wireframe ghost on the dock: "I don't want anything holographic or 'what could it be'.

@@ -448,6 +448,7 @@ function DataService.Save(player: Player, release: boolean?, deadline: number?):
 	local key = keyFor(player)
 	local data = loaded[player]
 	local copy = Rules.migrate(data) -- a clean copy, never the live table
+	copy.lastSeen = deps.now() -- offline worker earnings count from the last save (WorkerService)
 	local ledger: Ledger = table.clone(receipts[player] or {})
 	local committing: { [string]: boolean } = table.clone(pending[player] or {})
 	dirty[player] = nil -- changes made while this save runs mark it dirty again

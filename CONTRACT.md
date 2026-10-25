@@ -51,7 +51,7 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
 (UpgradeService), `Vehicle_QuickLaunch` (VehicleService), `PIW_Rescue` (Ops/PiwRescue), `Ops_*` (below), `Streak_State` / `Streak_Get` /
 `Streak_Open`, `Pet_State` / `Pet_Get` / `Pet_Equip`, `Dock_Upgrade` / `Dock_Build`, `Cosmetics_Equip` / `Cosmetics_Action` /
 `Cosmetics_Event`, `Monetization_GetCatalogue` / `Monetization_Purchased`, `PlatformPrompt_Ask` / `_Offer` /
-`_OptIn`, `Crew_Hire` / `Crew_Fire` (CrewHireService), `Telemetry_Client`, `Dev_Grant` / `Dev_Action`.
+`_OptIn`, `Telemetry_Client`, `Dev_Grant` / `Dev_Action`.
 
 ## Weather and storms
 
@@ -268,10 +268,10 @@ casualty shouts in CasualtyController).
 
 `src/client/UI/Menu.luau`: the left column of kit icon buttons (HudLayout region `menu`): Shop, Quests,
 Album, Pet, Crew, Settings, Map, Boat (Boat to me: `RequestVehicle(nil, false, true)`, the server's cooldown
-via `MonetizationEffects.boatToMeWait` x `CrewHire.boatToMeScale`, Quick Launch bolt). Each opens a kit Panel
+via `MonetizationEffects.boatToMeWait` x player attribute `WorkerBoatScale`, Quick Launch bolt). Each opens a kit Panel
 (`UI/Kit/`): `UI/Panels/Shop` (tabs Passes / Packs / Boosts / Day from `ProductShelves.storeItems`),
 `Panels/Quests`, `Panels/Album` (sticker pages), `Panels/Companion` (Bosun or one pet; `Pet_Equip`),
-`Panels/Crew` (party seats + hired crew), `SettingsPanel.newPanel`; dock boards open `UI/BoatCard` via
+`Panels/Crew` (party seats + your workers by category), `SettingsPanel.newPanel`; dock boards open `UI/BoatCard` via
 `Menu.openBoat(id)`. Keys: P Shop, gamepad Start Settings, D-pad Left focuses the column, B closes.
 Player attribute `MenuOpen` while a panel is up.
 
@@ -308,12 +308,16 @@ Player attribute `MenuOpen` while a panel is up.
   harbourmaster, campfire, monument, quest camps, hidden spots, its drop-off pad, the forest trees, Chief Aggie and
   the station crew) was removed in WP-27 (git tag `pre-hub-cut` has the town; history has the hub).
 - Pets and sanctuary: `PetService`, `PetRules`, `PetSeat`, `PetAccessory`, `PetController`.
-- Crew hire (docs/23 (j), WP-15): `src/shared/Crew/CrewHire.luau` (pure, `tests/CrewHire.spec.luau`: 20-minute
-  groups, seeded lineup, Cash price / daily wage, dock Lv 5 + Coxswain gate, effect knobs) and
-  `CrewHireService` (R15 seekers via `NpcFactory` outside your station, `Crew_Hire` / `Crew_Fire`, `data.crew`,
-  wage at session start; `CrewHireController` billboards, Hire / Fire card, next-group clock). Hooks:
-  VehicleService Boat to me cooldown, AmbientRescueService +1 swimmer, OperationService offer factor. Robux
-  product `CrewHire` (`id = 0`, `ready = false`).
+- Workers (docs/23 (o), WP-26; replaced the WP-15 crew lineup, old hires paid back on load): `shared/WorkerRules`
+  (pure, `tests/WorkerRules.spec.luau`: roll, admit at the cap, assign, effects, offline pay, clean). RescueService
+  rolls a survivor on pick-up (model attributes `WorkerCategory` / `WorkerRarity` / `WorkerName`, tag `WorkerBadge`)
+  and calls `WorkerService.Recruit` when they land at the driver's berth. `WorkerService`: `data.workers`, R15 NPCs in
+  `Workspace.Workers.<UserId>` at their building or the jetty, Gatherer pay, the Rescuers' NPC boat, offline pay on
+  join (`data.lastSeen`, stamped by `DataService.Save`; attribute `WorkerOffline`), effect attributes
+  `WorkerBuildDiscount` (DockService / `UnlockTree.canBuy` discount, build tablet, BuildSeq pace), `WorkerBoatScale`
+  (VehicleService, UI/Menu), `WorkerCraftSpeed` (boat `SpeedMultiplier`), `WorkerPayBonus` (OperationService
+  debrief). Client: `UI/WorkerBadge` (icon + stars billboard), `WorkerController`. Robux product `CrewHire`
+  retired (`ready = false`).
 - Exploration album and map fog (docs/archive/21-explore-world-plan.md §3): `Config/DiscoveryConfig` (pages, ranges, Cash, fog grid),
   `DiscoveryRules` (pure: sighted / reached / stickers, flags `isles` and `fog`), `DiscoveryService`
   (server-observed positions only; `Workspace.Discovery` placeholder props; remotes `Discovery_State`,
