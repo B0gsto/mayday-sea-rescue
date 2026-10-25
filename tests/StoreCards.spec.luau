@@ -120,8 +120,9 @@ return function(t)
 			end
 		end
 		for _, kind in { "GamePasses", "Products" } do
-			for key in Config[kind] do
-				t.expect(seen[`{kind}/{key}`]).toBe(true) -- Studio lists everything once
+			for key, item in Config[kind] do
+				-- Studio lists everything once; dock levels sell only at the dock
+				t.expect(seen[`{kind}/{key}`] == true).toBe(item.dockLevel == nil)
 			end
 		end
 		for _, ref in Shelves.storeItems(Config, "Passes", false) do

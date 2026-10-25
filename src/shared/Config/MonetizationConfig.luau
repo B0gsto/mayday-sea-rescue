@@ -35,6 +35,7 @@ export type Item = {
 	dayPassFor: string?, -- day passes: the GamePasses key whose effect this product lends
 	dayPassHours: number?, -- day passes: hours of real time (the clock runs while away; buying again adds)
 	vehicle: string?, -- vehicle passes: the VehicleConfig / LandVehicleConfig id it owns (any rank)
+	dockLevel: number?, -- dock levels (DockConfig): builds your dock to this level; sold at the dock only
 }
 
 local MonetizationConfig = {
@@ -140,6 +141,44 @@ local MonetizationConfig = {
 			ready = true,
 			dayPassFor = "QuickLaunch",
 			dayPassHours = 24,
+		},
+		-- docs/23 WP-4: one per dock level (DockConfig), sold at the ghost on your dock, granted by DockService.
+		-- Prices are docs/23 d.2 first guesses (open question g.3): confirm before deploy.py creates them.
+		DockLevel2 = {
+			id = 0,
+			name = "Dock Level 2",
+			description = "Builds your dock to level 2 now, no Cash or rank needed: a pontoon, lamp posts, your flag and a rescue board.",
+			price = 49,
+			order = 31,
+			ready = true,
+			dockLevel = 2,
+		},
+		DockLevel3 = {
+			id = 0,
+			name = "Dock Level 3",
+			description = "Builds your dock to level 3 now, no Cash or rank needed: a boathouse with a roll-up door.",
+			price = 99,
+			order = 32,
+			ready = true,
+			dockLevel = 3,
+		},
+		DockLevel4 = {
+			id = 0,
+			name = "Dock Level 4",
+			description = "Builds your dock to level 4 now, no Cash or rank needed: a lookout tower and a slipway crane, and no relaunch cooldown.",
+			price = 149,
+			order = 33,
+			ready = true,
+			dockLevel = 4,
+		},
+		DockLevel5 = {
+			id = 0,
+			name = "Dock Level 5",
+			description = "Builds your dock to level 5 now, no Cash or rank needed: a lit station front and a beacon seen across the harbour at night.",
+			price = 249,
+			order = 34,
+			ready = true,
+			dockLevel = 5,
 		},
 	} :: { [string]: Item },
 

@@ -4,16 +4,32 @@
 -- jetty, a name board and a flag in the player's colour; an empty plot is just the jetty. The dock level lives
 -- in the profile (data.dockLevel, default 1) so later levels rebuild on whichever plot the player gets.
 -- VehicleService launches at the plot's Berth part (BayLaunch frame) and stands the player on the jetty.
+-- Levels 2..5 (WP-4, DockConfig): each adds the DockPieces of that level on the plot, built here so everyone
+-- sees them. Bought with Cash + rank (Dock_Upgrade) or Robux (MonetizationConfig DockLevel<n>, skips both);
+-- the new pieces rise into place (the build beat). The owner's ghost of the next level is DockController's.
 --
 -- API: GetBerth(player) -> BasePart?, GetPlot(player) -> number?, GetLevel(player) -> number, Berths() -> { BasePart }.
--- Player attributes: DockPlot (index), BayCFrame (the berth CFrame; StreakController, MapController read it).
+-- Player attributes: DockPlot (index), BayCFrame (the berth CFrame; StreakController, MapController read it),
+-- DockLevel (built level, DockController's ghost reads it).
+-- Remote: Dock_Upgrade C->S function (level) -> ok, reason ("Level" | "Rank" | "Cash" | "Data" | "Busy").
+-- Studio: ServerStorage.DockDev:Invoke("level", n) sets the first player's dock level.
 -- Berth attributes: LaunchBay = true, PlotIndex, Owner (UserId, nil when empty).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
+local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DataService = require(script.Parent:WaitForChild("DataService"))
-local Marina = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Marina"))
+local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
+local DockPieces = require(Shared:WaitForChild("DockPieces"))
+local Marina = require(Shared:WaitForChild("Marina"))
+local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
+local Net = require(Shared:WaitForChild("Net"))
+local ProgressionRules = require(Shared:WaitForChild("ProgressionRules"))
+local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
+local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
 
 local DockService = {}
 DockService.Priority = 40 -- before VehicleService (50): the berths exist when it starts
@@ -22,8 +38,17 @@ local WOOD = Color3.fromRGB(122, 92, 62)
 local DARK_WOOD = Color3.fromRGB(84, 62, 44)
 local BOARD = Color3.fromRGB(236, 230, 214)
 
-type Plot =
-	{ model: Model, berth: Part, label: TextLabel, gui: SurfaceGui, board: Part, flag: Part }
+type Plot = {
+	model: Model,
+	berth: Part,
+	label: TextLabel,
+	gui: SurfaceGui,
+	board: Part,
+	flag: Part,
+	levels: Model?, -- Lv 2..built pieces
+	built: number,
+	counts: { TextLabel },
+}
 
 local plots: { Plot } = {}
 local owners: { [number]: Player } = {}
@@ -167,7 +192,72 @@ local function buildPlot(folder: Instance, i: number): Plot
 	berth:SetAttribute("PlotIndex", i)
 	model.PrimaryPart = berth
 	model.Parent = folder
-	return { model = model, berth = berth, label = label, gui = gui, board = board, flag = flag }
+	return {
+		model = model,
+		berth = berth,
+		label = label,
+		gui = gui,
+		board = board,
+		flag = flag,
+		built = 1,
+		counts = {},
+	}
+end
+
+-- the build beat: every part rises 6 studs from below, faded in, staggered
+local function rise(m: Model)
+	local k = 0
+	for _, d in m:GetDescendants() do
+		if d:IsA("BasePart") then
+			local final, alpha = d.CFrame, d.Transparency
+			d.CFrame = final - Vector3.new(0, 6, 0)
+			d.Transparency = 1
+			k += 1
+			TweenService:Create(
+				d,
+				TweenInfo.new(
+					0.7,
+					Enum.EasingStyle.Back,
+					Enum.EasingDirection.Out,
+					0,
+					false,
+					0.04 * k
+				),
+				{ CFrame = final, Transparency = alpha }
+			):Play()
+		end
+	end
+end
+
+-- Build the plot's level pieces up to `level` (beat = the new ones rise in); a lower level starts over.
+local function sync(plot: Plot, owner: Player?, level: number, beat: boolean)
+	if level < plot.built and plot.levels then
+		plot.levels:Destroy()
+		plot.levels, plot.built, plot.counts = nil, 1, {}
+	end
+	for n = plot.built + 1, math.min(level, DockConfig.MAX) do
+		local levels = plot.levels or Instance.new("Model")
+		levels.Name = "Levels"
+		levels.Parent = plot.model
+		plot.levels = levels
+		local m = DockPieces.build(n, plot.berth.CFrame - Vector3.new(0, 0.2, 0))
+		for _, d in m:GetDescendants() do
+			if d.Name == "Flag" and d:IsA("BasePart") and owner then
+				d.Color = Marina.flagColor(owner.UserId)
+			elseif d.Name == "Count" and d:IsA("TextLabel") then
+				table.insert(plot.counts, d)
+			end
+		end
+		m.Parent = levels
+		if beat then
+			rise(m)
+		end
+		plot.built = n
+	end
+	plot.model:SetAttribute("DockLevel", level)
+	if owner then
+		owner:SetAttribute("DockLevel", level)
+	end
 end
 
 -- Lv 1 for the owner, or the plain jetty when empty.
@@ -179,7 +269,44 @@ local function dress(plot: Plot, owner: Player?)
 	plot.flag.Transparency = if owner then 0 else 1
 	if owner then
 		plot.flag.Color = Marina.flagColor(owner.UserId)
+	else
+		sync(plot, nil, 1, false)
 	end
+end
+
+-- The player's built level now matches the profile (beat: the new pieces rise in).
+local function show(player: Player, beat: boolean)
+	local i = byPlayer[player]
+	local data: any = DataService.Get(player)
+	if i and data then
+		sync(plots[i], player, data.dockLevel or 1, beat)
+	end
+end
+
+local busy: { [Player]: boolean } = {}
+
+-- Cash + rank purchase of the next level (Robux goes through the DockLevel<n> products).
+local function buy(player: Player, level: any): (boolean, string)
+	local data: any = DataService.Get(player)
+	if not data then
+		return false, "Data"
+	end
+	if type(level) ~= "number" or busy[player] then
+		return false, "Busy"
+	end
+	local ok, reason, price =
+		DockConfig.canBuy(data.dockLevel or 1, level, data.cash, ProgressionRules.rankIndex(data))
+	if not ok or not price then
+		return false, reason or "Level"
+	end
+	data.cash -= price
+	data.dockLevel = level
+	Telemetry.CashSpent(player, price, data.cash, "Dock", `Lv{level}`)
+	DataService.MarkDirty(player)
+	ProgressionService.Refresh(player)
+	show(player, true)
+	task.spawn(DataService.Save, player, false)
+	return true, "ok"
 end
 
 local function claim(player: Player)
@@ -237,7 +364,50 @@ function DockService.Init()
 	for _, player in Players:GetPlayers() do
 		claim(player)
 	end
-	Players.PlayerRemoving:Connect(release)
+	Players.PlayerRemoving:Connect(function(player)
+		release(player)
+		busy[player] = nil
+	end)
+
+	local folderNet = Net.init()
+	local remote = Instance.new("RemoteFunction")
+	remote.Name = "Dock_Upgrade"
+	remote.OnServerInvoke = function(player: Player, level: any): (boolean, string)
+		local ok, reason = buy(player, level)
+		busy[player] = true -- one purchase per second
+		task.delay(1, function()
+			busy[player] = nil
+		end)
+		return ok, reason
+	end
+	remote.Parent = folderNet
+
+	-- Robux skips Cash and rank; the grant only raises the level, so a retried receipt is harmless
+	for n, lv in DockConfig.Levels do
+		MonetizationService.OnProduct(lv.product, function(_player, data: any)
+			data.dockLevel = math.max(data.dockLevel or 1, n)
+			return true
+		end, function(player)
+			show(player, true)
+		end)
+	end
+
+	if RunService:IsStudio() then
+		local dev = Instance.new("BindableFunction")
+		dev.Name = "DockDev"
+		dev.OnInvoke = function(cmd: string, n: any): any
+			local player = Players:GetPlayers()[1]
+			local data: any = player and DataService.Get(player)
+			if cmd == "level" and data then
+				data.dockLevel = math.clamp(tonumber(n) or 1, 1, DockConfig.MAX)
+				DataService.MarkDirty(player)
+				show(player, true)
+				return data.dockLevel
+			end
+			return nil
+		end
+		dev.Parent = game:GetService("ServerStorage")
+	end
 end
 
 function DockService.Start()
@@ -245,7 +415,21 @@ function DockService.Start()
 		claim(player) -- the profile can load before our PlayerAdded handler runs
 		local i = byPlayer[player]
 		if i then
-			plots[i].model:SetAttribute("DockLevel", data.dockLevel or 1) -- later levels build from this
+			sync(plots[i], player, data.dockLevel or 1, false)
+		end
+	end)
+	-- the rescue boards show each owner's real rescue count (BadgeService's Rescue100 counter)
+	task.spawn(function()
+		while true do
+			for i, owner in owners do
+				local data: any = DataService.Get(owner)
+				local counters = data and data.badgeCounters
+				local n = tostring(if type(counters) == "table" then counters.Rescue100 or 0 else 0)
+				for _, label in plots[i].counts do
+					label.Text = n
+				end
+			end
+			task.wait(3)
 		end
 	end)
 end
