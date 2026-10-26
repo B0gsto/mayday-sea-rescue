@@ -1187,6 +1187,7 @@ nearLaunch = function(spec: VehicleSpec, player: Player): CFrame?
 end
 
 local despawnMisplaced: (record: Record) -> () -- set below (after standOnGround)
+local stowRecord: (record: Record) -> string -- set below
 
 -- Capsized, beached, sunk or pinned for long enough (VehicleRecovery). Returns whether the boat
 -- is in a good state (upright and afloat) for lastGood.
@@ -1244,7 +1245,23 @@ local function recoverBoat(record: Record, dt: number): boolean
 end
 
 local function checkVehicle(record: Record, dt: number)
-	if record.mode == "Dock" or record.resetting then
+	if record.resetting then
+		return
+	end
+	local lost = VehicleRecovery.lost(
+		record.root.Position,
+		record.spec.craft ~= nil,
+		GameConfig.MapRadius + 200
+	)
+	local driven = record.mode == "Driven"
+	if lost and not driven then
+		-- nobody at the helm and flung, sunk through or off the map (playtest 2: a jet ski left on the shore
+		-- ended up 23,510 studs up): home to its berth
+		local at = record.root.Position
+		warn(`[VehicleService] {record.model.Name} lost at {at}: {stowRecord(record)}`)
+		return
+	end
+	if record.mode == "Dock" then
 		return
 	end
 	local bypass = IS_STUDIO
@@ -1270,9 +1287,7 @@ local function checkVehicle(record: Record, dt: number)
 		Telemetry.Vehicle(record.owner, "Underway", record.spec.id)
 	end
 	local moved = flatDistance(pos, record.lastGood.Position)
-	local outOfBounds = (record.spec.craft == nil and (pos.Y > MAX_Y or pos.Y < MIN_Y))
-		or Vector2.new(pos.X, pos.Z).Magnitude > GameConfig.MapRadius + 200
-	if outOfBounds then
+	if lost then
 		resetVehicle(record, "out of bounds")
 	elseif speed > limit or moved > limit * dt + TELEPORT_SLACK then
 		-- dt is the time since the last check, and lastGood was taken at that check
@@ -1393,14 +1408,16 @@ despawnMisplaced = function(record: Record)
 	despawnModel(record.model, "WrongMedium")
 end
 
--- Docks the player's vehicle at their bay; despawns it when that is not possible.
-local function stowVehicle(player: Player): string
-	local record = byPlayer[player]
-	if not record then
-		return "NoVehicle"
-	end
+-- Docks a vehicle at its owner's bay; despawns it when that is not possible (a heli, the second craft).
+stowRecord = function(record: Record): string
+	local player = record.owner
 	local bay = bayFor(player)
-	if bay and record.spec.craft ~= "Heli" and not bayBusy(bay, player) then
+	if
+		bay
+		and record.spec.craft ~= "Heli"
+		and byPlayer[player] == record
+		and not bayBusy(bay, player)
+	then
 		record.model:PivotTo(
 			Simulator.restCFrame(
 				record.model,
@@ -1420,7 +1437,8 @@ end
 -- The cold open ended off the craft (OperationService): bring the jet ski home to the bay so the
 -- next launch step points at the quay, not at a hull drifting out at sea.
 function VehicleService.Stow(player: Player): string
-	return stowVehicle(player)
+	local record = byPlayer[player]
+	return if record then stowRecord(record) else "NoVehicle"
 end
 
 -- K11 / docs/23: every spawn stands the player on their island (WP-19b: its spawn); a returning player (coldOpenDone) also gets

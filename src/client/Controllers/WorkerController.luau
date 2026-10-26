@@ -369,6 +369,14 @@ local function welcome()
 	if shown or type(pay) ~= "number" or pay <= 0 then
 		return
 	end
+	-- the pay lands on join, under the loading screen and its flyover (playtest 2: the toast was gone by then);
+	-- these attributes clearing calls this again
+	if
+		player:GetAttribute("LoadingScreenActive") == true
+		or player:GetAttribute("CinematicPlaying") == true
+	then
+		return
+	end
 	shown = true
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "WorkerWelcome"
@@ -395,7 +403,9 @@ function WorkerController.Start()
 	for _, inst in CollectionService:GetTagged("WorkerBadge") do
 		badge(inst)
 	end
-	player:GetAttributeChangedSignal("WorkerOffline"):Connect(welcome)
+	for _, name in { "WorkerOffline", "LoadingScreenActive", "CinematicPlaying" } do
+		player:GetAttributeChangedSignal(name):Connect(welcome)
+	end
 	task.delay(4, welcome) -- set before this ran: wait for the HUD to be up
 	local f = Instance.new("Folder")
 	f.Name = "WorkersLocal"

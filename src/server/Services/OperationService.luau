@@ -1574,13 +1574,17 @@ local function coldOpenShore(op: any)
 		local ci = inst and inst.casualtyIndex or 1
 		local v = op.scene.victims and op.scene.victims[ci]
 		local mode = v and v.state == "Water" and v.model and v.model:GetAttribute("PiwMode")
-		if
-			not (inst and player and inst.def.id == "recovery" and not inst.npc and mode == "held")
-		then
+		if not (inst and player and inst.def.id == "recovery" and not inst.npc) then
+			continue
+		end
+		-- the pick-up never times out here (playtest 2: at 300 s it went Bronze "done" with nobody aboard, and the
+		-- ride home completed at once by the berth): it ends with them aboard or landed. The casualty comes
+		-- to a jet ski that idles near them, and a flare pops after 10 s with no headway (ColdOpenCue).
+		inst.timeoutAt = math.max(inst.timeoutAt, now() + 30)
+		if mode ~= "held" then
 			continue
 		end
 		local cas = v.floater.cf.Position
-		inst.timeoutAt = math.max(inst.timeoutAt, now() + 30)
 		if
 			BoatColdOpen.landed(mode, cas)
 			and BoatColdOpen.atDropOff(cas, player:GetAttribute("BayCFrame")) -- your own island only

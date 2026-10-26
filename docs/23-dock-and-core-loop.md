@@ -218,10 +218,12 @@ Packs = the cheapest mix of live Cash packs (Calm Bay rate: 1,500 / 4,500 / 16,5
    rarer one stays, replacing the first of the lowest rarity); 3 slots per worker building (5 with the Station), best
    rarity first. Per unit: Builder -3% build Cash (cap -40%), Gatherer 2 Cash/min, Rescuer 20 Cash per 5-min boat
    trip (10% bring a worker), Mechanic -10% Boat to me (cap -50%) and +2% craft speed (cap +10%), Medic +4% call pay
-   (cap +30%); offline Gatherers + Rescuers at 10%, capped at 2 h. The sim builds the fish shed after the pontoon and
+   (cap +30%); offline Gatherers + Rescuers at 10% (30% since playtest 2, below), capped at 2 h. The sim builds the fish shed after the pontoon and
    the rescue boathouse after the lookout: Workshop 0:07, Boathouse 0:24, RIB 0:34, Pontoon 0:44, Lifeboat 2:17,
    Helicopter 7:21 (was 7:35), Submarine 10:39 (12:02), Station 11:56 (14:42), the whole tree 13:24 (17:17, -22%:
    the Builders' discount most, then rarer workers over time); ~844k Cash at 40 h (no-worker run ~424k).
+   Playtest 2 (2026-10-26): offline at 10% read as worthless (+24 for 2 h, one Gatherer); now 30%, still capped at
+   2 h: Lifeboat 2:14, Helicopter 7:01, Submarine 10:05, Station 11:22, the whole tree 12:41 (-5%), ~954k at 40 h.
 
 10. **Robux price for every tree building and decoration (2026-10-26).** Rule: R$ = the smallest price point
    (15 / 35 / 49 / 75 / 99 / 149 / 199) at least 1.3x the cheapest Cash-pack mix for the same Cash (packs as above),

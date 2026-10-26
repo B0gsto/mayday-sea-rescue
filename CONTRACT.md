@@ -112,7 +112,8 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   `BeaconController`, `Camera/Chase`.
 - `src/shared/Crowding.luau`: player boats ghost through each other (collision group `PlayerBoat`); idle timers
   scale with the player count. `src/shared/VehicleRecovery.luau`: flipped / stuck / sunk craft are put back
-  upright; a boat beached past recovery goes with `poof`.
+  upright; a boat beached past recovery goes with `poof`; a craft nobody drives that is `lost` (far over or under
+  the sea, off the map) goes back to its berth.
 - Upgrades: `src/shared/VehicleUpgrades.luau` (Engine, Hull, Fit), fitted by `UpgradeService` (`Upgrade_Buy`),
   bitmask in `data.vehicleUpgrades`; sold on `UI/BoatCard`.
 

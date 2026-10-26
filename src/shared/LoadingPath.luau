@@ -7,8 +7,10 @@
 --   flyover(t, ring, island, angle, sweep, look, finish): t 0..1 eased once over the whole flight
 local LoadingPath = {}
 
--- ~62 degrees down from ~740 studs: the whole ring (1,260 studs across) in frame
+-- ~62 degrees down from ~740 studs: the whole ring in frame
 LoadingPath.START_HEIGHT = 650
+-- the camera over this height is inside / above Terrain.Clouds (a blank pale frame): the loading screen hides them
+LoadingPath.CLOUD_BASE = 400
 LoadingPath.START_RADIUS = 350
 LoadingPath.END_RADIUS = 70
 LoadingPath.END_HEIGHT = 55

@@ -34,7 +34,7 @@ W.RESCUE_RECRUIT = 0.1 -- a trip brings home a new worker this often -- tune
 W.BOAT_PER, W.BOAT_CAP = 0.1, 0.5 -- Mechanic: Boat to me cooldown -10% per unit, cap -50%
 W.SPEED_PER, W.SPEED_CAP = 0.02, 0.1 -- Mechanic: craft top speed +2% per unit, cap +10%
 W.PAY_PER, W.PAY_CAP = 0.04, 0.3 -- Medic: call pay +4% per unit, cap +30%
-W.OFFLINE_RATE = 0.1 -- Gatherers and Rescuers earn this share while you are away -- tune
+W.OFFLINE_RATE = 0.3 -- Gatherers and Rescuers earn this share while you are away (0.1 read as worthless, playtest 2) -- tune
 W.OFFLINE_CAP = 2 * 3600 -- s
 
 local NAMES = {

@@ -37,6 +37,16 @@ function VehicleRecovery.new(): State
 	return { flip = 0, stuck = 0, off = 0, wrong = 0 }
 end
 
+-- Lost (playtest 2: a jet ski left on the shore ended up 23,510 studs up): a boat far over the sea or under it,
+-- a heli or sub over LOST_CEILING or under LOST_FLOOR (the deepest seabed is -165), anything off the map.
+VehicleRecovery.BOAT_TOP, VehicleRecovery.BOAT_BOTTOM = 40, -20
+VehicleRecovery.LOST_CEILING, VehicleRecovery.LOST_FLOOR = 600, -250 -- the heli ceiling is 300
+function VehicleRecovery.lost(pos: Vector3, craft: boolean, mapRadius: number): boolean
+	local top = if craft then VehicleRecovery.LOST_CEILING else VehicleRecovery.BOAT_TOP
+	local bottom = if craft then VehicleRecovery.LOST_FLOOR else VehicleRecovery.BOAT_BOTTOM
+	return pos.Y > top or pos.Y < bottom or Vector2.new(pos.X, pos.Z).Magnitude > mapRadius
+end
+
 -- Advances the misplaced timer by dt; true when the vehicle should go now.
 function VehicleRecovery.misplaced(
 	s: State,
