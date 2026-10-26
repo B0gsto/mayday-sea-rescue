@@ -2,15 +2,17 @@
 -- WorkerService (docs/23 (o), WP-26): rescued people become your workers. RescueService rolls each survivor
 -- (WorkerRules.roll) on pick-up and calls Recruit when they land at your berth; data.workers keeps them.
 -- Every 5 s per player: WorkerRules.assign places them (best rarity first) at their building on your island
--- or on the jetty, and R15 NPCs (NpcFactory, Workspace.Workers.<UserId>) stand there idling; a new or moved one
--- walks over. Effects go out as player attributes the hooks read: WorkerBuildDiscount (DockService, the tablet,
+-- or on the jetty. The server only publishes them (ReplicatedStorage.Workers.<UserId>.<index>: a Configuration
+-- with the worker and its feet CFrame `Spot`); every client draws, animates, paths and culls the rigs itself
+-- (WorkerController), cloned from RIGS shared R15 templates (ReplicatedStorage.WorkerRigs, NpcFactory) so a
+-- server of 6 full islands (~186 workers) costs the server nothing per frame. Effects go out as player attributes the hooks read: WorkerBuildDiscount (DockService, the tablet,
 -- BuildSeq), WorkerBoatScale (VehicleService Boat to me, UI/Menu), WorkerCraftSpeed (VehicleService
 -- SpeedMultiplier), WorkerPayBonus (OperationService debrief pay). Gatherers pay every minute, Rescuers send an
 -- NPC rescue boat out of your cove every RESCUE_PERIOD (Cash, sometimes a new worker). On join the time away
 -- pays Gatherers + Rescuers at OFFLINE_RATE, capped (attribute WorkerOffline: the client's coin burst).
 -- Studio: ServerStorage.WorkerDev:Invoke("recruit", category, rarity, name) as if landed at the first player's
--- berth; ("offline", seconds) pays as if they were away that long; ("status") -> a summary string.
-local CollectionService = game:GetService("CollectionService")
+-- berth; ("offline", seconds) pays as if they were away that long; ("status") -> a summary string;
+-- ("fill") shows 31 fake workers on each of the 6 islands (perf tests), ("unfill") clears them.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -30,16 +32,14 @@ local ProgressionService = require(script.Parent.ProgressionService)
 local WorkerService = {}
 
 WorkerService.IDLE_SHOWN = 6 -- idle workers standing on the jetty (the rest are "inside") -- tune
-local WALK_SPEED = 9 -- studs/s
+local RIGS = 12 -- outfit templates the clients clone (more = more variety, more memory)
 local TRIP_OUT = 260 -- studs the rescue boat sails out of the cove
 local TRIP_LEG = 22 -- s each way
-local ANIM = { Idle = "rbxassetid://507766666", Walk = "rbxassetid://507777826" }
 
-type Npc = { model: Model, spot: CFrame?, height: number }
 type State = {
-	folder: Folder,
-	npcs: { [number]: Npc }, -- by data.workers index (the list only grows)
-	loading: { [number]: boolean },
+	folder: Folder, -- Workspace.Workers.<UserId>: the rescue boat
+	data: Folder, -- ReplicatedStorage.Workers.<UserId>: the shown workers
+	shown: { [number]: Configuration }, -- by data.workers index (the list only grows)
 	fresh: { [number]: boolean }, -- recruited this session: walks in from the jetty
 	nextTrip: number,
 	tripBusy: boolean,
@@ -47,29 +47,12 @@ type State = {
 }
 
 local folder: Folder? = nil
+local dataRoot: Folder? = nil
 local states: { [Player]: State } = {}
 local rng = Random.new()
 
 local function effectsOf(data: ProgressionRules.PlayerData): WorkerRules.Effects
 	return WorkerRules.effects(WorkerRules.units(data.workers, data.dockBuildings))
-end
-
-local function play(model: Model, id: string)
-	local hum = model:FindFirstChildOfClass("Humanoid")
-	local animator = hum and hum:FindFirstChildOfClass("Animator")
-	if not animator then
-		return
-	end
-	for _, track in animator:GetPlayingAnimationTracks() do
-		track:Stop(0.2)
-	end
-	local anim = Instance.new("Animation")
-	anim.AnimationId = id
-	pcall(function()
-		local track = animator:LoadAnimation(anim)
-		track.Looped = true
-		track:Play(0.2)
-	end)
 end
 
 -- Feet CFrames in the berth frame `bay` ------------------------------------------------------------
@@ -99,63 +82,30 @@ local function arrival(bay: CFrame): CFrame
 	return bay * CFrame.new((J.x0 + J.x1) / 2, Marina.DECK_TOP, 0)
 end
 
-local function walk(npc: Npc, path: { CFrame })
-	local root = npc.model.PrimaryPart
-	if not root then
-		npc.model:PivotTo(path[#path])
-		return
-	end
-	play(npc.model, ANIM.Walk)
-	task.spawn(function()
-		for _, feet in path do
-			local target = feet * CFrame.new(0, npc.height, 0)
-			local from = root.Position
-			local face = CFrame.lookAt(from, Vector3.new(target.X, from.Y, target.Z))
-			root.CFrame = if (target.Position - from).Magnitude > 0.5 then face else root.CFrame
-			local tween = TweenService:Create(
-				root,
-				TweenInfo.new(
-					(target.Position - from).Magnitude / WALK_SPEED,
-					Enum.EasingStyle.Linear
-				),
-				{ CFrame = CFrame.new(target.Position) * face.Rotation }
-			)
-			tween:Play()
-			tween.Completed:Wait()
-			if not npc.model.Parent then
-				return
-			end
-		end
-		root.CFrame = path[#path] * CFrame.new(0, npc.height, 0)
-		play(npc.model, ANIM.Idle)
-	end)
+-- One worker as data for the clients (WorkerController draws the rig): attributes WorkerCategory, WorkerRarity,
+-- WorkerName, Rig (a WorkerRigs template), Spot (feet CFrame), Work (at their building), From (walk in from here).
+local function publish(
+	parent: Instance,
+	i: number,
+	w: WorkerRules.Worker,
+	spot: CFrame,
+	work: boolean,
+	from: CFrame?
+): Configuration
+	local cfg = Instance.new("Configuration")
+	cfg.Name = tostring(i)
+	cfg:SetAttribute("WorkerCategory", w.category)
+	cfg:SetAttribute("WorkerRarity", w.rarity)
+	cfg:SetAttribute("WorkerName", w.name)
+	cfg:SetAttribute("Rig", (i * 5 + #w.name) % RIGS + 1)
+	cfg:SetAttribute("Spot", spot)
+	cfg:SetAttribute("Work", work)
+	cfg:SetAttribute("From", from)
+	cfg.Parent = parent
+	return cfg
 end
 
-local function spawnNpc(player: Player, st: State, i: number, w: WorkerRules.Worker, at: CFrame)
-	st.loading[i] = true
-	task.spawn(function()
-		local model, height = NpcFactory.spawn("Passenger", {
-			name = `Worker_{w.name}`,
-			pose = "Idle",
-			seed = player.UserId * 7 + i * 131,
-			cframe = at,
-			parent = st.folder :: Instance?,
-		})
-		st.loading[i] = nil
-		if states[player] ~= st then
-			model:Destroy()
-			return
-		end
-		model:SetAttribute("WorkerCategory", w.category)
-		model:SetAttribute("WorkerRarity", w.rarity)
-		model:SetAttribute("WorkerName", w.name)
-		model:SetAttribute("WorkerOwner", player.UserId)
-		CollectionService:AddTag(model, "WorkerBadge")
-		st.npcs[i] = { model = model, spot = at, height = height }
-	end)
-end
-
--- Places every worker's NPC (spawn, walk, hide) and publishes the effects.
+-- Publishes every shown worker (ReplicatedStorage.Workers.<UserId>) and the effects.
 local function sync(player: Player)
 	local data = DataService.Get(player)
 	local st = states[player]
@@ -183,27 +133,26 @@ local function sync(player: Player)
 			idle += 1
 			spot = if idle <= WorkerService.IDLE_SHOWN then idleSpot(bay, idle) else nil
 		end
-		local npc = st.npcs[i]
+		local cfg = st.shown[i]
 		if not spot then
-			if npc then
-				npc.model:Destroy()
-				st.npcs[i] = nil
+			if cfg then
+				cfg:Destroy()
+				st.shown[i] = nil
 			end
-		elseif not npc and not st.loading[i] then
-			-- a new recruit appears on the jetty and walks over once its rig is in (the next sync)
-			spawnNpc(player, st, i, w, if st.fresh[i] then arrival(bay) else spot)
-			st.fresh[i] = nil
-		elseif npc and npc.spot ~= spot then
-			local from = npc.spot
-			npc.spot = spot
-			local quay = arrival(bay) * CFrame.new(0, 0, Marina.JETTY.z1 - 2)
-			-- off the jetty by its quay end, then over (a straight line otherwise)
-			walk(
-				npc,
-				if from and (from.Position - arrival(bay).Position).Magnitude < 1
-					then { quay, spot }
-					else { spot }
+		elseif not cfg then
+			-- a new recruit appears on the jetty and walks over (WorkerController)
+			st.shown[i] = publish(
+				st.data,
+				i,
+				w,
+				spot,
+				place[i] ~= nil,
+				if st.fresh[i] then arrival(bay) else nil
 			)
+			st.fresh[i] = nil
+		else
+			cfg:SetAttribute("Spot", spot) -- same value: no change, nothing replicates
+			cfg:SetAttribute("Work", place[i] ~= nil)
 		end
 	end
 end
@@ -223,9 +172,9 @@ function WorkerService.Recruit(player: Player, category: any, rarity: any, name:
 	ProgressionService.Refresh(player)
 	local st = states[player]
 	if st then
-		if st.npcs[i] then -- replaced: the one leaving goes
-			st.npcs[i].model:Destroy()
-			st.npcs[i] = nil
+		if st.shown[i] then -- replaced: the one leaving goes
+			st.shown[i]:Destroy()
+			st.shown[i] = nil
 		end
 		st.fresh[i] = true
 	end
@@ -325,6 +274,7 @@ local function clearState(player: Player)
 	states[player] = nil
 	if st then
 		st.folder:Destroy()
+		st.data:Destroy()
 	end
 end
 
@@ -343,16 +293,36 @@ function WorkerService.Init()
 	f.Name = "Workers"
 	f.Parent = Workspace
 	folder = f
+	local d = Instance.new("Folder")
+	d.Name = "Workers"
+	d.Parent = ReplicatedStorage
+	dataRoot = d
+	local rigs = Instance.new("Folder")
+	rigs.Name = "WorkerRigs"
+	rigs.Parent = ReplicatedStorage
+	for k = 1, RIGS do -- built once; each client clones them
+		task.spawn(function()
+			local model, height = NpcFactory.spawn(
+				"Passenger",
+				{ seed = k * 7919, storm = false, name = tostring(k) }
+			)
+			model:SetAttribute("RootHeight", height)
+			model.Parent = rigs
+		end)
+	end
 	Players.PlayerRemoving:Connect(clearState)
 	DataService.OnLoaded(function(player: Player, data: ProgressionRules.PlayerData)
 		local pf = Instance.new("Folder")
 		pf.Name = tostring(player.UserId)
 		pf.Parent = folder
+		local df = Instance.new("Folder")
+		df.Name = pf.Name
+		df.Parent = dataRoot
 		local now = os.clock()
 		states[player] = {
 			folder = pf,
-			npcs = {},
-			loading = {},
+			data = df,
+			shown = {},
 			fresh = {},
 			nextTrip = now + WorkerRules.RESCUE_PERIOD,
 			tripBusy = false,
@@ -370,7 +340,41 @@ function WorkerService.Init()
 			if not data then
 				return "no data"
 			end
-			if cmd == "recruit" then
+			if cmd == "fill" or cmd == "unfill" then
+				for k = 1, Marina.COUNT do
+					local old = (dataRoot :: Folder):FindFirstChild(`Fill{k}`)
+					if old then
+						old:Destroy()
+					end
+					if cmd == "fill" then
+						local ff = Instance.new("Folder")
+						ff.Name = `Fill{k}`
+						local bay = Marina.berth(k)
+						local n = 0
+						for _, category in WorkerRules.CATEGORIES do
+							for slot = 1, WorkerRules.slots({ Station = true }) do
+								n += 1
+								local w = { category = category, rarity = 1 + n % 3, name = "Fill" }
+								publish(
+									ff,
+									n,
+									w,
+									workSpot(bay, category, slot, 5) :: CFrame,
+									true,
+									nil
+								)
+							end
+						end
+						for idle = 1, WorkerService.IDLE_SHOWN do
+							n += 1
+							local w = { category = "Medic", rarity = 1, name = "Fill" }
+							publish(ff, n, w, idleSpot(bay, idle), false, nil)
+						end
+						ff.Parent = dataRoot
+					end
+				end
+				return "ok"
+			elseif cmd == "recruit" then
 				WorkerService.Recruit(player, a, b, c)
 			elseif cmd == "offline" then
 				data.lastSeen = os.time() - a
@@ -385,7 +389,7 @@ function WorkerService.Init()
 			local st = states[player]
 			local npcs = 0
 			if st then
-				for _ in st.npcs do
+				for _ in st.shown do
 					npcs += 1
 				end
 			end

@@ -14,10 +14,10 @@
 --   |       [obj pill]                                        gauges   |
 --   +------------------------------------------------------------------+
 --
--- Touch: the menu strip (UI/Menu, 2 icon columns) on the left edge, the 130 px minimap right of
--- it (tap it for the full map), the objective strip right of that, the wallet (Cash)
--- under the objective and the notice band beside the wallet. The mission card column stops above
--- the bottom-right jump / action buttons.
+-- Touch: the menu grid (UI/Menu, as many rows as fit above the thumbstick) top left, the 130 px
+-- minimap right of it (tap it for the full map), the objective strip right of that, the wallet (Cash)
+-- under the objective and the notice band beside or under the wallet. Nothing reaches into the
+-- thumbstick or the jump / action buttons (HudLayout).
 --
 -- Regions are transparent container Frames in "design units" (du): the usable area (the
 -- ScreenGui with CoreUISafeInsets: below the Roblox top bar and inside notches / home bar)
@@ -35,9 +35,9 @@
 -- Layout.promptBusy() is true while any "prompt" region holds a visible panel;
 -- Layout.onPromptBusy(fn) calls fn(busy) now and on every change (polled every 0.25 s).
 --
--- Phone check (844x390 landscape, notched insets, scale 0.7): the minimap and the wallet
--- end above the thumbstick zone at 55% of the safe height (only the narrow menu strip reaches
--- into it) and the card column ends above the jump zone at 65% (tests/HudLayout.spec.luau).
+-- Phone check (tests/HudLayout.spec.luau: phones and tablets, landscape and portrait, scale 0.7+):
+-- every region ends above the thumbstick zone at 55% of the safe height and the card column above
+-- the jump zone at 65%.
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

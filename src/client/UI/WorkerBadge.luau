@@ -91,19 +91,19 @@ function WorkerBadge.billboard(model: Model)
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "WorkerTag"
 	gui.Adornee = root
-	gui.Size = UDim2.fromOffset(84, 70)
-	gui.StudsOffset = Vector3.new(0, 4.6, 0) -- clear of the head and a waving arm
-	gui.MaxDistance = 90
+	gui.Size = UDim2.fromOffset(64, 54)
+	gui.StudsOffset = Vector3.new(0, 3.8, 0) -- just over the head: under the building signs behind them
+	gui.MaxDistance = 60 -- near only: a crowd of badges never covers the signs from afar
 	gui.LightInfluence = 0
 	gui.Parent = model
 	local icon = Instance.new("Frame")
 	icon.BackgroundTransparency = 1
 	icon.AnchorPoint = Vector2.new(0.5, 0)
 	icon.Position = UDim2.fromScale(0.5, 0)
-	icon.Size = UDim2.fromOffset(44, 44)
+	icon.Size = UDim2.fromOffset(34, 34)
 	icon.Parent = gui
 	WorkerBadge.icon(icon, category)
-	local row = WorkerBadge.stars(gui, stars, 22)
+	local row = WorkerBadge.stars(gui, stars, 17)
 	row.AnchorPoint = Vector2.new(0.5, 1)
 	row.Position = UDim2.fromScale(0.5, 1)
 	if stars >= 3 then -- legendary: a gold ring and a warm glow round them
