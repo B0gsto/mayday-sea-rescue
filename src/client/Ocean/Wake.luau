@@ -49,6 +49,7 @@ type Rig = {
 	styleId: string?,
 	night: number,
 	bowRate: number,
+	rainbow: number,
 }
 
 local Wake = {}
@@ -165,6 +166,7 @@ local function build(model: Model, seat: BasePart): Rig?
 		styleId = nil,
 		night = -1,
 		bowRate = WakeMath.BOW_RATE,
+		rainbow = 0,
 	}
 end
 
@@ -235,6 +237,7 @@ local function applyStyle(rig: Rig, night: number)
 	bow.Speed = NumberRange.new(v.bowSpeed[1], v.bowSpeed[2])
 	bow.SpreadAngle = Vector2.new(v.bowSpread[1], v.bowSpread[2])
 	rig.bowRate = v.bowRate
+	rig.rainbow = v.rainbow
 end
 
 local function scan()
@@ -284,6 +287,11 @@ function Wake.start(seaLevel: number)
 				else 0
 			rig.trail.Enabled = s > 0
 			rig.bow.Rate = rig.bowRate * s * tierScale
+			if rig.rainbow > 0 and s > 0 then
+				local c = Color3.fromHSV((now * 0.25) % 1, 0.55, 1)
+				rig.trail.Color = ColorSequence.new(c)
+				rig.ribbon.Color = ColorSequence.new(c)
+			end
 		end
 	end)
 end

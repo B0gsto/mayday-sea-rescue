@@ -34,7 +34,7 @@ local CosmeticPicker = {}
 local ownedRaw = ""
 local ownedSet: { [string]: boolean } = {}
 
-local function owns(key: string): boolean
+function CosmeticPicker.owns(key: string): boolean
 	if player:GetAttribute("Pass_" .. key) == true then
 		return true
 	end
@@ -115,7 +115,7 @@ function CosmeticPicker.new(parent: Instance, slot: string, opts: Options?): Pic
 		local option = if current then Cosmetics.option(slot, current) else nil
 		value.Text = if option then option.name else "-"
 		value.TextColor3 = if pending then Theme.Colors.textDark else Theme.Colors.textDark
-		local many = #Cosmetics.ownedOptions(slot, owns) > 1
+		local many = #Cosmetics.ownedOptions(slot, CosmeticPicker.owns) > 1
 		prev.Active = many
 		nextButton.Active = many
 		prev.ImageTransparency = if many then 0 else 0.4
@@ -126,7 +126,7 @@ function CosmeticPicker.new(parent: Instance, slot: string, opts: Options?): Pic
 		local current = pending
 			or (player:GetAttribute(Cosmetics.attribute(slot)) :: string?)
 			or Cosmetics.default(slot)
-		local id = Cosmetics.cycle(slot, current, owns, dir)
+		local id = Cosmetics.cycle(slot, current, CosmeticPicker.owns, dir)
 		local remote = equipRemote()
 		if not id or id == current or not remote then
 			return

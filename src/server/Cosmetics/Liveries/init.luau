@@ -21,6 +21,14 @@ local LiveryPattern = require(Shared:WaitForChild("LiveryPattern"))
 
 local SLOT = "Livery"
 local TRIM_NAME = "CosmeticLiveryTrim"
+local AURA_NAME = "CosmeticRarityAura"
+local AURA_ORDER = { Common = 1, Uncommon = 2, Rare = 3, Epic = 4, Legendary = 5, Mythic = 6 }
+local AURA_COLOR = {
+	Rare = Color3.fromRGB(70, 150, 255),
+	Epic = Color3.fromRGB(165, 100, 255),
+	Legendary = Color3.fromRGB(255, 196, 50),
+	Mythic = Color3.fromRGB(255, 120, 230),
+}
 
 local Liveries = {}
 
@@ -212,8 +220,52 @@ local function paintPart(part: BasePart, color: Color3?)
 	part.Color = color
 end
 
+-- A subtle rarity aura for a Rare+ spin finish / wake, so other players notice it on the water.
+local function rarityOf(option: any): string?
+	if type(option) ~= "table" or type(option.rarity) ~= "string" then
+		return nil
+	end
+	local rank = AURA_ORDER[option.rarity]
+	return if rank and rank >= AURA_ORDER.Rare then option.rarity else nil
+end
+
+local function aura(model: Model, liveryId: string?, wakeId: string?)
+	local old = model:FindFirstChild(AURA_NAME, true) -- parented to the hull part, not the model
+	if old then
+		old:Destroy()
+	end
+	local best: string? = nil
+	for _, pair in { { slot = "Livery", id = liveryId }, { slot = "Wake", id = wakeId } } do
+		local option = if pair.id then Cosmetics.option(pair.slot, pair.id) else nil
+		local rarity = rarityOf(option)
+		if rarity and (best == nil or AURA_ORDER[rarity] > AURA_ORDER[best]) then
+			best = rarity
+		end
+	end
+	local color = if best then AURA_COLOR[best] else nil
+	local body = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
+	if not color or not body then
+		return
+	end
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Name = AURA_NAME
+	emitter.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	emitter.Rate = 2.5
+	emitter.Lifetime = NumberRange.new(0.6, 1.2)
+	emitter.Speed = NumberRange.new(0.4, 1.2)
+	emitter.SpreadAngle = Vector2.new(180, 180)
+	emitter.Size = NumberSequence.new(0.16)
+	emitter.Color = ColorSequence.new(color)
+	emitter.LightEmission = 0.5
+	emitter.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.25),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	emitter.Parent = body
+end
+
 -- Repaints one vehicle model in a livery option id (unknown or "Standard" = stock).
-function Liveries.apply(model: Model, id: string?)
+function Liveries.apply(model: Model, id: string?, wakeId: string?)
 	local option = if id then Cosmetics.option(SLOT, id) else nil
 	local painting = LiveryPaint.paints(option)
 	local primary: BasePart? = nil
@@ -254,6 +306,7 @@ function Liveries.apply(model: Model, id: string?)
 	-- The jet ski's primary is the whole hull, and its secondary sled sits under the water.
 	local hullAnchor = if tubes then (secondary or primary) else primary
 	trim(model, if painting then option else nil, hullAnchor, tubes)
+	aura(model, if painting then id else nil, wakeId)
 end
 
 local function track(player: Player, model: Model)
@@ -269,12 +322,11 @@ local function track(player: Player, model: Model)
 			s[model] = nil
 		end
 	end)
-	local id = service.Equipped(player, SLOT)
-	Liveries.apply(model, id)
+	Liveries.apply(model, service.Equipped(player, SLOT), service.Equipped(player, "Wake"))
 	-- visuals may still be welding in on the spawn frame: paint once more after it
 	task.defer(function()
 		if model.Parent then
-			Liveries.apply(model, service.Equipped(player, SLOT))
+			Liveries.apply(model, service.Equipped(player, SLOT), service.Equipped(player, "Wake"))
 		end
 	end)
 end
@@ -289,13 +341,17 @@ function Liveries.Start()
 			track(player, model)
 		end
 	end)
-	service.Changed:Connect(function(player: Player, slot: string, id: string)
-		if slot ~= SLOT then
+	service.Changed:Connect(function(player: Player, slot: string, _id: string)
+		if slot ~= SLOT and slot ~= "Wake" then
 			return
 		end
 		for model in (vehicles[player] or {}) :: { [Model]: boolean } do
 			if model.Parent then
-				Liveries.apply(model, id)
+				Liveries.apply(
+					model,
+					service.Equipped(player, SLOT),
+					service.Equipped(player, "Wake")
+				)
 			end
 		end
 	end)

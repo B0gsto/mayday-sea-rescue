@@ -36,10 +36,12 @@ history, not here.
 | `DogPoint` | S->C | DogService: Bosun points at a survivor or flare |
 | `RequestVehicle` | C->S fn | VehicleService: `(vehicleId, docked?, near?) -> (ok, reasonOrVehicle)`; `near` = Boat to me (id ignored) |
 | `BuyGear` | C->S fn | ProgressionService: buys a craft (`vehicleId`); the name is historical |
+| `Spin_Spin` | C->S fn | SpinService: spends one spin, the server rolls -> `{ ok, prize, name, rarity, kind, icon, segment, duplicateCash? }` |
+| `Spin_Flex` | S->C | SpinService: a Legendary / Mythic win `{ userId, name, prize, rarity, icon }` (banner + confetti) |
 
 Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService), `Upgrade_Buy` (UpgradeService),
 `PIW_Rescue` (Ops/PiwRescue), `Dock_Upgrade` / `Dock_Build` (DockService), `Quest_Talk` (QuestService),
-`Streak_State` / `Streak_Get` / `Streak_Open`, `Pet_State` / `Pet_Get` / `Pet_Equip`, `Cosmetics_Equip` /
+`Streak_State` / `Streak_Get` / `Streak_Open`, `Pet_State` / `Pet_Get` / `Pet_Equip` / `Pet_Variant`, `Cosmetics_Equip` /
 `Cosmetics_Action` / `Cosmetics_Event`, `Monetization_GetCatalogue` / `Monetization_Purchased`,
 `Discovery_State` / `Discovery_Found` / `Discovery_Get`, `PlatformPrompt_Ask` / `_Offer` / `_OptIn`,
 `Telemetry_Client`, `Dev_Grant` / `Dev_Action`, and the `Ops_*` table below.
@@ -244,7 +246,7 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
 ## Monetization, cosmetics and the rest
 
 - `MonetizationConfig` (`Products` / `GamePasses`; `id = 0` or `ready = false` = not for sale; cut passes stay
-  recorded with `ready = false`), `MonetizationService` (`OnProduct`, `OnPassOwned`, `OwnsPass`, receipts through
+  recorded with `ready = false`), `MonetizationService` (`OnProduct`, `OnPassOwned`, `OwnsPass`, `GetPolicy`, receipts through
   `DataService.CommitReceipt`; helpers `Monetization/Core`, `Monetization/CashEffects`), effects in
   `src/shared/MonetizationEffects.luau`, shelves in `src/shared/ProductShelves.luau`. Player attributes
   `Pass_<Key>`, `DayPass_<Key>`, `PassesChecked`.
@@ -253,6 +255,10 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   (loads every `client/Cosmetics/*` feature), `CosmeticLoadout` (earned rewards), `LiveryPaint` / `LiveryPattern`,
   `VehicleSounds`, `LightBarFlash`, `ShantyRadio`, `AvatarCosmetics`.
 - Pets: `PetService`, `PetRules`, `PetSeat`, `PetAccessory`, `PetController`.
+- Spin wheel (docs/24 D): `SpinRules` (pure: odds, pity, prizes, free-spin accrual, saved in `flags.spin`),
+  `SpinService` (every roll; `Refresh`, `GiveFree`; Spin1/5/15 products are `paidRandom`, granted only when
+  `MonetizationService.GetPolicy` allows paid random items; grand boat = `flags.spinBoat`), `Panels/Spin`.
+  Attributes `FreeSpins`, `SpinPityEpic`, `SpinPityLegendary`. Studio: `ServerStorage.SpinDev` (`give` / `force`).
 - Weather: `src/shared/Weather.luau` reads `ReplicatedStorage.Weather` attributes; `WeatherMath`, `Waves`;
   `StormService` (`ForceStorm`, `ForceCalm`, `QueueSummon`; always sunny by default); `WeatherController`,
   `OceanController` (`GetVisualHeight`) + `client/Ocean/*`.

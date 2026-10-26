@@ -511,7 +511,10 @@ function SettingsPanel.newPanel(canvas: Frame, onClose: () -> ())
 		end
 		table.clear(ownedPickers)
 		for i, slot in Cosmetics.slots() do
-			if Cosmetics.ownsSlot(slot, ownsPass) then
+			if
+				Cosmetics.ownsSlot(slot, ownsPass)
+				or #Cosmetics.ownedOptions(slot, CosmeticPicker.owns) > 1
+			then
 				local picker = CosmeticPicker.new(owned, slot, {
 					layoutOrder = i,
 					height = 76,

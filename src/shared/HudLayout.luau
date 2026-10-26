@@ -50,7 +50,7 @@ HudLayout.QUEST_TOUCH_HEIGHT = 34 -- touch: a tag over the minimap's bottom edge
 HudLayout.DEBRIEF_WIDTH = 340 -- the end-of-call toast (UI/OpsDebrief), drawn scaled to its region's width
 HudLayout.DEBRIEF_HEIGHT = 96
 HudLayout.DEBRIEF_MIN = 0.7 -- the smallest the toast may shrink to fit a gap
-HudLayout.MENU_COUNT = 8 -- UI/Menu's buttons: Shop, Quests, Album, Pet, Crew, Settings, Map, Boat
+HudLayout.MENU_COUNT = 9 -- UI/Menu's buttons: Shop, Spin, Quests, Album, Pet, Crew, Settings, Map, Boat
 
 -- The menu grid's cell per device (du): icon square, label row (text = label - 4), row gap, column gap.
 -- Touch icons are >= 44 px at the 0.7 floor; desktop labels are bigger (kit polish).

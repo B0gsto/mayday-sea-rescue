@@ -14,6 +14,7 @@
 -- no-Roblox pure module; it stays service-free and Lune-tested in tests/CosmeticLoadout.spec.luau.
 
 local Cosmetics = require(script.Parent.Cosmetics)
+local SpinRules = require(script.Parent.SpinRules)
 
 local CosmeticLoadout = {}
 
@@ -65,6 +66,11 @@ for month = 1, 12 do
 	remember("monthly:" .. string.format("2026-%02d", month))
 end
 remember("group:crew")
+for _, prize in SpinRules.PRIZES do
+	if prize.kind == "finish" or prize.kind == "trail" then
+		remember("spin:" .. prize.id)
+	end
+end
 
 -- Earned keys that place something in the player's bay (fixed slots, server-built parts).
 CosmeticLoadout.DECOR = {
@@ -119,6 +125,12 @@ function CosmeticLoadout.owned(flags: any, rescued: number?): { [string]: boolea
 	local group = flags.group
 	if type(group) == "table" and group.c == true then
 		set["group:crew"] = true
+	end
+	local spin = flags.spin
+	if type(spin) == "table" then
+		for _, key in SpinRules.ownedKeys(SpinRules.decode(spin).owned) do
+			set[key] = true
+		end
 	end
 	return set
 end

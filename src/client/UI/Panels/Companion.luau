@@ -113,8 +113,55 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 		table.clear(cards)
 		local view = PetController.view()
 		local rows: { any } = if view then view.pets else {}
+		-- spin-wheel looks (docs/24 D): owned variants, one tap to wear one
+		local look = Instance.new("Frame")
+		look.Name = "PetVariantPicker"
+		look.BackgroundTransparency = 1
+		look.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 56)
+		look.Parent = panel.body
+		local lookList = Style.list(look, true, 8)
+		lookList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		local owned = {}
+		local variantIds: { string } = if view then view.variants else {}
+		for _, id in variantIds do
+			owned[id] = true
+		end
+		local chips: { { id: string?, label: string, color: string } } =
+			{ { id = nil, label = "Natural", color = "disabled" } }
+		for _, id in { "Golden", "Neon", "Rainbow", "Galaxy" } do
+			table.insert(chips, { id = id, label = id, color = "purple" })
+		end
+		for _, chip in chips do
+			local ready = chip.id == nil or owned[chip.id] == true
+			local button = Style.button(look, UDim2.fromOffset(122, 52))
+			button.Name = "Variant_" .. (chip.id or "None")
+			local _, face = Style.block(
+				button,
+				Style.grad(if ready then chip.color else "disabled"),
+				{ lip = 4, radius = S.cornerSmall }
+			)
+			local text = Style.label(face, chip.label, Theme.Text.small)
+			text.TextScaled = true
+			button.Active = ready
+			Style.press(button, function()
+				if ready then
+					PetController.chooseVariant(chip.id)
+				end
+			end, S.cornerSmall)
+			if (view and view.variant) == chip.id then
+				local tick = Instance.new("Frame")
+				tick.AnchorPoint = Vector2.new(1, 0)
+				tick.Position = UDim2.new(1, -6, 0, 4)
+				tick.Size = UDim2.fromOffset(18, 18)
+				tick.BackgroundTransparency = 1
+				tick.Parent = face
+				Style.icon(tick, "daily")
+			end
+		end
 		local host = Instance.new("Frame")
+		host.Name = "Pets"
 		host.BackgroundTransparency = 1
+		host.Position = UDim2.fromOffset(0, 64)
 		host.Size = UDim2.fromScale(1, 0)
 		host.AutomaticSize = Enum.AutomaticSize.Y
 		host.Parent = panel.body

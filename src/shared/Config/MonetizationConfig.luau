@@ -35,6 +35,7 @@ export type Item = {
 	dayPassFor: string?, -- day passes: the GamePasses key whose effect this product lends
 	dayPassHours: number?, -- day passes: hours of real time (the clock runs while away; buying again adds)
 	vehicle: string?, -- vehicle passes: the VehicleConfig id it owns (offered once its building stands)
+	spins: number?, -- spin-wheel products: free spins granted (docs/24 D)
 	dockBuilding: string?, -- island buildings and decor (DockConfig.Buildings / Decorations key); sold at the
 	-- build tablet only, once the building's prerequisites stand (Robux skips the Cash, never the order: docs/23 (q))
 	crewHire: boolean?, -- crew hire (docs/23 (j), WP-15): Robux skips the Cash
@@ -355,6 +356,38 @@ local MonetizationConfig = {
 			order = 38,
 			ready = false, -- WP-26: retired with the crew lineup; never flip
 			crewHire = true,
+		},
+		-- Spin wheel (docs/24 D): paid random items, so they carry `paidRandom` and the wheel shows the
+		-- odds. ready = false until the owner creates the products; the id stays 0 until then.
+		Spin1 = {
+			id = 0,
+			name = "One Spin",
+			description = "One spin of the prize wheel. Odds and pity are shown on the wheel.",
+			price = 49,
+			order = 54,
+			ready = false,
+			paidRandom = true,
+			spins = 1,
+		},
+		Spin5 = {
+			id = 0,
+			name = "Five Spins",
+			description = "Five spins of the prize wheel. Odds and pity are shown on the wheel.",
+			price = 199,
+			order = 55,
+			ready = false,
+			paidRandom = true,
+			spins = 5,
+		},
+		Spin15 = {
+			id = 0,
+			name = "Fifteen Spins",
+			description = "Fifteen spins of the prize wheel. Odds and pity are shown on the wheel.",
+			price = 499,
+			order = 56,
+			ready = false,
+			paidRandom = true,
+			spins = 15,
 		},
 	} :: { [string]: Item },
 

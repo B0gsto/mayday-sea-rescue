@@ -43,6 +43,8 @@ return {
 		settings = "rbxassetid://124561251642705",
 		shop = "rbxassetid://133652722448118",
 		vip = "rbxassetid://89629681853633",
+		spin = "rbxassetid://130789759216108", -- stand-in sparkle until a wheel icon is uploaded
+		wave = "rbxassetid://78956573306618", -- the wake trail prize icon (Settings' wave art)
 	} :: { [string]: string },
 	-- SettingsPanel row glyphs, keyed like its SHAPES (assets/ui/settings/<key>.png)
 	SettingsArt = {

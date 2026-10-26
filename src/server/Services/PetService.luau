@@ -81,6 +81,7 @@ end
 
 local function push(player: Player, state: PetRules.State)
 	player:SetAttribute("CompanionPet", state.active)
+	player:SetAttribute("CompanionVariant", state.variant)
 	local remote = stateRemote
 	if remote and player.Parent then
 		remote:FireClient(player, viewOf(state))
@@ -165,6 +166,32 @@ function PetService.Equip(player: Player, id: any): (boolean, string?)
 	return true
 end
 
+-- SpinService: a prize variant joins the sanctuary; false when it was already owned.
+function PetService.GrantVariant(player: Player, id: string): boolean
+	local data = DataService.Get(player)
+	if not data then
+		return false
+	end
+	local state, granted = PetRules.grantVariant(stateOf(data), id)
+	return granted and store(player, state)
+end
+
+-- Companion panel: wear an owned variant (nil = natural colours); also used by the dev hook.
+function PetService.EquipVariant(player: Player, id: string?): (boolean, string?)
+	local data = DataService.Get(player)
+	if not data then
+		return false, "Profile not loaded"
+	end
+	local state, ok = PetRules.equipVariant(stateOf(data), id)
+	if not ok then
+		return false, "Not owned"
+	end
+	if not store(player, state) then
+		return false, "Could not save"
+	end
+	return true, "ok"
+end
+
 -- Studio: finish recovery now (screenshots / checks; also useful for the first play test).
 function PetService.DevReady(player: Player): boolean
 	local data = DataService.Get(player)
@@ -188,6 +215,8 @@ function PetService.DevReady(player: Player): boolean
 		active = state.active,
 		entries = entries,
 		treats = state.treats,
+		variant = state.variant,
+		variants = state.variants,
 	})
 end
 
@@ -197,12 +226,19 @@ function PetService.Init()
 	stateRemote = ensureEvent(folder, "Pet_State")
 	local get = ensureFunction(folder, "Pet_Get")
 	local equip = ensureFunction(folder, "Pet_Equip")
+	local variant = ensureFunction(folder, "Pet_Variant")
 
 	get.OnServerInvoke = function(player: Player)
 		return PetService.GetView(player)
 	end
 	equip.OnServerInvoke = function(player: Player, id: any)
 		return PetService.Equip(player, id)
+	end
+	variant.OnServerInvoke = function(player: Player, id: any)
+		if id ~= nil and type(id) ~= "string" then
+			return false, "Bad request"
+		end
+		return PetService.EquipVariant(player, id)
 	end
 
 	DataService.OnLoaded(function(player: Player, data: any)
@@ -224,6 +260,10 @@ function PetService.Init()
 				return PetService.GetView(player)
 			elseif cmd == "equip" then
 				return PetService.Equip(player, a)
+			elseif cmd == "variant" then
+				return PetService.EquipVariant(player, if a == "" then nil else a)
+			elseif cmd == "grantVariant" then
+				return PetService.GrantVariant(player, a)
 			end
 			return nil
 		end

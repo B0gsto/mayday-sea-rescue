@@ -73,6 +73,9 @@ return function(t)
 			DecorStatue = 199,
 			DecorFountain = 199,
 			CrewHire = 99, -- docs/23 (j) WP-15, proposed
+			Spin1 = 49, -- docs/24 D
+			Spin5 = 199,
+			Spin15 = 499,
 		},
 	}
 
@@ -111,11 +114,15 @@ return function(t)
 		end
 	end)
 
-	t.test("the catalogue validates and nothing is a paid random item", function()
+	t.test("the catalogue validates; only the spin-wheel products are paid random", function()
 		t.expect(Core.validate(Config)).toEqual({})
 		for _, kind in Core.KINDS do
-			for _, it in Config[kind] do
-				t.expect(it.paidRandom == true).toBe(false)
+			for key, it in Config[kind] do
+				local spin = string.sub(key, 1, 4) == "Spin"
+				t.expect(it.paidRandom == true).toBe(spin)
+				if spin then
+					t.expect(it.spins ~= nil).toBe(true)
+				end
 			end
 		end
 	end)
