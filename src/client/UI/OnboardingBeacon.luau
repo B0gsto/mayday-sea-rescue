@@ -10,6 +10,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
+local Layout = require(script.Parent:WaitForChild("Layout"))
 local Weather = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Weather"))
 
 local OnboardingBeacon = {}
@@ -192,8 +193,15 @@ function OnboardingBeacon.start(): Beacon
 				(vp.X / 2 - margin) / math.max(math.abs(dx), 0.01),
 				(vp.Y / 2 - margin) / math.max(math.abs(dy), 0.01)
 			)
-			arrow.Position = UDim2.fromOffset(vp.X / 2 + dx * k, vp.Y / 2 + dy * k)
 			arrow.Rotation = math.deg(math.atan2(dx, -dy))
+			-- clear of the HUD like UI/Waypoint: pinned left it hid under the menu column (playtest 2026-10-26)
+			local pin = Layout.clearOfHud(
+				Vector2.new(vp.X / 2 + dx * k, vp.Y / 2 + dy * k),
+				Vector2.new(30, 30),
+				40
+			)
+			dx, dy, k = pin.X - vp.X / 2, pin.Y - vp.Y / 2, 1
+			arrow.Position = UDim2.fromOffset(pin.X, pin.Y)
 			arrow.Visible = true
 			local char = Players.LocalPlayer.Character
 			local root = char and char:FindFirstChild("HumanoidRootPart")
