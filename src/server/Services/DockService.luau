@@ -608,6 +608,7 @@ local function makeSite(plot: Plot, key: string)
 		return
 	end
 	m.Name = `Site_{key}`
+	m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic -- clients hide its parts: they must all arrive together
 	m.Parent = plot.model
 	plot.site, plot.siteKey = m, key
 end
@@ -889,6 +890,11 @@ local function startPrepaid(player: Player, data: any)
 	end
 	local prepaid = tableOf(data.dockPrepaid)
 	local owned = tableOf(data.dockBuildings)
+	for key in prepaid do
+		if owned[key] then
+			prepaid[key] = nil -- already standing (a Dev grant): nothing to build
+		end
+	end
 	for _, key in DockConfig.BUILDINGS do
 		if prepaid[key] and UnlockTree.missing(key, owned) == nil then
 			prepaid[key] = nil
@@ -973,6 +979,9 @@ local function buy(player: Player, key: any): (boolean, string)
 	end
 	if data.construction then
 		return false, "Building" -- one site at a time (docs/24 B)
+	end
+	if type(key) == "string" and type(data.dockPrepaid) == "table" and data.dockPrepaid[key] then
+		return false, "Owned" -- Robux paid already: it builds next, never charge Cash for it too
 	end
 	if busy[player] then
 		return false, "Busy"

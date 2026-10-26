@@ -76,7 +76,7 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   `BUILDINGS` (card order), `LEVEL_ITEMS` (old dock level -> tree items, the save migration), decorations and
   `Blueprints` (quest-chain buildings). Rules: `src/shared/UnlockTree.luau` (pure, `tests/UnlockTree.spec.luau`):
   `missing`, `canBuy(key, owned, cash) -> ok, "Owned" | "Needs" | "Cash", price, need`, `canRobux` (Robux skips the
-  Cash, never the order), `settle(owned, prepaid) -> built` (prepaid Robux buildings, in order), `craftMissing`,
+  Cash, never the order), `settle(owned, prepaid) -> built` (unused since timed builds), `craftMissing`,
   `migrate(level, owned)`. Craft gates:
   `ProgressionConfig.Vehicles[id].needs`.
 - `src/shared/DockPieces.luau`: `building(key, berthCFrame) -> Model` (the Lego set; doors in the owner's colour =
@@ -86,6 +86,13 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   the pieces client-side. `Dock_Upgrade` C->S fn `(key) -> ok, reason`; Robux = products with `dockBuilding`
   (keys `DockLevel2..5`, `DockHangar`, `DockSubPen`: the ids are the old dock levels'); a receipt whose
   prerequisites are missing is granted as prepaid (`data.dockPrepaid`, tablet chip "Paid"), built the moment they stand.
+- Timed builds (docs/24 B): every Cash or Robux buy starts a construction, one per island (`Dock_Upgrade` reason
+  `"Building"` while one runs; a Robux buy then waits in `dockPrepaid`). `src/shared/BuildTimer.luau` (pure,
+  `tests/BuildTimer.spec.luau`): `work(cash, decor)`, `builders(workers)`, `units`, `rate`, `rateOf`, `advance`,
+  `timeLeft`, `text`. Saved as `data.construction = { key, progress 0..1, rate, at (os.time) }`, advanced offline
+  on join; not owned (`dockBuildings`) until it finishes. Plot model attributes `SiteKey`, `SiteProgress`,
+  `SiteRate`, `SiteBuilders`, the rising model `Site_<key>` under the plot; client `ConstructionController` draws
+  the site, `DockController`'s tablet the timer. Studio: `WorkerDev` `"finishbuild"`.
 - Build tablet: the station tablet opens `DockController`'s top-down build mode (`DockBlueprints`: `onIsland`,
   `needs`, `glyph`, drawn by `UI/BuildGlyph`; `DockBuild`: camera and spot maths). `server/Dock/BoatBoard` builds
   every craft board (boat, hangar, sub) with scale models from `ReplicatedStorage.VehiclePreviews`; client
@@ -197,8 +204,9 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   rolls a survivor on pick-up (attributes `WorkerCategory` / `WorkerRarity` / `WorkerName`) and calls
   `WorkerService.Recruit` when they land at the driver's berth. `WorkerService`: `data.workers`, published as
   `ReplicatedStorage.Workers.<UserId>`, rigs in `ReplicatedStorage.WorkerRigs`, Gatherer pay, the Rescuers' NPC
-  boat, `PayOffline` on join; effect attributes `WorkerBuildDiscount`, `WorkerBoatScale`, `WorkerCraftSpeed`,
-  `WorkerPayBonus`. Client: `WorkerController`, `UI/WorkerBadge`. Studio: `WorkerDev` `"fill"` / `"unfill"`.
+  boat, `PayOffline` on join; effect attributes `WorkerBoatScale`, `WorkerCraftSpeed`, `WorkerPayBonus`
+  (Builders cut build time, not Cash). Each published worker has string attribute `Job`: `Build` (at the
+  island's construction site), `Fish`, `Repair`, `Rescue`, `Heal`, `Gather` or `Idle`. Client: `WorkerController`, `UI/WorkerBadge`. Studio: `WorkerDev` `"fill"` / `"unfill"`.
 - Crew (players riding together): `CrewService` (`GetCrew`, `IsCrewmate`, `Join`, `Leave`). Friends:
   `FriendService.Count`, `shared/FriendBonus`. Group reward: `GroupRewardService` + `shared/GroupReward`.
 - Daily crate: `StreakService` + `StreakRules` / `StreakConfig`; client `StreakController`, `World/StreakCrate`,

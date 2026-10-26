@@ -283,6 +283,8 @@ local function statusOf(item: DockBlueprints.Item): Status
 	local busy: ("site" | "wait")? = nil
 	if forSale and site.key then
 		busy = if site.key == item.key then "site" else "wait"
+	elseif forSale and type(snapshot.dockPrepaid) == "table" and snapshot.dockPrepaid[item.key] then
+		busy = "wait" -- Robux paid: it starts by itself, never offer a second buy
 	end
 	local reason: Reason? = nil
 	if owned then

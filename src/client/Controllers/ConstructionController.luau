@@ -366,8 +366,8 @@ end
 local function update(site: Site, progress: number, rate: number, builders: number)
 	local p = math.clamp(progress, 0, 1)
 	local cutoff = site.minY + (site.maxY - site.minY) * p
-	for _, part in site.parts do
-		local hid = part.CFrame.Y > cutoff + 1e-3
+	for n, part in site.parts do
+		local hid = site.ys[n] > cutoff + 1e-3 -- the resting height: a part mid-drop must not hide again
 		if not hid and site.hidden[part] and site.ready then
 			-- a newly reached course drops into place with a short Lego bounce
 			local final = part.CFrame
