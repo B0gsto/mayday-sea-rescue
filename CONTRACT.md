@@ -87,7 +87,7 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
 - Build tablet: the station tablet opens `DockController`'s top-down build mode (`DockBlueprints`: `onIsland`,
   `needs`, `glyph`, drawn by `UI/BuildGlyph`; `DockBuild`: camera and spot maths). `server/Dock/BoatBoard` builds
   every craft board (boat, hangar, sub) with scale models from `ReplicatedStorage.VehiclePreviews`; client
-  `BoatBoardController` (owned: crane beat + `DockLaunch`; locked: `Menu.openBoat(id)`). The boathouse paint
+  `BoatBoardController` (one `BoardOpen` prompt per board -> `Menu.openBoard` -> `UI/Panels/Board` cards; Launch = Net `BoardLaunch` -> crane beat + `DockLaunch`). The boathouse paint
   booth (`DockConfig.PAINT_BOOTH`) opens `DockController`'s paint card (`UI/CosmeticPicker`). Harbour Master:
   most people rescued among islands with a Station gets a gold name board and beacon.
 - Studio: `DockDev:Invoke("building", key | "all")`, DevBoard "Build (target)".

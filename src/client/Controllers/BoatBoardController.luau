@@ -1,11 +1,10 @@
 --!strict
 -- BoatBoardController (docs/23 d.3, WP-5): the client half of the vehicle boards (server/Dock/BoatBoard: the
 -- boat board and the hangar and sub pen boards, all tagged BoatBoard).
--- On your own rack, owned models stay lit with Launch (the server's crane does the rest); locked ones go
--- dark with a padlock, a Cash chip (coin + price, or the building it still needs: its drawing + name, docs/23
--- (q)) and an R$ chip (greyed until that building stands: Robux never skips the order), and their
--- prompt reads Buy. Buy and Upgrade open the kit Boat card for that craft (UI/BoatCard), with the
--- Cash / Robux buttons and upgrade tiles. Other players' racks: prompts off.
+-- On your own rack, owned models stay lit; locked ones go dark with a padlock, a Cash chip (coin + price, or
+-- the building it still needs: its drawing + name, docs/23 (q)) and an R$ chip (greyed until that building
+-- stands: Robux never skips the order). The rack's one BoardOpen prompt opens the board panel
+-- (Menu.openBoard: Launch / Buy per craft). Other players' racks: prompt off.
 local CollectionService = game:GetService("CollectionService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -194,21 +193,16 @@ end
 
 local function paintRack(rack: Instance)
 	local mine = rack:GetAttribute("Owner") == player.UserId
+	local open = rack:FindFirstChild("BoardOpen", true) :: ProximityPrompt?
+	if open then
+		open.Enabled = mine
+	end
 	for _, pad in rack:GetChildren() do
 		local id = pad:GetAttribute("VehicleId")
 		if not (pad:IsA("BasePart") and type(id) == "string") or pad:GetAttribute("Silhouette") then
 			continue -- a craft not built yet stays a grey shape
 		end
-		local launch = pad:FindFirstChild("BoardLaunch") :: ProximityPrompt?
-		local card = pad:FindFirstChild("BoardCard") :: ProximityPrompt?
 		local have = if mine then usable(id) else nil
-		if launch then
-			launch.Enabled = mine
-			launch.ActionText = if have == false then "Buy" else "Launch"
-		end
-		if card then
-			card.Enabled = mine and have == true
-		end
 		local model = pad:FindFirstChild("Model")
 		if model and mine then
 			local dim = model:FindFirstChild("Dim") :: Highlight?
@@ -251,20 +245,15 @@ local function watch(rack: Instance)
 	end)
 end
 
--- Buy (a locked model) or Upgrade (an owned one): the kit opens on that craft's card
 local function onTriggered(prompt: ProximityPrompt)
-	local id = prompt:GetAttribute("VehicleId")
-	local pad = prompt.Parent
-	local rack = pad and pad.Parent
+	local rack = prompt.Parent and prompt.Parent.Parent
 	if
-		type(id) ~= "string"
-		or not (rack and CollectionService:HasTag(rack, TAG))
-		or rack:GetAttribute("Owner") ~= player.UserId
+		prompt.Name == "BoardOpen"
+		and rack
+		and CollectionService:HasTag(rack, TAG)
+		and rack:GetAttribute("Owner") == player.UserId
 	then
-		return
-	end
-	if prompt.Name == "BoardCard" or (prompt.Name == "BoardLaunch" and usable(id) == false) then
-		Menu.openBoat(id)
+		Menu.openBoard(rack)
 	end
 end
 

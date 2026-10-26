@@ -5,14 +5,13 @@
 --   Boat board    every VehicleConfig.Order craft no building claims; the crane over the berth
 --   Hangar board  RescueHelicopter (onto the helipad), in the hangar
 --   Sub board     Submarine, on the jetty beside the sub pen; lowered into the pen on the gantry hook
--- Each model's pad carries two owner-only prompts:
---   BoardLaunch (E)  owned: the beat plays, then the craft spawns at its spot, you in its seat (boats, aircraft,
---                    sub: VehicleService.DockLaunch). Locked: the client opens
---                    the buy card (BoatBoardController).
---   BoardCard (F)    owned crafts with upgrades: the client opens the same card (upgrades).
--- An id VehicleConfig does not know yet shows as a grey silhouette with no prompts (pad
--- attribute Silhouette). The client lights owned models and puts the padlock and price chips on locked ones;
--- the server checks ownership again here. Racks: tag "BoatBoard", attributes Owner (UserId) and PlotIndex.
+-- The models are decoration. One owner-only prompt per board (BoardOpen, on the backboard; Roblox shows one
+-- prompt at a time, so a prompt per model hid the back row) opens the client's board panel (UI/Panels/Board):
+-- a card per craft. Launch there fires Net BoardLaunch (board name, id): the beat plays, then the craft spawns
+-- at its spot, you in its seat (VehicleService.DockLaunch). An id VehicleConfig does not know yet shows as a
+-- grey silhouette (pad attribute Silhouette). The client lights owned models and dims locked ones; the server
+-- checks owner, reach and ownership again here. Racks: tag "BoatBoard", attributes Owner (UserId), PlotIndex,
+-- Vehicles (the craft ids in order, comma-joined).
 --   BoatBoard.start(launch)  VehicleService.Start passes DockLaunch(player, id, target?) (no require cycle)
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -22,8 +21,8 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local DockPieces = require(Shared:WaitForChild("DockPieces"))
 local Marina = require(Shared:WaitForChild("Marina"))
+local Net = require(Shared:WaitForChild("Net"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
-local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
 local Services = script.Parent.Parent:WaitForChild("Services")
 local DockService = require(Services:WaitForChild("DockService"))
@@ -40,6 +39,7 @@ local CRANE = Vector3.new(-13, 0, -12) -- the boat crane post, on the jetty fing
 local JIB_Y = 24
 local AFLOAT = 1.5 -- a lowered craft's pivot over the water at the end of the beat
 local DROP_TIME = 1.4
+local REACH = 18 -- BoardLaunch: studs from the backboard (the prompt's reach plus a step back)
 
 local WOOD = Color3.fromRGB(84, 62, 44)
 local NAVY = Color3.fromRGB(30, 40, 58)
@@ -67,7 +67,7 @@ type Def = {
 	launch: (Player, string, CFrame?) -> (boolean, any),
 }
 
-type Board = { def: Def, rack: Model, hook: Part?, rope: Part?, busy: boolean }
+type Board = { def: Def, rack: Model, back: BasePart?, hook: Part?, rope: Part?, busy: boolean }
 
 local boards: { [string]: { [BasePart]: Board } } = {}
 local launchFn: Launch? = nil
@@ -140,29 +140,6 @@ local function silhouette(id: string): Model?
 		end
 	end
 	return model
-end
-
-local function prompt(
-	pad: BasePart,
-	name: string,
-	action: string,
-	key: Enum.KeyCode,
-	button: Enum.KeyCode,
-	id: string
-)
-	local p = Instance.new("ProximityPrompt")
-	p.Name = name
-	p.ActionText = action
-	p.ObjectText = displayName(id) or id
-	p.KeyboardKeyCode = key
-	p.GamepadKeyCode = button
-	p.HoldDuration = 0
-	p.MaxActivationDistance = 7
-	p.RequiresLineOfSight = false
-	p:SetAttribute("VehicleId", id)
-	p:SetAttribute("FootOnly", true)
-	p.Parent = pad
-	return p
 end
 
 local function frameOf(_def: Def, berth: BasePart): CFrame
@@ -296,6 +273,7 @@ local function build(def: Def, berth: BasePart)
 	rack.Name = def.name
 	rack:SetAttribute("Owner", berth:GetAttribute("Owner"))
 	rack:SetAttribute("PlotIndex", berth:GetAttribute("PlotIndex"))
+	rack:SetAttribute("Vehicles", table.concat(def.vehicles, ","))
 
 	-- the rack: shelves on legs (stepped rows in the boathouse) with a navy backboard
 	local order = def.vehicles
@@ -358,7 +336,18 @@ local function build(def: Def, berth: BasePart)
 	label.Text = TITLES[def.name] or ""
 	label.Parent = gui
 
-	local board: Board = { def = def, rack = rack, busy = false }
+	local open = Instance.new("ProximityPrompt")
+	open.Name = "BoardOpen"
+	open.ActionText = TITLES[def.name] or "Boats"
+	open.KeyboardKeyCode = Enum.KeyCode.E
+	open.GamepadKeyCode = Enum.KeyCode.ButtonX
+	open.HoldDuration = 0
+	open.MaxActivationDistance = 10
+	open.RequiresLineOfSight = false
+	open:SetAttribute("FootOnly", true)
+	open.Parent = back
+
+	local board: Board = { def = def, rack = rack, back = back, busy = false }
 	if def.hook then
 		if not def.building then
 			crane(rack, berth.CFrame)
@@ -405,16 +394,7 @@ local function build(def: Def, berth: BasePart)
 		pad.CanCollide = false
 		pad:SetAttribute("VehicleId", id)
 		local real = displayName(id) ~= nil
-		if real then
-			prompt(pad, "BoardLaunch", "Launch", Enum.KeyCode.E, Enum.KeyCode.ButtonX, id).Triggered:Connect(
-				function(player)
-					task.spawn(onLaunch, board, berth, player, id)
-				end
-			)
-			if VehicleUpgrades.Vehicles[id] then
-				prompt(pad, "BoardCard", "Upgrade", Enum.KeyCode.F, Enum.KeyCode.ButtonY, id)
-			end
-		else
+		if not real then
 			pad:SetAttribute("Silhouette", true)
 		end
 		task.defer(function() -- deferred: the rack is parented by then
@@ -478,8 +458,32 @@ local function boats(): { string }
 	return out
 end
 
+-- the board panel's Launch: your own board of that name, standing by it, a craft it carries
+local function onBoardLaunch(player: Player, name: any, id: any)
+	if type(name) ~= "string" or type(id) ~= "string" or not boards[name] then
+		return
+	end
+	local char = player.Character
+	local root = char and char:FindFirstChild("HumanoidRootPart")
+	for berth, board in boards[name] do
+		local back = board.back
+		if
+			berth:GetAttribute("Owner") == player.UserId
+			and table.find(board.def.vehicles, id)
+			and back
+			and root
+			and root:IsA("BasePart")
+			and (root.Position - back.Position).Magnitude <= REACH
+		then
+			task.spawn(onLaunch, board, berth, player, id)
+			return
+		end
+	end
+end
+
 function BoatBoard.start(launch: Launch)
 	launchFn = launch
+	Net.event("BoardLaunch").OnServerEvent:Connect(onBoardLaunch)
 	local B = DockPieces.Buildings
 	defs = {
 		{
