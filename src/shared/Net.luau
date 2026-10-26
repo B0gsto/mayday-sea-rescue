@@ -22,6 +22,7 @@
 --                            ReplicatedStorage.Weather (State, StateStartTime, Intensity,
 --                            WindDirection, StormId), so late joiners read it without catch-up.
 --   DogPoint           S->C  Bosun points/barks toward a victim (direction or position)
+--   BoardLaunch        C->S  launch a craft from your own craft board (board name, vehicleId; server/Dock/BoatBoard)
 --   RequestVehicle     C->S  function: launch a vehicle at a bay (vehicleId, docked?) -> (ok, reasonOrVehicle)
 --   BuyGear            C->S  function: buy a vehicle (vehicleId) -> (ok, reason)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -34,6 +35,7 @@ export type EventName =
 	| "PlayerDataChanged"
 	| "StormChanged"
 	| "DogPoint"
+	| "BoardLaunch"
 
 export type FunctionName = "RequestVehicle" | "BuyGear"
 
@@ -49,6 +51,7 @@ Net.EVENTS = table.freeze({
 	"PlayerDataChanged",
 	"StormChanged",
 	"DogPoint",
+	"BoardLaunch",
 } :: { EventName })
 
 Net.FUNCTIONS = table.freeze({ "RequestVehicle", "BuyGear" } :: { FunctionName })

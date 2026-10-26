@@ -8,6 +8,7 @@
 --   B closes the open panel or leaves the column.
 --   LocalPlayer attribute MenuOpen mirrors "a panel is up" (Waypoint and the pager hide under it).
 --   Menu.open(name) / Menu.close() / Menu.toggle(name) / Menu.openBoat(vehicleId) / Menu.isOpen()
+--   Menu.openBoard(rack): a craft board's list (Panels/Board), from its BoardOpen prompt
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
@@ -31,6 +32,7 @@ local UI = script.Parent
 local Kit = UI:WaitForChild("Kit")
 local Panels = UI:WaitForChild("Panels")
 local Album = require(Panels:WaitForChild("Album"))
+local Board = require(Panels:WaitForChild("Board"))
 local BoatCard = require(UI:WaitForChild("BoatCard"))
 local Companion = require(Panels:WaitForChild("Companion"))
 local Crew = require(Panels:WaitForChild("Crew"))
@@ -153,6 +155,15 @@ function Menu.openBoat(id: string)
 	if card then
 		card.setId(id)
 		Menu.open("Boat")
+	end
+end
+
+function Menu.openBoard(rack: Instance)
+	local name = "Board_" .. rack.Name
+	local p = panels[name]
+	if p then
+		p.setRack(rack)
+		Menu.open(name)
 	end
 end
 
@@ -444,6 +455,11 @@ function Menu.mount()
 		Crew = Crew.new(c, noteClosed),
 		Settings = SettingsPanel.newPanel(c, noteClosed),
 	}
+	local boards: { [string]: string } =
+		{ BoatBoard = "Boats", HangarBoard = "Helicopter", SubBoard = "Submarine" }
+	for rack, title in boards do
+		panels["Board_" .. rack] = Board.new(c, noteClosed, rack, title, Menu.openBoat)
+	end
 	buildChip(Layout.region(g, "quest"))
 
 	local function applyShown()

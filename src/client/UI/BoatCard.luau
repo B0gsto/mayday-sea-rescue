@@ -105,6 +105,33 @@ local function ownsPass(id: string): boolean
 	return key ~= nil and player:GetAttribute("Pass_" .. key) == true
 end
 
+-- the craft's 3D portrait in a rounded well (BoatCard hero, Panels/Board cards); size and place it
+function BoatCard.preview(parent: Instance, id: string): ViewportFrame
+	local art = Instance.new("ViewportFrame")
+	art.Name = "Preview"
+	art.BackgroundColor3 = Color3.fromRGB(214, 233, 247)
+	art.BackgroundTransparency = 0.15
+	art.Ambient = Color3.fromRGB(135, 145, 160)
+	art.LightColor = Color3.fromRGB(255, 244, 226)
+	art.LightDirection = Vector3.new(-0.6, -1, -0.5)
+	Style.corner(art, S.cornerSmall)
+	art.Parent = parent
+	local model = previewModel(id)
+	if model then
+		local centre, size = visibleBounds(model)
+		model.Parent = art
+		local camera = Instance.new("Camera")
+		camera.FieldOfView = 28
+		camera.Parent = art
+		art.CurrentCamera = camera
+		local dist = math.max(size.X, size.Y, size.Z) * 1.7
+		camera.CFrame = CFrame.lookAt(centre + Vector3.new(dist * 0.8, dist * 0.45, dist), centre)
+	else
+		Style.icon(art, "boat_to_me")
+	end
+	return art
+end
+
 function BoatCard.new(canvas: Frame, onClose: () -> ())
 	local panel = Panel.new(canvas, {
 		title = "Boat",
@@ -248,31 +275,9 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 		hero.BackgroundTransparency = 1
 		hero.Parent = panel.body
 		local _, face = Style.block(hero, Style.grad(if owned then "green" else "blue"))
-		local art = Instance.new("ViewportFrame")
-		art.Name = "Preview"
-		art.BackgroundColor3 = Color3.fromRGB(214, 233, 247)
-		art.BackgroundTransparency = 0.15
+		local art = BoatCard.preview(face, craft)
 		art.Position = UDim2.fromOffset(14, 14)
 		art.Size = UDim2.fromOffset(122, 122)
-		art.Ambient = Color3.fromRGB(135, 145, 160)
-		art.LightColor = Color3.fromRGB(255, 244, 226)
-		art.LightDirection = Vector3.new(-0.6, -1, -0.5)
-		Style.corner(art, S.cornerSmall)
-		art.Parent = face
-		local model = previewModel(craft)
-		if model then
-			local centre, size = visibleBounds(model)
-			model.Parent = art
-			local camera = Instance.new("Camera")
-			camera.FieldOfView = 28
-			camera.Parent = art
-			art.CurrentCamera = camera
-			local dist = math.max(size.X, size.Y, size.Z) * 1.7
-			camera.CFrame =
-				CFrame.lookAt(centre + Vector3.new(dist * 0.8, dist * 0.45, dist), centre)
-		else
-			Style.icon(art, "boat_to_me")
-		end
 		local boatName = Style.label(face, spec.displayName, Theme.Text.title)
 		boatName.Position = UDim2.fromOffset(154, 12)
 		boatName.Size = UDim2.new(1, -170, 0, 56)
