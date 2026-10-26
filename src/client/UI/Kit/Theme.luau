@@ -100,8 +100,11 @@ Theme.Size = {
 	panel = Vector2.new(700, 560),
 	titleBar = 74,
 	close = 66,
-	tab = 68, -- touch targets: >= 68 du = 48 px at the phone floor
+	tab = 68, -- the selected tab; touch targets are >= touch du (44 px at the phone floor)
+	tabOff = 64, -- the other tabs, a step lower
+	touch = 63,
 	card = 132,
+	cardCompact = 96, -- short landscape screens (Theme.compact): 3 cards show in a panel
 	price = Vector2.new(184, 70),
 	counter = Vector2.new(230, 62),
 	toast = 72,
@@ -132,9 +135,15 @@ function Theme.scaleFor(viewport: Vector2): number
 	return math.clamp(s, Theme.MIN_SCALE, Theme.MAX_SCALE)
 end
 
--- A centred panel's du size: its design size, shrunk to 92% x 86% of the viewport. Desktop
--- (scale >= 0.95, landscape) caps the width at half the screen unless `wide` (the map). Portrait
--- returns the most it may grow to (80% of the height); Kit/Panel shrinks it to its content.
+-- Short landscape screens (phones on their side): panels go compact (Kit/Panel: tabs in the title bar,
+-- tighter padding, 98% of the height; Kit/Card: cardCompact rows).
+function Theme.compact(viewport: Vector2, scale: number): boolean
+	return viewport.X > viewport.Y and viewport.Y / scale < 600
+end
+
+-- A centred panel's du size: its design size, shrunk to 92% x 86% of the viewport (compact: 98% of the
+-- height). Desktop (scale >= 0.95, landscape) caps the width at half the screen unless `wide` (the map).
+-- Portrait returns the most it may grow to (80% of the height); Kit/Panel shrinks it to its content.
 function Theme.panelSize(viewport: Vector2, scale: number, want: Vector2, wide: boolean?): Vector2
 	local portrait = viewport.Y > viewport.X
 	local h = if portrait then math.max(want.Y, viewport.Y * 0.8 / scale) else want.Y
@@ -142,7 +151,8 @@ function Theme.panelSize(viewport: Vector2, scale: number, want: Vector2, wide: 
 	if scale >= 0.95 and not portrait and not wide then
 		w = math.min(w, math.max(viewport.X * 0.5 / scale, 600))
 	end
-	return Vector2.new(math.floor(w), math.floor(math.min(h, viewport.Y * 0.86 / scale)))
+	local fill = if Theme.compact(viewport, scale) then 0.98 else 0.86
+	return Vector2.new(math.floor(w), math.floor(math.min(h, viewport.Y * fill / scale)))
 end
 
 -- Columns for the left icon-button bar: as many rows as fit in 86% of the height (at least 1).

@@ -9,7 +9,7 @@ export type Toggle = { root: ImageButton, set: (boolean) -> (), get: () -> boole
 
 local Toggle = {}
 
-local W, H = 124, 62
+local W, H = 124, 64 -- >= 44 px at the phone floor
 
 function Toggle.new(parent: Instance?, props: { on: boolean, onChange: ((boolean) -> ())? }): Toggle
 	local on = props.on

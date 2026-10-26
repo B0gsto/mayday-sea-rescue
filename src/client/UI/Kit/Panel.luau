@@ -141,11 +141,12 @@ function Panel.new(canvas: Instance, props: Props): Panel
 		ic.Parent = bar
 		Style.icon(ic, props.icon)
 	end
+	local titleX = if hasIcon then iconSide * 0.75 + 6 else S.pad + 6
 	local title = Style.label(barFace, props.title, Theme.Text.title)
 	title.TextXAlignment = Enum.TextXAlignment.Left
 	title.TextWrapped = false
-	title.Position = UDim2.fromOffset(if hasIcon then iconSide * 0.75 + 6 else S.pad + 6, 0)
-	title.Size = UDim2.new(1, -(if hasIcon then iconSide * 0.75 + 6 else S.pad + 6) - S.close, 1, 0)
+	title.Position = UDim2.fromOffset(titleX, 0)
+	title.Size = UDim2.new(1, -titleX - S.close, 1, 0)
 
 	-- red X, over the bar's right end
 	local x = Style.button(root, UDim2.fromOffset(S.close, S.close + S.lip))
@@ -164,9 +165,25 @@ function Panel.new(canvas: Instance, props: Props): Panel
 		+ 12
 		+ 8
 		+ (if props.tabs then S.tab + 10 else 0)
+	local padding = inner:FindFirstChildOfClass("UIPadding") :: UIPadding
+	top.ZIndex = 3
 	local function fit()
 		local vp, scale = Style.metrics(root)
 		local sz = Theme.panelSize(vp, scale, want, props.wide)
+		-- short landscape (phones): the tabs move into the title bar in place of the name (the icon stays),
+		-- tighter padding, so the list gets the height (verify 2026-10-26: the Shop showed 1.3 cards)
+		local compact = Theme.compact(vp, scale)
+		local px = UDim.new(0, if compact then 8 else S.pad)
+		padding.PaddingTop, padding.PaddingBottom, padding.PaddingLeft, padding.PaddingRight =
+			px, px, px, px
+		if props.tabs then
+			top.Parent = if compact then bar else inner
+			top.AnchorPoint = Vector2.new(0, if compact then 0.5 else 0)
+			top.Position = if compact then UDim2.new(0, titleX, 0.5, -2) else UDim2.new()
+			top.Size = UDim2.new(1, if compact then -titleX - S.close * 0.5 - 8 else 0, 0, S.tab)
+			title.Visible = not compact
+			body.Size = UDim2.new(1, 0, 1, if compact then 0 else -(S.tab + 10))
+		end
 		local h = sz.Y
 		-- portrait: shrink to the content (no dead space under a short list)
 		local ratio = if root.Size.Y.Offset > 0 then root.AbsoluteSize.Y / root.Size.Y.Offset else 0
@@ -193,6 +210,7 @@ function Panel.new(canvas: Instance, props: Props): Panel
 	root.Parent = canvas
 	fit()
 	canvas:GetAttributeChangedSignal("KitScale"):Connect(fit)
+	canvas:GetAttributeChangedSignal("KitViewport"):Connect(fit)
 
 	return {
 		root = root,

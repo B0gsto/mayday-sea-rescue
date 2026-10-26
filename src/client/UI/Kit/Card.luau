@@ -4,7 +4,7 @@
 -- (grey card, padlock over the art, price greyed).
 --   local c = Card.new(parent, { art = "vip", title = "VIP", line = "Double cash forever",
 --       color = "purple", price = 399, currency = "Robux", onBuy = fn })
---   c.setState("owned")  c.setLine("Active 2h")   c.root: Frame, full width x Theme.Size.card
+--   c.setState("owned")  c.setLine("Active 2h")   c.root: Frame, full width x Theme.Size.card (compact: cardCompact)
 local PriceButton = require(script.Parent:WaitForChild("PriceButton"))
 local Style = require(script.Parent:WaitForChild("Style"))
 local Theme = require(script.Parent:WaitForChild("Theme"))
@@ -36,10 +36,13 @@ function Card.new(parent: Instance?, props: Props): Card
 	local root = Instance.new("Frame")
 	root.Name = "Card"
 	root.BackgroundTransparency = 1
-	root.Size = UDim2.new(1, 0, 0, S.card)
+	-- shortcut: compact is read once, at creation (panels rebuild their cards on open); live re-fit if needed
+	local vp, scale = Style.metrics(parent or root)
+	local height = if Theme.compact(vp, scale) then S.cardCompact else S.card
+	root.Size = UDim2.new(1, 0, 0, height)
 	local holder, face = Style.block(root, Style.grad(props.color or "yellow"))
 
-	local artSide = S.card - S.lip - 22
+	local artSide = height - S.lip - 22
 	local well = Instance.new("Frame")
 	well.Name = "Art"
 	well.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -83,6 +86,18 @@ function Card.new(parent: Instance?, props: Props): Card
 	title.TextXAlignment = Enum.TextXAlignment.Left
 	title.TextWrapped = false
 	title.TextTruncate = Enum.TextTruncate.AtEnd
+	-- narrow cards (portrait phones): the name wraps to 2 lines and shrinks to fit instead of cutting off
+	local cap = Instance.new("UITextSizeConstraint")
+	cap.MaxTextSize = Theme.Text.heading
+	cap.MinTextSize = 16
+	cap.Parent = title
+	words:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+		local du = root.AbsoluteSize.Y / height -- px per du, whatever scales sit above
+		local narrow = du > 0 and words.AbsoluteSize.X / du < 200
+		title.TextWrapped = narrow
+		title.TextScaled = narrow
+		title.Size = UDim2.new(1, 0, 0, if narrow then 60 else 34)
+	end)
 	-- the 2-5 word line: a size up from small with the full-weight outline, readable on every gradient
 	local line = Style.label(words, props.line or "", Theme.Text.small + 2)
 	line.Name = "Line"

@@ -34,8 +34,7 @@ function Tabs.new(parent: Instance, tabs: { Tab }, onSelect: ((number) -> ())?):
 		for i, it in items do
 			local on = i == current
 			Style.recolor(it.holder, Style.grad(if on then "yellow" else "tabOff"))
-			it.root.Size =
-				UDim2.new(1 / #tabs, -10 + 10 / #tabs, 0, if on then S.tab else S.tab - 6)
+			it.root.Size = UDim2.new(1 / #tabs, -10 + 10 / #tabs, 0, if on then S.tab else S.tabOff)
 		end
 	end
 	local function pick(i: number)

@@ -120,11 +120,6 @@ local function buildWallet(region: Frame)
 	-- touch: the region can be shorter than the card (it ends above the thumbstick zone)
 	local fit = Instance.new("UIScale")
 	fit.Parent = wallet
-	local function refit()
-		fit.Scale = math.min(1, region.Size.Y.Offset / H)
-	end
-	region:GetPropertyChangedSignal("Size"):Connect(refit)
-	refit()
 
 	local row = Instance.new("Frame")
 	row.Name = "CashRow" -- FriendController adds its bonus chip here, after the amount
@@ -150,17 +145,24 @@ local function buildWallet(region: Frame)
 	cashLabel.TextTruncate = Enum.TextTruncate.None
 	HudTheme.outline(cashLabel)
 
-	-- (+): the kit Shop; a 48 du hit area around the 42 du button sprite
+	-- (+): the kit Shop; a hit area around the 42 du button sprite, >= 46 px on screen (touch target, refit)
 	local plus = Instance.new("TextButton")
 	plus.Name = "StoreButton"
 	plus.Text = ""
 	plus.AutoButtonColor = false
 	plus.Selectable = true
 	plus.BackgroundTransparency = 1
-	plus.AnchorPoint = Vector2.new(1, 0)
-	plus.Position = UDim2.new(1, -4, 0, 2)
-	plus.Size = UDim2.fromOffset(48, 48)
+	plus.AnchorPoint = Vector2.new(0.5, 0.5)
+	plus.Position = UDim2.fromOffset(W - 28, 26)
 	plus.Parent = wallet
+	local function refit()
+		fit.Scale = math.min(1, region.Size.Y.Offset / H)
+		local side = math.max(48, math.ceil(46 / (Layout.current().scale * fit.Scale)))
+		plus.Size = UDim2.fromOffset(side, side)
+	end
+	region:GetPropertyChangedSignal("Size"):Connect(refit)
+	Layout.onMetrics(refit)
+	refit()
 	local disc = HudTheme.image("Disc", Hud.PlusButton, UDim2.fromOffset(42, 42), plus)
 	disc.AnchorPoint = Vector2.new(0.5, 0.5)
 	disc.Position = UDim2.fromScale(0.5, 0.5)

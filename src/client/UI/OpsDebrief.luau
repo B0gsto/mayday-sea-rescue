@@ -1,6 +1,6 @@
 --!strict
--- OpsDebrief: the end-of-call result as a wordless toast (docs/16 K5). It slides down at the top
--- centre: up to three stars stamp in, Cash rolls up (the coins fly to the HUD's Cash counter), the
+-- OpsDebrief: the end-of-call result as a wordless toast (docs/16 K5). It slides down in the HudLayout
+-- "debrief" region (top centre where it fits): up to three stars stamp in, Cash rolls up (the coins fly to the HUD's Cash counter), the
 -- time shows on a stopwatch, and three mastery icons light up when earned: smooth ride (boat),
 -- nobody left (seat) and fast (speed) (shared/Ops/Grading.mastery). No grading text. It never takes
 -- input or covers the play area, and slides away on its own.
@@ -168,12 +168,20 @@ function OpsDebrief.new(parent: GuiObject): Debrief
 	toast.AnchorPoint = Vector2.new(0.5, 0)
 	toast.Visible = false
 	HudTheme.skin(toast)
+	-- shrinks to its HudLayout "debrief" region (a gap clear of the wallet and the edge HUD on small screens)
+	local fit = Instance.new("UIScale")
+	fit.Parent = toast
+	local function refit()
+		fit.Scale = math.min(1, parent.Size.X.Offset / 340)
+	end
+	parent:GetPropertyChangedSignal("Size"):Connect(refit)
+	refit()
 	local content = Instance.new("Frame")
 	content.Name = "Content"
 	content.Size = UDim2.fromScale(1, 1)
 	content.BackgroundTransparency = 1
 	content.Parent = toast
-	local OPEN = UDim2.new(0.5, 0, 0, 8)
+	local OPEN = UDim2.fromScale(0.5, 0)
 	local CLOSED = UDim2.new(0.5, 0, 0, -100)
 
 	local shownAt = 0

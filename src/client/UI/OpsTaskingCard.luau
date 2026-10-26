@@ -110,19 +110,28 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 	far.TextStrokeColor3 = Color3.fromHex("06101C")
 	far.TextStrokeTransparency = 0.55
 
-	-- accept: the check sprite (>= 48 px touch target); the key chip at its right shoulder
+	-- accept: the check sprite in an 80 du hit area (>= 44 px at the phone floor x the 0.8 touch scale); the key
+	-- chip at the sprite's right shoulder
 	local key = Instance.new("ImageButton")
 	key.Name = "Launch"
 	key.AnchorPoint = Vector2.new(0.5, 1)
-	key.Position = UDim2.new(0.5, 0, 1, -10)
-	key.Size = UDim2.fromOffset(64, 64)
+	key.Position = UDim2.new(0.5, 0, 1, -2)
+	key.Size = UDim2.fromOffset(80, 80)
 	key.BackgroundTransparency = 1
-	key.Image = Hud.AcceptButton
-	key.ScaleType = Enum.ScaleType.Fit
+	key.Image = ""
 	key.Parent = body
+	local tick = Instance.new("ImageLabel")
+	tick.Name = "Sprite"
+	tick.AnchorPoint = Vector2.new(0.5, 0.5)
+	tick.Position = UDim2.fromScale(0.5, 0.5)
+	tick.Size = UDim2.fromOffset(64, 64)
+	tick.BackgroundTransparency = 1
+	tick.Image = Hud.AcceptButton
+	tick.ScaleType = Enum.ScaleType.Fit
+	tick.Parent = key
 	local pulse = Instance.new("UIScale")
 	pulse.Parent = key
-	local chip = InputGlyph.chip(key, ACCEPT_KEY, ACCEPT_PAD)
+	local chip = InputGlyph.chip(tick, ACCEPT_KEY, ACCEPT_PAD)
 	chip.AnchorPoint = Vector2.new(0.5, 0.5)
 	chip.Position = UDim2.fromScale(0.92, 0.12)
 

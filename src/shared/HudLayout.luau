@@ -27,7 +27,8 @@
 -- minimap sits right of it at 130 final px (tap it for the full map, MapController), the objective strip
 -- right of that (portrait: under it) and the wallet under the objective. The notice band sits beside
 -- the wallet, or under it in the band between the two zones; the mission card column (TOUCH_CARD_WIDTH,
--- the pager) stops above the jump zone. The prompt keeps its place.
+-- the pager) stops above the jump zone. The prompt keeps its place. Phone-sized screens use this arrangement on
+-- every device (compute). The debrief toast takes the topmost free gap (debriefRect), shrinking to fit.
 -- `tests/HudLayout.spec.luau` asserts this on 16:9 / 19.5:9 / small Android phones (landscape and
 -- portrait) and 4:3 tablets.
 local HudLayout = {}
@@ -48,12 +49,15 @@ HudLayout.OBJECTIVE_MIN_WIDTH = 210 -- the step card is 208 wide
 HudLayout.QUEST_WIDTH = 236 -- the quest tracker chip (UI/Menu): desktop above the minimap pill
 HudLayout.QUEST_HEIGHT = 50
 HudLayout.QUEST_TOUCH_HEIGHT = 34 -- touch: a tag over the minimap's bottom edge, ending where the objective may start
+HudLayout.DEBRIEF_WIDTH = 340 -- the end-of-call toast (UI/OpsDebrief), drawn scaled to its region's width
+HudLayout.DEBRIEF_HEIGHT = 96
+HudLayout.DEBRIEF_MIN = 0.7 -- the smallest the toast may shrink to fit a gap
 HudLayout.MENU_COUNT = 8 -- UI/Menu's buttons: Shop, Quests, Album, Pet, Crew, Settings, Map, Boat
 
 -- The menu grid's cell per device (du): icon square, label row (text = label - 4), row gap, column gap.
--- Touch icons are >= 43 px at the 0.7 floor; desktop labels are bigger (kit polish).
+-- Touch icons are >= 44 px at the 0.7 floor; desktop labels are bigger (kit polish).
 local MENU_DESK = { icon = 72, label = 28, gap = 10, colGap = 22 }
-local MENU_TOUCH = { icon = 62, label = 24, gap = 6, colGap = 16 }
+local MENU_TOUCH = { icon = 64, label = 24, gap = 6, colGap = 14 }
 
 -- usable px at which the HUD draws 1:1 (1080p draws 1.6x: wallet ~380x150 px, minimap ~335 px)
 local REF_HEIGHT = 620
@@ -72,6 +76,7 @@ export type RegionName =
 	| "wallet"
 	| "menu"
 	| "quest"
+	| "debrief"
 
 export type Rect = {
 	anchor: Vector2,
@@ -107,6 +112,58 @@ export type Metrics = {
 
 local function rect(anchor: Vector2, pos: Vector2, size: Vector2): Rect
 	return { anchor = anchor, pos = pos, size = size }
+end
+
+local function box(r: Rect): (number, number, number, number)
+	local x = r.pos.X - r.anchor.X * r.size.X
+	local y = r.pos.Y - r.anchor.Y * r.size.Y
+	return x, y, x + r.size.X, y + r.size.Y
+end
+
+-- The debrief toast: the topmost band (at the toast's full height) with a free gap of at least DEBRIEF_MIN of its
+-- width between the edge HUD (wallet, menu, minimap, quest, card column, gauges) and the touch zones; the toast
+-- shrinks to the gap. The objective is free: the step card hides while the debrief shows (OpsHud).
+local function debriefRect(mt: Metrics, zones: { { number } }): Rect
+	local u, m, g = mt.usable, HudLayout.MARGIN, HudLayout.GAP
+	local W, H = HudLayout.DEBRIEF_WIDTH, HudLayout.DEBRIEF_HEIGHT
+	local blocks = table.clone(zones)
+	local ys = { m }
+	for _, name in { "wallet", "menu", "minimap", "quest", "right", "gauges" } do
+		local x0, y0, x1, y1 = box(mt.rects[name])
+		table.insert(blocks, { x0 - g, y0 - g, x1 + g, y1 + g })
+		table.insert(ys, y1 + g)
+	end
+	table.sort(ys)
+	for _, y in ys do
+		local spans = {}
+		for _, b in blocks do
+			if b[2] < y + H and b[4] > y then
+				table.insert(spans, b)
+			end
+		end
+		table.sort(spans, function(a, b)
+			return a[1] < b[1]
+		end)
+		local x, gapX, gapW = m, 0, 0
+		for _, b in spans do
+			if b[1] - x > gapW then
+				gapX, gapW = x, b[1] - x
+			end
+			x = math.max(x, b[3])
+		end
+		if u.X - m - x > gapW then
+			gapX, gapW = x, u.X - m - x
+		end
+		if gapW >= W * HudLayout.DEBRIEF_MIN and y + H <= u.Y - m then
+			local w = math.min(gapW, W)
+			return rect(
+				Vector2.new(0.5, 0),
+				Vector2.new(gapX + gapW / 2, y),
+				Vector2.new(w, H * w / W)
+			)
+		end
+	end
+	return mt.rects["notice"] -- shortcut: no gap anywhere (no tested screen), share the notice band
 end
 
 -- As many rows as fit `height`, then balanced columns (8 buttons: 2 x 4 on every current screen).
@@ -289,17 +346,27 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	)
 	mt.rects["gauges"] =
 		rect(Vector2.new(1, 1), Vector2.new(u.X - m, bottom), Vector2.new(side, side))
+	local stickRight = if u.X < u.Y then u.X else u.X * 0.4
+	mt.rects["debrief"] = debriefRect(
+		mt,
+		if touch
+			then { { 0, u.Y * 0.55, stickRight, u.Y }, { u.X * 0.7, u.Y * 0.65, u.X, u.Y } }
+			else {}
+	)
 	return mt
 end
 
 -- Pure: screen size and insets in pixels -> the metrics and rects for this device.
 -- device is "Touch" | "Gamepad" | "Keyboard" (UI/Layout reads it from UserInputService).
+-- Phone-sized screens (portrait, or under PHONE_HEIGHT px of safe height) get the touch arrangement on every
+-- device: the desktop column stack collides there (verify 2026-10-26, Studio windows at phone sizes).
+HudLayout.PHONE_HEIGHT = 480
 function HudLayout.compute(screen: Vector2, insets: Insets, device: string): Metrics
 	local px = Vector2.new(
 		math.max(screen.X - insets.left - insets.right, 1),
 		math.max(screen.Y - insets.top - insets.bottom, 1)
 	)
-	return HudLayout.metrics(px, device == "Touch")
+	return HudLayout.metrics(px, device == "Touch" or px.Y < HudLayout.PHONE_HEIGHT or px.X < px.Y)
 end
 
 return HudLayout
