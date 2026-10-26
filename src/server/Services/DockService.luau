@@ -66,6 +66,8 @@ type Plot = {
 	trim: { Part }, -- its frame bricks, posts and bases, a darker shade of the face
 	studs: { Part }, -- the stud row along its top edge, the face colour
 	flag: Part,
+	bands: { Frame }, -- the quay walks's tile bands, the flag colour (WP-25 r4)
+	markers: { [string]: Model }, -- empty lots' pads and peg flags (WP-25 r4)
 	buildings: { [string]: Model },
 	counts: { TextLabel },
 	trophies: Model?,
@@ -305,6 +307,7 @@ local function buildPlot(folder: Instance, i: number): Plot
 		Enum.Material.SmoothPlastic
 	)
 	flag.CanCollide = false
+	local bands = DockPieces.quayBands(sign, b)
 
 	local berth = part(
 		model,
@@ -334,6 +337,8 @@ local function buildPlot(folder: Instance, i: number): Plot
 		trim = trim,
 		studs = studs,
 		flag = flag,
+		bands = bands,
+		markers = {},
 		counts = {},
 		buildings = {},
 		trophyKey = "",
@@ -354,6 +359,20 @@ end
 local BUILT = table.clone(DockConfig.BUILDINGS)
 for key in DockConfig.Blueprints do
 	table.insert(BUILT, key)
+end
+
+-- the lots that get a marker while empty (WP-25 r4): on the plate, not over the water or on another building
+local MARKED: { [string]: { spot: CFrame, size: Vector2 } } = {}
+for _, key in BUILT do
+	local def = DockConfig.Buildings[key]
+	if key == "Pontoon" or key == "Crane" or key == "TrophyHall" or key == "SubPen" then
+		continue
+	elseif def then
+		MARKED[key] = { spot = def.spot, size = def.size }
+	else
+		local lot = Marina.LOTS[DockConfig.Blueprints[key].lot]
+		MARKED[key] = { spot = lot.cf, size = lot.size }
+	end
 end
 
 -- The owner's bought buildings stand on the plot; beat: new ones play the build animation.
@@ -385,6 +404,21 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 		elseif have and not want then
 			have:Destroy()
 			plot.buildings[key] = nil
+		end
+		local lot, marker = MARKED[key], plot.markers[key]
+		if lot and not want and not marker then
+			local made = DockPieces.lotMarker(plot.frame, plot.frame * lot.spot, lot.size)
+			made.Parent = plot.model
+			plot.markers[key] = made
+		elseif marker and want then
+			marker:Destroy()
+			plot.markers[key] = nil
+		end
+		local peg = plot.markers[key] and plot.markers[key]:FindFirstChild("Flag")
+		if peg and peg:IsA("BasePart") then
+			peg.Color = if owner
+				then Marina.flagColor(owner.UserId)
+				else Color3.fromRGB(242, 240, 232)
 		end
 		plot.berth:SetAttribute(key, if want then true else nil)
 		if owner then
@@ -623,6 +657,9 @@ local function dress(plot: Plot, owner: Player?)
 	plot.sign.Parent = if owner then plot.model else nil
 	if owner then
 		plot.flag.Color = Marina.flagColor(owner.UserId)
+		for _, f in plot.bands do
+			f.BackgroundColor3 = plot.flag.Color
+		end
 		setMaster(plot, master == owner)
 		if not plot.buildStation then
 			local st = DockPieces.buildStation(plot.frame)

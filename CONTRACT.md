@@ -81,7 +81,8 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   `ProgressionConfig.Vehicles[id].needs`.
 - `src/shared/DockPieces.luau`: `building(key, berthCFrame) -> Model` (the Lego set; doors in the owner's colour =
   parts named "Flag"), `base(berthCFrame)` (the fixed set on every plate), `trophies`, `buildStation`,
-  `decoration`. A buy plays the Lego build: `Dock_Build` S->C `{ plot, parent, name }`, `shared/BuildSeq` drops
+  `decoration`, `lotMarker(berth, at, size)` (an empty lot's pad + peg flag), `quayBands(parent, berth) -> { Frame }`
+  (the quay walks' owner-colour tiles). A buy plays the Lego build: `Dock_Build` S->C `{ plot, parent, name }`, `shared/BuildSeq` drops
   the pieces client-side. `Dock_Upgrade` C->S fn `(key) -> ok, reason`; Robux = products with `dockBuilding`
   (keys `DockLevel2..5`, `DockHangar`, `DockSubPen`: the ids are the old dock levels'); a receipt whose
   prerequisites are missing is granted as prepaid (`data.dockPrepaid`, tablet chip "Paid"), built the moment they stand.

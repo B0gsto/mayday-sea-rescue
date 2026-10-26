@@ -903,6 +903,28 @@ local function helipad(m: Model, b: CFrame)
 			)
 		)
 	end
+	-- a windsock by the pad's corner: a white post, a striped sock of shrinking Lego rings (big: reads from the build camera)
+	local ws = P * CFrame.new(22, 0, -22)
+	studTop(
+		brick(m, "WindsockBase", Vector3.new(3.2, 1, 3.2), ws * CFrame.new(0, 0.5, 0), BRICK_WHITE)
+	)
+	brick(m, "WindsockPole", Vector3.new(1, 19, 1), ws * CFrame.new(0, 10.5, 0), BRICK_WHITE)
+	for k, c in { BRICK_ORANGE, BRICK_WHITE, BRICK_ORANGE } do
+		local dia = 4.6 - (k - 1) * 0.9
+		part(
+			m,
+			"Windsock",
+			Vector3.new(3.6, dia, dia),
+			ws
+				* CFrame.new(0, 19, 0)
+				* CFrame.Angles(0, math.rad(35), math.rad(-12))
+				* CFrame.new(-0.6 - k * 3.6, 0, 0),
+			c,
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		).CanCollide =
+			false
+	end
 	path(m, b, { Vector2.new(-37, -40), Vector2.new(-65, -40) })
 end
 
@@ -1357,6 +1379,36 @@ local TREES = { -- island (r, f) of each tree; clumps of two or three read from 
 	V(-66, 136),
 	V(92, 138),
 	V(104, 128),
+	-- WP-25 r4: more clumps so the plate reads as a diorama from the build camera
+	V(80, 148),
+	V(-10, -150),
+	V(4, -146),
+	V(-60, -146),
+	V(60, -146),
+	V(-128, 30),
+	V(118, 114),
+	V(-104, 126),
+	V(-116, 136),
+	V(-124, -40),
+	V(-132, -52),
+}
+-- low hedges (island r, f from -> to, axis-aligned): along the plate's edges, the lanes and the back cross
+local HEDGES = {
+	{ V(-104, -154), V(-36, -154) }, -- the back edge, open behind the spawn
+	{ V(36, -154), V(104, -154) },
+	{ V(-154, -50), V(-154, 0) }, -- the west edge, clear of the bridge
+	{ V(-154, 46), V(-154, 108) },
+	{ V(154, 46), V(154, 108) }, -- the east edge, clear of the beach tower and the slipway
+	{ V(40, -78), V(40, -28) }, -- outside the lanes (gaps at the workshop door and the helipad walk)
+	{ V(40, 6), V(40, 15) },
+	{ V(-40, -78), V(-40, -46) },
+	{ V(-40, -34), V(-40, 15) },
+	{ V(-30, -90), V(-11, -90) }, -- behind the back cross, either side of the flowers
+	{ V(11, -90), V(30, -90) },
+	{ V(-42, -91), V(-112, -86) }, -- behind the bridge links
+	{ V(42, -91), V(112, -86) },
+	{ V(-104, 154), V(-56, 154) }, -- the front wings
+	{ V(56, 154), V(104, 154) },
 }
 local FLOWERS = {
 	V(-8, -64),
@@ -1399,6 +1451,18 @@ function DockPieces.base(b: CFrame): Model
 	end
 	for k, t in TREES do
 		tree(m, isle(b, t.X, t.Y), k)
+	end
+	for _, h in HEDGES do
+		local from, to = isle(b, h[1].X, h[1].Y).Position, isle(b, h[2].X, h[2].Y).Position
+		studTop(
+			brick(
+				m,
+				"Hedge",
+				Vector3.new(2.4, 2.2, (to - from).Magnitude + 2.4),
+				CFrame.lookAt((from + to) / 2, to) * CFrame.new(0, 1.1, 0),
+				LEAF
+			)
+		)
 	end
 	-- a red and white lifebuoy on a white post at the quay, beside the jetty
 	local stand = isle(b, 24.5, 28)
@@ -1542,6 +1606,91 @@ function DockPieces.building(key: string, cf: CFrame): Model
 		hut(m, cf, key)
 	end
 	return m
+end
+
+-- WP-25 r4: an empty lot's marker (`at` on the plate, its footprint `size`; `b` the berth frame): a low tan stud
+-- pad with a darker rim (SurfaceGui frames: no parts) and a "for sale" peg flag with the build glyph at a corner,
+-- turned to face the build camera. The flag is named "Flag" (the owner's colour). The paper blueprint lies on top.
+function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2): Model
+	local m = Instance.new("Model")
+	m.Name = "LotMarker"
+	local pad = brick(
+		m,
+		"LotPad",
+		Vector3.new(size.X - 1, 0.4, size.Y - 1),
+		at * CFrame.new(0, 0.2, 0),
+		TAN
+	)
+	pad.CanCollide = false
+	studTop(pad)
+	local gui = Instance.new("SurfaceGui")
+	gui.Face = Enum.NormalId.Top
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 8
+	gui.LightInfluence = 1
+	gui.Parent = pad
+	for _, e in { { 0, 0, 1, 0 }, { 0, 1, 1, 0 }, { 0, 0, 0, 1 }, { 1, 0, 0, 1 } } do -- the rim: 1.5 studs, 4 edges
+		local f = Instance.new("Frame")
+		f.BorderSizePixel = 0
+		f.BackgroundColor3 = TAN:Lerp(RBROWN, 0.45)
+		f.AnchorPoint = Vector2.new(e[1], e[2])
+		f.Position = UDim2.fromScale(e[1], e[2])
+		f.Size = UDim2.new(e[3], if e[3] == 0 then 12 else 0, e[4], if e[4] == 0 then 12 else 0)
+		f.Parent = gui
+	end
+	local peg = at * CFrame.new(-size.X / 2 + 2.5, 0, -size.Y / 2 + 2.5)
+	brick(m, "LotPeg", Vector3.new(0.8, 10, 0.8), peg * CFrame.new(0, 5, 0), BRICK_WHITE)
+	local face = CFrame.new(peg.Position) * isle(b, 0, 0).Rotation -- +Z toward the island's back: the build camera
+	local f = brick(m, "Flag", Vector3.new(6, 4, 0.6), face * CFrame.new(3.4, 7.8, 0), BRICK_WHITE)
+	f.CanCollide = false
+	for _, n in { Enum.NormalId.Front, Enum.NormalId.Back } do
+		local d = Instance.new("Decal")
+		d.Face = n
+		d.Texture = UiImages.Kit.build
+		d.Parent = f
+	end
+	for _, d in m:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.CanQuery = false
+		end
+	end
+	return m
+end
+
+-- WP-25 r4: owner-colour tile bands across the quay walks (the promenade, both cove walks): one clear carrier part
+-- per walk with a SurfaceGui of band frames (few parts). Returns the frames; DockService colours them with the flag.
+local QUAY_WALKS =
+	{ { V(-52, 23), V(55, 23) }, { V(55, 23), V(55, 104) }, { V(-52, 23), V(-52, 148) } }
+function DockPieces.quayBands(parent: Instance, b: CFrame): { Frame }
+	local out = {}
+	for _, w in QUAY_WALKS do
+		local from, to = isle(b, w[1].X, w[1].Y).Position, isle(b, w[2].X, w[2].Y).Position
+		local len = (to - from).Magnitude + 8
+		local p = brick(
+			parent,
+			"Bands",
+			Vector3.new(8, 0.05, len),
+			CFrame.lookAt((from + to) / 2, to) * CFrame.new(0, 0.37, 0),
+			WHITE
+		)
+		p.Transparency = 1
+		p.CanCollide, p.CastShadow, p.CanQuery, p.CanTouch = false, false, false, false
+		local gui = Instance.new("SurfaceGui")
+		gui.Face = Enum.NormalId.Top
+		gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+		gui.PixelsPerStud = 8
+		gui.LightInfluence = 1
+		gui.Parent = p
+		for z = 4, len - 6, 8 do -- 4-stud tiles, 4 apart
+			local f = Instance.new("Frame")
+			f.BorderSizePixel = 0
+			f.Position = UDim2.fromScale(0, z / len)
+			f.Size = UDim2.fromScale(1, 4 / len)
+			f.Parent = gui
+			table.insert(out, f)
+		end
+	end
+	return out
 end
 
 -- The trophy hall's contents (docs/23 d.2) around the berth CFrame b: a gold cup per name in `cups`

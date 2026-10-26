@@ -64,7 +64,7 @@ function DockBuild.spot(item: any): (CFrame, Vector2)
 	return CFrame.identity, Vector2.new(8, 8)
 end
 
-DockBuild.PAPER_LIFT = 0.3 -- the paper blueprint's centre above its lot (clear of the plate, no z-fight)
+DockBuild.PAPER_LIFT = 0.55 -- the paper blueprint's centre above its lot (clear of the lot pad, WP-25 r4)
 
 -- WP-14e: the paper blueprint of an item, in world space, turned to the berth frame so its drawing reads
 -- upright from the build camera (lots turned 90 degrees swap their footprint) -> CFrame, size (x, z).
