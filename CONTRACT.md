@@ -115,7 +115,10 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   `RemoveSurvivors`, `Climb`, `SpawnSeated`, `SpawnColdOpen`, `DevLaunch`, `DockLaunch(player, id, target?)`,
   `DockSpot(player, id) -> CFrame?`, `Stow`, `RefreshUpgrades`, `BuildProp`, signal `VehicleSpawned (player,
   model)`. Model attributes `VehicleId`, `Owner`, `Capacity`, `SurvivorCount`; hull attachments
-  `SurvivorSlot1..n`, `PetSeat`, `BowPoint`.
+  `SurvivorSlot1..n`, `PetSeat`, `BowPoint`. A climbing survivor's `Victim` model carries `ClimbHull`
+  (vehicle model name), `ClimbStart` (Vector3), `ClimbSide` (1/-1), `ClimbSeat` (CFrame), `ClimbStartTime`
+  (`GetServerTimeNow`), all in hull space; `Ops/ClimbPath` plays them on each client until the weld's Part1
+  is set.
 - Boat to me: `RequestVehicle(nil, false, true)` brings your current or last craft to the open water nearest
   you; free calls wait `MonetizationEffects.boatToMeWait` (player attribute `BoatToMeAt`, scaled by
   `WorkerBoatScale`); the Quick Launch pass or day pass skips the wait.
