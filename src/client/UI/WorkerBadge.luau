@@ -130,8 +130,7 @@ function WorkerBadge.billboard(model: Model)
 	end
 end
 
--- One badge for a building's whole crew (4+ there: single badges merged into a band): the icon and "x4".
--- The caller sets its Count label's text.
+-- One badge for a building's whole crew: the category icon and "x4" (the caller sets Count; empty for one).
 function WorkerBadge.crew(adornee: Instance, category: string, parent: Instance): BillboardGui
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "CrewTag"
