@@ -101,7 +101,8 @@ function Rules.ownsVehicle(data: PlayerData, vehicleId: string, passOwned: boole
 		return true
 	end
 	if unlock.passOnly then
-		return false
+		-- the wheel's grand-prize boat is the one pass-only craft a profile flag may own
+		return data.vehicles[vehicleId] == true and data.flags.spinBoat == vehicleId
 	end
 	return unlock.price <= 0 or data.vehicles[vehicleId] == true
 end
@@ -139,6 +140,9 @@ function Rules.fromSnapshot(snap: { [string]: any }): PlayerData
 		if type(snap[key]) == "table" then
 			(data :: any)[key] = table.clone(snap[key])
 		end
+	end
+	if type(snap.flags) == "table" and type(snap.flags.spinBoat) == "string" then
+		data.flags.spinBoat = snap.flags.spinBoat
 	end
 	return data
 end

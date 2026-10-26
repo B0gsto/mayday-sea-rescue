@@ -94,18 +94,18 @@ return function(t)
 		local day = 20000
 		local now = day * 86400 + 100
 		state = SpinRules.accrue(state, 9, now)
-		t.expect(state.free).toBe(0)
+		t.expect(state.free).toBe(1) -- the first day's spin
 		state, _ = SpinRules.accrue(state, 10, now)
-		t.expect(state.free).toBe(1)
+		t.expect(state.free).toBe(2)
 		state, _ = SpinRules.accrue(state, 25, now)
-		t.expect(state.free).toBe(2) -- 1 for people 10..19, 1 for 20..24
+		t.expect(state.free).toBe(3) -- +1 for people 10..19, +1 for 20..24
 		state, _ = SpinRules.accrue(state, 30, now)
-		t.expect(state.free).toBe(3)
+		t.expect(state.free).toBe(4)
 		local tomorrow = now + 86400
 		local added = 0
 		state, added = SpinRules.accrue(state, 30, tomorrow)
 		t.expect(added).toBe(1)
-		t.expect(state.free).toBe(4)
+		t.expect(state.free).toBe(5)
 		state.free = SpinRules.MAX_FREE
 		state, _ = SpinRules.accrue(state, 300, tomorrow + 86400 * 3)
 		t.expect(state.free).toBe(SpinRules.MAX_FREE)

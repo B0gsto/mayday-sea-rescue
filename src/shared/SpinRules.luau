@@ -47,8 +47,8 @@ SpinRules.PITY_EPIC = 10
 SpinRules.PITY_LEGENDARY = 50
 SpinRules.MAX_FREE = 99
 
-SpinRules.RARITY_ORDER =
-	{ "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic" } :: { Rarity }
+local ORDER: { Rarity } = { "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic" }
+SpinRules.RARITY_ORDER = ORDER
 
 -- odds in percent, the Kit colour the UI / Toast uses, and the Cash an owned duplicate pays
 SpinRules.RARITIES = {
@@ -200,8 +200,8 @@ end
 -- Sum of every rarity's odds in percent (100 when the table is right).
 function SpinRules.oddsSum(): number
 	local sum = 0
-	for _, rarity in SpinRules.RARITY_ORDER do
-		sum += SpinRules.RARITIES[rarity].odds
+	for i = 1, #ORDER do
+		sum += SpinRules.RARITIES[ORDER[i]].odds
 	end
 	return sum
 end
@@ -226,7 +226,7 @@ function SpinRules.decode(raw: any): State
 		return state
 	end
 	state.day = math.max(0, math.floor(tonumber(raw.d) or 0))
-	state.free = math.clamp(math.floor(tonumber(raw.f) or 0), 0, SpinRules.MAX_FREE)
+	state.free = math.max(0, math.floor(tonumber(raw.f) or 0))
 	state.pity.epic = math.max(0, math.floor(tonumber(raw.e) or 0))
 	state.pity.legendary = math.max(0, math.floor(tonumber(raw.l) or 0))
 	state.rescued = math.max(0, math.floor(tonumber(raw.r) or 0))
@@ -237,7 +237,7 @@ end
 function SpinRules.encode(state: State): { [string]: any }
 	return {
 		d = math.max(0, math.floor(state.day)),
-		f = math.clamp(math.floor(state.free), 0, SpinRules.MAX_FREE),
+		f = math.max(0, math.floor(state.free)),
 		e = math.max(0, math.floor(state.pity.epic)),
 		l = math.max(0, math.floor(state.pity.legendary)),
 		r = math.max(0, math.floor(state.rescued)),
@@ -249,15 +249,17 @@ end
 -- state and how many were added.
 function SpinRules.accrue(state: State, rescued: number, now: number): (State, number)
 	local day = math.floor(now / 86400)
-	local added = 0
+	local added = if state.day == 0 then 1 else math.max(0, day - state.day)
 	if state.day > 0 and day > state.day then
-		added += day - state.day
+		added = day - state.day
+	elseif state.day > 0 then
+		added = 0
 	end
 	local people = math.max(0, math.floor(rescued))
 	added += math.max(0, math.floor(people / 10) - math.floor(state.rescued / 10))
 	local nextState: State = {
 		day = day,
-		free = math.clamp(state.free + added, 0, SpinRules.MAX_FREE),
+		free = math.min(state.free + added, math.max(state.free, SpinRules.MAX_FREE)),
 		pity = state.pity,
 		rescued = math.max(state.rescued, people),
 		owned = state.owned,
@@ -267,11 +269,12 @@ end
 
 local function pickWeighted(rng: () -> number, rarities: { Rarity }): Rarity
 	local total = 0
-	for _, rarity in rarities do
-		total += SpinRules.RARITIES[rarity].odds
+	for i = 1, #rarities do
+		total += SpinRules.RARITIES[rarities[i]].odds
 	end
 	local roll = rng() * total
-	for _, rarity in rarities do
+	for i = 1, #rarities do
+		local rarity: Rarity = rarities[i]
 		roll -= SpinRules.RARITIES[rarity].odds
 		if roll < 0 then
 			return rarity
@@ -287,7 +290,8 @@ end
 function SpinRules.rollRarityAtLeast(rng: () -> number, floorRarity: Rarity): Rarity
 	local floor = SpinRules.rank(floorRarity)
 	local pool: { Rarity } = {}
-	for _, rarity in SpinRules.RARITY_ORDER do
+	for i = 1, #ORDER do
+		local rarity: Rarity = ORDER[i]
 		if SpinRules.rank(rarity) >= floor then
 			table.insert(pool, rarity)
 		end

@@ -43,7 +43,7 @@ type PetRow = {
 	adopted: boolean,
 	accessory: string?,
 }
-type View = { now: number, pets: { PetRow } }
+type View = { now: number, variant: string?, variants: { string }, pets: { PetRow } }
 
 local PetController = {}
 PetController.Priority = 72
@@ -53,9 +53,11 @@ local player = Players.LocalPlayer
 local stateRemote: RemoteEvent? = nil
 local getRemote: RemoteFunction? = nil
 local equipRemote: RemoteFunction? = nil
+local variantRemote: RemoteFunction? = nil
 
 local active: PetRow? = nil
 local activeModel: Model? = nil
+local activeVariant: string? = nil
 local petCF: CFrame? = nil
 local petYaw = 0
 local hopT = 0
@@ -86,6 +88,101 @@ local VOICE: { [string]: string } = {
 }
 
 local STATION_RANGE = 70 -- studs from your island's station lot: "at the station"
+
+-- Spin-wheel variants (docs/24 D). Every variant is Rare+, so the model also gets a small rarity
+-- aura; Galaxy adds its own sparkle ring. Rainbow repaints from the heartbeat.
+local VARIANT_STYLE = {
+	Golden = {
+		color = Color3.fromRGB(255, 198, 64),
+		material = Enum.Material.Metal,
+		aura = Color3.fromRGB(255, 214, 100),
+	},
+	Neon = {
+		color = Color3.fromRGB(70, 255, 220),
+		material = Enum.Material.Neon,
+		aura = Color3.fromRGB(90, 255, 230),
+	},
+	Rainbow = {
+		color = Color3.fromRGB(255, 90, 190),
+		material = Enum.Material.Neon,
+		aura = Color3.fromRGB(255, 120, 220),
+	},
+	Galaxy = {
+		color = Color3.fromRGB(46, 32, 84),
+		material = Enum.Material.SmoothPlastic,
+		aura = Color3.fromRGB(170, 140, 255),
+	},
+}
+local rainbowParts: { BasePart } = {}
+
+local function tintSurface(part: BasePart, color: Color3)
+	local appearance = part:FindFirstChildWhichIsA("SurfaceAppearance")
+	if appearance then
+		appearance.Color = color
+	end
+end
+
+local function paintRarity(model: Model, color: Color3, galaxy: boolean)
+	local body = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
+	if not body then
+		return
+	end
+	local old = model:FindFirstChild("PetRarityAura")
+	if old then
+		old:Destroy()
+	end
+	local aura = Instance.new("ParticleEmitter")
+	aura.Name = "PetRarityAura"
+	aura.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	aura.Rate = if galaxy then 7 else 3
+	aura.Lifetime = NumberRange.new(0.8, 1.4)
+	aura.Speed = NumberRange.new(0.8, 1.8)
+	aura.SpreadAngle = Vector2.new(180, 180)
+	aura.Size = NumberSequence.new(if galaxy then 0.22 else 0.14)
+	aura.Color = ColorSequence.new(color)
+	aura.LightEmission = 0.5
+	aura.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.2),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	aura.Parent = body
+end
+
+local function applyVariant(model: Model, variant: string?)
+	model:SetAttribute("PetVariant", variant)
+	table.clear(rainbowParts)
+	local style: any = if variant then VARIANT_STYLE[variant] else nil
+	for _, d in model:GetDescendants() do
+		if not d:IsA("BasePart") then
+			continue
+		end
+		if not style then
+			continue
+		end
+		d.Material = style.material
+		d.Color = style.color
+		tintSurface(d, style.color)
+		d.Reflectance = if variant == "Golden" then 0.15 else 0
+		if variant == "Rainbow" then
+			table.insert(rainbowParts, d)
+		end
+	end
+	if style then
+		paintRarity(model, style.aura, variant == "Galaxy")
+	end
+end
+
+local function cycleRainbow()
+	if #rainbowParts == 0 then
+		return
+	end
+	local hue = (clock * 0.12) % 1
+	for i, part in rainbowParts do
+		local c = Color3.fromHSV((hue + i * 0.03) % 1, 0.75, 1)
+		part.Color = c
+		tintSurface(part, c)
+	end
+end
 
 local function awaitChild(parent: Instance, name: string, class: string): Instance?
 	local child = parent:WaitForChild(name, 30)
@@ -244,11 +341,15 @@ local function applyView(next: View)
 		task.spawn(equip, recovered.id)
 	end
 	local previous = active
+	local variant = next.variant
+	local variantChanged = variant ~= activeVariant
+	activeVariant = variant
 	local changed = previous == nil
 		or during == nil
 		or during.id ~= previous.id
 		or during.species ~= previous.species
 		or during.rare ~= previous.rare
+		or variantChanged
 	if changed then
 		if activeModel then
 			activeModel:Destroy()
@@ -261,6 +362,7 @@ local function applyView(next: View)
 			local model = WildlifeRig.build(during.species, during.rare)
 			activeModel = model
 			if model then
+				applyVariant(model, variant)
 				WildlifeRig.scale(model, PetSeat.scaleFor(during.species))
 				if during.accessory then
 					PetAccessory.wear(model)
@@ -488,6 +590,17 @@ function PetController.choose(id: number)
 	task.spawn(equip, id)
 end
 
+-- Wear an owned spin-wheel variant (nil = natural colours; Pet_Variant checks ownership).
+function PetController.chooseVariant(id: string?)
+	if variantRemote then
+		task.spawn(function()
+			pcall(function()
+				(variantRemote :: RemoteFunction):InvokeServer(id)
+			end)
+		end)
+	end
+end
+
 function PetController.onChange(fn: () -> ()): RBXScriptConnection
 	return changedEvent.Event:Connect(fn)
 end
@@ -509,9 +622,11 @@ function PetController.Init()
 	local event = awaitChild(net, "Pet_State", "RemoteEvent")
 	local get = awaitChild(net, "Pet_Get", "RemoteFunction")
 	local equipFn = awaitChild(net, "Pet_Equip", "RemoteFunction")
+	local variantFn = awaitChild(net, "Pet_Variant", "RemoteFunction")
 	stateRemote = if event then event :: RemoteEvent else nil
 	getRemote = if get then get :: RemoteFunction else nil
 	equipRemote = if equipFn then equipFn :: RemoteFunction else nil
+	variantRemote = if variantFn then variantFn :: RemoteFunction else nil
 	if stateRemote then
 		stateRemote.OnClientEvent:Connect(applyView)
 	end
@@ -548,6 +663,9 @@ function PetController.Start()
 			return
 		end
 		local model = activeModel
+		if activeVariant == "Rainbow" then
+			cycleRainbow()
+		end
 		if clock >= nextVoice and not napping then
 			nextVoice = clock
 				+ math.random(AudioConfig.Mix.petVoiceMinGap, AudioConfig.Mix.petVoiceMaxGap)

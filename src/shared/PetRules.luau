@@ -35,6 +35,8 @@ export type State = {
 	active: number?,
 	entries: { Entry },
 	treats: number, -- fish treats in the player's pocket
+	variant: string?, -- the equipped spin-wheel pet variant (nil = natural colours)
+	variants: { [string]: boolean }, -- owned variants (spin prizes)
 }
 
 export type ViewEntry = {
@@ -55,6 +57,8 @@ export type ViewEntry = {
 export type View = {
 	now: number,
 	treats: number,
+	variant: string?,
+	variants: { string },
 	pets: { ViewEntry },
 }
 
@@ -66,6 +70,8 @@ PetRules.TREAT_MAX = 9
 PetRules.NAP_SECONDS = 30
 PetRules.ACCESSORY = "Vest"
 PetRules.BOSUN = 0 -- the companion id for Bosun (no pet out)
+-- Spin-wheel pet variants (docs/24 D). Purely visual; every pet the player owns can wear one.
+PetRules.VARIANTS = { "Golden", "Neon", "Rainbow", "Galaxy" }
 
 local function speciesKnown(id: string): boolean
 	return Wildlife.Species[id] ~= nil
@@ -110,7 +116,7 @@ local function encodeEntry(entry: Entry): string
 end
 
 function PetRules.newState(): State
-	return { nextId = 1, active = nil, entries = {}, treats = 0 }
+	return { nextId = 1, active = nil, entries = {}, treats = 0, variants = {} }
 end
 
 function PetRules.decode(raw: any): State
@@ -138,6 +144,16 @@ function PetRules.decode(raw: any): State
 		end
 	end
 	state.treats = math.clamp(flagTime(raw.t), 0, PetRules.TREAT_MAX)
+	if type(raw.v) == "string" and table.find(PetRules.VARIANTS, raw.v) then
+		state.variant = raw.v
+	end
+	if type(raw.w) == "string" then
+		for id in string.gmatch(raw.w, "[^,]+") do
+			if table.find(PetRules.VARIANTS, id) then
+				state.variants[id] = true
+			end
+		end
+	end
 	return state
 end
 
@@ -149,6 +165,18 @@ function PetRules.encode(state: State): { [string]: any }
 	}
 	for _, entry in state.entries do
 		out[`p{entry.id}`] = encodeEntry(entry)
+	end
+	if state.variant and state.variants[state.variant] then
+		out.v = state.variant
+	end
+	local owned = {}
+	for _, id in PetRules.VARIANTS do
+		if state.variants[id] then
+			table.insert(owned, id)
+		end
+	end
+	if #owned > 0 then
+		out.w = table.concat(owned, ",")
 	end
 	return out
 end
@@ -186,6 +214,8 @@ function PetRules.add(state: State, speciesId: string, rare: boolean, now: numbe
 		active = state.active,
 		entries = entries,
 		treats = state.treats or 0,
+		variant = state.variant,
+		variants = state.variants,
 	}
 	return nextState, entry
 end
@@ -228,6 +258,8 @@ function PetRules.equip(state: State, id: number): (State, boolean)
 			active = nil,
 			entries = state.entries,
 			treats = state.treats or 0,
+			variant = state.variant,
+			variants = state.variants,
 		},
 			true
 	end
@@ -249,6 +281,8 @@ function PetRules.equip(state: State, id: number): (State, boolean)
 		active = id,
 		entries = entries,
 		treats = state.treats or 0,
+		variant = state.variant,
+		variants = state.variants,
 	},
 		true
 end
@@ -260,6 +294,47 @@ end
 
 function PetRules.treats(state: State): number
 	return math.clamp(flagTime(state.treats), 0, PetRules.TREAT_MAX)
+end
+
+function PetRules.ownsVariant(state: State, id: string): boolean
+	return table.find(PetRules.VARIANTS, id) ~= nil and state.variants[id] == true
+end
+
+-- Adds a spin-wheel variant to the sanctuary. Returns the state and true only the first time.
+function PetRules.grantVariant(state: State, id: string): (State, boolean)
+	if not table.find(PetRules.VARIANTS, id) or state.variants[id] then
+		return state, false
+	end
+	local variants = table.clone(state.variants)
+	variants[id] = true
+	return {
+		nextId = state.nextId,
+		active = state.active,
+		entries = state.entries,
+		treats = state.treats or 0,
+		variant = state.variant or id,
+		variants = variants,
+	},
+		true
+end
+
+-- Wears an owned variant (nil = natural colours).
+function PetRules.equipVariant(state: State, id: string?): (State, boolean)
+	if id ~= nil and not PetRules.ownsVariant(state, id) then
+		return state, false
+	end
+	if state.variant == id then
+		return state, true
+	end
+	return {
+		nextId = state.nextId,
+		active = state.active,
+		entries = state.entries,
+		treats = state.treats or 0,
+		variant = id,
+		variants = state.variants,
+	},
+		true
 end
 
 -- The cosmetic reward at a full bond (code-built by PetAccessory on the client).
@@ -305,7 +380,19 @@ function PetRules.view(state: State, now: number): View
 			accessory = PetRules.accessory(entry),
 		})
 	end
-	return { now = math.floor(now), treats = PetRules.treats(state), pets = rows }
+	local variants = {}
+	for _, id in PetRules.VARIANTS do
+		if state.variants[id] then
+			table.insert(variants, id)
+		end
+	end
+	return {
+		now = math.floor(now),
+		treats = PetRules.treats(state),
+		variant = state.variant,
+		variants = variants,
+		pets = rows,
+	}
 end
 
 -- A small stable string hash (no math.random: the same call always brings the same animal).

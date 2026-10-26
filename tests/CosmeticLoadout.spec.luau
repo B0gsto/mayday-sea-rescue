@@ -3,6 +3,7 @@
 return function(t)
 	local Loadout = t.load("src/shared/CosmeticLoadout.luau")
 	local Cosmetics = t.load("src/shared/Cosmetics.luau")
+	local SpinRules = t.load("src/shared/SpinRules.luau")
 	local SEASON_TIER =
 		{ Decal_Season1 = 3, Wake_Season1 = 8, Title_Season1 = 12, Livery_Season1 = 30 }
 
@@ -124,6 +125,8 @@ return function(t)
 						flags.season = { c = claimed(SEASON_TIER[string.sub(option.earn, 8)]) }
 					elseif string.sub(option.earn, 1, 8) == "monthly:" then
 						flags.monthlyLivery = string.sub(option.earn, 9)
+					elseif string.sub(option.earn, 1, 5) == "spin:" then
+						flags.spin = { o = SpinRules.bit(string.sub(option.earn, 6)) or 0 }
 					end
 					local show = Loadout.show(flags)
 					t.expect(show.newest[slot] ~= nil).toBe(true)
