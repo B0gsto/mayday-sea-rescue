@@ -472,7 +472,11 @@ local function reconcile()
 					end
 				end
 			elseif site then
-				finish(site)
+				if site.model.Parent then
+					finish(site) -- the site became the owned building
+				else
+					stop(site) -- the plot was released / streamed out
+				end
 				sites[i] = nil
 			end
 		elseif site then
