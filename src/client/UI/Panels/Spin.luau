@@ -267,10 +267,22 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 		end
 	end
 
+	-- odds always in view next to the Robux buttons (paid random items: odds before purchase)
+	local parts = {}
+	for _, rarity in SpinRules.RARITY_ORDER do
+		table.insert(parts, `{rarity} {SpinRules.RARITIES[rarity].odds}%`)
+	end
+	local oddsLine = Style.label(controls, table.concat(parts, "  ·  "), Theme.Text.small, true)
+	oddsLine.Name = "OddsLine"
+	oddsLine.TextWrapped = true
+	oddsLine.Size = UDim2.fromScale(1, 0)
+	oddsLine.AutomaticSize = Enum.AutomaticSize.Y
+	oddsLine.LayoutOrder = 4
+
 	local odds: ImageButton
 	local oddsButton = Style.button(controls, UDim2.fromOffset(180, 54))
 	oddsButton.Name = "OddsButton"
-	oddsButton.LayoutOrder = 4
+	oddsButton.LayoutOrder = 5
 	local _, oddsFace =
 		Style.block(oddsButton, Style.grad("blue"), { lip = 5, radius = S.cornerSmall })
 	Style.label(oddsFace, "Odds", Theme.Text.button)
