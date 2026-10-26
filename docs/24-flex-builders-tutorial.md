@@ -88,3 +88,32 @@ Saved step; a returning player never repeats it.
 
 Re-run the pacing sims with build times and the spin wheel; keep "the whole tree in ~17 h"; first build inside
 5 minutes; always one visible next goal (a "Next" chip pointing at the next affordable building or call).
+
+## G. Skill trees (owner, 2026-10-26)
+
+"Instead of the basic list do a skill tree for building, and a skill tree for the player + crew: player upgrades,
+each crew category and so on." Menus outside gameplay are allowed (build tablet, left-button panels).
+
+- **One tree view** (UI kit component, `src/client/UI/Kit/TreeView.luau`): nodes (icon, short name, price) joined by
+  lines from prerequisites; states owned (gold rim + tick), buyable (green glow, pulses when affordable), locked
+  (grey + padlock, "Needs: X"); drag/scroll to pan, pinch/wheel zoom, gamepad moves node to node; tapping a node opens
+  a small card (icon, 1–3 word effect, green Cash button, Robux button where one exists). Branches read left to right.
+- **Build tree:** the build tablet's bottom card bar becomes this tree, fed from `DockConfig.Buildings` +
+  `UnlockTree` (no data change). Buying still starts the timed construction, closes the tree and shows the site; a
+  running site shows its timer on its node and other nodes wait (hourglass). The tutorial's Workshop pulse targets
+  the Workshop node.
+- **Player + crew tree** (new left-menu button "Skills", same view): bought with Cash, Robux skips Cash never order.
+  Branches, each 3–5 nodes in a chain with a fork or two:
+  - Captain (you): craft top speed +4% per tier (3), handling/grip, pick-up reach +3 studs, Boat-to-me cooldown −10%,
+    call pay +5% (2), swim speed +20%.
+  - Builder: build rate +10% per tier (3), +2 builders at a site, base crew 2 → 3.
+  - Gatherer: gather pay +15% per tier (3), offline rate 0.3 → 0.4, +1 slot at its building.
+  - Rescuer: trip time −15%, recruit chance +5%, trip pay +25%.
+  - Mechanic: speed cap +5%, Boat-to-me −10% cap.
+  - Medic: pay-bonus cap +10%, +5% pay per Medic unit.
+  - Crew: worker cap +5 per tier (3), rare chance +3% (2).
+  Prices from ~1k (first nodes) to ~60k (last), so the tree is the late-game Cash sink that brings the full
+  progression back to ~17 h (docs/23 (r)). Pure rules + data in `src/shared/SkillRules.luau` (one table of nodes),
+  server `SkillService` (buy, save `data.skills`, publish effects as player attributes like WorkerService does),
+  hooks in the existing readers (WorkerRules effects, BuildTimer rate, VehicleService speed/cooldown, Board reach,
+  OperationService pay, swim).
