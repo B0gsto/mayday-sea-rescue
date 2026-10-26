@@ -38,6 +38,8 @@ history, not here.
 | `BuyGear` | C->S fn | ProgressionService: buys a craft (`vehicleId`); the name is historical |
 | `Spin_Spin` | C->S fn | SpinService: spends one spin, the server rolls -> `{ ok, prize, name, rarity, kind, icon, segment, duplicateCash? }` |
 | `Spin_Flex` | S->C | SpinService: a Legendary / Mythic win `{ userId, name, prize, rarity, icon }` (banner + confetti) |
+| `Skill_Buy` | C->S fn | SkillService: buys a skill node `(id) -> (ok, reason)` |
+| `Skill_State` | S->C | SkillService: `{ owned, cash }` on join and after every buy |
 
 Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService), `Upgrade_Buy` (UpgradeService),
 `PIW_Rescue` (Ops/PiwRescue), `Dock_Upgrade` / `Dock_Build` / `Dock_Finish` (DockService), `Quest_Talk` (QuestService),
@@ -208,6 +210,14 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
 - `ProgressionService`: `Award(player, cash, reason, flat?)` (storm, pass, friend and live-ops multipliers unless
   `flat`), `GetData`, `CanUseVehicle`, `OwnsVehiclePass`, `SetFlag`, `RecordTraining(player, grade)`, `Refresh`.
   leaderstats Cash + Rescued. Studio: `ServerStorage.ProgressionDev`.
+- Skills (docs/24 G): `shared/SkillRules` (pure: one `NODES` table for the Captain, Builder, Gatherer, Rescuer,
+  Mechanic, Medic and Crew branches with `col`/`row` layout and `needs`, `canBuy(owned, id, cash) -> ok, reason`,
+  `effects(owned) -> totals`). `SkillService`: `Skill_Buy`, `data.skills`, `Skill_State`; it publishes the totals
+  as player attributes `SkillSpeedMult`, `SkillGrip`, `SkillReach`, `SkillBoatScale`, `SkillPayBonus`, `SkillSwimMult`,
+  `SkillBuildRate`, `SkillExtraBuilders`, `SkillBaseCrew`, `SkillGatherMult`, `SkillOfflineAdd`, `SkillSlots<branch>`,
+  `SkillTripScale`, `SkillRecruitChance`, `SkillTripPayMult`, the cap adds (`SkillSpeedCapAdd`, `SkillBoatCapAdd`,
+  `SkillMedicCapAdd`, `SkillMedicPerUnit`), `SkillWorkerCapAdd`, `SkillRareChanceAdd`. Readers default to no change:
+  WorkerRules/WorkerService, BuildTimer/DockService, VehicleService, Ops/Board reach, OperationService, SwimController.
 - Workers (docs/23 (o)): `shared/WorkerRules` (pure: roll, admit, assign, effects, offline pay). RescueService
   rolls a survivor on pick-up (attributes `WorkerCategory` / `WorkerRarity` / `WorkerName`) and calls
   `WorkerService.Recruit` when they land at the driver's berth. `WorkerService`: `data.workers`, published as

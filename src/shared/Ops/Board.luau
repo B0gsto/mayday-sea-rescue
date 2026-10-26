@@ -12,15 +12,15 @@ Board.HOLD = 0.6 -- s close and steady before they climb (heli winch and sub onl
 Board.RING = 12 -- studs, radius from the survivor to the hull centre -- tune
 
 -- May they climb aboard now? docs/24 A: a boat takes them at any speed and tilt;
--- gap is from the hull side.
-function Board.ready(gap: number, room: boolean): boolean
-	return room and gap <= Board.REACH
+-- gap is from the hull side. reachAdd is the Captain skill's extra studs (SkillService attribute).
+function Board.ready(gap: number, room: boolean, reachAdd: number?): boolean
+	return room and gap <= Board.REACH + math.max(0, reachAdd or 0)
 end
 
 -- Bigger craft. The ring is the boarding reach measured from the hull centre (the server's gap is from
 -- the side: half the root's X).
-function Board.ringFor(halfBeam: number): number
-	return math.max(Board.RING, Board.REACH + halfBeam)
+function Board.ringFor(halfBeam: number, reachAdd: number?): number
+	return math.max(Board.RING, Board.REACH + (reachAdd or 0) + halfBeam)
 end
 
 -- A hands-off helm within NUDGE_ANGLE of a survivor inside OUTER gets up to NUDGE of helm toward them.

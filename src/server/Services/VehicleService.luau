@@ -186,9 +186,11 @@ local function canUse(player: Player, vehicleId: string): boolean
 	return result == true
 end
 
--- Mechanics at work on your island (WP-26, WorkerService sets the attribute)
+-- Mechanics at work on your island (WP-26, WorkerService sets the attribute) and the Captain skill (SkillService).
 local function speedBonus(player: Player): number
-	return math.clamp(tonumber(player:GetAttribute("WorkerCraftSpeed")) or 1, 1, 3)
+	local crew = tonumber(player:GetAttribute("WorkerCraftSpeed")) or 1
+	local skill = tonumber(player:GetAttribute("SkillSpeedMult")) or 1
+	return math.clamp(crew * skill, 1, 3)
 end
 
 -- Fitted boatyard upgrades (docs 03 section 4.1), read from the profile push.
@@ -1565,6 +1567,7 @@ function VehicleService.Init()
 					now,
 					MonetizationEffects.BOAT_TO_ME_COOLDOWN
 						* (tonumber(player:GetAttribute("WorkerBoatScale")) or 1)
+						* (tonumber(player:GetAttribute("SkillBoatScale")) or 1)
 				) > 0
 			then
 				return false, "Cooldown"

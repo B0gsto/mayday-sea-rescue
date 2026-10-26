@@ -1,7 +1,8 @@
 -- Pacing: the docs/03 section 10 player (25-minute sessions, two a day, Silver grades,
 -- occasional storm, solo or with one friend) against the real config and pure rules. Prints the
 -- unlock timeline and the Cash at each session end, then asserts the targets. No ranks (docs/23 (q)):
--- progress is the island's unlock tree, bought with Cash only.
+-- progress is the island's unlock tree, bought with Cash only; once it stands the skill tree (docs/24 G)
+-- takes the spare Cash, so the full progression lands at ~17 h.
 -- Every number comes from a config or a pure rule module; only the play pattern below is assumed.
 return function(t)
 	local ProgressionConfig = t.load("src/shared/Config/ProgressionConfig.luau")
@@ -15,6 +16,7 @@ return function(t)
 	local UnlockTree = t.load("src/shared/UnlockTree.luau")
 	local WorkerRules = t.load("src/shared/WorkerRules.luau")
 	local BuildTimer = t.load("src/shared/BuildTimer.luau")
+	local SkillRules = t.load("src/shared/SkillRules.luau")
 	local SpinRules = t.load("src/shared/SpinRules.luau")
 
 	local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
@@ -96,18 +98,40 @@ return function(t)
 		-- WP-26: every person delivered home becomes a worker (the roll on a counter seed); `legacy` has none.
 		-- Rescuer boats' occasional extra worker is left out (the cap is reached within hours anyway).
 		local rolls = 0
+		local function skills(): any
+			return SkillRules.effects(data.skills)
+		end
 		local function fx()
-			return WorkerRules.effects(WorkerRules.units(data.workers, built))
+			local se = skills()
+			return WorkerRules.effects(
+				WorkerRules.units(data.workers, built, { Gatherer = se.extraSlots.Gatherer or 0 }),
+				{
+					gatherMult = se.gatherMult,
+					tripPayMult = se.tripPayMult,
+					tripScale = se.tripScale,
+					recruitChance = se.recruitChance,
+					offlineRate = se.offlineRate,
+					speedCapAdd = se.speedCapAdd,
+					boatCapAdd = se.boatCapAdd,
+					medicCapAdd = se.medicCapAdd,
+					medicPerUnit = se.medicPerUnit,
+				}
+			)
+		end
+		local function workerCap(): number
+			return WorkerRules.CAP + skills().workerCapAdd
 		end
 		local function recruit(people: number)
 			for _ = 1, if legacy then 0 else people do
 				rolls += 1
-				local category, rarity, name = WorkerRules.roll(rolls * 7919)
+				local category, rarity, name =
+					WorkerRules.roll(rolls * 7919, skills().rareChanceAdd)
 				WorkerRules.admit(
 					data.workers,
-					{ category = category, rarity = rarity, name = name }
+					{ category = category, rarity = rarity, name = name },
+					workerCap()
 				)
-				if #data.workers == WorkerRules.CAP then
+				if #data.workers == workerCap() then
 					mark("Workers full")
 				end
 			end
@@ -147,7 +171,12 @@ return function(t)
 						return
 					end
 					data.cash -= price
-					local rate = BuildTimer.rateOf(data.workers)
+					local se = skills()
+					local rate = BuildTimer.rateOf(data.workers, {
+						max = BuildTimer.BUILDERS + se.extraBuilders,
+						mult = 1 + se.buildRate,
+						crew = se.baseCrew,
+					})
 					local buildMin = BuildTimer.work(price) / 60 / rate
 					construction = { key = key, doneAt = playMin + buildMin }
 					table.insert(
@@ -168,6 +197,45 @@ return function(t)
 				end
 				planIndex += 1
 			end
+		end
+
+		-- docs/24 G: the skill tree sinks spare Cash (cheapest affordable first) but never the next planned
+		-- building's price, so the unlock plan keeps its order.
+		local function planPrice(): number
+			local key = PLAN[planIndex]
+			local b = key and DockConfig.Buildings[key]
+			return if b
+				then b.cash
+				elseif key then ProgressionConfig.Vehicles[key].price
+				else math.huge
+		end
+		local function skillsNext()
+			if PLAN[planIndex] then
+				return -- the island tree first (docs/23 (r)); skills are the late-game Cash sink (docs/24 G)
+			end
+			while data.cash < planPrice() do
+				local best, bestPrice = nil, math.huge
+				for _, n in SkillRules.NODES do
+					if
+						not data.skills[n.id]
+						and n.cash < bestPrice
+						and SkillRules.canBuy(data.skills, n.id, data.cash)
+					then
+						best, bestPrice = n, n.cash
+					end
+				end
+				if not best then
+					return
+				end
+				data.cash -= best.cash
+				data.skills[best.id] = true
+				mark(`Skill: {best.name}`)
+			end
+		end
+		local planBase = planNext
+		planNext = function()
+			planBase()
+			skillsNext()
 		end
 
 		-- docs 03 section 10: RIB engine, jet ski storm hull, lifeboat engine; week 1 fits the rest.
@@ -280,7 +348,7 @@ return function(t)
 			local distance = CallLogic.flatDistance(at, home)
 			-- the reach comes from every owned craft; the player takes whichever owned boat is quickest
 			local seconds, best = math.huge, "JetSki"
-			local speed = fx().craftSpeed
+			local speed = fx().craftSpeed * (1 + skills().speedMult)
 			for _, id in { "JetSki", "RIB", "Lifeboat" } do
 				if id == "JetSki" or owned[id] then
 					local craft = VehicleConfig[id]
@@ -326,14 +394,14 @@ return function(t)
 				else Grading.Payout.Tutorial[totalOps + 1]
 			local f = fx()
 			-- Gatherers and the Rescuers' boat earn through the op's minutes (flat Cash, no multipliers)
-			local work = math.floor(
-				(f.gatherPerMin + f.rescuePerTrip * 60 / WorkerRules.RESCUE_PERIOD) * minutes
-			)
+			local work =
+				math.floor((f.gatherPerMin + f.rescuePerTrip * 60 / f.rescuePeriod) * minutes)
 			data.cash += work
 			earned.workers += work
+			local pay = (1 + f.payBonus) * (1 + skills().payBonus)
 			earned.calls += reward.cash * scale * friendMult
-			earned.medic += reward.cash * scale * f.payBonus * friendMult
-			award(reward.cash * scale * (1 + f.payBonus), storm, great)
+			earned.medic += reward.cash * scale * (pay - 1) * friendMult
+			award(reward.cash * scale * pay, storm, great)
 			if scale == 1 then
 				recruit(people)
 				rescued += people
@@ -578,20 +646,30 @@ return function(t)
 		end
 	end)
 
-	t.test("the whole tree takes about 17 h of play (docs/00 section 6), +/- 15%", function()
+	t.test("the whole progression (tree + skill nodes) takes about 17 h, +/- 15%", function()
 		local last = 0
-		for _, key in PLAN do
-			last = math.max(
-				last,
-				minutes(
-					solo,
-					if DockConfig.Buildings[key]
-						then key .. " built"
-						else (LABEL[key] or key) .. " bought"
-				)
-			)
+		for _, entry in solo.timeline do
+			last = math.max(last, entry.at)
 		end
 		t.expect(last >= 0.85 * 17 * 60 and last <= 1.15 * 17 * 60).toBe(true)
+	end)
+
+	t.test("the skill tree is the late-game Cash sink: every node bought", function()
+		local count = 0
+		for _, n in SkillRules.NODES do
+			local entry = find(solo, `Skill: {n.name}`)
+			t.expect(entry ~= nil).toBe(true)
+			if entry then
+				count += 1
+			end
+		end
+		t.expect(count).toBe(#SkillRules.NODES)
+		-- docs/24 G: the tree's last node is a long goal, not an early buy
+		local last = 0
+		for _, entry in solo.timeline do
+			last = math.max(last, entry.at)
+		end
+		t.expect(last >= 12 * 60).toBe(true)
 	end)
 
 	t.test(

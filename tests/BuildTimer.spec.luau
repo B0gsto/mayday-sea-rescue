@@ -35,6 +35,17 @@ return function(t)
 		t.expect(B.rateOf(mixed)).toBeCloseTo(1 + B.PER * 2.5, 1e-9)
 	end)
 
+	t.test("the skill tree raises the builder count, rate and base crew", function()
+		local many = {}
+		for i = 1, 9 do
+			many[i] = worker("Builder", 1)
+		end
+		t.expect(#B.builders(many, B.BUILDERS + 2)).toBe(B.BUILDERS + 2)
+		local skill = B.rateOf(many, { max = B.BUILDERS + 2, mult = 1.3, crew = 1 })
+		t.expect(skill).toBeCloseTo((1 + B.PER * (B.units(many, B.BUILDERS + 2) + 1)) * 1.3, 1e-9)
+		t.expect(B.rateOf(many, { mult = 1.3 })).toBeCloseTo(B.rateOf(many) * 1.3, 1e-9)
+	end)
+
 	t.test("the finish tier follows the time left: 1 <= 60 s, 2 <= 300 s, 3 longer", function()
 		t.expect(B.finishTier(0)).toBe(1)
 		t.expect(B.finishTier(3)).toBe(1)

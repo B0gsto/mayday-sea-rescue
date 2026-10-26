@@ -29,7 +29,8 @@ function CraftBoard.ready(
 	speed: number,
 	tilt: number,
 	room: boolean,
-	waterY: number
+	waterY: number,
+	reachAdd: number?
 ): boolean
 	local d = target - at
 	local flat = Vector2.new(d.X, d.Z).Magnitude
@@ -42,7 +43,7 @@ function CraftBoard.ready(
 	elseif kind == "Sub" then
 		return Dive.pickupReady(d.X, d.Y, d.Z, speed, room)
 	end
-	return Board.ready(gap, room)
+	return Board.ready(gap, room, reachAdd)
 end
 
 -- Seconds they hold close and steady before climbing aboard: none for a boat (docs/24 A), the heli winch

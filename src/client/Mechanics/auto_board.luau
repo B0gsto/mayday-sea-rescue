@@ -10,6 +10,7 @@
 --           the help it gives: no throttle cut)
 -- Their outline shows white in reach, green while they climb, none with no room. Metrics: none (the server
 -- times it, elapsed).
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
@@ -54,6 +55,7 @@ function AutoBoard.start(
 	ring.FillTransparency = 1
 	ring.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 	local held = 0
+	local reachAdd = tonumber(Players.LocalPlayer:GetAttribute("SkillReach")) or 0
 	Step.heartbeat(s, function(dt)
 		if not (victim and victim.Parent) then
 			victim = World.victim(ctx)
@@ -79,7 +81,7 @@ function AutoBoard.start(
 		local tilt = math.deg(math.acos(math.clamp(h.cframe.UpVector.Y, -1, 1)))
 		local craft = h.root:FindFirstAncestorOfClass("Model")
 		local room = Board.hasRoom(craft)
-		ring.Enabled = room and gap <= Board.REACH * 2
+		ring.Enabled = room and gap <= (Board.REACH + reachAdd) * 2
 		ring.OutlineColor = if held > 0 then GREEN else WHITE
 		local at = h.position
 		local id = craft and craft:GetAttribute("VehicleId")
@@ -92,7 +94,8 @@ function AutoBoard.start(
 				speed,
 				tilt,
 				room,
-				Simulator.waterHeight(at.X, at.Z, Workspace:GetServerTimeNow())
+				Simulator.waterHeight(at.X, at.Z, Workspace:GetServerTimeNow()),
+				reachAdd
 			)
 		then
 			held += dt

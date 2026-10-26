@@ -925,8 +925,10 @@ finish = function(op: any, reason: string)
 			reward = Grading.shareWithoutStep(op.weight)
 			paidAs = "Op:Share"
 		end
-		-- Medics at work on your island pay a share more (WP-26, WorkerService sets the attribute)
-		local cash = reward.cash * (1 + (tonumber(p:GetAttribute("WorkerPayBonus")) or 0))
+		-- Medics at work on your island (WP-26) and the Captain skill (docs/24 G) pay a share more
+		local pay = 1 + (tonumber(p:GetAttribute("WorkerPayBonus")) or 0)
+		pay *= 1 + (tonumber(p:GetAttribute("SkillPayBonus")) or 0)
+		local cash = reward.cash * pay
 		if cash > 0 then
 			local ok = try("ProgressionService", "Award", p, cash, paidAs)
 			if not ok then

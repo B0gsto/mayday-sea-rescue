@@ -974,9 +974,10 @@ onPull = function(victim: any, player: Player, forced: boolean?)
 	victim.model:SetAttribute("PrivateTo", nil) -- aboard: everyone sees them
 	-- WP-26: a person picked up rolls the worker they become at home (the client draws the badge)
 	if not call.wildlifeSpecies and victim.model:GetAttribute("WorkerCategory") == nil then
-		local category, rarity, name = WorkerRules.roll(workerRng:NextInteger(1, 2147483646))
 		-- docs/24 E: the first survivor home is always a Builder (the tutorial's build station beat)
 		local owner = driverOf(vehicle) or player
+		local rare = tonumber(owner:GetAttribute("SkillRareChanceAdd")) or 0
+		local category, rarity, name = WorkerRules.roll(workerRng:NextInteger(1, 2147483646), rare)
 		local pdata = DataService.Get(owner)
 		if
 			pdata

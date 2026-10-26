@@ -98,7 +98,9 @@ local function step()
 	local craft = seatedCraft()
 	local full = craft ~= nil and not Board.hasRoom(craft)
 	local root = craft and craft.PrimaryPart
-	local ring = if root then Board.ringFor(root.Size.X / 2) else Board.RING -- your craft's reach
+	-- your craft's reach, plus the Captain skill's extra studs (SkillService)
+	local reachAdd = tonumber(Players.LocalPlayer:GetAttribute("SkillReach")) or 0
+	local ring = if root then Board.ringFor(root.Size.X / 2, reachAdd) else Board.RING + reachAdd
 	local seen: { [Model]: boolean } = {}
 	local cam = Workspace.CurrentCamera
 	local near: { { m: Model, d: number } } = {}
