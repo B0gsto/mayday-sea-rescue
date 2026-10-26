@@ -138,7 +138,7 @@ end
 local pending: { opId: string, position: Vector3 }? = nil -- the solo offer driving can take
 local onCourse = 0
 
--- The craft whose helm the player holds, or nil (on foot, a passenger, in a car).
+-- The craft whose helm the player holds, or nil (on foot or a passenger).
 local function helmSeat(): VehicleSeat?
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -288,7 +288,7 @@ function OpsController.Init()
 	mechanicsFolder = script.Parent.Parent:WaitForChild("Mechanics", 10)
 	RunService.Heartbeat:Connect(watchCourse)
 	watchCinematics(player:WaitForChild("PlayerGui"))
-	-- the rip off Haven Sands (docs/09 section 8.4): its channel shows near the beach
+	-- the rip off Puffin Isle (docs/09 section 8.4): its channel shows near the beach
 	-- (Mechanics/Rip/View; required through any so it does not type as a cycle through this controller)
 	local RipView = (require :: any)(
 		script.Parent.Parent:WaitForChild("Mechanics"):WaitForChild("Rip"):WaitForChild("View")

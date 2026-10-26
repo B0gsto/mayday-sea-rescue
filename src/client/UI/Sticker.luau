@@ -369,7 +369,7 @@ function Sticker.slam(islandId: string, stickerId: string, page: boolean?)
 	end
 
 	task.wait(if stamp then 1.6 else 1.1)
-	-- off toward the phone button (top left), shrinking
+	-- off toward the menu (top left), shrinking
 	local out = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In)
 	if reduced then
 		TweenService:Create(scale, TweenInfo.new(0.3), { Scale = 0.01 }):Play()

@@ -1,6 +1,6 @@
 --!strict
 -- Horns (RP-M5 Horn Pack, server). Action "Horn" from a client (no arguments): the player must be
--- in the DriverSeat of a boat, jet ski or car, have a Horn Pack horn equipped (Cos_Horn, already
+-- in the DriverSeat of a boat or jet ski, have a Horn Pack horn equipped (Cos_Horn, already
 -- sanitised against the pass by CosmeticsService) and be off cooldown (the horn's length, min 2 s).
 -- Then every client within the horn's range gets Cosmetics_Event "Horn" (model, hornId, userId);
 -- src/client/Cosmetics/Horns plays it. The driver always gets it (their own horn is never muted).

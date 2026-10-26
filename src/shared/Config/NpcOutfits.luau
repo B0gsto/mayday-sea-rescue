@@ -74,7 +74,6 @@ local ID = {
 	hairPonytail = 376527350, -- "Black Ponytail" (Roblox)
 	hairCharmer = 376548738, -- "Brown Charmer Hair" (Roblox)
 	hairBeanie = 1103003368, -- "Orange Beanie with Black Hair" (Roblox), fisherman's watch cap
-	hairGreyBun = 93650855450887, -- "Light Grey Messy Bun" (exactly ablimity), Aggie
 	-- crew kit (RNLI-style without RNLI marks)
 	drysuitYellow = 73811047577081, -- classic shirt "Drysuit (+) Yellow" (Hugh's Dive Shop)
 	drysuitOrange = 80871249248196, -- classic shirt "Drysuit (+) Orange" (Hugh's Dive Shop)
@@ -83,8 +82,6 @@ local ID = {
 	crewLifejacket = 122223709873035, -- front "High-Vis Life Jacket" (Emergency Supply co.)
 	inflatableVest = 75858505969915, -- front "Orange Hi-Vis Inflatable Life Jacket/Vest" (DevVinci)
 	rescueHelmet = 8657543997, -- hat "Rescue Helmet" (FouledAnchors)
-	-- Aggie, navy coxswain
-	navyLifejacket = 134403920493764, -- front "Lifesaver Lifejacket Navy" (BCRS Supply)
 	knitBlack = 9240757332, -- layered sweater "Knit Sweater - Black" (Roblox)
 	blackJeans = 382537569, -- classic pants "Black Jeans" (Roblox)
 	-- everyday clothes (Roblox layered, free)
@@ -193,19 +190,6 @@ NpcOutfits.Roles = {
 			face = ID.faceMan,
 			scale = MAN,
 			stormGear = false,
-		}),
-	},
-	-- Chief Agnes "Aggie" Brightwater, retired coxswain in her 60s: navy knit, navy lifejacket.
-	Aggie = {
-		outfit({
-			name = "Aggie_NavyCoxswain",
-			layers = { { id = ID.knitBlack, kind = "Sweater" } },
-			pants = ID.blackJeans,
-			front = { ID.navyLifejacket },
-			hair = { ID.hairGreyBun },
-			face = ID.faceWoman,
-			skin = "#E6BE9C",
-			scale = OLDER,
 		}),
 	},
 	-- The person in the water (Assets/CasualtyAsset; also the RescueService greybox upgrade):

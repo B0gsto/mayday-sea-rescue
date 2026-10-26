@@ -241,14 +241,6 @@ function MonetizationService.WaitForPasses(player: Player, timeout: number?): bo
 	return passesChecked[player] == true
 end
 
-function MonetizationService.GetPolicy(player: Player): Policy?
-	return policies[player]
-end
-
-function MonetizationService.IsOffered(player: Player, kind: Kind, key: string): boolean
-	return Core.isOffered(itemFor(kind, key), policies[player] :: any)
-end
-
 function MonetizationService.GetCatalogue(player: Player): { CatalogueEntry }
 	local entries: { CatalogueEntry } = {}
 	for _, kind: Kind in { "GamePasses" :: Kind, "Products" :: Kind } do

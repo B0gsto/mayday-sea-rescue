@@ -52,7 +52,6 @@ local MapConfig = {
 			"rbxassetid://100758580068795",
 		},
 	},
-	ImagePixels = 4096,
 	Origin = Vector2.new(-7168, -7168), -- world (x, z) of the image's top-left corner
 	Extent = 14336, -- studs covered by the image on each side
 
@@ -67,23 +66,23 @@ local MapConfig = {
 	-- Place names on the full map, drawn live by MapController at a fixed screen size (not baked
 	-- into the image): a name is skipped when it would touch the legend, the title, the buttons, the
 	-- Roblox top bar (GuiService:GetGuiInset) or a name earlier in this list (list order = priority).
-	-- kind: region | town | place | water (italic) | street (lowest priority, zoomed in only).
+	-- kind: region | isle | place | water (italic) | street (lowest priority, zoomed in only).
 	-- left = text starts at the point (else centred).
 	-- tools/world/make_map_image.py --labels reads these rows (keep each on one line).
 	Places = {
-		{ text = "SKERRY ISLE", x = 1800, z = 1660, kind = "town" },
-		{ text = "PUFFIN ISLE", x = -2600, z = 3400, kind = "town" },
-		{ text = "PENWYN", x = -4800, z = -300, kind = "town" },
-		{ text = "WRECK REEF", x = -3800, z = 4200, kind = "town" },
-		{ text = "THE ARCHES", x = 5300, z = -200, kind = "town" },
-		{ text = "GANNET ROCK", x = 3500, z = 3500, kind = "town" },
-		{ text = "MERMAID LAGOON", x = 300, z = 5600, kind = "town" },
+		{ text = "SKERRY ISLE", x = 1800, z = 1660, kind = "isle" },
+		{ text = "PUFFIN ISLE", x = -2600, z = 3400, kind = "isle" },
+		{ text = "PENWYN", x = -4800, z = -300, kind = "isle" },
+		{ text = "WRECK REEF", x = -3800, z = 4200, kind = "isle" },
+		{ text = "THE ARCHES", x = 5300, z = -200, kind = "isle" },
+		{ text = "GANNET ROCK", x = 3500, z = 3500, kind = "isle" },
+		{ text = "MERMAID LAGOON", x = 300, z = 5600, kind = "isle" },
 		{ text = "Skerry Light outpost", x = 1800, z = 1850, kind = "place" },
 		{ text = "The Skerries", x = 2060, z = 1380, kind = "water" },
 		{ text = "OPEN SEA", x = 0, z = 1900, kind = "region" },
 	} :: { { text: string, x: number, z: number, kind: string, left: boolean? } },
 
-	-- Fixed places (none since WP-27 cut the hub HQ).
+	-- Fixed places (none today).
 	Blips = {} :: { Blip },
 
 	-- Dynamic blip styles (positions come from the operation, vehicles and players).
@@ -162,7 +161,7 @@ local MapConfig = {
 	},
 
 	-- Weather has no positional storm yet: while the State is Warning / Storm / Clearing the exposed
-	-- open sea south of the hub is shaded. CONTRACT (storm stream): set ReplicatedStorage.Weather
+	-- open sea south of the ring is shaded. CONTRACT (storm stream): set ReplicatedStorage.Weather
 	-- attributes StormCenter (Vector3) and StormRadius (number) and the map uses those instead.
 	StormAreas = {
 		{ center = Vector3.new(0, 0, 1650), radius = 1250 },

@@ -3,7 +3,7 @@
 -- Tested by tests/Call.spec.luau.
 local CallTypes = require(script.Parent.CallTypes)
 local GameConfig = require(script.Parent.Parent.Config.GameConfig)
-local HubLayout = require(script.Parent.Parent.Config.HubLayout)
+local RingLayout = require(script.Parent.Parent.Config.RingLayout)
 local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
 export type Rng = () -> number -- uniform in [0, 1)
@@ -30,7 +30,7 @@ function CallLogic.homeOf(bay: any): Vector3
 	local p: Vector3 = if typeof(bay) == "CFrame"
 		then bay.Position
 		elseif typeof(bay) == "Vector3" then bay
-		else HubLayout.Islands[1].berths.Boat.Position
+		else RingLayout.Islands[1].berths.Boat.Position
 	return Vector3.new(p.X, 0, p.Z)
 end
 
@@ -60,18 +60,18 @@ function CallLogic.isWater(pos: Vector3, area: string): boolean
 	local A = CallTypes.Areas
 	local fromCentre = flatDistance(pos, CallTypes.STATION)
 	if
-		fromCentre < HubLayout.Ring
+		fromCentre < RingLayout.Ring
 		or fromCentre > GameConfig.MapRadius - A.MapMargin
 		or (area == "Outer" and fromCentre < A.OuterMin)
 	then
 		return false
 	end
-	for _, island in HubLayout.Islands do
-		if flatDistance(pos, island.center) < HubLayout.IslandRadius + A.Shore then
+	for _, island in RingLayout.Islands do
+		if flatDistance(pos, island.center) < RingLayout.IslandRadius + A.Shore then
 			return false
 		end
 	end
-	for _, bridge in HubLayout.Bridges do
+	for _, bridge in RingLayout.Bridges do
 		if segmentDistance(pos, bridge.from, bridge.to) < A.BridgeClear then
 			return false
 		end
@@ -170,15 +170,6 @@ function CallLogic.zoneIdAt(pos: Vector3): string
 	return if best then best.id else "OpenSea"
 end
 
-function CallLogic.zoneDisplayName(zoneId: string): string
-	for _, zone in GameConfig.Zones do
-		if zone.id == zoneId then
-			return zone.displayName
-		end
-	end
-	return GameConfig.OpenSea.displayName
-end
-
 -- Speed grade (MVP has no comfort meter, docs 02 section 3).
 function CallLogic.grade(elapsed: number, timer: number): string
 	local f = elapsed / math.max(timer, 1e-3)
@@ -221,25 +212,6 @@ function CallLogic.reward(
 		cash = math.floor(P.BaseCash * m + 0.5),
 		grade = g,
 	}
-end
-
--- Preview shown on the call card (Silver, solo).
-function CallLogic.previewReward(kind: string, tutorialIndex: number?): Reward
-	local spec = CallTypes.Kinds[kind]
-	if spec and spec.isBig then
-		return {
-			cash = math.floor(P.BaseCash * P.BigBonusCash),
-			grade = "Silver",
-		}
-	end
-	return CallLogic.reward(kind, 0.7 * 100, 100, 1, tutorialIndex)
-end
-
--- "You tried" share: the fail-safe and crew members without a role action. Cash only.
-function CallLogic.failSafeCash(kind: string): number
-	local spec = CallTypes.Kinds[kind]
-	local weight = if spec then spec.weight else 1
-	return math.floor(P.BaseCash * weight * P.FailSafeShare + 0.5)
 end
 
 -- Big call: victims scale with the server, at least one per player and at least the base.
@@ -387,26 +359,6 @@ function CallLogic.chooseCall(
 		return { kind = kind, zone = "HarbourMouth" }
 	end
 	return { kind = kind, zone = CallLogic.distanceZone(reach, roll, home) }
-end
-
--- Is a world position over a flat drop-off pad (XZ inside the pad's footprint plus a margin)?
-function CallLogic.insidePad(
-	padCFrame: CFrame,
-	padSize: Vector3,
-	pos: Vector3,
-	margin: number
-): boolean
-	local localPos = padCFrame:PointToObjectSpace(pos)
-	return math.abs(localPos.X) <= padSize.X / 2 + margin
-		and math.abs(localPos.Z) <= padSize.Z / 2 + margin
-		and math.abs(localPos.Y) <= 25
-end
-
--- Timer for a call in a zone.
-function CallLogic.timerFor(kind: string, zoneId: string): number
-	local spec = CallTypes.Kinds[kind]
-	local zone = CallTypes.SpawnZones[zoneId]
-	return math.floor(spec.timer * (if zone then zone.timerMultiplier else 1) + 0.5)
 end
 
 -- Driving at a call (docs/16 K2: a seated player who heads for the flare takes the call): flat

@@ -20,7 +20,7 @@
 --    first second. The world (client UI/ColdOpenCue) shows the way,
 --    and pops a flare when the player makes no headway for NUDGE_AFTER seconds (nudge).
 local Buoyancy = require(script.Parent.Buoyancy)
-local HubLayout = require(script.Parent.Parent.Config.HubLayout)
+local RingLayout = require(script.Parent.Parent.Config.RingLayout)
 
 local KNOT = 1.543 -- studs/s
 
@@ -103,27 +103,14 @@ function ColdOpen.easeThrottle(forwardSpeed: number, input: number): number
 	return math.min(-brake, input)
 end
 
--- Server side: replicated motion that certainly needed an ease (so a client cannot hide one).
--- speed: forward speed, as for updateEase.
-function ColdOpen.serverSawEase(
-	assist: boolean,
-	distance: number,
-	speed: number,
-	brakeDecel: number?
-): boolean
-	return assist
-		and distance < ColdOpen.easeRadius(speed, brakeDecel) + ColdOpen.SERVER_RADIUS_SLACK
-		and speed > ColdOpen.EASE_TRIGGER + ColdOpen.SERVER_SPEED_MARGIN
-end
-
 -- 4. Cold open setup (read by OperationService.StartColdOpen) and its world cues.
 -- 2026-10-21: recovery is auto_board (close and steady, they climb on the sled), then the ride home
 -- (transport): at the berth they climb off and wave
 ColdOpen.PLAN = { "tasking", "recovery", "transport" }
 -- The jet ski starts at your berth, bow out of the cove (VehicleService.BerthLaunch), the casualty dead ahead
 -- just off the cove mouth; home is the berth behind you (SHORE). With no berth: Plot1's berth, bow out.
-ColdOpen.SPAWN = HubLayout.Islands[1].berths.Boat.Position
-ColdOpen.SPAWN_FACING = HubLayout.Islands[1].facing
+ColdOpen.SPAWN = RingLayout.Islands[1].berths.Boat.Position
+ColdOpen.SPAWN_FACING = RingLayout.Islands[1].facing
 ColdOpen.DISTANCE = { 100, 120 } -- studs dead ahead: past the cove mouth, outside NUDGE_NEAR, so they drive in to board (docs/16 B0) -- tune
 ColdOpen.NUDGE_AFTER = 10 -- s without headway before the world helps (docs/14 10 s rule)
 ColdOpen.NUDGE_PROGRESS = 6 -- studs closer that count as headway
@@ -151,7 +138,7 @@ end
 
 -- 5. The first mission ends at a drop-off (docs/14 section 3, docs/23 (k)). The recovery only completes once
 --    the casualty holds on (PiwMode "held") and is within SHORE_RADIUS of a shore point: an island's berth
---    (HubLayout; the cold open starts at yours, and OperationService only takes your own). `water` is the drop-off, `dry` the quay at the head of the harbour / cove where the
+--    (RingLayout; the cold open starts at yours, and OperationService only takes your own). `water` is the drop-off, `dry` the quay at the head of the harbour / cove where the
 --    shore party takes them over. `via`: open-water turns the minimap route may go through (ColdOpen.nextHop)
 --    when something blocks the straight line (none on the new map: coves open straight out to sea).
 export type Shore = { id: string, water: Vector3, dry: Vector3, via: { Vector3 }? }
@@ -160,7 +147,7 @@ local function quay(frame: CFrame, fwd: number): Vector3
 	return Vector3.new(p.X, 0, p.Z)
 end
 ColdOpen.SHORE = {} :: { Shore }
-for _, island in HubLayout.Islands do
+for _, island in RingLayout.Islands do
 	local berth = island.berths.Boat.Position
 	table.insert(ColdOpen.SHORE, {
 		id = island.id,
@@ -251,16 +238,6 @@ end
 function ColdOpen.landed(mode: any, casualty: Vector3): boolean
 	local _, d = ColdOpen.nearestShore(casualty)
 	return mode == "held" and d <= ColdOpen.SHORE_RADIUS
-end
-
-local RANK = { Gold = 4, Silver = 3, Bronze = 2, Fail = 1 }
-
--- An eased approach is Silver at best; anything else passes unchanged.
-function ColdOpen.capGrade(grade: string, eased: boolean): string
-	if eased and (RANK[grade] or 0) > RANK[ColdOpen.EASE_GRADE_CAP] then
-		return ColdOpen.EASE_GRADE_CAP
-	end
-	return grade
 end
 
 return ColdOpen

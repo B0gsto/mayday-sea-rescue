@@ -19,8 +19,8 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
-local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local OfferPacing = require(Shared:WaitForChild("Calls"):WaitForChild("OfferPacing"))
+local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local Weather = require(Shared:WaitForChild("Weather"))
 local OpsFolder = Shared:WaitForChild("Ops")
 local Board = require(OpsFolder:WaitForChild("Board"))
@@ -286,7 +286,7 @@ local function homeOf(player: Player): Vector3
 	return CallLogic.homeOf(player:GetAttribute("BayCFrame"))
 end
 
--- On foot at their island's spawn (HubLayout; Plot1's while they have no berth), facing its station.
+-- On foot at their island's spawn (RingLayout; Plot1's while they have no berth), facing its station.
 -- A player seated in anything is left alone.
 local function sendToStation(player: Player)
 	local character = player.Character
@@ -294,9 +294,9 @@ local function sendToStation(player: Player)
 	if not character or not humanoid or humanoid.SeatPart or humanoid.Health <= 0 then
 		return
 	end
-	local home, spawn = homeOf(player), HubLayout.Islands[1].spawn
-	for _, island in HubLayout.Islands do
-		if CallLogic.flatDistance(island.center, home) <= HubLayout.IslandRadius then
+	local home, spawn = homeOf(player), RingLayout.Islands[1].spawn
+	for _, island in RingLayout.Islands do
+		if CallLogic.flatDistance(island.center, home) <= RingLayout.IslandRadius then
 			spawn = island.spawn
 		end
 	end
@@ -861,7 +861,7 @@ local function closeOp(op: any)
 		if st and st.activeOpId == op.id then
 			st.activeOpId = nil
 			st.offerOpId = nil
-			-- the cold open leaves room for Chief Aggie's walk-up and welcome before the next call
+			-- the cold open leaves a breather before the next call
 			st.nextOfferAt = now()
 				+ (
 					if op.coldOpen
@@ -870,20 +870,6 @@ local function closeOp(op: any)
 				)
 		end
 	end
-end
-
-local function tipFor(op: any, scored: { Grading.ScoredStep }): string?
-	local i = Grading.weakest(scored)
-	if not i then
-		return nil
-	end
-	local r = op.results[i]
-	for _, s in op.def.steps do
-		if s.id == r.stepId then
-			return s.tip
-		end
-	end
-	return nil
 end
 
 finish = function(op: any, reason: string)
@@ -919,7 +905,6 @@ finish = function(op: any, reason: string)
 			at = math.floor(r.at),
 		})
 	end
-	local tip = tipFor(op, scored)
 	for _, p in people do
 		local st = stateOf(p)
 		local reward: Grading.Reward
@@ -974,7 +959,6 @@ finish = function(op: any, reason: string)
 			saved = op.saved,
 			total = #op.casualties,
 			cash = math.floor(cash * mult + 0.5),
-			tip = tip,
 			me = p.UserId,
 		})
 	end
@@ -1252,7 +1236,7 @@ local function offerPayload(op: any, tutorialIndex: number?): { [string]: any }
 	}
 end
 
--- G69 idle nudge: standing on foot (not seated in a boat or car) and how far from the station.
+-- G69 idle nudge: standing on foot (not seated in a craft) and how far from the station.
 local function stationIdle(player: Player): (boolean, number)
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -1296,7 +1280,7 @@ end
 -- A call spot is open water; within ROUTE_CHECK of `home` also on a straight sea line from just past its cove
 -- mouth (never behind an island or a bridge pier). Farther out (an outer island) the
 -- trip is a voyage round things anyway, and the zone stays at its island.
-local COVE_MOUTH = 120 -- studs straight out from the berth: past the cove (HubLayout island radius 160)
+local COVE_MOUTH = 120 -- studs straight out from the berth: past the cove (RingLayout island radius 160)
 local ROUTE_CHECK = 1000
 local function clearSpawnFrom(home: Vector3): (Vector3) -> boolean
 	local d = Vector3.new(home.X, 0, home.Z) - CallTypes.STATION
@@ -1559,7 +1543,7 @@ end
 
 -- Cold open, the way in (docs/14 section 3): while the casualty holds on, the recovery step waits
 -- for land (no timeout); at a shore point (BoatColdOpen.landed) the shore party takes them over and
--- the step completes with the client's kept result. No headway for 10 s: Aggie calls them in.
+-- the step completes with the client's kept result. No headway for 10 s: the step completes for them.
 -- A step the server itself saw done (boarded, landed): graded on its server metrics, acknowledged, completed.
 local function serverDone(
 	op: any,

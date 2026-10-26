@@ -588,10 +588,6 @@ function DataService.MarkDirty(player: Player)
 	end
 end
 
-function DataService.IsMemoryMode(): boolean
-	return memoryMode
-end
-
 function DataService.OnLoaded(fn: (Player, PlayerData) -> ()): RBXScriptConnection
 	if not loadedEvent then
 		loadedEvent = Instance.new("BindableEvent")

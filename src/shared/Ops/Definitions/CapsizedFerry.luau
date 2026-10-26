@@ -33,7 +33,6 @@ local def: Types.OperationDef = {
 			timeoutSec = 45,
 			onFail = "npc",
 			npcSeconds = 8,
-			tip = "Answer the relay at once.",
 		},
 		{
 			id = "pickup",
@@ -52,7 +51,6 @@ local def: Types.OperationDef = {
 			onFail = "retry",
 			npcAllowed = false,
 			effect = "board",
-			tip = "Come in slow and steady: they climb aboard.",
 		},
 		{
 			id = "movement",
@@ -77,7 +75,6 @@ local def: Types.OperationDef = {
 			onFail = "continue",
 			npcSeconds = 40,
 			effect = "deliver",
-			tip = "A bigger boat brings more home per trip.",
 		},
 	},
 }

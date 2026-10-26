@@ -37,7 +37,7 @@ local function num(v: any): number
 	return if type(v) == "number" and v == v then v else 0
 end
 
--- The best-paying live zone (docs/04 4.1: packs scale with the top open zone; no ranks gate it, WP-28).
+-- The best-paying live zone (docs/04 4.1: packs scale with the top open zone).
 function Effects.topZone(zones: { Zone }): Zone?
 	local best: Zone? = nil
 	for _, zone in zones do
@@ -209,20 +209,7 @@ function Effects.summonDecision(ctx: SummonContext): string
 	return "Wait"
 end
 
--- Quick Launch (docs/04 section 3): launch an owned vehicle straight into the seat from anywhere, without
--- the walk and the launch cooldown. Never during the cold open; never while seated with someone (planSpawn
--- refuses); ownership still gates every vehicle (spawnVehicle).
-function Effects.quickLaunchAllowed(ownsPass: boolean, coldOpenDone: boolean): (boolean, string)
-	if not ownsPass then
-		return false, "NotOwned"
-	end
-	if not coldOpenDone then
-		return false, "ColdOpen"
-	end
-	return true, "ok"
-end
-
--- Boat to me (docs/23 c.5, WP-11a): the phone's free call waits BOAT_TO_ME_COOLDOWN between uses; the Quick
+-- Boat to me (docs/23 c.5, WP-11a): the menu's free call waits BOAT_TO_ME_COOLDOWN between uses; the Quick
 -- Launch pass skips the wait. -> seconds left (0 = ready). lastAt: the last call's server time (nil: never).
 -- cooldown: this player's wait (the hired Mechanic shortens it); nil = the base 60 s.
 Effects.BOAT_TO_ME_COOLDOWN = 60 -- s -- tune

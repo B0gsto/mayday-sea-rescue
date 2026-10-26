@@ -14,7 +14,7 @@
 --
 -- What it plays: wind (3 layers by Weather.getIntensity and apparent wind), sea beds (harbour /
 -- open / storm by zone shelter and height above the surface), rain on the water, the marina bed,
--- the town murmur, halyards clinking on masts with the wind, a bell buoy off the harbour mouth,
+-- halyards clinking on masts with the wind, a bell buoy off the harbour mouth,
 -- gulls (quiet in a storm), underwater bed with a muffle on SFX and Ambience, boat engines (jet ski
 -- and RIB, two layers crossfaded by RPM; RPM follows the throttle), hull lap / bow wash / wake and
 -- hull slams for the driven boat, ticks for world prompts, awards, completed steps and the debrief,
@@ -107,12 +107,6 @@ end
 function AudioController.group(category: string): SoundGroup
 	ensureGroups()
 	return groups[category] or groups.SFX
-end
-
-function AudioController.getVolume(category: string): number
-	ensureGroups()
-	local g = groups[category]
-	return if g then g.Volume else (volumes[category] or 1)
 end
 
 function AudioController.setVolume(category: string, value: number)
@@ -512,17 +506,6 @@ local function updateAmbience(dt: number, now: number, camPos: Vector3)
 	-- marina bed (3D at the harbour centre) and halyards on masts, more with the wind
 	local inHarbour = harbourDist < AudioConfig.HarbourRadius + 150
 	setBed(beds.Amb_Harbour, if inHarbour and not underwater then 1 - 0.6 * intensity else 0, dt, 1)
-	local townDist = (Vector3.new(camPos.X, 0, camPos.Z) - Vector3.new(
-		AudioConfig.TownCentre.X,
-		0,
-		AudioConfig.TownCentre.Z
-	)).Magnitude
-	setBed(
-		beds.Amb_Town,
-		if townDist < AudioConfig.TownRadius and not underwater then 1 - 0.5 * intensity else 0,
-		dt,
-		1
-	)
 	if inHarbour and not underwater then
 		riggingCarry += dt * MIX.riggingRate * math.clamp(
 			0.25 + w.light * 0.3 + w.strong * 0.7 + w.gale,
@@ -689,11 +672,6 @@ function AudioController.Init()
 	local hb = bed("Amb_Harbour", harbour)
 	hb.sound.RollOffMinDistance = 60
 	hb.sound.RollOffMaxDistance = AudioConfig.HarbourRadius + 150
-	local town = emitterAt(AudioConfig.TownCentre)
-	town.Name = "TownBed"
-	local tb = bed("Amb_Town", town)
-	tb.sound.RollOffMinDistance = 40
-	tb.sound.RollOffMaxDistance = AudioConfig.TownRadius
 	for _, name in { "Music_Operation", "Music_Debrief" } do
 		local b: Bed = {
 			sound = AudioController.newSound(name, SoundService, true),

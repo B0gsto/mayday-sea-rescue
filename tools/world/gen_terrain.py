@@ -518,7 +518,7 @@ def write_worldconfig(wins):
         "Terrain": {"cell": L.CELL, "seabedFloorY": L.SEABED_FLOOR_Y, "seed": L.SEED,
                     "windows": [{"id": i["id"], "min": Vec(i["window"][0], L.SEABED_FLOOR_Y, i["window"][1]),
                                  "max": Vec(i["window"][2], 0, i["window"][3])} for i in L.ISLAND_WINDOWS]},
-        # docs/23 (p): the six player islands in a ring round an open lagoon (HubLayout.luau lays the lots, berths and
+        # docs/23 (p): the six player islands in a ring round an open lagoon (RingLayout.luau lays the lots, berths and
         # bridges out from this). Bearings: 0 east, 90 south; islandNotch = the berth cove, facing out to sea
         "Ring": {"center": Vec(L.CENTER[0], py, L.CENTER[1]), "plateauY": py, "radius": L.RING["radius"],
                  "islandRadius": L.RING["islandRadius"], "islandNotch": L.RING["notch"],

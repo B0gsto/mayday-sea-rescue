@@ -10,7 +10,6 @@
 --   opts = { at: Instance?     a model or part: 3D from it (AudioEmitter, heard by a camera listener)
 --            channel: string?  a new line on a channel cuts the old one (default the castId)
 --            cancelled: (() -> boolean)? }
-local Players = game:GetService("Players")
 local SoundService = game:GetService("SoundService")
 local Workspace = game:GetService("Workspace")
 
@@ -18,7 +17,6 @@ local VoiceCast = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("
 
 local VoiceTTS = {}
 
-local player = Players.LocalPlayer
 local RATE = 3 -- generations per second (the client limit is 4 per user)
 local CACHE_MAX = 80
 local GROUP = "VoiceTTS" -- AudioInteractionGroup: our emitters reach only our listener
@@ -51,7 +49,7 @@ local function vol(path: { string }): number
 end
 
 function VoiceTTS.enabled(): boolean
-	return player:GetAttribute("VoiceLines") ~= false and vol({ "Master", "Radio", "Voice" }) > 0
+	return vol({ "Master", "Radio", "Voice" }) > 0
 end
 
 local function graph(): (Folder, AudioFader)
@@ -111,10 +109,7 @@ local function emitterOn(at: Instance): AudioEmitter?
 end
 
 local function mixLevel(): number
-	local extra = player:GetAttribute("VoiceVolume")
-	return vol({ "Master" })
-		* vol({ "Master", "Radio" })
-		* (if type(extra) == "number" then math.clamp(extra, 0, 2) else 1)
+	return vol({ "Master" }) * vol({ "Master", "Radio" })
 end
 
 local function resolve(text: string): { string }
@@ -141,7 +136,7 @@ local function load(text: string, castId: string): AudioTextToSpeech?
 		return nil
 	end
 	table.insert(stamps, now)
-	local cast = VoiceCast.Cast[castId] or VoiceCast.Cast.AGGIE
+	local cast = VoiceCast.Cast[castId] or VoiceCast.Cast.PATROL
 	local tts = Instance.new("AudioTextToSpeech")
 	tts.Text = text
 	tts.VoiceId = cast.voice

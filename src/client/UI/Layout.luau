@@ -30,10 +30,8 @@
 -- The minimap stays visible on purpose: with 3D waypoint arrows off it is the only guidance to
 -- the casualty; the world marker (UI/Waypoint: icon + distance) is the one objective readout (no step strip).
 -- Layout.onColdOpen(fn) calls fn(active) now and on every change.
--- Layout.newPlayer() is true on a new-profile HUD: the cold open and the first 3 calls after it
--- (Layout.onNewPlayer(fn) calls fn(active) now and on every change).
--- Layout.promptBusy() is true while any "prompt" region holds a visible panel;
--- Layout.onPromptBusy(fn) calls fn(busy) now and on every change (polled every 0.25 s).
+-- Layout.promptBusy() is true while any "prompt" region holds a visible panel (polled every 0.25 s).
+-- Layout.newPlayer() is true on a new-profile HUD: the cold open and the first 3 calls after it.
 --
 -- Phone check (tests/HudLayout.spec.luau: phones and tablets, landscape and portrait, scale 0.7+):
 -- every region ends above the thumbstick zone at 55% of the safe height and the card column above
@@ -257,7 +255,6 @@ local function evaluate()
 	end
 end
 
-local promptEvent = Instance.new("BindableEvent")
 local promptIsBusy = false
 
 local function anyPromptPanel(): boolean
@@ -273,22 +270,8 @@ local function anyPromptPanel(): boolean
 	return false
 end
 
-local function evaluatePrompt()
-	local busy = anyPromptPanel()
-	if busy ~= promptIsBusy then
-		promptIsBusy = busy
-		promptEvent:Fire(busy)
-	end
-end
-
 function Layout.promptBusy(): boolean
 	return promptIsBusy
-end
-
-function Layout.onPromptBusy(fn: (boolean) -> ()): RBXScriptConnection
-	local c = promptEvent.Event:Connect(fn)
-	task.spawn(fn, promptIsBusy)
-	return c
 end
 
 function Layout.coldOpen(): boolean
@@ -305,9 +288,7 @@ end
 
 -- New-player HUD (docs/15 section 3): the cold open and the first three calls keep the screen
 -- bare. `OpsCompletedTotal` is saved, so a returning player is never treated as new.
-local newPlayerEvent = Instance.new("BindableEvent")
 local newPlayerActive = false
-local newPlayerKnown = false
 
 local function evaluateNewPlayer()
 	local player = Players.LocalPlayer
@@ -315,25 +296,14 @@ local function evaluateNewPlayer()
 		return
 	end
 	local total = player:GetAttribute("OpsCompletedTotal")
-	local active = Onboarding.newPlayerHud(
+	newPlayerActive = Onboarding.newPlayerHud(
 		player:GetAttribute("ColdOpenDone") == true,
 		if type(total) == "number" then total else nil
 	)
-	if not newPlayerKnown or active ~= newPlayerActive then
-		newPlayerKnown = true
-		newPlayerActive = active
-		newPlayerEvent:Fire(active)
-	end
 end
 
 function Layout.newPlayer(): boolean
 	return newPlayerActive
-end
-
-function Layout.onNewPlayer(fn: (boolean) -> ()): RBXScriptConnection
-	local c = newPlayerEvent.Event:Connect(fn)
-	task.spawn(fn, newPlayerActive)
-	return c
 end
 
 if RunService:IsClient() and Players.LocalPlayer then
@@ -343,7 +313,7 @@ if RunService:IsClient() and Players.LocalPlayer then
 		if acc >= 0.25 then
 			acc = 0
 			evaluate()
-			evaluatePrompt()
+			promptIsBusy = anyPromptPanel()
 			evaluateNewPlayer()
 		end
 	end)

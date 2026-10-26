@@ -1,14 +1,14 @@
 --!strict
 -- Bridges (docs/23 (p), WP-27): six short walkable Lego bridges joining each island to its two neighbours (a full
--- ring), Lego bricks from HubLayout.Bridges (WP-25): a light grey stud deck (the paths' plate) on a blue beam, climbing at 11.3 deg
+-- ring), Lego bricks from RingLayout.Bridges (WP-25): a light grey stud deck (the paths' plate) on a blue beam, climbing at 11.3 deg
 -- from both plates to a rounded crest (underside ~20 studs over the sea at mid-span, so boats pass under), red
 -- rails on white posts with yellow stud caps, an invisible anti-fall fence above them, and a light grey pier with a
 -- white cap at each plate's edge. Persistent streaming, like the plates: never dropped from high up.
 -- WorldDressingService calls Bridges.place(base) once at server start.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local HubLayout = require(
-	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("HubLayout")
+local RingLayout = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("RingLayout")
 )
 
 local SEG = 6 -- deck segment length (studs along the deck; short so the crest reads round)
@@ -44,7 +44,7 @@ local function part(parent: Instance, name: string, size: Vector3, cf: CFrame, c
 	return p
 end
 
-local function build(br: HubLayout.Bridge, parent: Instance)
+local function build(br: RingLayout.Bridge, parent: Instance)
 	local model = Instance.new("Model")
 	model.Name = br.id
 	model:SetAttribute("Islands", `{br.a} {br.b}`)
@@ -58,7 +58,7 @@ local function build(br: HubLayout.Bridge, parent: Instance)
 	-- deck, rails, fence: one set per segment along the profile
 	local n = math.ceil(span / SEG)
 	for k = 0, n - 1 do
-		local a, b = HubLayout.deckAt(br, k / n), HubLayout.deckAt(br, (k + 1) / n)
+		local a, b = RingLayout.deckAt(br, k / n), RingLayout.deckAt(br, (k + 1) / n)
 		local len = (b - a).Magnitude + 0.3 -- overlap: no seams to trip on
 		local cf = CFrame.lookAt((a + b) / 2, b)
 		local deck = part(
@@ -123,12 +123,12 @@ local function build(br: HubLayout.Bridge, parent: Instance)
 	end
 
 	-- a pier under the deck at each plate edge (the water span between them stays open for boats)
-	local a, b = HubLayout.byId[br.a], HubLayout.byId[br.b]
+	local a, b = RingLayout.byId[br.a], RingLayout.byId[br.b]
 	for _, isl in { a, b } do
 		local t0, t1 = 0, 1 -- the deck point where it leaves the plate: bisect along the deck
 		local inside = function(t: number): boolean
 			local p = br.from:Lerp(br.to, t)
-			return HubLayout.onPlate(isl, p.X, p.Z)
+			return RingLayout.onPlate(isl, p.X, p.Z)
 		end
 		if not inside(0) then
 			t0, t1 = 1, 0
@@ -141,7 +141,7 @@ local function build(br: HubLayout.Bridge, parent: Instance)
 				t1 = m
 			end
 		end
-		local p = HubLayout.deckAt(br, t0)
+		local p = RingLayout.deckAt(br, t0)
 		local top = p.Y - THICK
 		local foot = Vector3.new(p.X, (top + SEABED_Y) / 2, p.Z)
 			+ dir * (if t1 > t0 then PIER else -PIER)
@@ -166,7 +166,7 @@ end
 function Bridges.place(base: Instance)
 	local folder = Instance.new("Folder")
 	folder.Name = "Bridges"
-	for _, br in HubLayout.Bridges do
+	for _, br in RingLayout.Bridges do
 		build(br, folder)
 	end
 	folder.Parent = base

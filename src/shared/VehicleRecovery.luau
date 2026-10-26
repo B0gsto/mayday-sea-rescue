@@ -1,5 +1,5 @@
 --!strict
--- VehicleRecovery: when a player vehicle (car, boat, jet ski) is "weird" the server puts it back
+-- VehicleRecovery: when a player craft (boat, jet ski, heli, sub) is "weird" the server puts it back
 -- upright. Pure timers (Lune-tested in tests/VehicleRecovery.spec.luau) plus the lift-and-settle
 -- path VehicleService glides the model along.
 --   Flipped  on its side or roof (up vector past ~65 degrees) for FLIP_TIME while touching down
@@ -7,7 +7,7 @@
 --   Sunk     the caller's "off" flag (in terrain, beached, under water) for OFF_TIME
 -- Airborne samples pause the flip and stuck timers (a legit jump or barrel roll never resets), and
 -- after a reset nothing fires for COOLDOWN seconds (no reset loops).
--- Misplaced (docs/20 WP-C addendum): a boat on land or a car in deep water for MISPLACED_TIME goes
+-- Misplaced (docs/20 WP-C addendum): a boat on land for MISPLACED_TIME goes
 -- (the caller despawns it with poof()): at once when nobody is aboard, else only once a recovery
 -- has already been tried during that spell and failed.
 local VehicleRecovery = {}
@@ -21,7 +21,7 @@ VehicleRecovery.OFF_TIME = 2.5 -- tune
 VehicleRecovery.COOLDOWN = 6 -- tune
 VehicleRecovery.GLIDE_TIME = 0.7 -- s of lift-and-settle -- tune
 VehicleRecovery.GLIDE_LIFT = 4 -- studs at the top of the arc -- tune
-VehicleRecovery.MISPLACED_TIME = 6 -- s on land (boat) / in deep water (car) before it goes -- tune
+VehicleRecovery.MISPLACED_TIME = 6 -- s on land before it goes -- tune
 
 export type Reason = "Flipped" | "Stuck" | "Sunk"
 export type State = { flip: number, stuck: number, off: number, wrong: number, lastAt: number? }

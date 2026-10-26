@@ -3,10 +3,8 @@
 -- Roblox licensed library, ids checked with `audio-search.py verify`, logged in
 -- assets/audio/candidates.csv; clips in AudioConfig "Siren_*"), each with a light pattern.
 --
--- Toggle from the vehicle the player is driving (boat, jet ski or car): keyboard G, gamepad DPadDown
--- on boats and jet skis, or a tap button on touch screens. On cars the Blues control (K / DPadRight)
--- also sounds the equipped pack tone with the blue lights. Like the car's blues, a siren sounds only
--- while the driver is on a tasking (docs 10 section 3.3) and stops when the operation ends.
+-- Toggle from the boat or jet ski the player is driving: keyboard G, gamepad DPadDown, or a tap
+-- button on touch screens. A siren sounds only while the driver is on a tasking (docs 10 section 3.3) and stops when the operation ends.
 -- Looped 3D Sound on the vehicle (SFX group, RollOffMaxDistance = `range`); other players can mute
 -- sirens (Settings: sirens); your own is always audible.
 --

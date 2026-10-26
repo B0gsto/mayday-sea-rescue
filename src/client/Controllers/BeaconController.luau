@@ -28,9 +28,6 @@ local function litAt(now: number): boolean
 end
 
 local function beaconOn(model: Model): boolean
-	if localPlayer:GetAttribute("OpsActiveOp") ~= nil then
-		return true
-	end
 	if model:GetAttribute("ColdOpenOpId") ~= nil then
 		return true
 	end

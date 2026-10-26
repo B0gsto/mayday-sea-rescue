@@ -6,7 +6,7 @@
 -- the first ones home and comes back for the rest. Data only.
 local Types = require(script.Parent.Parent.Types)
 
-return function(answerTip: string): { Types.StepDef }
+return function(): { Types.StepDef }
 	return {
 		{
 			id = "tasking",
@@ -22,7 +22,6 @@ return function(answerTip: string): { Types.StepDef }
 			timeoutSec = 45,
 			onFail = "npc",
 			npcSeconds = 8,
-			tip = answerTip,
 		},
 		{
 			id = "launch",
@@ -38,7 +37,6 @@ return function(answerTip: string): { Types.StepDef }
 			timeoutSec = 180, -- never skipped: the step ends only aboard (retry restarts it)
 			onFail = "retry",
 			npcAllowed = false,
-			tip = "Your boat waits at your bay: run straight down the pier and jump aboard.",
 		},
 		{
 			id = "recovery",
@@ -58,7 +56,6 @@ return function(answerTip: string): { Types.StepDef }
 			onFail = "continue", -- slow is Bronze, never a fail (docs/00 section 3)
 			npcAllowed = false,
 			effect = "board",
-			tip = "Come in slow and hold her steady beside them: they climb on by themselves.",
 		},
 		{
 			id = "transport",
@@ -83,7 +80,6 @@ return function(answerTip: string): { Types.StepDef }
 			onFail = "continue",
 			npcSeconds = 45,
 			effect = "deliver",
-			tip = "Ease off on the crests on the way home: every slam hurts a cold survivor.",
 		},
 	}
 end

@@ -41,10 +41,6 @@ function LiveOpsService.GetState(): LiveOps.State
 	return state
 end
 
-function LiveOpsService.IsActive(id: string): boolean
-	return LiveOps.isActive(state, id, os.time())
-end
-
 function LiveOpsService.Multipliers(): LiveOps.Multipliers
 	return LiveOps.multipliers(state, os.time())
 end

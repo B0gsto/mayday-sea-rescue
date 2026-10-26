@@ -31,7 +31,6 @@ AmbientRescueService.MAX_AGE = 360 -- s unrescued before they are swept off (a f
 AmbientRescueService.CLEAR = 120 -- studs from any player when one appears (no pop-in beside you)
 AmbientRescueService.SPACING = 150 -- studs between free-roam swimmers
 AmbientRescueService.CASH = 120 -- per survivor delivered (a Silver call pays 550)
-AmbientRescueService.REP = 25
 AmbientRescueService.ZONES = { "Outer" }
 AmbientRescueService.MOUTH_OUT = 350 -- studs straight out from a player's berth: just past their cove -- tune
 AmbientRescueService.MOUTH_VIEW = 220 -- studs from that point: in view from the cove -- tune
@@ -67,13 +66,7 @@ end
 
 local function onDelivered(scene: Scene, count: number, driver: Player?)
 	if driver then
-		pcall(
-			ProgressionService.Award,
-			driver,
-			AmbientRescueService.CASH * count,
-			AmbientRescueService.REP * count,
-			"AmbientRescue"
-		)
+		pcall(ProgressionService.Award, driver, AmbientRescueService.CASH * count, "AmbientRescue")
 	end
 	remove(scene)
 end

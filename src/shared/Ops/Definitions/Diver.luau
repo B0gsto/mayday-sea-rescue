@@ -15,7 +15,7 @@ local def: Types.OperationDef = {
 	states = { Alert = 0.5, Exhausted = 0.5 },
 	lifejacketChance = 0,
 	sceneKinds = { "Diver" },
-	steps = SimpleSteps("Answer the call quickly; their air will not wait."),
+	steps = SimpleSteps(),
 }
 
 return def

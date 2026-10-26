@@ -17,7 +17,6 @@ export type Zone = {
 local GameConfig = {
 	SeaLevel = 0,
 	OceanFloorY = -40,
-	LandTopY = 4, -- quay and town ground height
 	MapRadius = 7000, -- playable radius from the origin (matches WorldConfig.MapRadius; docs/21 archipelago) -- tune
 
 	-- Ordered from most specific to least.
@@ -49,9 +48,7 @@ local GameConfig = {
 		StormSeconds = 180, -- tune
 		ClearingSeconds = 60, -- tune
 		GreatStormSeconds = 240, -- summoned Great Storm phase (docs 04 section 5)
-		WaveHeightMultiplier = 2.5, -- storm waves x2.5 height (Waves.STORM is built to match)
 		CallRateMultiplier = 3,
-		PayoutMultiplier = 1.5,
 	},
 }
 

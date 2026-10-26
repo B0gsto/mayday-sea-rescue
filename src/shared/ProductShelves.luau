@@ -131,7 +131,7 @@ function ProductShelves.cardState(config: any, ref: ItemRef, ctx: CardContext): 
 		return state("comingSoon", "Coming soon")
 	end
 	if ref.kind == "GamePasses" and ctx.owned then
-		return state("owned", "Owned", "Equip it at the station locker or the Chandlery mirror.")
+		return state("owned", "Owned")
 	end
 	local note: string? = nil
 	local cash = ProductShelves.packCash(item, ctx.cashPerMinute)

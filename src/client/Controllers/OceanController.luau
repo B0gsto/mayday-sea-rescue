@@ -667,7 +667,7 @@ local function step(dt: number)
 	lastT = t
 	WaveField.beginFrame(t, pos)
 	if horizon then
-		-- WP-21a: hub hilltops (Y 37), the lookout tower and bridge decks put a walking camera at 40-65 studs,
+		-- island hilltops, the lookout tower and bridge decks put a walking camera at 40-65 studs,
 		-- where the 4,200-stud horizon square showed against the sky: the skirt comes on from 25 up
 		Horizon.setHigh(horizon, pos.Y > SEA + 25)
 	end
@@ -776,11 +776,6 @@ function OceanController.GetVisualHeight(x: number, z: number): number
 		return h
 	end
 	return SEA + (h - SEA) * fadeWeight(x - centreX, z - centreZ)
-end
-
--- Average CPU cost of one ocean update in ms (EMA), and the tier name. For profiling.
-function OceanController.GetStats(): (number, string)
-	return stepMsAvg, tier.name
 end
 
 function OceanController.GetMode(): Mode

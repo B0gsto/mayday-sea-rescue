@@ -212,20 +212,6 @@ local function applyFlash(now: number)
 	colorCorrection.TintColor = current.TintColor:Lerp(LightingPresets.Flash.TintColor, flash)
 end
 
-function WeatherController.SetBasePreset(name: string)
-	if name == "Night" then
-		return -- no night for now (2026-10-22: night look is buggy); events keep the sunny day
-	end
-	if name == "Overcast" then
-		name = "Clear" -- callers restore the old default with "Overcast"; the default is now sunny
-	end
-	local preset = DAY_PRESETS[name]
-	if preset then
-		basePresetName, basePreset = name, preset
-		Lighting.ClockTime = preset.ClockTime
-	end
-end
-
 local function smoothstep(e0: number, e1: number, x: number): number
 	local t = math.clamp((x - e0) / (e1 - e0), 0, 1)
 	return t * t * (3 - 2 * t)

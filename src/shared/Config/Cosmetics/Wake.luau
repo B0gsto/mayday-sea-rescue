@@ -84,7 +84,7 @@ local options: { Option } = {
 		id = "StockTurquoise",
 		name = "Turquoise wake",
 		earn = "stock:wake_turquoise",
-		-- Chandlery tint: clean turquoise water in the churn, brighter at night
+		-- paint-tin tint: clean turquoise water in the churn, brighter at night
 		style = {
 			tint = "#58C8BD",
 			opacity = 1.3,
@@ -97,7 +97,7 @@ local options: { Option } = {
 		id = "StockGold",
 		name = "Gold wake",
 		earn = "stock:wake_gold",
-		-- Chandlery tint: warm brass foam, a faint lit edge after dark
+		-- paint-tin tint: warm brass foam, a faint lit edge after dark
 		style = {
 			tint = "#F2C24E",
 			opacity = 1.35,

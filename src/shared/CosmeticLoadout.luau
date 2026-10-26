@@ -17,7 +17,7 @@ local Cosmetics = require(script.Parent.Cosmetics)
 
 local CosmeticLoadout = {}
 
--- The Chandlery stock and the Season Logbook are cut (docs/16 C6, C11); saves that bought or
+-- The old paint stock and the Season Logbook are cut (docs/16 C6, C11); saves that bought or
 -- claimed these keep them. Season tiers index the claimed-tier bitfield.
 local STOCK = {
 	"paint_red",

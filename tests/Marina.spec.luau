@@ -2,7 +2,7 @@
 -- frame; the returning player's spot is on the jetty finger; assignment and the spawn lock.
 return function(t)
 	local M = t.load("src/shared/Marina.luau")
-	local L = t.load("src/shared/Config/HubLayout.luau")
+	local L = t.load("src/shared/Config/RingLayout.luau")
 	local BayLaunch = t.load("src/shared/Boat/BayLaunch.luau")
 
 	local function near(a: CFrame, b: CFrame): boolean

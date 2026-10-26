@@ -5,7 +5,7 @@
 --   * 77 granite steps cut into the west face (the terrain is carved above each tread), railed on the drop side,
 --     past the stamp post's ledge, up to a walled whitewashed yard on the summit;
 --   * the light (Lighthouse.luau): spiral stair inside, lantern gallery with bench and telescope (the viewpoint);
---   * the keeper's cottage (a town cottage kit with its lights and chimney smoke), a gannet colony on the ledges
+--   * the keeper's cottage (the cottage kit with its lights and chimney smoke), a gannet colony on the ledges
 --     with guano splashes, gannets wheeling round the rock, surf bursting at the foot, a bell buoy off the reef.
 -- The stair line was planned on the baked heightmap (tools/world/gen_terrain.py bake_island): one stud up per tread,
 -- about 1.6 along, following the slope so the cut stays shallow. Re-plan it if the GannetRock polygon changes.
@@ -710,9 +710,9 @@ function M.place(base: Instance, island: any)
 	local light = flat(island.landmark)
 	local entry = flat(list[#list].pos)
 	local doorAngle = math.atan2(entry.Z - light.Z, entry.X - light.X)
-	local haven = math.atan2(-light.Z, -light.X) -- the gallery looks home, to Port Haven
+	local home = math.atan2(-light.Z, -light.X) -- the gallery looks home, to the ring of islands
 	local lighthouse, galleryY =
-		Lighthouse.build(m, Vector3.new(light.X, YARD_Y, light.Z), doorAngle, haven)
+		Lighthouse.build(m, Vector3.new(light.X, YARD_Y, light.Z), doorAngle, home)
 	m:SetAttribute("GalleryY", galleryY)
 
 	keeperCottage(m, Vector3.new(light.X + 21, YARD_Y, light.Z), Vector3.new(-1, 0, 0)) -- east of the tower, facing it

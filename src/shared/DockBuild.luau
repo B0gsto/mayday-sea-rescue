@@ -8,7 +8,7 @@ local Marina = require(script.Parent:WaitForChild("Marina"))
 
 local DockBuild = {}
 
-DockBuild.ISLAND_RADIUS = 172 -- the plateau (160) plus a little beach, from HubLayout.IslandRadius
+DockBuild.ISLAND_RADIUS = 172 -- the plateau (160) plus a little beach, from RingLayout.IslandRadius
 DockBuild.PITCH = math.rad(58) -- down from horizontal: high enough to read the lots, low enough to see fronts
 DockBuild.FOV = 45 -- camera FieldOfView
 DockBuild.MARGIN = 1.12 -- breathing room round the island

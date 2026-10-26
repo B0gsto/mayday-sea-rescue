@@ -529,11 +529,11 @@ local function main()
 	local shared = waitChild(ReplicatedStorage, "Shared", math.max(0.1, deadline - os.clock()))
 	local config = shared and waitChild(shared, "Config", 5)
 	local LoadingPath = loadModule(shared and waitChild(shared, "LoadingPath", 5))
-	local HubLayout = loadModule(config and waitChild(config, "HubLayout", 5))
+	local RingLayout = loadModule(config and waitChild(config, "RingLayout", 5))
 	local UiImages = loadModule(config and waitChild(config, "UiImages", 5))
 	local Marina = loadModule(shared and waitChild(shared, "Marina", 5))
 
-	if not (LoadingPath and HubLayout) then
+	if not (LoadingPath and RingLayout) then
 		barActive = false
 		setProgress(1, "Ready!")
 		fadeOverlay(0.6)
@@ -543,10 +543,10 @@ local function main()
 		return
 	end
 
-	local ringCenter: Vector3 = HubLayout.Center -- docs/23 (p): the lagoon, ringed by the islands
+	local ringCenter: Vector3 = RingLayout.Center -- docs/23 (p): the lagoon, ringed by the islands
 	local bay: CFrame? = nil
 	local firstSession = false
-	local spawnCF: CFrame = HubLayout.Islands[1].spawn
+	local spawnCF: CFrame = RingLayout.Islands[1].spawn
 	local orbitAngle = 0
 	local flyActive = false
 	local flyStart = 0
@@ -686,7 +686,7 @@ local function main()
 		task.wait(0.05)
 	end
 	if type(plot) == "number" then
-		local islandRow = HubLayout.Islands[plot]
+		local islandRow = RingLayout.Islands[plot]
 		if islandRow then
 			spawnCF = islandRow.spawn
 		end

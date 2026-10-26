@@ -22,12 +22,27 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local CottageLights = require(script.Parent:WaitForChild("CottageLights"))
 local SharedSetsRig = require(script.Parent:WaitForChild("SharedSetsRig"))
-local StationRig = require(script.Parent:WaitForChild("StationRig"))
 local Weather = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Weather"))
 
 local CottageRig = {}
 
 local RIG_ATTR = "CottageRig" -- on every Instance this module creates
+
+-- "Clear" | "Overcast" | "Storm" | "Night": Night when the sun is below the horizon or WeatherBase is Night
+local function preset(): string
+	if Weather.getState() == "Storm" then
+		return "Storm"
+	end
+	local base = Lighting:GetAttribute("WeatherBase")
+	local name = if base == "Clear" or base == "Calm"
+		then "Clear"
+		elseif base == "Night" then "Night"
+		else "Overcast"
+	if Lighting:GetSunDirection().Y < 0 then
+		name = "Night"
+	end
+	return name
+end
 local WARM_2700K = Color3.fromRGB(255, 177, 110)
 local ROOM_2400K = Color3.fromRGB(255, 160, 92)
 -- lit rooms: a soft warm off-white interior glow, not a saturated lamp (Neon bloom pushed the old amber to yellow);
@@ -102,7 +117,7 @@ function CottageRig.apply(shell: Model): () -> ()
 	if previous then
 		previous()
 	end
-	local render = shell:GetAttribute("Render") -- Town: the lot's wall colour; nil = the variant's own
+	local render = shell:GetAttribute("Render") -- Penwyn terraces: the lot's wall colour; nil = the variant's own
 	SharedSetsRig.cottage(shell, if type(render) == "string" then render else nil)
 	local created: { Instance } = {}
 	local connections: { RBXScriptConnection } = {}
@@ -156,7 +171,7 @@ function CottageRig.apply(shell: Model): () -> ()
 			return
 		end
 		if shell:GetAttribute("RigLights") == false then
-			return -- Town: only a subset of the terraces carry real lights (the Neon panes still glow)
+			return -- Penwyn: only a subset of the terraces carry real lights (the Neon panes still glow)
 		end
 		local pl = Instance.new("PointLight")
 		pl.Color = color
@@ -225,8 +240,8 @@ function CottageRig.apply(shell: Model): () -> ()
 	local lit: boolean? = nil
 	local smoking: boolean? = nil
 	local function refresh()
-		local preset = StationRig.preset()
-		local on = CottageLights.lightsOn(preset)
+		local look = preset()
+		local on = CottageLights.lightsOn(look)
 		if on ~= lit then
 			lit = on
 			for _, l in lights do
@@ -239,7 +254,7 @@ function CottageRig.apply(shell: Model): () -> ()
 				p.Color = if typeof(own) == "Color3" then own else GLOW_ON -- big panes (shop windows) carry a dimmer one
 			end
 		end
-		local puff = CottageLights.smokeOn(preset, Weather.getState())
+		local puff = CottageLights.smokeOn(look, Weather.getState())
 		local wind = Weather.getWindDirection()
 		local drift = Vector3.new(math.cos(wind), 0, math.sin(wind)) * SMOKE.wind
 			+ Vector3.yAxis * SMOKE.lift

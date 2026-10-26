@@ -790,14 +790,6 @@ local function buildFerry(call: any, pos: Vector3): (Floater, { any })
 	return f, ferry.rafts
 end
 
--- Upright (Undamaged shows) or Capsized (Damage + GrabLines show). The op spawns her capsized.
-function RescueService.SetFerryState(call: any, state: string)
-	local ferry = call.ferry
-	if ferry and (state == "Capsized" or state == "Upright") then
-		setFerryState(ferry, state)
-	end
-end
-
 -- Builds everything a call needs at call.position. Called by OperationService on accept / big-call start.
 function RescueService.SpawnCall(call: any, victimPositions: { Vector3 }?)
 	liveCalls[call] = true
@@ -1483,15 +1475,6 @@ function RescueService.SetStamina(call: any, index: number, stamina: number)
 	end
 end
 
--- Where a casualty is now (the floater), or nil when they are not in the water.
-function RescueService.VictimPosition(call: any, index: number): Vector3?
-	local victim = call.victims and call.victims[index]
-	if not victim or victim.state ~= "Water" then
-		return nil
-	end
-	return victim.root.Position
-end
-
 -- A casualty was handed over without reaching a pad (stub transport, big-call movement):
 -- take it off the boat or out of the water.
 function RescueService.RemoveVictim(call: any, index: number)
@@ -1520,16 +1503,6 @@ function RescueService.GetTargets(call: any): { Vector3 }
 		end
 	end
 	return out
-end
-
-function RescueService.CountAboard(call: any): number
-	local n = 0
-	for _, v in call.victims or {} do
-		if v.state == "Aboard" then
-			n += 1
-		end
-	end
-	return n
 end
 
 -- Removes everything a call spawned. Victims still aboard are taken off the boat too

@@ -4,7 +4,7 @@
 -- frames; the touch arrangement is decided here, from the screen size, the insets and the device.
 --
 -- Every device: the menu (UI/Menu: a grid of kit icon buttons) sits at the left edge; the rest of the
--- left-hand HUD sits right of it. No radio strip, no goal chip.
+-- left-hand HUD sits right of it.
 --
 -- Desktop / gamepad: the wallet top left (right of the menu) with the objective strip under it,
 -- the minimap bottom left (right of the menu), the mission card column top right, gauges bottom

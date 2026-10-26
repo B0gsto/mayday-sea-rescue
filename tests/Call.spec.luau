@@ -12,10 +12,10 @@ return function(t)
 		end
 	end
 
-	local HubLayout = t.load("src/shared/Config/HubLayout.luau")
+	local RingLayout = t.load("src/shared/Config/RingLayout.luau")
 	-- every player island's berth (BayCFrame), and no berth (Plot1's berth)
 	local homes = { CallLogic.homeOf(nil) }
-	for _, island in HubLayout.Islands do
+	for _, island in RingLayout.Islands do
 		table.insert(homes, CallLogic.homeOf(island.berths.Boat))
 	end
 
@@ -48,8 +48,8 @@ return function(t)
 		function()
 			t.expect(CallLogic.isWater(Vector3.new(0, 0, 0), "Open")).toBe(false) -- the lagoon
 			t.expect(CallLogic.isWater(Vector3.new(0, 0, 300), "Open")).toBe(false)
-			t.expect(CallLogic.isWater(HubLayout.Islands[1].center, "Open")).toBe(false)
-			local mid = HubLayout.deckAt(HubLayout.Bridges[2], 0.5)
+			t.expect(CallLogic.isWater(RingLayout.Islands[1].center, "Open")).toBe(false)
+			local mid = RingLayout.deckAt(RingLayout.Bridges[2], 0.5)
 			t.expect(CallLogic.isWater(Vector3.new(mid.X, 0, mid.Z), "Open")).toBe(false)
 			t.expect(CallLogic.isWater(Vector3.new(1800, 0, 1750), "Open")).toBe(false) -- Skerry Isle
 			t.expect(CallLogic.isWater(Vector3.new(0, 0, 7000), "Open")).toBe(false)
@@ -65,7 +65,7 @@ return function(t)
 		t.expect(choice.zone).toBe("Near")
 		t.expect(CallLogic.chooseCall(1, "Calm").zone).toBe("CalmBay")
 		local rng = makeRng(3)
-		for i, island in HubLayout.Islands do
+		for i, island in RingLayout.Islands do
 			local home = homes[i + 1]
 			for _, zone in { "Near", "CalmBay" } do
 				for _ = 1, 50 do
@@ -73,7 +73,9 @@ return function(t)
 					local d = CallLogic.flatDistance(p, home)
 					t.expect(d >= 150 and d <= 300).toBeTruthy()
 					-- out past the island's rim, on its sea side
-					t.expect(CallLogic.flatDistance(p, island.center) > HubLayout.IslandRadius + 40)
+					t.expect(
+						CallLogic.flatDistance(p, island.center) > RingLayout.IslandRadius + 40
+					)
 						.toBeTruthy()
 					t.expect((p - island.center):Dot(island.facing) > 150).toBeTruthy()
 				end
@@ -128,7 +130,6 @@ return function(t)
 		local first = CallLogic.reward("Swimmer", 90, 100, 1, 0)
 		t.expect(first.cash).toBe(500)
 		t.expect(CallLogic.reward("Swimmer", 90, 100, 1, 2).cash).toBe(300)
-		t.expect(CallLogic.failSafeCash("Swimmer")).toBe(25)
 	end)
 
 	t.test("crew bonus is +10% per extra member, capped at +30%", function()
@@ -148,14 +149,6 @@ return function(t)
 		t.expect(vc).toBe(150)
 		local pts = CallLogic.scatterPoints(Vector3.new(60, 0, 500), 9, 14, 34, "Open", makeRng(9))
 		t.expect(#pts).toBe(9)
-	end)
-
-	t.test("drop-off pad test uses the pad footprint plus margin", function()
-		local cf = CFrame.new(-125, 0.2, 92)
-		local size = Vector3.new(12, 0.4, 20)
-		t.expect(CallLogic.insidePad(cf, size, Vector3.new(-125, 1, 92), 0)).toBeTruthy()
-		t.expect(CallLogic.insidePad(cf, size, Vector3.new(-134, 1, 92), 5)).toBeTruthy()
-		t.expect(CallLogic.insidePad(cf, size, Vector3.new(-150, 1, 92), 5)).toBeFalsy()
 	end)
 
 	t.test("heading toward a call: fast enough and inside the cone", function()

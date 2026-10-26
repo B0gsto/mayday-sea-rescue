@@ -2,7 +2,7 @@
 
 Coordinates are studs from the map centre (the ring's lagoon): +X east, -Z north, +Z south, sea level Y = 0, 1 m = 3 studs.
 This file is the single source for the island masks and points of interest; gen_terrain.py bakes the terrain from
-it and writes src/shared/Config/WorldConfig.luau from it (WorldConfig.Ring feeds src/shared/Config/HubLayout.luau).
+it and writes src/shared/Config/WorldConfig.luau from it (WorldConfig.Ring feeds src/shared/Config/RingLayout.luau).
 """
 import math
 
@@ -37,10 +37,10 @@ def oval(cx, cz, rx, rz, kind, h, n=8):
 
 # ---------------------------------------------------------------- the ring of six player islands (docs/23 (p))
 # WP-27: no island at the centre. The six player islands sit in a tight ring round an open lagoon. Bearings: 0 east,
-# 90 south (+Z). Island-local frame (HubLayout.luau uses the same): forward = outward from the ring centre (cos b,
+# 90 south (+Z). Island-local frame (RingLayout.luau uses the same): forward = outward from the ring centre (cos b,
 # sin b), right = (-sin b, cos b) = CFrame.lookAt(centre, centre + forward).RightVector. The islands are not terrain
 # (WP-24): each is a flat Lego plate built from Parts (src/server/World/IslandPlates.luau, footprint in
-# HubLayout.IslandPlate), its berth notch on the forward (sea) face.
+# RingLayout.IslandPlate), its berth notch on the forward (sea) face.
 PLATEAU_Y = 4  # the plate top, the quays and every lot
 # Terrain renders its surface about half a voxel over the baked height (Studio raycasts: +1.9 +-0.25 studs)
 RENDER_BIAS = 2

@@ -4,7 +4,7 @@
 usage: python3 tools/world/check_zones.py
 
 Reads map/generated/terrain_height.i16 and the island windows: the six player islands are Lego plates built from
-Parts (WP-24) round an open lagoon (WP-27), so their ring must be open water deep enough for boats and the submarine (tests/HubLayout.spec.luau checks every lot, berth and
+Parts (WP-24) round an open lagoon (WP-27), so their ring must be open water deep enough for boats and the submarine (tests/RingLayout.spec.luau checks every lot, berth and
 bridge); the bake windows are disjoint and on the tile grid; every outer island's landmark / stamp / landing is land,
 its dock water a boat floats in, its pads dry; the Arches' Door channel is open."""
 import json, math, os, sys

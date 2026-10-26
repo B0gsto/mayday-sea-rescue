@@ -6,7 +6,6 @@
 --
 --   A11yPalette.setMode("Off" | "Deuteranopia" | "Protanopia" | "Tritanopia")
 --   A11yPalette.colour(group, state) / A11yPalette.symbol(group, state)
---   A11yPalette.triageShape(tag): Enum.PartType (the vest tags also differ in shape)
 
 local A11yPalette = {}
 
@@ -19,7 +18,6 @@ A11yPalette.Modes = table.freeze(MODES)
 A11yPalette.States = table.freeze({
 	Rarity = { "Common", "Uncommon", "Rare", "Epic", "Legendary" },
 	Grade = { "Gold", "Silver", "Bronze", "Fail" },
-	Triage = { "Red", "Yellow", "Green", "Black" },
 	Mark = { "Pass", "Fail", "Pending" },
 })
 
@@ -33,7 +31,6 @@ local SYMBOLS: { [string]: { [string]: string } } = {
 		Legendary = "♛",
 	},
 	Grade = { Gold = "★", Silver = "◈", Bronze = "◆", Fail = "✕" },
-	Triage = { Red = "✚", Yellow = "▲", Green = "●", Black = "■" },
 	Mark = { Pass = "✓", Fail = "✕", Pending = "○" },
 	Marker = {
 		Casualty = "!",
@@ -68,12 +65,6 @@ local PALETTES: { [string]: { [string]: { [string]: Color3 } } } = {
 			Bronze = Color3.fromHex("936037"),
 			Fail = Color3.fromHex("5E3333"),
 		},
-		Triage = {
-			Red = Color3.fromHex("D83B3B"),
-			Yellow = Color3.fromHex("F5D142"),
-			Green = Color3.fromHex("62B772"),
-			Black = Color3.fromHex("272727"),
-		},
 		Mark = {
 			Pass = Color3.fromHex("92EDB4"),
 			Fail = Color3.fromHex("B13528"),
@@ -93,12 +84,6 @@ local PALETTES: { [string]: { [string]: { [string]: Color3 } } } = {
 			Silver = Color3.fromHex("799B9F"),
 			Bronze = Color3.fromHex("9A5E2D"),
 			Fail = Color3.fromHex("613131"),
-		},
-		Triage = {
-			Red = Color3.fromHex("3176C8"),
-			Yellow = Color3.fromHex("F8CE6C"),
-			Green = Color3.fromHex("87ACB1"),
-			Black = Color3.fromHex("272727"),
 		},
 		Mark = {
 			Pass = Color3.fromHex("92EDB4"),
@@ -120,12 +105,6 @@ local PALETTES: { [string]: { [string]: { [string]: Color3 } } } = {
 			Bronze = Color3.fromHex("936229"),
 			Fail = Color3.fromHex("613131"),
 		},
-		Triage = {
-			Red = Color3.fromHex("3178C6"),
-			Yellow = Color3.fromHex("FFCB59"),
-			Green = Color3.fromHex("64B2B2"),
-			Black = Color3.fromHex("252729"),
-		},
 		Mark = {
 			Pass = Color3.fromHex("92EDB4"),
 			Fail = Color3.fromHex("945000"),
@@ -145,12 +124,6 @@ local PALETTES: { [string]: { [string]: { [string]: Color3 } } } = {
 			Silver = Color3.fromHex("8F969B"),
 			Bronze = Color3.fromHex("AD4F4F"),
 			Fail = Color3.fromHex("613131"),
-		},
-		Triage = {
-			Red = Color3.fromHex("CD4078"),
-			Yellow = Color3.fromHex("F9C5D7"),
-			Green = Color3.fromHex("82B285"),
-			Black = Color3.fromHex("252729"),
 		},
 		Mark = {
 			Pass = Color3.fromHex("92EDB4"),
@@ -204,18 +177,6 @@ end
 
 function A11yPalette.symbol(group: string, name: string): string
 	return A11yPalette.state(group, name).symbol
-end
-
--- The triage band also changes shape: a colour-blind player can tell the tags apart by touch.
-local TRIAGE_SHAPE = {
-	Red = Enum.PartType.Block,
-	Yellow = Enum.PartType.Wedge,
-	Green = Enum.PartType.Cylinder,
-	Black = Enum.PartType.Ball,
-}
-
-function A11yPalette.triageShape(tag: string): Enum.PartType
-	return (TRIAGE_SHAPE :: any)[tag] or Enum.PartType.Block
 end
 
 return table.freeze(A11yPalette)

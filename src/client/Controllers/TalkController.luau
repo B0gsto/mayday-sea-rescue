@@ -21,7 +21,6 @@ local QuestRules =
 local UI = script.Parent.Parent:WaitForChild("UI")
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
-local VoiceCast = require(UI:WaitForChild("VoiceCast"))
 local VoiceTTS = require(script.Parent.VoiceTTS)
 
 local TalkController = {}
@@ -112,11 +111,7 @@ show = function(id: string?)
 	t.node = id
 	lineLabel.Text = node.line
 	lineLabel.MaxVisibleGraphemes = 0
-	VoiceTTS.speak(
-		node.line,
-		t.tree.cast or VoiceCast.castFor(t.tree.name, "AGGIE"),
-		{ at = t.model, channel = "talk" }
-	)
+	VoiceTTS.speak(node.line, t.tree.cast or "PATROL", { at = t.model, channel = "talk" })
 	typing = 0
 	for _, c in list:GetChildren() do
 		if c:IsA("GuiButton") then

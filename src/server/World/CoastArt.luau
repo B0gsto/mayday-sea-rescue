@@ -3,9 +3,7 @@
 -- CoastArt.place(Workspace.Dressing) once; the placement data and the tests are in CoastArtLayout
 -- (tests/CoastArt.spec.luau).
 --
--- Kelp fills WorldConfig.KelpBeds, the mail seaplane replaces its greybox POI and sand ripples lie on the seabed.
--- (WP-21a: the Haven Head cliffs and ledges, the Needle's Eye, the bottle field, lost pots and mooring blocks went
--- with Great Gale and the Port Haven harbour.)
+-- Kelp fills WorldConfig.KelpBeds, the mail seaplane wreck replaces its greybox POI and sand ripples lie on the seabed.
 --
 -- Every piece is raycast onto the Terrain and sunk slightly, so nothing floats. A piece whose asset or ground is
 -- missing is skipped with a warning (there is no greybox for these props). Folder attributes when done:

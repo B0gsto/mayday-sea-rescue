@@ -80,11 +80,6 @@ function Ui.isTouch(): boolean
 	return UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 end
 
-function Ui.isGamepad(): boolean
-	local last = UserInputService:GetLastInputType()
-	return last.Name:sub(1, 7) == "Gamepad"
-end
-
 function Ui.screen(bag: Bag, name: string): ScreenGui
 	local gui = Instance.new("ScreenGui")
 	gui.Name = `PIW_{name}`

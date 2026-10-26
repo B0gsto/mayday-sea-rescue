@@ -415,7 +415,7 @@ local function connectTriggers()
 					return -- the loading flyover already ends behind this craft
 				end
 				if reason == "ColdOpen" then
-					-- where am I, what is going on: town and station, then the casualty, then control
+					-- where am I, what is going on: the island, then the casualty, then control
 					Cinematic.play(
 						Cinematic.Lists.coldOpen(model),
 						{ id = "coldopen", skippable = true }

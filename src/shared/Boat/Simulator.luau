@@ -2,12 +2,10 @@
 -- Simulator: applies Buoyancy math to a boat's constraints (VectorForce per float point, a
 -- DriveForce VectorForce and a DriveTorque Torque; no deprecated Body* movers). Runs wherever the
 -- assembly is simulated: on the driver's client (BoatController, which owns the boat), and on the
--- server for empty drifting boats and unpiloted tows (VehicleService). Call step() once per
+-- server for empty drifting boats (VehicleService). Call step() once per
 -- RunService.PreSimulation; the constraint values hold for the physics substeps until the next call.
 --
--- Rigs are found by name on the root part (see Builder). Models that were not built by Builder
--- (for example an NPC boat being towed) get a rig from Simulator.ensureRig: 4 float points at the
--- root's bottom corners, draft from the model's "Draft" attribute or 30% of the root height.
+-- Rigs are found by name on the root part (see Builder).
 
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -148,55 +146,6 @@ end
 
 function Simulator.waterHeight(x: number, z: number, now: number): number
 	return Waves.heightAt(x, z, now, Simulator.waveParams(Vector3.new(x, 0, z), now))
-end
-
-local function newForce(
-	root: BasePart,
-	name: string,
-	attachment: Attachment,
-	atCenter: boolean
-): VectorForce
-	local f = Instance.new("VectorForce")
-	f.Name = name
-	f.Attachment0 = attachment
-	f.RelativeTo = Enum.ActuatorRelativeTo.World
-	f.ApplyAtCenterOfMass = atCenter
-	f.Force = Vector3.zero
-	f.Parent = root
-	return f
-end
-
--- Adds float points and drive constraints to a model that has a PrimaryPart but no Builder rig.
--- Server-side so the instances replicate to whichever client simulates it.
-function Simulator.ensureRig(model: Model)
-	local root = model.PrimaryPart
-	if not root or root:FindFirstChild("FloatForce1") then
-		return
-	end
-	local half = root.Size / 2
-	local i = 0
-	for _, sx in { -1, 1 } do
-		for _, sz in { -1, 1 } do
-			i += 1
-			local a = Instance.new("Attachment")
-			a.Name = `Float{i}`
-			a.Position = Vector3.new(sx * half.X * 0.8, -half.Y, sz * half.Z * 0.8)
-			a.Parent = root
-			newForce(root, `FloatForce{i}`, a, false)
-		end
-	end
-	local center = Instance.new("Attachment")
-	center.Name = "DriveAttachment"
-	center.Parent = root
-	newForce(root, "DriveForce", center, true)
-	local torque = Instance.new("Torque")
-	torque.Name = "DriveTorque"
-	torque.Attachment0 = center
-	torque.RelativeTo = Enum.ActuatorRelativeTo.World
-	torque.Parent = root
-	if model:GetAttribute("Draft") == nil then
-		model:SetAttribute("Draft", math.max(root.Size.Y * 0.3, 0.2))
-	end
 end
 
 function Simulator.getRig(model: Model): Rig?

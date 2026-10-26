@@ -31,7 +31,7 @@ local TICK = 0.3
 
 -- tier -> plant share kept where seen / elsewhere, plant draw distance, rock LOD1 / LOD2 / draw distances
 -- (rocks are 2.5k-9.8k triangle scans: they drop to LOD1 sooner than the plants)
--- RP-P1: Haven Sands at the old medium caps drew about 1.0M scatter triangles; these numbers bring
+-- RP-P1: a busy beach at the old medium caps drew about 1.0M scatter triangles; these numbers bring
 -- that under about 0.6M without thinning the roads and viewpoints (`seen` rows stay first).
 local TIERS = {
 	low = {

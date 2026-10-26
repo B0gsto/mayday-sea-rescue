@@ -4,7 +4,7 @@
 -- section 3, tutorial chain, fail-safe 10%, big-call shares). Numbers without a doc source: -- tune.
 --
 -- World frame (WorldConfig, docs/23 (p)): sea level Y = 0, an open lagoon at the origin ringed by the six player
--- islands 470 out (HubLayout, coves facing out), the outer islands beyond. Calls count from the player's berth.
+-- islands 470 out (RingLayout, coves facing out), the outer islands beyond. Calls count from the player's berth.
 
 export type Interaction = {
 	kind: "Pull",
@@ -43,7 +43,6 @@ export type SpawnZone = {
 	minRadius: number,
 	maxRadius: number,
 	area: "Open" | "Outer", -- Open = any open water, Outer = also Areas.OuterMin from the ring centre (CallLogic.isWater)
-	timerMultiplier: number, -- longer timers for storm beginner calls (docs 02 section 8)
 	fallback: Vector3?, -- fixed sites; nil: CallLogic.homeFallback (open water out past your island)
 	reach: number?, -- distance-tier zones (docs/23 e.2): offered once the player's craft reach is at least this
 	cove: boolean?, -- a cone straight out of your island's cove (CallLogic.pickSpawnPoint)
@@ -51,14 +50,14 @@ export type SpawnZone = {
 	island: boolean?, -- an outer island's ring: offered when its centre is within reach of your berth
 }
 
-local HubLayout = require(script.Parent.Parent.Config.HubLayout)
+local RingLayout = require(script.Parent.Parent.Config.RingLayout)
 local RipCurrent = require(script.Parent.Parent.RipCurrent)
 local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
 local CallTypes = {}
 
--- Where calls are measured from: the centre of the ring of islands (docs/23 (p); HubLayout.Center at sea level).
-CallTypes.STATION = Vector3.new(HubLayout.Center.X, 0, HubLayout.Center.Z)
+-- Where calls are measured from: the centre of the ring of islands (docs/23 (p); RingLayout.Center at sea level).
+CallTypes.STATION = Vector3.new(RingLayout.Center.X, 0, RingLayout.Center.Z)
 
 -- the fixed scenes (docs/23 (p)): the ferry in open sea south of the ring (between Plot2 and Plot3, 1,000 studs out
 -- from the centre), the rip off Puffin Isle's beach (shared/RipCurrent.Beach)
@@ -77,7 +76,6 @@ CallTypes.Payout = {
 	SilverUnder = 0.85, -- the "late" warning point; after it, Bronze -- tune
 	CrewBonusPerMember = 0.1, -- +10% per extra member
 	CrewBonusMax = 0.3, -- up to +30% for four
-	FailSafeShare = 0.1, -- timer ran out (or a crew member with no role action): 10% Cash
 	Tutorial = {
 		{ cash = 500 }, -- call 1
 		{ cash = 300 }, -- calls 2 to 5
@@ -93,7 +91,6 @@ CallTypes.Scheduler = {
 	OfferDelay = 9, -- seconds after a player is free before the next offer (within ~10 s) -- tune
 	FirstOfferDelay = 3, -- a new player's first call (docs 02 section 2, 0:02) -- tune
 	OfferSeconds = 180, -- docs/16 K2: the call stands while you run to the bay and head out -- tune
-	LateGrace = 90, -- a call with a survivor aboard at timer end gets this long to deliver -- tune
 }
 
 CallTypes.Kinds = {
@@ -251,7 +248,6 @@ CallTypes.SpawnZones = {
 		minRadius = 150,
 		maxRadius = 220,
 		area = "Open",
-		timerMultiplier = 1.2,
 		cove = true,
 	},
 	CalmBay = {
@@ -261,7 +257,6 @@ CallTypes.SpawnZones = {
 		minRadius = 180,
 		maxRadius = 300,
 		area = "Open",
-		timerMultiplier = 1,
 		cove = true,
 	},
 	-- Storm beginner calls just past your cove: full storm waves, a short ride.
@@ -272,7 +267,6 @@ CallTypes.SpawnZones = {
 		minRadius = 300,
 		maxRadius = 450,
 		area = "Outer",
-		timerMultiplier = 1.4,
 		cove = true,
 	},
 	-- The open water between the six islands and the outer islands (free-roam swimmers).
@@ -283,7 +277,6 @@ CallTypes.SpawnZones = {
 		minRadius = 1200,
 		maxRadius = 1900,
 		area = "Outer",
-		timerMultiplier = 1.3,
 	},
 	-- The big call, in open sea south of the ring.
 	FerrySite = {
@@ -293,7 +286,6 @@ CallTypes.SpawnZones = {
 		minRadius = 0,
 		maxRadius = 0,
 		area = "Open",
-		timerMultiplier = 1,
 		fallback = FERRY_AT,
 	},
 	-- Rip-current beach rescue (docs/09 section 8.4): one place, the channel off Puffin Isle's beach
@@ -305,7 +297,6 @@ CallTypes.SpawnZones = {
 		minRadius = 0,
 		maxRadius = 0,
 		area = "Open",
-		timerMultiplier = 1,
 		fallback = RIP_AT,
 	},
 } :: { [string]: SpawnZone }
@@ -321,7 +312,6 @@ for id, ring in RINGS do
 		minRadius = ring[1],
 		maxRadius = ring[2],
 		area = "Outer",
-		timerMultiplier = 1.3,
 		reach = ring[2],
 		fromHome = true,
 	}
@@ -335,7 +325,6 @@ for _, island in WorldConfig.Islands do
 		minRadius = island.radius + 60,
 		maxRadius = island.radius + 400,
 		area = "Outer",
-		timerMultiplier = 1.3,
 		island = true,
 	}
 end
@@ -375,7 +364,7 @@ end
 
 -- Open water on the new map (CallLogic.isWater; the server adds its terrain / route raycasts on top).
 CallTypes.Areas = {
-	Shore = 40, -- studs off the player islands' rims (HubLayout radii)
+	Shore = 40, -- studs off the player islands' rims (RingLayout radii)
 	BridgeClear = 36, -- studs from a bridge's centre line: half its deck + 30
 	OuterMin = 1200, -- "Outer" area: this far from the ring centre, well past the six islands
 	MapMargin = 120, -- stay this far inside GameConfig.MapRadius

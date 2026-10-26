@@ -4,12 +4,12 @@
 -- in tests/Seamarks.spec.luau. No requires: safe to load in Lune.
 --
 -- IALA Region A (art/reference/M_Hbr_NavMark_*/dims.md). The south channel into the lagoon (docs/23 (p): between
--- Plot2 and Plot3, under their bridge at z 400; it led into the old hub harbour). A vessel entering from seaward
+-- Plot2 and Plot3, under their bridge at z 400). A vessel entering from seaward
 -- steers north (-Z), so its port hand is west (-X): red cans
 -- (even numbers) on the west of the channel, green cones (odd numbers) on the east, numbered from seaward. The
 -- fairway buoy (safe water) is the landfall mark at the head of the channel and the bell buoy the outer port-hand
 -- mark. Cardinals sit on the named side of the danger they mark (a West mark: pass to the west of it), with
--- depths read off map/generated/terrain_height.i16. (The old Port Haven swing moorings went with the harbour, WP-19a.)
+-- depths read off map/generated/terrain_height.i16.
 --
 --   SeamarkRules.Marks                   { Mark }: id, asset, name, x, z, yaw (deg), light?, map? (blip style)
 --   SeamarkRules.Lights[characteristic]  { color, seq = { on, off, on, off, ... } } seconds, one period
@@ -76,7 +76,7 @@ local marks: { Mark } = {
 	{
 		id = "Fairway",
 		asset = "M_Hbr_NavMark_SafeWater",
-		name = "Haven Fairway",
+		name = "Lagoon Fairway",
 		x = 0,
 		z = 1080,
 		yaw = 12,

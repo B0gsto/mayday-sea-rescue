@@ -1,14 +1,14 @@
 --!strict
 -- IslandPlates (WP-24): the six player islands are no longer terrain. Each is a flat Lego baseplate built from
--- Parts (the owner: "a simple plain Lego island"), placed from HubLayout.IslandPlate: a bright green slab ~2 studs
+-- Parts (the owner: "a simple plain Lego island"), placed from RingLayout.IslandPlate: a bright green slab ~2 studs
 -- thick whose top is at the plateau the lots already use, a darker trim skirt round the outer edge down past the
 -- waterline, a thin sand-yellow strip along the berth notch's walls (the U cut-out where the boats and the sub
 -- berth), and a tiled studs Texture on the slab's top. Anchored, CanCollide, SmoothPlastic throughout.
 -- WorldDressingService calls place(base).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local HubLayout = require(
-	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("HubLayout")
+local RingLayout = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("RingLayout")
 )
 
 local GREEN = Color3.fromRGB(75, 151, 75) -- Roblox "Bright green", the classic baseplate
@@ -40,8 +40,8 @@ end
 -- one green slab part per footprint rect, `thick` studs under the top, with a tiled studs Texture on top
 -- (one stud per stud), on a dark trim body down past the waterline so the notch walls and corner steps never
 -- show a gap under the plate
-local function slab(parent: Instance, isl: HubLayout.Island)
-	local P = HubLayout.IslandPlate
+local function slab(parent: Instance, isl: RingLayout.Island)
+	local P = RingLayout.IslandPlate
 	local bodyH = P.topY - P.thick + SKIRT_DOWN
 	for _, r in P.rects do
 		local cx, cz, w, d = (r[1] + r[2]) / 2, -(r[3] + r[4]) / 2, r[2] - r[1], r[4] - r[3]
@@ -74,8 +74,8 @@ end
 
 -- the darker trim skirt outside the plate's outer edges (down past the waterline) and the thin sand-yellow strip
 -- on top of the slab along the three walls of the berth notch
-local function edges(parent: Instance, isl: HubLayout.Island)
-	local P = HubLayout.IslandPlate
+local function edges(parent: Instance, isl: RingLayout.Island)
+	local P = RingLayout.IslandPlate
 	local e = P.edge
 	local hw = P.notch.halfWidth
 	local h = P.topY + SKIRT_DOWN -- the trim's height: plate top down into the water
@@ -113,7 +113,7 @@ local function edges(parent: Instance, isl: HubLayout.Island)
 	end
 end
 
-local function build(isl: HubLayout.Island, parent: Instance)
+local function build(isl: RingLayout.Island, parent: Instance)
 	local model = Instance.new("Model")
 	model.Name = `Plate{isl.index}`
 	model:SetAttribute("Island", isl.id)
@@ -126,7 +126,7 @@ end
 function IslandPlates.place(base: Instance)
 	local folder = Instance.new("Folder")
 	folder.Name = "IslandPlates"
-	for _, isl in HubLayout.Islands do
+	for _, isl in RingLayout.Islands do
 		build(isl, folder)
 	end
 	folder.Parent = base

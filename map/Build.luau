@@ -530,7 +530,7 @@ local function buildSeabed(map: Instance, points: Instance, world: any)
 	end
 end
 
--- docs/23 (p): one neutral SpawnLocation on each island's plate (HubLayout spawn), flush and invisible; the engine
+-- docs/23 (p): one neutral SpawnLocation on each island's plate (RingLayout spawn), flush and invisible; the engine
 -- picks one, then VehicleService stands every player on their own island's spawn.
 local function buildSpawns(map: Instance, H: any)
 	local spawns = folder(map, "Spawns")
@@ -558,7 +558,7 @@ local function setupStreaming(ws: any, map: Instance, zones: Instance)
 	ws.StreamingMinRadius = 384
 	-- RP-P1: 1024 is the docs/10 section 6.7 Low-tier budget. The radius is a place setting, not
 	-- scriptable at run time (the engine marks StreamingTargetRadius Not Scriptable), so one value
-	-- serves every tier; 2048 streamed about 40% more parts at Haven Sands for no phone budget.
+	-- serves every tier; 2048 streamed about 40% more parts for no phone budget.
 	ws.StreamingTargetRadius = 1024
 	ws.StreamOutBehavior = Enum.StreamOutBehavior.LowMemory
 	map.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
@@ -581,7 +581,7 @@ return function(place: any, ctx: any)
 	if not hasTerrain then
 		buildOceanFloor(map, GameConfig.OceanFloorY)
 	end
-	buildSpawns(map, ctx.require("Config/HubLayout"))
+	buildSpawns(map, ctx.require("Config/RingLayout"))
 	local points = folder(map, "WorldPoints")
 	buildSeabed(map, points, WorldConfig)
 	local zones = folder(ws, "Zones", "Model")

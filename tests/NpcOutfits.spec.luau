@@ -1,7 +1,7 @@
 -- NpcOutfits: the R15 NPC outfit table (docs/12 section 2.9) has the shape NpcFactory expects.
 return function(t)
 	local NpcOutfits = t.require("Config/NpcOutfits")
-	local ROLES = { "Crew", "Aggie", "Swimmer", "Boater", "Passenger" }
+	local ROLES = { "Crew", "Swimmer", "Boater", "Passenger" }
 
 	local function validId(id)
 		return type(id) == "number" and id > 0 and id == math.floor(id)
@@ -62,14 +62,13 @@ return function(t)
 		end
 	end)
 
-	t.test("crew wear the drysuit / lifejacket kit with a helmet; Aggie wears navy", function()
+	t.test("crew wear the drysuit / lifejacket kit with a helmet", function()
 		local id = NpcOutfits.ID
 		for _, o in NpcOutfits.Roles.Crew do
 			t.expect(table.find(o.hat, id.rescueHelmet) ~= nil).toBeTruthy()
 			t.expect(#o.front > 0).toBeTruthy()
 			t.expect(o.stormGear).toBe(false)
 		end
-		t.expect(table.find(NpcOutfits.Roles.Aggie[1].front, id.navyLifejacket) ~= nil).toBeTruthy()
 	end)
 
 	t.test("pick is deterministic, covers every variant and fills the skin tone", function()

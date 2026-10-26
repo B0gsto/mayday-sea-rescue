@@ -1,7 +1,6 @@
 --!strict
 -- Cosmetics (pure, client and server; RP-M5 spine): the cosmetic slots players equip with the game
--- passes they own (docs/04 section 1.1: equipped at the station locker or the Chandlery mirror, never
--- from a HUD shop). Lune-tested in tests/Cosmetics.spec.luau.
+-- passes they own (equipped in the world: the paint booth, never from a HUD shop). Lune-tested in tests/Cosmetics.spec.luau.
 --
 -- Slot data lives one file per slot in src/shared/Config/Cosmetics/*.luau (each builder owns one).
 -- A file returns a slot table or a list of slot tables:

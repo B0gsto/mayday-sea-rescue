@@ -48,7 +48,7 @@ Events.Funnel = {
 	{ step = 6, name = "Call2Accepted" }, -- the first station call is theirs
 	{ step = 7, name = "Call2Delivered" },
 	{ step = 8, name = "Call3Delivered" },
-	{ step = 9, name = "PhoneOpened" }, -- the first kit panel opened (legacy funnel name)
+	{ step = 9, name = "MenuOpened" }, -- the first menu panel opened
 	{ step = 10, name = "FirstUpgrade" }, -- the first vehicle upgrade bought with Cash
 	{ step = 11, name = "FirstBuilding" },
 	{ step = 12, name = "FirstVehicle" }, -- the first vehicle bought with Cash
@@ -63,8 +63,8 @@ Events.ColdOpenSteps = {
 -- Values the client may report (Telemetry_Client). Anything else is dropped: a client cannot grow
 -- the dashboard's field cardinality.
 Events.Devices = { Touch = true, Gamepad = true, Keyboard = true, Console = true, VR = true }
-Events.ShopApps = { Vehicles = true, Store = true, Pets = true, Explore = true }
-Events.InputContexts = { Foot = true, Boat = true, Swim = true, Phone = true }
+Events.ShopApps = { Store = true }
+Events.InputContexts = { Foot = true, Boat = true, Swim = true }
 
 local GRADE_VALUE: { [string]: number } = { Gold = 3, Silver = 2, Bronze = 1, Fail = 0 }
 
@@ -136,7 +136,7 @@ function Events.allow(b: Bucket, now: number): boolean
 	return true
 end
 
--- Shop visits: PhoneOpened always starts a new one; any other step starts one when none is open or
+-- Shop visits: MenuOpened always starts a new one; any other step starts one when none is open or
 -- the last step was more than SHOP_IDLE seconds ago.
 function Events.shopFresh(lastAt: number?, step: number, now: number): boolean
 	return step == 1 or lastAt == nil or now - lastAt > Events.SHOP_IDLE

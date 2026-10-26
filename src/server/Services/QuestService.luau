@@ -24,12 +24,12 @@ local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes")
 local Data = require(Shared:WaitForChild("Quests"):WaitForChild("Data"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local DockService = require(script.Parent:WaitForChild("DockService"))
-local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local Net = require(Shared:WaitForChild("Net"))
 local OperationService = require(script.Parent:WaitForChild("OperationService"))
 local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
 local QuestPontoons =
 	require(script.Parent.Parent:WaitForChild("World"):WaitForChild("QuestPontoons"))
+local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local Rules = require(Shared:WaitForChild("Quests"):WaitForChild("Rules"))
 
 local QuestService = {}
@@ -38,7 +38,7 @@ QuestService.Priority = 130
 local TICK = 0.3
 local TALK_RANGE = 16 -- studs from the giver a reply counts from
 local TABLET_RANGE = 16 -- studs from your quest tablet
-local BOATS = 3 -- givers at a pontoon at once (HubLayout quest.slots)
+local BOATS = 3 -- givers at a pontoon at once (RingLayout quest.slots)
 local OFFER_RETRY = CallTypes.Scheduler.OfferSeconds + 10 -- a quest call not taken by then is offered again
 
 type Live = {
@@ -277,7 +277,7 @@ local function publish(player: Player)
 		local b = QuestPontoons.Find(i, quest.npc)
 		target = if b
 			then QuestPontoons.Beside(b)
-			elseif i then HubLayout.Islands[i].quest.pontoon.Position
+			elseif i then RingLayout.Islands[i].quest.pontoon.Position
 			else nil
 	elseif quest then
 		local l = live[player]
@@ -441,7 +441,7 @@ local function sail()
 			owners[i] = player
 		end
 	end
-	for i in HubLayout.Islands do
+	for i in RingLayout.Islands do
 		local owner = owners[i]
 		if skipper[i] ~= owner then
 			QuestPontoons.Clear(i)
@@ -542,7 +542,7 @@ function QuestService.Start()
 				end
 				onTalk(player, arg, "accept")
 			elseif cmd == "tablet" and i then
-				local t = HubLayout.Islands[i].lots.QuestTablet.cframe
+				local t = RingLayout.Islands[i].lots.QuestTablet.cframe
 				root.CFrame = CFrame.lookAt(
 					(t * CFrame.new(0, 3, -5)).Position,
 					t.Position + Vector3.new(0, 3, 0)

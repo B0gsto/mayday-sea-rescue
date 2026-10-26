@@ -3,7 +3,6 @@
 -- Rules: docs/09-rescue-operations.md section 2.4 (points, weights, thresholds) and 4.2 (NPC
 -- Silver cap); payouts: docs/03-progression.md section 2. Storm multipliers are NOT applied here:
 -- ProgressionService.Award applies them itself.
-local Condition = require(script.Parent.Condition)
 local Types = require(script.Parent.Types)
 
 type Grade = Types.Grade
@@ -112,16 +111,6 @@ function Grading.resolveStep(
 	return Grading.stepGrade(step, metrics)
 end
 
--- Grade of the condition at handover (docs 09 section 5.1 step 9).
-function Grading.conditionGrade(value: number): Grade
-	local band = Condition.band(value)
-	return if band == "Stable"
-		then "Gold"
-		elseif band == "Concern" then "Silver"
-		elseif band == "Serious" then "Bronze"
-		else "Fail"
-end
-
 export type ScoredStep = { grade: Grade, weight: number }
 
 function Grading.weightedAverage(steps: { ScoredStep }): number
@@ -196,24 +185,6 @@ function Grading.bigCompletionBonus(saved: number, total: number): Reward
 	return {
 		cash = round(P.BaseCash * P.BigBonusCash * share),
 	}
-end
-
--- The weakest step (lowest points, ties: highest weight, then earliest) for the debrief tip.
-function Grading.weakest(steps: { ScoredStep }): number?
-	local best: number? = nil
-	for i, s in steps do
-		local b = best
-		if b == nil then
-			best = i
-		else
-			local cur = steps[b]
-			local p, q = Grading.Points[s.grade], Grading.Points[cur.grade]
-			if p < q or (p == q and s.weight > cur.weight) then
-				best = i
-			end
-		end
-	end
-	return best
 end
 
 -- The debrief's wordless summary (docs/16 K5) from its step timeline ({ id, grade, at }):

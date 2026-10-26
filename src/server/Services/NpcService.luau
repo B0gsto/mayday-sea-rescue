@@ -1,6 +1,6 @@
 --!strict
 -- NpcService: owns Workspace.Npcs (the quest givers, NpcFactory characters, live there too) and the cold open's
--- shore party. Chief Aggie and the station crew stood on the hub quay; they went with the hub (docs/23 (p)).
+-- shore party.
 -- Each is a Roblox R15 character from NpcFactory (docs/12 section 2.9), the block greybox when the
 -- build fails. Scenery only: anchored, non-colliding, under Workspace.Npcs.
 local Workspace = game:GetService("Workspace")

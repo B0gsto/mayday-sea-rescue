@@ -1,6 +1,6 @@
 --!strict
 -- Operation: rip-current rescue (docs/09-rescue-operations.md section 8.4, docs/16 K1). Data only.
--- A swimmer or body-boarder caught in the rip off the hub beach is carried seaward while you come: the
+-- A swimmer or body-boarder caught in the rip off Puffin Isle's beach is carried seaward while you come: the
 -- rip (shared/RipCurrent) is the drift. The plan is SimpleSteps; they climb aboard like any swimmer.
 local SimpleSteps = require(script.Parent.SimpleSteps)
 local Types = require(script.Parent.Parent.Types)
@@ -21,7 +21,7 @@ local def: Types.OperationDef = {
 	},
 	lifejacketChance = 0.35,
 	sceneKinds = { "RipCurrent" },
-	steps = SimpleSteps("Answer the call quickly; the rip keeps taking them out."),
+	steps = SimpleSteps(),
 }
 
 return def

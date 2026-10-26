@@ -3,7 +3,6 @@
 -- panel low on the screen, a crew call-out line, finish-exactly-once, and the smoke-run shortcut
 -- (the OpsAutoStub player attribute makes a mechanic finish by itself with a stub result).
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local OpsStepCard =
@@ -122,25 +121,6 @@ end
 -- Body text line under the header, returned so the mechanic can update it.
 function Step.line(s: S, text: string, y: number?): TextLabel
 	return Ui.text(s.panel, text, UDim2.new(1, -24, 0, 22), UDim2.fromOffset(12, y or 54))
-end
-
--- The vehicle's cruise speed (studs/s) for ETA and route time: 80% of its top speed.
-function Step.cruiseSpeed(vehicle: Model?): number
-	local ok, speed = pcall(function()
-		local cfg = (require :: any)(
-			ReplicatedStorage:WaitForChild("Shared")
-				:WaitForChild("Config")
-				:WaitForChild("VehicleConfig")
-		)
-		local id = vehicle and (vehicle:GetAttribute("VehicleId") or vehicle.Name) or "RIB"
-		for _, key in cfg.Order do
-			if string.find(string.lower(tostring(id)), string.lower(key)) then
-				return cfg[key].topSpeed * 0.8
-			end
-		end
-		return cfg.RIB.topSpeed * 0.8
-	end)
-	return if ok and type(speed) == "number" then speed else 45
 end
 
 return Step

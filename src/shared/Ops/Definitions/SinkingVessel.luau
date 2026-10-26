@@ -16,7 +16,7 @@ local def: Types.OperationDef = {
 	states = { Alert = 0.5, Exhausted = 0.3, VeryCold = 0.2 },
 	lifejacketChance = 1,
 	sceneKinds = { "Sinking" },
-	steps = SimpleSteps("Answer the MAYDAY at once: she won't stay up for long."),
+	steps = SimpleSteps(),
 }
 
 return def

@@ -96,14 +96,6 @@ local function visibleBounds(model: Model): (Vector3, Vector3)
 	return (lo + hi) / 2, hi - lo
 end
 
-local function snapshot(): Rules.PlayerData?
-	local raw = player:GetAttribute("PlayerData")
-	if type(raw) == "table" then
-		return Rules.fromSnapshot(raw)
-	end
-	return nil
-end
-
 local function passKey(id: string): string?
 	return Rules.vehiclePass(id)
 end
@@ -131,7 +123,7 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 		if busy or not craft then
 			return
 		end
-		local d = data or snapshot()
+		local d = data
 		if not d then
 			return
 		end
@@ -154,7 +146,7 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 	local function buyPass(craft: string)
 		local key = passKey(craft)
 		local item = if key then MonetizationConfig.GamePasses[key] else nil
-		local d = data or snapshot()
+		local d = data
 		-- Robux skips the Cash, never the order (docs/23 (q)): the building comes first
 		if not (item and item.ready and item.id > 0) or not d or Rules.vehicleLock(d, craft) then
 			return
@@ -244,7 +236,7 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 		if not (craft and spec) then
 			return
 		end
-		local d = data or snapshot()
+		local d = data
 		local owned = d ~= nil and Rules.ownsVehicle(d, craft, ownsPass(craft))
 		local unlock = ProgressionConfig.Vehicles[craft]
 		local need = if d and not owned then Rules.vehicleLock(d, craft) else nil

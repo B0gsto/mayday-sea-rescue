@@ -1,4 +1,4 @@
--- VoiceCast: every cast member has a valid TTS preset, speakers resolve, text is cleaned and chunked.
+-- VoiceCast: every cast member has a valid TTS preset, text is cleaned and chunked.
 return function(t)
 	local VoiceCast = t.load("src/client/UI/VoiceCast.luau")
 
@@ -7,16 +7,6 @@ return function(t)
 			t.expect(math.abs(v.pitch) <= 12 and v.speed >= 0.5 and v.speed <= 2).toBe(true)
 			t.expect(tonumber(v.voice) ~= nil).toBe(true)
 		end
-	end)
-
-	t.test("speaker names map to the cast", function()
-		t.expect(VoiceCast.castFor("Chief Aggie · Port Haven", "X")).toBe("AGGIE")
-		t.expect(VoiceCast.castFor("Gale Isles Coastguard", "X")).toBe("X")
-		t.expect(VoiceCast.castFor("Haven Harbour", "X")).toBe("PATROL")
-		t.expect(VoiceCast.castFor("Crew", "X")).toBe("CREW_FINN")
-		t.expect(VoiceCast.castFor("Dee", "X")).toBe("CREW_DEE")
-		t.expect(VoiceCast.castFor("LOU", "X")).toBe("LOU")
-		t.expect(VoiceCast.castFor("Deeside", "X")).toBe("X")
 	end)
 
 	t.test("spoken text drops cues and keeps quoted speech", function()

@@ -20,10 +20,10 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
-local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local PetAccessory = require(Shared:WaitForChild("PetAccessory"))
 local PetRules = require(Shared:WaitForChild("PetRules"))
 local PetSeat = require(Shared:WaitForChild("PetSeat"))
+local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local Wildlife = require(Shared:WaitForChild("Config"):WaitForChild("Wildlife"))
 local WildlifeRig = require(Shared:WaitForChild("WildlifeRig"))
 
@@ -444,7 +444,7 @@ local function stepIdle(dt: number)
 		idleSeconds += dt
 	end
 	local plot = player:GetAttribute("DockPlot")
-	local isle = if type(plot) == "number" then HubLayout.Islands[plot] else nil
+	local isle = if type(plot) == "number" then RingLayout.Islands[plot] else nil
 	local atStation = isle ~= nil
 		and (root.Position - isle.lots.Station.cframe.Position).Magnitude <= STATION_RANGE
 	local busy = trickName ~= nil and clock < trickUntil
@@ -477,7 +477,7 @@ local function watchMoment(attribute: string, signal: string)
 	end)
 end
 
--- The phone's Pets app ---------------------------------------------------------------------------
+-- The Companion panel ---------------------------------------------------------------------------
 
 function PetController.view(): View?
 	return lastView

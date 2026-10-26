@@ -1,7 +1,7 @@
 --!strict
 -- HudController: the progression HUD (docs 05 section 9 style, mobile first).
 --   Placement: UI/Layout regions. Top left ("wallet"): Cash with a round "+" that opens the kit
---   Shop (no rank: docs/23 (q)). UI/Menu owns the left button bar and the
+--   Shop. UI/Menu owns the left button bar and the
 --   panels (every menu, the crew's faces and Leave).
 --   Top centre ("notice"): "+Cash" award pops (with the friends bonus as "+20%").
 --   Cold open (Layout.coldOpen): wallet and pops stay hidden until it ends.
@@ -240,7 +240,7 @@ function HudController.Init()
 	Layout.onColdOpen(applyColdOpen)
 
 	-- The "Join crew" prompt is on every multi-seat boat; hide it on our own. FootOnly prompts (bay
-	-- Launch, car posts, Talk) hide locally while seated: "E Launch" rode along out of the bay.
+	-- Launch, Talk) hide locally while seated: "E Launch" rode along out of the bay.
 	local shown: { [ProximityPrompt]: boolean } = {}
 	local seatHidden: { [ProximityPrompt]: boolean } = {}
 	local function seated(): boolean
@@ -265,12 +265,6 @@ function HudController.Init()
 	end)
 	ProximityPromptService.PromptHidden:Connect(function(prompt: ProximityPrompt)
 		shown[prompt] = nil
-	end)
-	-- the hub shop counter (map/Build.luau buildHub) opens the kit Shop
-	ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt)
-		if prompt:HasTag("ShopCounter") then
-			Menu.open("Shop")
-		end
 	end)
 	local function watchSeat(char: Model)
 		local hum = char:WaitForChild("Humanoid", 10)

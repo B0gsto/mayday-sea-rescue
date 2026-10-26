@@ -1,6 +1,6 @@
 --!strict
 -- DevController: the client half of the dev board (DevService). Inert until the server sends
--- Dev_Grant (only to allowed players). Then: the DEV HUD button (right of the phone button; under
+-- Dev_Grant (only to allowed players). Then: the DEV HUD button (right of the menu; under
 -- the minimap on touch), F8, chat "/dev" or gamepad L1 + R1 + Select toggles the panel (UI/DevBoard).
 -- Cutscenes replay here for the dev only (Camera/Cinematic shot lists). Fly, noclip, walk speed and
 -- click-teleport aim run here (the character is client-owned); everything else is a Dev_Action

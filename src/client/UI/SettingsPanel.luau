@@ -571,18 +571,6 @@ function SettingsPanel.isOpen(): boolean
 	return currentPanel ~= nil and currentPanel.isOpen()
 end
 
-function SettingsPanel.setOpen(value: boolean)
-	local p = currentPanel
-	if not p or p.isOpen() == value then
-		return
-	end
-	if value then
-		p.open()
-	else
-		p.close()
-	end
-end
-
 function SettingsPanel.mount()
 	if mounted then
 		return

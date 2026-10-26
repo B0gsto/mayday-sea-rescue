@@ -17,7 +17,7 @@ export type Field = {
 
 local RipCurrent = {}
 
--- The beach rip (docs/23 (p)): off Puffin Isle's north-east beach (the hub beach went with the hub), from the
+-- The beach rip (docs/23 (p)): off Puffin Isle's north-east beach, from the
 -- waterline straight out to sea on bearing BEARING from the isle's centre, so the flow runs out and away from the
 -- sand: the casualty starts about 120 studs down the channel and is carried toward `length`. Bake-sampled
 -- (map/generated, PuffinIsle window): waterline 420 studs out, 6 studs deep at 120, 31 at 240.

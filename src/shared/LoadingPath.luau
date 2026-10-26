@@ -3,8 +3,8 @@
 -- islands (round the lagoon at its centre, docs/23 (p)) while loading, then one eased flight that spirals down to
 -- the player's island and sweeps past their name sign to a finish pose behind the character (or the cold-open jet
 -- ski).
---   orbit(center, angle), spiral(x, hub, island, angle), approach(x, from, sweep, look, finish),
---   flyover(t, hub, island, angle, sweep, look, finish): t 0..1 eased once over the whole flight
+--   orbit(center, angle), spiral(x, ring, island, angle), approach(x, from, sweep, look, finish),
+--   flyover(t, ring, island, angle, sweep, look, finish): t 0..1 eased once over the whole flight
 local LoadingPath = {}
 
 -- ~62 degrees down from ~740 studs: the whole ring (1,260 studs across) in frame
@@ -39,9 +39,9 @@ function LoadingPath.orbit(center: Vector3, angle: number): CFrame
 end
 
 -- spiral and approach take a linear 0..1; flyover eases once so the seam never stops the camera
-function LoadingPath.spiral(x: number, hub: Vector3, island: Vector3, angle: number): CFrame
+function LoadingPath.spiral(x: number, ring: Vector3, island: Vector3, angle: number): CFrame
 	-- cross to the island first and stay high doing it, then drop in circling it
-	local center = hub:Lerp(island, math.min(1, x / LoadingPath.TRAVEL_SHARE))
+	local center = ring:Lerp(island, math.min(1, x / LoadingPath.TRAVEL_SHARE))
 	local radius = LoadingPath.START_RADIUS
 		+ (LoadingPath.END_RADIUS - LoadingPath.START_RADIUS) * x
 	local height = LoadingPath.START_HEIGHT
@@ -73,7 +73,7 @@ end
 
 function LoadingPath.flyover(
 	t: number,
-	hub: Vector3,
+	ring: Vector3,
 	island: Vector3,
 	angle: number,
 	sweep: Vector3,
@@ -83,9 +83,9 @@ function LoadingPath.flyover(
 	local e = smoothstep(t)
 	local split = LoadingPath.SPIRAL_SHARE
 	if e <= split then
-		return LoadingPath.spiral(e / split, hub, island, angle)
+		return LoadingPath.spiral(e / split, ring, island, angle)
 	end
-	local from = LoadingPath.spiral(1, hub, island, angle)
+	local from = LoadingPath.spiral(1, ring, island, angle)
 	return LoadingPath.approach((e - split) / (1 - split), from, sweep, look, finish)
 end
 

@@ -7,7 +7,7 @@
 --     matched by name (<asset>_<Token>[_LODn]) and repainted by swapping in a map-only
 --     SurfaceAppearance of the same texture set (normal + roughness + metalness, no ColorMap) whose
 --     Color is the livery colour; wet uses the set's wet roughness and a darker colour.
---   * greybox Parts (cars, greybox boats) carry a "Paint" attribute set by the builders:
+--   * greybox Parts (greybox boats, the heli) carry a "Paint" attribute set by the builders:
 --     "Body" | "Secondary" | "Stripe1" | "Stripe2"; their Color is set directly.
 -- Parts that match nothing (seats, deck, consoles, engines, glass, lamps) keep the stock look.
 

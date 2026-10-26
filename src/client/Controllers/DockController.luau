@@ -1024,7 +1024,7 @@ local function refresh()
 		end
 	end
 	if shownCount and count > shownCount then
-		AudioController.play("Chandlery_Till")
+		AudioController.play("Shop_Till")
 		local view = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize
 			or Vector2.new(800, 600)
 		CashBurst.playAt(playerGui, view / 2, 0, false)

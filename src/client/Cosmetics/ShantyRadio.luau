@@ -4,9 +4,7 @@
 --   bindVehicleAction, so keyboard, gamepad and a touch button):
 --     "Radio"      N / gamepad DPadRight   on / off (each switch-on starts the next track)
 --     "RadioNext"  Period (.)              next track, only while it plays
---   M is the map and the D-pad's other directions are the siren and light bar; DPadRight is also
---   the car's blue lights, but the radio is never bound in a car, and the tow line takes it over
---   while towing (bound later, so it wins the ContextActionService stack).
+--   M is the map and the D-pad's other directions are the siren and light bar.
 -- * Playback for every vehicle in Workspace.Vehicles with a `RadioTrack` attribute (server-kept,
 --   src/shared/ShantyRadio format): one 3D Sound on the vehicle's PrimaryPart, Music category
 --   (AudioController.group("Music")), a short

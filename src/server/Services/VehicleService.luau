@@ -1,15 +1,15 @@
 --!strict
--- VehicleService (stream B): launches boats from the player's own berth at the marina (DockService, docs/23),
+-- VehicleService (stream B): launches craft from the player's own berth on their island (DockService, docs/23),
 -- one vehicle per player.
 --
 --   RequestVehicle (RemoteFunction, Net)  (vehicleId, docked?, near?) -> (ok, reasonOrVehicle); at the
---                                        player's berth. near = the phone's Boat to me (docs/23 c.5): vehicleId is
+--                                        player's berth. near = the menu's Boat to me (docs/23 c.5): vehicleId is
 --                                        ignored, your current (else last) craft comes to the open water nearest
 --                                        you (else off your berth), seated (docs/20 rule 7)
---   Seated launches (phone, berth Launch, Quick Launch, cold open) float the craft in open water off the
+--   Seated launches (Boat to me, berth Launch, cold open) float the craft in open water off the
 --   berth, bow to sea, never overlapping another vehicle (launchCFrame); the seat is retried until it holds.
 --   Spawns are serialized per berth (Marina.lock): two requests in the same moment never place two hulls.
---   Crowding (docs/20 WP-C addendum): player boats ghost through each other and through cars
+--   Crowding (docs/20 WP-C addendum): player boats ghost through each other
 --   (collision group PlayerBoat; BoatController eases hulls apart); a boat beached past recovery, or
 --   empty on land for VehicleRecovery.MISPLACED_TIME, goes with a poof and its riders stand up beside
 --   it; idle timers shrink with the player count (Crowding.scale).
@@ -18,9 +18,6 @@
 --                                        (server/Dock/BoatBoard: DockLaunch, docked at the berth)
 --   Every spawn (K11)                    stands the player on their jetty (BayLaunch.STAND); a returning player
 --                                        (coldOpenDone) also gets that craft docked beside them.
---   Vehicle_QuickLaunch (RemoteFunction, ReplicatedStorage.Net)  Quick Launch pass owners (RP-M2, docs/04
---     section 3): vehicleId -> (ok, reasonOrVehicle). From anywhere (the phone's Vehicles app Spawn), no
---     launch cooldown, seated at the helm at once. Same ownership and occupancy checks.
 --
 -- Vehicle states:
 --   Dock    nobody driving and the hull is at a bay: HullRoot anchored (clients bob it visually)
@@ -28,16 +25,10 @@
 --           (BoatController) runs buoyancy and controls. The server only sanity-checks speed and
 --           position every CHECK_INTERVAL and pulls cheaters back to the last good spot.
 --   Drift   nobody driving, away from the dock: unanchored, server-owned, the server runs buoyancy.
--- Tows: AttachTow ropes TowHitch to the target's BowPoint. An anchored non-vehicle target is a
--- scripted tow (TowScripted attribute): it stays anchored and its own script moves it, the rope is
--- a slack visual and nobody gets ownership. Otherwise the target's ownership goes to the
--- tower's driver (attribute TowedBy = that UserId, tag VehicleTowed) so the same client simulates
--- both hulls. With no driver, the server simulates the tow.
 --
 -- Shared APIs: see CONTRACT.md (B: VehicleService). ProgressionService (stream E) is optional:
 -- if it is missing or errors, every vehicle is allowed and the gear speed bonus is 1.
 
-local CollectionService = game:GetService("CollectionService")
 local PhysicsService = game:GetService("PhysicsService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -79,7 +70,6 @@ type Record = {
 	survivors: { [number]: Survivor },
 	mode: Mode,
 	driver: Player?,
-	tow: { rope: RopeConstraint, target: Model, scripted: boolean }?,
 	lastGood: CFrame,
 	strikes: number,
 	resetting: boolean,
@@ -89,7 +79,6 @@ type Record = {
 	recovery: VehicleRecovery.State,
 }
 
-local TOW_TAG = "VehicleTowed"
 local SPAWN_COOLDOWN = 2 -- seconds between launches per player
 local DOCK_RADIUS = 14 -- an emptied hull this close to a bay centre docks (anchors) -- tune
 local CHECK_INTERVAL = 0.5 -- seconds between sanity checks
@@ -131,9 +120,7 @@ local BOAT_BACKOFF = 10 -- studs -- tune
 local OPEN_WATER_RANGE = 150 -- studs searched for open water off a beach or slipway -- tune
 local SEA_VIEW = 30 -- studs of open water ahead of a recovered hull -- tune
 local GLIDE_RANGE = 80 -- studs: further resets (out of bounds) snap instead of gliding
-local TOW_MIN_LENGTH = 12
-local BOAT_GROUP = "PlayerBoat" -- player craft ghost through each other and through cars
-local SCRIPTED_TOW_SLACK = 10 -- extra rope on scripted tows so latency never makes it bind
+local BOAT_GROUP = "PlayerBoat" -- player craft ghost through each other
 
 local VehicleService = {}
 VehicleService.Priority = 50
@@ -146,7 +133,6 @@ local records: { [Model]: Record } = {}
 local byPlayer: { [Player]: Record } = {} -- the player's current vehicle (GetVehicle)
 local seconds: { [Player]: Record } = {} -- with the pontoon: the other craft kept out (docs/23 (q), 2nd berth)
 local owned: { [Player]: { [string]: Record } } = {} -- one record per player per vehicle class
-local towTargets: { [Model]: Record } = {} -- towed model -> tower record
 local lastSpawn: { [Player]: number } = {}
 local spawning: { [BasePart]: boolean } = {} -- per-berth spawn lock (docs/23 c.1)
 local folder: Folder
@@ -399,19 +385,6 @@ local function speedLimit(record: Record): number
 	return record.spec.topSpeed * m * SPEED_TOLERANCE + SPEED_SLACK
 end
 
--- Network ownership of a tow target follows the tower's driver (nil = server).
-local function updateTowOwnership(record: Record)
-	local tow = record.tow
-	if not tow or tow.scripted then
-		return
-	end
-	local targetRoot = rootOf(tow.target)
-	if targetRoot then
-		setOwner(targetRoot, record.driver)
-	end
-	tow.target:SetAttribute("TowedBy", if record.driver then record.driver.UserId else 0)
-end
-
 local function dock(record: Record)
 	record.mode = "Dock"
 	local root = record.root
@@ -484,14 +457,12 @@ local function onDriverChanged(record: Record)
 		if
 			record.spec.craft ~= "Heli" -- an empty heli lands itself (Craft.idle)
 			and nearestBay(record.root.Position, DOCK_RADIUS)
-			and not towTargets[record.model]
 		then
 			dock(record)
 		else
 			drift(record)
 		end
 	end
-	updateTowOwnership(record)
 end
 
 -- Someone else's craft (docked, adrift or passing) sits on the bay.
@@ -510,18 +481,6 @@ local function bayFor(player: Player): BasePart?
 	return DockService.GetBerth(player)
 end
 
-local function bayAllows(bay: BasePart, vehicleId: string): boolean
-	local allowed = bay:GetAttribute("AllowedVehicles")
-	if type(allowed) ~= "string" or allowed == "" then
-		return true
-	end
-	local list = string.split(allowed, ",")
-	local spec = VehicleConfig.get(vehicleId)
-	-- a premium boat docks wherever its base hull does
-	return table.find(list, vehicleId) ~= nil
-		or (spec ~= nil and spec.base ~= nil and table.find(list, spec.base) ~= nil)
-end
-
 local function lastVehicle(player: Player): string?
 	local data = DataService.Get(player)
 	local id = data and data.flags[BayLaunch.FLAG]
@@ -529,9 +488,9 @@ local function lastVehicle(player: Player): string?
 end
 
 -- K3: the craft the bay's Launch prompt (and a returning player's spawn) puts out.
-local function bayCraft(player: Player, bay: BasePart): string?
+local function bayCraft(player: Player): string?
 	return BayLaunch.pick(lastVehicle(player), VehicleConfig.Order, function(id)
-		return bayAllows(bay, id) and canUse(player, id)
+		return canUse(player, id)
 	end)
 end
 
@@ -628,11 +587,6 @@ local function despawnModel(model: Model, reason: string?)
 	if reason then
 		Telemetry.Custom(record.owner, "VehicleDespawned", 1, reason, record.spec.id, "Water")
 	end
-	VehicleService.DetachTow(model)
-	local tower = towTargets[model]
-	if tower then
-		VehicleService.DetachTow(tower.model)
-	end
 	VehicleService.RemoveSurvivors(model)
 	records[model] = nil
 	if byPlayer[record.owner] == record then
@@ -674,9 +628,7 @@ local function policyState(record: Record): RespawnPolicy.State
 	local ownerPos = character and character.PrimaryPart and character.PrimaryPart.Position
 	return {
 		occupied = occupied,
-		carrying = next(record.survivors) ~= nil
-			or record.tow ~= nil
-			or towTargets[record.model] ~= nil,
+		carrying = next(record.survivors) ~= nil,
 		lastOccupiedAt = record.lastOccupiedAt,
 		spawnedAt = record.spawnedAt,
 		docked = record.mode == "Dock",
@@ -880,7 +832,6 @@ local function createVehicle(
 		survivors = {},
 		mode = "Dock",
 		driver = nil,
-		tow = nil,
 		lastGood = root.CFrame,
 		strikes = 0,
 		resetting = false,
@@ -940,7 +891,7 @@ local function spawnLocked(
 	bay: BasePart?,
 	quick: boolean?,
 	docked: boolean?,
-	where: string, -- analytics H4: Phone / Quick / Bay / Board
+	where: string, -- analytics H4: Menu / Quick / Bay / Board
 	near: boolean?,
 	target: CFrame? -- docked: spawn here instead of at the berth (a dock building's pad or pen)
 ): (boolean, string | Model)
@@ -963,9 +914,6 @@ local function spawnLocked(
 	local at = bay or bayFor(player)
 	if not at then
 		return false, "NoBay"
-	end
-	if not bayAllows(at, vehicleId) then
-		return false, "BayNotAllowed"
 	end
 	-- seated: afloat in open water off the bay, clear of every other vehicle (docs/20 rule 7)
 	local launchAt = if docked or spec.craft == "Heli"
@@ -1262,8 +1210,6 @@ local function recoverBoat(record: Record, dt: number): boolean
 	})
 	-- addendum: on land (or sunk) past recovery, or empty there, it goes; never with cargo aboard
 	local cargo = next(record.survivors) ~= nil
-		or record.tow ~= nil
-		or towTargets[record.model] ~= nil
 	if
 		not reason
 		and VehicleRecovery.misplaced(
@@ -1342,36 +1288,20 @@ local function checkVehicle(record: Record, dt: number)
 	end
 end
 
-local function towerDriven(model: Model): boolean
-	local tower = towTargets[model]
-	return tower ~= nil and tower.driver ~= nil
-end
-
 local function simulateServerOwned(dt: number)
 	local now = Workspace:GetServerTimeNow()
 	for model, record in records do
 		if not model.Parent then
 			records[model] = nil
-		elseif (record.mode == "Drift" and not towerDriven(model)) or record.resetting then
+		elseif record.mode == "Drift" or record.resetting then
 			if not Craft.idle(model, record.spec, dt) then
 				Simulator.step(model, 0, 0, now)
 			end
 		end
 	end
-	for target, tower in towTargets do
-		if not target.Parent then
-			VehicleService.DetachTow(tower.model)
-		elseif
-			not records[target]
-			and not tower.driver
-			and not (tower.tow and tower.tow.scripted)
-		then
-			Simulator.step(target, 0, 0, now)
-		end
-	end
 end
 
--- The phone's Vehicles app previews exactly what the spawner builds: ReplicatedStorage.VehiclePreviews.<id>
+-- The boat boards and the boat card preview exactly what the spawner builds: ReplicatedStorage.VehiclePreviews.<id>
 -- (anchored BuildProp copies).
 local function publishPreviews()
 	local previews = ReplicatedStorage:FindFirstChild("VehiclePreviews")
@@ -1410,7 +1340,7 @@ local function addPrompts()
 			if bayFor(player) ~= bay then
 				return
 			end
-			local id = bayCraft(player, bay)
+			local id = bayCraft(player)
 			local ok, reason: any = false, "NoCraft"
 			if id then
 				ok, reason = spawnVehicle(player, id, bay, nil, nil, "Bay")
@@ -1469,14 +1399,8 @@ local function stowVehicle(player: Player): string
 	if not record then
 		return "NoVehicle"
 	end
-	VehicleService.DetachTow(record.model)
 	local bay = bayFor(player)
-	if
-		bay
-		and record.spec.craft ~= "Heli"
-		and bayAllows(bay, record.spec.id)
-		and not bayBusy(bay, player)
-	then
+	if bay and record.spec.craft ~= "Heli" and not bayBusy(bay, player) then
 		record.model:PivotTo(
 			Simulator.restCFrame(
 				record.model,
@@ -1515,7 +1439,7 @@ local function homeAtBay(player: Player, character: Model)
 		return
 	end
 	if data and data.coldOpenDone and not byPlayer[player] then
-		local id = bayCraft(player, bay)
+		local id = bayCraft(player)
 		if id then
 			spawnVehicle(player, id, bay, true, true, "Bay")
 		end
@@ -1550,8 +1474,6 @@ function VehicleService.Init()
 	f.Parent = Workspace
 	folder = f
 
-	local net = ReplicatedStorage:WaitForChild("Net")
-
 	-- docked = true (the launch step): leave it at the bay for the player to walk to and board
 	Net.func("RequestVehicle").OnServerInvoke = function(
 		player: Player,
@@ -1560,7 +1482,7 @@ function VehicleService.Init()
 		near: unknown
 	)
 		if near == true then
-			-- Boat to me (docs/23 c.5): the phone no longer chooses a craft; yours comes to you. Free calls
+			-- Boat to me (docs/23 c.5): no craft choice; yours comes to you. Free calls
 			-- wait out a cooldown (player attribute BoatToMeAt, server time, shorter with Mechanics at work, WP-26);
 			-- Quick Launch skips it
 			local now = Workspace:GetServerTimeNow()
@@ -1579,12 +1501,12 @@ function VehicleService.Init()
 			local current, bay = byPlayer[player], bayFor(player)
 			local id = if current and current.model.Parent
 				then current.spec.id
-				elseif bay then bayCraft(player, bay)
+				elseif bay then bayCraft(player)
 				else nil
 			if not id then
 				return false, "NoBay"
 			end
-			local ok, result = spawnVehicle(player, id, nil, nil, nil, "Phone", true)
+			local ok, result = spawnVehicle(player, id, nil, nil, nil, "Menu", true)
 			if ok then
 				player:SetAttribute("BoatToMeAt", now)
 			end
@@ -1593,18 +1515,8 @@ function VehicleService.Init()
 		if type(vehicleId) ~= "string" then
 			return false, "BadRequest"
 		end
-		return spawnVehicle(player, vehicleId, nil, nil, docked == true, "Phone")
+		return spawnVehicle(player, vehicleId, nil, nil, docked == true, "Menu")
 	end
-
-	local quickRemote = Instance.new("RemoteFunction")
-	quickRemote.Name = "Vehicle_QuickLaunch"
-	quickRemote.OnServerInvoke = function(player: Player, vehicleId: unknown)
-		if type(vehicleId) ~= "string" then
-			return false, "BadRequest"
-		end
-		return VehicleService.QuickLaunch(player, vehicleId)
-	end
-	quickRemote.Parent = net
 
 	DataService.OnLoaded(watchReturning)
 	Players.PlayerRemoving:Connect(function(player)
@@ -1620,7 +1532,7 @@ end
 
 function VehicleService.Start()
 	-- player boats collide like Default with everything (characters, casualties: every group is in
-	-- after Init) except each other and cars: they ghost, and BoatController eases them apart
+	-- after Init) except each other: they ghost, and BoatController eases them apart
 	pcall(PhysicsService.RegisterCollisionGroup, PhysicsService, BOAT_GROUP)
 	for _, g in PhysicsService:GetRegisteredCollisionGroups() do
 		PhysicsService:CollisionGroupSetCollidable(
@@ -1752,19 +1664,6 @@ function VehicleService.SpawnColdOpen(player: Player, cframe: CFrame): Model?
 		model:SetAttribute("ColdOpen", true) -- the client's arrival shot keys on this craft
 	end
 	return model
-end
-
--- Quick Launch (docs/04 section 3): convenience only. It skips the walk and the launch cooldown; it never
--- touches a casualty, a step or a grade, and ownership still gates every vehicle (canUse in spawnVehicle).
-function VehicleService.QuickLaunch(player: Player, vehicleId: string): (boolean, string | Model)
-	local allowed, why = MonetizationEffects.quickLaunchAllowed(
-		ownsQuickLaunch(player),
-		player:GetAttribute("ColdOpenDone") == true
-	)
-	if not allowed then
-		return false, why
-	end
-	return spawnVehicle(player, vehicleId, bayFor(player), true, nil, "Quick")
 end
 
 -- Dev board: launches the boat from the player's bay, seated (Quick Launch without the pass check).
@@ -1921,11 +1820,6 @@ function VehicleService.BuildProp(vehicleId: string): Model?
 	return model
 end
 
--- Rests a boat on the water at (x, z) facing `look` (the dock rest pose).
-function VehicleService.RestCFrame(model: Model, x: number, z: number, look: Vector3): CFrame
-	return Simulator.restCFrame(model, x, z, look)
-end
-
 -- Welds the survivor to the next free SurvivorSlot. False when the boat is full.
 -- CONTRACT: RescueService stops moving a survivor by script while its
 -- "OnVehicle" attribute is set (it holds the vehicle model's name).
@@ -2022,108 +1916,6 @@ function VehicleService.RemoveSurvivors(model: Model): { Model }
 	end
 	model:SetAttribute("SurvivorCount", 0)
 	return out
-end
-
--- Ropes the target's BowPoint to this vehicle's TowHitch. Targets need a PrimaryPart (or any
--- BasePart) and should be welded into one assembly. Anchored non-vehicle targets are scripted tows.
--- CONTRACT: RescueService stops moving a towed NPC boat by script while it has the VehicleTowed tag;
--- DetachTow re-anchors non-vehicle targets so script motion can resume.
-function VehicleService.AttachTow(model: Model, targetModel: Model): boolean
-	local record = records[model]
-	if not record or not record.spec.canTow or record.tow then
-		return false
-	end
-	if targetModel == model or towTargets[targetModel] or not targetModel:IsA("Model") then
-		return false
-	end
-	local targetRecord = records[targetModel]
-	if targetRecord and (targetRecord.driver or targetRecord.tow) then
-		return false
-	end
-	local targetRoot = rootOf(targetModel)
-	local hitch = record.root:FindFirstChild("TowHitch")
-	if not targetRoot or not (hitch and hitch:IsA("Attachment")) then
-		return false
-	end
-	local bow = targetModel:FindFirstChild("BowPoint", true)
-	if not (bow and bow:IsA("Attachment")) then
-		local created = Instance.new("Attachment")
-		created.Name = "BowPoint"
-		created.Position = Vector3.new(0, 0, -targetRoot.Size.Z / 2)
-		created.Parent = targetRoot
-		bow = created
-	end
-	assert(bow and bow:IsA("Attachment"), "unreachable")
-	-- Scripted tow: an anchored non-vehicle target (RescueService's NPC boats) stays anchored and is
-	-- moved by its own script along the line. The rope is only a visual with slack (ScriptedLength
-	-- is the nominal length the script keeps), and there is no ownership handoff.
-	local scripted = targetRecord == nil and targetRoot.Anchored
-	if not scripted then
-		if not targetRecord then
-			Simulator.ensureRig(targetModel)
-		end
-		for _, d in targetModel:GetDescendants() do
-			if d:IsA("BasePart") then
-				d.Anchored = false
-			end
-		end
-		if targetRecord then
-			targetRecord.mode = "Drift"
-		end
-	end
-
-	local nominal =
-		math.max(TOW_MIN_LENGTH, (hitch.WorldPosition - bow.WorldPosition).Magnitude + 0.5)
-	local rope = Instance.new("RopeConstraint")
-	rope.Name = "TowRope"
-	rope.Attachment0 = hitch
-	rope.Attachment1 = bow
-	rope.Length = if scripted then nominal + SCRIPTED_TOW_SLACK else nominal
-	if scripted then
-		rope:SetAttribute("ScriptedLength", nominal)
-	end
-	rope.Visible = true
-	rope.Thickness = 0.25
-	rope.Color = BrickColor.new("Institutional white")
-	rope.Parent = record.root
-
-	record.tow = { rope = rope, target = targetModel, scripted = scripted }
-	towTargets[targetModel] = record
-	targetModel:SetAttribute("TowVehicle", model.Name)
-	targetModel:SetAttribute("TowScripted", if scripted then true else nil)
-	CollectionService:AddTag(targetModel, TOW_TAG)
-	updateTowOwnership(record)
-	return true
-end
-
-function VehicleService.DetachTow(model: Model)
-	local record = records[model]
-	local tow = record and record.tow
-	if not (record and tow) then
-		return
-	end
-	record.tow = nil
-	tow.rope:Destroy()
-	local target = tow.target
-	towTargets[target] = nil
-	target:SetAttribute("TowedBy", nil)
-	target:SetAttribute("TowVehicle", nil)
-	target:SetAttribute("TowScripted", nil)
-	CollectionService:RemoveTag(target, TOW_TAG)
-	if not target.Parent or tow.scripted then
-		return
-	end
-	local targetRoot = rootOf(target)
-	if not targetRoot then
-		return
-	end
-	if records[target] then
-		setOwner(targetRoot, nil) -- an empty vehicle keeps drifting, server-simulated
-	else
-		Simulator.clear(target)
-		targetRoot.AssemblyLinearVelocity = Vector3.zero
-		targetRoot.Anchored = true -- hand the NPC boat back to its script motion
-	end
 end
 
 return VehicleService

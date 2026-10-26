@@ -4,7 +4,7 @@
 -- default Roblox name: their display name in HudTheme pale brass on a dark slate strip with a
 -- hairline brass edge and a small "VIP CREW" caption (no glow, no animation). Local only: the
 -- default name display is hidden on this client while the plate shows, restored when it goes.
--- The local player sees no plate of their own (first person).
+-- The local player sees no plate of their own.
 --
 --   VipNameplate.Start(ctx)
 --   VipNameplate.attach(model, name) -> () -> ()   plate on any rig (smoke tests / review shots)

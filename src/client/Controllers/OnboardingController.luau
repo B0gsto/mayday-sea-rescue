@@ -5,7 +5,7 @@
 -- the world waypoint (UI/Waypoint, B2) on the offer, the survivor and the drop-off.
 -- It reads only replicated facts: the Ops signals, the PlayerDataChanged snapshot and a few
 -- player attributes.
--- Beats (docs/20 changes 4, 7, 8): a new player sees a sea-blue cover, not the town, until they sit on
+-- Beats (docs/20 changes 4, 7, 8): a new player sees a sea-blue cover, not the island, until they sit on
 -- the cold-open jet ski (then it fades); for everyone, a board pops the craft's seat count ("1/1", seat
 -- pips, red when full) and the drop-off pulses green on the way in (ColdOpenCue.home).
 local Players = game:GetService("Players")
@@ -132,7 +132,7 @@ local function showReward()
 	end)
 end
 
--- The cold-open cover (docs/20 change 7): no visible town wait. Up from Init for a player whose profile
+-- The cold-open cover (docs/20 change 7): no visible island wait. Up from Init for a player whose profile
 -- has not said "done"; fades once they sit on the cold-open jet ski, as soon as the profile says they
 -- are returning, or after COVER_MAX s whatever happens.
 local COVER_MAX = 20
@@ -142,7 +142,7 @@ local function coverUntilAtSea()
 	gui.Name = "ColdOpenCover"
 	gui.IgnoreGuiInset = true
 	gui.ResetOnSpawn = false
-	gui.DisplayOrder = 60 -- over the HUD, the phone and Cinematic
+	gui.DisplayOrder = 60 -- over the HUD, the menu and Cinematic
 	local sea = Instance.new("Frame")
 	sea.Size = UDim2.fromScale(1, 1)
 	sea.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -372,11 +372,6 @@ function OnboardingController.Start()
 		end
 	end)
 	RunService.Heartbeat:Connect(update)
-end
-
--- True while the first-session world beacon is showing a goal (G58 hides the goal chip then).
-function OnboardingController.beaconActive(): boolean
-	return active and currentGoal ~= nil
 end
 
 return OnboardingController

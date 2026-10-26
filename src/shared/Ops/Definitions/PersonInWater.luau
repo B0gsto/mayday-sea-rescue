@@ -16,7 +16,7 @@ local def: Types.OperationDef = {
 	states = { Alert = 0.4, Panicking = 0.2, Exhausted = 0.2, VeryCold = 0.15, Unresponsive = 0.05 },
 	lifejacketChance = 0.6,
 	sceneKinds = { "Swimmer", "DriftingCraft" },
-	steps = SimpleSteps("Answer the call quickly; every second counts in the water."),
+	steps = SimpleSteps(),
 }
 
 return def

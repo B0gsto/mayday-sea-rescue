@@ -234,11 +234,6 @@ local function step(dt: number)
 	spinRotors(dt)
 end
 
--- The heli the local player is flying, if any, and its flight state (velocity, heading, yawRate).
-function HeliController.GetFlying(): (Model?, Flight.State?)
-	return flying, state
-end
-
 function HeliController.Start()
 	RunService.PreSimulation:Connect(step)
 end
