@@ -388,6 +388,7 @@ function WorkerService.Init()
 	end
 	Players.PlayerRemoving:Connect(clearState)
 	DataService.OnLoaded(function(player: Player, data: ProgressionRules.PlayerData)
+		clearState(player) -- a reload (DataDev "rejoin") must not leave a second, stale worker folder
 		local pf = Instance.new("Folder")
 		pf.Name = tostring(player.UserId)
 		pf.Parent = folder
