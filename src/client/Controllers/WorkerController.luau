@@ -6,9 +6,11 @@
 -- (ReplicatedStorage.Workers.<owner>.<i>, WorkerService) and this clones a shared R15 template
 -- (ReplicatedStorage.WorkerRigs) into Workspace.WorkersLocal for each one within NEAR studs of you, drops it
 -- past FAR, animates it only within LIVELY (a still pose beyond), and walks it along a cached
--- PathfindingService route when its Spot changes (a new recruit walks in from the jetty). At their building a
--- Builder hammers, a Mechanic swings a wrench, a Gatherer carries a crate to the door and back. With CREW_MIN
--- or more at one building their single badges hide behind one crew badge with a count.
+-- PathfindingService route when its Spot changes (a new recruit walks in from the jetty). At their building each
+-- Job loops a stock animation with a small code-built prop (docs/24 C): Build hammers, Fish carries a crate,
+-- Repair turns a wrench, Rescue scans with binoculars, Heal holds a clipboard, Gather saws, Idle stands. Workers
+-- waiting on the jetty keep their category badge (they are not at work). Gatherer/Rescuer pay pops a "+$".
+-- With CREW_MIN or more at one building their single badges hide behind one crew badge with a count.
 local CollectionService = game:GetService("CollectionService")
 local PathfindingService = game:GetService("PathfindingService")
 local Players = game:GetService("Players")
@@ -16,6 +18,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Net = require(Shared:WaitForChild("Net"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local CashBurst = require(UI:WaitForChild("CashBurst"))
 local Style = require(UI:WaitForChild("Kit"):WaitForChild("Style"))
@@ -34,12 +38,25 @@ local CREW_MIN = 4 -- this many at one building: one crew badge (single ones mer
 local ANIM_IDS: { [string]: string } = { -- stock R15 animations (the default Animate script's)
 	Idle = "rbxassetid://507766666",
 	Walk = "rbxassetid://507777826",
-	Swing = "rbxassetid://522635514", -- toolslash, looped slow: hammering
+	Swing = "rbxassetid://522635514", -- toolslash, looped slow: hammering / sawing / wrenching
+	Point = "rbxassetid://507770453", -- point: binoculars / clipboard read
 }
-local WORK: { [string]: { anim: string?, prop: string } } = {
-	Builder = { anim = "Swing", prop = "Hammer" },
-	Mechanic = { anim = "Swing", prop = "Wrench" },
-	Gatherer = { prop = "Crate" },
+-- Jobs (docs/24 C) and their held prop. A worker with no Job attribute falls back to its category.
+local JOBS: { [string]: { anim: string?, prop: string? } } = {
+	Build = { anim = "Swing", prop = "Hammer" },
+	Fish = { prop = "Crate" },
+	Repair = { anim = "Swing", prop = "Wrench" },
+	Rescue = { anim = "Point", prop = "Binoculars" },
+	Heal = { anim = "Point", prop = "Clipboard" },
+	Gather = { anim = "Swing", prop = "Saw" },
+	Idle = {},
+}
+local CATEGORY_JOB = {
+	Builder = "Build",
+	Gatherer = "Fish",
+	Mechanic = "Repair",
+	Rescuer = "Rescue",
+	Medic = "Heal",
 }
 
 type Rec = {
@@ -71,11 +88,21 @@ local function eye(): Vector3
 	return if cam then cam.CFrame.Position else Vector3.zero
 end
 
-local function work(r: Rec): { anim: string?, prop: string }?
+local function jobOf(r: Rec): string?
+	local job = r.cfg:GetAttribute("Job")
+	if type(job) == "string" and JOBS[job] then
+		return job
+	end
 	local category = r.cfg:GetAttribute("WorkerCategory")
-	return if r.cfg:GetAttribute("Work") == true and type(category) == "string"
-		then WORK[category]
-		else nil
+	return if type(category) == "string" then CATEGORY_JOB[category] else nil
+end
+
+local function work(r: Rec): { anim: string?, prop: string? }?
+	if r.cfg:GetAttribute("Work") ~= true then
+		return nil
+	end
+	local job = jobOf(r)
+	return job and JOBS[job]
 end
 
 -- Plays the tracks the worker should show now (none when far or culled); tracks load once per rig.
@@ -116,7 +143,7 @@ local function pose(r: Rec)
 	end
 end
 
-local function brick(name: string, size: Vector3, color: Color3, to: BasePart, c0: CFrame)
+local function brick(name: string, size: Vector3, color: Color3, to: BasePart, c0: CFrame): Part
 	local p = Instance.new("Part")
 	p.Name = name
 	p.Size = size
@@ -128,6 +155,7 @@ local function brick(name: string, size: Vector3, color: Color3, to: BasePart, c
 	w.Part0, w.Part1, w.C0 = to, p, c0
 	w.Parent = p
 	p.Parent = to
+	return p
 end
 
 -- The work prop (hammer, wrench, crate) while at their building, none on the jetty.
@@ -160,6 +188,54 @@ local function dress(r: Rec)
 				CFrame.new(0.7, 1.35, 0.1)
 			)
 		end
+	elseif want == "Saw" then -- a handle and a flat blade
+		brick(
+			want,
+			Vector3.new(0.3, 1.2, 0.3),
+			Color3.fromRGB(224, 56, 40),
+			hand,
+			g * CFrame.new(0, 0.4, 0)
+		)
+		brick(
+			`{want}Blade`,
+			Vector3.new(0.16, 1.8, 0.85),
+			Color3.fromRGB(200, 205, 214),
+			hand,
+			g * CFrame.new(0, 1.1, 0.1)
+		)
+	elseif want == "Binoculars" then -- two barrels on a bridge, held up to the face by Point
+		for _, x in { -0.26, 0.26 } do
+			local barrel = brick(
+				want,
+				Vector3.new(1.1, 0.38, 0.38),
+				Color3.fromRGB(52, 58, 70),
+				hand,
+				g * CFrame.new(x, 0.9, -0.1) * CFrame.Angles(0, math.pi / 2, 0)
+			)
+			barrel.Shape = Enum.PartType.Cylinder
+		end
+		brick(
+			`{want}Bridge`,
+			Vector3.new(0.5, 0.22, 0.22),
+			Color3.fromRGB(90, 96, 110),
+			hand,
+			g * CFrame.new(0, 0.9, 0.3)
+		)
+	elseif want == "Clipboard" then -- a board and a paper sheet
+		brick(
+			want,
+			Vector3.new(0.16, 1.4, 1.8),
+			Color3.fromRGB(105, 64, 40),
+			hand,
+			g * CFrame.new(0.35, 0.7, 0)
+		)
+		brick(
+			`{want}Paper`,
+			Vector3.new(0.18, 1.1, 1.4),
+			Color3.fromRGB(242, 240, 232),
+			hand,
+			g * CFrame.new(0.26, 0.7, 0)
+		)
 	else -- hammer / wrench: the handle out of the fist, the head at its end
 		local hammer = want == "Hammer"
 		local handle = if hammer then Color3.fromRGB(250, 208, 40) else Color3.fromRGB(224, 56, 40)
@@ -266,7 +342,7 @@ local function carry(r: Rec)
 	end
 	local legs = { r.feet * CFrame.new(0, 0, -2.5), r.feet * CFrame.new(0, 0, 2) } -- the feet face the shed
 	local function on(): boolean
-		return r.rig == rig and r.lively and not r.walking and work(r) == WORK.Gatherer
+		return r.rig == rig and r.lively and not r.walking and jobOf(r) == "Fish"
 	end
 	r.carry = "rest"
 	task.spawn(function()
@@ -387,7 +463,7 @@ local function cullPass()
 			r.lively = lively
 			pose(r)
 		end
-		if r.lively and not r.walking and not r.carry and work(r) == WORK.Gatherer then
+		if r.lively and not r.walking and not r.carry and jobOf(r) == "Fish" then
 			carry(r)
 		end
 	end
@@ -437,6 +513,52 @@ local function crewPass()
 			c.gui:Destroy()
 			c.at:Destroy()
 			crews[key] = nil
+		end
+	end
+end
+
+-- docs/24 C: a small "+$" over the worker when the server pays its category (client only)
+local function popCash(r: Rec)
+	local rig = r.rig
+	local root = rig and rig.PrimaryPart
+	if not (rig and root) then
+		return
+	end
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "PayPop"
+	gui.Adornee = root
+	gui.Size = UDim2.fromOffset(48, 28)
+	gui.StudsOffset = Vector3.new(0, 4.8, 0)
+	gui.MaxDistance = 80
+	gui.LightInfluence = 0
+	gui.Parent = rig
+	local label = Instance.new("TextLabel")
+	label.BackgroundTransparency = 1
+	label.Size = UDim2.fromScale(1, 1)
+	label.Font = Enum.Font.FredokaOne
+	label.TextScaled = true
+	label.TextColor3 = Color3.fromRGB(255, 214, 60)
+	label.TextStrokeTransparency = 0
+	label.Text = "+$"
+	label.Parent = gui
+	TweenService:Create(
+		gui,
+		TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		{ StudsOffset = Vector3.new(0, 7.6, 0) }
+	):Play()
+	TweenService:Create(label, TweenInfo.new(1.1), { TextTransparency = 1 }):Play()
+	task.delay(1.2, function()
+		gui:Destroy()
+	end)
+end
+
+-- the local player's workers of one category pop the paid mark
+local function paid(category: string)
+	for cfg, r in recs do
+		if r.rig and work(r) and cfg.Parent and cfg.Parent.Name == tostring(player.UserId) then
+			if cfg:GetAttribute("WorkerCategory") == category and not r.walking then
+				popCash(r)
+			end
 		end
 	end
 end
@@ -500,6 +622,17 @@ function WorkerController.Start()
 	for _, name in { "WorkerOffline", "LoadingScreenActive", "CinematicPlaying" } do
 		player:GetAttributeChangedSignal(name):Connect(welcome)
 	end
+	Net.event("PlayerDataChanged").OnClientEvent:Connect(function(data: any)
+		local award = data and data.award
+		if type(award) ~= "table" then
+			return
+		end
+		if award.reason == "Workers:Gather" then
+			paid("Gatherer")
+		elseif award.reason == "Workers:Rescue" then
+			paid("Rescuer")
+		end
+	end)
 	task.delay(4, welcome) -- set before this ran: wait for the HUD to be up
 	local f = Instance.new("Folder")
 	f.Name = "WorkersLocal"

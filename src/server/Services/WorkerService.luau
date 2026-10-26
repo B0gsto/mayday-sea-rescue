@@ -57,8 +57,16 @@ end
 
 -- Feet CFrames in the berth frame `bay` ------------------------------------------------------------
 
--- In front of the building's door (its -Z side), side by side, facing the building they work on (facing out
--- they swung at the air, verify 2026-10-26); 4.5 apart so the swings miss the neighbour.
+-- In front of the building's open front, side by side, facing the work they do inside it (docs/24 C: the worker
+-- buildings are open yards, so the crew stands just inside the front edge rather than out on the lane); 4.5 apart
+-- so the swings miss the neighbour.
+local WORK_INSET = { -- studs in from the front edge (docs/24 C open work areas)
+	Workshop = 2.5,
+	FishShed = 2.5,
+	BoatYard = 1.5, -- clear of the bow overhang
+	RescueBoathouse = 2.5,
+	Clinic = 4, -- inside the pavilion, at the beds
+}
 local function workSpot(bay: CFrame, category: string, slot: number, slots: number): CFrame?
 	local key = WorkerRules.buildingOf(category)
 	local def = key and DockConfig.Buildings[key]
@@ -66,7 +74,9 @@ local function workSpot(bay: CFrame, category: string, slot: number, slots: numb
 		return nil
 	end
 	local at = bay * def.spot
-	local p = (at * CFrame.new((slot - (slots + 1) / 2) * 4.5, 0.8, -(def.size.Y / 2 + 3.5))).Position
+	local inset = if key then WORK_INSET[key] else nil
+	local z = if inset then -(def.size.Y / 2 - inset) else -(def.size.Y / 2 + 3.5)
+	local p = (at * CFrame.new((slot - (slots + 1) / 2) * 4.5, 0.8, z)).Position
 	return CFrame.lookAt(p, p - at.LookVector)
 end
 
