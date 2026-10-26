@@ -7,7 +7,8 @@
 -- (ReplicatedStorage.WorkerRigs) into Workspace.WorkersLocal for each one within NEAR studs of you, drops it
 -- past FAR, animates it only within LIVELY (a still pose beyond), and walks it along a cached
 -- PathfindingService route when its Spot changes (a new recruit walks in from the jetty). At their building a
--- Builder hammers, a Mechanic swings a wrench, a Gatherer carries a crate.
+-- Builder hammers, a Mechanic swings a wrench, a Gatherer carries a crate to the door and back. With CREW_MIN
+-- or more at one building their single badges hide behind one crew badge with a count.
 local CollectionService = game:GetService("CollectionService")
 local PathfindingService = game:GetService("PathfindingService")
 local Players = game:GetService("Players")
@@ -29,6 +30,7 @@ local NEAR, FAR = 200, 240 -- studs from you: a rig is made within NEAR, dropped
 local LIVELY = 90 -- animated within this (the badge shows within 60)
 local WALK_SPEED = 9 -- studs/s
 local MAKE_PER_TICK = 8 -- rigs cloned per 0.25 s pass (no hitch when you land on a full island)
+local CREW_MIN = 4 -- this many at one building: one crew badge (single ones merged into a band, verify 2026-10-26)
 local ANIM_IDS: { [string]: string } = { -- stock R15 animations (the default Animate script's)
 	Idle = "rbxassetid://507766666",
 	Walk = "rbxassetid://507777826",
@@ -48,6 +50,7 @@ type Rec = {
 	loaded: { [string]: AnimationTrack },
 	lively: boolean,
 	walking: {}?, -- the running walk's token
+	carry: ("walk" | "rest")?, -- a Gatherer's crate loop, while it runs
 }
 
 local anims: { [string]: Animation } = {} -- one Animation per id, shared by every rig
@@ -79,7 +82,7 @@ end
 local function pose(r: Rec)
 	local want: { [string]: boolean } = {}
 	if r.rig and r.lively then
-		if r.walking then
+		if r.walking or r.carry == "walk" then
 			want.Walk = true
 		else
 			want.Idle = true
@@ -232,6 +235,62 @@ local function route(a: Vector3, b: Vector3): { Vector3 }
 	return points
 end
 
+-- Steps the rig's root from where it is to the feet CFrame `to`, facing the way it goes; yields.
+local function stride(r: Rec, root: BasePart, to: Vector3)
+	local target = to + Vector3.new(0, r.height, 0)
+	local at = root.Position
+	if (target - at).Magnitude <= 0.5 then
+		return
+	end
+	local flat = Vector3.new(target.X - at.X, 0, target.Z - at.Z)
+	-- straight up / down: keep facing (lookAt on the same point is NaN)
+	local face = if flat.Magnitude > 0.05
+		then CFrame.lookAt(Vector3.zero, flat).Rotation
+		else root.CFrame.Rotation
+	root.CFrame = CFrame.new(at) * face
+	local tween = TweenService:Create(
+		root,
+		TweenInfo.new((target - at).Magnitude / WALK_SPEED, Enum.EasingStyle.Linear),
+		{ CFrame = CFrame.new(target) * face }
+	)
+	tween:Play()
+	tween.Completed:Wait()
+end
+
+-- A Gatherer at its shed walks its crate up to the door and back out, a short rest at each end, while near.
+local function carry(r: Rec)
+	local rig = r.rig
+	local root = rig and rig.PrimaryPart
+	if not (rig and root) then
+		return
+	end
+	local legs = { r.feet * CFrame.new(0, 0, -2.5), r.feet * CFrame.new(0, 0, 2) } -- the feet face the shed
+	local function on(): boolean
+		return r.rig == rig and r.lively and not r.walking and work(r) == WORK.Gatherer
+	end
+	r.carry = "rest"
+	task.spawn(function()
+		local i = 0
+		while on() do
+			i = i % 2 + 1
+			r.carry = "walk"
+			pose(r)
+			stride(r, root, legs[i].Position)
+			if not on() then
+				break
+			end
+			r.carry = "rest"
+			pose(r)
+			task.wait(0.6 + math.random() * 0.8) -- uneven, so a crew never paces in step
+		end
+		r.carry = nil
+		if r.rig == rig and not r.walking then
+			place(r)
+			pose(r)
+		end
+	end)
+end
+
 -- Walks the rig from where it is to `to` (feet) along a route; culled or far, it is just there.
 local function walkTo(r: Rec, to: CFrame)
 	local rig = r.rig
@@ -250,23 +309,7 @@ local function walkTo(r: Rec, to: CFrame)
 	pose(r)
 	task.spawn(function()
 		for _, p in route(r.feet.Position, to.Position) do
-			local target = p + Vector3.new(0, r.height, 0)
-			local at = root.Position
-			if (target - at).Magnitude > 0.5 then
-				local flat = Vector3.new(target.X - at.X, 0, target.Z - at.Z)
-				-- straight up / down: keep facing (lookAt on the same point is NaN)
-				local face = if flat.Magnitude > 0.05
-					then CFrame.lookAt(Vector3.zero, flat).Rotation
-					else root.CFrame.Rotation
-				root.CFrame = CFrame.new(at) * face
-				local tween = TweenService:Create(
-					root,
-					TweenInfo.new((target - at).Magnitude / WALK_SPEED, Enum.EasingStyle.Linear),
-					{ CFrame = CFrame.new(target) * face }
-				)
-				tween:Play()
-				tween.Completed:Wait()
-			end
+			stride(r, root, p)
 			if r.walking ~= token or r.rig ~= rig then
 				return -- a newer walk took over, or the rig was culled (its feet are set)
 			end
@@ -344,6 +387,57 @@ local function cullPass()
 			r.lively = lively
 			pose(r)
 		end
+		if r.lively and not r.walking and not r.carry and work(r) == WORK.Gatherer then
+			carry(r)
+		end
+	end
+end
+
+-- CREW_MIN+ settled workers of one owner and category (one building): hide their own badges, show one over the
+-- middle of the crew with the count.
+local crews: { [string]: { gui: BillboardGui, at: Attachment } } = {}
+local function crewPass()
+	local groups: { [string]: { cat: string, sum: Vector3, rigs: { Model } } } = {}
+	for cfg, r in recs do
+		local cat = cfg:GetAttribute("WorkerCategory")
+		if r.rig and not r.walking and work(r) and type(cat) == "string" then
+			local key = `{cfg.Parent and cfg.Parent.Name}/{cat}`
+			local g = groups[key] or { cat = cat, sum = Vector3.zero, rigs = {} }
+			groups[key] = g
+			g.sum += r.feet.Position
+			table.insert(g.rigs, r.rig)
+		end
+	end
+	for key, g in groups do
+		local merged = #g.rigs >= CREW_MIN
+		for _, rig in g.rigs do
+			local tag = rig:FindFirstChild("WorkerTag")
+			if tag and tag:IsA("BillboardGui") then
+				tag.Enabled = not merged
+			end
+		end
+		local c = crews[key]
+		if merged then
+			if not c then
+				local at = Instance.new("Attachment")
+				at.Name = "CrewTag"
+				at.Parent = Workspace.Terrain
+				c = { at = at, gui = WorkerBadge.crew(at, g.cat, localFolder :: Folder) }
+				crews[key] = c
+			end
+			local crew = c :: { gui: BillboardGui, at: Attachment }
+			crew.at.WorldPosition = g.sum / #g.rigs + Vector3.new(0, 7.5, 0)
+			local count = crew.gui:FindFirstChild("Count") :: TextLabel
+			count.Text = `x{#g.rigs}`
+		end
+	end
+	for key, c in crews do
+		local g = groups[key]
+		if not (g and #g.rigs >= CREW_MIN) then
+			c.gui:Destroy()
+			c.at:Destroy()
+			crews[key] = nil
+		end
 	end
 end
 
@@ -419,6 +513,7 @@ function WorkerController.Start()
 	end
 	while true do
 		cullPass()
+		crewPass()
 		task.wait(0.25)
 	end
 end

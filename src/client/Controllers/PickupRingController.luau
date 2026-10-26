@@ -14,6 +14,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
+local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
 local PickupRingController = {}
@@ -21,12 +22,37 @@ local PickupRingController = {}
 local ORANGE = Color3.fromRGB(255, 140, 30)
 local GREY = Color3.fromRGB(150, 150, 150)
 local BAND = 1.4 -- studs wide up close; it widens with distance so it reads from ~150 studs out -- tune
-local FAR_WIDTH = 1 / 40 -- band width per stud of camera distance (150 studs: ~3.8 wide) -- tune
+local FAR_WIDTH = 1 / 25 -- band width per stud of camera distance (150 studs: ~6 wide) -- tune
 local FADE = 1 -- s: once they leave the water the ring swells and fades, so the climb aboard reads
+-- far marker: a lifebuoy pip over the swimmer, always on top, out to MARK_FAR; it fades out as you close
+-- (the ring takes over) between MARK_NEAR and MARK_NEAR * 2. Pooled: MARK_MAX nearest get one.
+local MARK_FAR, MARK_NEAR, MARK_MAX = 400, 45, 8
 
 local rings: { [Model]: CylinderHandleAdornment } = {}
 local fading: { [CylinderHandleAdornment]: number } = {} -- band -> os.clock() they left the water
 local folder: Folder? = nil
+local marks: { BillboardGui } = {}
+
+local function mark(i: number): BillboardGui
+	if not marks[i] then
+		local gui = Instance.new("BillboardGui")
+		gui.Name = "SurvivorMark"
+		gui.AlwaysOnTop = true
+		gui.LightInfluence = 0
+		gui.Size = UDim2.fromOffset(44, 44)
+		gui.StudsOffsetWorldSpace = Vector3.new(0, 3, 0)
+		gui.SizeOffset = Vector2.new(0, 0.7) -- clear of the ring at any distance
+		local img = Instance.new("ImageLabel")
+		img.Name = "Icon"
+		img.BackgroundTransparency = 1
+		img.Image = UiImages.Kit.lifebuoy
+		img.Size = UDim2.fromScale(1, 1)
+		img.Parent = gui
+		gui.Parent = folder
+		marks[i] = gui
+	end
+	return marks[i]
+end
 
 local function seatedCraft(): Model?
 	local char = Players.LocalPlayer.Character
@@ -73,6 +99,7 @@ local function step()
 	local full = craft ~= nil and not Board.hasRoom(craft)
 	local seen: { [Model]: boolean } = {}
 	local cam = Workspace.CurrentCamera
+	local near: { { m: Model, d: number } } = {}
 	for _, m in if props then props:GetChildren() else {} do
 		if waiting(m) then
 			local v = m :: Model
@@ -85,7 +112,7 @@ local function step()
 			-- wider and taller far off: a flat 1.4-stud band vanished at a grazing angle (playtest 2026-10-26)
 			local far = if cam then (cam.CFrame.Position - at).Magnitude else 0
 			band.InnerRadius = Board.RING - math.clamp(far * FAR_WIDTH, BAND, Board.RING / 2)
-			band.Height = math.clamp(far / 250, 0.1, 0.8)
+			band.Height = math.clamp(far / 150, 0.1, 1.2)
 			anchor.CFrame = CFrame.new(
 				at.X,
 				(if ok and type(h) == "number" then h else at.Y) + 0.15 + band.Height / 2,
@@ -93,6 +120,26 @@ local function step()
 			)
 			band.Color3 = if full then GREY else ORANGE
 			band.Transparency = if full then 0.7 else 0.15
+			if far < MARK_FAR and far > MARK_NEAR then
+				table.insert(near, { m = v, d = far })
+			end
+		end
+	end
+	table.sort(near, function(a, b)
+		return a.d < b.d
+	end)
+	for i = 1, math.max(#marks, math.min(#near, MARK_MAX)) do
+		local n = near[i]
+		if n then
+			local gui = mark(i)
+			gui.Adornee = n.m.PrimaryPart :: BasePart
+			gui.Enabled = true
+			local img = gui:FindFirstChild("Icon") :: ImageLabel
+			local shown = math.clamp(n.d / MARK_NEAR - 1, 0, 1) * (if full then 0.4 else 1)
+			img.ImageColor3 = if full then GREY else Color3.new(1, 1, 1)
+			img.ImageTransparency = 1 - shown
+		else
+			marks[i].Enabled = false
 		end
 	end
 	for v, band in rings do
