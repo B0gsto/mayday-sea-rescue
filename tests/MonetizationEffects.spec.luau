@@ -12,6 +12,13 @@ return function(t)
 		CalmSeconds = 600,
 	}
 
+	t.test("DevNoPasses only works in Studio", function()
+		t.expect(Effects.devNoPasses(true, true)).toBe(true)
+		t.expect(Effects.devNoPasses(false, true)).toBe(false) -- live servers ignore the attribute
+		t.expect(Effects.devNoPasses(true, nil)).toBe(false)
+		t.expect(Effects.devNoPasses(true, "true")).toBe(false)
+	end)
+
 	t.test("Cash packs pay docs/04 4.1 at the top live zone, matching the card", function()
 		local cpm = Effects.cashPerMinute(Config.CashPackZones, 1)
 		t.expect(cpm).toBe(100) -- Calm Bay ~6,000 Cash per hour

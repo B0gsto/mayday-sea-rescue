@@ -172,10 +172,17 @@ function MonetizationService.OnProduct(
 	}
 end
 
+local function noPasses(): boolean
+	return Effects.devNoPasses(RunService:IsStudio(), workspace:GetAttribute("DevNoPasses"))
+end
+
 local function grantPass(player: Player, key: string, isNewPurchase: boolean)
 	local owned = ownedPasses[player]
 	if not owned or owned[key] or MonetizationConfig.GamePasses[key].ready == false then
 		return -- a retired pass (ready = false) is never owned, even if bought back when it sold
+	end
+	if noPasses() and not isNewPurchase then
+		return -- DevNoPasses: the account's real passes stay unowned; a (test) purchase still grants
 	end
 	owned[key] = true
 	player:SetAttribute("Pass_" .. key, true)
@@ -214,7 +221,7 @@ function MonetizationService.OwnsPass(player: Player, key: string): boolean
 	local owned = ownedPasses[player]
 	return Effects.passActive(
 		owned ~= nil and owned[key] == true,
-		Effects.dayPassEnds(shopOf(DataService.Get(player)), key),
+		if noPasses() then 0 else Effects.dayPassEnds(shopOf(DataService.Get(player)), key),
 		os.time()
 	)
 end
@@ -223,7 +230,7 @@ local function publishDayPasses(player: Player, data: PlayerData)
 	for _, item in MonetizationConfig.Products do
 		local passKey = item.dayPassFor
 		if passKey then
-			local ends = Effects.dayPassEnds(shopOf(data), passKey)
+			local ends = if noPasses() then 0 else Effects.dayPassEnds(shopOf(data), passKey)
 			player:SetAttribute("DayPass_" .. passKey, if ends > os.time() then ends else nil)
 		end
 	end
@@ -426,6 +433,20 @@ function MonetizationService.Start()
 	for _, player in Players:GetPlayers() do
 		task.spawn(onPlayerAdded, player)
 	end
+	-- DevNoPasses flipped mid-session (smoke.py lua): drop or re-check every player's passes
+	workspace:GetAttributeChangedSignal("DevNoPasses"):Connect(function()
+		for _, player in Players:GetPlayers() do
+			for key in MonetizationConfig.GamePasses do
+				player:SetAttribute("Pass_" .. key, nil)
+			end
+			ownedPasses[player] = nil
+			checkPasses(player)
+			local data = DataService.Get(player)
+			if data then
+				publishDayPasses(player, data)
+			end
+		end
+	end)
 end
 
 return MonetizationService

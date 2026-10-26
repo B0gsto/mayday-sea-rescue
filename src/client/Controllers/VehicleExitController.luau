@@ -17,15 +17,15 @@ local player = Players.LocalPlayer
 
 local VehicleExitController = {}
 
-local function inVehicle(seat: BasePart?): boolean
+local function vehicleOf(seat: BasePart?): Model?
 	local node: Instance? = seat
 	while node and node.Parent do
 		if node:IsA("Model") and node:GetAttribute("VehicleId") ~= nil then
-			return true
+			return node :: Model
 		end
 		node = node.Parent
 	end
-	return false
+	return nil
 end
 
 local function onExit(
@@ -41,17 +41,27 @@ local function onExit(
 	if not (humanoid and humanoid.SeatPart) then
 		return Enum.ContextActionResult.Pass
 	end
-	local craft = humanoid.SeatPart.Parent
+	local seat = humanoid.SeatPart :: BasePart
+	local craft = seat.Parent
 	if craft and craft:GetAttribute("Airborne") == true then
 		return Enum.ContextActionResult.Sink -- flying heli (local attribute): land first
 	end
 	humanoid.Sit = false
 	humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	-- step off over the side: on a deck craft (Lifeboat) the jump left you standing on the seat, and
+	-- it (or the passenger seat behind) took you back within seconds; land half a beam + 3 out
+	local vehicle = vehicleOf(seat)
+	if vehicle then
+		local size = vehicle:GetExtentsSize()
+		local side = seat.Position + seat.CFrame.RightVector * (math.min(size.X, size.Z) / 2 + 3)
+		local body = character :: Model
+		body:PivotTo(CFrame.new(side.X, seat.Position.Y + 2, side.Z) * seat.CFrame.Rotation)
+	end
 	return Enum.ContextActionResult.Sink
 end
 
 local function onSeated(active: boolean, seat: BasePart?)
-	if active and inVehicle(seat) then
+	if active and vehicleOf(seat) then
 		ContextActionService:BindAction(
 			ACTION,
 			onExit,

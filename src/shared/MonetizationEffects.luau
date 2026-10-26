@@ -93,6 +93,12 @@ function Effects.passActive(owned: boolean, dayPassEnds: number?, now: number): 
 	return owned or num(dayPassEnds) > now
 end
 
+-- Studio-only test mode (Workspace attribute "DevNoPasses" = true): the player owns no game passes and no
+-- day passes, to test the free path on a dev account that owns them all. Never on a live server.
+function Effects.devNoPasses(isStudio: boolean, attribute: any): boolean
+	return isStudio and attribute == true
+end
+
 -- Adds hours of real time from now, or from the current end when one is running; returns the new end.
 -- shortcut: saved as a whole hour (the flag limit is 1e6), so the end rounds up and a buyer gets up to
 -- an hour extra; store seconds if the flag rules ever allow bigger numbers.
