@@ -882,6 +882,11 @@ function DockService.Init()
 				data.flags.isles = isles
 				DataService.MarkDirty(player)
 				return true
+			elseif cmd == "reset" and data then -- back to the bare start (art renders)
+				data.dockBuildings, data.dockPrepaid = {}, {}
+				DataService.MarkDirty(player)
+				show(player, false)
+				return true
 			elseif cmd == "building" and data then
 				data.dockBuildings = if type(data.dockBuildings) == "table"
 					then data.dockBuildings

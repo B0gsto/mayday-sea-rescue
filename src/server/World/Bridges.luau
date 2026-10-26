@@ -1,9 +1,9 @@
 --!strict
 -- Bridges (docs/23 (p), WP-27): six short walkable Lego bridges joining each island to its two neighbours (a full
--- ring), Lego bricks from RingLayout.Bridges (WP-25): a light grey stud deck (the paths' plate) on a blue beam, climbing at 11.3 deg
--- from both plates to a rounded crest (underside ~20 studs over the sea at mid-span, so boats pass under), red
--- rails on white posts with yellow stud caps, an invisible anti-fall fence above them, and a light grey pier with a
--- white cap at each plate's edge. Persistent streaming, like the plates: never dropped from high up.
+-- ring), Lego bricks from RingLayout.Bridges (WP-25): a tan stud deck (the paths' plate) on a blue beam, climbing at 11.3 deg
+-- from both plates to a rounded crest (underside ~20 studs over the sea at mid-span, so boats pass under), slim
+-- red-and-white rails on white posts with yellow stud caps, an invisible anti-fall fence above them, a lamp post
+-- and a light grey pier with a white cap at each plate's edge. Persistent streaming, like the plates: never dropped from high up.
 -- WorldDressingService calls Bridges.place(base) once at server start.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -19,7 +19,7 @@ local POST_EVERY = 3 -- a post every this many segments
 local PIER = 3
 local SEABED_Y = -40
 
-local DECK = Color3.fromRGB(163, 162, 165) -- Lego light bluish grey, the island paths' colour
+local DECK = Color3.fromRGB(212, 184, 132) -- Lego tan, the island paths' colour (WP-25 r7)
 local BEAM = Color3.fromRGB(40, 96, 208) -- Lego blue
 local RED = Color3.fromRGB(224, 56, 40)
 local WHITE = Color3.fromRGB(242, 240, 232)
@@ -72,7 +72,7 @@ local function build(br: RingLayout.Bridge, parent: Instance)
 		tex.Face = Enum.NormalId.Top
 		tex.Texture = STUDS
 		tex.StudsPerTileU, tex.StudsPerTileV = 8, 8
-		tex.Color3 = Color3.fromRGB(139, 138, 140)
+		tex.Color3 = DECK:Lerp(Color3.new(0, 0, 0), 0.15)
 		tex.Transparency = 0.1
 		tex.Parent = deck
 		part(
@@ -87,9 +87,9 @@ local function build(br: RingLayout.Bridge, parent: Instance)
 			part(
 				model,
 				"Rail",
-				Vector3.new(0.8, 0.8, len),
+				Vector3.new(0.5, 0.5, len),
 				cf * CFrame.new(side * (half - 0.4), RAIL_H, 0),
-				RED
+				if k % 2 == 0 then RED else WHITE -- WP-25 r7: slim candy-stripe rails, lighter in the bridge view
 			)
 			local fence = part(
 				model,
@@ -142,6 +142,24 @@ local function build(br: RingLayout.Bridge, parent: Instance)
 			end
 		end
 		local p = RingLayout.deckAt(br, t0)
+		-- a Lego lamp post at the bridge foot (WP-25 r7), on the right-hand rail going on to the bridge
+		local side = if t1 > t0 then 1 else -1
+		local lampAt = p + right * side * (half - 0.4)
+		part(
+			model,
+			"LampPost",
+			Vector3.new(0.6, 9, 0.6),
+			CFrame.new(lampAt + Vector3.new(0, 4.5, 0)),
+			WHITE
+		)
+		local bulb = part(
+			model,
+			"Lamp",
+			Vector3.new(1.4, 1.4, 1.4),
+			CFrame.new(lampAt + Vector3.new(0, 9.5, 0)),
+			YELLOW
+		)
+		bulb.Shape = Enum.PartType.Ball
 		local top = p.Y - THICK
 		local foot = Vector3.new(p.X, (top + SEABED_Y) / 2, p.Z)
 			+ dir * (if t1 > t0 then PIER else -PIER)

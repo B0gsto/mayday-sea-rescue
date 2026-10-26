@@ -46,7 +46,7 @@ local NAVY = Color3.fromRGB(30, 40, 58)
 local BLUE = Color3.fromRGB(40, 96, 208) -- WP-25 Lego brick colours
 local YELLOW = Color3.fromRGB(250, 208, 40)
 local TITLES = { BoatBoard = "Boats", HangarBoard = "Helicopter", SubBoard = "Submarine" }
-local STEEL = Color3.fromRGB(226, 178, 52) -- crane yellow
+local STEEL = Color3.fromRGB(242, 240, 232) -- the crane's white post (WP-25 r7: navy and white, calmer than yellow)
 local SILHOUETTE = Color3.fromRGB(120, 124, 130)
 
 type Launch = (Player, string, CFrame?) -> (boolean, any)
@@ -255,7 +255,7 @@ local function crane(rack: Model, b: CFrame)
 		"CraneJib",
 		Vector3.new(math.abs(CRANE.X) + 1.5, 1.4, 1.4),
 		b * CFrame.new(CRANE.X / 2, JIB_Y, CRANE.Z),
-		STEEL,
+		NAVY,
 		Enum.Material.SmoothPlastic
 	)
 	part(
@@ -263,7 +263,7 @@ local function crane(rack: Model, b: CFrame)
 		"CraneTie",
 		Vector3.new(1.4, 1.4, math.abs(CRANE.Z) + 1),
 		b * CFrame.new(0, JIB_Y, CRANE.Z / 2),
-		STEEL,
+		NAVY,
 		Enum.Material.SmoothPlastic
 	)
 end

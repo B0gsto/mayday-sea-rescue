@@ -3,7 +3,8 @@
 -- Parts (the owner: "a simple plain Lego island"), placed from RingLayout.IslandPlate: a bright green slab ~2 studs
 -- thick whose top is at the plateau the lots already use, a darker trim skirt round the outer edge down past the
 -- waterline, a thin sand-yellow strip along the berth notch's walls (the U cut-out where the boats and the sub
--- berth), and a tiled studs Texture on the slab's top. Anchored, CanCollide, SmoothPlastic throughout.
+-- berth), and a tiled studs Texture on the slab's top. WP-25 r7: a lighter lawn in the middle, a tan beach step
+-- round the outside with rocks at the corners. Anchored, CanCollide, SmoothPlastic throughout.
 -- WorldDressingService calls place(base).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -17,6 +18,14 @@ local SAND = Color3.fromRGB(226, 198, 140)
 local MAT = Enum.Material.SmoothPlastic
 local STUD_TEXTURE = "rbxassetid://18878365966" -- a 4 x 4 stud tile (SurfaceType.Studs does not render here)
 local STUD_TINT = Color3.fromRGB(60, 126, 60) -- the studs texture is white: tint it just under the slab green
+local LAWN = Color3.fromRGB(100, 176, 84) -- WP-25 r7: the inner rects a lighter lawn, the outer ring the darker edge
+local LAWN_TINT = Color3.fromRGB(84, 152, 70)
+local INNER = 3 -- rects 1..INNER are the plate's middle (RingLayout.IslandPlate.rects)
+local BEACH_W = 6 -- WP-25 r7: the tan beach step round the plate, outside the trim
+local BEACH_TOP, BEACH_FOOT = 2, -1.5 -- world Y: a step half way down from the plate (top 4) to the sea
+local ROCK = Color3.fromRGB(163, 162, 165)
+local ROCK_DARK = Color3.fromRGB(99, 95, 98)
+local BUSH = Color3.fromRGB(40, 127, 70)
 local TRIM_W = 2 -- the edge trim's width, outside the slab's footprint
 local SKIRT_DOWN = 1 -- the trim's bottom, studs under sea level so waves never expose the plate's underside
 local STRIP_W = 1.2 -- the sand-yellow berth strip's width
@@ -43,14 +52,14 @@ end
 local function slab(parent: Instance, isl: RingLayout.Island)
 	local P = RingLayout.IslandPlate
 	local bodyH = P.topY - P.thick + SKIRT_DOWN
-	for _, r in P.rects do
+	for i, r in P.rects do
 		local cx, cz, w, d = (r[1] + r[2]) / 2, -(r[3] + r[4]) / 2, r[2] - r[1], r[4] - r[3]
 		local p = part(
 			parent,
 			"Slab",
 			Vector3.new(w, P.thick, d),
 			isl.frame * CFrame.new(cx, -P.thick / 2, cz),
-			GREEN
+			if i <= INNER then LAWN else GREEN
 		)
 		local tex = Instance.new("Texture")
 		tex.Name = "Studs"
@@ -58,7 +67,7 @@ local function slab(parent: Instance, isl: RingLayout.Island)
 		tex.Texture = STUD_TEXTURE
 		tex.StudsPerTileU = 8 -- the tile holds 4 x 4 studs: 2-stud studs, like the buildings' (WP-25)
 		tex.StudsPerTileV = 8
-		tex.Color3 = STUD_TINT
+		tex.Color3 = if i <= INNER then LAWN_TINT else STUD_TINT
 		tex.Transparency = 0.15 -- the plate still reads plain green from a distance
 		tex.Parent = p
 		part(
@@ -96,6 +105,68 @@ local function edges(parent: Instance, isl: RingLayout.Island)
 			isl.frame * CFrame.new((s[1] + s[2]) / 2, -h / 2, -(s[3] + s[4]) / 2),
 			TRIM
 		)
+	end
+	-- WP-25 r7: a tan stud beach step outside the trim on every outer edge and along the corner notches' walls,
+	-- a gap left at the quest pontoon (its giver boats moor there), and a few rocks and a bush at each corner
+	local T, W, c = TRIM_W, BEACH_W, e - P.chamfer
+	local beaches = {
+		{ -c, c, -e - T - W, -e - T }, -- back
+		{ -e - T - W, -e - T, -c, c }, -- left
+		{ e + T, e + T + W, -c, c }, -- right
+		{ -c, -105, e + T, e + T + W }, -- fwd-left wing, either side of the quest pontoon
+		{ -65, -hw, e + T, e + T + W },
+		{ hw, c, e + T, e + T + W }, -- fwd-right wing
+	}
+	for _, sr in { -1, 1 } do
+		for _, sf in { -1, 1 } do
+			local function span(a: number, b: number, s: number): (number, number)
+				return math.min(a * s, b * s), math.max(a * s, b * s)
+			end
+			local r0, r1 = span(c, c + W, sr)
+			local f0, f1 = span(c, e + T + W, sf)
+			table.insert(beaches, { r0, r1, f0, f1 }) -- along the corner wall facing across the notch
+			r0, r1 = span(c + W, e + T + W, sr)
+			f0, f1 = span(c, c + W, sf)
+			table.insert(beaches, { r0, r1, f0, f1 })
+			for k, rock in
+				{
+					{ c + 4, e + 4, 3.2 },
+					{ e + 5, c + 4, 2.4 },
+					{ c + 3, c + 3, 2.8 },
+					{ c + 3, e - 12, 2 },
+					{ e - 12, c + 3, 2.6 },
+				}
+			do
+				local size = Vector3.new(rock[3] * 1.3, rock[3], rock[3])
+				part(
+					parent,
+					if k == 3 then "Bush" else "Rock",
+					size,
+					isl.frame
+						* CFrame.new(sr * rock[1], BEACH_TOP - P.topY + size.Y / 2, -sf * rock[2])
+						* CFrame.Angles(0, k * 0.7, 0),
+					if k == 3 then BUSH elseif k % 2 == 1 then ROCK else ROCK_DARK
+				)
+			end
+		end
+	end
+	local beachH = BEACH_TOP - BEACH_FOOT
+	for _, s in beaches do
+		local p = part(
+			parent,
+			"Beach",
+			Vector3.new(s[2] - s[1], beachH, s[4] - s[3]),
+			isl.frame
+				* CFrame.new((s[1] + s[2]) / 2, BEACH_TOP - P.topY - beachH / 2, -(s[3] + s[4]) / 2),
+			SAND
+		)
+		local tex = Instance.new("Texture")
+		tex.Face = Enum.NormalId.Top
+		tex.Texture = STUD_TEXTURE
+		tex.StudsPerTileU, tex.StudsPerTileV = 8, 8
+		tex.Color3 = SAND:Lerp(Color3.new(0, 0, 0), 0.12)
+		tex.Transparency = 0.15
+		tex.Parent = p
 	end
 	local strips = {
 		{ -hw - STRIP_W, -hw, P.notch.head, e }, -- the notch's left wall
