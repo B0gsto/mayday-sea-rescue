@@ -313,7 +313,11 @@ function Rules.migrate(raw: any): PlayerData
 	UnlockTree.migrate(data.dockLevel, data.dockBuildings) -- WP-28: old dock levels -> tree items
 	if type(raw.dockPrepaid) == "table" then
 		for key, paid in raw.dockPrepaid do
-			if type(key) == "string" and paid == true and DockConfig.Buildings[key] ~= nil then
+			if
+				type(key) == "string"
+				and paid == true
+				and (DockConfig.Buildings[key] ~= nil or DockConfig.Decorations[key] ~= nil)
+			then
 				data.dockPrepaid[key] = true
 			end
 		end
