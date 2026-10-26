@@ -18,6 +18,7 @@ local ServerStorage = game:GetService("ServerStorage")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
+local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local ProgressionRules = require(Shared:WaitForChild("ProgressionRules"))
 local SpinRules = require(Shared:WaitForChild("SpinRules"))
 
@@ -52,6 +53,21 @@ local function store(player: Player, state: SpinRules.State): boolean
 	return ProgressionService.SetFlag(player, FLAG, SpinRules.encode(state))
 end
 
+-- docs/24 E: the finished Workshop earns exactly one tutorial spin, once. The saved step is the
+-- receipt: a player who already spun (STEP_DONE) or skipped the tutorial (no STEP_SITE) never gets it.
+local function tutorialSpin(player: Player, data: any, state: SpinRules.State): boolean
+	if data.tutorialStep ~= Onboarding.STEP_SITE then
+		return false
+	end
+	if type(data.dockBuildings) ~= "table" or data.dockBuildings.Workshop ~= true then
+		return false
+	end
+	data.tutorialStep = Onboarding.STEP_SPIN
+	state.free = math.min(SpinRules.MAX_FREE, state.free + 1)
+	DataService.MarkDirty(player)
+	return true
+end
+
 -- Accrues the free spins that came due and mirrors the counters to the client.
 function SpinService.Refresh(player: Player): SpinRules.State?
 	local data = DataService.Get(player)
@@ -60,15 +76,26 @@ function SpinService.Refresh(player: Player): SpinRules.State?
 	end
 	local state = stateOf(data)
 	local nextState = SpinRules.accrue(state, data.totalRescues or 0, os.time())
+	-- the Workshop completion (DockService) calls Tutorial; this also catches an offline finish on join
+	local tutorial = tutorialSpin(player, data, nextState)
 	if
-		nextState.free ~= state.free
+		tutorial
+		or nextState.free ~= state.free
 		or nextState.day ~= state.day
 		or nextState.rescued ~= state.rescued
 	then
 		store(player, nextState)
 	end
+	if tutorial then
+		ProgressionService.Refresh(player) -- the client sees tutorialStep (the chip's Spin tick)
+	end
 	publish(player, nextState)
 	return nextState
+end
+
+-- The Workshop is done: hand over the first spin (docs/24 E). Idempotent through data.tutorialStep.
+function SpinService.Tutorial(player: Player)
+	SpinService.Refresh(player)
 end
 
 function SpinService.GiveFree(player: Player, n: number): number?
@@ -189,6 +216,13 @@ function SpinService.Spin(player: Player): { [string]: any }
 	end
 	publish(player, state)
 	CosmeticsService.Refresh(player)
+	-- docs/24 E: the first spin ticks the tutorial's last chip; the permanent Next chip takes over
+	local data = DataService.Get(player)
+	if data and data.tutorialStep == Onboarding.STEP_SPIN then
+		data.tutorialStep = Onboarding.STEP_DONE
+		DataService.MarkDirty(player)
+		ProgressionService.Refresh(player)
+	end
 	if SpinRules.rank(prize.rarity) >= SpinRules.rank("Legendary") then
 		task.spawn(DataService.Save, player, false) -- a big win is saved right away
 		fireFlex(player, prize)

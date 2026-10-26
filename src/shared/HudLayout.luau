@@ -47,6 +47,8 @@ HudLayout.OBJECTIVE_MIN_WIDTH = 210 -- the step card is 208 wide
 HudLayout.QUEST_WIDTH = 236 -- the quest tracker chip (UI/Menu): desktop above the minimap pill (bottom right)
 HudLayout.QUEST_HEIGHT = 50
 HudLayout.QUEST_TOUCH_HEIGHT = 34 -- touch: a tag over the minimap's bottom edge, ending where the objective may start
+HudLayout.CHIPS_WIDTH = 320 -- docs/24 E: the tutorial goal chips / the permanent Next chip (UI/NextChip)
+HudLayout.CHIPS_HEIGHT = 36
 HudLayout.DEBRIEF_WIDTH = 340 -- the end-of-call toast (UI/OpsDebrief), drawn scaled to its region's width
 HudLayout.DEBRIEF_HEIGHT = 96
 HudLayout.DEBRIEF_MIN = 0.7 -- the smallest the toast may shrink to fit a gap
@@ -73,6 +75,7 @@ export type RegionName =
 	| "wallet"
 	| "menu"
 	| "quest"
+	| "chips"
 	| "debrief"
 
 export type Rect = {
@@ -234,6 +237,12 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 			Vector2.new(objectiveX, objectiveY),
 			Vector2.new(objectiveWidth, objectiveHeight)
 		)
+		-- the goal chips take the objective region's bottom spare (the step card is 64 du high)
+		mt.rects["chips"] = rect(
+			Vector2.new(0, 0),
+			Vector2.new(objectiveX, objectiveY + 68),
+			Vector2.new(objectiveWidth, HudLayout.CHIPS_HEIGHT)
+		)
 		-- the wallet card under the objective, scaled down (by height, HudController) to its width and to
 		-- end above the thumbstick zone
 		local walletY = objectiveY + objectiveHeight + g
@@ -292,13 +301,19 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 			Vector2.new(left, m),
 			Vector2.new(objectiveWidth, objectiveHeight)
 		)
-		-- the top band fills the gap right of the objective
+		-- the top band right of the objective: the goal chip at the very top, award pops under it
 		local x0 = left + objectiveWidth + g
 		local x1 = u.X - m
+		local chipsW = math.min(x1 - x0, HudLayout.CHIPS_WIDTH)
+		mt.rects["chips"] = rect(
+			Vector2.new(0.5, 0),
+			Vector2.new((x0 + x1) / 2, m),
+			Vector2.new(chipsW, HudLayout.CHIPS_HEIGHT)
+		)
 		mt.noticeWidth = math.min(x1 - x0, 420)
 		mt.rects["notice"] = rect(
 			Vector2.new(0.5, 0),
-			Vector2.new((x0 + x1) / 2, m),
+			Vector2.new((x0 + x1) / 2, m + HudLayout.CHIPS_HEIGHT + g),
 			Vector2.new(mt.noticeWidth, HudLayout.NOTICE_HEIGHT)
 		)
 		mt.rects["minimap"] =

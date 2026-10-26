@@ -19,6 +19,7 @@ export type PlayerData = {
 	vehicleUpgrades: { [string]: number },
 	totalRescues: number, -- people delivered home (badges, leaderboards, the rescue board)
 	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
+	tutorialStep: number?, -- docs/24 E: the saved tutorial beat (Onboarding.STEP_*; nil = never started)
 	dockLevel: number, -- retired dock level 1..5 (WP-28): kept as saved; migrate maps it onto the tree
 	dockBuildings: { [string]: boolean }, -- the unlock tree (DockConfig.Buildings), blueprints and decor
 	-- Robux-paid buildings waiting for their prerequisites or for the one running site (docs/24 B).
@@ -137,6 +138,7 @@ function Rules.fromSnapshot(snap: { [string]: any }): PlayerData
 	local data = Rules.defaultData()
 	data.cash = if type(snap.cash) == "number" then snap.cash else 0
 	data.coldOpenDone = snap.coldOpenDone == true
+	data.tutorialStep = if type(snap.tutorialStep) == "number" then snap.tutorialStep else nil
 	data.totalRescues = if type(snap.totalRescues) == "number" then snap.totalRescues else 0
 	for _, key in { "vehicles", "vehicleUpgrades", "workers", "dockBuildings" } do
 		if type(snap[key]) == "table" then
@@ -298,6 +300,8 @@ function Rules.migrate(raw: any): PlayerData
 	end
 	payBackRetired(raw, data)
 	data.coldOpenDone = raw.coldOpenDone == true
+	local tutorial = math.floor(num(raw.tutorialStep, 0))
+	data.tutorialStep = if tutorial >= 1 then math.clamp(tutorial, 1, 4) else nil
 	data.dockLevel = math.clamp(math.floor(num(raw.dockLevel, 1)), 1, 5)
 	if type(raw.dockBuildings) == "table" then
 		for key, owned in raw.dockBuildings do
@@ -402,6 +406,7 @@ function Rules.snapshot(data: PlayerData): { [string]: any }
 		vehicleUpgrades = table.clone(data.vehicleUpgrades),
 		workers = table.clone(data.workers),
 		coldOpenDone = data.coldOpenDone,
+		tutorialStep = data.tutorialStep,
 		flags = Rules.migrate({ flags = data.flags }).flags, -- a deep, clean copy
 	}
 end

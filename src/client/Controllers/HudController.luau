@@ -25,6 +25,7 @@ local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local Layout = require(UI:WaitForChild("Layout"))
 local Menu = require(UI:WaitForChild("Menu"))
+local NextChip = require(UI:WaitForChild("NextChip"))
 local Hud = require(Shared:WaitForChild("Config"):WaitForChild("UiImages")).Hud
 
 local player = Players.LocalPlayer
@@ -266,6 +267,7 @@ function HudController.Init()
 	buildWallet(walletRegion)
 	buildAward()
 	Menu.mount() -- button bar, panel registry, Boat to me
+	NextChip.mount(Layout.region(gui, "chips")) -- the permanent next-goal chip (docs/24 E)
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)
 	Layout.onColdOpen(applyColdOpen)
 

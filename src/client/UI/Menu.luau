@@ -70,6 +70,60 @@ local panels: { [string]: any } = {}
 local buttons: { [string]: IconButton.IconButton } = {}
 local current: string? = nil
 local mounted = false
+local pulseName: string? = nil
+
+-- docs/24 E: a pulsing ring on the one button the tutorial asks for (the Spin tile), and nothing else.
+local function startPulse(root: GuiObject, name: string)
+	local ring = Instance.new("Frame")
+	ring.Name = "PulseRing"
+	ring.BackgroundTransparency = 1
+	ring.Position = UDim2.fromOffset(-4, -4)
+	ring.Size = UDim2.new(1, 8, 1, 8)
+	ring.Parent = root
+	Style.corner(ring, Theme.Size.corner + 8)
+	local stroke = Style.stroke(ring, 4, true)
+	stroke.Color = GOLD
+	local scale = Instance.new("UIScale")
+	scale.Name = "PulseScale"
+	scale.Parent = ring
+	task.spawn(function()
+		while root.Parent and pulseName == name do
+			TweenService:Create(
+				scale,
+				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+				{ Scale = 1.1 }
+			):Play()
+			TweenService:Create(
+				stroke,
+				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+				{ Transparency = 0.35 }
+			):Play()
+			task.wait(0.5)
+			TweenService:Create(
+				scale,
+				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+				{ Scale = 1 }
+			):Play()
+			TweenService:Create(
+				stroke,
+				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+				{ Transparency = 0 }
+			):Play()
+			task.wait(0.5)
+		end
+		ring:Destroy()
+	end)
+end
+
+function Menu.pulse(name: string?)
+	pulseName = name
+	if name then
+		local b = buttons[name]
+		if b and not b.root:FindFirstChild("PulseRing") then
+			startPulse(b.root, name)
+		end
+	end
+end
 
 local function shown(): boolean
 	return not Layout.coldOpen() and player:GetAttribute("CinematicPlaying") ~= true
@@ -368,6 +422,9 @@ local function buildBar(region: Frame)
 		label.Size = UDim2.new(1, mm.colGap - 2, 0, mm.label)
 		btn.root.LayoutOrder = i
 		buttons[info.name] = btn
+		if pulseName == info.name then
+			startPulse(btn.root, info.name)
+		end
 		if info.name == "Spin" then
 			dressSpin(btn)
 		end

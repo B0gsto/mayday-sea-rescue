@@ -192,4 +192,16 @@ return function(t)
 		t.expect(s.rep).toBeNil()
 		t.expect(Rules.fromSnapshot(s).dockBuildings).toEqual({ Pontoon = true })
 	end)
+
+	t.test("the tutorial step survives a save and is sane (docs/24 E)", function()
+		t.expect(Rules.migrate({ tutorialStep = 2 }).tutorialStep).toBe(2)
+		t.expect(Rules.migrate({ tutorialStep = 99 }).tutorialStep).toBe(4)
+		t.expect(Rules.migrate({ tutorialStep = 0 }).tutorialStep).toBeNil()
+		t.expect(Rules.migrate({ tutorialStep = "x" }).tutorialStep).toBeNil()
+		local d = data(10)
+		d.tutorialStep = 3
+		local s = Rules.snapshot(d)
+		t.expect(s.tutorialStep).toBe(3)
+		t.expect(Rules.fromSnapshot(s).tutorialStep).toBe(3)
+	end)
 end
