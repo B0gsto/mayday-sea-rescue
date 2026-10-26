@@ -97,10 +97,10 @@ end
 type WorkSlot = { x: number, z: number, tx: number, tz: number }
 local WORK_SPOTS: { [string]: { WorkSlot } } = {
 	Workshop = {
-		{ x = -3.4, z = -4.6, tx = -3.4, tz = -2.5 }, -- either side of the bench
-		{ x = 3.4, z = -4.6, tx = 3.4, tz = -2.5 },
+		{ x = -3.4, z = -6.9, tx = -3.4, tz = -4.6 }, -- the low bench, left
+		{ x = 7.5, z = 2.0, tx = 7.5, tz = 4.4 }, -- the half-built crate (hammer)
+		{ x = 3.4, z = -6.9, tx = 3.4, tz = -4.6 }, -- the low bench, right
 		{ x = -8.6, z = 2.4, tx = -5, tz = 2.4 }, -- the half-built boat frame
-		{ x = 6, z = -0.8, tx = 6, tz = 1.5 }, -- the timber stack
 		{ x = -8.6, z = -5.2, tx = -8.6, tz = -3.4 }, -- the sawhorse
 	},
 	FishShed = {
@@ -118,11 +118,11 @@ local WORK_SPOTS: { [string]: { WorkSlot } } = {
 		{ x = 6.6, z = -3.2, tx = 7.3, tz = -0.6 }, -- the tool chests
 	},
 	RescueBoathouse = {
-		{ x = -3.8, z = -2.6, tx = 0, tz = -2.6 }, -- either side of the rescue boat, fore and aft
-		{ x = 4.2, z = 0.7, tx = 0, tz = 0.7 },
-		{ x = -6.7, z = 2.4, tx = -6.7, tz = 4.2 }, -- the lifebuoy rack
-		{ x = 6.4, z = -2.2, tx = 6.4, tz = -4.8 }, -- the lifeguard chair
-		{ x = 3.4, z = 4.6, tx = 3.4, tz = 6.2 }, -- the oar rack
+		{ x = -5, z = -1, tx = -5, tz = 4.4 }, -- the trailer
+		{ x = -9.6, z = -3.4, tx = -9.9, tz = -5.8 }, -- the lifebuoy rack
+		{ x = 7, z = -5.2, tx = 7, tz = -2.7 }, -- the work table
+		{ x = 3.8, z = -2.6, tx = 0, tz = -2.6 }, -- the rescue boat
+		{ x = 8.6, z = 2, tx = 8.6, tz = 5.8 }, -- the lifeguard chair
 	},
 	Clinic = {
 		{ x = -4.8, z = -1.8, tx = -4.8, tz = 2.6 }, -- at the foot of bed A
@@ -164,13 +164,13 @@ local function arrival(bay: CFrame): CFrame
 	return bay * CFrame.new((J.x0 + J.x1) / 2, Marina.DECK_TOP, 0)
 end
 
--- The job loop each client draws from `Job` (docs/24 C); a Builder at a filled workshop gathers.
+-- The job loop each client draws from `Job` (docs/24 C); a Builder hammers at the workshop and on a site.
 local JOB: { [string]: string } = {
 	Gatherer = "Fish",
 	Mechanic = "Repair",
 	Rescuer = "Rescue",
 	Medic = "Heal",
-	Builder = "Gather",
+	Builder = "Build",
 }
 
 -- The owner's plot publishes SiteKey while a construction runs (DockService).
