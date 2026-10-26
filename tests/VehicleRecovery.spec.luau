@@ -5,6 +5,19 @@ return function(t)
 	local upright = { up = 1, speed = 20, throttle = 1, grounded = true }
 	local onSide = { up = 0.1, speed = 0, throttle = 0, grounded = true }
 
+	t.test(
+		"lost: far over or under the sea, or off the map; a heli or sub has more room",
+		function()
+			t.expect(R.lost(Vector3.new(0, 23510, 0), false, 7000)).toBe(true)
+			t.expect(R.lost(Vector3.new(0, 1, 0), false, 7000)).toBe(false)
+			t.expect(R.lost(Vector3.new(0, -30, 0), false, 7000)).toBe(true)
+			t.expect(R.lost(Vector3.new(8000, 1, 0), false, 7000)).toBe(true)
+			t.expect(R.lost(Vector3.new(0, 250, 0), true, 7000)).toBe(false) -- a heli at its ceiling
+			t.expect(R.lost(Vector3.new(0, -160, 0), true, 7000)).toBe(false) -- a sub on the seabed
+			t.expect(R.lost(Vector3.new(0, 23510, 0), true, 7000)).toBe(true)
+		end
+	)
+
 	t.test("on its side for FLIP_TIME: one Flipped, then the cooldown holds", function()
 		local s = R.new()
 		t.expect(R.step(s, 1, 1, onSide)).toBe(nil)

@@ -466,6 +466,16 @@ end
 local finished = false
 local controls: any = nil
 local cameraBound = false
+-- the camera over the cloud layer saw only a pale haze (playtest 2): clouds are off while it is up there
+local clouds: Clouds? = nil
+
+local function cloudsFor(y: number, base: number)
+	local c = clouds or Workspace.Terrain:FindFirstChildOfClass("Clouds")
+	if c then
+		clouds = c
+		c.Enabled = y < base
+	end
+end
 local canSkip = false
 local skipped = false
 
@@ -477,6 +487,9 @@ local function cleanup()
 	if cameraBound then
 		RunService:UnbindFromRenderStep("LoadingFlyover")
 		cameraBound = false
+	end
+	if clouds then
+		clouds.Enabled = true
 	end
 	player:SetAttribute("LoadingScreenActive", nil)
 	player:SetAttribute("CinematicPlaying", nil)
@@ -586,6 +599,7 @@ local function main()
 				camera.CameraType = Enum.CameraType.Scriptable
 				camera.CFrame = frame
 				camera.FieldOfView = FOV
+				cloudsFor(frame.Y, LoadingPath.CLOUD_BASE)
 			end
 		)
 		TweenService:Create(sky, TweenInfo.new(1.4), { BackgroundTransparency = 0.42 }):Play()

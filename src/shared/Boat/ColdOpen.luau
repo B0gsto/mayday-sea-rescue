@@ -111,7 +111,10 @@ ColdOpen.PLAN = { "tasking", "recovery", "transport" }
 -- just off the cove mouth; home is the berth behind you (SHORE). With no berth: Plot1's berth, bow out.
 ColdOpen.SPAWN = RingLayout.Islands[1].berths.Boat.Position
 ColdOpen.SPAWN_FACING = RingLayout.Islands[1].facing
-ColdOpen.DISTANCE = { 100, 120 } -- studs dead ahead: past the cove mouth, outside NUDGE_NEAR, so they drive in to board (docs/16 B0) -- tune
+-- studs dead ahead: past the cove mouth, outside NUDGE_NEAR, so they drive in to board (docs/16 B0); and outside
+-- PiwWays.LOST_RANGE (110): from 100 the swimmer swam to the jet ski still at the berth, which counted as landed,
+-- and the cold open finished itself (playtest 2) -- tune
+ColdOpen.DISTANCE = { 125, 145 }
 ColdOpen.NUDGE_AFTER = 10 -- s without headway before the world helps (docs/14 10 s rule)
 ColdOpen.NUDGE_PROGRESS = 6 -- studs closer that count as headway
 ColdOpen.NUDGE_NEAR = 45 -- studs: close enough that the casualty comes (PiwWays.COME_RANGE)

@@ -181,6 +181,9 @@ return function(t)
 	t.test("show, don't tell: casualty close ahead, no graded approach", function()
 		t.expect(ColdOpen.DISTANCE[2] < ColdOpen.HANDOVER_DISTANCE).toBe(true) -- creeps on in
 		t.expect(ColdOpen.DISTANCE[1] > ColdOpen.NUDGE_NEAR).toBe(true) -- one move to make
+		-- the swimmer never sets off for a jet ski still at the berth (it would land them with no pick-up)
+		local PiwWays = t.load("src/server/Ops/PiwWays.luau")
+		t.expect(ColdOpen.DISTANCE[1] > PiwWays.LOST_RANGE + 10).toBe(true)
 		t.expect(table.find(ColdOpen.PLAN, "approach")).toBe(nil)
 		t.expect(table.find(ColdOpen.PLAN, "recovery") ~= nil).toBe(true)
 	end)
