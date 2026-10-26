@@ -97,6 +97,14 @@ function WorkerBadge.billboard(model: Model)
 	gui.MaxDistance = 60 -- near only: a crowd of badges never covers the signs from afar
 	gui.LightInfluence = 0
 	gui.Parent = model
+	-- aboard a craft (welded into its assembly) the badge would float over the driver's head: hide it there
+	task.spawn(function()
+		while gui.Parent do
+			local assembly = root.AssemblyRootPart
+			gui.Enabled = assembly == nil or assembly == root
+			task.wait(0.5)
+		end
+	end)
 	local icon = Instance.new("Frame")
 	icon.BackgroundTransparency = 1
 	icon.AnchorPoint = Vector2.new(0.5, 0)
