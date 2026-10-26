@@ -1003,9 +1003,11 @@ local function startConstruction(player: Player, data: any, key: string)
 			owned = data.dockBuildings or {},
 			constructionKey = nil,
 		})
-		if beat == "BuildStation" then
+		-- "Rescue": a cold open that ended without a delivery (0 rescues) still buys the tutorial Workshop
+		if beat == "BuildStation" or beat == "Rescue" then
 			data.tutorialStep = Onboarding.STEP_SITE
 			DataService.MarkDirty(player)
+			ProgressionService.Refresh(player) -- the buy's own Refresh ran before this step moved
 		end
 	end
 	data.construction = {
