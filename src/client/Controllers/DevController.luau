@@ -416,11 +416,11 @@ local function onGrant(payload: any)
 	})
 	board = b
 	fill(b)
-	-- the DEV HUD button: right of the minimap (under it on touch), clear of the top strip (HudLayout). Studio only:
-	-- on a live server an allowed dev opens the board with F8 and players never see a DEV badge
+	-- the DEV HUD button: right of the minimap (under it on touch), clear of the top strip (HudLayout). Studio and
+	-- the test place only: on the launch place an allowed dev opens the board with F8 or "/dev"
 	local hud = Instance.new("ScreenGui")
 	hud.Name = "DevBoardButton"
-	hud.Enabled = RunService:IsStudio()
+	hud.Enabled = RunService:IsStudio() or game.PlaceId == 85419402278824 -- deploy/target.json
 	hud.ResetOnSpawn = false
 	hud.DisplayOrder = 59
 	Layout.prepare(hud)
