@@ -27,6 +27,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BuildSeq = require(Shared:WaitForChild("BuildSeq"))
+local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DockBlueprints = require(Shared:WaitForChild("DockBlueprints"))
 local DockBuild = require(Shared:WaitForChild("DockBuild"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
@@ -43,7 +44,6 @@ local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
 
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
-local WorkerRules = require(Shared:WaitForChild("WorkerRules"))
 
 local Kit = UI:WaitForChild("Kit")
 local PanelUI = require(Kit:WaitForChild("Panel"))
@@ -256,7 +256,21 @@ type Status = {
 	productId: number, -- 0: no Robux product
 	robux: number,
 	reason: Reason?,
+	busy: ("site" | "wait")?, -- another construction runs: this lot (timer) or any other (hourglass)
 }
+
+-- The island's running construction, published by DockService on the plot (docs/24 B).
+local function siteState(): { key: string?, progress: number, rate: number }
+	local i = player:GetAttribute("DockPlot")
+	local marina = Workspace:FindFirstChild("Marina")
+	local plot = if type(i) == "number" and marina then marina:FindFirstChild(`Plot{i}`) else nil
+	local key = plot and plot:GetAttribute("SiteKey")
+	return {
+		key = if type(key) == "string" then key else nil,
+		progress = (plot and tonumber(plot:GetAttribute("SiteProgress"))) or 0,
+		rate = (plot and tonumber(plot:GetAttribute("SiteRate"))) or 1,
+	}
+end
 
 local function statusOf(item: DockBlueprints.Item): Status
 	local entry = entryOf(item)
@@ -265,6 +279,11 @@ local function statusOf(item: DockBlueprints.Item): Status
 	local forSale = not owned and need == nil and DockBlueprints.buyable(item)
 	local product = entry and entry.product and MonetizationConfig.Products[entry.product]
 	local id = if product and product.ready then product.id else 0
+	local site = siteState()
+	local busy: ("site" | "wait")? = nil
+	if forSale and site.key then
+		busy = if site.key == item.key then "site" else "wait"
+	end
 	local reason: Reason? = nil
 	if owned then
 		reason = { icon = UiImages.VehicleArt.Check, text = "Owned" }
@@ -284,18 +303,11 @@ local function statusOf(item: DockBlueprints.Item): Status
 	return {
 		owned = owned,
 		forSale = forSale,
-		-- Builders at work take their share off buildings (WP-26, the server's rule)
-		cash = if entry and type(entry.cash) == "number"
-			then if item.kind == "Building"
-				then WorkerRules.price(
-					entry.cash,
-					tonumber(player:GetAttribute("WorkerBuildDiscount"))
-				)
-				else entry.cash
-			else 0,
+		cash = if entry and type(entry.cash) == "number" then entry.cash else 0,
 		productId = id,
 		robux = livePrice[id] or (entry and entry.robux) or 0,
 		reason = reason,
+		busy = busy,
 	}
 end
 
@@ -318,9 +330,121 @@ local function robuxBuy(id: number)
 	MarketplaceService:PromptProductPurchase(player, id)
 end
 
+-- The build tablet's busy state (docs/24 B): the lot being built shows its timer and bar, every other buy
+-- button is an hourglass and refuses.
+local timerRows: { { label: TextLabel, fill: Frame?, work: number } } = {}
+
+local function itemWork(item: DockBlueprints.Item): number
+	if item.kind == "Decor" then
+		return BuildTimer.DECOR
+	end
+	local b = DockConfig.Buildings[item.key]
+	return BuildTimer.work(b and b.cash or 0)
+end
+
+local function hourglass(parent: GuiObject, side: number)
+	local box = Instance.new("Frame")
+	box.Name = "Hourglass"
+	box.BackgroundTransparency = 1
+	box.AnchorPoint = Vector2.new(0.5, 0.5)
+	box.Position = UDim2.fromScale(0.5, 0.5)
+	box.Size = UDim2.fromOffset(side, side)
+	box.Parent = parent
+	local function bar(w: number, h: number, x: number, y: number, rot: number)
+		local f = Instance.new("Frame")
+		f.BackgroundColor3 = Color3.new(1, 1, 1)
+		f.BorderSizePixel = 0
+		f.AnchorPoint = Vector2.new(0.5, 0.5)
+		f.Position = UDim2.fromScale(x, y)
+		f.Size = UDim2.fromOffset(w, h)
+		f.Rotation = rot
+		f.Parent = box
+	end
+	bar(side * 0.55, side * 0.09, 0.5, 0.1, 0) -- caps
+	bar(side * 0.55, side * 0.09, 0.5, 0.9, 0)
+	local long = side * 0.48
+	bar(side * 0.09, long, 0.36, 0.36, 38)
+	bar(side * 0.09, long, 0.64, 0.36, -38)
+	bar(side * 0.09, long, 0.36, 0.64, -38)
+	bar(side * 0.09, long, 0.64, 0.64, 38)
+end
+
+local function busyRow(parent: GuiObject, item: DockBlueprints.Item, st: Status)
+	local row = Instance.new("Frame")
+	row.Name = "Busy"
+	row.BackgroundTransparency = 1
+	row.Size = UDim2.fromScale(1, 1)
+	row.Parent = parent
+	if st.busy == "wait" then
+		local button = Style.button(row, UDim2.fromScale(1, 1))
+		local _, face = Style.block(button, Style.grad("disabled"), { studs = true })
+		hourglass(face, 42)
+		Style.press(button, function()
+			shake(row)
+		end)
+		return
+	end
+	local site = siteState()
+	local work = itemWork(item)
+	local icon = Instance.new("Frame")
+	icon.BackgroundTransparency = 1
+	icon.Position = UDim2.fromOffset(0, 4)
+	icon.Size = UDim2.fromOffset(30, 30)
+	icon.Parent = row
+	Style.icon(icon, "build")
+	local label = Style.label(
+		row,
+		BuildTimer.text(BuildTimer.timeLeft(site.progress, site.rate, work)),
+		Theme.Text.small
+	)
+	label.Name = "Timer"
+	label.AnchorPoint = Vector2.new(1, 0)
+	label.Position = UDim2.fromScale(1, 0)
+	label.Size = UDim2.fromOffset(60, 28)
+	label.TextXAlignment = Enum.TextXAlignment.Right
+	local bar = Instance.new("Frame")
+	bar.Name = "Bar"
+	bar.BackgroundColor3 = C.panelLight
+	bar.BackgroundTransparency = 0.4
+	bar.AnchorPoint = Vector2.new(0, 1)
+	bar.Position = UDim2.new(0, 0, 1, -2)
+	bar.Size = UDim2.new(1, 0, 0, 12)
+	Style.corner(bar, S.cornerSmall)
+	bar.Parent = row
+	local fill = Instance.new("Frame")
+	fill.Name = "Fill"
+	fill.BackgroundColor3 = C.gold
+	fill.BorderSizePixel = 0
+	fill.Size = UDim2.fromScale(site.progress, 1)
+	Style.corner(fill, S.cornerSmall)
+	fill.Parent = bar
+	table.insert(timerRows, { label = label, fill = fill, work = work })
+end
+
+-- Runs while the tablet is open: the busy lot's clock moves without rebuilding the cards.
+local function updateTimers()
+	local site = siteState()
+	local live = {}
+	for _, row in timerRows do
+		if row.label.Parent then
+			local left = BuildTimer.timeLeft(site.progress, site.rate, row.work)
+			row.label.Text = BuildTimer.text(left)
+			if row.fill then
+				row.fill.Size = UDim2.fromScale(site.progress, 1)
+			end
+			table.insert(live, row)
+		end
+	end
+	timerRows = live
+end
+
 -- The Cash button (greyed when the Cash is short) and the Robux button (skips the Cash), side by side in
 -- `parent`; only shown once the prerequisites stand. Items without a Robux product get the Cash button alone.
 local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Status)
+	if st.busy then
+		busyRow(parent, item, st)
+		return
+	end
 	local row = Instance.new("Frame")
 	row.Name = "Buy"
 	row.BackgroundTransparency = 1
@@ -955,8 +1079,7 @@ local function dustPuff(at: Vector3)
 	game:GetService("Debris"):AddItem(p, 3)
 end
 
--- `pace` < 1 plays it faster (the owner's Builders, WP-26)
-local function playBuild(model: Model, pace: number)
+local function playBuild(model: Model)
 	local parts: { BasePart } = {}
 	local ys: { number } = {}
 	local base = Vector3.zero
@@ -980,7 +1103,6 @@ local function playBuild(model: Model, pace: number)
 		local part = parts[step.i]
 		local final = part.CFrame
 		part.CFrame = final + Vector3.new(0, step.drop, 0)
-		step.delay *= pace
 		local tween = TweenService:Create(
 			part,
 			TweenInfo.new(
@@ -1244,13 +1366,7 @@ function DockController.Start()
 							2.2
 						)
 					end
-					local discount = 0
-					for _, p in Players:GetPlayers() do
-						if p:GetAttribute("DockPlot") == plot then
-							discount = tonumber(p:GetAttribute("WorkerBuildDiscount")) or 0
-						end
-					end
-					playBuild(model, 1 - discount)
+					playBuild(model)
 				end
 			end)
 		end)
@@ -1280,6 +1396,25 @@ function DockController.Start()
 				end
 			end
 			task.wait(2)
+		end
+	end)
+	-- while the tablet is open the busy lot's timer moves (docs/24 B); a new / finished site redraws the cards
+	task.spawn(function()
+		local lastKey: string? = nil
+		local lastProgress = -1
+		while true do
+			if displayed then
+				local site = siteState()
+				if site.key ~= lastKey then
+					lastKey = site.key
+					refreshCards()
+					refreshStrip()
+				elseif site.progress ~= lastProgress then
+					lastProgress = site.progress
+					updateTimers()
+				end
+			end
+			task.wait(0.5)
 		end
 	end)
 	-- close if a teleport (or respawn) takes the player off the station, or a seat (a launch) takes them
