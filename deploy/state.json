@@ -34,7 +34,13 @@
       "DecorLampRow": 3722386151,
       "DecorFlagPole": 3722386157,
       "DecorStatue": 3722386162,
-      "DecorFountain": 3722386169
+      "DecorFountain": 3722386169,
+      "FinishNow1": 3722675352,
+      "FinishNow2": 3722675361,
+      "FinishNow3": 3722675370,
+      "Spin1": 3722675390,
+      "Spin5": 3722675407,
+      "Spin15": 3722675411
     },
     "GamePasses": {
       "DoubleCash": 2040015521,

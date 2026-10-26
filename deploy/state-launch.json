@@ -34,7 +34,13 @@
       "DecorFlagPole": 3722436433,
       "DecorStatue": 3722436441,
       "DecorFountain": 3722436449,
-      "DockGarage": 0
+      "DockGarage": 0,
+      "FinishNow1": 3722675461,
+      "FinishNow2": 3722675470,
+      "FinishNow3": 3722675487,
+      "Spin1": 3722675493,
+      "Spin5": 3722675501,
+      "Spin15": 3722675510
     },
     "GamePasses": {
       "DoubleCash": 2042234755,
