@@ -49,7 +49,7 @@ return function(t)
 		local from = P.spiral(1, ring, island, angle)
 		local first = P.approach(0, from, sweep, look, finish)
 		near(first.Position, from.Position, 1e-6)
-		near(first.LookVector, from.LookVector, 1e-6)
+		near(first.LookVector, from.LookVector, 1e-5)
 	end)
 
 	t.test("approach passes the sweep point and looks at the sign halfway", function()

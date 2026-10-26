@@ -1,7 +1,7 @@
 --!strict
 -- LoadingPath: the loading screen's camera (src/first/LoadingScreen): a slow orbit high over the ring of
 -- islands (round the lagoon at its centre, docs/23 (p)) while loading, then one eased flight that spirals down to
--- the player's island and sweeps past their name sign to a finish pose behind the character (or the cold-open jet
+-- the player's island (at most one turn) and sweeps past their name sign to a finish pose behind the character (or the cold-open jet
 -- ski).
 --   orbit(center, angle), spiral(x, ring, island, angle), approach(x, from, sweep, look, finish),
 --   flyover(t, ring, island, angle, sweep, look, finish): t 0..1 eased once over the whole flight
@@ -14,7 +14,7 @@ LoadingPath.CLOUD_BASE = 400
 LoadingPath.START_RADIUS = 350
 LoadingPath.END_RADIUS = 70
 LoadingPath.END_HEIGHT = 55
-LoadingPath.TURNS = 1.25
+LoadingPath.TURNS = 1 -- at most one full turn once loading is done
 LoadingPath.TRAVEL_SHARE = 0.6 -- of the spiral spent moving from the ring centre to the island
 LoadingPath.SPIRAL_SHARE = 0.8
 LoadingPath.ORBIT_SPEED = math.rad(6)
