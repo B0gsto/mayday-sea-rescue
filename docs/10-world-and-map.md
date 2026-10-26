@@ -12,7 +12,7 @@ The old Port Haven town, coast road, land vehicles and Great Gale terrain are cu
 - Play radius is `MapRadius = 7000` studs. The seabed floor is `Y = -165`.
 - Terrain uses cell size `4`, seed `1871`.
 
-The numbers below come from `src/shared/Config/WorldConfig.luau` and `HubLayout.luau`. Treat them as the map's
+The numbers below come from `src/shared/Config/WorldConfig.luau` and `RingLayout.luau`. Treat them as the map's
 source of truth; update the config first, then this table.
 
 ## 2. The world at a glance
@@ -39,7 +39,7 @@ source of truth; update the config first, then this table.
 
 ### 3.1 Lots
 
-`HubLayout.Hub.lots` places these on the plateau:
+`RingLayout.Hub.lots` places these on the plateau:
 
 | Lot | What stands there |
 |---|---|
@@ -53,11 +53,11 @@ source of truth; update the config first, then this table.
 
 ### 3.2 Clearings and quests
 
-`HubLayout.Hub.clearings` is generated from the terrain bake. Each clearing has a `kind`:
+`RingLayout.Hub.clearings` is generated from the terrain bake. Each clearing has a `kind`:
 
 - `outpost` — a frontier camp with a building or stall.
 - `bridge` — the hub end of a suspension bridge.
-- `quest` — an empty camp for a quest giver; `HubLayout.Hub.questSpots` gives its CFrame and radius.
+- `quest` — an empty camp for a quest giver; `RingLayout.Hub.questSpots` gives its CFrame and radius.
 - `hidden` — a ruin, wreck or other discovery.
 
 The six quest givers are Old Maud, Tam, Captain Rook, Nell, Keeper Ives and Pip. Their camps are in the
@@ -95,7 +95,7 @@ Six islands, `Plot1` … `Plot6`, in `WorldConfig` order. Each has:
 
 ### 4.1 Island lots
 
-`HubLayout.Islands[i].lots` uses the same local layout on every island:
+`RingLayout.Islands[i].lots` uses the same local layout on every island:
 
 | Lot | Use |
 |---|---|
@@ -127,7 +127,7 @@ The flat plate is deliberate: it keeps the tycoon readable and cheap on phones. 
 | Tower top | `Y = 74` |
 | Cable low point | `Y = 57` |
 
-`HubLayout.deckY(bridge, t)` is a sine arch from the plateau at both ends to `apexY` at mid-span. The deck is
+`RingLayout.deckY(bridge, t)` is a sine arch from the plateau at both ends to `apexY` at mid-span. The deck is
 walkable; boats and the helicopter pass under. No road, no cars.
 
 ## 6. Outer ring
@@ -198,7 +198,7 @@ empty in config; fill it as pages are wired.
 - `tools/world/` generates terrain, layout and the hub map image.
 - `map/Build.luau` builds the place: terrain, zones, streaming, ocean and world pieces.
 - `WorldConfig` holds the hub, ring, island radius and outer island rows.
-- `HubLayout` is generated from `tools/world/layout.py`, so the layout always matches the bake.
+- `RingLayout` is generated from `tools/world/layout.py`, so the layout always matches the bake.
 - Regenerate and commit the layout data with any map change; do not hand-place lots in Studio only.
 - The old `map/terrain/GenerateTerrain.luau` and Port Haven passes are historical; see the archive.
 

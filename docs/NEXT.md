@@ -42,8 +42,8 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
    (The old-design stale data was fixed 2026-10-25: rank `unlocks` name current craft/dock/crew, `CallTypes` says
    islands at 1,100 studs, and the pacing sim already had no garage/seaplane purchases; numbers in docs/23 (i)(7).)
 7. ~~**CONTRACT.md refresh** + **code sweep**~~ done 2026-10-26: dead modules / functions / remotes / config cut,
-   stale comments fixed, `HubLayout` renamed `RingLayout`, CONTRACT rewritten to match the code. docs/10 still
-   names `HubLayout` (docs rewrite thread).
+   stale comments fixed, `RingLayout` renamed `RingLayout`, CONTRACT rewritten to match the code. docs/10 still
+   names `RingLayout` (docs rewrite thread).
 8. **Real-client Opus playtest** of everything since v40 (none was done): a full first session, quests (salvage and
    rescue never tested end to end), dock levels, heli/sub, and **two players spawning boats at once**.
 9. **Publish**: test place after each merged batch; the public launch place is approved once checks + the
