@@ -33,6 +33,9 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
    (icons via Gemini) on the test and launch universes with `deploy.py ... --steps monetize --only <keys>`, set
    `ready = true`; the owner re-answers the maturity questionnaire (paid random items) in Creator Hub. (2) Robux
    "Finish now" on a running build (after B merges): tiered dev products by time left, same receipt flow.
+0b. **Icons blocked**: Gemini image quota (429) until ~2026-10-29 morning: spin.png, spin_1/5/15.png, finish_now.png,
+   hourglass.png in `marketing/ui/icons/` (brief: delegate task msr-24-icons-r1). Placeholders until then; products can be
+   created without icons and get them later.
 0. **docs/24 wave 2** after A-D merge: E tutorial, F progression/core loop pass (pacing sims with build times + spins), Opus review + Studio playtest, art-director render of C.
 
 1. ~~**WP-14d build tablet**~~ merged 2026-10-25 (build station on Spare3, top-down build mode, Build/Decor tabs, 6 Cash decorations; not yet seen in Studio). Was: replace the blueprint table with a tablet on a stand at a Lego build station near the
