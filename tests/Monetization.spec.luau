@@ -49,13 +49,29 @@ return function(t)
 			DayDoubleCash = 15, -- day passes: proposed, not in docs/04 yet
 			DayQuickLaunch = 10,
 			-- island buildings (the old dock-level keys, WP-28): pontoon, boathouse, lookout tower, station
-			DockLevel2 = 49,
-			DockLevel3 = 99,
-			DockLevel4 = 79,
+			DockLevel2 = 35,
+			DockLevel3 = 35,
+			DockLevel4 = 75,
 			DockLevel5 = 199,
 			DockGarage = 75, -- docs/23 h (WP-10b), prices docs/23 (i)
-			DockHangar = 199,
+			DockHangar = 149,
 			DockSubPen = 149,
+			-- the rest of the tree and the decor (WP-28): docs/23 (i) price table
+			DockWorkshop = 15,
+			DockFishShed = 35,
+			DockBoatYard = 75,
+			DockLifeboatSlip = 99,
+			DockCrane = 99,
+			DockHelipad = 99,
+			DockRescueBoathouse = 99,
+			DockTrophyHall = 149,
+			DockClinic = 199,
+			DecorFlowerBed = 35,
+			DecorPicnicTable = 49,
+			DecorLampRow = 75,
+			DecorFlagPole = 99,
+			DecorStatue = 199,
+			DecorFountain = 199,
 			CrewHire = 99, -- docs/23 (j) WP-15, proposed
 		},
 	}

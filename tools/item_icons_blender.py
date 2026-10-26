@@ -2108,6 +2108,169 @@ def d_subpen(M):
     return objs + submarine(0.32, (0, -0.5, 1.45))
 
 
+# WP-28: the rest of the unlock tree and the decorations, same diorama kit (Lego-bright walls per worker building)
+def walls(M, rgb):
+    return {**M, "wall": mat("Wall%d%d%d" % rgb, tuple((c / 255) ** 2.2 for c in rgb), rough=0.45, coat=0.3)}
+
+
+def crates(M, x, y, n=3):
+    return [obj_from("cube", "Crate", M["wood"], loc=(x + (i % 2) * 0.9, y + (i // 2) * 0.9, 1.65 + 0.85 * (i == 2)),
+                     scale=(0.4, 0.4, 0.4), rot=(0, 0, 0.2 * i), bevel=0.04) for i in range(n)]
+
+
+def d_workshop(M):
+    W = walls(M, (250, 208, 40))
+    return dock_base(M, jetty=False, quay=7.0) + shed(W, 0, 4.4, 6.0, 4.6, 3.2, door=M["white"]) + crates(M, 3.6, 0.4)
+
+
+def d_fishshed(M):
+    W = walls(M, (40, 96, 208))
+    objs = dock_base(M) + [deck(M, 4.2, 0.5, 4.6, 5.0)] + shed(W, 4.2, 0.5, 4.6, 5.0, 3.0, door=M["white"])
+    for i in range(3):
+        objs.append(obj_from("cylinder", "Barrel", M["navy"], loc=(-1.0 - 0.9 * i, 4.6, 1.75), scale=(0.38, 0.38, 0.5), vertices=20, smooth=True))
+    return objs
+
+
+def d_boatyard(M):
+    W = walls(M, (250, 140, 30))
+    objs = dock_base(M, jetty=False, quay=7.0) + shed(W, -3.2, 5.0, 4.6, 4.0, 3.0, roof="flat")
+    for y in (-0.8, 1.6):
+        objs.append(obj_from("cube", "Trestle", M["yellow"], loc=(3.0, y, 1.6), scale=(0.9, 0.12, 0.35), bevel=0.03))
+    objs.append(obj_from("cube", "Hull", M["red"], loc=(3.0, 0.4, 2.35), scale=(0.95, 2.4, 0.42), bevel=0.35))
+    objs.append(obj_from("cube", "HullTop", M["white"], loc=(3.0, 0.4, 2.8), scale=(0.8, 2.2, 0.06), bevel=0.05))
+    return objs
+
+
+def d_lifeboatslip(M):
+    W = walls(M, (60, 160, 220))
+    objs = dock_base(M, jetty=False) + shed(W, 0, 6.2, 4.2, 3.0, 3.2, door=M["white"])
+    objs.append(obj_from("cube", "Slip", M["stone"], loc=(0, 0.5, 0.2), rot=(-0.16, 0, 0), scale=(1.8, 5.2, 0.15), bevel=0.05))
+    for sx in (-1, 1):
+        objs.append(obj_from("cube", "Rail", M["dark"], loc=(sx * 0.9, 0.5, 0.38), rot=(-0.16, 0, 0), scale=(0.08, 5.2, 0.06)))
+    return objs
+
+
+def d_crane(M):
+    return dock_base(M) + crane(M, 3.2, 5.0) + crates(M, -3.6, 4.6) + lamp_post(M, -1.75, -3.0)
+
+
+def helipad(M, x, y, top):
+    return [obj_from("cylinder", "Pad", M["dark"], loc=(x, y, top + 0.05), scale=(3.0, 3.0, 0.06), vertices=48),
+            obj_from("torus", "PadRing", M["yellow"], loc=(x, y, top + 0.12), scale=(1, 1, 0.25), major_radius=2.5, minor_radius=0.12),
+            obj_from("cube", "H1", M["white"], loc=(x - 0.75, y, top + 0.12), scale=(0.18, 1.1, 0.03)),
+            obj_from("cube", "H2", M["white"], loc=(x + 0.75, y, top + 0.12), scale=(0.18, 1.1, 0.03)),
+            obj_from("cube", "H3", M["white"], loc=(x, y, top + 0.12), scale=(0.75, 0.16, 0.03)),
+            rod((x + 3.0, y + 3.2, top), (x + 3.0, y + 3.2, top + 1.8), 0.05, M["dark"], "SockPole"),
+            obj_from("cone", "Windsock", M["yellow"], loc=(x + 2.55, y + 3.2, top + 1.65), rot=(0, -math.pi / 2, 0),
+                     radius1=0.22, radius2=0.1, depth=0.9, vertices=16)]
+
+
+def d_helipad(M):
+    return dock_base(M, jetty=False, quay=7.0) + helipad(M, 0, 3.4, 1.28)
+
+
+def d_rescueboathouse(M):
+    W = walls(M, (224, 56, 40))
+    W["roof"] = M["white"]
+    return (dock_base(M) + [deck(M, 4.2, 0.5, 5.0, 6.0)] + shed(W, 4.2, 0.5, 5.0, 6.0, 3.4, door=M["white"])
+            + rescue_board(M, -4.5, 5.0, 1.3))
+
+
+def cup(m, x, y, z, s=1.0):
+    return [obj_from("cylinder", "CupFoot", m, loc=(x, y, z + 0.08 * s), scale=(0.45 * s, 0.45 * s, 0.08 * s), vertices=32, smooth=True),
+            obj_from("cylinder", "CupStem", m, loc=(x, y, z + 0.45 * s), scale=(0.1 * s, 0.1 * s, 0.3 * s), vertices=16, smooth=True),
+            obj_from("cone", "CupBowl", m, loc=(x, y, z + 1.05 * s), radius1=0.25 * s, radius2=0.6 * s, depth=0.6 * s, vertices=32, smooth=True)]
+
+
+def d_trophyhall(M):
+    gold = mat("Gold", (1.0, 0.68, 0.18), rough=0.2, metal=1.0)
+    objs = dock_base(M, jetty=False, quay=7.0) + shed(M, 0, 5.0, 7.0, 3.6, 3.0, roof="flat")
+    objs.append(obj_from("cube", "Plinth", M["stone"], loc=(0, 0.6, 1.75), scale=(0.7, 0.7, 0.5), bevel=0.05))
+    objs += cup(gold, 0, 0.6, 2.25, 1.3) + cup(gold, -2.4, 1.6, 1.28, 0.8) + cup(gold, 2.4, 1.6, 1.28, 0.8)
+    return objs
+
+
+def d_clinic(M):
+    W = walls(M, (242, 240, 232))
+    objs = dock_base(M, jetty=False, quay=7.0) + shed(W, 0, 4.4, 6.0, 4.6, 3.2, door=M["glass"], door_w=1.6)
+    objs += [obj_from("cube", "CrossV", M["red"], loc=(0, 2.06, 4.55), scale=(0.25, 0.04, 0.75)),
+             obj_from("cube", "CrossH", M["red"], loc=(0, 2.06, 4.55), scale=(0.75, 0.04, 0.25))]
+    return objs
+
+
+def lawn(M, r=3.2):
+    """A small square of island (decor is a set piece, not a whole quay)."""
+    return [obj_from("cube", "Plot", M["stone"], loc=(0, 3.0, 0.6), scale=(r, r, 0.6), bevel=0.15),
+            obj_from("cube", "Lawn", M["grass"], loc=(0, 3.0, 1.23), scale=(r - 0.1, r - 0.1, 0.05), bevel=0.04)]
+
+
+def d_flowerbed(M):
+    objs = lawn(M, 3.0) + [obj_from("cube", "Bed", M["wood"], loc=(0, 3.0, 1.55), scale=(2.6, 1.6, 0.3), bevel=0.05),
+                      obj_from("cube", "Soil", mat("Soil", (0.08, 0.04, 0.02), rough=1.0), loc=(0, 3.0, 1.83), scale=(2.45, 1.45, 0.04))]
+    petals = [mat(n, c, rough=0.4, coat=0.3) for n, c in (("Pink", (1.0, 0.25, 0.5)), ("Sun", (1.0, 0.75, 0.0)), ("Violet", (0.45, 0.15, 0.9)))]
+    rng = random.Random(7)
+    for i in range(10):
+        for j in range(5):
+            x, y = -2.1 + 0.47 * i + rng.uniform(-0.08, 0.08), 1.9 + 0.55 * j
+            h = rng.uniform(0.35, 0.6)
+            objs.append(rod((x, y, 1.85), (x, y, 1.85 + h), 0.03, M["grass"], "Stem"))
+            objs.append(obj_from("uv_sphere", "Bloom", petals[(i + j) % 3], loc=(x, y, 1.9 + h), scale=(0.17, 0.17, 0.12), smooth=True))
+    return objs
+
+
+def d_picnictable(M):
+    objs = lawn(M)
+    objs.append(obj_from("cube", "Top", M["wood"], loc=(0, 3.0, 2.3), scale=(2.0, 0.75, 0.08), bevel=0.03))
+    for sy in (-1, 1):
+        objs.append(obj_from("cube", "Bench", M["wood"], loc=(0, 3.0 + sy * 1.25, 1.75), scale=(2.0, 0.28, 0.07), bevel=0.03))
+        for sx in (-1, 1):
+            objs.append(rod((sx * 1.5, 3.0 + sy * 0.5, 1.28), (sx * 1.5, 3.0 + sy * 0.5, 2.25), 0.07, M["wood"], "Leg"))
+            objs.append(rod((sx * 1.5, 3.0 + sy * 1.25, 1.28), (sx * 1.5, 3.0 + sy * 1.25, 1.7), 0.07, M["wood"], "BenchLeg"))
+    objs.append(obj_from("cube", "Cloth", M["red"], loc=(0.4, 3.0, 2.39), scale=(0.7, 0.55, 0.01)))
+    return objs
+
+
+def d_lamprow(M):
+    objs = lawn(M)
+    for i in range(3):
+        objs += lamp_post(M, -2.2 + 2.2 * i, 3.0 + 0.6 * (i - 1), z=1.28, h=3.2)
+    return objs
+
+
+def d_flagpole(M):
+    objs = lawn(M) + [obj_from("cylinder", "Base", M["stone"], loc=(0, 3.0, 1.45), scale=(0.7, 0.7, 0.2), vertices=32)]
+    objs += [obj_from("cylinder", "Pole", M["white"], loc=(0, 3.0, 5.0), scale=(0.1, 0.1, 3.5), vertices=16, smooth=True),
+             obj_from("uv_sphere", "Finial", mat("Gold", (1.0, 0.68, 0.18), rough=0.2, metal=1.0), loc=(0, 3.0, 8.6), scale=(0.18, 0.18, 0.18), smooth=True),
+             obj_from("cube", "Flag", M["red"], loc=(1.25, 3.0, 7.7), rot=(0, 0, 0.12), scale=(1.15, 0.03, 0.7), bevel=0.02),
+             obj_from("cube", "Stripe", M["white"], loc=(1.25, 2.96, 7.7), rot=(0, 0, 0.12), scale=(1.15, 0.01, 0.16))]
+    return objs
+
+
+def d_statue(M):
+    bronze = mat("Bronze", (0.55, 0.36, 0.16), rough=0.3, metal=1.0)
+    objs = lawn(M) + [obj_from("cube", "Plinth", M["stone"], loc=(0, 3.0, 2.0), scale=(1.0, 1.0, 0.75), bevel=0.06)]
+    z = 2.75
+    objs += [obj_from("cube", "Legs", bronze, loc=(0, 3.0, z + 0.7), scale=(0.35, 0.22, 0.7), bevel=0.05),
+             obj_from("cube", "Body", bronze, loc=(0, 3.0, z + 1.8), scale=(0.45, 0.25, 0.5), bevel=0.06),
+             obj_from("uv_sphere", "Head", bronze, loc=(0, 3.0, z + 2.6), scale=(0.28, 0.28, 0.3), smooth=True),
+             rod((0.58, 3.0, z + 1.95), (0.58, 3.0, z + 3.05), 0.12, bronze, "Arm"),
+             rod((-0.58, 3.0, z + 1.4), (-0.58, 3.0, z + 2.2), 0.12, bronze, "Arm"),
+             obj_from("torus", "Ring", M["red"], loc=(-0.62, 2.7, z + 1.2), rot=(math.pi / 2, 0, 0), major_radius=0.38, minor_radius=0.1, smooth=True)]
+    return objs
+
+
+def d_fountain(M):
+    objs = lawn(M)
+    for r, z, h in ((2.6, 1.5, 0.25), (1.2, 2.5, 0.12)):
+        objs.append(obj_from("cylinder", "Basin", M["stone"], loc=(0, 3.0, z), scale=(r, r, h), vertices=48, smooth=True))
+        objs.append(obj_from("cylinder", "Pool", M["water"], loc=(0, 3.0, z + h), scale=(r - 0.2, r - 0.2, 0.03), vertices=48))
+    objs.append(obj_from("cylinder", "Column", M["stone"], loc=(0, 3.0, 2.1), scale=(0.25, 0.25, 0.5), vertices=24, smooth=True))
+    spray = mat("Spray", (0.7, 0.9, 1.0), rough=0.05, transmission=0.9)
+    objs.append(obj_from("cone", "Jet", spray, loc=(0, 3.0, 3.2), radius1=0.12, radius2=0.04, depth=1.1, vertices=16))
+    objs.append(obj_from("uv_sphere", "Crown", spray, loc=(0, 3.0, 3.8), scale=(0.45, 0.45, 0.2), smooth=True))
+    return objs
+
+
 SCENES = {
     "SmallBonus": s_small,
     "CrewPayroll": s_payroll,
@@ -2155,6 +2318,21 @@ SCENES = {
     "DockGarage": lambda: s_dock(d_garage),
     "DockHangar": lambda: s_dock(d_hangar),
     "DockSubPen": lambda: s_dock(d_subpen),
+    "DockWorkshop": lambda: s_dock(d_workshop),
+    "DockFishShed": lambda: s_dock(d_fishshed),
+    "DockBoatYard": lambda: s_dock(d_boatyard),
+    "DockLifeboatSlip": lambda: s_dock(d_lifeboatslip),
+    "DockCrane": lambda: s_dock(d_crane),
+    "DockHelipad": lambda: s_dock(d_helipad),
+    "DockRescueBoathouse": lambda: s_dock(d_rescueboathouse),
+    "DockTrophyHall": lambda: s_dock(d_trophyhall),
+    "DockClinic": lambda: s_dock(d_clinic),
+    "DecorFlowerBed": lambda: s_dock(d_flowerbed),
+    "DecorPicnicTable": lambda: s_dock(d_picnictable),
+    "DecorLampRow": lambda: s_dock(d_lamprow),
+    "DecorFlagPole": lambda: s_dock(d_flagpole),
+    "DecorStatue": lambda: s_dock(d_statue),
+    "DecorFountain": lambda: s_dock(d_fountain),
 }
 
 os.makedirs(OUT, exist_ok=True)

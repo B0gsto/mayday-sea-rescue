@@ -161,6 +161,21 @@ return function(t)
 				DockLevel5 = true,
 				DockHangar = true,
 				DockSubPen = true,
+				DockWorkshop = true,
+				DockFishShed = true,
+				DockBoatYard = true,
+				DockLifeboatSlip = true,
+				DockCrane = true,
+				DockHelipad = true,
+				DockRescueBoathouse = true,
+				DockTrophyHall = true,
+				DockClinic = true,
+				DecorFlowerBed = true, -- DockService grants decor too
+				DecorPicnicTable = true,
+				DecorLampRow = true,
+				DecorFlagPole = true,
+				DecorStatue = true,
+				DecorFountain = true,
 			},
 			GamePasses = { DoubleCash = true, StarterKit = true, QuickLaunch = true }, -- QuickLaunch: RP-A1 use card
 		}

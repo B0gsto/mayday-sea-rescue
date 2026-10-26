@@ -65,7 +65,7 @@ DockConfig.Buildings = {
 		cash = 2500, -- tune
 		needs = {},
 		product = "DockLevel2",
-		robux = 49,
+		robux = 35,
 		spot = CFrame.new(16, 2.1, 2),
 		size = Vector2.new(8, 50),
 	},
@@ -74,6 +74,8 @@ DockConfig.Buildings = {
 		desc = "Builders work here. Unlocks the boathouse.",
 		cash = 1000, -- tune: the first build, ~8 min in (tests/NewPlayerPace)
 		needs = {},
+		product = "DockWorkshop",
+		robux = 15,
 		spot = isle(80, -60),
 		size = Vector2.new(20, 16),
 		worker = "Builder",
@@ -84,6 +86,8 @@ DockConfig.Buildings = {
 		desc = "Gatherers work here.",
 		cash = 3000, -- tune
 		needs = {},
+		product = "DockFishShed",
+		robux = 35,
 		spot = isle(45, 28),
 		size = Vector2.new(16, 12),
 		worker = "Gatherer",
@@ -95,7 +99,7 @@ DockConfig.Buildings = {
 		cash = 2500, -- tune
 		needs = { "Workshop" },
 		product = "DockLevel3",
-		robux = 99,
+		robux = 35,
 		spot = LOTS.Boathouse.cf,
 		size = Vector2.new(34, 40),
 	},
@@ -105,7 +109,7 @@ DockConfig.Buildings = {
 		cash = 8000, -- tune
 		needs = { "Pontoon" },
 		product = "DockLevel4",
-		robux = 79,
+		robux = 75,
 		spot = LOTS.LifeguardTower.cf,
 		size = Vector2.new(10, 10),
 	},
@@ -114,6 +118,8 @@ DockConfig.Buildings = {
 		desc = "Mechanics work here.",
 		cash = 8000, -- tune
 		needs = { "Workshop" },
+		product = "DockBoatYard",
+		robux = 75,
 		spot = isle(45, -48, 180),
 		size = Vector2.new(18, 14),
 		worker = "Mechanic",
@@ -124,6 +130,8 @@ DockConfig.Buildings = {
 		desc = "A slipway for the big lifeboat.",
 		cash = 10000, -- tune
 		needs = { "Boathouse" },
+		product = "DockLifeboatSlip",
+		robux = 99,
 		spot = isle(88, 20),
 		size = Vector2.new(16, 22),
 		color = Color3.fromRGB(60, 160, 220),
@@ -133,6 +141,8 @@ DockConfig.Buildings = {
 		desc = "A slipway crane: relaunch with no wait.",
 		cash = 15000, -- tune
 		needs = { "Boathouse" },
+		product = "DockCrane",
+		robux = 99,
 		spot = CFrame.new(16, Marina.DECK_TOP, 66),
 		size = Vector2.new(8, 8),
 	},
@@ -141,6 +151,8 @@ DockConfig.Buildings = {
 		desc = "A landing pad for a helicopter.",
 		cash = 10000, -- tune
 		needs = { "LookoutTower" },
+		product = "DockHelipad",
+		robux = 99,
 		spot = LOTS.Helipad.cf,
 		size = LOTS.Helipad.size,
 	},
@@ -149,6 +161,8 @@ DockConfig.Buildings = {
 		desc = "Rescuers work here.",
 		cash = 12000, -- tune
 		needs = { "LookoutTower" },
+		product = "DockRescueBoathouse",
+		robux = 99,
 		spot = isle(-45, 12),
 		size = Vector2.new(18, 14),
 		worker = "Rescuer",
@@ -171,7 +185,7 @@ DockConfig.Buildings = {
 		cash = 20000, -- tune
 		needs = { "Helipad" },
 		product = "DockHangar",
-		robux = 199,
+		robux = 149,
 		spot = LOTS.Hangar.cf,
 		size = LOTS.Hangar.size,
 		vehicles = { "RescueHelicopter" },
@@ -191,6 +205,8 @@ DockConfig.Buildings = {
 		desc = "Cups and island stamps on the station wall.",
 		cash = 20000, -- tune
 		needs = { "Station" },
+		product = "DockTrophyHall",
+		robux = 149,
 		spot = LOTS.Station.cf * CFrame.new(-15.5, 0, -18),
 		size = Vector2.new(20, 6),
 	},
@@ -199,6 +215,8 @@ DockConfig.Buildings = {
 		desc = "Medics work here.",
 		cash = 30000, -- tune
 		needs = { "Station" },
+		product = "DockClinic",
+		robux = 199,
 		spot = isle(-25, -70, 180),
 		size = Vector2.new(16, 14),
 		worker = "Medic",
@@ -220,8 +238,8 @@ DockConfig.Blueprints = {
 	Lighthouse = { lot = "Spare1", desc = "Keeper Ives' lamp, earned on his quest." }, -- Quests/Data Lamp3
 } :: { [string]: { lot: string, desc: string } }
 
--- Decorations (WP-14d): Cash-only Lego set pieces on the free lots by the spawn. Bought from the build
--- tablet's Decor tab and kept in data.dockBuildings like buildings, so the save migration accepts them.
+-- Decorations (WP-14d): Lego set pieces on the free lots by the spawn. Bought from the build tablet's Decor tab
+-- (Cash, or Robux) and kept in data.dockBuildings like buildings, so the save migration accepts them.
 export type Decor = {
 	name: string,
 	cash: number,
@@ -230,6 +248,8 @@ export type Decor = {
 	lot: string, -- Marina.LOTS key
 	offset: Vector2, -- studs from the lot centre, x / z
 	size: Vector2, -- footprint in studs (x / z)
+	product: string?, -- MonetizationConfig.Products key (skips the Cash; decor needs only the jetty)
+	robux: number?, -- its launch price (docs/23 (i))
 }
 
 DockConfig.DECOR = { "FlowerBed", "PicnicTable", "LampRow", "FlagPole", "Statue", "Fountain" }
@@ -238,6 +258,8 @@ DockConfig.Decorations = {
 	FlowerBed = {
 		name = "Flower bed",
 		cash = 2000,
+		product = "DecorFlowerBed",
+		robux = 35,
 		desc = "Bright Lego flowers by your spawn.",
 		color = "pink",
 		lot = "Spare2",
@@ -247,6 +269,8 @@ DockConfig.Decorations = {
 	PicnicTable = {
 		name = "Picnic table",
 		cash = 5000,
+		product = "DecorPicnicTable",
+		robux = 49,
 		desc = "A picnic table for crew breaks.",
 		color = "green",
 		lot = "Spare2",
@@ -256,6 +280,8 @@ DockConfig.Decorations = {
 	LampRow = {
 		name = "Lamp row",
 		cash = 9000,
+		product = "DecorLampRow",
+		robux = 75,
 		desc = "A row of lamps that glow at night.",
 		color = "yellow",
 		lot = "Spare2",
@@ -265,6 +291,8 @@ DockConfig.Decorations = {
 	FlagPole = {
 		name = "Flag pole",
 		cash = 15000,
+		product = "DecorFlagPole",
+		robux = 99,
 		desc = "A tall flag pole flying your colours.",
 		color = "blue",
 		lot = "Spare3",
@@ -274,6 +302,8 @@ DockConfig.Decorations = {
 	Statue = {
 		name = "Statue",
 		cash = 25000,
+		product = "DecorStatue",
+		robux = 199,
 		desc = "A hero statue for your island.",
 		color = "orange",
 		lot = "Spare3",
@@ -283,6 +313,8 @@ DockConfig.Decorations = {
 	Fountain = {
 		name = "Fountain",
 		cash = 40000,
+		product = "DecorFountain",
+		robux = 199,
 		desc = "A splashing fountain in the square.",
 		color = "teal",
 		lot = "Spare3",

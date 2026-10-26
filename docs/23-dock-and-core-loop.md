@@ -223,6 +223,35 @@ Packs = the cheapest mix of live Cash packs (Calm Bay rate: 1,500 / 4,500 / 16,5
    Helicopter 7:21 (was 7:35), Submarine 10:39 (12:02), Station 11:56 (14:42), the whole tree 13:24 (17:17, -22%:
    the Builders' discount most, then rarer workers over time); ~844k Cash at 40 h (no-worker run ~424k).
 
+10. **Robux price for every tree building and decoration (2026-10-26).** Rule: R$ = the smallest price point
+   (15 / 35 / 49 / 75 / 99 / 149 / 199) at least 1.3x the cheapest Cash-pack mix for the same Cash (packs as above),
+   so a Robux skip always costs a bit more than buying the Cash; it skips the Cash, never `needs`. Every Cash item has
+   one (`tests/DockConfig.spec.luau` pins a 1.3x floor at the best pack's rate). Old dock-level ids kept and renamed on Roblox.
+
+| Item (product key) | Cash | R$ | Packs for that Cash (R$) | R$ vs packs |
+|---|---:|---:|---:|---:|
+| Workshop (`DockWorkshop`) | 1,000 | 15 | 10 | 1.50x |
+| Pontoon (`DockLevel2`) | 2,500 | 35 (was 49) | 20 | 1.75x |
+| Boathouse (`DockLevel3`) | 2,500 | 35 (was 99) | 20 | 1.75x |
+| Fish shed (`DockFishShed`) | 3,000 | 35 | 20 | 1.75x |
+| Lookout tower (`DockLevel4`) | 8,000 | 75 (was 79) | 50 | 1.50x |
+| Boat yard (`DockBoatYard`) | 8,000 | 75 | 50 | 1.50x |
+| Lifeboat slip (`DockLifeboatSlip`) | 10,000 | 99 | 60 | 1.65x |
+| Helipad (`DockHelipad`) | 10,000 | 99 | 60 | 1.65x |
+| Rescue boathouse (`DockRescueBoathouse`) | 12,000 | 99 | 70 | 1.41x |
+| Crane (`DockCrane`) | 15,000 | 99 | 75 | 1.32x |
+| Sub pen (`DockSubPen`) | 20,000 | 149 | 100 | 1.49x |
+| Hangar (`DockHangar`) | 20,000 | 149 (was 199) | 100 | 1.49x |
+| Trophy hall (`DockTrophyHall`) | 20,000 | 149 | 100 | 1.49x |
+| Clinic (`DockClinic`) | 30,000 | 199 | 149 | 1.34x |
+| Station (`DockLevel5`) | 40,000 | 199 | 149 | 1.34x |
+| Flower bed (decor) (`DecorFlowerBed`) | 2,000 | 35 | 20 | 1.75x |
+| Picnic table (decor) (`DecorPicnicTable`) | 5,000 | 49 | 35 | 1.40x |
+| Lamp row (decor) (`DecorLampRow`) | 9,000 | 75 | 50 | 1.50x |
+| Flag pole (decor) (`DecorFlagPole`) | 15,000 | 99 | 75 | 1.32x |
+| Statue (decor) (`DecorStatue`) | 25,000 | 199 | 125 | 1.59x |
+| Fountain (decor) (`DecorFountain`) | 40,000 | 199 | 149 | 1.34x |
+
 ## (j) Plots v2: big land plots, blueprint table, crew (owner, 2026-10-25)
 
 Owner, after seeing the blue wireframe ghost on the dock: "I don't want anything holographic or 'what could it be'.

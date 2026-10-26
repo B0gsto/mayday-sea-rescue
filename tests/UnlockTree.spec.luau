@@ -57,7 +57,8 @@ return function(t)
 		t.expect(U.canRobux("Boathouse", {})).toBe(false)
 		t.expect(U.canRobux("Boathouse", { Workshop = true })).toBe(true)
 		t.expect(U.canRobux("Boathouse", { Workshop = true, Boathouse = true })).toBe(false)
-		t.expect(U.canRobux("Workshop", {})).toBe(false) -- no product: Cash only
+		t.expect(U.canRobux("Workshop", {})).toBe(true) -- a root: only the jetty
+		t.expect(U.canRobux("Nope", {})).toBe(false) -- no such building
 		t.expect(U.canRobux("Pontoon", {})).toBe(true)
 	end)
 

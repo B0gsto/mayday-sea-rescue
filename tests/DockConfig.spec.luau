@@ -28,15 +28,18 @@ return function(t)
 		"Robux products: each sells its own building at the config price, never cheaper than packs",
 		function()
 			local CASH_PER_ROBUX = 50400 / 149 -- the best Cash pack (docs/23 (i))
-			for key, b in D.Buildings do
-				if b.product then
+			for _, rows: { [string]: any } in { D.Buildings :: any, D.Decorations } do
+				for key, b in rows do
+					t.expect(b.product ~= nil).toBe(true) -- every Cash item has its Robux skip
 					local item = Monetization.Products[b.product]
 					t.expect(item ~= nil).toBe(true)
 					t.expect(item.price).toBe(b.robux)
 					t.expect(item.dockBuilding).toBe(key)
-					t.expect(D.buildingFor(b.product)).toBe(key)
-					t.expect(b.robux >= b.cash / CASH_PER_ROBUX).toBe(true)
+					t.expect(b.robux >= 1.3 * b.cash / CASH_PER_ROBUX).toBe(true)
 				end
+			end
+			for key, b in D.Buildings do
+				t.expect(D.buildingFor(b.product)).toBe(key)
 			end
 			t.expect(D.buildingFor("SmallBonus")).toBe(nil)
 			t.expect(D.Buildings.Pontoon.product).toBe("DockLevel2")

@@ -19,7 +19,22 @@
       "DockLevel5": 3722223223,
       "DockGarage": 3722223237,
       "DockHangar": 3722223246,
-      "DockSubPen": 3722223257
+      "DockSubPen": 3722223257,
+      "DockWorkshop": 3722386053,
+      "DockFishShed": 3722386064,
+      "DockBoatYard": 3722386073,
+      "DockLifeboatSlip": 3722386079,
+      "DockCrane": 3722386091,
+      "DockHelipad": 3722386100,
+      "DockRescueBoathouse": 3722386108,
+      "DockTrophyHall": 3722386118,
+      "DockClinic": 3722386124,
+      "DecorFlowerBed": 3722386134,
+      "DecorPicnicTable": 3722386143,
+      "DecorLampRow": 3722386151,
+      "DecorFlagPole": 3722386157,
+      "DecorStatue": 3722386162,
+      "DecorFountain": 3722386169
     },
     "GamePasses": {
       "DoubleCash": 2040015521,

@@ -36,8 +36,8 @@ Mayday sells **time, looks and shared fun**, never skill.
 | **Cash Boost** | 2x Cash for 30 minutes of play | 15 |
 | **Crew Boost** | +50% Cash for you and your crew, 20 minutes | 15 |
 | **Day 2x Cash / Day Quick Launch** | A pass effect for 24 real hours | 15 / 10 |
-| **Pontoon / Boathouse / Lookout / Station** | Builds it now, no Cash (prerequisites first) | 49 / 99 / 79 / 199 |
-| **Hangar / Sub pen** | Builds it now, no Cash (prerequisites first) | 199 / 149 |
+| **Island buildings** (every tree building) | Builds it now, no Cash (prerequisites first) | 15–199 |
+| **Decorations** | Places it now, no Cash | 35–199 |
 | **Storm Summons** (in progress) | A server-wide storm; weather is currently always sunny | 49 / 149 |
 | **Sea Chests** (planned) | Cosmetic-only random chest, odds shown | — |
 
@@ -141,38 +141,12 @@ is required to read a call.
 - A day pass is a rental, clearly labelled. No Day VIP until the VIP pass itself is ready.
 - Boosts never apply to quests, Album finds, the streak crate or Cash packs.
 
-### 5.3 Island buildings
+### 5.3 Island buildings and decorations
 
-| Item (product key) | Price | Builds | Needs first |
-|---|---:|---|---|
-| **Pontoon** (`DockLevel2`) | 49 | Pontoon, lamps, flag, rescue board | — |
-| **Boathouse** (`DockLevel3`) | 99 | Boathouse, boat board, paint booth | Workshop |
-| **Lookout Tower** (`DockLevel4`) | 79 | Lookout tower | Pontoon |
-| **Station** (`DockLevel5`) | 199 | Station front, beacon | Boathouse, Lookout tower |
-| **Hangar** (`DockHangar`) | 199 | Hangar, hangar board | Helipad |
-| **Sub Pen** (`DockSubPen`) | 149 | Sub pen, sub board | Crane |
-
-The product keys and ids are the old dock levels' (WP-28); the Creator Hub names and prices need a sync. Every
-price is at least the Cash packs' price for that Cash (docs/23 (i)).
-
-### 5.4 Storm Summons (in progress)
-
-| Item | Price | Effect |
-|---|---:|---|
-| **Call the Storm** | 49 | A server-wide storm for the whole server. |
-| **Call the Great Storm** | 149 | A bigger storm with a guaranteed big call. |
-
-- Weather is currently always sunny (`StormService.ALWAYS_SUNNY`), so these are **not live**. When they ship:
-  - the storm is server-wide and everyone can join the rescues;
-  - storm calls pay 1.5x Cash (Great Storm 2x Cash);
-  - the buyer is credited; one storm at a time; purchases join a queue.
-- No natural storm cycle. A storm exists only because a player called one. This replaces the retired storm season.
-
-### 5.5 Sea Chests (planned)
-
-- Cosmetic only. No Cash, no craft, no reach.
-- Odds and duplicate handling are shown before purchase.
-- No keys, no timed offers, no "chest only" power.
+Every Cash item on the island has a Robux product that skips the Cash, never `needs` (sold at the build tablet
+only): the 15 tree buildings at 15–199 R$ and the six decorations at 35–199 R$. Price = the smallest price point at
+least 1.3x the Cash packs' price for the same Cash; the full table (Cash, R$, packs) is docs/23 (i) item 10. The
+pontoon, boathouse, lookout tower and station keep the old dock levels' keys and ids (`DockLevel2..5`).
 
 ## 6. Fairness rules
 

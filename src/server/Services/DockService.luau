@@ -633,7 +633,7 @@ local function buyBuilding(player: Player, data: any, key: string): (boolean, st
 	return true, "ok"
 end
 
--- Cash-only purchase of a decoration (WP-14d); needs only the jetty, no Robux product.
+-- Cash purchase of a decoration (WP-14d); needs only the jetty (its Robux product: the grant below).
 local function buyDecor(player: Player, data: any, key: string): (boolean, string)
 	data.dockBuildings = if type(data.dockBuildings) == "table" then data.dockBuildings else {}
 	local ok, reason, price =
@@ -731,24 +731,29 @@ function DockService.Init()
 	buildRemote = buildEvent
 
 	-- Robux skips the Cash, never the order: the grant refuses (the receipt waits) until the prerequisites
-	-- stand; a retried receipt for an owned building is harmless
-	for key, b in DockConfig.Buildings do
-		if b.product then
-			MonetizationService.OnProduct(b.product, function(_player, data: any)
-				data.dockBuildings = if type(data.dockBuildings) == "table"
-					then data.dockBuildings
-					else {}
-				if data.dockBuildings[key] then
+	-- stand (decor needs only the jetty); a retried receipt for an owned item is harmless
+	for _, rows: { [string]: any } in { DockConfig.Buildings :: any, DockConfig.Decorations } do
+		for key, b in rows do
+			if b.product then
+				MonetizationService.OnProduct(b.product, function(_player, data: any)
+					data.dockBuildings = if type(data.dockBuildings) == "table"
+						then data.dockBuildings
+						else {}
+					if data.dockBuildings[key] then
+						return true
+					end
+					if
+						DockConfig.Buildings[key]
+						and not UnlockTree.canRobux(key, data.dockBuildings)
+					then
+						return false
+					end
+					data.dockBuildings[key] = true
 					return true
-				end
-				if not UnlockTree.canRobux(key, data.dockBuildings) then
-					return false
-				end
-				data.dockBuildings[key] = true
-				return true
-			end, function(player)
-				show(player, true)
-			end)
+				end, function(player)
+					show(player, true)
+				end)
+			end
 		end
 	end
 	if RunService:IsStudio() then
