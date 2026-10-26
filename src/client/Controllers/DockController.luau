@@ -742,10 +742,8 @@ local function buildNodes(): { TreeView.Node }
 		elseif prepaid and not st.owned and not st.forSale then
 			effect = "Paid"
 		elseif item.kind == "Blueprint" and not st.owned then
-			-- a quest grants it (QuestService): no Cash button, a greyed quest chip instead
+			-- a quest grants it (QuestService): no Cash button
 			note = "Quest"
-			action =
-				{ text = "Quest", icon = "quests", enabled = false, onActivate = function() end }
 		end
 		local reason = st.reason
 		local need = reason and reason.item

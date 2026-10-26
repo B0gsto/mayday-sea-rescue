@@ -244,6 +244,7 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	local points: { TreeMath.Point } = {}
 	local pulses: { UIStroke } = {}
 	local pointers: { UIStroke } = {}
+	local noteLabels: { [string]: TextLabel } = {}
 	local cash = props.cash
 	local fitted = false
 	local alive = true
@@ -501,6 +502,7 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		row.Parent = face
 		if node.note then
 			local note = Style.label(row, node.note, Theme.Text.small)
+			noteLabels[node.id] = note
 			note.TextXAlignment = Enum.TextXAlignment.Left
 			note.TextWrapped = false
 			note.Position = UDim2.fromOffset(4, 0)
@@ -598,6 +600,7 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 			end
 		end
 		nodesById = {}
+		noteLabels = {}
 		boxes = {}
 		buttons = {}
 		order = {}
@@ -726,7 +729,48 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		apply()
 	end
 
+	-- true when only the ticking text (note, effect, action) differs from what is drawn
+	local function onlyText(nodes: { Node }, value: number?): boolean
+		if value ~= cash or #nodes ~= #points then
+			return false
+		end
+		for _, n in nodes do
+			local old = nodesById[n.id]
+			if not old or (old.note == nil) ~= (n.note == nil) then
+				return false
+			end
+			for k, v in n :: any do
+				local was = (old :: any)[k]
+				if k == "needs" then
+					if table.concat(v, ",") ~= table.concat(was, ",") then
+						return false
+					end
+				elseif k ~= "note" and k ~= "effect" and k ~= "action" and v ~= was then
+					return false
+				end
+			end
+			for k in old :: any do
+				if (n :: any)[k] == nil and k ~= "note" and k ~= "effect" and k ~= "action" then
+					return false
+				end
+			end
+		end
+		return true
+	end
+
 	local function setNodes(nodes: { Node }, value: number?)
+		-- a running site's timer ticks twice a second: retext in place, as a rebuild eats clicks
+		if onlyText(nodes, value) then
+			for _, n in nodes do
+				nodesById[n.id] = n
+				local label = noteLabels[n.id]
+				if label and n.note then
+					label.Text = n.note
+				end
+			end
+			refreshDetail()
+			return
+		end
 		cash = if value ~= nil then value else cash
 		local keep = selectedId
 		build(sortedNodes(nodes))
