@@ -29,6 +29,7 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
 
 ## 2. Queued (in order)
 
+0d. **docs/24 G skill trees** (owner 2026-10-26): G-b rules/service/effects running (task msr-24-Gb-r1); G-a Kit TreeView + build tablet as a tree after the tutorial playtest-fix lands (both edit DockController); G-c Skills panel on TreeView after G-a + G-b.
 0a. **Owner 2026-10-26: both approved.** (1) Spin products live: after D merges, create the 1/5/15-spin dev products
    (icons via Gemini) on the test and launch universes with `deploy.py ... --steps monetize --only <keys>`, set
    `ready = true`; the owner re-answers the maturity questionnaire (paid random items) in Creator Hub. (2) Robux
