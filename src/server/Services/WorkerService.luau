@@ -61,27 +61,64 @@ end
 
 -- Feet CFrames in the berth frame `bay` ------------------------------------------------------------
 
--- In front of the building's open front, side by side, facing the work they do inside it (docs/24 C: the worker
--- buildings are open yards, so the crew stands just inside the front edge rather than out on the lane); 4.5 apart
--- so the swings miss the neighbour.
-local WORK_INSET = { -- studs in from the front edge (docs/24 C open work areas)
-	Workshop = 2.5,
-	FishShed = 2.5,
-	BoatYard = 1.5, -- clear of the bow overhang
-	RescueBoathouse = 2.5,
-	Clinic = 4, -- inside the pavilion, at the beds
+-- One feet spot per yard slot, in 1x yard-local studs (+Z into the yard, -Z the open front; scale multiplies
+-- them like the built model). Each one stands by its own work object (bench, stall, boat, bed) and looks at it,
+-- so 2-3 of a crew spread round the yard instead of posing in a line (docs/24 C art pass).
+type WorkSlot = { x: number, z: number, tx: number, tz: number }
+local WORK_SPOTS: { [string]: { WorkSlot } } = {
+	Workshop = {
+		{ x = -3.4, z = -4.6, tx = -3.4, tz = -2.5 }, -- either side of the bench
+		{ x = 3.4, z = -4.6, tx = 3.4, tz = -2.5 },
+		{ x = -8.6, z = 2.4, tx = -5, tz = 2.4 }, -- the half-built boat frame
+		{ x = 6, z = -0.8, tx = 6, tz = 1.5 }, -- the timber stack
+		{ x = -8.6, z = -5.2, tx = -8.6, tz = -3.4 }, -- the sawhorse
+	},
+	FishShed = {
+		{ x = -5.8, z = 0.6, tx = -5.8, tz = -2 }, -- behind a stall counter
+		{ x = 5.8, z = 0.6, tx = 5.8, tz = -2 },
+		{ x = 0, z = 1.4, tx = 0, tz = 3.9 }, -- the drying rack
+		{ x = 1.8, z = -4.2, tx = 0, tz = -1 }, -- the fish crates
+		{ x = 5, z = 2.4, tx = 6.6, tz = 4.2 }, -- the hanging scale
+	},
+	BoatYard = {
+		{ x = -5.4, z = -1, tx = 0, tz = -1 }, -- the hull, port side
+		{ x = 5.4, z = 1.4, tx = 0, tz = 1.4 },
+		{ x = 0, z = -8.6, tx = 0, tz = -4 }, -- the bow
+		{ x = 0, z = 8.4, tx = 0, tz = 4 }, -- the stern
+		{ x = 6.6, z = -3.2, tx = 7.3, tz = -0.6 }, -- the tool chests
+	},
+	RescueBoathouse = {
+		{ x = -4.2, z = 0.7, tx = 0, tz = 0.7 }, -- either side of the rescue boat
+		{ x = 4.2, z = 0.7, tx = 0, tz = 0.7 },
+		{ x = -5.2, z = 2.2, tx = -5.2, tz = 4.8 }, -- the lifebuoy rack
+		{ x = 6.4, z = -2.2, tx = 6.4, tz = -4.8 }, -- the lifeguard chair
+		{ x = 3.4, z = 4.6, tx = 3.4, tz = 6.2 }, -- the oar rack
+	},
+	Clinic = {
+		{ x = -4.8, z = -1.8, tx = -4.8, tz = 2.6 }, -- at the foot of bed A
+		{ x = 4.8, z = 6.9, tx = 4.8, tz = 2.6 }, -- at the head of bed B
+		{ x = 0, z = -0.6, tx = 0, tz = 3.3 }, -- the stretcher
+		{ x = 6.4, z = -2, tx = 7.4, tz = 1.6 }, -- the IV stand
+		{ x = -7.6, z = 1, tx = -8, tz = 3.3 }, -- the medicine crate
+	},
 }
-local function workSpot(bay: CFrame, category: string, slot: number, slots: number): CFrame?
+local function workSpot(bay: CFrame, category: string, slot: number, _slots: number): CFrame?
 	local key = WorkerRules.buildingOf(category)
 	local def = key and DockConfig.Buildings[key]
 	if not def then
 		return nil
 	end
 	local at = bay * def.spot
-	local inset = if key then WORK_INSET[key] else nil
-	local z = if inset then -(def.size.Y / 2 - inset) else -(def.size.Y / 2 + 3.5)
-	local p = (at * CFrame.new((slot - (slots + 1) / 2) * 4.5, 0.8, z)).Position
-	return CFrame.lookAt(p, p - at.LookVector)
+	local scale = def.scale or 1
+	local list = if key then WORK_SPOTS[key] else nil
+	if list and #list > 0 then
+		local s = list[(slot - 1) % #list + 1]
+		local p = (at * CFrame.new(s.x * scale, 0.8, s.z * scale)).Position
+		local look = (at * CFrame.new(s.tx * scale, 0.8, s.tz * scale)).Position
+		return CFrame.lookAt(p, look)
+	end
+	local p = (at * CFrame.new((slot - (_slots + 1) / 2) * 4.5, 0.8, -(def.size.Y / 2 + 3.5))).Position
+	return CFrame.lookAt(p, p + at.LookVector)
 end
 
 -- On the jetty by the quay, two by two, facing the berth (the bunkhouse until art lands).

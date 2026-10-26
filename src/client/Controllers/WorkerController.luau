@@ -1,6 +1,6 @@
 --!strict
 -- WorkerController (WP-26): draws the WorkerBadge billboard (category icon + rarity stars, legendary glow) on
--- every model tagged "WorkerBadge" (a picked-up survivor, your workers), and plays the offline
+-- every model tagged "WorkerBadge" (a picked-up survivor), and plays the offline
 -- earnings welcome: a coin burst into the wallet and a Toast when the player attribute WorkerOffline arrives.
 -- It also draws every island's workers, client-side only: the server publishes them as data
 -- (ReplicatedStorage.Workers.<owner>.<i>, WorkerService) and this clones a shared R15 template
@@ -10,7 +10,7 @@
 -- Job loops a stock animation with a small code-built prop (docs/24 C): Build hammers, Fish carries a crate,
 -- Repair turns a wrench, Rescue scans with binoculars, Heal holds a clipboard, Gather saws, Idle stands. Workers
 -- waiting on the jetty keep their category badge (they are not at work). Gatherer/Rescuer pay pops a "+$".
--- With CREW_MIN or more at one building their single badges hide behind one crew badge with a count.
+-- Each yard shows one crew badge (icon + count) instead of one per worker.
 local CollectionService = game:GetService("CollectionService")
 local PathfindingService = game:GetService("PathfindingService")
 local Players = game:GetService("Players")
@@ -34,7 +34,6 @@ local NEAR, FAR = 200, 240 -- studs from you: a rig is made within NEAR, dropped
 local LIVELY = 90 -- animated within this (the badge shows within 60)
 local WALK_SPEED = 9 -- studs/s
 local MAKE_PER_TICK = 8 -- rigs cloned per 0.25 s pass (no hitch when you land on a full island)
-local CREW_MIN = 4 -- this many at one building: one crew badge (single ones merged into a band, verify 2026-10-26)
 local ANIM_IDS: { [string]: string } = { -- stock R15 animations (the default Animate script's)
 	Idle = "rbxassetid://507766666",
 	Walk = "rbxassetid://507777826",
@@ -268,7 +267,6 @@ local function makeRig(r: Rec): boolean
 	place(r)
 	dress(r)
 	rig.Parent = localFolder
-	CollectionService:AddTag(rig, "WorkerBadge") -- the billboard (badge below)
 	pose(r)
 	return true
 end
@@ -333,14 +331,14 @@ local function stride(r: Rec, root: BasePart, to: Vector3)
 	tween.Completed:Wait()
 end
 
--- A Gatherer at its shed walks its crate up to the door and back out, a short rest at each end, while near.
+-- A Gatherer at its stall paces with crates along the counter and back, a short rest at each end, while near.
 local function carry(r: Rec)
 	local rig = r.rig
 	local root = rig and rig.PrimaryPart
 	if not (rig and root) then
 		return
 	end
-	local legs = { r.feet * CFrame.new(0, 0, -2.5), r.feet * CFrame.new(0, 0, 2) } -- the feet face the shed
+	local legs = { r.feet * CFrame.new(-2.2, 0, 0), r.feet * CFrame.new(2.2, 0, 0) } -- along the stall counter
 	local function on(): boolean
 		return r.rig == rig and r.lively and not r.walking and jobOf(r) == "Fish"
 	end
@@ -428,6 +426,13 @@ local function track(cfg: Instance)
 			pose(r)
 		end
 	end)
+	cfg:GetAttributeChangedSignal("Job")
+		:Connect(function() -- a job swap with Work already true: new prop + loop
+			if not r.walking then
+				dress(r)
+				pose(r)
+			end
+		end)
 end
 
 local function untrack(cfg: Instance)
@@ -469,8 +474,8 @@ local function cullPass()
 	end
 end
 
--- CREW_MIN+ settled workers of one owner and category (one building): hide their own badges, show one over the
--- middle of the crew with the count.
+-- One badge per yard (one owner + category) over the middle of its settled crew, count when 2+: five badges
+-- stacked over one stall was noise (docs/24 C art r2). WorkerBadge.crew's MaxDistance keeps it near-only.
 local crews: { [string]: { gui: BillboardGui, at: Attachment } } = {}
 local function crewPass()
 	local groups: { [string]: { cat: string, sum: Vector3, rigs: { Model } } } = {}
@@ -485,31 +490,21 @@ local function crewPass()
 		end
 	end
 	for key, g in groups do
-		local merged = #g.rigs >= CREW_MIN
-		for _, rig in g.rigs do
-			local tag = rig:FindFirstChild("WorkerTag")
-			if tag and tag:IsA("BillboardGui") then
-				tag.Enabled = not merged
-			end
-		end
 		local c = crews[key]
-		if merged then
-			if not c then
-				local at = Instance.new("Attachment")
-				at.Name = "CrewTag"
-				at.Parent = Workspace.Terrain
-				c = { at = at, gui = WorkerBadge.crew(at, g.cat, localFolder :: Folder) }
-				crews[key] = c
-			end
-			local crew = c :: { gui: BillboardGui, at: Attachment }
-			crew.at.WorldPosition = g.sum / #g.rigs + Vector3.new(0, 7.5, 0)
-			local count = crew.gui:FindFirstChild("Count") :: TextLabel
-			count.Text = `x{#g.rigs}`
+		if not c then
+			local at = Instance.new("Attachment")
+			at.Name = "CrewTag"
+			at.Parent = Workspace.Terrain
+			c = { at = at, gui = WorkerBadge.crew(at, g.cat, localFolder :: Folder) }
+			crews[key] = c
 		end
+		local crew = c :: { gui: BillboardGui, at: Attachment }
+		crew.at.WorldPosition = g.sum / #g.rigs + Vector3.new(0, 7.5, 0)
+		local count = crew.gui:FindFirstChild("Count") :: TextLabel
+		count.Text = if #g.rigs > 1 then `x{#g.rigs}` else ""
 	end
 	for key, c in crews do
-		local g = groups[key]
-		if not (g and #g.rigs >= CREW_MIN) then
+		if not groups[key] then
 			c.gui:Destroy()
 			c.at:Destroy()
 			crews[key] = nil
