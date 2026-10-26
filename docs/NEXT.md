@@ -125,3 +125,9 @@ Left, in order:
 2. Creator Hub: store icon + thumbnails upload (API can't set source-language media), genre/subgenre,
    badge names and descriptions.
 3. `python3 tools/studio/publish_studio.py --launch`, then make it public.
+
+## Status 2026-10-26 morning (test place v50)
+
+Playable end to end in Studio: loading flyover → cold open → calls (ring assist, generous home zone, routing round islands) → build tablet + unlock tree + Lego builds → quest pontoon/tablet → workers (categories, rarity, offline earnings) → Lifeboat / Submarine (diver) / Helicopter (winch cable, auto-land) → ring bridges. 3 Opus playtests, all findings fixed. Launch universe prepped (40 products, server size 6, listing).
+Store media ready locally (not uploaded): icon `marketing/icon_v4/icon_final.png` (alt A/B/C), thumbnails `marketing/thumbnails_v4/thumb_1..5.png` (1, 2, 4 strongest; 3 weak).
+Waiting on the owner: (1) art pass — another 3 art-director rounds vs ship as is; (2) run `tools/roblox/keyd.sh` (sudo) for a real-client Opus playtest on an account without passes (free Boat-to-me cooldown, Cash craft buys, real steering, real DataStore saves); (3) Creator Hub: upload icon + thumbnails, genre/subgenre, rename the 5 badges to rescue milestones; then `publish_studio.py --launch` + go public.
