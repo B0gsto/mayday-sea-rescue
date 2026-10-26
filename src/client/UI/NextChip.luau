@@ -44,6 +44,8 @@ local beacon: OnboardingBeacon.Beacon? = nil
 local pointingUntil = 0
 local doneAt: number? = nil
 local pointingAt: Vector3? = nil
+local lastSite: NextGoal.Site? = nil
+local lastSiteAt = 0
 
 local POINT_SECONDS = 10 -- s the arrow/pin stay after a tap
 local NEAR_STATION = 18 -- studs: close enough to open the tablet from the chip
@@ -75,7 +77,7 @@ local function stationPoint(): Vector3?
 	if typeof(bay) ~= "CFrame" then
 		return nil
 	end
-	return DockConfig.stationSpot(bay).Position
+	return DockConfig.stationSpot(bay).Position + Vector3.new(0, 1.1, 0) -- the pad top (DockPieces.buildStation: 0.8 base + studs)
 end
 
 local function beat(): Onboarding.Beat
@@ -188,10 +190,18 @@ local function refresh()
 		startPulse(false)
 		return
 	end
+	local owned = if type(s.dockBuildings) == "table" then s.dockBuildings else {}
+	-- a running site owns the chip: a frame without SiteKey (playtest 2026-10-26, not reproduced) must not flip
+	-- it to the next buy. shortcut: a 3 s hold, until the server's site state is found to drop out
 	local site = siteState()
+	if site then
+		lastSite, lastSiteAt = site, os.clock()
+	elseif lastSite and os.clock() - lastSiteAt < 3 and owned[lastSite.key] ~= true then
+		site = lastSite
+	end
 	local g = NextGoal.next({
 		cash = tonumber(s.cash) or 0,
-		owned = if type(s.dockBuildings) == "table" then s.dockBuildings else {},
+		owned = owned,
 		construction = site,
 	})
 	if not g then
@@ -264,20 +274,20 @@ function NextChip.mount(region: Frame)
 	local panel = Instance.new("Frame")
 	panel.Name = "Panel"
 	panel.Size = UDim2.fromScale(1, 1)
-	panel.BackgroundColor3 = HudTheme.Colors.panel
-	panel.BackgroundTransparency = HudTheme.PanelTransparency
+	panel.BackgroundColor3 = Color3.new(1, 1, 1)
 	panel.BorderSizePixel = 0
 	panel.Parent = r
-	HudTheme.corner(panel)
-	local edge = HudTheme.stroke(panel)
-	edge.Transparency = 0.25
+	-- the UI kit look, like the tutorial chips it replaces (playtest 2026-10-26: slate read faint)
+	Style.corner(panel, 10)
+	Style.gradient(panel, Style.grad("ink"))
+	Style.stroke(panel, 3, true)
 
 	local well = Instance.new("Frame")
 	well.Name = "Icon"
 	well.BackgroundColor3 = HudTheme.Colors.panelLight
 	well.BackgroundTransparency = 0.1
-	well.Position = UDim2.fromOffset(6, 5)
-	well.Size = UDim2.fromOffset(26, 26)
+	well.Position = UDim2.fromOffset(6, 6)
+	well.Size = UDim2.fromOffset(36, 36)
 	well.Parent = panel
 	HudTheme.corner(well, 5)
 	local art = Instance.new("Frame")
@@ -289,12 +299,18 @@ function NextChip.mount(region: Frame)
 	art.Parent = well
 	iconWell = art
 
-	local name = HudTheme.label("Name", "", UDim2.new(1, -116, 0, 20), HudTheme.BoldFont, 14, panel)
-	name.Position = UDim2.fromOffset(40, 1)
+	local name = Style.label(panel, "", 20)
+	name.Name = "Name"
+	name.Size = UDim2.new(1, -150, 0, 26)
+	name.Position = UDim2.fromOffset(50, 2)
+	name.TextXAlignment = Enum.TextXAlignment.Left
+	name.TextWrapped = false
+	name.TextTruncate = Enum.TextTruncate.AtEnd
 	nameLabel = name
-	local price =
-		HudTheme.label("Price", "", UDim2.fromOffset(66, 20), HudTheme.NumberFont, 15, panel)
-	price.Position = UDim2.new(1, -100, 0, 1)
+	local price = Style.label(panel, "", 20)
+	price.Name = "Price"
+	price.Size = UDim2.fromOffset(80, 26)
+	price.Position = UDim2.new(1, -124, 0, 2)
 	price.TextXAlignment = Enum.TextXAlignment.Right
 	price.TextColor3 = HudTheme.Colors.gold
 	priceLabel = price
@@ -304,8 +320,8 @@ function NextChip.mount(region: Frame)
 	back.BackgroundColor3 = HudTheme.Colors.locked
 	back.BackgroundTransparency = 0.25
 	back.BorderSizePixel = 0
-	back.Position = UDim2.fromOffset(40, 25)
-	back.Size = UDim2.new(1, -146, 0, 6)
+	back.Position = UDim2.fromOffset(50, 32)
+	back.Size = UDim2.new(1, -94, 0, 8)
 	back.Parent = panel
 	HudTheme.corner(back, 3)
 	local f = Instance.new("Frame")
@@ -321,8 +337,8 @@ function NextChip.mount(region: Frame)
 	slot.Name = "Key"
 	slot.BackgroundTransparency = 1
 	slot.AnchorPoint = Vector2.new(1, 0)
-	slot.Position = UDim2.new(1, -2, 0, 2)
-	slot.Size = UDim2.fromOffset(34, 32)
+	slot.Position = UDim2.new(1, -4, 0, 4)
+	slot.Size = UDim2.fromOffset(38, 36)
 	slot.Parent = panel
 	InputGlyph.chip(slot, Enum.KeyCode.F, Enum.KeyCode.ButtonY)
 

@@ -52,6 +52,7 @@ local SHOWN: { [string]: boolean } = {
 	Craft = true,
 	Quest = true,
 }
+local CALL: { [string]: boolean } = { Mayday = true, Casualty = true, Vessel = true }
 
 function Waypoint.metres(studs: number): string
 	local m = studs / STUDS_PER_M
@@ -189,7 +190,10 @@ function Waypoint.start(
 		local me = if root then root.Position else Vector3.zero
 
 		-- the marker on the objective
-		local want = pos ~= nil and label ~= nil and SHOWN[label] == true
+		local want = pos ~= nil
+			and label ~= nil
+			and SHOWN[label] == true
+			and not (CALL[label] and player:GetAttribute("TutorialHoldCall") == true) -- the tutorial's build step leads
 		local flat = route
 			or if pos then Vector3.new(pos.X - me.X, 0, pos.Z - me.Z).Magnitude else 0
 		if not (want and root) then

@@ -1,8 +1,8 @@
 --!strict
 -- OnboardingBeacon: the one next goal, shown in the world (docs/15 section 3, "a beacon on the
--- next thing, no text"). A ground-level pulse ring and an always-on-top diamond so a goal inside
--- the station still reads through the roof; no light column (user, 2026-10-21). Hidden while a
--- cutscene owns the camera (Scriptable). Off screen, an arrow on the screen edge points at it.
+-- next thing, no text"). A ground-level pulse ring and a diamond high over it (clear of roofs, cranes and
+-- name signs: AlwaysOnTop never drew in play, Studio 2026-10-25/26); no light column (user, 2026-10-21). Hidden while a
+-- cinematic hides the HUD (OpsUiHidden). Off screen, an arrow on the screen edge points at it.
 -- Client only. Mounted by OnboardingController (one beacon, moved from goal to goal) and by the
 -- launch step (on your boat).
 local Players = game:GetService("Players")
@@ -10,6 +10,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
+local Layout = require(script.Parent:WaitForChild("Layout"))
 local Weather = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Weather"))
 
 local OnboardingBeacon = {}
@@ -29,6 +30,7 @@ local COLORS: { [string]: Color3 } = {
 }
 
 local RING_MAX = 40
+local LIFT = 16 -- studs: the diamond over the goal
 
 local function surfaceY(p: Vector3): number
 	local ok, h = pcall(Weather.heightAt, p)
@@ -53,9 +55,10 @@ function OnboardingBeacon.start(): Beacon
 
 	local billboard = Instance.new("BillboardGui")
 	billboard.Name = "Mark"
-	billboard.Size = UDim2.fromOffset(64, 92)
-	billboard.StudsOffsetWorldSpace = Vector3.new(0, 6, 0)
-	billboard.AlwaysOnTop = true
+	billboard.Size = UDim2.fromOffset(80, 120)
+	billboard.StudsOffsetWorldSpace = Vector3.new(0, LIFT, 0)
+	billboard.AlwaysOnTop = false
+	billboard.LightInfluence = 0
 	billboard.MaxDistance = 1500
 	billboard.Adornee = ring
 	billboard.Parent = ring
@@ -64,7 +67,7 @@ function OnboardingBeacon.start(): Beacon
 	diamond.Name = "Diamond"
 	diamond.AnchorPoint = Vector2.new(0.5, 0.5)
 	diamond.Position = UDim2.fromScale(0.5, 0.3)
-	diamond.Size = UDim2.fromOffset(30, 30)
+	diamond.Size = UDim2.fromOffset(40, 40)
 	diamond.Rotation = 45
 	diamond.BackgroundColor3 = COLORS.Place
 	diamond.BorderSizePixel = 0
@@ -81,7 +84,7 @@ function OnboardingBeacon.start(): Beacon
 	stem.Name = "Stem"
 	stem.AnchorPoint = Vector2.new(0.5, 0)
 	stem.Position = UDim2.fromScale(0.5, 0.46)
-	stem.Size = UDim2.fromOffset(3, 24)
+	stem.Size = UDim2.fromOffset(4, 56)
 	stem.BackgroundColor3 = COLORS.Place
 	stem.BackgroundTransparency = 0.25
 	stem.BorderSizePixel = 0
@@ -164,8 +167,8 @@ function OnboardingBeacon.start(): Beacon
 		if not active or not at then
 			return
 		end
-		local cutscene = Workspace.CurrentCamera ~= nil
-			and Workspace.CurrentCamera.CameraType == Enum.CameraType.Scriptable
+		-- not CameraType: the jet ski's chase camera is Scriptable too, so the mark never drew on the water
+		local cutscene = Players.LocalPlayer:GetAttribute("OpsUiHidden") == true
 		billboard.Enabled = not cutscene
 		arrow.Visible = false
 		range.Visible = false
@@ -175,7 +178,7 @@ function OnboardingBeacon.start(): Beacon
 		end
 		local cam = Workspace.CurrentCamera :: Camera
 		local vp = cam.ViewportSize
-		local p, onScreen = cam:WorldToViewportPoint(at + Vector3.new(0, 6, 0))
+		local p, onScreen = cam:WorldToViewportPoint(at + Vector3.new(0, LIFT, 0))
 		local margin = 48
 		local x, y = p.X, p.Y
 		if p.Z <= 0 then -- behind the camera: the projection flips
@@ -190,8 +193,15 @@ function OnboardingBeacon.start(): Beacon
 				(vp.X / 2 - margin) / math.max(math.abs(dx), 0.01),
 				(vp.Y / 2 - margin) / math.max(math.abs(dy), 0.01)
 			)
-			arrow.Position = UDim2.fromOffset(vp.X / 2 + dx * k, vp.Y / 2 + dy * k)
 			arrow.Rotation = math.deg(math.atan2(dx, -dy))
+			-- clear of the HUD like UI/Waypoint: pinned left it hid under the menu column (playtest 2026-10-26)
+			local pin = Layout.clearOfHud(
+				Vector2.new(vp.X / 2 + dx * k, vp.Y / 2 + dy * k),
+				Vector2.new(30, 30),
+				40
+			)
+			dx, dy, k = pin.X - vp.X / 2, pin.Y - vp.Y / 2, 1
+			arrow.Position = UDim2.fromOffset(pin.X, pin.Y)
 			arrow.Visible = true
 			local char = Players.LocalPlayer.Character
 			local root = char and char:FindFirstChild("HumanoidRootPart")

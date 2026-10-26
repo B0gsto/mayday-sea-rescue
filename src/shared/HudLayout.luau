@@ -47,8 +47,8 @@ HudLayout.OBJECTIVE_MIN_WIDTH = 210 -- the step card is 208 wide
 HudLayout.QUEST_WIDTH = 236 -- the quest tracker chip (UI/Menu): desktop above the minimap pill (bottom right)
 HudLayout.QUEST_HEIGHT = 50
 HudLayout.QUEST_TOUCH_HEIGHT = 34 -- touch: a tag over the minimap's bottom edge, ending where the objective may start
-HudLayout.CHIPS_WIDTH = 320 -- docs/24 E: the tutorial goal chips / the permanent Next chip (UI/NextChip)
-HudLayout.CHIPS_HEIGHT = 36
+HudLayout.CHIPS_WIDTH = 420 -- docs/24 E: the tutorial goal chips / the permanent Next chip (UI/NextChip)
+HudLayout.CHIPS_HEIGHT = 48 -- touch: under the 64 du step card, inside OBJECTIVE_HEIGHT (68 + 48 <= 132)
 HudLayout.DEBRIEF_WIDTH = 340 -- the end-of-call toast (UI/OpsDebrief), drawn scaled to its region's width
 HudLayout.DEBRIEF_HEIGHT = 96
 HudLayout.DEBRIEF_MIN = 0.7 -- the smallest the toast may shrink to fit a gap
