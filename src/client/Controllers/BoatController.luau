@@ -440,6 +440,11 @@ local function step(dt: number)
 					local root = child.PrimaryPart
 					local speed = if root then root.AssemblyLinearVelocity.Magnitude else 0
 					helm = Helm.step(helm, steer, speed / (if spec then spec.topSpeed else 60), dt)
+					-- Captain Grip (SkillService's SkillGrip): the hull bites sooner; 1 = no change
+					Simulator.setGrip(
+						child,
+						1 + (tonumber(localPlayer:GetAttribute("SkillGrip")) or 0)
+					)
 					telemetry = Simulator.step(child, throttle, helm, now)
 					if root and spec then
 						-- a quay corner deflects, never spins: no yaw past the helm's own top rate (and the
