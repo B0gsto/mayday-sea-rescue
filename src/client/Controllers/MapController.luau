@@ -729,8 +729,9 @@ local function buildFullMap()
 	panel.body.Visible = false
 
 	local root = frame("View", panel.root, {
-		Position = UDim2.fromOffset(S.pad, S.titleBar * 0.5 + S.pad),
-		Size = UDim2.new(1, -2 * S.pad, 1, -(S.titleBar * 0.5 + 2 * S.pad)),
+		-- below the whole title bar (over its lower half it clipped the title)
+		Position = UDim2.fromOffset(S.pad, S.titleBar + 6),
+		Size = UDim2.new(1, -2 * S.pad, 1, -(S.titleBar + 6 + S.pad)),
 		BackgroundColor3 = DEEP,
 		BackgroundTransparency = 0,
 		ClipsDescendants = true,

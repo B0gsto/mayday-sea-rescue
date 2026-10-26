@@ -133,6 +133,16 @@ local function aspect(): number
 	return math.max(vp.X / math.max(vp.Y, 1), 0.3)
 end
 
+-- The screen share left of the list (the island and the lot being built are framed there, not under it).
+local function free(): number
+	local p = listPanel
+	if not p then
+		return 1
+	end
+	local vp, scale = Style.metrics(p.root)
+	return math.clamp((vp.X - (LIST_W + 2 * S.margin) * scale) / math.max(vp.X, 1), 0.4, 1)
+end
+
 local function shake(target: GuiObject?)
 	if not target then
 		AudioController.play("UI_Fail")
@@ -381,7 +391,7 @@ local function artWell(parent: GuiObject, item: DockBlueprints.Item, side: numbe
 	return well
 end
 
-local focusItem: (DockBlueprints.Item) -> ()
+local focusItem: (DockBlueprints.Item, number?) -> ()
 
 -- The state badge on its own row (never over the title): the reason's icon and label. A prerequisite reason
 -- is a chip with that item's drawing; tapping it focuses the prerequisite.
@@ -682,12 +692,13 @@ end
 local function islandView(duration: number)
 	local b = plotFrame
 	if b then
-		fly(DockBuild.camera(b, DockBuild.ISLAND_RADIUS, aspect(), nil), duration)
+		fly(DockBuild.camera(b, DockBuild.ISLAND_RADIUS, aspect(), nil, free()), duration)
 	end
 end
 
--- Zoom to an item's lot (from its card or its paper on the island) and show its strip.
-focusItem = function(item: DockBlueprints.Item)
+-- Zoom to an item's lot (from its card or its paper on the island) and show its strip. `room` widens the view
+-- (a building going up is taller than its footprint).
+focusItem = function(item: DockBlueprints.Item, room: number?)
 	local b = plotFrame
 	if not b then
 		return
@@ -696,7 +707,7 @@ focusItem = function(item: DockBlueprints.Item)
 	local spot, size = DockBuild.spot(item)
 	outlineSpot(b * spot, size)
 	local at, paperSize = DockBuild.paper(item, b)
-	fly(DockBuild.focus(b, at.Position, paperSize, aspect()), 0.6)
+	fly(DockBuild.focus(b, at.Position, paperSize * (room or 1), aspect(), free()), 0.6)
 	refreshStrip()
 	AudioController.play("UI_Click")
 end
@@ -1208,6 +1219,22 @@ function DockController.Start()
 				local holder = if typeof(parent) == "string" then pm:WaitForChild(parent, 3) else pm
 				local model = holder and holder:WaitForChild(name, 3)
 				if model and model:IsA("Model") then
+					local decor = parent == "Decorations"
+					if
+						displayed
+						and plot == player:GetAttribute("DockPlot")
+						and (
+							if decor
+								then DockConfig.Decorations[name]
+								else DockConfig.Buildings[name]
+						)
+					then
+						-- my own build while the tablet is up: watch the bricks land (left of the list)
+						focusItem(
+							{ kind = if decor then "Decor" else "Building", key = name } :: any,
+							2.2
+						)
+					end
 					local discount = 0
 					for _, p in Players:GetPlayers() do
 						if p:GetAttribute("DockPlot") == plot then

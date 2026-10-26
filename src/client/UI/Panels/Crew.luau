@@ -1,6 +1,6 @@
 --!strict
--- Crew panel: the four party seats, with the leader ringed, then your workers (WP-26: the people you
--- rescued, by category, from the PlayerDataChanged snapshot; they work in the world, nothing to pick here).
+-- Crew panel: your workers (WP-26: the people you rescued, by category, from the PlayerDataChanged snapshot;
+-- they work in the world, nothing to pick here), then the party seats while you are in a party (leader ringed).
 -- Invite opens Roblox's own invite sheet; Leave is the same remote the boat prompt uses. The server
 -- echoes both changes.
 local Players = game:GetService("Players")
@@ -46,6 +46,8 @@ function Crew.new(canvas: Frame, onClose: () -> ())
 		end
 		local host = Instance.new("Frame")
 		host.Name = "Seats"
+		host.LayoutOrder = 8
+		host.Visible = #ids > 0 -- solo: no empty seats, the panel is your workers
 		host.BackgroundTransparency = 1
 		host.Size = UDim2.fromScale(1, 0)
 		host.AutomaticSize = Enum.AutomaticSize.Y
@@ -102,7 +104,21 @@ function Crew.new(canvas: Frame, onClose: () -> ())
 		-- your workers (WP-26): one row per category, its icon and how many work / are rescued, then a chip
 		-- per person (stars + name), lit while they work at the building, grey while they wait on the jetty
 		local place = WorkerRules.assign(workers, owned)
+		if #workers == 0 then
+			local none = Style.label(panel.body, "No workers", Theme.Text.heading, true)
+			none.Size = UDim2.new(1, 0, 0, 70)
+		end
 		for c, category in WorkerRules.CATEGORIES do
+			local working, total = 0, 0
+			for i, w in workers do
+				if w.category == category then
+					total += 1
+					working += if place[i] then 1 else 0
+				end
+			end
+			if total == 0 then
+				continue
+			end
 			local row = Instance.new("Frame")
 			row.Name = category
 			row.LayoutOrder = c
@@ -122,20 +138,17 @@ function Crew.new(canvas: Frame, onClose: () -> ())
 			local icon = Instance.new("Frame")
 			icon.BackgroundTransparency = 1
 			icon.AnchorPoint = Vector2.new(0.5, 0)
-			icon.Position = UDim2.fromScale(0.5, 0.08)
-			icon.Size = UDim2.fromOffset(56, 56)
+			icon.Position = UDim2.new(0.5, 0, 0, 4)
+			icon.Size = UDim2.fromOffset(48, 48)
 			icon.Parent = hFace
 			WorkerBadge.icon(icon, category)
-			local working, total = 0, 0
-			for i, w in workers do
-				if w.category == category then
-					total += 1
-					working += if place[i] then 1 else 0
-				end
-			end
+			local label = Style.label(hFace, category, Theme.Text.small)
+			label.Position = UDim2.fromOffset(4, 54)
+			label.Size = UDim2.new(1, -8, 0, 24)
+			label.TextScaled = true
 			local count = Style.label(hFace, `{working}/{total}`, Theme.Text.small)
-			count.Position = UDim2.new(0, 4, 1, -40)
-			count.Size = UDim2.new(1, -8, 0, 30)
+			count.Position = UDim2.fromOffset(4, 78)
+			count.Size = UDim2.new(1, -8, 0, 24)
 			for i, w in workers do
 				if w.category ~= category then
 					continue

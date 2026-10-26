@@ -21,17 +21,32 @@ function DockBuild.distance(radius: number, aspect: number, fov: number?): numbe
 	return math.min(radius * DockBuild.MARGIN / math.min(vf, hf), DockBuild.MAX_DISTANCE)
 end
 
+-- Sideways pan (studs, along the camera's right) that sets the look target in the middle of the left `free`
+-- share of the screen (the rest is the right-hand list).
+local function panLeft(d: number, aspect: number, free: number): number
+	return (1 - free) * d * math.tan(math.rad(DockBuild.FOV) / 2) * math.max(aspect, 0.3)
+end
+
 -- The build-mode camera CFrame in the berth frame. `aim` (world) pulls the look target toward a selected
 -- item's spot; without it the island centre is framed. The camera sits inland of the island (the bridge
--- side), looking out over the lots to the sea.
-function DockBuild.camera(frame: CFrame, radius: number, aspect: number, aim: Vector3?): CFrame
-	local d = DockBuild.distance(radius, aspect)
+-- side), looking out over the lots to the sea. `free` (0-1, default 1): the screen share left of the list
+-- the island is fitted into.
+function DockBuild.camera(
+	frame: CFrame,
+	radius: number,
+	aspect: number,
+	aim: Vector3?,
+	free: number?
+): CFrame
+	local f = free or 1
+	local d = DockBuild.distance(radius, aspect * f)
 	local centre = (frame * Marina.ISLAND).Position
 	local look = if aim then centre:Lerp(aim, 0.35) else centre
 	local pos = centre
 		+ Vector3.new(0, d * math.sin(DockBuild.PITCH), 0)
 		- frame.LookVector * (d * math.cos(DockBuild.PITCH))
-	return CFrame.lookAt(pos, look)
+	local cam = CFrame.lookAt(pos, look)
+	return cam + cam.RightVector * panLeft(d, aspect, f)
 end
 
 -- Where an item would stand, in the berth frame, and the footprint to outline -> CFrame, Vector2.
@@ -66,16 +81,27 @@ DockBuild.FOCUS_MIN = 45 -- never closer than this (small decor)
 DockBuild.FOCUS_SHIFT = Vector2.new(0.3, 0.2) -- spot off-centre (viewport halves): left of the list, above the strip
 
 -- The focused view of a lot: same pitch and heading as the island view, close enough to fit the footprint,
--- panned so the spot sits left of the right-hand list and above the bottom strip.
-function DockBuild.focus(frame: CFrame, at: Vector3, size: Vector2, aspect: number): CFrame
+-- panned so the spot sits left of the right-hand list (in the middle of the `free` share when given) and above
+-- the bottom strip.
+function DockBuild.focus(
+	frame: CFrame,
+	at: Vector3,
+	size: Vector2,
+	aspect: number,
+	free: number?
+): CFrame
 	local r = math.max(size.X, size.Y) / 2
-	local d = math.max(DockBuild.distance(r * DockBuild.FOCUS_ROOM, aspect), DockBuild.FOCUS_MIN)
+	local d = math.max(
+		DockBuild.distance(r * DockBuild.FOCUS_ROOM, aspect * (free or 1)),
+		DockBuild.FOCUS_MIN
+	)
 	local pos = at
 		+ Vector3.new(0, d * math.sin(DockBuild.PITCH), 0)
 		- frame.LookVector * (d * math.cos(DockBuild.PITCH))
 	local cam = CFrame.lookAt(pos, at)
 	local vf = math.tan(math.rad(DockBuild.FOV) / 2)
-	local pan = cam.RightVector * (DockBuild.FOCUS_SHIFT.X * d * vf * math.max(aspect, 0.3))
+	local shiftX = if free then 1 - free else DockBuild.FOCUS_SHIFT.X
+	local pan = cam.RightVector * (shiftX * d * vf * math.max(aspect, 0.3))
 		- cam.UpVector * (DockBuild.FOCUS_SHIFT.Y * d * vf)
 	return cam + pan
 end

@@ -115,6 +115,17 @@ AssetLoader.PART_SETS = {
 	},
 } :: { [string]: { [string]: string } }
 
+-- Assets that ship with plain (untextured) parts: their sets exist but no part name maps to one, and mapping them
+-- now would change how they look in game. No "no texture set" warning for them.
+-- shortcut: silenced, not mapped; add PART_SETS rows in an art pass that is allowed to change their look.
+AssetLoader.UNTEXTURED = {
+	M_Sea_Morwenna = true,
+	M_Sea_MailSeaplane = true,
+	M_Sea_AdmiraltyAnchor = true,
+	M_Sea_Bell = true,
+	M_Bld_Cottage_02 = true,
+} :: { [string]: boolean }
+
 local appearances = script.Parent:FindFirstChild("Appearances")
 local templates: Folder? = nil
 local loading: { [string]: boolean } = {}
@@ -227,7 +238,9 @@ local function applyAppearance(asset: string, part: MeshPart)
 		return
 	end
 	if not set then
-		warn(`[AssetLoader] {asset}: no texture set for {part.Name}`)
+		if not AssetLoader.UNTEXTURED[asset] then
+			warn(`[AssetLoader] {asset}: no texture set for {part.Name}`)
+		end
 		return
 	end
 	for _, old in part:GetChildren() do

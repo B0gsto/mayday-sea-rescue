@@ -46,6 +46,12 @@ return function(t)
 			t.expect(`{q.id} ask {words(q.ask) <= 12}`).toBe(`{q.id} ask true`)
 			t.expect(`{q.id} thanks {words(q.thanks) <= 12}`).toBe(`{q.id} thanks true`)
 			t.expect(typeof(Rules.target(q))).toBe("Vector3")
+			local placeId, placeName = Rules.place(q)
+			local named = false
+			for _, row in t.require("Config/WorldConfig").Islands do
+				named = named or (row.id == placeId and row.name == placeName)
+			end
+			t.expect(`{q.id} place {named}`).toBe(`{q.id} place true`)
 			if q.kind == "rescue" then
 				t.expect(CallTypes.SpawnZones[q.at.zone :: string] ~= nil).toBe(true)
 			end

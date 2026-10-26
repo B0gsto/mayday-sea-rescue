@@ -45,6 +45,9 @@ HudLayout.PILL_HEIGHT = 36 -- desktop: clear space above the square (the minimap
 HudLayout.TOUCH_SIDE = 130 -- final px: the touch minimap square
 HudLayout.TOUCH_CARD_WIDTH = 130 -- touch: the mission card column (the pager is 120 wide)
 HudLayout.OBJECTIVE_MIN_WIDTH = 210 -- the step card is 208 wide
+HudLayout.QUEST_WIDTH = 236 -- the quest tracker chip (UI/Menu): desktop above the minimap pill
+HudLayout.QUEST_HEIGHT = 50
+HudLayout.QUEST_TOUCH_HEIGHT = 34 -- touch: a tag over the minimap's bottom edge, ending where the objective may start
 HudLayout.MENU_COUNT = 8 -- UI/Menu's buttons: Shop, Quests, Album, Pet, Crew, Settings, Map, Boat
 
 -- The menu grid's cell per device (du): icon square, label row (text = label - 4), row gap, column gap.
@@ -68,6 +71,7 @@ export type RegionName =
 	| "gauges"
 	| "wallet"
 	| "menu"
+	| "quest"
 
 export type Rect = {
 	anchor: Vector2,
@@ -224,6 +228,11 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 			Vector2.new(u.X - m, m),
 			Vector2.new(HudLayout.TOUCH_CARD_WIDTH, cardBottom - m)
 		)
+		mt.rects["quest"] = rect(
+			Vector2.new(0, 0),
+			Vector2.new(left, m + side + g - HudLayout.QUEST_TOUCH_HEIGHT),
+			Vector2.new(side, HudLayout.QUEST_TOUCH_HEIGHT)
+		)
 	else
 		-- the menu strip centred on the left edge, the wallet top left beside it, the objective under
 		mt.rects["menu"] =
@@ -254,6 +263,11 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		)
 		mt.rects["minimap"] =
 			rect(Vector2.new(0, 1), Vector2.new(left, bottom), Vector2.new(side, side))
+		mt.rects["quest"] = rect(
+			Vector2.new(0, 1),
+			Vector2.new(left, bottom - side - HudLayout.PILL_HEIGHT - g),
+			Vector2.new(HudLayout.QUEST_WIDTH, HudLayout.QUEST_HEIGHT)
+		)
 	end
 	-- prompt and gauges keep their place on every device (the prompt clears the speed dock;
 	-- gauges holds the touch action buttons at the bottom right on purpose). Desktop: the prompt

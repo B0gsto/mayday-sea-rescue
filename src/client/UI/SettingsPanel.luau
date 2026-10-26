@@ -94,7 +94,7 @@ local function art(parent: Instance, name: string, color: string)
 	tile.Name = "Icon"
 	tile.BackgroundColor3 = Style.grad(color).top
 	tile.AnchorPoint = Vector2.new(0, 0.5)
-	tile.Position = UDim2.fromOffset(12, 0)
+	tile.Position = UDim2.new(0, 12, 0.5, 0)
 	tile.Size = UDim2.fromOffset(52, 52)
 	tile.Parent = parent
 	Style.corner(tile, S.cornerSmall)
@@ -158,7 +158,7 @@ local function toggleRow(
 	label: string
 )
 	local row = rowRoot(parent, order, 82)
-	local line = (row:FindFirstChild("Row") :: Frame):FindFirstChild("LabelLine") :: Frame
+	local line = row:FindFirstChild("LabelLine", true) :: Frame
 	art(line, artName, color)
 	rowLabel(line, label, 150)
 	local t = Toggle.new(line, {
@@ -185,7 +185,7 @@ local function sliderRow(
 	local range = SettingsRules.Ranges[key]
 	local lo, hi = range[1], range[2]
 	local row = rowRoot(parent, order, 150)
-	local line = (row:FindFirstChild("Row") :: Frame):FindFirstChild("LabelLine") :: Frame
+	local line = row:FindFirstChild("LabelLine", true) :: Frame
 	art(line, artName, color)
 	rowLabel(line, label, 110)
 	local value = Style.label(line, "", Theme.Text.body, true)
@@ -310,7 +310,7 @@ local function segmentRow(
 	options: { { any } }
 )
 	local row = rowRoot(parent, order, 150)
-	local line = (row:FindFirstChild("Row") :: Frame):FindFirstChild("LabelLine") :: Frame
+	local line = row:FindFirstChild("LabelLine", true) :: Frame
 	art(line, artName, color)
 	rowLabel(line, label, 16)
 	local strip = Instance.new("Frame")
@@ -352,7 +352,7 @@ local function actionRow(
 	onTap: () -> ()
 ): (Frame, TextLabel)
 	local row = rowRoot(parent, order, 82)
-	local line = (row:FindFirstChild("Row") :: Frame):FindFirstChild("LabelLine") :: Frame
+	local line = row:FindFirstChild("LabelLine", true) :: Frame
 	art(line, artName, color)
 	rowLabel(line, label, 70)
 	local hit = Style.button(row, UDim2.fromScale(1, 1))
