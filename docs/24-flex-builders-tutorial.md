@@ -104,7 +104,8 @@ each crew category and so on." Menus outside gameplay are allowed (build tablet,
 - **Build tree:** the build tablet's bottom card bar becomes this tree, fed from `DockConfig.Buildings` +
   `UnlockTree` (no data change). Buying still starts the timed construction, closes the tree and shows the site; a
   running site shows its timer on its node and other nodes wait (hourglass). The tutorial's Workshop pulse targets
-  the Workshop node.
+  the Workshop node. A second lane "Quest" holds the quest-chain blueprints (`DockConfig.Blueprints`, e.g. the
+  Lighthouse): padlock + "Quest" until the quest grants it, then owned; never sold (no Cash button).
 - **Player + crew tree** (new left-menu button "Skills", same view): bought with Cash, Robux skips Cash never order.
   Branches, each 3–5 nodes in a chain with a fork or two:
   - Captain (you): craft top speed +4% per tier (3), handling/grip, pick-up reach +3 studs, Boat-to-me cooldown −10%,

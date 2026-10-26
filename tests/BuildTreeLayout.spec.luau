@@ -4,16 +4,45 @@ return function(t)
 	local L = t.load("src/shared/BuildTreeLayout.luau")
 	local DockConfig = t.load("src/shared/Config/DockConfig.luau")
 
+	local function buildCells()
+		local out = {}
+		for _, cell in L.cells() do
+			if cell.group == "Build" then
+				table.insert(out, cell)
+			end
+		end
+		return out
+	end
+
 	t.test("every building gets a cell, in BUILDINGS order", function()
-		local cells = L.cells()
+		local cells = buildCells()
 		t.expect(#cells).toBe(#DockConfig.BUILDINGS)
 		for i, cell in cells do
 			t.expect(cell.id).toBe(DockConfig.BUILDINGS[i])
 		end
 	end)
 
-	t.test("a node sits right of all its prerequisites", function()
+	t.test("quest blueprints follow in their own Quest lane, one column", function()
 		local cells = L.cells()
+		local n = 0
+		for _ in DockConfig.Blueprints do
+			n += 1
+		end
+		t.expect(#cells).toBe(#DockConfig.BUILDINGS + n)
+		local row = 0
+		for i = #DockConfig.BUILDINGS + 1, #cells do
+			local cell = cells[i]
+			t.expect(cell.group).toBe("Quest")
+			t.expect(DockConfig.Blueprints[cell.id] ~= nil).toBe(true)
+			t.expect(cell.col).toBe(0)
+			t.expect(cell.row).toBe(row)
+			row += 1
+		end
+		t.expect(cells[#cells].id).toBe("Lighthouse")
+	end)
+
+	t.test("a node sits right of all its prerequisites", function()
+		local cells = buildCells()
 		local col: { [string]: number } = {}
 		for _, cell in cells do
 			col[cell.id] = cell.col
@@ -34,7 +63,7 @@ return function(t)
 	t.test("no two nodes share a cell", function()
 		local seen: { [string]: boolean } = {}
 		for _, cell in L.cells() do
-			local key = `{cell.col}:{cell.row}`
+			local key = `{cell.group}:{cell.col}:{cell.row}`
 			t.expect(seen[key]).toBeNil()
 			seen[key] = true
 			t.expect(cell.col >= 0 and cell.row >= 0).toBe(true)
@@ -42,9 +71,8 @@ return function(t)
 	end)
 
 	t.test("rows inside a column keep the stable config order; calls agree", function()
-		local first = L.cells()
-		local second = L.cells()
-		t.expect(second).toEqual(first)
+		t.expect(L.cells()).toEqual(L.cells())
+		local first = buildCells()
 		local byCol: { [number]: { any } } = {}
 		for _, cell in first do
 			local list = byCol[cell.col]
