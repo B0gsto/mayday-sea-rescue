@@ -1852,7 +1852,65 @@ end
 -- The boarding climb (2026-10-21): an anchored survivor swims to the hull side by their slot, then
 -- up and over onto it, following the moving boat each frame (target() is the slot pose).
 VehicleService.CLIMB_SECONDS = 1.3
+VehicleService.WINCH_SECONDS = 1.5 -- up the cable
+VehicleService.SWING_SECONDS = 0.4 -- in through the door
+
+-- The helicopter's winch (2026-10-26): a cable from WinchPoint to their harness, they rise up it with a
+-- fading sway, unhook under the arm and swing in to the slot. The Beam renders on each client.
+local function winchLift(
+	survivorModel: Model,
+	hull: BasePart,
+	winch: Attachment,
+	target: () -> CFrame
+)
+	local start = survivorModel:GetPivot()
+	local harness = Instance.new("Attachment")
+	harness.Name = "WinchHarness"
+	harness.Position = Vector3.new(0, 2.2, 0) -- head top on the R15 rig, from its root
+	harness.Parent = survivorModel.PrimaryPart
+		or survivorModel:FindFirstChildWhichIsA("BasePart", true)
+	local cable = Instance.new("Beam")
+	cable.Name = "WinchCable"
+	cable.Attachment0 = winch
+	cable.Attachment1 = harness
+	cable.Width0, cable.Width1 = 0.15, 0.15
+	cable.Segments = 1
+	cable.FaceCamera = true
+	cable.Color = ColorSequence.new(Color3.fromRGB(40, 40, 44))
+	cable.Transparency = NumberSequence.new(0)
+	cable.Parent = harness
+	local t0 = os.clock()
+	local hang = start
+	while survivorModel.Parent and hull.Parent do
+		local t = math.min((os.clock() - t0) / VehicleService.WINCH_SECONDS, 1)
+		local up = hull.CFrame.Rotation + winch.WorldPosition - Vector3.new(0, 3.2, 0) -- harness ~1 under the hook
+		local sway = math.sin(t * math.pi * 3) * (1 - t) * 0.7
+		hang = start:Lerp(up, t * t * (3 - 2 * t))
+			* CFrame.new(sway, 0, 0)
+			* CFrame.Angles(0, 0, -sway * 0.15)
+		survivorModel:PivotTo(hang)
+		if t >= 1 then
+			break
+		end
+		RunService.Heartbeat:Wait()
+	end
+	harness:Destroy() -- reeled in: the cable goes with the harness
+	t0 = os.clock()
+	while survivorModel.Parent and hull.Parent do
+		local t = math.min((os.clock() - t0) / VehicleService.SWING_SECONDS, 1)
+		survivorModel:PivotTo(hang:Lerp(target(), t))
+		if t >= 1 then
+			return
+		end
+		RunService.Heartbeat:Wait()
+	end
+end
+
 function VehicleService.Climb(survivorModel: Model, hull: BasePart, target: () -> CFrame)
+	local winch = hull:FindFirstChild("WinchPoint")
+	if winch and winch:IsA("Attachment") then
+		return winchLift(survivorModel, hull, winch, target)
+	end
 	local start = survivorModel:GetPivot()
 	local side = if hull.CFrame:PointToObjectSpace(start.Position).X >= 0 then 1 else -1
 	local t0 = os.clock()

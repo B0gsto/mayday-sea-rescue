@@ -17,6 +17,7 @@ local ORANGE = Color3.fromRGB(255, 102, 0)
 local WHITE = Color3.fromRGB(240, 240, 236)
 local DARK = Color3.fromRGB(45, 48, 54)
 local GLASS = Color3.fromRGB(120, 170, 200)
+local YELLOW = Color3.fromRGB(245, 205, 48) -- Lego bright yellow
 
 local ROOT_SIZE = Vector3.new(7, 6, 13)
 local MASS = 6400 / 37 -- RMU (1 RMU = 37 kg)
@@ -162,6 +163,7 @@ function Builder.build(id: string): Model
 	part(model, body, "Fin", Vector3.new(0.4, 4, 2.4), CFrame.new(0, 3.4, 19), ORANGE)
 	part(model, body, "Stabiliser", Vector3.new(4.4, 0.3, 1.4), CFrame.new(0, 1.4, 18), WHITE)
 	part(model, body, "WinchArm", Vector3.new(2, 0.4, 0.4), CFrame.new(4.3, 2.4, 2.4), DARK)
+	part(model, body, "WinchHook", Vector3.new(0.6, 0.6, 0.6), CFrame.new(5, 1.9, 2.4), YELLOW) -- the cable's end
 	for _, x in { -2.6, 2.6 } do -- skids: bottom at -4.5 = Flight spec.skid
 		part(model, body, "Skid", Vector3.new(0.4, 0.4, 11), CFrame.new(x, -4.3, 0), DARK)
 		part(model, body, "Strut", Vector3.new(0.3, 1.6, 0.3), CFrame.new(x, -3.4, -2.5), DARK)
@@ -200,7 +202,7 @@ function Builder.build(id: string): Model
 	attitude.MaxTorque = math.huge
 	attitude.Enabled = false
 	attitude.Parent = root
-	attach(root, "WinchPoint", Vector3.new(4.8, 2.2, 2.4))
+	attach(root, "WinchPoint", Vector3.new(5, 1.6, 2.4)) -- under WinchHook: VehicleService.Climb hangs the cable here
 	for i = 1, Winch.SEATS do
 		attach(root, `SurvivorSlot{i}`, Vector3.new(-1.4 + (i - 1) * 2.8, -1.4, 2.4))
 	end
