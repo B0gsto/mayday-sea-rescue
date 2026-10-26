@@ -2011,8 +2011,14 @@ function VehicleService.AddSurvivor(model: Model, survivorModel: Model): boolean
 		VehicleService.Climb(survivorModel, record.root, function()
 			return seatCF() * pivotOffset
 		end)
-		toSlot()
-		task.wait(SURVIVOR_WELD_DELAY)
+		-- ride the slot through the weld delay: a fast boat left them 14 studs behind, then snapped (docs/24 A)
+		local held = os.clock()
+		repeat
+			toSlot()
+			RunService.Heartbeat:Wait()
+			local cur = record.survivors[slotIndex]
+		until os.clock() - held >= SURVIVOR_WELD_DELAY
+			or not (cur and cur.weld == weld and record.root.Parent)
 		local entry = record.survivors[slotIndex]
 		if not (entry and entry.weld == weld and weld.Parent and survivorModel.Parent) then
 			return -- taken off (RemoveSurvivors) or gone before the weld went on
