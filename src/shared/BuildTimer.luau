@@ -68,6 +68,16 @@ function B.timeLeft(progress: number, rate: number, work: number): number
 	return math.max(0, (1 - math.clamp(progress, 0, 1)) * work / math.max(rate, 1e-3))
 end
 
+-- The Robux "Finish now" tier for a site's current time left (docs/24 B): 1 <= 60 s, 2 <= 300 s, 3 longer.
+function B.finishTier(secondsLeft: number): number
+	if secondsLeft <= 60 then
+		return 1
+	elseif secondsLeft <= 300 then
+		return 2
+	end
+	return 3
+end
+
 -- "m:ss" for a board or the tablet.
 function B.text(seconds: number): string
 	local s = math.max(0, math.floor(seconds + 0.5))

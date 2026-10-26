@@ -21,6 +21,7 @@ local GuiService = game:GetService("GuiService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
@@ -334,7 +335,35 @@ end
 
 -- The build tablet's busy state (docs/24 B): the lot being built shows its timer and bar, every other buy
 -- button is an hourglass and refuses.
-local timerRows: { { label: TextLabel, fill: Frame?, work: number } } = {}
+local timerRows: { { label: TextLabel, fill: Frame?, work: number, finish: any? } } = {}
+local finishAsked: { [number]: boolean } = {}
+
+-- The FinishNow product for a site's time left, with the live Robux price when there is an id.
+local function finishProduct(left: number): (any, number)
+	local product = MonetizationConfig.Products[`FinishNow{BuildTimer.finishTier(left)}`]
+	if not product then
+		return nil, 0
+	end
+	local id = product.id
+	if id ~= 0 and not livePrice[id] and not finishAsked[id] then
+		finishAsked[id] = true
+		task.spawn(function()
+			local ok, info = pcall(function()
+				return MarketplaceService:GetProductInfo(id, Enum.InfoType.Product)
+			end)
+			if ok and type(info) == "table" and type(info.PriceInRobux) == "number" then
+				livePrice[id] = info.PriceInRobux
+			end
+		end)
+	end
+	return product, livePrice[id] or product.price
+end
+
+-- Unready products stay visible in Studio, like the shelves' coming-soon cards.
+local function finishOffered(product: any): boolean
+	return product ~= nil
+		and (RunService:IsStudio() or (product.ready ~= false and product.id ~= 0))
+end
 
 local function itemWork(item: DockBlueprints.Item): number
 	if item.kind == "Decor" then
@@ -388,29 +417,46 @@ local function busyRow(parent: GuiObject, item: DockBlueprints.Item, st: Status)
 	end
 	local site = siteState()
 	local work = itemWork(item)
+	local left = BuildTimer.timeLeft(site.progress, site.rate, work)
 	local icon = Instance.new("Frame")
 	icon.BackgroundTransparency = 1
 	icon.Position = UDim2.fromOffset(0, 4)
 	icon.Size = UDim2.fromOffset(30, 30)
 	icon.Parent = row
 	Style.icon(icon, "build")
-	local label = Style.label(
-		row,
-		BuildTimer.text(BuildTimer.timeLeft(site.progress, site.rate, work)),
-		Theme.Text.small
-	)
+	local label = Style.label(row, BuildTimer.text(left), Theme.Text.small)
 	label.Name = "Timer"
-	label.AnchorPoint = Vector2.new(1, 0)
-	label.Position = UDim2.fromScale(1, 0)
-	label.Size = UDim2.fromOffset(60, 28)
-	label.TextXAlignment = Enum.TextXAlignment.Right
+	label.Position = UDim2.fromOffset(38, 4)
+	label.Size = UDim2.fromOffset(60, 24)
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	local product, price = finishProduct(left)
+	local finish = PriceButtonUI.new(row, {
+		price = price,
+		currency = "Robux",
+		onActivate = function()
+			Net.event("Dock_Finish"):FireServer()
+		end,
+	})
+	finish.root.Name = "Finish"
+	finish.root.AnchorPoint = Vector2.new(1, 0.5)
+	finish.root.Position = UDim2.fromScale(1, 0.5)
+	finish.root.Size = UDim2.new(0.48, -2, 1, 0)
+	finish.root.Visible = left >= 3 and finishOffered(product)
+	local bolt = Instance.new("Frame")
+	bolt.Name = "FinishIcon"
+	bolt.BackgroundTransparency = 1
+	bolt.Position = UDim2.fromOffset(5, 3)
+	bolt.Size = UDim2.fromOffset(22, 22)
+	bolt.ZIndex = 3
+	bolt.Parent = finish.root
+	Style.icon(bolt, "finish_now")
 	local bar = Instance.new("Frame")
 	bar.Name = "Bar"
 	bar.BackgroundColor3 = C.panelLight
 	bar.BackgroundTransparency = 0.4
 	bar.AnchorPoint = Vector2.new(0, 1)
-	bar.Position = UDim2.new(0, 0, 1, -2)
-	bar.Size = UDim2.new(1, 0, 0, 12)
+	bar.Position = UDim2.new(0, 38, 1, -2)
+	bar.Size = UDim2.new(0.52, -44, 0, 12)
 	Style.corner(bar, S.cornerSmall)
 	bar.Parent = row
 	local fill = Instance.new("Frame")
@@ -420,7 +466,7 @@ local function busyRow(parent: GuiObject, item: DockBlueprints.Item, st: Status)
 	fill.Size = UDim2.fromScale(site.progress, 1)
 	Style.corner(fill, S.cornerSmall)
 	fill.Parent = bar
-	table.insert(timerRows, { label = label, fill = fill, work = work })
+	table.insert(timerRows, { label = label, fill = fill, work = work, finish = finish })
 end
 
 -- Runs while the tablet is open: the busy lot's clock moves without rebuilding the cards.
@@ -433,6 +479,11 @@ local function updateTimers()
 			row.label.Text = BuildTimer.text(left)
 			if row.fill then
 				row.fill.Size = UDim2.fromScale(site.progress, 1)
+			end
+			if row.finish then
+				local product, price = finishProduct(left)
+				row.finish.setPrice(price)
+				row.finish.root.Visible = left >= 3 and finishOffered(product)
 			end
 			table.insert(live, row)
 		end

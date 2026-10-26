@@ -35,6 +35,7 @@ return {
 		companion = "rbxassetid://82752596877543",
 		crew = "rbxassetid://83085542846827",
 		daily = "rbxassetid://79958924558323",
+		finish_now = "rbxassetid://0", -- not uploaded yet: Style.icon draws the letter placeholder
 		gift = "rbxassetid://72702946079049",
 		lifebuoy = "rbxassetid://76945613397404",
 		lock = "rbxassetid://135893459775435",
