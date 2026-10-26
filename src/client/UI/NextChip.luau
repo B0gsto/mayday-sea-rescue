@@ -42,6 +42,7 @@ local pulsing = false
 local snapshot: { [string]: any }? = nil
 local beacon: OnboardingBeacon.Beacon? = nil
 local pointingUntil = 0
+local doneAt: number? = nil
 local pointingAt: Vector3? = nil
 
 local POINT_SECONDS = 10 -- s the arrow/pin stay after a tap
@@ -173,7 +174,14 @@ end
 local function refresh()
 	local r = root
 	local s = snapshot
-	if not (r and s and beat() == "Done") then
+	local done = s ~= nil and beat() == "Done"
+	if not done then
+		doneAt = nil
+	end
+	if done and s and doneAt == nil then
+		doneAt = os.clock() + Onboarding.DONE_HOLD + 0.5 -- the tutorial's ticked Spin chip keeps the slot first
+	end
+	if not (r and s and done and doneAt and os.clock() >= doneAt) then
 		if r then
 			r.Visible = false
 		end
@@ -285,8 +293,8 @@ function NextChip.mount(region: Frame)
 	name.Position = UDim2.fromOffset(40, 1)
 	nameLabel = name
 	local price =
-		HudTheme.label("Price", "", UDim2.fromOffset(66, 16), HudTheme.NumberFont, 16, panel)
-	price.Position = UDim2.new(1, -100, 0, 4)
+		HudTheme.label("Price", "", UDim2.fromOffset(66, 20), HudTheme.NumberFont, 15, panel)
+	price.Position = UDim2.new(1, -100, 0, 1)
 	price.TextXAlignment = Enum.TextXAlignment.Right
 	price.TextColor3 = HudTheme.Colors.gold
 	priceLabel = price

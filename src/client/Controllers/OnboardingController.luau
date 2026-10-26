@@ -69,6 +69,8 @@ local guide: string? = nil
 local lastTabletPulse: string? = nil
 local glanceSerial = 0
 local tickAt = 0
+local doneAt: number? = nil
+local holdingTick = false
 
 local CHIPS: { { id: string, label: string, icon: string? } } = {
 	{ id = "Rescue", label = "Rescue", icon = "lifebuoy" },
@@ -398,8 +400,8 @@ local function makeChip(
 		Style.icon(icon, info.icon or "build")
 	end
 	local label =
-		HudTheme.label("Name", info.label, UDim2.new(1, -46, 0, 18), HudTheme.BoldFont, 13, root)
-	label.Position = UDim2.fromOffset(27, 2)
+		HudTheme.label("Name", info.label, UDim2.new(1, -46, 0, 22), HudTheme.BoldFont, 14, root)
+	label.Position = UDim2.fromOffset(27, 1)
 	label.TextXAlignment = Enum.TextXAlignment.Left
 	local tick = Instance.new("Frame")
 	tick.Name = "Tick"
@@ -446,7 +448,7 @@ local function renderChips()
 	end
 	local shown = dataReady
 		and beat ~= "ColdOpen"
-		and beat ~= "Done"
+		and (beat ~= "Done" or holdingTick)
 		and not Layout.coldOpen()
 		and player:GetAttribute("MenuOpen") ~= true
 		and player:GetAttribute("CinematicPlaying") ~= true
@@ -497,6 +499,13 @@ local function update()
 		showReward()
 	end
 	beat = currentBeat()
+	-- the Spin chip ticks for a moment after the first spin before the Next chip takes the slot
+	if beat == "Done" and tutorialStep and tutorialStep >= Onboarding.STEP_DONE then
+		doneAt = doneAt or os.clock() + Onboarding.DONE_HOLD
+	else
+		doneAt = nil
+	end
+	holdingTick = beat == "Done" and doneAt ~= nil and os.clock() < doneAt
 	if dataReady then
 		local kind = if beat == "BuildStation"
 			then "station"

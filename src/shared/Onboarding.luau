@@ -27,6 +27,7 @@ Onboarding.STEP_RESCUE = 1 -- the cold open is home; the next call is the goal (
 Onboarding.STEP_SITE = 2 -- the Workshop site is running
 Onboarding.STEP_SPIN = 3 -- the Workshop is done; the one tutorial spin waits in the menu
 Onboarding.STEP_DONE = 4 -- the chip row is gone, the Next chip leads from here
+Onboarding.DONE_HOLD = 1.6 -- s the ticked Spin chip stays up before the Next chip takes over
 Onboarding.SKIP_RESCUES = 5 -- an old save with this many rescues never starts the tutorial
 Onboarding.WORKSHOP = "Workshop"
 
