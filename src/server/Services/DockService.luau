@@ -347,10 +347,11 @@ local function buildPlot(folder: Instance, i: number): Plot
 
 	DockPieces.base(b).Parent = model -- WP-25: paths, trees, the lifebuoy stand (every island, owned or not)
 
-	-- docs/24 D: the prize wheel beside the anchor, facing the jetty, with its odds board and tokens
+	-- docs/24 D: the prize wheel set (odds board, tokens) on the open lawn west of the plaza, across the west
+	-- lane (island r -52, f -5), turned to face the jetty's quay end; clear of every lot, lamp and the hangar
 	local islandFrame = b * Marina.ISLAND
-	local foot = islandFrame * CFrame.new(21, 0.3, -4)
-	local at = CFrame.lookAt(foot.Position, foot.Position - islandFrame.XVector)
+	local foot = islandFrame * CFrame.new(-52, 0, 5)
+	local at = CFrame.lookAt(foot.Position, (islandFrame * CFrame.new(0, 0, -28)).Position)
 	local wheel = PrizeWheel.build(at, {
 		spin = function(player: Player)
 			return wheelSpin(i, player)

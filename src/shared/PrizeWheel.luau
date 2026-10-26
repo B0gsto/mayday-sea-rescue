@@ -5,7 +5,8 @@
 --
 -- The set: a 14-stud Lego wheel (12 rarity segments, rim pegs, hub), a stand with the big red SPIN
 -- button and the free-spin sign, the odds board (paid random items must show odds) and the token
--- machine (1 / 5 / 15 Robux spins). Parts: wheel 37, odds board 2, token machine 13.
+-- machine (1 / 5 / 15 Robux spins). Parts: wheel 11 (segments and pegs are SurfaceGui frames on the disc),
+-- odds board 2, token machine 13.
 local MonetizationConfig =
 	require(script.Parent:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local PushButton = require(script.Parent:WaitForChild("PushButton"))
@@ -101,28 +102,6 @@ local function faceLabel(p: BasePart, text: string, color: Color3?)
 	return label
 end
 
-local function rainbowFace(p: BasePart)
-	local gui = Instance.new("SurfaceGui")
-	gui.Face = Enum.NormalId.Front
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = 20
-	gui.LightInfluence = 0
-	gui.Parent = p
-	local frame = Instance.new("Frame")
-	frame.Size = UDim2.fromScale(1, 1)
-	frame.BorderSizePixel = 0
-	frame.Parent = gui
-	local gradient = Instance.new("UIGradient")
-	gradient.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromHSV(0, 0.85, 1)),
-		ColorSequenceKeypoint.new(0.25, Color3.fromHSV(0.25, 0.85, 1)),
-		ColorSequenceKeypoint.new(0.5, Color3.fromHSV(0.5, 0.85, 1)),
-		ColorSequenceKeypoint.new(0.75, Color3.fromHSV(0.75, 0.85, 1)),
-		ColorSequenceKeypoint.new(1, Color3.fromHSV(1, 0.85, 1)),
-	})
-	gradient.Parent = frame
-end
-
 local function segmentColor(rarity: string): Color3
 	if rarity == "Common" then
 		return GREY
@@ -149,6 +128,8 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 	rotor.Name = "Rotor"
 	rotor.Parent = model
 
+	-- one disc part: the 12 rarity segments and the rim pegs are frames in its SurfaceGui (Right face = the
+	-- front), not 25 parts; it is the rotor's PrimaryPart, its pivot offset back to `centre`
 	local disc = part(
 		rotor,
 		"Disc",
@@ -158,21 +139,57 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 	)
 	disc.CanCollide = false
 	disc.CanQuery = false
-
+	disc.PivotOffset = CFrame.Angles(0, -math.pi / 2, 0)
+	local PPS = 20
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = "Face"
+	gui.Face = Enum.NormalId.Right
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = PPS
+	gui.LightInfluence = 0.6
+	gui.Parent = disc
+	local half = (WHEEL_R + 0.2) * PPS
+	-- gui +x = the centre's -X and +y (down) = its -Y, so the 3D angle a sits at (-cos a, -sin a)
+	local function polar(a: number, r: number): UDim2
+		return UDim2.fromOffset(half - math.cos(a) * r * PPS, half - math.sin(a) * r * PPS)
+	end
 	for i, rarity in SpinRules.SEGMENTS do
 		local a = math.rad((i - 1) * 360 / segCount)
-		local seg = part(
-			rotor,
-			`Segment{i}`,
-			Vector3.new(WHEEL_R + 0.2, 3.5, 0.45),
-			centre * CFrame.Angles(0, 0, a) * CFrame.new(WHEEL_R / 2, 0, -0.3),
-			if rarity == "Mythic" then RAINBOW else segmentColor(rarity)
-		)
-		seg.CanCollide = false
-		seg.CanQuery = false
+		local seg = Instance.new("Frame")
+		seg.Name = `Segment{i}`
+		seg.AnchorPoint = Vector2.new(0.5, 0.5)
+		seg.Position = polar(a, WHEEL_R / 2)
+		seg.Size = UDim2.fromOffset((WHEEL_R + 0.2) * PPS, 3.5 * PPS)
+		seg.Rotation = math.deg(a)
+		seg.BorderSizePixel = 0
+		seg.BackgroundColor3 = if rarity == "Mythic"
+			then Color3.new(1, 1, 1)
+			else segmentColor(rarity)
+		seg.ZIndex = i
+		seg.Parent = gui
 		if rarity == "Mythic" then
-			rainbowFace(seg)
+			local gradient = Instance.new("UIGradient")
+			gradient.Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromHSV(0, 0.85, 1)),
+				ColorSequenceKeypoint.new(0.25, Color3.fromHSV(0.25, 0.85, 1)),
+				ColorSequenceKeypoint.new(0.5, Color3.fromHSV(0.5, 0.85, 1)),
+				ColorSequenceKeypoint.new(0.75, Color3.fromHSV(0.75, 0.85, 1)),
+				ColorSequenceKeypoint.new(1, Color3.fromHSV(1, 0.85, 1)),
+			})
+			gradient.Parent = seg
 		end
+	end
+	for i = 1, segCount do
+		local peg = Instance.new("Frame")
+		peg.Name = `Peg{i}`
+		peg.AnchorPoint = Vector2.new(0.5, 0.5)
+		peg.Position = polar(math.rad(i * 360 / segCount), WHEEL_R - 0.3)
+		peg.Size = UDim2.fromOffset(0.8 * PPS, 0.8 * PPS)
+		peg.BorderSizePixel = 0
+		peg.BackgroundColor3 = WHITE
+		peg.ZIndex = segCount + 1
+		peg.Parent = gui
+		Instance.new("UICorner", peg).CornerRadius = UDim.new(0.5, 0)
 	end
 
 	local hub = part(
@@ -186,30 +203,7 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 	)
 	hub.CanCollide = false
 	hub.CanQuery = false
-
-	for i = 1, segCount do
-		local a = math.rad(i * 360 / segCount)
-		local peg = part(
-			rotor,
-			`Peg{i}`,
-			Vector3.new(1.3, 0.7, 0.7),
-			centre
-				* CFrame.Angles(0, 0, a)
-				* CFrame.new(WHEEL_R + 0.15, 0, -0.2)
-				* CFrame.Angles(0, math.pi / 2, 0),
-			WHITE,
-			nil,
-			Enum.PartType.Cylinder
-		)
-		peg.CanCollide = false
-		peg.CanQuery = false
-	end
-
-	local pivot = part(rotor, "RotorPivot", Vector3.new(0.2, 0.2, 0.2), centre, DARK)
-	pivot.Transparency = 1
-	pivot.CanCollide = false
-	pivot.CanQuery = false
-	rotor.PrimaryPart = pivot
+	rotor.PrimaryPart = disc
 
 	-- stand ---------------------------------------------------------------------------------------
 	local base = part(model, "Base", Vector3.new(16, 1.2, 6), at * CFrame.new(0, 0.6, 0), RED)
@@ -224,17 +218,6 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 		)
 		post.CanCollide = false
 	end
-	local axle = part(
-		model,
-		"Axle",
-		Vector3.new(WHEEL_R * 2, 0.9, 0.9),
-		at * CFrame.new(0, WHEEL_Y, WHEEL_Z + 1.1) * CFrame.Angles(0, 0, math.pi / 2),
-		GOLD,
-		M.Metal,
-		Enum.PartType.Cylinder
-	)
-	axle.CanCollide = false
-
 	part(
 		model,
 		"PointerArm",
@@ -412,6 +395,7 @@ export type Handlers = {
 function PrizeWheel.build(at: CFrame, handlers: Handlers): Model
 	local root = Instance.new("Model")
 	root.Name = "PrizeWheel"
+	root.WorldPivot = at
 	local wheel = buildWheel(root, at, handlers.spin)
 	buildOdds(root, at)
 	local machine = buildMachine(root, at, handlers.buy)

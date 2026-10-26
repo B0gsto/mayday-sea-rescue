@@ -2417,7 +2417,7 @@ function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2, price: numbe
 		f.Size = UDim2.fromOffset(32, 32)
 		f.Parent = gui
 	end
-	-- docs/24 C r2/r3: a locked lot reads as a site: tall orange/white stakes and a doubled crate pile
+	-- docs/24 C r2/r3: a locked lot reads as a site: tall orange/white stakes and a stacked crate pair (2, part budget)
 	local hx, hz = size.X / 2 - 2, size.Y / 2 - 2
 	for _, c in { V(-hx, -hz), V(hx, -hz), V(-hx, hz), V(hx, hz) } do
 		brick(
@@ -2430,8 +2430,6 @@ function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2, price: numbe
 	end
 	crate(m, at * CFrame.new(hx - 1.6, 0.4, hz - 1.6), BRICK_ORANGE)
 	crate(m, at * CFrame.new(hx - 1.6, 2.4, hz - 1.6), BRICK_BLUE)
-	crate(m, at * CFrame.new(hx - 3.2, 0.4, hz - 2.4), BRICK_YELLOW)
-	crate(m, at * CFrame.new(hx - 4.6, 0.4, hz - 1.2), BRICK_WHITE)
 	local peg = at * CFrame.new(-size.X / 2 + 2.5, 0, -size.Y / 2 + 2.5)
 	studTop(brick(m, "LotPeg", Vector3.new(1.2, 13, 1.2), peg * CFrame.new(0, 6.5, 0), BRICK_WHITE))
 	local face = CFrame.new(peg.Position) * isle(b, 0, 0).Rotation -- +Z toward the island's back: the build camera
