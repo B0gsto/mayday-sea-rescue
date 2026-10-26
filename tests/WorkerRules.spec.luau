@@ -88,20 +88,15 @@ return function(t)
 			worker("Medic", 2),
 			worker("Rescuer", 1),
 		}, owned))
-		t.expect(fx.buildDiscount).toBeCloseTo(2.5 * W.BUILD_PER, 1e-9)
 		t.expect(fx.gatherPerMin).toBeCloseTo(2.5 * W.GATHER_PER, 1e-9)
 		t.expect(fx.rescuePerTrip).toBeCloseTo(W.RESCUE_PER, 1e-9)
 		t.expect(fx.boatScale).toBeCloseTo(1 - W.BOAT_PER, 1e-9)
 		t.expect(fx.craftSpeed).toBeCloseTo(1 + W.SPEED_PER, 1e-9)
 		t.expect(fx.payBonus).toBeCloseTo(1.5 * W.PAY_PER, 1e-9)
 		local max = W.effects({ Builder = 99, Mechanic = 99, Medic = 99 })
-		t.expect(max.buildDiscount).toBe(W.BUILD_CAP)
 		t.expect(max.boatScale).toBeCloseTo(1 - W.BOAT_CAP, 1e-9)
 		t.expect(max.craftSpeed).toBeCloseTo(1 + W.SPEED_CAP, 1e-9)
 		t.expect(max.payBonus).toBe(W.PAY_CAP)
-		t.expect(W.price(1000, 0.09)).toBe(910)
-		t.expect(W.price(1000, 0.9)).toBe(600) -- the cap holds on any input
-		t.expect(W.price(1000)).toBe(1000)
 	end)
 
 	t.test("offline pay is a reduced rate, capped at 2 hours", function()

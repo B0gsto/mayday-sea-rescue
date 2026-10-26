@@ -122,6 +122,7 @@ return function(t)
 			end
 		end
 		data.vehicleUpgrades.RIB = VehicleUpgrades.MAX_MASK
+		data.construction = { key = "Clinic", progress = 0.42, rate = 2.1, at = NOW }
 		data.vehicleUpgrades.JetSki = VehicleUpgrades.bit("Engine") + VehicleUpgrades.bit("Hull")
 		for i = 1, WorkerRules.CAP do
 			table.insert(data.workers, {

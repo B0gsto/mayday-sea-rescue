@@ -9,7 +9,6 @@ local DockConfig = require(script.Parent:WaitForChild("Config"):WaitForChild("Do
 
 export type Worker = { category: string, rarity: number, name: string }
 export type Effects = {
-	buildDiscount: number, -- 0..BUILD_CAP off every building's Cash price (BuildSeq plays this much faster)
 	gatherPerMin: number, -- Cash a minute while you play
 	rescuePerTrip: number, -- Cash per NPC rescue boat trip (0: no boat)
 	boatScale: number, -- Boat to me cooldown x this
@@ -26,7 +25,6 @@ W.CAP = 30 -- workers kept (full in ~1.3 h of play); past it see admit -- tune
 W.SLOTS = 3 -- per worker building -- tune
 W.STATION_SLOTS = 2 -- more per building once the Station stands (the island's top tier) -- tune
 
-W.BUILD_PER, W.BUILD_CAP = 0.03, 0.4 -- Builder: -3% build Cash per unit, cap -40%
 W.GATHER_PER = 2 -- Gatherer: Cash a minute per unit -- tune
 W.RESCUE_PERIOD = 300 -- s between NPC rescue boat trips -- tune
 W.RESCUE_PER = 20 -- Rescuer: Cash per trip per unit -- tune
@@ -175,18 +173,12 @@ function W.effects(units: { [string]: number }): Effects
 		return units[c] or 0
 	end
 	return {
-		buildDiscount = math.min(u("Builder") * W.BUILD_PER, W.BUILD_CAP),
 		gatherPerMin = u("Gatherer") * W.GATHER_PER,
 		rescuePerTrip = u("Rescuer") * W.RESCUE_PER,
 		boatScale = 1 - math.min(u("Mechanic") * W.BOAT_PER, W.BOAT_CAP),
 		craftSpeed = 1 + math.min(u("Mechanic") * W.SPEED_PER, W.SPEED_CAP),
 		payBonus = math.min(u("Medic") * W.PAY_PER, W.PAY_CAP),
 	}
-end
-
--- A building's Cash price with the Builders' discount (whole Cash).
-function W.price(cash: number, discount: number?): number
-	return math.floor(cash * (1 - math.clamp(discount or 0, 0, W.BUILD_CAP)) + 0.5)
 end
 
 -- Cash earned while away `seconds` (Gatherers + Rescuers at OFFLINE_RATE, capped at OFFLINE_CAP).

@@ -7,11 +7,14 @@
 -- island's Berth part (BayLaunch frame) and stands the player on the island spawn (GetSpawn).
 -- The unlock tree (docs/23 (q), DockConfig.Buildings + shared/UnlockTree): each building stands on its spot once
 -- owned; it is bought with Cash once its prerequisites stand (Dock_Upgrade) or with its Robux product (skips
--- the Cash, never the prerequisites: the grant refuses until they stand, so the receipt waits). A buy plays the
--- Lego build beat: the pieces exist here in their final state, the Dock_Build event lets every client drop
--- them in (shared/BuildSeq), and two builder NPCs stand by the build station (WP-14d). The build station by
--- the spawn carries the tablet whose prompt opens the owner's top-down build mode (DockController); its
--- catalog is DockBlueprints.catalog: tree buildings, quest blueprints and the Cash-only Decorations.
+-- the Cash, never the prerequisites: the grant waits until they stand). A buy starts one construction at a
+-- time (docs/24 B): shared/BuildTimer measures its work, the island's Builders (and the two base crew NPCs)
+-- cut the time, the progress is saved with the profile and the site is published on the plot as SiteKey /
+-- SiteProgress / SiteRate / SiteBuilders for every client (ConstructionController). The building is not owned
+-- until the site finishes; then the model that was standing there (DockPieces, hidden above the progress
+-- height on every client) is the finished one and the build beat plays. Quest blueprints still arrive whole.
+-- The build station by the spawn carries the tablet whose prompt opens the owner's top-down build mode
+-- (DockController); its catalog is DockBlueprints.catalog: tree buildings, quest blueprints and decor.
 --
 -- API: GetBerth(player) -> BasePart?, GetPlot(player) -> number?, GetSpawn(player) -> CFrame?,
 -- Owns(player, key) -> boolean (a DockConfig building), Berths() -> { BasePart }, Refresh(player) (rebuild).
@@ -19,9 +22,10 @@
 -- Dock<key> / Decor<key> (owned; the build tablet). Berth attributes: LaunchBay = true, PlotIndex, Owner
 -- (UserId, nil when empty), <key> = true per building standing (BoatBoard reads Boathouse / Hangar / SubPen).
 -- Remote: Dock_Upgrade C->S function (building / decor key) -> ok, reason ("Needs" | "Cash" | "Owned" |
--- "Data" | "Busy" | "Unknown"). Vehicle boards are server/Dock/BoatBoard's.
+-- "Data" | "Busy" | "Building" | "Unknown"). Vehicle boards are server/Dock/BoatBoard's.
 -- Studio: ServerStorage.DockDev:Invoke("building", key) gives the first player a building ("all": every one);
--- ("decor", key) a decoration ("all": every one); ("trophies") every rescue milestone and island stamp.
+-- ("decor", key) a decoration ("all": every one); ("trophies") every rescue milestone and island stamp;
+-- WorkerDev ("finishbuild") finishes the running site at once.
 -- Harbour Master (docs/23 d.1, Marina.harbourMaster): the most people rescued among islands with a Station gets
 -- a gold name sign and a tall gold beacon; picked on join / leave / a build (nobody's island ever moves). The
 -- trophy hall: a cup per rescue milestone (BadgeRules.trophies) and a plaque per island stamp (DiscoveryRules),
@@ -34,6 +38,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeConfig"))
 local BadgeRules = require(Shared:WaitForChild("BadgeRules"))
+local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local DiscoveryRules = require(Shared:WaitForChild("DiscoveryRules"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
@@ -76,6 +81,9 @@ type Plot = {
 	buildStation: Model?, -- the tablet station by the spawn (WP-14d), while owned
 	decorations: Model?, -- the owner's bought decorations
 	finish: Model?, -- WP-25 r9: the garden clusters on the open lawn, while the whole tree is built
+	site: Model?, -- the building being built (DockPieces, still not owned), while a construction runs
+	siteKey: string?,
+	crew: { { model: Model, height: number } }?, -- the two base builder NPCs walking to / from the site
 }
 
 local plots: { Plot } = {}
@@ -347,7 +355,6 @@ local function buildPlot(folder: Instance, i: number): Plot
 end
 
 local buildRemote: RemoteEvent? = nil
-local BUILD_WATCH = 6 -- s the builder NPCs stay (matches the client's build beat)
 
 -- Everyone animates the new model in (WP-14c): the pieces are already in their final state here.
 local function announceBuild(plot: Plot, parentName: string?, modelName: string)
@@ -400,7 +407,14 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 		local want = owner ~= nil and owned[key] == true
 		local have = plot.buildings[key]
 		if want and not have and owner then
-			local m = DockPieces.building(key, plot.frame)
+			local m
+			if plot.siteKey == key and plot.site then
+				m = plot.site -- the site finished: the bricks that stood there are the building
+				plot.site, plot.siteKey = nil, nil
+				m.Name = key
+			else
+				m = DockPieces.building(key, plot.frame)
+			end
 			for _, d in m:GetDescendants() do
 				if d.Name == "Flag" and d:IsA("BasePart") then
 					d.Color = Marina.flagColor(owner.UserId)
@@ -485,7 +499,14 @@ local function syncDecor(plot: Plot, owner: Player?, beat: boolean)
 		local want = owner ~= nil and owned[key] == true
 		local have = holder and holder:FindFirstChild(key)
 		if want and not have and holder and owner then
-			local m = DockPieces.decoration(key, plot.frame)
+			local m
+			if plot.siteKey == key and plot.site then
+				m = plot.site
+				plot.site, plot.siteKey = nil, nil
+				m.Name = key
+			else
+				m = DockPieces.decoration(key, plot.frame)
+			end
 			for _, d in m:GetDescendants() do
 				if d.Name == "Flag" and d:IsA("BasePart") then
 					d.Color = Marina.flagColor(owner.UserId)
@@ -538,24 +559,149 @@ local function hardHat(model: Model)
 	cap("HardHatBrim", Vector3.new(1.7, 0.12, 0.5), CFrame.new(0, head.Size.Y / 2 + 0.02, -0.85))
 end
 
--- Two builder NPCs (R15 crew, hard hats, NpcFactory's building) by the station while the beat plays, gone after.
-local function spawnBuilders(plot: Plot)
+local function workOf(key: string): number
+	local b = DockConfig.Buildings[key]
+	if b then
+		return BuildTimer.work(b.cash)
+	end
+	local d = DockConfig.Decorations[key]
+	return BuildTimer.work(d and d.cash or 0, true)
+end
+
+-- Where a site stands (berth frame) and its footprint, for the base crew's walk.
+local function siteSpot(plot: Plot, key: string): (CFrame?, Vector2?)
+	local b = DockConfig.Buildings[key]
+	if b then
+		return plot.frame * b.spot, b.size
+	end
+	local d = DockConfig.Decorations[key]
+	if d then
+		return DockConfig.decorSpot(key, plot.frame), d.size
+	end
+	return nil, nil
+end
+
+-- Clear the published site state and any site model on a plot (released, or the build is done).
+local function clearSite(plot: Plot)
+	if plot.site then
+		plot.site:Destroy()
+		plot.site = nil
+	end
+	plot.siteKey = nil
+	plot.model:SetAttribute("SiteKey", nil)
+	plot.model:SetAttribute("SiteProgress", nil)
+	plot.model:SetAttribute("SiteRate", nil)
+	plot.model:SetAttribute("SiteBuilders", nil)
+end
+
+-- The model that rises with the progress; it stays unowned (no effects, unlocks or worker slots) until done.
+local function makeSite(plot: Plot, key: string)
+	if plot.siteKey == key and plot.site then
+		return
+	end
+	clearSite(plot)
+	local m = if DockConfig.Buildings[key]
+		then DockPieces.building(key, plot.frame)
+		elseif DockConfig.Decorations[key] then DockPieces.decoration(key, plot.frame)
+		else nil
+	if not m then
+		return
+	end
+	m.Name = `Site_{key}`
+	m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic -- clients hide its parts: they must all arrive together
+	m.Parent = plot.model
+	plot.site, plot.siteKey = m, key
+end
+
+-- The one construction's state for clients (ConstructionController draws it; the tablet shows its timer).
+local function syncSite(plot: Plot, data: any)
+	local c = data.construction
+	if c then
+		plot.model:SetAttribute("SiteKey", c.key)
+		plot.model:SetAttribute("SiteProgress", c.progress)
+		plot.model:SetAttribute("SiteRate", c.rate)
+		plot.model:SetAttribute("SiteBuilders", #BuildTimer.builders(data.workers) + 2)
+	else
+		clearSite(plot)
+	end
+end
+
+local function crewWalk(m: Model, height: number, to: Vector3, look: Vector3)
+	local from = m:GetPivot().Position - Vector3.new(0, height, 0)
+	local dist = (to - from).Magnitude
+	local steps = math.max(1, math.ceil(dist / 2.2))
+	for i = 1, steps do
+		if m.Parent == nil then
+			return
+		end
+		local p = from:Lerp(to, i / steps)
+		m:PivotTo(CFrame.lookAt(p + Vector3.new(0, height, 0), look + Vector3.new(0, height, 0)))
+		task.wait(math.clamp(dist / steps / 9, 0.05, 0.2)) -- ~9 studs/s
+	end
+end
+
+-- The two hard-hat base crew NPCs: from the station to the site, back when it is done.
+local function spawnCrew(plot: Plot)
+	if plot.crew then
+		return
+	end
+	local key = plot.siteKey
+	local site = key and siteSpot(plot, key)
+	if not site then
+		return
+	end
 	local at = DockConfig.stationSpot(plot.frame)
+	plot.crew = {}
 	for side = -1, 1, 2 do
 		task.spawn(function()
 			local feet = at * CFrame.new(side * 5.5, 0, -7.2)
-			local m = NpcFactory.spawn("Crew", {
+			local m, height = NpcFactory.spawn("Crew", {
 				seed = math.random(1, 1_000_000),
 				pose = "Idle",
 				cframe = CFrame.lookAt(feet.Position, at.Position),
 				parent = Workspace,
 			})
 			hardHat(m)
-			task.delay(BUILD_WATCH, function()
+			local crew = plot.crew
+			if not crew or plot.siteKey ~= key then
 				m:Destroy()
-			end)
+				return
+			end
+			table.insert(crew, { model = m, height = height })
+			local to = site * CFrame.new(side * 4.5, 0, 6)
+			crewWalk(m, height, to.Position, site.Position)
 		end)
 	end
+end
+
+-- Walk the base crew back to the station, then let them go (the site is done).
+local function sendCrewHome(plot: Plot)
+	local crew = plot.crew
+	plot.crew = nil
+	if not crew then
+		return
+	end
+	local at = DockConfig.stationSpot(plot.frame)
+	for k, row in crew do
+		task.spawn(function()
+			local m = row.model
+			if m.Parent then
+				local side = if k % 2 == 1 then -1 else 1
+				local to = at * CFrame.new(side * 5.5, 0, -7.2)
+				crewWalk(m, row.height, to.Position, at.Position)
+			end
+			task.wait(0.4)
+			m:Destroy()
+		end)
+	end
+end
+
+local function clearCrew(plot: Plot)
+	local crew: { { model: Model, height: number } } = plot.crew or {}
+	for _, row in crew do
+		row.model:Destroy()
+	end
+	plot.crew = nil
 end
 
 -- The trophy hall's cups and plaques, rebuilt only when the owner's list changed.
@@ -706,6 +852,8 @@ local function dress(plot: Plot, owner: Player?)
 		end
 		syncDecor(plot, owner, false)
 	else
+		clearSite(plot)
+		clearCrew(plot)
 		syncBuildings(plot, nil, false)
 		syncDecor(plot, nil, false)
 		syncTrophies(plot, nil)
@@ -717,24 +865,76 @@ local function dress(plot: Plot, owner: Player?)
 	end
 end
 
--- The player's island now matches the profile (beat: the build animation + builders play).
+-- One construction at a time per island (docs/24 B): the site rises from nothing, the crew walks over.
+local function startConstruction(player: Player, data: any, key: string)
+	data.construction = {
+		key = key,
+		progress = 0,
+		rate = BuildTimer.rateOf(data.workers),
+		at = os.time(),
+	}
+	DataService.MarkDirty(player)
+	local i = byPlayer[player]
+	if i then
+		makeSite(plots[i], key)
+		syncSite(plots[i], data)
+		spawnCrew(plots[i])
+	end
+	task.spawn(DataService.Save, player, false)
+end
+
+-- A Robux-paid building whose prerequisites now stand starts its own construction (one at a time).
+local function startPrepaid(player: Player, data: any)
+	if data.construction then
+		return
+	end
+	local prepaid = tableOf(data.dockPrepaid)
+	local owned = tableOf(data.dockBuildings)
+	for key in prepaid do
+		if owned[key] then
+			prepaid[key] = nil -- already standing (a Dev grant): nothing to build
+		end
+	end
+	for _, key in DockConfig.BUILDINGS do
+		if prepaid[key] and UnlockTree.missing(key, owned) == nil then
+			prepaid[key] = nil
+			startConstruction(player, data, key)
+			return
+		end
+	end
+	for _, key in DockConfig.DECOR do
+		if prepaid[key] then
+			prepaid[key] = nil
+			startConstruction(player, data, key)
+			return
+		end
+	end
+end
+
+-- A construction saved with the profile: make sure its site and crew are up.
+local function resumeSite(plot: Plot, player: Player, data: any)
+	local c = data.construction
+	if not c then
+		clearSite(plot)
+		clearCrew(plot)
+		return
+	end
+	makeSite(plot, c.key)
+	syncSite(plot, data)
+	spawnCrew(plot)
+	DataService.MarkDirty(player)
+end
+
+-- The player's island now matches the profile (beat: new quest/Dev pieces play the build animation).
 local function show(player: Player, beat: boolean)
 	local i = byPlayer[player]
 	local data: any = DataService.Get(player)
-	if data and type(data.dockPrepaid) == "table" and type(data.dockBuildings) == "table" then
-		-- Robux-paid buildings go up the moment their prerequisites stand
-		if #UnlockTree.settle(data.dockBuildings, data.dockPrepaid) > 0 then
-			DataService.MarkDirty(player)
-			ProgressionService.Refresh(player)
-			task.spawn(DataService.Save, player, false)
-		end
-	end
 	if i and data then
-		syncBuildings(plots[i], player, beat)
-		syncDecor(plots[i], player, beat)
-		if beat then
-			spawnBuilders(plots[i])
-		end
+		local plot = plots[i]
+		resumeSite(plot, player, data)
+		syncBuildings(plot, player, beat)
+		syncDecor(plot, player, beat)
+		startPrepaid(player, data)
 		crown()
 	end
 end
@@ -743,42 +943,31 @@ local busy: { [Player]: boolean } = {}
 
 -- Cash purchase of tree building `key` once its prerequisites stand (Robux goes through its product).
 local function buyBuilding(player: Player, data: any, key: string): (boolean, string)
-	data.dockBuildings = if type(data.dockBuildings) == "table" then data.dockBuildings else {}
-	local ok, reason, price = UnlockTree.canBuy(
-		key,
-		data.dockBuildings,
-		data.cash,
-		tonumber(player:GetAttribute("WorkerBuildDiscount")) -- Builders at work (WorkerService)
-	)
+	data.dockBuildings = tableOf(data.dockBuildings)
+	local ok, reason, price = UnlockTree.canBuy(key, data.dockBuildings, data.cash)
 	if not ok or not price then
 		return false, reason or "Owned"
 	end
 	data.cash -= price
-	data.dockBuildings[key] = true
 	Telemetry.CashSpent(player, price, data.cash, "Dock", key)
 	Telemetry.Funnel(player, "FirstBuilding") -- the first island building (WP-28: replaces FirstRank)
-	DataService.MarkDirty(player)
 	ProgressionService.Refresh(player)
-	show(player, true)
-	task.spawn(DataService.Save, player, false)
+	startConstruction(player, data, key)
 	return true, "ok"
 end
 
 -- Cash purchase of a decoration (WP-14d); needs only the jetty (its Robux product: the grant below).
 local function buyDecor(player: Player, data: any, key: string): (boolean, string)
-	data.dockBuildings = if type(data.dockBuildings) == "table" then data.dockBuildings else {}
+	data.dockBuildings = tableOf(data.dockBuildings)
 	local ok, reason, price =
 		DockConfig.canBuyDecor(key, data.dockBuildings[key] == true, data.cash)
 	if not ok or not price then
 		return false, reason or "Owned"
 	end
 	data.cash -= price
-	data.dockBuildings[key] = true
 	Telemetry.CashSpent(player, price, data.cash, "Dock", key)
-	DataService.MarkDirty(player)
 	ProgressionService.Refresh(player)
-	show(player, true)
-	task.spawn(DataService.Save, player, false)
+	startConstruction(player, data, key)
 	return true, "ok"
 end
 
@@ -787,6 +976,12 @@ local function buy(player: Player, key: any): (boolean, string)
 	local data: any = DataService.Get(player)
 	if not data then
 		return false, "Data"
+	end
+	if data.construction then
+		return false, "Building" -- one site at a time (docs/24 B)
+	end
+	if type(key) == "string" and type(data.dockPrepaid) == "table" and data.dockPrepaid[key] then
+		return false, "Owned" -- Robux paid already: it builds next, never charge Cash for it too
 	end
 	if busy[player] then
 		return false, "Busy"
@@ -797,6 +992,69 @@ local function buy(player: Player, key: any): (boolean, string)
 		return buyDecor(player, data, key)
 	end
 	return false, "Unknown"
+end
+
+-- The work is done: the building becomes owned (effects, unlocks, worker slots) and the site stands.
+local function finishConstruction(plot: Plot, player: Player, data: any)
+	local c = data.construction
+	if not c then
+		return
+	end
+	data.construction = nil
+	data.dockBuildings = tableOf(data.dockBuildings)
+	data.dockBuildings[c.key] = true
+	DataService.MarkDirty(player)
+	syncBuildings(plot, player, false)
+	syncDecor(plot, player, false)
+	clearSite(plot)
+	sendCrewHome(plot)
+	ProgressionService.Refresh(player)
+	task.spawn(DataService.Save, player, false)
+	-- let every client see the finished site play its beat before the next paid build starts
+	task.delay(2, function()
+		local latest: any = DataService.Get(player)
+		if latest and latest.construction == nil and byPlayer[player] then
+			startPrepaid(player, latest)
+		end
+	end)
+end
+
+-- A build keeps going while the owner is away: advance it at the saved rate before the plot is shown.
+local function applyOffline(player: Player, data: any)
+	local c = data.construction
+	if not c then
+		return
+	end
+	local now = os.time()
+	c.progress = BuildTimer.advance(c.progress, c.rate or 1, now - (c.at or now), workOf(c.key))
+	c.at = now
+	local i = byPlayer[player]
+	if c.progress >= 1 and i then
+		finishConstruction(plots[i], player, data)
+		return
+	end
+	c.rate = BuildTimer.rateOf(data.workers)
+	DataService.MarkDirty(player)
+end
+
+-- One second of a running construction; it publishes the site for every client.
+local function tickConstruction(plot: Plot, player: Player, data: any)
+	local c = data.construction
+	if not c then
+		return
+	end
+	local now = os.time()
+	local rate = BuildTimer.rateOf(data.workers)
+	c.progress = BuildTimer.advance(c.progress, c.rate or rate, now - (c.at or now), workOf(c.key))
+	c.rate, c.at = rate, now
+	if c.progress >= 1 then
+		finishConstruction(plot, player, data)
+		return
+	end
+	makeSite(plot, c.key)
+	syncSite(plot, data)
+	spawnCrew(plot)
+	DataService.MarkDirty(player)
 end
 
 local function claim(player: Player)
@@ -867,26 +1125,33 @@ function DockService.Init()
 		for key, b in rows do
 			if b.product then
 				MonetizationService.OnProduct(b.product, function(_player, data: any)
-					data.dockBuildings = if type(data.dockBuildings) == "table"
-						then data.dockBuildings
-						else {}
-					if data.dockBuildings[key] then
-						return true
-					end
+					data.dockBuildings = tableOf(data.dockBuildings)
+					data.dockPrepaid = tableOf(data.dockPrepaid)
+					local building = DockConfig.Buildings[key]
 					if
-						DockConfig.Buildings[key]
-						and not UnlockTree.canRobux(key, data.dockBuildings)
+						data.dockBuildings[key]
+						or data.dockPrepaid[key]
+						or (data.construction and data.construction.key == key)
 					then
-						data.dockPrepaid = if type(data.dockPrepaid) == "table"
-							then data.dockPrepaid
-							else {}
-						data.dockPrepaid[key] = true
 						return true
 					end
-					data.dockBuildings[key] = true
+					if building and not UnlockTree.canRobux(key, data.dockBuildings) then
+						data.dockPrepaid[key] = true -- paid, waits for the prerequisite
+						return true
+					end
+					if data.construction then
+						data.dockPrepaid[key] = true -- paid, waits its turn
+						return true
+					end
+					data.construction = {
+						key = key,
+						progress = 0,
+						rate = BuildTimer.rateOf(data.workers),
+						at = os.time(),
+					}
 					return true
 				end, function(player)
-					show(player, true)
+					show(player, false)
 				end)
 			end
 		end
@@ -947,13 +1212,22 @@ function DockService.Init()
 end
 
 function DockService.Start()
-	DataService.OnLoaded(function(player: Player)
+	DataService.OnLoaded(function(player: Player, data: any)
 		claim(player)
-		local i = byPlayer[player]
-		if i then
-			syncBuildings(plots[i], player, false)
-			syncDecor(plots[i], player, false)
-			crown() -- GetBerth may have claimed before the profile loaded
+		applyOffline(player, data) -- a build finished while away stands on rejoin
+		show(player, false)
+		crown() -- GetBerth may have claimed before the profile loaded
+	end)
+	task.spawn(function() -- one construction tick a second per owner
+		while true do
+			for player, i in byPlayer do
+				local plot = plots[i]
+				local data: any = DataService.Get(player)
+				if data and data.construction and plot then
+					tickConstruction(plot, player, data)
+				end
+			end
+			task.wait(1)
 		end
 	end)
 	-- the rescue boards show each owner's real rescue count (survivors delivered, RescueService)
@@ -975,6 +1249,18 @@ end
 -- Rebuild the player's plot from the profile, new pieces rising in (QuestService after a blueprint unlock).
 function DockService.Refresh(player: Player)
 	show(player, true)
+end
+
+-- Studio playtest hook (WorkerDev): finish the running site at once.
+function DockService.FinishBuild(player: Player): boolean
+	local data: any = DataService.Get(player)
+	local i = byPlayer[player]
+	if not (data and data.construction and i) then
+		return false
+	end
+	data.construction.progress = 1
+	finishConstruction(plots[i], player, data)
+	return true
 end
 
 function DockService.GetPlot(player: Player): number?

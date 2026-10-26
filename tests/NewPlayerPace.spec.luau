@@ -18,6 +18,7 @@ return function(t)
 	local Grading = t.load("src/shared/Ops/Grading.luau")
 	local StreakRules = t.load("src/shared/StreakRules.luau")
 	local ColdOpen = t.load("src/shared/Boat/ColdOpen.luau")
+	local BuildTimer = t.load("src/shared/BuildTimer.luau")
 
 	local COLD_OPEN = 0.31 -- min: Round 4, cold open Complete at 0:18.7
 	local ANSWER = 10 / 60 -- R / tap (or WP3's seated auto-accept)
@@ -41,9 +42,10 @@ return function(t)
 		local events = {}
 		local seen = {}
 		local cashAt = {}
-		local function mark(label: string)
+		local building, buildDoneAt = false, 0
+		local function mark(label: string, at: number?)
 			if not seen[label] then
-				seen[label] = now
+				seen[label] = at or now
 				table.insert(events, label)
 			end
 		end
@@ -55,6 +57,22 @@ return function(t)
 			end
 			if seen["upgrade bought"] and data.cash >= FIRST_BUILD then
 				mark("first build affordable")
+			end
+		end
+		local function tryBuild()
+			if building or not seen["upgrade bought"] or data.cash < FIRST_BUILD then
+				return
+			end
+			mark("first build affordable")
+			data.cash -= FIRST_BUILD
+			building = true
+			mark("first build started")
+			buildDoneAt = now + BuildTimer.work(FIRST_BUILD) / 60
+		end
+		local function settleBuild()
+			if building and now >= buildDoneAt then
+				building = false
+				mark("first build", buildDoneAt)
 			end
 		end
 		local function pay(kind: string)
@@ -78,6 +96,8 @@ return function(t)
 			local trips = math.ceil((choice.victims or 1) / SEATS)
 			now += trips * (TRIP + BOARD + DROP) * slow
 			pay(choice.kind)
+			settleBuild()
+			tryBuild()
 			if not seen["upgrade bought"] and data.cash >= ENGINE then
 				now += BUY_MIN * slow
 				local streak = StreakRules.claim(StreakRules.newState(), 1792800000)
@@ -88,7 +108,10 @@ return function(t)
 				mark("upgrade bought")
 			end
 			now += CallTypes.Scheduler.OfferDelay / 60
+			settleBuild()
 		end
+		tryBuild()
+		settleBuild()
 		local cash10 = 0
 		for _, row in cashAt do
 			if row.at <= 10 then
@@ -156,5 +179,12 @@ return function(t)
 
 	t.test("the RIB is in sight at 10 minutes", function()
 		t.expect(main.rib >= 0.2).toBe(true)
+	end)
+
+	t.test("the first build stands, its crew's work counted", function()
+		for _, s in scenarios do
+			local at = s.r.at["first build"]
+			t.expect(at ~= nil and at <= 11).toBe(true)
+		end
 	end)
 end

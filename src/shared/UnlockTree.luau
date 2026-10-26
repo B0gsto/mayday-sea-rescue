@@ -6,7 +6,6 @@
 local Config = script.Parent:WaitForChild("Config")
 local DockConfig = require(Config:WaitForChild("DockConfig"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
-local WorkerRules = require(script.Parent:WaitForChild("WorkerRules"))
 
 local UnlockTree = {}
 
@@ -25,18 +24,16 @@ function UnlockTree.missing(key: string, owned: { [string]: boolean }): string?
 end
 
 -- A Cash buy of building `key` -> ok, reason ("Owned" | "Needs" | "Cash"), price, the missing prerequisite.
--- `discount`: the Builders' share off (WorkerRules effects, WP-26).
 function UnlockTree.canBuy(
 	key: string,
 	owned: { [string]: boolean },
-	cash: number,
-	discount: number?
+	cash: number
 ): (boolean, string?, number?, string?)
 	local b = DockConfig.Buildings[key]
 	if not b or owned[key] == true then
 		return false, "Owned", nil, nil
 	end
-	local price = WorkerRules.price(b.cash, discount)
+	local price = b.cash
 	local need = UnlockTree.missing(key, owned)
 	if need then
 		return false, "Needs", price, need

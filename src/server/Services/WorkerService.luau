@@ -5,13 +5,16 @@
 -- or on the jetty. The server only publishes them (ReplicatedStorage.Workers.<UserId>.<index>: a Configuration
 -- with the worker and its feet CFrame `Spot`); every client draws, animates, paths and culls the rigs itself
 -- (WorkerController), cloned from RIGS shared R15 templates (ReplicatedStorage.WorkerRigs, NpcFactory) so a
--- server of 6 full islands (~186 workers) costs the server nothing per frame. Effects go out as player attributes the hooks read: WorkerBuildDiscount (DockService, the tablet,
--- BuildSeq), WorkerBoatScale (VehicleService Boat to me, UI/Menu), WorkerCraftSpeed (VehicleService
+-- server of 6 full islands (~186 workers) costs the server nothing per frame. Builders walk to a running
+-- construction site (docs/24 B; DockService publishes SiteKey on the plot) and each worker carries the job its
+-- client animations read (`Job`). Effects go out as player attributes the hooks read: WorkerBoatScale
+-- (VehicleService Boat to me, UI/Menu), WorkerCraftSpeed (VehicleService
 -- SpeedMultiplier), WorkerPayBonus (OperationService debrief pay). Gatherers pay every minute, Rescuers send an
 -- NPC rescue boat out of your cove every RESCUE_PERIOD (Cash, sometimes a new worker). On join the time away
 -- pays Gatherers + Rescuers at OFFLINE_RATE, capped (attribute WorkerOffline: the client's coin burst).
 -- Studio: ServerStorage.WorkerDev:Invoke("recruit", category, rarity, name) as if landed at the first player's
--- berth; ("offline", seconds) pays as if they were away that long; ("status") -> a summary string;
+-- berth; ("offline", seconds) pays as if they were away that long; ("finishbuild") finishes the running site;
+-- ("status") -> a summary string;
 -- ("fill") shows 31 fake workers on each of the 6 islands (perf tests), ("unfill") clears them.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -20,6 +23,7 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Marina = require(Shared:WaitForChild("Marina"))
 local ProgressionRules = require(Shared:WaitForChild("ProgressionRules"))
@@ -83,15 +87,61 @@ local function arrival(bay: CFrame): CFrame
 	return bay * CFrame.new((J.x0 + J.x1) / 2, Marina.DECK_TOP, 0)
 end
 
+-- The job loop each client draws from `Job` (docs/24 C); a Builder at a filled workshop gathers.
+local JOB: { [string]: string } = {
+	Gatherer = "Fish",
+	Mechanic = "Repair",
+	Rescuer = "Rescue",
+	Medic = "Heal",
+	Builder = "Gather",
+}
+
+-- The owner's plot publishes SiteKey while a construction runs (DockService).
+local function siteKey(player: Player): string?
+	local i = player:GetAttribute("DockPlot")
+	if type(i) ~= "number" then
+		return nil
+	end
+	local marina = Workspace:FindFirstChild("Marina")
+	local plot = marina and marina:FindFirstChild(`Plot{i}`)
+	local key = plot and plot:GetAttribute("SiteKey")
+	return if type(key) == "string" then key else nil
+end
+
+-- A feet spot round the site's footprint, one per Builder (the front of the building is -Z).
+local function buildSpot(bay: CFrame, key: string, n: number, count: number): CFrame?
+	local b = DockConfig.Buildings[key]
+	local at: CFrame?
+	local size: Vector2
+	if b then
+		at, size = bay * b.spot, b.size
+	else
+		local d = DockConfig.Decorations[key]
+		if not d then
+			return nil
+		end
+		at, size = DockConfig.decorSpot(key, bay), d.size
+	end
+	if not at then
+		return nil
+	end
+	local hw, hd = size.X / 2 + 3, size.Y / 2 + 3
+	local a = (n - 1) / math.max(count, 1) * math.pi * 2
+	local p = at.Position + Vector3.new(math.cos(a) * hw, 0.8, math.sin(a) * hd)
+	return CFrame.lookAt(p, at.Position + Vector3.new(0, 0.8, 0))
+end
+
 -- One worker as data for the clients (WorkerController draws the rig): attributes WorkerCategory, WorkerRarity,
--- WorkerName, Rig (a WorkerRigs template), Spot (feet CFrame), Work (at their building), From (walk in from here).
+-- WorkerName, Rig (a WorkerRigs template), Spot (feet CFrame), Work (at their building), From (walk in from
+-- here), Job (the animation loop another client controller plays).
 local function publish(
 	parent: Instance,
 	i: number,
 	w: WorkerRules.Worker,
 	spot: CFrame,
 	work: boolean,
-	from: CFrame?
+	from: CFrame?,
+	job: string
 ): Configuration
 	local cfg = Instance.new("Configuration")
 	cfg.Name = tostring(i)
@@ -102,6 +152,7 @@ local function publish(
 	cfg:SetAttribute("Spot", spot)
 	cfg:SetAttribute("Work", work)
 	cfg:SetAttribute("From", from)
+	cfg:SetAttribute("Job", job)
 	cfg.Parent = parent
 	return cfg
 end
@@ -114,7 +165,6 @@ local function sync(player: Player)
 		return
 	end
 	local fx = effectsOf(data)
-	player:SetAttribute("WorkerBuildDiscount", fx.buildDiscount)
 	player:SetAttribute("WorkerBoatScale", fx.boatScale)
 	player:SetAttribute("WorkerCraftSpeed", fx.craftSpeed)
 	player:SetAttribute("WorkerPayBonus", fx.payBonus)
@@ -125,11 +175,24 @@ local function sync(player: Player)
 	end
 	local place = WorkerRules.assign(data.workers, data.dockBuildings)
 	local slots = WorkerRules.slots(data.dockBuildings)
+	local site = siteKey(player)
+	local order, count = {}, 0
+	if site then
+		for k, index in BuildTimer.builders(data.workers) do
+			order[index] = k
+			count = k
+		end
+	end
 	local idle = 0
 	for i, w in data.workers do
 		local spot: CFrame? = nil
-		if place[i] then
+		local job = "Idle"
+		if order[i] and site then
+			spot = buildSpot(bay, site, order[i], count)
+			job = "Build"
+		elseif place[i] then
 			spot = workSpot(bay, w.category, place[i], slots)
+			job = JOB[w.category] or "Idle"
 		else
 			idle += 1
 			spot = if idle <= WorkerService.IDLE_SHOWN then idleSpot(bay, idle) else nil
@@ -147,13 +210,15 @@ local function sync(player: Player)
 				i,
 				w,
 				spot,
-				place[i] ~= nil,
-				if st.fresh[i] then arrival(bay) else nil
+				job ~= "Idle",
+				if st.fresh[i] then arrival(bay) else nil,
+				job
 			)
 			st.fresh[i] = nil
 		else
 			cfg:SetAttribute("Spot", spot) -- same value: no change, nothing replicates
-			cfg:SetAttribute("Work", place[i] ~= nil)
+			cfg:SetAttribute("Work", job ~= "Idle")
+			cfg:SetAttribute("Job", job)
 		end
 	end
 end
@@ -341,6 +406,9 @@ function WorkerService.Init()
 			if not data then
 				return "no data"
 			end
+			if cmd == "finishbuild" then
+				return require(script.Parent.DockService).FinishBuild(player)
+			end
 			if cmd == "fill" or cmd == "unfill" then
 				for k = 1, Marina.COUNT do
 					local old = (dataRoot :: Folder):FindFirstChild(`Fill{k}`)
@@ -362,14 +430,15 @@ function WorkerService.Init()
 									w,
 									workSpot(bay, category, slot, 5) :: CFrame,
 									true,
-									nil
+									nil,
+									JOB[category] or "Gather"
 								)
 							end
 						end
 						for idle = 1, WorkerService.IDLE_SHOWN do
 							n += 1
 							local w = { category = "Medic", rarity = 1, name = "Fill" }
-							publish(ff, n, w, idleSpot(bay, idle), false, nil)
+							publish(ff, n, w, idleSpot(bay, idle), false, nil, "Idle")
 						end
 						ff.Parent = dataRoot
 					end
