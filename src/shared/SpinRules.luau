@@ -170,9 +170,9 @@ SpinRules.PRIZES = {
 		id = "GrandBoat",
 		rarity = "Mythic",
 		kind = "boat",
-		name = "Gilded Gull",
+		name = "Storm Runner",
 		icon = "boat_to_me",
-		vehicle = "GildedGull",
+		vehicle = "StormRunner",
 	},
 } :: { Prize }
 

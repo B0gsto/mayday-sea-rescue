@@ -80,6 +80,14 @@ return function(t)
 			t.expect((Rules.canBuyVehicle(data(1e9, { Boathouse = true }), id))).toBe(false)
 			t.expect((Rules.canUseVehicle(data(0), id, true))).toBe(true)
 		end
+		-- the spin wheel's grand prize: the profile flag owns exactly that one pass-only craft
+		local won = data(0, {}, { StormRunner = true })
+		t.expect(Rules.ownsVehicle(won, "StormRunner")).toBe(false)
+		won.flags.spinBoat = "StormRunner"
+		t.expect(Rules.ownsVehicle(won, "StormRunner")).toBe(true)
+		t.expect(Rules.ownsVehicle(won, "GildedGull")).toBe(false)
+		local rebuilt = Rules.fromSnapshot(Rules.snapshot(won))
+		t.expect(Rules.ownsVehicle(rebuilt, "StormRunner")).toBe(true)
 	end)
 
 	t.test("dock decor keys survive the save migration, junk keys drop", function()
