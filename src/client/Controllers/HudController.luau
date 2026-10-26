@@ -126,7 +126,7 @@ local function buildWallet(region: Frame)
 	row.Name = "CashRow" -- FriendController adds its bonus chip here, after the amount
 	row.BackgroundTransparency = 1
 	row.Position = UDim2.fromOffset(10, 5)
-	row.Size = UDim2.new(1, -10, 0, 42)
+	row.Size = UDim2.new(1, -10, 0, 52)
 	row.Parent = wallet
 	local list = Instance.new("UIListLayout")
 	list.FillDirection = Enum.FillDirection.Horizontal
@@ -135,16 +135,26 @@ local function buildWallet(region: Frame)
 	list.Padding = UDim.new(0, 6)
 	list.Parent = row
 
-	local coin = HudTheme.image("Coin", Hud.Coin, UDim2.fromOffset(36, 36), row)
+	local coin = HudTheme.image("Coin", Hud.Coin, UDim2.fromOffset(52, 52), row)
 	coin.LayoutOrder = 1
 	coinPop = Instance.new("UIScale")
 	coinPop.Parent = coin
 
-	cashLabel = HudTheme.label("Cash", "0", UDim2.fromOffset(0, 42), HudTheme.NumberFont, 28, row)
+	cashLabel = HudTheme.label("Cash", "0", UDim2.fromOffset(0, 52), HudTheme.NumberFont, 42, row)
 	cashLabel.LayoutOrder = 2
 	cashLabel.AutomaticSize = Enum.AutomaticSize.X
 	cashLabel.TextTruncate = Enum.TextTruncate.None
-	HudTheme.outline(cashLabel)
+	-- gold number with a thick dark outline so it pops over the world (user, 2026-10-26)
+	cashLabel.TextColor3 = Color3.new(1, 1, 1)
+	local gold = Instance.new("UIGradient")
+	gold.Rotation = 90
+	gold.Color = ColorSequence.new(Color3.fromHex("FFF7B8"), Color3.fromHex("FFB81C"))
+	gold.Parent = cashLabel
+	local edge = Instance.new("UIStroke")
+	edge.Color = Color3.fromHex("3A1E00")
+	edge.Thickness = 3.5
+	edge.LineJoinMode = Enum.LineJoinMode.Round
+	edge.Parent = cashLabel
 
 	-- (+): the kit Shop; a hit area around the 42 du button sprite, >= 46 px on screen (touch target, refit)
 	local plus = Instance.new("TextButton")
@@ -157,15 +167,25 @@ local function buildWallet(region: Frame)
 	plus.Parent = row
 	local function refit()
 		fit.Scale = math.min(1, region.Size.Y.Offset / H)
-		local side = math.max(48, math.ceil(46 / (Layout.current().scale * fit.Scale)))
+		local side = math.max(58, math.ceil(46 / (Layout.current().scale * fit.Scale)))
 		plus.Size = UDim2.fromOffset(side, side)
 	end
 	region:GetPropertyChangedSignal("Size"):Connect(refit)
 	Layout.onMetrics(refit)
 	refit()
-	local disc = HudTheme.image("Disc", Hud.PlusButton, UDim2.fromOffset(42, 42), plus)
+	local disc = HudTheme.image("Disc", Hud.PlusButton, UDim2.fromOffset(56, 56), plus)
 	disc.AnchorPoint = Vector2.new(0.5, 0.5)
 	disc.Position = UDim2.fromScale(0.5, 0.5)
+	-- dark ring behind the sprite, the same outline as the Cash number
+	local ring = Instance.new("Frame")
+	ring.Name = "Ring"
+	ring.AnchorPoint = Vector2.new(0.5, 0.5)
+	ring.Position = UDim2.fromScale(0.5, 0.5)
+	ring.Size = UDim2.fromOffset(61, 61)
+	ring.BackgroundColor3 = Color3.fromHex("3A1E00")
+	ring.ZIndex = disc.ZIndex - 1
+	ring.Parent = plus -- a sibling: under Sibling ZIndex a child would draw over the sprite
+	HudTheme.corner(ring, 999)
 	local pop = Instance.new("UIScale")
 	pop.Parent = disc
 	local function to(scale: number)
@@ -191,6 +211,14 @@ local function buildWallet(region: Frame)
 		to(1)
 		Menu.open("Shop")
 	end)
+	-- idle heartbeat on the "+" so the shop entry reads as a live button
+	local beat = Instance.new("UIScale")
+	beat.Parent = plus
+	TweenService:Create(
+		beat,
+		TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true, 1.2),
+		{ Scale = 1.1 }
+	):Play()
 end
 
 local function buildAward()
