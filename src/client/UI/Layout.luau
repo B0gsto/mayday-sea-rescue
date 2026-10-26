@@ -6,12 +6,11 @@
 -- Desktop / gamepad:
 --
 --   +------------------------------------------------------------------+
---   | menu  wallet          notice (toasts, call-outs)        mission  |
---   | menu  objective                                         card     |
---   | menu  (step card)     prompt (mechanic panels,          column   |
---   | menu                  interaction cards)                (pager,  |
---   | menu  minimap                                           monitor) |
---   |       [obj pill]                                        gauges   |
+--   | menu  objective       notice (toasts, call-outs)                 |
+--   | menu  (step card)                                                |
+--   | menu                  prompt (mechanic panels,         [quest]  |
+--   | menu                  interaction cards)               [pill]   |
+--   | wallet (Cash)                                          minimap  |
 --   +------------------------------------------------------------------+
 --
 -- Touch: the menu grid (UI/Menu, as many rows as fit above the thumbstick) top left, the 130 px
@@ -34,8 +33,7 @@
 -- Layout.newPlayer() is true on a new-profile HUD: the cold open and the first 3 calls after it.
 --
 -- Phone check (tests/HudLayout.spec.luau: phones and tablets, landscape and portrait, scale 0.7+):
--- every region ends above the thumbstick zone at 55% of the safe height and the card column above
--- the jump zone at 65%.
+-- every region ends above the thumbstick zone at 55% of the safe height and clear of the jump zone.
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -278,7 +276,6 @@ local EDGE_REGIONS = {
 	wallet = true,
 	objective = true,
 	minimap = true,
-	right = true,
 	gauges = true,
 	quest = true,
 }

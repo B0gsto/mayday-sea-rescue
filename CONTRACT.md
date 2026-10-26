@@ -164,10 +164,10 @@ fail: a slow one grades Bronze (`Condition.overdue`; the big call ends on its ca
 | `Ops_Closed` | S->C | `{ opId, reason }` |
 
 Client: `OpsController` plays one mechanic per step (`src/client/Mechanics/`: `{ start(ctx, finish) ->
-cleanup? }`, fallback `Mechanics/Default`, helpers `Mechanics/PIW`); UI `UI/OpsHud` (mounts `OpsTaskingCard`
-(the pager), `OpsStepCard`, `OpsDebrief`), `UI/Waypoint`, `PickupRingController` (the orange ring),
-`CasualtyController` (strobes, shouts), `PyroController` (flares). A new call is the pager card, its flare and
-pin, and a beep (no radio). Voices are NPCs only: `VoiceTTS` + `UI/VoiceCast`.
+cleanup? }`, fallback `Mechanics/Default`, helpers `Mechanics/PIW`); UI `UI/OpsHud` (mounts `OpsStepCard`,
+`OpsDebrief`), `UI/Waypoint`, `PickupRingController` (the orange ring),
+`CasualtyController` (strobes, shouts), `PyroController` (flares). A new call is its flare, pin and screen
+marker, and a beep (no pager card, no radio); driving at it takes it. Voices are NPCs only: `VoiceTTS` + `UI/VoiceCast`.
 
 ## First minutes
 

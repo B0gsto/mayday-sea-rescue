@@ -6,17 +6,17 @@
 -- Every device: the menu (UI/Menu: a grid of kit icon buttons) sits at the left edge; the rest of the
 -- left-hand HUD sits right of it.
 --
--- Desktop / gamepad: the wallet top left (right of the menu) with the objective strip under it,
--- the minimap bottom left (right of the menu), the mission card column top right, gauges bottom
--- right. The notice band sits top centre in the gap between the wallet / objective and the card
--- column; the prompt sits bottom centre between the minimap and the gauges.
+-- Desktop / gamepad: the menu on the left edge with the wallet (a see-through Cash counter) under it,
+-- the objective strip top left (right of the menu), the minimap bottom right (in the gauges square) with
+-- the quest chip above it. The notice band sits top centre right of the objective; the prompt sits
+-- bottom centre between the menu and the minimap. No call card: a call shows in the world (OpsHud).
 --
 -- Touch (thumbstick bottom left, jump / action buttons bottom right):
 --
 --   +------------------------------------------------------------------+
---   | menu menu menu menu  minimap  objective                  mission |
---   | menu menu menu menu  (130 px) wallet                     card    |
---   |                      notice                              column  |
+--   | menu menu menu menu  minimap  objective                          |
+--   | menu menu menu menu  (130 px) wallet                             |
+--   |                      notice                                      |
 --   |       prompt (unchanged)                                         |
 --   | [thumbstick]                                  [jump / actions]    |
 --   +------------------------------------------------------------------+
@@ -26,8 +26,7 @@
 -- menu grid takes as many rows as fit above the stick zone (4 x 2 on phones, 2 x 4 on tablets); the
 -- minimap sits right of it at 130 final px (tap it for the full map, MapController), the objective strip
 -- right of that (portrait: under it) and the wallet under the objective. The notice band sits beside
--- the wallet, or under it in the band between the two zones; the mission card column (TOUCH_CARD_WIDTH,
--- the pager) stops above the jump zone. The prompt keeps its place. Phone-sized screens use this arrangement on
+-- the wallet, or under it in the band between the two zones. The prompt keeps its place. Phone-sized screens use this arrangement on
 -- every device (compute). The debrief toast takes the topmost free gap (debriefRect), shrinking to fit.
 -- `tests/HudLayout.spec.luau` asserts this on 16:9 / 19.5:9 / small Android phones (landscape and
 -- portrait) and 4:3 tablets.
@@ -44,9 +43,8 @@ HudLayout.WALLET_WIDTH = 236 -- the Cash card (HudController)
 HudLayout.WALLET_HEIGHT = 54
 HudLayout.PILL_HEIGHT = 36 -- desktop: clear space above the square (the minimap bezel overhangs it)
 HudLayout.TOUCH_SIDE = 130 -- final px: the touch minimap square
-HudLayout.TOUCH_CARD_WIDTH = 130 -- touch: the mission card column (the pager is 120 wide)
 HudLayout.OBJECTIVE_MIN_WIDTH = 210 -- the step card is 208 wide
-HudLayout.QUEST_WIDTH = 236 -- the quest tracker chip (UI/Menu): desktop above the minimap pill
+HudLayout.QUEST_WIDTH = 236 -- the quest tracker chip (UI/Menu): desktop above the minimap pill (bottom right)
 HudLayout.QUEST_HEIGHT = 50
 HudLayout.QUEST_TOUCH_HEIGHT = 34 -- touch: a tag over the minimap's bottom edge, ending where the objective may start
 HudLayout.DEBRIEF_WIDTH = 340 -- the end-of-call toast (UI/OpsDebrief), drawn scaled to its region's width
@@ -68,7 +66,6 @@ local MAX_SCALE = 1.6
 export type RegionName =
 	"objective"
 	| "status"
-	| "right"
 	| "notice"
 	| "prompt"
 	| "minimap"
@@ -103,7 +100,6 @@ export type Metrics = {
 	touch: boolean,
 	side: number, -- minimap / gauges square
 	objectiveWidth: number,
-	rightWidth: number,
 	centreWidth: number, -- prompt
 	noticeWidth: number,
 	menu: Menu,
@@ -121,14 +117,14 @@ local function box(r: Rect): (number, number, number, number)
 end
 
 -- The debrief toast: the topmost band (at the toast's full height) with a free gap of at least DEBRIEF_MIN of its
--- width between the edge HUD (wallet, menu, minimap, quest, card column, gauges) and the touch zones; the toast
+-- width between the edge HUD (wallet, menu, minimap, quest, gauges) and the touch zones; the toast
 -- shrinks to the gap. The objective is free: the step card hides while the debrief shows (OpsHud).
 local function debriefRect(mt: Metrics, zones: { { number } }): Rect
 	local u, m, g = mt.usable, HudLayout.MARGIN, HudLayout.GAP
 	local W, H = HudLayout.DEBRIEF_WIDTH, HudLayout.DEBRIEF_HEIGHT
 	local blocks = table.clone(zones)
 	local ys = { m }
-	for _, name in { "wallet", "menu", "minimap", "quest", "right", "gauges" } do
+	for _, name in { "wallet", "menu", "minimap", "quest", "gauges" } do
 		local x0, y0, x1, y1 = box(mt.rects[name])
 		table.insert(blocks, { x0 - g, y0 - g, x1 + g, y1 + g })
 		table.insert(ys, y1 + g)
@@ -196,12 +192,10 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	-- touch: as many rows as fit above the thumbstick zone (4 x 2 on phones, 2 x 4 on tablets)
 	local menu = if touch
 		then menuGrid(MENU_TOUCH, u.Y * 0.55 - 4 - m)
-		else menuGrid(MENU_DESK, u.Y - 2 * m)
+		else menuGrid(MENU_DESK, u.Y - 2 * m - HudLayout.WALLET_HEIGHT - g)
 	local left = m + menu.width + g -- the left-hand HUD starts right of the menu
 	local objectiveWidth = math.clamp(math.floor(u.X * 0.3), 300, if touch then 460 else 360)
-	local rightWidth = math.clamp(math.floor(u.X * 0.24), 280, 360)
-	local rightLeft = u.X - m - rightWidth
-	local outer = math.max(side, rightWidth)
+	local outer = math.max(side, math.clamp(math.floor(u.X * 0.24), 280, 360)) -- touch prompt clearance
 	local bottom = u.Y - m
 	local objectiveHeight = HudLayout.OBJECTIVE_HEIGHT
 	local mt: Metrics = {
@@ -210,7 +204,6 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		touch = touch,
 		side = side,
 		objectiveWidth = objectiveWidth,
-		rightWidth = rightWidth,
 		centreWidth = math.min(u.X - 2 * (outer + 2 * m), 640),
 		noticeWidth = 0,
 		menu = menu,
@@ -218,16 +211,14 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	}
 	-- status is empty now (the friend chip lives in the wallet): a zero-height line, so it never
 	-- pushes the mission card down
-	mt.rects["status"] =
-		rect(Vector2.new(1, 0), Vector2.new(u.X - m, m), Vector2.new(rightWidth, 0))
+	mt.rects["status"] = rect(Vector2.new(1, 0), Vector2.new(u.X - m, m), Vector2.new(280, 0))
 	if touch then
 		-- Roblox's touch controls: the dynamic thumbstick bottom left (portrait: the whole bottom), the
 		-- jump / action buttons bottom right. Every region ends above them.
 		local portrait = u.X < u.Y
 		local stickTop = u.Y * 0.55
 		local jumpTop = u.Y * 0.65
-		local cardBottom = if portrait then stickTop - 1 else jumpTop - 1
-		local cardLeft = u.X - m - HudLayout.TOUCH_CARD_WIDTH
+		local cardLeft = u.X - m -- the right edge (no card column since the pager went)
 		mt.rects["menu"] =
 			rect(Vector2.new(0, 0), Vector2.new(m, m), Vector2.new(menu.width, menu.height))
 		mt.rects["minimap"] = rect(Vector2.new(0, 0), Vector2.new(left, m), Vector2.new(side, side))
@@ -280,59 +271,51 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 			Vector2.new(nx, ny),
 			Vector2.new(nw, math.clamp(noticeBottom - ny, 48, HudLayout.NOTICE_HEIGHT))
 		)
-		mt.rects["right"] = rect(
-			Vector2.new(1, 0),
-			Vector2.new(u.X - m, m),
-			Vector2.new(HudLayout.TOUCH_CARD_WIDTH, cardBottom - m)
-		)
 		mt.rects["quest"] = rect(
 			Vector2.new(0, 0),
 			Vector2.new(left, m + side + g - HudLayout.QUEST_TOUCH_HEIGHT),
 			Vector2.new(side, HudLayout.QUEST_TOUCH_HEIGHT)
 		)
 	else
-		-- the menu strip centred on the left edge, the wallet top left beside it, the objective under
+		-- the menu strip on the left edge with the wallet under it, the pair centred; the objective top left
+		-- beside the menu; the minimap bottom right with the quest chip above its pill
+		local menuTop = (u.Y - menu.height - HudLayout.WALLET_HEIGHT - g) / 2
 		mt.rects["menu"] =
-			rect(Vector2.new(0, 0.5), Vector2.new(m, u.Y / 2), Vector2.new(menu.width, menu.height))
+			rect(Vector2.new(0, 0), Vector2.new(m, menuTop), Vector2.new(menu.width, menu.height))
 		mt.rects["wallet"] = rect(
 			Vector2.new(0, 0),
-			Vector2.new(left, m),
+			Vector2.new(m, menuTop + menu.height + g),
 			Vector2.new(HudLayout.WALLET_WIDTH, HudLayout.WALLET_HEIGHT)
 		)
 		mt.rects["objective"] = rect(
 			Vector2.new(0, 0),
-			Vector2.new(left, m + HudLayout.WALLET_HEIGHT + g),
+			Vector2.new(left, m),
 			Vector2.new(objectiveWidth, objectiveHeight)
 		)
-		-- the top band fills the gap between the wallet / objective and the card column
-		local x0 = left + math.max(HudLayout.WALLET_WIDTH, objectiveWidth) + g
-		local x1 = rightLeft - g
+		-- the top band fills the gap right of the objective
+		local x0 = left + objectiveWidth + g
+		local x1 = u.X - m
 		mt.noticeWidth = math.min(x1 - x0, 420)
 		mt.rects["notice"] = rect(
 			Vector2.new(0.5, 0),
 			Vector2.new((x0 + x1) / 2, m),
 			Vector2.new(mt.noticeWidth, HudLayout.NOTICE_HEIGHT)
 		)
-		mt.rects["right"] = rect(
-			Vector2.new(1, 0),
-			Vector2.new(u.X - m, m),
-			Vector2.new(rightWidth, math.max(bottom - side - g - m, 120))
-		)
 		mt.rects["minimap"] =
-			rect(Vector2.new(0, 1), Vector2.new(left, bottom), Vector2.new(side, side))
+			rect(Vector2.new(1, 1), Vector2.new(u.X - m, bottom), Vector2.new(side, side))
 		mt.rects["quest"] = rect(
-			Vector2.new(0, 1),
-			Vector2.new(left, bottom - side - HudLayout.PILL_HEIGHT - g),
+			Vector2.new(1, 1),
+			Vector2.new(u.X - m, bottom - side - HudLayout.PILL_HEIGHT - g),
 			Vector2.new(HudLayout.QUEST_WIDTH, HudLayout.QUEST_HEIGHT)
 		)
 	end
 	-- prompt and gauges keep their place on every device (the prompt clears the speed dock;
-	-- gauges holds the touch action buttons at the bottom right on purpose). Desktop: the prompt
-	-- centres between the minimap and the gauges.
+	-- gauges holds the touch action buttons at the bottom right on purpose; on desktop the minimap shares
+	-- its square). Desktop: the prompt centres between the menu and the minimap.
 	local b = bottom - HudLayout.SUBTITLE_HEIGHT - g
 	local cx = u.X / 2
 	if not touch then
-		local p0, p1 = left + side + g, u.X - m - side - g
+		local p0, p1 = left, u.X - m - side - g
 		cx = (p0 + p1) / 2
 		mt.centreWidth = math.min(p1 - p0, 640)
 	end

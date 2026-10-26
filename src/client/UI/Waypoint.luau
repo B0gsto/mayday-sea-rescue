@@ -2,7 +2,7 @@
 -- Waypoint (playtest 2026-10-23: a new player could not find the second call): the way to the
 -- call, in the world. MapController's objective (your craft while you are off it, the offered call,
 -- the nearest survivor or vessel, the drop-off once they are aboard) gets a screen marker (no light pillar: user, 2026-10-21): the call-type icon on a disc
--- (OpsTaskingCard.KIND) with its distance under it, pinned to the screen edge with its tip pointing
+-- (KIND below) with its distance under it, pinned to the screen edge with its tip pointing
 -- the way while off screen. Close in (NEAR) it never hides: it bobs over the target, tip down, until
 -- the goal is done (docs/20 rule 2). The strip shows the same icon and distance (onGoal); the minimap
 -- has no pill. Hidden under a panel or the full map, and in cinematics (OpsUiHidden). Mounted by OpsHud.
@@ -15,7 +15,6 @@ local Workspace = game:GetService("Workspace")
 local Glyph = require(script.Parent.Glyph)
 local HudTheme = require(script.Parent.HudTheme)
 local Layout = require(script.Parent.Layout)
-local OpsTaskingCard = require(script.Parent.OpsTaskingCard)
 
 local Waypoint = {}
 
@@ -28,6 +27,19 @@ local STUDS_PER_M = 3
 local NEAR = 25 * STUDS_PER_M -- studs: this close the marker bobs over the target
 local BOB = 8 -- px: how far it bobs
 local DISC = 46 -- du
+
+local RED = Color3.fromHex("E8332A")
+local AMBER = Color3.fromHex("FFB020")
+-- call kind -> Glyph icon and alert colour
+local KIND: { [string]: { icon: string, color: Color3 } } = {
+	PersonInWater = { icon = "swimmer", color = RED },
+	RipCurrent = { icon = "swimmer", color = RED },
+	CapsizedFerry = { icon = "boat", color = RED },
+	SinkingVessel = { icon = "boat", color = RED },
+	VesselFire = { icon = "flare", color = RED },
+	Diver = { icon = "cross", color = RED },
+	WildlifeRescue = { icon = "ring", color = AMBER },
+}
 local LIFT = 34 -- px: the disc floats over the target, its tip pointing down at it
 local RIM = Vector2.new(0.36, 0.28) -- the pin ellipse's radii, share of the screen (down)
 local RIM_UP = 0.24 -- its upward radius: the top band holds the strip
@@ -153,7 +165,7 @@ function Waypoint.start(
 		end
 		local s = ops.GetState()
 		local kind = if label == "Mayday" then offerKind elseif s then s.kind else nil
-		local k = OpsTaskingCard.KIND[kind or ""]
+		local k = KIND[kind or ""]
 		if k then
 			return k.icon, k.color
 		end

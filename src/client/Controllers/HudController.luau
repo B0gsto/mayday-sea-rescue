@@ -1,6 +1,6 @@
 --!strict
 -- HudController: the progression HUD (docs 05 section 9 style, mobile first).
---   Placement: UI/Layout regions. Top left ("wallet"): Cash with a round "+" that opens the kit
+--   Placement: UI/Layout regions. "wallet" (desktop: under the menu): Cash, no backing card, with a round "+" that opens the kit
 --   Shop. UI/Menu owns the left button bar and the
 --   panels (every menu, the crew's faces and Leave).
 --   Top centre ("notice"): "+Cash" award pops (with the friends bonus as "+20%").
@@ -117,6 +117,7 @@ local function buildWallet(region: Frame)
 		HudTheme.Slice.Panel,
 		0.45
 	)
+	wallet.ImageTransparency = 1 -- see-through: coin, outlined number and "+" over the world (user, 2026-10-26)
 	-- touch: the region can be shorter than the card (it ends above the thumbstick zone)
 	local fit = Instance.new("UIScale")
 	fit.Parent = wallet
@@ -125,7 +126,7 @@ local function buildWallet(region: Frame)
 	row.Name = "CashRow" -- FriendController adds its bonus chip here, after the amount
 	row.BackgroundTransparency = 1
 	row.Position = UDim2.fromOffset(10, 5)
-	row.Size = UDim2.new(1, -62, 0, 42)
+	row.Size = UDim2.new(1, -10, 0, 42)
 	row.Parent = wallet
 	local list = Instance.new("UIListLayout")
 	list.FillDirection = Enum.FillDirection.Horizontal
@@ -152,9 +153,8 @@ local function buildWallet(region: Frame)
 	plus.AutoButtonColor = false
 	plus.Selectable = true
 	plus.BackgroundTransparency = 1
-	plus.AnchorPoint = Vector2.new(0.5, 0.5)
-	plus.Position = UDim2.fromOffset(W - 28, 26)
-	plus.Parent = wallet
+	plus.LayoutOrder = 4 -- right after the amount (and the friends chip, 3)
+	plus.Parent = row
 	local function refit()
 		fit.Scale = math.min(1, region.Size.Y.Offset / H)
 		local side = math.max(48, math.ceil(46 / (Layout.current().scale * fit.Scale)))

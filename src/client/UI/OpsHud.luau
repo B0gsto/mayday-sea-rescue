@@ -1,10 +1,10 @@
 --!strict
 -- OpsHud: wires the operation UI to OpsController's signals (CONTRACT.md "Operations v2"):
--- the tasking pager (OnOffer), the objective strip (OnState), the debrief toast (OnDebrief) and
+-- the call alert (OnOffer: flare and beep), the objective strip (OnState), the debrief toast (OnDebrief) and
 -- closures (OnClosed). Mounted by OpsController.
--- A new call shows as the pager card, its flare and pin, and a pager beep; no voice.
--- Placement (UI/Layout): the strip in the "objective" region (top left), the pager in the "right"
--- column, the debrief a toast in its own "debrief" region. In the cold open both are hidden: the world
+-- A new call shows as its flare, minimap pin and screen marker, and a beep; no card, no voice: driving at
+-- it takes it (OpsController).
+-- Placement (UI/Layout): the strip in the "objective" region (top left), the debrief a toast in its own "debrief" region. In the cold open both are hidden: the world
 -- marker (UI/Waypoint) is the one objective readout. A new player (Layout.newPlayer) gets no
 -- relay / big-call alert.
 -- The world shows the way to a call (docs/16 K2): a red parachute flare goes up over it
@@ -17,7 +17,6 @@ local ColdOpenCue = require(script.Parent.ColdOpenCue)
 local Layout = require(script.Parent.Layout)
 local OpsDebrief = require(script.Parent.OpsDebrief)
 local OpsStepCard = require(script.Parent.OpsStepCard)
-local OpsTaskingCard = require(script.Parent.OpsTaskingCard)
 local Waypoint = require(script.Parent.Waypoint)
 local Controllers = script.Parent.Parent:WaitForChild("Controllers")
 local AudioController = require(Controllers:WaitForChild("AudioController"))
@@ -41,15 +40,6 @@ function OpsHud.mount(playerGui: Instance, ops: any)
 	gui.Parent = playerGui
 
 	local objective = Layout.region(gui, "objective")
-	local right = Layout.region(gui, "right")
-	local stack = Instance.new("UIListLayout")
-	stack.FillDirection = Enum.FillDirection.Vertical
-	stack.HorizontalAlignment = Enum.HorizontalAlignment.Right
-	stack.SortOrder = Enum.SortOrder.LayoutOrder
-	stack.Padding = UDim.new(0, Layout.GAP)
-	stack.Parent = right
-
-	local tasking = OpsTaskingCard.new(right)
 	local step = OpsStepCard.new(objective)
 	Waypoint.start(ops, MapController, step.goal)
 	-- cold open: one objective on screen, the world marker (swimmer, then home), so no step strip
@@ -57,7 +47,6 @@ function OpsHud.mount(playerGui: Instance, ops: any)
 	local stopCue: (() -> ())? = nil
 	local function applyColdOpen(_: boolean?)
 		local active = Layout.coldOpen()
-		right.Visible = not active
 		objective.Visible = not active
 		if active and not stopCue then
 			stopCue = ColdOpenCue.start()
@@ -113,26 +102,21 @@ function OpsHud.mount(playerGui: Instance, ops: any)
 		if data.isBig and Layout.newPlayer() then
 			return
 		end
-		-- the debrief never holds up the next tasking for more than 10 seconds
+		-- the debrief never holds up the next call for more than 10 seconds
 		if debrief.shownFor() >= 10 then
 			debrief.hide()
 		end
-		tasking.show(data, function(opId: string)
-			tasking.hide(opId)
-			ops.Accept(opId)
-		end)
 		if not fresh then
 			return
 		end
 		if typeof(data.position) == "Vector3" then
 			flareOver(data.opId, data.position)
 		end
-		AudioController.play("UI_Success", nil, 1, 1.2) -- the pager beep
+		AudioController.play("UI_Success", nil, 1, 1.2) -- the call beep
 	end)
 
 	ops.OnState:Connect(function(s: { [string]: any })
 		activeOp = s.opId
-		tasking.hide(s.opId)
 		stopFlare(s.opId) -- taken: the survivor's own cues take over
 		step.update(s)
 		local mine: { [string]: any }? = nil
@@ -166,7 +150,6 @@ function OpsHud.mount(playerGui: Instance, ops: any)
 	end)
 
 	ops.OnClosed:Connect(function(c: { [string]: any })
-		tasking.hide(c.opId)
 		stopFlare(c.opId)
 		if c.opId == activeOp then
 			activeOp = nil

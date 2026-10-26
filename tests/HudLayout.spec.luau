@@ -40,7 +40,6 @@ return function(t)
 		"status",
 		"objective",
 		"notice",
-		"right",
 		"minimap",
 		"wallet",
 		"menu",
@@ -114,7 +113,7 @@ return function(t)
 	-- the minimap. Phone sizes (any device, with and without the top-bar inset): the wallet, menu, minimap, debrief,
 	-- quest tracker and call card column never overlap, and the debrief keeps off the touch zones.
 	t.test("phone sizes: wallet, menu, minimap, debrief, quest, call card never overlap", function()
-		local KEY = { "wallet", "menu", "minimap", "debrief", "quest", "right" }
+		local KEY = { "wallet", "menu", "minimap", "debrief", "quest" }
 		for _, screen in { Vector2.new(667, 375), Vector2.new(844, 390), Vector2.new(390, 844) } do
 			for _, top in { 0, 58 } do
 				for _, dev in { "Touch", "Keyboard" } do
@@ -157,38 +156,35 @@ return function(t)
 	end)
 
 	t.test(
-		"desktop: menu strip on the left edge, wallet and minimap beside it, card top right",
+		"desktop: menu strip on the left edge with the wallet under it, minimap bottom right",
 		function()
 			for _, screen in DESKTOP do
 				local mt = HudLayout.compute(screen, NO_INSETS, "Keyboard")
 				t.expect(mt.touch).toBe(false)
 				local m, g = HudLayout.MARGIN, HudLayout.GAP
-				local menu, wallet, right = mt.rects.menu, mt.rects.wallet, mt.rects.right
-				local left = m + menu.size.X + g
-				t.expect(menu.anchor).toEqual(Vector2.new(0, 0.5))
-				t.expect(menu.pos).toEqual(Vector2.new(m, mt.usable.Y / 2))
-				t.expect(menu.size.Y <= mt.usable.Y - 2 * m).toBe(true)
-				t.expect(wallet.pos).toEqual(Vector2.new(left, m))
-				t.expect(right.anchor).toEqual(Vector2.new(1, 0))
-				t.expect(right.pos).toEqual(Vector2.new(mt.usable.X - m, m))
+				local menu, wallet = mt.rects.menu, mt.rects.wallet
+				local _, my0, _, my1 = box(menu)
+				local _, wy0, _, wy1 = box(wallet)
+				t.expect(menu.pos.X).toBe(m)
+				t.expect(wallet.pos.X).toBe(m)
+				t.expect(math.abs(wy0 - (my1 + g)) < 1e-6).toBe(true)
+				t.expect(my0 >= m and wy1 <= mt.usable.Y - m).toBe(true)
+				t.expect(mt.menu.rows * mt.menu.cols >= HudLayout.MENU_COUNT).toBe(true)
 				local mini = mt.rects.minimap
-				t.expect(mini.anchor).toEqual(Vector2.new(0, 1))
-				t.expect(mini.pos).toEqual(Vector2.new(left, mt.usable.Y - m))
+				t.expect(mini.anchor).toEqual(Vector2.new(1, 1))
+				t.expect(mini.pos).toEqual(Vector2.new(mt.usable.X - m, mt.usable.Y - m))
 			end
 		end
 	)
 
 	-- the minimap's objective pill ("Mayday 100 m") sits above the square on desktop
-	t.test("desktop left column clears the minimap pill, no overlaps", function()
-		local LEFT =
-			{ "menu", "wallet", "objective", "minimap", "right", "notice", "gauges", "quest" }
+	t.test("desktop: the quest chip clears the minimap pill, no overlaps", function()
+		-- gauges shares the minimap's square on desktop (touch buttons only)
+		local LEFT = { "menu", "wallet", "objective", "minimap", "notice", "quest" }
 		for _, screen in DESKTOP do
 			local mt = HudLayout.compute(screen, NO_INSETS, "Keyboard")
-			local _, _, _, oy2 = box(mt.rects.objective)
 			local _, my = box(mt.rects.minimap)
-			t.expect(oy2 + HudLayout.GAP <= my - HudLayout.PILL_HEIGHT + 1e-6).toBe(true)
-			local _, qy, _, qy2 = box(mt.rects.quest) -- the quest chip between the objective and the pill
-			t.expect(oy2 + HudLayout.GAP <= qy + 1e-6).toBe(true)
+			local _, _, _, qy2 = box(mt.rects.quest) -- the quest chip above the pill
 			t.expect(qy2 + HudLayout.GAP <= my - HudLayout.PILL_HEIGHT + 1e-6).toBe(true)
 			t.expect(mt.noticeWidth >= 200).toBe(true)
 			for i = 1, #LEFT do
@@ -202,7 +198,7 @@ return function(t)
 			end
 			-- the debrief toast keeps its top band, clear of the edge HUD
 			t.expect(mt.rects.debrief.pos.Y).toBe(HudLayout.MARGIN)
-			for _, name in { "menu", "wallet", "minimap", "right", "gauges", "quest" } do
+			for _, name in { "menu", "wallet", "minimap", "gauges", "quest" } do
 				t.expect(overlaps(mt.rects.debrief, mt.rects[name])).toBe(false)
 			end
 		end

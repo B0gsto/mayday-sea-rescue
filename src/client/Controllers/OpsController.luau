@@ -5,9 +5,9 @@
 -- result (Ops_StepResult). The HUD (UI/OpsHud, mounted here) draws everything from
 -- the signals below.
 --
--- Taking a call (docs/16 K2): the pager's key or tap accepts, and so does driving at it: seated
--- at a craft's helm, moving at AUTO_SPEED or more with the course within AUTO_CONE of the call for
--- AUTO_HOLD s (shared/Calls/CallLogic.headingToward). Big calls (join) take the key only.
+-- Taking a call (docs/16 K2): drive at it (no pager card): seated at a craft's helm, moving at
+-- AUTO_SPEED or more with the course within AUTO_CONE of the call for AUTO_HOLD s
+-- (shared/Calls/CallLogic.headingToward). Big calls join the same way.
 --
 -- API for other controllers:
 --   OpsController.OnOffer / OnState / OnDebrief / OnClosed : { Connect(self, fn) }
@@ -299,7 +299,7 @@ function OpsController.Init()
 
 	Remotes.event("Ops_Offered").OnClientEvent:Connect(function(data)
 		OpsController.OnOffer:Fire(data)
-		if not data.isBig and typeof(data.position) == "Vector3" then
+		if typeof(data.position) == "Vector3" then
 			pending = { opId = data.opId, position = data.position }
 			onCourse = 0
 		end
