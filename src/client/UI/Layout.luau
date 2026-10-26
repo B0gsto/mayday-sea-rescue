@@ -273,8 +273,15 @@ end
 -- Viewport px boxes (IgnoreGuiInset space) round the visible HUD in the edge regions, 4x a second: world pins and
 -- their edge arrows keep out of them (UI/Waypoint; playtest 2026-10-26: pins hid behind the menu buttons)
 export type Box = { min: Vector2, max: Vector2 }
-local EDGE_REGIONS =
-	{ menu = true, wallet = true, objective = true, minimap = true, right = true, gauges = true }
+local EDGE_REGIONS = {
+	menu = true,
+	wallet = true,
+	objective = true,
+	minimap = true,
+	right = true,
+	gauges = true,
+	quest = true,
+}
 local hudBoxes: { Box } = {}
 
 local function boxHud(): { Box }
