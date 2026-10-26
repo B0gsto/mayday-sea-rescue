@@ -13,7 +13,7 @@ means its builder stopped mid-task: finish it there (review the diff first), the
 
 | Work | Branch | Worktree | Builder |
 |---|---|---|---|
-| docs/24 A: jet ski pick-up at any speed, no auto-brake, handling | T3 worktree (task msr-24-A-r1) | DeepSeek Flash Free |
+
 | docs/24 B: timed builds, builders cut time, construction look | T3 worktree (task msr-24-B-r1) | DeepSeek Flash |
 | docs/24 C: open island, distinct work buildings, worker job anims | T3 worktree (task msr-24-C-r1) | DeepSeek Flash |
 | docs/24 D: spin wheel (pets, finishes, trails, boat), flex banners | T3 worktree (task msr-24-D-r1) | DeepSeek Flash |
@@ -23,7 +23,7 @@ Stale, safe to delete (cancelled, no changes): worktrees `t3-394fa9ed`, `t3-52b7
 `t3-b9289b21`. Not ours (a sibling thread): `t3/cut-seasonal-clock-events`, `t3/cut-side-progressions` — ask
 before touching.
 
-Merged since: WP-23b UI kit (`src/client/UI/Kit/`, FredokaOne, icons in `UiImages.Kit`; art director "ship" on round 3; leftover polish: portrait panels shrink to content, clearer Owned state, stronger studs/tab/subtitle contrast, bigger desktop labels, desktop panel ~50% width); docs rewrite first half (05/06/08/10/12/13/18/19 + archive); flaky Waves timing test fixed. WP-16 asset diet (asset ids 1,478 → 259, texture-pack surfaces 455 → 195, no look changes). Not yet seen in Studio: WP-14c blueprint table + `BuildSeq` Lego build; WP-15 crew lineup (gate dock Lv5 + Coxswain; Mechanic/Lifeguard/Dispatcher 12k/9k/15k Cash, wages 400/300/500 per session). Mechanic now cuts the "Boat to me" cooldown 60 → 42 s. `check.sh` failed once then passed 3× (possible flaky test).
+Merged since: docs/24 A (boats board at any speed within 14 studs, no auto-brake, jet ski 52 kn + grippier handling; not yet felt in Studio). WP-23b UI kit (`src/client/UI/Kit/`, FredokaOne, icons in `UiImages.Kit`; art director "ship" on round 3; leftover polish: portrait panels shrink to content, clearer Owned state, stronger studs/tab/subtitle contrast, bigger desktop labels, desktop panel ~50% width); docs rewrite first half (05/06/08/10/12/13/18/19 + archive); flaky Waves timing test fixed. WP-16 asset diet (asset ids 1,478 → 259, texture-pack surfaces 455 → 195, no look changes). Not yet seen in Studio: WP-14c blueprint table + `BuildSeq` Lego build; WP-15 crew lineup (gate dock Lv5 + Coxswain; Mechanic/Lifeguard/Dispatcher 12k/9k/15k Cash, wages 400/300/500 per session). Mechanic now cuts the "Boat to me" cooldown 60 → 42 s. `check.sh` failed once then passed 3× (possible flaky test).
 
 WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffects.boatToMeWait` x `CrewHire.boatToMeScale` from the `CrewMechanic` attribute). The HUD's left side now starts right of the menu strip (HudLayout `menu`); on touch the narrow strip reaches into the top of the thumbstick zone (spec allows only it).
 
