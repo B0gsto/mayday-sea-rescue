@@ -338,7 +338,8 @@ local function carry(r: Rec)
 	if not (rig and root) then
 		return
 	end
-	local legs = { r.feet * CFrame.new(-2.2, 0, 0), r.feet * CFrame.new(2.2, 0, 0) } -- along the stall counter
+	-- a short step each way along the counter: wider paces walked into the next stall's worker (docs/24 C art r3)
+	local legs = { r.feet * CFrame.new(-1.2, 0, 0), r.feet * CFrame.new(1.2, 0, 0) }
 	local function on(): boolean
 		return r.rig == rig and r.lively and not r.walking and jobOf(r) == "Fish"
 	end
@@ -354,6 +355,7 @@ local function carry(r: Rec)
 				break
 			end
 			r.carry = "rest"
+			root.CFrame = CFrame.new(root.Position) * r.feet.Rotation -- set the crate down facing the counter
 			pose(r)
 			task.wait(0.6 + math.random() * 0.8) -- uneven, so a crew never paces in step
 		end

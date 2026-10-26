@@ -108,7 +108,7 @@ local WORK_SPOTS: { [string]: { WorkSlot } } = {
 		{ x = 5.8, z = 0.6, tx = 5.8, tz = -2 },
 		{ x = 0, z = 1.4, tx = 0, tz = 3.9 }, -- the drying rack
 		{ x = 1.8, z = -4.2, tx = 0, tz = -1 }, -- the fish crates
-		{ x = 5, z = 2.4, tx = 6.6, tz = 4.2 }, -- the hanging scale
+		{ x = -8.2, z = 4.4, tx = -7.6, tz = 1.2 }, -- the ice crate (4+ studs from the counter pacer)
 	},
 	BoatYard = {
 		{ x = -5.4, z = -1, tx = 0, tz = -1 }, -- the hull, port side
@@ -118,9 +118,9 @@ local WORK_SPOTS: { [string]: { WorkSlot } } = {
 		{ x = 6.6, z = -3.2, tx = 7.3, tz = -0.6 }, -- the tool chests
 	},
 	RescueBoathouse = {
-		{ x = -4.2, z = 0.7, tx = 0, tz = 0.7 }, -- either side of the rescue boat
+		{ x = -3.8, z = -2.6, tx = 0, tz = -2.6 }, -- either side of the rescue boat, fore and aft
 		{ x = 4.2, z = 0.7, tx = 0, tz = 0.7 },
-		{ x = -5.2, z = 2.2, tx = -5.2, tz = 4.8 }, -- the lifebuoy rack
+		{ x = -6.7, z = 2.4, tx = -6.7, tz = 4.2 }, -- the lifebuoy rack
 		{ x = 6.4, z = -2.2, tx = 6.4, tz = -4.8 }, -- the lifeguard chair
 		{ x = 3.4, z = 4.6, tx = 3.4, tz = 6.2 }, -- the oar rack
 	},
