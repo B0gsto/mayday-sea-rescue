@@ -20,6 +20,7 @@ local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic")
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local CasualtyRig = require(Shared:WaitForChild("Casualty"):WaitForChild("CasualtyRig"))
 local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
+local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local PiwRescue = require(script.Parent.Parent.Ops.PiwRescue)
 local RipCurrent = require(Shared:WaitForChild("RipCurrent"))
 local CasualtyAsset: any = (function()
@@ -974,6 +975,19 @@ onPull = function(victim: any, player: Player, forced: boolean?)
 	-- WP-26: a person picked up rolls the worker they become at home (the client draws the badge)
 	if not call.wildlifeSpecies and victim.model:GetAttribute("WorkerCategory") == nil then
 		local category, rarity, name = WorkerRules.roll(workerRng:NextInteger(1, 2147483646))
+		-- docs/24 E: the first survivor home is always a Builder (the tutorial's build station beat)
+		local owner = driverOf(vehicle) or player
+		local pdata = DataService.Get(owner)
+		if
+			pdata
+			and Onboarding.buildersFirst(
+				pdata.totalRescues,
+				pdata.tutorialStep,
+				pdata.dockBuildings
+			)
+		then
+			category = "Builder"
+		end
 		victim.model:SetAttribute("WorkerCategory", category)
 		victim.model:SetAttribute("WorkerRarity", rarity)
 		victim.model:SetAttribute("WorkerName", name)

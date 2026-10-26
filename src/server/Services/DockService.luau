@@ -47,6 +47,7 @@ local Marina = require(Shared:WaitForChild("Marina"))
 local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 local Net = require(Shared:WaitForChild("Net"))
 local NpcFactory = require(script.Parent.Parent.Npc.NpcFactory)
+local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
@@ -867,6 +868,20 @@ end
 
 -- One construction at a time per island (docs/24 B): the site rises from nothing, the crew walks over.
 local function startConstruction(player: Player, data: any, key: string)
+	-- docs/24 E: a tutorial Workshop (Cash or Robux) advances the saved step so a rejoin is at the site
+	if key == Onboarding.WORKSHOP and (data.tutorialStep or 0) < Onboarding.STEP_SITE then
+		local beat = Onboarding.beat({
+			coldOpenDone = data.coldOpenDone == true,
+			totalRescues = data.totalRescues or 0,
+			step = data.tutorialStep,
+			owned = data.dockBuildings or {},
+			constructionKey = nil,
+		})
+		if beat == "BuildStation" then
+			data.tutorialStep = Onboarding.STEP_SITE
+			DataService.MarkDirty(player)
+		end
+	end
 	data.construction = {
 		key = key,
 		progress = 0,
@@ -944,6 +959,25 @@ local busy: { [Player]: boolean } = {}
 -- Cash purchase of tree building `key` once its prerequisites stand (Robux goes through its product).
 local function buyBuilding(player: Player, data: any, key: string): (boolean, string)
 	data.dockBuildings = tableOf(data.dockBuildings)
+	-- docs/24 E: the tutorial tops up a short wallet to exactly the Workshop price, once (the buy's
+	-- coin burst shows it). startConstruction moves the saved step on (Robux starts the same site).
+	local beat = Onboarding.beat({
+		coldOpenDone = data.coldOpenDone == true,
+		totalRescues = data.totalRescues or 0,
+		step = data.tutorialStep,
+		owned = data.dockBuildings,
+		constructionKey = if data.construction then data.construction.key else nil,
+	})
+	if key == Onboarding.WORKSHOP and beat == "BuildStation" then
+		local gap = Onboarding.topUp(
+			data.cash,
+			DockConfig.Buildings[key] and DockConfig.Buildings[key].cash or 0
+		)
+		if gap > 0 then
+			data.cash += gap
+			DataService.MarkDirty(player)
+		end
+	end
 	local ok, reason, price = UnlockTree.canBuy(key, data.dockBuildings, data.cash)
 	if not ok or not price then
 		return false, reason or "Owned"
@@ -1009,6 +1043,13 @@ local function finishConstruction(plot: Plot, player: Player, data: any)
 	clearSite(plot)
 	sendCrewHome(plot)
 	ProgressionService.Refresh(player)
+	-- docs/24 E: the Workshop's completion hands out the one tutorial spin (the chip then pulses Spin)
+	if c.key == Onboarding.WORKSHOP then
+		local ok, spin = pcall(require, script.Parent:WaitForChild("SpinService"))
+		if ok and type(spin) == "table" and type(spin.Tutorial) == "function" then
+			spin.Tutorial(player)
+		end
+	end
 	task.spawn(DataService.Save, player, false)
 	-- let every client see the finished site play its beat before the next paid build starts
 	task.delay(2, function()
