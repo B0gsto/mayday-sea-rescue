@@ -29,6 +29,10 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
 
 ## 2. Queued (in order)
 
+0a. **Owner 2026-10-26: both approved.** (1) Spin products live: after D merges, create the 1/5/15-spin dev products
+   (icons via Gemini) on the test and launch universes with `deploy.py ... --steps monetize --only <keys>`, set
+   `ready = true`; the owner re-answers the maturity questionnaire (paid random items) in Creator Hub. (2) Robux
+   "Finish now" on a running build (after B merges): tiered dev products by time left, same receipt flow.
 0. **docs/24 wave 2** after A-D merge: E tutorial, F progression/core loop pass (pacing sims with build times + spins), Opus review + Studio playtest, art-director render of C.
 
 1. ~~**WP-14d build tablet**~~ merged 2026-10-25 (build station on Spare3, top-down build mode, Build/Decor tabs, 6 Cash decorations; not yet seen in Studio). Was: replace the blueprint table with a tablet on a stand at a Lego build station near the
