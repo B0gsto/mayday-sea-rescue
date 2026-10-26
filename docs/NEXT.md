@@ -168,6 +168,8 @@ Left, in order:
    badge names and descriptions.
 3. `python3 tools/studio/publish_studio.py --launch`, then make it public.
 
+## Status 2026-10-26 late: test place v59 = docs/24 A-G (any-speed pick-up + handling, timed builds + builders + Finish now, open island r1-r4, in-world prize wheel, tutorial + Next chip, progression pass, build tree + Skills tree). Open: spin/finish-now products + icons (Gemini quota until ~10-29), late Robux re-price question, real-client playtest, launch publish.
+
 ## Status 2026-10-26 (test place v56, launch place v56 build, private)
 
 Playable end to end in Studio: loading flyover → cold open → calls (ring assist, generous home zone, routing round islands) → build tablet + unlock tree + Lego builds → quest pontoon/tablet → workers (categories, rarity, offline earnings) → Lifeboat / Submarine (diver) / Helicopter (winch cable, auto-land) → ring bridges. 3 Opus playtests, all findings fixed. Launch universe prepped (40 products, server size 6, listing).
