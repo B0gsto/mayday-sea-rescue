@@ -346,6 +346,7 @@ function QuestPontoons.Arrive(i: number, npc: Data.Npc): Boat?
 		end
 		b.rel = at:ToObjectSpace(rig:GetPivot())
 		rig:SetAttribute("QuestIsland", i)
+		rig.ModelStreamingMode = Enum.ModelStreamingMode.Persistent -- the menu's Quests panel lists them from afar
 		rig:SetAttribute("Moored", b.state == "moored" or nil)
 		rig:SetAttribute("Leaving", b.state == "out" or nil)
 		b.rig = rig

@@ -223,34 +223,9 @@ function Waypoint.start(
 			at = Vector2.new(cx + dx * k, cy + dy * k)
 			turn.Rotation = math.deg(math.atan2(dx, -dy))
 		end
-		-- out of the HUD's corners (menu, minimap, wallet, cards): slide to the nearest free side of the box
+		-- out of the HUD (menu, minimap, wallet, cards): slid in toward the centre, the tip still points the way
 		local clear = Vector2.new(DISC, DISC) * fit.Scale * 0.5 + Vector2.new(14, 14) -- strokes and labels hang past the frames
-		for _, b in Layout.hudBoxes() do
-			local lo, hi = b.min - clear, b.max + clear + Vector2.new(0, 34 * fit.Scale) -- the range chip hangs under
-			if at.X > lo.X and at.X < hi.X and at.Y > lo.Y and at.Y < hi.Y then
-				local best, out = math.huge, at
-				for _, cand in
-					{
-						Vector2.new(lo.X, at.Y),
-						Vector2.new(hi.X, at.Y),
-						Vector2.new(at.X, lo.Y),
-						Vector2.new(at.X, hi.Y),
-					}
-				do
-					local d = (cand - at).Magnitude
-					if
-						d < best
-						and cand.X > 0
-						and cand.X < vp.X
-						and cand.Y > 0
-						and cand.Y < vp.Y
-					then
-						best, out = d, cand
-					end
-				end
-				at = out
-			end
-		end
+		at = Layout.clearOfHud(at, clear, 34 * fit.Scale) -- the range chip hangs under
 		mark.Position = UDim2.fromOffset(at.X, at.Y)
 		range.Text = Waypoint.metres(flat)
 		mark.Visible = true

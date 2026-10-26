@@ -174,8 +174,8 @@ end
 
 local function grantPass(player: Player, key: string, isNewPurchase: boolean)
 	local owned = ownedPasses[player]
-	if not owned or owned[key] then
-		return
+	if not owned or owned[key] or MonetizationConfig.GamePasses[key].ready == false then
+		return -- a retired pass (ready = false) is never owned, even if bought back when it sold
 	end
 	owned[key] = true
 	player:SetAttribute("Pass_" .. key, true)
@@ -291,7 +291,7 @@ local function checkPasses(player: Player)
 		end
 	end
 	for key, item in MonetizationConfig.GamePasses do
-		if item.id == 0 then
+		if item.id == 0 or item.ready == false then
 			continue
 		end
 		if RunService:IsStudio() and key == "StarterKit" then

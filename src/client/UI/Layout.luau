@@ -309,6 +309,30 @@ function Layout.hudBoxes(): { Box }
 	return hudBoxes
 end
 
+-- A screen pin at `at` (viewport px) slid toward the screen centre until it clears every HUD box, kept `clear` px
+-- off each side and `hang` px more above (a label hanging under the pin). Pushing out of one box at a time parked
+-- pins in the gap between the menu column and the quest chip (playtest 2 2026-10-26: on the Settings button).
+function Layout.clearOfHud(at: Vector2, clear: Vector2, hang: number?): Vector2
+	local cam = Workspace.CurrentCamera
+	local centre = if cam then cam.ViewportSize / 2 else at
+	local up = Vector2.new(0, hang or 0)
+	for i = 0, 24 do
+		local p = at:Lerp(centre, i / 24)
+		local blocked = false
+		for _, b in hudBoxes do
+			local lo, hi = b.min - clear - up, b.max + clear
+			if p.X > lo.X and p.X < hi.X and p.Y > lo.Y and p.Y < hi.Y then
+				blocked = true
+				break
+			end
+		end
+		if not blocked then
+			return p
+		end
+	end
+	return at
+end
+
 function Layout.promptBusy(): boolean
 	return promptIsBusy
 end

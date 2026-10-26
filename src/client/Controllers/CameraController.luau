@@ -150,14 +150,14 @@ local function popOccluders(camera: Camera, char: Model)
 end
 
 -- A wall pop or a short chase arm can put the lens inside the avatar's head (the near plane shows
--- its insides): fade the own body out as the camera closes in, hidden at 1.5 studs from the head.
+-- its insides): fade the own body out as the camera closes in, hidden at 3 studs from the head (hair reaches ~2).
 local bodyFaded = false
 local function fadeNearBody(char: Model, camPos: Vector3)
 	local head = char:FindFirstChild("Head")
 	local d = if head and head:IsA("BasePart")
 		then (head.Position - camPos).Magnitude
 		else math.huge
-	local t = math.clamp((3.5 - d) / 2, 0, 1)
+	local t = math.clamp((5 - d) / 2, 0, 1)
 	if t <= 0 and not bodyFaded then
 		return
 	end
@@ -335,6 +335,10 @@ local function update(dt: number)
 		end
 		camera.CameraType = Enum.CameraType.Scriptable
 		camera.CFrame = override
+		local char = player.Character
+		if char then
+			fadeNearBody(char, override.Position) -- the tablets' camera flights pass the head
+		end
 		if overrideFov then
 			camera.FieldOfView = overrideFov
 		end

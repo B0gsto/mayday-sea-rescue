@@ -4,8 +4,8 @@
 -- first, then the givers with an offer for you today) and sail off when you hand in; unclaimed islands have none.
 -- Each player has one active quest (Quests/Rules; saved in the profile flag `quest`).
 --   Talk to a moored giver (TalkController, numbered replies) or use your quest tablet (QuestController) -> remote
---   Quest_Talk C->S (npcId, "accept" | "handIn" | "drop"): only for a giver moored at your island, from beside them
---   or from your tablet. find: the item waits on its island; walk into it and it rides on your back. salvage: the
+--   Quest_Talk C->S (npcId, "accept" | "handIn" | "drop"): only for a giver moored at your island; a hand-in from
+--   beside them or from your tablet, accept / drop from anywhere (the menu's Quests panel). find: the item waits on its island; walk into it and it rides on your back. salvage: the
 --   same from the sub at a wreck. deliver: you carry it from the pontoon; walk it to the flag. rescue: a call is offered at the zone
 --   (OperationService.OfferCall), done when its survivor is delivered (OperationCompleted). Then back to the
 --   giver ("?") to hand in: Cash (flat), and the chain's last step adds its blueprint to your island.
@@ -378,14 +378,15 @@ end
 
 local function onTalk(player: Player, npcId: any, action: any)
 	local s, root, i = states[player], rootOf(player), DockService.GetPlot(player)
-	-- only a giver tied up at your own island, from beside them or from your tablet
+	-- only a giver tied up at your own island; a hand-in from beside them or from your tablet (the menu accepts too)
 	local boat = if type(npcId) == "string" then QuestPontoons.Giver(i, npcId) else nil
 	if not (s and root and i and boat) then
 		return
 	end
 	local giver = boat.model:GetPivot().Position + Vector3.new(0, 3, 0)
 	if
-		(root.Position - giver).Magnitude > TALK_RANGE
+		action == "handIn"
+		and (root.Position - giver).Magnitude > TALK_RANGE
 		and (root.Position - QuestPontoons.TabletAt(i)).Magnitude > TABLET_RANGE
 	then
 		return

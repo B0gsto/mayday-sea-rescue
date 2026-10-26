@@ -4,6 +4,7 @@
 -- cards: island art, the place, the reward on the art; Accept closes the tablet). Tapping a card eases the camera onto that giver's boat; its button
 -- accepts an offer, hands in a quest that is "back" or drops one still "go" (Quest_Talk, the same as talking to
 -- them; greyed until the boat is tied up). Escape / B / the red X closes and eases the camera back.
+-- QuestTablet.rows / QuestTablet.fill are the one source of truth the menu's Quests panel (Panels/Quests) shares.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -29,6 +30,7 @@ local player = Players.LocalPlayer
 local S = Theme.Size
 local LIST_W = 640 -- du
 local LEAVE = 20 -- studs from the tablet (a teleport) closes it
+local HAND_IN = 15 -- studs from the giver a hand-in counts away from the tablet (QuestService TALK_RANGE 16)
 
 local QuestTablet = {}
 
@@ -112,30 +114,37 @@ local function focus(rig: Model?)
 	AudioController.play("UI_Click")
 end
 
+export type Row = { quest: QuestData.Quest, action: string, rig: Model?, ready: boolean }
+
 local function card(
+	body: Instance,
 	order: number,
-	quest: QuestData.Quest,
-	color: string,
-	label: string,
-	action: string,
-	ready: boolean,
-	rig: Model?
+	row: Row,
+	onAccept: () -> (),
+	onTap: (Row, () -> ()) -> ()
 ): GuiObject
+	local quest, action, ready = row.quest, row.action, row.ready
+	local color = if action == "accept" then "yellow" else "green"
+	local label = if action == "accept"
+		then "Accept"
+		elseif action == "handIn" then "Hand in"
+		else "Drop"
 	local npc = QuestData.npcById[quest.npc]
 	local placeId, place = Rules.place(quest)
 	local sticker = Stickers[placeId]
-	local c = Card.new(panel.body, {
+	local function act()
+		send(quest.npc, action)
+		if action == "accept" then
+			onAccept()
+		end
+	end
+	local c = Card.new(body, {
 		art = if action == "handIn" or not sticker then "quests" else sticker,
 		title = if action == "handIn" then npc.name else place, -- the ask itself is spoken by the giver
 		color = color,
 		price = quest.cash,
 		currency = "Cash",
-		onBuy = function()
-			send(quest.npc, action)
-			if action == "accept" then
-				QuestTablet.close()
-			end
-		end,
+		onBuy = act,
 	})
 	c.root.LayoutOrder = order
 	local reward = Style.label(c.art, `+{Theme.short(quest.cash)}`, Theme.Text.small)
@@ -153,68 +162,92 @@ local function card(
 	if action == "drop" and ready and block and block:IsA("Frame") then
 		Style.recolor(block, Style.grad("red"))
 	end
-	-- the whole card (under the button) focuses the giver
+	-- the whole card (under the button) is a target too: onTap gets the row and the button's action
 	local tap = Style.button(c.root, UDim2.fromScale(1, 1))
 	tap.Name = "Focus"
 	tap.ZIndex = 0
 	Style.press(tap, function()
-		focus(rig)
+		onTap(row, function()
+			if ready then
+				act()
+			end
+		end)
 	end, S.corner)
 	return tap
 end
 
-local function rebuild()
+-- Your active quest, then today's offers from givers at your pontoon; ready = its button works now (the boat is
+-- tied up; an offer only while you have no quest; away from the tablet a hand-in needs you beside the giver).
+-- -> the rows, and a signature that changes whenever a card would
+function QuestTablet.rows(atTablet: boolean): ({ Row }, string)
 	local rigs = here()
 	local activeId = player:GetAttribute("QuestId")
 	local active = if type(activeId) == "string" then QuestData.byId[activeId] else nil
 	local back = player:GetAttribute("QuestStage") == "back"
-	local rows: { { quest: QuestData.Quest, action: string } } = {}
+	local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+	local out: { Row } = {}
+	local function add(q: QuestData.Quest, action: string)
+		local rig: Model? = rigs[q.npc]
+		local ready = rig ~= nil
+			and rig:GetAttribute("Moored") == true
+			and (action ~= "accept" or not active)
+		if ready and action == "handIn" and not atTablet then
+			ready = root ~= nil
+				and root:IsA("BasePart")
+				and (root.Position - (rig :: Model):GetPivot().Position).Magnitude <= HAND_IN
+		end
+		table.insert(out, { quest = q, action = action, rig = rig, ready = ready })
+	end
 	if active then
-		table.insert(rows, { quest = active, action = if back then "handIn" else "drop" })
+		add(active, if back then "handIn" else "drop")
 	end
 	for _, npc in QuestData.Npcs do
 		local offerId = player:GetAttribute(`QuestOffer_{npc.id}`)
 		local q = if type(offerId) == "string" then QuestData.byId[offerId] else nil
 		if q and rigs[npc.id] and not (active and active.npc == npc.id) then
-			table.insert(rows, { quest = q, action = "accept" })
+			add(q, "accept")
 		end
 	end
 	local sig = ""
-	for _, r in rows do
-		local rig: Model? = rigs[r.quest.npc]
-		sig ..= `{r.quest.id}:{r.action}:{rig ~= nil}:{rig and rig:GetAttribute("Moored") == true};`
+	for _, r in out do
+		sig ..= `{r.quest.id}:{r.action}:{r.rig ~= nil}:{r.ready};`
 	end
-	if sig == shown then
-		return
-	end
-	shown = sig
-	for _, c in panel.body:GetChildren() do
+	return out, sig
+end
+
+-- the rows' cards into a panel body (cleared first) -> the first card's tap target (gamepad focus)
+function QuestTablet.fill(
+	body: Instance,
+	rows: { Row },
+	onAccept: () -> (),
+	onTap: (Row, () -> ()) -> ()
+): GuiObject?
+	for _, c in body:GetChildren() do
 		if c:IsA("GuiObject") then
 			c:Destroy()
 		end
 	end
 	local first: GuiObject? = nil
 	for i, r in rows do
-		local rig: Model? = rigs[r.quest.npc]
-		local moored = rig ~= nil and rig:GetAttribute("Moored") == true
-		local tap = card(
-			i,
-			r.quest,
-			if r.action == "accept" then "yellow" else "green",
-			if r.action == "accept"
-				then "Accept"
-				elseif r.action == "handIn" then "Hand in"
-				else "Drop",
-			r.action,
-			moored and (r.action ~= "accept" or not active),
-			rig
-		)
+		local tap = card(body, i, r, onAccept, onTap)
 		first = first or tap
 	end
 	if #rows == 0 then
-		local none = Style.label(panel.body, "None today", Theme.Text.heading, true)
+		local none = Style.label(body, "None today", Theme.Text.heading, true)
 		none.Size = UDim2.new(1, 0, 0, 80)
 	end
+	return first
+end
+
+local function rebuild()
+	local rows, sig = QuestTablet.rows(true)
+	if sig == shown then
+		return
+	end
+	shown = sig
+	local first = QuestTablet.fill(panel.body, rows, QuestTablet.close, function(r: Row)
+		focus(r.rig)
+	end)
 	modal.open(first or panel.closeButton)
 end
 

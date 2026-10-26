@@ -204,8 +204,9 @@ pin, and a beep (no radio). Voices are NPCs only: `VoiceTTS` + `UI/VoiceCast`.
   one active quest, one offer per giver per day, `talk` -> a `Dialogue` tree). `server/World/QuestPontoons` builds
   each island's quest pontoon and tablet and sails the givers' boats in and out; `QuestService` runs the quest
   stages, pays on hand-in, adds a chain's blueprint to `data.dockBuildings`. `Quest_Talk` C->S `(npcId, "accept" |
-  "handIn" | "drop")` (own island only, within 16 studs). Player attributes `QuestId`, `QuestStage`,
-  `QuestTarget`, `QuestOffer_<npcId>`. Client: `QuestController`, `UI/QuestTablet`, `TalkController` (camera zoom
+  "handIn" | "drop")` (a giver moored at your own island; a hand-in within 16 studs of them or the tablet). Player
+  attributes `QuestId`, `QuestStage`, `QuestTarget`, `QuestOffer_<npcId>`. Client: `QuestController`,
+  `UI/QuestTablet` (`rows` / `fill`: the cards the menu's `Panels/Quests` and its badge share), `TalkController` (camera zoom
   + numbered replies, `shared/Dialogue`). Studio: `QuestDev`.
 
 ## Menu, HUD and map

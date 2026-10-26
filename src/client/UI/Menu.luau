@@ -38,6 +38,7 @@ local Companion = require(Panels:WaitForChild("Companion"))
 local Crew = require(Panels:WaitForChild("Crew"))
 local IconButton = require(Kit:WaitForChild("IconButton"))
 local Layout = require(UI:WaitForChild("Layout"))
+local QuestTablet = require(UI:WaitForChild("QuestTablet"))
 local Quests = require(Panels:WaitForChild("Quests"))
 local SettingsPanel = require(UI:WaitForChild("SettingsPanel"))
 local Shop = require(Panels:WaitForChild("Shop"))
@@ -266,10 +267,11 @@ local function dressBoat(b: IconButton.IconButton)
 	end
 end
 
+-- the quest cards you can act on now (the tablet's rows: an offer you can accept, a quest ready to hand in)
 local function questBadge()
 	local n = 0
-	for _, npc in QuestData.Npcs do
-		if player:GetAttribute(`QuestOffer_{npc.id}`) then
+	for _, r in QuestTablet.rows(true) do
+		if r.ready and r.action ~= "drop" then
 			n += 1
 		end
 	end
@@ -477,7 +479,13 @@ function Menu.mount()
 		chrome()
 	end)
 	player.AttributeChanged:Connect(function(name)
-		if string.sub(name, 1, 10) == "QuestOffer" then
+		if string.sub(name, 1, 5) == "Quest" then
+			questBadge()
+		end
+	end)
+	task.spawn(function() -- givers moor and sail off with no attribute of yours changing
+		while true do
+			task.wait(1)
 			questBadge()
 		end
 	end)
