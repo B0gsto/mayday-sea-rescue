@@ -9,6 +9,12 @@
 --
 -- The first calls are fail-safe: condition is held above Critical for the cold open and the next
 -- three calls, so a child who just holds the throttle cannot lose anyone.
+--
+-- docs/24 E: the tutorial's saved beat (data.tutorialStep) walks the world from the cold open to the
+-- first build and the first spin. `beat` is pure and reads only saved facts, so a returning player
+-- resumes where the save left them; a save that already has a building or 5+ rescues (made before
+-- this tutorial existed) skips to the permanent Next chip. The build tablet tops up a new player's
+-- Cash to the Workshop price exactly once; the server clients the first rescued survivor as a Builder.
 local Onboarding = {}
 
 Onboarding.WEATHER_HOLD = 300 -- s a running cold open may hold back a new storm (server-wide) -- tune
@@ -16,7 +22,24 @@ Onboarding.FAILSAFE_CALLS = 3 -- station calls after the cold open that cannot f
 Onboarding.FAILSAFE_FLOOR = 20 -- condition never reaches Critical on those calls
 Onboarding.TUTORIAL_CALLS = 4 -- station calls after the cold open (#CallTypes.TutorialChain - 1)
 
+-- Saved tutorial beats (data.tutorialStep). The step only ever moves forward; facts fill the rest.
+Onboarding.STEP_RESCUE = 1 -- the cold open is home; the next call is the goal (not written yet)
+Onboarding.STEP_SITE = 2 -- the Workshop site is running
+Onboarding.STEP_SPIN = 3 -- the Workshop is done; the one tutorial spin waits in the menu
+Onboarding.STEP_DONE = 4 -- the chip row is gone, the Next chip leads from here
+Onboarding.SKIP_RESCUES = 5 -- an old save with this many rescues never starts the tutorial
+Onboarding.WORKSHOP = "Workshop"
+
 export type Goal = "Rescue"
+export type Beat = "ColdOpen" | "Rescue" | "BuildStation" | "Build" | "Spin" | "Done"
+
+export type BeatFacts = {
+	coldOpenDone: boolean,
+	totalRescues: number,
+	step: number?, -- data.tutorialStep (nil = never started)
+	owned: { [string]: boolean }, -- data.dockBuildings
+	constructionKey: string?, -- the island's running site (plot SiteKey)
+}
 
 export type Facts = {
 	coldOpenDone: boolean,
@@ -67,6 +90,80 @@ end
 -- The reward burst belongs to a cold open the player actually rescued on.
 function Onboarding.rewarded(reason: string?): boolean
 	return reason == "Complete"
+end
+
+-- Never start the tutorial on an established save (or a save from before docs/24 E): any building or
+-- five people home sends them straight to the Next chip. A saved step always wins.
+function Onboarding.skip(f: BeatFacts): boolean
+	if f.step and f.step >= Onboarding.STEP_RESCUE then
+		return false
+	end
+	if (f.totalRescues or 0) >= Onboarding.SKIP_RESCUES then
+		return true
+	end
+	local ownedMap: { [string]: boolean } = f.owned or {}
+	for _, has in ownedMap do
+		if has == true then
+			return true
+		end
+	end
+	return false
+end
+
+-- The one beat to show now (docs/24 E): jet ski -> first survivor -> the build tablet -> Workshop
+-- site -> Spin -> done. `Build` also runs while the next tutorial call is the actual goal; the
+-- controller shows the call marker then.
+function Onboarding.beat(f: BeatFacts): Beat
+	if f.step and f.step >= Onboarding.STEP_DONE then
+		return "Done"
+	end
+	if Onboarding.skip(f) then
+		return "Done"
+	end
+	if not f.coldOpenDone then
+		return "ColdOpen"
+	end
+	if (f.owned or {})[Onboarding.WORKSHOP] == true then
+		return "Spin"
+	end
+	if f.constructionKey == Onboarding.WORKSHOP then
+		return "Build"
+	end
+	if (f.totalRescues or 0) >= 1 or (f.step and f.step >= Onboarding.STEP_RESCUE) then
+		return "BuildStation"
+	end
+	return "Rescue"
+end
+
+-- The tutorial's first survivor is always a Builder, so the island can show one walking to the
+-- build station (docs/24 E beat 2). Only before anyone has been delivered; the random roll returns
+-- for everyone else.
+function Onboarding.buildersFirst(
+	totalRescues: number?,
+	step: number?,
+	owned: { [string]: boolean }?
+): boolean
+	if (step or 0) >= Onboarding.STEP_SITE then
+		return false
+	end
+	if (totalRescues or 0) > 0 then
+		return false
+	end
+	local ownedMap: { [string]: boolean } = owned or {}
+	for _, has in ownedMap do
+		if has == true then
+			return false
+		end
+	end
+	return true
+end
+
+-- Cash the tutorial adds so the Workshop is affordable (0 when it already is): exactly the gap.
+function Onboarding.topUp(cash: number, price: number): number
+	if price <= 0 then
+		return 0
+	end
+	return math.max(0, math.floor(price - math.max(0, cash)))
 end
 
 return Onboarding

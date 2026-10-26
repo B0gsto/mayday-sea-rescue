@@ -75,4 +75,84 @@ return function(t)
 			t.expect(O.rewarded(reason)).toBe(false)
 		end
 	end)
+
+	local function beat(over)
+		local f = {
+			coldOpenDone = false,
+			totalRescues = 0,
+			step = nil,
+			owned = {},
+			constructionKey = nil,
+		}
+		for k, v in over or {} do
+			f[k] = v
+		end
+		return f
+	end
+
+	t.test(
+		"tutorial beats: cold open, rescue, build station, site, spin, done (docs/24 E)",
+		function()
+			t.expect(O.beat(beat())).toBe("ColdOpen")
+			t.expect(O.beat(beat({ coldOpenDone = true }))).toBe("Rescue")
+			t.expect(O.beat(beat({ coldOpenDone = true, totalRescues = 1 }))).toBe("BuildStation")
+			t.expect(O.beat(beat({
+				coldOpenDone = true,
+				totalRescues = 1,
+				step = O.STEP_RESCUE,
+				constructionKey = "Workshop",
+			}))).toBe("Build")
+			t.expect(O.beat(beat({
+				coldOpenDone = true,
+				totalRescues = 1,
+				step = O.STEP_SITE,
+				owned = { Workshop = true },
+			}))).toBe("Spin")
+			t.expect(O.beat(beat({
+				coldOpenDone = true,
+				totalRescues = 1,
+				step = O.STEP_DONE,
+				owned = { Workshop = true },
+			}))).toBe("Done")
+		end
+	)
+
+	t.test("a saved step never repeats an earlier beat", function()
+		t.expect(O.beat(beat({ coldOpenDone = true, step = O.STEP_RESCUE }))).toBe("BuildStation")
+		t.expect(O.beat(beat({
+			coldOpenDone = true,
+			step = O.STEP_SPIN,
+			owned = { Workshop = true },
+		}))).toBe("Spin")
+	end)
+
+	t.test("an established save skips the tutorial; a started one does not", function()
+		t.expect(O.skip(beat({ coldOpenDone = true, totalRescues = 5 }))).toBe(true)
+		t.expect(O.skip(beat({ coldOpenDone = true, owned = { Pontoon = true } }))).toBe(true)
+		t.expect(O.skip(beat({ coldOpenDone = true, step = O.STEP_SITE }))).toBe(false)
+		t.expect(
+			O.beat(beat({ coldOpenDone = true, totalRescues = 9, owned = { Pontoon = true } }))
+		)
+			.toBe("Done")
+		t.expect(O.beat(beat({
+			coldOpenDone = true,
+			step = O.STEP_SITE,
+			owned = { Pontoon = true },
+			constructionKey = "Workshop",
+		}))).toBe("Build")
+	end)
+
+	t.test("the first survivor is a Builder until someone is home", function()
+		t.expect(O.buildersFirst(0, nil, {})).toBe(true)
+		t.expect(O.buildersFirst(0, nil, { Pontoon = true })).toBe(false)
+		t.expect(O.buildersFirst(1, nil, {})).toBe(false)
+		t.expect(O.buildersFirst(0, O.STEP_SITE, {})).toBe(false)
+	end)
+
+	t.test("the Workshop top-up is exactly the gap", function()
+		t.expect(O.topUp(250, 1000)).toBe(750)
+		t.expect(O.topUp(0, 1000)).toBe(1000)
+		t.expect(O.topUp(1000, 1000)).toBe(0)
+		t.expect(O.topUp(4000, 1000)).toBe(0)
+	end)
 end
