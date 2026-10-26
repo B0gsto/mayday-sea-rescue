@@ -687,7 +687,11 @@ local function badgeRow(parent: GuiObject, st: Status): GuiObject?
 	return row
 end
 
-local function buildingItem(key: string): DockBlueprints.Item
+-- A Build tab node: a tree building, or a quest blueprint in the Quest lane (keys never collide).
+local function treeItem(key: string): DockBlueprints.Item
+	if DockConfig.Blueprints[key] then
+		return { kind = "Blueprint", key = key }
+	end
 	return { kind = "Building", key = key }
 end
 
@@ -695,7 +699,7 @@ end
 -- reads affordable and pulses even before the first 500 Cash is in.
 local function treeCash(): number
 	local cash = tonumber(snapshot.cash) or 0
-	if tutorialBuild(buildingItem(Onboarding.WORKSHOP)) then
+	if tutorialBuild(treeItem(Onboarding.WORKSHOP)) then
 		return math.max(cash, DockConfig.Buildings[Onboarding.WORKSHOP].cash)
 	end
 	return cash
@@ -705,7 +709,7 @@ local function buildNodes(): { TreeView.Node }
 	local site = siteState()
 	local out: { TreeView.Node } = {}
 	for _, cell in BuildTreeLayout.cells() do
-		local item = buildingItem(cell.id)
+		local item = treeItem(cell.id)
 		local st = statusOf(item)
 		if st.productId ~= 0 then
 			livePriceOf(st.productId)
@@ -737,6 +741,11 @@ local function buildNodes(): { TreeView.Node }
 			effect = if prepaid then "Paid" else "Site busy"
 		elseif prepaid and not st.owned and not st.forSale then
 			effect = "Paid"
+		elseif item.kind == "Blueprint" and not st.owned then
+			-- a quest grants it (QuestService): no Cash button, a greyed quest chip instead
+			note = "Quest"
+			action =
+				{ text = "Quest", icon = "quests", enabled = false, onActivate = function() end }
 		end
 		local reason = st.reason
 		local need = reason and reason.item
@@ -745,11 +754,12 @@ local function buildNodes(): { TreeView.Node }
 			name = DockBlueprints.label(item),
 			icon = "build",
 			price = st.cash,
-			needs = DockConfig.Buildings[cell.id].needs,
+			needs = if item.kind == "Building" then DockConfig.Buildings[cell.id].needs else {},
 			need = if need and need.kind == "Building" then need.key else nil,
 			robux = if st.forSale and st.productId ~= 0 then st.robux else nil,
 			col = cell.col,
 			row = cell.row,
+			group = cell.group,
 			state = state,
 			effect = effect,
 			note = note,
@@ -778,7 +788,7 @@ function DockController.Pulse(key: string?)
 end
 
 local function treeBuy(id: string)
-	local item = buildingItem(id)
+	local item = treeItem(id)
 	local st = statusOf(item)
 	if st.cash > (snapshot.cash or 0) and tutorialBuild(item) then
 		local view = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize
@@ -789,7 +799,7 @@ local function treeBuy(id: string)
 end
 
 local function treeBuyRobux(id: string)
-	robuxBuy(statusOf(buildingItem(id)).productId)
+	robuxBuy(statusOf(treeItem(id)).productId)
 end
 
 refreshTree = function()
@@ -1282,14 +1292,17 @@ local function buildUI(): ScreenGui
 	host.Parent = bandFace
 	local tree = TreeView.new(host, {
 		nodes = {},
-		header = false,
+		groups = {
+			{ id = "Build", name = "Build", icon = "build", color = "teal" },
+			{ id = "Quest", name = "Quest", icon = "quests", color = "purple" },
+		},
 		onSelect = function(id: string)
-			focusItem(buildingItem(id))
+			focusItem(treeItem(id))
 		end,
 		onBuy = treeBuy,
 		onBuyRobux = treeBuyRobux,
 		renderIcon = function(parent: Instance, id: string)
-			drawGlyph(parent :: GuiObject, buildingItem(id))
+			drawGlyph(parent :: GuiObject, treeItem(id))
 		end,
 	})
 	tree.root.Size = UDim2.fromScale(1, 1)

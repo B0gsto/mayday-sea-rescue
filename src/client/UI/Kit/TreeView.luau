@@ -335,7 +335,7 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		if showRobux then
 			table.insert(list, dRobux)
 		end
-		local showCash = state ~= "busy"
+		local showCash = state ~= "busy" and node.price > 0 -- price 0: not sold (a quest reward)
 		if showCash then
 			table.insert(list, dPrice)
 		end
