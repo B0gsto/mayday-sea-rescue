@@ -524,7 +524,7 @@ local function boathouse(m: Model, b: CFrame)
 			slot,
 			"Line",
 			Vector3.new(e[3], 0.06, e[4]),
-			c * CFrame.new(e[1], 0.43, e[2]), -- on the plinth
+			c * CFrame.new(e[1], 0.5, e[2]), -- on the (scaled) plinth
 			YELLOW,
 			M.SmoothPlastic
 		)
@@ -1128,6 +1128,7 @@ end
 -- nearest lane (island r, f points). The workers stand in front of the door (-Z, WorkerService).
 type Hut = {
 	roof: Color3,
+	tree: number?, -- WP-25 r8: a little tree at the back corner on this side (local X sign), clear of the neighbours
 	icon: string?,
 	path: { Vector2 },
 	props: ((Model, CFrame, number, number) -> ())?,
@@ -1139,9 +1140,10 @@ end
 
 local HUTS: { [string]: Hut } = {
 	Workshop = {
+		tree = -1,
 		roof = BRICK_RED,
 		icon = UiImages.Kit.build,
-		path = { Vector2.new(48, -10), Vector2.new(36, -10) },
+		path = { Vector2.new(46, -10), Vector2.new(36, -10) },
 		props = function(m, at, w, d) -- a stack of spare bricks by the door
 			local s = at * CFrame.new(-w / 2 - 3, 0, -d / 2 + 2)
 			crate(m, s, BRICK_RED)
@@ -1150,9 +1152,10 @@ local HUTS: { [string]: Hut } = {
 		end,
 	},
 	FishShed = {
+		tree = 1,
 		roof = BRICK_WHITE,
 		icon = UiImages.Kit.cash,
-		path = { Vector2.new(58, 102), Vector2.new(55, 102) },
+		path = { Vector2.new(60, 105), Vector2.new(55, 105) },
 		props = function(m, at, w, d) -- fish crates and a barrel by the door
 			local s = at * CFrame.new(w / 2 + 2.5, 0, -d / 2 + 2)
 			crate(m, s, BRICK_ORANGE)
@@ -1169,9 +1172,10 @@ local HUTS: { [string]: Hut } = {
 		end,
 	},
 	BoatYard = {
+		tree = 1,
 		roof = BRICK_BLUE,
 		icon = UiImages.Kit.boost,
-		path = { Vector2.new(85, -93), Vector2.new(85, -82) },
+		path = { Vector2.new(85, -94), Vector2.new(85, -82) },
 		props = function(m, at, w, _d) -- a little hull up on two trestles
 			local s = at * CFrame.new(-w / 2 - 4, 0, 0)
 			for _, z in { -2.5, 2.5 } do
@@ -1191,9 +1195,10 @@ local HUTS: { [string]: Hut } = {
 		end,
 	},
 	RescueBoathouse = {
+		tree = 1,
 		roof = BRICK_WHITE,
 		icon = UiImages.Kit.lifebuoy,
-		path = { Vector2.new(-57, 100), Vector2.new(-54, 100) },
+		path = { Vector2.new(-59, 99), Vector2.new(-54, 99) },
 		props = function(m, at, w, _d) -- a rescue RIB on its trailer by the door
 			local s = at * CFrame.new(w / 2 + 4, 0, 0)
 			brick(m, "Trailer", Vector3.new(3, 0.6, 8), s * CFrame.new(0, 0.9, 0), DBG)
@@ -1209,8 +1214,23 @@ local HUTS: { [string]: Hut } = {
 		end,
 	},
 	Clinic = {
+		tree = -1,
 		roof = BRICK_RED,
-		path = { Vector2.new(-85, -88), Vector2.new(-85, -82) },
+		path = { Vector2.new(-85, -93), Vector2.new(-85, -82) },
+		props = function(m, at, w, _d) -- a little white ambulance by the door, its blue beacon on the roof
+			local s = at * CFrame.new(w / 2 + 4, 0, -2)
+			studTop(
+				brick(
+					m,
+					"Ambulance",
+					Vector3.new(3.6, 3.4, 7),
+					s * CFrame.new(0, 2.1, 0),
+					BRICK_WHITE
+				)
+			)
+			brick(m, "Stripe", Vector3.new(3.7, 0.8, 7.1), s * CFrame.new(0, 2.2, 0), BRICK_RED)
+			brick(m, "Beacon", Vector3.new(1.4, 0.8, 1), s * CFrame.new(0, 4.2, -2), BRICK_BLUE)
+		end,
 	},
 }
 
@@ -1273,7 +1293,7 @@ local function hut(m: Model, b: CFrame, key: string)
 	local def = DockConfig.Buildings[key]
 	local spec = HUTS[key]
 	local at = b * def.spot
-	local w, d = def.size.X, def.size.Y
+	local w, d = def.size.X / (def.scale or 1), def.size.Y / (def.scale or 1) -- DockPieces.building scales it up
 	cottage(
 		m,
 		at,
@@ -1297,7 +1317,8 @@ end
 local function lifeboatSlip(m: Model, b: CFrame)
 	local def = DockConfig.Buildings.LifeboatSlip
 	local at = b * def.spot -- -Z = toward the sea
-	local w, d = def.size.X, def.size.Y
+	local D = def.size.Y -- the scaled footprint: the slipway and the path stay 1x (DockPieces.building)
+	local w, d = def.size.X / (def.scale or 1), D / (def.scale or 1)
 	local h = 11
 	plinth(m, Vector3.new(w + 2, 0.8, d), at * CFrame.new(0, 0.4, 0))
 	for _, x in { -1, 1 } do
@@ -1328,12 +1349,12 @@ local function lifeboatSlip(m: Model, b: CFrame)
 	-- into the sea
 	local slipR = Marina.ISLAND:ToObjectSpace(def.spot).X -- the slip's island-frame right (it faces +right)
 	local edge = -(RingLayout.IslandPlate.edge - slipR)
-	local flatLen = d / 2 - 2 - edge
+	local flatLen = D / 2 - 2 - edge
 	brick(
 		m,
 		"Slipway",
 		Vector3.new(7, 0.6, flatLen),
-		at * CFrame.new(0, 0.3, (d / 2 - 2 + edge) / 2),
+		at * CFrame.new(0, 0.3, (D / 2 - 2 + edge) / 2),
 		TAN
 	)
 	local from = (at * CFrame.new(0, 0, edge)).Position
@@ -1345,7 +1366,7 @@ local function lifeboatSlip(m: Model, b: CFrame)
 			m,
 			"SlipRail",
 			Vector3.new(0.6, 0.6, flatLen),
-			at * CFrame.new(x, 0.9, (d / 2 - 2 + edge) / 2),
+			at * CFrame.new(x, 0.9, (D / 2 - 2 + edge) / 2),
 			DBG
 		)
 		brick(
@@ -1359,7 +1380,7 @@ local function lifeboatSlip(m: Model, b: CFrame)
 	studTop(
 		brick(m, "Winch", Vector3.new(3, 2, 2), at * CFrame.new(0, 1.8, d / 2 - 1.5), BRICK_YELLOW)
 	)
-	path(m, b, { Vector2.new(57, 23), Vector2.new(slipR - d / 2 - 2, 23) })
+	path(m, b, { Vector2.new(57, 23), Vector2.new(slipR - D / 2 - 2, 23) })
 end
 
 -- WP-25: the fixed set on every island plate, there from the bare start (DockService builds it with the jetty):
@@ -1447,6 +1468,8 @@ local FIELDS = {
 	{ 85, 135, 24, 12 }, -- the front wings
 	{ -85, 125, 22, 12 },
 }
+-- WP-25 r8: the empty plot corners' prop clusters (island r, f): clear of the paths, hedges, fields and lots
+local CORNERS = { V(-140, -20), V(-136, 58), V(140, -12), V(122, -98), V(62, 138), V(-64, 130) }
 local LAMPS = { V(-44, 17), V(-20, 17), V(20, 17), V(44, 17) } -- along the promenade's inland side
 local LEAF = Color3.fromRGB(40, 127, 70) -- Lego dark green: reads against the plate
 local HEDGE = Color3.fromRGB(36, 88, 50) -- a shade darker: hedges outline the lanes from the build camera
@@ -1738,6 +1761,65 @@ function DockPieces.base(b: CFrame): Model
 			)
 		)
 	end
+	-- WP-25 r8: a tall signal mast at the island's back (3 parts): the skyline from the sea at every stage
+	local mast = isle(b, 24, -122)
+	studTop(brick(m, "MastBase", Vector3.new(5, 3, 5), mast * CFrame.new(0, 1.5, 0), BRICK_RED))
+	studTop(brick(m, "Mast", Vector3.new(1.6, 52, 1.6), mast * CFrame.new(0, 29, 0), BRICK_WHITE))
+	local pennant =
+		brick(m, "MastFlag", Vector3.new(0.4, 6, 10), mast * CFrame.new(0, 51, 5.8), BRICK_RED)
+	pennant.CanCollide = false
+	for _, n in { Enum.NormalId.Left, Enum.NormalId.Right } do
+		local d = Instance.new("Decal")
+		d.Face = n
+		d.Texture = UiImages.Kit.lifebuoy
+		d.Parent = pennant
+	end
+	-- WP-25 r8: a little Lego cluster in each empty plot corner (3 parts): a crate pair and a barrel, or a crate
+	-- and a flower pot
+	local tints = { BRICK_RED, BRICK_BLUE, BRICK_WHITE, BRICK_RED, BRICK_BLUE, BRICK_WHITE }
+	for k, c in CORNERS do
+		local at = isle(b, c.X, c.Y) * CFrame.Angles(0, k * 0.7, 0)
+		studTop(brick(m, "Crate", Vector3.new(3.2, 2.6, 3.2), at * CFrame.new(0, 1.3, 0), tints[k]))
+		if k % 2 == 1 then
+			studTop(
+				brick(
+					m,
+					"Crate",
+					Vector3.new(2.4, 2, 2.4),
+					at * CFrame.new(0, 3.6, 0) * CFrame.Angles(0, 0.5, 0),
+					BRICK_YELLOW
+				)
+			)
+			part(
+				m,
+				"Barrel",
+				Vector3.new(3.2, 2.6, 2.6),
+				at * CFrame.new(3.6, 1.6, 0.6) * CFrame.Angles(0, 0, math.pi / 2),
+				RBROWN,
+				M.SmoothPlastic,
+				Enum.PartType.Cylinder
+			)
+		else
+			part(
+				m,
+				"Pot",
+				Vector3.new(2.2, 3, 3),
+				at * CFrame.new(3.4, 1.1, 0.4) * CFrame.Angles(0, 0, math.pi / 2),
+				BRICK_ORANGE,
+				M.SmoothPlastic,
+				Enum.PartType.Cylinder
+			)
+			part(
+				m,
+				"Bloom",
+				Vector3.new(2.8, 2.8, 2.8),
+				at * CFrame.new(3.4, 3, 0.4),
+				blooms[k % #blooms + 1],
+				M.SmoothPlastic,
+				Enum.PartType.Ball
+			)
+		end
+	end
 	for _, d in m:GetDescendants() do
 		if d:IsA("BasePart") and d.Name ~= "Path" then
 			d.CanQuery = false -- set dressing: no prompts or camera hits
@@ -1760,6 +1842,8 @@ local BUILDINGS = {
 	Lighthouse = lighthouse,
 } :: { [string]: (Model, CFrame) -> () }
 
+local KEEP_1X =
+	{ Path = true, Slipway = true, SlipRail = true, BoardSlot = true, PaintBooth = true }
 local AFLOAT = { Pontoon = true, SubPen = true, TrophyHall = true, Crane = true } -- no lot bed: on the water or a wall
 
 -- The pieces of building `key` (DockConfig.Buildings, Blueprints) around the berth frame `cf`, as a Model
@@ -1774,6 +1858,30 @@ function DockPieces.building(key: string, cf: CFrame): Model
 		hut(m, cf, key)
 	end
 	local def = DockConfig.Buildings[key]
+	if def and def.scale then
+		-- WP-25 r8: built at 1x, scaled up round its spot to fill the lot; walks and the slipway keep their size
+		-- and ends (they meet the lanes and the sea), the boat board's slot and the paint booth their zones
+		local keep = {}
+		for _, d in m:GetChildren() do
+			if KEEP_1X[d.Name] then
+				table.insert(keep, d)
+				d.Parent = nil
+			end
+		end
+		m.WorldPivot = cf * def.spot
+		m:ScaleTo(def.scale)
+		for _, d in keep do
+			d.Parent = m
+		end
+	end
+	local spec = HUTS[key]
+	if def and spec and spec.tree then -- a tree at the back corner (1x, like the plate's trees)
+		tree(
+			m,
+			cf * def.spot * CFrame.new(spec.tree * (def.size.X / 2 + 3), 0, def.size.Y / 2 + 1),
+			0.8
+		)
+	end
 	if def and def.spot and def.size and not AFLOAT[key] then
 		-- WP-25 r7: a darker green bed under the lot (2 studs round it, under the paths): a framed plot, not lawn
 		local bed = brick(
@@ -1793,7 +1901,7 @@ end
 -- Lego stud plate with the build glyph in the middle and a 3-stud rim in the owner's colour (SurfaceGui frames named "Rim": no parts) and a tall
 -- "for sale" peg flag with the build glyph at a corner, turned to face the build camera. The flag is named "Flag"
 -- (the owner's colour; DockService colours the rim with it). The paper blueprint lies on top.
-function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2): Model
+function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2, price: number?): Model
 	local m = Instance.new("Model")
 	m.Name = "LotMarker"
 	local pad = brick(
@@ -1830,10 +1938,42 @@ function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2): Model
 	local f = brick(m, "Flag", Vector3.new(8, 5.2, 0.8), face * CFrame.new(4.6, 10, 0), BRICK_WHITE)
 	f.CanCollide = false
 	for _, n in { Enum.NormalId.Front, Enum.NormalId.Back } do
-		local d = Instance.new("Decal")
-		d.Face = n
-		d.Texture = UiImages.Kit.build
-		d.Parent = f
+		if not price then
+			local d = Instance.new("Decal")
+			d.Face = n
+			d.Texture = UiImages.Kit.build
+			d.Parent = f
+			continue
+		end
+		-- WP-25 r8: the build glyph over the lot's price (cash icon + 2.5K): what this lot buys, at a glance
+		local sgui = Instance.new("SurfaceGui")
+		sgui.Face = n
+		sgui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+		sgui.PixelsPerStud = 30
+		sgui.LightInfluence = 0.4
+		sgui.Parent = f
+		local mark = Instance.new("ImageLabel")
+		mark.BackgroundTransparency = 1
+		mark.Image = UiImages.Kit.build
+		mark.ScaleType = Enum.ScaleType.Fit
+		mark.Position = UDim2.fromScale(0, 0.04)
+		mark.Size = UDim2.fromScale(1, 0.52)
+		mark.Parent = sgui
+		local cash = mark:Clone()
+		cash.Image = UiImages.Kit.cash
+		cash.Position = UDim2.fromScale(0.06, 0.58)
+		cash.Size = UDim2.fromScale(0.3, 0.38)
+		cash.Parent = sgui
+		local label = Instance.new("TextLabel")
+		label.BackgroundTransparency = 1
+		label.Position = UDim2.fromScale(0.36, 0.58)
+		label.Size = UDim2.fromScale(0.6, 0.38)
+		label.TextScaled = true
+		label.Font = Enum.Font.FredokaOne
+		label.TextColor3 = BRICK_WHITE -- on any owner colour
+		label.TextStrokeTransparency = 0
+		label.Text = if price >= 1000 then string.format("%gK", price / 1000) else tostring(price)
+		label.Parent = sgui
 	end
 	for _, d in m:GetDescendants() do
 		if d:IsA("BasePart") then

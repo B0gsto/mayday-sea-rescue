@@ -407,7 +407,9 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 		end
 		local lot, marker = MARKED[key], plot.markers[key]
 		if lot and not want and not marker then
-			local made = DockPieces.lotMarker(plot.frame, plot.frame * lot.spot, lot.size)
+			local def = DockConfig.Buildings[key]
+			local made =
+				DockPieces.lotMarker(plot.frame, plot.frame * lot.spot, lot.size, def and def.cash)
 			made.Parent = plot.model
 			plot.markers[key] = made
 		elseif marker and want then

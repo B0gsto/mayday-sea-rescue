@@ -68,4 +68,30 @@ return function(t)
 		t.expect(math.abs(p.X) + half <= lot.size.X / 2).toBe(true)
 		t.expect(math.abs(p.Z) + half <= lot.size.Y / 2).toBe(true)
 	end)
+
+	t.test("land buildings (WP-25 r8 scaled) stay on the plate and clear of each other", function()
+		local RingLayout = t.load("src/shared/Config/RingLayout.luau")
+		local boxes = {}
+		for key, b in D.Buildings do
+			if key == "Pontoon" or key == "Crane" or key == "SubPen" or key == "TrophyHall" then
+				continue -- on the water, or on the station's wall
+			end
+			local l = Marina.ISLAND:ToObjectSpace(b.spot)
+			local hx = (math.abs(l.XVector.X) * b.size.X + math.abs(l.ZVector.X) * b.size.Y) / 2
+				+ 1.5 -- + plinth
+			local hz = (math.abs(l.XVector.Z) * b.size.X + math.abs(l.ZVector.Z) * b.size.Y) / 2
+				+ 1.5
+			local r, f = l.X, -l.Z
+			for _, c in { { -hx, -hz }, { hx, -hz }, { -hx, hz }, { hx, hz } } do
+				t.expect(RingLayout.plateContains(r + c[1], f + c[2])).toBe(true)
+			end
+			for other, o in boxes do
+				local apart = math.abs(r - o[1]) >= hx + o[3] or math.abs(f - o[2]) >= hz + o[4]
+				if not apart then
+					error(key .. " overlaps " .. other)
+				end
+			end
+			boxes[key] = { r, f, hx, hz }
+		end
+	end)
 end

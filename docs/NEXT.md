@@ -105,6 +105,11 @@ Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-2
   paint booth, bridge-axis trees removed. Parts bare 729 / ~50% 926 / full 1239. AD r7a and r7b "not ship" (r7b:
   "close"); r7b quick fixes applied (sheet build/art/island_r7c.png, not re-reviewed). Open: buildings small vs
   their lots, small clusters in empty lot corners. Render tool (local, gitignored): build/art7/render.py.
+  r8 (branch worktree-agent-a6d23375e7d4de152): huts/tower/slip/hangar/boathouse scaled 1.15-1.4x round their spots
+  (DockConfig `scale`, size = scaled footprint; walks, slipway, board slot, paint booth stay 1x), 3-part prop clusters
+  in 6 empty corners, a signal mast at the back, a tree per hut, a clinic ambulance, lot flags show the price. Parts
+  bare 750 (at budget) / ~50% 959 / full 1283. AD r8 "not ship, close" (open: raised levels, roofline variety);
+  quick fixes applied, sheet build/art/island_r8b.png not re-reviewed. Berth notch + slip ramp check: build/art8.
 - **WP-25 island art pass** (after WP-24 plates and WP-14e build mode v2 merge): the island/dock must look good at
   EVERY stage (Lv1 bare plate → Lv5 + hangar + sub pen + decor). Owner screenshot issues: the name-sign arch reads
   "the other way around" (make it read correctly from the jetty/boat approach and from land: text on both faces),
