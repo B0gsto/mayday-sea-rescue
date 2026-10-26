@@ -23,7 +23,7 @@
 --
 -- Nothing reaches into Roblox's touch controls: the bottom-left 40% x 45% thumbstick zone (portrait: the
 -- whole bottom 45%, where Roblox's dynamic stick starts) and the bottom-right 30% x 35% jump zone. The
--- menu grid takes as many rows as fit above the stick zone (4 x 2 on phones, 2 x 4 on tablets); the
+-- menu grid takes as many rows as fit above the stick zone (4 x 3 on phones, 3 x 4 on tablets); the
 -- minimap sits right of it at 130 final px (tap it for the full map, MapController), the objective strip
 -- right of that (portrait: under it) and the wallet under the objective. The notice band sits beside
 -- the wallet, or under it in the band between the two zones. The prompt keeps its place. Phone-sized screens use this arrangement on
@@ -165,7 +165,7 @@ local function debriefRect(mt: Metrics, zones: { { number } }): Rect
 	return mt.rects["notice"] -- shortcut: no gap anywhere (no tested screen), share the notice band
 end
 
--- As many rows as fit `height`, then balanced columns (10 buttons: 2 x 5 on every current screen).
+-- As many rows as fit `height`, then balanced columns (10 buttons: 2 x 5 at 1080p).
 local function menuGrid(c: typeof(MENU_DESK), height: number): Menu
 	local n = HudLayout.MENU_COUNT
 	local cell = c.icon + c.label + c.gap

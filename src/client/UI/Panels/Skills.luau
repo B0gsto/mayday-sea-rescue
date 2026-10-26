@@ -76,7 +76,7 @@ local function effectText(kind: string, amount: number): string
 	elseif kind == "medicPerUnit" then
 		return `+{pct(amount)} per Medic`
 	elseif kind == "workerCapAdd" then
-		return `+{math.floor(amount)} crew cap`
+		return `+{math.floor(amount)} worker cap`
 	elseif kind == "rareChanceAdd" then
 		return `+{pct(amount)} rare finds`
 	elseif kind == "extraSlots" then
