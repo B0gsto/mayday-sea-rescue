@@ -31,6 +31,7 @@
 -- a gold name sign and a tall gold beacon; picked on join / leave / a build (nobody's island ever moves). The
 -- trophy hall: a cup per rescue milestone (BadgeRules.trophies) and a plaque per island stamp (DiscoveryRules),
 -- rebuilt from the profile every few seconds when it changes.
+local CollectionService = game:GetService("CollectionService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -51,7 +52,9 @@ local MonetizationService = require(script.Parent:WaitForChild("MonetizationServ
 local Net = require(Shared:WaitForChild("Net"))
 local NpcFactory = require(script.Parent.Parent.Npc.NpcFactory)
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
+local PrizeWheel = require(Shared:WaitForChild("PrizeWheel"))
 local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
+local SpinService = require(script.Parent:WaitForChild("SpinService"))
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 
@@ -88,12 +91,71 @@ type Plot = {
 	site: Model?, -- the building being built (DockPieces, still not owned), while a construction runs
 	siteKey: string?,
 	crew: { { model: Model, height: number } }?, -- the two base builder NPCs walking to / from the site
+	wheel: Model?, -- the prize wheel set on the plaza (docs/24 D)
+	wheelPrompt: ProximityPrompt?,
+	wheelCount: TextLabel?,
+	wheelConn: RBXScriptConnection?,
 }
 
 local plots: { Plot } = {}
 local owners: { [number]: Player } = {}
 local byPlayer: { [Player]: number } = {}
 local master: Player? = nil
+
+local spinning: { [number]: boolean } = {}
+
+-- The wheel's SPIN button and token machine (docs/24 D). All checks stay here and in SpinService.
+local function wheelSpin(plotIndex: number, player: Player): boolean
+	if owners[plotIndex] ~= player or spinning[plotIndex] then
+		return false
+	end
+	local result = SpinService.WheelSpin(player)
+	if result.ok ~= true then
+		return false
+	end
+	spinning[plotIndex] = true
+	local plot = plots[plotIndex]
+	local prompt = plot and plot.wheelPrompt
+	if prompt then
+		prompt.Enabled = false
+	end
+	task.delay(result.duration or 4.5, function()
+		spinning[plotIndex] = nil
+		if owners[plotIndex] and prompt then
+			prompt.Enabled = true
+		end
+	end)
+	return true
+end
+
+local function wheelBuy(plotIndex: number, player: Player, key: string): boolean
+	if owners[plotIndex] ~= player then
+		return false
+	end
+	local item = MonetizationConfig.Products[key]
+	if not item or item.id == 0 or item.ready == false then
+		return false
+	end
+	local policy = MonetizationService.GetPolicy(player)
+	if not (policy and policy.ArePaidRandomItemsRestricted == false) then
+		return false
+	end
+	MarketplaceService:PromptProductPurchase(player, item.id)
+	return true
+end
+
+local function paintWheel(plot: Plot)
+	local owner = owners[plot.index]
+	local free = owner and owner:GetAttribute("FreeSpins")
+	local n = if type(free) == "number" then free else 0
+	if plot.wheelCount then
+		plot.wheelCount.Text = `SPINS {n}`
+	end
+	if plot.wheelPrompt then
+		plot.wheelPrompt.ObjectText = if owner then `{n} free` else ""
+		plot.wheelPrompt.Enabled = if owner then true else false
+	end
+end
 
 local function part(
 	parent: Instance,
@@ -285,6 +347,25 @@ local function buildPlot(folder: Instance, i: number): Plot
 
 	DockPieces.base(b).Parent = model -- WP-25: paths, trees, the lifebuoy stand (every island, owned or not)
 
+	-- docs/24 D: the prize wheel beside the anchor, facing the jetty, with its odds board and tokens
+	local islandFrame = b * Marina.ISLAND
+	local foot = islandFrame * CFrame.new(21, 0.3, -4)
+	local at = CFrame.lookAt(foot.Position, foot.Position - islandFrame.XVector)
+	local wheel = PrizeWheel.build(at, {
+		spin = function(player: Player)
+			return wheelSpin(i, player)
+		end,
+		buy = function(player: Player, key: string)
+			return wheelBuy(i, player, key)
+		end,
+	})
+	wheel:SetAttribute("Plot", i)
+	wheel.Parent = model
+	CollectionService:AddTag(wheel, "PrizeWheel")
+	local wheelCap = wheel:FindFirstChild("SpinButton", true)
+	local wheelPrompt = wheelCap and wheelCap:FindFirstChildOfClass("ProximityPrompt")
+	local wheelCount = wheel:FindFirstChild("FreeCount", true)
+
 	-- the owner's sign (only while the island has an owner): a Lego name sign over the jetty's quay end,
 	-- facing the cove, and a flag beside it
 	local sign = Instance.new("Model")
@@ -355,6 +436,9 @@ local function buildPlot(folder: Instance, i: number): Plot
 		counts = {},
 		buildings = {},
 		trophyKey = "",
+		wheel = wheel,
+		wheelPrompt = wheelPrompt,
+		wheelCount = if wheelCount and wheelCount:IsA("TextLabel") then wheelCount else nil,
 	}
 end
 
@@ -895,6 +979,16 @@ local function dress(plot: Plot, owner: Player?)
 			plot.buildStation = nil
 		end
 	end
+	if plot.wheelConn then
+		plot.wheelConn:Disconnect()
+		plot.wheelConn = nil
+	end
+	if owner then
+		plot.wheelConn = owner:GetAttributeChangedSignal("FreeSpins"):Connect(function()
+			paintWheel(plot)
+		end)
+	end
+	paintWheel(plot)
 end
 
 -- One construction at a time per island (docs/24 B): the site rises from nothing, the crew walks over.

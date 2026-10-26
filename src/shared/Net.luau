@@ -27,9 +27,9 @@
 --   RequestVehicle     C->S  function: launch a vehicle at a bay (vehicleId, docked?) -> (ok, reasonOrVehicle)
 --   BuyGear            C->S  function: buy a vehicle (vehicleId) -> (ok, reason)
 --   Spin_Flex          S->C  a Legendary / Mythic wheel win: banner + confetti for everyone
---   Spin_Spin          C->S  function: spend one spin -> { ok, prize, rarity, segment, duplicateCash? }
 --   Skill_State        S->C  the player's bought skill nodes and Cash (on join and after a buy)
 --   Skill_Buy          C->S  function: buy a skill node (id) -> ok, reason
+--   Spin_Wheel         S->C  a physical wheel spin: { userId, plot, segment, startTime, duration, prize... }
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
@@ -44,8 +44,9 @@ export type EventName =
 	| "BoardLaunch"
 	| "Spin_Flex"
 	| "Skill_State"
+	| "Spin_Wheel"
 
-export type FunctionName = "RequestVehicle" | "BuyGear" | "Spin_Spin" | "Skill_Buy"
+export type FunctionName = "RequestVehicle" | "BuyGear" | "Skill_Buy"
 
 local FOLDER_NAME = "Net"
 local WAIT_TIMEOUT = 30
@@ -63,10 +64,10 @@ Net.EVENTS = table.freeze({
 	"BoardLaunch",
 	"Spin_Flex",
 	"Skill_State",
+	"Spin_Wheel",
 } :: { EventName })
 
-Net.FUNCTIONS =
-	table.freeze({ "RequestVehicle", "BuyGear", "Spin_Spin", "Skill_Buy" } :: { FunctionName })
+Net.FUNCTIONS = table.freeze({ "RequestVehicle", "BuyGear", "Skill_Buy" } :: { FunctionName })
 
 local folder: Folder? = nil
 

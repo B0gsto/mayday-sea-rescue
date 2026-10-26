@@ -64,17 +64,20 @@ updated when the work merges).
 
 ## D. Spin wheel (RNG, flex)
 
-- A Spin button in the left menu opens a full-screen animated prize wheel (menus outside gameplay are allowed).
-  Free spins: 1 a day + 1 every 10 people rescued. Robux: 1 / 5 / 15 spins (dev products, `ready = false` until the
-  owner creates them). Odds are shown on the wheel (Roblox rule for paid random items).
+- A physical Lego prize wheel stands on every island (owner 2026-10-26: the spin happens in the world, not in a
+  full-screen panel; the left-menu Spin tile is gone). Its SPIN button pops a capsule above the wheel and shows the
+  prize there. Free spins: 1 a day + 1 every 10 people rescued. Robux: 1 / 5 / 15 spins on the token machine (dev
+  products, `ready = false` until the owner creates them); paid buttons hide when the policy forbids paid random items.
+  Odds are on a board beside the wheel (Roblox rule for paid random items).
 - Rarities: Common 50, Uncommon 25, Rare 15, Epic 7, Legendary 2.5, Mythic 0.5 (%). Pity: an Epic or better at
   least every 10 spins, a Legendary or better at least every 50. Duplicates turn into Cash by rarity.
 - Prizes: Cash (Common/Uncommon); pet variants of the existing pets (Golden, Neon, Rainbow, Galaxy with a sparkle
   aura); boat finishes for any craft (Gold chrome, Neon glow, Lava, Galaxy) and wake trails (rainbow, fire, stars);
   the grand prize a Robux boat (owned already → a Mythic finish).
-- Flex: Epic+ wins show a reveal card with rays; Legendary/Mythic wins also put a server-wide banner up ("Ava won a
-  MYTHIC Galaxy Otter!", rarity colour, icon) and a confetti burst over the winner that everyone sees. Equipped rare
-  items carry a rarity aura (particles) so others notice them on the water and on islands.
+- Flex: Epic+ wins burst confetti / a light beam above the wheel and float the prize there (name 1-3 words, rarity
+  colour); Legendary/Mythic wins also put a server-wide banner up ("Ava won a MYTHIC Galaxy Otter!", rarity colour,
+  icon) and a confetti burst over the winner that everyone sees. Equipped rare items carry a rarity aura (particles)
+  so others notice them on the water and on islands.
 - Owned finishes are picked where liveries are picked today; pet variants in the Companion panel.
 
 ## E. Tutorial (after A–D merge)

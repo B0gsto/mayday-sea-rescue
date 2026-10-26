@@ -36,7 +36,7 @@ history, not here.
 | `DogPoint` | S->C | DogService: Bosun points at a survivor or flare |
 | `RequestVehicle` | C->S fn | VehicleService: `(vehicleId, docked?, near?) -> (ok, reasonOrVehicle)`; `near` = Boat to me (id ignored) |
 | `BuyGear` | C->S fn | ProgressionService: buys a craft (`vehicleId`); the name is historical |
-| `Spin_Spin` | C->S fn | SpinService: spends one spin, the server rolls -> `{ ok, prize, name, rarity, kind, icon, segment, duplicateCash? }` |
+| `Spin_Wheel` | S->C | SpinService: one spin `{ userId, plot, segment, startTime, duration, prize, name, rarity, kind, icon, variant, option, vehicle, duplicateCash? }`; the island's wheel animates on every client |
 | `Spin_Flex` | S->C | SpinService: a Legendary / Mythic win `{ userId, name, prize, rarity, icon }` (banner + confetti) |
 | `Skill_Buy` | C->S fn | SkillService: buys a skill node `(id) -> (ok, reason)` |
 | `Skill_State` | S->C | SkillService: `{ owned, cash }` on join and after every buy |
@@ -273,7 +273,8 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
 - Pets: `PetService`, `PetRules`, `PetSeat`, `PetAccessory`, `PetController`.
 - Spin wheel (docs/24 D): `SpinRules` (pure: odds, pity, prizes, free-spin accrual, saved in `flags.spin`),
   `SpinService` (every roll; `Refresh`, `GiveFree`; Spin1/5/15 products are `paidRandom`, granted only when
-  `MonetizationService.GetPolicy` allows paid random items; grand boat = `flags.spinBoat`), `Panels/Spin`.
+  `MonetizationService.GetPolicy` allows paid random items; grand boat = `flags.spinBoat`), `PrizeWheel` (world build),
+  `PushButton`, `PrizeWheelController` (world spin/reveal/flex), `WheelMath`.
   Attributes `FreeSpins`, `SpinPityEpic`, `SpinPityLegendary`. Studio: `ServerStorage.SpinDev` (`give` / `force`).
 - Weather: `src/shared/Weather.luau` reads `ReplicatedStorage.Weather` attributes; `WeatherMath`, `Waves`;
   `StormService` (`ForceStorm`, `ForceCalm`, `QueueSummon`; always sunny by default); `WeatherController`,
