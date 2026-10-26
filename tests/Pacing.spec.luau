@@ -14,6 +14,7 @@ return function(t)
 	local VehicleUpgrades = t.load("src/shared/VehicleUpgrades.luau")
 	local UnlockTree = t.load("src/shared/UnlockTree.luau")
 	local WorkerRules = t.load("src/shared/WorkerRules.luau")
+	local BuildTimer = t.load("src/shared/BuildTimer.luau")
 
 	local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
 	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
@@ -79,10 +80,10 @@ return function(t)
 
 		local timeline = {}
 		local seen = {}
-		local function mark(label: string)
+		local function mark(label: string, at: number?)
 			if not seen[label] then
 				seen[label] = true
-				table.insert(timeline, { at = playMin, label = label, cash = data.cash })
+				table.insert(timeline, { at = at or playMin, label = label, cash = data.cash })
 			end
 		end
 
@@ -116,21 +117,41 @@ return function(t)
 		end
 
 		-- docs/23 (q): a free player walks the unlock tree in PLAN order with Cash only, each item as soon
-		-- as it is affordable (a due upgrade goes first: they are cheap and make the craft better)
+		-- as it is affordable (a due upgrade goes first: they are cheap and make the craft better). One
+		-- construction at a time (docs/24 B): the building stands when its crew's work is done, while the
+		-- player keeps taking calls.
 		local planIndex = 1
-		local function planNext()
+		local construction: { key: string, doneAt: number }? = nil
+		local planNext
+		local function settleBuilds()
+			while construction and construction.doneAt <= playMin + 1e-9 do
+				local done = construction
+				construction = nil
+				built[done.key] = true
+				mark(done.key .. " built", done.doneAt)
+				planNext()
+			end
+		end
+		planNext = function()
 			while PLAN[planIndex] do
+				if construction then
+					return
+				end
 				local key = PLAN[planIndex]
 				if DockConfig.Buildings[key] then
-					local ok, reason, price =
-						UnlockTree.canBuy(key, built, data.cash, fx().buildDiscount)
+					local ok, reason, price = UnlockTree.canBuy(key, built, data.cash)
 					assert(reason ~= "Needs", `PLAN buys {key} before its prerequisites`)
 					if not ok or not price then
 						return
 					end
 					data.cash -= price
-					built[key] = true
-					mark(key .. " built")
+					construction = {
+						key = key,
+						doneAt = playMin
+							+ BuildTimer.work(price) / 60 / BuildTimer.rateOf(data.workers),
+					}
+					planIndex += 1
+					return
 				else
 					local ok, reason, price = Progression.canBuyVehicle(data, key)
 					assert(not string.find(reason, "Needs", 1, true), `PLAN buys {key} first`)
@@ -250,6 +271,7 @@ return function(t)
 		)
 			local completeAt = now + minutes * 60
 			playMin += minutes
+			settleBuilds()
 			local scale = if minutes < planned - 1e-6 then minutes / planned else 1
 			local great = isGreat(completeAt)
 			local storm = great or opIndex % 5 == 4
@@ -290,6 +312,11 @@ return function(t)
 				if lastEnd and not legacy then
 					data.cash += WorkerRules.offlinePay(fx(), now - lastEnd) -- collected on join
 				end
+				-- a build keeps going while away: it stands by the time the next session starts
+				if construction then
+					construction.doneAt = math.min(construction.doneAt, playMin)
+				end
+				settleBuilds()
 				local cashAtStart = data.cash
 				while remaining > 0.01 do
 					local planned, weight, people = TUTORIAL_MIN[totalOps + 1], nil, 1

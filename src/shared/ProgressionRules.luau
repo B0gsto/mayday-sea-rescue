@@ -21,8 +21,10 @@ export type PlayerData = {
 	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
 	dockLevel: number, -- retired dock level 1..5 (WP-28): kept as saved; migrate maps it onto the tree
 	dockBuildings: { [string]: boolean }, -- the unlock tree (DockConfig.Buildings), blueprints and decor
-	-- Robux-paid buildings waiting for their prerequisites (UnlockTree.settle builds them once those stand).
+	-- Robux-paid buildings waiting for their prerequisites or for the one running site (docs/24 B).
 	dockPrepaid: { [string]: boolean },
+	-- The one site being built (docs/24 B): key, progress 0..1, crew rate and the last server tick (os.time).
+	construction: { key: string, progress: number, rate: number, at: number }?,
 	-- Rescued people working on your island (docs/23 (o), WP-26; WorkerRules, WorkerService), at most WorkerRules.CAP.
 	workers: { WorkerRules.Worker },
 	lastSeen: number?, -- os.time of the last save (DataService): offline worker earnings count from here
@@ -314,6 +316,22 @@ function Rules.migrate(raw: any): PlayerData
 			if type(key) == "string" and paid == true and DockConfig.Buildings[key] ~= nil then
 				data.dockPrepaid[key] = true
 			end
+		end
+	end
+	if type(raw.construction) == "table" then
+		local key = raw.construction.key
+		local at = num(raw.construction.at, 0)
+		if
+			type(key) == "string"
+			and at > 0
+			and (DockConfig.Buildings[key] ~= nil or DockConfig.Decorations[key] ~= nil)
+		then
+			data.construction = {
+				key = key,
+				progress = math.clamp(num(raw.construction.progress, 0), 0, 1),
+				rate = math.clamp(num(raw.construction.rate, 1), 1, 20),
+				at = at,
+			}
 		end
 	end
 	-- WP-26: the hired crew (WP-15) is gone; what it cost comes back once (saves no longer carry `crew`)
