@@ -381,6 +381,12 @@ local function spin(payload: any)
 	end)
 end
 
+-- Only the island's owner can spin or buy at its wheel: others get no prompt and no click cursor.
+local function mine(inst: Instance): boolean
+	local wheel = inst:FindFirstAncestor("PrizeWheel") or inst
+	return wheel:GetAttribute("Plot") == player:GetAttribute("DockPlot")
+end
+
 local function hidePaid(machine: Instance, index: number, hidden: boolean)
 	local key = `Buy{index}`
 	for _, name in { key, key .. "Base", `Price{index}` } do
@@ -401,7 +407,7 @@ local function hidePaid(machine: Instance, index: number, hidden: boolean)
 	end
 	local click = cap and cap:FindFirstChildOfClass("ClickDetector")
 	if click then
-		click.MaxActivationDistance = if hidden then 0 else 24
+		click.MaxActivationDistance = if hidden or not mine(machine) then 0 else 24
 	end
 end
 
@@ -415,6 +421,21 @@ local function paintPaid(wheel: Instance)
 	end
 end
 
+local promptRange: { [ProximityPrompt]: number } = {}
+
+local function gate(wheel: Instance)
+	local own = mine(wheel)
+	for _, d in wheel:GetDescendants() do
+		if d:IsA("ProximityPrompt") then
+			promptRange[d] = promptRange[d] or d.MaxActivationDistance
+			d.MaxActivationDistance = if own then promptRange[d] else 0
+		elseif d:IsA("ClickDetector") and d.Parent and d.Parent.Name == "SpinButton" then
+			d.MaxActivationDistance = if own then 24 else 0
+		end
+	end
+	paintPaid(wheel) -- the token machine's clicks
+end
+
 local function register(model: Instance)
 	if not model:IsA("Model") then
 		return
@@ -425,11 +446,18 @@ local function register(model: Instance)
 	end
 	wheels[plot] = model
 	local rotor = model:FindFirstChild("Rotor", true)
-	if rotor and rotor:IsA("Model") then
+	-- streaming: without its PrimaryPart the rotor's pivot is not the hub; spin() takes it later
+	if rotor and rotor:IsA("Model") and rotor.PrimaryPart then
 		basePivot[plot] = rotor:GetPivot()
 		angleNow[plot] = 0
 	end
-	paintPaid(model)
+	gate(model)
+	-- streaming: buttons can arrive after the model
+	model.DescendantAdded:Connect(function(d)
+		if d:IsA("ProximityPrompt") or d:IsA("ClickDetector") then
+			task.defer(gate, model)
+		end
+	end)
 end
 
 local function fetchCatalogue()
@@ -486,6 +514,11 @@ function PrizeWheelController.Init()
 		register(model)
 	end
 	CollectionService:GetInstanceAddedSignal("PrizeWheel"):Connect(register)
+	player:GetAttributeChangedSignal("DockPlot"):Connect(function()
+		for _, wheel in wheels do
+			gate(wheel)
+		end
+	end)
 	fetchCatalogue()
 end
 

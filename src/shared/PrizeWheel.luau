@@ -5,7 +5,7 @@
 --
 -- The set: a 14-stud Lego wheel (12 rarity segments, rim pegs, hub), a stand with the big red SPIN
 -- button and the free-spin sign, the odds board (paid random items must show odds) and the token
--- machine (1 / 5 / 15 Robux spins). Parts: wheel 11 (segments and pegs are SurfaceGui frames on the disc),
+-- machine (1 / 5 / 15 Robux spins). Parts: wheel 23 (rim, 12 wedge segments, hub; pegs are rim SurfaceGui frames),
 -- odds board 2, token machine 13.
 local MonetizationConfig =
 	require(script.Parent:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
@@ -36,6 +36,7 @@ local RARITY_COLOR: { [string]: Color3 } = {
 }
 
 local WHEEL_R = 7
+local SEG_R = 5.6 -- segment radius: the saw-tooth tips (SEG_R / cos 30°) stay inside the rim pegs
 local WHEEL_Y = 10
 local WHEEL_Z = -3.6
 
@@ -126,20 +127,23 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 
 	local rotor = Instance.new("Model")
 	rotor.Name = "Rotor"
+	rotor.ModelStreamingMode = Enum.ModelStreamingMode.Atomic -- streams whole, so it spins whole
 	rotor.Parent = model
 
-	-- one disc part: the 12 rarity segments and the rim pegs are frames in its SurfaceGui (Right face = the
-	-- front), not 25 parts; it is the rotor's PrimaryPart, its pivot offset back to `centre`
-	local disc = part(
+	-- the round rim: one cylinder facing -Z, the rotor's PrimaryPart (pivot offset back to `centre`); its
+	-- SurfaceGui (Right face = the front) carries the white pegs outside the segments' saw-tooth tips
+	local rim = part(
 		rotor,
-		"Disc",
-		Vector3.new(0.5, WHEEL_R * 2 + 0.4, WHEEL_R * 2 + 0.4),
+		"Rim",
+		Vector3.new(0.4, WHEEL_R * 2 + 0.4, WHEEL_R * 2 + 0.4),
 		centre * CFrame.Angles(0, math.pi / 2, 0),
-		DARK
+		INK, -- dark: the gold Legendary segment and the saw-tooth read against it
+		nil,
+		Enum.PartType.Cylinder
 	)
-	disc.CanCollide = false
-	disc.CanQuery = false
-	disc.PivotOffset = CFrame.Angles(0, -math.pi / 2, 0)
+	rim.CanCollide = false
+	rim.CanQuery = false
+	rim.PivotOffset = CFrame.Angles(0, -math.pi / 2, 0)
 	local PPS = 20
 	local gui = Instance.new("SurfaceGui")
 	gui.Name = "Face"
@@ -147,49 +151,50 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
 	gui.PixelsPerStud = PPS
 	gui.LightInfluence = 0.6
-	gui.Parent = disc
+	gui.Parent = rim
 	local half = (WHEEL_R + 0.2) * PPS
 	-- gui +x = the centre's -X and +y (down) = its -Y, so the 3D angle a sits at (-cos a, -sin a)
 	local function polar(a: number, r: number): UDim2
 		return UDim2.fromOffset(half - math.cos(a) * r * PPS, half - math.sin(a) * r * PPS)
 	end
-	for i, rarity in SpinRules.SEGMENTS do
-		local a = math.rad((i - 1) * 360 / segCount)
-		local seg = Instance.new("Frame")
-		seg.Name = `Segment{i}`
-		seg.AnchorPoint = Vector2.new(0.5, 0.5)
-		seg.Position = polar(a, WHEEL_R / 2)
-		seg.Size = UDim2.fromOffset((WHEEL_R + 0.2) * PPS, 3.5 * PPS)
-		seg.Rotation = math.deg(a)
-		seg.BorderSizePixel = 0
-		seg.BackgroundColor3 = if rarity == "Mythic"
-			then Color3.new(1, 1, 1)
-			else segmentColor(rarity)
-		seg.ZIndex = i
-		seg.Parent = gui
-		if rarity == "Mythic" then
-			local gradient = Instance.new("UIGradient")
-			gradient.Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromHSV(0, 0.85, 1)),
-				ColorSequenceKeypoint.new(0.25, Color3.fromHSV(0.25, 0.85, 1)),
-				ColorSequenceKeypoint.new(0.5, Color3.fromHSV(0.5, 0.85, 1)),
-				ColorSequenceKeypoint.new(0.75, Color3.fromHSV(0.75, 0.85, 1)),
-				ColorSequenceKeypoint.new(1, Color3.fromHSV(1, 0.85, 1)),
-			})
-			gradient.Parent = seg
-		end
-	end
 	for i = 1, segCount do
 		local peg = Instance.new("Frame")
 		peg.Name = `Peg{i}`
 		peg.AnchorPoint = Vector2.new(0.5, 0.5)
-		peg.Position = polar(math.rad(i * 360 / segCount), WHEEL_R - 0.3)
-		peg.Size = UDim2.fromOffset(0.8 * PPS, 0.8 * PPS)
+		peg.Position = polar(math.rad((i - 0.5) * 360 / segCount), WHEEL_R - 0.3)
+		peg.Size = UDim2.fromOffset(0.5 * PPS, 0.5 * PPS)
 		peg.BorderSizePixel = 0
 		peg.BackgroundColor3 = WHITE
-		peg.ZIndex = segCount + 1
 		peg.Parent = gui
 		Instance.new("UICorner", peg).CornerRadius = UDim.new(0.5, 0)
+	end
+
+	-- 12 segments, one WedgePart each (WheelMath: segment i centred at (i-1)*30° CCW from +X in the
+	-- centre's XY). The wedge's right angle sits at the slice's start radius r, one leg back to the hub,
+	-- the other square to it up to the slice's end edge: slices tile, the tips make a small saw-tooth.
+	local step = 2 * math.pi / segCount
+	local r = SEG_R
+	local tooth = r * math.tan(step)
+	for i, rarity in SpinRules.SEGMENTS do
+		local start = (i - 1.5) * step
+		local u = Vector3.new(math.cos(start), math.sin(start), 0) -- the start radius (wedge +Z)
+		local t = Vector3.new(-math.sin(start), math.cos(start), 0) -- square to it (wedge +Y)
+		local corner = u * r
+		local seg = Instance.new("WedgePart")
+		seg.Name = `Segment{i}`
+		seg.Size = Vector3.new(0.4, tooth, r)
+		seg.CFrame = centre
+			* CFrame.fromMatrix(
+				corner + t * (tooth / 2) - u * (r / 2) + Vector3.new(0, 0, -0.35),
+				Vector3.new(0, 0, -1),
+				t
+			)
+		seg.Color = segmentColor(rarity)
+		seg.Material = if rarity == "Mythic" then M.Neon else M.SmoothPlastic
+		seg.Anchored = true
+		seg.CanCollide = false
+		seg.CanQuery = false
+		seg.Parent = rotor
 	end
 
 	local hub = part(
@@ -203,7 +208,7 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 	)
 	hub.CanCollide = false
 	hub.CanQuery = false
-	rotor.PrimaryPart = disc
+	rotor.PrimaryPart = rim
 
 	-- stand ---------------------------------------------------------------------------------------
 	local base = part(model, "Base", Vector3.new(16, 1.2, 6), at * CFrame.new(0, 0.6, 0), RED)
@@ -230,7 +235,7 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 		model,
 		"PointerHousing",
 		Vector3.new(1.8, 1.5, 1.2),
-		at * CFrame.new(0, WHEEL_Y + WHEEL_R + 0.3, WHEEL_Z - 0.4),
+		at * CFrame.new(0, WHEEL_Y + WHEEL_R + 0.3, WHEEL_Z - 1.0),
 		RED
 	).CanCollide =
 		false
@@ -238,7 +243,7 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 	flapper.Name = "Flapper"
 	flapper.Size = Vector3.new(1.2, 2.6, 0.8)
 	flapper.CFrame = at
-		* CFrame.new(0, WHEEL_Y + WHEEL_R - 1.1, WHEEL_Z - 0.4)
+		* CFrame.new(0, WHEEL_Y + WHEEL_R - 1.1, WHEEL_Z - 0.95) -- in front of the segments
 		* CFrame.Angles(0, 0, math.pi)
 	flapper.Color = WHITE
 	flapper.Material = M.SmoothPlastic
@@ -264,6 +269,7 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 		width = 2.8,
 		onPress = onSpin,
 	})
+	spin.prompt.HoldDuration = 0 -- a tap spins (the only E prompt at the wheel)
 
 	return {
 		model = model,
@@ -380,6 +386,9 @@ local function buildMachine(parent: Instance, at: CFrame, onBuy: (Player, string
 			end,
 		})
 		made.cap:SetAttribute("Product", key)
+		-- R and close range: the paid buttons never take the SPIN button's E
+		made.prompt.KeyboardKeyCode = Enum.KeyCode.R
+		made.prompt.MaxActivationDistance = 8
 		buttons[key] = made
 	end
 	return { model = model, buttons = buttons }

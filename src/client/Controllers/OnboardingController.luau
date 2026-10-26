@@ -206,8 +206,11 @@ local function setGuide(kind: string?)
 		lastTabletPulse = nil
 	end
 	guide = kind
-	-- one goal at a time: UI/Waypoint holds the call marker back until the Workshop is bought (docs/24 E)
-	player:SetAttribute("TutorialHoldCall", if kind == "station" then true else nil)
+	-- one goal at a time: UI/Waypoint holds the call marker back on the station and spin beats (docs/24 E)
+	player:SetAttribute(
+		"TutorialHoldCall",
+		if kind == "station" or kind == "spin" then true else nil
+	)
 	if kind == "station" then
 		local at = stationPoint()
 		if not at then
