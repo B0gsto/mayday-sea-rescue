@@ -67,19 +67,19 @@ local VehicleConfig = {}
 VehicleConfig.KNOT = KNOT
 
 -- Three-seat rescue PWC with a rescue sled (Yamaha FX / Sea-Doo GTX class): 3.3 m x 1.2 m,
--- 0.3 m draft, 350 kg dry + rider = 430 kg, 45 knots (sled fitted), 0 to 30 mph in about 2 s.
+-- 0.3 m draft, 350 kg dry + rider = 430 kg, 52 knots (docs/24 A: +15%), 0 to 30 mph in about 1.5 s.
 VehicleConfig.JetSki = {
 	id = "JetSki",
 	displayName = "Jet Ski",
 	cameraMode = "Chase",
 	eyePoint = Vector3.new(0, 4.0, -0.4), -- 1.6 m above the footwell deck (rider half standing)
-	topSpeed = 45 * KNOT, -- 69.4 studs/s (23.1 m/s)
-	accel = 24, -- 0.82 g off the line -- tune
+	topSpeed = 52 * KNOT, -- 80.2 studs/s (26.7 m/s), +15% (docs/24 A)
+	accel = 30, -- 1.0 g off the line: quicker response (docs/24 A) -- tune
 	brakeDecel = 16, -- reverse bucket brake, about 0.55 g -- tune
-	turnRate = 95, -- degrees/s cap -- tune
-	turnRadiusSlow = 7.5, -- 2.5 m: spins in about 1.5 lengths -- tune
-	maxLateralG = 1.3, -- hard carve: about 38 m radius at full speed -- tune
-	pivotSpeed = 7, -- jet thrust steers at a standstill -- tune
+	turnRate = 110, -- degrees/s cap -- tune
+	turnRadiusSlow = 6.5, -- 2.2 m: spins in about 1.3 lengths -- tune
+	maxLateralG = 1.8, -- tighter carve at speed (docs/24 A) -- tune
+	pivotSpeed = 8, -- jet thrust steers at a standstill -- tune
 	offThrottleSteer = 0.2, -- jets barely steer with the throttle closed -- tune
 	humpSpeed = 0.2, -- 14 studs/s, about 9 knots -- tune
 	planingSpeed = 0.36, -- on the plane at about 16 knots -- tune
@@ -87,8 +87,8 @@ VehicleConfig.JetSki = {
 	runningTrim = 3,
 	squatTrim = 2.5,
 	planingLift = 0.55,
-	leanFactor = 0.55, -- rider and hull bank into the carve -- tune
-	maxLean = 24,
+	leanFactor = 0.65, -- rider and hull bank into the carve -- tune
+	maxLean = 26,
 	dampingRatio = 0.6,
 	idleCreep = 2.5 * KNOT, -- an idling jet creeps at about 2.5 knots -- tune
 	approachSpeed = 4.5 * KNOT, -- 6.9 studs/s, under 5 knots
@@ -107,26 +107,24 @@ VehicleConfig.JetSki = {
 		Vector3.new(-1.5, -1.05, 3.6),
 		Vector3.new(1.5, -1.05, 3.6),
 	},
-	lateralGrip = 0.7, -- slides on turns (docs 02)
+	lateralGrip = 0.88, -- grippier, arcade (docs/24 A): less sideways slide -- tune
 	canCapsize = true,
 } :: VehicleSpec
 
 -- RNLI Atlantic 85-class inshore lifeboat: 8.44 m x 2.85 m, 0.53 m draft, 1.8 t + crew = 2.1 t,
--- twin 115 hp outboards, 35 knots, deep-V hull inside an air-tube collar.
+-- twin 115 hp outboards, 46 knots (docs/24 A: +15%), deep-V hull inside an air-tube collar.
 VehicleConfig.RIB = {
 	id = "RIB",
 	displayName = "RIB Inflatable",
 	cameraMode = "Chase",
 	eyePoint = Vector3.new(0, 2.7, -0.5), -- helm on the jockey seat: 1.65 m above the deck
-	-- 2026-10-24 balance: 35 knots on accel 7 had so little thrust over drag that a little swell held
-	-- it near 30 km/h, slower than the free jet ski. Fast (74 km/h), just under the jet ski.
-	topSpeed = 40 * KNOT, -- 61.7 studs/s (20.6 m/s, 74 km/h) -- tune
-	accel = 15, -- 0.5 g: twin outboards, 0 to 25 knots in about 3.5 s; holds speed in a swell -- tune
+	topSpeed = 46 * KNOT, -- 71.0 studs/s (23.7 m/s) -- tune
+	accel = 19, -- quicker response (docs/24 A); holds speed in a swell -- tune
 	brakeDecel = 14, -- astern on both engines, "quick to stop" -- tune
-	turnRate = 50, -- degrees/s cap -- tune
-	turnRadiusSlow = 15, -- 5 m, about 0.6 lengths -- tune
-	maxLateralG = 0.95, -- about 45 m radius at full speed -- tune
-	pivotSpeed = 5, -- twin outboards turned hard over -- tune
+	turnRate = 60, -- degrees/s cap -- tune
+	turnRadiusSlow = 11, -- 3.7 m: tight enough to hit a ring at speed (docs/24 A) -- tune
+	maxLateralG = 1.25, -- tighter at speed: the ring is reachable at full throttle -- tune
+	pivotSpeed = 6, -- twin outboards turned hard over -- tune
 	offThrottleSteer = 0.5, -- the outboard legs still act as rudders -- tune
 	humpSpeed = 0.22, -- 12 studs/s, about 8 knots -- tune
 	planingSpeed = 0.42, -- on the plane at about 15 knots -- tune
@@ -134,8 +132,8 @@ VehicleConfig.RIB = {
 	runningTrim = 4,
 	squatTrim = 3,
 	planingLift = 0.45,
-	leanFactor = 0.3, -- deep V heels into the turn -- tune
-	maxLean = 10,
+	leanFactor = 0.35, -- deep V heels into the turn -- tune
+	maxLean = 12,
 	dampingRatio = 0.4, -- air tubes: bounces hard in swell (docs 02)
 	idleCreep = 0, -- outboards in neutral
 	approachSpeed = 4.5 * KNOT, -- 6.9 studs/s, under 5 knots
@@ -156,7 +154,7 @@ VehicleConfig.RIB = {
 		Vector3.new(-3.6, -1.65, 9),
 		Vector3.new(3.6, -1.65, 9),
 	},
-	lateralGrip = 0.85,
+	lateralGrip = 0.9, -- grippier (docs/24 A) -- tune
 	canCapsize = true,
 } :: VehicleSpec
 
@@ -225,17 +223,17 @@ VehicleConfig.StormRunner = variant("RIB", {
 	id = "StormRunner",
 	displayName = "Storm Runner",
 	model = "M_Veh_StormRunner", -- on the RIB frame and ATT_ markers (its own helm: no M_Veh_RIB_Helm)
-	topSpeed = 58 * KNOT, -- 89.5 studs/s -- tune
-	accel = 13, -- twice the RIB's punch -- tune
+	topSpeed = 66 * KNOT, -- 101.8 studs/s, still the fastest RIB-based hull -- tune
+	accel = 17,
 	brakeDecel = 16,
-	turnRate = 58,
-	maxLateralG = 1.05,
+	turnRate = 66,
+	maxLateralG = 1.35,
 	planingSpeed = 0.34,
 	runningTrim = 4.5,
-	leanFactor = 0.4,
-	maxLean = 14,
+	leanFactor = 0.45,
+	maxLean = 16,
 	dampingRatio = 0.5,
-	lateralGrip = 0.88,
+	lateralGrip = 0.92,
 })
 
 -- Luxury catamaran: two hulls, dead flat in a turn, soft over a swell, never capsizes; 6 casualties.
@@ -245,13 +243,13 @@ VehicleConfig.Tidewalker = variant("Lifeboat", {
 	-- on the lifeboat frame, its own ATT_ markers (Boat/Builder buildTidewalkerAsset; pivot at HullRoot
 	-- (0, -2.8, -0.01), art/source/vehicles/M_Veh_Tidewalker/frame_offset.json)
 	model = "M_Veh_Tidewalker",
-	topSpeed = 36 * KNOT, -- 55.5 studs/s, faster than the lifeboat -- tune
-	accel = 9,
-	brakeDecel = 9,
-	turnRate = 34,
-	turnRadiusSlow = 30,
-	maxLateralG = 0.6,
-	pivotSpeed = 4, -- twin engines spin a cat on the spot
+	topSpeed = 41 * KNOT, -- 63.3 studs/s, faster than the lifeboat, still the heavy cat -- tune
+	accel = 11,
+	brakeDecel = 10,
+	turnRate = 40,
+	turnRadiusSlow = 24,
+	maxLateralG = 0.8,
+	pivotSpeed = 5, -- twin engines spin a cat on the spot
 	leanFactor = 0.06,
 	maxLean = 3,
 	dampingRatio = 0.75, -- smooth ride
@@ -263,15 +261,15 @@ VehicleConfig.RiptideX = variant("JetSki", {
 	id = "RiptideX",
 	displayName = "Riptide X",
 	model = "M_Veh_JetSki_RiptideX", -- on the jet ski frame and ATT_ markers (no close-up set)
-	topSpeed = 62 * KNOT, -- 95.7 studs/s -- tune
-	accel = 32,
-	turnRate = 115,
-	turnRadiusSlow = 6,
-	maxLateralG = 1.55,
-	pivotSpeed = 8,
-	leanFactor = 0.65,
-	maxLean = 30,
-	lateralGrip = 0.74,
+	topSpeed = 71 * KNOT, -- 109.5 studs/s, the quickest thing on the water -- tune
+	accel = 38,
+	turnRate = 130,
+	turnRadiusSlow = 5.4,
+	maxLateralG = 2,
+	pivotSpeed = 9,
+	leanFactor = 0.7,
+	maxLean = 32,
+	lateralGrip = 0.88,
 })
 
 -- Gold luxe jet ski: fast, planted and smooth rather than wild.
@@ -279,14 +277,14 @@ VehicleConfig.GildedGull = variant("JetSki", {
 	id = "GildedGull",
 	displayName = "Gilded Gull",
 	model = "M_Veh_JetSki_GildedGull", -- on the jet ski frame and ATT_ markers (no close-up set)
-	topSpeed = 54 * KNOT, -- 83.3 studs/s -- tune
-	accel = 27,
-	turnRate = 100,
-	maxLateralG = 1.4,
-	leanFactor = 0.45,
-	maxLean = 20,
+	topSpeed = 62 * KNOT, -- 95.7 studs/s, planted and fast -- tune
+	accel = 33,
+	turnRate = 115,
+	maxLateralG = 1.85,
+	leanFactor = 0.55,
+	maxLean = 24,
 	dampingRatio = 0.8, -- glides over chop
-	lateralGrip = 0.82,
+	lateralGrip = 0.9,
 })
 
 -- docs/23 (h), WP-10a: the hangar and sub pen craft. Handling lives in their own modules (Heli/Flight,

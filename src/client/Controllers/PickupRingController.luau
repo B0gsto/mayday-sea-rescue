@@ -4,10 +4,9 @@
 -- other crews' casualties) gets an orange ring of Board.ringFor(your hull) on the water: missions, free-roam and big calls alike.
 -- It dims grey while the craft you sit in is full (the seat pips say why) and swells and fades as they climb aboard. They
 -- wave on their own (RescueService "Wave" pose with a boat in sight, CasualtyController).
--- Assist(craft, throttle, steer, spec): BoatController runs the driven hull's throttle and helm through it, so a
--- craft with room slows itself to Board.ASSIST_SPEED by the nearest ring (Board.assistThrottle), steering hard
--- toward a survivor eases speed until the turn reaches the ring (Board.turnSpeed), and a hands-off helm is
--- nudged onto them (Board.nudge). Keys, stick and touch all get the same assist; the player still steers.
+-- Assist(craft, throttle, steer): BoatController runs the driven hull's helm through it, so with room a hands-off
+-- helm near the nearest ring is nudged onto them (Board.nudge). The throttle is never cut (docs/24 A: drive next
+-- to them at any speed). Keys, stick and touch all get the same assist; the player still steers.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -15,8 +14,6 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
-local Buoyancy = require(Shared:WaitForChild("Boat"):WaitForChild("Buoyancy"))
-local Helm = require(Shared:WaitForChild("Boat"):WaitForChild("Helm"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
@@ -169,14 +166,9 @@ local function step()
 	end
 end
 
--- The throttle and helm the driven craft gets near the nearest waiting survivor (unchanged with no room or
--- none near). spec: its VehicleConfig entry (brake and turning circle); nil keeps the old jet ski numbers.
-function PickupRingController.Assist(
-	craft: Model,
-	input: number,
-	steer: number,
-	spec: any?
-): (number, number)
+-- The helm the driven craft gets near the nearest waiting survivor (unchanged with no room or none near).
+-- Only a hands-off helm is nudged onto them; the throttle is always the player's (docs/24 A: no auto-brake).
+function PickupRingController.Assist(craft: Model, input: number, steer: number): (number, number)
 	local root = craft.PrimaryPart
 	if not root or not Board.hasRoom(craft) then
 		return input, steer
@@ -197,41 +189,16 @@ function PickupRingController.Assist(
 	end
 	local to = best :: Vector3
 	local dist = to.Magnitude
-	local ring = Board.ringFor(root.Size.X / 2)
-	local vel = root.AssemblyLinearVelocity
+	if dist < 0.5 or dist > Board.OUTER then
+		return input, steer
+	end
 	local look = root.CFrame.LookVector
 	local flatLook = Vector3.new(look.X, 0, look.Z)
 	flatLook = if flatLook.Magnitude > 1e-3 then flatLook.Unit else Vector3.zAxis
-	local forward = vel:Dot(flatLook)
-	local closing = if dist > 0.5 then vel:Dot(to.Unit) else forward
-	local throttle = Board.assistThrottle(
-		input,
-		dist - (ring - Board.RING),
-		closing,
-		forward,
-		if spec then spec.brakeDecel else 16
-	)
-	if dist < 0.5 or dist > Board.OUTER or not spec then
-		return throttle, steer
-	end
 	local right = flatLook:Cross(Vector3.yAxis)
 	local side, ahead = to:Dot(right), to:Dot(flatLook)
 	local bearing = math.deg(math.atan2(side, ahead))
-	steer = Board.nudge(steer, bearing, dist)
-	-- steering hard toward them (not behind): slow enough that the turn reaches the ring
-	if steer * side > 0 and math.abs(steer) > 0.5 and ahead > -0.2 * dist then
-		local lock = Helm.AT_SPEED -- the least helm left at speed: brakes a touch early rather than late
-		local cap = Board.turnSpeed(
-			dist,
-			math.abs(side) / dist,
-			ring,
-			math.rad(spec.turnRate) * lock,
-			spec.turnRadiusSlow,
-			spec.maxLateralG * Buoyancy.GRAVITY * lock
-		)
-		throttle = math.min(throttle, math.clamp((cap - forward) / Board.ASSIST_SPAN, -1, 1))
-	end
-	return throttle, steer
+	return input, Board.nudge(steer, bearing, dist)
 end
 
 function PickupRingController.Init() end

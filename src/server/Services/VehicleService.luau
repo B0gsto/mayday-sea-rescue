@@ -1912,16 +1912,19 @@ function VehicleService.Climb(survivorModel: Model, hull: BasePart, target: () -
 		return winchLift(survivorModel, hull, winch, target)
 	end
 	local start = survivorModel:GetPivot()
-	local side = if hull.CFrame:PointToObjectSpace(start.Position).X >= 0 then 1 else -1
+	local startLocal = hull.CFrame:PointToObjectSpace(start.Position)
+	local side = if startLocal.X >= 0 then 1 else -1
 	local t0 = os.clock()
 	while survivorModel.Parent and hull.Parent do
 		local t = math.min((os.clock() - t0) / VehicleService.CLIMB_SECONDS, 1)
 		local seat = target()
+		-- the path rides in the hull's frame: a fast boat outruns a world-space tween (docs/24 A)
+		local here = hull.CFrame * CFrame.new(startLocal)
 		local edge = seat
 			+ hull.CFrame.RightVector * side * (hull.Size.X / 2 + 0.8)
 			- Vector3.new(0, 1.6, 0)
 		local cf = if t < 0.45
-			then start:Lerp(edge, t / 0.45)
+			then here:Lerp(edge, t / 0.45)
 			else edge:Lerp(seat, (t - 0.45) / 0.55) + Vector3.new(
 				0,
 				math.sin((t - 0.45) / 0.55 * math.pi) * 1.2,

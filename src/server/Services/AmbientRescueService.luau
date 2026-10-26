@@ -2,8 +2,9 @@
 -- AmbientRescueService (2026-10-21, user: "be able to save random people, not only the ones in a mission"):
 -- free-roam swimmers in open water that anyone can pick up. Each one is a mission-less RescueService scene
 -- (the same rigged swimmer, drift, waving and VehicleService climb-aboard), boarded by the server with the
--- auto_board rule (Ops/Board.ready: close, slow, level, room aboard; the server reads the boat itself, no
--- client input) and paid on delivery to a pad via the scene's onDelivered hook. Smaller pay than a call.
+-- auto_board rule (Ops/Board.ready: a boat with room within reach takes them at any speed, docs/24 A; the
+-- server reads the boat itself, no client input) and paid on delivery to a pad via the scene's onDelivered
+-- hook. Smaller pay than a call.
 -- They swim in the open water between the six islands and the outer islands (CallTypes zone Outer, docs/23
 -- (p)), never in the lagoon or a cove. K13 (docs/16): one is always in view off each player's cove mouth
 -- (checked every MOUTH_CHECK s, so an idle player sees one within ~45 s); at the cap the oldest one nobody is
@@ -234,8 +235,8 @@ function AmbientRescueService.SeatedBoats(): { Boat }
 end
 
 -- Server-side auto_board for one RescueService scene, measured from the server's view of the boat: a
--- survivor climbs aboard once a boat has held close, slow, level and with room (Board.ready) for
--- Board.HOLD. Free-roam swimmers and every mission (OperationService) use this one rule.
+-- boat with room within reach takes them at once (docs/24 A); the heli winch and the sub still hold
+-- steady for Board.HOLD. Free-roam swimmers and every mission (OperationService) use this one rule.
 -- may(player, index) filters who may take whom; board(index, player) does the boarding (default:
 -- RescueService.BoardVictim).
 function AmbientRescueService.StepBoarding(
@@ -251,14 +252,16 @@ function AmbientRescueService.StepBoarding(
 			continue
 		end
 		local ready: Boat? = nil
+		local hold = Board.HOLD
 		for _, b in boats do
 			local at = b.root.Position
 			local vel = b.root.AssemblyLinearVelocity
 			local speed = Vector3.new(vel.X, 0, vel.Z).Magnitude
 			local tilt = math.deg(math.acos(math.clamp(b.root.CFrame.UpVector.Y, -1, 1)))
+			local id = b.vehicle:GetAttribute("VehicleId")
 			if
-				CraftBoard.ready( -- boats close and steady; heli winch, sub ring
-					b.vehicle:GetAttribute("VehicleId"),
+				CraftBoard.ready( -- boats any speed and tilt; heli winch, sub ring
+					id,
 					at,
 					b.root.Size.X / 2,
 					victim.root.Position,
@@ -269,6 +272,7 @@ function AmbientRescueService.StepBoarding(
 				) and (may == nil or may(b.player, i))
 			then
 				ready = b
+				hold = CraftBoard.hold(id)
 				break
 			end
 		end
@@ -278,7 +282,7 @@ function AmbientRescueService.StepBoarding(
 		end
 		local t = (held[victim] or 0) + dt
 		held[victim] = t
-		if t >= Board.HOLD then
+		if t >= hold then
 			held[victim] = nil
 			if board then
 				board(i, ready.player)
