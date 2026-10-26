@@ -41,6 +41,10 @@ local focusHeight = 4
 local restPitch = math.rad(13)
 -- studs over the hull root the open-seat focus sits: a seated rider's head top is ~5.4 on the jet ski
 Chase.RIDER_FOCUS = 6.5
+-- a passenger sits behind the rider, between them and the camera (verify 2026-10-26): with one aboard the
+-- pivot rises and the arm looks down a little more, so they drop to the frame's lower edge
+local PASSENGER_LIFT, PASSENGER_PITCH = 2, math.rad(7)
+local rider = false
 
 -- Sizes the arm from the hull: about 1.6 hull lengths back, focus above the deck. A small craft
 -- (the jet ski and its sled) sits closer and flatter: it fills less of the frame and the casualty / throw
@@ -51,7 +55,7 @@ function Chase.enter(model: Model, root: BasePart)
 	local _, size = model:GetBoundingBox()
 	local length = math.max(size.X, size.Z)
 	local small = length < 20
-	local rider = small and model:GetAttribute("Sub") ~= true
+	rider = small and model:GetAttribute("Sub") ~= true
 	if rider then
 		baseDistance = math.clamp(length * 1.1 + 3, 14, 28)
 		focusHeight = Chase.RIDER_FOCUS
@@ -98,6 +102,8 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	local root = ctx.root
 	local vel = root.AssemblyLinearVelocity
 	local flatSpeed = Vector3.new(vel.X, 0, vel.Z).Magnitude
+	local aboard = rider and (tonumber(ctx.model:GetAttribute("SurvivorCount")) or 0) > 0
+	local rest = restPitch + (if aboard then PASSENGER_PITCH else 0)
 
 	-- heading: the hull's, with a short lag so a turn reads but the nose never leaves the frame
 	-- (0.35 s lost the view in hard A/D turns, real-client playtest)
@@ -117,10 +123,10 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	local steering = math.abs(root.AssemblyAngularVelocity.Y) > 0.25
 	if state.idle > 0.3 and steering then
 		state.yaw = CameraMath.dampAngle(state.yaw, 0, 0.22, dt)
-		state.pitch = CameraMath.damp(state.pitch, restPitch, 0.3, dt)
+		state.pitch = CameraMath.damp(state.pitch, rest, 0.3, dt)
 	elseif state.idle > 2.5 and flatSpeed > 5 then
 		state.yaw = CameraMath.dampAngle(state.yaw, 0, 0.9, dt)
-		state.pitch = CameraMath.damp(state.pitch, restPitch, 1.2, dt)
+		state.pitch = CameraMath.damp(state.pitch, rest, 1.2, dt)
 	end
 
 	-- focus: above the deck, leading along the nose (a drifting hull's velocity swung it sideways),
@@ -130,15 +136,15 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	state.focusY = if state.fresh
 		then root.Position.Y
 		else CameraMath.damp(state.focusY, root.Position.Y, 0.3, dt)
-	local focusTarget = Vector3.new(root.Position.X, state.focusY + focusHeight, root.Position.Z)
-		+ ahead
+	local lift = focusHeight + (if aboard then PASSENGER_LIFT else 0)
+	local focusTarget = Vector3.new(root.Position.X, state.focusY + lift, root.Position.Z) + ahead
 	state.focus = if state.fresh
 		then focusTarget
 		else CameraMath.damp(state.focus, focusTarget, 0.06, dt)
 	local focus = state.focus
 	castParams.FilterDescendantsInstances = ctx.exclude
 	-- the lead must not push the focus through a quay wall, or the arm cast starts inside it
-	local hull = Vector3.new(root.Position.X, state.focusY + focusHeight, root.Position.Z)
+	local hull = Vector3.new(root.Position.X, state.focusY + lift, root.Position.Z)
 	local lead = focus - hull
 	if lead.Magnitude > 0.5 then
 		local block = Workspace:Spherecast(hull, 0.8, lead, castParams)

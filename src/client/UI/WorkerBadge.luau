@@ -4,6 +4,7 @@
 --   WorkerBadge.icon(parent, category)          the category icon on its coloured disc, filling `parent`
 --   WorkerBadge.stars(parent, rarity, size)     1..3 gold stars in a row
 --   WorkerBadge.billboard(model)                icon + stars over the model (legendary: gold ring + glow)
+--   WorkerBadge.crew(adornee, category, parent) one badge + a count label for a building's crew
 --   WorkerBadge.GRAD[category]                  its kit gradient name
 local Glyph = require(script.Parent:WaitForChild("Glyph"))
 local Style = require(script.Parent:WaitForChild("Kit"):WaitForChild("Style"))
@@ -119,6 +120,30 @@ function WorkerBadge.billboard(model: Model)
 		light.Brightness = 2
 		light.Parent = root
 	end
+end
+
+-- One badge for a building's whole crew (4+ there: single badges merged into a band): the icon and "x4".
+-- The caller sets its Count label's text.
+function WorkerBadge.crew(adornee: Instance, category: string, parent: Instance): BillboardGui
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "CrewTag"
+	gui.Adornee = adornee
+	gui.Size = UDim2.fromOffset(92, 44)
+	gui.MaxDistance = 60
+	gui.LightInfluence = 0
+	local icon = Instance.new("Frame")
+	icon.BackgroundTransparency = 1
+	icon.Size = UDim2.fromOffset(40, 40)
+	icon.Position = UDim2.fromOffset(2, 2)
+	icon.Parent = gui
+	WorkerBadge.icon(icon, category)
+	local n = Style.label(gui, "", 30)
+	n.Name = "Count"
+	n.TextXAlignment = Enum.TextXAlignment.Left
+	n.Position = UDim2.fromOffset(46, 0)
+	n.Size = UDim2.new(1, -46, 1, 0)
+	gui.Parent = parent
+	return gui
 end
 
 return WorkerBadge

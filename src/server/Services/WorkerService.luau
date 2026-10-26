@@ -57,7 +57,8 @@ end
 
 -- Feet CFrames in the berth frame `bay` ------------------------------------------------------------
 
--- In front of the building's door (its -Z side), side by side, facing out.
+-- In front of the building's door (its -Z side), side by side, facing the building they work on (facing out
+-- they swung at the air, verify 2026-10-26); 4.5 apart so the swings miss the neighbour.
 local function workSpot(bay: CFrame, category: string, slot: number, slots: number): CFrame?
 	local key = WorkerRules.buildingOf(category)
 	local def = key and DockConfig.Buildings[key]
@@ -65,8 +66,8 @@ local function workSpot(bay: CFrame, category: string, slot: number, slots: numb
 		return nil
 	end
 	local at = bay * def.spot
-	local p = (at * CFrame.new((slot - (slots + 1) / 2) * 3.5, 0.8, -(def.size.Y / 2 + 3.5))).Position
-	return CFrame.lookAt(p, p + at.LookVector)
+	local p = (at * CFrame.new((slot - (slots + 1) / 2) * 4.5, 0.8, -(def.size.Y / 2 + 3.5))).Position
+	return CFrame.lookAt(p, p - at.LookVector)
 end
 
 -- On the jetty by the quay, two by two, facing the berth (the bunkhouse until art lands).
