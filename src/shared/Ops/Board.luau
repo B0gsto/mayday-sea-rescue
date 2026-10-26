@@ -58,6 +58,48 @@ function Board.assistThrottle(
 	return math.min(input, math.clamp((allowed - speed) / Board.ASSIST_SPAN, -1, 1))
 end
 
+-- Bigger craft (playtest 2026-10-26: a RIB at full throttle circled a ring 3 times). The ring is the
+-- boarding reach measured from the hull centre (the server's gap is from the side: half the root's X).
+function Board.ringFor(halfBeam: number): number
+	return math.max(Board.RING, Board.REACH + halfBeam)
+end
+
+-- Turning toward a survivor inside OUTER eases the craft to a speed whose turning circle passes through
+-- their ring; a hands-off helm within NUDGE_ANGLE of them gets up to NUDGE of helm toward them.
+Board.OUTER = 220 -- studs: about a full-throttle RIB's turning circle -- tune
+Board.NUDGE_ANGLE = 40 -- degrees off the bow -- tune
+Board.NUDGE = 0.35 -- of full helm, never more: the player still steers -- tune
+
+-- The fastest speed whose turning circle (tangent to the bow) passes within `ring` of a point `dist` off
+-- at `sinB` (|sin| of its bearing off the bow). The circle is max(minRadius, v / yawRate, v^2 / lateralAccel).
+-- math.huge when already heading through the ring; ASSIST_SPEED when it sits inside the tightest circle.
+function Board.turnSpeed(
+	dist: number,
+	sinB: number,
+	ring: number,
+	yawRate: number,
+	minRadius: number,
+	lateralAccel: number
+): number
+	local miss = dist * sinB - ring
+	if miss <= 0 then
+		return math.huge
+	end
+	local r = (dist * dist - ring * ring) / (2 * miss) -- the widest circle that still reaches the ring
+	if r < minRadius then
+		return Board.ASSIST_SPEED
+	end
+	return math.max(Board.ASSIST_SPEED, math.min(yawRate * r, math.sqrt(lateralAccel * r)))
+end
+
+-- Hands-off helm nudge toward a survivor `bearingDeg` off the bow (positive: to starboard / right).
+function Board.nudge(steer: number, bearingDeg: number, dist: number): number
+	if steer ~= 0 or dist > Board.OUTER or math.abs(bearingDeg) > Board.NUDGE_ANGLE then
+		return steer
+	end
+	return math.clamp(bearingDeg / Board.NUDGE_ANGLE * 2, -1, 1) * Board.NUDGE
+end
+
 function Board.hasRoom(model: Model?): boolean
 	local cap = model and model:GetAttribute("Capacity")
 	local count = model and model:GetAttribute("SurvivorCount")

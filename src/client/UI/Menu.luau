@@ -191,6 +191,17 @@ local function boatWait(): (number, number)
 	return left, cooldown
 end
 
+-- Seated in a craft (the server answers "Occupied"): the Boat tile rests grey and wordless, no error.
+local function aboard(): boolean
+	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	local seat = hum and hum.SeatPart
+	local craft = seat and seat:FindFirstAncestorWhichIsA("Model")
+	while craft and craft:GetAttribute("VehicleId") == nil do
+		craft = craft:FindFirstAncestorWhichIsA("Model")
+	end
+	return craft ~= nil
+end
+
 -- The Boat button's extras: a ring of ticks round the tile that fills back up over the cooldown
 -- (the tile greys while it waits), a gold bolt with Quick Launch. Press: your craft comes to you.
 local function dressBoat(b: IconButton.IconButton)
@@ -231,9 +242,10 @@ local function dressBoat(b: IconButton.IconButton)
 	local function paint()
 		local left, cooldown = boatWait()
 		local wait = left > 0
-		if wait ~= waiting then
-			waiting = wait
-			Style.recolor(holder, Style.grad(if wait then "disabled" else "red"))
+		local seated = aboard()
+		if (wait or seated) ~= waiting then
+			waiting = wait or seated
+			Style.recolor(holder, Style.grad(if waiting then "disabled" else "red"))
 		end
 		local lit = math.floor((1 - left / cooldown) * #ticks)
 		for i, t in ticks do
@@ -241,7 +253,11 @@ local function dressBoat(b: IconButton.IconButton)
 		end
 		bolt.Visible = quick()
 		if os.clock() > flash then
-			label.Text = if sending then "…" elseif wait then `{math.ceil(left)}s` else "Boat"
+			label.Text = if sending
+				then "…"
+				elseif wait then `{math.ceil(left)}s`
+				elseif seated then ""
+				else "Boat"
 		end
 	end
 	RunService.Heartbeat:Connect(function()
@@ -250,7 +266,7 @@ local function dressBoat(b: IconButton.IconButton)
 		end
 	end)
 	return function()
-		if sending or boatWait() > 0 then
+		if sending or boatWait() > 0 or aboard() then
 			return
 		end
 		sending = true

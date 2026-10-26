@@ -47,6 +47,39 @@ return function(t)
 		t.expect(v >= AutoBoard.ASSIST_SPEED - 1).toBe(true) -- not stopped short either
 	end)
 
+	t.test(
+		"bigger craft: the ring grows with the beam, and turning in slows to a circle that reaches it",
+		function()
+			local B = AutoBoard
+			t.expect(B.ringFor(2)).toBe(B.RING) -- a jet ski keeps the tuned ring
+			t.expect(B.ringFor(9)).toBe(B.REACH + 9) -- a lifeboat: the server's reach from its side
+			t.expect(B.turnSpeed(100, 0.05, 14, 1, 15, 20)).toBe(math.huge) -- already heading through it
+			t.expect(B.turnSpeed(20, 1, 14, 1, 40, 20)).toBe(B.ASSIST_SPEED) -- inside the tightest circle
+			-- a full-throttle RIB orbiting a survivor 120 studs abeam: eased to a speed whose circle (tangent to the
+			-- bow) passes within the ring
+			local v = B.turnSpeed(120, 1, 14, 0.57, 15, 18)
+			t.expect(v > B.ASSIST_SPEED and v < 40).toBe(true)
+			local r = math.max(15, v / 0.57, v * v / 18)
+			t.expect(math.abs(math.sqrt(r * r + 120 * 120 - 2 * r * 120) - r) <= 14 + 1e-6)
+				.toBe(true)
+			t.expect(B.turnSpeed(60, 0.5, 14, 0.57, 15, 18) > B.turnSpeed(60, 1, 14, 0.57, 15, 18))
+				.toBe(true)
+		end
+	)
+
+	t.test(
+		"a hands-off helm is nudged onto them; the player's own helm is never changed",
+		function()
+			local B = AutoBoard
+			t.expect(B.nudge(0, 20, 50)).toBe(B.NUDGE)
+			t.expect(B.nudge(0, -5, 50) < 0).toBe(true)
+			t.expect(B.nudge(0, 0, 50)).toBe(0)
+			t.expect(B.nudge(0, B.NUDGE_ANGLE + 5, 50)).toBe(0) -- well off the bow
+			t.expect(B.nudge(0, 10, B.OUTER + 1)).toBe(0) -- too far
+			t.expect(B.nudge(-1, 20, 50)).toBe(-1) -- steering away stays theirs
+		end
+	)
+
 	t.test("a craft held at the assist speed inside the ring boards them", function()
 		t.expect(AutoBoard.ready(AutoBoard.RING - 4, AutoBoard.ASSIST_SPEED, 5, true)).toBe(true)
 	end)

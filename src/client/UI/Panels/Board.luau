@@ -30,6 +30,7 @@ local Theme = require(Kit:WaitForChild("Theme"))
 local player = Players.LocalPlayer
 local S = Theme.Size
 local prices: { [number]: number } = {} -- pass id -> Robux
+local STACK = 0.58 -- price button scale when Cash and Robux stack (two fit a compact 96 card)
 
 local Board = {}
 
@@ -153,11 +154,28 @@ function Board.new(
 				end,
 			})
 			robux.root.AnchorPoint = Vector2.new(1, 0.5)
-			local shift = if c.price.root.Visible then S.price.X + 10 else 0
-			robux.root.Position = UDim2.new(1, -12 - shift, 0.5, 0)
-			local words = c.root:FindFirstChild("Words", true) :: Frame?
-			if words then
-				words.Size += UDim2.fromOffset(-shift, 0)
+			robux.root.Position = UDim2.new(1, -12, 0.5, 0)
+			if c.price.root.Visible then
+				-- Cash over Robux, both smaller: side by side they squeezed the name ("All-Weath er", playtest 2026-10-26)
+				for i, btn in { c.price.root, robux.root } do
+					-- a holder takes the UIScale: the button's own is its hover / press bounce (one UIScale counts)
+					local box = Instance.new("Frame")
+					box.Name = "PriceSlot"
+					box.BackgroundTransparency = 1
+					box.Size = UDim2.fromOffset(S.price.X, S.price.Y)
+					box.AnchorPoint = Vector2.new(1, if i == 1 then 1 else 0)
+					box.Position = UDim2.new(1, -12, 0.5, if i == 1 then -2 else 2)
+					local scale = Instance.new("UIScale")
+					scale.Scale = STACK
+					scale.Parent = box
+					box.Parent = btn.Parent
+					btn.AnchorPoint, btn.Position = Vector2.zero, UDim2.new()
+					btn.Parent = box
+				end
+				local words = c.root:FindFirstChild("Words", true) :: Frame?
+				if words then
+					words.Size += UDim2.fromOffset(S.price.X * (1 - STACK), 0)
+				end
 			end
 			if not prices[item.id] then
 				task.spawn(function()

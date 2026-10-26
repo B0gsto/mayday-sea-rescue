@@ -82,6 +82,7 @@ local visualOffset: { [Model]: number } = {}
 local telemetry: Simulator.Telemetry? = nil
 local lastThrottle = 0 -- the throttle the driven hull got last step (after the cold-open helm)
 local helm = 0 -- the eased steer (Boat/Helm)
+local YAW_SLACK = 1.25 -- the driven hull's yaw rate cap, as a share of its spec turnRate -- tune
 local tiltTime = 0
 local navTimer = NAV_INTERVAL
 local launched: { [Model]: boolean } = setmetatable({}, { __mode = "k" }) :: any
@@ -476,21 +477,27 @@ local function step(dt: number)
 					engageControls(seat)
 					local id = child:GetAttribute("VehicleId")
 					local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
-					local throttle =
+					local throttle, steer =
 						PickupRingController.Assist( -- the pick-up ring's docking assist
 							child,
 							coldOpenThrottle(child, seat.ThrottleFloat, now),
-							if spec then spec.brakeDecel else nil
+							seat.SteerFloat,
+							spec
 						)
 					local root = child.PrimaryPart
 					local speed = if root then root.AssemblyLinearVelocity.Magnitude else 0
-					helm = Helm.step(
-						helm,
-						seat.SteerFloat,
-						speed / (if spec then spec.topSpeed else 60),
-						dt
-					)
+					helm = Helm.step(helm, steer, speed / (if spec then spec.topSpeed else 60), dt)
 					telemetry = Simulator.step(child, throttle, helm, now)
+					if root and spec then
+						-- a quay corner deflects, never spins: no yaw past the helm's own top rate (and the
+						-- unstick swing is trimmed to it a frame later). Playtest 2026-10-26: a RIB spun 180 deg.
+						local w = root.AssemblyAngularVelocity
+						local cap = math.rad(spec.turnRate) * YAW_SLACK
+						if math.abs(w.Y) > cap then
+							root.AssemblyAngularVelocity =
+								Vector3.new(w.X, math.sign(w.Y) * cap, w.Z)
+						end
+					end
 					softApart(child)
 					lastThrottle = throttle
 					nowSimulated[child] = true
