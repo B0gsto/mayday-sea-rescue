@@ -16,8 +16,23 @@ return function(t)
 			insets = { top = 58, bottom = 21, left = 44, right = 44 },
 		},
 		{
+			name = "small Android",
+			screen = Vector2.new(640, 360),
+			insets = { top = 58, bottom = 0, left = 0, right = 0 },
+		},
+		{
 			name = "tablet 4:3",
 			screen = Vector2.new(1023, 768),
+			insets = { top = 58, bottom = 20, left = 0, right = 0 },
+		},
+		{
+			name = "phone portrait",
+			screen = Vector2.new(390, 844),
+			insets = { top = 58, bottom = 34, left = 0, right = 0 },
+		},
+		{
+			name = "tablet portrait",
+			screen = Vector2.new(768, 1024),
 			insets = { top = 58, bottom = 20, left = 0, right = 0 },
 		},
 	}
@@ -52,24 +67,22 @@ return function(t)
 				local x, y, x2, y2 = box(mt.rects[name])
 				t.expect(x >= -1e-6 and y >= -1e-6).toBe(true)
 				t.expect(x2 <= u.X + 1e-6 and y2 <= u.Y + 1e-6).toBe(true)
-				-- bottom-left thumbstick (40% x 45%) and bottom-right jump (30% x 35%) stay clear;
-				-- only the narrow menu strip on the very left edge may reach into the stick zone
-				if name ~= "menu" then
-					t.expect(x < 0.4 * u.X and y2 > 0.55 * u.Y).toBe(false)
-				end
-				t.expect(x2 > 0.7 * u.X and y2 > 0.65 * u.Y).toBe(false)
+				-- the thumbstick (bottom-left 40% x 45%; portrait: the whole bottom 45%) and the
+				-- bottom-right jump zone (30% x 35%) stay clear, the menu included
+				local stickRight = if u.X < u.Y then u.X else 0.4 * u.X
+				t.expect(x < stickRight and y2 > 0.55 * u.Y + 1e-6).toBe(false)
+				t.expect(x2 > 0.7 * u.X + 1e-6 and y2 > 0.65 * u.Y + 1e-6).toBe(false)
 			end
 			for i = 1, #HUD do
 				for j = i + 1, #HUD do
 					t.expect(overlaps(mt.rects[HUD[i]], mt.rects[HUD[j]])).toBe(false)
 				end
 			end
-			-- the minimap is the requested ~130 px square; menu icons >= 43 px, the strip < 20% wide
+			-- the minimap is the requested ~130 px square; menu icons >= 43 px; the step card fits
 			t.expect(mt.rects.minimap.size.X * mt.scale).toBeCloseTo(130, 1)
 			t.expect(mt.menu.icon * mt.scale >= 43).toBe(true)
 			t.expect(mt.menu.rows * mt.menu.cols >= HudLayout.MENU_COUNT).toBe(true)
-			local _, _, mx2 = box(mt.rects.menu)
-			t.expect(mx2 <= 0.2 * u.X).toBe(true)
+			t.expect(mt.objectiveWidth >= 208).toBe(true)
 			t.expect(mt.noticeWidth >= HudLayout.NOTICE_MIN_WIDTH).toBe(true)
 		end)
 	end
@@ -79,6 +92,9 @@ return function(t)
 		function()
 			for _, s in SCREENS do
 				local mt = HudLayout.compute(s.screen, s.insets, "Touch")
+				if mt.usable.X < mt.usable.Y then
+					continue -- portrait: the objective sits under the minimap
+				end
 				local m, g = HudLayout.MARGIN, HudLayout.GAP
 				local menu, mini = mt.rects.menu, mt.rects.minimap
 				t.expect(menu.pos).toEqual(Vector2.new(m, m))

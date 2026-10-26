@@ -268,7 +268,7 @@ casualty shouts in CasualtyController).
 
 ## Menu (all menus, WP-23c: no phone)
 
-`src/client/UI/Menu.luau`: the left column of kit icon buttons (HudLayout region `menu`): Shop, Quests,
+`src/client/UI/Menu.luau`: the left grid of kit icon buttons (HudLayout region `menu`; touch: 4 x 2 above the thumbstick): Shop, Quests,
 Album, Pet, Crew, Settings, Map, Boat (Boat to me: `RequestVehicle(nil, false, true)`, the server's cooldown
 via `MonetizationEffects.boatToMeWait` x player attribute `WorkerBoatScale`, Quick Launch bolt). Each opens a kit Panel
 (`UI/Kit/`): `UI/Panels/Shop` (tabs Passes / Packs / Boosts / Day from `ProductShelves.storeItems`),
@@ -280,7 +280,8 @@ Player attribute `MenuOpen` while a panel is up.
 ## HUD and map
 
 - HUD (K10): menu column, wallet (Cash), objective strip, minimap (no radio strip, no goal chip).
-  `src/shared/HudLayout.luau` (pure) places the regions per device.
+  `src/shared/HudLayout.luau` (pure) places the regions per device; on touch nothing overlaps Roblox's thumbstick or
+  jump zones, landscape or portrait (`tests/HudLayout.spec.luau`).
 - `MapController` (minimap and full map on M / Select / tap), `MapService`, `MapConfig` (styles, blips);
   `SetBlips(group, items)` for static blips (seamarks). Player attributes `MapWaypoint`, `MapOpen`.
   The one objective pin (`GetObjective`, docs/archive/20-clarity-redesign.md rule 1): your accepted call, then your quest (`QuestTarget`),
@@ -313,12 +314,16 @@ Player attribute `MenuOpen` while a panel is up.
 - Workers (docs/23 (o), WP-26; replaced the WP-15 crew lineup, old hires paid back on load): `shared/WorkerRules`
   (pure, `tests/WorkerRules.spec.luau`: roll, admit at the cap, assign, effects, offline pay, clean). RescueService
   rolls a survivor on pick-up (model attributes `WorkerCategory` / `WorkerRarity` / `WorkerName`, tag `WorkerBadge`)
-  and calls `WorkerService.Recruit` when they land at the driver's berth. `WorkerService`: `data.workers`, R15 NPCs in
-  `Workspace.Workers.<UserId>` at their building or the jetty, Gatherer pay, the Rescuers' NPC boat, offline pay on
+  and calls `WorkerService.Recruit` when they land at the driver's berth. `WorkerService`: `data.workers`, published
+  as data only (`ReplicatedStorage.Workers.<UserId>.<i>`: Configuration, attributes `Spot` feet CFrame at their
+  building or the jetty, `Work`, `Rig`, `From`), 12 shared R15 templates in `ReplicatedStorage.WorkerRigs`
+  (NpcFactory, built once), Gatherer pay, the Rescuers' NPC boat (`Workspace.Workers.<UserId>`), offline pay on
   join (`data.lastSeen`, stamped by `DataService.Save`; attribute `WorkerOffline`), effect attributes
   `WorkerBuildDiscount` (DockService / `UnlockTree.canBuy` discount, build tablet, BuildSeq pace), `WorkerBoatScale`
   (VehicleService, UI/Menu), `WorkerCraftSpeed` (boat `SpeedMultiplier`), `WorkerPayBonus` (OperationService
-  debrief). Client: `UI/WorkerBadge` (icon + stars billboard), `WorkerController`. Robux product `CrewHire`
+  debrief). Client: `UI/WorkerBadge` (icon + stars billboard), `WorkerController` (clones the rigs into
+  `Workspace.WorkersLocal` within 200 studs, animates within 90, walks them on cached PathfindingService routes,
+  work props). Studio: `WorkerDev` `"fill"` / `"unfill"` (31 fake workers on all 6 islands). Robux product `CrewHire`
   retired (`ready = false`).
 - Exploration album and map fog (docs/archive/21-explore-world-plan.md §3): `Config/DiscoveryConfig` (pages, ranges, Cash, fog grid),
   `DiscoveryRules` (pure: sighted / reached / stickers, flags `isles` and `fog`), `DiscoveryService`
