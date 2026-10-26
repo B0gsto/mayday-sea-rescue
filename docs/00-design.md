@@ -57,7 +57,7 @@ centres sit 470 out and the nearest plate corners are 80 apart.)
   (beacon), trophy hall, worker buildings (workshop, fish shed, boat yard, rescue boathouse, clinic: plain Lego
   for now), quest-chain buildings, decor.
 - **Your people:** survivors you rescue get a category (Builder, Gatherer, Rescuer, Mechanic, Medic) and a rarity;
-  delivered home they walk to the matching building on your island and work there (cheaper builds, passive Cash,
+  delivered home they walk to the matching building on your island and work there (faster builds, passive Cash,
   NPC rescues, faster craft, bigger payouts). Small capped offline earnings. (In progress, WP-26; replaces the crew
   lineup.)
 - **Flex:** everything is visible to the server; the island with a Station and the most people rescued gets a gold

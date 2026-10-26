@@ -15,6 +15,7 @@ return function(t)
 	local UnlockTree = t.load("src/shared/UnlockTree.luau")
 	local WorkerRules = t.load("src/shared/WorkerRules.luau")
 	local BuildTimer = t.load("src/shared/BuildTimer.luau")
+	local SpinRules = t.load("src/shared/SpinRules.luau")
 
 	local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
 	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
@@ -27,29 +28,29 @@ return function(t)
 		table.insert(HOMES, CallLogic.homeOf(island.berths.Boat))
 	end
 
-	-- The free player's walk through the tree (docs/23 (q)): the boathouse and RIB first, the fish shed (its
-	-- Gatherers earn while you play, WP-26), the lifeboat, the rescue boathouse, the helicopter's branch, then
-	-- the rest. Every prerequisite comes before its item (planNext asserts it).
+	-- The free player's walk through the tree (docs/23 (q), (r)): a new craft, worker type or reach every
+	-- 10-20 minutes early (Workshop, fish shed, boathouse, RIB, pontoon, boat yard, clinic, lifeboat...), then
+	-- the helicopter's branch (by 8 h), the rescue boathouse, the sub's branch, the station. Every prerequisite comes before its item (planNext asserts it).
 	local PLAN = {
 		"Workshop",
+		"FishShed",
 		"Boathouse",
 		"RIB",
 		"Pontoon",
-		"FishShed",
+		"BoatYard",
+		"Clinic",
 		"LifeboatSlip",
 		"Lifeboat",
 		"LookoutTower",
-		"RescueBoathouse",
 		"Helipad",
 		"Hangar",
 		"RescueHelicopter",
-		"BoatYard",
+		"RescueBoathouse",
 		"Crane",
 		"SubPen",
-		"Submarine",
 		"Station",
+		"Submarine",
 		"TrophyHall",
-		"Clinic",
 	}
 	local LABEL = { RescueHelicopter = "Helicopter" }
 
@@ -122,6 +123,7 @@ return function(t)
 		-- player keeps taking calls.
 		local planIndex = 1
 		local construction: { key: string, doneAt: number }? = nil
+		local builds = {} -- one row per construction: when, how long, at what crew rate
 		local planNext
 		local function settleBuilds()
 			while construction and construction.doneAt <= playMin + 1e-9 do
@@ -145,11 +147,13 @@ return function(t)
 						return
 					end
 					data.cash -= price
-					construction = {
-						key = key,
-						doneAt = playMin
-							+ BuildTimer.work(price) / 60 / BuildTimer.rateOf(data.workers),
-					}
+					local rate = BuildTimer.rateOf(data.workers)
+					local buildMin = BuildTimer.work(price) / 60 / rate
+					construction = { key = key, doneAt = playMin + buildMin }
+					table.insert(
+						builds,
+						{ key = key, at = playMin, minutes = buildMin, rate = rate }
+					)
 					planIndex += 1
 					return
 				else
@@ -200,6 +204,48 @@ return function(t)
 						)
 					end
 				end
+			end
+		end
+
+		-- docs/24 D: free spins (1 a UTC day + 1 per 10 people rescued) are spun at once; Cash prizes and owned
+		-- duplicates pay flat Cash (no multipliers). Pet / finish / boat prizes are cosmetic.
+		local spin = SpinRules.newState()
+		local pity = nil
+		local got = {}
+		local rescued = 0
+		local spinCash, spins, spinMaxShare = 0, 0, 0
+		local earned = { calls = 0, medic = 0, workers = 0, offline = 0 } -- where the Cash came from
+		local treeSpinShare = nil -- spins' share of all Cash earned by the time the last tree item is bought
+		local function nextPrice(): number
+			local key = PLAN[planIndex]
+			local b = key and DockConfig.Buildings[key]
+			return if b then b.cash elseif key then ProgressionConfig.Vehicles[key].price else 0
+		end
+		local function spinFree(now: number)
+			if legacy then
+				return
+			end
+			spin = SpinRules.accrue(spin, rescued, now)
+			while spin.free > 0 do
+				spin.free -= 1
+				spins += 1
+				local result = SpinRules.roll(random, pity)
+				pity = result.pity
+				local prize = result.prize
+				local cash = 0
+				if prize.kind == "cash" then
+					cash = prize.cash or 0
+				elseif got[prize.id] then
+					cash = SpinRules.duplicateCash(prize)
+				else
+					got[prize.id] = true
+				end
+				local price = nextPrice()
+				if price > 0 then
+					spinMaxShare = math.max(spinMaxShare, cash / price)
+				end
+				spinCash += cash
+				data.cash += cash
 			end
 		end
 
@@ -280,12 +326,26 @@ return function(t)
 				else Grading.Payout.Tutorial[totalOps + 1]
 			local f = fx()
 			-- Gatherers and the Rescuers' boat earn through the op's minutes (flat Cash, no multipliers)
-			data.cash += math.floor(
+			local work = math.floor(
 				(f.gatherPerMin + f.rescuePerTrip * 60 / WorkerRules.RESCUE_PERIOD) * minutes
 			)
+			data.cash += work
+			earned.workers += work
+			earned.calls += reward.cash * scale * friendMult
+			earned.medic += reward.cash * scale * f.payBonus * friendMult
 			award(reward.cash * scale * (1 + f.payBonus), storm, great)
 			if scale == 1 then
 				recruit(people)
+				rescued += people
+			end
+			spinFree(completeAt)
+			planNext()
+			if not treeSpinShare and not PLAN[planIndex] then
+				local all = spinCash
+				for _, cash in earned do
+					all += cash
+				end
+				treeSpinShare = spinCash / all
 			end
 
 			totalOps += 1
@@ -310,7 +370,9 @@ return function(t)
 
 				local remaining = SESSION_MIN
 				if lastEnd and not legacy then
-					data.cash += WorkerRules.offlinePay(fx(), now - lastEnd) -- collected on join
+					local away = WorkerRules.offlinePay(fx(), now - lastEnd) -- collected on join
+					data.cash += away
+					earned.offline += away
 				end
 				-- a build keeps going while away: it stands by the time the next session starts
 				if construction then
@@ -361,6 +423,12 @@ return function(t)
 			playMin = playMin,
 			perCraft = perCraft,
 			workers = #data.workers,
+			builds = builds,
+			spinCash = spinCash,
+			spins = spins,
+			spinMaxShare = spinMaxShare,
+			earned = earned,
+			treeSpinShare = treeSpinShare or 0,
 		}
 	end
 
@@ -400,6 +468,25 @@ return function(t)
 				result.workers
 			)
 		)
+		local e = result.earned
+		print(
+			string.format(
+				"  earned: calls %d, medic bonus %d, workers %d, offline %d, spins %d (%d spins, %.1f%% of Cash to the tree's end, max %.0f%% of the next price)",
+				e.calls,
+				e.medic,
+				e.workers,
+				e.offline,
+				result.spinCash,
+				result.spins,
+				result.treeSpinShare * 100,
+				result.spinMaxShare * 100
+			)
+		)
+		local parts = {}
+		for _, b in result.builds do
+			table.insert(parts, string.format("%s %.1fm x%.2f", b.key, b.minutes, b.rate))
+		end
+		print("  builds: " .. table.concat(parts, ", "))
 		for _, id in { "JetSki", "RIB", "Lifeboat" } do
 			local row = result.perCraft[id]
 			if row then
@@ -455,7 +542,7 @@ return function(t)
 	t.test(
 		"the first island building in session 1 (the onboarding clock: NewPlayerPace)",
 		function()
-			between(solo, "Workshop built", 3, 20)
+			between(solo, "Workshop built", 1, 5) -- docs/23 (r): within 5 minutes, right after the first rescue
 		end
 	)
 
@@ -470,23 +557,68 @@ return function(t)
 	end)
 
 	t.test("helicopter in week 1", function()
-		-- docs 03 section 10.2: past 8 hours, cut its price (the bill includes the helipad and hangar)
-		between(solo, "Helicopter bought", 180, 8 * 60)
+		-- docs 03 section 10.2 said 8 h; docs/23 (r): 9 h, so the Robux-capped late prices still fill a ~17 h tree
+		between(solo, "Helicopter bought", 180, 9 * 60)
 	end)
 
-	t.test("the first 2 hours still carry the early unlocks", function()
-		-- at least six unlocks the config can time, and no modeled gap over half an hour before the lifeboat
-		local anchors = {}
+	t.test("the first 2 hours: a new craft, building or upgrade every 20 minutes", function()
+		-- docs/23 (r) goal 4: unlocks only (not the streak crate or the worker count), from the start to 2:00
+		local anchors = { 0 }
 		for _, entry in solo.timeline do
-			if entry.at <= 75 then
+			local unlock = entry.label ~= "Streak crate"
+				and entry.label ~= "Workers full"
+				and entry.label ~= "First rescue"
+			if unlock and entry.at <= 120 then
 				table.insert(anchors, entry.at)
 			end
 		end
-		t.expect(#anchors >= 6).toBe(true)
-		table.insert(anchors, 0)
-		table.sort(anchors)
+		t.expect(#anchors >= 10).toBe(true)
 		for i = 2, #anchors do
-			t.expect(anchors[i] - anchors[i - 1] <= 30).toBe(true)
+			t.expect(anchors[i] - anchors[i - 1] <= 20).toBe(true)
+		end
+	end)
+
+	t.test("the whole tree takes about 17 h of play (docs/00 section 6), +/- 15%", function()
+		local last = 0
+		for _, key in PLAN do
+			last = math.max(
+				last,
+				minutes(
+					solo,
+					if DockConfig.Buildings[key]
+						then key .. " built"
+						else (LABEL[key] or key) .. " bought"
+				)
+			)
+		end
+		t.expect(last >= 0.85 * 17 * 60 and last <= 1.15 * 17 * 60).toBe(true)
+	end)
+
+	t.test(
+		"builds: about a call early, a few minutes late, a full Builder crew halves them",
+		function()
+			local longest = 0
+			for _, b in solo.builds do
+				if b.at <= 60 then
+					t.expect(b.minutes <= 1).toBe(true)
+				end
+				longest = math.max(longest, b.minutes)
+			end
+			t.expect(longest >= 2 and longest <= 6).toBe(true)
+			local full = BuildTimer.rate(BuildTimer.BUILDERS) -- a full crew of commons
+			t.expect(full >= 1.6 and full <= 2.5).toBe(true)
+			local late = solo.builds[#solo.builds].rate -- the crew the sim really has at the last build
+			t.expect(late >= 1.7 and late <= 2.6).toBe(true)
+		end
+	)
+
+	t.test("free spins' Cash stays small (docs/24 D)", function()
+		t.expect(solo.treeSpinShare > 0 and solo.treeSpinShare <= 0.06).toBe(true)
+		-- a plain Cash prize is under a fifth of any building past the first two
+		for key, b in DockConfig.Buildings do
+			if key ~= "Workshop" and key ~= "FishShed" then
+				t.expect(SpinRules.cashFor("Uncommon") <= 0.2 * b.cash).toBe(true)
+			end
 		end
 	end)
 

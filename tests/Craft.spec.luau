@@ -9,8 +9,8 @@ return function(t)
 
 	t.test("registered with their building, Cash and a Robux pass", function()
 		local want = {
-			RescueHelicopter = { kind = "Heli", needs = "Hangar", price = 55000 },
-			Submarine = { kind = "Sub", needs = "SubPen", price = 40000 },
+			RescueHelicopter = { kind = "Heli", needs = "Hangar", price = 85000 },
+			Submarine = { kind = "Sub", needs = "SubPen", price = 64000 },
 		}
 		for _, id in VehicleConfig.CraftOrder do
 			local spec = VehicleConfig.get(id)

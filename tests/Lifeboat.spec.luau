@@ -83,6 +83,6 @@ return function(t)
 		-- the unlock tree (docs/23 (q)): the lifeboat slip, then 12,000 Cash
 		local unlock = Progression.Vehicles.Lifeboat
 		t.expect(unlock.needs).toBe("LifeboatSlip")
-		t.expect(unlock.price).toBe(12000)
+		t.expect(unlock.price).toBe(18000)
 	end)
 end
