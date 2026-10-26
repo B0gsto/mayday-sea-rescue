@@ -20,6 +20,9 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
 local QuestData = require(Shared:WaitForChild("Quests"):WaitForChild("Data"))
+local QuestRules = require(Shared:WaitForChild("Quests"):WaitForChild("Rules"))
+local Stickers =
+	require(Shared:WaitForChild("Config"):WaitForChild("UiImages")).Stickers :: { [string]: string }
 local Client = script.Parent.Parent
 local MapController = require(Client:WaitForChild("Controllers"):WaitForChild("MapController"))
 local Telemetry = require(Client:WaitForChild("Telemetry"))
@@ -37,6 +40,8 @@ local Quests = require(Panels:WaitForChild("Quests"))
 local SettingsPanel = require(UI:WaitForChild("SettingsPanel"))
 local Shop = require(Panels:WaitForChild("Shop"))
 local Style = require(Kit:WaitForChild("Style"))
+local Theme = require(Kit:WaitForChild("Theme"))
+local Waypoint = require(UI:WaitForChild("Waypoint"))
 
 local player = Players.LocalPlayer
 local GOLD = Color3.fromHex("FFD84A")
@@ -54,6 +59,7 @@ local BUTTONS = { -- HudLayout.MENU_COUNT
 local Menu = {}
 
 local bar: Frame? = nil
+local chip: GuiObject? = nil -- the quest tracker (HudLayout "quest"): icon, place, distance; tap opens Quests
 local panels: { [string]: any } = {}
 local buttons: { [string]: IconButton.IconButton } = {}
 local current: string? = nil
@@ -66,6 +72,12 @@ end
 local function chrome()
 	if bar then
 		bar.Visible = shown() and current == nil
+	end
+	if chip then
+		chip.Visible = shown()
+			and current == nil
+			and player:GetAttribute("MapOpen") ~= true
+			and QuestData.byId[player:GetAttribute("QuestId") :: any] ~= nil
 	end
 	player:SetAttribute("MenuOpen", current ~= nil)
 end
@@ -314,6 +326,94 @@ local function buildBar(region: Frame)
 	chrome()
 end
 
+local function buildChip(region: Frame)
+	local b = Style.button(region, UDim2.fromScale(1, 1))
+	b.Name = "QuestChip"
+	local _, face =
+		Style.block(b, Style.grad("orange"), { lip = 4, radius = Theme.Size.cornerSmall })
+	local art = Instance.new("Frame")
+	art.BackgroundColor3 = Color3.new(1, 1, 1)
+	art.BackgroundTransparency = 0.15
+	Style.corner(art, 999)
+	art.AnchorPoint = Vector2.new(0, 0.5)
+	art.Position = UDim2.new(0, 6, 0.5, 0)
+	art.Size = UDim2.fromScale(0.8, 0.8)
+	art.SizeConstraint = Enum.SizeConstraint.RelativeYY
+	art.Parent = face
+	local place = Style.label(face, "", Theme.Text.small)
+	place.AnchorPoint = Vector2.new(0, 0.5)
+	place.Position = UDim2.new(0.2, 4, 0.5, 0)
+	place.Size = UDim2.fromScale(0.48, 0.56)
+	place.TextScaled = true
+	place.TextXAlignment = Enum.TextXAlignment.Left
+	local dist = Style.label(face, "", Theme.Text.small)
+	dist.AnchorPoint = Vector2.new(1, 0.5)
+	dist.Position = UDim2.new(1, -8, 0.5, 0)
+	dist.Size = UDim2.fromScale(0.24, 0.44)
+	dist.TextScaled = true
+	dist.TextXAlignment = Enum.TextXAlignment.Right
+	Style.press(b, function()
+		Menu.open("Quests")
+	end, Theme.Size.cornerSmall)
+	chip = b
+
+	local shownKey = ""
+	local function paint()
+		local quest = QuestData.byId[player:GetAttribute("QuestId") :: any]
+		if not quest then
+			return
+		end
+		local back = player:GetAttribute("QuestStage") == "back"
+		local id, name = QuestRules.place(quest)
+		if back then
+			name = QuestData.npcById[quest.npc].name
+		end
+		local key = `{quest.id}:{back}`
+		if key ~= shownKey then
+			shownKey = key
+			for _, ch in art:GetChildren() do
+				if not ch:IsA("UICorner") then
+					ch:Destroy()
+				end
+			end
+			local sticker = Stickers[id]
+			if sticker and not back then
+				local img = Instance.new("ImageLabel")
+				img.BackgroundTransparency = 1
+				img.Image = sticker
+				img.ScaleType = Enum.ScaleType.Fit
+				img.Size = UDim2.fromScale(1, 1)
+				img.Parent = art
+			else
+				Style.icon(art, "quests")
+			end
+			place.Text = name
+		end
+		local target = player:GetAttribute("QuestTarget")
+		local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		dist.Text = if typeof(target) == "Vector3"
+				and root
+				and root:IsA("BasePart")
+			then Waypoint.metres((root.Position - target).Magnitude)
+			else ""
+	end
+	task.spawn(function()
+		while b.Parent do
+			if b.Visible then
+				paint()
+			end
+			task.wait(0.25)
+		end
+	end)
+	player.AttributeChanged:Connect(function(name)
+		if name == "QuestId" or name == "QuestStage" then
+			chrome()
+			paint()
+		end
+	end)
+	chrome()
+end
+
 function Menu.mount()
 	if mounted then
 		return
@@ -344,6 +444,7 @@ function Menu.mount()
 		Crew = Crew.new(c, noteClosed),
 		Settings = SettingsPanel.newPanel(c, noteClosed),
 	}
+	buildChip(Layout.region(g, "quest"))
 
 	local function applyShown()
 		if not shown() then
@@ -357,6 +458,7 @@ function Menu.mount()
 		if player:GetAttribute("MapOpen") == true then
 			Menu.close() -- M over an open panel: the map wins
 		end
+		chrome()
 	end)
 	player.AttributeChanged:Connect(function(name)
 		if string.sub(name, 1, 10) == "QuestOffer" then

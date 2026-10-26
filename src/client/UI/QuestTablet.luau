@@ -1,7 +1,7 @@
 --!strict
 -- QuestTablet (docs/23 (p), WP-27): the quest tablet by your own pontoon (QuestController binds its prompt). A Kit
 -- panel docked right lists your active quest and today's offers from the givers whose boats are at your pontoon (Kit
--- cards: name, the ask, the reward on the art). Tapping a card eases the camera onto that giver's boat; its button
+-- cards: island art, the place, the reward on the art; Accept closes the tablet). Tapping a card eases the camera onto that giver's boat; its button
 -- accepts an offer, hands in a quest that is "back" or drops one still "go" (Quest_Talk, the same as talking to
 -- them; greyed until the boat is tied up). Escape / B / the red X closes and eases the camera back.
 local Players = game:GetService("Players")
@@ -10,8 +10,11 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
-local QuestData =
-	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Quests"):WaitForChild("Data"))
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local QuestData = require(Shared:WaitForChild("Quests"):WaitForChild("Data"))
+local Rules = require(Shared:WaitForChild("Quests"):WaitForChild("Rules"))
+local Stickers =
+	require(Shared:WaitForChild("Config"):WaitForChild("UiImages")).Stickers :: { [string]: string }
 local Controllers = script.Parent.Parent:WaitForChild("Controllers")
 local AudioController = require(Controllers:WaitForChild("AudioController"))
 local CameraController = require(Controllers:WaitForChild("CameraController"))
@@ -119,15 +122,19 @@ local function card(
 	rig: Model?
 ): GuiObject
 	local npc = QuestData.npcById[quest.npc]
+	local placeId, place = Rules.place(quest)
+	local sticker = Stickers[placeId]
 	local c = Card.new(panel.body, {
-		art = "cash",
-		title = npc.name,
-		line = quest.ask,
+		art = if action == "handIn" or not sticker then "quests" else sticker,
+		title = if action == "handIn" then npc.name else place, -- the ask itself is spoken by the giver
 		color = color,
 		price = quest.cash,
 		currency = "Cash",
 		onBuy = function()
 			send(quest.npc, action)
+			if action == "accept" then
+				QuestTablet.close()
+			end
 		end,
 	})
 	c.root.LayoutOrder = order

@@ -102,6 +102,21 @@ function Rules.target(quest: Data.Quest): Vector3
 	return (row[at.from or "landing"] :: Vector3) + (at.offset or Vector3.zero)
 end
 
+-- The island the quest goes to: its id (UiImages.Stickers key) and display name, for the 1-3 word cards.
+function Rules.place(quest: Data.Quest): (string, string)
+	local at = quest.at
+	local id = at.island or at.zone
+	if at.site then
+		for _, site in CallTypes.DiveSites do
+			if site.id == at.site then
+				id = site.island
+			end
+		end
+	end
+	local row = islandRow(id :: string)
+	return id :: string, if row then row.name else id :: string
+end
+
 -- Today's quest from giver `npc`, or nil. `can(quest)` = the player can do it (salvage needs the submarine).
 function Rules.offer(
 	s: State,

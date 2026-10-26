@@ -39,6 +39,20 @@ return function(t)
 		t.expect((plain.LookVector - aimed.LookVector).Magnitude > 1e-3).toBe(true)
 	end)
 
+	t.test(
+		"free share: the island centre sits in the middle of the area left of the list",
+		function()
+			local cam = B.camera(frame, B.ISLAND_RADIUS, 16 / 9, nil, 0.6)
+			local rel = cam:PointToObjectSpace(centre)
+			local vf = math.tan(math.rad(B.FOV) / 2)
+			local ndcX = rel.X / (-rel.Z * vf * 16 / 9)
+			t.expect(ndcX).toBeCloseTo(-0.4, 2)
+			local plain = B.camera(frame, B.ISLAND_RADIUS, 16 / 9, nil)
+			t.expect((cam.Position - centre).Magnitude > (plain.Position - centre).Magnitude)
+				.toBe(true)
+		end
+	)
+
 	t.test("every catalog item has a lot spot and a footprint", function()
 		local items = DB.catalog()
 		t.expect(#items > 0).toBe(true)

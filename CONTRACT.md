@@ -214,9 +214,10 @@ pin, and a beep (no radio). Voices are NPCs only: `VoiceTTS` + `UI/VoiceCast`.
   `menu`): Shop, Quests, Album, Pet, Crew, Settings, Map, Boat (Boat to me). Panels (`UI/Kit/*`):
   `UI/Panels/Shop` (`ProductShelves.storeItems`), `Panels/Quests`, `Panels/Album`, `Panels/Companion` (Bosun or
   one pet; `Pet_Equip`), `Panels/Crew`, `SettingsPanel.newPanel`; `UI/BoatCard` via `Menu.openBoat(id)`. API
-  `open`, `close`, `toggle`, `openBoat`, `isOpen`; player attribute `MenuOpen`.
+  `open`, `close`, `toggle`, `openBoat`, `isOpen`; player attribute `MenuOpen`. The quest tracker chip (region
+  `quest`: island art, place, distance to `QuestTarget`; tap opens Quests) shows while a quest is active.
 - `src/shared/HudLayout.luau` (pure, `tests/HudLayout.spec.luau`) places the regions (menu, wallet, objective,
-  status, notice, prompt, minimap, gauges, right) per device, clear of Roblox's thumbstick and jump zones;
+  status, notice, prompt, minimap, gauges, right, quest) per device, clear of Roblox's thumbstick and jump zones;
   `UI/Layout` turns them into frames (`region`, `coldOpen`, `newPlayer`, `promptBusy`, `hudBoxes`: world pins keep out). `HudController`: wallet,
   award pops. `UI/HudTheme`, `UI/Kit/*` (Theme, Style, Panel, Card, PriceButton, IconButton, Tabs, ...),
   `UI/InputGlyph`, `UI/Glyph`.

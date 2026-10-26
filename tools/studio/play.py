@@ -14,7 +14,7 @@ usage: python3 tools/studio/play.py <command> [args]
   drag X1 Y1 X2 Y2 [right]  press, move, release
   turn DX               right-drag DX image pixels from the centre (third person only: Studio's input does not
                         turn a locked first-person camera)
-  scroll N              mouse wheel (positive = zoom in)
+  scroll N [X Y]        mouse wheel at X,Y of the last `look` (default the centre; positive = up / zoom in)
   chat TEXT             Slash, type TEXT, Return
 Each command takes the machine-wide `studio` lock only for its own duration."""
 import json, os, re, subprocess, sys, time
@@ -115,7 +115,10 @@ def main():
                 drag(s, cx, cy, cx + int(float(a[1]) * sx), cy, "right")
             elif cmd == "scroll":
                 n = int(a[1])
-                send(s, "user_mouse_input", [{"action": "scrollUp" if n > 0 else "scrollDown"}] * abs(n))
+                # the wheel needs a mouse position (the injected input has none until a moveTo): X Y, else the centre
+                x, y = to_vp(a[2], a[3]) if len(a) > 3 else to_vp(384, 216)
+                send(s, "user_mouse_input", [{"action": "moveTo", "x": x, "y": y}]
+                     + [{"action": "scrollUp" if n > 0 else "scrollDown"}] * abs(n))
             elif cmd == "chat":
                 send(s, "user_keyboard_input", [{"action": "keyPress", "key_code": "Slash"},
                                                 {"action": "wait", "wait_time_ms": 300},

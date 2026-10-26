@@ -44,6 +44,7 @@ return function(t)
 		"minimap",
 		"wallet",
 		"menu",
+		"quest",
 	}
 
 	local function box(rect)
@@ -75,6 +76,10 @@ return function(t)
 			end
 			for i = 1, #HUD do
 				for j = i + 1, #HUD do
+					-- the quest tag hangs over the minimap's bottom edge on purpose
+					if HUD[i] == "minimap" and HUD[j] == "quest" then
+						continue
+					end
 					t.expect(overlaps(mt.rects[HUD[i]], mt.rects[HUD[j]])).toBe(false)
 				end
 			end
@@ -143,12 +148,16 @@ return function(t)
 
 	-- the minimap's objective pill ("Mayday 100 m") sits above the square on desktop
 	t.test("desktop left column clears the minimap pill, no overlaps", function()
-		local LEFT = { "menu", "wallet", "objective", "minimap", "right", "notice", "gauges" }
+		local LEFT =
+			{ "menu", "wallet", "objective", "minimap", "right", "notice", "gauges", "quest" }
 		for _, screen in DESKTOP do
 			local mt = HudLayout.compute(screen, NO_INSETS, "Keyboard")
 			local _, _, _, oy2 = box(mt.rects.objective)
 			local _, my = box(mt.rects.minimap)
 			t.expect(oy2 + HudLayout.GAP <= my - HudLayout.PILL_HEIGHT + 1e-6).toBe(true)
+			local _, qy, _, qy2 = box(mt.rects.quest) -- the quest chip between the objective and the pill
+			t.expect(oy2 + HudLayout.GAP <= qy + 1e-6).toBe(true)
+			t.expect(qy2 + HudLayout.GAP <= my - HudLayout.PILL_HEIGHT + 1e-6).toBe(true)
 			t.expect(mt.noticeWidth >= 200).toBe(true)
 			for i = 1, #LEFT do
 				for j = i + 1, #LEFT do
