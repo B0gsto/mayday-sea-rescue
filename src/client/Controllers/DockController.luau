@@ -3,12 +3,13 @@
 -- the spawn carries a tablet whose prompt opens the top-down build mode. The camera lifts to a Scriptable island
 -- view (shared/DockBuild), movement locks, every building and decor not owned yet gets a flat paper blueprint
 -- on its spot (WP-14e: blue sheet, white grid, the item's Lego line drawing; never a 3D preview; one still
--- locked behind a prerequisite is grey with a chain and a padlock), and a Kit panel docked on the right lists
--- every building, quest blueprint and decor as a card (Build / Decor tabs). A locked card shows a padlock and a
--- "Needs: <item>" chip with that item's drawing; tapping the chip focuses the prerequisite. Tapping a paper or a
--- card focuses it: the camera eases in to its spot (0.6 s), a flat outline pulses and a bottom strip shows its
--- name, one line (DockConfig desc) and the buy buttons. Cash buys through Dock_Upgrade (greyed when the Cash
--- is short); Robux opens Roblox's purchase prompt (skips the Cash, never the prerequisites). Escape / B /
+-- locked behind a prerequisite is grey with a chain and a padlock). The Build tab is the shared Kit tree
+-- (shared/BuildTreeLayout, Kit/TreeView) on a translucent bottom band, so the island stays visible above it;
+-- the Decor tab stays the Kit panel's card list. A busy site shows its m:ss on its node and an hourglass on
+-- the other buyables; the node's detail card carries the Cash / Robux buys, "Needs: <item>" (selects the
+-- prerequisite) and Finish now. Tapping a paper or a node focuses it: the camera eases in to its spot
+-- (0.6 s) and a flat outline pulses. Cash buys through Dock_Upgrade (greyed when the Cash is short); Robux
+-- opens Roblox's purchase prompt (skips the Cash, never the prerequisites). Escape / B /
 -- tapping empty sea backs out of the focus, then out of build mode (Escape is read from UserInputService:
 -- Roblox keeps it from ContextActionService); the red X or a teleport closes and restores the camera and
 -- controls. On a buy the pieces already exist in their final state; Dock_Build tells this controller to play
@@ -29,6 +30,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BuildSeq = require(Shared:WaitForChild("BuildSeq"))
 local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
+local BuildTreeLayout = require(Shared:WaitForChild("BuildTreeLayout"))
 local DockBlueprints = require(Shared:WaitForChild("DockBlueprints"))
 local DockBuild = require(Shared:WaitForChild("DockBuild"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
@@ -53,6 +55,7 @@ local PriceButtonUI = require(Kit:WaitForChild("PriceButton"))
 local Style = require(Kit:WaitForChild("Style"))
 local TabsUI = require(Kit:WaitForChild("Tabs"))
 local Theme = require(Kit:WaitForChild("Theme"))
+local TreeView = require(Kit:WaitForChild("TreeView"))
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -84,9 +87,15 @@ local listPanel: PanelUI.Panel? = nil
 local cardsContent: ScrollingFrame? = nil
 local focusStrip: Frame? = nil
 local stripContent: Frame? = nil
-local tabs: TabsUI.Tabs? = nil
+local decorTabs: TabsUI.Tabs? = nil
 local cards: { ImageButton } = {}
-local pulseKey: string? = nil -- docs/24 E: the Workshop card pulses while the tutorial points at it
+local pulseKey: string? = nil -- docs/24 E: the Workshop node pulses while the tutorial points at it
+local buildBand: Frame? = nil -- the Build tab's tree, a bottom band over the island view
+local buildTree: TreeView.TreeView? = nil
+local buildTabs: TabsUI.Tabs? = nil
+local bandClose: ImageButton? = nil
+local refreshTree: () -> () = function() end
+local pickTab: (number) -> () = function() end
 
 local papers: Folder? = nil
 local paperItems: { [Instance]: DockBlueprints.Item } = {}
@@ -136,10 +145,11 @@ local function aspect(): number
 	return math.max(vp.X / math.max(vp.Y, 1), 0.3)
 end
 
--- The screen share left of the list (the island and the lot being built are framed there, not under it).
+-- The screen share left of the list (the island and the lot being built are framed there, not under it);
+-- the Build band spans the screen, so the whole width is free there.
 local function free(): number
 	local p = listPanel
-	if not p then
+	if not p or tabIndex == 1 then
 		return 1
 	end
 	local vp, scale = Style.metrics(p.root)
@@ -323,13 +333,15 @@ local function cashBuy(item: DockBlueprints.Item)
 	end
 	local ok = remote:InvokeServer(item.key)
 	if not ok then
-		shake(if focused then focusStrip else listPanel and listPanel.root)
+		local tree = if tabIndex == 1 then buildTree else nil
+		shake(tree and tree.root or (if focused then focusStrip else listPanel and listPanel.root))
 	end
 end
 
 local function robuxBuy(id: number)
 	if id == 0 then
-		shake(focusStrip)
+		local tree = if tabIndex == 1 then buildTree else nil
+		shake(tree and tree.root or focusStrip)
 		return
 	end
 	MarketplaceService:PromptProductPurchase(player, id)
@@ -365,6 +377,27 @@ end
 local function finishOffered(product: any): boolean
 	return product ~= nil
 		and (RunService:IsStudio() or (product.ready ~= false and product.id ~= 0))
+end
+
+local priceAsked: { [number]: boolean } = {}
+-- A product's live Robux price, read from Roblox once; the tree redraws when it lands.
+local function livePriceOf(id: number): number?
+	if id == 0 or livePrice[id] or priceAsked[id] then
+		return livePrice[id]
+	end
+	priceAsked[id] = true
+	task.spawn(function()
+		local ok, info = pcall(function()
+			return MarketplaceService:GetProductInfo(id, Enum.InfoType.Product)
+		end)
+		if ok and type(info) == "table" and type(info.PriceInRobux) == "number" then
+			livePrice[id] = info.PriceInRobux
+			if displayed and tabIndex == 1 then
+				refreshTree()
+			end
+		end
+	end)
+	return nil
 end
 
 local function itemWork(item: DockBlueprints.Item): number
@@ -654,66 +687,122 @@ local function badgeRow(parent: GuiObject, st: Status): GuiObject?
 	return row
 end
 
--- docs/24 E: pulse one card (the Workshop) until the tutorial leaves the tablet.
-local function startCardPulse(root: GuiObject, key: string)
-	local ring = Instance.new("Frame")
-	ring.Name = "PulseRing"
-	ring.BackgroundTransparency = 1
-	ring.Position = UDim2.fromOffset(-4, -4)
-	ring.Size = UDim2.new(1, 8, 1, 8)
-	ring.Parent = root
-	Style.corner(ring, S.corner + 8)
-	local stroke = Style.stroke(ring, 4, true)
-	stroke.Color = OUTLINE
-	local scale = Instance.new("UIScale")
-	scale.Name = "PulseScale"
-	scale.Parent = ring
-	task.spawn(function()
-		while root.Parent and pulseKey == key do
-			TweenService:Create(
-				scale,
-				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-				{ Scale = 1.06 }
-			):Play()
-			TweenService:Create(
-				stroke,
-				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-				{ Transparency = 0.35 }
-			):Play()
-			task.wait(0.5)
-			TweenService:Create(
-				scale,
-				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-				{ Scale = 1 }
-			):Play()
-			TweenService:Create(
-				stroke,
-				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-				{ Transparency = 0 }
-			):Play()
-			task.wait(0.5)
-		end
-		ring:Destroy()
-	end)
+local function buildingItem(key: string): DockBlueprints.Item
+	return { kind = "Building", key = key }
 end
 
--- The tutorial (OnboardingController) points at one card while its step is up; nil stops it.
+-- docs/24 E: the server tops the purse up to the Workshop's price on the buy, so the tutorial node
+-- reads affordable and pulses even before the first 500 Cash is in.
+local function treeCash(): number
+	local cash = tonumber(snapshot.cash) or 0
+	if tutorialBuild(buildingItem(Onboarding.WORKSHOP)) then
+		return math.max(cash, DockConfig.Buildings[Onboarding.WORKSHOP].cash)
+	end
+	return cash
+end
+
+local function buildNodes(): { TreeView.Node }
+	local site = siteState()
+	local out: { TreeView.Node } = {}
+	for _, cell in BuildTreeLayout.cells() do
+		local item = buildingItem(cell.id)
+		local st = statusOf(item)
+		if st.productId ~= 0 then
+			livePriceOf(st.productId)
+		end
+		local state: TreeView.State = if st.owned
+			then "owned"
+			elseif st.busy then "busy"
+			elseif st.forSale then "buyable"
+			else "locked"
+		local prepaid = type(snapshot.dockPrepaid) == "table"
+			and snapshot.dockPrepaid[cell.id] == true
+		local effect = DockBlueprints.desc(item)
+		local note: string? = nil
+		local action: TreeView.Action? = nil
+		if st.busy == "site" then
+			local left = BuildTimer.timeLeft(site.progress, site.rate, itemWork(item))
+			note, effect = BuildTimer.text(left), BuildTimer.text(left)
+			local product, price = finishProduct(left)
+			action = {
+				price = price,
+				currency = "Robux",
+				icon = "finish_now",
+				visible = left >= 3 and finishOffered(product),
+				onActivate = function()
+					Net.event("Dock_Finish"):FireServer()
+				end,
+			}
+		elseif st.busy == "wait" then
+			effect = if prepaid then "Paid" else "Site busy"
+		elseif prepaid and not st.owned and not st.forSale then
+			effect = "Paid"
+		end
+		local reason = st.reason
+		local need = reason and reason.item
+		table.insert(out, {
+			id = cell.id,
+			name = DockBlueprints.label(item),
+			icon = "build",
+			price = st.cash,
+			needs = DockConfig.Buildings[cell.id].needs,
+			need = if need and need.kind == "Building" then need.key else nil,
+			robux = if st.forSale and st.productId ~= 0 then st.robux else nil,
+			col = cell.col,
+			row = cell.row,
+			state = state,
+			effect = effect,
+			note = note,
+			pulse = pulseKey == cell.id,
+			action = action,
+		})
+	end
+	return out
+end
+
+-- docs/24 E: the tutorial points at the Workshop node while its step is up; nil stops the pulse.
 function DockController.Pulse(key: string?)
 	pulseKey = key
-	local target = key
-	if not target then
+	if not displayed then
 		return
 	end
-	for _, card in cards do
-		if card:GetAttribute("ItemKey") == target and not card:FindFirstChild("PulseRing") then
-			startCardPulse(card, target)
+	if key and tabIndex ~= 1 then
+		pickTab(1) -- the pointed node lives on the Build tab
+	end
+	if tabIndex == 1 then
+		refreshTree()
+		if key and buildTree then
+			buildTree.select(key)
 		end
 	end
 end
 
+local function treeBuy(id: string)
+	local item = buildingItem(id)
+	local st = statusOf(item)
+	if st.cash > (snapshot.cash or 0) and tutorialBuild(item) then
+		local view = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize
+			or Vector2.new(800, 600)
+		CashBurst.playAt(playerGui, view / 2, 0, false)
+	end
+	cashBuy(item)
+end
+
+local function treeBuyRobux(id: string)
+	robuxBuy(statusOf(buildingItem(id)).productId)
+end
+
+refreshTree = function()
+	local tree = buildTree
+	if tree then
+		tree.setNodes(buildNodes(), treeCash())
+	end
+end
+
+-- The Decor tab stays the card list (docs/24 G-a2 keeps only the Build tab a tree).
 local function refreshCards()
 	local content = cardsContent
-	if not content then
+	if not content or tabIndex ~= 2 then
 		return
 	end
 	for _, card in cards do
@@ -722,7 +811,7 @@ local function refreshCards()
 	cards = {}
 	local n = 0
 	for _, item in DockBlueprints.catalog() do
-		if (tabIndex == 2) == (item.kind == "Decor") then
+		if item.kind == "Decor" then
 			n += 1
 			local st = statusOf(item)
 			local root = Style.button(
@@ -732,9 +821,6 @@ local function refreshCards()
 			root.Name = `Card{n}`
 			root.LayoutOrder = n
 			root:SetAttribute("ItemKey", item.key)
-			if pulseKey == item.key then
-				startCardPulse(root, item.key)
-			end
 			local locked = not st.owned and not st.forSale
 			local _, face =
 				Style.block(root, Style.grad(if locked then "locked" else colorOf(item)))
@@ -785,7 +871,7 @@ local function refreshStrip()
 	end
 	content:ClearAllChildren()
 	local item = focused
-	holder.Visible = item ~= nil
+	holder.Visible = item ~= nil and tabIndex == 2
 	if not item then
 		return
 	end
@@ -978,13 +1064,18 @@ focusItem = function(item: DockBlueprints.Item, room: number?)
 	outlineSpot(b * spot, size)
 	local at, paperSize = DockBuild.paper(item, b)
 	fly(DockBuild.focus(b, at.Position, paperSize * (room or 1), aspect(), free()), 0.6)
-	refreshStrip()
+	if tabIndex == 2 then
+		refreshStrip()
+	end
 	AudioController.play("UI_Click")
 end
 
 local function unfocus()
 	focused = nil
 	clearOutline()
+	if tabIndex == 1 and buildTree then
+		buildTree.select(nil)
+	end
 	refreshStrip()
 	islandView(0.6)
 end
@@ -1017,6 +1108,9 @@ local function closeBuild()
 	end
 	displayed = false
 	focused = nil
+	if buildTree then
+		buildTree.select(nil)
+	end
 	clearOutline()
 	clearPapers()
 	refreshStrip()
@@ -1058,8 +1152,62 @@ end
 
 local function redraw()
 	refreshCards()
+	refreshTree()
 	refreshPapers()
 	refreshStrip()
+end
+
+local syncingTabs = false
+
+local function showTab()
+	local bandUp = tabIndex == 1
+	if buildBand then
+		buildBand.Visible = displayed and bandUp
+	end
+	local p = listPanel
+	if p then
+		p.root.Visible = displayed and not bandUp
+	end
+	if not displayed then
+		return
+	end
+	if bandUp then
+		refreshTree()
+		if p and GuiService.SelectedObject and GuiService.SelectedObject:IsDescendantOf(p.root) then
+			GuiService.SelectedObject = nil
+		end
+	else
+		refreshCards()
+		if p then
+			p.body.CanvasPosition = Vector2.zero
+			if InputGlyph.device() == "Gamepad" and cards[1] then
+				GuiService.SelectedObject = cards[1]
+			end
+		end
+	end
+end
+
+pickTab = function(i: number)
+	tabIndex = i
+	syncingTabs = true
+	local band = buildTabs
+	if band then
+		band.select(i)
+	end
+	local decor = decorTabs
+	if decor then
+		decor.select(i)
+	end
+	syncingTabs = false
+	showTab()
+end
+
+local function onTab(i: number)
+	if syncingTabs then
+		return
+	end
+	pickTab(i)
+	AudioController.play("UI_Click")
 end
 
 local function buildUI(): ScreenGui
@@ -1073,7 +1221,7 @@ local function buildUI(): ScreenGui
 	gui.Parent = playerGui
 	local canvas = Style.canvas(gui)
 
-	-- the list: a Kit panel docked on the right, full height, Build / Decor tabs on top
+	-- Decor: the Kit panel docked on the right, full height, Build / Decor tabs on top
 	local p = PanelUI.new(canvas, {
 		title = "Build",
 		icon = "build",
@@ -1083,17 +1231,76 @@ local function buildUI(): ScreenGui
 	})
 	p.root.AnchorPoint = Vector2.new(1, 0.5)
 	p.root.Position = UDim2.new(1, -S.margin, 0.5, 0)
+	p.root.Visible = false
 	listPanel = p
 	cardsContent = p.body
-	tabs = TabsUI.new(
-		p.top,
-		{ { name = "Build", icon = "build" }, { name = "Decor", icon = "gift" } },
-		function(i)
-			tabIndex = i
-			refreshCards()
-			p.body.CanvasPosition = Vector2.zero
-		end
-	)
+	local TAB_LIST = { { name = "Build", icon = "build" }, { name = "Decor", icon = "gift" } }
+	decorTabs = TabsUI.new(p.top, TAB_LIST, onTab)
+
+	-- Build: the shared tree on a translucent band over the lower part of the island view
+	local band = Instance.new("Frame")
+	band.Name = "BuildTreeBand"
+	band.BackgroundTransparency = 1
+	band.AnchorPoint = Vector2.new(0.5, 1)
+	band.Position = UDim2.new(0.5, 0, 1, -S.margin)
+	band.Size = UDim2.fromScale(0.96, 0.45)
+	band.Visible = false
+	band.ZIndex = 5
+	band.Parent = canvas
+	local _, bandFace =
+		Style.block(band, Style.grad("body"), { shadow = true, radius = S.corner + 4 })
+	bandFace.BackgroundTransparency = 0.1 -- the island and the lot pulse read through it
+	buildBand = band
+
+	local top = Instance.new("Frame")
+	top.Name = "Top"
+	top.BackgroundTransparency = 1
+	top.Position = UDim2.fromOffset(S.pad, S.pad * 0.5)
+	top.Size = UDim2.new(1, -(2 * S.pad + S.close + 8), 0, S.tab)
+	top.ZIndex = 3
+	top.Parent = bandFace
+	local tabBar = TabsUI.new(top, TAB_LIST, onTab)
+	tabBar.root.Size = UDim2.fromScale(1, 1)
+	buildTabs = tabBar
+
+	local close = Style.button(bandFace, UDim2.fromOffset(S.close, S.close + S.lip))
+	close.Name = "Close"
+	close.AnchorPoint = Vector2.new(1, 0)
+	close.Position = UDim2.new(1, -S.pad, 0, S.pad * 0.5 + (S.tab - S.close - S.lip) * 0.5)
+	close.ZIndex = 4
+	local _, closeFace = Style.block(close, Style.grad("close"), { radius = S.cornerSmall })
+	Style.label(closeFace, "X", Theme.Text.title)
+	Style.press(close, closeBuild, S.cornerSmall)
+	bandClose = close
+
+	local host = Instance.new("Frame")
+	host.Name = "Tree"
+	host.BackgroundTransparency = 1
+	host.Position = UDim2.fromOffset(S.pad, S.pad * 0.5 + S.tab + 8)
+	host.Size = UDim2.new(1, -2 * S.pad, 1, -(S.pad * 1.5 + S.tab + 8))
+	host.ZIndex = 3
+	host.Parent = bandFace
+	local tree = TreeView.new(host, {
+		nodes = {},
+		header = false,
+		onSelect = function(id: string)
+			focusItem(buildingItem(id))
+		end,
+		onBuy = treeBuy,
+		onBuyRobux = treeBuyRobux,
+		renderIcon = function(parent: Instance, id: string)
+			drawGlyph(parent :: GuiObject, buildingItem(id))
+		end,
+	})
+	tree.root.Size = UDim2.fromScale(1, 1)
+	buildTree = tree
+
+	local function sizeBand()
+		local vp = Style.metrics(band)
+		band.Size = UDim2.fromScale(0.96, if vp.Y > vp.X then 0.5 else 0.45)
+	end
+	sizeBand()
+	canvas:GetAttributeChangedSignal("KitViewport"):Connect(sizeBand)
 
 	-- the focus strip, bottom left of the list
 	local holder = Instance.new("Frame")
@@ -1143,14 +1350,32 @@ local function openBuild()
 	screen.Enabled = true
 	hideHud(true)
 	local p = listPanel :: PanelUI.Panel
-	Style.pop(p.root, true)
-	local tabBar = tabs
-	if tabBar then
-		tabBar.select(tabIndex)
+	syncingTabs = true
+	if buildTabs then
+		buildTabs.select(tabIndex)
+	end
+	if decorTabs then
+		decorTabs.select(tabIndex)
+	end
+	syncingTabs = false
+	showTab()
+	if tabIndex == 1 then
+		if buildBand then
+			Style.pop(buildBand, true)
+		end
+	else
+		Style.pop(p.root, true)
 	end
 	refreshPapers()
-	modal.open(p.closeButton)
-	if InputGlyph.device() == "Gamepad" and cards[1] then
+	modal.open(if tabIndex == 1 then bandClose else p.closeButton)
+	if tabIndex == 1 then
+		-- skip the X in the gamepad focus: the tree's D-pad owns it (B still closes)
+		if pulseKey and buildTree then
+			buildTree.select(pulseKey)
+		elseif InputGlyph.device() == "Gamepad" then
+			GuiService.SelectedObject = nil
+		end
+	elseif InputGlyph.device() == "Gamepad" and cards[1] then
 		GuiService.SelectedObject = cards[1]
 	end
 	islandView(0.8)
@@ -1178,7 +1403,17 @@ local function onWorldTap(input: InputObject, processed: boolean)
 	local item = hit and paperItems[hit.Instance]
 	if item then
 		if not sameItem(item, focused) then
-			focusItem(item)
+			-- a paper is also a way into its tab: buildings open their node, decor its card strip
+			if item.kind == "Building" and tabIndex ~= 1 then
+				pickTab(1)
+			elseif item.kind == "Decor" and tabIndex ~= 2 then
+				pickTab(2)
+			end
+			if item.kind == "Building" and buildTree then
+				buildTree.select(item.key)
+			else
+				focusItem(item)
+			end
 		end
 	elseif focused then
 		unfocus()
@@ -1444,6 +1679,7 @@ function DockController.Start()
 			snapshot = data
 			if displayed then
 				refreshCards()
+				refreshTree()
 				refreshStrip()
 			end
 		end
@@ -1457,6 +1693,7 @@ function DockController.Start()
 			snapshot = data
 			if displayed then
 				refreshCards()
+				refreshTree()
 				refreshStrip()
 			end
 		end
@@ -1556,12 +1793,17 @@ function DockController.Start()
 			if displayed then
 				local site = siteState()
 				if site.key ~= lastKey then
-					lastKey = site.key
+					lastKey, lastProgress = site.key, site.progress
 					refreshCards()
+					refreshTree()
 					refreshStrip()
 				elseif site.progress ~= lastProgress then
 					lastProgress = site.progress
-					updateTimers()
+					if tabIndex == 1 then
+						refreshTree()
+					else
+						updateTimers()
+					end
 				end
 			end
 			task.wait(0.5)

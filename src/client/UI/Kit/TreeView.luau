@@ -22,6 +22,16 @@ local TreeMath = require(script.Parent:WaitForChild("TreeMath"))
 local S = Theme.Size
 
 export type State = "owned" | "buyable" | "locked" | "busy"
+-- One extra detail-card button (the build tablet's Finish now): a price, or just a 1-3 word text.
+export type Action = {
+	price: number?,
+	currency: ("Robux" | "Cash")?,
+	text: string?,
+	icon: string?,
+	visible: boolean?,
+	enabled: boolean?,
+	onActivate: () -> (),
+}
 export type Node = {
 	id: string,
 	name: string,
@@ -33,19 +43,27 @@ export type Node = {
 	group: string?,
 	effect: string?,
 	state: State?,
+	note: string?, -- text in the price row instead of the price (a busy site's timer)
+	robux: number?, -- second price button on the detail card
+	need: string?, -- the prerequisite the Needs line selects
+	pulse: boolean?, -- tutorial pointer ring
+	action: Action?,
 }
 export type Group = { id: string, name: string, icon: string?, color: string? }
 export type Props = {
 	nodes: { Node },
 	groups: { Group }?,
 	cash: number?,
+	header: boolean?, -- group lane headers (default true; off for a single nameless lane)
+	renderIcon: ((Instance, string) -> ())?, -- draw node art yourself (icon is the fallback)
 	onSelect: ((string) -> ())?,
 	onBuy: ((string) -> ())?,
+	onBuyRobux: ((string) -> ())?,
 }
 export type TreeView = {
 	root: Frame,
 	setNodes: (nodes: { Node }, cash: number?) -> (),
-	select: (id: string) -> (),
+	select: (id: string?) -> (),
 	selected: () -> string?,
 }
 
@@ -108,6 +126,9 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	local zoomScale = Instance.new("UIScale")
 	zoomScale.Parent = content
 
+	local nodesById: { [string]: Node } = {}
+	local choose: (string, boolean) -> ()
+
 	local detail = Instance.new("Frame")
 	detail.Name = "Detail"
 	detail.BackgroundTransparency = 1
@@ -151,17 +172,24 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	dEffect.TextWrapped = false
 	dEffect.Position = UDim2.fromOffset(96, 42)
 	dEffect.Size = UDim2.new(1, -300, 0, 28)
-	local dNeeds = Style.label(dface, "", Theme.Text.small, true)
+	local dNeedsButton = Style.button(dface, UDim2.new(1, -300, 0, 26))
+	dNeedsButton.Name = "Needs"
+	dNeedsButton.Position = UDim2.fromOffset(96, 72)
+	local dNeeds = Style.label(dNeedsButton, "", Theme.Text.small, true)
 	dNeeds.TextXAlignment = Enum.TextXAlignment.Left
 	dNeeds.TextWrapped = false
 	dNeeds.TextScaled = true
 	dNeeds.TextColor3 = Theme.Grad.red.bottom
-	dNeeds.Position = UDim2.fromOffset(96, 72)
-	dNeeds.Size = UDim2.new(1, -300, 0, 26)
 	local needsCap = Instance.new("UITextSizeConstraint")
 	needsCap.MaxTextSize = Theme.Text.small
 	needsCap.MinTextSize = 12
 	needsCap.Parent = dNeeds
+	Style.press(dNeedsButton, function()
+		local node = if selectedId then nodesById[selectedId :: string] else nil
+		if node and node.need and nodesById[node.need] then
+			choose(node.need, false)
+		end
+	end, S.cornerSmall)
 	local dPrice = PriceButton.new(dface, {
 		price = 0,
 		currency = "Cash",
@@ -173,17 +201,49 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 			end
 		end,
 	})
-	dPrice.root.AnchorPoint = Vector2.new(1, 0.5)
-	dPrice.root.Position = UDim2.new(1, -12, 0.5, 0)
+	dPrice.root.Visible = false
 	dPrice.root.Selectable = false
+	local dRobux = PriceButton.new(dface, {
+		price = 0,
+		currency = "Robux",
+		state = "buy",
+		onActivate = function()
+			local id = selectedId
+			if id and props.onBuyRobux then
+				props.onBuyRobux(id)
+			end
+		end,
+	})
+	dRobux.root.Visible = false
+	dRobux.root.Selectable = false
+	local dAction = PriceButton.new(dface, {
+		price = 0,
+		currency = "Robux",
+		state = "disabled",
+		onActivate = function()
+			local node = if selectedId then nodesById[selectedId :: string] else nil
+			if node and node.action then
+				node.action.onActivate()
+			end
+		end,
+	})
+	dAction.root.Visible = false
+	dAction.root.Selectable = false
+	local actionIcon = Instance.new("Frame")
+	actionIcon.Name = "ActionIcon"
+	actionIcon.BackgroundTransparency = 1
+	actionIcon.Position = UDim2.fromOffset(5, 3)
+	actionIcon.Size = UDim2.fromOffset(22, 22)
+	actionIcon.ZIndex = 3
+	actionIcon.Parent = dAction.root
 
 	local layout = TreeMath.layout({})
-	local nodesById: { [string]: Node } = {}
 	local boxes: { [string]: TreeMath.Box } = {}
 	local buttons: { [string]: ImageButton } = {}
 	local order: { string } = {}
 	local points: { TreeMath.Point } = {}
 	local pulses: { UIStroke } = {}
+	local pointers: { UIStroke } = {}
 	local cash = props.cash
 	local fitted = false
 	local alive = true
@@ -228,6 +288,8 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	local function hideDetail()
 		detail.Visible = false
 		dPrice.root.Selectable = false
+		dRobux.root.Selectable = false
+		dAction.root.Selectable = false
 		selectedId = nil
 	end
 
@@ -243,7 +305,11 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 				c:Destroy()
 			end
 		end
-		Style.icon(dArt, node.icon)
+		if props.renderIcon then
+			props.renderIcon(dArt, node.id)
+		else
+			Style.icon(dArt, node.icon)
+		end
 		dName.Text = node.name
 		dEffect.Text = node.effect or ""
 		local missing: { string } = {}
@@ -252,8 +318,57 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 				table.insert(missing, (nodesById[need] :: Node).name)
 			end
 		end
-		dNeeds.Visible = state == "locked" and #missing > 0
-		dNeeds.Text = `Needs: {table.concat(missing, ", ")}`
+		local needNode = if node.need then nodesById[node.need] else nil
+		dNeedsButton.Visible = state == "locked" and #missing > 0
+		dNeeds.Text = if needNode
+			then `Needs: {needNode.name}`
+			else `Needs: {table.concat(missing, ", ")}`
+		dNeedsButton.Selectable = needNode ~= nil
+
+		-- buy buttons right; busy hides both (the site's card offers Finish now instead)
+		local list: { PriceButton.PriceButton } = {}
+		local showAction = node.action ~= nil and node.action.visible ~= false
+		if showAction then
+			table.insert(list, dAction)
+		end
+		local showRobux = node.robux ~= nil and props.onBuyRobux ~= nil and state == "buyable"
+		if showRobux then
+			table.insert(list, dRobux)
+		end
+		local showCash = state ~= "busy"
+		if showCash then
+			table.insert(list, dPrice)
+		end
+		dPrice.root.Visible = false
+		dRobux.root.Visible = false
+		dAction.root.Visible = false
+		-- two buttons go side by side when the card has the width (the build band on desktop), else
+		-- stack them so the words keep their room on a phone
+		local cardWidth = root.AbsoluteSize.X / kitScale() - 24
+		local across = #list > 1 and cardWidth >= 700
+		local rowWidth = #list * S.price.X + (#list - 1) * 8
+		for i, button in list do
+			button.root.Visible = true
+			button.root.AnchorPoint = Vector2.new(1, 0)
+			button.root.Position = if across
+				then UDim2.new(1, -12 - (#list - i) * (S.price.X + 8), 0.5, -S.price.Y * 0.5)
+				else UDim2.new(
+					1,
+					-12,
+					0.5,
+					-#list * S.price.Y * 0.5 - (#list - 1) * 4 + (i - 1) * (S.price.Y + 8)
+				)
+		end
+		local height = if across
+			then 112
+			else math.max(112, #list * S.price.Y + (#list - 1) * 8 + 28)
+		local right = 96 + (if across then rowWidth + 12 else S.price.X + 24)
+		dName.Size = UDim2.new(1, -right, 0, 34)
+		dEffect.Size = UDim2.new(1, -right, 0, 28)
+		dNeedsButton.Size = UDim2.new(1, -right, 0, 26)
+		detail.Size = UDim2.new(1, -24, 0, height)
+		detailSize.MaxSize = Vector2.new(if across then 760 else 560, height)
+
 		dPrice.setPrice(node.price)
 		local affordable = cash == nil or cash >= node.price
 		local canBuy = props.onBuy ~= nil
@@ -268,11 +383,29 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 				then "disabled"
 				else "buy"
 		)
-		dPrice.root.Selectable = state == "buyable" and affordable and canBuy
+		dPrice.root.Selectable = showCash and state == "buyable" and affordable and canBuy
+
+		if showRobux then
+			dRobux.setPrice(node.robux :: number)
+			dRobux.setState("buy")
+		end
+		dRobux.root.Selectable = showRobux
+
+		local act = node.action
+		if showAction and act then
+			dAction.setPrice(act.price or 0)
+			dAction.setText(if act.price == nil then act.text else nil)
+			dAction.setState(if act.enabled == false then "disabled" else "buy")
+			for _, c in actionIcon:GetChildren() do
+				c:Destroy()
+			end
+			if act.icon then
+				Style.icon(actionIcon, act.icon)
+			end
+		end
+		dAction.root.Selectable = showAction and act ~= nil and act.enabled ~= false
 		detail.Visible = true
 	end
-
-	local choose: (string, boolean) -> ()
 
 	-- drag to pan (mouse + touch) starts on the empty canvas and on a node alike; a drag never
 	-- activates the node it started on (suppressUntil)
@@ -334,7 +467,11 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		art.Position = UDim2.fromScale(0.12, 0.12)
 		art.Size = UDim2.fromScale(0.76, 0.76)
 		art.Parent = well
-		Style.icon(art, node.icon)
+		if props.renderIcon then
+			props.renderIcon(art, node.id)
+		else
+			Style.icon(art, node.icon)
+		end
 		if state == "locked" then
 			local lock = Instance.new("Frame")
 			lock.BackgroundTransparency = 1
@@ -362,7 +499,13 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		row.Position = UDim2.fromOffset(9, 58)
 		row.Size = UDim2.new(1, -18, 0, 28)
 		row.Parent = face
-		if state == "owned" then
+		if node.note then
+			local note = Style.label(row, node.note, Theme.Text.small)
+			note.TextXAlignment = Enum.TextXAlignment.Left
+			note.TextWrapped = false
+			note.Position = UDim2.fromOffset(4, 0)
+			note.Size = UDim2.new(1, -4, 1, 0)
+		elseif state == "owned" then
 			local tick = Instance.new("Frame")
 			tick.BackgroundColor3 = GOLD
 			tick.Position = UDim2.fromOffset(0, 1)
@@ -399,7 +542,11 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		end
 
 		local affordable = cash == nil or cash >= (node.price or 0)
-		if state == "buyable" then
+		if node.pulse then
+			halo.Color = GOLD
+			halo.Transparency = 0.1
+			table.insert(pointers, halo)
+		elseif state == "buyable" then
 			halo.Transparency = if affordable then 0.45 else 0.75
 			if affordable then
 				table.insert(pulses, halo)
@@ -443,7 +590,7 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		for _, n in sorted do
 			table.insert(placed, { id = n.id, col = n.col, row = n.row, group = n.group })
 		end
-		layout = TreeMath.layout(placed)
+		layout = TreeMath.layout(placed, if props.header == false then { header = 0 } else nil)
 		content.Size = UDim2.fromOffset(layout.size.X, layout.size.Y)
 		for _, c in content:GetChildren() do
 			if c:IsA("GuiObject") then
@@ -456,6 +603,7 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		order = {}
 		points = {}
 		pulses = {}
+		pointers = {}
 
 		local groupOf: { [string]: Group } = {}
 		local groups: { Group } = props.groups or {}
@@ -495,32 +643,34 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 			end
 		end
 
-		for _, lane in layout.lanes do
-			local g = groupOf[lane.id]
-			local head = Instance.new("Frame")
-			head.Name = `Lane_{lane.id}`
-			head.BackgroundTransparency = 1
-			head.Position = UDim2.fromOffset(TreeMath.PAD, lane.y)
-			head.Size = UDim2.fromOffset(layout.size.X - TreeMath.PAD * 2, TreeMath.HEADER)
-			head.ZIndex = 2
-			head.Parent = content
-			local _, face = Style.block(
-				head,
-				Style.grad(if g and g.color then g.color else "blue"),
-				{ lip = 4 }
-			)
-			local icon = Instance.new("Frame")
-			icon.BackgroundTransparency = 1
-			icon.AnchorPoint = Vector2.new(0, 0.5)
-			icon.Position = UDim2.new(0, 8, 0.5, 0)
-			icon.Size = UDim2.fromOffset(34, 34)
-			icon.Parent = face
-			Style.icon(icon, if g and g.icon then g.icon else "boost")
-			local label = Style.label(face, if g then g.name else lane.id, Theme.Text.heading)
-			label.TextXAlignment = Enum.TextXAlignment.Left
-			label.TextWrapped = false
-			label.Position = UDim2.fromOffset(50, 0)
-			label.Size = UDim2.new(1, -60, 1, 0)
+		if props.header ~= false then
+			for _, lane in layout.lanes do
+				local g = groupOf[lane.id]
+				local head = Instance.new("Frame")
+				head.Name = `Lane_{lane.id}`
+				head.BackgroundTransparency = 1
+				head.Position = UDim2.fromOffset(TreeMath.PAD, lane.y)
+				head.Size = UDim2.fromOffset(layout.size.X - TreeMath.PAD * 2, TreeMath.HEADER)
+				head.ZIndex = 2
+				head.Parent = content
+				local _, face = Style.block(
+					head,
+					Style.grad(if g and g.color then g.color else "blue"),
+					{ lip = 4 }
+				)
+				local icon = Instance.new("Frame")
+				icon.BackgroundTransparency = 1
+				icon.AnchorPoint = Vector2.new(0, 0.5)
+				icon.Position = UDim2.new(0, 8, 0.5, 0)
+				icon.Size = UDim2.fromOffset(34, 34)
+				icon.Parent = face
+				Style.icon(icon, if g and g.icon then g.icon else "boost")
+				local label = Style.label(face, if g then g.name else lane.id, Theme.Text.heading)
+				label.TextXAlignment = Enum.TextXAlignment.Left
+				label.TextWrapped = false
+				label.Position = UDim2.fromOffset(50, 0)
+				label.Size = UDim2.new(1, -60, 1, 0)
+			end
 		end
 
 		for _, node in sorted do
@@ -606,11 +756,14 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	task.spawn(function()
 		local t = 0
 		while root.Parent do
-			if onScreen() and #pulses > 0 then
+			if onScreen() then
 				t += 0.05
-				local a = 0.45 + 0.32 * (0.5 + 0.5 * math.sin(t * 4))
+				local wave = 0.5 + 0.5 * math.sin(t * 4)
 				for _, s in pulses do
-					s.Transparency = a
+					s.Transparency = 0.45 + 0.32 * wave
+				end
+				for _, s in pointers do
+					s.Transparency = 0.05 + 0.4 * wave
 				end
 			end
 			task.wait(0.05)
@@ -790,8 +943,12 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	return {
 		root = root,
 		setNodes = setNodes,
-		select = function(id: string)
-			choose(id, false)
+		select = function(id: string?)
+			if id then
+				choose(id, false)
+			else
+				hideDetail()
+			end
 		end,
 		selected = function()
 			return selectedId
