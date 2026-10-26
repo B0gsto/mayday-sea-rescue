@@ -29,7 +29,7 @@ export type Building = {
 	vehicles: { string }?, -- its own vehicle board's craft, in order (BoatBoard)
 	worker: string?, -- a worker building (WP-26): a Lego cottage (DockPieces), its workers in front of the door (-Z)
 	color: Color3?, -- the cottage's wall colour
-	scale: number?, -- WP-25 r8: built at size / scale, then scaled up round its spot (size = the scaled footprint)
+	scale: number?, -- WP-25 r8/r9: built at size / scale, then scaled up round its spot (size = the scaled footprint)
 }
 
 local DockConfig = {}
@@ -78,8 +78,8 @@ DockConfig.Buildings = {
 		product = "DockWorkshop",
 		robux = 15,
 		spot = isle(60, -10, 90), -- door onto the east lane (WP-25 layout)
-		size = Vector2.new(26, 20) * 1.4,
-		scale = 1.4,
+		size = Vector2.new(26, 20) * 1.5,
+		scale = 1.5,
 		worker = "Builder",
 		color = Color3.fromRGB(250, 208, 40),
 	},
@@ -90,9 +90,9 @@ DockConfig.Buildings = {
 		needs = {},
 		product = "DockFishShed",
 		robux = 35,
-		spot = isle(72, 105, 90), -- on the east quay, door onto the cove walk
-		size = Vector2.new(22, 16) * 1.4,
-		scale = 1.4,
+		spot = isle(73, 105, 90), -- on the east quay, door onto the cove walk
+		size = Vector2.new(22, 16) * 1.5,
+		scale = 1.5,
 		worker = "Gatherer",
 		color = Color3.fromRGB(40, 96, 208),
 	},
@@ -104,8 +104,8 @@ DockConfig.Buildings = {
 		product = "DockLevel3",
 		robux = 35,
 		spot = LOTS.Boathouse.cf,
-		size = Vector2.new(34, 40) * 1.15,
-		scale = 1.15,
+		size = Vector2.new(34, 40) * 1.2,
+		scale = 1.2,
 	},
 	LookoutTower = {
 		name = "Lookout tower",
@@ -115,8 +115,8 @@ DockConfig.Buildings = {
 		product = "DockLevel4",
 		robux = 75,
 		spot = LOTS.LifeguardTower.cf,
-		size = Vector2.new(10, 10) * 1.4,
-		scale = 1.4,
+		size = Vector2.new(10, 10) * 1.5,
+		scale = 1.5,
 	},
 	BoatYard = {
 		name = "Boat yard",
@@ -125,9 +125,9 @@ DockConfig.Buildings = {
 		needs = { "Workshop" },
 		product = "DockBoatYard",
 		robux = 75,
-		spot = isle(85, -106), -- back right, door onto the bridge path
-		size = Vector2.new(26, 18) * 1.3,
-		scale = 1.3,
+		spot = isle(85, -105), -- back right, door onto the bridge path
+		size = Vector2.new(26, 18) * 1.45,
+		scale = 1.45,
 		worker = "Mechanic",
 		color = Color3.fromRGB(250, 140, 30),
 	},
@@ -139,8 +139,8 @@ DockConfig.Buildings = {
 		product = "DockLifeboatSlip",
 		robux = 99,
 		spot = isle(138, 20, -90), -- on the east edge, the slipway runs off the plate into the sea
-		size = Vector2.new(16, 22) * 1.25,
-		scale = 1.25,
+		size = Vector2.new(16, 22) * 1.5,
+		scale = 1.5,
 		color = Color3.fromRGB(60, 160, 220),
 	},
 	Crane = {
@@ -171,8 +171,8 @@ DockConfig.Buildings = {
 		product = "DockRescueBoathouse",
 		robux = 99,
 		spot = isle(-70, 99, -90), -- on the west quay, door onto the cove walk
-		size = Vector2.new(24, 16) * 1.4,
-		scale = 1.4,
+		size = Vector2.new(24, 16) * 1.5,
+		scale = 1.5,
 		worker = "Rescuer",
 		color = Color3.fromRGB(224, 56, 40),
 	},
@@ -195,8 +195,8 @@ DockConfig.Buildings = {
 		product = "DockHangar",
 		robux = 149,
 		spot = LOTS.Hangar.cf,
-		size = LOTS.Hangar.size * 1.2,
-		scale = 1.2,
+		size = LOTS.Hangar.size * 1.3,
+		scale = 1.3,
 		vehicles = { "RescueHelicopter" },
 	},
 	Station = {
@@ -227,8 +227,8 @@ DockConfig.Buildings = {
 		product = "DockClinic",
 		robux = 199,
 		spot = isle(-85, -105), -- back left, door onto the bridge path
-		size = Vector2.new(24, 18) * 1.3,
-		scale = 1.3,
+		size = Vector2.new(24, 18) * 1.45,
+		scale = 1.45,
 		worker = "Medic",
 		color = Color3.fromRGB(242, 240, 232),
 	},

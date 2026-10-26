@@ -110,6 +110,12 @@ Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-2
   in 6 empty corners, a signal mast at the back, a tree per hut, a clinic ambulance, lot flags show the price. Parts
   bare 750 (at budget) / ~50% 959 / full 1283. AD r8 "not ship, close" (open: raised levels, roofline variety);
   quick fixes applied, sheet build/art/island_r8b.png not re-reviewed. Berth notch + slip ramp check: build/art8.
+  r9 (branch worktree-agent-a70f5626a3351674a): huts/slip/tower 1.45-1.5x, boathouse 1.2, hangar 1.3 (no-overlap spec
+  passes); wide roof eaves with a dark trim; a red/white Lego flag tower behind the station (the sea landmark); once
+  the whole tree is built, empty lots become gardens (DockPieces.lotGarden) and 14 garden clusters fill the lawn
+  (DockPieces.finish); hedges get red/yellow flower breaks; the bridge-foot lamp sits off the deck. Parts bare 747 /
+  ~50% 968 / full 1385. AD r9 "ship" (3 quick fixes applied; sheet build/art/island_r9.png, reviewed one
+  island_r9_ad.png). Berth + slip check OK (build/art9, local).
 - **WP-25 island art pass** (after WP-24 plates and WP-14e build mode v2 merge): the island/dock must look good at
   EVERY stage (Lv1 bare plate → Lv5 + hangar + sub pen + decor). Owner screenshot issues: the name-sign arch reads
   "the other way around" (make it read correctly from the jetty/boat approach and from land: text on both faces),
