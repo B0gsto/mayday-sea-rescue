@@ -158,6 +158,27 @@ local function studTop(p: BasePart)
 	t.Parent = p
 end
 
+-- a crisp `px`-pixel border (8 px a stud) round a plate's top face: SurfaceGui frames named "Rim", no parts
+local function border(p: BasePart, color: Color3, px: number)
+	local gui = Instance.new("SurfaceGui")
+	gui.Face = Enum.NormalId.Top
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 8
+	gui.LightInfluence = 1
+	gui.Parent = p
+	for _, e in { { 0, 0, 1, 0 }, { 0, 1, 1, 0 }, { 0, 0, 0, 1 }, { 1, 0, 0, 1 } } do
+		local f = Instance.new("Frame")
+		f.Name = "Rim"
+		f.BorderSizePixel = 0
+		f.BackgroundColor3 = color
+		f.AnchorPoint = Vector2.new(e[1], e[2])
+		f.Position = UDim2.fromScale(e[1], e[2])
+		f.Size = UDim2.new(e[3], if e[3] == 0 then px else 0, e[4], if e[4] == 0 then px else 0)
+		f.Parent = gui
+	end
+	return gui
+end
+
 local function plinth(parent: Instance, size: Vector3, cf: CFrame, color: Color3?): BasePart
 	local p = brick(parent, "Plinth", size, cf, color or LBG)
 	studTop(p)
@@ -801,8 +822,8 @@ local function station(m: Model, b: CFrame)
 	)
 	local glow = Instance.new("PointLight")
 	glow.Color = Color3.fromRGB(255, 90, 60)
-	glow.Range = 60
-	glow.Brightness = 4
+	glow.Range = 40
+	glow.Brightness = 2
 	glow.Parent = lens
 end
 
@@ -1357,40 +1378,36 @@ DockPieces.PATHS = {
 	{ V(-34, -84), V(-121, -78) }, -- to the bridges
 	{ V(34, -84), V(121, -78) },
 }
-local TREES = { -- island (r, f) of each tree; clumps of two or three read from the build camera
-	V(-25, -128),
-	V(-14, -138),
-	V(25, -132),
-	V(-100, -126),
-	V(-86, -140),
-	V(-108, -114),
-	V(100, -126),
-	V(84, -140),
-	V(110, -112),
-	V(142, -15),
-	V(136, -2),
-	V(145, 56),
-	V(136, 90),
-	V(146, 100),
-	V(-142, -2),
-	V(-140, 62),
-	V(-128, 92),
-	V(-142, 104),
-	V(-66, 136),
-	V(92, 138),
-	V(104, 128),
-	-- WP-25 r4: more clumps so the plate reads as a diorama from the build camera
-	V(80, 148),
-	V(-10, -150),
-	V(4, -146),
-	V(-60, -146),
-	V(60, -146),
-	V(-128, 30),
-	V(118, 114),
-	V(-104, 126),
-	V(-116, 136),
-	V(-124, -40),
-	V(-132, -52),
+-- WP-25 r6: five clumps of mixed sizes (island r, f, scale) framing the plate corners and the lower quadrants
+local V3 = Vector3.new
+local TREES = {
+	-- the back-left corner, along the chamfer
+	V3(-142, -96, 1.0),
+	V3(-130, -108, 1.5),
+	V3(-120, -95, 0.8),
+	V3(-115, -122, 1.2),
+	V3(-102, -136, 1.5),
+	V3(-94, -148, 0.9),
+	-- the back-right corner
+	V3(142, -98, 0.9),
+	V3(129, -110, 1.4),
+	V3(116, -124, 1.5),
+	V3(103, -137, 1.1),
+	V3(108, -150, 0.8),
+	-- behind the spawn
+	V3(-6, -146, 1.4),
+	V3(10, -140, 0.9),
+	V3(-20, -138, 0.8),
+	-- the east front wing
+	V3(140, 94, 1.5),
+	V3(148, 80, 0.9),
+	V3(128, 110, 1.1),
+	V3(114, 124, 0.8),
+	-- the west front wing
+	V3(-140, 92, 1.4),
+	V3(-148, 78, 0.8),
+	V3(-127, 106, 1.0),
+	V3(-115, 120, 0.8),
 }
 -- low hedges (island r, f from -> to, axis-aligned): along the plate's edges, the lanes and the back cross
 local HEDGES = {
@@ -1399,14 +1416,16 @@ local HEDGES = {
 	{ V(-154, -50), V(-154, 0) }, -- the west edge, clear of the bridge
 	{ V(-154, 46), V(-154, 108) },
 	{ V(154, 46), V(154, 108) }, -- the east edge, clear of the beach tower and the slipway
-	{ V(40, -78), V(40, -28) }, -- outside the lanes (gaps at the workshop door and the helipad walk)
-	{ V(40, 6), V(40, 15) },
-	{ V(-40, -78), V(-40, -46) },
-	{ V(-40, -34), V(-40, 15) },
-	{ V(-30, -90), V(-11, -90) }, -- behind the back cross, either side of the flowers
-	{ V(11, -90), V(30, -90) },
-	{ V(-42, -91), V(-112, -86) }, -- behind the bridge links
-	{ V(42, -91), V(112, -86) },
+	{ V(41, -78), V(41, -28) }, -- outside the lanes (gaps at the workshop door and the helipad walk)
+	{ V(41, 6), V(41, 15) },
+	{ V(-41, -78), V(-41, -46) },
+	{ V(-41, -34), V(-41, 15) },
+	{ V(-27, -91), V(-11, -91) }, -- behind the back cross, either side of the flowers
+	{ V(11, -91), V(27, -91) },
+	{ V(-42, -91), V(-70, -89) }, -- behind the bridge links (gaps at the back huts' doors)
+	{ V(-100, -86.9), V(-112, -86) },
+	{ V(42, -91), V(70, -89) },
+	{ V(100, -86.9), V(112, -86) },
 	{ V(-104, 154), V(-56, 154) }, -- the front wings
 	{ V(56, 154), V(104, 154) },
 }
@@ -1426,9 +1445,9 @@ local FLOWERS = {
 }
 local LAMPS = { V(-44, 17), V(-20, 17), V(20, 17), V(44, 17) } -- along the promenade's inland side
 local LEAF = Color3.fromRGB(40, 127, 70) -- Lego dark green: reads against the plate
+local HEDGE = Color3.fromRGB(36, 88, 50) -- a shade darker: hedges outline the lanes from the build camera
 
-local function tree(m: Model, at: CFrame, k: number)
-	local s = 1 + (k % 3) * 0.2 -- a little size variety
+local function tree(m: Model, at: CFrame, s: number)
 	brick(m, "Trunk", Vector3.new(2.4, 6 * s, 2.4), at * CFrame.new(0, 3 * s, 0), RBROWN)
 	for i, w in { 12, 8.5, 5 } do -- stacked round plates: a Lego pine, round from the build camera
 		part(
@@ -1443,26 +1462,132 @@ local function tree(m: Model, at: CFrame, k: number)
 	end
 end
 
+-- WP-25 r6: two big set pieces in the lower quadrants (read from the build camera). In the piece's frame `P`
+-- (x = right, -z = out toward the cove). A playground: a blue stud plate, a slide tower with steps, a swing set.
+local function playground(m: Model, P: CFrame)
+	local pad = brick(m, "PlayPad", Vector3.new(34, 0.4, 24), P * CFrame.new(0, 0.2, 0), BRICK_BLUE)
+	pad.CanCollide = false
+	studTop(pad)
+	border(pad, BRICK_WHITE, 12)
+	local T = P * CFrame.new(-8, 0, 2) -- the slide tower
+	for _, c in { V(-3, -3), V(3, -3), V(-3, 3), V(3, 3) } do
+		brick(m, "PlayLeg", Vector3.new(1.2, 10, 1.2), T * CFrame.new(c.X, 5, c.Y), BRICK_RED)
+	end
+	studTop(brick(m, "PlayDeck", Vector3.new(8, 0.8, 8), T * CFrame.new(0, 6, 0), BRICK_YELLOW))
+	studTop(brick(m, "PlayRoof", Vector3.new(9, 0.8, 9), T * CFrame.new(0, 10.4, 0), BRICK_YELLOW))
+	for i = 1, 3 do -- the steps up the -x side
+		studTop(
+			brick(
+				m,
+				"PlayStep",
+				Vector3.new(2, 1.6 * i, 3),
+				T * CFrame.new(-4 - 2 * (4 - i), 0.8 * i, 0),
+				BRICK_RED
+			)
+		)
+	end
+	local top, foot = T * Vector3.new(0, 6.3, -4), T * Vector3.new(0, 0.7, -13)
+	brick(
+		m,
+		"Slide",
+		Vector3.new(3.4, 0.5, (foot - top).Magnitude),
+		CFrame.lookAt((top + foot) / 2, foot),
+		BRICK_GREEN
+	)
+	local S = P * CFrame.new(8.5, 0, 0) -- the swing set, its bar along x
+	for _, x in { -7, 7 } do
+		for _, z in { -1, 1 } do -- an A-frame each end
+			brick(
+				m,
+				"SwingLeg",
+				Vector3.new(0.8, 9.4, 0.8),
+				S * CFrame.new(x, 4.5, z * 1.6) * CFrame.Angles(-z * math.rad(20), 0, 0), -- tops meet over the bar
+				BRICK_RED
+			)
+		end
+	end
+	brick(m, "SwingBar", Vector3.new(15.6, 1, 1), S * CFrame.new(0, 9, 0), BRICK_YELLOW)
+	for _, x in { -3, 3 } do
+		brick(m, "SwingSeat", Vector3.new(2.6, 0.4, 1.4), S * CFrame.new(x, 2.4, 0), DBG)
+		for _, dx in { -1.1, 1.1 } do
+			brick(
+				m,
+				"SwingChain",
+				Vector3.new(0.2, 6.2, 0.2),
+				S * CFrame.new(x + dx, 5.6, 0),
+				STEEL
+			)
+		end
+	end
+end
+
+-- a beach volleyball court on a sand corner: a sand stud plate with white lines, a net, a ball, a red umbrella
+local function volleyball(m: Model, P: CFrame)
+	local sand = brick(
+		m,
+		"Sand",
+		Vector3.new(36, 0.4, 24),
+		P * CFrame.new(0, 0.2, 0),
+		Color3.fromRGB(240, 204, 122)
+	)
+	sand.CanCollide = false
+	studTop(sand)
+	local gui = border(sand, BRICK_WHITE, 6)
+	local mid = Instance.new("Frame") -- the centre line under the net
+	mid.Name = "Line"
+	mid.BorderSizePixel = 0
+	mid.BackgroundColor3 = BRICK_WHITE
+	mid.AnchorPoint = Vector2.new(0.5, 0)
+	mid.Position = UDim2.fromScale(0.5, 0)
+	mid.Size = UDim2.new(0, 6, 1, 0)
+	mid.Parent = gui
+	for _, z in { -10.5, 10.5 } do
+		brick(m, "NetPost", Vector3.new(0.8, 8, 0.8), P * CFrame.new(0, 4, z), BRICK_WHITE)
+	end
+	brick(m, "Net", Vector3.new(0.2, 3, 21), P * CFrame.new(0, 5.6, 0), NAVY)
+	brick(m, "NetBand", Vector3.new(1, 0.5, 21), P * CFrame.new(0, 7.3, 0), BRICK_WHITE)
+	part(
+		m,
+		"Ball",
+		Vector3.new(2, 2, 2),
+		P * CFrame.new(6, 1.4, 4),
+		BRICK_YELLOW,
+		M.SmoothPlastic,
+		Enum.PartType.Ball
+	)
+	local U = P * CFrame.new(14, 0, -7) -- the umbrella and two towels in the corner
+	brick(m, "UmbrellaPole", Vector3.new(0.5, 9, 0.5), U * CFrame.new(0, 4.5, 0), BRICK_WHITE)
+	part(
+		m,
+		"Umbrella",
+		Vector3.new(0.8, 10, 10),
+		U * CFrame.new(0, 9, 0) * CFrame.Angles(0, 0, math.pi / 2),
+		BRICK_RED,
+		M.SmoothPlastic,
+		Enum.PartType.Cylinder
+	)
+	brick(m, "Towel", Vector3.new(3, 0.12, 5.5), U * CFrame.new(-2.5, 0.46, 1), BRICK_CYAN)
+	brick(m, "Towel", Vector3.new(3, 0.12, 5.5), U * CFrame.new(2.2, 0.46, 1.5), BRICK_PINK)
+end
+
 function DockPieces.base(b: CFrame): Model
 	local m = Instance.new("Model")
 	m.Name = "IslandSet"
 	for _, pts in DockPieces.PATHS do
 		path(m, b, pts)
 	end
-	for k, t in TREES do
-		tree(m, isle(b, t.X, t.Y), k)
+	for _, t in TREES do
+		tree(m, isle(b, t.X, t.Y), t.Z)
 	end
 	for _, h in HEDGES do
 		local from, to = isle(b, h[1].X, h[1].Y).Position, isle(b, h[2].X, h[2].Y).Position
-		studTop(
-			brick(
-				m,
-				"Hedge",
-				Vector3.new(2.4, 2.2, (to - from).Magnitude + 2.4),
-				CFrame.lookAt((from + to) / 2, to) * CFrame.new(0, 1.1, 0),
-				LEAF
-			)
-		)
+		studTop(brick(
+			m,
+			"Hedge",
+			Vector3.new(5.5, 3.6, (to - from).Magnitude + 5.5), -- WP-25 r6: reads from the build camera
+			CFrame.lookAt((from + to) / 2, to) * CFrame.new(0, 1.8, 0),
+			HEDGE
+		))
 	end
 	-- a red and white lifebuoy on a white post at the quay, beside the jetty
 	local stand = isle(b, 24.5, 28)
@@ -1560,6 +1685,19 @@ function DockPieces.base(b: CFrame): Model
 			)
 		end
 	end
+	for name, r in { Playground = -60, Volleyball = 60 } :: { [string]: number } do
+		local set = Instance.new("Model")
+		set.Name = name
+		local at = isle(b, r, -133)
+		set.WorldPivot = at
+		if name == "Playground" then
+			playground(set, at)
+		else
+			volleyball(set, at)
+		end
+		set:ScaleTo(1.3) -- built at 1x, shown big enough to read from the build camera
+		set.Parent = m
+	end
 	local stack = isle(b, 30, 28)
 	for i, c in { BRICK_RED, BRICK_BLUE, BRICK_YELLOW } do
 		studTop(
@@ -1608,9 +1746,10 @@ function DockPieces.building(key: string, cf: CFrame): Model
 	return m
 end
 
--- WP-25 r4: an empty lot's marker (`at` on the plate, its footprint `size`; `b` the berth frame): a low tan stud
--- pad with a darker rim (SurfaceGui frames: no parts) and a "for sale" peg flag with the build glyph at a corner,
--- turned to face the build camera. The flag is named "Flag" (the owner's colour). The paper blueprint lies on top.
+-- WP-25 r4/r6: an empty lot's marker (`at` on the plate, its footprint `size`; `b` the berth frame): a low white
+-- Lego stud plate with a 2-stud rim in the owner's colour (SurfaceGui frames named "Rim": no parts) and a tall
+-- "for sale" peg flag with the build glyph at a corner, turned to face the build camera. The flag is named "Flag"
+-- (the owner's colour; DockService colours the rim with it). The paper blueprint lies on top.
 function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2): Model
 	local m = Instance.new("Model")
 	m.Name = "LotMarker"
@@ -1619,29 +1758,25 @@ function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2): Model
 		"LotPad",
 		Vector3.new(size.X - 1, 0.4, size.Y - 1),
 		at * CFrame.new(0, 0.2, 0),
-		TAN
+		Color3.fromRGB(222, 224, 228) -- light bluish grey-white: a plate, not dirt (WP-25 r6)
 	)
 	pad.CanCollide = false
 	studTop(pad)
-	local gui = Instance.new("SurfaceGui")
-	gui.Face = Enum.NormalId.Top
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = 8
-	gui.LightInfluence = 1
-	gui.Parent = pad
-	for _, e in { { 0, 0, 1, 0 }, { 0, 1, 1, 0 }, { 0, 0, 0, 1 }, { 1, 0, 0, 1 } } do -- the rim: 1.5 studs, 4 edges
+	local gui = border(pad, DBG, 16)
+	for _, c in { V(0, 0), V(1, 0), V(0, 1), V(1, 1) } do -- 4-stud corner tiles: read from the build camera
 		local f = Instance.new("Frame")
+		f.Name = "Rim"
 		f.BorderSizePixel = 0
-		f.BackgroundColor3 = TAN:Lerp(RBROWN, 0.45)
-		f.AnchorPoint = Vector2.new(e[1], e[2])
-		f.Position = UDim2.fromScale(e[1], e[2])
-		f.Size = UDim2.new(e[3], if e[3] == 0 then 12 else 0, e[4], if e[4] == 0 then 12 else 0)
+		f.BackgroundColor3 = DBG
+		f.AnchorPoint = c
+		f.Position = UDim2.fromScale(c.X, c.Y)
+		f.Size = UDim2.fromOffset(32, 32)
 		f.Parent = gui
 	end
 	local peg = at * CFrame.new(-size.X / 2 + 2.5, 0, -size.Y / 2 + 2.5)
-	brick(m, "LotPeg", Vector3.new(0.8, 10, 0.8), peg * CFrame.new(0, 5, 0), BRICK_WHITE)
+	studTop(brick(m, "LotPeg", Vector3.new(1.2, 13, 1.2), peg * CFrame.new(0, 6.5, 0), BRICK_WHITE))
 	local face = CFrame.new(peg.Position) * isle(b, 0, 0).Rotation -- +Z toward the island's back: the build camera
-	local f = brick(m, "Flag", Vector3.new(6, 4, 0.6), face * CFrame.new(3.4, 7.8, 0), BRICK_WHITE)
+	local f = brick(m, "Flag", Vector3.new(8, 5.2, 0.8), face * CFrame.new(4.6, 10, 0), BRICK_WHITE)
 	f.CanCollide = false
 	for _, n in { Enum.NormalId.Front, Enum.NormalId.Back } do
 		local d = Instance.new("Decal")

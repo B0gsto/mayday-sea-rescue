@@ -94,6 +94,11 @@ Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-2
   windsock, owner-colour bands on the quay walks; parts bare 747 / ~50% 944 / full 1246. AD r4, r5 "not ship"; open:
   pads read as dirt (light grey?), hedges/pegs too small from the build camera, trees as clumps, detail in the lower
   quadrants, bloom over the berth; bare start is at the 750 budget (merge parts first).
+  r6 (branch worktree-agent-ad77b89e302c8d4b3): lot pads light grey stud plates with an owner-colour rim + corner
+  tiles, bigger peg flags, thicker darker hedges, trees in 5 mixed-size clumps, a playground and a beach volleyball
+  court in the lower quadrants, softer Harbour Master beacon, board display models drop their lights (the sub
+  headlight blew out the cove). Parts bare 741 / ~50% 958 / full 1240. AD r6 "not ship" before its quick fixes
+  (applied, sheet build/art/island_r6b.png not re-reviewed); open: bare has ~9 parts of headroom.
 - **WP-25 island art pass** (after WP-24 plates and WP-14e build mode v2 merge): the island/dock must look good at
   EVERY stage (Lv1 bare plate → Lv5 + hangar + sub pen + decor). Owner screenshot issues: the name-sign arch reads
   "the other way around" (make it read correctly from the jetty/boat approach and from land: text on both faces),

@@ -103,6 +103,7 @@ local function inert(source: Model): Model
 			or d:IsA("ProximityPrompt")
 			or d:IsA("Seat")
 			or d:IsA("VehicleSeat")
+			or d:IsA("Light") -- a full-size headlight on a toy-sized model blew out the cove (WP-25 r6)
 		then
 			d:Destroy()
 		elseif d:IsA("BasePart") then

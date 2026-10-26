@@ -414,11 +414,21 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 			marker:Destroy()
 			plot.markers[key] = nil
 		end
-		local peg = plot.markers[key] and plot.markers[key]:FindFirstChild("Flag")
-		if peg and peg:IsA("BasePart") then
-			peg.Color = if owner
-				then Marina.flagColor(owner.UserId)
-				else Color3.fromRGB(242, 240, 232)
+		local mk = plot.markers[key]
+		if mk then -- the peg flag and the pad's rim take the owner's colour
+			local peg = mk:FindFirstChild("Flag")
+			if peg and peg:IsA("BasePart") then
+				peg.Color = if owner
+					then Marina.flagColor(owner.UserId)
+					else Color3.fromRGB(242, 240, 232)
+			end
+			for _, d in mk:GetDescendants() do
+				if d.Name == "Rim" and d:IsA("Frame") then
+					d.BackgroundColor3 = if owner
+						then Marina.flagColor(owner.UserId)
+						else Color3.fromRGB(99, 95, 98)
+				end
+			end
 		end
 		plot.berth:SetAttribute(key, if want then true else nil)
 		if owner then
@@ -583,16 +593,16 @@ local function setMaster(plot: Plot, on: boolean)
 		local lens = part(
 			m,
 			"Beacon",
-			Vector3.new(3, 3, 3),
-			at * CFrame.new(0, 35.5, 0),
+			Vector3.new(2.2, 2.2, 2.2),
+			at * CFrame.new(0, 35.1, 0),
 			GOLD,
 			Enum.Material.Neon
 		)
 		lens.Shape = Enum.PartType.Ball
 		local glow = Instance.new("PointLight")
 		glow.Color = GOLD
-		glow.Range = 60
-		glow.Brightness = 4
+		glow.Range = 36 -- WP-25 r6: softer, the bloom washed out the berth
+		glow.Brightness = 1.5
 		glow.Parent = lens
 		local a0 = Instance.new("Attachment")
 		a0.Parent = lens
@@ -601,11 +611,11 @@ local function setMaster(plot: Plot, on: boolean)
 		a1.Parent = lens
 		local beam = Instance.new("Beam")
 		beam.Attachment0, beam.Attachment1 = a0, a1
-		beam.Width0, beam.Width1 = 4, 10
+		beam.Width0, beam.Width1 = 1.6, 4
 		beam.FaceCamera = true
-		beam.LightEmission = 1
+		beam.LightEmission = 0.25
 		beam.Color = ColorSequence.new(GOLD)
-		beam.Transparency = NumberSequence.new(0.6, 1)
+		beam.Transparency = NumberSequence.new(0.88, 1)
 		beam.Parent = lens
 		m.Parent = plot.model
 		plot.master = m
