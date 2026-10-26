@@ -6,6 +6,7 @@ return function(t)
 	local PetRules = t.load("src/shared/PetRules.luau")
 	local PlatformPrompts = t.load("src/shared/PlatformPrompts.luau")
 	local DiscoveryRules = t.load("src/shared/DiscoveryRules.luau")
+	local SpinRules = t.load("src/shared/SpinRules.luau")
 
 	local NOW = 1790000000
 
@@ -38,6 +39,13 @@ return function(t)
 			foghub = { f1 = string.rep("_", 64), f2 = string.rep("_", 64) },
 			lighthouses = { HarbourLight = true, SkerryLight = true },
 			stock = { paint_red = true, decor_signals = true },
+			spin = SpinRules.encode({
+				day = 20717,
+				free = SpinRules.MAX_FREE,
+				pity = { epic = SpinRules.PITY_EPIC - 1, legendary = SpinRules.PITY_LEGENDARY - 1 },
+				rescued = 1000,
+				owned = 2 ^ #SpinRules.PRIZES - 1,
+			}),
 			platformPrompts = PlatformPrompts.encode(
 				PlatformPrompts.record(
 					PlatformPrompts.record(PlatformPrompts.decode(nil), "notify", NOW),

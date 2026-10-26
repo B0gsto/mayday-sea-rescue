@@ -119,6 +119,7 @@ local options: { Option } = {
 			glow = "#F2E0A0",
 			glowEmission = 0.55,
 			trail = 0.9,
+			rainbow = 0.85,
 			length = 1.45,
 			opacity = 1.25,
 			bowRate = 1.15,

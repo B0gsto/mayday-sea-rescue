@@ -136,6 +136,7 @@ export type Visual = {
 	bowTransparency: number, -- at birth
 	ribbon: number, -- 0..1: the faint coloured trail from the stern (0 = none)
 	ribbonColor: Color3, -- the trail / foam tint
+	rainbow: number, -- 0..1: cycle the ribbon through the hue wheel (spin prize)
 }
 
 Wake.FOAM = Color3.fromHex("#E8EEEC")
@@ -211,6 +212,7 @@ function Wake.visual(style: { [string]: any }?, night: number?): Visual
 		bowTransparency = op(0.35),
 		ribbon = num(s, "trail", 0, 0, 1),
 		ribbonColor = color,
+		rainbow = num(s, "rainbow", 0, 0, 1),
 	}
 end
 

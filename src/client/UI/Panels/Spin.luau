@@ -199,14 +199,20 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 
 	local productButtons: { any } = {}
 	local prices: { [number]: number | false } = {}
+	local offered: { [string]: boolean } = {}
+	local catalogueFetched = false
 	local function paintProducts()
 		for _, row in productButtons do
 			local item = row.item
 			local live = item.ready ~= false and item.id ~= 0
+			row.cell.Visible = not (catalogueFetched and live and offered[row.key] ~= true)
 			if not live then
 				row.button.setState("disabled")
 				row.button.setText("Soon")
 				continue
+			end
+			if catalogueFetched and offered[row.key] ~= true then
+				continue -- the policy hides paid random items for this player
 			end
 			local price = prices[item.id]
 			if type(price) == "number" then
@@ -256,7 +262,7 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 			button.root.AnchorPoint = Vector2.new(0.5, 0)
 			button.root.Position = UDim2.new(0.5, 0, 0, 24)
 			button.root.Size = UDim2.fromOffset(92, 62)
-			table.insert(productButtons, { item = item, button = button })
+			table.insert(productButtons, { item = item, button = button, cell = cell, key = key })
 			fetchPrice(item)
 		end
 	end
@@ -288,8 +294,10 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 	odds.BackgroundTransparency = 1
 	odds.Visible = false
 	odds.ZIndex = 12
-	local _, oddsBody =
+	local oddsHolder, oddsBody =
 		Style.block(odds, Style.grad("body"), { shadow = true, lip = 6, radius = S.corner })
+	oddsHolder.ZIndex = 1
+	oddsBody.ZIndex = 1
 	local oddsFrame = Instance.new("Frame")
 	oddsFrame.BackgroundTransparency = 1
 	oddsFrame.Size = UDim2.fromScale(1, 1)
@@ -297,6 +305,7 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 	local oddsList = Style.list(oddsFrame, false, 6)
 	oddsList.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	local oddsTitle = Style.label(oddsFrame, "Odds", Theme.Text.heading, true)
+	oddsTitle.ZIndex = 2
 	oddsTitle.Size = UDim2.new(1, 0, 0, 44)
 	for i, rarity in SpinRules.RARITY_ORDER do
 		local row = Style.label(
@@ -307,6 +316,7 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 		)
 		row.Size = UDim2.new(0.8, 0, 0, 30)
 		row.LayoutOrder = i
+		row.ZIndex = 2
 	end
 	local pity = Style.label(
 		oddsFrame,
@@ -316,6 +326,7 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 	)
 	pity.Size = UDim2.new(0.9, 0, 0, 24)
 	pity.LayoutOrder = 99
+	pity.ZIndex = 2
 	Style.press(odds, function()
 		odds.Visible = false
 	end, S.cornerSmall)
@@ -336,7 +347,7 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 	rays.Size = UDim2.fromOffset(640, 640)
 	rays.BackgroundTransparency = 1
 	rays.Visible = false
-	rays.ZIndex = 13
+	rays.ZIndex = 1
 	rays.Parent = reveal
 	for i = 1, 20 do
 		local ray = Instance.new("Frame")
@@ -347,30 +358,36 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 		ray.Position = UDim2.fromScale(0.5, 0.5)
 		ray.Size = UDim2.fromOffset(18, 320)
 		ray.Rotation = (i - 1) * 18
-		ray.ZIndex = 13
+		ray.ZIndex = 1
 		ray.Parent = rays
 	end
 	local raySpin: Tween? = nil
 
-	local _, cardFace =
+	local cardHolder, cardFace =
 		Style.block(reveal, Style.grad("body"), { shadow = true, lip = 8, radius = S.corner })
+	cardHolder.ZIndex = 2
+	cardFace.ZIndex = 2
 	local cardText = Style.label(cardFace, "", Theme.Text.title, true)
+	cardText.ZIndex = 3
 	cardText.Position = UDim2.fromOffset(26, 18)
 	cardText.Size = UDim2.new(1, -52, 0, 44)
 	cardText.TextWrapped = false
 	cardText.TextTruncate = Enum.TextTruncate.AtEnd
+	cardText.ZIndex = 3
 	local cardIcon = Instance.new("Frame")
 	cardIcon.Name = "PrizeIcon"
 	cardIcon.AnchorPoint = Vector2.new(0.5, 0.5)
 	cardIcon.Position = UDim2.fromScale(0.5, 0.45)
 	cardIcon.Size = UDim2.fromOffset(150, 150)
 	cardIcon.BackgroundTransparency = 1
-	cardIcon.ZIndex = 15
+	cardIcon.ZIndex = 3
 	cardIcon.Parent = reveal
 	local cardRarity = Style.label(cardFace, "", Theme.Text.heading, true)
+	cardRarity.ZIndex = 3
 	cardRarity.Position = UDim2.new(0, 26, 1, -70)
 	cardRarity.Size = UDim2.new(1, -52, 0, 34)
 	local cardCash = Style.label(cardFace, "", Theme.Text.body, true)
+	cardCash.ZIndex = 3
 	cardCash.Position = UDim2.new(0, 26, 1, -36)
 	cardCash.Size = UDim2.new(1, -52, 0, 26)
 	Style.press(reveal, function()
@@ -470,6 +487,10 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 		spinButton.Active = n > 0 and not busy
 		spinLabel.Text = if busy then "…" else "SPIN"
 		spinLabel.TextTransparency = if n > 0 or busy then 0 else 0.45
+		local epic = tonumber(player:GetAttribute("SpinPityEpic")) or 0
+		local legend = tonumber(player:GetAttribute("SpinPityLegendary")) or 0
+		pity.Text =
+			`Epic+ every {SpinRules.PITY_EPIC} ({SpinRules.PITY_EPIC - epic})  ·  Legendary+ every {SpinRules.PITY_LEGENDARY} ({SpinRules.PITY_LEGENDARY - legend})`
 	end
 
 	local function spin()
@@ -577,9 +598,43 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 		confetti(payload.userId, payload.rarity)
 	end)
 
+	-- the catalogue (and the paid-random policy gate) decides which Robux spins may show
+	local function fetchCatalogue()
+		local net = ReplicatedStorage:FindFirstChild("Net")
+		local remote = net and net:FindFirstChild("Monetization_GetCatalogue")
+		if not (remote and remote:IsA("RemoteFunction")) then
+			catalogueFetched = true
+			paintProducts()
+			return
+		end
+		task.spawn(function()
+			local ok, entries = pcall(function()
+				return (remote :: RemoteFunction):InvokeServer()
+			end)
+			if ok and type(entries) == "table" then
+				local set = {}
+				for _, entry in entries do
+					if
+						type(entry) == "table"
+						and entry.kind == "Products"
+						and type(entry.key) == "string"
+					then
+						set[entry.key] = true
+					end
+				end
+				offered = set
+			end
+			catalogueFetched = true
+			paintProducts()
+		end)
+	end
+
 	player:GetAttributeChangedSignal("FreeSpins"):Connect(refresh)
+	player:GetAttributeChangedSignal("SpinPityEpic"):Connect(refresh)
+	player:GetAttributeChangedSignal("SpinPityLegendary"):Connect(refresh)
 	refresh()
 	paintProducts()
+	fetchCatalogue()
 
 	return {
 		root = root,

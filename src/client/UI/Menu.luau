@@ -1,7 +1,7 @@
 --!strict
 -- Menu (docs/23 (m), WP-23c): the left button column and its kit panels. Mounted once by HudController.
---   Grid (HudLayout "menu" region: 2 icon columns, phones 4 x 2 above the thumbstick): Shop, Quests, Album, Pet, Crew, Settings, Map
---   and Boat (Boat to me: the server's cooldown rule with the Mechanics' shorter wait, drawn as
+--   Grid (HudLayout "menu" region: 2 icon columns above the thumbstick): Shop, Spin, Quests,
+--   Album, Pet, Crew, Settings, Map and Boat (Boat to me: the server's cooldown rule with the Mechanics' shorter wait, drawn as
 --   a ring of ticks; Quick Launch shows the bolt and skips it). Each opens a centred kit Panel; Map
 --   opens the full map (MapController, also M).
 --   Keys: P Shop, gamepad Start Settings, D-pad Left focuses the column (D-pad moves, A presses),
