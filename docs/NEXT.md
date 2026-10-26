@@ -38,7 +38,7 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
 4. **Icons**: redo `boat_to_me`, `settings`, `crew` in `marketing/ui/icons/` with Gemini (Antigravity
    `gemini-3.8-flash-high`; its image quota ran out today), then upload and update `UiImages.Kit`.
 5. **Map image refresh** after WP-24 (`tools/world/make_map_image.py`, upload changed tiles, `MapConfig.Tiles`).
-6. **Launch place server size**: set the LAUNCH place to 6 (done on the test place via the Open Cloud places API, `serverSize`).
+6. ~~**Launch place server size**~~ done 2026-10-26 (see Launch checklist).
    (The old-design stale data was fixed 2026-10-25: rank `unlocks` name current craft/dock/crew, `CallTypes` says
    islands at 1,100 studs, and the pacing sim already had no garage/seaplane purchases; numbers in docs/23 (i)(7).)
 7. ~~**CONTRACT.md refresh** + **code sweep**~~ done 2026-10-26: dead modules / functions / remotes / config cut,
@@ -108,4 +108,20 @@ Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-2
   with `deploy.py ... --steps monetize --only <keys>`.
 - **`deploy.py --only`**: stays uncommitted in `~/RobloxProjects/tools/deploy.py` (TameATitan repo, another thread
   has edits in the same file); that thread commits it. Re-add it locally if it disappears.
-- Launch universe has none of today's 10 products yet.
+
+## Launch checklist (2026-10-26)
+
+Done on the launch universe (10772117922 / place 74810284434342, Brightwake Games, still private):
+- Robux items: the 40 live test items (ready ~= false, real test id) exist with the same names, prices,
+  descriptions and icons; 23 created today (15 dock, 6 decor products; Rescue Helicopter, Submarine passes), 17
+  older ones re-synced. Ids in `deploy/state-launch.json` (retired DockGarage / SeaplanePass pinned to 0).
+  New live item later: `ROBLOX_API_KEY_FILE=~/RobloxProjects/.roblox-api-key-brightwake python3 ~/RobloxProjects/tools/deploy.py . 10772117922 74810284434342 --state deploy/state-launch.json --steps monetize --only <keys>`.
+- Start place name "Mayday: Sea Rescue", description from `marketing/listing.json`, server size 6 (`--steps info --server-size 6`).
+- `publish_studio.py --launch` writes the state-launch ids into MonetizationConfig for the build, then restores
+  the file; simulated today: 40 live items, all launch ids, no test ids.
+
+Left, in order:
+1. Real-client playtest on an account that owns no passes (shop prompts, dock/decor buys, free path).
+2. Creator Hub: store icon + thumbnails upload (API can't set source-language media), genre/subgenre,
+   badge names and descriptions.
+3. `python3 tools/studio/publish_studio.py --launch`, then make it public.

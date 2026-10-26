@@ -12,7 +12,29 @@
       "CallTheStorm": 3720378622,
       "CallTheGreatStorm": 3720378636,
       "DayDoubleCash": 3721589637,
-      "DayQuickLaunch": 3721589648
+      "DayQuickLaunch": 3721589648,
+      "DockLevel2": 3722436293,
+      "DockLevel3": 3722436302,
+      "DockLevel4": 3722436314,
+      "DockLevel5": 3722436317,
+      "DockHangar": 3722436326,
+      "DockSubPen": 3722436333,
+      "DockWorkshop": 3722436343,
+      "DockFishShed": 3722436348,
+      "DockBoatYard": 3722436356,
+      "DockLifeboatSlip": 3722436360,
+      "DockCrane": 3722436369,
+      "DockHelipad": 3722436378,
+      "DockRescueBoathouse": 3722436388,
+      "DockTrophyHall": 3722436399,
+      "DockClinic": 3722436409,
+      "DecorFlowerBed": 3722436411,
+      "DecorPicnicTable": 3722436418,
+      "DecorLampRow": 3722436425,
+      "DecorFlagPole": 3722436433,
+      "DecorStatue": 3722436441,
+      "DecorFountain": 3722436449,
+      "DockGarage": 0
     },
     "GamePasses": {
       "DoubleCash": 2042234755,
@@ -27,7 +49,10 @@
       "RiptideXPass": 2052640957,
       "GildedGullPass": 2053174933,
       "HarbourGTPass": 2054128890,
-      "LighthouseCruiserPass": 2053492929
+      "LighthouseCruiserPass": 2053492929,
+      "RescueHelicopterPass": 2053380362,
+      "SubmarinePass": 2053296382,
+      "SeaplanePass": 0
     }
   },
   "placeVersion": 5
