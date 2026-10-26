@@ -281,7 +281,7 @@ local function isle(b: CFrame, r: number, f: number): CFrame
 	return b * Marina.ISLAND * CFrame.new(r, 0, -f)
 end
 
--- a light grey Lego plate path on the island plate through island (r, f) points, 8 wide, one part per leg (the
+-- a tan Lego plate path on the island plate through island (r, f) points, 8 wide, one part per leg (the
 -- legs overlap at the corners)
 local function path(parent: Instance, b: CFrame, pts: { Vector2 })
 	for k = 1, #pts - 1 do
@@ -292,14 +292,14 @@ local function path(parent: Instance, b: CFrame, pts: { Vector2 })
 			"Path",
 			Vector3.new(8, 0.3, (to - from).Magnitude + 8),
 			CFrame.lookAt((from + to) / 2, to) * CFrame.new(0, 0.15 + (k % 2) * 0.02, 0), -- no z-fight at corners
-			LBG
+			TAN -- WP-25 r7: warm tan walks (grey read cold against the plate)
 		)
 		p.CanCollide, p.CastShadow = false, false
 		local t = Instance.new("Texture")
 		t.Face = Enum.NormalId.Top
 		t.Texture = STUDS
 		t.StudsPerTileU, t.StudsPerTileV = 8, 8
-		t.Color3 = LBG:Lerp(Color3.new(0, 0, 0), 0.15)
+		t.Color3 = TAN:Lerp(Color3.new(0, 0, 0), 0.15)
 		t.Transparency = 0.1
 		t.Parent = p
 	end
@@ -408,7 +408,7 @@ local function paintBooth(m: Model, b: CFrame)
 			"BoothBeam",
 			Vector3.new(xe - xw + 1.4, 1.4, 1.4),
 			b * CFrame.new((xw + xe) / 2, y1, z),
-			ORANGE,
+			NAVY, -- WP-25 r7: navy, calmer over the cove than orange
 			M.SmoothPlastic
 		)
 		beam.CanCollide = false
@@ -613,7 +613,7 @@ local function slipCrane(m: Model, b: CFrame)
 		"Mast",
 		Vector3.new(1.6, mastH, 1.6),
 		base * CFrame.new(0, mastH / 2, 0),
-		YELLOW,
+		WHITE,
 		M.SmoothPlastic
 	)
 	local top = (base * CFrame.new(0, mastH - 0.5, 0)).Position
@@ -624,7 +624,7 @@ local function slipCrane(m: Model, b: CFrame)
 		"Boom",
 		Vector3.new(1.2, 1.2, (tip - top).Magnitude + 6),
 		CFrame.lookAt((top + tip) / 2 - dir * 3, tip),
-		YELLOW,
+		NAVY,
 		M.SmoothPlastic
 	)
 	part(
@@ -1382,15 +1382,11 @@ DockPieces.PATHS = {
 local V3 = Vector3.new
 local TREES = {
 	-- the back-left corner, along the chamfer
-	V3(-142, -96, 1.0),
-	V3(-130, -108, 1.5),
 	V3(-120, -95, 0.8),
 	V3(-115, -122, 1.2),
 	V3(-102, -136, 1.5),
 	V3(-94, -148, 0.9),
 	-- the back-right corner
-	V3(142, -98, 0.9),
-	V3(129, -110, 1.4),
 	V3(116, -124, 1.5),
 	V3(103, -137, 1.1),
 	V3(108, -150, 0.8),
@@ -1442,6 +1438,14 @@ local FLOWERS = {
 	V(-60, 40),
 	V(-60, 66),
 	V(44, 12),
+}
+-- WP-25 r7: Lego tulip fields on the empty lawn (island r, f, width along r, depth along f): one soil plate each,
+-- the rows of blooms are SurfaceGui stripes (no parts), so they fill the top-down view for one part apiece
+local FIELDS = {
+	{ 100, -15, 18, 28 }, -- the right side, between the workshop and the beach tower
+	{ -88, 0, 30, 14 }, -- between the helipad and the hangar
+	{ 85, 135, 24, 12 }, -- the front wings
+	{ -85, 125, 22, 12 },
 }
 local LAMPS = { V(-44, 17), V(-20, 17), V(20, 17), V(44, 17) } -- along the promenade's inland side
 local LEAF = Color3.fromRGB(40, 127, 70) -- Lego dark green: reads against the plate
@@ -1589,6 +1593,30 @@ function DockPieces.base(b: CFrame): Model
 			HEDGE
 		))
 	end
+	local rows = { BRICK_RED, BRICK_YELLOW, BRICK_PINK, BRICK_WHITE, BRICK_ORANGE }
+	for k, fd in FIELDS do
+		local soil = brick(
+			m,
+			"Field",
+			Vector3.new(fd[3], 0.6, fd[4]),
+			isle(b, fd[1], fd[2]) * CFrame.new(0, 0.3, 0),
+			RBROWN
+		)
+		soil.CanCollide = false
+		local gui = border(soil, LEAF, 8) -- a leafy edge round the soil
+		local along = fd[3] >= fd[4] -- rows run along the long side
+		local n = math.floor((if along then fd[4] else fd[3]) / 3)
+		for i = 0, n - 1 do
+			local row = Instance.new("Frame")
+			row.BorderSizePixel = 0
+			row.BackgroundColor3 = rows[(i + k) % #rows + 1]
+			row.Position = if along
+				then UDim2.fromOffset(12, 12 + i * 24)
+				else UDim2.fromOffset(12 + i * 24, 12)
+			row.Size = if along then UDim2.new(1, -24, 0, 14) else UDim2.new(0, 14, 1, -24)
+			row.Parent = gui
+		end
+	end
 	-- a red and white lifebuoy on a white post at the quay, beside the jetty
 	local stand = isle(b, 24.5, 28)
 	studTop(
@@ -1732,6 +1760,8 @@ local BUILDINGS = {
 	Lighthouse = lighthouse,
 } :: { [string]: (Model, CFrame) -> () }
 
+local AFLOAT = { Pontoon = true, SubPen = true, TrophyHall = true, Crane = true } -- no lot bed: on the water or a wall
+
 -- The pieces of building `key` (DockConfig.Buildings, Blueprints) around the berth frame `cf`, as a Model
 -- named `key`. A worker building with no builder of its own is a plain Lego hut.
 function DockPieces.building(key: string, cf: CFrame): Model
@@ -1743,11 +1773,24 @@ function DockPieces.building(key: string, cf: CFrame): Model
 	elseif DockConfig.Buildings[key] then
 		hut(m, cf, key)
 	end
+	local def = DockConfig.Buildings[key]
+	if def and def.spot and def.size and not AFLOAT[key] then
+		-- WP-25 r7: a darker green bed under the lot (2 studs round it, under the paths): a framed plot, not lawn
+		local bed = brick(
+			m,
+			"LotBed",
+			Vector3.new(def.size.X + 4, 0.26, def.size.Y + 4),
+			cf * def.spot * CFrame.new(0, 0.13, 0),
+			Color3.fromRGB(75, 151, 75)
+		)
+		bed.CanCollide, bed.CanQuery = false, false
+		studTop(bed)
+	end
 	return m
 end
 
--- WP-25 r4/r6: an empty lot's marker (`at` on the plate, its footprint `size`; `b` the berth frame): a low white
--- Lego stud plate with a 2-stud rim in the owner's colour (SurfaceGui frames named "Rim": no parts) and a tall
+-- WP-25 r4/r6/r7: an empty lot's marker (`at` on the plate, its footprint `size`; `b` the berth frame): a low grey
+-- Lego stud plate with the build glyph in the middle and a 3-stud rim in the owner's colour (SurfaceGui frames named "Rim": no parts) and a tall
 -- "for sale" peg flag with the build glyph at a corner, turned to face the build camera. The flag is named "Flag"
 -- (the owner's colour; DockService colours the rim with it). The paper blueprint lies on top.
 function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2): Model
@@ -1758,11 +1801,19 @@ function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2): Model
 		"LotPad",
 		Vector3.new(size.X - 1, 0.4, size.Y - 1),
 		at * CFrame.new(0, 0.2, 0),
-		Color3.fromRGB(222, 224, 228) -- light bluish grey-white: a plate, not dirt (WP-25 r6)
+		LBG -- WP-25 r7: a grey baseplate (white read as a missing texture; tan is the paths now)
 	)
 	pad.CanCollide = false
 	studTop(pad)
-	local gui = border(pad, DBG, 16)
+	local gui = border(pad, DBG, 24)
+	local glyph = Instance.new("ImageLabel") -- the build glyph in the middle: "build here" from the top-down camera
+	glyph.BackgroundTransparency = 1
+	glyph.Image = UiImages.Kit.build
+	glyph.ScaleType = Enum.ScaleType.Fit
+	glyph.AnchorPoint = Vector2.new(0.5, 0.5)
+	glyph.Position = UDim2.fromScale(0.5, 0.5)
+	glyph.Size = UDim2.fromOffset(math.min(size.X, size.Y) * 3.6, math.min(size.X, size.Y) * 3.6) -- 45% (8 px a stud)
+	glyph.Parent = gui
 	for _, c in { V(0, 0), V(1, 0), V(0, 1), V(1, 1) } do -- 4-stud corner tiles: read from the build camera
 		local f = Instance.new("Frame")
 		f.Name = "Rim"

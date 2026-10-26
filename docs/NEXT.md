@@ -99,6 +99,12 @@ Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-2
   court in the lower quadrants, softer Harbour Master beacon, board display models drop their lights (the sub
   headlight blew out the cove). Parts bare 741 / ~50% 958 / full 1240. AD r6 "not ship" before its quick fixes
   (applied, sheet build/art/island_r6b.png not re-reviewed); open: bare has ~9 parts of headroom.
+  r7 (branch worktree-agent-a6c5959a043f94d59): tan stud beach step + corner rocks round every plate, lighter inner
+  lawn, tan paths and bridge decks, slim red/white bridge rails + foot lamps, grey lot pads with a centre build glyph,
+  1-part tulip fields on the empty lawn, darker lot beds under built buildings, navy/white berth + slip cranes and
+  paint booth, bridge-axis trees removed. Parts bare 729 / ~50% 926 / full 1239. AD r7a and r7b "not ship" (r7b:
+  "close"); r7b quick fixes applied (sheet build/art/island_r7c.png, not re-reviewed). Open: buildings small vs
+  their lots, small clusters in empty lot corners. Render tool (local, gitignored): build/art7/render.py.
 - **WP-25 island art pass** (after WP-24 plates and WP-14e build mode v2 merge): the island/dock must look good at
   EVERY stage (Lv1 bare plate → Lv5 + hangar + sub pen + decor). Owner screenshot issues: the name-sign arch reads
   "the other way around" (make it read correctly from the jetty/boat approach and from land: text on both faces),
