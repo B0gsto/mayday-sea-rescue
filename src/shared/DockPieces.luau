@@ -5,8 +5,8 @@
 -- island lot (Marina.LOTS, berth frame): the pontoon (beside the berth), lamps, rescue board on the quay; the
 -- boathouse (its lot) + paint booth arches over the berth; the lookout tower (the beach tower lot); the slipway
 -- crane on the quay; the station (its lot): lit front, roof beacon; the trophy hall wall on its front; the
--- helipad and hangar on their lots; the sub pen over the sub berth; the worker buildings and the lifeboat slip
--- as plain Lego huts on their DockConfig spot. DockService builds them (everyone sees them); a buy plays the Lego build
+-- helipad and hangar on their lots; the sub pen over the sub berth; the worker buildings as open work yards
+-- (docs/24 C) and the lifeboat slip on their DockConfig spot. DockService builds them (everyone sees them); a buy plays the Lego build
 -- beat (shared/BuildSeq) client-side. The build station (docs/23 (j) rule 4, WP-14d) stands on the Spare3
 -- lot by the spawn, and the Cash-only decorations on the Spare2 / Spare3 spare lots. Named hooks: parts
 -- "Flag" take the owner's colour, TextLabels "Count" show the rescue count. Materials stay off the
@@ -835,8 +835,8 @@ local function station(m: Model, b: CFrame)
 	glow.Parent = lens
 end
 
--- the trophy hall: a blue board in a yellow frame, a shelf and a name sign on the station's front wall, left of the door
--- (DockPieces.trophies fills it)
+-- the trophy hall: a blue board in a yellow frame, a shelf and a name sign on the station's front wall, left of
+-- the door, framed by two white columns and a gold dome (docs/24 C; DockPieces.trophies fills the board)
 local function trophyHall(m: Model, b: CFrame)
 	brick(
 		m,
@@ -855,7 +855,28 @@ local function trophyHall(m: Model, b: CFrame)
 			BRICK_WHITE
 		)
 	)
-	sign(m, Vector3.new(9, 1.6, 0.4), b * HALL * CFrame.new(0, 9.3, -0.1), BRICK_YELLOW, "Trophies")
+	for _, x in { -9.8, 9.8 } do
+		part(
+			m,
+			"Column",
+			Vector3.new(9.4, 1.5, 1.5),
+			b * HALL * CFrame.new(x, 4.7, -0.5) * CFrame.Angles(0, 0, math.pi / 2),
+			BRICK_WHITE,
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+	end
+	brick(m, "Lintel", Vector3.new(21, 1, 1.2), b * HALL * CFrame.new(0, 9.5, -0.4), BRICK_WHITE)
+	part(
+		m,
+		"Dome",
+		Vector3.new(14, 5, 5),
+		b * HALL * CFrame.new(0, 10.6, -0.6),
+		GOLD,
+		M.SmoothPlastic,
+		Enum.PartType.Ball
+	)
+	sign(m, Vector3.new(9, 1.6, 0.4), b * HALL * CFrame.new(0, 1.1, -0.1), BRICK_YELLOW, "Trophies")
 end
 
 -- WP-10b buildings (WP-19b: on their own lots) ------------------------------------------------------
@@ -991,17 +1012,43 @@ local function hangar(m: Model, b: CFrame)
 		H * CFrame.new(0, h + 0.5, 0),
 		BRICK_WHITE
 	)
-	gable(m, H * CFrame.new(0, h + 1, 0), hw * 2 + 3, hd * 2 + 3, 8, RED) -- the gable over the open front
+	-- docs/24 C: an arched roof (five chunky slope courses on a circle), not a gable
+	local apex, radius = H * CFrame.new(0, h + 9.5, 0), 25
+	for i = -2, 2 do
+		local a = math.rad(i * 24)
+		brick(
+			m,
+			"ArchRoof",
+			Vector3.new(10.6, 1.2, hd * 2 + 3),
+			apex
+				* CFrame.new(radius * math.sin(a), -radius * (1 - math.cos(a)), 0)
+				* CFrame.Angles(0, 0, -a),
+			RED
+		)
+	end
 	sign(m, Vector3.new(11, 2.2, 0.4), H * CFrame.new(0, h - 1.5, -hd - 0.6), BRICK_WHITE, "Hangar")
 	path(m, b, { Vector2.new(-37, 5), Vector2.new(-88, 5), Vector2.new(-88, 18) })
 end
 
--- the sub pen: a chunky Lego gantry (grey legs, yellow beams, a trolley) over a white stud-deck walkway that rings
--- the moon pool at the waterline, yellow bollards at its corners, a plank from the jetty
+-- the sub pen (docs/24 C): a round moon pool ringed by a stud deck, a yellow gantry and a white dome cap
 local function subPen(m: Model, b: CFrame)
 	local P = b * Marina.SUB
 	local hx, hz, top = PEN.hx, PEN.hz, PEN.top
-	for _, x in { -hx, hx } do
+	-- the round walkway: eight tangent deck segments round the pool
+	for i = 0, 7 do
+		local a = i * math.pi / 4
+		studTop(
+			brick(
+				m,
+				"Walk",
+				Vector3.new(9.4, 1, 5.6),
+				P * CFrame.new(math.sin(a) * 13, 0.5, math.cos(a) * 13) * CFrame.Angles(0, a, 0),
+				BRICK_WHITE
+			)
+		)
+	end
+	-- four gantry legs, a square beam frame and the trolley (the hook stays at PEN.top - 0.5)
+	for _, x in { -hx - 2, hx + 2 } do
 		for _, z in { -hz, hz } do
 			brick(
 				m,
@@ -1010,40 +1057,32 @@ local function subPen(m: Model, b: CFrame)
 				P * CFrame.new(x, (top - 6) / 2, z),
 				GREY
 			)
-			studTop(
-				brick(
-					m,
-					"Bollard",
-					Vector3.new(1.4, 1.2, 1.4),
-					P * CFrame.new(x + math.sign(x) * 1, 1.6, z + math.sign(z) * 1),
-					BRICK_YELLOW
-				)
-			)
 		end
 		brick(m, "Beam", Vector3.new(1.4, 1.4, hz * 2 + 1.6), P * CFrame.new(x, top, 0), YELLOW)
-		studTop(
-			brick(
-				m,
-				"Walk",
-				Vector3.new(3, 1, hz * 2 + 5),
-				P * CFrame.new(x + math.sign(x) * 1, 0.5, 0),
-				BRICK_WHITE
-			)
-		)
 	end
 	for _, z in { -hz, hz } do
-		brick(m, "Beam", Vector3.new(hx * 2, 1.4, 1.4), P * CFrame.new(0, top, z), YELLOW)
-		studTop(
-			brick(
-				m,
-				"Walk",
-				Vector3.new(hx * 2 - 1, 1, 3),
-				P * CFrame.new(0, 0.5, z + math.sign(z) * 1),
-				BRICK_WHITE
-			)
-		)
+		brick(m, "Beam", Vector3.new(hx * 2 + 4, 1.4, 1.4), P * CFrame.new(0, top, z), YELLOW)
 	end
 	brick(m, "Trolley", Vector3.new(hx * 2, 1.4, 2.4), P * CFrame.new(0, top + 0.2, 0), BRICK_RED)
+	-- the dome: a yellow ring on the beams and a white cap (a whole ball, its lower half under the ring)
+	part(
+		m,
+		"DomeRing",
+		Vector3.new(1.2, hx * 2 + 9, hx * 2 + 9),
+		P * CFrame.new(0, top + 1.2, 0) * CFrame.Angles(0, 0, math.pi / 2),
+		BRICK_YELLOW,
+		M.SmoothPlastic,
+		Enum.PartType.Cylinder
+	)
+	part(
+		m,
+		"Dome",
+		Vector3.new(hx * 2, 8, hx * 2),
+		P * CFrame.new(0, top + 4.8, 0),
+		BRICK_WHITE,
+		M.SmoothPlastic,
+		Enum.PartType.Ball
+	)
 	-- a plank from the jetty onto the walkway
 	brick(
 		m,
@@ -1130,16 +1169,14 @@ local function plate(
 	label.Parent = gui
 end
 
--- WP-25 worker buildings (docs/23 (o)): Lego cottages on their DockConfig spot (`spot`, `size`, `color` = the
--- walls): a stud plinth, a solid wall brick with a white top course, windows, a door in the owner's colour, a
--- slope-brick gable roof with a chimney, a sign on the gable (Kit icon + name), a few props and a path stub to the
--- nearest lane (island r, f points). The workers stand in front of the door (-Z, WorkerService).
+-- WP-25 worker buildings (docs/23 (o), docs/24 C): open Lego work yards on their DockConfig spot (`spot`,
+-- `size`, `color` = the owner's accent): a stud plinth, the work furniture and a path stub to the nearest lane
+-- (island r, f points). The open front (-Z) is where the crew stands (WorkerService.workSpot).
 type Hut = {
-	roof: Color3,
+	roof: Color3?,
 	tree: number?, -- WP-25 r8: a little tree at the back corner on this side (local X sign), clear of the neighbours
 	icon: string?,
 	path: { Vector2 },
-	props: ((Model, CFrame, number, number) -> ())?,
 }
 
 local function crate(m: Model, at: CFrame, color: Color3)
@@ -1152,93 +1189,29 @@ local HUTS: { [string]: Hut } = {
 		roof = BRICK_RED,
 		icon = UiImages.Kit.build,
 		path = { Vector2.new(46, -10), Vector2.new(36, -10) },
-		props = function(m, at, w, d) -- a stack of spare bricks by the door
-			local s = at * CFrame.new(-w / 2 - 3, 0, -d / 2 + 2)
-			crate(m, s, BRICK_RED)
-			crate(m, s * CFrame.new(0, 2, 0) * CFrame.Angles(0, 0.4, 0), BRICK_BLUE)
-			crate(m, s * CFrame.new(0, 0, 3), BRICK_GREEN)
-		end,
 	},
 	FishShed = {
 		tree = 1,
 		roof = BRICK_WHITE,
 		icon = UiImages.Kit.cash,
 		path = { Vector2.new(60, 105), Vector2.new(55, 105) },
-		props = function(m, at, w, d) -- fish crates and a barrel by the door
-			local s = at * CFrame.new(w / 2 + 2.5, 0, -d / 2 + 2)
-			crate(m, s, BRICK_ORANGE)
-			crate(m, s * CFrame.new(0, 0, 3), BRICK_WHITE)
-			part(
-				m,
-				"Barrel",
-				Vector3.new(3, 2.4, 2.4),
-				s * CFrame.new(0, 1.5, 6.5) * CFrame.Angles(0, 0, math.pi / 2),
-				RBROWN,
-				M.SmoothPlastic,
-				Enum.PartType.Cylinder
-			)
-		end,
 	},
 	BoatYard = {
 		tree = 1,
 		roof = BRICK_BLUE,
 		icon = UiImages.Kit.boost,
 		path = { Vector2.new(85, -94), Vector2.new(85, -82) },
-		props = function(m, at, w, _d) -- a little hull up on two trestles
-			local s = at * CFrame.new(-w / 2 - 4, 0, 0)
-			for _, z in { -2.5, 2.5 } do
-				brick(m, "Trestle", Vector3.new(3, 1.6, 0.8), s * CFrame.new(0, 0.8, z), DBG)
-			end
-			brick(m, "Hull", Vector3.new(3.4, 1.6, 8), s * CFrame.new(0, 2.4, 0), BRICK_WHITE)
-			local bow = Instance.new("WedgePart")
-			bow.Name = "Bow"
-			bow.Size = Vector3.new(3.4, 1.6, 2.4)
-			bow.CFrame = s
-				* CFrame.new(0, 2.4, -5.2)
-				* CFrame.Angles(0, math.pi, 0)
-				* CFrame.Angles(0, 0, 0)
-			bow.Color, bow.Material, bow.Anchored = BRICK_WHITE, M.SmoothPlastic, true
-			bow.Parent = m
-			brick(m, "Stripe", Vector3.new(3.5, 0.5, 8), s * CFrame.new(0, 2.6, 0), BRICK_ORANGE)
-		end,
 	},
 	RescueBoathouse = {
 		tree = 1,
 		roof = BRICK_WHITE,
 		icon = UiImages.Kit.lifebuoy,
 		path = { Vector2.new(-59, 99), Vector2.new(-54, 99) },
-		props = function(m, at, w, _d) -- a rescue RIB on its trailer by the door
-			local s = at * CFrame.new(w / 2 + 4, 0, 0)
-			brick(m, "Trailer", Vector3.new(3, 0.6, 8), s * CFrame.new(0, 0.9, 0), DBG)
-			brick(m, "Tube", Vector3.new(3.6, 1.4, 8), s * CFrame.new(0, 1.9, 0), BRICK_ORANGE)
-			brick(m, "Deck", Vector3.new(2.4, 0.6, 6.6), s * CFrame.new(0, 2.5, 0), DBG)
-			brick(
-				m,
-				"Console",
-				Vector3.new(1.4, 1.4, 1.4),
-				s * CFrame.new(0, 3.4, 0.6),
-				BRICK_WHITE
-			)
-		end,
 	},
 	Clinic = {
 		tree = -1,
 		roof = BRICK_RED,
 		path = { Vector2.new(-85, -93), Vector2.new(-85, -82) },
-		props = function(m, at, w, _d) -- a little white ambulance by the door, its blue beacon on the roof
-			local s = at * CFrame.new(w / 2 + 4, 0, -2)
-			studTop(
-				brick(
-					m,
-					"Ambulance",
-					Vector3.new(3.6, 3.4, 7),
-					s * CFrame.new(0, 2.1, 0),
-					BRICK_WHITE
-				)
-			)
-			brick(m, "Stripe", Vector3.new(3.7, 0.8, 7.1), s * CFrame.new(0, 2.2, 0), BRICK_RED)
-			brick(m, "Beacon", Vector3.new(1.4, 0.8, 1), s * CFrame.new(0, 4.2, -2), BRICK_BLUE)
-		end,
 	},
 }
 
@@ -1313,11 +1286,393 @@ local function hut(m: Model, b: CFrame, key: string)
 		spec and spec.icon
 	)
 	if spec then
-		if spec.props then
-			spec.props(m, at, w, d)
-		end
 		path(m, b, spec.path)
 	end
+end
+
+-- docs/24 C: the worker buildings are open work yards, so the crew and their props read from the front (-Z).
+-- Built at size / scale; DockPieces.building scales the lot's footprint back up.
+local function yardSize(def: DockConfig.Building): (number, number)
+	return def.size.X / (def.scale or 1), def.size.Y / (def.scale or 1)
+end
+
+-- Builder: an open-air carpentry yard: bench under a low lean-to, timber stacks and a half-built boat frame
+local function workshopYard(m: Model, b: CFrame)
+	local def = DockConfig.Buildings.Workshop
+	local at = b * def.spot
+	local w, d = yardSize(def)
+	local spec = HUTS.Workshop
+	local front = -d / 2
+	local wall = def.color or BRICK_YELLOW
+	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
+	brick(m, "Wall", Vector3.new(w, 5, 0.8), at * CFrame.new(0, 3.3, d / 2 - 0.4), wall)
+	for _, x in { -1, 1 } do
+		brick(
+			m,
+			"Wall",
+			Vector3.new(0.8, 5, 3),
+			at * CFrame.new(x * (w / 2 - 0.4), 3.3, d / 2 - 2),
+			wall
+		)
+	end
+	-- the bench (the crew faces it from the front edge), with a low lean-to over it
+	studTop(
+		brick(
+			m,
+			"Bench",
+			Vector3.new(15, 0.7, 3.2),
+			at * CFrame.new(0, 3.1, front + 5),
+			BRICK_WHITE
+		)
+	)
+	for _, x in { -5.2, 5.2 } do
+		brick(m, "BenchLeg", Vector3.new(0.8, 2.8, 2.8), at * CFrame.new(x, 1.4, front + 5), DBG)
+	end
+	for _, x in { -6, 6 } do
+		brick(
+			m,
+			"Post",
+			Vector3.new(0.8, 8.4, 0.8),
+			at * CFrame.new(x, 4.6, front + 2.2),
+			BRICK_WHITE
+		)
+	end
+	brick(m, "Roof", Vector3.new(13.5, 0.7, 7.2), at * CFrame.new(0, 8.9, front + 4.6), BRICK_GREEN)
+	sign(
+		m,
+		Vector3.new(6, 2, 0.4),
+		at * CFrame.new(0, 7.1, front + 2.2),
+		BRICK_WHITE,
+		def.name,
+		spec.icon
+	)
+	-- timber stacks and the half-built boat frame deeper in the yard
+	local tim = at * CFrame.new(w / 2 - 4, 0, 1.5)
+	for i = 0, 2 do
+		studTop(
+			brick(
+				m,
+				"Timber",
+				Vector3.new(7, 1.2, 2),
+				tim * CFrame.new(0, 1.4 + i * 1.3, -i * 0.4),
+				RBROWN
+			)
+		)
+	end
+	local boat = at * CFrame.new(-w / 4, 0, 2.4)
+	brick(m, "Keel", Vector3.new(1.2, 1.2, 8.4), boat * CFrame.new(0, 2.6, 0), RBROWN)
+	for i = -1, 1 do
+		brick(m, "Rib", Vector3.new(5.6, 0.8, 0.8), boat * CFrame.new(0, 2.8, i * 2.8), RBROWN)
+	end
+	path(m, b, spec.path)
+end
+
+-- Gatherer: a fish market on the cove walk: two striped awning stalls, fish crates, drying racks
+local function fishMarket(m: Model, b: CFrame)
+	local def = DockConfig.Buildings.FishShed
+	local at = b * def.spot
+	local w, d = yardSize(def)
+	local spec = HUTS.FishShed
+	local front = -d / 2
+	local accent = def.color or BRICK_BLUE
+	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
+	for k, x in { -w / 4 - 1, w / 4 + 1 } do
+		local s = at * CFrame.new(x, 0, front + 5)
+		studTop(
+			brick(m, "Counter", Vector3.new(6.4, 2.4, 2.6), s * CFrame.new(0, 1.2, 0), BRICK_WHITE)
+		)
+		for _, px in { -2.8, 2.8 } do
+			brick(m, "Post", Vector3.new(0.6, 7, 0.6), s * CFrame.new(px, 3.5, 0), BRICK_WHITE)
+		end
+		for i = 1, 3 do -- chunky striped awning, the owner's colour and white
+			brick(
+				m,
+				"Awning",
+				Vector3.new(2.3, 0.4, 4.4),
+				s * CFrame.new((i - 2) * 2.3, 6.6, 0) * CFrame.Angles(math.rad(-12), 0, 0),
+				if (i + k) % 2 == 0 then accent else BRICK_WHITE
+			)
+		end
+		crate(m, s * CFrame.new(-1.4, 0, 2.6), BRICK_WHITE)
+	end
+	-- crates of fish and a barrel between the stalls
+	crate(m, at * CFrame.new(0, 0, front + 6), BRICK_ORANGE)
+	part(
+		m,
+		"Barrel",
+		Vector3.new(3, 2.4, 2.4),
+		at * CFrame.new(0, 1.5, front + 2.4) * CFrame.Angles(0, 0, math.pi / 2),
+		RBROWN,
+		M.SmoothPlastic,
+		Enum.PartType.Cylinder
+	)
+	-- a drying rack at the back: two posts, a bar and three fish
+	local rack = at * CFrame.new(0, 0, d / 2 - 3)
+	for _, x in { -4, 4 } do
+		brick(m, "RackPost", Vector3.new(0.6, 5, 0.6), rack * CFrame.new(x, 2.5, 0), BRICK_WHITE)
+	end
+	brick(m, "RackBar", Vector3.new(8.6, 0.6, 0.6), rack * CFrame.new(0, 5, 0), BRICK_WHITE)
+	for i = -1, 1 do
+		brick(
+			m,
+			"Fish",
+			Vector3.new(0.5, 1.6, 1.1),
+			rack * CFrame.new(i * 2.4, 4.1, 0),
+			if i == 0 then BRICK_ORANGE else BRICK_WHITE
+		)
+	end
+	sign(
+		m,
+		Vector3.new(5, 2, 0.4),
+		at * CFrame.new(w / 2 - 4, 8.2, front + 5),
+		BRICK_WHITE,
+		def.name,
+		spec.icon
+	)
+	path(m, b, spec.path)
+end
+
+-- Mechanic: a boat up on a cradle under a gantry crane, tool chests beside it
+local function boatYard(m: Model, b: CFrame)
+	local def = DockConfig.Buildings.BoatYard
+	local at = b * def.spot
+	local w, d = yardSize(def)
+	local spec = HUTS.BoatYard
+	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
+	local boat = at * CFrame.new(0, 0, 1)
+	for _, z in { -3, 3 } do
+		studTop(brick(m, "Cradle", Vector3.new(7, 0.9, 1.4), boat * CFrame.new(0, 1.6, z), RBROWN))
+	end
+	studTop(brick(m, "Hull", Vector3.new(6, 2.6, 12), boat * CFrame.new(0, 3.3, 0), BRICK_WHITE))
+	local bow = Instance.new("WedgePart")
+	bow.Name = "Bow"
+	bow.Size = Vector3.new(6, 2.6, 2.8)
+	bow.CFrame = boat * CFrame.new(0, 3.3, -7.2) * CFrame.Angles(0, math.pi, 0)
+	bow.Color, bow.Material, bow.Anchored = BRICK_WHITE, M.SmoothPlastic, true
+	bow.Parent = m
+	brick(
+		m,
+		"Stripe",
+		Vector3.new(6.1, 0.6, 12),
+		boat * CFrame.new(0, 3.4, 0),
+		def.color or BRICK_ORANGE
+	)
+	brick(m, "Deck", Vector3.new(4.4, 0.5, 9), boat * CFrame.new(0, 4.75, 0.5), DBG)
+	brick(m, "Console", Vector3.new(2.4, 1.6, 2), boat * CFrame.new(0, 5.6, 2.4), BRICK_WHITE)
+	-- the gantry crane over the boat
+	for _, x in { -8.5, 8.5 } do
+		brick(m, "Leg", Vector3.new(1.2, 14, 1.2), boat * CFrame.new(x, 8.2, 0), DBG)
+	end
+	brick(m, "Beam", Vector3.new(18.4, 1.2, 1.2), boat * CFrame.new(0, 14.8, 0), BRICK_YELLOW)
+	brick(m, "Cable", Vector3.new(0.4, 4, 0.4), boat * CFrame.new(0, 12.4, 0), DBG)
+	brick(m, "Hook", Vector3.new(1.4, 1.4, 1.4), boat * CFrame.new(0, 10.2, 0), BRICK_ORANGE)
+	sign(
+		m,
+		Vector3.new(7, 2, 0.4),
+		boat * CFrame.new(0, 16.4, 0),
+		BRICK_YELLOW,
+		def.name,
+		spec.icon
+	)
+	-- tool chests and a tyre stack beside the hull
+	local tools = at * CFrame.new(w / 2 - 4, 0, -d / 2 + 8)
+	studTop(
+		brick(m, "ToolChest", Vector3.new(3.6, 2.2, 2), tools * CFrame.new(0, 1.1, 0), BRICK_RED)
+	)
+	studTop(
+		brick(
+			m,
+			"ToolChest",
+			Vector3.new(2.6, 1.6, 1.8),
+			tools * CFrame.new(-0.4, 2.8, 0.6) * CFrame.Angles(0, 0.4, 0),
+			BRICK_BLUE
+		)
+	)
+	for i = 0, 1 do
+		part(
+			m,
+			"Tyre",
+			Vector3.new(1.2, 2.6, 2.6),
+			tools * CFrame.new(3.2, 1.2 + i * 2.1, 0) * CFrame.Angles(0, 0, math.pi / 2),
+			Color3.fromRGB(40, 42, 48),
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+	end
+	path(m, b, spec.path)
+end
+
+-- Rescuer: an open slipway shed with the rescue boat, a lifebuoy rack and a tall lifeguard chair
+local function rescueBoathouse(m: Model, b: CFrame)
+	local def = DockConfig.Buildings.RescueBoathouse
+	local at = b * def.spot
+	local w, d = yardSize(def)
+	local spec = HUTS.RescueBoathouse
+	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
+	for _, x in { -1, 1 } do
+		for _, z in { -1, 1 } do
+			brick(
+				m,
+				"Post",
+				Vector3.new(1, 11, 1),
+				at * CFrame.new(x * (w / 2 - 1.2), 6.1, z * (d / 2 - 1.2)),
+				BRICK_WHITE
+			)
+		end
+	end
+	for _, x in { -1, 1 } do -- two slope bricks, open at the front and sides
+		local roof = brick(
+			m,
+			"Roof",
+			Vector3.new(w / 2 + 2.4, 0.8, d + 3),
+			at * CFrame.new(x * (w / 4 + 0.6), 12.6, 0),
+			def.color or BRICK_RED
+		)
+		roof.CFrame = roof.CFrame * CFrame.Angles(0, 0, -x * math.rad(9))
+	end
+	-- the rescue boat on its slip
+	local boat = at * CFrame.new(0, 0, -d / 2 + 8.5)
+	brick(m, "Hull", Vector3.new(4.4, 2, 10), boat * CFrame.new(0, 2.4, 0), BRICK_WHITE)
+	brick(m, "Tube", Vector3.new(4.8, 0.8, 10), boat * CFrame.new(0, 3.3, 0), BRICK_ORANGE)
+	brick(m, "Deck", Vector3.new(3.2, 0.5, 8), boat * CFrame.new(0, 3.6, 0), DBG)
+	brick(m, "Console", Vector3.new(1.8, 1.4, 1.8), boat * CFrame.new(0, 4.3, 1.6), BRICK_WHITE)
+	-- the lifebuoy rack on the back wall
+	local rack = at * CFrame.new(-w / 4, 0, d / 2 - 3)
+	for _, x in { -2.4, 2.4 } do
+		brick(m, "RackPost", Vector3.new(0.7, 6, 0.7), rack * CFrame.new(x, 3, 0), BRICK_WHITE)
+	end
+	brick(m, "RackBar", Vector3.new(5.4, 0.7, 0.7), rack * CFrame.new(0, 6, 0), BRICK_WHITE)
+	for _, x in { -1.5, 1.5 } do
+		part(
+			m,
+			"Lifebuoy",
+			Vector3.new(0.7, 2, 2),
+			rack * CFrame.new(x, 4.6, -0.6) * CFrame.Angles(0, 0, math.pi / 2),
+			BRICK_RED,
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+		part(
+			m,
+			"Lifebuoy",
+			Vector3.new(0.8, 1, 1),
+			rack * CFrame.new(x, 4.6, -0.6) * CFrame.Angles(0, 0, math.pi / 2),
+			BRICK_WHITE,
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+	end
+	-- the tall lifeguard chair by the front corner: a seat over a narrow tower with a footrest
+	local chair = at * CFrame.new(w / 2 - 4, 0, -d / 2 + 3)
+	studTop(
+		brick(
+			m,
+			"ChairBase",
+			Vector3.new(3.4, 0.8, 3.4),
+			chair * CFrame.new(0, 0.4, 0),
+			BRICK_YELLOW
+		)
+	)
+	brick(m, "ChairPost", Vector3.new(1.2, 9, 1.2), chair * CFrame.new(0, 5, 0), BRICK_WHITE)
+	studTop(
+		brick(
+			m,
+			"ChairSeat",
+			Vector3.new(3.2, 0.6, 3.2),
+			chair * CFrame.new(0, 9.8, 0),
+			BRICK_YELLOW
+		)
+	)
+	brick(
+		m,
+		"ChairBack",
+		Vector3.new(3.2, 2.6, 0.5),
+		chair * CFrame.new(0, 11.4, 1.35),
+		BRICK_YELLOW
+	)
+	brick(m, "ChairStep", Vector3.new(2, 0.4, 1.2), chair * CFrame.new(0, 5.8, -1.7), BRICK_WHITE)
+	sign(
+		m,
+		Vector3.new(6, 2, 0.4),
+		at * CFrame.new(0, 9.4, -d / 2 + 0.2),
+		BRICK_WHITE,
+		def.name,
+		spec.icon
+	)
+	path(m, b, spec.path)
+end
+
+-- Medic: a white pavilion (open sides) with a big red cross, two beds and a stretcher in view
+local function clinic(m: Model, b: CFrame)
+	local def = DockConfig.Buildings.Clinic
+	local at = b * def.spot
+	local w, d = yardSize(def)
+	local spec = HUTS.Clinic
+	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
+	for _, x in { -1, 1 } do
+		for _, z in { -1, 1 } do
+			brick(
+				m,
+				"Post",
+				Vector3.new(1, 10, 1),
+				at * CFrame.new(x * (w / 2 - 1.2), 5.8, z * (d / 2 - 1.2)),
+				BRICK_WHITE
+			)
+		end
+	end
+	-- a white tent roof: two slope bricks meeting at the ridge
+	local top = at * CFrame.new(0, 10.8, 0)
+	for _, z in { -1, 1 } do
+		local roof = brick(
+			m,
+			"Roof",
+			Vector3.new(w + 3, 0.8, d / 2 + 5),
+			top * CFrame.new(0, 1.2, z * (d / 4 + 0.2)),
+			BRICK_WHITE
+		)
+		roof.CFrame = roof.CFrame * CFrame.Angles(z * math.rad(14), 0, 0)
+	end
+	-- the big red cross on the front header: readable from the lane and the build camera
+	brick(m, "Header", Vector3.new(9, 4.6, 0.5), at * CFrame.new(0, 8.4, -d / 2 + 0.2), BRICK_WHITE)
+	brick(m, "Cross", Vector3.new(1.6, 4.2, 0.5), at * CFrame.new(0, 8.4, -d / 2 - 0.1), BRICK_RED)
+	brick(m, "Cross", Vector3.new(4.2, 1.6, 0.5), at * CFrame.new(0, 8.4, -d / 2 - 0.1), BRICK_RED)
+	-- two beds at the back, made up
+	for k, x in { -w / 4, w / 4 } do
+		local bed = at * CFrame.new(x, 0, d / 2 - 5.2)
+		brick(m, "BedFrame", Vector3.new(4.4, 0.7, 7), bed * CFrame.new(0, 1.4, 0), BRICK_WHITE)
+		for _, z in { -2.6, 2.6 } do
+			brick(m, "BedLeg", Vector3.new(0.5, 1.2, 0.5), bed * CFrame.new(0, 0.6, z), STEEL)
+		end
+		studTop(
+			brick(m, "Mattress", Vector3.new(4, 0.8, 6), bed * CFrame.new(0, 2.1, 0), BRICK_WHITE)
+		)
+		brick(
+			m,
+			"Pillow",
+			Vector3.new(3, 0.7, 1.4),
+			bed * CFrame.new(0, 2.9, 2.1),
+			if k == 1 then BRICK_CYAN else BRICK_PINK
+		)
+	end
+	-- a stretcher between the beds
+	local st = at * CFrame.new(0, 0, d / 2 - 4.5)
+	for _, z in { -2, 2 } do
+		brick(m, "StretcherLeg", Vector3.new(3.4, 1.4, 0.4), st * CFrame.new(0, 0.8, z), STEEL)
+		brick(m, "StretcherRail", Vector3.new(0.5, 0.5, 6), st * CFrame.new(-1.5, 1.6, 0), STEEL)
+		brick(m, "StretcherRail", Vector3.new(0.5, 0.5, 6), st * CFrame.new(1.5, 1.6, 0), STEEL)
+	end
+	brick(m, "Stretcher", Vector3.new(3.4, 0.4, 5.2), st * CFrame.new(0, 2, 0), BRICK_WHITE)
+	-- a medicine crate and an IV stand
+	crate(m, at * CFrame.new(-w / 2 + 1.6, 0, d / 2 - 4.5), BRICK_RED)
+	brick(m, "IVPost", Vector3.new(0.4, 6, 0.4), at * CFrame.new(w / 2 - 1.8, 3, d / 2 - 6), STEEL)
+	brick(
+		m,
+		"IVBag",
+		Vector3.new(1.1, 1.6, 0.8),
+		at * CFrame.new(w / 2 - 1.8, 6.4, d / 2 - 6),
+		BRICK_CYAN
+	)
+	path(m, b, spec.path)
 end
 
 -- the lifeboat slip on the island's edge: an open shed (white posts, blue slope roof) over a slipway that runs
@@ -1392,9 +1747,9 @@ local function lifeboatSlip(m: Model, b: CFrame)
 end
 
 -- WP-25: the fixed set on every island plate, there from the bare start (DockService builds it with the jetty):
--- the light grey plate paths (a loop of lanes round the station's spot from the spawn to the quay promenade, the cove
--- walks, the links to both bridges), Lego trees round the edges, a lifebuoy stand on the quay and a bench by the
--- spawn. Island (r, f) points: r = right, f = out toward the cove.
+-- the tan paths (a loop of lanes round the station's spot from the spawn to the quay promenade, the cove walks, the
+-- links to both bridges), a central plaza on the cove axis, Lego trees round the edges, a lifebuoy stand on the
+-- quay and a bench by the spawn. Island (r, f) points: r = right, f = out toward the cove.
 local V = Vector2.new
 DockPieces.PATHS = {
 	{ V(-34, -84), V(34, -84) }, -- the back cross, past the spawn
@@ -1434,50 +1789,10 @@ local TREES = {
 	V3(-127, 106, 1.0),
 	V3(-115, 120, 0.8),
 }
--- low hedges (island r, f from -> to, axis-aligned): along the plate's edges, the lanes and the back cross
-local HEDGES = {
-	{ V(-104, -154), V(-36, -154) }, -- the back edge, open behind the spawn
-	{ V(36, -154), V(104, -154) },
-	{ V(-154, -50), V(-154, 0) }, -- the west edge, clear of the bridge
-	{ V(-154, 46), V(-154, 108) },
-	{ V(154, 46), V(154, 108) }, -- the east edge, clear of the beach tower and the slipway
-	{ V(41, -78), V(41, -28) }, -- outside the lanes (gaps at the workshop door and the helipad walk)
-	{ V(41, 6), V(41, 15) },
-	{ V(-41, -78), V(-41, -46) },
-	{ V(-41, -34), V(-41, 15) },
-	{ V(-27, -91), V(-11, -91) }, -- behind the back cross, either side of the flowers
-	{ V(11, -91), V(27, -91) },
-	{ V(-42, -91), V(-70, -89) }, -- behind the bridge links (gaps at the back huts' doors)
-	{ V(-100, -86.9), V(-112, -86) },
-	{ V(42, -91), V(70, -89) },
-	{ V(100, -86.9), V(112, -86) },
-	{ V(-104, 154), V(-56, 154) }, -- the front wings
-	{ V(56, 154), V(104, 154) },
-}
-local FLOWERS = {
-	V(-8, -64),
-	V(8, -64),
-	V(-26, -12),
-	V(24, -14),
-	V(-26, 15),
-	V(-6, -94),
-	V(6, -94),
-	V(62, 86),
-	V(-60, 66),
-}
--- WP-25 r7: Lego tulip fields on the empty lawn (island r, f, width along r, depth along f): one soil plate each,
--- the rows of blooms are SurfaceGui stripes (no parts), so they fill the top-down view for one part apiece
-local FIELDS = {
-	{ 100, -15, 18, 28 }, -- the right side, between the workshop and the beach tower
-	{ -88, 0, 30, 14 }, -- between the helipad and the hangar
-	{ 85, 135, 24, 12 }, -- the front wings
-	{ -85, 125, 22, 12 },
-}
--- WP-25 r8: the empty plot corners' prop clusters (island r, f): clear of the paths, hedges, fields and lots
-local CORNERS = { V(-140, -20), V(-136, 58), V(140, -12), V(122, -98), V(62, 138), V(-64, 130) }
+-- a few flower patches by the spawn (docs/24 C: thin the clutter, keep the colour near the arrival)
+local FLOWERS = { V(-8, -64), V(8, -64), V(-6, -94), V(6, -94) }
 local LAMPS = { V(-44, 17), V(-20, 17), V(20, 17), V(44, 17) } -- along the promenade's inland side
 local LEAF = Color3.fromRGB(40, 127, 70) -- Lego dark green: reads against the plate
-local HEDGE = Color3.fromRGB(36, 88, 50) -- a shade darker: hedges outline the lanes from the build camera
 
 -- a 1-part Lego tulip field at `at`, w x d: brown soil, a leafy edge, rows of blooms as SurfaceGui stripes
 local ROWS = { BRICK_RED, BRICK_YELLOW, BRICK_PINK, BRICK_WHITE, BRICK_ORANGE }
@@ -1514,156 +1829,19 @@ local function tree(m: Model, at: CFrame, s: number)
 	end
 end
 
--- WP-25 r6: two big set pieces in the lower quadrants (read from the build camera). In the piece's frame `P`
--- (x = right, -z = out toward the cove). A playground: a blue stud plate, a slide tower with steps, a swing set.
-local function playground(m: Model, P: CFrame)
-	local pad = brick(m, "PlayPad", Vector3.new(34, 0.4, 24), P * CFrame.new(0, 0.2, 0), BRICK_BLUE)
-	pad.CanCollide = false
-	studTop(pad)
-	border(pad, BRICK_WHITE, 12)
-	local T = P * CFrame.new(-8, 0, 2) -- the slide tower
-	for _, c in { V(-3, -3), V(3, -3), V(-3, 3), V(3, 3) } do
-		brick(m, "PlayLeg", Vector3.new(1.2, 10, 1.2), T * CFrame.new(c.X, 5, c.Y), BRICK_RED)
-	end
-	studTop(brick(m, "PlayDeck", Vector3.new(8, 0.8, 8), T * CFrame.new(0, 6, 0), BRICK_YELLOW))
-	studTop(brick(m, "PlayRoof", Vector3.new(9, 0.8, 9), T * CFrame.new(0, 10.4, 0), BRICK_YELLOW))
-	for i = 1, 3 do -- the steps up the -x side
-		studTop(
-			brick(
-				m,
-				"PlayStep",
-				Vector3.new(2, 1.6 * i, 3),
-				T * CFrame.new(-4 - 2 * (4 - i), 0.8 * i, 0),
-				BRICK_RED
-			)
-		)
-	end
-	local top, foot = T * Vector3.new(0, 6.3, -4), T * Vector3.new(0, 0.7, -13)
-	brick(
-		m,
-		"Slide",
-		Vector3.new(3.4, 0.5, (foot - top).Magnitude),
-		CFrame.lookAt((top + foot) / 2, foot),
-		BRICK_GREEN
-	)
-	local S = P * CFrame.new(8.5, 0, 0) -- the swing set, its bar along x
-	for _, x in { -7, 7 } do
-		for _, z in { -1, 1 } do -- an A-frame each end
-			brick(
-				m,
-				"SwingLeg",
-				Vector3.new(0.8, 9.4, 0.8),
-				S * CFrame.new(x, 4.5, z * 1.6) * CFrame.Angles(-z * math.rad(20), 0, 0), -- tops meet over the bar
-				BRICK_RED
-			)
-		end
-	end
-	brick(m, "SwingBar", Vector3.new(15.6, 1, 1), S * CFrame.new(0, 9, 0), BRICK_YELLOW)
-	for _, x in { -3, 3 } do
-		brick(m, "SwingSeat", Vector3.new(2.6, 0.4, 1.4), S * CFrame.new(x, 2.4, 0), DBG)
-		for _, dx in { -1.1, 1.1 } do
-			brick(
-				m,
-				"SwingChain",
-				Vector3.new(0.2, 6.2, 0.2),
-				S * CFrame.new(x + dx, 5.6, 0),
-				STEEL
-			)
-		end
-	end
-end
-
--- a beach volleyball court on a sand corner: a sand stud plate with white lines, a net, a ball, a red umbrella
-local function volleyball(m: Model, P: CFrame)
-	local sand = brick(
-		m,
-		"Sand",
-		Vector3.new(36, 0.4, 24),
-		P * CFrame.new(0, 0.2, 0),
-		Color3.fromRGB(240, 204, 122)
-	)
-	sand.CanCollide = false
-	studTop(sand)
-	local gui = border(sand, BRICK_WHITE, 6)
-	local mid = Instance.new("Frame") -- the centre line under the net
-	mid.Name = "Line"
-	mid.BorderSizePixel = 0
-	mid.BackgroundColor3 = BRICK_WHITE
-	mid.AnchorPoint = Vector2.new(0.5, 0)
-	mid.Position = UDim2.fromScale(0.5, 0)
-	mid.Size = UDim2.new(0, 6, 1, 0)
-	mid.Parent = gui
-	for _, z in { -10.5, 10.5 } do
-		brick(m, "NetPost", Vector3.new(0.8, 8, 0.8), P * CFrame.new(0, 4, z), BRICK_WHITE)
-	end
-	brick(m, "Net", Vector3.new(0.2, 3, 21), P * CFrame.new(0, 5.6, 0), NAVY)
-	brick(m, "NetBand", Vector3.new(1, 0.5, 21), P * CFrame.new(0, 7.3, 0), BRICK_WHITE)
-	part(
-		m,
-		"Ball",
-		Vector3.new(2, 2, 2),
-		P * CFrame.new(6, 1.4, 4),
-		BRICK_YELLOW,
-		M.SmoothPlastic,
-		Enum.PartType.Ball
-	)
-	local U = P * CFrame.new(14, 0, -7) -- the umbrella and two towels in the corner
-	brick(m, "UmbrellaPole", Vector3.new(0.5, 9, 0.5), U * CFrame.new(0, 4.5, 0), BRICK_WHITE)
-	part(
-		m,
-		"Umbrella",
-		Vector3.new(0.8, 10, 10),
-		U * CFrame.new(0, 9, 0) * CFrame.Angles(0, 0, math.pi / 2),
-		BRICK_RED,
-		M.SmoothPlastic,
-		Enum.PartType.Cylinder
-	)
-	brick(m, "Towel", Vector3.new(3, 0.12, 5.5), U * CFrame.new(-2.5, 0.46, 1), BRICK_CYAN)
-	brick(m, "Towel", Vector3.new(3, 0.12, 5.5), U * CFrame.new(2.2, 0.46, 1.5), BRICK_PINK)
-end
-
 function DockPieces.base(b: CFrame): Model
 	local m = Instance.new("Model")
 	m.Name = "IslandSet"
 	for _, pts in DockPieces.PATHS do
 		path(m, b, pts)
 	end
+	-- docs/24 C: one clear plaza on the cove axis, in front of the station: the jetty -> build station sightline
+	local plaza =
+		brick(m, "Plaza", Vector3.new(64, 0.3, 30), isle(b, 0, 4) * CFrame.new(0, 0.15, 0), TAN)
+	plaza.CanCollide = false
+	studTop(plaza)
 	for _, t in TREES do
 		tree(m, isle(b, t.X, t.Y), t.Z)
-	end
-	for _, h in HEDGES do
-		local from, to = isle(b, h[1].X, h[1].Y).Position, isle(b, h[2].X, h[2].Y).Position
-		local hedge = brick(
-			m,
-			"Hedge",
-			Vector3.new(5.5, 3.6, (to - from).Magnitude + 5.5), -- WP-25 r6: reads from the build camera
-			CFrame.lookAt((from + to) / 2, to) * CFrame.new(0, 1.8, 0),
-			HEDGE
-		)
-		studTop(hedge)
-		-- WP-25 r9: red / yellow flower breaks every ~16 studs (SurfaceGui blocks, no parts): not plain slabs
-		local len = hedge.Size.Z
-		local n = math.floor(len / 16)
-		for _, face in { Enum.NormalId.Top, Enum.NormalId.Left, Enum.NormalId.Right } do
-			local gui = Instance.new("SurfaceGui")
-			gui.Face = face
-			gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-			gui.PixelsPerStud = 8
-			gui.LightInfluence = 1
-			gui.Parent = hedge
-			for i = 1, n do
-				local f = Instance.new("Frame")
-				f.BorderSizePixel = 0
-				f.BackgroundColor3 = if i % 2 == 0 then BRICK_YELLOW else BRICK_RED
-				f.AnchorPoint = Vector2.new(0.5, 0.5)
-				f.Position = UDim2.fromScale(i / (n + 1), 0.5) -- every face's U runs along the hedge
-				f.Size = UDim2.new(0, 24, 1, 0)
-				f.Parent = gui
-			end
-		end
-	end
-	for k, fd in FIELDS do
-		field(m, isle(b, fd[1], fd[2]), fd[3], fd[4], k)
 	end
 	-- a red and white lifebuoy on a white post at the quay, beside the jetty
 	local stand = isle(b, 24.5, 28)
@@ -1692,7 +1870,7 @@ function DockPieces.base(b: CFrame): Model
 		brick(m, "BenchSeat", Vector3.new(6, 0.6, 2.4), bench * CFrame.new(0, 1.9, 0), BRICK_BLUE)
 	)
 	brick(m, "BenchBack", Vector3.new(6, 2, 0.6), bench * CFrame.new(0, 3, 1.1), BRICK_BLUE)
-	-- flower patches round the spawn and the square, bushes along the cove walks, spare bricks on the quay
+	-- a few flower patches by the spawn
 	local blooms = { BRICK_RED, BRICK_YELLOW, BRICK_PINK, BRICK_WHITE }
 	for k, f in FLOWERS do
 		local at = isle(b, f.X, f.Y)
@@ -1761,31 +1939,6 @@ function DockPieces.base(b: CFrame): Model
 			)
 		end
 	end
-	for name, r in { Playground = -60, Volleyball = 60 } :: { [string]: number } do
-		local set = Instance.new("Model")
-		set.Name = name
-		local at = isle(b, r, -136) -- WP-25 r9: clear of the bigger back huts
-		set.WorldPivot = at
-		if name == "Playground" then
-			playground(set, at)
-		else
-			volleyball(set, at)
-		end
-		set:ScaleTo(1.3) -- built at 1x, shown big enough to read from the build camera
-		set.Parent = m
-	end
-	local stack = isle(b, 30, 28)
-	for i, c in { BRICK_RED, BRICK_BLUE, BRICK_YELLOW } do
-		studTop(
-			brick(
-				m,
-				"Crate",
-				Vector3.new(2.6, 2, 2.6),
-				stack * CFrame.new(if i == 2 then 2.8 else 0, if i == 3 then 3 else 1, 0),
-				c
-			)
-		)
-	end
 	-- WP-25 r9: a chunky red/white Lego flag tower behind the station (10 parts; the red/white lighthouse is the
 	-- Spare1 quest reward): the island's landmark from the sea and the other islands at every stage (plate stays flat)
 	local lh = isle(b, 19, -68)
@@ -1821,52 +1974,6 @@ function DockPieces.base(b: CFrame): Model
 		d.Texture = UiImages.Kit.lifebuoy
 		d.Parent = pennant
 	end
-	-- WP-25 r8: a little Lego cluster in each empty plot corner (3 parts): a crate pair and a barrel, or a crate
-	-- and a flower pot
-	local tints = { BRICK_RED, BRICK_BLUE, BRICK_WHITE, BRICK_RED, BRICK_BLUE, BRICK_WHITE }
-	for k, c in CORNERS do
-		local at = isle(b, c.X, c.Y) * CFrame.Angles(0, k * 0.7, 0)
-		studTop(brick(m, "Crate", Vector3.new(3.2, 2.6, 3.2), at * CFrame.new(0, 1.3, 0), tints[k]))
-		if k % 2 == 1 then
-			studTop(
-				brick(
-					m,
-					"Crate",
-					Vector3.new(2.4, 2, 2.4),
-					at * CFrame.new(0, 3.6, 0) * CFrame.Angles(0, 0.5, 0),
-					BRICK_YELLOW
-				)
-			)
-			part(
-				m,
-				"Barrel",
-				Vector3.new(3.2, 2.6, 2.6),
-				at * CFrame.new(3.6, 1.6, 0.6) * CFrame.Angles(0, 0, math.pi / 2),
-				RBROWN,
-				M.SmoothPlastic,
-				Enum.PartType.Cylinder
-			)
-		else
-			part(
-				m,
-				"Pot",
-				Vector3.new(2.2, 3, 3),
-				at * CFrame.new(3.4, 1.1, 0.4) * CFrame.Angles(0, 0, math.pi / 2),
-				BRICK_ORANGE,
-				M.SmoothPlastic,
-				Enum.PartType.Cylinder
-			)
-			part(
-				m,
-				"Bloom",
-				Vector3.new(2.8, 2.8, 2.8),
-				at * CFrame.new(3.4, 3, 0.4),
-				blooms[k % #blooms + 1],
-				M.SmoothPlastic,
-				Enum.PartType.Ball
-			)
-		end
-	end
 	for _, d in m:GetDescendants() do
 		if d:IsA("BasePart") and d.Name ~= "Path" then
 			d.CanQuery = false -- set dressing: no prompts or camera hits
@@ -1877,6 +1984,11 @@ end
 
 local BUILDINGS = {
 	Pontoon = pontoon,
+	Workshop = workshopYard,
+	FishShed = fishMarket,
+	BoatYard = boatYard,
+	RescueBoathouse = rescueBoathouse,
+	Clinic = clinic,
 	Boathouse = boathouse,
 	LookoutTower = lookout,
 	Crane = slipCrane,
@@ -2030,54 +2142,12 @@ function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2, price: numbe
 	return m
 end
 
--- WP-25 r9: a garden cluster at `at` (5 parts): a tulip bed, a white fence on two sides, two bushes
-local function garden(m: Model, at: CFrame, k: number)
-	field(m, at, 14, 8, k)
-	brick(m, "Fence", Vector3.new(19, 2, 0.8), at * CFrame.new(0, 1, 5.6), BRICK_WHITE)
-	brick(m, "Fence", Vector3.new(0.8, 2, 12), at * CFrame.new(-9.2, 1, 0), BRICK_WHITE)
-	for i, c in { V(10.5, 2), V(7.5, 6.2) } do
-		local r = if i == 1 then 5.6 else 4.2
-		part(
-			m,
-			"Bush",
-			Vector3.new(r, r, r),
-			at * CFrame.new(c.X, r / 2, c.Y),
-			LEAF,
-			M.SmoothPlastic,
-			Enum.PartType.Ball
-		)
-	end
-end
-
--- WP-25 r9: the open lawn's garden clusters (island r, f, yaw) once the whole tree is built: no big empty grass
-local GARDENS = {
-	V3(-130, -45, 0),
-	V3(-128, 20, math.pi / 2),
-	V3(-20, -72, 0),
-	V3(105, -68, math.pi),
-	V3(100, -50, 0),
-	V3(-95, 70, 0),
-	V3(105, 100, math.pi / 2),
-	V3(22, -125, 0),
-	V3(-25, -125, math.pi),
-	V3(-128, -62, math.pi),
-	V3(141, -62, 0), -- r9 AD: the lawn by the east bridge foot
-	V3(128, -94, math.pi),
-	V3(0, -112, 0),
-	V3(-57, -4, math.pi / 2),
-	V3(95, 24, 0),
-}
-function DockPieces.finish(b: CFrame): Model
+-- WP-25 r9: the finish pass used to fill the lawn with garden clusters; docs/24 C opened the island up, so the
+-- whole-tree pass adds nothing now (the empty lots still become gardens, DockPieces.lotGarden). Kept because
+-- DockService owns the lifecycle of this model.
+function DockPieces.finish(_b: CFrame): Model
 	local m = Instance.new("Model")
 	m.Name = "Finish"
-	for k, g in GARDENS do
-		garden(m, isle(b, g.X, g.Y) * CFrame.Angles(0, g.Z, 0), k)
-	end
-	for _, d in m:GetDescendants() do
-		if d:IsA("BasePart") then
-			d.CanQuery = false
-		end
-	end
 	return m
 end
 
