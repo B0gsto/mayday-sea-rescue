@@ -36,9 +36,7 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
 0b. **Icons blocked**: Gemini image quota (429) until ~2026-10-29 morning: spin.png, spin_1/5/15.png, finish_now.png,
    hourglass.png in `marketing/ui/icons/` (brief: delegate task msr-24-icons-r1). Placeholders until then; products can be
    created without icons and get them later.
-0c. **Climb lag at speed** (playtest 2026-10-26): at 52 kn the survivor shows ~13 studs behind the seat for the 1.3 s
-   server-driven climb, then snaps on (worse with real ping). Fix: play the climb on the clients relative to the hull
-   (hide the server model until welded) or a much shorter leap at speed.
+0c. ~~Climb lag at speed~~ merged 2026-10-26 (client replays the climb relative to its own hull, `Ops/ClimbPath`); playtest it.
 0. **docs/24 wave 2** after A-D merge: E tutorial, F progression/core loop pass (pacing sims with build times + spins), Opus review + Studio playtest, art-director render of C.
 
 1. ~~**WP-14d build tablet**~~ merged 2026-10-25 (build station on Spare3, top-down build mode, Build/Decor tabs, 6 Cash decorations; not yet seen in Studio). Was: replace the blueprint table with a tablet on a stand at a Lego build station near the
