@@ -160,7 +160,7 @@ local function buildIsland(i: number, isl: HubLayout.Island, parent: Instance)
 	screen.AnchorPoint = Vector2.new(0.5, 0.5)
 	screen.Position = UDim2.fromScale(0.5, 0.5)
 	screen.Size = UDim2.new(1, -28, 1, -28)
-	screen.BackgroundColor3 = Color3.fromRGB(44, 92, 150)
+	screen.BackgroundColor3 = Color3.fromRGB(30, 58, 104) -- WP-25: a calm deep blue, not glaring
 	screen.BorderSizePixel = 0
 	screen.Parent = gui
 	local round = Instance.new("UICorner")

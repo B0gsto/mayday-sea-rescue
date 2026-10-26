@@ -81,6 +81,14 @@ Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-2
   rarer rescue replaces the first lowest-rarity worker: owner to confirm); ~31 R15 NPCs per full island (x6 servers:
   watch perf); a paid slot expansion if wanted.
 
+- **WP-25 island art pass done (awaiting merge)**: one Lego kit in `DockPieces` (stud plinths, slope-brick roofs, white
+  windows, doors in the owner's colour); worker buildings are Lego cottages, re-placed (DockConfig spots) so the plate
+  composes; a fixed set on every plate (`DockPieces.base`: grey stud paths spawn -> lanes -> quay -> cove walks ->
+  bridges, trees, flower beds, lamps, bunkhouse, lifebuoy stand, capped quay edge with bollards and fenders); the
+  name arch is 2x bigger (name on both faces), rescue and boat boards have content, station/hangar have gable roofs,
+  no sky beam on the station; Lego bridges (Persistent streaming). AD rounds r1-r3 all "not ship"; open from r3: the
+  top-down still reads sparse on the 320-stud plate (lot markers / more groves / hedges), worker billboards overlap
+  building signs (WorkerController), helipad windsock, quay walk tile bands. Sheets: build/art/island_r1..r3.png.
 - **WP-25 island art pass** (after WP-24 plates and WP-14e build mode v2 merge): the island/dock must look good at
   EVERY stage (Lv1 bare plate → Lv5 + hangar + sub pen + decor). Owner screenshot issues: the name-sign arch reads
   "the other way around" (make it read correctly from the jetty/boat approach and from land: text on both faces),

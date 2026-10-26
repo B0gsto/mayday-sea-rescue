@@ -84,8 +84,10 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   ok, "Owned" | "Needs" | "Cash", price, need; `canRobux` (Robux skips the Cash, never the order); `craftMissing`;
   `migrate(level, owned)`. Craft gates: `ProgressionConfig.Vehicles[id].needs` (RIB / Robux boats <- Boathouse,
   Lifeboat <- LifeboatSlip, Submarine <- SubPen, RescueHelicopter <- Hangar); owned craft always launch.
-  `src/shared/DockPieces.luau` `building(key, berthCFrame) -> Model` (placeholder Parts; worker buildings and the
-  lifeboat slip are plain Lego huts). DockService builds each owner's buildings on their plot (everyone sees
+  `src/shared/DockPieces.luau` `building(key, berthCFrame) -> Model` (WP-25 Lego set: stud plinths, slope-brick
+  roofs, doors in the owner's colour = parts named "Flag"; worker buildings are Lego cottages with their workers in
+  front of the door, -Z) and `base(berthCFrame) -> Model` (the fixed set on every plate: paths, trees, quay edge,
+  bunkhouse, lamps). DockService builds each owner's buildings on their plot (everyone sees
   them), berth attribute `<key>` and player attribute `Dock<key>` per building; remote `Dock_Upgrade` C->S fn
   `(key) -> ok, reason`; Robux = products with `dockBuilding` (the old `DockLevel2..5`, `DockHangar`,
   `DockSubPen` ids), granted only once the prerequisites stand (else the receipt waits). A buy plays the Lego

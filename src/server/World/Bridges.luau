@@ -1,9 +1,10 @@
 --!strict
 -- Bridges (docs/23 (p), WP-27): six short walkable Lego bridges joining each island to its two neighbours (a full
--- ring), code-built placeholder Parts from HubLayout.Bridges: a reddish-brown deck climbing at 11.3 deg from both
--- plates to a rounded crest (underside ~20 studs over the sea at mid-span, so boats pass under), red rails on white
--- posts with an invisible anti-fall fence above them, and a grey pier at each plate's edge. WorldDressingService
--- calls Bridges.place(base) once at server start.
+-- ring), Lego bricks from HubLayout.Bridges (WP-25): a light grey stud deck (the paths' plate) on a blue beam, climbing at 11.3 deg
+-- from both plates to a rounded crest (underside ~20 studs over the sea at mid-span, so boats pass under), red
+-- rails on white posts with yellow stud caps, an invisible anti-fall fence above them, and a light grey pier with a
+-- white cap at each plate's edge. Persistent streaming, like the plates: never dropped from high up.
+-- WorldDressingService calls Bridges.place(base) once at server start.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local HubLayout = require(
@@ -18,10 +19,13 @@ local POST_EVERY = 3 -- a post every this many segments
 local PIER = 3
 local SEABED_Y = -40
 
-local DECK = Color3.fromRGB(105, 64, 40) -- Lego reddish brown
-local RED = Color3.fromRGB(196, 40, 28)
-local WHITE = Color3.fromRGB(242, 243, 242)
-local GREY = Color3.fromRGB(99, 95, 98) -- dark stone grey
+local DECK = Color3.fromRGB(163, 162, 165) -- Lego light bluish grey, the island paths' colour
+local BEAM = Color3.fromRGB(40, 96, 208) -- Lego blue
+local RED = Color3.fromRGB(224, 56, 40)
+local WHITE = Color3.fromRGB(242, 240, 232)
+local YELLOW = Color3.fromRGB(250, 208, 40)
+local GREY = Color3.fromRGB(163, 162, 165) -- light bluish grey
+local STUDS = "rbxassetid://18878365966" -- the 4 x 4 stud tile (IslandPlates)
 local MAT = Enum.Material.SmoothPlastic
 
 local Bridges = {}
@@ -44,6 +48,7 @@ local function build(br: HubLayout.Bridge, parent: Instance)
 	local model = Instance.new("Model")
 	model.Name = br.id
 	model:SetAttribute("Islands", `{br.a} {br.b}`)
+	model.ModelStreamingMode = Enum.ModelStreamingMode.Persistent -- seen from afar like the plates
 	local flat = Vector3.new(br.to.X - br.from.X, 0, br.to.Z - br.from.Z)
 	local span = flat.Magnitude
 	local dir = flat.Unit
@@ -56,13 +61,28 @@ local function build(br: HubLayout.Bridge, parent: Instance)
 		local a, b = HubLayout.deckAt(br, k / n), HubLayout.deckAt(br, (k + 1) / n)
 		local len = (b - a).Magnitude + 0.3 -- overlap: no seams to trip on
 		local cf = CFrame.lookAt((a + b) / 2, b)
-		part(
+		local deck = part(
 			model,
 			"Deck",
-			Vector3.new(br.width, THICK, len),
+			Vector3.new(br.width - 1, THICK, len),
 			cf * CFrame.new(0, -THICK / 2, 0),
 			DECK
 		)
+		local tex = Instance.new("Texture")
+		tex.Face = Enum.NormalId.Top
+		tex.Texture = STUDS
+		tex.StudsPerTileU, tex.StudsPerTileV = 8, 8
+		tex.Color3 = Color3.fromRGB(139, 138, 140)
+		tex.Transparency = 0.1
+		tex.Parent = deck
+		part(
+			model,
+			"Beam",
+			Vector3.new(br.width, THICK, len),
+			cf * CFrame.new(0, -THICK * 1.5 + 0.05, 0),
+			BEAM
+		).CastShadow =
+			false
 		for _, side in { -1, 1 } do
 			part(
 				model,
@@ -82,15 +102,22 @@ local function build(br: HubLayout.Bridge, parent: Instance)
 			fence.CanQuery = false
 			fence.CastShadow = false
 			if k % POST_EVERY == 0 then
+				local foot = CFrame.new(a) * CFrame.new(right * side * (half - 0.4))
 				part(
 					model,
 					"Post",
-					Vector3.new(0.8, RAIL_H, 0.8),
-					CFrame.new(a)
-						* CFrame.new(right * side * (half - 0.4))
-						* CFrame.new(0, RAIL_H / 2, 0),
+					Vector3.new(1, RAIL_H + 0.4, 1),
+					foot * CFrame.new(0, RAIL_H / 2 + 0.2, 0),
 					WHITE
 				)
+				part(
+					model,
+					"Stud",
+					Vector3.new(0.4, 0.8, 0.8),
+					foot * CFrame.new(0, RAIL_H + 0.6, 0) * CFrame.Angles(0, 0, math.pi / 2),
+					YELLOW
+				).Shape =
+					Enum.PartType.Cylinder
 			end
 		end
 	end
@@ -118,12 +145,19 @@ local function build(br: HubLayout.Bridge, parent: Instance)
 		local top = p.Y - THICK
 		local foot = Vector3.new(p.X, (top + SEABED_Y) / 2, p.Z)
 			+ dir * (if t1 > t0 then PIER else -PIER)
-		part(
+		local pier = part(
 			model,
 			"Pier",
 			Vector3.new(br.width - 2, top - SEABED_Y, PIER),
 			CFrame.lookAt(foot, foot + dir),
 			GREY
+		)
+		part(
+			model,
+			"PierCap",
+			Vector3.new(br.width - 1, 1, PIER + 1),
+			pier.CFrame * CFrame.new(0, (top - SEABED_Y) / 2 - 1.5, 0),
+			WHITE
 		)
 	end
 	model.Parent = parent

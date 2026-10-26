@@ -49,8 +49,8 @@ local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 local DockService = {}
 DockService.Priority = 40 -- before VehicleService (50): the berths exist when it starts
 
-local WOOD = Color3.fromRGB(122, 92, 62)
-local DARK_WOOD = Color3.fromRGB(84, 62, 44)
+local WOOD = Color3.fromRGB(105, 64, 40) -- WP-25: Lego reddish brown
+local DARK_WOOD = Color3.fromRGB(75, 48, 32)
 local BOARD = Color3.fromRGB(236, 230, 214)
 local GOLD = Color3.fromRGB(222, 178, 60)
 local HARD_HAT = Color3.fromRGB(250, 205, 35)
@@ -108,9 +108,20 @@ local function post(parent: Instance, cf: CFrame, top: number, bottom: number)
 		Vector3.new(top - bottom, 1.2, 1.2),
 		CFrame.new(cf.X, (top + bottom) / 2, cf.Z) * CFrame.Angles(0, 0, math.pi / 2),
 		DARK_WOOD,
-		Enum.Material.Wood
+		Enum.Material.SmoothPlastic
 	)
 	p.Shape = Enum.PartType.Cylinder
+end
+
+-- WP-25: chunky Lego studs on a deck's top (the stud tile DockPieces and IslandPlates use)
+local function studTop(p: Part)
+	local t = Instance.new("Texture")
+	t.Face = Enum.NormalId.Top
+	t.Texture = "rbxassetid://18878365966"
+	t.StudsPerTileU, t.StudsPerTileV = 8, 8
+	t.Color3 = p.Color:Lerp(Color3.new(0, 0, 0), 0.15)
+	t.Transparency = 0.2
+	t.Parent = p
 end
 
 -- The sign's frame, posts and bases: the face colour, darker (only SmoothPlastic: it is a Lego brick).
@@ -141,21 +152,42 @@ local function nameSign(
 		return p
 	end
 	local dark = signTrim(faceColor)
-	for _, dx in { -10.4, 10.4 } do
-		brick("SignBase", Vector3.new(3.2, 0.8, 3.2), CFrame.new(dx, 0.4, 0), dark)
-		brick("SignPost", Vector3.new(1.6, 5.7, 1.6), CFrame.new(dx, 3.65, 0), dark)
+	-- WP-25: twice the old size, an arch over the jetty's root that frames the boat approach
+	local BW, BH, Y = 26, 6, 12 -- the board, its centre height
+	local px = BW / 2 + 1.7
+	for _, dx in { -px, px } do
+		brick("SignBase", Vector3.new(3.6, 1, 3.6), CFrame.new(dx, 0.5, 0), dark)
+		brick(
+			"SignPost",
+			Vector3.new(2.2, Y + BH / 2, 2.2),
+			CFrame.new(dx, 1 + (Y + BH / 2) / 2, 0),
+			dark
+		)
+		local cap = brick(
+			"SignStud",
+			Vector3.new(0.6, 1.4, 1.4),
+			CFrame.new(dx, Y + BH / 2 + 1.3, 0) * CFrame.Angles(0, 0, math.pi / 2),
+			faceColor,
+			true
+		)
+		cap.Shape = Enum.PartType.Cylinder
 	end
-	for _, dy in { -2.5, 2.5 } do
-		brick("SignFrame", Vector3.new(19.2, 0.6, 1), CFrame.new(0, 9.3 + dy, 0), dark)
+	for _, dy in { -1, 1 } do
+		brick(
+			"SignFrame",
+			Vector3.new(BW + 1.6, 0.8, 1.2),
+			CFrame.new(0, Y + dy * (BH / 2 + 0.4), 0),
+			dark
+		)
 	end
-	for _, dx in { -9.3, 9.3 } do
-		brick("SignFrame", Vector3.new(0.6, 5.6, 1), CFrame.new(dx, 9.3, 0), dark)
+	for _, dx in { -1, 1 } do
+		brick("SignFrame", Vector3.new(0.8, BH, 1.2), CFrame.new(dx * (BW / 2 + 0.4), Y, 0), dark)
 	end
-	for _, dx in { -6, 0, 6 } do
+	for _, dx in { -9, -3, 3, 9 } do
 		local stud = brick(
 			"SignStud",
-			Vector3.new(0.5, 1, 1),
-			CFrame.new(dx, 12.35, 0) * CFrame.Angles(0, 0, math.pi / 2),
+			Vector3.new(0.6, 1.4, 1.4),
+			CFrame.new(dx, Y + BH / 2 + 1.1, 0) * CFrame.Angles(0, 0, math.pi / 2),
 			faceColor,
 			true
 		)
@@ -164,8 +196,8 @@ local function nameSign(
 	local board = part(
 		sign,
 		"NameBoard",
-		Vector3.new(18, 4.4, 0.8),
-		arch * CFrame.new(0, 9.3, 0),
+		Vector3.new(BW, BH, 0.8),
+		arch * CFrame.new(0, Y, 0),
 		faceColor,
 		Enum.Material.SmoothPlastic
 	)
@@ -206,13 +238,15 @@ local function buildPlot(folder: Instance, i: number): Plot
 	local jetty = Marina.LOTS.Jetty
 	local jcf = b * jetty.cf
 	local len = jetty.size.Y + 4
-	part(
-		model,
-		"Jetty",
-		Vector3.new(jetty.size.X, 1, len),
-		jcf * CFrame.new(0, -0.5, 2),
-		WOOD,
-		Enum.Material.Wood
+	studTop(
+		part(
+			model,
+			"Jetty",
+			Vector3.new(jetty.size.X, 1, len),
+			jcf * CFrame.new(0, -0.5, 2),
+			WOOD,
+			Enum.Material.SmoothPlastic
+		)
 	)
 	for z = -jetty.size.Y / 2 + 1, jetty.size.Y / 2 - 6, 12 do
 		for _, x in { -jetty.size.X / 2 + 0.6, jetty.size.X / 2 - 0.6 } do
@@ -220,17 +254,21 @@ local function buildPlot(folder: Instance, i: number): Plot
 		end
 	end
 	local j = Marina.JETTY
-	part(
-		model,
-		"Finger",
-		Vector3.new(j.x1 - j.x0, 1, j.z1 - j.out),
-		b * CFrame.new((j.x0 + j.x1) / 2, top - 0.5, (j.z1 + j.out) / 2),
-		WOOD,
-		Enum.Material.Wood
+	studTop(
+		part(
+			model,
+			"Finger",
+			Vector3.new(j.x1 - j.x0, 1, j.z1 - j.out),
+			b * CFrame.new((j.x0 + j.x1) / 2, top - 0.5, (j.z1 + j.out) / 2),
+			WOOD,
+			Enum.Material.SmoothPlastic
+		)
 	)
 	for _, z in { j.out + 1, (j.out + j.z1) / 2 } do
 		post(model, b * CFrame.new(j.x1 - 0.6, 0, z), top + 0.8, -10)
 	end
+
+	DockPieces.base(b).Parent = model -- WP-25: paths, trees, the lifebuoy stand (every island, owned or not)
 
 	-- the owner's sign (only while the island has an owner): a Lego name sign over the jetty's quay end,
 	-- facing the cove, and a flag beside it
@@ -239,22 +277,32 @@ local function buildPlot(folder: Instance, i: number): Plot
 	local isle = b * Marina.ISLAND
 	local arch = isle * CFrame.new(0, 0, -28.5)
 	local board, labels, trim, studs = nameSign(sign, arch, BOARD)
-	local poleAt = isle * CFrame.new(-12, 0, -27)
+	local poleAt = isle * CFrame.new(-34, 0, -28)
+	studTop(
+		part(
+			sign,
+			"FlagBase",
+			Vector3.new(3.2, 1, 3.2),
+			poleAt * CFrame.new(0, 0.5, 0),
+			Color3.fromRGB(242, 240, 232),
+			Enum.Material.SmoothPlastic
+		)
+	)
 	part(
 		sign,
 		"FlagPole",
-		Vector3.new(0.5, 24, 0.5),
+		Vector3.new(0.9, 24, 0.9),
 		poleAt * CFrame.new(0, 12, 0),
-		Color3.fromRGB(200, 200, 205),
-		Enum.Material.Metal
+		Color3.fromRGB(242, 240, 232),
+		Enum.Material.SmoothPlastic
 	)
 	local flag = part(
 		sign,
 		"Flag",
-		Vector3.new(0.15, 4, 6.5),
-		poleAt * CFrame.new(0, 21.8, -3.5),
+		Vector3.new(0.3, 4.5, 7),
+		poleAt * CFrame.new(0, 21.6, -3.9),
 		BOARD,
-		Enum.Material.Fabric
+		Enum.Material.SmoothPlastic
 	)
 	flag.CanCollide = false
 
@@ -488,7 +536,7 @@ local function setMaster(plot: Plot, on: boolean)
 	if on and not plot.master then
 		local m = Instance.new("Model")
 		m.Name = "HarbourMaster"
-		local at = plot.frame * Marina.ISLAND * CFrame.new(12, 0, -27)
+		local at = plot.frame * Marina.ISLAND * CFrame.new(21, 0, -28)
 		local pole = part(
 			m,
 			"Pole",
@@ -515,7 +563,7 @@ local function setMaster(plot: Plot, on: boolean)
 		local a0 = Instance.new("Attachment")
 		a0.Parent = lens
 		local a1 = Instance.new("Attachment")
-		a1.Position = Vector3.new(0, 260, 0)
+		a1.Position = Vector3.new(0, 45, 0)
 		a1.Parent = lens
 		local beam = Instance.new("Beam")
 		beam.Attachment0, beam.Attachment1 = a0, a1
