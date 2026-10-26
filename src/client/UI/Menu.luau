@@ -1,6 +1,6 @@
 --!strict
 -- Menu (docs/23 (m), WP-23c): the left button column and its kit panels. Mounted once by HudController.
---   Grid (HudLayout "menu" region: 2 icon columns above the thumbstick): Shop, Spin, Quests,
+--   Grid (HudLayout "menu" region: 2 icon columns above the thumbstick): Shop, Quests,
 --   Album, Pet, Crew, Settings, Map and Boat (Boat to me: the server's cooldown rule with the Mechanics' shorter wait, drawn as
 --   a ring of ticks; Quick Launch shows the bolt and skips it). Each opens a centred kit Panel; Map
 --   opens the full map (MapController, also M).
@@ -43,7 +43,6 @@ local QuestTablet = require(UI:WaitForChild("QuestTablet"))
 local Quests = require(Panels:WaitForChild("Quests"))
 local SettingsPanel = require(UI:WaitForChild("SettingsPanel"))
 local Shop = require(Panels:WaitForChild("Shop"))
-local Spin = require(Panels:WaitForChild("Spin"))
 local Style = require(Kit:WaitForChild("Style"))
 local Theme = require(Kit:WaitForChild("Theme"))
 local Waypoint = require(UI:WaitForChild("Waypoint"))
@@ -52,7 +51,6 @@ local player = Players.LocalPlayer
 local GOLD = Color3.fromHex("FFD84A")
 local BUTTONS = { -- HudLayout.MENU_COUNT
 	{ name = "Shop", label = "Shop", icon = "shop", color = "yellow" },
-	{ name = "Spin", label = "Spin", icon = "spin", color = "pink" },
 	{ name = "Quests", label = "Quests", icon = "quests", color = "orange" },
 	{ name = "Album", label = "Album", icon = "album", color = "pink" },
 	{ name = "Companion", label = "Pet", icon = "companion", color = "purple" },
@@ -72,7 +70,7 @@ local current: string? = nil
 local mounted = false
 local pulseName: string? = nil
 
--- docs/24 E: a pulsing ring on the one button the tutorial asks for (the Spin tile), and nothing else.
+-- docs/24 E: a pulsing ring on the one button the tutorial asks for, and nothing else.
 local function startPulse(root: GuiObject, name: string)
 	local ring = Instance.new("Frame")
 	ring.Name = "PulseRing"
@@ -340,37 +338,6 @@ local function dressBoat(b: IconButton.IconButton)
 	end
 end
 
--- the Spin tile: a pulsing badge with the free spins (SpinService sets the FreeSpins attribute)
-local function dressSpin(b: IconButton.IconButton)
-	b.root.Name = "Menu_Spin"
-	local badge = b.root:FindFirstChild("Badge") :: Frame?
-	if badge then
-		local sc = Instance.new("UIScale")
-		sc.Parent = badge
-		task.spawn(function()
-			while badge.Parent do
-				if badge.Visible then
-					sc.Scale = 1.18
-					local t = TweenService:Create(
-						sc,
-						TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-						{ Scale = 1 }
-					)
-					t:Play()
-					t.Completed:Wait()
-				end
-				task.wait(0.25)
-			end
-		end)
-	end
-	local function paint()
-		local free = player:GetAttribute("FreeSpins")
-		b.setBadge(if type(free) == "number" and free > 0 then free else nil)
-	end
-	paint()
-	player:GetAttributeChangedSignal("FreeSpins"):Connect(paint)
-end
-
 -- the quest cards you can act on now (the tablet's rows: an offer you can accept, a quest ready to hand in)
 local function questBadge()
 	local n = 0
@@ -424,9 +391,6 @@ local function buildBar(region: Frame)
 		buttons[info.name] = btn
 		if pulseName == info.name then
 			startPulse(btn.root, info.name)
-		end
-		if info.name == "Spin" then
-			dressSpin(btn)
 		end
 		if info.name == "Boat" then
 			onPress = dressBoat(btn)
@@ -566,7 +530,6 @@ function Menu.mount()
 		Companion = Companion.new(c, noteClosed),
 		Crew = Crew.new(c, noteClosed),
 		Settings = SettingsPanel.newPanel(c, noteClosed),
-		Spin = Spin.new(c, noteClosed),
 	}
 	local boards: { [string]: string } =
 		{ BoatBoard = "Boats", HangarBoard = "Helicopter", SubBoard = "Submarine" }

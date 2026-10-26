@@ -6,8 +6,10 @@
 -- Spin5 / Spin15) grant their spins through the normal MonetizationService receipt flow.
 -- Prizes are granted once (finish / trail bitmask, pet variants in the pets flag, the grand boat in
 -- data.vehicles plus flags.spinBoat); a duplicate pays Cash by rarity.
--- Legendary / Mythic wins fire Spin_Flex to every client (banner + confetti).
--- Remotes: Spin_Spin C->S function -> result table; Spin_Flex S->C flex payload.
+-- A physical wheel spin (DockService's button / prompt) calls WheelSpin: the same roll, saved at
+-- once, then Spin_Wheel goes to every client so the island's wheel animates and reveals the prize.
+-- Legendary / Mythic wins fire Spin_Flex when the wheel stops (banner + confetti).
+-- Remotes: Spin_Wheel S->C spin payload; Spin_Flex S->C flex payload.
 -- Studio: ServerStorage.SpinDev "give" (n free spins) / "force" (next roll that rarity).
 
 local Players = game:GetService("Players")
@@ -34,10 +36,14 @@ SpinService.Priority = 72 -- after ProgressionService (30), CosmeticsService (40
 local FLAG = "spin"
 local COOLDOWN = 0.75
 local REFRESH_SECONDS = 60
+local WHEEL_TIME = 4.5 -- the client's spin; the reveal and flex land when it stops
+SpinService.WHEEL_TIME = WHEEL_TIME
 
 local lastSpin: { [Player]: number } = {}
+local wheelBusy: { [Player]: boolean } = {}
 local forced: string? = nil
 local flexRemote: RemoteEvent? = nil
+local wheelRemote: RemoteEvent? = nil
 
 local function stateOf(data: any): SpinRules.State
 	return SpinRules.decode(if type(data.flags) == "table" then data.flags[FLAG] else nil)
@@ -225,7 +231,6 @@ function SpinService.Spin(player: Player): { [string]: any }
 	end
 	if SpinRules.rank(prize.rarity) >= SpinRules.rank("Legendary") then
 		task.spawn(DataService.Save, player, false) -- a big win is saved right away
-		fireFlex(player, prize)
 	end
 	return {
 		ok = true,
@@ -234,9 +239,53 @@ function SpinService.Spin(player: Player): { [string]: any }
 		rarity = prize.rarity,
 		kind = prize.kind,
 		icon = prize.icon,
+		variant = prize.variant,
+		option = prize.option,
+		vehicle = prize.vehicle,
 		segment = segment,
 		duplicateCash = duplicate,
 	}
+end
+
+-- The physical wheel (docs/24 D): one server roll, then every client animates this island's wheel
+-- and shows the prize. The flex banner follows when the wheel stops, not while it is still spinning.
+function SpinService.WheelSpin(player: Player): { [string]: any }
+	if wheelBusy[player] then
+		return { ok = false, reason = "Spinning" }
+	end
+	local result = SpinService.Spin(player)
+	if result.ok ~= true then
+		return result
+	end
+	local prize = SpinRules.prize(result.prize)
+	wheelBusy[player] = true
+	local remote = wheelRemote
+	if remote then
+		remote:FireAllClients({
+			userId = player.UserId,
+			plot = player:GetAttribute("DockPlot"),
+			segment = result.segment,
+			startTime = workspace:GetServerTimeNow(),
+			duration = WHEEL_TIME,
+			prize = result.prize,
+			name = result.name,
+			rarity = result.rarity,
+			kind = result.kind,
+			icon = result.icon,
+			variant = result.variant,
+			option = result.option,
+			vehicle = result.vehicle,
+			duplicateCash = result.duplicateCash,
+		})
+	end
+	task.delay(WHEEL_TIME, function()
+		wheelBusy[player] = nil
+		if prize then
+			fireFlex(player, prize)
+		end
+	end)
+	result.duration = WHEEL_TIME
+	return result
 end
 
 local function grantProductSpins(player: Player, data: any, n: number): boolean
@@ -255,10 +304,7 @@ end
 
 function SpinService.Init()
 	flexRemote = Net.event("Spin_Flex")
-	local spin = Net.func("Spin_Spin")
-	spin.OnServerInvoke = function(player: Player)
-		return SpinService.Spin(player)
-	end
+	wheelRemote = Net.event("Spin_Wheel")
 
 	for key, item in MonetizationConfig.Products do
 		local n = item.spins
@@ -276,6 +322,7 @@ function SpinService.Init()
 	end)
 	Players.PlayerRemoving:Connect(function(player: Player)
 		lastSpin[player] = nil
+		wheelBusy[player] = nil
 	end)
 
 	if RunService:IsStudio() then
