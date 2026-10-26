@@ -100,7 +100,7 @@ function WorkerBadge.billboard(model: Model)
 	-- aboard a craft (welded into its assembly) the badge would float over the driver's head: hide it there
 	task.spawn(function()
 		while gui.Parent do
-			local assembly = root.AssemblyRootPart
+			local assembly: BasePart? = root.AssemblyRootPart
 			gui.Enabled = assembly == nil or assembly == root
 			task.wait(0.5)
 		end
