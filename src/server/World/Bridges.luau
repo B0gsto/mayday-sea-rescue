@@ -142,9 +142,10 @@ local function build(br: RingLayout.Bridge, parent: Instance)
 			end
 		end
 		local p = RingLayout.deckAt(br, t0)
-		-- a Lego lamp post at the bridge foot (WP-25 r7), on the right-hand rail going on to the bridge
+		-- a Lego lamp post at the bridge foot (WP-25 r7), right of the way on to the bridge; r9: off the deck on the
+		-- plate, out of the bridge view's foreground
 		local side = if t1 > t0 then 1 else -1
-		local lampAt = p + right * side * (half - 0.4)
+		local lampAt = p + right * side * (half + 14) - dir * side * 3
 		part(
 			model,
 			"LampPost",

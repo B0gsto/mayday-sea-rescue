@@ -206,6 +206,14 @@ local function gable(
 		wdg.Material = M.SmoothPlastic
 		wdg.Anchored = true
 		wdg.Parent = parent
+		-- WP-25 r9: a darker eaves trim: the roof's outline reads from the top-down camera on a phone
+		brick(
+			parent,
+			"Eaves",
+			Vector3.new(1.4, 0.9, d + 0.4),
+			top * CFrame.new(side * (w / 2 + 0.3), 0.15, 0),
+			color:Lerp(Color3.new(0, 0, 0), 0.45)
+		)
 	end
 	brick(parent, "Ridge", Vector3.new(1.2, 0.8, d), top * CFrame.new(0, rise + 0.2, 0), color)
 end
@@ -1270,7 +1278,7 @@ local function cottage(
 		)
 	end
 	local top = at * CFrame.new(0, y0 + h, 0)
-	gable(m, top, w + 3, d + 3, rise, roof)
+	gable(m, top, w + 6, d + 3, rise, roof) -- WP-25 r9: wide eaves, a bigger roof from above
 	studTop(
 		brick(
 			m,
@@ -1454,11 +1462,8 @@ local FLOWERS = {
 	V(-26, 15),
 	V(-6, -94),
 	V(6, -94),
-	V(62, 38),
 	V(62, 86),
-	V(-60, 40),
 	V(-60, 66),
-	V(44, 12),
 }
 -- WP-25 r7: Lego tulip fields on the empty lawn (island r, f, width along r, depth along f): one soil plate each,
 -- the rows of blooms are SurfaceGui stripes (no parts), so they fill the top-down view for one part apiece
@@ -1473,6 +1478,26 @@ local CORNERS = { V(-140, -20), V(-136, 58), V(140, -12), V(122, -98), V(62, 138
 local LAMPS = { V(-44, 17), V(-20, 17), V(20, 17), V(44, 17) } -- along the promenade's inland side
 local LEAF = Color3.fromRGB(40, 127, 70) -- Lego dark green: reads against the plate
 local HEDGE = Color3.fromRGB(36, 88, 50) -- a shade darker: hedges outline the lanes from the build camera
+
+-- a 1-part Lego tulip field at `at`, w x d: brown soil, a leafy edge, rows of blooms as SurfaceGui stripes
+local ROWS = { BRICK_RED, BRICK_YELLOW, BRICK_PINK, BRICK_WHITE, BRICK_ORANGE }
+local function field(m: Model, at: CFrame, w: number, d: number, k: number)
+	local soil = brick(m, "Field", Vector3.new(w, 0.6, d), at * CFrame.new(0, 0.3, 0), RBROWN)
+	soil.CanCollide = false
+	local gui = border(soil, LEAF, 8) -- a leafy edge round the soil
+	local along = w >= d -- rows run along the long side
+	local n = math.floor((if along then d else w) / 3)
+	for i = 0, n - 1 do
+		local row = Instance.new("Frame")
+		row.BorderSizePixel = 0
+		row.BackgroundColor3 = ROWS[(i + k) % #ROWS + 1]
+		row.Position = if along
+			then UDim2.fromOffset(12, 12 + i * 24)
+			else UDim2.fromOffset(12 + i * 24, 12)
+		row.Size = if along then UDim2.new(1, -24, 0, 14) else UDim2.new(0, 14, 1, -24)
+		row.Parent = gui
+	end
+end
 
 local function tree(m: Model, at: CFrame, s: number)
 	brick(m, "Trunk", Vector3.new(2.4, 6 * s, 2.4), at * CFrame.new(0, 3 * s, 0), RBROWN)
@@ -1608,37 +1633,37 @@ function DockPieces.base(b: CFrame): Model
 	end
 	for _, h in HEDGES do
 		local from, to = isle(b, h[1].X, h[1].Y).Position, isle(b, h[2].X, h[2].Y).Position
-		studTop(brick(
+		local hedge = brick(
 			m,
 			"Hedge",
 			Vector3.new(5.5, 3.6, (to - from).Magnitude + 5.5), -- WP-25 r6: reads from the build camera
 			CFrame.lookAt((from + to) / 2, to) * CFrame.new(0, 1.8, 0),
 			HEDGE
-		))
-	end
-	local rows = { BRICK_RED, BRICK_YELLOW, BRICK_PINK, BRICK_WHITE, BRICK_ORANGE }
-	for k, fd in FIELDS do
-		local soil = brick(
-			m,
-			"Field",
-			Vector3.new(fd[3], 0.6, fd[4]),
-			isle(b, fd[1], fd[2]) * CFrame.new(0, 0.3, 0),
-			RBROWN
 		)
-		soil.CanCollide = false
-		local gui = border(soil, LEAF, 8) -- a leafy edge round the soil
-		local along = fd[3] >= fd[4] -- rows run along the long side
-		local n = math.floor((if along then fd[4] else fd[3]) / 3)
-		for i = 0, n - 1 do
-			local row = Instance.new("Frame")
-			row.BorderSizePixel = 0
-			row.BackgroundColor3 = rows[(i + k) % #rows + 1]
-			row.Position = if along
-				then UDim2.fromOffset(12, 12 + i * 24)
-				else UDim2.fromOffset(12 + i * 24, 12)
-			row.Size = if along then UDim2.new(1, -24, 0, 14) else UDim2.new(0, 14, 1, -24)
-			row.Parent = gui
+		studTop(hedge)
+		-- WP-25 r9: red / yellow flower breaks every ~16 studs (SurfaceGui blocks, no parts): not plain slabs
+		local len = hedge.Size.Z
+		local n = math.floor(len / 16)
+		for _, face in { Enum.NormalId.Top, Enum.NormalId.Left, Enum.NormalId.Right } do
+			local gui = Instance.new("SurfaceGui")
+			gui.Face = face
+			gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+			gui.PixelsPerStud = 8
+			gui.LightInfluence = 1
+			gui.Parent = hedge
+			for i = 1, n do
+				local f = Instance.new("Frame")
+				f.BorderSizePixel = 0
+				f.BackgroundColor3 = if i % 2 == 0 then BRICK_YELLOW else BRICK_RED
+				f.AnchorPoint = Vector2.new(0.5, 0.5)
+				f.Position = UDim2.fromScale(i / (n + 1), 0.5) -- every face's U runs along the hedge
+				f.Size = UDim2.new(0, 24, 1, 0)
+				f.Parent = gui
+			end
 		end
+	end
+	for k, fd in FIELDS do
+		field(m, isle(b, fd[1], fd[2]), fd[3], fd[4], k)
 	end
 	-- a red and white lifebuoy on a white post at the quay, beside the jetty
 	local stand = isle(b, 24.5, 28)
@@ -1739,7 +1764,7 @@ function DockPieces.base(b: CFrame): Model
 	for name, r in { Playground = -60, Volleyball = 60 } :: { [string]: number } do
 		local set = Instance.new("Model")
 		set.Name = name
-		local at = isle(b, r, -133)
+		local at = isle(b, r, -136) -- WP-25 r9: clear of the bigger back huts
 		set.WorldPivot = at
 		if name == "Playground" then
 			playground(set, at)
@@ -1761,12 +1786,34 @@ function DockPieces.base(b: CFrame): Model
 			)
 		)
 	end
-	-- WP-25 r8: a tall signal mast at the island's back (3 parts): the skyline from the sea at every stage
-	local mast = isle(b, 24, -122)
-	studTop(brick(m, "MastBase", Vector3.new(5, 3, 5), mast * CFrame.new(0, 1.5, 0), BRICK_RED))
-	studTop(brick(m, "Mast", Vector3.new(1.6, 52, 1.6), mast * CFrame.new(0, 29, 0), BRICK_WHITE))
+	-- WP-25 r9: a chunky red/white Lego flag tower behind the station (10 parts; the red/white lighthouse is the
+	-- Spare1 quest reward): the island's landmark from the sea and the other islands at every stage (plate stays flat)
+	local lh = isle(b, 19, -68)
+	studTop(brick(m, "TowerBase", Vector3.new(16, 2, 16), lh * CFrame.new(0, 1, 0), BRICK_RED))
+	for k = 0, 4 do
+		brick(
+			m,
+			"TowerBand",
+			Vector3.new(13.5 - k * 0.6, 15.6, 13.5 - k * 0.6),
+			lh * CFrame.new(0, 9.8 + k * 15.6, 0),
+			if k % 2 == 0 then BRICK_WHITE else BRICK_RED
+		)
+	end
+	studTop(
+		brick(m, "Gallery", Vector3.new(14, 1.6, 14), lh * CFrame.new(0, 80.8, 0), BRICK_YELLOW)
+	)
+	brick(m, "Mast", Vector3.new(2.4, 20, 2.4), lh * CFrame.new(0, 91.6, 0), BRICK_WHITE)
+	part(
+		m,
+		"MastTop",
+		Vector3.new(3.6, 3.6, 3.6),
+		lh * CFrame.new(0, 103.4, 0),
+		BRICK_YELLOW,
+		M.SmoothPlastic,
+		Enum.PartType.Ball
+	)
 	local pennant =
-		brick(m, "MastFlag", Vector3.new(0.4, 6, 10), mast * CFrame.new(0, 51, 5.8), BRICK_RED)
+		brick(m, "MastFlag", Vector3.new(0.5, 16, 26), lh * CFrame.new(0, 92.5, 14.2), BRICK_RED)
 	pennant.CanCollide = false
 	for _, n in { Enum.NormalId.Left, Enum.NormalId.Right } do
 		local d = Instance.new("Decal")
@@ -1978,6 +2025,134 @@ function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2, price: numbe
 	for _, d in m:GetDescendants() do
 		if d:IsA("BasePart") then
 			d.CanQuery = false
+		end
+	end
+	return m
+end
+
+-- WP-25 r9: a garden cluster at `at` (5 parts): a tulip bed, a white fence on two sides, two bushes
+local function garden(m: Model, at: CFrame, k: number)
+	field(m, at, 14, 8, k)
+	brick(m, "Fence", Vector3.new(19, 2, 0.8), at * CFrame.new(0, 1, 5.6), BRICK_WHITE)
+	brick(m, "Fence", Vector3.new(0.8, 2, 12), at * CFrame.new(-9.2, 1, 0), BRICK_WHITE)
+	for i, c in { V(10.5, 2), V(7.5, 6.2) } do
+		local r = if i == 1 then 5.6 else 4.2
+		part(
+			m,
+			"Bush",
+			Vector3.new(r, r, r),
+			at * CFrame.new(c.X, r / 2, c.Y),
+			LEAF,
+			M.SmoothPlastic,
+			Enum.PartType.Ball
+		)
+	end
+end
+
+-- WP-25 r9: the open lawn's garden clusters (island r, f, yaw) once the whole tree is built: no big empty grass
+local GARDENS = {
+	V3(-130, -45, 0),
+	V3(-128, 20, math.pi / 2),
+	V3(-20, -72, 0),
+	V3(105, -68, math.pi),
+	V3(100, -50, 0),
+	V3(-95, 70, 0),
+	V3(105, 100, math.pi / 2),
+	V3(22, -125, 0),
+	V3(-25, -125, math.pi),
+	V3(-128, -62, math.pi),
+	V3(141, -62, 0), -- r9 AD: the lawn by the east bridge foot
+	V3(128, -94, math.pi),
+	V3(0, -112, 0),
+	V3(-57, -4, math.pi / 2),
+	V3(95, 24, 0),
+}
+function DockPieces.finish(b: CFrame): Model
+	local m = Instance.new("Model")
+	m.Name = "Finish"
+	for k, g in GARDENS do
+		garden(m, isle(b, g.X, g.Y) * CFrame.Angles(0, g.Z, 0), k)
+	end
+	for _, d in m:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.CanQuery = false
+		end
+	end
+	return m
+end
+
+-- WP-25 r9: an empty lot once the whole tree is built (`at` on the plate, its footprint `size`): a finished garden,
+-- not a for-sale pad: a lot bed, a tan stud patio, tulip beds either side, a white fence with a gate, bushes, a pot
+function DockPieces.lotGarden(at: CFrame, size: Vector2): Model
+	local m = Instance.new("Model")
+	m.Name = "LotGarden"
+	local bed = brick(
+		m,
+		"LotBed",
+		Vector3.new(size.X + 4, 0.26, size.Y + 4),
+		at * CFrame.new(0, 0.13, 0),
+		Color3.fromRGB(75, 151, 75)
+	)
+	studTop(bed)
+	local patio = brick(
+		m,
+		"Patio",
+		Vector3.new(size.X * 0.5, 0.4, size.Y * 0.5),
+		at * CFrame.new(0, 0.3, 0),
+		TAN
+	)
+	studTop(patio)
+	border(patio, BRICK_WHITE, 10)
+	local hx, hz = size.X / 2, size.Y / 2
+	for _, x in { -1, 1 } do
+		field(
+			m,
+			at * CFrame.new(x * hx * 0.72, 0, 0),
+			size.X * 0.2,
+			size.Y * 0.7,
+			if x < 0 then 1 else 3
+		)
+		brick(
+			m,
+			"Fence",
+			Vector3.new(hx - 3, 1.8, 0.7),
+			at * CFrame.new(x * (hx + 3) / 2, 0.9, -hz + 0.5),
+			BRICK_WHITE
+		)
+		for _, z in { -1, 1 } do
+			part(
+				m,
+				"Bush",
+				Vector3.new(3.6, 3.6, 3.6),
+				at * CFrame.new(x * hx * 0.32, 1.8, z * hz * 0.32),
+				LEAF,
+				M.SmoothPlastic,
+				Enum.PartType.Ball
+			)
+		end
+	end
+	brick(m, "Fence", Vector3.new(size.X, 1.8, 0.7), at * CFrame.new(0, 0.9, hz - 0.5), BRICK_WHITE)
+	part(
+		m,
+		"Pot",
+		Vector3.new(2.6, 4, 4),
+		at * CFrame.new(0, 1.3, 0) * CFrame.Angles(0, 0, math.pi / 2),
+		BRICK_ORANGE,
+		M.SmoothPlastic,
+		Enum.PartType.Cylinder
+	)
+	part(
+		m,
+		"Bloom",
+		Vector3.new(4, 4, 4),
+		at * CFrame.new(0, 3.6, 0),
+		BRICK_PINK,
+		M.SmoothPlastic,
+		Enum.PartType.Ball
+	)
+	for _, d in m:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.CanQuery, d.CanCollide = false, d.Name == "Fence"
 		end
 	end
 	return m

@@ -75,6 +75,7 @@ type Plot = {
 	master: Model?, -- the Harbour Master's gold beacon
 	buildStation: Model?, -- the tablet station by the spawn (WP-14d), while owned
 	decorations: Model?, -- the owner's bought decorations
+	finish: Model?, -- WP-25 r9: the garden clusters on the open lawn, while the whole tree is built
 }
 
 local plots: { Plot } = {}
@@ -382,6 +383,19 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 	if not owner then
 		plot.counts = {}
 	end
+	-- WP-25 r9: the whole tree built -> empty lots turn into gardens, the open lawn gets garden clusters
+	local complete = owner ~= nil
+	for _, key in DockConfig.BUILDINGS do
+		complete = complete and owned[key] == true
+	end
+	if complete and not plot.finish then
+		local made = DockPieces.finish(plot.frame)
+		made.Parent = plot.model
+		plot.finish = made
+	elseif plot.finish and not complete then
+		plot.finish:Destroy()
+		plot.finish = nil
+	end
 	for _, key in BUILT do
 		local want = owner ~= nil and owned[key] == true
 		local have = plot.buildings[key]
@@ -405,11 +419,23 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 			have:Destroy()
 			plot.buildings[key] = nil
 		end
+		local stale = plot.markers[key]
+		if stale and stale:GetAttribute("Garden") ~= complete then -- the tree got finished (or reset)
+			stale:Destroy()
+			plot.markers[key] = nil
+		end
 		local lot, marker = MARKED[key], plot.markers[key]
 		if lot and not want and not marker then
 			local def = DockConfig.Buildings[key]
-			local made =
-				DockPieces.lotMarker(plot.frame, plot.frame * lot.spot, lot.size, def and def.cash)
+			local made = if complete
+				then DockPieces.lotGarden(plot.frame * lot.spot, lot.size)
+				else DockPieces.lotMarker(
+					plot.frame,
+					plot.frame * lot.spot,
+					lot.size,
+					def and def.cash
+				)
+			made:SetAttribute("Garden", complete)
 			made.Parent = plot.model
 			plot.markers[key] = made
 		elseif marker and want then
