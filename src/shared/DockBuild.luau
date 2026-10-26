@@ -15,10 +15,12 @@ DockBuild.MARGIN = 1.12 -- breathing room round the island
 DockBuild.MAX_DISTANCE = 1600
 
 -- Camera distance that fits `radius` in both axes for the given viewport aspect and FOV.
-function DockBuild.distance(radius: number, aspect: number, fov: number?): number
+-- `visible` (0-1, default 1): the vertical share not covered by a bottom band.
+function DockBuild.distance(radius: number, aspect: number, fov: number?, visible: number?): number
 	local vf = math.tan(math.rad(fov or DockBuild.FOV) / 2)
 	local hf = vf * math.max(aspect, 0.3)
-	return math.min(radius * DockBuild.MARGIN / math.min(vf, hf), DockBuild.MAX_DISTANCE)
+	local vv = vf * math.clamp(visible or 1, 0.2, 1)
+	return math.min(radius * DockBuild.MARGIN / math.min(vv, hf), DockBuild.MAX_DISTANCE)
 end
 
 -- Sideways pan (studs, along the camera's right) that sets the look target in the middle of the left `free`
@@ -30,23 +32,27 @@ end
 -- The build-mode camera CFrame in the berth frame. `aim` (world) pulls the look target toward a selected
 -- item's spot; without it the island centre is framed. The camera sits inland of the island (the bridge
 -- side), looking out over the lots to the sea. `free` (0-1, default 1): the screen share left of the list
--- the island is fitted into.
+-- the island is fitted into. `band` (0-1, default 0): the screen share covered by the build tree at the
+-- bottom — the island is fitted above it and its centre is raised to that visible area's middle.
 function DockBuild.camera(
 	frame: CFrame,
 	radius: number,
 	aspect: number,
 	aim: Vector3?,
-	free: number?
+	free: number?,
+	band: number?
 ): CFrame
 	local f = free or 1
-	local d = DockBuild.distance(radius, aspect * f)
+	local cover = math.clamp(band or 0, 0, 0.8)
+	local d = DockBuild.distance(radius, aspect * f, nil, 1 - cover)
 	local centre = (frame * Marina.ISLAND).Position
 	local look = if aim then centre:Lerp(aim, 0.35) else centre
 	local pos = centre
 		+ Vector3.new(0, d * math.sin(DockBuild.PITCH), 0)
 		- frame.LookVector * (d * math.cos(DockBuild.PITCH))
 	local cam = CFrame.lookAt(pos, look)
-	return cam + cam.RightVector * panLeft(d, aspect, f)
+	local vf = math.tan(math.rad(DockBuild.FOV) / 2)
+	return cam + cam.RightVector * panLeft(d, aspect, f) - cam.UpVector * (cover * d * vf)
 end
 
 -- Where an item would stand, in the berth frame, and the footprint to outline -> CFrame, Vector2.
@@ -88,11 +94,13 @@ function DockBuild.focus(
 	at: Vector3,
 	size: Vector2,
 	aspect: number,
-	free: number?
+	free: number?,
+	band: number?
 ): CFrame
 	local r = math.max(size.X, size.Y) / 2
+	local cover = math.clamp(band or 0, 0, 0.8)
 	local d = math.max(
-		DockBuild.distance(r * DockBuild.FOCUS_ROOM, aspect * (free or 1)),
+		DockBuild.distance(r * DockBuild.FOCUS_ROOM, aspect * (free or 1), nil, 1 - cover),
 		DockBuild.FOCUS_MIN
 	)
 	local pos = at
@@ -101,8 +109,9 @@ function DockBuild.focus(
 	local cam = CFrame.lookAt(pos, at)
 	local vf = math.tan(math.rad(DockBuild.FOV) / 2)
 	local shiftX = if free then 1 - free else DockBuild.FOCUS_SHIFT.X
+	local shiftY = if cover > 0 then cover else DockBuild.FOCUS_SHIFT.Y
 	local pan = cam.RightVector * (shiftX * d * vf * math.max(aspect, 0.3))
-		- cam.UpVector * (DockBuild.FOCUS_SHIFT.Y * d * vf)
+		- cam.UpVector * (shiftY * d * vf)
 	return cam + pan
 end
 

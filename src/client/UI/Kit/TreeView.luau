@@ -129,27 +129,25 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	local nodesById: { [string]: Node } = {}
 	local choose: (string, boolean) -> ()
 
+	-- The detail card is compact and docked to the free side of the band (right on landscape, top on
+	-- portrait), so the tree keeps a free rect of its own and the card never covers the selected node.
+	local DETAIL_PAD = 12
+	local DETAIL_TOP = 92 -- icon + name / effect / needs, above the price row
 	local detail = Instance.new("Frame")
 	detail.Name = "Detail"
 	detail.BackgroundTransparency = 1
-	detail.AnchorPoint = Vector2.new(0.5, 1)
-	detail.Position = UDim2.new(0.5, 0, 1, -14)
-	detail.Size = UDim2.new(1, -24, 0, 112)
+	detail.Size = UDim2.fromOffset(360, 120)
 	detail.ZIndex = 8
 	detail.Visible = false
 	detail.Parent = root
-	local detailSize = Instance.new("UISizeConstraint")
-	detailSize.MaxSize = Vector2.new(560, 112)
-	detailSize.Parent = detail
 	local _, dface =
 		Style.block(detail, Style.grad("body"), { shadow = true, radius = S.corner + 2 })
 	local dIcon = Instance.new("Frame")
 	dIcon.Name = "Icon"
 	dIcon.BackgroundColor3 = Color3.new(1, 1, 1)
 	dIcon.BackgroundTransparency = 0.4
-	dIcon.AnchorPoint = Vector2.new(0, 0.5)
-	dIcon.Position = UDim2.new(0, 12, 0.5, 0)
-	dIcon.Size = UDim2.fromOffset(72, 72)
+	dIcon.Position = UDim2.fromOffset(12, 10)
+	dIcon.Size = UDim2.fromOffset(56, 56)
 	Style.corner(dIcon, S.cornerSmall)
 	dIcon.Parent = dface
 	local dArt = Instance.new("Frame")
@@ -161,20 +159,25 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	dName.TextXAlignment = Enum.TextXAlignment.Left
 	dName.TextWrapped = false
 	dName.TextScaled = true
-	dName.Position = UDim2.fromOffset(96, 8)
-	dName.Size = UDim2.new(1, -300, 0, 34)
+	dName.Position = UDim2.fromOffset(76, 4)
+	dName.Size = UDim2.new(1, -88, 0, 34)
 	local nameCap = Instance.new("UITextSizeConstraint")
 	nameCap.MaxTextSize = Theme.Text.heading
-	nameCap.MinTextSize = 16
+	nameCap.MinTextSize = 14
 	nameCap.Parent = dName
 	local dEffect = Style.label(dface, "", Theme.Text.small + 2, true)
 	dEffect.TextXAlignment = Enum.TextXAlignment.Left
 	dEffect.TextWrapped = false
-	dEffect.Position = UDim2.fromOffset(96, 42)
-	dEffect.Size = UDim2.new(1, -300, 0, 28)
-	local dNeedsButton = Style.button(dface, UDim2.new(1, -300, 0, 26))
+	dEffect.TextScaled = true
+	dEffect.Position = UDim2.fromOffset(76, 39)
+	dEffect.Size = UDim2.new(1, -88, 0, 24)
+	local effectCap = Instance.new("UITextSizeConstraint")
+	effectCap.MaxTextSize = Theme.Text.small + 2
+	effectCap.MinTextSize = 12
+	effectCap.Parent = dEffect
+	local dNeedsButton = Style.button(dface, UDim2.new(1, -88, 0, 24))
 	dNeedsButton.Name = "Needs"
-	dNeedsButton.Position = UDim2.fromOffset(96, 72)
+	dNeedsButton.Position = UDim2.fromOffset(76, 64)
 	local dNeeds = Style.label(dNeedsButton, "", Theme.Text.small, true)
 	dNeeds.TextXAlignment = Enum.TextXAlignment.Left
 	dNeeds.TextWrapped = false
@@ -190,7 +193,20 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 			choose(node.need, false)
 		end
 	end, S.cornerSmall)
-	local dPrice = PriceButton.new(dface, {
+	-- a price button needs 184 du; on a narrow card the slot scales it down (still a big touch target)
+	local function buttonSlot(): (Frame, UIScale)
+		local holder = Instance.new("Frame")
+		holder.Name = "Slot"
+		holder.BackgroundTransparency = 1
+		holder.Size = UDim2.fromOffset(S.price.X, S.price.Y)
+		holder.Visible = false
+		holder.Parent = dface
+		local sc = Instance.new("UIScale")
+		sc.Parent = holder
+		return holder, sc
+	end
+	local dPriceSlot, dPriceScale = buttonSlot()
+	local dPrice = PriceButton.new(dPriceSlot, {
 		price = 0,
 		currency = "Cash",
 		state = "disabled",
@@ -203,7 +219,8 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	})
 	dPrice.root.Visible = false
 	dPrice.root.Selectable = false
-	local dRobux = PriceButton.new(dface, {
+	local dRobuxSlot, dRobuxScale = buttonSlot()
+	local dRobux = PriceButton.new(dRobuxSlot, {
 		price = 0,
 		currency = "Robux",
 		state = "buy",
@@ -216,7 +233,8 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	})
 	dRobux.root.Visible = false
 	dRobux.root.Selectable = false
-	local dAction = PriceButton.new(dface, {
+	local dActionSlot, dActionScale = buttonSlot()
+	local dAction = PriceButton.new(dActionSlot, {
 		price = 0,
 		currency = "Robux",
 		state = "disabled",
@@ -286,12 +304,36 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		return box.pos + box.size * 0.5
 	end
 
+	-- The free tree rect: the detail card reserves the right column on landscape, the top strip on
+	-- portrait. Ten du of breathing room beside the card.
+	local function viewRect(): TreeMath.View
+		local vp = viewportDu()
+		local right, top = 0, 0
+		if detail.Visible then
+			if vp.X >= vp.Y then
+				right = detail.Size.X.Offset + 20
+			else
+				top = detail.Size.Y.Offset + 20
+			end
+		end
+		return {
+			pos = Vector2.new(0, top),
+			size = Vector2.new(math.max(vp.X - right, 4), math.max(vp.Y - top, 4)),
+		}
+	end
+
+	local function clampView()
+		pan = TreeMath.clampPanIn(pan, viewRect(), layout.size, zoom)
+		apply()
+	end
+
 	local function hideDetail()
 		detail.Visible = false
 		dPrice.root.Selectable = false
 		dRobux.root.Selectable = false
 		dAction.root.Selectable = false
 		selectedId = nil
+		clampView()
 	end
 
 	local function refreshDetail()
@@ -326,49 +368,59 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 			else `Needs: {table.concat(missing, ", ")}`
 		dNeedsButton.Selectable = needNode ~= nil
 
-		-- buy buttons right; busy hides both (the site's card offers Finish now instead)
-		local list: { PriceButton.PriceButton } = {}
+		-- buy buttons in a row under the words; busy hides them all (the site's card offers Finish now)
+		local list: { { button: PriceButton.PriceButton, slot: Frame, scale: UIScale } } = {}
 		local showAction = node.action ~= nil and node.action.visible ~= false
 		if showAction then
-			table.insert(list, dAction)
+			table.insert(list, { button = dAction, slot = dActionSlot, scale = dActionScale })
 		end
 		local showRobux = node.robux ~= nil and props.onBuyRobux ~= nil and state == "buyable"
 		if showRobux then
-			table.insert(list, dRobux)
+			table.insert(list, { button = dRobux, slot = dRobuxSlot, scale = dRobuxScale })
 		end
 		local showCash = state ~= "busy" and node.price > 0 -- price 0: not sold (a quest reward)
 		if showCash then
-			table.insert(list, dPrice)
+			table.insert(list, { button = dPrice, slot = dPriceSlot, scale = dPriceScale })
 		end
 		dPrice.root.Visible = false
 		dRobux.root.Visible = false
 		dAction.root.Visible = false
-		-- two buttons go side by side when the card has the width (the build band on desktop), else
-		-- stack them so the words keep their room on a phone
-		local cardWidth = root.AbsoluteSize.X / kitScale() - 24
-		local across = #list > 1 and cardWidth >= 700
-		local rowWidth = #list * S.price.X + (#list - 1) * 8
-		for i, button in list do
-			button.root.Visible = true
-			button.root.AnchorPoint = Vector2.new(1, 0)
-			button.root.Position = if across
-				then UDim2.new(1, -12 - (#list - i) * (S.price.X + 8), 0.5, -S.price.Y * 0.5)
-				else UDim2.new(
-					1,
-					-12,
-					0.5,
-					-#list * S.price.Y * 0.5 - (#list - 1) * 4 + (i - 1) * (S.price.Y + 8)
-				)
+		dPriceSlot.Visible = false
+		dRobuxSlot.Visible = false
+		dActionSlot.Visible = false
+		-- compact card: a du width that scales with the screen, docked right on landscape and on top
+		-- on portrait. Buttons share the bottom row; a narrow slot shrinks the whole button.
+		local vp = viewportDu()
+		local portrait = vp.Y > vp.X
+		local cardW = if portrait
+			then math.min(vp.X - 32, 760)
+			else math.clamp(vp.X * 0.34, 360, 460)
+		local gap = 8
+		local slotW = if #list > 0 then (cardW - 2 * DETAIL_PAD - (#list - 1) * gap) / #list else 0
+		local k = math.clamp(slotW / S.price.X, 0.1, 1)
+		if #list > 0 then
+			-- a short band (a phone on its side) shrinks the row too, so the card never overflows it
+			k = math.min(k, math.max((vp.Y - 12 - DETAIL_TOP - DETAIL_PAD) / S.price.Y, 0.1))
 		end
-		local height = if across
-			then 112
-			else math.max(112, #list * S.price.Y + (#list - 1) * 8 + 28)
-		local right = 96 + (if across then rowWidth + 12 else S.price.X + 24)
-		dName.Size = UDim2.new(1, -right, 0, 34)
-		dEffect.Size = UDim2.new(1, -right, 0, 28)
-		dNeedsButton.Size = UDim2.new(1, -right, 0, 26)
-		detail.Size = UDim2.new(1, -24, 0, height)
-		detailSize.MaxSize = Vector2.new(if across then 760 else 560, height)
+		local height = DETAIL_TOP + (if #list > 0 then S.price.Y * k + DETAIL_PAD else 0)
+		for i, entry in list do
+			entry.button.root.Visible = true
+			entry.slot.Visible = true
+			entry.scale.Scale = k
+			local w = S.price.X * k
+			entry.slot.Position = UDim2.fromOffset(
+				math.floor(DETAIL_PAD + (i - 1) * (slotW + gap) + (slotW - w) * 0.5),
+				DETAIL_TOP
+			)
+		end
+		if portrait then
+			detail.AnchorPoint = Vector2.new(0.5, 0)
+			detail.Position = UDim2.new(0.5, 0, 0, 10)
+		else
+			detail.AnchorPoint = Vector2.new(1, 0.5)
+			detail.Position = UDim2.new(1, -10, 0.5, 0)
+		end
+		detail.Size = UDim2.fromOffset(cardW, height)
 
 		dPrice.setPrice(node.price)
 		local affordable = cash == nil or cash >= node.price
@@ -406,6 +458,33 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		end
 		dAction.root.Selectable = showAction and act ~= nil and act.enabled ~= false
 		detail.Visible = true
+		clampView()
+	end
+
+	-- Bring a node fully into the free rect (the card may have just made it narrower).
+	local function reveal(id: string)
+		local box = boxes[id]
+		if not box then
+			return
+		end
+		local view = viewRect()
+		local at = pan + centre(box) * zoom
+		local nx, ny = pan.X, pan.Y
+		-- keep the whole node card inside the free rect, not only its centre
+		local mx = math.min(box.size.X * 0.5 * zoom + 8, view.size.X * 0.45)
+		local my = math.min(box.size.Y * 0.5 * zoom + 8, view.size.Y * 0.45)
+		if at.X < view.pos.X + mx then
+			nx = view.pos.X + mx - centre(box).X * zoom
+		elseif at.X > view.pos.X + view.size.X - mx then
+			nx = view.pos.X + view.size.X - mx - centre(box).X * zoom
+		end
+		if at.Y < view.pos.Y + my then
+			ny = view.pos.Y + my - centre(box).Y * zoom
+		elseif at.Y > view.pos.Y + view.size.Y - my then
+			ny = view.pos.Y + view.size.Y - my - centre(box).Y * zoom
+		end
+		pan = TreeMath.clampPanIn(Vector2.new(nx, ny), view, layout.size, zoom)
+		apply()
 	end
 
 	-- drag to pan (mouse + touch) starts on the empty canvas and on a node alike; a drag never
@@ -491,7 +570,7 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		name.Size = UDim2.new(1, -70, 0, 38)
 		local cap = Instance.new("UITextSizeConstraint")
 		cap.MaxTextSize = Theme.Text.small + 2
-		cap.MinTextSize = 11
+		cap.MinTextSize = 12
 		cap.Parent = name
 
 		local row = Instance.new("Frame")
@@ -573,6 +652,7 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		end
 		selectedId = id
 		refreshDetail()
+		reveal(id)
 		if open then
 			if UserInputService.GamepadEnabled and dPrice.root.Selectable then
 				GuiService.SelectedObject = dPrice.root
@@ -716,15 +796,23 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	end
 
 	local function fit()
-		local vp = viewportDu()
-		if vp.X < 4 or vp.Y < 4 or layout.size.X < 4 or #points == 0 then
+		local view = viewRect()
+		if view.size.X < 4 or view.size.Y < 4 or layout.size.X < 4 or #points == 0 then
 			return
 		end
-		zoom =
-			math.clamp(math.min((vp.X - 24) / layout.size.X, (vp.Y - 24) / layout.size.Y), 0.7, 1)
+		zoom = math.clamp(
+			math.min((view.size.X - 24) / layout.size.X, (view.size.Y - 24) / layout.size.Y),
+			0.7,
+			1
+		)
 		-- lanes read top down: start at the first branch, centred across
 		local shown = layout.size * zoom
-		pan = TreeMath.clampPan(Vector2.new((vp.X - shown.X) * 0.5, 0), vp, layout.size, zoom)
+		pan = TreeMath.clampPanIn(
+			Vector2.new(view.pos.X + (view.size.X - shown.X) * 0.5, view.pos.Y),
+			view,
+			layout.size,
+			zoom
+		)
 		fitted = true
 		apply()
 	end
@@ -779,20 +867,19 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		if not fitted then
 			fit()
 		else
-			local vp = viewportDu()
-			pan = TreeMath.clampPan(pan, vp, layout.size, zoom)
-			apply()
+			clampView()
 		end
 	end
 
 	build(sortedNodes(props.nodes))
 	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+		if selectedId then
+			refreshDetail() -- redock the card (a resize can change the orientation)
+		end
 		if not fitted then
 			fit()
 		else
-			local vp = viewportDu()
-			pan = TreeMath.clampPan(pan, vp, layout.size, zoom)
-			apply()
+			clampView()
 		end
 	end)
 
@@ -836,17 +923,16 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 			end
 			if d.moved then
 				pan = d.pan + delta / kitScale()
-				local vp = viewportDu()
-				pan = TreeMath.clampPan(pan, vp, layout.size, zoom)
+				pan = TreeMath.clampPanIn(pan, viewRect(), layout.size, zoom)
 				apply()
 			end
 		elseif t == Enum.UserInputType.MouseWheel then
-			local vp = viewportDu()
+			local view = viewRect()
 			local before = zoom
 			zoom =
 				math.clamp(zoom * (1.12 ^ input.Position.Z), TreeMath.MIN_ZOOM, TreeMath.MAX_ZOOM)
-			pan = TreeMath.zoomAbout(pan, vp * 0.5, before, zoom)
-			pan = TreeMath.clampPan(pan, vp, layout.size, zoom)
+			pan = TreeMath.zoomAbout(pan, view.pos + view.size * 0.5, before, zoom)
+			pan = TreeMath.clampPanIn(pan, view, layout.size, zoom)
 			apply()
 		end
 	end)
@@ -879,12 +965,12 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 			pinchStart = zoom
 			drag = nil
 		elseif state == Enum.UserInputState.Change and pinchStart then
-			local vp = viewportDu()
+			local view = viewRect()
 			local before = zoom
 			zoom =
 				math.clamp(pinchStart * math.max(scale, 0.05), TreeMath.MIN_ZOOM, TreeMath.MAX_ZOOM)
-			pan = TreeMath.zoomAbout(pan, vp * 0.5, before, zoom)
-			pan = TreeMath.clampPan(pan, vp, layout.size, zoom)
+			pan = TreeMath.zoomAbout(pan, view.pos + view.size * 0.5, before, zoom)
+			pan = TreeMath.clampPanIn(pan, view, layout.size, zoom)
 			apply()
 		else
 			pinchStart = nil
@@ -899,37 +985,18 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	}
 
 	local function move(dir: Vector2)
+		local view = viewRect()
 		local from: Vector2
 		if selectedId and boxes[selectedId :: string] then
 			from = centre(boxes[selectedId :: string])
 		else
-			local vp = viewportDu()
-			from = (vp * 0.5 - pan) / zoom
+			from = (view.pos + view.size * 0.5 - pan) / zoom
 		end
 		local id = TreeMath.nearest(points, from, dir)
 		if not id then
 			return
 		end
 		choose(id, false)
-		local box = boxes[id]
-		if box then
-			local vp = viewportDu()
-			local at = pan + centre(box) * zoom
-			local nx, ny = pan.X, pan.Y
-			if at.X < 40 then
-				nx = 40 - centre(box).X * zoom
-			elseif at.X > vp.X - 40 then
-				nx = vp.X - 40 - centre(box).X * zoom
-			end
-			local low = if detail.Visible then 40 + detail.Size.Y.Offset else 40
-			if at.Y < 40 then
-				ny = 40 - centre(box).Y * zoom
-			elseif at.Y > vp.Y - low then
-				ny = vp.Y - low - centre(box).Y * zoom
-			end
-			pan = TreeMath.clampPan(Vector2.new(nx, ny), vp, layout.size, zoom)
-			apply()
-		end
 	end
 
 	ContextActionService:BindActionAtPriority(

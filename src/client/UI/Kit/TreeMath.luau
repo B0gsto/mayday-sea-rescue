@@ -5,7 +5,7 @@
 -- nearest node in a direction. All values are design units (du).
 local TreeMath = {}
 
-TreeMath.NODE = Vector2.new(144, 96)
+TreeMath.NODE = Vector2.new(200, 96) -- wide enough for the longest name at the label size
 TreeMath.COL_GAP = 72
 TreeMath.ROW_GAP = 20
 TreeMath.LANE_GAP = 18
@@ -137,17 +137,26 @@ function TreeMath.nearest(points: { Point }, from: Vector2, dir: Vector2): strin
 	return best
 end
 
+-- The free part of the tree viewport: the detail card docks over the rest (root space, du).
+export type View = { pos: Vector2, size: Vector2 }
+
+-- Keep the content inside `view`: centred when it is smaller, else pan clamped so no edge shows
+-- empty space in the free rect (the card never covers a node).
+function TreeMath.clampPanIn(pan: Vector2, view: View, content: Vector2, zoom: number): Vector2
+	local shown = content * zoom
+	local x = if shown.X <= view.size.X
+		then view.pos.X + (view.size.X - shown.X) * 0.5
+		else math.clamp(pan.X, view.pos.X + view.size.X - shown.X, view.pos.X)
+	local y = if shown.Y <= view.size.Y
+		then view.pos.Y + (view.size.Y - shown.Y) * 0.5
+		else math.clamp(pan.Y, view.pos.Y + view.size.Y - shown.Y, view.pos.Y)
+	return Vector2.new(x, y)
+end
+
 -- Keep the content on screen: centred when it is smaller than the viewport, else pan clamped so
 -- no edge shows empty space.
 function TreeMath.clampPan(pan: Vector2, viewport: Vector2, content: Vector2, zoom: number): Vector2
-	local shown = content * zoom
-	local x = if shown.X <= viewport.X
-		then (viewport.X - shown.X) * 0.5
-		else math.clamp(pan.X, viewport.X - shown.X, 0)
-	local y = if shown.Y <= viewport.Y
-		then (viewport.Y - shown.Y) * 0.5
-		else math.clamp(pan.Y, viewport.Y - shown.Y, 0)
-	return Vector2.new(x, y)
+	return TreeMath.clampPanIn(pan, { pos = Vector2.zero, size = viewport }, content, zoom)
 end
 
 -- Zoom about a point: the point stays where it is while the scale changes from `before` to `after`.

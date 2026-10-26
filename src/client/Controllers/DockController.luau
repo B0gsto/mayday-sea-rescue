@@ -96,6 +96,7 @@ local buildTabs: TabsUI.Tabs? = nil
 local bandClose: ImageButton? = nil
 local refreshTree: () -> () = function() end
 local pickTab: (number) -> () = function() end
+local closeBuild: () -> ()
 
 local papers: Folder? = nil
 local paperItems: { [Instance]: DockBlueprints.Item } = {}
@@ -154,6 +155,17 @@ local function free(): number
 	end
 	local vp, scale = Style.metrics(p.root)
 	return math.clamp((vp.X - (LIST_W + 2 * S.margin) * scale) / math.max(vp.X, 1), 0.4, 1)
+end
+
+-- The Build tab's bottom band as a screen share (0-1), so the island is framed above it.
+local function bandShare(): number
+	local band = buildBand
+	if not band or tabIndex ~= 1 or not band.Visible then
+		return 0
+	end
+	local vp, scale = Style.metrics(band)
+	local h = vp.Y / math.max(scale, 0.05)
+	return math.clamp((S.margin + h * band.Size.Y.Scale) / math.max(h, 1), 0, 0.8)
 end
 
 local function shake(target: GuiObject?)
@@ -332,7 +344,12 @@ local function cashBuy(item: DockBlueprints.Item)
 		return
 	end
 	local ok = remote:InvokeServer(item.key)
-	if not ok then
+	if ok then
+		-- docs/24 G: a bought building closes the tree so the player sees the site start
+		if displayed and item.kind == "Building" then
+			closeBuild()
+		end
+	else
 		local tree = if tabIndex == 1 then buildTree else nil
 		shake(tree and tree.root or (if focused then focusStrip else listPanel and listPanel.root))
 	end
@@ -1056,7 +1073,10 @@ end
 local function islandView(duration: number)
 	local b = plotFrame
 	if b then
-		fly(DockBuild.camera(b, DockBuild.ISLAND_RADIUS, aspect(), nil, free()), duration)
+		fly(
+			DockBuild.camera(b, DockBuild.ISLAND_RADIUS, aspect(), nil, free(), bandShare()),
+			duration
+		)
 	end
 end
 
@@ -1071,7 +1091,10 @@ focusItem = function(item: DockBlueprints.Item, room: number?)
 	local spot, size = DockBuild.spot(item)
 	outlineSpot(b * spot, size)
 	local at, paperSize = DockBuild.paper(item, b)
-	fly(DockBuild.focus(b, at.Position, paperSize * (room or 1), aspect(), free()), 0.6)
+	fly(
+		DockBuild.focus(b, at.Position, paperSize * (room or 1), aspect(), free(), bandShare()),
+		0.6
+	)
 	if tabIndex == 2 then
 		refreshStrip()
 	end
@@ -1110,7 +1133,7 @@ local function hideHud(on: boolean)
 	end
 end
 
-local function closeBuild()
+closeBuild = function()
 	if not displayed then
 		return
 	end
@@ -1196,6 +1219,7 @@ local function showTab()
 end
 
 pickTab = function(i: number)
+	local changed = tabIndex ~= i
 	tabIndex = i
 	syncingTabs = true
 	local band = buildTabs
@@ -1208,6 +1232,9 @@ pickTab = function(i: number)
 	end
 	syncingTabs = false
 	showTab()
+	if changed and displayed then
+		islandView(0.6) -- the Build band changes the free screen: reframe above it / beside the list
+	end
 end
 
 local function onTab(i: number)

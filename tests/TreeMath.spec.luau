@@ -112,6 +112,16 @@ return function(t)
 		t.expect(big.Y).toBe(-300)
 	end)
 
+	t.test("clampPanIn: the free rect keeps the docked detail card off every node", function()
+		local view = { pos = v(100, 80), size = v(400, 300) }
+		local small = M.clampPanIn(v(0, 0), view, v(200, 100), 1)
+		t.expect(small).toEqual(v(200, 180))
+		local big = M.clampPanIn(v(9999, 9999), view, v(800, 600), 1)
+		t.expect(big).toEqual(v(100, 80))
+		big = M.clampPanIn(v(-9999, -9999), view, v(800, 600), 1)
+		t.expect(big).toEqual(v(-300, -220))
+	end)
+
 	t.test("zoomAbout: the point under the pointer stays put", function()
 		local pan, at = v(-100, -50), v(200, 100)
 		local before = (at - pan) / 1

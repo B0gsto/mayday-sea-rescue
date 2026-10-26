@@ -53,6 +53,20 @@ return function(t)
 		end
 	)
 
+	t.test("bottom band: the island centre moves into the visible area above it", function()
+		local vf = math.tan(math.rad(B.FOV) / 2)
+		local plain = B.camera(frame, B.ISLAND_RADIUS, 16 / 9, nil)
+		local cam = B.camera(frame, B.ISLAND_RADIUS, 16 / 9, nil, nil, 0.45)
+		local rel = cam:PointToObjectSpace(centre)
+		t.expect(rel.Y / (-rel.Z * vf)).toBeCloseTo(0.45, 2)
+		t.expect((cam.Position - centre).Magnitude > (plain.Position - centre).Magnitude).toBe(true)
+		-- the focus view is raised to the same visible middle
+		local spot = (frame * M.LOTS.Spare3.cf).Position
+		local focus = B.focus(frame, spot, Vector2.new(7, 7), 16 / 9, nil, 0.45)
+		local frel = focus:PointToObjectSpace(spot)
+		t.expect(frel.Y / (-frel.Z * vf)).toBeCloseTo(0.45, 2)
+	end)
+
 	t.test("every catalog item has a lot spot and a footprint", function()
 		local items = DB.catalog()
 		t.expect(#items > 0).toBe(true)
