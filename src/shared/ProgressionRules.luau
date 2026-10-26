@@ -198,7 +198,8 @@ local function flagScalar(value: any): any
 		if value ~= value or value == math.huge or value == -math.huge then
 			return nil
 		end
-		return math.clamp(value, -1e6, 1e6)
+		-- whole ids and timestamps stay exact (1e6 cut flags.group's group id on every save)
+		return math.clamp(value, -2 ^ 53, 2 ^ 53)
 	elseif kind == "string" then
 		return string.sub(value, 1, 64)
 	end

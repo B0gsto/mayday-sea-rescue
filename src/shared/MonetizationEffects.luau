@@ -6,7 +6,7 @@
 -- Fairness (docs/04 sections 1 and 7): every effect here is Cash or a server-wide storm. Nothing
 -- touches grades, timing windows or a casualty's condition.
 --
--- Saved state: one flat profile flag `shop` (ProgressionRules flag rules: scalars only, |n| <= 1e6):
+-- Saved state: one flat profile flag `shop` (ProgressionRules flag rules: scalars only, |n| <= 2^53):
 --   cashBoost, crewBoost   seconds of boost playtime left (tick only while the player is in a server)
 --   packDay, packs         UTC day number and Cash packs bought that day (docs/04 4.1 daily limit)
 --   starterKit             true once the Starter Kit's one-time Cash has been paid
@@ -100,8 +100,8 @@ function Effects.devNoPasses(isStudio: boolean, attribute: any): boolean
 end
 
 -- Adds hours of real time from now, or from the current end when one is running; returns the new end.
--- shortcut: saved as a whole hour (the flag limit is 1e6), so the end rounds up and a buyer gets up to
--- an hour extra; store seconds if the flag rules ever allow bigger numbers.
+-- shortcut: saved as a whole hour (the flag limit was 1e6), so the end rounds up and a buyer gets up to
+-- an hour extra; flags allow 2^53 now, so seconds would fit.
 function Effects.addDayPass(shop: Shop, passKey: string, hours: number, now: number): number
 	local from = math.max(Effects.dayPassEnds(shop, passKey), now)
 	local hour = math.ceil((from + math.max(hours, 0) * 3600) / 3600)

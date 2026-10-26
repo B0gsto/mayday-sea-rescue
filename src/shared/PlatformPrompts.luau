@@ -20,8 +20,8 @@ export type State = {
 	last: number?,
 }
 
--- The save sanitiser clamps one flag field to +/-1e6 (ProgressionRules), so an epoch timestamp
--- cannot be stored. Each ask is two small fields instead: UTC day index + second of that day.
+-- The save sanitiser clamped one flag field to +/-1e6 (now 2^53, ProgressionRules), so an epoch timestamp
+-- could not be stored. Each ask is two small fields instead: UTC day index + second of that day.
 local DAY = 86400
 
 function PlatformPrompts.isKind(kind: any): boolean

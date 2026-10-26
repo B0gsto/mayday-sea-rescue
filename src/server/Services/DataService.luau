@@ -678,6 +678,24 @@ function DataService.Start()
 	for _, player in Players:GetPlayers() do
 		task.spawn(onPlayerAdded, player)
 	end
+	if RunService:IsStudio() then
+		-- Studio: ServerStorage.DataDev:Invoke("rejoin") saves the first player as if leaving, loads them again
+		-- through the same path and returns (before, the stored record (memory mode), after)
+		local dev = Instance.new("BindableFunction")
+		dev.Name = "DataDev"
+		dev.OnInvoke = function(cmd: string): ...any
+			local player = Players:GetPlayers()[1]
+			if cmd ~= "rejoin" or not player or not loaded[player] then
+				return nil
+			end
+			local before = Rules.migrate(loaded[player])
+			onPlayerRemoving(player)
+			local record = Logic.deepCopy(memoryStore[keyFor(player)])
+			onPlayerAdded(player)
+			return before, record, loaded[player]
+		end
+		dev.Parent = game:GetService("ServerStorage")
+	end
 	while true do
 		task.wait(AUTOSAVE_SECONDS)
 		if closing then

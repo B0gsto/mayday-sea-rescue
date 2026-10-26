@@ -209,7 +209,7 @@ return function(t)
 		t.expect(Effects.dayPassEnds(nil, "DoubleCash")).toBe(0)
 		local ends = Effects.addDayPass(shop, "DoubleCash", 24, now)
 		t.expect(ends >= now + 24 * 3600 and ends < now + 25 * 3600).toBe(true)
-		t.expect(shop.dayDoubleCash < 1e6).toBe(true) -- the flag limit
+		t.expect(shop.dayDoubleCash < 1e6).toBe(true) -- whole hours
 		t.expect(Effects.dayPassEnds(shop, "DoubleCash")).toBe(ends)
 		t.expect(Effects.dayPassEnds(shop, "QuickLaunch")).toBe(0)
 		t.expect(Effects.addDayPass(shop, "DoubleCash", 24, now + 3600)).toBe(ends + 24 * 3600)
