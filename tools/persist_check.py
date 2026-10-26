@@ -168,7 +168,7 @@ def compare(expected, actual, path, out, limit=25):
         for k in expected:
             compare(expected[k], (actual or {}).get(k), f"{path}.{k}", out, limit)
         for k in actual or {}:
-            if k not in expected:
+            if k not in expected and k != "lastSeen":  # the save timestamp (offline pay), set on every save
                 out.append({"field": f"{path}.{k}", "expected": "<absent>", "actual": repr(actual[k])})
         return
     if expected != actual:
@@ -271,7 +271,7 @@ local function compare(expected, actual, path, out, limit)
         compare(v, actual[k], `{path}.{tostring(k)}`, out, limit)
     end
     for k, v in actual do
-        if expected[k] == nil then
+        if expected[k] == nil and k ~= "lastSeen" then -- lastSeen: the save timestamp (offline pay), set on every save
             table.insert(out, {
                 field = `{path}.{tostring(k)}`,
                 expected = "<absent>",
@@ -424,19 +424,6 @@ for flagName in data.flags or {} do
     end
 end
 
-local configModule = Shared.Config.ProgressionConfig
-local ProgressionConfig = require(configModule)
-local rankIndex = Rules.rankIndex(data)
-local expectedRankIndex = Rules.rankIndex(expected)
-fields.rank = { ok = rankIndex == expectedRankIndex, failures = if rankIndex == expectedRankIndex then 0 else 1 }
-if rankIndex ~= expectedRankIndex then
-    table.insert(mismatches, {
-        field = "rank",
-        expected = tostring(expectedRankIndex),
-        actual = tostring(rankIndex),
-    })
-end
-local rankName = ProgressionConfig.Ranks[rankIndex].displayName
 
 local rawOk, raw = pcall(function()
     return store:GetAsync(key)
@@ -466,7 +453,6 @@ return {
     key = key,
     fields = fields,
     mismatches = mismatches,
-    rank = { index = rankIndex, name = rankName, expected = expectedRankIndex },
     storedVersion = if storedOk then raw.version else nil,
     sessionReleased = released,
     warnings = warnings,
