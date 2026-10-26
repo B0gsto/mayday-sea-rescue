@@ -10,7 +10,7 @@ return function(t)
 		"the field runs off Puffin Isle's beach, straight out to sea, far from the ring",
 		function()
 			local WorldConfig = t.load("src/shared/Config/WorldConfig.luau")
-			local HubLayout = t.load("src/shared/Config/HubLayout.luau")
+			local RingLayout = t.load("src/shared/Config/RingLayout.luau")
 			local puffin
 			for _, isl in WorldConfig.Islands do
 				if isl.id == "PuffinIsle" then
@@ -21,7 +21,7 @@ return function(t)
 			t.expect(F.direction.Y).toBe(0)
 			local off = F.origin - puffin.center
 			t.expect(Vector3.new(off.X, 0, off.Z).Unit:Dot(F.direction.Unit)).toBeCloseTo(1, 1e-4)
-			t.expect((F.origin - HubLayout.Center).Magnitude > HubLayout.Ring + 1000).toBeTruthy()
+			t.expect((F.origin - RingLayout.Center).Magnitude > RingLayout.Ring + 1000).toBeTruthy()
 			t.expect(F.strength > 4 and F.strength < 12).toBeTruthy()
 			t.expect(F.width > 20 and F.length > F.width).toBeTruthy()
 			t.expect(R.point(F, 0, 0)).toBe(F.origin)

@@ -1,5 +1,5 @@
 --!strict
--- HubLayout (docs/23 (p), WP-27): where things go on the six player islands, a tight ring round an open lagoon (no
+-- RingLayout (docs/23 (p), WP-27): where things go on the six player islands, a tight ring round an open lagoon (no
 -- island at the centre). Pure data, built from WorldConfig.Ring (generated from tools/world/layout.py). Lune-safe.
 --
 -- Frames: an island's `frame` is CFrame.lookAt(centre, centre + facing) on its plate (Y = plateauY), `facing` the
@@ -7,13 +7,13 @@
 -- cframe on the ground at the lot centre, LookVector = the building's front; size = Vector2 (width along
 -- RightVector, depth along LookVector). Berths are CFrames at sea level, LookVector = bow (pointing out to sea).
 --
---   HubLayout.Center    the lagoon's centre (on the plate level); calls are measured from it
---   HubLayout.Islands   { Island } in WorldConfig order (Plot1..Plot6); HubLayout.byId[id]
+--   RingLayout.Center    the lagoon's centre (on the plate level); calls are measured from it
+--   RingLayout.Islands   { Island } in WorldConfig order (Plot1..Plot6); RingLayout.byId[id]
 --   Island.quest        { pontoon, slots } the quest pontoon (deck-top CFrame, LookVector out to sea, size
 --                       QUEST_PONTOON) and the quest boats' mooring spots (sea level, LookVector = bow, toward the
 --                       plate); boats sail in along -facing from out at sea. The quest tablet stands on lots.QuestTablet
---   HubLayout.Bridges   { Bridge } island i -> island i + 1 (a full ring); HubLayout.deckY(bridge, t) deck top at t
---   HubLayout.IslandPlate the Lego plate footprint (WP-24: the islands are not terrain); onPlate / plateContains
+--   RingLayout.Bridges   { Bridge } island i -> island i + 1 (a full ring); RingLayout.deckY(bridge, t) deck top at t
+--   RingLayout.IslandPlate the Lego plate footprint (WP-24: the islands are not terrain); onPlate / plateContains
 local WorldConfig = require(script.Parent.WorldConfig)
 
 export type Lot = { cframe: CFrame, size: Vector2, clearRadius: number? }
@@ -42,22 +42,22 @@ export type Bridge = {
 local Ring = WorldConfig.Ring
 local Y = Ring.plateauY
 
-local HubLayout = {}
-HubLayout.PlateauY = Y
-HubLayout.Center = Ring.center
-HubLayout.Ring = Ring.radius
-HubLayout.IslandRadius = Ring.islandRadius
-HubLayout.Notch = { island = Ring.islandNotch }
+local RingLayout = {}
+RingLayout.PlateauY = Y
+RingLayout.Center = Ring.center
+RingLayout.Ring = Ring.radius
+RingLayout.IslandRadius = Ring.islandRadius
+RingLayout.Notch = { island = Ring.islandNotch }
 
 -- WP-24: a player island is a flat Lego plate built from Parts (src/server/World/IslandPlates.luau), a chamfered
 -- square within the island's radius with a U cut-out (the berth notch, from WorldConfig.Ring.islandNotch) where the
 -- berths are. `rects` are island-frame { r0, r1, f0, f1 } along right / fwd (frame:PointToObjectSpace's (X, -Z));
 -- the plate top is at Y, the green slab `thick` studs below it. The rects are disjoint, inside |right|, |fwd| <=
--- edge, and leave the notch open (|right| < halfWidth, fwd > head). tests/HubLayout.spec.luau checks lots and bridges.
+-- edge, and leave the notch open (|right| < halfWidth, fwd > head). tests/RingLayout.spec.luau checks lots and bridges.
 local CHAMFER = 47
 local EDGE = Ring.islandRadius -- 160
 local NOTCH = Ring.islandNotch
-HubLayout.IslandPlate = {
+RingLayout.IslandPlate = {
 	topY = Y,
 	thick = 2,
 	edge = EDGE,
@@ -76,14 +76,14 @@ HubLayout.IslandPlate = {
 }
 
 -- a world point on island `isl`'s plate
-function HubLayout.onPlate(isl: Island, worldX: number, worldZ: number): boolean
+function RingLayout.onPlate(isl: Island, worldX: number, worldZ: number): boolean
 	local l = isl.frame:PointToObjectSpace(Vector3.new(worldX, Y, worldZ))
-	return HubLayout.plateContains(l.X, -l.Z)
+	return RingLayout.plateContains(l.X, -l.Z)
 end
 
 -- island-frame (right, fwd) inside the plate's rects
-function HubLayout.plateContains(right: number, fwd: number): boolean
-	for _, r in HubLayout.IslandPlate.rects do
+function RingLayout.plateContains(right: number, fwd: number): boolean
+	for _, r in RingLayout.IslandPlate.rects do
 		if right >= r[1] and right <= r[2] and fwd >= r[3] and fwd <= r[4] then
 			return true
 		end
@@ -102,11 +102,11 @@ local BRIDGE = {
 	crest = 16, -- studs either side of mid-span the crest rounds over
 	width = 12,
 }
-HubLayout.BRIDGE = BRIDGE
+RingLayout.BRIDGE = BRIDGE
 
 -- The quest pontoon (docs/23 (p)): off the front-left wing (clear of the berth cove), out to sea.
-HubLayout.QUEST_PONTOON = Vector2.new(6, 36) -- width, length
-HubLayout.QUEST_DECK_Y = Y - 1 -- a step down from the plate
+RingLayout.QUEST_PONTOON = Vector2.new(6, 36) -- width, length
+RingLayout.QUEST_DECK_Y = Y - 1 -- a step down from the plate
 
 local function facingOf(bearing: number): Vector3
 	local b = math.rad(bearing)
@@ -142,13 +142,10 @@ local function islandLots(frame: CFrame): { [string]: Lot }
 	local lots: { [string]: Lot } = {
 		Station = lot(frame, 0, -35, 180, 60, 44), -- front toward the spawn
 		Boathouse = lot(frame, 85, 62, 90, 34, 40), -- doors onto the cove
-		PaintBooth = lot(frame, 88, 20, 90, 30, 30),
 		Helipad = lot(frame, -85, -40, 0, 40, 40),
 		Hangar = lot(frame, -88, 35, 180, 40, 34), -- doors toward the helipad
 		SubPen = lot(frame, -22, 80, 0, 30, 56, 0), -- over the cove water
 		Jetty = lot(frame, 0, 68, 0, 10, 70, Y), -- along the cove centre from the quay
-		BlueprintTable = lot(frame, 0, 42, 180, 6, 3, Y), -- on the jetty, by the quay
-		CrewQuarters = lot(frame, 80, -60, -90, 40, 30),
 		LifeguardTower = lot(frame, 125, -45, -90, 10, 10), -- on the beach
 		Spare1 = lot(frame, -45, -95, 180, 32, 32),
 		Spare2 = lot(frame, 45, -95, 180, 32, 32),
@@ -159,8 +156,8 @@ local function islandLots(frame: CFrame): { [string]: Lot }
 	return lots
 end
 
-HubLayout.Islands = {} :: { Island }
-HubLayout.byId = {} :: { [string]: Island }
+RingLayout.Islands = {} :: { Island }
+RingLayout.byId = {} :: { [string]: Island }
 for i, row in Ring.islands do
 	local frame = frameAt(row.center, row.bearing)
 	local island: Island = {
@@ -180,9 +177,9 @@ for i, row in Ring.islands do
 			pontoon = at(
 				frame,
 				-85,
-				160 + HubLayout.QUEST_PONTOON.Y / 2,
+				160 + RingLayout.QUEST_PONTOON.Y / 2,
 				0,
-				HubLayout.QUEST_DECK_Y
+				RingLayout.QUEST_DECK_Y
 			),
 			slots = { -- either side of the pontoon, bow in
 				at(frame, -93, 171, 180, 0),
@@ -191,17 +188,17 @@ for i, row in Ring.islands do
 			},
 		},
 	}
-	table.insert(HubLayout.Islands, island)
-	HubLayout.byId[row.id] = island
+	table.insert(RingLayout.Islands, island)
+	RingLayout.byId[row.id] = island
 end
 
-HubLayout.Bridges = {} :: { Bridge }
-for i, a in HubLayout.Islands do
-	local b = HubLayout.Islands[i % #HubLayout.Islands + 1]
+RingLayout.Bridges = {} :: { Bridge }
+for i, a in RingLayout.Islands do
+	local b = RingLayout.Islands[i % #RingLayout.Islands + 1]
 	local bis = (a.facing + b.facing).Unit -- the bisector between the two islands, out from the centre
-	local mid = Vector3.new(HubLayout.Center.X, Y, HubLayout.Center.Z) + bis * BRIDGE.axisR
+	local mid = Vector3.new(RingLayout.Center.X, Y, RingLayout.Center.Z) + bis * BRIDGE.axisR
 	local dir = Vector3.new(a.center.X - b.center.X, 0, a.center.Z - b.center.Z).Unit -- toward a
-	table.insert(HubLayout.Bridges, {
+	table.insert(RingLayout.Bridges, {
 		id = `Bridge{i}`,
 		a = a.id,
 		b = b.id,
@@ -214,16 +211,16 @@ end
 
 -- deck top Y along a bridge: straight ramps at BRIDGE.grade from the plate at both ends, a parabolic crest over the
 -- middle 2 x crest studs (the slope never passes the grade)
-function HubLayout.deckY(bridge: Bridge, t: number): number
+function RingLayout.deckY(bridge: Bridge, t: number): number
 	local s = math.abs(math.clamp(t, 0, 1) - 0.5) * (bridge.to - bridge.from).Magnitude
 	local g, c = BRIDGE.grade, BRIDGE.crest
 	return bridge.apexY - (if s < c then g * s * s / (2 * c) else g * (s - c / 2))
 end
 
 -- deck centre-line point at t (0 island a's end, 1 island b's end)
-function HubLayout.deckAt(bridge: Bridge, t: number): Vector3
+function RingLayout.deckAt(bridge: Bridge, t: number): Vector3
 	local p = bridge.from:Lerp(bridge.to, t)
-	return Vector3.new(p.X, HubLayout.deckY(bridge, t), p.Z)
+	return Vector3.new(p.X, RingLayout.deckY(bridge, t), p.Z)
 end
 
-return table.freeze(HubLayout)
+return table.freeze(RingLayout)

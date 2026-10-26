@@ -34,7 +34,7 @@ export type Building = {
 local DockConfig = {}
 
 local LOTS = Marina.LOTS
--- a spot on the island, `right` / `fwd` studs from its centre (HubLayout's island frame), turned `yaw` degrees
+-- a spot on the island, `right` / `fwd` studs from its centre (RingLayout's island frame), turned `yaw` degrees
 local function isle(right: number, fwd: number, yaw: number?): CFrame
 	return Marina.ISLAND * CFrame.new(right, 0, -fwd) * CFrame.Angles(0, math.rad(yaw or 0), 0)
 end

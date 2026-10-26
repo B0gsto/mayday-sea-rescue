@@ -1,8 +1,8 @@
--- HubLayout (docs/23 (p), WP-24, WP-27): the ring geometry, every lot on its island's Lego plate (built from Parts
+-- RingLayout (docs/23 (p), WP-24, WP-27): the ring geometry, every lot on its island's Lego plate (built from Parts
 -- by src/server/World/IslandPlates.luau, a U cut-out over the berth cove) and clear of the others, deep water round
 -- the plate and in the cove with a clear route out, the quest pontoon, neighbour bridges high enough for boats.
 return function(t)
-	local L = t.load("src/shared/Config/HubLayout.luau")
+	local L = t.load("src/shared/Config/RingLayout.luau")
 	local fs = t.lune("fs")
 	local meta = t.lune("serde")
 		.decode("json", fs.readFile(`{t.gameDir}/map/generated/terrain.json`))
@@ -36,7 +36,7 @@ return function(t)
 		end
 		return x0, z0, x1, z1
 	end
-	local WATER = { SubPen = true, Jetty = true, BlueprintTable = true }
+	local WATER = { SubPen = true, Jetty = true }
 	local PLATE = L.IslandPlate
 
 	t.test(
@@ -140,9 +140,7 @@ return function(t)
 				end
 				local names = {}
 				for name in isl.lots do
-					if name ~= "BlueprintTable" then -- it stands on the jetty
-						table.insert(names, name)
-					end
+					table.insert(names, name)
 				end
 				for a = 1, #names do
 					for b = a + 1, #names do
@@ -163,8 +161,6 @@ return function(t)
 						end
 					end
 				end
-				local _, tz0, _, tz1 = box(isl.lots.Jetty.cframe, isl.lots.BlueprintTable)
-				t.expect(math.abs(tz0) < 35 and math.abs(tz1) < 35).toBe(true) -- the table is on the jetty
 			end
 		end
 	)

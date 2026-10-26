@@ -1,6 +1,6 @@
 --!strict
 -- DockService (docs/23 WP-1; WP-19b; the unlock tree, WP-28): your island is your plot. Builds the six player
--- islands' docks (shared/Marina = HubLayout.Islands) as placeholder Parts in Workspace.Marina, gives each joining
+-- islands' docks (shared/Marina = RingLayout.Islands) as placeholder Parts in Workspace.Marina, gives each joining
 -- player the lowest free island and frees it on leave. Every island has a bare jetty down its cove; an owner
 -- adds their Lego name sign and flag; an unclaimed island is just land and the jetty. What you built lives in
 -- the profile (data.dockBuildings) so it rebuilds on whichever island you get. VehicleService launches at the

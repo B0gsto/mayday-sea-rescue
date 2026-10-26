@@ -1,17 +1,15 @@
 --!strict
--- Cosmetics slot "Livery" (RP-M5 E1). Paint schemes for the player's own vehicles (RIB, jet ski,
--- and the land vehicles: pickup, response car, beach ATV). Applied by src/server/Cosmetics/Liveries
+-- Cosmetics slot "Livery" (RP-M5 E1). Paint schemes for the player's own craft (RIB, jet ski,
+-- lifeboat, heli). Applied by src/server/Cosmetics/Liveries
 -- with the role mapping in src/shared/LiveryPaint.luau.
 -- Pass(es): VipCrewCard (VIP Gold), StormChaserLiveries (Storm Chaser), StarterKit (Station Orange).
 -- Shape: { slot, options = { { id, name, pass = <GamePass key, nil for free>, ...free-form } }, default }.
 --
 -- Paint roles (free fields of each option, sRGB albedo):
---   primary    RIB tubes, jet ski hull/deck, car body panels
+--   primary    RIB tubes, jet ski hull/deck
 --   secondary  RIB GRP hull below the tubes, jet ski lower sled
---   stripe     the RIB / jet ski decal bands (plain paint band, no lettering), the car's first checks
---   stripe2    the car's second check colour (falls back to secondary)
+--   stripe     the RIB / jet ski decal bands (plain paint band, no lettering)
 --   trim       optional: RIB A-frame and helm console (nil keeps the stock orange)
---   metallic   car panels get a faint clear-coat sheen (Reflectance); boats keep their roughness maps
 -- Every colour stays clear of docs/05 section 3.2 reserved signal colours (LiveryPaint.signalClash,
 -- checked in tests/Livery.spec.luau). "Standard" is the stock factory paint: nothing is changed.
 --
@@ -63,9 +61,9 @@ local options: { Option } = {
 	},
 	{
 		id = "StockRed",
-		name = "Chandlery red",
+		name = "Paint tin red",
 		earn = "stock:paint_red",
-		blurb = "Oxide red over a charcoal hull with a sand band (Chandlery paint tin).",
+		blurb = "Oxide red over a charcoal hull with a sand band.",
 		primary = Color3.fromRGB(176, 52, 44),
 		secondary = Color3.fromRGB(34, 34, 38),
 		stripe = Color3.fromRGB(236, 220, 178),
@@ -75,9 +73,9 @@ local options: { Option } = {
 	},
 	{
 		id = "StockTeal",
-		name = "Chandlery teal",
+		name = "Paint tin teal",
 		earn = "stock:paint_teal",
-		blurb = "Harbour teal over a dark hull with twin cream bands (Chandlery paint tin).",
+		blurb = "Harbour teal over a dark hull with twin cream bands.",
 		primary = Color3.fromRGB(36, 140, 140),
 		secondary = Color3.fromRGB(30, 38, 42),
 		stripe = Color3.fromRGB(232, 214, 170),
@@ -87,9 +85,9 @@ local options: { Option } = {
 	},
 	{
 		id = "StockGold",
-		name = "Chandlery gold",
+		name = "Paint tin gold",
 		earn = "stock:paint_gold",
-		blurb = "Old brass gold over a near-black hull with an ivory band (Chandlery paint tin).",
+		blurb = "Old brass gold over a near-black hull with an ivory band.",
 		primary = Color3.fromRGB(220, 176, 66),
 		secondary = Color3.fromRGB(30, 32, 36),
 		stripe = Color3.fromRGB(238, 226, 188),

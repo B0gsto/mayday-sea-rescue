@@ -120,12 +120,6 @@ return function(t)
 		end
 	)
 
-	t.test("Quick Launch needs the pass and a finished cold open, from anywhere", function()
-		t.expect(Effects.quickLaunchAllowed(true, true)).toBe(true)
-		t.expect(select(2, Effects.quickLaunchAllowed(false, true))).toBe("NotOwned")
-		t.expect(select(2, Effects.quickLaunchAllowed(true, false))).toBe("ColdOpen")
-	end)
-
 	t.test("Boat to me waits out its cooldown unless you own Quick Launch", function()
 		local cd = Effects.BOAT_TO_ME_COOLDOWN
 		t.expect(Effects.boatToMeWait(false, nil, 100)).toBe(0)

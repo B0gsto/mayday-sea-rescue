@@ -18,11 +18,11 @@ return function(t)
 	local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
 	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
 	local DockConfig = t.load("src/shared/Config/DockConfig.luau")
-	local HubLayout = t.load("src/shared/Config/HubLayout.luau")
+	local RingLayout = t.load("src/shared/Config/RingLayout.luau")
 	-- docs/23 (k): calls count from the player's island berth; the sim plays every island in turn (the east
 	-- island has Skerry Isle on its doorstep, the west one sails farther), so the averages are the server's
 	local HOMES = {}
-	for _, island in HubLayout.Islands do
+	for _, island in RingLayout.Islands do
 		table.insert(HOMES, CallLogic.homeOf(island.berths.Boat))
 	end
 

@@ -98,11 +98,6 @@ function BadgeService.Award(player: Player, key: string): boolean
 	return award(player, key)
 end
 
-function BadgeService.Has(player: Player, key: string): boolean
-	local s = store(player)
-	return s ~= nil and s.badgesAwarded[key] == true
-end
-
 local function applyCounts(player: Player, increments: { [string]: number })
 	local s = store(player)
 	if not s or next(increments) == nil then

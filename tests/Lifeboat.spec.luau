@@ -53,7 +53,6 @@ return function(t)
 		t.expect(boat.survivorCapacity).toBe(8)
 		t.expect(boat.canCapsize).toBe(false) -- self-righting
 		t.expect(boat.ejectOnCapsize).toBe(false)
-		t.expect(boat.canTow).toBe(true)
 		t.expect(boat.draft).toBeCloseTo(4.5, 0.01) -- 1.5 m
 		t.expect(boat.topSpeed / KNOT > 20 and boat.topSpeed / KNOT < 32).toBeTruthy()
 		-- the hull floats at its displacement (block coefficient of the collision box)

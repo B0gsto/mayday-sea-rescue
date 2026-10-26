@@ -9,9 +9,9 @@ no polygons is deep floor until its shoals raise it, so one wide lagoon-sand sho
 ramping to the -165 floor over the window's `edgeRamp` 120, with a basin round each plate. The six player islands
 (`Plot1..6`, `layout.RING`: centres 470 studs out at bearings 0, 60 .. 300, berth coves facing out to sea) are not
 terrain (WP-24): each is a flat Lego baseplate built from Parts at run time by `src/server/World/IslandPlates.luau`
-from `HubLayout.IslandPlate` (320 across, top at Y 4, 2 thick, a U cut-out over the berth cove). `WorldConfig.Ring`
-carries the ring; `src/shared/Config/HubLayout.luau` lays out lots, berths, spawns, the quest pontoons and the
-neighbour bridges (`src/server/World/Bridges.luau`) from it, and `tests/HubLayout.spec.luau` checks them against the
+from `RingLayout.IslandPlate` (320 across, top at Y 4, 2 thick, a U cut-out over the berth cove). `WorldConfig.Ring`
+carries the ring; `src/shared/Config/RingLayout.luau` lays out lots, berths, spawns, the quest pontoons and the
+neighbour bridges (`src/server/World/Bridges.luau`) from it, and `tests/RingLayout.spec.luau` checks them against the
 bake. Skerry Isle has its own window (1,024..2,560 x 1,280..2,304, the Skerries reefs as shoals); the other outer
 windows are unchanged. `check_zones.py` checks the plate rings' and the lagoon's open water and the outer islands;
 `scatter_props.py` places nothing in the main window now (no land). `make_map_image.py` draws the plates and the

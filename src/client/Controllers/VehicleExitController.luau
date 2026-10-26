@@ -1,6 +1,6 @@
 --!strict
 -- VehicleExitController: Space / gamepad A / the on-screen exit button (exit_button.png) gets the
--- player out of any vehicle seat (cars, boats, jet skis), like a default Roblox seat. Bound only
+-- player out of any vehicle seat (boats, jet skis, heli, sub), like a default Roblox seat. Bound only
 -- while seated in a model with a VehicleId. It unseats directly, so OpsController's jump guard (which eats the default
 -- seat jump during operation steps) does not trap the player; the cold open still keeps them aboard.
 local ContextActionService = game:GetService("ContextActionService")

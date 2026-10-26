@@ -27,7 +27,7 @@ export type Card = {
 }
 
 -- R answers the call; the pad's DPadUp too. Bound at High priority only while
--- the pager shows (it outranks the whistle / car lights for those seconds).
+-- the pager shows (it outranks the whistle for those seconds).
 local ACCEPT_KEY, ACCEPT_PAD = Enum.KeyCode.R, Enum.KeyCode.DPadUp
 local ACCEPT_ACTION = "TaskingAccept"
 
@@ -183,7 +183,7 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 			for _, arm in arrow:GetChildren() do
 				(arm :: Frame).BackgroundColor3 = kind.color
 			end
-			body.Visible = false -- the Heartbeat shows it (and binds R) while the phone is shut
+			body.Visible = false -- the Heartbeat shows it (and binds R) while no menu panel is open
 			if conn then
 				conn:Disconnect()
 			end

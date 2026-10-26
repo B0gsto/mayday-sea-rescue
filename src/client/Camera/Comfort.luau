@@ -121,10 +121,6 @@ function Comfort.markSeen(id: string)
 	end
 end
 
-function Comfort.isLoaded(): boolean
-	return loaded
-end
-
 local ready = false
 local readyEvent = Instance.new("BindableEvent")
 

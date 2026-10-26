@@ -40,7 +40,6 @@ export type StepDef = {
 	allowedEvents: { [string]: number }?, -- condition events a client may report, with a max count
 	perCasualty: boolean?, -- consecutive perCasualty steps loop once per casualty the track claims
 	effect: string?, -- server side effect on success: "board" (they climb aboard) or "deliver" (home)
-	tip: string?, -- Chief Aggie's debrief tip when this is the weakest step
 }
 
 export type OperationDef = {

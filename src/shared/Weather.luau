@@ -169,11 +169,6 @@ function Weather.isGreatStorm(): boolean
 	return snap.IsGreatStorm and snap.State ~= "Calm"
 end
 
--- Seconds since the current state started (server clock).
-function Weather.getElapsed(now: number?): number
-	return math.max(0, (now or serverNow()) - snap.StateStartTime)
-end
-
 function Weather.getIntensity(now: number?): number
 	local elapsed = (now or serverNow()) - snap.StateStartTime
 	return WeatherMath.intensityFor(snap.State, math.max(0, elapsed), snap.StateDuration)

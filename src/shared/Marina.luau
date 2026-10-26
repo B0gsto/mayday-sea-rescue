@@ -1,20 +1,20 @@
 --!strict
 -- Marina (docs/23 (k), WP-19b): the six player islands are the plots, one per player (server size 6). Pure
--- (tests/Marina.spec.luau). Plot i = HubLayout.Islands[i] (Plot1..Plot6): its boat berth in the cove, its lots.
+-- (tests/Marina.spec.luau). Plot i = RingLayout.Islands[i] (Plot1..Plot6): its boat berth in the cove, its lots.
 -- Berth frame (what VehicleService, BayLaunch and DockPieces read): the island's boat berth at sea level,
 -- LookVector = out of the cove, local -X = the jetty (the finger beside the craft), local +Z = the quay.
 -- Every island is the same shape turned round the ring centre, so a lot sits at the same place in its berth frame:
 -- Marina.LOTS[name] = { cf = the lot's CFrame in the berth frame (on the plateau), size = Vector2 }.
-local HubLayout = require(script.Parent:WaitForChild("Config"):WaitForChild("HubLayout"))
+local RingLayout = require(script.Parent:WaitForChild("Config"):WaitForChild("RingLayout"))
 
 local Marina = {}
 
-Marina.COUNT = #HubLayout.Islands -- server size (docs/23 (k))
+Marina.COUNT = #RingLayout.Islands -- server size (docs/23 (k))
 Marina.BERTH = 55 -- the berth's length (a lifeboat is 52 long)
-Marina.DECK_TOP = HubLayout.PlateauY -- the jetty and the quay
+Marina.DECK_TOP = RingLayout.PlateauY -- the jetty and the quay
 Marina.JETTY = { x0 = -17, x1 = -9, out = -20, z1 = 30 } -- berth frame: the finger the player stands on (BayLaunch.STAND)
 
-local ISLE = HubLayout.Islands[1]
+local ISLE = RingLayout.Islands[1]
 local B0 = ISLE.berths.Boat
 Marina.LOTS = {} :: { [string]: { cf: CFrame, size: Vector2 } }
 for name, lot in ISLE.lots do
@@ -25,12 +25,12 @@ Marina.ISLAND = B0:ToObjectSpace(ISLE.frame) -- the island's centre on the plate
 
 -- The berth CFrame of plot i (1..COUNT), at sea level.
 function Marina.berth(i: number): CFrame
-	return HubLayout.Islands[i].berths.Boat
+	return RingLayout.Islands[i].berths.Boat
 end
 
 -- Where plot i's owner spawns and respawns (on their island, off the bridge, facing the station).
 function Marina.spawn(i: number): CFrame
-	return HubLayout.Islands[i].spawn
+	return RingLayout.Islands[i].spawn
 end
 
 -- The lowest free plot (taken[i] truthy = in use), nil when all are taken.

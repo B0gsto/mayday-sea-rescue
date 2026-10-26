@@ -3,14 +3,14 @@
 -- the Roblox licensed library, each id checked with `audio-search.py verify` and logged in
 -- assets/audio/candidates.csv; clips in AudioConfig "Horn_*").
 --
--- Played on a tap from the vehicle the player is driving (boat, jet ski or car): keyboard H,
--- gamepad L3 (the car horn's button; DPadUp is the radio wheel), or a tap button on touch screens.
+-- Played on a tap from the boat or jet ski the player is driving: keyboard H, gamepad L3, or a tap
+-- button on touch screens.
 -- The server (src/server/Cosmetics/Horns) checks driver + pass + cooldown, then FireNear "Horn" to
 -- clients within `range`; the client (src/client/Cosmetics/Horns) plays a 3D Sound on the vehicle
 -- in the SFX group. Other players can mute horns (Settings: horns); your own is always audible.
 --
--- "Standard" (free) is the vehicle's own horn: the car horn on cars, none on boats, so the tap
--- button only shows while a Horn Pack horn is equipped (it then replaces the car horn on H / L3).
+-- "Standard" (free) is no horn (boats have none), so the tap button only shows while a Horn Pack
+-- horn is equipped.
 --
 -- Option fields (VehicleSounds reads them):
 --   clip    AudioConfig clip name (nil = no pack horn)

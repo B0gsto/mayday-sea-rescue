@@ -157,7 +157,7 @@ function Horns.Start(ctx: any)
 	end
 	rebind()
 	ctx.onEquipped(player, "Horn", function()
-		rebind() -- new touch label; re-binding also puts H / L3 above the car horn
+		rebind() -- new touch label; re-binding also puts H / L3 on top
 	end)
 
 	ctx.onEvent("Horn", function(model: any, hornId: any, userId: any)

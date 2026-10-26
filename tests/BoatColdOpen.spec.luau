@@ -178,21 +178,6 @@ return function(t)
 		t.expect(ColdOpen.easeThrottle(ColdOpen.EASE_TARGET - 0.5, -0.4)).toBe(-0.4)
 	end)
 
-	t.test("the server sees a clear ease but not a slow, careful approach", function()
-		t.expect(ColdOpen.serverSawEase(true, 25, 20, jet.brakeDecel)).toBe(true)
-		t.expect(ColdOpen.serverSawEase(true, 25, ColdOpen.EASE_TARGET, jet.brakeDecel)).toBe(false)
-		t.expect(ColdOpen.serverSawEase(true, 120, 20, jet.brakeDecel)).toBe(false)
-		t.expect(ColdOpen.serverSawEase(false, 25, 20, jet.brakeDecel)).toBe(false)
-	end)
-
-	t.test("an eased approach is Silver at best", function()
-		t.expect(ColdOpen.capGrade("Gold", true)).toBe("Silver")
-		t.expect(ColdOpen.capGrade("Silver", true)).toBe("Silver")
-		t.expect(ColdOpen.capGrade("Bronze", true)).toBe("Bronze")
-		t.expect(ColdOpen.capGrade("Fail", true)).toBe("Fail")
-		t.expect(ColdOpen.capGrade("Gold", false)).toBe("Gold")
-	end)
-
 	t.test("show, don't tell: casualty close ahead, no graded approach", function()
 		t.expect(ColdOpen.DISTANCE[2] < ColdOpen.HANDOVER_DISTANCE).toBe(true) -- creeps on in
 		t.expect(ColdOpen.DISTANCE[1] > ColdOpen.NUDGE_NEAR).toBe(true) -- one move to make
@@ -226,8 +211,8 @@ return function(t)
 		t.expect(ColdOpen.landed("held", hub + Vector3.new(0, 0, ColdOpen.SHORE_RADIUS + 1)))
 			.toBe(false)
 		-- every island's berth is a shore point (the cold open starts at yours)
-		local HubLayout = t.load("src/shared/Config/HubLayout.luau")
-		for _, island in HubLayout.Islands do
+		local RingLayout = t.load("src/shared/Config/RingLayout.luau")
+		for _, island in RingLayout.Islands do
 			local berth = island.berths.Boat.Position
 			t.expect(ColdOpen.nearestShore(berth).id).toBe(island.id)
 			t.expect(ColdOpen.landed("held", berth + Vector3.new(10, 1, 10))).toBe(true)
@@ -237,13 +222,13 @@ return function(t)
 	t.test(
 		"from a berth the casualty is just off the cove, dead ahead, and home is behind",
 		function()
-			local HubLayout = t.load("src/shared/Config/HubLayout.luau")
-			for _, island in HubLayout.Islands do
+			local RingLayout = t.load("src/shared/Config/RingLayout.luau")
+			for _, island in RingLayout.Islands do
 				local berth = island.berths.Boat
 				for _, d in ColdOpen.DISTANCE do
 					local cas = berth.Position + berth.LookVector * d
 					-- past the island's rim (the cove mouth), and its nearest shore is this berth
-					t.expect((cas - island.center):Dot(island.facing) > HubLayout.IslandRadius)
+					t.expect((cas - island.center):Dot(island.facing) > RingLayout.IslandRadius)
 						.toBe(true)
 					t.expect(ColdOpen.nearestShore(cas).id).toBe(island.id)
 				end

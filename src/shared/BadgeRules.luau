@@ -116,8 +116,6 @@ local TROPHIES = {
 	EveryCall = true,
 	Rescue100 = true,
 	FerryHero = true,
-	LegendaryRescue = true,
-	GoldenGull = true,
 }
 function BadgeRules.trophies(
 	counters: { [string]: number },

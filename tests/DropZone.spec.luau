@@ -2,13 +2,13 @@
 -- berth), moving or docked (RescueService.checkDeliveries, OperationService isHome, client transport).
 return function(t)
 	local ColdOpen = t.load("src/shared/Boat/ColdOpen.luau")
-	local HubLayout = t.load("src/shared/Config/HubLayout.luau")
+	local RingLayout = t.load("src/shared/Config/RingLayout.luau")
 	local R = ColdOpen.DROP_RADIUS
 
 	t.test(
 		"your whole cove counts: the berth, the craft kept beside it, the jetty, the quay",
 		function()
-			for i, island in HubLayout.Islands do
+			for i, island in RingLayout.Islands do
 				local bay = island.berths.Boat -- player attribute BayCFrame
 				local function cove(right: number, fwd: number): Vector3
 					return (island.frame * CFrame.new(right, 0, -fwd)).Position
@@ -24,7 +24,7 @@ return function(t)
 				t.expect(ColdOpen.atDropOff(bay.Position + bay.LookVector * (R + 1), bay))
 					.toBe(false)
 				t.expect(ColdOpen.atDropOff(bay.Position, nil)).toBe(false)
-				local other = HubLayout.Islands[i % #HubLayout.Islands + 1].berths.Boat
+				local other = RingLayout.Islands[i % #RingLayout.Islands + 1].berths.Boat
 				t.expect(ColdOpen.atDropOff(other.Position, bay)).toBe(false)
 			end
 		end
@@ -33,8 +33,8 @@ return function(t)
 	t.test("only your berth: the lagoon is no drop-off (docs/23 (p))", function()
 		t.expect(
 			ColdOpen.atDropOff(
-				HubLayout.Center * Vector3.new(1, 0, 1),
-				HubLayout.Islands[1].berths.Boat
+				RingLayout.Center * Vector3.new(1, 0, 1),
+				RingLayout.Islands[1].berths.Boat
 			)
 		).toBe(false)
 		t.expect(ColdOpen.dropOff(nil)).toBe(nil)

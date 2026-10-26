@@ -41,15 +41,6 @@ return function(t)
 		end
 	)
 
-	t.test("triage tags differ in shape as well as colour", function()
-		local seen = {}
-		for _, tag in Pal.States.Triage do
-			local shape = Pal.triageShape(tag)
-			t.expect(seen[shape]).toBeNil()
-			seen[shape] = true
-		end
-	end)
-
 	t.test("map markers all carry a different glyph", function()
 		local seen = {}
 		for _, name in

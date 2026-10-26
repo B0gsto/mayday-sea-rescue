@@ -5,7 +5,7 @@
 --   CottageLights.kind(partName) -> "glow" | "glass" | nil
 --       glow:  the GlassLit mesh (M_Bld_Cottage_GlassLit_NN_LODk: lit panes + lantern cores)
 --       glass: the window / fanlight glass (M_Bld_Cottage_Glass_NN_LODk), Transparency ~0.35 over the room backplate
---   CottageLights.lightsOn(preset)              lights + glow at night or in a storm (StationRig.preset() names)
+--   CottageLights.lightsOn(preset)              lights + glow at night or in a storm (CottageRig's preset names)
 --   CottageLights.smokeOn(preset, weatherState) chimney smoke in cold weather (anything but a clear day) or a storm
 --   CottageLights.stacks(points, gap?)          one smoke point per chimney stack: drops pots within `gap` studs
 --                                               (default 2.5) of one already kept, in the given order

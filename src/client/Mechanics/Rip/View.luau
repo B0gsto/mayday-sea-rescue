@@ -1,5 +1,5 @@
 --!strict
--- Rip/View (client): the visible rip off Haven Sands (docs/09 section 8.4) — a slightly darker,
+-- Rip/View (client): the visible rip off Puffin Isle's beach (docs/09 section 8.4) — a slightly darker,
 -- calmer band of water between the banks, whitewater breaking on both banks with a gap over the
 -- channel, and thin foam streaks drifting seaward (plus the floating kit it carries out: a body
 -- board, a rescue board, a rescue tube). Everything is low-transparency, textured foam and follows
@@ -316,7 +316,7 @@ local function hookOcean()
 	end
 end
 
--- The channel shows itself when the player is near Haven Sands (it is geography, not a step).
+-- The channel shows itself when the player is near the rip (it is geography, not a step).
 function View.start()
 	if started then
 		return

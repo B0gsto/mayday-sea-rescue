@@ -1,5 +1,5 @@
 --!strict
--- Chase: the third-person spring-arm camera for the RIB, larger boats and cars.
+-- Chase: the third-person spring-arm camera for the RIB and larger boats.
 -- Reads the sea well: the frame stays level with the horizon while the hull pitches and rolls
 -- in it, the focus leads the boat (look-ahead along its nose), its height is low-passed so the
 -- swell visibly lifts the hull, and the camera never dips under the wave surface. The arm is a
@@ -47,12 +47,7 @@ function Chase.enter(model: Model, root: BasePart)
 	local _, size = model:GetBoundingBox()
 	local length = math.max(size.X, size.Z)
 	local small = length < 20
-	if model:GetAttribute("LandVehicle") == true then
-		-- cars sit close like a driving game; their physics chassis runs long (a 16-stud pickup
-		-- has a 28-stud chassis, which put the camera 50 studs back)
-		baseDistance = math.clamp(length * 0.8, 14, 28)
-		focusHeight = math.clamp(size.Y * 0.6, 2.5, 8) + 1.5
-	elseif small then
+	if small then
 		baseDistance = math.clamp(length * 1.1 + 3, 14, 28)
 		focusHeight = math.clamp(size.Y * 0.55, 2.2, 4.2) + 0.9
 	else
@@ -96,10 +91,9 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	local flatSpeed = Vector3.new(vel.X, 0, vel.Z).Magnitude
 
 	-- heading: the hull's, with a short lag so a turn reads but the nose never leaves the frame
-	-- (0.35 s lost the view in hard A/D turns, real-client playtest); cars have no wave yaw
-	local land = ctx.model:GetAttribute("LandVehicle") == true
+	-- (0.35 s lost the view in hard A/D turns, real-client playtest)
 	local hullHeading = CameraMath.heading(root.CFrame)
-	local headingLag = if state.fresh then 0 elseif land then 0.07 else 0.11
+	local headingLag = if state.fresh then 0 else 0.11
 	state.heading = CameraMath.dampAngle(state.heading, hullHeading, headingLag, dt)
 
 	-- orbit input, then the swing back behind the boat

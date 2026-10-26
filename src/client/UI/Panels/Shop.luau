@@ -1,7 +1,7 @@
 --!strict
 -- Shop panel: the kit Store. Tabs Passes / Packs / Boosts / Day passes (ProductShelves.storeItems)
 -- as kit Cards with live Roblox prices, owned ticks, day-pass clocks, and ProductShelves' prompt
--- gating (the same purchase flow the phone Store had). Gamepad: L1 / R1 step the tabs.
+-- gating. Gamepad: L1 / R1 step the tabs.
 local GuiService = game:GetService("GuiService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -330,7 +330,7 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 		open = function()
 			panel.open()
 			setTab(tab)
-			Telemetry.shop("AppOpened", "Store")
+			Telemetry.shop("PanelOpened", "Store")
 		end,
 		close = panel.close,
 		isOpen = panel.isOpen,

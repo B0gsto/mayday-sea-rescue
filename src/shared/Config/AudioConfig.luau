@@ -96,16 +96,9 @@ AudioConfig.Clips = {
 	Rain_Heavy = rl(9112853287, 0.6, "Rain Heavy 1 (SFX)"),
 	Rain_OnWater = rl(9112854469, 0.5, "Rain On Water 1 (SFX)"),
 	Thunder_Near = rl(9120016241, 1, "Thunder Cracks Big Rumbling Blasts Booming 4 (SFX)"),
-	Thunder_Roll = rl(9120021237, 0.8, "Thunder Rumbling 1 (SFX)"),
 
 	-- Harbour and coast.
 	Amb_Harbour = rl(9112829678, 0.5, "Marina Ambience 5 (SFX)"),
-	Amb_Town = rl(
-		9116203080,
-		0.22,
-		"Korean Walla Single Male Female Voice 2 (SFX)",
-		"distant murmur"
-	),
 	Rigging_Clink_1 = rl(9114462292, 0.25, "Flagpole Hit 1 (SFX)", "halyard on a mast"),
 	Rigging_Clink_2 = rl(9114462293, 0.25, "Flagpole Hit 3 (SFX)"),
 	Rigging_Clink_3 = rl(9114462450, 0.25, "Flagpole Hit 4 (SFX)"),
@@ -142,10 +135,7 @@ AudioConfig.Clips = {
 	-- G43: rewards, shops, the album, pets and the seasonal events.
 	Crate_Lid = rl(9120881884, 0.55, "Wood Groan Creak Opening Wood Chest Coffin 8 (SFX)"),
 	Cash_Coins = rl(9113704200, 0.4, "Candy Machine Coin Drops Insert Vending 5 (SFX)"),
-	Chandlery_Bell = rl(9125485591, 0.45, "Desk Bell Counter Service Single Ringing Din (SFX)"),
-	Chandlery_Till = rl(9113728648, 0.55, "Cash Register 4 (SFX)"),
-	Logbook_Page = rl(9118835414, 0.4, "Scrapbook Open And Turn Pages 2 (SFX)"),
-	Logbook_Chime = rl(9116394545, 0.35, "Magic Glows Soft Clusters Of Chiming Hits 1 (SFX)"),
+	Shop_Till = rl(9113728648, 0.55, "Cash Register 4 (SFX)"),
 	Album_Sticker = rl(9113263851, 0.45, "Balloon Pops Slap Clap Smack 1 (SFX)", "sticker slap"),
 	Album_Sparkle = rl(9126073001, 0.35, "Synth Sparkle Tone High Pitch Bell Tone Ding (SFX)"),
 	Pet_Seal = rl(9125919816, 0.45, "Seal Bark Human Like Grunt Heaving Rhythmic (SFX)"),
@@ -167,7 +157,6 @@ AudioConfig.Clips = {
 
 	-- Music (APM via Roblox). Two cues: an operation underway, and the debrief.
 	Music_CrateFanfare = rl(1837762472, 0.5, "Victory Dance (sting a) (APM)", "day-7 crate"),
-	Music_Legendary = rl(85130118995016, 0.5, "Arc Of Triumph (Sting) (APM)", "Legendary call"),
 	Music_Operation = rl(1837463124, 0.35, "Tension Bed for One (APM, The Box)"),
 	Music_Debrief = rl(
 		84002131639340,
@@ -221,16 +210,14 @@ end
 
 -- Places (studs). Harbour centre for the marina bed, rigging and gulls; the bell buoy off the
 -- harbour mouth (MapConfig.Places "Harbour Mouth").
-AudioConfig.HarbourCentre = Vector3.new(0, 4, 330) -- the hub harbour (HubLayout notch)
+AudioConfig.HarbourCentre = Vector3.new(0, 4, 330) -- inside the ring, south of the lagoon centre
 AudioConfig.HarbourRadius = 200 -- the marina bed and rigging fade out past this
-AudioConfig.TownCentre = Vector3.new(-15, 4, 45) -- docs/23 (l): no town; a camp murmur round the hub campfire
-AudioConfig.TownRadius = 70 -- the murmur fades out past this
 AudioConfig.BellBuoy = Vector3.new(-60, 5.25, 880) -- SeamarkRules No2Bell, ATT_Bell height
 AudioConfig.CoastRadius = 900 -- gulls only within this of the harbour centre
 
 -- Mix constants (tune by ear).
 AudioConfig.Mix = {
-	engineRange = 260, -- studs: boats and cars further than this have no engine sound
+	engineRange = 260, -- studs: boats further than this have no engine sound
 	slamMin = 4, -- telemetry.slam (studs/s) below this is not a slam
 	slamCooldown = 0.35, -- s between hull impacts
 	seaNearHeight = 70, -- studs above the surface where the sea bed has faded out

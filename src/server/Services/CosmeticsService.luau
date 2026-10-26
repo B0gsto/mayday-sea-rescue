@@ -29,7 +29,7 @@
 --   CosmeticsService.VehicleOf(player): (Model?, kind?)    kind "Boat" | "JetSki"; the vehicle
 --       the player is seated in, else the one they own (VehicleService)
 --   CosmeticsService.KindOf(model): string?                "Boat" | "JetSki" | nil
---   CosmeticsService.VehicleSpawned: signal (player, model, kind) boats, jet skis and cars
+--   CosmeticsService.VehicleSpawned: signal (player, model, kind) boats and jet skis
 --   CosmeticsService.Cosmetics                             the shared registry
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -183,12 +183,6 @@ function CosmeticsService.OnAction(name: string, handler: (Player, ...any) -> ()
 		log(`action {name} registered twice; the later handler wins`)
 	end
 	actionHandlers[name] = handler
-end
-
-function CosmeticsService.Broadcast(name: string, ...: any)
-	if eventRemote then
-		eventRemote:FireAllClients(name, ...)
-	end
 end
 
 function CosmeticsService.FireClient(player: Player, name: string, ...: any)

@@ -53,7 +53,7 @@ local function triggered(player: Player, kind: PlatformPrompts.Kind): boolean
 	if kind == "notify" then
 		return player:GetAttribute("StreakClaim") ~= nil
 	elseif kind == "favorite" then
-		local data: any = DataService.Get(player) -- after the first island building (WP-28: no rank-ups)
+		local data: any = DataService.Get(player) -- after the first island building
 		return data ~= nil and next(data.dockBuildings) ~= nil
 	elseif kind == "invite" then
 		return player:GetAttribute("CrewOpDone") == true

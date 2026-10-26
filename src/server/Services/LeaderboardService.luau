@@ -19,8 +19,8 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeConfig"))
-local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local LeaderboardRules = require(Shared:WaitForChild("LeaderboardRules"))
+local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 
 type Entry = LeaderboardRules.Entry
 
@@ -456,8 +456,8 @@ local function refresh()
 end
 
 local function placeBoard()
-	-- one per island, beside the spawn (HubLayout: 22 studs to its left, the face turned toward it), on two posts
-	for _, isl in HubLayout.Islands do
+	-- one per island, beside the spawn (RingLayout: 22 studs to its left, the face turned toward it), on two posts
+	for _, isl in RingLayout.Islands do
 		local face = isl.frame
 			* CFrame.new(-22, 1.5 + H / 2, 72)
 			* CFrame.Angles(0, -math.pi / 2, 0)
@@ -479,10 +479,6 @@ local function placeBoard()
 		show(key, entries)
 	end
 	paintFooter()
-end
-
-function LeaderboardService.GetBoard(key: string): { Entry }
-	return shown[key] or {}
 end
 
 function LeaderboardService.Init()

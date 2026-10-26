@@ -1,11 +1,10 @@
 --!strict
 -- WildlifeController (G76): ambient grey seals and herring gulls, drawn on this client only (not replicated), only
 -- near the camera, no UI. Static meshes (ReplicatedStorage.WildlifeTemplates, WildlifeArtService) moved by code:
---   * seals hauled out on the low ledges by the Haven Head rock pools and west of the harbour: a slow breathing bob,
+--   * seals hauled out on low rock ledges (SEAL_SITES): a slow breathing bob,
 --     the head part turning and lifting now and then; one seal per haul-out bottling head-up in the swell offshore;
---   * gulls over the harbour gliding banked circles and figure-eights (Wildlife/GullPath), two perched on the
---     pier-head bollards turning and hopping now and then.
--- Heights come from raycasts at spawn (ledge hulls, bollards); a group with nothing placed is retried next check.
+--   * gulls over the lagoon gliding banked circles and figure-eights (Wildlife/GullPath).
+-- Heights come from raycasts at spawn (ledge hulls); a group with nothing placed is retried next check.
 -- Every part is anchored with CanCollide / CanQuery / CanTouch off.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -20,7 +19,6 @@ local WildlifeController = {}
 local SEAL, GULL = "M_Ani_GreySeal", "M_Ani_HerringGull"
 local CHECK = 1 -- s between near / far checks
 local HYSTERESIS = 80 -- studs past `near` before a group is removed
-local HOP = 0.45 -- s
 local NOSE_UP = CFrame.Angles(math.rad(70), 0, 0) -- bottling: head out of the water, body hanging below
 
 -- spots: low rocks from map/generated/props.json, the first two dry ones are used; sea: open water the seals face, where
@@ -86,10 +84,8 @@ local GULL_LOOPS: { GullPath.Loop } = {
 		drift = 8,
 	},
 }
--- the hub quay head berth bollards (map/Build.luau buildHub: right +-12, fwd 96 in the hub frame)
-local GULL_PERCHES = { Vector3.new(-12, 0, 96), Vector3.new(12, 0, 96) }
 
-type Kind = "Hauled" | "Bottling" | "Glide" | "Perch"
+type Kind = "Hauled" | "Bottling" | "Glide"
 type Animal = {
 	kind: Kind,
 	parts: { BasePart },
@@ -101,12 +97,11 @@ type Animal = {
 	pos: Vector3,
 	loop: GullPath.Loop?,
 	phase: number,
-	yaw: number, -- head yaw (seal) or body yaw (perched gull)
+	yaw: number, -- head yaw (seal)
 	pitch: number,
 	goalYaw: number,
 	goalPitch: number,
 	nextAt: number,
-	hopAt: number,
 }
 type Group = {
 	centre: Vector3,
@@ -157,7 +152,6 @@ local function spawnAnimal(asset: string, kind: Kind, parent: Instance): Animal?
 		goalYaw = 0,
 		goalPitch = 0,
 		nextAt = 0,
-		hopAt = -math.huge,
 	}
 	for _, d in m:GetDescendants() do
 		if d:IsA("BasePart") then
@@ -226,34 +220,14 @@ local function buildGulls(model: Model): { Animal }
 			table.insert(out, a)
 		end
 	end
-	for _, spot in GULL_PERCHES do
-		local r = ground(spot)
-		if r and r.Position.Y > 3.5 then
-			local a = spawnAnimal(GULL, "Perch", model)
-			if a then
-				a.pos = r.Position + Vector3.new(0, -a.minY, 0)
-				a.yaw = math.random() * math.pi * 2
-				a.goalYaw = a.yaw
-				table.insert(out, a)
-			end
-		end
-	end
 	return out
 end
 
 local function step(a: Animal, t: number, dt: number, parts: { BasePart }, cfs: { CFrame })
 	if t >= a.nextAt then
-		if a.kind == "Perch" then
-			if math.random() < 0.35 then
-				a.hopAt = t
-			end
-			a.goalYaw = a.yaw + (math.random() * 2 - 1) * 1.2
-			a.nextAt = t + 4 + math.random() * 7
-		else
-			a.goalYaw = if math.random() < 0.35 then 0 else (math.random() * 2 - 1) * 0.45
-			a.goalPitch = if math.random() < 0.3 then 0.18 else 0
-			a.nextAt = t + 3 + math.random() * 6
-		end
+		a.goalYaw = if math.random() < 0.35 then 0 else (math.random() * 2 - 1) * 0.45
+		a.goalPitch = if math.random() < 0.3 then 0.18 else 0
+		a.nextAt = t + 3 + math.random() * 6
 	end
 	local k = math.min(1, dt * 1.5)
 	a.yaw += (a.goalYaw - a.yaw) * k
@@ -266,12 +240,8 @@ local function step(a: Animal, t: number, dt: number, parts: { BasePart }, cfs: 
 		root = CFrame.new(a.pos + Vector3.new(0, swell, 0))
 			* CFrame.Angles(0, a.phase + 0.6 * math.sin(t * 0.05 + a.phase), 0)
 			* NOSE_UP
-	elseif a.kind == "Glide" then
-		root = GullPath.at(a.loop :: GullPath.Loop, t)
 	else
-		local u = (t - a.hopAt) / HOP
-		local hop = if u < 1 then 0.7 * math.sin(math.pi * u) else 0
-		root = CFrame.new(a.pos + Vector3.new(0, hop, 0)) * CFrame.Angles(0, a.yaw, 0)
+		root = GullPath.at(a.loop :: GullPath.Loop, t)
 	end
 	for i, p in a.parts do
 		table.insert(parts, p)

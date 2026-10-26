@@ -1,7 +1,7 @@
 return function(t)
 	local P = t.load("src/shared/LoadingPath.luau")
 	local TAU = math.pi * 2
-	local hub = Vector3.new(0, 10, 0)
+	local ring = Vector3.new(0, 10, 0)
 	local island = Vector3.new(0, 12, -1100)
 	local angle = 0.7
 	local finish = CFrame.lookAt(Vector3.new(10, 20, -1000), Vector3.new(0, 18, -1010))
@@ -22,20 +22,20 @@ return function(t)
 		t.expect(P.ease(2)).toBe(1)
 	end)
 
-	t.test("orbit circles the hub at the start height", function()
-		near(P.orbit(hub, 0).Position, hub + Vector3.new(P.START_RADIUS, P.START_HEIGHT, 0), 1e-6)
-		local quarter = P.orbit(hub, math.pi / 2)
-		near(quarter.Position, hub + Vector3.new(0, P.START_HEIGHT, P.START_RADIUS), 1e-6)
+	t.test("orbit circles the ring at the start height", function()
+		near(P.orbit(ring, 0).Position, ring + Vector3.new(P.START_RADIUS, P.START_HEIGHT, 0), 1e-6)
+		local quarter = P.orbit(ring, math.pi / 2)
+		near(quarter.Position, ring + Vector3.new(0, P.START_HEIGHT, P.START_RADIUS), 1e-6)
 		t.expect(quarter.LookVector.Y < 0).toBe(true)
 	end)
 
 	t.test("spiral starts at the orbit pose", function()
-		local start = P.spiral(0, hub, island, angle)
-		near(start.Position, P.orbit(hub, angle).Position, 1e-6)
+		local start = P.spiral(0, ring, island, angle)
+		near(start.Position, P.orbit(ring, angle).Position, 1e-6)
 	end)
 
 	t.test("spiral ends low over the island after TURNS turns", function()
-		local endPose = P.spiral(1, hub, island, angle)
+		local endPose = P.spiral(1, ring, island, angle)
 		local a = angle + P.TURNS * TAU
 		near(
 			endPose.Position,
@@ -46,21 +46,21 @@ return function(t)
 	end)
 
 	t.test("approach starts at the spiral end", function()
-		local from = P.spiral(1, hub, island, angle)
+		local from = P.spiral(1, ring, island, angle)
 		local first = P.approach(0, from, sweep, look, finish)
 		near(first.Position, from.Position, 1e-6)
 		near(first.LookVector, from.LookVector, 1e-6)
 	end)
 
 	t.test("approach passes the sweep point and looks at the sign halfway", function()
-		local from = P.spiral(1, hub, island, angle)
+		local from = P.spiral(1, ring, island, angle)
 		local mid = P.approach(0.5, from, sweep, look, finish)
 		near(mid.Position, sweep, 1e-6)
 		near(mid.LookVector, CFrame.lookAt(sweep, look).LookVector, 1e-6)
 	end)
 
 	t.test("approach ends exactly on the finish pose", function()
-		local from = P.spiral(1, hub, island, angle)
+		local from = P.spiral(1, ring, island, angle)
 		local last = P.approach(1, from, sweep, look, finish)
 		near(last.Position, finish.Position, 1e-6)
 		near(last.LookVector, finish.LookVector, 1e-6)
@@ -77,19 +77,19 @@ return function(t)
 				hi = mid
 			end
 		end
-		local a = P.flyover(lo, hub, island, angle, sweep, look, finish)
-		local b = P.flyover(hi + 1e-6, hub, island, angle, sweep, look, finish)
+		local a = P.flyover(lo, ring, island, angle, sweep, look, finish)
+		local b = P.flyover(hi + 1e-6, ring, island, angle, sweep, look, finish)
 		near(a.Position, b.Position, 0.01)
 		t.expect(a.Position.Y > 50).toBe(true)
-		local before = P.flyover(lo - 0.01, hub, island, angle, sweep, look, finish)
-		local after = P.flyover(lo + 0.01, hub, island, angle, sweep, look, finish)
+		local before = P.flyover(lo - 0.01, ring, island, angle, sweep, look, finish)
+		local after = P.flyover(lo + 0.01, ring, island, angle, sweep, look, finish)
 		t.expect((after.Position - before.Position).Magnitude > 1).toBe(true)
 	end)
 
 	t.test("flyover starts high and ends at the finish", function()
-		local start = P.flyover(0, hub, island, angle, sweep, look, finish)
-		near(start.Position, P.orbit(hub, angle).Position, 1e-6)
-		local last = P.flyover(1, hub, island, angle, sweep, look, finish)
+		local start = P.flyover(0, ring, island, angle, sweep, look, finish)
+		near(start.Position, P.orbit(ring, angle).Position, 1e-6)
+		local last = P.flyover(1, ring, island, angle, sweep, look, finish)
 		near(last.Position, finish.Position, 1e-6)
 	end)
 end

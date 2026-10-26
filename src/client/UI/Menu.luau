@@ -124,7 +124,7 @@ function Menu.open(name: string)
 	current = name
 	chrome()
 	p.open()
-	Telemetry.shop("PhoneOpened") -- the funnel's legacy step name: "a menu panel opened"
+	Telemetry.shop("MenuOpened") -- a menu panel opened
 	task.defer(focusFirst, p.root)
 end
 

@@ -236,7 +236,7 @@ function TelemetryService.Call(player: Player, opId: any, step: string, kind: st
 	TelemetryService.Step(player, "Call", `{JOB}:{tostring(opId)}`, step, kind, callContext(player))
 end
 
--- Shop funnel: PhoneOpened -> AppOpened -> ItemViewed -> BuyTapped -> Bought, one session per visit
+-- Shop funnel: MenuOpened -> PanelOpened -> ItemViewed -> BuyTapped -> Bought, one session per visit
 -- (Events.shopFresh). Fields: app, item, currency. The client sends the first four, the server Bought.
 function TelemetryService.Shop(
 	player: Player,
@@ -258,7 +258,7 @@ function TelemetryService.Shop(
 	s.at = now
 	s.app = app or s.app
 	if n <= 2 then
-		TelemetryService.Funnel(player, "PhoneOpened")
+		TelemetryService.Funnel(player, "MenuOpened")
 	end
 	TelemetryService.Step(player, "Shop", s.id, step, s.app, item or "None", currency or "None")
 end

@@ -7,7 +7,7 @@ return function(t)
 	local Dialogue = t.require("Dialogue")
 	local CallTypes = t.require("Calls/CallTypes")
 	local DockConfig = t.require("Config/DockConfig")
-	local HubLayout = t.require("Config/HubLayout")
+	local RingLayout = t.require("Config/RingLayout")
 	local ProgressionRules = t.require("ProgressionRules")
 
 	local function words(s: string): number
@@ -19,15 +19,15 @@ return function(t)
 	end
 
 	t.test("every island has a quest pontoon with three clear moorings", function()
-		t.expect(#HubLayout.Islands).toBe(6)
-		for _, isl in HubLayout.Islands do
+		t.expect(#RingLayout.Islands).toBe(6)
+		for _, isl in RingLayout.Islands do
 			local P, slots = isl.quest.pontoon, isl.quest.slots
 			t.expect(#slots).toBe(3)
 			for k, slot in slots do
 				local s = P:PointToObjectSpace(slot.Position)
 				-- beside the deck, along its length, bow toward the plate (against the facing)
-				t.expect(math.abs(s.X) > HubLayout.QUEST_PONTOON.X / 2 + 2.5).toBe(true)
-				t.expect(math.abs(s.Z) <= HubLayout.QUEST_PONTOON.Y / 2).toBe(true)
+				t.expect(math.abs(s.X) > RingLayout.QUEST_PONTOON.X / 2 + 2.5).toBe(true)
+				t.expect(math.abs(s.Z) <= RingLayout.QUEST_PONTOON.Y / 2).toBe(true)
 				t.expect(slot.LookVector:Dot(isl.facing) < -0.99).toBe(true)
 				for j = k + 1, #slots do
 					t.expect((slots[j].Position - slot.Position).Magnitude >= 12).toBe(true) -- 12-long boats

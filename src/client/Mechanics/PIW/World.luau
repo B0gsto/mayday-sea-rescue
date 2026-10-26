@@ -2,7 +2,6 @@
 -- PIW/World: what the mechanics read from the live scene (the casualty model, the boat, the
 -- camera) and the real-world cues they add locally: the lifejacket strobe, an orange smoke float
 -- on the search start, a dan buoy marker. Client-only; nothing here replicates.
-local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
@@ -111,12 +110,6 @@ function World.seat(model: Model?): VehicleSeat?
 	return model:FindFirstChildWhichIsA("VehicleSeat", true)
 end
 
--- Out of gear: the throttle at its neutral notch (X / B / the slider notch).
-function World.isNeutral(model: Model?): boolean
-	local seat = World.seat(model)
-	return seat == nil or math.abs(seat.ThrottleFloat) < 0.05
-end
-
 function World.isJetSki(model: Model?): boolean
 	if not model then
 		return false
@@ -167,39 +160,8 @@ function World.slam(): number
 	return if ok and type(value) == "number" then value else 0
 end
 
-function World.lowLight(): boolean
-	local t = Lighting.ClockTime
-	return t < 7 or t > 18.5
-end
-
 function World.camera(): Camera
 	return Workspace.CurrentCamera :: Camera
-end
-
--- Where the reticle (screen centre) or a screen point meets the sea surface at height waterY.
-function World.screenToWater(screen: Vector2?, waterY: number): Vector3?
-	local cam = World.camera()
-	local vp = cam.ViewportSize
-	local p = screen or Vector2.new(vp.X / 2, vp.Y / 2)
-	local ray = cam:ViewportPointToRay(p.X, p.Y)
-	if ray.Direction.Y > -1e-3 then
-		return nil
-	end
-	local t = (waterY - ray.Origin.Y) / ray.Direction.Y
-	if t < 0 or t > 2000 then
-		return nil
-	end
-	return ray.Origin + ray.Direction * t
-end
-
--- Angle (deg) between the camera's look and the direction to a point.
-function World.lookError(point: Vector3): number
-	local cf = World.camera().CFrame
-	local to = point - cf.Position
-	if to.Magnitude < 1e-3 then
-		return 0
-	end
-	return math.deg(math.acos(math.clamp(cf.LookVector:Dot(to.Unit), -1, 1)))
 end
 
 function World.onScreen(point: Vector3): (Vector2?, boolean)
@@ -208,34 +170,6 @@ function World.onScreen(point: Vector3): (Vector2?, boolean)
 		return nil, false
 	end
 	return Vector2.new(v.X, v.Y), true
-end
-
--- A lifejacket strobe on the casualty: a white flash about once a second (SOLAS lights flash
--- 50 to 70 times a minute). Real, readable, and not a game glow.
-function World.strobe(bag: Ui.Bag, model: Model?): ()
-	local root = model and model.PrimaryPart
-	if not root then
-		return
-	end
-	local light = Instance.new("PointLight")
-	light.Color = Color3.new(1, 1, 1)
-	light.Range = 18
-	light.Brightness = 0
-	light.Shadows = false
-	light.Parent = root
-	Ui.add(bag, light)
-	local alive = true
-	Ui.add(bag, function()
-		alive = false
-	end)
-	task.spawn(function()
-		while alive and light.Parent do
-			light.Brightness = 6
-			task.wait(0.12)
-			light.Brightness = 0
-			task.wait(0.88)
-		end
-	end)
 end
 
 -- A dan buoy on the search start, with a smoke float trailing orange smoke downwind.

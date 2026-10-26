@@ -6,7 +6,7 @@
 -- fails (and still stand in for the unfinished Water Dog Friends coat options). An invisible root part
 -- "Body" carries the physics: he follows his player on land (AlignPosition / AlignOrientation, no
 -- collisions: docs 02 section 10.8) and floats in his harness on water. While his player sits in any
--- vehicle (car, boat, jet ski) he is hidden (model attribute Hidden, DogController) and reappears
+-- craft he is hidden (model attribute Hidden, DogController) and reappears
 -- beside them when they get out. The
 -- parts hang on Motor6Ds named after the BosunMotion pose keys (Root, Neck, Jaw, Tail1, Tail2, eight leg
 -- joints) whose Transforms DogController writes locally. Everyone sees this low-poly dog (docs/14 section 4:
@@ -561,7 +561,7 @@ local function step(dog: Dog, now: number)
 		return
 	end
 	-- In any vehicle he is hidden (DogController) and stays where he was; he reappears beside the
-	-- player when they get out (user, 2026-10-22: a dog standing on the car looked broken).
+	-- player when they get out (user, 2026-10-22: a dog standing on a vehicle looked broken).
 	if vehicleOf(humanoid.SeatPart) then
 		if not dog.hidden then
 			dog.hidden = true

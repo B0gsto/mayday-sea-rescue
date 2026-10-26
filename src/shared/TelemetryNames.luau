@@ -26,7 +26,7 @@ TelemetryNames.Custom = table.freeze({
 	"ColdOpenEnded", -- why the cold open ended (Complete, Timer, Died, LeftCraft, ...)
 	"StormJoined", -- Great Storm / ordinary storm, Start / MidStorm
 	"DailyCrate", -- streak day, Daily / Welcome
-	"CompanionSwitch", -- the companion changed on the phone: from species, to species (Bosun = the dog)
+	"CompanionSwitch", -- the companion changed (Companion panel): from species, to species (Bosun = the dog)
 	"LiveEvent", -- a LiveOps event was live while the player was in the server
 	"FriendBonus", -- friends in the server and the Cash percent they add
 	"PromptShown", -- notify / favorite / invite prompt was shown
@@ -54,7 +54,7 @@ TelemetryNames.Funnel = table.freeze({
 	"Call2Accepted",
 	"Call2Delivered",
 	"Call3Delivered",
-	"PhoneOpened",
+	"MenuOpened",
 	"FirstUpgrade",
 	"FirstBuilding",
 	"FirstVehicle",
@@ -65,7 +65,7 @@ TelemetryNames.Funnel = table.freeze({
 -- visit, vehicle spawn, island and species (TelemetryService). Append steps only after launch.
 TelemetryNames.Funnels = table.freeze({
 	Call = table.freeze({ "Offered", "Accepted", "Seated", "Boarded", "Delivered" }),
-	Shop = table.freeze({ "PhoneOpened", "AppOpened", "ItemViewed", "BuyTapped", "Bought" }),
+	Shop = table.freeze({ "MenuOpened", "PanelOpened", "ItemViewed", "BuyTapped", "Bought" }),
 	Vehicle = table.freeze({ "Spawned", "Boarded", "Underway" }),
 	Explore = table.freeze({ "Sighted", "Reached", "Stamped" }),
 	Companion = table.freeze({ "Rescued", "Adopted", "Chosen" }),

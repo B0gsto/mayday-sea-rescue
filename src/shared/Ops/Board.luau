@@ -12,7 +12,7 @@ Board.RAM_SPEED = 14 -- studs/s
 Board.CONTACT = 4 -- studs from the hull side
 Board.BUMP_GAP = 2 -- s between bumps
 -- docs/23 e.1: a ram knocks them back only once you own a boathouse (the DockBoathouse attribute): new
--- players are never punished for a clumsy first pick-up (WP-28: was rank 3).
+-- players are never punished for a clumsy first pick-up.
 -- The pick-up ring (docs/23 e.1, PickupRingController): drawn on the water round a survivor; a craft with room
 -- eases its throttle so it is down to ASSIST_SPEED by the ring and holds it inside, under STEADY_SPEED.
 Board.RING = 12 -- studs, radius from the survivor to the hull centre -- tune

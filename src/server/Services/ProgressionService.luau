@@ -145,7 +145,7 @@ end
 
 -- A finished operation (OperationService calls it once per player at the debrief): a graded one
 -- counts toward the saved total (flags.opsCompleted, read as the OpsCompletedTotal attribute by the
--- new-player HUD and the phone Store).
+-- new-player HUD).
 function ProgressionService.RecordTraining(player: Player, grade: string): nil
 	local data = DataService.Get(player)
 	if not data or not (grade == "Gold" or grade == "Silver" or grade == "Bronze") then

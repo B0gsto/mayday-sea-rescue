@@ -1,5 +1,5 @@
 --!strict
--- VehicleUpgrades: the per-vehicle upgrades sold in the phone's Vehicles app (docs 03 section 4.1,
+-- VehicleUpgrades: the per-vehicle upgrades sold on the boat card (UI/BoatCard; docs 03 section 4.1,
 -- docs/16 K8). Pure data and maths, Lune-tested (tests/VehicleUpgrades.spec.luau):
 --   Engine  Tuned engine  -- +15% top speed
 --   Hull    Storm hull    -- steadier in waves, turns better
@@ -10,7 +10,7 @@ local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
 
 export type Upgrade = {
 	id: string,
-	name: string, -- 1-3 words on the stand tag and the next-goal chip
+	name: string, -- 1-3 words on the boat card
 	price: number,
 	effect: string, -- short line on the tag
 }

@@ -1,9 +1,7 @@
 --!strict
 -- UiImages: uploaded UI sprites (assets/ui/<set>/*.png, uploaded with tools/assets.py upload).
--- Hud: the gameplay HUD set (assets/ui/hud, mockup.png). Panel / SpeedPanel / Bar* are 9-slice.
+-- Hud: the gameplay HUD set (assets/ui/hud, mockup.png). Panel is 9-slice.
 return {
-	-- World signs: the old hub shop counter's sign (the hub went in docs/23 (p); the old phone Store icon art)
-	Signs = { Shop = "rbxassetid://138403733104125" },
 	Hud = {
 		Coin = "rbxassetid://73244576620050",
 		XpStar = "rbxassetid://95688680030871",
@@ -13,18 +11,14 @@ return {
 		ExitButton = "rbxassetid://129655332194316",
 		MinimapRing = "rbxassetid://130518444307744", -- minimap_ring_thin.png: hole 72%
 		Panel = "rbxassetid://89769136629803", -- 512x256, slice 32 px
-		SpeedPanel = "rbxassetid://91006902656634", -- 512x128, slice 24 px
-		BarFill = "rbxassetid://101134848001000", -- 512x64, slice 32 px each end
-		BarTrack = "rbxassetid://82053370414902", -- 512x64, slice 32 px each end
 	},
 	-- Icons requested in docs/18-ui-art-requests.md. Empty until uploaded: the UI draws its glyph
-	-- placeholder instead. VehicleArt: the Vehicles app (upgrades by id, the three stat rows, the tick).
+	-- placeholder instead. VehicleArt: UI/BoatCard (upgrades by id, the stat rows, the tick).
 	VehicleArt = {
 		Engine = "rbxassetid://77604707401218",
 		Hull = "rbxassetid://70457841837821",
 		Fit = "rbxassetid://128287933181704",
 		Speed = "rbxassetid://122953764585559",
-		People = "rbxassetid://118927461824321",
 		Tough = "rbxassetid://115278891400408",
 		Check = "rbxassetid://101458713833337",
 	},

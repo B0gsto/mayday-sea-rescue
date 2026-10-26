@@ -8,8 +8,7 @@
 --    keyboard (WASD / arrows), gamepad and the mobile thumbstick alike; steer goes through
 --    Boat/Helm (ramps to full in 0.4 s, less lock at speed). The boat's SpeedMultiplier
 --    attribute (the server sets it from ProgressionService.GetGearBonus "speed") scales thrust and
---    top speed inside Simulator. A model tagged VehicleTowed with TowedBy = our UserId is ours to
---    simulate too (no input), since the server gave us its ownership.
+--    top speed inside Simulator.
 --
 -- 1b. Helm modes and safety. Z (or the on-screen "Approach" button) toggles approach mode: a
 --    speed governor under 5 knots with fine throttle (Buoyancy.thrust), for the final run to a
@@ -45,7 +44,6 @@
 --    its rest draft on the locally drawn wave. Height comes from OceanController.GetVisualHeight
 --    when stream A provides it, else from the shared wave field.
 
-local CollectionService = game:GetService("CollectionService")
 local ContextActionService = game:GetService("ContextActionService")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
@@ -67,7 +65,6 @@ local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local Unstick = require(Shared:WaitForChild("Boat"):WaitForChild("Unstick"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
-local TOW_TAG = "VehicleTowed"
 local MAX_VISUAL_OFFSET = 1.5 -- studs; larger errors are left to replication -- tune
 local VISUAL_SMOOTHING = 10 -- 1/s -- tune
 local CAPSIZE_ANGLE = math.rad(70) -- the rider falls off past this heel -- tune
@@ -115,10 +112,6 @@ local function isLocalDriver(model: Model): boolean
 	local seat = seatOf(model)
 	local occupant = seat and seat.Occupant
 	return occupant ~= nil and occupant.Parent == localPlayer.Character
-end
-
-local function isLocalTow(model: Model): boolean
-	return model:GetAttribute("TowedBy") == localPlayer.UserId
 end
 
 local function setVisualOffset(model: Model, offset: number)
@@ -510,20 +503,10 @@ local function step(dt: number)
 							and child:GetAttribute("ColdOpenAutoThrottle") ~= true,
 						dt
 					)
-				elseif isLocalTow(child) then
-					Simulator.step(child, 0, 0, now)
-					nowSimulated[child] = true
 				else
 					snapRemote(child, dt, now)
 				end
 			end
-		end
-	end
-	-- towed non-vehicle hulls (NPC boats) that the server handed to us
-	for _, tagged in CollectionService:GetTagged(TOW_TAG) do
-		if tagged:IsA("Model") and not nowSimulated[tagged] and isLocalTow(tagged) then
-			Simulator.step(tagged, 0, 0, now)
-			nowSimulated[tagged] = true
 		end
 	end
 

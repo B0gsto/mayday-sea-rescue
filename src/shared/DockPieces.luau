@@ -12,8 +12,8 @@
 -- "Flag" take the owner's colour, TextLabels "Count" show the rescue count. Materials stay off the
 -- MaterialService remap (no Slate, WoodPlanks, Brick, Concrete).
 local DockConfig = require(script.Parent:WaitForChild("Config"):WaitForChild("DockConfig"))
-local HubLayout = require(script.Parent:WaitForChild("Config"):WaitForChild("HubLayout"))
 local Marina = require(script.Parent:WaitForChild("Marina"))
+local RingLayout = require(script.Parent:WaitForChild("Config"):WaitForChild("RingLayout"))
 local UiImages = require(script.Parent:WaitForChild("Config"):WaitForChild("UiImages"))
 
 local DockPieces = {}
@@ -1284,7 +1284,7 @@ local function lifeboatSlip(m: Model, b: CFrame)
 	-- the slipway: flat from the shed to the plate's edge (EDGE studs out from the island centre), then down
 	-- into the sea
 	local slipR = Marina.ISLAND:ToObjectSpace(def.spot).X -- the slip's island-frame right (it faces +right)
-	local edge = -(HubLayout.IslandPlate.edge - slipR)
+	local edge = -(RingLayout.IslandPlate.edge - slipR)
 	local flatLen = d / 2 - 2 - edge
 	brick(
 		m,
@@ -1459,8 +1459,8 @@ function DockPieces.base(b: CFrame): Model
 	-- the bunkhouse on the quay (the crew's hut), its door onto the promenade
 	cottage(m, isle(b, 21, 6), 14, 10, RBROWN, BRICK_BLUE, "Bunkhouse", UiImages.Kit.crew)
 	-- the cove's side walls: a stud-capped dark grey quay edge, yellow bollards on it, black tyre fenders below
-	local notch = HubLayout.IslandPlate.notch
-	local edge = HubLayout.IslandPlate.edge
+	local notch = RingLayout.IslandPlate.notch
+	local edge = RingLayout.IslandPlate.edge
 	for _, side in { -1, 1 } do
 		local x = side * notch.halfWidth
 		local len = edge - notch.head

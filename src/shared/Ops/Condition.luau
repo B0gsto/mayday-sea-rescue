@@ -181,13 +181,4 @@ function Condition.overdue(
 	return elapsed > capSeconds
 end
 
--- Seconds until the meter reaches Critical at the current rate (math.huge when not declining).
-function Condition.secondsToCritical(c: CasualtyState, env: Env?): number
-	local r = Condition.rate(c, env)
-	if r >= 0 then
-		return math.huge
-	end
-	return math.max(c.condition - Condition.CRITICAL, 0) / -r
-end
-
 return Condition

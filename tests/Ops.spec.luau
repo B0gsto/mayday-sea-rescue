@@ -108,9 +108,6 @@ return function(t)
 		c.condition = 19
 		t.expect(Condition.overdue({ c }, 10, 720)).toBe(true)
 		t.expect(Condition.overdue({ warm }, 721, 720)).toBe(true)
-		-- the meter reaches Critical in the water without help, in a few minutes
-		local w = Condition.new("c", "Alert", true, 90)
-		t.expect(Condition.secondsToCritical(w)).toBeCloseTo(350, 1e-6)
 		local v = Condition.new("v", "Vessel", true, 90)
 		t.expect(Condition.rate(v) < 0).toBeTruthy()
 		v.towed = true
@@ -160,13 +157,6 @@ return function(t)
 			{ grade = "Gold", weight = 2 },
 			{ grade = "Fail", weight = 1 },
 		})).toBe(2)
-		t.expect(Grading.conditionGrade(75)).toBe("Gold")
-		t.expect(Grading.conditionGrade(10)).toBe("Fail")
-		t.expect(Grading.weakest({
-			{ grade = "Gold", weight = 1 },
-			{ grade = "Bronze", weight = 1 },
-			{ grade = "Bronze", weight = 2 },
-		})).toBe(3)
 		-- solo all-Silver (NPC-heavy) still lands Silver, never Gold
 		local all = {}
 		for _ = 1, 10 do
@@ -189,11 +179,9 @@ return function(t)
 		t.expect(Grading.bigCompletionBonus(5, 10).cash).toBe(688)
 	end)
 
-	t.test("rolls and triage truth", function()
+	t.test("rolls", function()
 		t.expect(Operations.roll({ A = 1, B = 1 }, 0)).toBe("A")
 		t.expect(Operations.roll({ A = 1, B = 1 }, 0.99)).toBe("B")
-		t.expect(Operations.triageTag("Unresponsive")).toBe("Red")
-		t.expect(Operations.triageTag("Alert")).toBe("Green")
 		t.expect(Operations.FromCallKind.Tow).toBeNil() -- the tow op is gone (docs/16 C2)
 	end)
 	t.test("drift scale softens the decline (cold open)", function()

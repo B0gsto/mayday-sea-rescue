@@ -672,7 +672,7 @@ local LEGEND_HEAD = 34 -- collapsed height
 local LEGEND_ROW = 24
 local PLACE_STYLE: { [string]: { size: number, color: Color3, halo: Color3 } } = {
 	region = { size = 24, color = Color3.fromRGB(235, 240, 220), halo = Color3.fromRGB(10, 25, 45) },
-	town = { size = 24, color = Color3.fromRGB(255, 248, 232), halo = Color3.fromRGB(10, 25, 45) },
+	isle = { size = 24, color = Color3.fromRGB(255, 248, 232), halo = Color3.fromRGB(10, 25, 45) },
 	place = { size = 19, color = Color3.fromRGB(238, 232, 214), halo = Color3.fromRGB(10, 25, 45) },
 	water = { size = 19, color = Color3.fromRGB(196, 236, 246), halo = Color3.fromRGB(8, 34, 64) },
 	street = { size = 16, color = Color3.fromRGB(255, 250, 238), halo = Color3.fromRGB(10, 25, 45) },
@@ -795,7 +795,7 @@ local function buildFullMap()
 		local t = text("Place" .. i, names, string.gsub(str, " $", ""), st.size, st.color)
 		t.FontFace = Font.new(
 			"rbxasset://fonts/families/BuilderSans.json",
-			if pl.kind == "town" or pl.kind == "region"
+			if pl.kind == "isle" or pl.kind == "region"
 				then Enum.FontWeight.Bold
 				else Enum.FontWeight.SemiBold,
 			if pl.kind == "water" then Enum.FontStyle.Italic else Enum.FontStyle.Normal
@@ -1369,10 +1369,6 @@ function MapController.SetBlips(
 		})
 	end
 	extraBlips[group] = list
-end
-
-function MapController.GetWaypoint(): Vector3?
-	return waypoint
 end
 
 function MapController.GetObjective(): (Vector3?, string?)

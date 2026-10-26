@@ -54,8 +54,6 @@ export type VehicleSpec = {
 	floatPoints: { Vector3 },
 	lateralGrip: number, -- 0..1, sideways drag vs forward drag (keel / grip force)
 	canCapsize: boolean,
-	canTow: boolean,
-	firePump: boolean,
 	-- Premium fleet: the hand-built hull / art layout it borrows ("JetSki" | "RIB" | "Lifeboat"; nil =
 	-- its own id) and the uploaded AssetIds model the spawner clones (nil = the base's art, or greybox).
 	base: string?,
@@ -111,8 +109,6 @@ VehicleConfig.JetSki = {
 	},
 	lateralGrip = 0.7, -- slides on turns (docs 02)
 	canCapsize = true,
-	canTow = false,
-	firePump = false,
 } :: VehicleSpec
 
 -- RNLI Atlantic 85-class inshore lifeboat: 8.44 m x 2.85 m, 0.53 m draft, 1.8 t + crew = 2.1 t,
@@ -162,8 +158,6 @@ VehicleConfig.RIB = {
 	},
 	lateralGrip = 0.85,
 	canCapsize = true,
-	canTow = true, -- tows light boats (docs 02)
-	firePump = true, -- small fire pump (docs 02)
 } :: VehicleSpec
 
 -- Severn-class all-weather lifeboat: 17.3 m x 5.9 m, 1.5 m draft, 41 t, 25 knots. Heavy and
@@ -212,8 +206,6 @@ VehicleConfig.Lifeboat = {
 	},
 	lateralGrip = 0.95, -- a deep keel and bilge keels: minimal leeway
 	canCapsize = false,
-	canTow = true, -- strong tow (docs 02)
-	firePump = true, -- fire monitor (docs 02)
 } :: VehicleSpec
 
 -- Premium fleet (2026-10-21, user): Robux only (ProgressionConfig.Vehicles passOnly). Each copies a
@@ -244,7 +236,6 @@ VehicleConfig.StormRunner = variant("RIB", {
 	maxLean = 14,
 	dampingRatio = 0.5,
 	lateralGrip = 0.88,
-	firePump = false,
 })
 
 -- Luxury catamaran: two hulls, dead flat in a turn, soft over a swell, never capsizes; 6 casualties.
@@ -265,8 +256,6 @@ VehicleConfig.Tidewalker = variant("Lifeboat", {
 	maxLean = 3,
 	dampingRatio = 0.75, -- smooth ride
 	survivorCapacity = 6, -- between the RIB's 3 and the lifeboat's 8
-	canTow = true,
-	firePump = false,
 })
 
 -- Sport jet ski (stand-up race class): the quickest thing on the water, light and twitchy.
@@ -301,7 +290,7 @@ VehicleConfig.GildedGull = variant("JetSki", {
 })
 
 -- docs/23 (h), WP-10a: the hangar and sub pen craft. Handling lives in their own modules (Heli/Flight,
--- Sub/Dive); these rows carry what VehicleService, the camera and the phone read.
+-- Sub/Dive); these rows carry what VehicleService, the camera and the boards read.
 local function craft(kind: "Heli" | "Sub", over: { [string]: any }): VehicleSpec
 	local spec = table.clone(VehicleConfig.Lifeboat) :: any
 	for k, v in over do
@@ -311,7 +300,6 @@ local function craft(kind: "Heli" | "Sub", over: { [string]: any }): VehicleSpec
 	spec.model = nil
 	spec.idleCreep = 0
 	spec.killCord, spec.ejectOnCapsize, spec.canCapsize = false, false, false
-	spec.canTow, spec.firePump = false, false
 	return spec :: VehicleSpec
 end
 
@@ -343,7 +331,7 @@ VehicleConfig.Submarine = craft("Sub", {
 	floatPoints = {},
 })
 
--- Every boat id, in shop / bay menu order (boats only: the bay launch, the phone and the trailer read it).
+-- Every boat id, in shop / bay menu order (boats only: the bay launch and the boat board read it).
 VehicleConfig.Order =
 	{ "JetSki", "RiptideX", "GildedGull", "RIB", "StormRunner", "Tidewalker", "Lifeboat" }
 -- The docs/23 (h) craft (hangar, sub pen): bought and launched at their dock building (WP-10b).

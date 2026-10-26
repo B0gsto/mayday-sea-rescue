@@ -8,7 +8,7 @@
 --     side windows. Styles per lot: rendered (9 colours, neighbours always differ), granite front, slate-hung
 --     upper storeys, granite quoins; blinds and lit rooms seeded per lot. Roofs: dark Delabole slate, seeded pitch,
 --     hipped on corners and now and then, stacks 1 or 2 at seeded heights. lot.kind: "endon" (gable-end-on
---     cottage), "chapel" (granite, tall round-headed windows), "garage" (single storey, roller door), "pub".
+--     cottage), "chapel" (granite, tall round-headed windows), "pub".
 -- Night: "_GlassLit_" parts (lit rooms, shop windows) + ATT_Lamp_Window / ATT_Smoke markers go through CottageRig
 -- (Neon at night; RigLights / RigSmoke on a subset as for the cottages).
 -- Materials avoid the MaterialService overrides (Slate -> KelpRock, WoodPlanks -> TurfOlive, Brick -> TurfWorn,
@@ -829,10 +829,7 @@ function TownBuildings.terrace(parent: Instance, lot: Lot, n: number, lo: number
 	m.Name = `Terrace{n}`
 	m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
 	local kind = lot.kind
-	local floors = if kind == "chapel" or kind == "garage"
-		then 1
-		elseif kind == "endon" then 2
-		else lot.floors or 3
+	local floors = if kind == "chapel" then 1 elseif kind == "endon" then 2 else lot.floors or 3
 	if lot.corner then
 		floors = math.min(floors + 1, 4)
 	end
@@ -851,11 +848,7 @@ function TownBuildings.terrace(parent: Instance, lot: Lot, n: number, lo: number
 		w = lot.w,
 		d = lot.depth or DEPTH,
 		floors = floors,
-		ground = if kind == "chapel"
-			then 15
-			elseif kind == "garage" then 10
-			elseif lot.shop then 10
-			else 9,
+		ground = if kind == "chapel" then 15 elseif lot.shop then 10 else 9,
 		upper = 8.1 + rng:NextNumber() * 0.9, -- a ragged eaves line down the street
 		drop = hi - lo + 1,
 		wall = if granite then GRANITE elseif hung then HUNG else wall,
@@ -865,7 +858,7 @@ function TownBuildings.terrace(parent: Instance, lot: Lot, n: number, lo: number
 		slate = TownBuildings.SLATES[n % #TownBuildings.SLATES + 1],
 		bay = 6 + n % 3,
 		corner = lot.corner,
-		chimney = if kind == "garage" or kind == "chapel" then 0 elseif n % 2 == 0 then 1 else -1,
+		chimney = if kind == "chapel" then 0 elseif n % 2 == 0 then 1 else -1,
 		sill = if granite or rng:NextNumber() < 0.4 then GRANITE else WHITE,
 		lintels = granite or style == 4,
 		quoins = (style == 4 and not lot.shop) or kind == "chapel",
@@ -877,9 +870,8 @@ function TownBuildings.terrace(parent: Instance, lot: Lot, n: number, lo: number
 		ridge = RIDGES[rng:NextInteger(1, #RIDGES)],
 		seed = seed,
 		roof = roof,
-		pitch = if kind == "garage"
-			then 0.35
-			elseif roof == "endon" then 0.95 + rng:NextNumber() * 0.25
+		pitch = if roof == "endon"
+			then 0.95 + rng:NextNumber() * 0.25
 			else ({ 0.5, 0.62, 0.75, 0.9 })[rng:NextInteger(1, 4)],
 		stackUp = 1.8 + rng:NextNumber() * 3.6,
 		stacks = if n % 3 == 0 then 2 else 1,
@@ -888,25 +880,6 @@ function TownBuildings.terrace(parent: Instance, lot: Lot, n: number, lo: number
 	local eave = shell(m, at, s)
 	if kind == "chapel" then
 		chapelFront(m, at, lot.w, s.d, eave)
-	elseif kind == "garage" then
-		local front = at * CFrame.new(0, 0, -s.d / 2)
-		part(
-			m,
-			"RollerDoor",
-			Vector3.new(lot.w - 5, 7.6, 0.3),
-			front * CFrame.new(0, 3.8, -0.1),
-			Color3.fromRGB(150, 156, 160),
-			M.Metal
-		)
-		local fascia = part(
-			m,
-			"Fascia",
-			Vector3.new(lot.w - 2, 1.4, 0.4),
-			front * CFrame.new(0, 8.6, -0.2),
-			Color3.fromRGB(176, 30, 34),
-			M.SmoothPlastic
-		)
-		sign(fascia, "GARAGE", WHITE, Enum.Font.GothamBold)
 	elseif lot.shop then
 		shopfront(m, at * CFrame.new(0, 0, -s.d / 2), lot.w, n, kind == "pub")
 		local rear = s.d / 2 + 0.1

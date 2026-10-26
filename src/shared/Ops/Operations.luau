@@ -34,17 +34,6 @@ function Operations.get(id: string): OperationDef?
 	return Operations.Defs[id]
 end
 
--- Triage sieve truth for a casualty (docs 09 section 7 step 4), simplified for greybox:
--- walking -> Green; breathing but not walking -> Yellow; unresponsive or very cold -> Red.
-function Operations.triageTag(state: string): string
-	if state == "Unresponsive" or state == "VeryCold" then
-		return "Red"
-	elseif state == "Exhausted" or state == "Panicking" then
-		return "Yellow"
-	end
-	return "Green"
-end
-
 -- Picks a key from a { key = weight } table with a 0..1 roll.
 function Operations.roll(weights: { [string]: number }, r: number): string
 	local keys = {}
@@ -62,14 +51,6 @@ function Operations.roll(weights: { [string]: number }, r: number): string
 		end
 	end
 	return keys[#keys]
-end
-
-function Operations.totalWeight(steps: { StepDef }): number
-	local w = 0
-	for _, s in steps do
-		w += s.weight
-	end
-	return w
 end
 
 -- The casualties a slow grade is about: not yet picked up. Aboard a crew's boat (the board effect

@@ -229,7 +229,6 @@ local function step(dt: number)
 		or humanoid.Health <= 0
 		or humanoid.SeatPart ~= nil
 		or root.Anchored
-		or player:GetAttribute("SwimLocked") == true
 		or humanoid:GetState() == Enum.HumanoidStateType.Climbing
 	then
 		exitSwim()
@@ -265,7 +264,7 @@ local function step(dt: number)
 	local move = humanoid.MoveDirection
 	local horizontal = move * Snorkel.SWIM_SPEED
 	local vy = Snorkel.verticalVelocity(eyeY, surfaceY, look.Y)
-	-- the rip off Haven Sands (docs/09 section 8.4): stroke plus the current, so swimming
+	-- the rip off Puffin Isle (docs/09 section 8.4): stroke plus the current, so swimming
 	-- straight back against it barely moves and going across it leaves the channel
 	local flow = RipCurrent.velocityAt(RipCurrent.Beach, Vector3.new(pos.X, 0, pos.Z))
 	-- mass changes after entry (VehicleService makes a rider massless and restores it once off the

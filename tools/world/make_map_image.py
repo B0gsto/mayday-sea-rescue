@@ -5,7 +5,7 @@ usage: python3 tools/world/make_map_image.py [--out art/map/gale_isles_map.png] 
 
 Inputs (read only): map/generated/terrain.json + the main and island-window height / material grids
 (gen_terrain.py). The outer islands come from the bake; the six player islands are Lego plates (Parts, not
-terrain), drawn from layout.RING with the neighbour bridges (mirroring HubLayout); place names from MapConfig.Places
+terrain), drawn from layout.RING with the neighbour bridges (mirroring RingLayout); place names from MapConfig.Places
 (--labels).
 
 World -> image (north up, the same frame as the bake: rows are +Z = south), the whole archipelago canvas:
@@ -245,8 +245,8 @@ def main():
         px, pz = to_px(x, z)
         d.ellipse([px - r, pz - r, px + r, pz + r], fill=colour, outline=(20, 20, 20, 255), width=2)
 
-    # docs/23 (p): the ring of six Lego-plate islands (HubLayout.IslandPlate rects) and the bridges between neighbours
-    # (HubLayout.BRIDGE: crossing each bisector 400 out, 91 studs either side)
+    # docs/23 (p): the ring of six Lego-plate islands (RingLayout.IslandPlate rects) and the bridges between neighbours
+    # (RingLayout.BRIDGE: crossing each bisector 400 out, 91 studs either side)
     e, ch, hw, head = L.RING["islandRadius"], 47, L.RING["notch"]["halfWidth"], L.RING["notch"]["head"]
     rects = [(-e + ch, -hw, -e + ch, e - ch), (hw, e - ch, -e + ch, e - ch), (-hw, hw, -e + ch, head),
              (-e + ch, e - ch, -e, -e + ch), (-e, -e + ch, -e + ch, e - ch), (e - ch, e, -e + ch, e - ch),
@@ -272,7 +272,7 @@ def main():
     # for a stand-alone preview.
     if "--labels" in sys.argv:
         style = {  # kind -> (px at 2048, colour, italic, letter spacing)
-            "region": (64, (235, 240, 220, 255), False, 1), "town": (46, (255, 248, 232, 255), False, 0),
+            "region": (64, (235, 240, 220, 255), False, 1), "isle": (46, (255, 248, 232, 255), False, 0),
             "place": (34, (238, 232, 214, 255), False, 0), "water": (36, (196, 236, 246, 255), True, 0),
             "street": (30, (238, 232, 214, 255), False, 0),
         }

@@ -1,11 +1,11 @@
 --!strict
--- Telemetry (client, G64): the facts only the client knows (the reward burst played, photo mode, the
--- first photo, the device, shop taps, dead input). Everything else is logged on the server; this thin
+-- Telemetry (client, G64): the facts only the client knows (the reward burst played, the device,
+-- shop taps, dead input). Everything else is logged on the server; this thin
 -- module only forwards a fixed name plus a few short values to TelemetryService over Telemetry_Client,
 -- which checks every value against a fixed set and rate limits the remote.
 --   Telemetry.once(name)                         once per session
 --   Telemetry.send(name, a?, b?, c?, d?)          every time (Device, InputDead)
---   Telemetry.shop(step, app?, item?, currency?)  Shop funnel: PhoneOpened, AppOpened, ItemViewed, BuyTapped
+--   Telemetry.shop(step, app?, item?, currency?)  Shop funnel: MenuOpened, PanelOpened, ItemViewed, BuyTapped
 --   Telemetry.stalled(context, stalled, dt)       per frame: InputDead once per 3 s stall (Boat)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 

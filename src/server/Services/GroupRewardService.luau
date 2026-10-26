@@ -82,11 +82,6 @@ local function check(player: Player, force: boolean): GroupReward.State?
 	return apply(player, inGroup)
 end
 
-function GroupRewardService.IsMember(player: Player): boolean
-	local state = stateOf(player)
-	return state ~= nil and GroupReward.isMember(state, SocialConfig.GroupId)
-end
-
 function GroupRewardService.State(player: Player): GroupReward.State?
 	return stateOf(player)
 end

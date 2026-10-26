@@ -1,5 +1,5 @@
 --!strict
--- QuestPontoons (docs/23 (p), WP-27): each island's Lego quest pontoon (HubLayout.Islands[i].quest.pontoon) and quest
+-- QuestPontoons (docs/23 (p), WP-27): each island's Lego quest pontoon (RingLayout.Islands[i].quest.pontoon) and quest
 -- tablet on its stand (lots.QuestTablet; the screen part is named "QuestTablet", QuestController binds its prompt on
 -- your own island), in Workspace.QuestPontoons.Island<i>. And the quest boats: a giver (NpcFactory R15, in
 -- Workspace.Npcs, named by npc id) stands in a small Lego boat that sails in from out at sea to a free mooring slot
@@ -12,8 +12,8 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Data = require(Shared:WaitForChild("Quests"):WaitForChild("Data"))
-local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local NpcFactory = require(script.Parent.Parent:WaitForChild("Npc"):WaitForChild("NpcFactory"))
+local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 
 local QuestPontoons = {}
@@ -81,11 +81,11 @@ end
 
 -- The pontoon (deck top at P, LookVector out to sea): three bright bricks with studs, floats under it, a bollard by
 -- each mooring slot and a gold quest flag at the sea end. Then the tablet on its stand (copy of the build tablet).
-local function buildIsland(i: number, isl: HubLayout.Island, parent: Instance)
+local function buildIsland(i: number, isl: RingLayout.Island, parent: Instance)
 	local m = Instance.new("Model")
 	m.Name = `Island{i}`
 	local P = isl.quest.pontoon
-	local w, len = HubLayout.QUEST_PONTOON.X, HubLayout.QUEST_PONTOON.Y
+	local w, len = RingLayout.QUEST_PONTOON.X, RingLayout.QUEST_PONTOON.Y
 	local brick = len / 3
 	for k, color in { YELLOW, BLUE, RED } do
 		local fwd = -len / 2 + brick * (k - 0.5)
@@ -276,19 +276,19 @@ end
 
 -- where island i's quest tablet screen is
 function QuestPontoons.TabletAt(i: number): Vector3
-	return HubLayout.Islands[i].lots.QuestTablet.cframe.Position + Vector3.new(0, 4, 0)
+	return RingLayout.Islands[i].lots.QuestTablet.cframe.Position + Vector3.new(0, 4, 0)
 end
 
 -- a point on the pontoon deck beside the boat (dev teleports, the pin)
 function QuestPontoons.Beside(b: Boat): Vector3
-	local P = HubLayout.Islands[b.island].quest.pontoon
+	local P = RingLayout.Islands[b.island].quest.pontoon
 	return (P * CFrame.new(0, 3, P:PointToObjectSpace(b.home.Position).Z)).Position
 end
 
 -- Giver `npc` sails in to the first free slot at island i; nil when all three are taken.
 function QuestPontoons.Arrive(i: number, npc: Data.Npc): Boat?
 	local fleet = QuestPontoons.Boats(i)
-	local slots = HubLayout.Islands[i].quest.slots
+	local slots = RingLayout.Islands[i].quest.slots
 	local slot: number? = nil
 	for k = 1, #slots do
 		if not fleet[k] then
@@ -300,7 +300,7 @@ function QuestPontoons.Arrive(i: number, npc: Data.Npc): Boat?
 		return nil
 	end
 	local home = slots[slot]
-	local P = HubLayout.Islands[i].quest.pontoon
+	local P = RingLayout.Islands[i].quest.pontoon
 	local side = math.sign(home:PointToObjectSpace(P.Position).X)
 	local lane = home * CFrame.new(-side * LANE, 0, 0)
 	local start = lane * CFrame.new(0, 0, OUT) -- home's LookVector points at the plate: +Z is out to sea
@@ -403,7 +403,7 @@ function QuestPontoons.Build(npcs: Instance)
 	boatFolder.Parent = Workspace
 	local folder = Instance.new("Folder")
 	folder.Name = "QuestPontoons"
-	for i, isl in HubLayout.Islands do
+	for i, isl in RingLayout.Islands do
 		buildIsland(i, isl, folder)
 	end
 	folder.Parent = Workspace

@@ -6,7 +6,7 @@
 -- recover for 10 real minutes even while the player is away; after that the client adopts one
 -- (PetController: each newly recovered one). One companion out at a time (owner, 2026-10-24):
 -- Bosun by default (active nil); a pet out sends him home. The player attribute CompanionPet (the
--- active pet id, nil = Bosun) tells DogService; the phone's Pets app switches (Pet_Equip 0 = Bosun).
+-- active pet id, nil = Bosun) tells DogService; the Companion panel switches (Pet_Equip 0 = Bosun).
 --
 -- SanctuaryService calls AddRescue when a WildlifeRescue operation finishes. Remotes (under
 -- ReplicatedStorage.Net; created here so shared/Net.luau needs no edit):
