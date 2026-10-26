@@ -31,7 +31,6 @@ local UI = Client:WaitForChild("UI")
 local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
 local ColdOpenCue = require(UI:WaitForChild("ColdOpenCue"))
 local Glyph = require(UI:WaitForChild("Glyph"))
-local HudTheme = require(UI:WaitForChild("HudTheme"))
 local Layout = require(UI:WaitForChild("Layout"))
 local Menu = require(UI:WaitForChild("Menu"))
 local OnboardingBeacon = require(UI:WaitForChild("OnboardingBeacon"))
@@ -108,7 +107,7 @@ local function stationPoint(): Vector3?
 	if typeof(bay) ~= "CFrame" then
 		return nil
 	end
-	return DockConfig.stationSpot(bay).Position
+	return DockConfig.stationSpot(bay).Position + Vector3.new(0, 1.1, 0) -- the pad top (DockPieces.buildStation: 0.8 base + studs)
 end
 
 local function workshopPoint(): Vector3?
@@ -195,6 +194,8 @@ local function setGuide(kind: string?)
 		lastTabletPulse = nil
 	end
 	guide = kind
+	-- one goal at a time: UI/Waypoint holds the call marker back until the Workshop is bought (docs/24 E)
+	player:SetAttribute("TutorialHoldCall", if kind == "station" then true else nil)
 	if kind == "station" then
 		local at = stationPoint()
 		if not at then
@@ -378,42 +379,52 @@ local function makeChip(
 	info: { id: string, label: string, icon: string? },
 	index: number
 ): Frame
+	-- the UI kit look (playtest 2026-10-26: the slate chips were small and faint): gradient blocks, ink outlines, FredokaOne
 	local root = Instance.new("Frame")
 	root.Name = "Chip_" .. info.id
-	root.Position = UDim2.new((index - 1) / #CHIPS, 2, 0, 0)
-	root.Size = UDim2.new(1 / #CHIPS, -4, 1, 0)
-	root.BackgroundColor3 = HudTheme.Colors.panel
-	root.BackgroundTransparency = 0.3
+	root.Position = UDim2.new((index - 1) / #CHIPS, 3, 0, 0)
+	root.Size = UDim2.new(1 / #CHIPS, -6, 1, 0)
+	root.BackgroundColor3 = Color3.new(1, 1, 1)
 	root.BorderSizePixel = 0
 	root.Parent = bar
-	HudTheme.corner(root, 6)
-	local stroke = HudTheme.stroke(root)
+	Style.corner(root, 10)
+	Style.gradient(root, Style.grad("ink"))
+	local stroke = Style.stroke(root, 3, true)
 	local icon = Instance.new("Frame")
 	icon.Name = "Icon"
 	icon.BackgroundTransparency = 1
-	icon.Position = UDim2.fromOffset(5, 9)
-	icon.Size = UDim2.fromOffset(18, 18)
+	icon.AnchorPoint = Vector2.new(0, 0.5)
+	icon.Position = UDim2.new(0, 6, 0.5, 0)
+	icon.Size = UDim2.fromOffset(30, 30)
 	icon.Parent = root
 	if info.id == "Workshop" then
 		BuildGlyph(icon, { kind = "Building", key = Onboarding.WORKSHOP })
 	else
 		Style.icon(icon, info.icon or "build")
 	end
-	local label =
-		HudTheme.label("Name", info.label, UDim2.new(1, -46, 0, 22), HudTheme.BoldFont, 14, root)
-	label.Position = UDim2.fromOffset(27, 1)
+	local label = Style.label(root, info.label, 20)
+	label.Position = UDim2.fromOffset(40, 0)
+	label.Size = UDim2.new(1, -44, 1, 0)
 	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.TextWrapped = false
+	label.TextScaled = true
+	local fit = Instance.new("UITextSizeConstraint")
+	fit.MaxTextSize = 22
+	fit.Parent = label
+	-- the tick: a badge on the icon's corner, so the word keeps the chip's width
 	local tick = Instance.new("Frame")
 	tick.Name = "Tick"
-	tick.AnchorPoint = Vector2.new(1, 0.5)
-	tick.Position = UDim2.new(1, -4, 0.5, 0)
-	tick.Size = UDim2.fromOffset(14, 14)
-	tick.BackgroundColor3 = HudTheme.Colors.ready
-	tick.BackgroundTransparency = 0.1
+	tick.AnchorPoint = Vector2.new(0.5, 0.5)
+	tick.Position = UDim2.fromOffset(34, 10)
+	tick.Size = UDim2.fromOffset(18, 18)
+	tick.BackgroundColor3 = Color3.new(1, 1, 1)
 	tick.BorderSizePixel = 0
 	tick.Visible = false
+	tick.ZIndex = 3
 	tick.Parent = root
-	HudTheme.corner(tick, 7)
+	Style.corner(tick, 9)
+	Style.gradient(tick, Style.grad("buy"))
+	Style.stroke(tick, 2, true)
 	Glyph.draw("check", tick, Color3.new(1, 1, 1))
 	chipViews[info.id] = { root = root, label = label, tick = tick, stroke = stroke }
 	return root
@@ -476,20 +487,16 @@ local function renderChips()
 			local complete = done[info.id] == true
 			local current = here[info.id] == true
 			view.tick.Visible = complete
-			view.root.BackgroundTransparency = if current
-				then 0.1
-				elseif complete then 0.55
-				else 0.35
-			view.stroke.Color = if current then HudTheme.Colors.gold else HudTheme.Colors.edge
-			view.stroke.Transparency = if current then 0.05 else 0.7
+			Style.gradient(
+				view.root,
+				Style.grad(if current then "orange" elseif complete then "green" else "ink")
+			)
+			view.stroke.Color = if current then Color3.new(1, 1, 1) else Color3.fromHex("14121C")
 			if info.id == "Workshop" and digging and not complete then
 				view.label.Text = BuildTimer.text(left)
 			else
 				view.label.Text = info.label
 			end
-			view.label.TextColor3 = if complete
-				then HudTheme.Colors.textDim
-				else HudTheme.Colors.text
 		end
 	end
 end
