@@ -11,7 +11,7 @@ usage: python3 tools/studio/publish_studio.py [--skip-check] [--launch] [--batch
   3. tools/studio-load.py replaces its content with build/MaydaySeaRescue.rbxl plus the terrain bake staged in
      ServerStorage (build/MaydayPublish.rbxl, tools/world/make_work_place.luau): studio-load clears the voxels and
      never carries them, so tools/world/write_terrain.luau writes them (as studio_terrain.py does), the staging is
-     removed, and a probe of the town platform must read solid ground
+     removed, and a probe under Skerry Isle must read solid ground
   4. wait for Studio's own texture-pack burst to end (it can hit HTTP 429 / 5xx on hundreds of packs at once); only
      when it logged failures, re-trigger packs: blank and restore ColorMap on --batch surfaces every --gap seconds,
      pausing until the 429's "will reset at <time>". The log never names the failed surface, so each failure is
@@ -66,9 +66,10 @@ local out = {}
 for _, i in {%s} do table.insert(out, list[i]:GetFullName()) end
 return table.concat(out, "\\n")
 '''
-# the hub plateau (Y 4, docs/23 (k)) north-west of the HQ: solid voxels, else the terrain did not load
+# under the Skerry Isle landmark (WorldConfig.Islands, Y ~25): solid voxels, else the terrain did not load
+# (the old hub plateau was removed with the ring layout, docs/23 (p))
 TOWN_PROBE = '''
-local m = workspace.Terrain:ReadVoxels(Region3.new(Vector3.new(-104, -8, -64), Vector3.new(-96, 4, -56)), 4)
+local m = workspace.Terrain:ReadVoxels(Region3.new(Vector3.new(1516, -8, 1696), Vector3.new(1524, 20, 1704)), 4)
 local solid = 0
 for x = 1, m.Size.X do for y = 1, m.Size.Y do for z = 1, m.Size.Z do
 	if m[x][y][z] ~= Enum.Material.Air then solid += 1 end
@@ -220,9 +221,9 @@ def main():
                 studio_terrain.write(lambda a: luau(studio_terrain.lua_args(a) + studio_terrain.WRITER))
                 luau('game:GetService("ServerStorage").__WorldTerrain:Destroy() return "ok"')
                 solid = int(luau(TOWN_PROBE).strip())
-                print("town platform probe: %d solid voxels" % solid, flush=True)
+                print("terrain probe (Skerry): %d solid voxels" % solid, flush=True)
                 if solid < 6:
-                    sys.exit("the loaded place has no terrain at the town platform: nothing published")
+                    sys.exit("the loaded place has no terrain at Skerry Isle: nothing published")
                 settle(log)  # the burst for the freshly loaded surfaces
 
                 def nudge(idx, code=NUDGE):
