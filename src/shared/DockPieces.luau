@@ -1401,7 +1401,7 @@ local function fishMarket(m: Model, b: CFrame)
 		m,
 		"Barrel",
 		Vector3.new(3, 2.4, 2.4),
-		at * CFrame.new(0, 1.5, front + 2.4) * CFrame.Angles(0, 0, math.pi / 2),
+		at * CFrame.new(0, 1.5, front + 4.5) * CFrame.Angles(0, 0, math.pi / 2),
 		RBROWN,
 		M.SmoothPlastic,
 		Enum.PartType.Cylinder
@@ -1547,7 +1547,7 @@ local function rescueBoathouse(m: Model, b: CFrame)
 			m,
 			"Lifebuoy",
 			Vector3.new(0.7, 2, 2),
-			rack * CFrame.new(x, 4.6, -0.6) * CFrame.Angles(0, 0, math.pi / 2),
+			rack * CFrame.new(x, 4.6, -0.6) * CFrame.Angles(0, math.pi / 2, 0),
 			BRICK_RED,
 			M.SmoothPlastic,
 			Enum.PartType.Cylinder
@@ -1556,7 +1556,7 @@ local function rescueBoathouse(m: Model, b: CFrame)
 			m,
 			"Lifebuoy",
 			Vector3.new(0.8, 1, 1),
-			rack * CFrame.new(x, 4.6, -0.6) * CFrame.Angles(0, 0, math.pi / 2),
+			rack * CFrame.new(x, 4.6, -0.7) * CFrame.Angles(0, math.pi / 2, 0),
 			BRICK_WHITE,
 			M.SmoothPlastic,
 			Enum.PartType.Cylinder
@@ -1658,8 +1658,9 @@ local function clinic(m: Model, b: CFrame)
 	local st = at * CFrame.new(0, 0, d / 2 - 4.5)
 	for _, z in { -2, 2 } do
 		brick(m, "StretcherLeg", Vector3.new(3.4, 1.4, 0.4), st * CFrame.new(0, 0.8, z), STEEL)
-		brick(m, "StretcherRail", Vector3.new(0.5, 0.5, 6), st * CFrame.new(-1.5, 1.6, 0), STEEL)
-		brick(m, "StretcherRail", Vector3.new(0.5, 0.5, 6), st * CFrame.new(1.5, 1.6, 0), STEEL)
+	end
+	for _, x in { -1.5, 1.5 } do
+		brick(m, "StretcherRail", Vector3.new(0.5, 0.5, 6), st * CFrame.new(x, 1.6, 0), STEEL)
 	end
 	brick(m, "Stretcher", Vector3.new(3.4, 0.4, 5.2), st * CFrame.new(0, 2, 0), BRICK_WHITE)
 	-- a medicine crate and an IV stand
