@@ -424,8 +424,10 @@ end
 
 -- 0..1 effect of the water on jet, prop, keel and drag from the mean float point wetness. A
 -- planing hull rides high (low wetness) but its jet and running surface are fully in the water.
-function Buoyancy.grip(contact: number): number
-	return math.clamp(contact / Buoyancy.GRIP_CONTACT, 0, 1)
+-- boost is the skill grip bonus (1 = no change); it scales the same wetness so a hull bites
+-- sooner in marginal water.
+function Buoyancy.grip(contact: number, boost: number?): number
+	return math.clamp(contact / Buoyancy.GRIP_CONTACT, 0, 1) * math.max(boost or 1, 0)
 end
 
 -- Solid box moments of inertia (about local X, Y, Z) for a hull of this size and mass.

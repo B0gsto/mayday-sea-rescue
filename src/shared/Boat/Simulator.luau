@@ -68,6 +68,8 @@ local GENERIC_HANDLING: Buoyancy.Handling = {
 local Simulator = {}
 
 local rigs: { [Model]: Rig } = setmetatable({}, { __mode = "k" }) :: any
+-- the driver's SkillGrip bonus (BoatController; 1 = no change), local to the simulating machine
+local gripBoost: { [Model]: number? } = setmetatable({}, { __mode = "k" }) :: any
 
 -- CONTRACT: Weather (stream D) at ReplicatedStorage.Shared.Weather with getWaveParams(position, now).
 -- Loaded lazily and dynamically so this module still works before Weather.luau lands.
@@ -252,7 +254,7 @@ function Simulator.step(model: Model, throttle: number, steer: number, now: numb
 		slam += hit / n
 	end
 
-	local grip = Buoyancy.grip(contact)
+	local grip = Buoyancy.grip(contact, gripBoost[model] or 1)
 	local pitchRate = omega:Dot(cf.RightVector)
 	local added = Buoyancy.addedResistance(pitchRate, slam)
 	local thrust =
@@ -291,8 +293,18 @@ function Simulator.step(model: Model, throttle: number, steer: number, now: numb
 	}
 end
 
+-- The skill's grip multiplier for this hull (SkillGrip: 0.25 = +25% bite); nil resets to 1.
+function Simulator.setGrip(model: Model, boost: number?)
+	local b = 1
+	if boost ~= nil then
+		b = math.max(boost, 0)
+	end
+	gripBoost[model] = if b ~= 1 then b else nil
+end
+
 -- Zeroes every force (call when this machine stops simulating the boat).
 function Simulator.clear(model: Model)
+	gripBoost[model] = nil
 	local rig = Simulator.getRig(model)
 	if not rig then
 		return

@@ -43,6 +43,7 @@ local QuestTablet = require(UI:WaitForChild("QuestTablet"))
 local Quests = require(Panels:WaitForChild("Quests"))
 local SettingsPanel = require(UI:WaitForChild("SettingsPanel"))
 local Shop = require(Panels:WaitForChild("Shop"))
+local Skills = require(Panels:WaitForChild("Skills"))
 local Spin = require(Panels:WaitForChild("Spin"))
 local Style = require(Kit:WaitForChild("Style"))
 local Theme = require(Kit:WaitForChild("Theme"))
@@ -57,6 +58,7 @@ local BUTTONS = { -- HudLayout.MENU_COUNT
 	{ name = "Album", label = "Album", icon = "album", color = "pink" },
 	{ name = "Companion", label = "Pet", icon = "companion", color = "purple" },
 	{ name = "Crew", label = "Crew", icon = "crew", color = "teal" },
+	{ name = "Skills", label = "Skills", icon = "boost", color = "green" },
 	{ name = "Settings", label = "Settings", icon = "settings", color = "blue" },
 	{ name = "Map", label = "Map", icon = "map", color = "green" },
 	{ name = "Boat", label = "Boat", icon = "boat_to_me", color = "red" },
@@ -565,6 +567,7 @@ function Menu.mount()
 		Album = Album.new(c, noteClosed),
 		Companion = Companion.new(c, noteClosed),
 		Crew = Crew.new(c, noteClosed),
+		Skills = Skills.new(c, noteClosed),
 		Settings = SettingsPanel.newPanel(c, noteClosed),
 		Spin = Spin.new(c, noteClosed),
 	}

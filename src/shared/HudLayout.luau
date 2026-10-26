@@ -52,7 +52,7 @@ HudLayout.CHIPS_HEIGHT = 36
 HudLayout.DEBRIEF_WIDTH = 340 -- the end-of-call toast (UI/OpsDebrief), drawn scaled to its region's width
 HudLayout.DEBRIEF_HEIGHT = 96
 HudLayout.DEBRIEF_MIN = 0.7 -- the smallest the toast may shrink to fit a gap
-HudLayout.MENU_COUNT = 9 -- UI/Menu's buttons: Shop, Spin, Quests, Album, Pet, Crew, Settings, Map, Boat
+HudLayout.MENU_COUNT = 10 -- UI/Menu's buttons: Shop, Spin, Quests, Album, Pet, Crew, Skills, Settings, Map, Boat
 
 -- The menu grid's cell per device (du): icon square, label row (text = label - 4), row gap, column gap.
 -- Touch icons are >= 44 px at the 0.7 floor; desktop labels are bigger (kit polish).
@@ -165,7 +165,7 @@ local function debriefRect(mt: Metrics, zones: { { number } }): Rect
 	return mt.rects["notice"] -- shortcut: no gap anywhere (no tested screen), share the notice band
 end
 
--- As many rows as fit `height`, then balanced columns (8 buttons: 2 x 4 on every current screen).
+-- As many rows as fit `height`, then balanced columns (10 buttons: 2 x 5 on every current screen).
 local function menuGrid(c: typeof(MENU_DESK), height: number): Menu
 	local n = HudLayout.MENU_COUNT
 	local cell = c.icon + c.label + c.gap

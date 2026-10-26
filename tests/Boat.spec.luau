@@ -439,6 +439,16 @@ return function(t)
 		t.expect(NavLights.shouldBeOn(13, 1)).toBe(true)
 	end)
 
+	t.test("grip: the skill bonus scales wetness, 1 is no change", function()
+		t.expect(Buoyancy.grip(0)).toBe(0)
+		t.expect(Buoyancy.grip(Buoyancy.GRIP_CONTACT)).toBeCloseTo(1, 1e-9)
+		t.expect(Buoyancy.grip(Buoyancy.GRIP_CONTACT * 0.5)).toBeCloseTo(0.5, 1e-9)
+		-- +25% bite in marginal water; the drag / damping readers clamp or use it as a rate
+		t.expect(Buoyancy.grip(Buoyancy.GRIP_CONTACT * 0.5, 1.25)).toBeCloseTo(0.625, 1e-9)
+		t.expect(Buoyancy.grip(Buoyancy.GRIP_CONTACT, 1)).toBeCloseTo(1, 1e-9)
+		t.expect(Buoyancy.grip(Buoyancy.GRIP_CONTACT, -1)).toBe(0)
+	end)
+
 	t.test("buoyancy math is fast", function()
 		local spec = VehicleConfig.RIB
 		local params = Waves.paramsFor(1, 0, 0)
