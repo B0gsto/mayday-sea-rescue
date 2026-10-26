@@ -40,6 +40,7 @@ local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForC
 local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
 local BoatBoard = require(script.Parent.Parent:WaitForChild("Dock"):WaitForChild("BoatBoard"))
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
+local ClimbPath = require(Shared:WaitForChild("Ops"):WaitForChild("ClimbPath"))
 local Crowding = require(Shared:WaitForChild("Crowding"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local Marina = require(Shared:WaitForChild("Marina"))
@@ -1851,7 +1852,7 @@ end
 
 -- The boarding climb (2026-10-21): an anchored survivor swims to the hull side by their slot, then
 -- up and over onto it, following the moving boat each frame (target() is the slot pose).
-VehicleService.CLIMB_SECONDS = 1.3
+VehicleService.CLIMB_SECONDS = ClimbPath.SECONDS
 VehicleService.WINCH_SECONDS = 1.5 -- up the cable
 VehicleService.SWING_SECONDS = 0.4 -- in through the door
 
@@ -1914,23 +1915,24 @@ function VehicleService.Climb(survivorModel: Model, hull: BasePart, target: () -
 	local start = survivorModel:GetPivot()
 	local startLocal = hull.CFrame:PointToObjectSpace(start.Position)
 	local side = if startLocal.X >= 0 then 1 else -1
+	-- the path rides in the hull's frame: a fast boat outruns a world-space tween (docs/24 A)
+	local seatLocal = hull.CFrame:ToObjectSpace(target())
+	-- every client plays the same climb on its own copy of the driver-owned hull (docs/NEXT 0c): these
+	-- hull-space attributes carry it there (CasualtyController)
+	local vehicle = hull:FindFirstAncestorOfClass("Model")
+	if vehicle then
+		survivorModel:SetAttribute("ClimbHull", vehicle.Name)
+		survivorModel:SetAttribute("ClimbStart", startLocal)
+		survivorModel:SetAttribute("ClimbSide", side)
+		survivorModel:SetAttribute("ClimbSeat", seatLocal)
+		survivorModel:SetAttribute("ClimbStartTime", Workspace:GetServerTimeNow())
+	end
 	local t0 = os.clock()
 	while survivorModel.Parent and hull.Parent do
 		local t = math.min((os.clock() - t0) / VehicleService.CLIMB_SECONDS, 1)
-		local seat = target()
-		-- the path rides in the hull's frame: a fast boat outruns a world-space tween (docs/24 A)
-		local here = hull.CFrame * CFrame.new(startLocal)
-		local edge = seat
-			+ hull.CFrame.RightVector * side * (hull.Size.X / 2 + 0.8)
-			- Vector3.new(0, 1.6, 0)
-		local cf = if t < 0.45
-			then here:Lerp(edge, t / 0.45)
-			else edge:Lerp(seat, (t - 0.45) / 0.55) + Vector3.new(
-				0,
-				math.sin((t - 0.45) / 0.55 * math.pi) * 1.2,
-				0
-			)
-		survivorModel:PivotTo(cf)
+		survivorModel:PivotTo(
+			ClimbPath.at(hull.CFrame, startLocal, side, hull.Size.X / 2, seatLocal, t)
+		)
 		if t >= 1 then
 			return
 		end

@@ -20,6 +20,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CasualtyRig = require(Shared:WaitForChild("Casualty"):WaitForChild("CasualtyRig"))
+local ClimbPath = require(Shared:WaitForChild("Ops"):WaitForChild("ClimbPath"))
 local VoiceTTS = require(script.Parent.VoiceTTS)
 
 local CasualtyController = {}
@@ -101,6 +102,50 @@ local function shout(camPos: Vector3)
 		VoiceTTS.speak(text, cast, { at = best.model, channel = "casualty" })
 	end
 end
+
+-- The climb plays on every client relative to its own copy of the hull (docs/NEXT 0c): the hull is
+-- network-owned by the driver, so the server's climb trails a fast boat. VehicleService.Climb sets the
+-- hull-space path on the Victim; we stop once the weld goes on and the hull carries them.
+local function climbStep()
+	local folder = Workspace:FindFirstChild("CallProps")
+	if not folder then
+		return
+	end
+	local vehicles = Workspace:FindFirstChild("Vehicles")
+	local now = Workspace:GetServerTimeNow()
+	for _, victim in folder:GetChildren() do
+		if not victim:IsA("Model") then
+			continue
+		end
+		local hullName = victim:GetAttribute("ClimbHull")
+		local start = victim:GetAttribute("ClimbStart")
+		local side = victim:GetAttribute("ClimbSide")
+		local seat = victim:GetAttribute("ClimbSeat")
+		local started = victim:GetAttribute("ClimbStartTime")
+		if
+			victim:GetAttribute("OnVehicle") == nil
+			or type(hullName) ~= "string"
+			or typeof(start) ~= "Vector3"
+			or type(side) ~= "number"
+			or typeof(seat) ~= "CFrame"
+			or type(started) ~= "number"
+		then
+			continue
+		end
+		local weld = victim:FindFirstChild("VehicleSurvivorWeld", true)
+		if weld and (weld :: any).Part1 ~= nil then
+			continue -- welded
+		end
+		local vehicle = vehicles and vehicles:FindFirstChild(hullName)
+		local hull = vehicle and vehicle.PrimaryPart
+		if not hull then
+			continue -- hull not replicated (yet)
+		end
+		local t = (now - started) / ClimbPath.SECONDS
+		victim:PivotTo(ClimbPath.at(hull.CFrame, start, side, hull.Size.X / 2, seat, t))
+	end
+end
+
 local strobeFolder: Folder? = nil
 local weather: any = nil
 
@@ -270,6 +315,8 @@ function CasualtyController.Start()
 	-- PreSimulation, not RenderStepped: the Animator (PreAnimation) runs after RenderStepped and
 	-- resets every Transform to the bind pose, so the casualty floated stiff as a plank.
 	RunService.PreSimulation:Connect(step)
+	-- RenderStepped: after physics and replication, so the survivor draws with this client's hull
+	RunService.RenderStepped:Connect(climbStep)
 	task.spawn(function()
 		while true do
 			local folder = Workspace:FindFirstChild("CallProps")
