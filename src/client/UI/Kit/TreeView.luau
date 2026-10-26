@@ -274,6 +274,24 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 
 	local choose: (string, boolean) -> ()
 
+	-- drag to pan (mouse + touch) starts on the empty canvas and on a node alike; a drag never
+	-- activates the node it started on (suppressUntil)
+	local drag: { start: Vector2, pan: Vector2, moved: boolean, input: InputObject }? = nil
+	local function beginDrag(input: InputObject)
+		local t = input.UserInputType
+		if
+			(t == Enum.UserInputType.MouseButton1 or t == Enum.UserInputType.Touch)
+			and drag == nil
+		then
+			drag = {
+				start = Vector2.new(input.Position.X, input.Position.Y),
+				pan = pan,
+				moved = false,
+				input = input,
+			}
+		end
+	end
+
 	local function buildCard(node: Node, box: TreeMath.Box)
 		local state: State = node.state or "locked"
 		local card = Style.button(content, UDim2.fromOffset(box.size.X, box.size.Y))
@@ -388,6 +406,7 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 			end
 		end
 
+		card.InputBegan:Connect(beginDrag)
 		card.SelectionGained:Connect(function()
 			selectedId = node.id
 		end)
@@ -598,22 +617,8 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		end
 	end)
 
-	-- drag to pan (mouse + touch); an empty tap closes the detail card
-	local drag: { start: Vector2, pan: Vector2, moved: boolean, input: InputObject }? = nil
-	hit.InputBegan:Connect(function(input: InputObject)
-		local t = input.UserInputType
-		if
-			(t == Enum.UserInputType.MouseButton1 or t == Enum.UserInputType.Touch)
-			and drag == nil
-		then
-			drag = {
-				start = Vector2.new(input.Position.X, input.Position.Y),
-				pan = pan,
-				moved = false,
-				input = input,
-			}
-		end
-	end)
+	-- an empty tap closes the detail card
+	hit.InputBegan:Connect(beginDrag)
 	UserInputService.InputChanged:Connect(function(input: InputObject)
 		if not onScreen() then
 			return
@@ -630,6 +635,7 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 			local delta = Vector2.new(input.Position.X, input.Position.Y) - d.start
 			if delta.Magnitude > 6 then
 				d.moved = true
+				suppressUntil = os.clock() + 0.25
 			end
 			if d.moved then
 				pan = d.pan + delta / kitScale()
