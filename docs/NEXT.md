@@ -13,6 +13,10 @@ means its builder stopped mid-task: finish it there (review the diff first), the
 
 | Work | Branch | Worktree | Builder |
 |---|---|---|---|
+| docs/24 A: jet ski pick-up at any speed, no auto-brake, handling | T3 worktree (task msr-24-A-r1) | DeepSeek Flash Free |
+| docs/24 B: timed builds, builders cut time, construction look | T3 worktree (task msr-24-B-r1) | DeepSeek Flash |
+| docs/24 C: open island, distinct work buildings, worker job anims | T3 worktree (task msr-24-C-r1) | DeepSeek Flash |
+| docs/24 D: spin wheel (pets, finishes, trails, boat), flex banners | T3 worktree (task msr-24-D-r1) | DeepSeek Flash |
 | Docs rewrite, second half (01–04, 07, 15, store text) | `t3/rewrite-current-design-docs` | `t3-d7464e33` | DeepSeek Flash |
 
 Stale, safe to delete (cancelled, no changes): worktrees `t3-394fa9ed`, `t3-52b73544`, `t3-6558e19d`, `t3-d3311682`,
@@ -24,6 +28,8 @@ Merged since: WP-23b UI kit (`src/client/UI/Kit/`, FredokaOne, icons in `UiImage
 WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffects.boatToMeWait` x `CrewHire.boatToMeScale` from the `CrewMechanic` attribute). The HUD's left side now starts right of the menu strip (HudLayout `menu`); on touch the narrow strip reaches into the top of the thumbstick zone (spec allows only it).
 
 ## 2. Queued (in order)
+
+0. **docs/24 wave 2** after A-D merge: E tutorial, F progression/core loop pass (pacing sims with build times + spins), Opus review + Studio playtest, art-director render of C.
 
 1. ~~**WP-14d build tablet**~~ merged 2026-10-25 (build station on Spare3, top-down build mode, Build/Decor tabs, 6 Cash decorations; not yet seen in Studio). Was: replace the blueprint table with a tablet on a stand at a Lego build station near the
    island spawn. Using it tweens the camera to a top-down view of your island; a bottom bar of UI-kit cards lists
