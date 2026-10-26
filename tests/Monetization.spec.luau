@@ -115,9 +115,9 @@ return function(t)
 		for _, key in Config.CashPacks do
 			t.expect(Config.Products[key] ~= nil).toBe(true)
 		end
-		for _, key in { "FinishNow1", "FinishNow2", "FinishNow3" } do
-			t.expect(Config.Products[key].ready).toBe(false) -- the owner creates them on Roblox
-			t.expect(Config.Products[key].id).toBe(0)
+		for _, key in { "FinishNow1", "FinishNow2", "FinishNow3", "Spin1", "Spin5", "Spin15" } do
+			t.expect(Config.Products[key].ready).toBe(true) -- live since 2026-10-26 (owner approved)
+			t.expect(Config.Products[key].id > 0).toBe(true)
 		end
 	end)
 

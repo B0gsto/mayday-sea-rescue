@@ -177,6 +177,12 @@ return function(t)
 				DecorFlagPole = true,
 				DecorStatue = true,
 				DecorFountain = true,
+				FinishNow1 = true, -- DockService finishes the running site (docs/24 B)
+				FinishNow2 = true,
+				FinishNow3 = true,
+				Spin1 = true, -- SpinService (docs/24 D)
+				Spin5 = true,
+				Spin15 = true,
 			},
 			GamePasses = { DoubleCash = true, StarterKit = true, QuickLaunch = true }, -- QuickLaunch: RP-A1 use card
 		}
