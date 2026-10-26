@@ -4,12 +4,13 @@
 --   cold open (jet ski, first survivor, home) -> the Builder walks off the jetty -> the guide arrow
 --   and minimap pin go to the build station -> the Workshop card pulses in the tablet (the server
 --   tops the wallet up to its price) -> the chip row shows the site's timer while the next call is
---   the goal -> the finished Workshop grants one spin and the Spin button pulses -> the chip row
+--   the goal -> the finished Workshop grants one spin and the arrow points at your island's prize wheel -> the chip row
 --   gives way to the permanent Next chip (UI/NextChip).
 -- It reads only replicated facts: the Ops signals, the PlayerDataChanged snapshot, player and plot
 -- attributes (SiteKey / SiteProgress / SiteRate) and the Progression_GetData pull.
 -- Also here: the cold-open reward burst (B1, still seated on the jet ski), the seat pips and the
 -- green home cue, and the sea-blue cover until the player sits on the cold-open jet ski (docs/20 4, 7, 8).
+local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -110,6 +111,17 @@ local function stationPoint(): Vector3?
 	return DockConfig.stationSpot(bay).Position + Vector3.new(0, 1.1, 0) -- the pad top (DockPieces.buildStation: 0.8 base + studs)
 end
 
+-- Your island's prize wheel (DockService tags it "PrizeWheel" with its Plot): the spin beat's target.
+local function wheelPoint(): Vector3?
+	local i = player:GetAttribute("DockPlot")
+	for _, w in CollectionService:GetTagged("PrizeWheel") do
+		if w:IsA("Model") and w:GetAttribute("Plot") == i then
+			return w:GetPivot().Position + Vector3.new(0, 1, 0)
+		end
+	end
+	return nil
+end
+
 local function workshopPoint(): Vector3?
 	local pm = plotModel()
 	if not pm then
@@ -179,7 +191,7 @@ local function buildTabletOpen(): boolean
 end
 
 -- docs/24 E: the one world guide for the beat. The call marker stays UI/Waypoint's job; this handles
--- the build station arrow + minimap pin and the Spin button pulse.
+-- the build station arrow + minimap pin, and the arrow + pin to your island's prize wheel.
 local function setGuide(kind: string?)
 	if kind == guide then
 		return
@@ -211,8 +223,18 @@ local function setGuide(kind: string?)
 	elseif kind == "site" then
 		glance(workshopPoint())
 	elseif kind == "spin" then
-		Menu.pulse("Spin")
-		glance(workshopPoint())
+		local at = wheelPoint()
+		if not at then
+			guide = nil -- the wheel has not streamed in yet: retry next frame
+		else
+			glance(workshopPoint())
+			local b = beacon or OnboardingBeacon.start()
+			beacon = b
+			b.show(at, "Place")
+			MapController.SetBlips("Tutorial", {
+				{ id = "Spin", position = at, style = "Waypoint", size = 22 },
+			})
+		end
 	end
 end
 
