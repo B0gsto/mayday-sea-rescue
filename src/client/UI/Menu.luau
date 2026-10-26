@@ -14,6 +14,7 @@ local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
@@ -42,6 +43,7 @@ local QuestTablet = require(UI:WaitForChild("QuestTablet"))
 local Quests = require(Panels:WaitForChild("Quests"))
 local SettingsPanel = require(UI:WaitForChild("SettingsPanel"))
 local Shop = require(Panels:WaitForChild("Shop"))
+local Spin = require(Panels:WaitForChild("Spin"))
 local Style = require(Kit:WaitForChild("Style"))
 local Theme = require(Kit:WaitForChild("Theme"))
 local Waypoint = require(UI:WaitForChild("Waypoint"))
@@ -50,6 +52,7 @@ local player = Players.LocalPlayer
 local GOLD = Color3.fromHex("FFD84A")
 local BUTTONS = { -- HudLayout.MENU_COUNT
 	{ name = "Shop", label = "Shop", icon = "shop", color = "yellow" },
+	{ name = "Spin", label = "Spin", icon = "spin", color = "pink" },
 	{ name = "Quests", label = "Quests", icon = "quests", color = "orange" },
 	{ name = "Album", label = "Album", icon = "album", color = "pink" },
 	{ name = "Companion", label = "Pet", icon = "companion", color = "purple" },
@@ -283,6 +286,37 @@ local function dressBoat(b: IconButton.IconButton)
 	end
 end
 
+-- the Spin tile: a pulsing badge with the free spins (SpinService sets the FreeSpins attribute)
+local function dressSpin(b: IconButton.IconButton)
+	b.root.Name = "Menu_Spin"
+	local badge = b.root:FindFirstChild("Badge") :: Frame?
+	if badge then
+		local sc = Instance.new("UIScale")
+		sc.Parent = badge
+		task.spawn(function()
+			while badge.Parent do
+				if badge.Visible then
+					sc.Scale = 1.18
+					local t = TweenService:Create(
+						sc,
+						TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+						{ Scale = 1 }
+					)
+					t:Play()
+					t.Completed:Wait()
+				end
+				task.wait(0.25)
+			end
+		end)
+	end
+	local function paint()
+		local free = player:GetAttribute("FreeSpins")
+		b.setBadge(if type(free) == "number" and free > 0 then free else nil)
+	end
+	paint()
+	player:GetAttributeChangedSignal("FreeSpins"):Connect(paint)
+end
+
 -- the quest cards you can act on now (the tablet's rows: an offer you can accept, a quest ready to hand in)
 local function questBadge()
 	local n = 0
@@ -334,6 +368,9 @@ local function buildBar(region: Frame)
 		label.Size = UDim2.new(1, mm.colGap - 2, 0, mm.label)
 		btn.root.LayoutOrder = i
 		buttons[info.name] = btn
+		if info.name == "Spin" then
+			dressSpin(btn)
+		end
 		if info.name == "Boat" then
 			onPress = dressBoat(btn)
 		elseif info.name == "Map" then
@@ -472,6 +509,7 @@ function Menu.mount()
 		Companion = Companion.new(c, noteClosed),
 		Crew = Crew.new(c, noteClosed),
 		Settings = SettingsPanel.newPanel(c, noteClosed),
+		Spin = Spin.new(c, noteClosed),
 	}
 	local boards: { [string]: string } =
 		{ BoatBoard = "Boats", HangarBoard = "Helicopter", SubBoard = "Submarine" }
