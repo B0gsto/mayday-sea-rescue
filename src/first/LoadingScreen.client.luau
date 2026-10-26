@@ -443,8 +443,8 @@ local function finishPose(bay: CFrame?, firstSession: boolean, fallback: CFrame)
 			local pivot = craft:GetPivot()
 			local look = flatLook(pivot)
 			return CFrame.lookAt(
-				pivot.Position - look * 16 + Vector3.new(0, 6, 0),
-				pivot.Position + look * 20 + Vector3.new(0, 2, 0)
+				pivot.Position - look * 19.4 + Vector3.new(0, 8.2, 0),
+				pivot.Position + look * 20 + Vector3.new(0, 4.8, 0)
 			)
 		end
 		if bay then

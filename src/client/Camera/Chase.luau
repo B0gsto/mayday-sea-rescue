@@ -39,15 +39,23 @@ local state = {
 local baseDistance = 24
 local focusHeight = 4
 local restPitch = math.rad(13)
+-- studs over the hull root the open-seat focus sits: a seated rider's head top is ~5.4 on the jet ski
+Chase.RIDER_FOCUS = 6.5
 
 -- Sizes the arm from the hull: about 1.6 hull lengths back, focus above the deck. A small craft
--- (the jet ski and its sled) sits closer, lower and flatter: it fills less of the frame and the
--- casualty / throw target ahead stays on the horizon. The cold open sits flatter still.
+-- (the jet ski and its sled) sits closer and flatter: it fills less of the frame and the casualty / throw
+-- target ahead stays near the horizon. Its rider sits in the line of sight, so the pivot rides over their
+-- head and the arm looks down past them (playtest v46: the call pin and survivor hid behind the head).
+-- The cold open sits flatter still. The sub (small, closed cockpit) keeps the low deck focus.
 function Chase.enter(model: Model, root: BasePart)
 	local _, size = model:GetBoundingBox()
 	local length = math.max(size.X, size.Z)
 	local small = length < 20
-	if small then
+	local rider = small and model:GetAttribute("Sub") ~= true
+	if rider then
+		baseDistance = math.clamp(length * 1.1 + 3, 14, 28)
+		focusHeight = Chase.RIDER_FOCUS
+	elseif small then
 		baseDistance = math.clamp(length * 1.1 + 3, 14, 28)
 		focusHeight = math.clamp(size.Y * 0.55, 2.2, 4.2) + 0.9
 	else
@@ -55,7 +63,8 @@ function Chase.enter(model: Model, root: BasePart)
 		focusHeight = math.clamp(size.Y * 0.6, 2.5, 12) + 1.5
 	end
 	restPitch = if model:GetAttribute("ColdOpen") == true
-		then math.rad(4)
+		then math.rad(5)
+		elseif rider then math.rad(10)
 		elseif small then math.rad(8)
 		else math.rad(13)
 	state.heading = CameraMath.heading(root.CFrame)

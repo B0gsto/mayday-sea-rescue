@@ -349,7 +349,12 @@ function Lists.coldOpen(model: Model): { Shot }
 				offset = Vector3.new(4, 9, 26),
 				look = Vector3.new(0, 2, -20),
 			},
-			to = { subject = model, offset = Vector3.new(0, 6, 16), look = Vector3.new(0, 2, -20) },
+			-- Chase's cold-open pose (RIDER_FOCUS, 5 degrees, 19.4 back), so control comes back without a jump
+			to = {
+				subject = model,
+				offset = Vector3.new(0, 8.2, 19.4),
+				look = Vector3.new(0, 4.8, -20),
+			},
 			duration = 1.6,
 			fov = 60,
 		},

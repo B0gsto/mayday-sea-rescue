@@ -1671,14 +1671,20 @@ function VehicleService.DevLaunch(player: Player, vehicleId: string): (boolean, 
 	return spawnVehicle(player, vehicleId, bayFor(player), true, nil, "Quick")
 end
 
--- The boat board's launch (docs/23 d.3): `vehicleId` docked at the player's berth, afloat, not seated; a
--- dock building's board (WP-10b) passes `target` (the helipad, the sub pen).
+-- The boat board's launch (docs/23 d.3): `vehicleId` docked at the player's berth, afloat, the player put in
+-- its driver seat (playtest v46: launching left you on the quay); a dock building's board (WP-10b) passes
+-- `target` (the helipad, the sub pen).
 function VehicleService.DockLaunch(
 	player: Player,
 	vehicleId: string,
 	target: CFrame?
 ): (boolean, string | Model)
-	return spawnVehicle(player, vehicleId, nil, nil, true, "Board", nil, target)
+	local ok, model = spawnVehicle(player, vehicleId, nil, nil, true, "Board", nil, target)
+	local record = if ok then records[model :: Model] else nil
+	if record then
+		sitDriver(player, record.seat)
+	end
+	return ok, model
 end
 
 -- The boat board's crane (WP-11a): where `vehicleId` will dock at the player's berth (the berth or the
@@ -1856,8 +1862,13 @@ function VehicleService.AddSurvivor(model: Model, survivorModel: Model): boolean
 	local bbCF, size = survivorModel:GetBoundingBox()
 	local pivotOffset = bbCF:ToObjectSpace(survivorModel:GetPivot())
 	local slot = record.slots[slotIndex]
+	-- upright and facing the bow: the slot's position on the hull's axes. The asset slots carry the export's
+	-- rotation (the jet ski's points its up along the hull), which laid the survivor flat (playtest v46)
+	local function seatCF(): CFrame
+		return record.root.CFrame.Rotation + slot.WorldPosition + Vector3.new(0, size.Y / 2, 0)
+	end
 	local function toSlot()
-		survivorModel:PivotTo(slot.WorldCFrame * CFrame.new(0, size.Y / 2, 0) * pivotOffset)
+		survivorModel:PivotTo(seatCF() * pivotOffset)
 	end
 	local weld = Instance.new("WeldConstraint")
 	weld.Name = "VehicleSurvivorWeld"
@@ -1866,7 +1877,7 @@ function VehicleService.AddSurvivor(model: Model, survivorModel: Model): boolean
 	task.spawn(function()
 		-- they swim to the side and climb on (2026-10-21), then sit anchored for the weld delay
 		VehicleService.Climb(survivorModel, record.root, function()
-			return slot.WorldCFrame * CFrame.new(0, size.Y / 2, 0) * pivotOffset
+			return seatCF() * pivotOffset
 		end)
 		toSlot()
 		task.wait(SURVIVOR_WELD_DELAY)

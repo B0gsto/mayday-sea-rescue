@@ -1273,14 +1273,15 @@ function DockController.Start()
 			task.wait(2)
 		end
 	end)
-	-- close if a teleport (or respawn) takes the player off the station
+	-- close if a teleport (or respawn) takes the player off the station, or a seat (a launch) takes them
 	task.spawn(function()
 		while true do
 			if displayed and stationPos then
 				local character = player.Character
 				local root = character and character:FindFirstChild("HumanoidRootPart")
+				local hum = character and character:FindFirstChildOfClass("Humanoid")
 				local at = if root and root:IsA("BasePart") then root.Position else nil
-				if not at or (at - stationPos).Magnitude > 90 then
+				if not at or (at - stationPos).Magnitude > 90 or (hum and hum.SeatPart) then
 					closeBuild()
 				end
 			end
