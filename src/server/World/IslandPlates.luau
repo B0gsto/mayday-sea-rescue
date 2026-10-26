@@ -16,7 +16,7 @@ local TRIM = Color3.fromRGB(39, 92, 46)
 local SAND = Color3.fromRGB(226, 198, 140)
 local MAT = Enum.Material.SmoothPlastic
 local STUD_TEXTURE = "rbxassetid://18878365966" -- a 4 x 4 stud tile (SurfaceType.Studs does not render here)
-local STUD_TINT = Color3.fromRGB(66, 136, 66) -- the studs texture is white: tint it just under the slab green
+local STUD_TINT = Color3.fromRGB(60, 126, 60) -- the studs texture is white: tint it just under the slab green
 local TRIM_W = 2 -- the edge trim's width, outside the slab's footprint
 local SKIRT_DOWN = 1 -- the trim's bottom, studs under sea level so waves never expose the plate's underside
 local STRIP_W = 1.2 -- the sand-yellow berth strip's width
@@ -56,10 +56,10 @@ local function slab(parent: Instance, isl: HubLayout.Island)
 		tex.Name = "Studs"
 		tex.Face = Enum.NormalId.Top
 		tex.Texture = STUD_TEXTURE
-		tex.StudsPerTileU = 4 -- the tile holds 4 x 4 studs: one stud per stud
-		tex.StudsPerTileV = 4
+		tex.StudsPerTileU = 8 -- the tile holds 4 x 4 studs: 2-stud studs, like the buildings' (WP-25)
+		tex.StudsPerTileV = 8
 		tex.Color3 = STUD_TINT
-		tex.Transparency = 0.25 -- subtle: the plate reads plain green from a distance
+		tex.Transparency = 0.15 -- the plate still reads plain green from a distance
 		tex.Parent = p
 		part(
 			parent,

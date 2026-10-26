@@ -27,8 +27,8 @@ export type Building = {
 	spot: CFrame, -- berth frame, on the ground: the paper blueprint and the build camera's focus
 	size: Vector2, -- footprint (x / z of `spot`)
 	vehicles: { string }?, -- its own vehicle board's craft, in order (BoatBoard)
-	worker: string?, -- a worker building (WP-26 adds the workers): a plain Lego placeholder for now
-	color: Color3?, -- the placeholder's wall colour
+	worker: string?, -- a worker building (WP-26): a Lego cottage (DockPieces), its workers in front of the door (-Z)
+	color: Color3?, -- the cottage's wall colour
 }
 
 local DockConfig = {}
@@ -74,8 +74,8 @@ DockConfig.Buildings = {
 		desc = "Builders work here. Unlocks the boathouse.",
 		cash = 1000, -- tune: the first build, ~8 min in (tests/NewPlayerPace)
 		needs = {},
-		spot = isle(80, -60),
-		size = Vector2.new(20, 16),
+		spot = isle(60, -10, 90), -- door onto the east lane (WP-25 layout)
+		size = Vector2.new(26, 20),
 		worker = "Builder",
 		color = Color3.fromRGB(250, 208, 40),
 	},
@@ -84,8 +84,8 @@ DockConfig.Buildings = {
 		desc = "Gatherers work here.",
 		cash = 3000, -- tune
 		needs = {},
-		spot = isle(45, 28),
-		size = Vector2.new(16, 12),
+		spot = isle(68, 102, 90), -- on the east quay, door onto the cove walk
+		size = Vector2.new(22, 16),
 		worker = "Gatherer",
 		color = Color3.fromRGB(40, 96, 208),
 	},
@@ -114,8 +114,8 @@ DockConfig.Buildings = {
 		desc = "Mechanics work here.",
 		cash = 8000, -- tune
 		needs = { "Workshop" },
-		spot = isle(45, -48, 180),
-		size = Vector2.new(18, 14),
+		spot = isle(85, -105), -- back right, door onto the bridge path
+		size = Vector2.new(26, 18),
 		worker = "Mechanic",
 		color = Color3.fromRGB(250, 140, 30),
 	},
@@ -124,7 +124,7 @@ DockConfig.Buildings = {
 		desc = "A slipway for the big lifeboat.",
 		cash = 10000, -- tune
 		needs = { "Boathouse" },
-		spot = isle(88, 20),
+		spot = isle(138, 20, -90), -- on the east edge, the slipway runs off the plate into the sea
 		size = Vector2.new(16, 22),
 		color = Color3.fromRGB(60, 160, 220),
 	},
@@ -149,8 +149,8 @@ DockConfig.Buildings = {
 		desc = "Rescuers work here.",
 		cash = 12000, -- tune
 		needs = { "LookoutTower" },
-		spot = isle(-45, 12),
-		size = Vector2.new(18, 14),
+		spot = isle(-66, 100, -90), -- on the west quay, door onto the cove walk
+		size = Vector2.new(24, 16),
 		worker = "Rescuer",
 		color = Color3.fromRGB(224, 56, 40),
 	},
@@ -199,8 +199,8 @@ DockConfig.Buildings = {
 		desc = "Medics work here.",
 		cash = 30000, -- tune
 		needs = { "Station" },
-		spot = isle(-25, -70, 180),
-		size = Vector2.new(16, 14),
+		spot = isle(-85, -100), -- back left, door onto the bridge path
+		size = Vector2.new(24, 18),
 		worker = "Medic",
 		color = Color3.fromRGB(242, 240, 232),
 	},

@@ -43,6 +43,9 @@ local DROP_TIME = 1.4
 
 local WOOD = Color3.fromRGB(84, 62, 44)
 local NAVY = Color3.fromRGB(30, 40, 58)
+local BLUE = Color3.fromRGB(40, 96, 208) -- WP-25 Lego brick colours
+local YELLOW = Color3.fromRGB(250, 208, 40)
+local TITLES = { BoatBoard = "Boats", HangarBoard = "Helicopter", SubBoard = "Submarine" }
 local STEEL = Color3.fromRGB(226, 178, 52) -- crane yellow
 local SILHOUETTE = Color3.fromRGB(120, 124, 130)
 
@@ -264,26 +267,26 @@ local function crane(rack: Model, b: CFrame)
 	part(
 		rack,
 		"CranePost",
-		Vector3.new(1.2, JIB_Y - Marina.DECK_TOP + 1, 1.2),
+		Vector3.new(2, JIB_Y - Marina.DECK_TOP + 1, 2),
 		post * CFrame.new(0, (JIB_Y + Marina.DECK_TOP) / 2, 0),
 		STEEL,
-		Enum.Material.Metal
+		Enum.Material.SmoothPlastic
 	)
 	part(
 		rack,
 		"CraneJib",
-		Vector3.new(math.abs(CRANE.X) + 1.5, 1, 1),
+		Vector3.new(math.abs(CRANE.X) + 1.5, 1.4, 1.4),
 		b * CFrame.new(CRANE.X / 2, JIB_Y, CRANE.Z),
 		STEEL,
-		Enum.Material.Metal
+		Enum.Material.SmoothPlastic
 	)
 	part(
 		rack,
 		"CraneTie",
-		Vector3.new(1, 1, math.abs(CRANE.Z) + 1),
+		Vector3.new(1.4, 1.4, math.abs(CRANE.Z) + 1),
 		b * CFrame.new(0, JIB_Y, CRANE.Z / 2),
 		STEEL,
-		Enum.Material.Metal
+		Enum.Material.SmoothPlastic
 	)
 end
 
@@ -323,14 +326,37 @@ local function build(def: Def, berth: BasePart)
 			)
 		end
 	end
-	part(
+	-- the backboard (WP-25): a blue Lego brick with a yellow name strip, facing the player
+	local back = part(
 		rack,
 		"Back",
 		Vector3.new(width, 4, 0.3),
 		base * CFrame.new(0, SHELF_H + 1.8 + (rows - 1) * STEP_UP, 1.4 + (rows - 1) * STEP_BACK),
-		NAVY,
+		BLUE,
 		Enum.Material.SmoothPlastic
 	)
+	local strip = part(
+		rack,
+		"BackName",
+		Vector3.new(math.min(width - 1, 9), 1.4, 0.2),
+		back.CFrame * CFrame.new(0, 1, -0.25),
+		YELLOW,
+		Enum.Material.SmoothPlastic
+	)
+	local gui = Instance.new("SurfaceGui")
+	gui.Face = Enum.NormalId.Front
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 40
+	gui.LightInfluence = 0.4
+	gui.Parent = strip
+	local label = Instance.new("TextLabel")
+	label.BackgroundTransparency = 1
+	label.Size = UDim2.fromScale(1, 1)
+	label.TextScaled = true
+	label.Font = Enum.Font.FredokaOne
+	label.TextColor3 = NAVY
+	label.Text = TITLES[def.name] or ""
+	label.Parent = gui
 
 	local board: Board = { def = def, rack = rack, busy = false }
 	if def.hook then
