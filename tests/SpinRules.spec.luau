@@ -111,6 +111,18 @@ return function(t)
 		t.expect(state.free).toBe(SpinRules.MAX_FREE)
 	end)
 
+	t.test("free spins can't be farmed: no back-pay, no banked days, no clock rewind", function()
+		local now = 20000 * 86400 + 100
+		local vet = SpinRules.accrue(SpinRules.newState(), 500, now)
+		t.expect(vet.free).toBe(1) -- the day's spin only, not 50 for old rescues
+		local away = SpinRules.accrue(vet, 500, now + 86400 * 30)
+		t.expect(away.free).toBe(2) -- a month away is still one day's spin
+		local rewound = SpinRules.accrue(away, 500, now)
+		t.expect(rewound.day).toBe(away.day)
+		local back = SpinRules.accrue(rewound, 500, now + 86400 * 30)
+		t.expect(back.free).toBe(2) -- the rewind didn't re-open today
+	end)
+
 	t.test("decode ignores junk and encode round-trips", function()
 		local junk = SpinRules.decode({ d = "x", f = -4, e = 0 / 0, o = 3.7 })
 		t.expect(junk.free).toBe(0)

@@ -11,7 +11,7 @@
 --   e / l = spins since the last Epic+ / Legendary+, r = rescued people already paid out,
 --   o = bitmask of owned finish / trail prizes (bit i = PRIZES[i]).
 --
--- Free spins: 1 a day plus 1 for every 10 people rescued (docs/24 D).
+-- Free spins: 1 a day plus 1 for every 10 people rescued (docs/24 D); see accrue.
 --
 -- The wheel draws SEGMENTS in this order; the server picks one of the rolled rarity's segments so
 -- the animation always stops on the prize it actually granted.
@@ -245,23 +245,20 @@ function SpinRules.encode(state: State): { [string]: any }
 	}
 end
 
--- Grants the free spins that came due: 1 per UTC day and 1 per 10 people rescued. Returns the new
--- state and how many were added.
+-- Grants the free spins that came due: 1 on a new UTC day (not banked for days away) and 1 per 10
+-- people rescued since the wheel first saw this profile (no back-pay for rescues made before it
+-- shipped). A clock that steps back never re-opens a day. Returns the new state and how many were added.
 function SpinRules.accrue(state: State, rescued: number, now: number): (State, number)
-	local day = math.floor(now / 86400)
-	local added = if state.day == 0 then 1 else math.max(0, day - state.day)
-	if state.day > 0 and day > state.day then
-		added = day - state.day
-	elseif state.day > 0 then
-		added = 0
-	end
+	local day = math.max(state.day, math.floor(now / 86400))
 	local people = math.max(0, math.floor(rescued))
-	added += math.max(0, math.floor(people / 10) - math.floor(state.rescued / 10))
+	local baseline = if state.day == 0 then people else state.rescued
+	local added = if day > state.day then 1 else 0
+	added += math.max(0, math.floor(people / 10) - math.floor(baseline / 10))
 	local nextState: State = {
 		day = day,
 		free = math.min(state.free + added, math.max(state.free, SpinRules.MAX_FREE)),
 		pity = state.pity,
-		rescued = math.max(state.rescued, people),
+		rescued = math.max(baseline, people),
 		owned = state.owned,
 	}
 	return nextState, added

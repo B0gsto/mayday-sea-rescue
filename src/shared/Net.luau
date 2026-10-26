@@ -26,7 +26,7 @@
 --   RequestVehicle     C->S  function: launch a vehicle at a bay (vehicleId, docked?) -> (ok, reasonOrVehicle)
 --   BuyGear            C->S  function: buy a vehicle (vehicleId) -> (ok, reason)
 --   Spin_Flex          S->C  a Legendary / Mythic wheel win: banner + confetti for everyone
---   Spin_Spin          C->S  function: one free spin -> (ok, prize, rarity, segment, duplicateCash)
+--   Spin_Spin          C->S  function: spend one spin -> { ok, prize, rarity, segment, duplicateCash? }
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 

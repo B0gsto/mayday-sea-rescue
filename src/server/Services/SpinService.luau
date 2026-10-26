@@ -86,12 +86,13 @@ local function grantCash(player: Player, cash: number)
 	ProgressionService.Award(player, cash, "spin", true)
 end
 
--- Applies one prize. Returns the (possibly changed) spin state and the duplicate Cash paid.
+-- Applies one prize. Returns the (possibly changed) spin state, the duplicate Cash paid and the
+-- prize actually given when it differs (an owned grand boat becomes the Galaxy finish).
 local function grantPrize(
 	player: Player,
 	state: SpinRules.State,
 	prize: SpinRules.Prize
-): (SpinRules.State, number?)
+): (SpinRules.State, number?, SpinRules.Prize?)
 	if prize.kind == "cash" then
 		grantCash(player, SpinRules.cashFor(prize.rarity))
 		return state, nil
@@ -111,19 +112,17 @@ local function grantPrize(
 				prize.vehicle,
 				ProgressionService.OwnsVehiclePass(player, prize.vehicle)
 			)
-		if not owned then
-			if data then
-				data.vehicles[prize.vehicle] = true
-				DataService.MarkDirty(player)
-			end
-			ProgressionService.SetFlag(player, "spinBoat", prize.vehicle)
+		-- ownsVehicle needs both the vehicle and the flag; no flag room = the Cash fallback below
+		if data and not owned and ProgressionService.SetFlag(player, "spinBoat", prize.vehicle) then
+			data.vehicles[prize.vehicle] = true
+			DataService.MarkDirty(player)
 			ProgressionService.Refresh(player)
 			return state, nil
 		end
 		-- already owned: the Mythic finish instead
 		local galaxy = SpinRules.prize("GalaxyFinish")
 		if galaxy and not SpinRules.owns(state, galaxy) then
-			return SpinRules.claim(state, galaxy), nil
+			return SpinRules.claim(state, galaxy), nil, galaxy
 		end
 	end
 	local cash = SpinRules.duplicateCash(prize)
@@ -178,11 +177,20 @@ function SpinService.Spin(player: Player): { [string]: any }
 
 	state.free -= 1
 	state.pity = pity
-	local duplicate = grantPrize(player, state, prize)
-	store(player, state)
+	-- the spent spin is saved before anything is granted: a failed save never yields a free prize
+	if not store(player, state) then
+		return { ok = false, reason = "Could not save" }
+	end
+	local granted, duplicate, instead = grantPrize(player, state, prize)
+	prize = instead or prize
+	if granted ~= state then
+		state = granted
+		store(player, state)
+	end
 	publish(player, state)
 	CosmeticsService.Refresh(player)
 	if SpinRules.rank(prize.rarity) >= SpinRules.rank("Legendary") then
+		task.spawn(DataService.Save, player, false) -- a big win is saved right away
 		fireFlex(player, prize)
 	end
 	return {
@@ -197,8 +205,12 @@ function SpinService.Spin(player: Player): { [string]: any }
 	}
 end
 
-local function grantProductSpins(_player: Player, data: any, n: number): boolean
-	if type(data.flags) ~= "table" then
+local function grantProductSpins(player: Player, data: any, n: number): boolean
+	-- paid random items: refused (receipt left unprocessed) unless the policy allows them
+	local policy = MonetizationService.GetPolicy(player)
+	if
+		type(data.flags) ~= "table" or not (policy and policy.ArePaidRandomItemsRestricted == false)
+	then
 		return false
 	end
 	local state = SpinRules.decode(data.flags[FLAG])
@@ -217,8 +229,8 @@ function SpinService.Init()
 	for key, item in MonetizationConfig.Products do
 		local n = item.spins
 		if type(n) == "number" then
-			MonetizationService.OnProduct(key, function(_player: Player, data: any): boolean
-				return grantProductSpins(_player, data, n)
+			MonetizationService.OnProduct(key, function(player: Player, data: any): boolean
+				return grantProductSpins(player, data, n)
 			end, function(player: Player)
 				SpinService.Refresh(player)
 			end)

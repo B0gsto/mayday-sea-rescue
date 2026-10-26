@@ -200,19 +200,19 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 	local productButtons: { any } = {}
 	local prices: { [number]: number | false } = {}
 	local offered: { [string]: boolean } = {}
-	local catalogueFetched = false
 	local function paintProducts()
 		for _, row in productButtons do
 			local item = row.item
 			local live = item.ready ~= false and item.id ~= 0
-			row.cell.Visible = not (catalogueFetched and live and offered[row.key] ~= true)
+			-- a live paid spin shows only once the server's catalogue offers it (paid-random policy)
+			row.cell.Visible = not live or offered[row.key] == true
 			if not live then
 				row.button.setState("disabled")
 				row.button.setText("Soon")
 				continue
 			end
-			if catalogueFetched and offered[row.key] ~= true then
-				continue -- the policy hides paid random items for this player
+			if offered[row.key] ~= true then
+				continue
 			end
 			local price = prices[item.id]
 			if type(price) == "number" then
@@ -253,7 +253,7 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 			local button = require(Kit:WaitForChild("PriceButton")).new(cell, {
 				price = item.price,
 				onActivate = function()
-					if item.ready == false or item.id == 0 then
+					if item.ready == false or item.id == 0 or offered[key] ~= true then
 						return
 					end
 					MarketplaceService:PromptProductPurchase(player, item.id)
@@ -603,7 +603,6 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 		local net = ReplicatedStorage:FindFirstChild("Net")
 		local remote = net and net:FindFirstChild("Monetization_GetCatalogue")
 		if not (remote and remote:IsA("RemoteFunction")) then
-			catalogueFetched = true
 			paintProducts()
 			return
 		end
@@ -624,7 +623,6 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 				end
 				offered = set
 			end
-			catalogueFetched = true
 			paintProducts()
 		end)
 	end
@@ -646,6 +644,7 @@ function Spin.new(canvas: Frame, onClose: () -> ())
 			odds.Visible = false
 			layout()
 			refresh()
+			fetchCatalogue() -- the policy can arrive after the first fetch
 			Style.pop(root, true)
 		end,
 		close = function()

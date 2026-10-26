@@ -230,7 +230,7 @@ local function rarityOf(option: any): string?
 end
 
 local function aura(model: Model, liveryId: string?, wakeId: string?)
-	local old = model:FindFirstChild(AURA_NAME)
+	local old = model:FindFirstChild(AURA_NAME, true) -- parented to the hull part, not the model
 	if old then
 		old:Destroy()
 	end
