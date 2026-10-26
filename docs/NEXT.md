@@ -30,7 +30,7 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
 ## 2. Queued (in order)
 
 0e. **In-world wheel + clickable buttons** (owner 2026-10-26: "no UI, spin in the game visually", "clickable buttons in the game"): D2 task msr-24-D2-r1 (physical Lego wheel on the plaza, ClickDetector push buttons + prompts for gamepad, token machine, odds board; Spin panel removed). After merge: repoint the tutorial spin beat to the wheel; reuse the push button for Finish now on the construction sign.
-0d. **docs/24 G skill trees** (owner 2026-10-26): G-b rules/service/effects running (task msr-24-Gb-r1); G-a Kit TreeView + build tablet as a tree after the tutorial playtest-fix lands (both edit DockController); G-c Skills panel on TreeView after G-a + G-b.
+0d. **docs/24 G skill trees** (owner 2026-10-26): G-b merged (SkillRules 31 nodes, SkillService, Skill* attributes, hooks; tree+skills 17.84 h; open: SkillGrip has no handling reader, Crew panel ignores skill caps); G-a Kit TreeView + build tablet as a tree after the tutorial playtest-fix lands (both edit DockController); G-c Skills panel on TreeView after G-a + G-b.
 0a. **Owner 2026-10-26: both approved.** (1) Spin products live: after D merges, create the 1/5/15-spin dev products
    (icons via Gemini) on the test and launch universes with `deploy.py ... --steps monetize --only <keys>`, set
    `ready = true`; the owner re-answers the maturity questionnaire (paid random items) in Creator Hub. (2) Robux
