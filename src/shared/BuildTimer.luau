@@ -1,7 +1,9 @@
 --!strict
 -- BuildTimer (docs/24 B): every build takes time. Base work comes from the Cash price (decor is a flat 8 s);
--- Builders cut time instead of Cash: rate = 1 + PER * units, units = RARITY_MULT over the island's Builders
--- (rarest first, at most BUILDERS: a full crew about halves a build, docs/23 (r)). The island keeps its two base crew, so even 0 Builders build at rate 1. Pure
+-- Builders cut time instead of Cash: rate = (1 + PER * units) * mult, units = RARITY_MULT over the island's
+-- Builders (rarest first, at most BUILDERS: a full crew about halves a build, docs/23 (r)). The island keeps
+-- its BASE_CREW, so even 0 Builders build at rate 1. The skill tree raises the Builder count, the rate and the
+-- base crew; readers pass those totals in. Pure
 -- (tests/BuildTimer.spec.luau); DockService saves progress with it and the build tablet shows its time left.
 local WorkerRules = require(script.Parent:WaitForChild("WorkerRules"))
 
@@ -12,6 +14,8 @@ B.SCALE, B.POW = 20, 0.9 -- 1k 20 s, 2.5k 45 s, 10k 2:39, 40k 9:15 of one-crew w
 B.DECOR = 8
 B.PER = 0.15 -- rate per Builder unit -- tune
 B.BUILDERS = 5 -- the most Builders a site takes (the best rarities): 5 commons x1.75, a late rarer crew ~x2.2 -- tune
+B.BASE_CREW = 2 -- the hard-hat NPCs every island builds with (docs/24 B); SkillRules' baseCrew adds one -- tune
+export type Skill = { max: number?, mult: number?, crew: number? } -- skill tree totals (nil = no change)
 
 -- Seconds of one-crew work for a building bought at `cash`; decor is flat.
 function B.work(cash: number, decor: boolean?): number
@@ -22,8 +26,8 @@ function B.work(cash: number, decor: boolean?): number
 	return math.clamp(B.SCALE * (value / 1000) ^ B.POW, B.MIN, B.MAX)
 end
 
--- The island's Builders at a site: data.workers indices, rarest first, at most BUILDERS.
-function B.builders(workers: { WorkerRules.Worker }): { number }
+-- The island's Builders at a site: data.workers indices, rarest first, at most `max` (default BUILDERS).
+function B.builders(workers: { WorkerRules.Worker }, max: number?): { number }
 	local out = {}
 	for i, w in workers do
 		if w.category == "Builder" then
@@ -34,27 +38,29 @@ function B.builders(workers: { WorkerRules.Worker }): { number }
 		local ra, rb = workers[a].rarity, workers[b].rarity
 		return if ra ~= rb then ra > rb else a < b
 	end)
-	while #out > B.BUILDERS do
+	while #out > (max or B.BUILDERS) do
 		table.remove(out)
 	end
 	return out
 end
 
 -- Sum of RARITY_MULT over those Builders.
-function B.units(workers: { WorkerRules.Worker }): number
+function B.units(workers: { WorkerRules.Worker }, max: number?): number
 	local units = 0
-	for _, i in B.builders(workers) do
+	for _, i in B.builders(workers, max) do
 		units += WorkerRules.RARITY_MULT[workers[i].rarity] or 1
 	end
 	return units
 end
 
-function B.rate(units: number): number
-	return 1 + B.PER * math.max(0, units or 0)
+-- `mult` is the Builder branch's rate bonus, `crew` extra base-crew units (one common Builder each).
+function B.rate(units: number, mult: number?, crew: number?): number
+	return (1 + B.PER * (math.max(0, units or 0) + math.max(0, crew or 0))) * (mult or 1)
 end
 
-function B.rateOf(workers: { WorkerRules.Worker }): number
-	return B.rate(B.units(workers))
+function B.rateOf(workers: { WorkerRules.Worker }, skill: Skill?): number
+	local s: Skill = skill or {}
+	return B.rate(B.units(workers, s.max), s.mult, s.crew)
 end
 
 -- Progress after `dt` seconds at a crew rate (progress is 0..1 of `work`; omit for a rate per second).

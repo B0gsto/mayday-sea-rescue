@@ -6,6 +6,7 @@
 local DockConfig = require(script.Parent.Config.DockConfig)
 local MonetizationConfig = require(script.Parent.Config.MonetizationConfig)
 local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
+local SkillRules = require(script.Parent.SkillRules)
 local UnlockTree = require(script.Parent.UnlockTree)
 local VehicleUpgrades = require(script.Parent.VehicleUpgrades)
 local WorkerRules = require(script.Parent.WorkerRules)
@@ -28,6 +29,8 @@ export type PlayerData = {
 	construction: { key: string, progress: number, rate: number, at: number }?,
 	-- Rescued people working on your island (docs/23 (o), WP-26; WorkerRules, WorkerService), at most WorkerRules.CAP.
 	workers: { WorkerRules.Worker },
+	-- Bought player + crew skill nodes (docs/24 G; SkillRules), id -> true.
+	skills: { [string]: boolean },
 	lastSeen: number?, -- os.time of the last save (DataService): offline worker earnings count from here
 	-- Small persisted flags and settings (ProgressionService.SetFlag). A value is a boolean, a
 	-- number, a short string or a flat table of those (for example `cameraSettings`).
@@ -190,6 +193,7 @@ function Rules.defaultData(): PlayerData
 		dockBuildings = {},
 		dockPrepaid = {},
 		workers = {},
+		skills = {},
 		flags = {},
 		cosmetics = {},
 	}
@@ -354,7 +358,18 @@ function Rules.migrate(raw: any): PlayerData
 			end
 		end
 	end
-	data.workers = WorkerRules.clean(raw.workers)
+	data.skills = {}
+	local skillRaw = Rules.sanitizeFlag(raw.skills)
+	if type(skillRaw) == "table" then
+		for id, owned in skillRaw do
+			if owned == true and SkillRules.byId[id] then
+				data.skills[id] = true
+			end
+		end
+	end
+	-- the Crew branch raises the worker cap, so an old save keeps the workers it earned
+	local cap = WorkerRules.CAP + SkillRules.effects(data.skills).workerCapAdd
+	data.workers = WorkerRules.clean(raw.workers, cap)
 	local seen = num(raw.lastSeen, 0)
 	data.lastSeen = if seen > 0 then seen else nil
 	if type(raw.flags) == "table" then
@@ -405,6 +420,7 @@ function Rules.snapshot(data: PlayerData): { [string]: any }
 		vehicles = table.clone(data.vehicles),
 		vehicleUpgrades = table.clone(data.vehicleUpgrades),
 		workers = table.clone(data.workers),
+		skills = table.clone(data.skills),
 		coldOpenDone = data.coldOpenDone,
 		tutorialStep = data.tutorialStep,
 		flags = Rules.migrate({ flags = data.flags }).flags, -- a deep, clean copy

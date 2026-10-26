@@ -108,6 +108,43 @@ return function(t)
 		t.expect(W.offlinePay(W.effects({ Builder = 3 }), 3600)).toBe(0)
 	end)
 
+	t.test("the skill tree raises the effects, caps, slots and roll", function()
+		local owned = { Workshop = true }
+		local list = {}
+		for i = 1, 4 do
+			list[i] = worker("Builder", 1)
+		end
+		t.expect(W.slots(owned, 1)).toBe(W.SLOTS + 1)
+		t.expect(W.assign(list, owned, { Builder = 1 })[4]).toBe(4)
+		local fx = W.effects({ Gatherer = 1, Rescuer = 1, Mechanic = 99, Medic = 99 }, {
+			gatherMult = 0.15,
+			tripPayMult = 0.25,
+			tripScale = 0.15,
+			recruitChance = 0.05,
+			offlineRate = 0.1,
+			speedCapAdd = 0.05,
+			boatCapAdd = 0.1,
+			medicCapAdd = 0.1,
+			medicPerUnit = 0.05,
+		})
+		t.expect(fx.gatherPerMin).toBeCloseTo(W.GATHER_PER * 1.15, 1e-9)
+		t.expect(fx.rescuePerTrip).toBeCloseTo(W.RESCUE_PER * 1.25, 1e-9)
+		t.expect(fx.craftSpeed).toBeCloseTo(1 + W.SPEED_CAP + 0.05, 1e-9)
+		t.expect(fx.boatScale).toBeCloseTo(1 - W.BOAT_CAP - 0.1, 1e-9)
+		t.expect(fx.payBonus).toBeCloseTo(W.PAY_CAP + 0.1, 1e-9)
+		t.expect(fx.rescuePeriod).toBeCloseTo(W.RESCUE_PERIOD * 0.85, 1e-9)
+		t.expect(fx.recruitChance).toBeCloseTo(W.RESCUE_RECRUIT + 0.05, 1e-9)
+		t.expect(fx.offlineRate).toBeCloseTo(W.OFFLINE_RATE + 0.1, 1e-9)
+		local rare = 0
+		for seed = 1, 4000 do
+			local _, rarity = W.roll(seed * 7919, 0.1)
+			if rarity > 1 then
+				rare += 1
+			end
+		end
+		t.expect(rare / 4000 > 0.24).toBe(true) -- 20% base + the skill's 10 points
+	end)
+
 	t.test("saves: workers cleaned and capped, old crew paid back once", function()
 		local raw = {
 			cash = 100,

@@ -9,8 +9,9 @@
 -- construction site (docs/24 B; DockService publishes SiteKey on the plot) and each worker carries the job its
 -- client animations read (`Job`). Effects go out as player attributes the hooks read: WorkerBoatScale
 -- (VehicleService Boat to me, UI/Menu), WorkerCraftSpeed (VehicleService
--- SpeedMultiplier), WorkerPayBonus (OperationService debrief pay). Gatherers pay every minute, Rescuers send an
--- NPC rescue boat out of your cove every RESCUE_PERIOD (Cash, sometimes a new worker). On join the time away
+-- SpeedMultiplier), WorkerPayBonus (OperationService debrief pay); the skill tree's `Skill*` attributes
+-- (SkillService) raise the same numbers, the caps, slots and the roll. Gatherers pay every minute, Rescuers
+-- send an NPC rescue boat out of your cove every rescuePeriod (Cash, sometimes a new worker). On join the time away
 -- pays Gatherers + Rescuers at OFFLINE_RATE, capped (attribute WorkerOffline: the client's coin burst).
 -- Studio: ServerStorage.WorkerDev:Invoke("recruit", category, rarity, name) as if landed at the first player's
 -- berth; ("offline", seconds) pays as if they were away that long; ("finishbuild") finishes the running site;
@@ -55,8 +56,37 @@ local dataRoot: Folder? = nil
 local states: { [Player]: State } = {}
 local rng = Random.new()
 
-local function effectsOf(data: ProgressionRules.PlayerData): WorkerRules.Effects
-	return WorkerRules.effects(WorkerRules.units(data.workers, data.dockBuildings))
+-- The skill tree's totals (SkillService publishes them as attributes; no skills = no change).
+local function skillOf(player: Player): WorkerRules.Skill
+	local function attr(name: string, default: number): number
+		return tonumber(player:GetAttribute(name)) or default
+	end
+	return {
+		gatherMult = attr("SkillGatherMult", 1) - 1,
+		tripPayMult = attr("SkillTripPayMult", 1) - 1,
+		tripScale = 1 - attr("SkillTripScale", 1),
+		recruitChance = attr("SkillRecruitChance", 0),
+		offlineRate = attr("SkillOfflineAdd", 0),
+		speedCapAdd = attr("SkillSpeedCapAdd", 0),
+		boatCapAdd = attr("SkillBoatCapAdd", 0),
+		medicCapAdd = attr("SkillMedicCapAdd", 0),
+		medicPerUnit = attr("SkillMedicPerUnit", 0),
+	}
+end
+
+local function extraSlots(player: Player): { [string]: number }
+	local out = {}
+	for _, category in WorkerRules.CATEGORIES do
+		out[category] = tonumber(player:GetAttribute(`SkillSlots{category}`)) or 0
+	end
+	return out
+end
+
+local function effectsOf(player: Player, data: ProgressionRules.PlayerData): WorkerRules.Effects
+	return WorkerRules.effects(
+		WorkerRules.units(data.workers, data.dockBuildings, extraSlots(player)),
+		skillOf(player)
+	)
 end
 
 -- Feet CFrames in the berth frame `bay` ------------------------------------------------------------
@@ -211,7 +241,7 @@ local function sync(player: Player)
 	if not data or not st then
 		return
 	end
-	local fx = effectsOf(data)
+	local fx = effectsOf(player, data)
 	player:SetAttribute("WorkerBoatScale", fx.boatScale)
 	player:SetAttribute("WorkerCraftSpeed", fx.craftSpeed)
 	player:SetAttribute("WorkerPayBonus", fx.payBonus)
@@ -220,12 +250,14 @@ local function sync(player: Player)
 	if typeof(bay) ~= "CFrame" then
 		return
 	end
-	local place = WorkerRules.assign(data.workers, data.dockBuildings)
+	local place = WorkerRules.assign(data.workers, data.dockBuildings, extraSlots(player))
 	local slots = WorkerRules.slots(data.dockBuildings)
 	local site = siteKey(player)
 	local order, count = {}, 0
+	local maxBuilders = BuildTimer.BUILDERS
+		+ (tonumber(player:GetAttribute("SkillExtraBuilders")) or 0)
 	if site then
-		for k, index in BuildTimer.builders(data.workers) do
+		for k, index in BuildTimer.builders(data.workers, maxBuilders) do
 			order[index] = k
 			count = k
 		end
@@ -277,7 +309,8 @@ function WorkerService.Recruit(player: Player, category: any, rarity: any, name:
 		return
 	end
 	local clean = WorkerRules.clean({ { category = category, rarity = rarity, name = name } })[1]
-	local i = clean and WorkerRules.admit(data.workers, clean)
+	local cap = WorkerRules.CAP + (tonumber(player:GetAttribute("SkillWorkerCapAdd")) or 0)
+	local i = clean and WorkerRules.admit(data.workers, clean, cap)
 	if not i then
 		return
 	end
@@ -295,7 +328,7 @@ function WorkerService.Recruit(player: Player, category: any, rarity: any, name:
 end
 
 -- The NPC rescue boat: out of your cove and back (a placeholder Lego boat until art lands), then the pay.
-local function rescueTrip(player: Player, st: State, bay: CFrame, cash: number)
+local function rescueTrip(player: Player, st: State, bay: CFrame, cash: number, chance: number)
 	st.tripBusy = true
 	local m = Instance.new("Model")
 	m.Name = "WorkerRescueBoat"
@@ -352,8 +385,9 @@ local function rescueTrip(player: Player, st: State, bay: CFrame, cash: number)
 			return -- left meanwhile
 		end
 		ProgressionService.Award(player, cash, "Workers:Rescue", true)
-		if rng:NextNumber() < WorkerRules.RESCUE_RECRUIT then
-			local category, rarity, name = WorkerRules.roll(rng:NextInteger(1, 2147483646))
+		if rng:NextNumber() < chance then
+			local rare = tonumber(player:GetAttribute("SkillRareChanceAdd")) or 0
+			local category, rarity, name = WorkerRules.roll(rng:NextInteger(1, 2147483646), rare)
 			WorkerService.Recruit(player, category, rarity, name)
 		end
 	end)
@@ -366,7 +400,7 @@ local function earn(player: Player, now: number)
 	if not data or not st then
 		return
 	end
-	local fx = effectsOf(data)
+	local fx = effectsOf(player, data)
 	if now >= st.gatherAt then
 		st.gatherAt = now + 60
 		if fx.gatherPerMin > 0 then
@@ -375,10 +409,10 @@ local function earn(player: Player, now: number)
 	end
 	local bay = player:GetAttribute("BayCFrame")
 	if fx.rescuePerTrip <= 0 then
-		st.nextTrip = now + WorkerRules.RESCUE_PERIOD
+		st.nextTrip = now + fx.rescuePeriod
 	elseif now >= st.nextTrip and not st.tripBusy and typeof(bay) == "CFrame" then
-		st.nextTrip = now + WorkerRules.RESCUE_PERIOD
-		rescueTrip(player, st, bay, fx.rescuePerTrip)
+		st.nextTrip = now + fx.rescuePeriod
+		rescueTrip(player, st, bay, fx.rescuePerTrip, fx.recruitChance)
 	end
 end
 
@@ -394,7 +428,7 @@ end
 -- The time away (from the last save), capped: Gatherers and Rescuers at a reduced rate. Once, on join.
 function WorkerService.PayOffline(player: Player, data: ProgressionRules.PlayerData)
 	local away = if data.lastSeen then os.time() - data.lastSeen else 0
-	local pay = WorkerRules.offlinePay(effectsOf(data), away)
+	local pay = WorkerRules.offlinePay(effectsOf(player, data), away)
 	if pay > 0 then
 		ProgressionService.Award(player, pay, "Workers:Offline", true)
 		player:SetAttribute("WorkerOffline", pay)
@@ -437,7 +471,7 @@ function WorkerService.Init()
 			data = df,
 			shown = {},
 			fresh = {},
-			nextTrip = now + WorkerRules.RESCUE_PERIOD,
+			nextTrip = now + effectsOf(player, data).rescuePeriod,
 			tripBusy = false,
 			gatherAt = now + 60,
 		}

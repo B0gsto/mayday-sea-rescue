@@ -14,6 +14,21 @@ export type Effects = {
 	boatScale: number, -- Boat to me cooldown x this
 	craftSpeed: number, -- your craft's SpeedMultiplier
 	payBonus: number, -- call pay x (1 + this)
+	rescuePeriod: number, -- s between NPC rescue boat trips (SkillRules Rescuer -15%)
+	recruitChance: number, -- a trip brings home a new worker this often
+	offlineRate: number, -- share of the gather/trip rate paid while away
+}
+-- SkillRules.effects totals: the skill tree's deltas the effects math reads (nil/0 = no skills).
+export type Skill = {
+	gatherMult: number?,
+	tripPayMult: number?,
+	tripScale: number?,
+	recruitChance: number?,
+	offlineRate: number?,
+	speedCapAdd: number?,
+	boatCapAdd: number?,
+	medicCapAdd: number?,
+	medicPerUnit: number?,
 }
 
 local W = {}
@@ -84,16 +99,23 @@ local function step(state: number): (number, number)
 	return s, s / 2147483647
 end
 
--- The survivor's category, rarity (1..3 stars) and name from a seed (the server picks the seed).
-function W.roll(seed: number): (string, number, string)
+-- The survivor's category, rarity (1..3 stars) and name from a seed (the server picks the seed). `rareAdd` is
+-- the Crew branch's rare-chance bonus: it moves that many percentage points from common to rare.
+function W.roll(seed: number, rareAdd: number?): (string, number, string)
 	local s = math.floor(math.abs(seed)) % 2147483646 + 1
 	local a, b
 	s, a = step(s)
 	s, b = step(s)
 	local _, c = step(s)
 	local category = W.CATEGORIES[1 + math.floor(a * #W.CATEGORIES) % #W.CATEGORIES]
+	local bonus = math.clamp(rareAdd or 0, 0, 0.5) * 100
 	local pick, rarity = b * 100, 1
 	for r, weight in W.RARITY_WEIGHTS do
+		if r == 1 then
+			weight -= bonus
+		elseif r == 2 then
+			weight += bonus
+		end
 		if pick < weight then
 			rarity = r
 			break
@@ -105,9 +127,9 @@ end
 
 -- A new worker joins `workers`: appended under the cap; at the cap they take the place of the first worker of
 -- the lowest rarity when they are rarer (that one leaves), else they don't stay (the call's Cash is all).
--- Returns the index they went to, or nil.
-function W.admit(workers: { Worker }, w: Worker): number?
-	if #workers < W.CAP then
+-- Returns the index they went to, or nil. `cap` is W.CAP + the Crew branch's workerCapAdd.
+function W.admit(workers: { Worker }, w: Worker, cap: number?): number?
+	if #workers < (cap or W.CAP) then
 		table.insert(workers, w)
 		return #workers
 	end
@@ -124,19 +146,24 @@ function W.admit(workers: { Worker }, w: Worker): number?
 	return worst
 end
 
--- Places in each built worker building.
-function W.slots(owned: { [string]: boolean }): number
-	return W.SLOTS + if owned.Station then W.STATION_SLOTS else 0
+-- Places in each built worker building (extra: SkillRules' Gatherer slot).
+function W.slots(owned: { [string]: boolean }, extra: number?): number
+	return W.SLOTS + (if owned.Station then W.STATION_SLOTS else 0) + (extra or 0)
 end
 
 -- Where each worker goes: place[i] = their slot (1..slots) at their category's building, nil = idle on the
 -- jetty. The best rarity fills a building first; ties keep the earlier rescue.
-function W.assign(workers: { Worker }, owned: { [string]: boolean }): { [number]: number }
+function W.assign(
+	workers: { Worker },
+	owned: { [string]: boolean },
+	extraSlots: { [string]: number }?
+): { [number]: number }
 	local place = {}
-	local slots = W.slots(owned)
+	local base = W.slots(owned)
 	for _, category in W.CATEGORIES do
 		local key = W.buildingOf(category)
 		if key and owned[key] then
+			local slots = base + (if extraSlots then extraSlots[category] or 0 else 0)
 			local mine = {}
 			for i, w in workers do
 				if w.category == category then
@@ -156,46 +183,59 @@ function W.assign(workers: { Worker }, owned: { [string]: boolean }): { [number]
 end
 
 -- Rarity-weighted units of the assigned workers, per category.
-function W.units(workers: { Worker }, owned: { [string]: boolean }): { [string]: number }
+function W.units(
+	workers: { Worker },
+	owned: { [string]: boolean },
+	extraSlots: { [string]: number }?
+): { [string]: number }
 	local out = {}
 	for _, category in W.CATEGORIES do
 		out[category] = 0
 	end
-	for i in W.assign(workers, owned) do
+	for i in W.assign(workers, owned, extraSlots) do
 		local w = workers[i]
 		out[w.category] += W.RARITY_MULT[w.rarity] or 1
 	end
 	return out
 end
 
-function W.effects(units: { [string]: number }): Effects
+function W.effects(units: { [string]: number }, skill: Skill?): Effects
+	local s: Skill = skill or {}
 	local u = function(c: string): number
 		return units[c] or 0
 	end
+	local speedCap = W.SPEED_CAP + (s.speedCapAdd or 0)
+	local boatCap = W.BOAT_CAP + (s.boatCapAdd or 0)
+	local payCap = W.PAY_CAP + (s.medicCapAdd or 0)
+	local payPer = W.PAY_PER + (s.medicPerUnit or 0)
 	return {
-		gatherPerMin = u("Gatherer") * W.GATHER_PER,
-		rescuePerTrip = u("Rescuer") * W.RESCUE_PER,
-		boatScale = 1 - math.min(u("Mechanic") * W.BOAT_PER, W.BOAT_CAP),
-		craftSpeed = 1 + math.min(u("Mechanic") * W.SPEED_PER, W.SPEED_CAP),
-		payBonus = math.min(u("Medic") * W.PAY_PER, W.PAY_CAP),
+		gatherPerMin = u("Gatherer") * W.GATHER_PER * (1 + (s.gatherMult or 0)),
+		rescuePerTrip = u("Rescuer") * W.RESCUE_PER * (1 + (s.tripPayMult or 0)),
+		boatScale = 1 - math.min(u("Mechanic") * W.BOAT_PER, boatCap),
+		craftSpeed = 1 + math.min(u("Mechanic") * W.SPEED_PER, speedCap),
+		payBonus = math.min(u("Medic") * payPer, payCap),
+		rescuePeriod = W.RESCUE_PERIOD * (1 - math.clamp(s.tripScale or 0, 0, 0.9)),
+		recruitChance = math.clamp(W.RESCUE_RECRUIT + (s.recruitChance or 0), 0, 1),
+		offlineRate = W.OFFLINE_RATE + (s.offlineRate or 0),
 	}
 end
 
 -- Cash earned while away `seconds` (Gatherers + Rescuers at OFFLINE_RATE, capped at OFFLINE_CAP).
 function W.offlinePay(fx: Effects, seconds: number): number
 	local minutes = math.clamp(seconds, 0, W.OFFLINE_CAP) / 60
-	local perMin = fx.gatherPerMin + fx.rescuePerTrip * 60 / W.RESCUE_PERIOD
-	return math.floor(perMin * minutes * W.OFFLINE_RATE)
+	local perMin = fx.gatherPerMin + fx.rescuePerTrip * 60 / (fx.rescuePeriod or W.RESCUE_PERIOD)
+	return math.floor(perMin * minutes * (fx.offlineRate or W.OFFLINE_RATE))
 end
 
--- A saved worker list from anything (corrupt saves included): known categories, rarity 1..3, short names, <= CAP.
-function W.clean(raw: any): { Worker }
+-- A saved worker list from anything (corrupt saves included): known categories, rarity 1..3, short names,
+-- <= cap (W.CAP + the Crew branch's workerCapAdd).
+function W.clean(raw: any, cap: number?): { Worker }
 	local out = {}
 	if type(raw) ~= "table" then
 		return out
 	end
 	for _, w in raw do
-		if #out >= W.CAP then
+		if #out >= (cap or W.CAP) then
 			break
 		end
 		if

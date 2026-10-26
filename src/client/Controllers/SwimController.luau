@@ -262,7 +262,9 @@ local function step(dt: number)
 	local cam = Workspace.CurrentCamera
 	local look = if cam then cam.CFrame.LookVector else root.CFrame.LookVector
 	local move = humanoid.MoveDirection
-	local horizontal = move * Snorkel.SWIM_SPEED
+	-- the Captain skill's swim speed (SkillService; no skills = Snorkel.SWIM_SPEED)
+	local swimSpeed = Snorkel.SWIM_SPEED * (tonumber(player:GetAttribute("SkillSwimMult")) or 1)
+	local horizontal = move * swimSpeed
 	local vy = Snorkel.verticalVelocity(eyeY, surfaceY, look.Y)
 	-- the rip off Puffin Isle (docs/09 section 8.4): stroke plus the current, so swimming
 	-- straight back against it barely moves and going across it leaves the channel

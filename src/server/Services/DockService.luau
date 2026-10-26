@@ -563,6 +563,19 @@ local function hardHat(model: Model)
 	cap("HardHatBrim", Vector3.new(1.7, 0.12, 0.5), CFrame.new(0, head.Size.Y / 2 + 0.02, -0.85))
 end
 
+-- The skill tree's build totals (SkillService attributes; no skills = today's numbers).
+local function buildSkill(player: Player): BuildTimer.Skill
+	return {
+		max = BuildTimer.BUILDERS + (tonumber(player:GetAttribute("SkillExtraBuilders")) or 0),
+		mult = tonumber(player:GetAttribute("SkillBuildRate")) or 1,
+		crew = tonumber(player:GetAttribute("SkillBaseCrew")) or 0,
+	}
+end
+
+local function baseCrew(player: Player): number
+	return BuildTimer.BASE_CREW + (tonumber(player:GetAttribute("SkillBaseCrew")) or 0)
+end
+
 local function workOf(key: string): number
 	local b = DockConfig.Buildings[key]
 	if b then
@@ -628,13 +641,16 @@ local function makeSite(plot: Plot, key: string)
 end
 
 -- The one construction's state for clients (ConstructionController draws it; the tablet shows its timer).
-local function syncSite(plot: Plot, data: any)
+local function syncSite(plot: Plot, data: any, player: Player)
 	local c = data.construction
 	if c then
 		plot.model:SetAttribute("SiteKey", c.key)
 		plot.model:SetAttribute("SiteProgress", c.progress)
 		plot.model:SetAttribute("SiteRate", c.rate)
-		plot.model:SetAttribute("SiteBuilders", #BuildTimer.builders(data.workers) + 2)
+		plot.model:SetAttribute(
+			"SiteBuilders",
+			#BuildTimer.builders(data.workers, buildSkill(player).max) + baseCrew(player)
+		)
 	else
 		clearSite(plot)
 	end
@@ -654,8 +670,8 @@ local function crewWalk(m: Model, height: number, to: Vector3, look: Vector3)
 	end
 end
 
--- The two hard-hat base crew NPCs: from the station to the site, back when it is done.
-local function spawnCrew(plot: Plot)
+-- The hard-hat base crew (two, or three with the Builder skill): station -> site, back when done.
+local function spawnCrew(plot: Plot, count: number?)
 	if plot.crew then
 		return
 	end
@@ -666,9 +682,11 @@ local function spawnCrew(plot: Plot)
 	end
 	local at = DockConfig.stationSpot(plot.frame)
 	plot.crew = {}
-	for side = -1, 1, 2 do
+	local n = math.max(1, count or BuildTimer.BASE_CREW)
+	for k = 1, n do
+		local side = (k - (n + 1) / 2) * (if n == 2 then 11 else 6)
 		task.spawn(function()
-			local feet = at * CFrame.new(side * 5.5, 0, -7.2)
+			local feet = at * CFrame.new(side, 0, -7.2)
 			local m, height = NpcFactory.spawn("Crew", {
 				seed = math.random(1, 1_000_000),
 				pose = "Idle",
@@ -898,15 +916,15 @@ local function startConstruction(player: Player, data: any, key: string)
 	data.construction = {
 		key = key,
 		progress = 0,
-		rate = BuildTimer.rateOf(data.workers),
+		rate = BuildTimer.rateOf(data.workers, buildSkill(player)),
 		at = os.time(),
 	}
 	DataService.MarkDirty(player)
 	local i = byPlayer[player]
 	if i then
 		makeSite(plots[i], key)
-		syncSite(plots[i], data)
-		spawnCrew(plots[i])
+		syncSite(plots[i], data, player)
+		spawnCrew(plots[i], baseCrew(player))
 	end
 	task.spawn(DataService.Save, player, false)
 end
@@ -948,8 +966,8 @@ local function resumeSite(plot: Plot, player: Player, data: any)
 		return
 	end
 	makeSite(plot, c.key)
-	syncSite(plot, data)
-	spawnCrew(plot)
+	syncSite(plot, data, player)
+	spawnCrew(plot, baseCrew(player))
 	DataService.MarkDirty(player)
 end
 
@@ -1116,7 +1134,7 @@ local function applyOffline(player: Player, data: any)
 		finishConstruction(plots[i], player, data)
 		return
 	end
-	c.rate = BuildTimer.rateOf(data.workers)
+	c.rate = BuildTimer.rateOf(data.workers, buildSkill(player))
 	DataService.MarkDirty(player)
 end
 
@@ -1127,7 +1145,7 @@ local function tickConstruction(plot: Plot, player: Player, data: any)
 		return
 	end
 	local now = os.time()
-	local rate = BuildTimer.rateOf(data.workers)
+	local rate = BuildTimer.rateOf(data.workers, buildSkill(player))
 	c.progress = BuildTimer.advance(c.progress, c.rate or rate, now - (c.at or now), workOf(c.key))
 	c.rate, c.at = rate, now
 	if c.progress >= 1 then
@@ -1135,8 +1153,8 @@ local function tickConstruction(plot: Plot, player: Player, data: any)
 		return
 	end
 	makeSite(plot, c.key)
-	syncSite(plot, data)
-	spawnCrew(plot)
+	syncSite(plot, data, player)
+	spawnCrew(plot, baseCrew(player))
 	DataService.MarkDirty(player)
 end
 
@@ -1233,7 +1251,7 @@ function DockService.Init()
 					data.construction = {
 						key = key,
 						progress = 0,
-						rate = BuildTimer.rateOf(data.workers),
+						rate = BuildTimer.rateOf(data.workers, buildSkill(_player)),
 						at = os.time(),
 					}
 					return true
