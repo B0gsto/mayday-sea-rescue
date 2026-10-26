@@ -51,7 +51,7 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   `Islands` / `byId` (Plot1..6: `center`, `facing` (out to sea), `frame`, `spawn`, `berths` Boat / Sub, `lots`
   Station, Boathouse, Helipad (`clearRadius`), Hangar, SubPen, Jetty, LifeguardTower, Spare1..3, QuestTablet;
   `quest` = { pontoon, slots }), `Bridges` (island i -> i + 1) + `deckY` / `deckAt`, `IslandPlate` + `onPlate` /
-  `plateContains`.
+  `plateContains`, `seaRoute(from, to) -> (leg, length)` (round the plates, into a cove through its mouth).
 - `WorldDressingService` places the world at run time: `server/World/Seamarks`, `CoastArt`,
   `SkerryLight`, `Islands` (one module per outer island: Penwyn, GannetRock, MermaidLagoon, ...), `Bridges` (the
   six Lego neighbour bridges), `IslandPlates` (one Persistent `Plate<n>` per island), plus the scattered rocks'
@@ -217,12 +217,12 @@ pin, and a beep (no radio). Voices are NPCs only: `VoiceTTS` + `UI/VoiceCast`.
   `open`, `close`, `toggle`, `openBoat`, `isOpen`; player attribute `MenuOpen`.
 - `src/shared/HudLayout.luau` (pure, `tests/HudLayout.spec.luau`) places the regions (menu, wallet, objective,
   status, notice, prompt, minimap, gauges, right) per device, clear of Roblox's thumbstick and jump zones;
-  `UI/Layout` turns them into frames (`region`, `coldOpen`, `newPlayer`, `promptBusy`). `HudController`: wallet,
+  `UI/Layout` turns them into frames (`region`, `coldOpen`, `newPlayer`, `promptBusy`, `hudBoxes`: world pins keep out). `HudController`: wallet,
   award pops. `UI/HudTheme`, `UI/Kit/*` (Theme, Style, Panel, Card, PriceButton, IconButton, Tabs, ...),
   `UI/InputGlyph`, `UI/Glyph`.
 - `MapController` (minimap and full map on M / Select / tap; `SetBlips`, `SetWaypoint`, `GetObjective`),
   `MapService`, `MapConfig`. The one objective pin: your accepted call, then your quest (`QuestTarget`), then a
-  call offer, then your own waypoint.
+  call offer, then your own waypoint. By boat the pin / line point at its next `RingLayout.seaRoute` leg.
 - Album and map fog: `Config/DiscoveryConfig`, `DiscoveryRules` (pure), `DiscoveryService` (server-observed
   positions; `Discovery_*` remotes), `DiscoveryController` (`IsRevealed`, `IsStamped`, `State`), `UI/Sticker`,
   `UI/Panels/Album`.

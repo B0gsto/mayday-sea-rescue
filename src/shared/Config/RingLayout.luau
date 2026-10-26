@@ -91,6 +91,125 @@ function RingLayout.plateContains(right: number, fwd: number): boolean
 	return false
 end
 
+-- Sea routing (playtest 2026-10-26: the home pin pointed straight across the plate, so following it beached the
+-- boat 60 m out): seaRoute(from, to) -> (leg, length). `leg` is where to steer now: `to` itself, or a node of an
+-- ring of 8 nodes round the first plate the straight line crosses (its front node sits just outside the cove mouth,
+-- so a berth in the cove is reached through the mouth). Legs keep ROUTE_CLEAR off the plate (its trim skirt and the
+-- bridge piers stand just outside it); the nodes sit in the plates' square-notched corners, clear of the neighbours. `length` is the route's flat length. No way round (a point on
+-- a plate) gives (to, straight-line length).
+local ROUTE_CLEAR = 12 -- studs: hull half-width + trim + piers
+local ROUTE_R, ROUTE_D = EDGE + 25, EDGE + 25 -- node offsets, island frame: side / diagonal
+local OCTAGON = {
+	{ 0, ROUTE_R }, -- the cove mouth, out to sea
+	{ ROUTE_D, ROUTE_D },
+	{ ROUTE_R, 0 },
+	{ ROUTE_D, -ROUTE_D },
+	{ 0, -ROUTE_R },
+	{ -ROUTE_D, -ROUTE_D },
+	{ -ROUTE_R, 0 },
+	{ -ROUTE_D, ROUTE_D },
+}
+
+local function localOf(isl: Island, p: Vector3): Vector2
+	local l = isl.frame:PointToObjectSpace(Vector3.new(p.X, Y, p.Z))
+	return Vector2.new(l.X, -l.Z)
+end
+
+-- where (0..1) the segment a -> b (island frame) first comes within ROUTE_CLEAR of the plate, nil if it never does
+-- (slab clipping)
+local function entry(a: Vector2, b: Vector2): number?
+	local d = b - a
+	local best: number? = nil
+	for _, r in RingLayout.IslandPlate.rects do
+		local t0, t1 = 0, 1
+		for _, ax in
+			{
+				{ a.X, d.X, r[1] - ROUTE_CLEAR, r[2] + ROUTE_CLEAR },
+				{ a.Y, d.Y, r[3] - ROUTE_CLEAR, r[4] + ROUTE_CLEAR },
+			}
+		do
+			local p, v, lo, hi = ax[1], ax[2], ax[3], ax[4]
+			if math.abs(v) < 1e-9 then
+				if p < lo or p > hi then
+					t0 = 2
+				end
+			else
+				local u0, u1 = (lo - p) / v, (hi - p) / v
+				t0, t1 = math.max(t0, math.min(u0, u1)), math.min(t1, math.max(u0, u1))
+			end
+		end
+		if t0 <= t1 and (not best or t0 < best) then
+			best = t0
+		end
+	end
+	return best
+end
+
+local function flatDist(a: Vector3, b: Vector3): number
+	return Vector2.new(a.X - b.X, a.Z - b.Z).Magnitude
+end
+
+function RingLayout.seaRoute(from: Vector3, to: Vector3, depth: number?): (Vector3, number)
+	local straight = flatDist(from, to)
+	local isl, first = nil :: Island?, math.huge
+	for _, i in RingLayout.Islands do
+		local t = entry(localOf(i, from), localOf(i, to))
+		if t and t < first then
+			isl, first = i, t
+		end
+	end
+	if not isl then
+		return to, straight
+	end
+	-- shortest path from -> octagon nodes -> to, edges that keep off this plate (Dijkstra on 10 nodes)
+	local pts: { Vector2 } = { localOf(isl, from) }
+	for _, o in OCTAGON do
+		table.insert(pts, Vector2.new(o[1], o[2]))
+	end
+	table.insert(pts, localOf(isl, to))
+	local n = #pts
+	local dist, prev, done =
+		{ [1] = 0 } :: { [number]: number }, {} :: { [number]: number }, {} :: { [number]: boolean }
+	while true do
+		local u, du = nil :: number?, math.huge
+		for i = 1, n do
+			if not done[i] and dist[i] and dist[i] < du then
+				u, du = i, dist[i]
+			end
+		end
+		if not u or u == n then
+			break
+		end
+		done[u] = true
+		for v = 2, n do
+			if not done[v] and not entry(pts[u], pts[v]) then
+				local dv = du + (pts[v] - pts[u]).Magnitude
+				if dv < (dist[v] or math.huge) then
+					dist[v], prev[v] = dv, u
+				end
+			end
+		end
+	end
+	if not dist[n] then
+		return to, straight
+	end
+	local step = n
+	while prev[step] ~= 1 do
+		step = prev[step]
+	end
+	if step == n then
+		return to, dist[n]
+	end
+	local o = OCTAGON[step - 1]
+	local node = (isl.frame * CFrame.new(o[1], 0, -o[2])).Position
+	node = Vector3.new(node.X, to.Y, node.Z)
+	if (depth or 0) < 2 then -- the first leg may itself cross a neighbour's plate
+		local leg, len = RingLayout.seaRoute(from, node, (depth or 0) + 1)
+		return leg, dist[n] - flatDist(from, node) + len
+	end
+	return node, dist[n]
+end
+
 -- Neighbour bridges (docs/23 (p)): straight across the gap between two plates, crossing the bisector axisR studs out
 -- from the centre, where each deck enters its plate's side face just clear of the cut-out back corner (~93 studs of
 -- water between the plates there). The deck climbs at `grade` (11.3 deg) from both ends to a rounded crest over

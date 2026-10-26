@@ -17,7 +17,8 @@
 --   * Hidden while LocalPlayer attribute CinematicPlaying is true.
 --
 -- API: MapController.SetWaypoint(pos: Vector3?), GetWaypoint(), Open(), Close(), IsOpen(),
---      GetObjective(): (Vector3?, label?), the one goal: "Craft" | "Casualty" | "Drop-off" | "Quest" | "Mayday" |
+--      GetObjective(): (Vector3?, label?, routeStuds?), the one goal (by boat: its next sea leg round the islands,
+--      RingLayout.seaRoute, and the route's length): "Craft" | "Casualty" | "Drop-off" | "Quest" | "Mayday" |
 --      "Waypoint". Order (docs/20 rule 1): your accepted call, then your quest (QuestService's QuestTarget
 --      attribute), then a call offer, then your own waypoint. An offer never takes the pin from a quest.
 --      GetTargets(): { Vector3 }
@@ -31,6 +32,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DiscoveryConfig = require(Shared:WaitForChild("Config"):WaitForChild("DiscoveryConfig"))
 local MapConfig = require(Shared:WaitForChild("Config"):WaitForChild("MapConfig"))
+local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local Weather = require(Shared:WaitForChild("Weather"))
 local UI = script.Parent.Parent:WaitForChild("UI")
@@ -72,6 +74,7 @@ local offers: { [string]: { position: Vector3, expires: number } } = {}
 local closedOps: { [string]: boolean } = {}
 local isOpen = false
 local objective: Vector3?, objectiveLabel: string? = nil, nil
+local objectiveRoute: number? = nil -- by boat: the sea route's length (objective is then its next leg)
 local targets: { Vector3 } = {} -- the pulsing call blips (survivors, vessels, offers) last frame
 -- extra static blips other systems hand in (SetBlips), keyed by group: the seamarks
 local extraBlips: { [string]: { BlipDraw } } = {}
@@ -413,6 +416,12 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 		if not objective then
 			objective, objectiveLabel = waypoint, "Waypoint"
 		end
+	end
+	-- by boat, round the islands (playtest 2026-10-26: straight at the berth beached you on the plate): the pin and
+	-- the line point at the next sea leg, the cove mouth before the berth; a heli (high) flies straight
+	objectiveRoute = nil
+	if objective and objectiveLabel ~= "Craft" and myVehicle and me.Y < 20 then
+		objective, objectiveRoute = RingLayout.seaRoute(me, objective)
 	end
 	local home = player:GetAttribute("BayCFrame") -- your dock at the marina (docs/23)
 	if typeof(home) == "CFrame" then
@@ -1371,8 +1380,8 @@ function MapController.SetBlips(
 	extraBlips[group] = list
 end
 
-function MapController.GetObjective(): (Vector3?, string?)
-	return objective, objectiveLabel
+function MapController.GetObjective(): (Vector3?, string?, number?)
+	return objective, objectiveLabel, objectiveRoute
 end
 
 -- Where the call blips pulse (survivors, vessels, offered calls), as of the last map frame.

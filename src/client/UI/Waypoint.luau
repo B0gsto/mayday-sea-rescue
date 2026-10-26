@@ -172,13 +172,14 @@ function Waypoint.start(
 		local cam = Workspace.CurrentCamera
 		local char = player.Character
 		local root = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
-		local pos, label = map.GetObjective()
+		local pos, label, route = map.GetObjective() -- by boat, pos is the next sea leg (the cove mouth first)
 		local hidden = not (cam and root) or player:GetAttribute("OpsUiHidden") == true -- a cinematic (the chase camera is Scriptable too)
 		local me = if root then root.Position else Vector3.zero
 
 		-- the marker on the objective
 		local want = pos ~= nil and label ~= nil and SHOWN[label] == true
-		local flat = if pos then Vector3.new(pos.X - me.X, 0, pos.Z - me.Z).Magnitude else 0
+		local flat = route
+			or if pos then Vector3.new(pos.X - me.X, 0, pos.Z - me.Z).Magnitude else 0
 		if not (want and root) then
 			onGoal(nil)
 			mark.Visible = false
@@ -210,17 +211,47 @@ function Waypoint.start(
 		local dx, dy = x - cx, y - cy
 		local ry = vp.Y * (if dy < 0 then RIM_UP else RIM.Y)
 		local e = (dx / (vp.X * RIM.X)) ^ 2 + (dy / ry) ^ 2
+		local at: Vector2
 		if not behind and e <= 1 then
-			mark.Position = UDim2.fromOffset(x, y)
+			at = Vector2.new(x, y)
 			turn.Rotation = 180
 		else
 			if e < 1e-6 then -- dead centre behind you: straight down
 				dy, e = 1, (1 / (vp.Y * RIM.Y)) ^ 2
 			end
 			local k = 1 / math.sqrt(e)
-			mark.Position = UDim2.fromOffset(cx + dx * k, cy + dy * k)
+			at = Vector2.new(cx + dx * k, cy + dy * k)
 			turn.Rotation = math.deg(math.atan2(dx, -dy))
 		end
+		-- out of the HUD's corners (menu, minimap, wallet, cards): slide to the nearest free side of the box
+		local clear = Vector2.new(DISC, DISC) * fit.Scale * 0.5 + Vector2.new(14, 14) -- strokes and labels hang past the frames
+		for _, b in Layout.hudBoxes() do
+			local lo, hi = b.min - clear, b.max + clear + Vector2.new(0, 34 * fit.Scale) -- the range chip hangs under
+			if at.X > lo.X and at.X < hi.X and at.Y > lo.Y and at.Y < hi.Y then
+				local best, out = math.huge, at
+				for _, cand in
+					{
+						Vector2.new(lo.X, at.Y),
+						Vector2.new(hi.X, at.Y),
+						Vector2.new(at.X, lo.Y),
+						Vector2.new(at.X, hi.Y),
+					}
+				do
+					local d = (cand - at).Magnitude
+					if
+						d < best
+						and cand.X > 0
+						and cand.X < vp.X
+						and cand.Y > 0
+						and cand.Y < vp.Y
+					then
+						best, out = d, cand
+					end
+				end
+				at = out
+			end
+		end
+		mark.Position = UDim2.fromOffset(at.X, at.Y)
 		range.Text = Waypoint.metres(flat)
 		mark.Visible = true
 	end)

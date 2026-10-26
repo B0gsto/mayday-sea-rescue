@@ -145,7 +145,7 @@ local function cashRoll(parent: Instance, fromCash: number, cash: number, second
 	local frame = Instance.new("Frame")
 	frame.Name = "Roll"
 	frame.AnchorPoint = Vector2.new(0.5, 0.5)
-	frame.Position = UDim2.fromScale(0.5, 0.33)
+	frame.Position = UDim2.fromScale(0.5, 0.14) -- top centre: at 0.33 it sat behind your head (playtest 2026-10-26)
 	frame.Size = UDim2.fromOffset(250, 108)
 	frame.BackgroundColor3 = HudTheme.Colors.panel
 	frame.BackgroundTransparency = 0.2
@@ -222,7 +222,7 @@ local function cashRoll(parent: Instance, fromCash: number, cash: number, second
 			task.delay(1.8, function()
 				TweenService:Create(frame, TweenInfo.new(0.5), {
 					BackgroundTransparency = 1,
-					Position = UDim2.fromScale(0.5, 0.28),
+					Position = UDim2.fromScale(0.5, 0.09),
 				}):Play()
 				TweenService:Create(number, TweenInfo.new(0.5), { TextTransparency = 1 }):Play()
 				TweenService:Create(word, TweenInfo.new(0.5), { TextTransparency = 1 }):Play()

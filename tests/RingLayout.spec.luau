@@ -290,4 +290,58 @@ return function(t)
 			end
 		end
 	)
+	t.test(
+		"seaRoute: the home pin leads round the plate and in through the cove mouth, never over land",
+		function()
+			local function onLand(
+				p: Vector3
+			): string? -- on the plate or within 8 studs (trim skirt, bridge piers)
+				for _, isl in L.Islands do
+					for _, o in { { 0, 0 }, { 8, 0 }, { -8, 0 }, { 0, 8 }, { 0, -8 } } do
+						if L.onPlate(isl, p.X + o[1], p.Z + o[2]) then
+							return isl.id
+						end
+					end
+				end
+				return nil
+			end
+			for k, isl in L.Islands do
+				local berth = isl.berths.Boat.Position
+				local right = isl.frame.RightVector
+				local nxt = L.Islands[k % #L.Islands + 1]
+				local starts = {
+					isl.center - isl.facing * 230, -- the lagoon, behind the island
+					isl.center + right * 260, -- beside it
+					isl.center - right * 260,
+					isl.center + isl.facing * 420 + right * 320, -- out at sea, off the mouth's line
+					nxt.berths.Boat.Position, -- a neighbour's berth
+				}
+				for _, s0 in starts do
+					local p = Vector3.new(s0.X, 0, s0.Z)
+					t.expect(onLand(p)).toBe(nil)
+					local leg0, len = L.seaRoute(p, berth)
+					t.expect(len >= (Vector3.new(berth.X, 0, berth.Z) - p).Magnitude - 1e-6)
+						.toBe(true)
+					local steps = 0
+					while (Vector3.new(berth.X, 0, berth.Z) - p).Magnitude > 4 do
+						local leg = L.seaRoute(p, berth)
+						local d = Vector3.new(leg.X - p.X, 0, leg.Z - p.Z)
+						p += if d.Magnitude > 4 then d.Unit * 4 else d
+						local land = onLand(p)
+						if land then
+							error(`{isl.id}: the route from {s0} runs over {land} at {p}`)
+						end
+						steps += 1
+						if steps > 1000 then
+							error(`{isl.id}: no way home from {s0}`)
+						end
+					end
+					t.expect(leg0 ~= berth or (s0 - isl.center):Dot(isl.facing) > 0).toBe(true)
+				end
+				-- straight in through the mouth: the pin is the berth itself
+				local front = isl.center + isl.facing * 400
+				t.expect(L.seaRoute(Vector3.new(front.X, 0, front.Z), berth)).toBe(berth)
+			end
+		end
+	)
 end

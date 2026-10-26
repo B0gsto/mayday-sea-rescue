@@ -270,6 +270,38 @@ local function anyPromptPanel(): boolean
 	return false
 end
 
+-- Viewport px boxes (IgnoreGuiInset space) round the visible HUD in the edge regions, 4x a second: world pins and
+-- their edge arrows keep out of them (UI/Waypoint; playtest 2026-10-26: pins hid behind the menu buttons)
+export type Box = { min: Vector2, max: Vector2 }
+local EDGE_REGIONS =
+	{ menu = true, wallet = true, objective = true, minimap = true, right = true, gauges = true }
+local hudBoxes: { Box } = {}
+
+local function boxHud(): { Box }
+	local out: { Box } = {}
+	local inset = GuiService:GetGuiInset()
+	for _, e in entries do
+		if EDGE_REGIONS[e.name] and e.frame.Visible and e.gui.Enabled and e.gui.Parent ~= nil then
+			local lo, hi = Vector2.new(math.huge, math.huge), Vector2.new(-math.huge, -math.huge)
+			for _, ch in e.frame:GetChildren() do
+				if ch:IsA("GuiObject") and ch.Visible and ch.AbsoluteSize.X > 1 then
+					lo, hi =
+						lo:Min(ch.AbsolutePosition), hi:Max(ch.AbsolutePosition + ch.AbsoluteSize)
+				end
+			end
+			if lo.X < hi.X then
+				local off = if e.gui.IgnoreGuiInset then Vector2.zero else inset
+				table.insert(out, { min = lo + off, max = hi + off })
+			end
+		end
+	end
+	return out
+end
+
+function Layout.hudBoxes(): { Box }
+	return hudBoxes
+end
+
 function Layout.promptBusy(): boolean
 	return promptIsBusy
 end
@@ -314,6 +346,7 @@ if RunService:IsClient() and Players.LocalPlayer then
 			acc = 0
 			evaluate()
 			promptIsBusy = anyPromptPanel()
+			hudBoxes = boxHud()
 			evaluateNewPlayer()
 		end
 	end)

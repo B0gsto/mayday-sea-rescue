@@ -2,7 +2,7 @@
 -- PickupRingController (docs/23 e.1, WP-2): "slow down here" reads from the water. Every survivor still in the
 -- water (Workspace.CallProps "Victim" with Survivor and no OnVehicle; PrivateCasualtyController already unparents
 -- other crews' casualties) gets an orange ring of Board.RING on the water: missions, free-roam and big calls alike.
--- It dims grey while the craft you sit in is full (the seat pips say why) and goes once they are aboard. They
+-- It dims grey while the craft you sit in is full (the seat pips say why) and swells and fades as they climb aboard. They
 -- wave on their own (RescueService "Wave" pose with a boat in sight, CasualtyController).
 -- Assist(craft, throttle, brakeDecel): BoatController runs the driven hull's throttle through it, so a craft with
 -- room slows itself to Board.ASSIST_SPEED by the nearest ring (Board.assistThrottle) and keys, stick and
@@ -20,9 +20,12 @@ local PickupRingController = {}
 
 local ORANGE = Color3.fromRGB(255, 140, 30)
 local GREY = Color3.fromRGB(150, 150, 150)
-local BAND = 1.4 -- studs wide: reads from far -- tune
+local BAND = 1.4 -- studs wide up close; it widens with distance so it reads from ~150 studs out -- tune
+local FAR_WIDTH = 1 / 40 -- band width per stud of camera distance (150 studs: ~3.8 wide) -- tune
+local FADE = 1 -- s: once they leave the water the ring swells and fades, so the climb aboard reads
 
 local rings: { [Model]: CylinderHandleAdornment } = {}
+local fading: { [CylinderHandleAdornment]: number } = {} -- band -> os.clock() they left the water
 local folder: Folder? = nil
 
 local function seatedCraft(): Model?
@@ -69,6 +72,7 @@ local function step()
 	local craft = seatedCraft()
 	local full = craft ~= nil and not Board.hasRoom(craft)
 	local seen: { [Model]: boolean } = {}
+	local cam = Workspace.CurrentCamera
 	for _, m in if props then props:GetChildren() else {} do
 		if waiting(m) then
 			local v = m :: Model
@@ -78,16 +82,36 @@ local function step()
 			local at = (v.PrimaryPart :: BasePart).Position
 			local ok, h = pcall(Weather.heightAt, at)
 			local anchor = band.Adornee :: BasePart
-			anchor.CFrame =
-				CFrame.new(at.X, (if ok and type(h) == "number" then h else at.Y) + 0.15, at.Z)
+			-- wider and taller far off: a flat 1.4-stud band vanished at a grazing angle (playtest 2026-10-26)
+			local far = if cam then (cam.CFrame.Position - at).Magnitude else 0
+			band.InnerRadius = Board.RING - math.clamp(far * FAR_WIDTH, BAND, Board.RING / 2)
+			band.Height = math.clamp(far / 250, 0.1, 0.8)
+			anchor.CFrame = CFrame.new(
+				at.X,
+				(if ok and type(h) == "number" then h else at.Y) + 0.15 + band.Height / 2,
+				at.Z
+			)
 			band.Color3 = if full then GREY else ORANGE
 			band.Transparency = if full then 0.7 else 0.15
 		end
 	end
 	for v, band in rings do
 		if not seen[v] then
-			(band.Adornee :: Instance):Destroy()
 			rings[v] = nil
+			fading[band] = os.clock()
+		end
+	end
+	for band, t0 in fading do
+		local u = (os.clock() - t0) / FADE
+		if u >= 1 then
+			(band.Adornee :: Instance):Destroy()
+			fading[band] = nil
+		else
+			local w = band.Radius - band.InnerRadius
+			band.Radius = Board.RING * (1 + 0.5 * u)
+			band.InnerRadius = band.Radius - w
+			band.Color3 = ORANGE
+			band.Transparency = 0.15 + 0.85 * u
 		end
 	end
 end
