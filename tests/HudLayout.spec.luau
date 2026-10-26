@@ -110,6 +110,38 @@ return function(t)
 		end
 	)
 
+	-- verify 2026-10-26 (fix-f1): the debrief toast covered the Cash counter at 667x375; portrait the menu ran into
+	-- the minimap. Phone sizes (any device, with and without the top-bar inset): the wallet, menu, minimap, debrief,
+	-- quest tracker and call card column never overlap, and the debrief keeps off the touch zones.
+	t.test("phone sizes: wallet, menu, minimap, debrief, quest, call card never overlap", function()
+		local KEY = { "wallet", "menu", "minimap", "debrief", "quest", "right" }
+		for _, screen in { Vector2.new(667, 375), Vector2.new(844, 390), Vector2.new(390, 844) } do
+			for _, top in { 0, 58 } do
+				for _, dev in { "Touch", "Keyboard" } do
+					local insets = { top = top, bottom = 0, left = 0, right = 0 }
+					local mt = HudLayout.compute(screen, insets, dev)
+					local u = mt.usable
+					t.expect(mt.touch).toBe(true) -- phone-sized: the touch arrangement on every device
+					for i = 1, #KEY do
+						for j = i + 1, #KEY do
+							if KEY[i] == "minimap" and KEY[j] == "quest" then
+								continue -- the tag hangs over the minimap's edge on purpose
+							end
+							t.expect(overlaps(mt.rects[KEY[i]], mt.rects[KEY[j]])).toBe(false)
+						end
+					end
+					local d = mt.rects.debrief
+					local x, y, x2, y2 = box(d)
+					t.expect(x >= 0 and y >= 0 and x2 <= u.X and y2 <= u.Y).toBe(true)
+					t.expect(d.size.X >= HudLayout.DEBRIEF_WIDTH * HudLayout.DEBRIEF_MIN).toBe(true)
+					local stickRight = if u.X < u.Y then u.X else 0.4 * u.X
+					t.expect(x < stickRight and y2 > 0.55 * u.Y + 1e-6).toBe(false)
+					t.expect(x2 > 0.7 * u.X + 1e-6 and y2 > 0.65 * u.Y + 1e-6).toBe(false)
+				end
+			end
+		end
+	end)
+
 	local DESKTOP = { Vector2.new(1920, 1080), Vector2.new(1366, 768), Vector2.new(1280, 720) }
 	local NO_INSETS = { top = 0, bottom = 0, left = 0, right = 0 }
 
@@ -167,6 +199,11 @@ return function(t)
 			-- the prompt (mechanic panels) clears the minimap, the gauges and the menu
 			for _, name in { "minimap", "gauges", "menu" } do
 				t.expect(overlaps(mt.rects.prompt, mt.rects[name])).toBe(false)
+			end
+			-- the debrief toast keeps its top band, clear of the edge HUD
+			t.expect(mt.rects.debrief.pos.Y).toBe(HudLayout.MARGIN)
+			for _, name in { "menu", "wallet", "minimap", "right", "gauges", "quest" } do
+				t.expect(overlaps(mt.rects.debrief, mt.rects[name])).toBe(false)
 			end
 		end
 	end)

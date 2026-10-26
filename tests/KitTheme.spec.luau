@@ -22,11 +22,41 @@ return function(t)
 			local s = Theme.scaleFor(vp)
 			local px = Theme.panelSize(vp, s, want) * s
 			t.expect(px.X <= vp.X * 0.94 + 0.01).toBe(true)
-			t.expect(px.Y <= vp.Y * 0.9 + 0.01).toBe(true)
+			t.expect(px.Y <= vp.Y * (if Theme.compact(vp, s) then 0.98 else 0.9) + 0.01).toBe(true)
 		end
 		-- portrait grows to most of the height
 		local tall = Theme.panelSize(Vector2.new(390, 844), 0.7, want)
 		t.expect(tall.Y * 0.7 >= 844 * 0.78).toBe(true)
+	end)
+
+	-- verify 2026-10-26 (fix-f1): landscape phones showed 1.3 Shop cards. Safe areas of 667x375 / 844x390 (with and
+	-- without the top bar, notch insets): compact panels (tabs in the title bar, 8 du padding, Kit/Panel) fit 3 cards.
+	t.test("short landscape panels are compact and show 3 cards", function()
+		local S = Theme.Size
+		t.expect(Theme.compact(Vector2.new(1280, 720), 1)).toBe(false)
+		t.expect(Theme.compact(Vector2.new(390, 844), 0.7)).toBe(false)
+		for _, vp in
+			{
+				Vector2.new(667, 317),
+				Vector2.new(667, 375),
+				Vector2.new(844, 332),
+				Vector2.new(756, 311),
+			}
+		do
+			local s = Theme.scaleFor(vp)
+			t.expect(Theme.compact(vp, s)).toBe(true)
+			local h = Theme.panelSize(vp, s, Vector2.new(760, 580)).Y
+			-- Kit/Panel: bar half + inner offset, body lip, 8 du padding, list padding
+			local list = h - S.titleBar * 0.5 - (S.titleBar * 0.5 + 6) - 8 - 2 * 8 - 12
+			t.expect(list >= 3 * S.cardCompact + 2 * 12).toBe(true)
+		end
+	end)
+
+	t.test("kit touch targets are >= 44 px at the phone floor", function()
+		local S = Theme.Size
+		for _, du in { S.touch, S.tabOff, S.tab, S.close, S.price.Y, S.reply, S.icon } do
+			t.expect(du * Theme.MIN_SCALE >= 44).toBe(true)
+		end
 	end)
 
 	t.test("the icon bar wraps into columns that fit the height", function()

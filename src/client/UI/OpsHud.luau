@@ -4,7 +4,7 @@
 -- closures (OnClosed). Mounted by OpsController.
 -- A new call shows as the pager card, its flare and pin, and a pager beep; no voice.
 -- Placement (UI/Layout): the strip in the "objective" region (top left), the pager in the "right"
--- column, the debrief a toast in the "notice" band. In the cold open both are hidden: the world
+-- column, the debrief a toast in its own "debrief" region. In the cold open both are hidden: the world
 -- marker (UI/Waypoint) is the one objective readout. A new player (Layout.newPlayer) gets no
 -- relay / big-call alert.
 -- The world shows the way to a call (docs/16 K2): a red parachute flare goes up over it
@@ -67,7 +67,7 @@ function OpsHud.mount(playerGui: Instance, ops: any)
 		end
 	end
 	Layout.onColdOpen(applyColdOpen)
-	local debrief = OpsDebrief.new(Layout.region(gui, "notice"))
+	local debrief = OpsDebrief.new(Layout.region(gui, "debrief"))
 	local activeOp: string? = nil
 	local findOp: string? = nil
 	local stopFind: (() -> ())? = nil

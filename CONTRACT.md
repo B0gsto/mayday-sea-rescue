@@ -221,7 +221,8 @@ pin, and a beep (no radio). Voices are NPCs only: `VoiceTTS` + `UI/VoiceCast`.
   `open`, `close`, `toggle`, `openBoat`, `isOpen`; player attribute `MenuOpen`. The quest tracker chip (region
   `quest`: island art, place, distance to `QuestTarget`; tap opens Quests) shows while a quest is active.
 - `src/shared/HudLayout.luau` (pure, `tests/HudLayout.spec.luau`) places the regions (menu, wallet, objective,
-  status, notice, prompt, minimap, gauges, right, quest) per device, clear of Roblox's thumbstick and jump zones;
+  status, notice, prompt, minimap, gauges, right, quest, debrief) per device (phone-sized screens: the touch
+  arrangement on every device), clear of Roblox's thumbstick and jump zones;
   `UI/Layout` turns them into frames (`region`, `coldOpen`, `newPlayer`, `promptBusy`, `hudBoxes`: world pins keep out). `HudController`: wallet,
   award pops. `UI/HudTheme`, `UI/Kit/*` (Theme, Style, Panel, Card, PriceButton, IconButton, Tabs, ...),
   `UI/InputGlyph`, `UI/Glyph`.
