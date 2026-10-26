@@ -54,10 +54,10 @@ SpinRules.RARITY_ORDER = ORDER
 SpinRules.RARITIES = {
 	Common = { odds = 50, color = "disabled", cash = 150 },
 	Uncommon = { odds = 25, color = "green", cash = 400 },
-	Rare = { odds = 15, color = "blue", cash = 1200 },
-	Epic = { odds = 7, color = "purple", cash = 3000 },
-	Legendary = { odds = 2.5, color = "yellow", cash = 8000 },
-	Mythic = { odds = 0.5, color = "pink", cash = 20000 },
+	Rare = { odds = 15, color = "blue", cash = 600 },
+	Epic = { odds = 7, color = "purple", cash = 1500 },
+	Legendary = { odds = 2.5, color = "yellow", cash = 4000 },
+	Mythic = { odds = 0.5, color = "pink", cash = 10000 },
 } :: { [string]: { odds: number, color: string, cash: number } }
 
 SpinRules.SEGMENTS = {

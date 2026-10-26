@@ -525,3 +525,48 @@ build Y, clearly stated in the UI ... we can scale that." This wins over every r
 **Work package.** WP-28 (after the current batch lands, before WP-27 ring): remove ranks/Rep; unlock tree config +
 rules + specs; tablet cards and blueprints show prerequisites; craft/building gates; call reach; badges/leaderboard
 to rescues; pacing re-tune; docs (00, 02, 03, 04) updated.
+
+## (r) Progression pass 2026-10-26
+
+Owner: "refine the progression", "make the core loop better", "I don't know how to get people to work". Numbers
+and small rules only (docs/24 F). The sims now model build time (calls fill the wait), the Builders' speed-up,
+free spins' Cash (SpinRules rolls, duplicates), and log where Cash comes from (`tests/Pacing`, `tests/NewPlayerPace`).
+
+| Measure (solo free player, sim) | Before | After |
+|---|---|---|
+| First build starts (NewPlayerPace) | 8.3 min | 0.8 min (right after the first rescue; done before call 2 ends) |
+| Whole tree (last item) | 12.9 h (Clinic) | 15.1 h (Trophy hall); one friend 14.1 h |
+| Unlock gaps, first 2 h | 7–24 min (slip → jet ski hull 24) | 8–19 min (asserted <= 20) |
+| Gaps 2–5 h | 12–39 min | 10–47 min |
+| Longest gap | 148 min (Hangar → Helicopter) | 179 min (Hangar → Helicopter), Station → Sub 107 |
+| Build time, first hour / late | 0.3 min / ~1 min (x3+ crew) | <= 0.9 min / 3.3–4.1 min (x2.3 crew) |
+| Full Builder crew | x3.5+ (10 Builders x 0.35) | x1.75 commons, x2.3 the sim's late crew |
+| Worker Cash share (40 h) | not logged (weak: Gatherers 2/min) | workers 15%, offline 10%, Medic bonus 11% |
+| Free spins' Cash, to the tree's end | not modeled | 5.2% |
+
+Timeline after: Workshop 0:02, Fish shed 0:13, Boathouse 0:24, RIB 0:33, Pontoon 0:43, Boat yard 0:56, Clinic 1:15,
+Lifeboat slip 1:32, Lifeboat 2:20, Lookout 3:14, Helipad 4:01, Hangar 5:13, Helicopter 8:27, Rescue boathouse 9:00,
+Crane 9:47, Sub pen 10:50, Station 12:23, Submarine 14:10, Trophy hall 15:06.
+
+Changes:
+- **First build:** Workshop 1,000 → 500 (the cold-open pay), so the tutorial's "build the Workshop" beat is
+  affordable right after the first rescue; 20 s of work.
+- **Build time** (`BuildTimer`): `clamp(20 * (cash/1000)^0.9, 20, 600)` s (was ^0.65, min 15); rate `1 + 0.15 *
+  units` over the best 5 Builders (was 0.35 x 10): a full crew about halves a build, so a Builder is felt, not x3.5.
+- **Workers** (`WorkerRules`): Gatherer 2 → 3 Cash/min/unit, Rescuer 20 → 40 Cash per 5-min trip, Mechanic speed
+  +2% → +3%/unit (cap 10 → 15%), Medic +4% → +3%/unit (cap 30 → 20%), offline 30% → 15% (per unit it still pays
+  more than before: at 30% offline outearned play). CAP 30 and rarity 80/17/3 kept: past the cap a rarer rescue
+  still replaces the lowest (~20% of rescues for hours, then legendaries), so rescuing keeps upgrading the crew.
+- **Worker buildings early:** Fish shed 3,000 → 1,500 (0:13), Boat yard 8,000 → 5,000 (0:56), Clinic 30,000 → 8,000
+  and needs Pontoon (was Station; Medics idled until ~13 h, now 1:15). Rescue boathouse 12,000 → 16,000.
+- **Late prices** up to stretch the tree: Lookout 19,000, Lifeboat slip 8,000, Helipad 22,000, Hangar 32,000, Crane
+  25,000, Sub pen 38,000, Station 51,000, Trophy hall 38,000; Lifeboat 18,000, Helicopter 85,000, Submarine 64,000.
+- **Spin wheel:** duplicate Cash halved for Rare+ (600 / 1,500 / 4,000 / 10,000; Common 150, Uncommon 400 kept): free
+  spins were ~8% of all Cash, now ~5%.
+- Helicopter target 8 h → 9 h (`tests/Pacing`).
+
+Limit: 17 h is out of reach without new rows. Each late building's Cash is capped by its Robux skip (R$ >= 1.3x
+packs: Station <= 51.7k, Sub pen / Hangar / Trophy <= 38.7k, Crane / Helipad <= 25.7k) and the Submarine by its
+249 R$ pass (<= 64.8k). After the helicopter only ~220k can be spent, ~6.5 h at ~550 Cash/min, so the tree lands
+at ~15 h (inside the 17 h +/- 15% the sim asserts). To reach 17 h without longer gaps: re-price the late Robux
+skips / Sub pass (MonetizationConfig), or add late rows (building tiers), not more Cash per item.

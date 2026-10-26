@@ -7,13 +7,14 @@
 -- tablet prices it.
 --   Jetty (start)
 --   +- Pontoon (2nd berth) -- Lookout tower -- Helipad -- Hangar -> Helicopter
---   |                              +- Rescue boathouse
+--   |    +- Clinic                 +- Rescue boathouse
 --   +- Workshop -+- Boathouse -> RIB, boat board, paint booth, Robux boats
 --   |            |    +- Lifeboat slip -> Lifeboat
 --   |            |    +- Crane -- Sub pen -> Submarine
 --   |            +- Boat yard
 --   +- Fish shed
---   +- Station (Boathouse + Lookout tower) -- Clinic, Trophy hall
+--   +- Station (Boathouse + Lookout tower) -- Trophy hall
+--   Prices and pacing: docs/23 (r) (tests/Pacing; R$ floors in tests/DockConfig cap the late Cash prices).
 --   Decor: the jetty only.
 local Marina = require(script.Parent.Parent:WaitForChild("Marina"))
 
@@ -73,7 +74,7 @@ DockConfig.Buildings = {
 	Workshop = {
 		name = "Workshop",
 		desc = "Builders work here. Unlocks the boathouse.",
-		cash = 1000, -- tune: the first build, ~8 min in (tests/NewPlayerPace)
+		cash = 500, -- tune: the first build, right after the first rescue (tests/NewPlayerPace)
 		needs = {},
 		product = "DockWorkshop",
 		robux = 15,
@@ -86,7 +87,7 @@ DockConfig.Buildings = {
 	FishShed = {
 		name = "Fish shed",
 		desc = "Gatherers work here.",
-		cash = 3000, -- tune
+		cash = 1500, -- tune
 		needs = {},
 		product = "DockFishShed",
 		robux = 35,
@@ -110,7 +111,7 @@ DockConfig.Buildings = {
 	LookoutTower = {
 		name = "Lookout tower",
 		desc = "A tall tower to spot calls from.",
-		cash = 8000, -- tune
+		cash = 19000, -- tune
 		needs = { "Pontoon" },
 		product = "DockLevel4",
 		robux = 75,
@@ -121,7 +122,7 @@ DockConfig.Buildings = {
 	BoatYard = {
 		name = "Boat yard",
 		desc = "Mechanics work here.",
-		cash = 8000, -- tune
+		cash = 5000, -- tune
 		needs = { "Workshop" },
 		product = "DockBoatYard",
 		robux = 75,
@@ -134,7 +135,7 @@ DockConfig.Buildings = {
 	LifeboatSlip = {
 		name = "Lifeboat slip",
 		desc = "A slipway for the big lifeboat.",
-		cash = 10000, -- tune
+		cash = 8000, -- tune
 		needs = { "Boathouse" },
 		product = "DockLifeboatSlip",
 		robux = 99,
@@ -146,7 +147,7 @@ DockConfig.Buildings = {
 	Crane = {
 		name = "Crane",
 		desc = "A slipway crane: relaunch with no wait.",
-		cash = 15000, -- tune
+		cash = 25000, -- tune
 		needs = { "Boathouse" },
 		product = "DockCrane",
 		robux = 99,
@@ -156,7 +157,7 @@ DockConfig.Buildings = {
 	Helipad = {
 		name = "Helipad",
 		desc = "A landing pad for a helicopter.",
-		cash = 10000, -- tune
+		cash = 22000, -- tune
 		needs = { "LookoutTower" },
 		product = "DockHelipad",
 		robux = 99,
@@ -166,7 +167,7 @@ DockConfig.Buildings = {
 	RescueBoathouse = {
 		name = "Rescue boathouse",
 		desc = "Rescuers work here.",
-		cash = 12000, -- tune
+		cash = 16000, -- tune
 		needs = { "LookoutTower" },
 		product = "DockRescueBoathouse",
 		robux = 99,
@@ -179,7 +180,7 @@ DockConfig.Buildings = {
 	SubPen = {
 		name = "Sub pen",
 		desc = "A sub pen to launch your submarine.",
-		cash = 20000, -- tune
+		cash = 38000, -- tune
 		needs = { "Crane" },
 		product = "DockSubPen",
 		robux = 149,
@@ -190,7 +191,7 @@ DockConfig.Buildings = {
 	Hangar = {
 		name = "Hangar",
 		desc = "A hangar for your rescue helicopter.",
-		cash = 20000, -- tune
+		cash = 32000, -- tune
 		needs = { "Helipad" },
 		product = "DockHangar",
 		robux = 149,
@@ -202,7 +203,7 @@ DockConfig.Buildings = {
 	Station = {
 		name = "Station",
 		desc = "A lit station and a beacon for the harbour.",
-		cash = 40000, -- tune
+		cash = 51000, -- tune
 		needs = { "Boathouse", "LookoutTower" },
 		product = "DockLevel5",
 		robux = 199,
@@ -212,7 +213,7 @@ DockConfig.Buildings = {
 	TrophyHall = {
 		name = "Trophy hall",
 		desc = "Cups and island stamps on the station wall.",
-		cash = 20000, -- tune
+		cash = 38000, -- tune
 		needs = { "Station" },
 		product = "DockTrophyHall",
 		robux = 149,
@@ -222,8 +223,8 @@ DockConfig.Buildings = {
 	Clinic = {
 		name = "Clinic",
 		desc = "Medics work here.",
-		cash = 30000, -- tune
-		needs = { "Station" },
+		cash = 8000, -- tune
+		needs = { "Pontoon" },
 		product = "DockClinic",
 		robux = 199,
 		spot = isle(-85, -105), -- back left, open front onto the bridge path

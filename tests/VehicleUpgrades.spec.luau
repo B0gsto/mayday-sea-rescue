@@ -15,7 +15,7 @@ return function(t)
 	t.test("prices follow docs 03 4.1 (25 / 50 / 100 % of the vehicle price)", function()
 		t.expect(prices("JetSki")).toEqual({ 300, 800 }) -- free vehicle: fixed
 		t.expect(prices("RIB")).toEqual({ 625, 1250, 2500 })
-		t.expect(prices("Lifeboat")).toEqual({ 3000, 6000, 12000 })
+		t.expect(prices("Lifeboat")).toEqual({ 4500, 9000, 18000 })
 	end)
 
 	t.test(

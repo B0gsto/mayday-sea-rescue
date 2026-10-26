@@ -1,4 +1,4 @@
--- BuildTimer (docs/24 B): work from the Cash price, decor flat, the Builders' rate (rarest 10, capped units),
+-- BuildTimer (docs/24 B): work from the Cash price, decor flat, the Builders' rate (rarest BUILDERS, capped units),
 -- progress/time-left arithmetic and the board's m:ss text.
 return function(t)
 	local B = t.load("src/shared/BuildTimer.luau")
@@ -10,16 +10,17 @@ return function(t)
 
 	t.test("work follows the Cash price, clamped; decor is 8 s", function()
 		t.expect(B.work(1000)).toBeCloseTo(20, 1e-9)
-		t.expect(B.work(10000)).toBeCloseTo(20 * 10 ^ 0.65, 1e-9)
-		t.expect(B.work(40000)).toBeCloseTo(20 * 40 ^ 0.65, 1e-9)
+		t.expect(B.work(10000)).toBeCloseTo(B.SCALE * 10 ^ B.POW, 1e-9)
+		t.expect(B.work(40000)).toBeCloseTo(B.SCALE * 40 ^ B.POW, 1e-9)
 		t.expect(B.work(0)).toBe(B.MIN)
 		t.expect(B.work(1e9)).toBe(B.MAX)
 		t.expect(B.work(40000, true)).toBe(B.DECOR)
 	end)
 
-	t.test("the rate is 1 + 0.35 per Builder unit, rarest ten only", function()
+	t.test("the rate is 1 + PER per Builder unit, the rarest BUILDERS only", function()
 		t.expect(B.rate(0)).toBe(1)
-		t.expect(B.rate(2.5)).toBeCloseTo(1 + 0.35 * 2.5, 1e-9)
+		t.expect(B.rate(2.5)).toBeCloseTo(1 + B.PER * 2.5, 1e-9)
+		t.expect(B.rate(B.BUILDERS) >= 1.6 and B.rate(B.BUILDERS) <= 2.5).toBe(true) -- a full crew ~halves a build
 		local many = {}
 		for i = 1, 12 do
 			many[i] = worker("Builder", if i <= 2 then 3 else 1)
@@ -28,10 +29,10 @@ return function(t)
 		t.expect(#picked).toBe(B.BUILDERS)
 		t.expect(picked[1]).toBe(1)
 		t.expect(picked[2]).toBe(2)
-		t.expect(B.units(many)).toBeCloseTo(2 * W.RARITY_MULT[3] + 8, 1e-9)
+		t.expect(B.units(many)).toBeCloseTo(2 * W.RARITY_MULT[3] + B.BUILDERS - 2, 1e-9)
 		local mixed = { worker("Gatherer", 3), worker("Builder", 2), worker("Builder", 1) }
 		t.expect(B.builders(mixed)).toEqual({ 2, 3 })
-		t.expect(B.rateOf(mixed)).toBeCloseTo(1 + 0.35 * 2.5, 1e-9)
+		t.expect(B.rateOf(mixed)).toBeCloseTo(1 + B.PER * 2.5, 1e-9)
 	end)
 
 	t.test("the finish tier follows the time left: 1 <= 60 s, 2 <= 300 s, 3 longer", function()

@@ -23,11 +23,11 @@ updated when the work merges).
 
 ## B. Builders and timed construction
 
-- Every building and decor build takes time. Base work `T = clamp(20 * (cash / 1000) ^ 0.65, 15, 600)` seconds of
-  one-crew work (Workshop 1,000 → 20 s, 10,000 → ~90 s, 40,000 → ~220 s); decor 8 s. Robux-bought builds take the
+- Every building and decor build takes time. Base work `T = clamp(20 * (cash / 1000) ^ 0.9, 20, 600)` seconds of
+  one-crew work (Workshop 500 → 20 s, 10,000 → ~2:40, 40,000 → ~9 min); decor 8 s (tuned in docs/23 (r)). Robux-bought builds take the
   same time (Robux skips Cash, not the build).
-- One construction at a time per island. Rate = `1 + 0.35 * units`, units = sum of `WorkerRules.RARITY_MULT` over
-  the Builder workers present at the site (all of the island's Builders go there, max 10). The island always has its
+- One construction at a time per island. Rate = `1 + 0.15 * units`, units = sum of `WorkerRules.RARITY_MULT` over
+  the Builder workers present at the site (the island's best Builders go there, max 5: a full crew ~halves a build). The island always has its
   base crew (the two hard-hat builder NPCs at the build station) so a 0-Builder player still builds at rate 1.
   Progress is saved (progress + last tick, server clock); it keeps going while the owner is offline at the last rate,
   so a build finished while away is standing on rejoin. Builders now cut TIME instead of Cash: the Builder Cash

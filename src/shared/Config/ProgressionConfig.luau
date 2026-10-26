@@ -16,9 +16,9 @@ ProgressionConfig.SchemaVersion = 1
 ProgressionConfig.Vehicles = {
 	JetSki = { price = 0 },
 	RIB = { needs = "Boathouse", price = 2500 }, -- tune
-	Lifeboat = { needs = "LifeboatSlip", price = 12000 }, -- tune
-	RescueHelicopter = { needs = "Hangar", price = 55000 }, -- tune: in week 1 (tests/Pacing)
-	Submarine = { needs = "SubPen", price = 40000 }, -- tune
+	Lifeboat = { needs = "LifeboatSlip", price = 18000 }, -- tune
+	RescueHelicopter = { needs = "Hangar", price = 85000 }, -- tune: in week 1 (tests/Pacing)
+	Submarine = { needs = "SubPen", price = 64000 }, -- tune
 	-- Premium fleet (2026-10-21, user): Robux only, through the vehicle's Game Pass; launched from the boathouse.
 	StormRunner = { needs = "Boathouse", price = 0, passOnly = true },
 	Tidewalker = { needs = "Boathouse", price = 0, passOnly = true },

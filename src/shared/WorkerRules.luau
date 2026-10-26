@@ -25,14 +25,14 @@ W.CAP = 30 -- workers kept (full in ~1.3 h of play); past it see admit -- tune
 W.SLOTS = 3 -- per worker building -- tune
 W.STATION_SLOTS = 2 -- more per building once the Station stands (the island's top tier) -- tune
 
-W.GATHER_PER = 2 -- Gatherer: Cash a minute per unit -- tune
+W.GATHER_PER = 3 -- Gatherer: Cash a minute per unit -- tune
 W.RESCUE_PERIOD = 300 -- s between NPC rescue boat trips -- tune
-W.RESCUE_PER = 20 -- Rescuer: Cash per trip per unit -- tune
+W.RESCUE_PER = 40 -- Rescuer: Cash per trip per unit -- tune
 W.RESCUE_RECRUIT = 0.1 -- a trip brings home a new worker this often -- tune
 W.BOAT_PER, W.BOAT_CAP = 0.1, 0.5 -- Mechanic: Boat to me cooldown -10% per unit, cap -50%
-W.SPEED_PER, W.SPEED_CAP = 0.02, 0.1 -- Mechanic: craft top speed +2% per unit, cap +10%
-W.PAY_PER, W.PAY_CAP = 0.04, 0.3 -- Medic: call pay +4% per unit, cap +30%
-W.OFFLINE_RATE = 0.3 -- Gatherers and Rescuers earn this share while you are away (0.1 read as worthless, playtest 2) -- tune
+W.SPEED_PER, W.SPEED_CAP = 0.03, 0.15 -- Mechanic: craft top speed +3% per unit, cap +15%
+W.PAY_PER, W.PAY_CAP = 0.03, 0.2 -- Medic: call pay +3% per unit, cap +20%
+W.OFFLINE_RATE = 0.15 -- Gatherers and Rescuers earn this share while you are away (0.1 of the old 2 Cash/min read as worthless, playtest 2; 0.3 outearned play at the 2026-10-26 rates) -- tune
 W.OFFLINE_CAP = 2 * 3600 -- s
 
 local NAMES = {

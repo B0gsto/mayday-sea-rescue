@@ -1,8 +1,9 @@
 -- NewPlayerPace: the first 10 minutes (docs/16 section 4), walked headlessly. A fresh profile does
 -- the cold open, stays seated, takes the tutorial calls CallLogic picks (answer -> launch ->
--- auto_board -> transport) with the real payouts, buys the jet ski Engine upgrade at the first
--- free moment after call 2 (B5) and can afford its first island building (the unlock tree's cheapest
--- root, docs/23 (q); was the first rank-up, B7). The clock: the cold open as
+-- auto_board -> transport) with the real payouts, builds its first island building (the unlock tree's
+-- cheapest root, docs/23 (q), (r)) as soon as it is affordable (the tutorial's beat right after the first
+-- rescue, docs/24 E), its crew working while the player takes the next call, and buys the jet ski Engine
+-- upgrade at the first free moment after call 2 (B5). The clock: the cold open as
 -- measured (docs/research/playtest-first-20-min.md Round 4), the next-call delay and capacities
 -- from config, and per trip the docs/02 travel budget out and back (CallTypes.TRAVEL_SECONDS,
 -- about 4x the real Calm Bay distance at jet-ski cruise). Prints the milestone minutes.
@@ -26,6 +27,7 @@ return function(t)
 	local DROP = 15 / 60 -- climb off at the pad, the debrief rolls
 	local TRIP = 2 * CallTypes.TRAVEL_SECONDS / 60 -- out and back
 	local BUY_MIN = 1 -- open the phone, Vehicles, buy the Engine
+	local BUILD_MIN = 0.5 -- tap the build tablet, tap the card
 	local ENGINE = (VehicleUpgrades.entry("JetSki", "Engine") :: any).price
 	local SEATS = VehicleConfig.JetSki.survivorCapacity
 	local FIRST_BUILD = math.huge -- the cheapest building that needs only the jetty
@@ -42,7 +44,7 @@ return function(t)
 		local events = {}
 		local seen = {}
 		local cashAt = {}
-		local building, buildDoneAt = false, 0
+		local buildDoneAt = nil
 		local function mark(label: string, at: number?)
 			if not seen[label] then
 				seen[label] = at or now
@@ -55,23 +57,21 @@ return function(t)
 			if data.cash >= ENGINE then
 				mark("upgrade affordable")
 			end
-			if seen["upgrade bought"] and data.cash >= FIRST_BUILD then
+			if data.cash >= FIRST_BUILD then
 				mark("first build affordable")
 			end
 		end
 		local function tryBuild()
-			if building or not seen["upgrade bought"] or data.cash < FIRST_BUILD then
+			if seen["first build started"] or data.cash < FIRST_BUILD then
 				return
 			end
-			mark("first build affordable")
+			now += BUILD_MIN * slow
 			data.cash -= FIRST_BUILD
-			building = true
 			mark("first build started")
-			buildDoneAt = now + BuildTimer.work(FIRST_BUILD) / 60
+			buildDoneAt = now + BuildTimer.work(FIRST_BUILD) / 60 -- the base crew alone (rate 1)
 		end
 		local function settleBuild()
-			if building and now >= buildDoneAt then
-				building = false
+			if buildDoneAt and now >= buildDoneAt then
 				mark("first build", buildDoneAt)
 			end
 		end
@@ -86,6 +86,7 @@ return function(t)
 		now = COLD_OPEN
 		pay("Swimmer")
 		mark("first reward")
+		tryBuild()
 		now += ColdOpen.NEXT_CALL_DELAY / 60 -- still seated on the jet ski (B2)
 		while now < 20 do
 			now += ANSWER * slow
@@ -96,6 +97,7 @@ return function(t)
 			local trips = math.ceil((choice.victims or 1) / SEATS)
 			now += trips * (TRIP + BOARD + DROP) * slow
 			pay(choice.kind)
+			mark("call 2 done")
 			settleBuild()
 			tryBuild()
 			if not seen["upgrade bought"] and data.cash >= ENGINE then
@@ -167,24 +169,21 @@ return function(t)
 		end
 	end)
 
-	t.test(
-		"the first island building is affordable by 11:00 (was the first rank-up, B7)",
-		function()
-			for _, s in scenarios do
-				local at = s.r.at["first build affordable"]
-				t.expect(at ~= nil and at <= 11).toBe(true)
-			end
+	t.test("the first build starts within 5 minutes (docs/23 (r))", function()
+		for _, s in scenarios do
+			local at = s.r.at["first build started"]
+			t.expect(at ~= nil and at <= 5).toBe(true)
 		end
-	)
+	end)
 
 	t.test("the RIB is in sight at 10 minutes", function()
 		t.expect(main.rib >= 0.2).toBe(true)
 	end)
 
-	t.test("the first build stands, its crew's work counted", function()
+	t.test("the first build stands before the next call is done", function()
 		for _, s in scenarios do
 			local at = s.r.at["first build"]
-			t.expect(at ~= nil and at <= 11).toBe(true)
+			t.expect(at ~= nil and at <= s.r.at["call 2 done"]).toBe(true)
 		end
 	end)
 end

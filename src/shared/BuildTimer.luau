@@ -1,17 +1,17 @@
 --!strict
 -- BuildTimer (docs/24 B): every build takes time. Base work comes from the Cash price (decor is a flat 8 s);
--- Builders cut time instead of Cash: rate = 1 + 0.35 * units, units = RARITY_MULT over the island's Builders
--- (rarest first, at most 10). The island keeps its two base crew, so even 0 Builders build at rate 1. Pure
+-- Builders cut time instead of Cash: rate = 1 + PER * units, units = RARITY_MULT over the island's Builders
+-- (rarest first, at most BUILDERS: a full crew about halves a build, docs/23 (r)). The island keeps its two base crew, so even 0 Builders build at rate 1. Pure
 -- (tests/BuildTimer.spec.luau); DockService saves progress with it and the build tablet shows its time left.
 local WorkerRules = require(script.Parent:WaitForChild("WorkerRules"))
 
 local B = {}
 
-B.MIN, B.MAX = 15, 600 -- seconds of one-crew work
-B.SCALE, B.POW = 20, 0.65
+B.MIN, B.MAX = 20, 600 -- seconds of one-crew work
+B.SCALE, B.POW = 20, 0.9 -- 1k 20 s, 2.5k 45 s, 10k 2:39, 40k 9:15 of one-crew work -- tune
 B.DECOR = 8
-B.PER = 0.35 -- rate per Builder unit
-B.BUILDERS = 10 -- the most Builders a site takes (the best rarities)
+B.PER = 0.15 -- rate per Builder unit -- tune
+B.BUILDERS = 5 -- the most Builders a site takes (the best rarities): 5 commons x1.75, a late rarer crew ~x2.2 -- tune
 
 -- Seconds of one-crew work for a building bought at `cash`; decor is flat.
 function B.work(cash: number, decor: boolean?): number
