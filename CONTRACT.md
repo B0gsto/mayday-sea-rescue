@@ -76,14 +76,15 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   `BUILDINGS` (card order), `LEVEL_ITEMS` (old dock level -> tree items, the save migration), decorations and
   `Blueprints` (quest-chain buildings). Rules: `src/shared/UnlockTree.luau` (pure, `tests/UnlockTree.spec.luau`):
   `missing`, `canBuy(key, owned, cash) -> ok, "Owned" | "Needs" | "Cash", price, need`, `canRobux` (Robux skips the
-  Cash, never the order), `craftMissing`, `migrate(level, owned)`. Craft gates:
+  Cash, never the order), `settle(owned, prepaid) -> built` (prepaid Robux buildings, in order), `craftMissing`,
+  `migrate(level, owned)`. Craft gates:
   `ProgressionConfig.Vehicles[id].needs`.
 - `src/shared/DockPieces.luau`: `building(key, berthCFrame) -> Model` (the Lego set; doors in the owner's colour =
   parts named "Flag"), `base(berthCFrame)` (the fixed set on every plate), `trophies`, `buildStation`,
   `decoration`. A buy plays the Lego build: `Dock_Build` S->C `{ plot, parent, name }`, `shared/BuildSeq` drops
   the pieces client-side. `Dock_Upgrade` C->S fn `(key) -> ok, reason`; Robux = products with `dockBuilding`
-  (keys `DockLevel2..5`, `DockHangar`, `DockSubPen`: the ids are the old dock levels'), granted once the
-  prerequisites stand.
+  (keys `DockLevel2..5`, `DockHangar`, `DockSubPen`: the ids are the old dock levels'); a receipt whose
+  prerequisites are missing is granted as prepaid (`data.dockPrepaid`, tablet chip "Paid"), built the moment they stand.
 - Build tablet: the station tablet opens `DockController`'s top-down build mode (`DockBlueprints`: `onIsland`,
   `needs`, `glyph`, drawn by `UI/BuildGlyph`; `DockBuild`: camera and spot maths). `server/Dock/BoatBoard` builds
   every craft board (boat, hangar, sub) with scale models from `ReplicatedStorage.VehiclePreviews`; client
@@ -185,7 +186,7 @@ pin, and a beep (no radio). Voices are NPCs only: `VoiceTTS` + `UI/VoiceCast`.
 - `DataService`: `Get`, `MarkDirty`, `Save(player, release?, deadline?)`, `OnLoaded(fn)`,
   `CommitReceipt(player, purchaseId, grantFn)` (idempotent receipt ledger), `HasReceipt`; session locks.
 - `ProgressionRules` (pure): `PlayerData { cash, vehicles, vehicleUpgrades, totalRescues, coldOpenDone,
-  dockBuildings, workers, flags, cosmetics, ... }` (retired `rep`, `dockLevel`, `crew`, `certs`, `exercises` stay
+  dockBuildings, dockPrepaid, workers, flags, cosmetics, ... }` (retired `rep`, `dockLevel`, `crew`, `certs`, `exercises` stay
   as saved, never read), `migrate` (old dock levels onto the tree, old crew hires paid back), `snapshot`,
   `canBuyVehicle`, `vehicleLock`. `ProgressionConfig`: craft unlocks (`needs` building, Cash price).
 - `ProgressionService`: `Award(player, cash, reason, flat?)` (storm, pass, friend and live-ops multipliers unless

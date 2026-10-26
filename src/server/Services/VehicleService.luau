@@ -77,12 +77,15 @@ type Record = {
 	spawnedAt: number, -- os.clock()
 	lastOccupiedAt: number?, -- os.clock() when the last rider left (RespawnPolicy)
 	recovery: VehicleRecovery.State,
+	home: CFrame, -- where it launched (its berth, pad or pen): sendHome brings it back here
 }
 
 local SPAWN_COOLDOWN = 2 -- seconds between launches per player
 local DOCK_RADIUS = 14 -- an emptied hull this close to a bay centre docks (anchors) -- tune
 local CHECK_INTERVAL = 0.5 -- seconds between sanity checks
 local SWEEP_INTERVAL = 5 -- seconds between idle / wreck sweeps (RespawnPolicy)
+local RECALL_RANGE = 200 -- studs from home: an empty craft further out goes home on the next launch -- tune
+local HELI_RETURN = 60 -- s an empty heli waits (landed or afloat) out past RECALL_RANGE before it flies home -- tune
 -- Real models per vehicle id (AssetIds names, LOD0; the first is required, the rest optional). A
 -- vehicle whose first model fails to load is built as the greybox.
 local VISUAL_ASSETS: { [string]: { string } } = {
@@ -641,6 +644,47 @@ local function policyState(record: Record): RespawnPolicy.State
 	}
 end
 
+-- A docked craft's pose at `at`: a heli hovering just over it (a helipad: WP-10b), the rest afloat.
+local function restAt(model: Model, spec: VehicleSpec, at: CFrame): CFrame
+	return if spec.craft == "Heli"
+		then Craft.heliLaunch(model, at)
+		else Simulator.restCFrame(model, at.X, at.Z, at.LookVector)
+end
+
+-- Nobody aboard and nobody being carried.
+local function unattended(record: Record): boolean
+	return not isOccupied(record) and next(record.survivors) == nil and not record.resetting
+end
+
+-- Playtest 3: an empty craft left far out goes back to where it launched, docked, engine off.
+local function sendHome(record: Record)
+	local root = record.root
+	Craft.clear(record.model)
+	Simulator.clear(record.model)
+	record.mode = "Dock"
+	root.Anchored = true
+	root.AssemblyLinearVelocity = Vector3.zero
+	root.AssemblyAngularVelocity = Vector3.zero
+	record.model:PivotTo(restAt(record.model, record.spec, record.home))
+	record.model:SetAttribute("EngineRunning", false)
+	record.lastGood = root.CFrame
+end
+
+-- Launching another craft brings the player's empty ones home from further than RECALL_RANGE (the pontoon's
+-- second berth still keeps one out, just at home). Before any launch spot is picked, so the spots see it.
+local function recallFar(player: Player, except: string)
+	local classes: { [string]: Record } = owned[player] or {}
+	for id, record in classes do
+		if
+			id ~= except
+			and flatDistance(record.root.Position, record.home.Position) > RECALL_RANGE
+			and unattended(record)
+		then
+			sendHome(record)
+		end
+	end
+end
+
 -- Periodic sweep: clears idle, superseded or wrecked vehicles nobody is (or just was) aboard.
 local function sweepVehicles()
 	local now = os.clock()
@@ -651,6 +695,14 @@ local function sweepVehicles()
 		if idle or wrecked then
 			print(`[VehicleService] clearing {model.Name}: {if idle then "idle" else "wrecked"}`)
 			despawnModel(model, if idle then "Idle" else "Wrecked")
+		elseif
+			record.spec.craft == "Heli"
+			and record.mode == "Drift"
+			and RespawnPolicy.idleFor(state, now) > HELI_RETURN
+			and flatDistance(record.root.Position, record.home.Position) > RECALL_RANGE
+			and unattended(record)
+		then
+			sendHome(record) -- left out on the sea or a far island: back on its helipad
 		end
 	end
 end
@@ -803,9 +855,7 @@ local function createVehicle(
 	model:SetAttribute("Owner", player.UserId)
 	model:SetAttribute("SpeedMultiplier", speedBonus(player))
 	model:SetAttribute("EngineRunning", false)
-	model:PivotTo(if spec.craft == "Heli"
-		then Craft.heliLaunch(model, at) -- hovering just over the berth (a helipad: WP-10b)
-		else Simulator.restCFrame(model, at.X, at.Z, at.LookVector))
+	model:PivotTo(restAt(model, spec, at))
 	for _, d in model:GetDescendants() do
 		if d:IsA("BasePart") then
 			d.CollisionGroup = BOAT_GROUP
@@ -839,6 +889,7 @@ local function createVehicle(
 		spawnedAt = os.clock(),
 		lastOccupiedAt = nil,
 		recovery = VehicleRecovery.new(),
+		home = at,
 	}
 	records[model] = record
 	byPlayer[player] = record
@@ -915,6 +966,7 @@ local function spawnLocked(
 	if not at then
 		return false, "NoBay"
 	end
+	recallFar(player, vehicleId)
 	-- seated: afloat in open water off the bay, clear of every other vehicle (docs/20 rule 7)
 	local launchAt = if docked or spec.craft == "Heli"
 		then nil
@@ -1717,6 +1769,7 @@ function VehicleService.DockSpot(player: Player, vehicleId: string): CFrame?
 	if plan == "Refuse" then
 		return nil
 	end
+	recallFar(player, vehicleId)
 	local spot, keep = dockSpot(player, spec, at)
 	clearOtherClasses(player, spec, "Request", keep)
 	if existing then

@@ -16,7 +16,7 @@
 -- Reads player attributes DockPlot, Dock<key> / Decor<key> (owned) and the PlayerDataChanged snapshot (Cash).
 -- Paint booth (docs/23 d.3, WP-13): sitting in a craft inside your own boathouse's booth
 -- (DockConfig.PAINT_BOOTH) opens the paint card: a swatch strip and the existing cosmetic pickers for Livery
--- and Decal. Leaving the booth or B / the X button closes it.
+-- and Decal. Leaving the booth, boarding a seat (a launch puts you in the booth) or B / the X button closes it.
 local GuiService = game:GetService("GuiService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -271,9 +271,13 @@ local function statusOf(item: DockBlueprints.Item): Status
 	elseif item.kind == "Blueprint" then
 		reason = { icon = "quests", text = "Quest" }
 	elseif need then
+		local prepaid = snapshot.dockPrepaid
+		local paid = type(prepaid) == "table" and prepaid[item.key] == true -- Robux paid, waits for `need`
 		reason = {
 			icon = "lock",
-			text = `Needs: {DockConfig.Buildings[need].name}`,
+			text = if paid
+				then `Paid — builds when {DockConfig.Buildings[need].name} is built`
+				else `Needs: {DockConfig.Buildings[need].name}`,
 			item = { kind = "Building", key = need },
 		}
 	end
@@ -1046,6 +1050,7 @@ end
 type Booth = { gui: ScreenGui, pickers: { CosmeticPicker.Picker } }
 local booth: Booth? = nil
 local inBooth = false
+local boothSeat: BasePart? = nil
 local boothModal: InputGlyph.Modal
 
 local function closeBooth()
@@ -1142,7 +1147,11 @@ local function boothCheck()
 		local h = zone.size / 2
 		now = math.abs(d.X) <= h.X and math.abs(d.Y) <= h.Y and math.abs(d.Z) <= h.Z
 	end
-	if now ~= inBooth then
+	if seat ~= boothSeat then
+		-- sitting down (a launch seats you inside the booth) or getting up closes it: drive in to paint
+		boothSeat, inBooth = seat, now
+		closeBooth()
+	elseif now ~= inBooth then
 		inBooth = now
 		if now then
 			openBooth()

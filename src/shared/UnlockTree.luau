@@ -56,6 +56,27 @@ function UnlockTree.canRobux(key: string, owned: { [string]: boolean }): boolean
 		and UnlockTree.missing(key, owned) == nil
 end
 
+-- Prepaid Robux buildings (a receipt for one whose prerequisites were missing): moves every prepaid key whose
+-- prerequisites now stand from `prepaid` into `owned`, chains included, never out of order. Returns the keys
+-- built, in build order (mutates both tables).
+function UnlockTree.settle(owned: { [string]: boolean }, prepaid: { [string]: boolean }): { string }
+	local built = {}
+	local again = true
+	while again do
+		again = false
+		for key in prepaid do
+			if owned[key] == true then
+				prepaid[key] = nil
+			elseif DockConfig.Buildings[key] and UnlockTree.missing(key, owned) == nil then
+				owned[key], prepaid[key] = true, nil
+				table.insert(built, key)
+				again = true
+			end
+		end
+	end
+	return built
+end
+
 -- The building craft `id` needs and that is not owned yet (nil: none, or owned).
 function UnlockTree.craftMissing(id: string, owned: { [string]: boolean }): string?
 	local v = ProgressionConfig.Vehicles[id]

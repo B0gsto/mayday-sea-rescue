@@ -24,7 +24,8 @@ export type Input = { forward: number, strafe: number, yaw: number, lift: number
 
 export type State = { velocity: Vector3, heading: number, yawRate: number }
 
-Flight.WATER_CLEARANCE = 8 -- studs from the sea to the skids: it never ditches
+Flight.WATER_CLEARANCE = 8 -- studs from the sea to the skids: a piloted heli never ditches
+Flight.FLOAT_DRAFT = 1 -- studs the skids sit under the sea when an empty heli settles onto it (Craft.idle)
 Flight.ALTITUDE_GAIN = 2 -- 1/s: how hard the floor and ceiling push back
 Flight.WIND = 1.5 -- studs/s of drift in a full storm; under Board.STEADY_SPEED, so a hover still winches
 
@@ -58,11 +59,12 @@ end
 
 -- Lowest the root may sit: on its skids over land (and decks), WATER_CLEARANCE above open sea.
 -- groundY: the first solid hit straight down (nil = none); waterY: the sea surface there.
-function Flight.floor(groundY: number?, waterY: number, spec: Spec): number
+-- landing (an empty heli setting itself down): over open sea it settles onto the water and floats.
+function Flight.floor(groundY: number?, waterY: number, spec: Spec, landing: boolean?): number
 	if groundY and groundY >= waterY then
 		return groundY + spec.skid
 	end
-	return waterY + Flight.WATER_CLEARANCE + spec.skid
+	return waterY + spec.skid + (if landing then -Flight.FLOAT_DRAFT else Flight.WATER_CLEARANCE)
 end
 
 -- Gentle drift from Weather (wind angle in radians, direction (cos a, sin a); intensity 0..1).

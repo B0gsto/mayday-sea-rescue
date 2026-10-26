@@ -13,7 +13,7 @@
 --    Hands off = a level hover. The floor is the ground under the skids, or the sea plus
 --    Flight.WATER_CLEARANCE; gentle wind drift comes from Weather.
 -- 2. Rotors. Every heli's RotorJoint / TailRotorJoint Transform spins up while its DriverSeat is
---    taken and spools down when it is empty (visual, each client for itself).
+--    taken or its engine runs (EngineRunning: landing itself) and spools down after (visual, per client).
 local CollectionService = game:GetService("CollectionService")
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
@@ -204,7 +204,9 @@ end
 local function spinRotors(dt: number)
 	for _, model in CollectionService:GetTagged(TAG) do
 		local seat = model:FindFirstChild("DriverSeat")
+		-- an empty heli keeps its rotors turning while it lands itself (Craft.idle stops the engine once down)
 		local on = seat and seat:IsA("VehicleSeat") and seat.Occupant ~= nil
+			or model:GetAttribute("EngineRunning") == true
 		local s = spool[model] or 0
 		s = math.clamp(s + (if on then dt else -dt) / SPOOL_TIME, 0, 1)
 		spool[model] = s

@@ -62,6 +62,26 @@ return function(t)
 		t.expect(U.canRobux("Pontoon", {})).toBe(true)
 	end)
 
+	t.test(
+		"prepaid Robux buildings build the moment their prerequisites stand, in order",
+		function()
+			local owned: { [string]: boolean } = {}
+			local prepaid: { [string]: boolean } = { Boathouse = true, Crane = true }
+			t.expect(#U.settle(owned, prepaid)).toBe(0) -- nothing stands yet
+			t.expect(prepaid.Boathouse).toBe(true)
+			owned.Workshop = true -- Boathouse needs Workshop; the Crane needs the Boathouse
+			local built = U.settle(owned, prepaid)
+			t.expect(#built).toBe(2)
+			t.expect(built[1]).toBe("Boathouse") -- never out of order
+			t.expect(built[2]).toBe("Crane")
+			t.expect(owned.Crane).toBe(true)
+			t.expect(next(prepaid)).toBeNil()
+			local p2: { [string]: boolean } = { Boathouse = true } -- already owned: just cleared
+			t.expect(#U.settle(owned, p2)).toBe(0)
+			t.expect(next(p2)).toBeNil()
+		end
+	)
+
 	t.test("craft unlock through their building", function()
 		local want = {
 			RIB = "Boathouse",

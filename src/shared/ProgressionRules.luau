@@ -21,6 +21,8 @@ export type PlayerData = {
 	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
 	dockLevel: number, -- retired dock level 1..5 (WP-28): kept as saved; migrate maps it onto the tree
 	dockBuildings: { [string]: boolean }, -- the unlock tree (DockConfig.Buildings), blueprints and decor
+	-- Robux-paid buildings waiting for their prerequisites (UnlockTree.settle builds them once those stand).
+	dockPrepaid: { [string]: boolean },
 	-- Rescued people working on your island (docs/23 (o), WP-26; WorkerRules, WorkerService), at most WorkerRules.CAP.
 	workers: { WorkerRules.Worker },
 	lastSeen: number?, -- os.time of the last save (DataService): offline worker earnings count from here
@@ -178,6 +180,7 @@ function Rules.defaultData(): PlayerData
 		coldOpenDone = false,
 		dockLevel = 1,
 		dockBuildings = {},
+		dockPrepaid = {},
 		workers = {},
 		flags = {},
 		cosmetics = {},
@@ -305,6 +308,13 @@ function Rules.migrate(raw: any): PlayerData
 		end
 	end
 	UnlockTree.migrate(data.dockLevel, data.dockBuildings) -- WP-28: old dock levels -> tree items
+	if type(raw.dockPrepaid) == "table" then
+		for key, paid in raw.dockPrepaid do
+			if type(key) == "string" and paid == true and DockConfig.Buildings[key] ~= nil then
+				data.dockPrepaid[key] = true
+			end
+		end
+	end
 	-- WP-26: the hired crew (WP-15) is gone; what it cost comes back once (saves no longer carry `crew`)
 	if type(raw.crew) == "table" then
 		for role, hired in raw.crew do
@@ -360,6 +370,7 @@ function Rules.snapshot(data: PlayerData): { [string]: any }
 		cash = data.cash,
 		totalRescues = data.totalRescues,
 		dockBuildings = table.clone(data.dockBuildings),
+		dockPrepaid = table.clone(data.dockPrepaid),
 		vehicles = table.clone(data.vehicles),
 		vehicleUpgrades = table.clone(data.vehicleUpgrades),
 		workers = table.clone(data.workers),

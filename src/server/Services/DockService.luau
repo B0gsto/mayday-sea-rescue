@@ -646,6 +646,14 @@ end
 local function show(player: Player, beat: boolean)
 	local i = byPlayer[player]
 	local data: any = DataService.Get(player)
+	if data and type(data.dockPrepaid) == "table" and type(data.dockBuildings) == "table" then
+		-- Robux-paid buildings go up the moment their prerequisites stand
+		if #UnlockTree.settle(data.dockBuildings, data.dockPrepaid) > 0 then
+			DataService.MarkDirty(player)
+			ProgressionService.Refresh(player)
+			task.spawn(DataService.Save, player, false)
+		end
+	end
 	if i and data then
 		syncBuildings(plots[i], player, beat)
 		syncDecor(plots[i], player, beat)
@@ -778,8 +786,8 @@ function DockService.Init()
 	buildEvent.Parent = folderNet
 	buildRemote = buildEvent
 
-	-- Robux skips the Cash, never the order: the grant refuses (the receipt waits) until the prerequisites
-	-- stand (decor needs only the jetty); a retried receipt for an owned item is harmless
+	-- Robux skips the Cash, never the order: a building whose prerequisites are missing is granted as prepaid
+	-- (show builds it once they stand; decor needs only the jetty); a retried receipt is harmless
 	for _, rows: { [string]: any } in { DockConfig.Buildings :: any, DockConfig.Decorations } do
 		for key, b in rows do
 			if b.product then
@@ -794,7 +802,11 @@ function DockService.Init()
 						DockConfig.Buildings[key]
 						and not UnlockTree.canRobux(key, data.dockBuildings)
 					then
-						return false
+						data.dockPrepaid = if type(data.dockPrepaid) == "table"
+							then data.dockPrepaid
+							else {}
+						data.dockPrepaid[key] = true
+						return true
 					end
 					data.dockBuildings[key] = true
 					return true

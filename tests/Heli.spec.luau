@@ -48,6 +48,9 @@ return function(t)
 		t.expect(Flight.floor(12, 0, spec)).toBe(12 + spec.skid)
 		t.expect(Flight.floor(-40, 0, spec)).toBe(Flight.WATER_CLEARANCE + spec.skid) -- seabed
 		t.expect(Flight.floor(nil, 2, spec)).toBe(2 + Flight.WATER_CLEARANCE + spec.skid)
+		-- an empty heli landing: onto the sea (floats), onto land as before
+		t.expect(Flight.floor(-40, 0, spec, true)).toBe(spec.skid - Flight.FLOAT_DRAFT)
+		t.expect(Flight.floor(12, 0, spec, true)).toBe(12 + spec.skid)
 	end)
 
 	t.test("storm wind drifts a hover, but slower than the steady limit", function()

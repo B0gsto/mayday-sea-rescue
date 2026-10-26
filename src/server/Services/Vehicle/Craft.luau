@@ -1,8 +1,9 @@
 --!strict
 -- VehicleService's docs/23 (h) craft (WP-10a): builds them, places a launched helicopter, and runs the
 -- server's half for an empty one (the pilot's client flies them: Heli/SubController).
---   Heli   lands itself: hands-off Heli/Flight sinking at AUTO_LAND to its floor (the ground under the
---          skids, or hovering Flight.WATER_CLEARANCE over the sea), then holds there.
+--   Heli   lands itself: hands-off Heli/Flight sinking at AUTO_LAND to its landing floor (on its skids on
+--          land, a pad or a plate; afloat on the open sea), then the engine stops (EngineRunning false: the
+--          rotors spin down). VehicleService flies a long-empty far one home (sendHome).
 --   Sub    holds on Sub/Rig with no input (the sea has no Terrain water: without it, it sinks).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -24,6 +25,8 @@ local RAY_TOP = 120 -- studs above the berth the launch ray starts (over any boa
 local RAY_DEPTH = 600
 
 local heliStates: { [Model]: HeliFlight.State } = setmetatable({}, { __mode = "k" }) :: any
+-- seconds an empty heli has sat still while sinking: resting on something the floor ray can't see (a jetty)
+local resting: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
 
 -- The new model, its root anchored like Boat/Builder's (docked until a driver sits).
 function Craft.build(spec: VehicleConfig.VehicleSpec): Model
@@ -52,11 +55,17 @@ local function groundBelow(from: Vector3, model: Model): number?
 	return hit and hit.Position.Y
 end
 
-local function heliFloor(model: Model, at: Vector3, spec: HeliFlight.Spec): number
+local function heliFloor(
+	model: Model,
+	at: Vector3,
+	spec: HeliFlight.Spec,
+	landing: boolean?
+): number
 	return HeliFlight.floor(
 		groundBelow(at, model),
 		Simulator.waterHeight(at.X, at.Z, Workspace:GetServerTimeNow()),
-		spec
+		spec,
+		landing
 	)
 end
 
@@ -92,15 +101,20 @@ function Craft.idle(model: Model, spec: VehicleConfig.VehicleSpec, dt: number): 
 	end
 	local state = s :: HeliFlight.State
 	local idle = { forward = 0, strafe = 0, yaw = 0, lift = -Craft.AUTO_LAND }
-	HeliFlight.step(
-		state,
-		idle,
-		fspec,
-		root.Position.Y,
-		heliFloor(model, root.Position, fspec),
-		Vector3.zero,
-		dt
-	)
+	local floor = heliFloor(model, root.Position, fspec, true)
+	HeliFlight.step(state, idle, fspec, root.Position.Y, floor, Vector3.zero, dt)
+	local still = state.velocity.Y < -0.5 and math.abs(root.AssemblyLinearVelocity.Y) < 0.3
+	resting[model] = if still then (resting[model] or 0) + dt else 0
+	if
+		model:GetAttribute("EngineRunning") == true
+		and (
+			math.abs(root.Position.Y - floor) < 1.5 -- vertical speed may follow the waves
+			or (resting[model] or 0) > 1
+		)
+		and Vector2.new(state.velocity.X, state.velocity.Z).Magnitude < 2
+	then
+		model:SetAttribute("EngineRunning", false) -- down: the rotors spin down (HeliController)
+	end
 	local lift = root:FindFirstChild("Lift") :: LinearVelocity?
 	local attitude = root:FindFirstChild("Attitude") :: AlignOrientation?
 	if lift and attitude then
