@@ -168,7 +168,7 @@ Left, in order:
    badge names and descriptions.
 3. `python3 tools/studio/publish_studio.py --launch`, then make it public.
 
-## Status 2026-10-26 late: test place v59 = docs/24 A-G (any-speed pick-up + handling, timed builds + builders + Finish now, open island r1-r4, in-world prize wheel, tutorial + Next chip, progression pass, build tree + Skills tree). Open: spin/finish-now products + icons (Gemini quota until ~10-29), late Robux re-price question, real-client playtest, launch publish.
+## Status 2026-10-26 late: test place v60 (v59 + live Spin1/5/15 + FinishNow1/2/3, also created on the launch universe; placeholder icons marketing/items/{Spin*,FinishNow*}.png = copies of WakeTrails/DockWorkshop, replace when Gemini returns) = docs/24 A-G (any-speed pick-up + handling, timed builds + builders + Finish now, open island r1-r4, in-world prize wheel, tutorial + Next chip, progression pass, build tree + Skills tree). Open: real icons for the 6 products + spin/hourglass glyphs (Gemini quota until ~10-29), owner re-answers the maturity questionnaire (paid random items = Yes), late Robux re-price question, real-client playtest, launch publish.
 
 ## Status 2026-10-26 (test place v56, launch place v56 build, private)
 
