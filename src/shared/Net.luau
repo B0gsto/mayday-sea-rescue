@@ -22,6 +22,7 @@
 --                            ReplicatedStorage.Weather (State, StateStartTime, Intensity,
 --                            WindDirection, StormId), so late joiners read it without catch-up.
 --   DogPoint           S->C  Bosun points/barks toward a victim (direction or position)
+--   Dock_Finish        C->S  finish the running build now (the server prompts the tier by time left)
 --   BoardLaunch        C->S  launch a craft from your own craft board (board name, vehicleId; server/Dock/BoatBoard)
 --   RequestVehicle     C->S  function: launch a vehicle at a bay (vehicleId, docked?) -> (ok, reasonOrVehicle)
 --   BuyGear            C->S  function: buy a vehicle (vehicleId) -> (ok, reason)
@@ -35,6 +36,7 @@ export type EventName =
 	| "PlayerDataChanged"
 	| "StormChanged"
 	| "DogPoint"
+	| "Dock_Finish"
 	| "BoardLaunch"
 
 export type FunctionName = "RequestVehicle" | "BuyGear"
@@ -51,6 +53,7 @@ Net.EVENTS = table.freeze({
 	"PlayerDataChanged",
 	"StormChanged",
 	"DogPoint",
+	"Dock_Finish",
 	"BoardLaunch",
 } :: { EventName })
 

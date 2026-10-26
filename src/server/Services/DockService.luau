@@ -22,7 +22,8 @@
 -- Dock<key> / Decor<key> (owned; the build tablet). Berth attributes: LaunchBay = true, PlotIndex, Owner
 -- (UserId, nil when empty), <key> = true per building standing (BoatBoard reads Boathouse / Hangar / SubPen).
 -- Remote: Dock_Upgrade C->S function (building / decor key) -> ok, reason ("Needs" | "Cash" | "Owned" |
--- "Data" | "Busy" | "Building" | "Unknown"). Vehicle boards are server/Dock/BoatBoard's.
+-- "Data" | "Busy" | "Building" | "Unknown"). Dock_Finish C->S (no args) prompts the FinishNow tier for the
+-- running site's current time left; its receipt finishes the site. Vehicle boards are server/Dock/BoatBoard's.
 -- Studio: ServerStorage.DockDev:Invoke("building", key) gives the first player a building ("all": every one);
 -- ("decor", key) a decoration ("all": every one); ("trophies") every rescue milestone and island stamp;
 -- WorkerDev ("finishbuild") finishes the running site at once.
@@ -30,6 +31,7 @@
 -- a gold name sign and a tall gold beacon; picked on join / leave / a build (nobody's island ever moves). The
 -- trophy hall: a cup per rescue milestone (BadgeRules.trophies) and a plaque per island stamp (DiscoveryRules),
 -- rebuilt from the profile every few seconds when it changes.
+local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -44,6 +46,7 @@ local DiscoveryRules = require(Shared:WaitForChild("DiscoveryRules"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local DockPieces = require(Shared:WaitForChild("DockPieces"))
 local Marina = require(Shared:WaitForChild("Marina"))
+local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 local Net = require(Shared:WaitForChild("Net"))
 local NpcFactory = require(script.Parent.Parent.Npc.NpcFactory)
@@ -568,6 +571,16 @@ local function workOf(key: string): number
 	return BuildTimer.work(d and d.cash or 0, true)
 end
 
+-- What the build cost in Cash (the FinishNow refund on a lost race), buildings and decor alike.
+local function cashOf(key: string): number
+	local b = DockConfig.Buildings[key]
+	if b then
+		return b.cash
+	end
+	local d = DockConfig.Decorations[key]
+	return d and d.cash or 0
+end
+
 -- Where a site stands (berth frame) and its footprint, for the base crew's walk.
 local function siteSpot(plot: Plot, key: string): (CFrame?, Vector2?)
 	local b = DockConfig.Buildings[key]
@@ -940,6 +953,34 @@ local function show(player: Player, beat: boolean)
 end
 
 local busy: { [Player]: boolean } = {}
+local lastBuild: { [Player]: { key: string, cash: number } } = {}
+local lastPrompt: { [Player]: number } = {}
+
+local FINISH_MIN_LEFT = 3 -- under this the site finishes on its own
+local FINISH_PROMPT_COOLDOWN = 1
+
+-- The client asks to finish (it never names a tier): prompt the product matching the site's time left now.
+local function promptFinish(player: Player)
+	local now = os.clock()
+	if now - (lastPrompt[player] or 0) < FINISH_PROMPT_COOLDOWN then
+		return
+	end
+	lastPrompt[player] = now
+	local data: any = DataService.Get(player)
+	local c = data and data.construction
+	if not (c and byPlayer[player]) then
+		return
+	end
+	local left = BuildTimer.timeLeft(c.progress, c.rate or 1, workOf(c.key))
+	if left < FINISH_MIN_LEFT then
+		return
+	end
+	local product = MonetizationConfig.Products[`FinishNow{BuildTimer.finishTier(left)}`]
+	if not product or product.ready == false or product.id == 0 then
+		return
+	end
+	MarketplaceService:PromptProductPurchase(player, product.id)
+end
 
 -- Cash purchase of tree building `key` once its prerequisites stand (Robux goes through its product).
 local function buyBuilding(player: Player, data: any, key: string): (boolean, string)
@@ -1000,6 +1041,7 @@ local function finishConstruction(plot: Plot, player: Player, data: any)
 	if not c then
 		return
 	end
+	lastBuild[player] = { key = c.key, cash = cashOf(c.key) }
 	data.construction = nil
 	data.dockBuildings = tableOf(data.dockBuildings)
 	data.dockBuildings[c.key] = true
@@ -1098,6 +1140,8 @@ function DockService.Init()
 	Players.PlayerRemoving:Connect(function(player)
 		release(player)
 		busy[player] = nil
+		lastBuild[player] = nil
+		lastPrompt[player] = nil
 	end)
 
 	local folderNet = Net.init()
@@ -1118,6 +1162,8 @@ function DockService.Init()
 	buildEvent.Name = "Dock_Build"
 	buildEvent.Parent = folderNet
 	buildRemote = buildEvent
+
+	Net.event("Dock_Finish").OnServerEvent:Connect(promptFinish)
 
 	-- Robux skips the Cash, never the order: a building whose prerequisites are missing is granted as prepaid
 	-- (show builds it once they stand; decor needs only the jetty); a retried receipt is harmless
@@ -1156,6 +1202,27 @@ function DockService.Init()
 			end
 		end
 	end
+	-- Robux Finish now (docs/24 B): finish through the same path as FinishBuild; a receipt that lands after
+	-- the site stood pays a tenth of its Cash price back, so the Robux is never lost.
+	for tier = 1, 3 do
+		MonetizationService.OnProduct(`FinishNow{tier}`, function(player, data: any)
+			local c = data.construction
+			if c and c.progress < 1 then
+				c.progress = 1 -- the receipt's save holds it; the next tick / rejoin finishes
+				return true
+			end
+			local last = lastBuild[player]
+			data.cash = (data.cash or 0) + math.floor((if last then last.cash else 0) * 0.1)
+			return true
+		end, function(player)
+			local data: any = DataService.Get(player)
+			local c = data and data.construction
+			if c and c.progress >= 1 then
+				DockService.FinishBuild(player) -- never a later site a receipt retry finds running
+			end
+		end)
+	end
+
 	if RunService:IsStudio() then
 		local dev = Instance.new("BindableFunction")
 		dev.Name = "DockDev"

@@ -104,6 +104,32 @@ local MonetizationConfig = {
 			cashMultiplier = 1.5,
 			boostMinutes = 20,
 		},
+		-- Finish now (owner 2026-10-26, docs/24 B): the tier is picked by the running site's time left; the
+		-- owner creates the products on Roblox and flips `ready`.
+		FinishNow1 = {
+			id = 0,
+			name = "Finish Now 1",
+			description = "Finishes your running build at once. For a build with up to 1 minute left.",
+			price = 9,
+			order = 21,
+			ready = false,
+		},
+		FinishNow2 = {
+			id = 0,
+			name = "Finish Now 2",
+			description = "Finishes your running build at once. For a build with up to 5 minutes left.",
+			price = 25,
+			order = 22,
+			ready = false,
+		},
+		FinishNow3 = {
+			id = 0,
+			name = "Finish Now 3",
+			description = "Finishes your running build at once. For a longer-running build.",
+			price = 49,
+			order = 23,
+			ready = false,
+		},
 		CallTheStorm = {
 			id = 3719524960,
 			name = "Call the Storm",

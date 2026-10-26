@@ -38,7 +38,7 @@ history, not here.
 | `BuyGear` | C->S fn | ProgressionService: buys a craft (`vehicleId`); the name is historical |
 
 Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService), `Upgrade_Buy` (UpgradeService),
-`PIW_Rescue` (Ops/PiwRescue), `Dock_Upgrade` / `Dock_Build` (DockService), `Quest_Talk` (QuestService),
+`PIW_Rescue` (Ops/PiwRescue), `Dock_Upgrade` / `Dock_Build` / `Dock_Finish` (DockService), `Quest_Talk` (QuestService),
 `Streak_State` / `Streak_Get` / `Streak_Open`, `Pet_State` / `Pet_Get` / `Pet_Equip`, `Cosmetics_Equip` /
 `Cosmetics_Action` / `Cosmetics_Event`, `Monetization_GetCatalogue` / `Monetization_Purchased`,
 `Discovery_State` / `Discovery_Found` / `Discovery_Get`, `PlatformPrompt_Ask` / `_Offer` / `_OptIn`,
@@ -89,10 +89,13 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
 - Timed builds (docs/24 B): every Cash or Robux buy starts a construction, one per island (`Dock_Upgrade` reason
   `"Building"` while one runs; a Robux buy then waits in `dockPrepaid`). `src/shared/BuildTimer.luau` (pure,
   `tests/BuildTimer.spec.luau`): `work(cash, decor)`, `builders(workers)`, `units`, `rate`, `rateOf`, `advance`,
-  `timeLeft`, `text`. Saved as `data.construction = { key, progress 0..1, rate, at (os.time) }`, advanced offline
-  on join; not owned (`dockBuildings`) until it finishes. Plot model attributes `SiteKey`, `SiteProgress`,
-  `SiteRate`, `SiteBuilders`, the rising model `Site_<key>` under the plot; client `ConstructionController` draws
-  the site, `DockController`'s tablet the timer. Studio: `WorkerDev` `"finishbuild"`.
+  `timeLeft`, `finishTier`, `text`. Saved as `data.construction = { key, progress 0..1, rate, at (os.time) }`,
+  advanced offline on join; not owned (`dockBuildings`) until it finishes. Plot model attributes `SiteKey`,
+  `SiteProgress`, `SiteRate`, `SiteBuilders`, the rising model `Site_<key>` under the plot; client
+  `ConstructionController` draws the site and the owner's "Finish" prompt, `DockController`'s tablet the timer and
+  its FinishNow price. `Dock_Finish` C->S (no args) prompts `FinishNow1..3` by the site's current time left (the
+  server picks; a client tier is ignored); the receipt finishes through the same path, or pays 10% of the build's
+  Cash if the site already stood. Studio: `WorkerDev` `"finishbuild"`.
 - Build tablet: the station tablet opens `DockController`'s top-down build mode (`DockBlueprints`: `onIsland`,
   `needs`, `glyph`, drawn by `UI/BuildGlyph`; `DockBuild`: camera and spot maths). `server/Dock/BoatBoard` builds
   every craft board (boat, hangar, sub) with scale models from `ReplicatedStorage.VehiclePreviews`; client

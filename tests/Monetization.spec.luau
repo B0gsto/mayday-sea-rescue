@@ -44,6 +44,9 @@ return function(t)
 			HarborFund = 149,
 			CashBoost = 15,
 			CrewBoost = 15,
+			FinishNow1 = 9, -- owner 2026-10-26: tiers by the running site's time left
+			FinishNow2 = 25,
+			FinishNow3 = 49,
 			CallTheStorm = 49,
 			CallTheGreatStorm = 149,
 			DayDoubleCash = 15, -- day passes: proposed, not in docs/04 yet
@@ -108,6 +111,10 @@ return function(t)
 		t.expect(Config.GamePasses.StarterKit.cashOnce).toBe(3000)
 		for _, key in Config.CashPacks do
 			t.expect(Config.Products[key] ~= nil).toBe(true)
+		end
+		for _, key in { "FinishNow1", "FinishNow2", "FinishNow3" } do
+			t.expect(Config.Products[key].ready).toBe(false) -- the owner creates them on Roblox
+			t.expect(Config.Products[key].id).toBe(0)
 		end
 	end)
 

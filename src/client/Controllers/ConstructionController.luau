@@ -5,8 +5,10 @@
 -- server's model, its parts above the progress height hidden locally in BuildSeq's bottom-to-top order. On
 -- finish the remaining bricks drop with the BuildSeq bounce, confetti pops and the fence/scaffold go away.
 -- Late joiners reconcile to the same attributes, so they see the same state.
+local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
@@ -14,6 +16,8 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BuildSeq = require(Shared:WaitForChild("BuildSeq"))
 local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
+local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
+local Net = require(Shared:WaitForChild("Net"))
 
 local UI = script.Parent.Parent:WaitForChild("UI")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
@@ -56,9 +60,57 @@ type Site = {
 	count: TextLabel,
 	post: Part,
 	dust: ParticleEmitter,
+	prompt: ProximityPrompt?,
 }
 
 local sites: { [number]: Site } = {}
+local livePrice: { [number]: number } = {}
+local finishAsked: { [number]: boolean } = {}
+
+-- The FinishNow product for a site's time left, with the live Robux price when there is an id.
+local function finishProduct(left: number): (any, number)
+	local product = MonetizationConfig.Products[`FinishNow{BuildTimer.finishTier(left)}`]
+	if not product then
+		return nil, 0
+	end
+	local id = product.id
+	if id ~= 0 and not livePrice[id] and not finishAsked[id] then
+		finishAsked[id] = true
+		task.spawn(function()
+			local ok, info = pcall(function()
+				return MarketplaceService:GetProductInfo(id, Enum.InfoType.Product)
+			end)
+			if ok and type(info) == "table" and type(info.PriceInRobux) == "number" then
+				livePrice[id] = info.PriceInRobux
+			end
+		end)
+	end
+	return product, livePrice[id] or product.price
+end
+
+-- Unready products stay visible in Studio, like the shelves' coming-soon cards.
+local function finishOffered(product: any): boolean
+	return product ~= nil
+		and (RunService:IsStudio() or (product.ready ~= false and product.id ~= 0))
+end
+
+-- The site's Finish prompt (the owner only): E / X / tap opens the server's tier prompt.
+local function addFinishPrompt(site: Site)
+	if site.prompt then
+		return
+	end
+	local prompt = Instance.new("ProximityPrompt")
+	prompt.Name = "FinishNow"
+	prompt.ActionText = "Finish"
+	prompt.HoldDuration = 0
+	prompt.MaxActivationDistance = 16
+	prompt.RequiresLineOfSight = false
+	prompt.Parent = site.post
+	prompt.Triggered:Connect(function()
+		Net.event("Dock_Finish"):FireServer()
+	end)
+	site.prompt = prompt
+end
 
 local function brick(
 	parent: Instance,
@@ -311,7 +363,7 @@ local function confetti(at: Vector3)
 	end)
 end
 
-local function startSite(plot: Model, model: Model, key: string): Site
+local function startSite(plot: Model, model: Model, key: string, mine: boolean): Site
 	local parts, ys = {}, {}
 	local minY, maxY = math.huge, -math.huge
 	local ground = math.huge
@@ -357,8 +409,12 @@ local function startSite(plot: Model, model: Model, key: string): Site
 		count = nil :: any,
 		post = nil :: any,
 		dust = nil :: any,
+		prompt = nil,
 	}
 	makeProps(site)
+	if mine then
+		addFinishPrompt(site)
+	end
 	makeSign(site, DockConfig.Buildings[key] ~= nil)
 	return site
 end
@@ -388,8 +444,14 @@ local function update(site: Site, progress: number, rate: number, builders: numb
 	local work = if DockConfig.Buildings[site.key]
 		then BuildTimer.work(DockConfig.Buildings[site.key].cash)
 		else BuildTimer.DECOR
-	site.timer.Text = BuildTimer.text(BuildTimer.timeLeft(p, rate, work))
+	local left = BuildTimer.timeLeft(p, rate, work)
+	site.timer.Text = BuildTimer.text(left)
 	site.count.Text = `x{builders}`
+	if site.prompt then
+		local product, price = finishProduct(left)
+		site.prompt.Enabled = left >= 3 and finishOffered(product)
+		site.prompt.ObjectText = `R$ {price}`
+	end
 end
 
 local function stop(site: Site)
@@ -459,10 +521,13 @@ local function reconcile()
 						if current then
 							stop(current)
 						end
-						current = startSite(plot, model, key)
+						current = startSite(plot, model, key, player:GetAttribute("DockPlot") == i)
 						sites[i] = current :: Site
 					end
 					if current then
+						if current.prompt == nil and player:GetAttribute("DockPlot") == i then
+							addFinishPrompt(current :: Site)
+						end
 						update(
 							current :: Site,
 							tonumber(plot:GetAttribute("SiteProgress")) or 0,
