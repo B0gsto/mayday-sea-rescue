@@ -197,8 +197,8 @@ return function(t)
 		t.expect(ski.hullSize.Z / 3).toBeCloseTo(3.3, 3.3 * 0.05)
 		t.expect(rib.hullSize.Z / 3).toBeCloseTo(8.44, 8.44 * 0.05)
 		t.expect(rib.hullSize.X / 3).toBeCloseTo(2.85, 2.85 * 0.05)
-		t.expect(ski.topSpeed / KNOT).toBeCloseTo(45, 0.5)
-		t.expect(rib.topSpeed / KNOT).toBeCloseTo(40, 0.5)
+		t.expect(ski.topSpeed / KNOT).toBeCloseTo(52, 0.5) -- docs/24 A: +15%
+		t.expect(rib.topSpeed / KNOT).toBeCloseTo(46, 0.5)
 		-- 1 RMU = 37 kg: the jet ski with rider about 430 kg, the RIB with crew about 2.1 t
 		t.expect(ski.massHint * 37).toBeCloseTo(430, 20)
 		t.expect(rib.massHint * 37).toBeCloseTo(2100, 100)
@@ -212,8 +212,8 @@ return function(t)
 	end)
 
 	t.test("accelerates like the real boats", function()
-		-- PWC: 0 to 30 mph (40 studs/s) in about 2 to 4 s; RIB (game-tuned, punchier than an
-		-- Atlantic 85): 0 to 25 knots in about 3 to 6 s; the jet ski still leaves it behind
+		-- PWC: 0 to 30 mph (40 studs/s) in about 1 to 4 s; RIB (game-tuned, punchier, docs/24 A):
+		-- 0 to 25 knots in about 2 to 5 s; the jet ski still leaves it behind
 		local function timeTo(spec, target)
 			local v, time, dt = 0, 0, 1 / 60
 			while v < target and time < 60 do
@@ -231,8 +231,8 @@ return function(t)
 		end
 		local ski = timeTo(VehicleConfig.JetSki, 40)
 		local rib = timeTo(VehicleConfig.RIB, 25 * KNOT)
-		t.expect(ski > 1.5 and ski < 4.5).toBeTruthy()
-		t.expect(rib > 3 and rib < 6).toBeTruthy()
+		t.expect(ski > 1 and ski < 4.5).toBeTruthy()
+		t.expect(rib > 2 and rib < 5).toBeTruthy()
 		t.expect(timeTo(VehicleConfig.JetSki, 25 * KNOT) < rib).toBeTruthy()
 	end)
 
@@ -346,8 +346,10 @@ return function(t)
 		local stbd = Buoyancy.liftOffset(Vector3.new(1.4, 0, 0), spec.draft, 0, 0, lean)
 		local port = Buoyancy.liftOffset(Vector3.new(-1.4, 0, 0), spec.draft, 0, 0, lean)
 		t.expect(stbd < port).toBeTruthy()
-		t.expect(math.deg(Buoyancy.leanTarget(40, -1, VehicleConfig.RIB, G)) <= 10 + 1e-9)
-			.toBeTruthy()
+		t.expect(
+			math.deg(Buoyancy.leanTarget(40, -1, VehicleConfig.RIB, G))
+				<= VehicleConfig.RIB.maxLean + 1e-9
+		).toBeTruthy()
 	end)
 
 	t.test("head seas and slamming cost speed", function()

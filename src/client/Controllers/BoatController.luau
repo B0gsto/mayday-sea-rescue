@@ -22,10 +22,8 @@
 --    ColdOpenAutoThrottle = true. Here the auto-throttle holds about 20 knots until AUTO_HOLD s,
 --    HANDOVER_DISTANCE studs from the casualty or the player's first throttle input, then sets
 --    ColdOpenAutoThrottle = false (locally) and the throttle is the player's (W released coasts).
---    While ColdOpenApproach is true (server: the approach step is current), a hull still closing
---    fast on the casualty is braked to approach speed (steering away or past is never braked);
---    AssistEase (bool) is true while that ease acts and AssistEaseCount counts its engagements
---    (Mechanics/approach reports it; the server caps the grade at Silver).
+--    There is no approach brake (docs/24 A): the boat takes them at speed, and the held casualty
+--    rides along for the tow home.
 --
 -- 1c. Nav lights. Every NAV_INTERVAL each vehicle's lights follow NavLights.shouldBeOn (night or
 --    storm). Visual only, so each client decides for itself.
@@ -86,8 +84,8 @@ local YAW_SLACK = 1.25 -- the driven hull's yaw rate cap, as a share of its spec
 local tiltTime = 0
 local navTimer = NAV_INTERVAL
 local launched: { [Model]: boolean } = setmetatable({}, { __mode = "k" }) :: any
--- cold open helm state per jet ski: auto-throttle still holding, Assist ease acting
-type ColdOpenState = { auto: boolean, easing: boolean }
+-- cold open helm state per jet ski: auto-throttle still holding
+type ColdOpenState = { auto: boolean }
 local coldOpens: { [Model]: ColdOpenState } = setmetatable({}, { __mode = "k" }) :: any
 local unstick: { [Model]: Unstick.State } = setmetatable({}, { __mode = "k" }) :: any
 
@@ -299,26 +297,7 @@ local function coldOpenCasualty(model: Model): Vector3?
 	return if typeof(target) == "Vector3" then target else nil
 end
 
--- True once the cold-open casualty holds on: the approach ease must let go for the tow in.
-local function coldOpenHeld(model: Model): boolean
-	local opId = model:GetAttribute("ColdOpenOpId")
-	local props = Workspace:FindFirstChild("CallProps")
-	if opId ~= nil and props then
-		for _, m in props:GetChildren() do
-			if
-				m:IsA("Model")
-				and m.Name == "Victim"
-				and m:GetAttribute("CallId") == opId
-				and m:GetAttribute("PiwMode") == "held"
-			then
-				return true
-			end
-		end
-	end
-	return false
-end
-
--- The throttle the cold-open jet ski really gets (auto-throttle, then the player's, eased).
+-- The throttle the cold-open jet ski really gets (auto-throttle until handover, then the player's own).
 local function coldOpenThrottle(model: Model, input: number, now: number): number
 	local root = model.PrimaryPart
 	if not root then
@@ -329,8 +308,11 @@ local function coldOpenThrottle(model: Model, input: number, now: number): numbe
 		if model:GetAttribute("ColdOpenAutoThrottle") ~= true then
 			return input
 		end
-		st = { auto = true, easing = false }
+		st = { auto = true }
 		coldOpens[model] = st
+	end
+	if not st.auto then
+		return input
 	end
 	local cas = coldOpenCasualty(model)
 	local flat = Vector3.new(1, 0, 1)
@@ -339,44 +321,16 @@ local function coldOpenThrottle(model: Model, input: number, now: number): numbe
 	local forwardSpeed = root.AssemblyLinearVelocity:Dot(forward)
 	local id = model:GetAttribute("VehicleId")
 	local spec: any = if type(id) == "string" then VehicleConfig.get(id) else nil
-	local throttle = input
+	local started = model:GetAttribute("ColdOpenStart")
+	local elapsed = if type(started) == "number" then now - started else 0
+	st.auto = model:GetAttribute("ColdOpenAutoThrottle") == true
+		and spec ~= nil
+		and ColdOpen.autoActive(elapsed, distance, input)
 	if st.auto then
-		local started = model:GetAttribute("ColdOpenStart")
-		local elapsed = if type(started) == "number" then now - started else 0
-		st.auto = model:GetAttribute("ColdOpenAutoThrottle") == true
-			and spec ~= nil
-			and ColdOpen.autoActive(elapsed, distance, input)
-		if st.auto then
-			throttle = ColdOpen.autoThrottle(spec, forwardSpeed)
-		else
-			model:SetAttribute("ColdOpenAutoThrottle", false) -- handed over (verification hook)
-		end
+		return ColdOpen.autoThrottle(spec, forwardSpeed)
 	end
-	local onApproach = model:GetAttribute("ColdOpenApproach") == true and not coldOpenHeld(model)
-	-- only speed toward the casualty counts: braking a ski that steers past or away held it at 5-9 km/h
-	-- inside 60 studs whichever way it pointed (playtest 2026-10-24: "the jet ski is slow")
-	local toCas = if cas and distance > 0.5 then ((cas - root.Position) * flat).Unit else forward
-	local closing = root.AssemblyLinearVelocity:Dot(toCas)
-	local wasEasing = st.easing
-	st.easing = onApproach
-		and ColdOpen.updateEase(
-			st.easing,
-			true, -- always Assist (the Pro mode is gone, docs/16 C16)
-			distance,
-			closing,
-			if spec then spec.brakeDecel else nil
-		)
-	if st.easing then
-		throttle = ColdOpen.easeThrottle(forwardSpeed, throttle)
-		if not wasEasing then
-			local n = model:GetAttribute("AssistEaseCount")
-			model:SetAttribute("AssistEaseCount", (if type(n) == "number" then n else 0) + 1)
-		end
-	end
-	if model:GetAttribute("AssistEase") ~= st.easing then
-		model:SetAttribute("AssistEase", st.easing)
-	end
-	return throttle
+	model:SetAttribute("ColdOpenAutoThrottle", false) -- handed over (verification hook)
+	return input
 end
 
 -- The server can seat us before the PlayerModule hooks Humanoid.Seated (the cold open seats on
@@ -478,11 +432,10 @@ local function step(dt: number)
 					local id = child:GetAttribute("VehicleId")
 					local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
 					local throttle, steer =
-						PickupRingController.Assist( -- the pick-up ring's docking assist
+						PickupRingController.Assist( -- the pick-up ring's helm nudge
 							child,
 							coldOpenThrottle(child, seat.ThrottleFloat, now),
-							seat.SteerFloat,
-							spec
+							seat.SteerFloat
 						)
 					local root = child.PrimaryPart
 					local speed = if root then root.AssemblyLinearVelocity.Magnitude else 0

@@ -1,71 +1,45 @@
--- auto_board (2026-10-21): close and steady with room, they climb aboard; ramming knocks them back.
+-- auto_board (docs/24 A): drive next to them with room and they climb aboard, at any speed and tilt.
 return function(t)
 	local AutoBoard = t.load("src/shared/Ops/Board.luau")
+	local CraftBoard = t.load("src/shared/Ops/CraftBoard.luau")
+	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
 
-	t.test("close, slow, level and with room: they climb aboard", function()
-		t.expect(AutoBoard.ready(5, 3, 5, true)).toBe(true)
-		t.expect(AutoBoard.ready(5, 3, 5, false)).toBe(false) -- full craft
-		t.expect(AutoBoard.ready(AutoBoard.REACH + 1, 3, 5, true)).toBe(false) -- too far
-		t.expect(AutoBoard.ready(5, AutoBoard.STEADY_SPEED + 1, 5, true)).toBe(false) -- moving
-		t.expect(AutoBoard.ready(5, 3, AutoBoard.STEADY_TILT + 5, true)).toBe(false) -- big waves
+	t.test("within reach with room: they climb aboard", function()
+		t.expect(AutoBoard.ready(5, true)).toBe(true)
+		t.expect(AutoBoard.ready(5, false)).toBe(false) -- full craft
+		t.expect(AutoBoard.ready(AutoBoard.REACH + 1, true)).toBe(false) -- too far
 	end)
 
-	t.test("only a fast run on top of them is a bump, and only for a boathouse owner", function()
-		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1, true)).toBe(true)
-		t.expect(AutoBoard.rammed(2, 3, true)).toBe(false)
-		t.expect(AutoBoard.rammed(AutoBoard.CONTACT + 3, AutoBoard.RAM_SPEED + 5, true)).toBe(false)
-		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1, false)).toBe(false) -- a new player
-		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1, nil)).toBe(false) -- not loaded yet
+	t.test("no speed or tilt gate for a boat (docs/24 A)", function()
+		local ski = VehicleConfig.JetSki
+		local at = Vector3.new(0, 0, 0)
+		local swimmer = Vector3.new(0, 0, -(2 + AutoBoard.REACH - 1))
+		t.expect(CraftBoard.ready("JetSki", at, 2, swimmer, ski.topSpeed, 40, true, 0)).toBe(true)
+		t.expect(CraftBoard.ready("JetSki", at, 2, swimmer, ski.topSpeed, 0, true, 0)).toBe(true)
+		t.expect(CraftBoard.hold("JetSki")).toBe(0) -- no hold: they leap aboard
 	end)
 
-	t.test("pick-up ring: a craft at full throttle is eased to a boarding speed", function()
-		local assist = AutoBoard.assistThrottle
-		t.expect(AutoBoard.ASSIST_SPEED < AutoBoard.STEADY_SPEED).toBe(true)
-		t.expect(assist(1, 300, 40, 40, 16)).toBe(1) -- far out: the player's throttle
-		t.expect(assist(1, 40, 40, 40, 16) < 0).toBe(true) -- closing fast near the ring: brakes
-		t.expect(assist(1, 60, 2, 40, 16)).toBe(1) -- passing by, not closing: untouched
-		t.expect(assist(1, 5, 30, 30, 16)).toBe(-1) -- inside, far too fast: full brake
-		t.expect(assist(1, 5, 0, AutoBoard.ASSIST_SPEED + 2, 16) < 0).toBe(true)
-		local slow = assist(1, 5, 0, AutoBoard.ASSIST_SPEED - 1, 16) -- inside, near the speed: part throttle
-		t.expect(slow > 0 and slow < 1).toBe(true)
-		t.expect(assist(-1, 5, 0, 1, 16)).toBe(-1) -- astern is always the player's
-		t.expect(assist(0.3, 5, 0, 1, 16)).toBe(0.3) -- never more than they asked
+	t.test("a boat at full speed passing within reach boards the survivor", function()
+		local ski = VehicleConfig.JetSki
+		local at = Vector3.new(100, 0, 0)
+		local survivor = Vector3.new(100, 0, 2 + AutoBoard.REACH - 2) -- alongside, just inside reach
+		t.expect(
+			CraftBoard.ready("JetSki", at, ski.hullSize.X / 2, survivor, ski.topSpeed, 25, true, 0)
+		)
+			.toBe(true)
 	end)
 
-	t.test("a jet ski at full throttle reaches the ring edge at <= 8 studs/s", function()
-		local B = t.load("src/shared/Boat/Buoyancy.luau")
-		local h = t.load("src/shared/Config/VehicleConfig.luau").JetSki
-		local grip = 0.7 -- the hull skipping on the chop: thrust and drag both lose grip
-		local x, v, dt = 200, h.topSpeed, 1 / 60
-		local lag = { 1, 1, 1, 1, 1, 1 } -- 0.1 s from the assist to the water
-		while x > AutoBoard.RING do
-			table.insert(lag, AutoBoard.assistThrottle(1, x, v, v, h.brakeDecel))
-			v += (B.thrust(table.remove(lag, 1), v, 1, h, grip, 1) - B.forwardDecel(v, h, 1) * grip) * dt
-			x -= v * dt
-		end
-		t.expect(v <= 8).toBe(true)
-		t.expect(v >= AutoBoard.ASSIST_SPEED - 1).toBe(true) -- not stopped short either
+	t.test("the heli winch and the sub still hold slow and steady", function()
+		t.expect(CraftBoard.hold("RescueHelicopter")).toBe(AutoBoard.HOLD)
+		t.expect(CraftBoard.hold("Submarine")).toBe(AutoBoard.HOLD)
 	end)
 
-	t.test(
-		"bigger craft: the ring grows with the beam, and turning in slows to a circle that reaches it",
-		function()
-			local B = AutoBoard
-			t.expect(B.ringFor(2)).toBe(B.RING) -- a jet ski keeps the tuned ring
-			t.expect(B.ringFor(9)).toBe(B.REACH + 9) -- a lifeboat: the server's reach from its side
-			t.expect(B.turnSpeed(100, 0.05, 14, 1, 15, 20)).toBe(math.huge) -- already heading through it
-			t.expect(B.turnSpeed(20, 1, 14, 1, 40, 20)).toBe(B.ASSIST_SPEED) -- inside the tightest circle
-			-- a full-throttle RIB orbiting a survivor 120 studs abeam: eased to a speed whose circle (tangent to the
-			-- bow) passes within the ring
-			local v = B.turnSpeed(120, 1, 14, 0.57, 15, 18)
-			t.expect(v > B.ASSIST_SPEED and v < 40).toBe(true)
-			local r = math.max(15, v / 0.57, v * v / 18)
-			t.expect(math.abs(math.sqrt(r * r + 120 * 120 - 2 * r * 120) - r) <= 14 + 1e-6)
-				.toBe(true)
-			t.expect(B.turnSpeed(60, 0.5, 14, 0.57, 15, 18) > B.turnSpeed(60, 1, 14, 0.57, 15, 18))
-				.toBe(true)
-		end
-	)
+	t.test("bigger craft: the ring grows with the beam", function()
+		local B = AutoBoard
+		t.expect(B.ringFor(2)).toBe(B.REACH + 2) -- a jet ski: the reach from its side
+		t.expect(B.ringFor(9)).toBe(B.REACH + 9) -- a lifeboat: wider still
+		t.expect(B.ringFor(9) > B.ringFor(2)).toBe(true)
+	end)
 
 	t.test(
 		"a hands-off helm is nudged onto them; the player's own helm is never changed",
@@ -79,10 +53,6 @@ return function(t)
 			t.expect(B.nudge(-1, 20, 50)).toBe(-1) -- steering away stays theirs
 		end
 	)
-
-	t.test("a craft held at the assist speed inside the ring boards them", function()
-		t.expect(AutoBoard.ready(AutoBoard.RING - 4, AutoBoard.ASSIST_SPEED, 5, true)).toBe(true)
-	end)
 
 	t.test("a mission casualty is the crew's until aboard; free-roam ones are anyone's", function()
 		local list = AutoBoard.privateList({ 12, 345 })

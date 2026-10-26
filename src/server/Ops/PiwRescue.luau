@@ -2,8 +2,7 @@
 -- PiwRescue: the server half of a survivor answering the boat that comes for them (docs/14 section 3;
 -- client: src/client/Mechanics/auto_board.luau). Remote Net.PIW_Rescue, C->S (opId, casualtyIndex, action):
 --   "arm"    the recovery step started: the casualty now answers this rescuer (10 s rule)
---   "bump"   auto_board: the boat ran into them (checked: fast and close), they are knocked back (from
---            boathouse owners only, Board.knocks)
+-- A boat takes them at any speed (docs/24 A), so there is no ram / knock-away.
 -- A full craft (docs/20 change 8) takes nobody: they tread water WAIT_GAP off and wave (mode "wait")
 -- instead of clinging to its side, and come in once there is a seat again.
 -- RescueService's drift step asks `velocity` for each victim and moves the floater with it.
@@ -25,7 +24,7 @@ PiwRescue.MIN_INTERVAL = 0.2 -- s between a player's events
 PiwRescue.COLD_OPEN_GRACE = 30
 PiwRescue.WAIT_GAP = 15 -- studs (5 m) a swimmer keeps from a full craft -- tune
 
-type Engaged = { player: Player, ways: PiwWays.State, bumpUntil: number?, bumpVel: Vector3? }
+type Engaged = { player: Player, ways: PiwWays.State }
 
 local engaged: { [any]: Engaged } = setmetatable({}, { __mode = "k" }) :: any -- victim -> rescuer
 local lastEvent: { [Player]: number } = {}
@@ -68,9 +67,6 @@ function PiwRescue.velocity(victim: any, dt: number): Vector3?
 	if victim.state ~= "Water" or not e.player.Parent then
 		engaged[victim] = nil
 		return nil
-	end
-	if e.bumpUntil and Workspace:GetServerTimeNow() < e.bumpUntil then
-		return e.bumpVel
 	end
 	local pos, speed, onBoat, boat = rescuerOf(e.player)
 	if not pos then
@@ -150,20 +146,6 @@ local function onEvent(
 	end
 	if not e or e.player ~= player then
 		return -- not armed by this rescuer
-	end
-	local pos, speed, onBoat = rescuerOf(player)
-	if not pos then
-		return
-	end
-	local cas = Vector3.new(victim.floater.x, 0, victim.floater.z)
-	if action == "bump" and Board.knocks(player:GetAttribute("DockBoathouse")) then
-		local away = cas - Vector3.new(pos.X, 0, pos.Z)
-		if onBoat and speed > PiwWays.STOPPED and away.Magnitude < 16 and away.Magnitude > 1e-3 then
-			e.bumpUntil = now + 0.8
-			e.bumpVel = away.Unit * 10
-			e.ways = PiwWays.new()
-			e.ways.since = now
-		end
 	end
 	setMode(victim, e.ways.mode)
 end

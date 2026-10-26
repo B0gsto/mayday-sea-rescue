@@ -1,17 +1,15 @@
 --!strict
 -- auto_board (2026-10-21, user: "just get near him ... he gets on whatever you are driving"): drive up
--- to the person in the water and hold the boat close and steady; they swim the last bit (PIW_Rescue
--- "arm": the 10 s rule) and climb aboard by themselves (the server's board effect plays the climb in
--- VehicleService.AddSurvivor). Depth comes from the situation, never from text:
+-- to the person in the water; a boat with room within reach takes them at any speed and tilt (docs/24 A),
+-- they swim the last bit (PIW_Rescue "arm": the 10 s rule) and climb aboard by themselves (the server's
+-- board effect plays the climb in VehicleService.AddSurvivor). Depth comes from the situation, never from text:
 --   room    a full craft (SurvivorCount = Capacity: jet ski 1, RIB 3, lifeboat 8) takes nobody: they wait
 --           5 m off and wave (PiwRescue); full shows on the craft's seat pips, never on them (docs/20 rule 5)
---   steady  under STEADY_SPEED and pitching / rolling under STEADY_TILT: big waves make it a skill
---   ramming coming in fast on top of them knocks them back (a "bump" event, PiwRescue pushes them off),
---           boathouse owners only (Board.knocks, docs/23 e.1)
---   ring    PickupRingController draws the orange pick-up ring and eases the craft's throttle inside it
--- Their outline shows white in reach, green while they get ready, none with no room. Metrics: none (the server times
--- it, elapsed); events: bump.
-local Players = game:GetService("Players")
+--   hold    none for a boat; the helicopter winch and the submarine still hover slow and level for Board.HOLD
+--   ring    PickupRingController draws the orange pick-up ring, sized to the reach (the helm nudge is all
+--           the help it gives: no throttle cut)
+-- Their outline shows white in reach, green while they climb, none with no room. Metrics: none (the server
+-- times it, elapsed).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
@@ -56,8 +54,6 @@ function AutoBoard.start(
 	ring.FillTransparency = 1
 	ring.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 	local held = 0
-	local bumps = 0
-	local lastBump = -math.huge
 	Step.heartbeat(s, function(dt)
 		if not (victim and victim.Parent) then
 			victim = World.victim(ctx)
@@ -83,23 +79,13 @@ function AutoBoard.start(
 		local tilt = math.deg(math.acos(math.clamp(h.cframe.UpVector.Y, -1, 1)))
 		local craft = h.root:FindFirstAncestorOfClass("Model")
 		local room = Board.hasRoom(craft)
-		if
-			Board.rammed(gap, speed, Players.LocalPlayer:GetAttribute("DockBoathouse"))
-			and os.clock() - lastBump > Board.BUMP_GAP
-		then
-			lastBump = os.clock()
-			bumps += 1
-			held = 0
-			if r then
-				r:FireServer(opId, index, "bump")
-			end
-		end
 		ring.Enabled = room and gap <= Board.REACH * 2
 		ring.OutlineColor = if held > 0 then GREEN else WHITE
 		local at = h.position
+		local id = craft and craft:GetAttribute("VehicleId")
 		if
-			CraftBoard.ready( -- the server's rule (AmbientRescueService): heli winch, sub ring
-				craft and craft:GetAttribute("VehicleId"),
+			CraftBoard.ready( -- the server's rule (AmbientRescueService): boats at once, heli winch, sub ring
+				id,
 				at,
 				h.beam / 2,
 				cas,
@@ -110,11 +96,8 @@ function AutoBoard.start(
 			)
 		then
 			held += dt
-			if held >= Board.HOLD then
-				Step.finish(
-					s,
-					{ metrics = {}, events = if bumps > 0 then { bump = bumps } else nil }
-				)
+			if held >= CraftBoard.hold(id) then
+				Step.finish(s, { metrics = {} })
 			end
 		else
 			held = 0

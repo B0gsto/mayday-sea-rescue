@@ -1,8 +1,9 @@
 --!strict
--- Ops/CraftBoard (docs/23 (h), WP-10a): may the person at `target` climb aboard this craft now? Boats keep
--- Ops/Board's rule; the helicopter winches (Heli/Winch: hover inside the ring, low, slow and level), the
--- submarine inside its ring at their depth (Sub/Dive.pickupReady). Pure; the server (AmbientRescueService) and the client
--- (auto_board) both measure the craft and ask here. Lune-tested in tests/Craft.spec.luau.
+-- Ops/CraftBoard (docs/23 (h), WP-10a): may the person at `target` climb aboard this craft now? A boat takes
+-- them inside its reach at any speed and tilt (docs/24 A); the helicopter winches (Heli/Winch: hover inside the
+-- ring, low, slow and level), the submarine inside its ring at their depth (Sub/Dive.pickupReady). Pure; the
+-- server (AmbientRescueService) and the client (auto_board) both measure the craft and ask here.
+-- Lune-tested in tests/Craft.spec.luau.
 local Board = require(script.Parent.Board)
 local Dive = require(script.Parent.Parent.Sub.Dive)
 local VehicleConfig = require(script.Parent.Parent.Config.VehicleConfig)
@@ -41,7 +42,13 @@ function CraftBoard.ready(
 	elseif kind == "Sub" then
 		return Dive.pickupReady(d.X, d.Y, d.Z, speed, room)
 	end
-	return Board.ready(gap, speed, tilt, room)
+	return Board.ready(gap, room)
+end
+
+-- Seconds they hold close and steady before climbing aboard: none for a boat (docs/24 A), the heli winch
+-- and the sub keep Board.HOLD.
+function CraftBoard.hold(vehicleId: any): number
+	return if CraftBoard.kind(vehicleId) then Board.HOLD else 0
 end
 
 return CraftBoard
