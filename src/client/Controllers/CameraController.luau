@@ -323,6 +323,11 @@ local function update(dt: number)
 		return -- src/first/LoadingScreen flies the camera; it hands back a Custom camera when done
 	end
 	if override then
+		-- a cinematic under the override never advances, and its hide-every-ScreenGui (OpsController) left
+		-- build mode with no panel, no HUD and no way out (playtest v46: a launch beat over the build view)
+		if Cinematic.isPlaying() then
+			Cinematic.stop()
+		end
 		if mode ~= "None" then
 			exitMode(mode)
 			mode = "None"
@@ -411,8 +416,8 @@ local function connectTriggers()
 				if model:GetAttribute("Owner") ~= player.UserId then
 					return
 				end
-				if player:GetAttribute("LoadingScreenActive") == true then
-					return -- the loading flyover already ends behind this craft
+				if player:GetAttribute("LoadingScreenActive") == true or override then
+					return -- the loading flyover already ends behind this craft; build mode owns the view
 				end
 				if reason == "ColdOpen" then
 					-- where am I, what is going on: the island, then the casualty, then control

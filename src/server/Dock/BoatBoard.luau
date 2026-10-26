@@ -6,7 +6,7 @@
 --   Hangar board  RescueHelicopter (onto the helipad), in the hangar
 --   Sub board     Submarine, on the jetty beside the sub pen; lowered into the pen on the gantry hook
 -- Each model's pad carries two owner-only prompts:
---   BoardLaunch (E)  owned: the beat plays, then the craft spawns at its spot, nobody seated (boats, aircraft,
+--   BoardLaunch (E)  owned: the beat plays, then the craft spawns at its spot, you in its seat (boats, aircraft,
 --                    sub: VehicleService.DockLaunch). Locked: the client opens
 --                    the buy card (BoatBoardController).
 --   BoardCard (F)    owned crafts with upgrades: the client opens the same card (upgrades).
