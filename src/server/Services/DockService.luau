@@ -977,7 +977,7 @@ local function clearCrew(plot: Plot)
 	plot.crew = nil
 end
 
--- The trophy hall's cups and plaques, rebuilt only when the owner's list changed.
+-- The trophy hall's cups and plaques, rebuilt only when the owner's list or the hall's plinths changed.
 local function syncTrophies(plot: Plot, owner: Player?)
 	local data: any = owner and DataService.Get(owner)
 	local cups, plaques = {}, {}
@@ -996,7 +996,14 @@ local function syncTrophies(plot: Plot, owner: Player?)
 	for _, p in plaques do
 		table.insert(names, p.name)
 	end
-	local key = if data then `{table.concat(cups, ",")}|{table.concat(names, ",")}` else ""
+	-- the add-on mesh's plinths take the first cups (DockPieces.trophies): 8 at Lv2, 14 at Lv3
+	local hall = plot.buildings.TrophyHall
+	local plinths = if hall and hall:FindFirstChild("TrophyHallMesh")
+		then (if (plot.levels.TrophyHall or 1) >= 3 then 14 else 8)
+		else 0
+	local key = if data
+		then `{table.concat(cups, ",")}|{table.concat(names, ",")}|{plinths}`
+		else ""
 	if key == plot.trophyKey then
 		return
 	end
@@ -1006,7 +1013,7 @@ local function syncTrophies(plot: Plot, owner: Player?)
 		plot.trophies = nil
 	end
 	if #cups + #plaques > 0 then
-		local m = DockPieces.trophies(plot.frame, cups, plaques)
+		local m = DockPieces.trophies(plot.frame, cups, plaques, plinths)
 		m.Parent = plot.model
 		plot.trophies = m
 	end

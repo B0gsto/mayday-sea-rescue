@@ -122,7 +122,10 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   the station's -X side, 49..61 studs out at Lv5; the code radio mast and gold ball are only its fallback;
   `WorkerController` lights `Lv5_L05_Beacon` at night). The Air Station's Lv2 refuel pad + bowser apron and Lv3 patrol
   hut are `M_Bld_AirStationAddons` (`AirStationMesh`, the hangar's -X side and front; no Lv1 piece gives way;
-  `WorkerController` sways `Lv2_L04_Windsock` about its pole within LIVELY); no worker uses its `ATT_*` yet. The Depot model holds `DepotMesh` (the Lv1..n
+  `WorkerController` sways `Lv2_L04_Windsock` about its pole within LIVELY); no worker uses its `ATT_*` yet. The Trophy Hall's Lv2 navy dome rotunda + 8 wing plinths and Lv3
+  gold dome, portico and galleries + 6 plinths are `M_Bld_TrophyHallAddons` (`TrophyHallMesh`, round the code wall; the
+  code gold dome is only its fallback); `DockService` puts the first cups on its `ATT_Plinth_01..08` (Lv2) / `..14`
+  (Lv3) via `DockPieces.trophies(b, cups, plaques, plinths)`, the rest on the wall shelf. The Depot model holds `DepotMesh` (the Lv1..n
   layers and `Marks`: `ATT_PickUp_*` / `ATT_DropOff_*` bays, `ATT_BargeMoor`, `ATT_QuayLoad`, `ATT_QuayLand`) and
   `FreightQuay` (west plate edge, sea level). Client: `DepotController` (barge from `BargeNext` via
   `shared/BargePath`, `Stack_1..4` from `DepotStock` / `DepotCap`, empty-crate icon on `SiteWaiting`) and

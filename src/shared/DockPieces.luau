@@ -548,8 +548,8 @@ end
 -- Fish Market's Lv2 stalls / Lv3 smokehouse (M_Bld_FishMarketAddons), the Clinic's Lv2 pavilion / Lv3 hospital
 -- (M_Bld_ClinicAddons), the Lookout's Lv2 lantern / Lv3 searchlight (M_Bld_LookoutAddons), the Boat Yard's Lv2
 -- crane / Lv3 dry dock (M_Bld_BoatYardAddons), the Rescue Boathouse's Lv2 RIB / Lv3 lifeboat berths
--- (M_Bld_RescueBoathouseAddons) and the Air Station's Lv2 refuel pad / Lv3 patrol hut (M_Bld_AirStationAddons):
--- meshes Lv<l>_L<nn>_*
+-- (M_Bld_RescueBoathouseAddons), the Air Station's Lv2 refuel pad / Lv3 patrol hut (M_Bld_AirStationAddons) and the
+-- Trophy Hall's Lv2 dome rotunda / Lv3 gold dome + galleries (M_Bld_TrophyHallAddons): meshes Lv<l>_L<nn>_*
 -- and Lv<l>_COL authored in the yard's final (scaled) frame round its ground centre, so they stay 1x (KEEP_1X
 -- `name`). False when the level is 1 or the mesh is not loaded (the Lv1 yard stands alone, everything included).
 local function addonMesh(m: Model, at: CFrame, n: number, asset: string, name: string): boolean
@@ -873,9 +873,12 @@ local function station(m: Model, b: CFrame)
 	glow.Parent = lens
 end
 
--- the trophy hall: a blue board in a yellow frame, a shelf and a name sign on the station's front wall, left of
--- the door, framed by two white columns and a gold dome (docs/24 C; DockPieces.trophies fills the board)
-local function trophyHall(m: Model, b: CFrame)
+-- the trophy hall: a blue board in a yellow frame, a shelf and a name sign on its lot, framed by two white columns
+-- and a gold dome (docs/24 C; DockPieces.trophies fills the board). Lv2 navy dome rotunda + 8 wing plinths, Lv3 gold
+-- dome, portico and front galleries + 6 plinths (M_Bld_TrophyHallAddons): the rotunda drum swallows the code dome, so
+-- it goes; nothing else gives way. Mesh missing: today's look.
+local function trophyHall(m: Model, b: CFrame, level: number?)
+	local mesh = addonMesh(m, b * HALL, level or 1, "M_Bld_TrophyHallAddons", "TrophyHallMesh")
 	brick(
 		m,
 		"TrophyFrame",
@@ -905,15 +908,17 @@ local function trophyHall(m: Model, b: CFrame)
 		)
 	end
 	brick(m, "Lintel", Vector3.new(21, 1, 1.2), b * HALL * CFrame.new(0, 9.5, -0.4), BRICK_WHITE)
-	part(
-		m,
-		"Dome",
-		Vector3.new(14, 5, 5),
-		b * HALL * CFrame.new(0, 10.6, -0.6),
-		GOLD,
-		M.SmoothPlastic,
-		Enum.PartType.Ball
-	)
+	if not mesh then
+		part(
+			m,
+			"Dome",
+			Vector3.new(14, 5, 5),
+			b * HALL * CFrame.new(0, 10.6, -0.6),
+			GOLD,
+			M.SmoothPlastic,
+			Enum.PartType.Ball
+		)
+	end
 	sign(m, Vector3.new(9, 1.6, 0.4), b * HALL * CFrame.new(0, 1.1, -0.1), BRICK_YELLOW, "Trophies")
 end
 
@@ -2757,31 +2762,45 @@ function DockPieces.quayBands(parent: Instance, b: CFrame): { Frame }
 	return out
 end
 
--- The trophy hall's contents (docs/23 d.2) around the berth CFrame b: a gold cup per name in `cups`
--- (rescue milestones) on the shelf, a plaque per island stamp above it. A Model "Trophies" (not parented).
+-- The trophy hall's contents (docs/23 d.2, docs/25 B) around the berth CFrame b: a gold cup per name in `cups`
+-- (rescue milestones), the first `plinths` of them 1.5x on the add-on mesh's ATT_Plinth_NN (8 at Lv2, 14 at Lv3, 0
+-- when the mesh is not shown) and the rest on the shelf, and a plaque per island stamp above the shelf. A Model
+-- "Trophies" (not parented).
 function DockPieces.trophies(
 	b: CFrame,
 	cups: { string },
-	plaques: { { name: string, colour: Color3 } }
+	plaques: { { name: string, colour: Color3 } },
+	plinths: number?
 ): Model
 	local m = Instance.new("Model")
 	m.Name = "Trophies"
 	local hall = b * HALL
+	local onPlinths = math.min(plinths or 0, #cups)
 	for i, name in cups do
-		local x = -9 + (i - 1) * 2.25
+		local at, label, k
+		if i <= onPlinths then
+			local p: Vector3 =
+				AssetIds.Attachments.M_Bld_TrophyHallAddons[string.format("ATT_Plinth_%02d", i)]
+			at, k = hall * CFrame.new(p), 1.5
+			-- on the pedestal's red front plaque (the Lv3 gallery pedestals are 0.86x)
+			label = hall * CFrame.new(p + Vector3.new(0, -1.92, if i > 8 then -1.57 else -1.8))
+		else
+			at, k = hall * CFrame.new(-9 + (i - onPlinths - 1) * 2.25, 2.8, -0.7), 1
+			label = at * CFrame.new(0, -0.2, -0.72)
+		end
 		part(
 			m,
 			"CupBase",
-			Vector3.new(0.9, 0.4, 0.9),
-			hall * CFrame.new(x, 2.95, -0.7),
+			Vector3.new(0.9, 0.4, 0.9) * k,
+			at * CFrame.new(0, 0.15 * k, 0),
 			DARK,
 			M.SmoothPlastic
 		)
 		part(
 			m,
 			"CupStem",
-			Vector3.new(0.7, 0.3, 0.3),
-			hall * CFrame.new(x, 3.5, -0.7) * CFrame.Angles(0, 0, math.pi / 2),
+			Vector3.new(0.7, 0.3, 0.3) * k,
+			at * CFrame.new(0, 0.7 * k, 0) * CFrame.Angles(0, 0, math.pi / 2),
 			GOLD,
 			M.SmoothPlastic,
 			Enum.PartType.Cylinder
@@ -2789,13 +2808,13 @@ function DockPieces.trophies(
 		part(
 			m,
 			"Cup",
-			Vector3.new(1.1, 1.1, 1.1),
-			hall * CFrame.new(x, 4.25, -0.7),
+			Vector3.new(1.1, 1.1, 1.1) * k,
+			at * CFrame.new(0, 1.45 * k, 0),
 			GOLD,
 			M.SmoothPlastic,
 			Enum.PartType.Ball
 		)
-		plate(m, "CupName", Vector3.new(2, 0.5, 0.05), hall * CFrame.new(x, 2.6, -1.42), NAVY, name)
+		plate(m, "CupName", Vector3.new(if k > 1 then 1.8 else 2, 0.5, 0.05), label, NAVY, name)
 	end
 	for i, p in plaques do
 		local x = -8.75 + (i - 1) * 2.5
