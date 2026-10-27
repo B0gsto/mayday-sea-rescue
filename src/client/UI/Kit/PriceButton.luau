@@ -1,7 +1,7 @@
 --!strict
--- PriceButton: the big green buy button. Robux glyph (Roblox's built-in) or the Cash icon + the
--- number. States: "buy" (green, pressable), "disabled" (grey: can't afford), "owned" (blue, gold
--- tick, "Owned").
+-- PriceButton: the big green buy button. Robux glyph (Roblox's built-in), the Cash icon or a Medal
+-- + the number. States: "buy" (green, pressable), "disabled" (grey: can't afford), "owned" (blue,
+-- gold tick, "Owned").
 --   local b = PriceButton.new(parent, { price = 399, currency = "Robux", onActivate = fn })
 --   b.setState("owned") / b.setPrice(n)   b.root is the ImageButton (size Theme.Size.price)
 local Glyph = require(script.Parent.Parent:WaitForChild("Glyph"))
@@ -13,7 +13,7 @@ local S = Theme.Size
 export type State = "buy" | "disabled" | "owned"
 export type Props = {
 	price: number,
-	currency: ("Robux" | "Cash")?,
+	currency: ("Robux" | "Cash" | "Medal")?,
 	state: State?,
 	onActivate: (() -> ())?,
 }
@@ -43,6 +43,12 @@ local function glyph(parent: Instance, currency: string): GuiObject
 			img.Position = UDim2.fromOffset(off.X, off.Y)
 			img.Parent = box
 		end
+	elseif currency == "Medal" then
+		local art = Instance.new("Frame")
+		art.BackgroundTransparency = 1
+		art.Size = UDim2.fromScale(1, 1)
+		art.Parent = box
+		Glyph.draw("medal", art, Color3.new(1, 1, 1))
 	else
 		Style.icon(box, "cash")
 	end

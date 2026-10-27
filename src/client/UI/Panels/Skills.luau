@@ -1,35 +1,31 @@
 --!strict
--- Skills panel (docs/25 F): the radial tree's temporary old-layout view on Kit/TreeView until the
--- full-screen radial view lands. Lanes are SkillRules' sectors; a node is bought with Medals through
--- Skill_Buy, and the server's Skill_State snapshot (or PlayerDataChanged's `skills`) refreshes the
--- states. The Medal counter rides on the title bar so the cost and the purse read together.
+-- Skills panel (docs/25 F, J): the full-screen radial tree, its Medal wallet, buying through Skill_Buy
+-- and the state snapshot (Skill_State / PlayerDataChanged / Progression_GetData). Tapping a node shows
+-- its card and moves the camera to the nearest world subject for its focus (Captain: you; a category:
+-- your rarest survivor of it; Any: your rarest survivor). The tree fades while the world shows through.
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
 local SkillRules = require(Shared:WaitForChild("SkillRules"))
 
-local Kit = script.Parent.Parent:WaitForChild("Kit")
-local Counter = require(Kit:WaitForChild("Counter"))
-local Panel = require(Kit:WaitForChild("Panel"))
-local Theme = require(Kit:WaitForChild("Theme"))
-local TreeView = require(Kit:WaitForChild("TreeView"))
+local Client = script.Parent.Parent.Parent
+local Controllers = Client:WaitForChild("Controllers")
+local AudioController = require(Controllers:WaitForChild("AudioController"))
+local CameraController = require(Controllers:WaitForChild("CameraController"))
+local SkillTreeView =
+	require(script.Parent.Parent:WaitForChild("Kit"):WaitForChild("SkillTreeView"))
 
+local player = Players.LocalPlayer
 local Skills = {}
 
-local GROUP_LOOK: { [string]: { icon: string, color: string } } = {
-	Captain = { icon = "boat_to_me", color = "blue" },
-	Rescue = { icon = "lifebuoy", color = "green" },
-	Crew = { icon = "crew", color = "teal" },
-	Industry = { icon = "build", color = "orange" },
-	Bridge = { icon = "lock", color = "locked" },
-}
-
-local GROUPS: { TreeView.Group } = {}
-for _, sector in SkillRules.SECTORS do
-	local look = GROUP_LOOK[sector] or { icon = "boost", color = "blue" }
-	table.insert(GROUPS, { id = sector, name = sector, icon = look.icon, color = look.color })
-end
+local FOCUS_DISTANCE = 8
+local FOCUS_HEIGHT = 3.2
+local FOCUS_FOV = 50
+local FOCUS_TIME = 0.5
 
 local function pct(amount: number): string
 	return `{math.floor(amount * 100 + 0.5)}%`
@@ -123,90 +119,265 @@ local function effectText(kind: string, amount: number): string
 	return kind
 end
 
-function Skills.new(canvas: Frame, onClose: () -> ())
-	local panel = Panel.new(canvas, {
-		title = "Skills",
-		icon = "boost",
-		size = Vector2.new(1080, 620),
-		wide = true,
-		onClose = onClose,
-	})
-	panel.body.ScrollingEnabled = false
-	panel.body.AutomaticCanvasSize = Enum.AutomaticSize.None
-	panel.body.CanvasSize = UDim2.new()
-	panel.body.ScrollBarThickness = 0
+-- The rarest shown survivor of a category, then its live rig on this client or its published footing.
+local function workerPoint(category: string?): Vector3?
+	local root = ReplicatedStorage:FindFirstChild("Workers")
+	local folder = root and root:FindFirstChild(tostring(player.UserId))
+	if not folder then
+		return nil
+	end
+	local best: Configuration? = nil
+	local bestRarity = 0
+	for _, child in folder:GetChildren() do
+		if child:IsA("Configuration") then
+			local cat = child:GetAttribute("WorkerCategory") or child:GetAttribute("Category")
+			local rarity = tonumber(
+				child:GetAttribute("WorkerRarity") or child:GetAttribute("Rarity")
+			) or 0
+			if (category == nil or cat == category) and rarity > bestRarity then
+				best, bestRarity = child, rarity
+			end
+		end
+	end
+	if not best then
+		return nil
+	end
+	local name = best:GetAttribute("WorkerName")
+	local cat = best:GetAttribute("WorkerCategory") or best:GetAttribute("Category")
+	local rarity = best:GetAttribute("WorkerRarity") or best:GetAttribute("Rarity")
+	local localRoot = Workspace:FindFirstChild("WorkersLocal")
+	if localRoot then
+		for _, child in localRoot:GetChildren() do
+			if
+				child:IsA("Model")
+				and child:GetAttribute("WorkerName") == name
+				and child:GetAttribute("WorkerCategory") == cat
+				and child:GetAttribute("WorkerRarity") == rarity
+			then
+				local torso = child:FindFirstChild("HumanoidRootPart")
+				if torso and torso:IsA("BasePart") then
+					return torso.Position + Vector3.new(0, 0.4, 0)
+				end
+				return child:GetPivot().Position
+			end
+		end
+	end
+	local spot = best:GetAttribute("Spot")
+	if typeof(spot) == "CFrame" then
+		return spot.Position + Vector3.new(0, 2.6, 0)
+	end
+	return nil
+end
 
+local function focusPoint(kind: string): Vector3?
+	if kind == "Captain" then
+		local char = player.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
+		if root and root:IsA("BasePart") then
+			return root.Position + Vector3.new(0, 0.7, 0)
+		end
+		return nil
+	end
+	return workerPoint(if kind == "Any" then nil else kind)
+end
+
+function Skills.new(canvas: Frame, onClose: () -> ())
 	local owned: { [string]: boolean } = {}
 	local medals = 0
+	local newest: string? = nil
+	local view: SkillTreeView.View
+	local close: () -> ()
+	local focus: { from: CFrame, to: CFrame, fromFov: number, toFov: number, t: number }? = nil
+	local focusing = false
 
-	local tree = TreeView.new(panel.body, {
-		nodes = {},
-		groups = GROUPS,
-		cash = medals,
-		onBuy = function(id: string)
-			task.spawn(function()
-				pcall(function()
-					Net.func("Skill_Buy"):InvokeServer(id)
-				end)
-			end)
-		end,
-	})
-	tree.root.Size = UDim2.new(1, -8, 1, -16)
+	local function endFocus()
+		focus = nil
+		if focusing then
+			focusing = false
+			CameraController.ClearOverride()
+		end
+		view.setFaded(false)
+	end
 
-	local counter = Counter.new(panel.root, { kind = "medal", value = medals })
-	counter.root.Name = "SkillsMedals"
-	counter.root.AnchorPoint = Vector2.new(1, 0.5)
-	counter.root.Position = UDim2.new(1, -(Theme.Size.close + 10), 0, Theme.Size.titleBar * 0.5)
-	counter.root.ZIndex = 6
+	local function startFocus(at: Vector3): boolean
+		local camera = Workspace.CurrentCamera
+		if not camera then
+			return false
+		end
+		local flat = camera.CFrame.LookVector
+		flat = Vector3.new(flat.X, 0, flat.Z)
+		if flat.Magnitude < 1e-3 then
+			flat = Vector3.new(0, 0, -1)
+		end
+		flat = flat.Unit
+		local eye = at - flat * FOCUS_DISTANCE + Vector3.new(0, FOCUS_HEIGHT, 0)
+		focus = {
+			from = camera.CFrame,
+			to = CFrame.lookAt(eye, at + Vector3.new(0, 0.4, 0)),
+			fromFov = camera.FieldOfView,
+			toFov = FOCUS_FOV,
+			t = 0,
+		}
+		focusing = true
+		CameraController.SetOverride(camera.CFrame, camera.FieldOfView)
+		return true
+	end
 
-	local function nodes(): { TreeView.Node }
-		local out: { TreeView.Node } = {}
+	RunService.RenderStepped:Connect(function(dt: number)
+		local f = focus
+		if not f then
+			return
+		end
+		f.t = math.min(1, f.t + dt / FOCUS_TIME)
+		local k = f.t * f.t * (3 - 2 * f.t)
+		CameraController.SetOverride(f.from:Lerp(f.to, k), f.fromFov + (f.toFov - f.fromFov) * k)
+		if f.t >= 1 then
+			focus = nil
+		end
+	end)
+
+	local function nodeList(): { SkillTreeView.Node }
+		local out: { SkillTreeView.Node } = {}
 		for _, n in SkillRules.nodes() do
-			local state: "owned" | "buyable" | "locked"
+			local near = #n.needs == 0
+			for _, need in n.needs do
+				if owned[need] then
+					near = true
+					break
+				end
+			end
+			local state: SkillTreeView.State
 			if owned[n.id] then
 				state = "owned"
+			elseif n.soon then
+				state = "soon"
+			elseif near then
+				state = "buyable"
 			else
-				local ready = #n.needs == 0
-				for _, need in n.needs do
-					if owned[need] then
-						ready = true
-						break
-					end
-				end
-				state = if ready and not n.soon then "buyable" else "locked"
+				state = "locked"
 			end
 			table.insert(out, {
 				id = n.id,
 				name = n.name,
 				icon = n.icon,
-				price = n.medals,
-				needs = n.needs,
-				col = n.ring,
-				row = n.angle / 36,
-				group = n.sector,
 				effect = effectText(n.effect.kind, n.effect.amount),
+				price = n.medals,
+				ring = n.ring,
+				angle = n.angle,
+				sector = n.sector,
+				keystone = n.keystone,
+				revealed = owned[n.id] or near,
 				state = state,
+				focus = n.focus,
+				needs = n.needs,
 			})
 		end
 		return out
 	end
 
-	local function apply(skills: any, purse: any)
-		if type(purse) == "number" then
-			medals = purse
-			counter.set(medals)
+	local function newestId(): string?
+		if newest and owned[newest] then
+			return newest
 		end
-		if type(skills) == "table" then
-			owned = {}
-			for id, on in skills do
-				if on == true and SkillRules.byId[id] then
-					owned[id] = true
-				end
+		local best: string? = nil
+		local ring = -1
+		for _, n in SkillRules.nodes() do
+			if owned[n.id] and n.ring > ring then
+				best, ring = n.id, n.ring
 			end
 		end
-		-- rebuild only while visible: PlayerDataChanged arrives on every award
-		if panel.isOpen() then
-			tree.setNodes(nodes(), medals)
+		return best
+	end
+
+	local function chime()
+		for i = 1, 3 do
+			task.delay((i - 1) * 0.06, function()
+				AudioController.play("UI_Step", nil, 0.7, 1 + (i - 1) * 0.14)
+			end)
+		end
+	end
+
+	view = SkillTreeView.new(canvas, {
+		nodes = {},
+		medals = 0,
+		onBuy = function(id: string, done: SkillTreeView.Done)
+			task.spawn(function()
+				local ok, bought = pcall(function()
+					return Net.func("Skill_Buy"):InvokeServer(id)
+				end)
+				local won = ok and bought == true
+				if won then
+					newest = id
+					chime()
+				end
+				done(won)
+			end)
+		end,
+		onSelect = function(n: SkillTreeView.Node)
+			local kind = n.focus
+			local at = kind and focusPoint(kind)
+			if not at then
+				endFocus()
+				return
+			end
+			if startFocus(at) then
+				view.setFaded(true)
+			else
+				endFocus()
+			end
+		end,
+		onEmpty = endFocus,
+		onEndFocus = endFocus,
+		onReset = function()
+			task.spawn(pcall, function()
+				return Net.func("Skill_Reset"):InvokeServer() -- Skill_State brings the refunded tree back
+			end)
+		end,
+		onClose = function()
+			close()
+		end,
+	})
+
+	close = function()
+		endFocus()
+		view.close()
+		onClose()
+	end
+
+	local function sameOwned(a: { [string]: boolean }, b: { [string]: boolean }): boolean
+		for id in a do
+			if not b[id] then
+				return false
+			end
+		end
+		for id in b do
+			if not a[id] then
+				return false
+			end
+		end
+		return true
+	end
+
+	local function apply(skills: any, purse: any)
+		local changed = false
+		if type(purse) == "number" and purse ~= medals then
+			medals = purse
+			changed = true
+		end
+		if type(skills) == "table" then
+			local nextOwned: { [string]: boolean } = {}
+			for id, on in skills do
+				if on == true and SkillRules.byId[id] then
+					nextOwned[id] = true
+				end
+			end
+			if not sameOwned(owned, nextOwned) then
+				owned = nextOwned
+				changed = true
+			end
+		end
+		if changed and view.isOpen() then
+			view.setNodes(nodeList(), medals)
 		end
 	end
 
@@ -232,16 +403,16 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 		end
 	end)
 
-	apply(nil, nil)
-
 	return {
 		open = function()
-			panel.open()
-			tree.setNodes(nodes(), medals)
+			endFocus()
+			view.root.Visible = true
+			view.setNodes(nodeList(), medals)
+			view.openAt(newestId())
 		end,
-		close = panel.close,
-		isOpen = panel.isOpen,
-		root = panel.root,
+		close = close,
+		isOpen = view.isOpen,
+		root = view.root,
 	}
 end
 

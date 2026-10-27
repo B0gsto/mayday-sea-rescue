@@ -129,4 +129,45 @@ return function(t)
 		local after = (at - next_) / 2
 		t.expect((after - before).Magnitude).toBeCloseTo(0, 1e-6)
 	end)
+
+	t.test("radial: ring radii interpolate the bridge (2.75) and clamp at the rim", function()
+		t.expect(M.ringRadius(0)).toBe(0)
+		t.expect(M.ringRadius(1)).toBe(150)
+		t.expect(M.ringRadius(2.75)).toBeCloseTo(316.25, 1e-6)
+		t.expect(M.ringRadius(5)).toBe(520)
+		t.expect(M.ringRadius(9)).toBe(520)
+		t.expect(M.ringRadius(0.5)).toBe(75)
+	end)
+
+	t.test("radial: 0 is up, 90 is right (0..360 clockwise)", function()
+		local up = M.polar(1, 0)
+		t.expect(up.X).toBeCloseTo(0, 1e-6)
+		t.expect(up.Y).toBeCloseTo(-150, 1e-6)
+		local right = M.polar(1, 90)
+		t.expect(right.X).toBeCloseTo(150, 1e-6)
+		t.expect(right.Y).toBeCloseTo(0, 1e-6)
+		local down = M.polar(1, 180)
+		t.expect(down.X).toBeCloseTo(0, 1e-6)
+		t.expect(down.Y).toBeCloseTo(150, 1e-6)
+		local left = M.polar(1, 270)
+		t.expect(left.X).toBeCloseTo(-150, 1e-6)
+		t.expect(left.Y).toBeCloseTo(0, 1e-6)
+	end)
+
+	t.test("radialLayout: nodes centre in a padded square, every node inside it", function()
+		local size = M.radialSize()
+		t.expect(size).toEqual(v((520 + M.RADIAL_PAD) * 2, (520 + M.RADIAL_PAD) * 2))
+		local pos = M.radialLayout({
+			{ id = "n", ring = 1, angle = 0 },
+			{ id = "bridge", ring = 2.75, angle = 90 },
+			{ id = "rim", ring = 5, angle = 225 },
+		})
+		t.expect(pos.n).toEqual(v(size.X * 0.5, size.Y * 0.5 - 150))
+		t.expect(pos.bridge.X).toBeCloseTo(size.X * 0.5 + 316.25, 1e-6)
+		t.expect(pos.bridge.Y).toBeCloseTo(size.Y * 0.5, 1e-6)
+		for _, p in pos do
+			t.expect(p.X >= 0 and p.X <= size.X).toBe(true)
+			t.expect(p.Y >= 0 and p.Y <= size.Y).toBe(true)
+		end
+	end)
 end

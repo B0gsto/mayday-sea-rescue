@@ -14,6 +14,11 @@ TreeMath.PAD = 22
 TreeMath.MIN_ZOOM = 0.4
 TreeMath.MAX_ZOOM = 1.5
 
+-- The radial skill tree (docs/25 F): 0 = up, clockwise, ring 2.75 for the bridges.
+TreeMath.RING_RADII = { 0, 150, 245, 340, 435, 520 }
+TreeMath.SECTOR_SPREAD = 36
+TreeMath.RADIAL_PAD = 28
+
 export type Node = { id: string, col: number, row: number, group: string? }
 export type Box = { id: string, pos: Vector2, size: Vector2 }
 export type Lane = {
@@ -163,6 +168,44 @@ end
 function TreeMath.zoomAbout(pan: Vector2, at: Vector2, before: number, after: number): Vector2
 	local k = after / math.max(before, 1e-6)
 	return at - (at - pan) * k
+end
+
+-- The radial skill tree: ring 0 is the centre ("You"), rings 1..5 radiate outward; an angle in
+-- degrees, 0 = up and clockwise. Fractional rings interpolate the radius (bridges sit at 2.75).
+export type RadialNode = { id: string, ring: number, angle: number }
+export type RadialOpts = { rings: { number }?, pad: number? }
+
+function TreeMath.ringRadius(ring: number, rings: { number }?): number
+	local list = rings or TreeMath.RING_RADII
+	local r = math.max(0, ring)
+	local lo = math.clamp(math.floor(r), 0, #list - 1)
+	local hi = math.clamp(math.ceil(r), 0, #list - 1)
+	local a = list[lo + 1] or 0
+	local b = list[hi + 1] or a
+	return a + (b - a) * (r - lo)
+end
+
+function TreeMath.polar(ring: number, angle: number, opts: RadialOpts?): Vector2
+	local radius = TreeMath.ringRadius(ring, opts and opts.rings)
+	local t = math.rad(angle)
+	return Vector2.new(radius * math.sin(t), -radius * math.cos(t))
+end
+
+function TreeMath.radialSize(opts: RadialOpts?): Vector2
+	local list = (opts and opts.rings) or TreeMath.RING_RADII
+	local pad = (opts and opts.pad) or TreeMath.RADIAL_PAD
+	local side = ((list[#list] or 0) + pad) * 2
+	return Vector2.new(side, side)
+end
+
+-- Node centres in content space, centred in the square radial canvas.
+function TreeMath.radialLayout(nodes: { RadialNode }, opts: RadialOpts?): { [string]: Vector2 }
+	local centre = TreeMath.radialSize(opts) * 0.5
+	local out: { [string]: Vector2 } = {}
+	for _, n in nodes do
+		out[n.id] = centre + TreeMath.polar(n.ring, n.angle, opts)
+	end
+	return out
 end
 
 return TreeMath

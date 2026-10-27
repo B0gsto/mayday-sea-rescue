@@ -197,7 +197,12 @@ function Menu.open(name: string)
 	chrome()
 	p.open()
 	Telemetry.shop("MenuOpened") -- a menu panel opened
-	task.defer(focusFirst, p.root)
+	local sel = GuiService.SelectedObject
+	if
+		not (sel and sel:IsDescendantOf(p.root) and (not sel:IsA("GuiButton") or sel.Selectable))
+	then
+		task.defer(focusFirst, p.root)
+	end
 end
 
 function Menu.toggle(name: string)

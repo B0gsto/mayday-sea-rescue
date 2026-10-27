@@ -3,6 +3,7 @@
 -- hanging over its left end, the number outlined in white.
 --   local c = Counter.new(parent, { kind = "cash", value = 1250 })   c.set(1500) (counts up)
 --   c.root: Frame, Theme.Size.counter
+local Glyph = require(script.Parent.Parent:WaitForChild("Glyph"))
 local Style = require(script.Parent:WaitForChild("Style"))
 local Theme = require(script.Parent:WaitForChild("Theme"))
 
@@ -42,7 +43,15 @@ function Counter.new(parent: Instance?, props: Props): Counter
 	ic.Size = UDim2.fromOffset(S.counter.Y + 14, S.counter.Y + 14)
 	ic.ZIndex = 2
 	ic.Parent = root
-	Style.icon(ic, kind)
+	if kind == "medal" then
+		local art = Instance.new("Frame")
+		art.BackgroundTransparency = 1
+		art.Size = UDim2.fromScale(1, 1)
+		art.Parent = ic
+		Glyph.draw("medal", art, Color3.new(1, 1, 1))
+	else
+		Style.icon(ic, kind)
+	end
 	local bump = Instance.new("UIScale")
 	bump.Parent = ic
 
