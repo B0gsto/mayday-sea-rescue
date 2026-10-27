@@ -69,6 +69,7 @@ DockConfig.BUILDINGS = {
 
 -- The Bunkhouse's people cap by level (docs/25 B); WorkerRules.W.CAP stays untouched, WorkerService reads this.
 DockConfig.BunkhouseCaps = { 10, 20, 30, 45, 60 }
+DockConfig.HutCap = 5 -- people the Rescue Hut sleeps before a Bunkhouse stands (the tutorial's first Builder)
 
 local rows: { [string]: any } = {
 	HQ = {

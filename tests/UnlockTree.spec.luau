@@ -82,6 +82,7 @@ return function(t)
 		}
 		ok, reason, _, need = U.canBuild("HQ", 3, hq2, 1e9)
 		t.expect({ ok, reason, need }).toEqual({ false, "Needs", "BoatYard" })
+		t.expect(U.canRobux("HQ", 3, hq2)).toBe(false) -- Robux skips the Cash, never the HQ's needs
 		t.expect(U.nextHqNeed({ HQ = 5, Harbour = 3 })).toBeNil()
 	end)
 
@@ -97,7 +98,7 @@ return function(t)
 	end)
 
 	t.test("Bunkhouse caps the crew", function()
-		t.expect(U.bunkCap({})).toBe(0)
+		t.expect(U.bunkCap({})).toBe(5)
 		t.expect(U.bunkCap({ Bunkhouse = 1 })).toBe(10)
 		t.expect(U.bunkCap({ Bunkhouse = 3 })).toBe(30)
 		t.expect(U.bunkCap({ Bunkhouse = 9 })).toBe(60)

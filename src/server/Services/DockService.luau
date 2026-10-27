@@ -1218,7 +1218,7 @@ local function buy(player: Player, key: any): (boolean, string)
 	end
 	if type(key) == "string" and DockConfig.Buildings[key] then
 		local n = UnlockTree.levelOf(data.dock.levels, key) + 1
-		if type(data.dockPrepaid) == "table" and data.dockPrepaid[key] then
+		if tableOf(data.dock.prepaid)[key] == n then
 			return false, "Owned" -- Robux paid already: it builds next, never charge Cash for it too
 		end
 		if busy[player] then

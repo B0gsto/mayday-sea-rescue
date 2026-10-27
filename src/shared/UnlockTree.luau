@@ -137,17 +137,12 @@ function UnlockTree.canBuild(
 	return true, nil, lvl.cash, nil
 end
 
--- May `key` be bought to level `n` with its Robux product now? The order and the HQ gate must stand.
+-- May `key` be bought to level `n` with its Robux product now? Robux skips only the Cash: the order, the HQ gate
+-- and the next HQ level's needs must stand (canBuild with unlimited Cash).
 function UnlockTree.canRobux(key: string, n: number, levels: Levels): boolean
 	local b = DockConfig.Buildings[key]
-	local want = count(n)
-	local lvl = b and b.levels[want]
-	return b ~= nil
-		and lvl ~= nil
-		and lvl.product ~= nil
-		and want == UnlockTree.levelOf(levels, key) + 1
-		and UnlockTree.levelOf(levels, "HQ") >= lvl.hq
-		and UnlockTree.missingLevel(key, want, levels) == nil
+	local lvl = b and b.levels[count(n)]
+	return lvl ~= nil and lvl.product ~= nil and (UnlockTree.canBuild(key, n, levels, math.huge))
 end
 
 -- Every row the current HQ level offers (unlockAt <= HQ) with no level built yet: what the next HQ level needs.
@@ -170,11 +165,11 @@ function UnlockTree.nextHqNeed(levels: Levels): { string }?
 	return out
 end
 
--- The Bunkhouse's people cap at its current level (0 when not built).
+-- The Bunkhouse's people cap at its current level (the Hut's few bunks when not built).
 function UnlockTree.bunkCap(levels: Levels): number
 	local n = UnlockTree.levelOf(levels, "Bunkhouse")
 	if n < 1 then
-		return 0
+		return DockConfig.HutCap
 	end
 	return DockConfig.BunkhouseCaps[math.min(n, #DockConfig.BunkhouseCaps)] or 0
 end

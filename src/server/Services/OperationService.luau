@@ -1846,7 +1846,8 @@ local function tick()
 				then ColdOpenFlow.decide(e, true, 0, coldOpenDone(player))
 				else ColdOpenFlow.decide(e, OperationService.ColdOpenAuto, st.completed, true)
 			-- docs/25 J: a new island builds the free Rescue Hut first; the jet ski waits until it stands
-			if decision == "Start" and player:GetAttribute("DockLevelHQ") ~= 0 then
+			local hq = player:GetAttribute("DockLevelHQ") -- nil until DockService's first sync
+			if decision == "Start" and hq ~= nil and hq ~= 0 then
 				OperationService.StartColdOpen(player)
 			elseif decision == "Abandon" then
 				-- its op is gone (a start error, closed without finish): hand over, never replay
