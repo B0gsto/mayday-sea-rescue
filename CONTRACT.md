@@ -125,7 +125,10 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   `WorkerController` sways `Lv2_L04_Windsock` about its pole within LIVELY); no worker uses its `ATT_*` yet. The Trophy Hall's Lv2 navy dome rotunda + 8 wing plinths and Lv3
   gold dome, portico and galleries + 6 plinths are `M_Bld_TrophyHallAddons` (`TrophyHallMesh`, round the code wall; the
   code gold dome is only its fallback); `DockService` puts the first cups on its `ATT_Plinth_01..08` (Lv2) / `..14`
-  (Lv3) via `DockPieces.trophies(b, cups, plaques, plinths)`, the rest on the wall shelf. The Depot model holds `DepotMesh` (the Lv1..n
+  (Lv3) via `DockPieces.trophies(b, cups, plaques, plinths)`, the rest on the wall shelf. The Sub Pen's Lv2 gantry +
+  hanging mini-sub + dive rack and Lv3 salvage wet dock are `M_Bld_SubPenAddons` (`SubPenMesh`, the pen's -X rim and
+  its back; no Lv1 piece gives way; `WorkerController` rolls `Lv2_L03_MiniSub` on its straps within LIVELY); no worker
+  uses its `ATT_*` yet. The Depot model holds `DepotMesh` (the Lv1..n
   layers and `Marks`: `ATT_PickUp_*` / `ATT_DropOff_*` bays, `ATT_BargeMoor`, `ATT_QuayLoad`, `ATT_QuayLand`) and
   `FreightQuay` (west plate edge, sea level). Client: `DepotController` (barge from `BargeNext` via
   `shared/BargePath`, `Stack_1..4` from `DepotStock` / `DepotCap`, empty-crate icon on `SiteWaiting`) and

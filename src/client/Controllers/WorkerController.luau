@@ -1181,12 +1181,30 @@ end
 
 -- docs/25 B: the Rescue Boathouse's moored RIB (Lv2) and lifeboat (Lv3) (RescueBoathouseMesh) bob gently on their
 -- slips, only while you are within LIVELY; the berth and the boats' _COL boxes stay put. The Air Station's Lv2
--- windsock (AirStationMesh) sways the same way, turning about its pole (mesh frame x -45.6, z 18.7) instead.
-type Mooring = { boats: { BasePart }, bob: Tween?, at: Vector3, pole: CFrame? }
+-- windsock (AirStationMesh) sways the same way, turning about its pole (mesh frame x -45.6, z 18.7) instead, and
+-- the Sub Pen's Lv2 mini-sub (SubPenMesh) rolls a little on its straps about the hook block (x -3.95, y 10).
+type Mooring = {
+	boats: { BasePart },
+	bob: Tween?,
+	at: Vector3,
+	pole: CFrame?,
+	swing: number,
+	period: number,
+}
 local moorings: { [Model]: Mooring } = {}
 local MOORED = {
 	RescueBoathouseMesh = { "Lv2_L04_RIB", "Lv3_L03_Lifeboat" },
 	AirStationMesh = { "Lv2_L04_Windsock" },
+	SubPenMesh = { "Lv2_L03_MiniSub" },
+}
+-- in the mesh frame, turning about the pole's Y: swing in radians, half a period in seconds
+local POLES: { [string]: { pole: CFrame, swing: number, period: number } } = {
+	AirStationMesh = { pole = CFrame.new(-45.6, 0, 18.7), swing = math.rad(14), period = 3.4 },
+	SubPenMesh = { -- Y along the hull
+		pole = CFrame.new(-3.95, 10, 0) * CFrame.Angles(math.pi / 2, 0, 0),
+		swing = math.rad(4),
+		period = 2.8,
+	},
 }
 
 local function moorBoats(mesh: Instance)
@@ -1194,12 +1212,13 @@ local function moorBoats(mesh: Instance)
 	if not names or not mesh:IsA("Model") or moorings[mesh] then
 		return
 	end
+	local spec = POLES[mesh.Name]
 	local o: Mooring = {
 		boats = {},
 		at = mesh:GetPivot().Position,
-		pole = if mesh.Name == "AirStationMesh"
-			then mesh:GetPivot() * CFrame.new(-45.6, 0, 18.7)
-			else nil,
+		pole = if spec then mesh:GetPivot() * spec.pole else nil,
+		swing = if spec then spec.swing else 0.18,
+		period = if spec then spec.period else 2.6,
 	}
 	moorings[mesh] = o
 	-- shortcut: read once, 2 s after the mesh lands (like the lookout); a boat streamed in later stays still
@@ -1229,14 +1248,8 @@ local function bobOf(o: Mooring): Tween
 	end)
 	return TweenService:Create(
 		heave,
-		TweenInfo.new(
-			if pole then 3.4 else 2.6,
-			Enum.EasingStyle.Sine,
-			Enum.EasingDirection.InOut,
-			-1,
-			true
-		),
-		{ Value = if pole then math.rad(14) else 0.18 }
+		TweenInfo.new(o.period, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+		{ Value = o.swing }
 	)
 end
 

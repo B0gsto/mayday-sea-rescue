@@ -548,8 +548,9 @@ end
 -- Fish Market's Lv2 stalls / Lv3 smokehouse (M_Bld_FishMarketAddons), the Clinic's Lv2 pavilion / Lv3 hospital
 -- (M_Bld_ClinicAddons), the Lookout's Lv2 lantern / Lv3 searchlight (M_Bld_LookoutAddons), the Boat Yard's Lv2
 -- crane / Lv3 dry dock (M_Bld_BoatYardAddons), the Rescue Boathouse's Lv2 RIB / Lv3 lifeboat berths
--- (M_Bld_RescueBoathouseAddons), the Air Station's Lv2 refuel pad / Lv3 patrol hut (M_Bld_AirStationAddons) and the
--- Trophy Hall's Lv2 dome rotunda / Lv3 gold dome + galleries (M_Bld_TrophyHallAddons): meshes Lv<l>_L<nn>_*
+-- (M_Bld_RescueBoathouseAddons), the Air Station's Lv2 refuel pad / Lv3 patrol hut (M_Bld_AirStationAddons), the
+-- Trophy Hall's Lv2 dome rotunda / Lv3 gold dome + galleries (M_Bld_TrophyHallAddons) and the Sub Pen's Lv2 gantry
+-- / Lv3 salvage dock (M_Bld_SubPenAddons): meshes Lv<l>_L<nn>_*
 -- and Lv<l>_COL authored in the yard's final (scaled) frame round its ground centre, so they stay 1x (KEEP_1X
 -- `name`). False when the level is 1 or the mesh is not loaded (the Lv1 yard stands alone, everything included).
 local function addonMesh(m: Model, at: CFrame, n: number, asset: string, name: string): boolean
@@ -1071,9 +1072,12 @@ local function hangar(m: Model, b: CFrame)
 end
 
 -- the sub pen (docs/24 C, moved to its own harbour lot): a ringed stud deck, a yellow gantry and a white dome cap.
--- The submarine still launches from the old sub berth (Marina.SUB); the board is on this deck.
-local function subPen(m: Model, b: CFrame)
+-- The submarine still launches from the old sub berth (Marina.SUB); the board is on this deck. Lv2 gantry + hanging
+-- mini-sub + dive rack on the -X plinth rim, Lv3 salvage wet dock behind the pen (M_Bld_SubPenAddons, mesh x -19..12,
+-- z -7..37: clear of the code gantry, beams, deck and board, so no Lv1 piece gives way). Mesh missing: today's look.
+local function subPen(m: Model, b: CFrame, level: number?)
 	local S = b * DockConfig.Buildings.SubPen.spot -- -Z = the front, toward the plaza
+	addonMesh(m, S, level or 1, "M_Bld_SubPenAddons", "SubPenMesh")
 	local hx, top = 8, 16
 	plinth(m, Vector3.new(38, 0.8, 38), S * CFrame.new(0, 0.4, 0), BRICK_WHITE)
 	studTop(brick(m, "Deck", Vector3.new(30, 0.8, 30), S * CFrame.new(0, 0.8, 0), GREY))
