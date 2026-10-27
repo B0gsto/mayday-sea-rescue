@@ -1,17 +1,14 @@
 --!strict
--- WorkerController (WP-26): draws the WorkerBadge billboard (category icon + rarity stars, legendary glow) on
--- every model tagged "WorkerBadge" (a picked-up survivor), and plays the offline
--- earnings welcome: a coin burst into the wallet and a Toast when the player attribute WorkerOffline arrives.
--- It also draws every island's workers, client-side only: the server publishes them as data
--- (ReplicatedStorage.Workers.<owner>.<i>, WorkerService) and this clones a shared R15 template
+-- WorkerController (WP-26, docs/25 J): draws every island's workers, client-side only. The server publishes
+-- them as data (ReplicatedStorage.Workers.<owner>.<i>, WorkerService) and this clones a shared R15 template
 -- (ReplicatedStorage.WorkerRigs) into Workspace.WorkersLocal for each one within NEAR studs of you, drops it
 -- past FAR, animates it only within LIVELY (a still pose beyond), and walks it along a cached
 -- PathfindingService route when its Spot changes (a new recruit walks in from the jetty). At their building each
 -- Job loops a stock animation with a small code-built prop (docs/24 C): Build hammers, Fish carries a crate,
--- Repair turns a wrench, Rescue scans with binoculars, Heal holds a clipboard, Gather saws, Idle stands. Workers
--- waiting on the jetty keep their category badge (they are not at work). Gatherer/Rescuer pay pops a "+$".
--- Each yard shows one crew badge (icon + count) instead of one per worker.
-local CollectionService = game:GetService("CollectionService")
+-- Repair turns a wrench, Rescue scans with binoculars, Heal holds a clipboard, Gather saws, Idle stands. Every
+-- rig gets its rarity name tag and info card (SurvivorController); each yard shows one crew badge (icon + count)
+-- instead of one per worker. Gatherer/Rescuer pay pops a "+$". It also plays the offline earnings welcome: a
+-- coin burst into the wallet and a Toast when the player attribute WorkerOffline arrives.
 local PathfindingService = game:GetService("PathfindingService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -23,6 +20,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local CashBurst = require(UI:WaitForChild("CashBurst"))
 local Style = require(UI:WaitForChild("Kit"):WaitForChild("Style"))
+local SurvivorController = require(script.Parent:WaitForChild("SurvivorController"))
 local Toast = require(UI:WaitForChild("Kit"):WaitForChild("Toast"))
 local WorkerBadge = require(UI:WaitForChild("WorkerBadge"))
 
@@ -31,7 +29,7 @@ local WorkerController = {}
 local player = Players.LocalPlayer
 
 local NEAR, FAR = 200, 240 -- studs from you: a rig is made within NEAR, dropped beyond FAR
-local LIVELY = 90 -- animated within this (the badge shows within 60)
+local LIVELY = 90 -- animated within this (the yard crew badge shows within 60)
 local WALK_SPEED = 9 -- studs/s
 local MAKE_PER_TICK = 8 -- rigs cloned per 0.25 s pass (no hitch when you land on a full island)
 local ANIM_IDS: { [string]: string } = { -- stock R15 animations (the default Animate script's)
@@ -87,13 +85,23 @@ local function eye(): Vector3
 	return if cam then cam.CFrame.Position else Vector3.zero
 end
 
+-- K1 calls it Category; WP-26 called it WorkerCategory. Read either, so the client outlives the migration.
+local function categoryOf(cfg: Configuration): string?
+	local category = cfg:GetAttribute("Category")
+	if type(category) == "string" then
+		return category
+	end
+	local legacy = cfg:GetAttribute("WorkerCategory")
+	return if type(legacy) == "string" then legacy else nil
+end
+
 local function jobOf(r: Rec): string?
 	local job = r.cfg:GetAttribute("Job")
 	if type(job) == "string" and JOBS[job] then
 		return job
 	end
-	local category = r.cfg:GetAttribute("WorkerCategory")
-	return if type(category) == "string" then CATEGORY_JOB[category] else nil
+	local category = categoryOf(r.cfg)
+	return if category then CATEGORY_JOB[category] else nil
 end
 
 local function work(r: Rec): { anim: string?, prop: string? }?
@@ -260,13 +268,28 @@ local function makeRig(r: Rec): boolean
 	local rig = tpl:Clone()
 	r.height = tonumber(tpl:GetAttribute("RootHeight")) or 3
 	r.loaded = {}
-	for _, key in { "WorkerCategory", "WorkerRarity", "WorkerName" } do
+	-- K1 properties (plus the WP-26 names while the server migrates) drive the tag and the info card
+	for _, key in
+		{
+			"SurvivorName",
+			"Rarity",
+			"Category",
+			"Trait",
+			"Special",
+			"Workplace",
+			"Job",
+			"WorkerCategory",
+			"WorkerRarity",
+			"WorkerName",
+		}
+	do
 		rig:SetAttribute(key, r.cfg:GetAttribute(key))
 	end
 	r.rig = rig
 	place(r)
 	dress(r)
 	rig.Parent = localFolder
+	SurvivorController.attach(rig)
 	pose(r)
 	return true
 end
@@ -482,8 +505,8 @@ local crews: { [string]: { gui: BillboardGui, at: Attachment } } = {}
 local function crewPass()
 	local groups: { [string]: { cat: string, sum: Vector3, rigs: { Model } } } = {}
 	for cfg, r in recs do
-		local cat = cfg:GetAttribute("WorkerCategory")
-		if r.rig and not r.walking and work(r) and type(cat) == "string" then
+		local cat = categoryOf(cfg)
+		if r.rig and not r.walking and work(r) and cat then
 			local key = `{cfg.Parent and cfg.Parent.Name}/{cat}`
 			local g = groups[key] or { cat = cat, sum = Vector3.zero, rigs = {} }
 			groups[key] = g
@@ -553,27 +576,11 @@ end
 local function paid(category: string)
 	for cfg, r in recs do
 		if r.rig and work(r) and cfg.Parent and cfg.Parent.Name == tostring(player.UserId) then
-			if cfg:GetAttribute("WorkerCategory") == category and not r.walking then
+			if categoryOf(cfg) == category and not r.walking then
 				popCash(r)
 			end
 		end
 	end
-end
-
-local function badge(inst: Instance)
-	if not inst:IsA("Model") then
-		return
-	end
-	-- the rig may stream in after the tag: retry briefly
-	task.spawn(function()
-		for _ = 1, 20 do
-			if inst.Parent == nil or inst:FindFirstChild("WorkerTag") then
-				return
-			end
-			WorkerBadge.billboard(inst)
-			task.wait(0.5)
-		end
-	end)
 end
 
 local shown = false -- once a session (the server sets it once)
@@ -612,10 +619,6 @@ local function welcome()
 end
 
 function WorkerController.Start()
-	CollectionService:GetInstanceAddedSignal("WorkerBadge"):Connect(badge)
-	for _, inst in CollectionService:GetTagged("WorkerBadge") do
-		badge(inst)
-	end
 	for _, name in { "WorkerOffline", "LoadingScreenActive", "CinematicPlaying" } do
 		player:GetAttributeChangedSignal(name):Connect(welcome)
 	end
