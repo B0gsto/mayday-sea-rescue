@@ -33,13 +33,13 @@ build or upgrade right now (Clash of Clans style).
 | 4 Coastguard Base | + radio mast wing | Air Station (helicopter); Update 1: Lumber Camp, Quarry | 3 (Bunkhouse 4) |
 | 5 Coastguard HQ | + gold beacon tower | Sub Pen, Trophy Hall, Harbour Master gold beacon | 3 (Bunkhouse 5) |
 
-HQ prices: Lv2 3k, Lv3 12k, Lv4 30k, Lv5 60k Cash (tune with tests/Pacing; whole track stays ~17 h).
+HQ prices: Lv2 3k, Lv3 12k, Lv4 80k, Lv5 160k Cash (tune with tests/Pacing; the last level fills the ~17 h track).
 
 ## B. Buildings and their levels
 
 Each level is a visible Lego add-on to the same building (a wing, a floor, a second stall, a bigger boat), played
 with the timed construction (docs/24 B). The Lv1 model stays what we have; levels add pieces, they never reshape it.
-Lv2 ≈ 2.5x the Lv1 price, Lv3 ≈ 6x (tune). Robux can skip the Cash of any level the HQ allows, never the order.
+Lv2 ≈ 3x the Lv1 price (6x on HQ3+ rows), Lv3 ≈ 16-20x (tune). Robux can skip the Cash of any level the HQ allows, never the order.
 
 | Building | Zone | Workers | Lv1 → Lv2 → Lv3 (what you see / what it does) |
 |---|---|---|---|
