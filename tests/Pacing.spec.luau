@@ -271,6 +271,19 @@ return function(t)
 			planBase()
 			skillsNext()
 		end
+		-- docs/25: the run ends when nothing is left to buy (every building level and skill node); a
+		-- 40 h tail with no sink would only measure the Cash pile, not the economy.
+		local function trackDone(): boolean
+			if construction or PLAN[planIndex] then
+				return false
+			end
+			for _, n in SkillRules.nodes() do
+				if not n.soon and not data.skills[n.id] then
+					return false
+				end
+			end
+			return true
+		end
 
 		-- docs 03 section 10: RIB engine, jet ski storm hull, lifeboat engine; week 1 fits the rest.
 		local UPGRADE_AT = {
@@ -467,6 +480,7 @@ return function(t)
 
 		local sessions = {}
 		local lastEnd: number? = nil
+		local finished = false
 		for d = 1, 80 do
 			for s = 1, 2 do
 				if playMin >= MAX_PLAY_MIN then
@@ -489,6 +503,10 @@ return function(t)
 					construction.doneAt = math.min(construction.doneAt, playMin)
 				end
 				settleBuilds()
+				if trackDone() then
+					finished = true
+					break
+				end
 				local cashAtStart = data.cash
 				while remaining > 0.01 do
 					local planned, weight, people = TUTORIAL_MIN[totalOps + 1], nil, 1
@@ -499,6 +517,13 @@ return function(t)
 					runOperation(minutes, planned, now, weight, people)
 					now += minutes * 60
 					remaining -= minutes
+					if trackDone() then
+						finished = true
+						break
+					end
+				end
+				if finished then
+					break
 				end
 				if s == 2 then
 					if not legacy then
@@ -520,7 +545,7 @@ return function(t)
 					gained = data.cash - cashAtStart,
 				})
 			end
-			if playMin >= MAX_PLAY_MIN then
+			if finished or playMin >= MAX_PLAY_MIN then
 				break
 			end
 		end
@@ -698,6 +723,19 @@ return function(t)
 		t.expect(last >= 0.85 * 17 * 60 and last <= 1.15 * 17 * 60).toBe(true)
 	end)
 
+	t.test("building levels fill the ~17 h track and end Cash stays small", function()
+		local last = 0
+		for _, entry in solo.timeline do
+			if string.find(entry.label, " built", 1, true) then
+				last = math.max(last, entry.at)
+			end
+		end
+		t.expect(last >= 0.85 * 17 * 60 and last <= 1.15 * 17 * 60).toBe(true)
+		local e = solo.earned
+		local earned = e.calls + e.medic + e.workers + e.offline + solo.spinCash
+		t.expect(solo.cash < 0.10 * earned).toBe(true)
+	end)
+
 	t.test("the radial skill tree: every buyable node bought by the end of the track", function()
 		local count = 0
 		for _, n in SkillRules.nodes() do
@@ -738,9 +776,10 @@ return function(t)
 			t.expect(longest >= 2 and longest <= 6).toBe(true)
 			local full = BuildTimer.rate(BuildTimer.BUILDERS) -- a full crew of commons
 			t.expect(full >= 1.6 and full <= 2.5).toBe(true)
-			-- the crew the sim really has at the last build, plus the tree's buildRate minors by then (docs/25 F)
+			-- the crew the sim really has at the last build, plus the tree's buildRate minors by then (docs/25 F;
+			-- the last level now lands after GoldenBricks and DoubleSite, so the ceiling is higher)
 			local late = solo.builds[#solo.builds].rate
-			t.expect(late >= 1.7 and late <= 3.3).toBe(true)
+			t.expect(late >= 1.7 and late <= 4.2).toBe(true)
 		end
 	)
 

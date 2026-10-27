@@ -89,8 +89,8 @@ local rows: { [string]: any } = {
 				effect = "HQ",
 				piece = "Station",
 			},
-			{ cash = 30000, hq = 3, effect = "HQ", piece = "Base" },
-			{ cash = 60000, hq = 4, effect = "HQ", piece = "HQ" },
+			{ cash = 80000, hq = 3, effect = "HQ", piece = "Base" },
+			{ cash = 160000, hq = 4, effect = "HQ", piece = "HQ" },
 		} :: { Level },
 	},
 	Harbour = {
@@ -111,7 +111,7 @@ local rows: { [string]: any } = {
 				piece = "Pontoon",
 			},
 			{
-				cash = 15000,
+				cash = 25000,
 				hq = 3,
 				product = "DockCrane",
 				robux = 99,
@@ -131,8 +131,8 @@ local rows: { [string]: any } = {
 		color = Color3.fromRGB(250, 208, 40),
 		levels = {
 			{ cash = 700, hq = 1, effect = "Depot", piece = "Yard" },
-			{ cash = 1750, hq = 2, effect = "Depot", piece = "Pile" },
-			{ cash = 4200, hq = 3, effect = "Depot", piece = "Conveyor" },
+			{ cash = 2000, hq = 2, effect = "Depot", piece = "Pile" },
+			{ cash = 14000, hq = 3, effect = "Depot", piece = "Conveyor" },
 		} :: { Level },
 	},
 	Workshop = {
@@ -155,8 +155,8 @@ local rows: { [string]: any } = {
 				effect = "Builders",
 				piece = "Yard",
 			},
-			{ cash = 1250, hq = 2, effect = "BuilderSlots5", piece = "SawBench" },
-			{ cash = 3000, hq = 3, effect = "BuilderSlots8", piece = "BoatFrame" },
+			{ cash = 1500, hq = 2, effect = "BuilderSlots5", piece = "SawBench" },
+			{ cash = 11000, hq = 3, effect = "BuilderSlots8", piece = "BoatFrame" },
 		} :: { Level },
 	},
 	Bunkhouse = {
@@ -170,10 +170,10 @@ local rows: { [string]: any } = {
 		color = Color3.fromRGB(80, 190, 90),
 		levels = {
 			{ cash = 800, hq = 1, effect = "People10", piece = "Hut" },
-			{ cash = 2000, hq = 2, effect = "People20", piece = "Floor" },
-			{ cash = 4800, hq = 3, effect = "People30", piece = "Floor" },
-			{ cash = 8000, hq = 4, effect = "People45", piece = "Hammocks" },
-			{ cash = 18000, hq = 5, effect = "People60", piece = "Lights" },
+			{ cash = 3000, hq = 2, effect = "People20", piece = "Floor" },
+			{ cash = 10000, hq = 3, effect = "People30", piece = "Floor" },
+			{ cash = 25000, hq = 4, effect = "People45", piece = "Hammocks" },
+			{ cash = 50000, hq = 5, effect = "People60", piece = "Lights" },
 		} :: { Level },
 	},
 	FishShed = {
@@ -195,8 +195,8 @@ local rows: { [string]: any } = {
 				effect = "Fishers",
 				piece = "Stalls",
 			},
-			{ cash = 1500, hq = 2, effect = "FishSlots4", piece = "Stalls" },
-			{ cash = 3600, hq = 3, effect = "FishSlots8", piece = "Smokehouse" },
+			{ cash = 1750, hq = 2, effect = "FishSlots4", piece = "Stalls" },
+			{ cash = 11000, hq = 3, effect = "FishSlots8", piece = "Smokehouse" },
 		} :: { Level },
 	},
 	Boathouse = {
@@ -224,7 +224,7 @@ local rows: { [string]: any } = {
 				effect = "LifeboatSlip",
 				piece = "Slip",
 			},
-			{ cash = 5400, hq = 3, effect = "QuickLaunch", piece = "QuickBay" },
+			{ cash = 14000, hq = 3, effect = "QuickLaunch", piece = "QuickBay" },
 		} :: { Level },
 	},
 	BoatYard = {
@@ -246,8 +246,8 @@ local rows: { [string]: any } = {
 				effect = "Mechanics",
 				piece = "Cradle",
 			},
-			{ cash = 2500, hq = 2, effect = "Gantry", piece = "Gantry" },
-			{ cash = 6000, hq = 3, effect = "DryDock", piece = "DryDock" },
+			{ cash = 3000, hq = 2, effect = "Gantry", piece = "Gantry" },
+			{ cash = 16000, hq = 3, effect = "DryDock", piece = "DryDock" },
 		} :: { Level },
 	},
 	Clinic = {
@@ -269,8 +269,8 @@ local rows: { [string]: any } = {
 				effect = "Medics",
 				piece = "Tent",
 			},
-			{ cash = 3000, hq = 2, effect = "Pavilion", piece = "Pavilion" },
-			{ cash = 7200, hq = 3, effect = "Hospital", piece = "Hospital" },
+			{ cash = 3500, hq = 2, effect = "Pavilion", piece = "Pavilion" },
+			{ cash = 18000, hq = 3, effect = "Hospital", piece = "Hospital" },
 		} :: { Level },
 	},
 	RescueBoathouse = {
@@ -292,8 +292,8 @@ local rows: { [string]: any } = {
 				effect = "Rescuers",
 				piece = "Dinghy",
 			},
-			{ cash = 3750, hq = 3, effect = "RescueRIB", piece = "RIB" },
-			{ cash = 9000, hq = 3, effect = "RescueLifeboat", piece = "Lifeboat" },
+			{ cash = 10000, hq = 3, effect = "RescueRIB", piece = "RIB" },
+			{ cash = 30000, hq = 3, effect = "RescueLifeboat", piece = "Lifeboat" },
 		} :: { Level },
 	},
 	LookoutTower = {
@@ -313,8 +313,8 @@ local rows: { [string]: any } = {
 				effect = "CallsFar",
 				piece = "Tower",
 			},
-			{ cash = 4000, hq = 3, effect = "GoldCalls15", piece = "Lamp" },
-			{ cash = 9600, hq = 3, effect = "GoldCalls2", piece = "Spotlight" },
+			{ cash = 10000, hq = 3, effect = "GoldCalls15", piece = "Lamp" },
+			{ cash = 30000, hq = 3, effect = "GoldCalls2", piece = "Spotlight" },
 		} :: { Level },
 	},
 	AirStation = {
@@ -334,8 +334,8 @@ local rows: { [string]: any } = {
 				effect = "Helicopter",
 				piece = "HelipadHangar",
 			},
-			{ cash = 4500, hq = 4, effect = "Refuel", piece = "RefuelPad" },
-			{ cash = 10800, hq = 4, effect = "Patrol", piece = "PatrolHut" },
+			{ cash = 12000, hq = 4, effect = "Refuel", piece = "RefuelPad" },
+			{ cash = 36000, hq = 4, effect = "Patrol", piece = "PatrolHut" },
 		} :: { Level },
 	},
 	SubPen = {
@@ -355,8 +355,8 @@ local rows: { [string]: any } = {
 				effect = "Submarine",
 				piece = "Dome",
 			},
-			{ cash = 4750, hq = 5, effect = "DeepDives", piece = "Gantry" },
-			{ cash = 11400, hq = 5, effect = "Salvage", piece = "Salvage" },
+			{ cash = 13000, hq = 5, effect = "DeepDives", piece = "Gantry" },
+			{ cash = 38000, hq = 5, effect = "Salvage", piece = "Salvage" },
 		} :: { Level },
 	},
 	TrophyHall = {
@@ -375,8 +375,8 @@ local rows: { [string]: any } = {
 				effect = "Trophies",
 				piece = "Hall",
 			},
-			{ cash = 5000, hq = 5, effect = "TrophyPlinths", piece = "Dome" },
-			{ cash = 12000, hq = 5, effect = "TrophyWheel", piece = "GoldDome" },
+			{ cash = 14000, hq = 5, effect = "TrophyPlinths", piece = "Dome" },
+			{ cash = 40000, hq = 5, effect = "TrophyWheel", piece = "GoldDome" },
 		} :: { Level },
 	},
 }

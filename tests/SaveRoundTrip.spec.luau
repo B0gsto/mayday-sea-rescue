@@ -253,7 +253,7 @@ return function(t)
 			A._test.playerAdded(p)
 			local data = A.Get(p)
 			-- 50,000 + Mechanic 12,000 + gear level 2 (1,200; level 1 became the Engine upgrade) + jet ski seat 1,500
-			t.expect(data.cash).toBe(73800)
+			t.expect(data.cash).toBe(66300)
 			t.expect(data.totalRescues).toBe(321)
 			t.expect(data.coldOpenDone).toBe(true)
 			for n = 2, 4 do
@@ -276,7 +276,7 @@ return function(t)
 			local B = server(store, "job-B")
 			local again = fakePlayer(2)
 			B._test.playerAdded(again)
-			t.expect(B.Get(again).cash).toBe(73800)
+			t.expect(B.Get(again).cash).toBe(66300)
 			t.expect(B.Get(again).dockBuildings).toEqual(data.dockBuildings)
 		end
 	)
