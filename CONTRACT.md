@@ -319,7 +319,8 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   `PushButton`, `PrizeWheelController` (world spin/reveal/flex), `WheelMath`.
   Attributes `FreeSpins`, `SpinPityEpic`, `SpinPityLegendary`. Studio: `ServerStorage.SpinDev` (`give` / `force`).
 - Weather: `src/shared/Weather.luau` reads `ReplicatedStorage.Weather` attributes; `WeatherMath`, `Waves`;
-  `StormService` (`ForceStorm`, `ForceCalm`, `QueueSummon`; always sunny by default); `WeatherController`,
+  `StormService` (`ForceStorm`, `ForceCalm`, `QueueSummon`; always sunny by default; writes `Lighting.ClockTime` from
+  `DayClock` every 0.5 s, dev offset = Workspace attribute `DayClockOffset`); `WeatherController`,
   `OceanController` (`GetVisualHeight`) + `client/Ocean/*`.
 - Live ops: `LiveOps` (pure), `LiveOpsService`, `LiveOpsController`. Re-engagement: `PlatformPrompts` +
   `PlatformPromptService` / `PlatformPromptController`; `NotifyDue` + `NotifyService`.

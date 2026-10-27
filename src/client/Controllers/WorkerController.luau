@@ -7,13 +7,16 @@
 -- Job loops 2-3 beats of a stock animation with a small code-built prop (WorkLoop, docs/25 G): Build hammers, Fish
 -- serves at the counter, hauls a net and carries a crate back, Repair wrenches round the hull, Rescue scans with
 -- binoculars and checks the boat, Heal walks the beds with a clipboard, Gather saws, Idle stands; holds and walk
--- speeds vary per worker so a crew never moves in step. At night (WorkLoop.isNight on Lighting.ClockTime) each
--- Bunkhouse floor gets a warm PointLight and the roof a "Zzz". With the
+-- speeds vary per worker so a crew never moves in step. Day/night (DayClock moves Lighting.ClockTime): from dusk
+-- (WorkLoop.isHome, each a little late) survivors down tools, walk in through the Bunkhouse door (else the Rescue
+-- Hut's) and hide till dawn, then walk back out to their spots (far ones just appear / vanish). At night
+-- (WorkLoop.isNight) each Bunkhouse floor gets a warm PointLight, the roof a "Zzz", and the NightLamp lamps light. With the
 -- uploaded Depot standing (docs/25 D, K4) Haulers push a crate cart barge -> pile and a site's Builders carry brick
 -- stacks over their heads pile -> site, paced by HaulRate / CarryRate, waiting at the pile while SiteWaiting. Every
 -- rig gets its rarity name tag and info card (SurvivorController); each yard shows one crew badge (icon + count)
 -- instead of one per worker. Gatherer/Rescuer pay pops a "+$". It also plays the offline earnings welcome: a
 -- coin burst into the wallet and a Toast when the player attribute WorkerOffline arrives.
+local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local PathfindingService = game:GetService("PathfindingService")
 local Players = game:GetService("Players")
@@ -80,6 +83,7 @@ type Rec = {
 	beat: WorkLoop.Beat?, -- the work loop's beat now (its anim and prop)
 	beatI: number?, -- the last beat played; nil until the first loop (which starts late, out of step)
 	speed: number, -- walk studs/s
+	sleep: boolean?, -- home for the night (walking there, or in and hidden)
 }
 
 local anims: { [string]: Animation } = {} -- one Animation per id, shared by every rig
@@ -512,6 +516,38 @@ local function ownerPlot(r: Rec): Model?
 	return if id then DepotController.plotOf(id) else nil
 end
 
+-- docs/25 G: where a plot's survivors sleep: 3 studs in through the Bunkhouse door (its mesh's ATT_Door_01, else the
+-- lot's front edge), else the Rescue Hut's; nil with neither. Cached per building instance, so a Bunkhouse built or
+-- upgraded mid-night (a new model) moves it.
+local doors: { [Model]: { by: Instance, at: CFrame } } = {}
+local function doorOf(r: Rec): CFrame?
+	local plot = ownerPlot(r)
+	local b = plot and (plot:FindFirstChild("Bunkhouse") or plot:FindFirstChild("HQ"))
+	if not (plot and b) then
+		return nil
+	end
+	local hit = doors[plot]
+	if hit and hit.by == b then
+		return hit.at
+	end
+	local def = DockConfig.Buildings[b.Name]
+	local i = tonumber(string.match(plot.Name, "^Plot(%d+)$"))
+	if not (def and i) then
+		return nil
+	end
+	local lot = Marina.berth(i) * def.spot
+	local att = b:FindFirstChild("ATT_Door_01", true)
+	local door = if att and att:IsA("Attachment")
+		then att.WorldPosition
+		else (lot * CFrame.new(0, 0, -def.size.Y / 2)).Position
+	local inward = Vector3.new(lot.X - door.X, 0, lot.Z - door.Z)
+	local at = if inward.Magnitude > 0.1
+		then CFrame.lookAt(door, door + inward) * CFrame.new(0, 0, -3)
+		else CFrame.new(door)
+	doors[plot] = { by = b, at = at }
+	return at
+end
+
 -- seconds a worker rests after a trip so `crew` of them make `perMinute` trips a minute (K4 HaulRate / CarryRate)
 local function rest(perMinute: any, crew: number, walked: number): number
 	if type(perMinute) ~= "number" or perMinute <= 0 then
@@ -767,7 +803,7 @@ local function track(cfg: Instance)
 	recs[cfg] = r
 	cfg:GetAttributeChangedSignal("Spot"):Connect(function()
 		local to = cfg:GetAttribute("Spot")
-		if typeof(to) == "CFrame" then
+		if typeof(to) == "CFrame" and not r.sleep then -- asleep: walks to the new spot at dawn
 			walkTo(r, to)
 		end
 	end)
@@ -800,12 +836,20 @@ local function cullPass()
 	local at = eye()
 	local made = 0
 	for cfg, r in recs do
+		local door = if WorkLoop.isHome(Lighting.ClockTime, seedOf(cfg)) then doorOf(r) else nil
+		if r.sleep and not door then -- dawn: made at the door below and walked out to the Spot; far ones are just there
+			local spot = cfg:GetAttribute("Spot")
+			if typeof(spot) == "CFrame" and (r.feet.Position - at).Magnitude > LIVELY then
+				r.feet = spot
+			end
+		end
+		r.sleep = door ~= nil
 		local d = (r.feet.Position - at).Magnitude
 		if r.rig and d > FAR then
 			dropRig(r)
 			local spot = cfg:GetAttribute("Spot")
 			r.feet = if typeof(spot) == "CFrame" then spot else r.feet
-		elseif not r.rig and d < NEAR and made < MAKE_PER_TICK then
+		elseif not r.rig and not r.sleep and d < NEAR and made < MAKE_PER_TICK then
 			r.lively = d < LIVELY
 			if makeRig(r) then
 				made += 1
@@ -820,7 +864,17 @@ local function cullPass()
 			r.lively = lively
 			pose(r)
 		end
-		if r.lively and not r.walking and not r.carry then
+		if door then -- dusk: stops the work loop (walkTo), walks in, then hides till dawn
+			if not r.rig then
+				r.feet = door
+			elseif not r.walking then
+				if (r.feet.Position - door.Position).Magnitude < 1 then
+					dropRig(r)
+				else
+					walkTo(r, door) -- a still (far) rig is just there, hidden next pass
+				end
+			end
+		elseif r.lively and not r.walking and not r.carry then
 			local job = jobOf(r)
 			if job == "Haul" then
 				haul(r)
@@ -917,10 +971,35 @@ end
 
 -- docs/25 G: at night every built Bunkhouse floor glows warm from inside and a "Zzz" floats over the roof. The mesh's
 -- Lamp panes (M_Bld_Bunkhouse_Lv<l>_L<k>_Lamp_LOD0) are its windows, so one light per level sits at their middle.
--- No clock moves Lighting.ClockTime yet (WeatherController sets it once): this keys off it so a day cycle just works.
 local bunks: { [Model]: { lights: { PointLight }, zzz: BillboardGui?, bob: Tween? } } = {}
+-- The dock and bridge lamps (tag NightLamp): plain warm light at night, an unlit bulb by day.
+local function lamp(p: Instance, on: boolean)
+	if not p:IsA("BasePart") then
+		return
+	end
+	p.Material = if on then Enum.Material.Neon else Enum.Material.SmoothPlastic
+	local light = p:FindFirstChildOfClass("PointLight")
+	if not light and on then
+		local made = Instance.new("PointLight")
+		made.Color = p.Color
+		made.Range = 24
+		made.Brightness = 1.2
+		made.Parent = p
+		light = made
+	end
+	if light then
+		light.Enabled = on
+	end
+end
+local lampsLit: boolean? = nil
 local function nightPass()
 	local night = WorkLoop.isNight(Lighting.ClockTime)
+	if night ~= lampsLit then
+		lampsLit = night
+		for _, p in CollectionService:GetTagged("NightLamp") do
+			lamp(p, night)
+		end
+	end
 	for mesh, b in bunks do
 		if not mesh.Parent then
 			bunks[mesh] = nil
@@ -1061,6 +1140,10 @@ function WorkerController.Start()
 	end)
 	task.delay(4, welcome) -- set before this ran: wait for the HUD to be up
 	Lighting:GetPropertyChangedSignal("ClockTime"):Connect(nightPass)
+	CollectionService:GetInstanceAddedSignal("NightLamp"):Connect(function(p)
+		lamp(p, lampsLit == true) -- streamed in or built later
+	end)
+	nightPass()
 	task.spawn(function()
 		local marina = Workspace:WaitForChild("Marina")
 		marina.DescendantAdded:Connect(lightBunk)

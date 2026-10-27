@@ -1,10 +1,10 @@
 --!strict
 -- WeatherController: the client side of the storm (docs 06 section 3.4, docs 05 section 6).
 --   * At 10 Hz blends a day base preset (Clear, the default, Calm golden hour or Overcast)
---     toward Night by the sun's elevation (so a day cycle moving ClockTime just works) and toward
---     Storm by Weather.getIntensity() (Lighting, Atmosphere, Clouds, ColorCorrection, Bloom,
---     SunRays; creates missing effects). ClockTime is set once from the base preset and never
---     moves during a storm.
+--     toward Calm by DayClock.warmth (the warm dusk and dawn; none 09:00-15:30), toward Night by
+--     the sun's elevation and toward Storm by Weather.getIntensity() (Lighting, Atmosphere, Clouds,
+--     ColorCorrection, Bloom, SunRays; creates missing effects). The server moves ClockTime
+--     (StormService, DayClock); a storm's look wins over the hour, and hides the sun.
 --   * Sky: swaps the Sky cube faces (src/client/Ocean/SkyAssets) to the dominant preset (Storm
 --     above intensity 0.5, Night when the sun is down, else the base) - Roblox can't blend skies.
 --   * Publishes the blended water and haze colours to the ocean as Lighting attributes
@@ -18,9 +18,6 @@
 --     short brightness flash (strikes are at least WeatherMath.STRIKE_MIN_GAP apart, never a
 --     strobe) and thunder delayed by the distance to the camera.
 --   * A "Storm incoming!" banner (and siren cue) when the Warning phase begins.
---
--- API: WeatherController.SetBasePreset("Clear" | "Calm" | "Overcast" | "Night"): a day base, or
--- "Night" to move the clock to night (the Night look itself follows the sun).
 
 local ContentProvider = game:GetService("ContentProvider")
 local Debris = game:GetService("Debris")
@@ -36,6 +33,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local DayClock = require(Shared:WaitForChild("DayClock"))
 local Flipbooks = require(Shared:WaitForChild("Fx"):WaitForChild("Flipbooks"))
 local LightingPresets = require(Shared:WaitForChild("Config"):WaitForChild("LightingPresets"))
 local Net = require(Shared:WaitForChild("Net"))
@@ -81,7 +79,6 @@ local DAY_PRESETS: { [string]: Preset } = {
 	Overcast = LightingPresets.Overcast,
 }
 local basePresetName = "Clear" -- always sunny (user, 2026-10-22); was Overcast
-local basePreset: Preset = LightingPresets.Clear
 local sky: Sky
 local skyKey = ""
 local SkyAssets: { [string]: { [string]: string } }? = nil
@@ -269,13 +266,22 @@ local function computeBlend(intensity: number): Preset
 		name = override
 	end
 	Lighting:SetAttribute("LocalStormIntensity", intensity) -- the client sea, boats and audio
-	local day = DAY_PRESETS[name]
+	local warm = DayClock.warmth(Lighting.ClockTime)
+	local day = if warm > 0.001
+		then LightingPresets.blend(DAY_PRESETS[name], LightingPresets.Calm, warm)
+		else DAY_PRESETS[name]
 	local n = nightFactor()
 	local dayMix = if n > 0.001 then LightingPresets.blend(day, LightingPresets.Night, n) else day
 	local stormMix = if n > 0.001
 		then LightingPresets.blend(LightingPresets.Storm, LightingPresets.Night, n * 0.8)
 		else LightingPresets.Storm
-	applySky(if intensity >= 0.5 then "Storm" elseif n >= 0.5 then "Night" else name)
+	applySky(
+		if intensity >= 0.5
+			then "Storm"
+			elseif n >= 0.5 then "Night"
+			elseif warm >= 0.5 then "Calm"
+			else name
+	)
 	local p = if intensity > 0.001
 		then LightingPresets.blend(dayMix, stormMix, intensity)
 		else dayMix
@@ -654,7 +660,6 @@ function WeatherController.Init()
 end
 
 function WeatherController.Start()
-	Lighting.ClockTime = basePreset.ClockTime -- once; storms never move the sun
 	calmLevel = calmTarget()
 	local intensity = OnboardingWeather.localIntensity(Weather.getIntensity(), calmLevel)
 	current = computeBlend(intensity)

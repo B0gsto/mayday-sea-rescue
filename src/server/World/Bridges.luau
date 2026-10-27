@@ -161,6 +161,7 @@ local function build(br: RingLayout.Bridge, parent: Instance)
 			YELLOW
 		)
 		bulb.Shape = Enum.PartType.Ball
+		bulb:AddTag("NightLamp") -- WorkerController lights it at night only
 		local top = p.Y - THICK
 		local foot = Vector3.new(p.X, (top + SEABED_Y) / 2, p.Z)
 			+ dir * (if t1 > t0 then PIER else -PIER)

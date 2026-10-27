@@ -9,6 +9,8 @@
 --   StormService.ForceCalm()                                           -- end any storm now
 --   StormService.QueueSummon(player, tier) -> (ok, reason)  use one of the player's Storm Tickets
 -- Dev chat commands (Studio only): /storm, /storm now, /greatstorm, /calm.
+-- Day/night: writes Lighting.ClockTime from DayClock every 0.5 s (replicated; the dev offset is the Workspace attribute
+-- DayClockOffset, DevService "clock"); storms blend over it on the client.
 --
 -- Storm Summon (RP-M2, docs/04 section 5): the Call the Storm / Call the Great Storm products grant a
 -- Storm Ticket on the profile (flag shop.ticketStorm / ticketGreat) and queue it. The ticket is used up
@@ -19,6 +21,7 @@
 -- natural), GreatStormCallers (names, comma separated, for the station board). Player attribute
 -- StormCaller = true for 24 hours after their storm starts. Both products are ready=false (docs/16 C9).
 
+local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -27,6 +30,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DataService = require(script.Parent:WaitForChild("DataService"))
+local DayClock = require(Shared:WaitForChild("DayClock"))
 local Effects = require(Shared:WaitForChild("MonetizationEffects"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
@@ -430,6 +434,13 @@ function StormService.Init()
 end
 
 function StormService.Start()
+	task.spawn(function()
+		while true do
+			local offset = tonumber(Workspace:GetAttribute("DayClockOffset")) or 0
+			Lighting.ClockTime = DayClock.clockTime(Workspace:GetServerTimeNow() + offset)
+			task.wait(0.5)
+		end
+	end)
 	local sinceIntensity = 0
 	local lastIntensity = -1
 	local sinceTitles = 0

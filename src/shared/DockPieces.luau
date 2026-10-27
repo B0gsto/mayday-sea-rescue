@@ -117,6 +117,7 @@ local function lamp(parent: Instance, b: CFrame, x: number, z: number, y0: numbe
 	light.Range = 24
 	light.Brightness = 1.2
 	light.Parent = bulb
+	bulb:AddTag("NightLamp") -- WorkerController lights it at night only
 end
 
 local function flag(parent: Instance, b: CFrame, x: number, z: number, y0: number, h: number)
