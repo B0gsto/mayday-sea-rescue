@@ -6,7 +6,7 @@ to the edges so we can keep adding as we update, full screen. One tree for the p
 types (with special ones for the RNG), which buildings, a basic map. Animation heavy: survivors seen working,
 gathering (builders take materials from a deposit; later lumberjacks and miners feed it)."
 
-Status: **proposal, waiting for the owner's OK** (section I). Once approved this replaces docs/24 G (the two
+Status: **approved 2026-10-27, in implementation** (owner changes in section J, build contracts in K). Once approved this replaces docs/24 G (the two
 left-to-right trees) and docs/00 §4 and §6 get rewritten to match. Rules that still hold: CLAUDE.md (no choice UI in
 gameplay, show don't tell, every action on keyboard/touch/gamepad, new things Lego-style, keep finished models' looks).
 Visual board (map, HQ spine, tree mock): `docs/25-visuals.html`.
@@ -164,10 +164,10 @@ Mythic rolls, a special of that type you don't own yet can come instead; some on
 
 | Special | Rarity, type | What makes them special | Where from |
 |---|---|---|---|
-| Brickbeard | Legendary Builder | gold hard hat, carries 3 stacks, his builds sparkle | any call |
+| Brickbeard | Legendary Builder | gold hard hat, carries 3 stacks at once | any call |
 | Big Lou | Legendary Hauler | wheels a whole pallet, Depot refill x2 | any call |
 | Captain Marlow | Legendary Rescuer | his NPC boat brings back twice as many, rarer recruits | any call |
-| Dr. Coral | Legendary Medic | 5% of arrivals she checks go up one rarity (sparkle at the clinic) | any call |
+| Dr. Coral | Legendary Medic | 5% of arrivals she checks go up one rarity (their name tag changes colour with a pop) | any call |
 | Bolt the Robot | Mythic Mechanic | works all night and offline at full rate, beeps, sparks | any call |
 | Pearl the Mermaid | Mythic Fisher | sits on the pier, catches golden fish (big "+$") | Mermaid Lagoon calls only |
 | Nova the Astronaut | Mythic, any job | counts x5 in any building | Splashdown event: a capsule falls into the sea in flames, the whole server sees it |
@@ -195,7 +195,7 @@ free in the panel.
 | **Captain** (you, your craft) | Throttle: speed +4% · Fins: swim +20% | Long Reach: pick-up +3 studs · Grip: tighter turns | Nitro: double-tap boost burst · Boat Call: Boat to me −20% | Bounty: call pay +10% · Golden Eye: Epic+ survivors on the map from any distance | Storm Rider |
 | **Rescue** (Rescuers, Mechanics, Medics) | Tune-up: Mechanic cap +5% · First Aid: Medic cap +10% | Fast Launch: NPC trips −15% · Spare Parts: Boat to me cap −10% | Big Boat: NPC boat +2 seats · Recruiter: recruits +5% | Air Patrol: Pilots (Update 2) · Glow Up: Medics can raise an arrival's rarity | Deep Divers |
 | **Crew & Luck** (survivors) | Bunks: +5 people · Lucky Flare: rarity luck +10% | Team Spirit: +5% with 3+ co-workers · Homecoming: offline cap 2 h → 4 h | Clover: traits roll twice, keep the best · Mentor: a Legendary trains one Common to Uncommon every 2 h | Big Family: +10 people · Golden Mayday: golden calls x2 | Celebrity Visits |
-| **Industry** (Builders, Haulers, Fishers) | Strong Backs: builders carry 2 · Fresh Catch: fish Cash +15% | Hard Hats: base crew 2 → 3 · Hand Carts: Depot refill +50% | Double Site: two builds at once · Market Day: +1 stall slot | Night Shift: offline rate 0.15 → 0.25 · Golden Bricks: builds +20% faster, gold bricks | Lumberjacks, Miners |
+| **Industry** (Builders, Haulers, Fishers) | Strong Backs: builders carry 2 · Fresh Catch: fish Cash +15% | Hard Hats: base crew 2 → 3 · Hand Carts: Depot refill +50% | Double Site: two builds at once · Market Day: +1 stall slot | Night Shift: offline rate 0.15 → 0.25 · Golden Bricks: builds +20% faster | Lumberjacks, Miners |
 
 Bridges: **Lifeguard** (Captain–Rescue: your craft +1 seat), **Welcome Home** (Rescue–Crew: each arrival pays a
 little Cash), **Foreman** (Crew–Industry: +1% build speed per 5 people), **Salvage** (Industry–Captain: pick up
@@ -245,3 +245,49 @@ docs/24 G-a2 (the build tablet as a tree) is dropped.
 3. The **merges**: Pontoon + Crane → Harbour levels, Lifeboat slip → Boathouse Lv2, Helipad + Hangar → Air Station,
    Station → HQ Lv3.
 4. The build tablet stays a top-down island (no build tree); the radial tree is only for player + survivors.
+
+## J. Owner decisions 2026-10-27 (these win over A–I)
+
+- Section I: all four approved (Medals, bricks are a real limit, the merges, the tablet stays a top-down island).
+- Rarities: Common, Uncommon, Rare, Epic, Legendary, Mythic.
+- **No building ever sparkles** (no glitter, glow or gold-brick effects on buildings or construction sites).
+- **Every survivor shows their name above them, coloured by rarity** (Mythic: a moving rainbow): in the water, aboard,
+  walking and at work. **Click/tap a survivor** (ProximityPrompt for keyboard/gamepad) to see their properties: name,
+  rarity, type, trait, work value, workplace, effect. Info only.
+- **Empty start, no placeholders:** an unbuilt lot shows nothing (no paper blueprints, lot pads, flags, gardens, fixed
+  decor, trees). At first nothing stands on land. The build stand (tablet) stands on the jetty head. The plate keeps its
+  edge (beach step, quay edge), the jetty, the berth and the bridges.
+- **The first build is free:** the Rescue Hut (HQ Lv1), and the tutorial's first beat teaches building with it (arrow to
+  the tablet → the HQ card pulses → tap → watch the crew build it). The prize wheel arrives with the HQ (on the plaza).
+- **Focus on tap:** tapping a skill node moves the camera to your rarest survivor of that node's type (Captain nodes:
+  you; Crew & Luck nodes: your rarest survivor of any type); the tree fades so the world shows, the node card stays.
+  Tapping a building card on the build tablet moves the camera to that building (or its lot).
+- **Loading → play:** when the loading screen ends the camera tweens straight from the top view to the player. No orbit,
+  no stop at the spawn point.
+- **Art:** new building art is made in Blender, Lego style, as layered meshes so the construction rise still works.
+  Each asset gets an art-director score; it ships at > 8/10, at most 3 rounds (a 4th only if truly necessary).
+
+## K. Build contracts (every builder codes against these)
+
+K1 Survivors (attributes on every survivor Model, in the water, aboard and at home, and on the published workers
+`ReplicatedStorage.Workers.<UserId>.<index>`): `SurvivorName` string, `Rarity` number 1–6 (Common..Mythic),
+`Category` string (`Builder`, `Hauler`, `Gatherer` (shown as "Fisher"), `Mechanic`, `Medic`, `Rescuer`), `Trait` string
+(`""`, `Speedy`, `Strong`, `Lucky`, `NightOwl`, `Cheerful`), `Special` string (`""` or the special's id), `Workplace`
+string (DockConfig building key, `""` while waiting), `Job` (as today). One shared rarity table (name + colour per tier)
+used by survivors and the prize wheel: `src/shared/Rarity.luau` (`Rarity.TIERS[i] = { name, color }`, `Rarity.MYTHIC = 6`).
+Survivors roll when they spawn (so the tag shows in the water), on the server.
+
+K2 Buildings: `DockConfig.Buildings[key].levels = { { cash, robux?, hq, effect?, piece? }, ... }` (index = level; `hq` =
+HQ level needed). The HQ is the row `HQ` (5 levels; Lv1 cash 0). Save: `data.dock.levels[key] = n` (nil = not built).
+`UnlockTree` answers: can I build/upgrade `key` to level `n` (HQ gate + `needs`), and what does the next HQ level need
+(every building the current HQ level unlocks built at least Lv1). Merged rows: `Harbour` (Lv1 jetty is the start, Lv2
+pontoon, Lv3 crane), `Boathouse` (Lv2 lifeboat slip), `AirStation` (helipad + hangar), `HQ` (Lv3 = the Station model).
+New rows: `Depot`, `Bunkhouse`.
+
+K3 Skills: `SkillRules.nodes()` returns every node, keystones and generated minor nodes:
+`{ id, sector ("Captain"|"Rescue"|"Crew"|"Industry"|"Bridge"), ring (number, may be fractional), angle (degrees: offset
+-36..36 inside the sector, absolute for Bridge), name, icon, medals, needs = { ids } (any one owned), effect = { kind,
+amount }, focus ("Captain" | a K1 Category | "Any"), keystone = bool, soon = bool }`. Minor nodes: id
+`<keystone>_m<i>`, between the keystone and its first need. Sector centres: Captain 315°, Rescue 45°, Crew 135°,
+Industry 225° (0° = up, clockwise). Save: `data.medals` (number), `data.skills` (owned ids). Medals: 1 per 2 people
+rescued, +1 per gold grade, +3 per quest, +5 per HQ level, daily chest +1–3.
