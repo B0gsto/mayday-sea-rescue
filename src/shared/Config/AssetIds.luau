@@ -26,6 +26,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://93594095444599",
 		LOD2 = "rbxassetid://106771424616555",
 	},
+	M_Bld_RescueHQ = {
+		LOD0 = "rbxassetid://98767043445996",
+		LOD1 = "rbxassetid://90696032490593",
+		LOD2 = "rbxassetid://83819932767188",
+	},
 	M_Chr_Bosun = {
 		LOD0 = "rbxassetid://93498658626129",
 		LOD1 = "rbxassetid://83581557797709",
@@ -428,6 +433,10 @@ AssetIds.Attachments = {
 		ATT_Smoke_03 = Vector3.new(-0.9, 23.73, 0),
 		ATT_Smoke_04 = Vector3.new(-11.98, 23.58, 0),
 		ATT_Smoke_05 = Vector3.new(-12.88, 23.13, 0),
+	},
+	M_Bld_RescueHQ = {
+		ATT_Sign_01 = Vector3.new(0, 9.45, -10.12),
+		ATT_Sign_02 = Vector3.new(0, 20.1, -9.25),
 	},
 	M_Chr_Bosun = {
 		ATT_HarnessHandle = Vector3.new(0.0038, 2.4265, 0.4724),

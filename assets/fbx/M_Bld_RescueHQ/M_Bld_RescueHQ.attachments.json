@@ -1,0 +1,65 @@
+{
+ "asset": "M_Bld_RescueHQ",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Sign_01",
+   "parent": null,
+   "blender": [
+    0.0,
+    -10.12,
+    9.45
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    9.45,
+    -10.12
+   ],
+   "roblox_from_bbox_centre": [
+    3.85,
+    -6.25,
+    -9.22
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Sign_02",
+   "parent": null,
+   "blender": [
+    0.0,
+    -9.25,
+    20.1
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    20.1,
+    -9.25
+   ],
+   "roblox_from_bbox_centre": [
+    3.85,
+    4.4,
+    -8.35
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

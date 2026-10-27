@@ -2291,12 +2291,63 @@ local function harbour(m: Model, b: CFrame, level: number?)
 	end
 end
 
--- HQ levels: a hut at Lv1/2, today's station from Lv3, a radio mast at Lv4 and the gold beacon at Lv5.
+-- Set by the server (DockService): a static copy of an uploaded building mesh, nil while it is not loaded.
+DockPieces.mesh = nil :: ((asset: string) -> Model?)?
+
+-- HQ Lv1 Rescue Hut / Lv2 Rescue Post (M_Bld_RescueHQ): meshes named _Lv<l>_L<k>_ (layer k of level l) and
+-- _Lv<l>_Col_COL; Lv2 = Lv1's meshes + Lv2's. Each mesh gets a BuildY (ConstructionController raises the
+-- layers in order: Lv1 L01..L05, then Lv2 L01..L07); the OwnerColour door becomes a "Flag"; the sign words go on
+-- the ATT_Sign_<l> plaques as a ribbon across their lower edge. False when the mesh is not loaded.
+local HQ_RISE = 2.6 -- studs of BuildY per layer: Lv2's L07 lands near the real top (31)
+local function hqMesh(m: Model, b: CFrame, n: number): boolean
+	local src = DockPieces.mesh and DockPieces.mesh("M_Bld_RescueHQ")
+	if not src then
+		return false
+	end
+	local at = b * DockConfig.Buildings.HQ.spot
+	src:PivotTo(at)
+	local signs = {}
+	for l = 1, n do
+		local att = src:FindFirstChild(`ATT_Sign_0{l}`, true)
+		if att and att:IsA("Attachment") then
+			signs[l] = att.WorldCFrame
+		end
+	end
+	for _, d in src:GetDescendants() do
+		if d:IsA("BasePart") then
+			local lv, k = string.match(d.Name, "_Lv(%d)_L(%d+)_")
+			local l = tonumber(lv or string.match(d.Name, "_Lv(%d)_Col_COL$")) or 1
+			if l > n then
+				d:Destroy()
+			elseif k then
+				d:SetAttribute("BuildY", at.Y + ((l - 1) * 5 + (tonumber(k) or 0)) * HQ_RISE)
+				if string.find(d.Name, "OwnerColour", 1, true) then
+					d.Name = "Flag" -- DockService paints it the owner's colour
+				end
+			end
+		end
+	end
+	src.Parent = m
+	for l, cf in signs do
+		local s = sign(
+			m,
+			Vector3.new(7 - l, 1.1, 0.3),
+			cf * CFrame.new(0, -1.1, -0.2),
+			BRICK_WHITE,
+			DockConfig.Buildings.HQ.name
+		)
+		s:SetAttribute("BuildY", at.Y + (if l == 1 then 5 else 11) * HQ_RISE) -- with its plaque's layer
+	end
+	return true
+end
+
+-- HQ levels: the Rescue Hut / Post mesh at Lv1/2 (a Lego hut until it loads), today's station from Lv3, a radio
+-- mast at Lv4 and the gold beacon at Lv5.
 local function hq(m: Model, b: CFrame, level: number?)
 	local n = level or 1
 	if n >= 3 then
 		station(m, b)
-	else
+	elseif not hqMesh(m, b, n) then
 		hut(m, b, "HQ")
 	end
 	local S = b * DockConfig.Buildings.HQ.spot
