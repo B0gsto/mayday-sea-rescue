@@ -101,7 +101,7 @@ W.PAY_PER, W.PAY_CAP = 0.03, 0.2 -- Medic: call pay +3% per unit, cap +20%
 W.OFFLINE_RATE = 0.15 -- Gatherers and Rescuers earn this share while you are away (0.1 of the old 2 Cash/min read as worthless, playtest 2; 0.3 outearned play at the 2026-10-26 rates) -- tune
 W.OFFLINE_CAP = 2 * 3600 -- s
 W.TRAIT_BEST = { "Cheerful", "NightOwl", "Strong", "Lucky", "Speedy" } -- Clover keeps the earlier one -- tune
-W.TEAM_MATES = 3 -- Team Spirit: co-workers at the same building it needs
+W.TEAM_MATES = 2 -- Team Spirit: co-workers it needs (3 working together: a full Lv1 yard of 3 slots counts)
 W.MENTOR_PERIOD = 2 * 3600 -- s: a Legendary trains one Common to Uncommon this often (Mentor)
 W.GLOW_UP_PER, W.GLOW_UP_CAP = 0.02, 0.1 -- Glow Up: arrival rarity +1 chance per Medic unit, cap -- tune
 
