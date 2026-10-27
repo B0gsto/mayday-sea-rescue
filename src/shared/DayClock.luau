@@ -17,8 +17,13 @@ DayClock.KEYS = {
 	{ 1200, 29 }, -- 05:00, the next dawn
 }
 DayClock.CYCLE = 1200
+DayClock.ON = true -- false: always midday (the pre-2026-10-27 always-sunny look), one switch for the whole cycle
+DayClock.NOON = 12.5
 
 function DayClock.clockTime(t: number): number
+	if not DayClock.ON then
+		return DayClock.NOON
+	end
 	local s = t % DayClock.CYCLE
 	local keys = DayClock.KEYS
 	for i = 2, #keys do
