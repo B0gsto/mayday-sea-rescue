@@ -3,7 +3,7 @@
 -- cycles a rainbow) and, from Epic up in the water, a tall light beam readable from far. Reads the
 -- K1 attributes (SurvivorName, Rarity 1-6, Category, Trait, Special, Workplace, Job) and falls back
 -- to the WP-26 ones and the model's Name / Common, so a half-migrated server never errors.
---   SurvivorTag.info(model) -> properties for the card
+--   SurvivorTag.info(model) -> properties for the card (fromWorker(w, workplace): the same from a saved worker)
 --   SurvivorTag.attach(model, inWater?) -> one BillboardGui per model, destroyed with it
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -82,33 +82,51 @@ local function rarityOf(model: Model): number
 	return Rarity.COMMON
 end
 
-function SurvivorTag.info(model: Model): Info
-	local rarity = rarityOf(model)
+-- The card's properties from plain fields (a model's attributes, or a saved worker for the Album).
+function SurvivorTag.fromWorker(
+	w: {
+		name: string,
+		rarity: number,
+		category: string,
+		trait: string,
+		special: string,
+	},
+	workplace: string,
+	job: string?
+): Info
+	local rarity = math.clamp(math.floor(w.rarity), 1, Rarity.MYTHIC)
 	local tier = Rarity.TIERS[rarity]
-	local category = text(model, "Category", "WorkerCategory")
-	local trait = text(model, "Trait")
-	local workplace = text(model, "Workplace")
-	local name = text(model, "SurvivorName", "WorkerName")
 	local building = if workplace ~= "" then DockConfig.Buildings[workplace] else nil
 	return {
-		name = if name ~= "" then name else model.Name,
+		name = w.name,
 		rarity = rarity,
 		rarityName = tier.name,
 		color = tier.color,
-		category = category,
-		typeName = CATEGORY_NAME[category] or category,
-		trait = trait,
-		traitName = if trait ~= "" then (TRAIT_NAME[trait] or trait) else "",
-		special = text(model, "Special"),
-		job = text(model, "Job"),
+		category = w.category,
+		typeName = CATEGORY_NAME[w.category] or w.category,
+		trait = w.trait,
+		traitName = if w.trait ~= "" then (TRAIT_NAME[w.trait] or w.trait) else "",
+		special = w.special,
+		job = job or "",
 		workplace = workplace,
 		workplaceName = if workplace == ""
 			then "Waiting"
 			elseif building then building.name
 			else workplace,
-		effect = EFFECT[category] or "",
+		effect = EFFECT[w.category] or "",
 		work = WORK[rarity] or 1,
 	}
+end
+
+function SurvivorTag.info(model: Model): Info
+	local name = text(model, "SurvivorName", "WorkerName")
+	return SurvivorTag.fromWorker({
+		name = if name ~= "" then name else model.Name,
+		rarity = rarityOf(model),
+		category = text(model, "Category", "WorkerCategory"),
+		trait = text(model, "Trait"),
+		special = text(model, "Special"),
+	}, text(model, "Workplace"), text(model, "Job"))
 end
 
 local function rootOf(model: Model): BasePart?
