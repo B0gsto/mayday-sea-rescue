@@ -2681,6 +2681,7 @@ local AFLOAT = { Harbour = true } -- no lot bed: on the water
 function DockPieces.building(key: string, cf: CFrame, level: number?): Model
 	local m = Instance.new("Model")
 	m.Name = key
+	m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic -- a far island's building streams in and out whole
 	local fn = BUILDINGS[key]
 	if fn then
 		fn(m, cf, level)
