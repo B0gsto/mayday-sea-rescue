@@ -166,7 +166,7 @@ local function makeTiles(parent: Instance)
 	end
 end
 
--- A round badge with a glyph; casualty badges carry a pulse ring.
+-- A round badge with a glyph; casualty badges carry a soft halo ring.
 local function badge(style: Style, size: number, pulse: boolean?): Frame
 	local f = frame("Blip", gui, {
 		AnchorPoint = Vector2.new(0.5, 0.5),
@@ -221,15 +221,16 @@ local function poolFlush(pool: Pool)
 	table.clear(pool.used)
 end
 
+-- the halo breathes slowly and never flashes or pings (owner, 2026-10-28)
 local function pulseAll(pool: Pool, t: number)
-	local p = (t % 1.3) / 1.3
+	local k = 1.45 + 0.1 * math.sin(t * 1.6)
 	for _, f in pool.items do
 		local ring = f:FindFirstChild("Pulse") :: Frame?
 		if ring then
-			ring.Size = UDim2.fromScale(1 + 1.6 * p, 1 + 1.6 * p)
+			ring.Size = UDim2.fromScale(k, k)
 			local s = ring:FindFirstChildOfClass("UIStroke")
 			if s then
-				s.Transparency = p
+				s.Transparency = 0.35
 			end
 		end
 	end

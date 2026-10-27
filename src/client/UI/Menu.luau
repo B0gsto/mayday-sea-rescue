@@ -72,7 +72,8 @@ local current: string? = nil
 local mounted = false
 local pulseName: string? = nil
 
--- docs/24 E: a pulsing ring on the one button the tutorial asks for, and nothing else.
+-- docs/24 E: a steady gold ring on the one button the tutorial asks for, and nothing else. It pops in
+-- once and then holds still (never a looping pulse: owner 2026-10-28).
 local function startPulse(root: GuiObject, name: string)
 	local ring = Instance.new("Frame")
 	ring.Name = "PulseRing"
@@ -85,31 +86,16 @@ local function startPulse(root: GuiObject, name: string)
 	stroke.Color = GOLD
 	local scale = Instance.new("UIScale")
 	scale.Name = "PulseScale"
+	scale.Scale = 1.15
 	scale.Parent = ring
+	TweenService:Create(
+		scale,
+		TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+		{ Scale = 1 }
+	):Play()
 	task.spawn(function()
 		while root.Parent and pulseName == name do
-			TweenService:Create(
-				scale,
-				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-				{ Scale = 1.1 }
-			):Play()
-			TweenService:Create(
-				stroke,
-				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-				{ Transparency = 0.35 }
-			):Play()
-			task.wait(0.5)
-			TweenService:Create(
-				scale,
-				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-				{ Scale = 1 }
-			):Play()
-			TweenService:Create(
-				stroke,
-				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-				{ Transparency = 0 }
-			):Play()
-			task.wait(0.5)
+			task.wait(0.2)
 		end
 		ring:Destroy()
 	end)

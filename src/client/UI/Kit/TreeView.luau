@@ -261,7 +261,6 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 	local order: { string } = {}
 	local points: { TreeMath.Point } = {}
 	local pulses: { UIStroke } = {}
-	local pointers: { UIStroke } = {}
 	local noteLabels: { [string]: TextLabel } = {}
 	local cash = props.cash
 	local fitted = false
@@ -625,8 +624,7 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		local affordable = cash == nil or cash >= (node.price or 0)
 		if node.pulse then
 			halo.Color = GOLD
-			halo.Transparency = 0.1
-			table.insert(pointers, halo)
+			halo.Transparency = 0.1 -- steady: the tutorial pointer never blinks (owner, 2026-10-28)
 		elseif state == "buyable" then
 			halo.Transparency = if affordable then 0.45 else 0.75
 			if affordable then
@@ -686,7 +684,6 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 		order = {}
 		points = {}
 		pulses = {}
-		pointers = {}
 
 		local groupOf: { [string]: Group } = {}
 		local groups: { Group } = props.groups or {}
@@ -892,9 +889,6 @@ function TreeView.new(parent: Instance, props: Props): TreeView
 				local wave = 0.5 + 0.5 * math.sin(t * 4)
 				for _, s in pulses do
 					s.Transparency = 0.45 + 0.32 * wave
-				end
-				for _, s in pointers do
-					s.Transparency = 0.05 + 0.4 * wave
 				end
 			end
 			task.wait(0.05)

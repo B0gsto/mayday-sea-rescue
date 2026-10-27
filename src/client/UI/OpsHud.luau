@@ -43,7 +43,7 @@ function OpsHud.mount(playerGui: Instance, ops: any)
 	local step = OpsStepCard.new(objective)
 	Waypoint.start(ops, MapController, step.goal)
 	-- cold open: one objective on screen, the world marker (swimmer, then home), so no step strip
-	-- the world shows the goal (docs/14 F-3): dye, pulse ring, smoke and a flare at the casualty
+	-- the world shows the goal (docs/14 F-3): dye, a steady ring, smoke and a flare at the casualty
 	local stopCue: (() -> ())? = nil
 	local function applyColdOpen(_: boolean?)
 		local active = Layout.coldOpen()

@@ -219,9 +219,9 @@ function Waypoint.start(
 			Glyph.draw(glyph, icon, Color3.new(1, 1, 1))
 		end
 		disc.BackgroundColor3, tip.BackgroundColor3 = color, color
-		-- docs/25 E: a golden call's pin wears a thick pulsing gold ring
+		-- docs/25 E: a golden call's pin wears a thick gold ring that breathes slowly (never flashes: owner 2026-10-28)
 		ring.Color = if golden then QUEST else Color3.new(1, 1, 1)
-		ring.Thickness = if golden then 4 + 1.5 * math.sin(os.clock() * 6) else 2.5
+		ring.Thickness = if golden then 4 + 0.5 * math.sin(os.clock() * 1.6) else 2.5
 	end
 
 	RunService.RenderStepped:Connect(function()

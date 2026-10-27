@@ -6,7 +6,7 @@
 -- "Needs: HQ 2" / the missing building when locked; the HQ card shows what the next HQ level needs as icons
 -- with ticks) and Decor. An unbuilt lot shows nothing (docs/25 J). A busy site shows its m:ss on its card and
 -- an hourglass on the other buyables. Tapping a card focuses it (owner rule): the camera eases in to the
--- building or its empty lot (0.6 s) and a flat outline pulses; a "Needs" chip focuses what it needs. Cash
+-- building or its empty lot (0.6 s) and a steady flat outline marks it (never blinks: owner 2026-10-28); a "Needs" chip focuses what it needs. Cash
 -- buys through Dock_Upgrade (greyed when the Cash is short); Robux opens Roblox's purchase prompt (skips the
 -- Cash, never the order). Escape / B / tapping the world backs out of the focus, then out of build mode
 -- (Escape is read from UserInputService: Roblox keeps it from ContextActionService); the red X or a teleport
@@ -223,7 +223,6 @@ local function outlineSpot(world: CFrame, size: Vector2)
 	clearOutline()
 	local m = Instance.new("Model")
 	m.Name = "BuildOutline"
-	local parts: { BasePart } = {}
 	local function edge(name: string, partSize: Vector3, offset: Vector3)
 		local p = Instance.new("Part")
 		p.Name = name
@@ -235,7 +234,6 @@ local function outlineSpot(world: CFrame, size: Vector2)
 		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow =
 			true, false, false, false, false
 		p.Parent = m
-		table.insert(parts, p)
 	end
 	local barH = 0.16
 	local thick = 0.7
@@ -244,13 +242,6 @@ local function outlineSpot(world: CFrame, size: Vector2)
 	edge("Back", Vector3.new(size.X, barH, thick), Vector3.new(0, y, size.Y / 2))
 	edge("Left", Vector3.new(thick, barH, size.Y), Vector3.new(-size.X / 2, y, 0))
 	edge("Right", Vector3.new(thick, barH, size.Y), Vector3.new(size.X / 2, y, 0))
-	for _, p in parts do
-		TweenService:Create(
-			p,
-			TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-			{ Transparency = 0.75 }
-		):Play()
-	end
 	m.Parent = Workspace
 	outline = m
 end
@@ -808,18 +799,19 @@ local function hqNeeds(parent: GuiObject): Frame?
 	return row
 end
 
--- docs/24 E, docs/25 J: the card the tutorial points at wears a pulsing gold outline.
+-- docs/24 E, docs/25 J: the card the tutorial points at wears a steady gold outline that pops in once
+-- (never a blinking pulse: owner 2026-10-28).
 local function pulseRing(face: GuiObject)
 	local stroke = Instance.new("UIStroke")
 	stroke.Name = "Pulse"
 	stroke.Color = OUTLINE
-	stroke.Thickness = 5
+	stroke.Thickness = 10
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	stroke.Parent = face
 	TweenService:Create(
 		stroke,
-		TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-		{ Transparency = 0.85 }
+		TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+		{ Thickness = 5 }
 	):Play()
 end
 

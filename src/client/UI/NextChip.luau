@@ -1,7 +1,7 @@
 --!strict
 -- NextChip: the permanent "what to build next" chip (docs/24 E/F) in the HudLayout "chips" slot.
 -- Compact: the next building's Lego icon, its 1-3 word name, a Cash bar to its price. At the price it
--- pulses; during a construction it shows the site's progress and time left instead. Tapping / clicking
+-- pops once (never a looping pulse: owner 2026-10-28); during a construction it shows the site's progress and time left instead. Tapping / clicking
 -- (or F / gamepad Y, shown as an InputGlyph) opens the build tablet when you stand at the station,
 -- else puts the guide arrow and the minimap pin on the station for a few seconds.
 -- The tutorial's chip row (OnboardingController) owns this slot until the tutorial is done.
@@ -156,22 +156,13 @@ local function startPulse(on: boolean)
 		TweenService:Create(scale, TweenInfo.new(0.2), { Scale = 1 }):Play()
 		return
 	end
-	task.spawn(function()
-		while pulsing and root and root.Parent do
-			TweenService:Create(
-				scale,
-				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-				{ Scale = 1.1 }
-			):Play()
-			task.wait(0.5)
-			TweenService:Create(
-				scale,
-				TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-				{ Scale = 1 }
-			):Play()
-			task.wait(0.5)
-		end
-	end)
+	-- one gentle pop as it becomes affordable, then it rests
+	scale.Scale = 1.1
+	TweenService:Create(
+		scale,
+		TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+		{ Scale = 1 }
+	):Play()
 end
 
 local function refresh()

@@ -212,14 +212,7 @@ local function buildWallet(region: Frame)
 		to(1)
 		Menu.open("Shop")
 	end)
-	-- idle heartbeat on the "+" so the shop entry reads as a live button
-	local beat = Instance.new("UIScale")
-	beat.Parent = plus
-	TweenService:Create(
-		beat,
-		TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true, 1.2),
-		{ Scale = 1.1 }
-	):Play()
+	-- no idle heartbeat on the "+": a looping pulse to sell the shop looks cheap (owner, 2026-10-28)
 end
 
 local function buildAward()

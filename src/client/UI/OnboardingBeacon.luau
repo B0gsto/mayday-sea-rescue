@@ -1,6 +1,7 @@
 --!strict
 -- OnboardingBeacon: the one next goal, shown in the world (docs/15 section 3, "a beacon on the
--- next thing, no text"). A ground-level pulse ring and a diamond high over it (clear of roofs, cranes and
+-- next thing, no text"). A steady ground-level ring (one pop as it appears, never a flashing pulse: owner
+-- 2026-10-28) and a diamond high over it (clear of roofs, cranes and
 -- name signs: AlwaysOnTop never drew in play, Studio 2026-10-25/26); no light column (user, 2026-10-21). Hidden while a
 -- cinematic hides the HUD (OpsUiHidden). Off screen, an arrow on the screen edge points at it.
 -- Client only. Mounted by OnboardingController (one beacon, moved from goal to goal) and by the
@@ -8,6 +9,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Layout = require(script.Parent:WaitForChild("Layout"))
@@ -29,7 +31,8 @@ local COLORS: { [string]: Color3 } = {
 	Call = Color3.fromRGB(255, 120, 30), -- on the water: the ring sits on the waves
 }
 
-local RING_MAX = 40
+local RING = 24 -- studs across the steady ring
+local POP = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 local LIFT = 16 -- studs: the diamond over the goal
 
 local function surfaceY(p: Vector3): number
@@ -144,7 +147,8 @@ function OnboardingBeacon.start(): Beacon
 		baseY = if kind == "Call" then surfaceY(position) else position.Y
 		ring.CFrame = CFrame.new(Vector3.new(position.X, baseY + 0.12, position.Z))
 			* CFrame.Angles(0, 0, math.rad(90))
-		ring.Transparency = 0.2
+		ring.Size = Vector3.new(0.1, 8, 8)
+		TweenService:Create(ring, POP, { Size = Vector3.new(0.1, RING, RING) }):Play()
 		billboard.Enabled = true
 		diamond.Visible, stem.Visible = true, true
 		folder.Parent = Workspace
@@ -220,13 +224,10 @@ function OnboardingBeacon.start(): Beacon
 			end
 		end
 		local t = os.clock()
-		local k = (t % 1.6) / 1.6
-		ring.Size = Vector3.new(0.1, 8 + k * RING_MAX * 2, 8 + k * RING_MAX * 2)
-		ring.Transparency = 0.15 + 0.7 * k
+		ring.Transparency = 0.45
 		ring.CFrame = CFrame.new(Vector3.new(at.X, baseY + 0.12, at.Z))
 			* CFrame.Angles(0, 0, math.rad(90))
 		diamond.Rotation = 45 + math.sin(t * 1.8) * 12
-		diamond.BackgroundTransparency = 0.05 + math.sin(t * 3) * 0.05
 	end)
 
 	function self.destroy()

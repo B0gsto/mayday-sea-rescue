@@ -1,7 +1,7 @@
 --!strict
 -- ColdOpenCue: the cold open's world cues (docs/14 F-3, RP-UX2), local only. While the player
--- rides the cold-open jet ski, the casualty (CallProps "Victim" of ColdOpenOpId) gets a pulse ring
--- spreading on the water (the steady orange ring is PickupRingController's), orange smoke and splashes (and the
+-- rides the cold-open jet ski, the casualty (CallProps "Victim" of ColdOpenOpId) gets a white ring on the
+-- water that pops in once and then breathes slowly (never a flashing orange pulse: owner 2026-10-28; the steady orange ring is PickupRingController's), orange smoke and splashes (and the
 -- casualty waves: CasualtyController), so the goal reads from the world with no text to read. If the player makes no headway
 -- for 10 s (shared/Boat/ColdOpen.nudge) a red flare pops over them. All of it goes once the
 -- casualty holds on (PiwMode "held") or climbs aboard, or the cold open ends.
@@ -11,6 +11,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -25,9 +26,8 @@ local PyroController =
 local ColdOpenCue = {}
 
 local GREEN = Color3.fromRGB(90, 225, 120) -- home
-local PULSE = 1.6 -- s per ring
-local RING_MAX = 40 -- studs across at the end of a pulse (26 read too small at range: playtest)
-local MARK = 10 -- studs across where the pulse starts
+local PULSE = 1.6 -- s per home ring
+local CALL_RING = 32 -- studs across the casualty's steady ring (26 read too small at range: playtest)
 
 -- The marker lies on the water, not on the casualty's root (which can sit a stud under it).
 local function waterY(p: Vector3): number
@@ -137,6 +137,7 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 	local pulse: Ring? = nil
 	local nudge = ColdOpen.newNudge(os.clock())
 	local lastBurst = 0
+	local born = 0
 	local wasHeld: boolean? = nil
 
 	local function clear()
@@ -154,7 +155,8 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 		f.Name = "ColdOpenCue"
 		f.Parent = Workspace
 		folder = f
-		pulse = ring("Pulse", Color3.fromRGB(255, 110, 90), f)
+		pulse = ring("Mark", Color3.new(1, 1, 1), f)
+		born = os.clock()
 		local a = Instance.new("Attachment")
 		a.Name = "ColdOpenCue"
 		a.Parent = root
@@ -187,9 +189,13 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 		local root = m.PrimaryPart :: BasePart
 		local t = os.clock()
 		local base = Vector3.new(root.Position.X, waterY(root.Position) + 0.08, root.Position.Z)
-		local k = (t % PULSE) / PULSE
 		if pulse then
-			setRing(pulse, base, MARK + k * (RING_MAX - MARK), 0.3 + 0.7 * k)
+			local pop = TweenService:GetValue(
+				math.min((t - born) / 0.35, 1),
+				Enum.EasingStyle.Back,
+				Enum.EasingDirection.Out
+			)
+			setRing(pulse, base, pop * (CALL_RING + 1.2 * math.sin(t * 1.5)), 0.2)
 		end
 		-- a splash burst every 0.8 s (the waving arms are the call for help)
 		if splashes and t - lastBurst > 0.8 then
