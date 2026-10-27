@@ -334,6 +334,18 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:04893d1e34c571ce758292468bede9ea90a026a41d1828f116fe258d59128139": {
+  "aliases": [
+   "T_Barge_Hull_RGH"
+  ],
+  "assetId": "77394710200809",
+  "imageId": "77394710200809",
+  "moderation": "Approved",
+  "name": "T_Depot_Brick_RGH",
+  "sha": "04893d1e34c571ce758292468bede9ea90a026a41d1828f116fe258d59128139",
+  "source": "assets/textures/M_Bld_Depot/T_Depot_Brick_RGH.png",
+  "type": "Image"
+ },
  "Image:04aae70229db3035203ee1078b333c82765bd020786a1dab1f4fea9f21d7d1d2": {
   "assetId": "80129672610190",
   "imageId": "80129672610190",
@@ -6391,6 +6403,15 @@
   "name": "T_LifeguardPickup_Body_RGH_Wet",
   "sha": "4d758900d107982d7badb11e8f1156fb0ee51b7f06e8d0a8d0c4674bd4c9ffe3",
   "source": "assets/textures/M_Veh_LifeguardPickup/T_LifeguardPickup_Body_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:4d96fda75512c5e5c1fe13ef93772d8a55f60168d80d4fe59f92df573ea321a5": {
+  "assetId": "131215207343243",
+  "imageId": "131215207343243",
+  "moderation": "Reviewing",
+  "name": "T_Depot_Brick_ALB",
+  "sha": "4d96fda75512c5e5c1fe13ef93772d8a55f60168d80d4fe59f92df573ea321a5",
+  "source": "assets/textures/M_Bld_Depot/T_Depot_Brick_ALB.png",
   "type": "Image"
  },
  "Image:4d97592e0b423114a77ee3d008849c143e1675f2990b9be0271b77f5afcd65b9": {
@@ -12912,6 +12933,18 @@
   "source": "assets/textures/FX/FX_Spray_BowSheet.png",
   "type": "Image"
  },
+ "Image:9f434a0f8f97d5cd291c118eceb20bcaff796e8ba49034620802353fdbf77242": {
+  "aliases": [
+   "T_Barge_Hull_NOR"
+  ],
+  "assetId": "134063939343985",
+  "imageId": "134063939343985",
+  "moderation": "Approved",
+  "name": "T_Depot_Brick_NOR",
+  "sha": "9f434a0f8f97d5cd291c118eceb20bcaff796e8ba49034620802353fdbf77242",
+  "source": "assets/textures/M_Bld_Depot/T_Depot_Brick_NOR.png",
+  "type": "Image"
+ },
  "Image:9f49777600d767edd7158c258b4ed5a3fc617dc82776d9dee69907888f5e40f7": {
   "assetId": "121986639698502",
   "imageId": "121986639698502",
@@ -15066,6 +15099,15 @@
   "source": "assets/textures/M_Chr_HumanBase_F/T_HumanBaseF_Body_ALB.png",
   "type": "Image"
  },
+ "Image:be8e6942fb33172f96c83406382be2d1a97bfb3b62315b94f87d07f67ccebaf6": {
+  "assetId": "101612034075338",
+  "imageId": "101612034075338",
+  "moderation": "Reviewing",
+  "name": "T_Barge_Hull_ALB",
+  "sha": "be8e6942fb33172f96c83406382be2d1a97bfb3b62315b94f87d07f67ccebaf6",
+  "source": "assets/textures/M_Veh_SupplyBarge/T_Barge_Hull_ALB.png",
+  "type": "Image"
+ },
  "Image:bef6b1e00984a6b8e5a68ef6f14bba6bcee0816a8b4dc9237bca66d2e121d434": {
   "assetId": "72873404937057",
   "imageId": "72873404937057",
@@ -16871,6 +16913,18 @@
   "name": "T_GaleQueen_Deck_RGH",
   "sha": "d67cd4032aed26305b085f6f293fd106daa23c151bc691b71a4d5de243b1a9d1",
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_RGH.png",
+  "type": "Image"
+ },
+ "Image:d69112264db6c2c1b6f6bc930b7d7cf38c27a4fead1b5000259265c5405c66ef": {
+  "aliases": [
+   "T_Barge_Hull_MET"
+  ],
+  "assetId": "82741558542658",
+  "imageId": "82741558542658",
+  "moderation": "Approved",
+  "name": "T_Depot_Brick_MET",
+  "sha": "d69112264db6c2c1b6f6bc930b7d7cf38c27a4fead1b5000259265c5405c66ef",
+  "source": "assets/textures/M_Bld_Depot/T_Depot_Brick_MET.png",
   "type": "Image"
  },
  "Image:d69a03be6f4ca0da91fa5c084836e126f068d5434293fc8cb2b36ea1b7bfe04c": {
@@ -20417,6 +20471,16 @@
   "source": "assets/fbx/M_Rock_Ledge_01/M_Rock_Ledge_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:11d727693d9edc9b99f905e8c2cbb9136272ce487fae5e584b3924686d768092": {
+  "assetId": "94162998733864",
+  "moderation": "Approved",
+  "name": "M_Bld_Depot_LOD2",
+  "rbxm": "assets/models/M_Bld_Depot_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "11d727693d9edc9b99f905e8c2cbb9136272ce487fae5e584b3924686d768092",
+  "source": "assets/fbx/M_Bld_Depot/M_Bld_Depot_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:11e0faf95045701396ffa3a9de3fc0e3e83fb3a89b0a9636294f6f54cc232ff6": {
   "assetId": "88977717761218",
   "moderation": "Approved",
@@ -20575,6 +20639,16 @@
   "route": "delivery",
   "sha": "18bde59e14a263c12124f71cdc7de94085240fe59f1cf22f15e7cbd06b1ec0b1",
   "source": "assets/fbx/M_Veg_SeaThrift_02/M_Veg_SeaThrift_02_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:18d7ef33daf1806b925f1e46119922bd11a911269a078b6879181156f876113a": {
+  "assetId": "115192072017821",
+  "moderation": "Approved",
+  "name": "M_Bld_Depot_LOD1",
+  "rbxm": "assets/models/M_Bld_Depot_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "18d7ef33daf1806b925f1e46119922bd11a911269a078b6879181156f876113a",
+  "source": "assets/fbx/M_Bld_Depot/M_Bld_Depot_LOD1.fbx",
   "type": "Model"
  },
  "Model:1929cad4df782793b622e94194988c65fd78ea3d4ce25a08bdec620d29a2f4d0": {
@@ -21635,6 +21709,16 @@
   "route": "delivery",
   "sha": "348f35aae39c4b1c71ed21b9aa263c063f0d84875f9be9b496a42502a4390191",
   "source": "assets/fbx/M_Hbr_Pontoon_Gangway/M_Hbr_Pontoon_Gangway_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:356695c942b3c5a6f7b12778005d3d3f73d908b968cf0a76494bc91afd385def": {
+  "assetId": "74080281756686",
+  "moderation": "Approved",
+  "name": "M_Veh_SupplyBarge_LOD2",
+  "rbxm": "assets/models/M_Veh_SupplyBarge_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "356695c942b3c5a6f7b12778005d3d3f73d908b968cf0a76494bc91afd385def",
+  "source": "assets/fbx/M_Veh_SupplyBarge/M_Veh_SupplyBarge_LOD2.fbx",
   "type": "Model"
  },
  "Model:35f52797bdd562bcb5a28499b9d40d3a4319b98ef605ba65cc0ce81cb682d8fb": {
@@ -23167,6 +23251,16 @@
   "source": "assets/fbx/M_Rock_Ledge_04/M_Rock_Ledge_04_LOD2.fbx",
   "type": "Model"
  },
+ "Model:63784117ecbba94aa69eec2a47b7ae61551f6a92b8e04e3619cf591019de2954": {
+  "assetId": "105732848935013",
+  "moderation": "Approved",
+  "name": "M_Bld_Depot_LOD0",
+  "rbxm": "assets/models/M_Bld_Depot_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "63784117ecbba94aa69eec2a47b7ae61551f6a92b8e04e3619cf591019de2954",
+  "source": "assets/fbx/M_Bld_Depot/M_Bld_Depot_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:63863a460ec506136659e07cccd5a5b44480320cda205158626a22d641134b0e": {
   "assetId": "133030532979239",
   "moderation": "Approved",
@@ -24035,6 +24129,16 @@
   "route": "delivery",
   "sha": "7ff52831b9ee8f0bdde5de49c517454caa8ed497644aa3c825e18674545e6d66",
   "source": "assets/fbx/M_Veh_Coastguard4x4/M_Veh_Coastguard4x4_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:7ff8eb52998d489d8b57012dc09b1145ec09024f78962bbd576dff5176e49268": {
+  "assetId": "122246514856072",
+  "moderation": "Approved",
+  "name": "M_Veh_SupplyBarge_LOD0",
+  "rbxm": "assets/models/M_Veh_SupplyBarge_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "7ff8eb52998d489d8b57012dc09b1145ec09024f78962bbd576dff5176e49268",
+  "source": "assets/fbx/M_Veh_SupplyBarge/M_Veh_SupplyBarge_LOD0.fbx",
   "type": "Model"
  },
  "Model:80641a79d2adba7d5c6d7dae467c47c6bc5bd5630a0ed66e85cdb08fe06e0aba": {
@@ -27255,6 +27359,16 @@
   "route": "delivery",
   "sha": "e66062ba4b86382b40d0155fd7239ce06e9d3d48c8e21797e5ccb950021c9ed8",
   "source": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:e7343c22ff342bf6530b3ba3b60d5bca1eef407171e9969a619a2d310ad9d857": {
+  "assetId": "125066632574795",
+  "moderation": "Approved",
+  "name": "M_Veh_SupplyBarge_LOD1",
+  "rbxm": "assets/models/M_Veh_SupplyBarge_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "e7343c22ff342bf6530b3ba3b60d5bca1eef407171e9969a619a2d310ad9d857",
+  "source": "assets/fbx/M_Veh_SupplyBarge/M_Veh_SupplyBarge_LOD1.fbx",
   "type": "Model"
  },
  "Model:e7c7a6a98af2cb2b363d3c0fa1de1c51ecbb7b30cff480127460c84671d3a837": {

@@ -5,7 +5,9 @@
 -- past FAR, animates it only within LIVELY (a still pose beyond), and walks it along a cached
 -- PathfindingService route when its Spot changes (a new recruit walks in from the jetty). At their building each
 -- Job loops a stock animation with a small code-built prop (docs/24 C): Build hammers, Fish carries a crate,
--- Repair turns a wrench, Rescue scans with binoculars, Heal holds a clipboard, Gather saws, Idle stands. Every
+-- Repair turns a wrench, Rescue scans with binoculars, Heal holds a clipboard, Gather saws, Idle stands. With the
+-- uploaded Depot standing (docs/25 D, K4) Haulers push a crate cart barge -> pile and a site's Builders carry brick
+-- stacks over their heads pile -> site, paced by HaulRate / CarryRate, waiting at the pile while SiteWaiting. Every
 -- rig gets its rarity name tag and info card (SurvivorController); each yard shows one crew badge (icon + count)
 -- instead of one per worker. Gatherer/Rescuer pay pops a "+$". It also plays the offline earnings welcome: a
 -- coin burst into the wallet and a Toast when the player attribute WorkerOffline arrives.
@@ -16,9 +18,12 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
+local Marina = require(Shared:WaitForChild("Marina"))
 local Net = require(Shared:WaitForChild("Net"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local CashBurst = require(UI:WaitForChild("CashBurst"))
+local DepotController = require(script.Parent:WaitForChild("DepotController"))
 local Style = require(UI:WaitForChild("Kit"):WaitForChild("Style"))
 local SurvivorController = require(script.Parent:WaitForChild("SurvivorController"))
 local Toast = require(UI:WaitForChild("Kit"):WaitForChild("Toast"))
@@ -46,6 +51,7 @@ local JOBS: { [string]: { anim: string?, prop: string? } } = {
 	Rescue = { anim = "Point", prop = "Binoculars" },
 	Heal = { anim = "Point", prop = "Clipboard" },
 	Gather = { anim = "Swing", prop = "Saw" },
+	Haul = { prop = "Cart" },
 	Idle = {},
 }
 local CATEGORY_JOB = {
@@ -54,6 +60,7 @@ local CATEGORY_JOB = {
 	Mechanic = "Repair",
 	Rescuer = "Rescue",
 	Medic = "Heal",
+	Hauler = "Haul",
 }
 
 type Rec = {
@@ -185,7 +192,41 @@ local function dress(r: Rec)
 	end
 	local grip = hand:FindFirstChild("RightGripAttachment")
 	local g = if grip and grip:IsA("Attachment") then grip.CFrame else CFrame.new(0, -0.3, 0)
-	if want == "Crate" then -- on the right shoulder
+	local root = rig.PrimaryPart
+	if want == "Cart" and root then -- a hand cart pushed in front: a deck on two wheels, handles back to the hands
+		brick(
+			want,
+			Vector3.new(2.2, 0.3, 2),
+			Color3.fromRGB(105, 64, 40),
+			root,
+			CFrame.new(0, -1.6, -2.4)
+		)
+		for _, x in { -1.25, 1.25 } do
+			local wheel = brick(
+				`{want}Wheel`,
+				Vector3.new(0.35, 1.2, 1.2),
+				Color3.fromRGB(30, 34, 40),
+				root,
+				CFrame.new(x, -2.4, -2.4)
+			)
+			wheel.Shape = Enum.PartType.Cylinder
+			brick(
+				`{want}Handle`,
+				Vector3.new(0.2, 0.2, 1.6),
+				Color3.fromRGB(250, 208, 40),
+				root,
+				CFrame.new(x * 0.6, -1.0, -1.0) * CFrame.Angles(math.rad(-40), 0, 0)
+			)
+		end
+		local load = brick( -- shown while loaded (cargo)
+			`{want}Crate`,
+			Vector3.new(1.6, 1.3, 1.6),
+			Color3.fromRGB(242, 140, 30),
+			root,
+			CFrame.new(0, -0.8, -2.4)
+		)
+		load.Transparency = 1
+	elseif want == "Crate" then -- on the right shoulder
 		if torso and torso:IsA("BasePart") then
 			brick(
 				want,
@@ -390,6 +431,223 @@ local function carry(r: Rec)
 	end)
 end
 
+-- docs/25 D flows 1 and 2: one leg after another (a route per leg); false when the loop should stop
+local function legs(r: Rec, root: BasePart, points: { Vector3 }, on: () -> boolean): boolean
+	r.carry = "walk"
+	pose(r)
+	for _, p in points do
+		stride(r, root, p)
+		if not on() then
+			return false
+		end
+	end
+	r.carry = "rest"
+	pose(r)
+	return true
+end
+
+local function feetOf(r: Rec, root: BasePart): Vector3
+	return root.Position - Vector3.new(0, r.height, 0)
+end
+
+local function ownerPlot(r: Rec): Model?
+	local id = r.cfg.Parent and tonumber(r.cfg.Parent.Name)
+	return if id then DepotController.plotOf(id) else nil
+end
+
+-- seconds a worker rests after a trip so `crew` of them make `perMinute` trips a minute (K4 HaulRate / CarryRate)
+local function rest(perMinute: any, crew: number, walked: number): number
+	if type(perMinute) ~= "number" or perMinute <= 0 then
+		return 2
+	end
+	return math.clamp(60 * crew / perMinute - walked, 1, 20)
+end
+
+local function crewOf(r: Rec, job: string): number
+	local n = 0
+	for cfg, o in recs do
+		if cfg.Parent == r.cfg.Parent and o.rig and jobOf(o) == job then
+			n += 1
+		end
+	end
+	return math.max(n, 1)
+end
+
+-- A Hauler: from the pile to the quay, waits for the barge, pushes a crate up to a drop-off bay, rests, again.
+local function haul(r: Rec)
+	local rig = r.rig
+	local root = rig and rig.PrimaryPart
+	local plot = ownerPlot(r)
+	local function on(): boolean
+		return r.rig == rig
+			and r.lively
+			and not r.walking
+			and jobOf(r) == "Haul"
+			and work(r) ~= nil
+			and DepotController.depot(plot :: Model) ~= nil
+	end
+	if not (rig and root and plot and on()) then
+		return
+	end
+	local slot = (tonumber(r.cfg.Name) or 0) % 4 - 1.5 -- side by side along the quay
+	r.carry = "rest"
+	task.spawn(function()
+		local trip = tonumber(r.cfg.Name) or 0
+		while on() do
+			local depot = DepotController.depot(plot :: Model) :: Model
+			local land = DepotController.mark(depot, "ATT_QuayLand")
+			local load = DepotController.mark(depot, "ATT_QuayLoad")
+			local drops = DepotController.marks(depot, "ATT_DropOff_")
+			if not (land and load and #drops > 0) then
+				break
+			end
+			trip += 1
+			local drop = drops[trip % #drops + 1].Position
+			local cart = rig:FindFirstChild("CartCrate", true) :: BasePart?
+			local start = os.clock()
+			local quay = load.Position + load.LookVector * slot * 3
+			local out = table.clone(route(feetOf(r, root), land.Position)) -- route's tables are its cache
+			table.insert(out, quay)
+			if not legs(r, root, out, on) then
+				break
+			end
+			while on() and not DepotController.moored(plot :: Model) do
+				task.wait(0.5)
+			end
+			if not on() then
+				break
+			end
+			task.wait(1) -- the crate swings on
+			if cart then
+				cart.Transparency = 0
+			end
+			local back = table.clone(route(land.Position, drop))
+			table.insert(back, 1, land.Position)
+			if not legs(r, root, back, on) then
+				break
+			end
+			if cart then
+				cart.Transparency = 1
+			end
+			task.wait(
+				rest(
+					(plot :: Model):GetAttribute("HaulRate"),
+					crewOf(r, "Haul"),
+					os.clock() - start
+				)
+			)
+		end
+		local cart = rig:FindFirstChild("CartCrate", true)
+		if cart and cart:IsA("BasePart") then
+			cart.Transparency = 1
+		end
+		r.carry = nil
+		if r.rig == rig and not r.walking then
+			place(r)
+			pose(r)
+		end
+	end)
+end
+
+-- the brick stack a Builder holds over their head (on: shown)
+local BRICK_COLOURS =
+	{ Color3.fromRGB(224, 56, 40), Color3.fromRGB(250, 208, 40), Color3.fromRGB(40, 96, 208) }
+local function bricks(rig: Model, on: boolean)
+	local head = rig:FindFirstChild("Head")
+	local had = rig:FindFirstChild("BrickStack", true)
+	if had and not on then
+		had:Destroy()
+	elseif on and not had and head and head:IsA("BasePart") then
+		local base = brick(
+			"BrickStack",
+			Vector3.new(1.8, 0.55, 0.9),
+			BRICK_COLOURS[1],
+			head,
+			CFrame.new(0, 1.1, 0)
+		)
+		for k = 2, 3 do
+			brick(
+				`BrickStack{k}`,
+				Vector3.new(1.8, 0.55, 0.9),
+				BRICK_COLOURS[k],
+				base,
+				CFrame.new(0, 0.55 * (k - 1), 0)
+			)
+		end
+	end
+end
+
+-- the running site's lot when this Builder's spot is at it (DockService puts a site's Builders round its lot)
+local function atSite(r: Rec, plot: Model): boolean
+	local key = plot:GetAttribute("SiteKey")
+	local def = if type(key) == "string" then DockConfig.Buildings[key] else nil
+	local i = tonumber(string.match(plot.Name, "^Plot(%d+)$"))
+	if not (def and i) then
+		return false
+	end
+	local lot = (Marina.berth(i) * def.spot).Position
+	return (r.feet.Position - lot).Magnitude < math.max(def.size.X, def.size.Y) / 2 + 8
+end
+
+-- A site's Builder: walks to a pick-up bay, waits there while the Depot is empty, carries a brick stack back and
+-- hammers it on, again.
+local function supply(r: Rec)
+	local rig = r.rig
+	local root = rig and rig.PrimaryPart
+	local plot = ownerPlot(r)
+	local function on(): boolean
+		return r.rig == rig
+			and r.lively
+			and not r.walking
+			and jobOf(r) == "Build"
+			and work(r) ~= nil
+			and DepotController.depot(plot :: Model) ~= nil
+			and atSite(r, plot :: Model)
+	end
+	if not (rig and root and plot and on()) then
+		return
+	end
+	r.carry = "rest"
+	task.spawn(function()
+		local trip = tonumber(r.cfg.Name) or 0
+		while on() do
+			local picks =
+				DepotController.marks(DepotController.depot(plot :: Model) :: Model, "ATT_PickUp_")
+			if #picks == 0 then
+				break
+			end
+			trip += 1
+			local pick = picks[trip % #picks + 1].Position
+			local start = os.clock()
+			if not legs(r, root, route(feetOf(r, root), pick), on) then
+				break
+			end
+			while on() and (plot :: Model):GetAttribute("SiteWaiting") == true do
+				task.wait(1) -- an empty Depot: waits at the pile, hands empty
+			end
+			if not on() then
+				break
+			end
+			bricks(rig, true)
+			if not legs(r, root, route(pick, r.feet.Position), on) then
+				break
+			end
+			bricks(rig, false)
+			root.CFrame = CFrame.new(root.Position) * r.feet.Rotation -- faces the site: hammers the bricks on
+			pose(r)
+			local crew = tonumber((plot :: Model):GetAttribute("SiteBuilders"))
+				or crewOf(r, "Build")
+			task.wait(rest((plot :: Model):GetAttribute("CarryRate"), crew, os.clock() - start))
+		end
+		bricks(rig, false)
+		r.carry = nil
+		if r.rig == rig and not r.walking then
+			place(r)
+			pose(r)
+		end
+	end)
+end
+
 -- Walks the rig from where it is to `to` (feet) along a route; culled or far, it is just there.
 local function walkTo(r: Rec, to: CFrame)
 	local rig = r.rig
@@ -493,8 +751,15 @@ local function cullPass()
 			r.lively = lively
 			pose(r)
 		end
-		if r.lively and not r.walking and not r.carry and jobOf(r) == "Fish" then
-			carry(r)
+		if r.lively and not r.walking and not r.carry then
+			local job = jobOf(r)
+			if job == "Fish" then
+				carry(r)
+			elseif job == "Haul" then
+				haul(r)
+			elseif job == "Build" then
+				supply(r)
+			end
 		end
 	end
 end

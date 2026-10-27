@@ -100,7 +100,15 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   `ConstructionController` draws the site and the owner's "Finish" prompt, `DockController`'s tablet the timer and
   its FinishNow price. `Dock_Finish` C->S (no args) prompts `FinishNow1..3` by the site's current time left (the
   server picks; a client tier is ignored); the receipt finishes through the same path, or pays 10% of the build's
-  Cash if the site already stood. Studio: `WorkerDev` `"finishbuild"`.
+  Cash if the site already stood. Studio: `WorkerDev` `"finishbuild"`. Layered meshes (`Lv<k>_L<nn>_`) rise layer by
+  layer; a level's site keeps the lower levels hidden (the standing building shows them).
+- Depot art (docs/25 D, K4): `DepotArtService` sets `DockPieces.meshes` (the Depot is `M_Bld_Depot`, a hut until it
+  loads) and publishes `ReplicatedStorage.DepotTemplates.Barge`. The Depot model holds `DepotMesh` (the Lv1..n
+  layers and `Marks`: `ATT_PickUp_*` / `ATT_DropOff_*` bays, `ATT_BargeMoor`, `ATT_QuayLoad`, `ATT_QuayLand`) and
+  `FreightQuay` (west plate edge, sea level). Client: `DepotController` (barge from `BargeNext` via
+  `shared/BargePath`, `Stack_1..4` from `DepotStock` / `DepotCap`, empty-crate icon on `SiteWaiting`) and
+  `WorkerController` (Haulers, Job `Haul` or Category `Hauler`, and a site's Builders walk the marks, paced by
+  `HaulRate` / `CarryRate`).
 - Depot and bricks (docs/25 D, K4): `src/shared/DepotRules.luau` (pure, `tests/DepotRules.spec.luau`, also stepped by
   `tests/Pacing.spec.luau`): `cap(depotLevel)` (20 / 40 / 80, 0 with no Depot), `BARGE_PERIOD` 60 s,
   `bargeLoads(depotLevel, haulerUnits, refill?)` (crew drop 2 + `HAUL_PER` per Hauler unit, Lv2+ x2, Hand Carts'

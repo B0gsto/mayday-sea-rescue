@@ -37,6 +37,7 @@ MAPS = {"ALB": "ColorMap", "NOR": "NormalMap", "RGH": "RoughnessMap", "MET": "Me
 ALPHA_TRANSPARENCY = ("M_Veg_",)
 # Single texture sets that are alpha cards inside an otherwise opaque asset: (asset, set).
 ALPHA_TRANSPARENCY_SETS = {("M_Chr_Bosun", "Fur"), ("M_Bld_Station", "Grime"), ("M_Hbr_PropAtlas", "Rope"), ("M_Bld_Cottage_Kit", "Grime"), ("M_Sea_Morwenna", "Kelp"), ("M_Sea_AdmiraltyAnchor", "Sand"), ("M_Veh_GaleQueen", "Decals")}  # Morwenna kelp cards (S1a); anchor sand bed alpha rim (POL2); Bosun fur cards (DogService); station H3 grime decals; cottage H3b grime decals
+SHARED_BYTES = ("M_Veh_SupplyBarge",)  # its NOR/RGH/MET are the Depot palette's bytes
 FX_RE = re.compile(r"^assets/textures/FX/(FX_\w+)\.png$")  # FX1 / FX2 flipbooks and foam maps (docs/12 2.11)
 TEX_RE = re.compile(r"^assets/textures/(M_\w+?)/T_\w+?_([A-Za-z][A-Za-z0-9]*(?:_\d+)?)_(ALB|NOR|RGH|MET)(_Wet)?\.png$")
 
@@ -117,6 +118,14 @@ def main():
             by_source.setdefault((e.get("type"), e["source"]), []).append(e)
 
     models, textures, fx = {}, {}, {}
+    # a map with the same bytes as one already uploaded (a shared palette) is keyed under the first file's path only:
+    # give SHARED_BYTES assets' files their own source too, so they get the full set (opt-in: older assets that ship
+    # without such maps would change look)
+    by_sha = {e["sha"]: e for e in manifest.values() if e.get("type") == "Image" and e.get("sha") and e.get("assetId")}
+    for path in (p for a in SHARED_BYTES for p in glob.glob(os.path.join(ROOT, "assets", "textures", a, "T_*.png"))):
+        rel = os.path.relpath(path, ROOT)
+        if ("Image", rel) not in by_source and TEX_RE.match(rel) and disk_sha(rel) in by_sha:
+            by_source[("Image", rel)] = [dict(by_sha[disk_sha(rel)], source=rel)]
     for (kind, src), entries in sorted(by_source.items()):
         e = pick(entries, listed, src)
         if kind == "Model":

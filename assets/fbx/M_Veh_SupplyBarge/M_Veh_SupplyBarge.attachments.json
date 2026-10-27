@@ -1,0 +1,123 @@
+{
+ "asset": "M_Veh_SupplyBarge",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Waterline",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -3.9,
+    -0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Bow",
+   "parent": null,
+   "blender": [
+    0.0,
+    -16.0,
+    0.8
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.8,
+    -16.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -3.1,
+    -16.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Stern",
+   "parent": null,
+   "blender": [
+    0.0,
+    16.8,
+    0.8
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.8,
+    16.8
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -3.1,
+    16.425
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Helm",
+   "parent": null,
+   "blender": [
+    0.0,
+    12.5,
+    4.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    4.0,
+    12.5
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.1,
+    12.125
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

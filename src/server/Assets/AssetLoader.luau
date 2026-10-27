@@ -425,11 +425,6 @@ function AssetLoader.getTemplate(asset: string, lod: string?): Model?
 	return model
 end
 
--- True once the template is cached (never yields, never starts a load).
-function AssetLoader.isLoaded(asset: string, lod: string?): boolean
-	return templateFolder():FindFirstChild(`{asset}_{lod or "LOD0"}`) ~= nil
-end
-
 -- A fresh copy of the asset at its authored pivot (parts unanchored), or nil (see getTemplate).
 function AssetLoader.clone(asset: string, lod: string?): Model?
 	local template = AssetLoader.getTemplate(asset, lod)

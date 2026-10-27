@@ -2291,16 +2291,16 @@ local function harbour(m: Model, b: CFrame, level: number?)
 	end
 end
 
--- Set by the server (DockService): a static copy of an uploaded building mesh, nil while it is not loaded.
-DockPieces.mesh = nil :: ((asset: string) -> Model?)?
+-- Set by the server (DepotArtService): a static copy of an uploaded building mesh (the walk-in _COL hulls collide,
+-- the visual meshes don't); it waits for the first load and is nil if the asset failed (a code-built piece stands in).
+DockPieces.meshes = nil :: ((asset: string) -> Model?)?
 
--- HQ Lv1 Rescue Hut / Lv2 Rescue Post (M_Bld_RescueHQ): meshes named _Lv<l>_L<k>_ (layer k of level l) and
--- _Lv<l>_Col_COL; Lv2 = Lv1's meshes + Lv2's. Each mesh gets a BuildY (ConstructionController raises the
--- layers in order: Lv1 L01..L05, then Lv2 L01..L07); the OwnerColour door becomes a "Flag"; the sign words go on
--- the ATT_Sign_<l> plaques as a ribbon across their lower edge. False when the mesh is not loaded.
-local HQ_RISE = 2.6 -- studs of BuildY per layer: Lv2's L07 lands near the real top (31)
+-- HQ Lv1 Rescue Hut / Lv2 Rescue Post (M_Bld_RescueHQ): meshes named _Lv<l>_L<k>_ (layer k of level l,
+-- ConstructionController raises them) and _Lv<l>_Col_COL; Lv2 = Lv1's meshes + Lv2's. The OwnerColour door becomes
+-- a "Flag"; the sign words go on the ATT_Sign_<l> plaques as a ribbon across their lower edge. False when the mesh
+-- is not loaded.
 local function hqMesh(m: Model, b: CFrame, n: number): boolean
-	local src = DockPieces.mesh and DockPieces.mesh("M_Bld_RescueHQ")
+	local src = DockPieces.meshes and DockPieces.meshes("M_Bld_RescueHQ")
 	if not src then
 		return false
 	end
@@ -2319,11 +2319,8 @@ local function hqMesh(m: Model, b: CFrame, n: number): boolean
 			local l = tonumber(lv or string.match(d.Name, "_Lv(%d)_Col_COL$")) or 1
 			if l > n then
 				d:Destroy()
-			elseif k then
-				d:SetAttribute("BuildY", at.Y + ((l - 1) * 5 + (tonumber(k) or 0)) * HQ_RISE)
-				if string.find(d.Name, "OwnerColour", 1, true) then
-					d.Name = "Flag" -- DockService paints it the owner's colour
-				end
+			elseif k and string.find(d.Name, "OwnerColour", 1, true) then
+				d.Name = "Flag" -- DockService paints it the owner's colour
 			end
 		end
 	end
@@ -2336,7 +2333,8 @@ local function hqMesh(m: Model, b: CFrame, n: number): boolean
 			BRICK_WHITE,
 			DockConfig.Buildings.HQ.name
 		)
-		s:SetAttribute("BuildY", at.Y + (if l == 1 then 5 else 11) * HQ_RISE) -- with its plaque's layer
+		s:SetAttribute("BuildLv", l) -- with its plaque's level and layer
+		s:SetAttribute("BuildY", if l == 1 then 5 else 6)
 	end
 	return true
 end
@@ -2404,8 +2402,75 @@ local function airStation(m: Model, b: CFrame)
 	helipad(m, b)
 end
 
+-- The Depot (docs/25 B, D): the uploaded M_Bld_Depot (DockPieces.meshes, set by the server; a hut until it loads),
+-- its Lv1..n layers on the lot and its FreightQuay on the plate's west edge at sea level (the export has the quay
+-- beside the body, which here would stand the barge on land). Its marks (ATT_*) sit on one invisible part, Marks,
+-- in world place; ATT_QuayLoad (deck by the barge) and ATT_QuayLand (plate top at the quay's land end) are ours.
+-- Both stay 1x (the mesh is authored at the lot's size).
+local DEPOT_SHIFT = CFrame.new(-6, 0, 0) -- the body is authored 6 off the lot centre (its quay was beside it)
+local QUAY_AT = Vector2.new(-173, 2) -- island (right, fwd) of the quay centre: past the beach step
+local QUAY_X = -18 -- the quay's centre in the export
+local function depot(m: Model, b: CFrame, level: number?)
+	local src = DockPieces.meshes and DockPieces.meshes("M_Bld_Depot")
+	if not src then
+		hut(m, b, "Depot")
+		return
+	end
+	local n = level or 1
+	local at = b * DockConfig.Buildings.Depot.spot * DEPOT_SHIFT
+	local quay = isle(b, QUAY_AT.X, QUAY_AT.Y) * CFrame.new(-QUAY_X, -TOP, 0)
+	local root = src:GetPivot()
+	local body, pier = Instance.new("Model"), Instance.new("Model")
+	body.Name, pier.Name = "DepotMesh", "FreightQuay"
+	local marks = part(body, "Marks", Vector3.one, at, WHITE, M.SmoothPlastic)
+	marks.Transparency = 1
+	marks.CanCollide, marks.CanQuery, marks.CanTouch, marks.CastShadow = false, false, false, false
+	local function mark(name: string, world: CFrame)
+		local a = Instance.new("Attachment")
+		a.Name = name
+		a.CFrame = at:ToObjectSpace(world)
+		a.Parent = marks
+	end
+	for _, d in src:GetDescendants() do
+		if d:IsA("Attachment") and string.sub(d.Name, 1, 4) == "ATT_" then
+			local rel = root:ToObjectSpace(d.WorldCFrame)
+			local lv = tonumber(string.match(d.Name, "_Lv(%d)$"))
+				or (if d.Name == "ATT_ConveyorEnd" then 3 else 1)
+			if d.Name == "ATT_BargeMoor" then
+				mark(d.Name, quay * rel)
+			elseif lv <= n then
+				mark(d.Name, at * rel)
+			end
+		end
+	end
+	mark("ATT_QuayLoad", quay * CFrame.new(QUAY_X - 3, 2.2, 0)) -- 3 in from the sea face, on the deck (2.2)
+	mark("ATT_QuayLand", quay * CFrame.new(QUAY_X + 15, TOP, 0)) -- on the plate, 2 in from its edge
+	for _, d in src:GetChildren() do
+		if d:IsA("BasePart") then
+			for _, a in d:GetChildren() do
+				if a:IsA("Attachment") then
+					a:Destroy()
+				end
+			end
+			local rel = root:ToObjectSpace(d.CFrame)
+			local lv = tonumber(string.match(d.Name, "^Lv(%d)_"))
+			if string.sub(d.Name, 1, 11) == "FreightQuay" then
+				d.CFrame = quay * rel
+				d.Parent = pier
+			elseif lv and lv <= n then
+				d.CFrame = at * rel
+				d.Parent = body
+			end
+		end
+	end
+	src:Destroy()
+	pier:SetAttribute("SiteApart", true) -- ConstructionController: not inside the site's fence
+	body.Parent, pier.Parent = m, m
+end
+
 local BUILDINGS = {
 	HQ = hq,
+	Depot = depot,
 	Harbour = harbour,
 	Workshop = workshopYard,
 	FishShed = fishMarket,
@@ -2421,6 +2486,8 @@ local BUILDINGS = {
 } :: { [string]: (Model, CFrame, number?) -> () }
 
 local KEEP_1X = {
+	DepotMesh = true,
+	FreightQuay = true,
 	Path = true,
 	Slipway = true,
 	SlipRail = true,
@@ -2453,7 +2520,9 @@ function DockPieces.building(key: string, cf: CFrame, level: number?): Model
 			end
 		end
 		m.WorldPivot = cf * def.spot
-		m:ScaleTo(def.scale)
+		if #m:GetChildren() > 0 then -- all kept 1x (the Depot's meshes): nothing to scale
+			m:ScaleTo(def.scale)
+		end
 		for _, d in keep do
 			d.Parent = m
 		end
