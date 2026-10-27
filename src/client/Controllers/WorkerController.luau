@@ -21,6 +21,7 @@ local Lighting = game:GetService("Lighting")
 local PathfindingService = game:GetService("PathfindingService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
@@ -50,6 +51,7 @@ local ANIM_IDS: { [string]: string } = { -- stock R15 animations (the default An
 	Walk = "rbxassetid://507777826",
 	Swing = "rbxassetid://522635514", -- toolslash, looped slow: hammering / sawing / wrenching
 	Point = "rbxassetid://507770453", -- point: binoculars / clipboard read
+	Climb = "rbxassetid://507765644",
 }
 -- Jobs (docs/24 C) and their held prop. A worker with no Job attribute falls back to its category.
 local JOBS: { [string]: { anim: string?, prop: string? } } = {
@@ -84,6 +86,7 @@ type Rec = {
 	beatI: number?, -- the last beat played; nil until the first loop (which starts late, out of step)
 	speed: number, -- walk studs/s
 	sleep: boolean?, -- home for the night (walking there, or in and hidden)
+	climbing: boolean?, -- on a ladder (walkTo)
 }
 
 local anims: { [string]: Animation } = {} -- one Animation per id, shared by every rig
@@ -135,7 +138,9 @@ end
 local function pose(r: Rec)
 	local want: { [string]: boolean } = {}
 	if r.rig and r.lively then
-		if r.walking or r.carry == "walk" then
+		if r.climbing then
+			want.Climb = true
+		elseif r.walking or r.carry == "walk" then
 			want.Walk = true
 		else
 			want.Idle = true
@@ -374,6 +379,7 @@ local function dropRig(r: Rec)
 		r.loaded = {}
 	end
 	r.walking = nil
+	r.climbing = nil
 	r.beat = nil
 end
 
@@ -756,6 +762,33 @@ local function supply(r: Rec): boolean
 	return true
 end
 
+-- P1-8: a spot well above the ground (the Lookout's gallery, 31 up) has no navmesh route: the worker walks to the
+-- foot of the nearest Ladder (a TrussPart), climbs to its top facing it, and fades onto the spot; coming down is the
+-- reverse. A spot with no ladder near keeps the straight-line fallback.
+local CLIMB_ABOVE = 10 -- studs of rise that need a ladder
+local function ladderNear(high: Vector3): TrussPart?
+	local best, bestD = nil, 36
+	for _, p in Workspace:GetPartBoundsInRadius(high, 36) do
+		local d = (p.Position - high).Magnitude
+		if p:IsA("TrussPart") and d < bestD then
+			best, bestD = p, d
+		end
+	end
+	return best
+end
+
+local function fade(rig: Model, to: number)
+	for i = 1, 5 do
+		local a = if to == 1 then i / 5 else 1 - i / 5
+		for _, d in rig:GetDescendants() do
+			if d:IsA("BasePart") then -- its decals (the face) fade with it
+				d.LocalTransparencyModifier = a
+			end
+		end
+		task.wait(0.05)
+	end
+end
+
 -- Walks the rig from where it is to `to` (feet) along a route; culled or far, it is just there.
 local function walkTo(r: Rec, to: CFrame)
 	local rig = r.rig
@@ -763,6 +796,7 @@ local function walkTo(r: Rec, to: CFrame)
 	r.beat, r.beatI = nil, nil
 	if not (rig and root and r.lively) then
 		r.walking = nil
+		r.climbing = nil
 		r.feet = to
 		place(r)
 		dress(r)
@@ -774,18 +808,80 @@ local function walkTo(r: Rec, to: CFrame)
 	dress(r)
 	pose(r)
 	task.spawn(function()
-		for _, p in route(r.feet.Position, to.Position) do
-			stride(r, root, p)
-			if r.walking ~= token or r.rig ~= rig then
-				return -- a newer walk took over, or the rig was culled (its feet are set)
+		local function live(): boolean
+			return r.walking == token and r.rig == rig -- else a newer walk took over, or the rig was culled
+		end
+		local function go(points: { Vector3 }): boolean
+			for _, p in points do
+				stride(r, root, p)
+				if not live() then
+					return false
+				end
+				r.feet = CFrame.new(p) * root.CFrame.Rotation
 			end
-			r.feet = CFrame.new(p) * root.CFrame.Rotation
+			return true
+		end
+		local function climb(b: Vector3, face: Vector3): boolean
+			root.CFrame = CFrame.lookAt(root.Position, root.Position + face)
+			r.climbing = true
+			pose(r)
+			stride(r, root, b) -- straight up / down keeps the facing
+			r.climbing = nil
+			pose(r)
+			r.feet = CFrame.new(b) * root.CFrame.Rotation
+			return live()
+		end
+		local from = r.feet.Position
+		local up = to.Position.Y - from.Y > CLIMB_ABOVE
+		local high = if up
+			then to.Position
+			elseif from.Y - to.Position.Y > CLIMB_ABOVE then from
+			else nil
+		local ladder = high and ladderNear(high)
+		if ladder then
+			-- the foot is off the ladder face turned away from the spot it serves (a truss is 2 x 2 across)
+			local away = ladder.Position - (high :: Vector3)
+			local lk, rt = ladder.CFrame.LookVector, ladder.CFrame.RightVector
+			local out = if math.abs(away:Dot(lk)) >= math.abs(away:Dot(rt))
+				then (if away:Dot(lk) >= 0 then lk else -lk)
+				else (if away:Dot(rt) >= 0 then rt else -rt)
+			local foot = ladder.Position + out * 1.6 - Vector3.new(0, ladder.Size.Y / 2, 0)
+			local top = foot + Vector3.new(0, ladder.Size.Y, 0)
+			if up then
+				if not (go(route(from, foot)) and climb(top, -out)) then
+					return
+				end
+				fade(rig, 1) -- over the top and onto the deck: the end below places it on the spot
+				if not live() then
+					fade(rig, 0)
+					return
+				end
+			else
+				fade(rig, 1)
+				if not live() then
+					fade(rig, 0)
+					return
+				end
+				root.CFrame = CFrame.lookAt(
+					top + Vector3.new(0, r.height, 0),
+					top + Vector3.new(0, r.height, 0) - out
+				)
+				fade(rig, 0)
+				if not (climb(foot, -out) and go(route(foot, to.Position))) then
+					return
+				end
+			end
+		elseif not go(route(from, to.Position)) then
+			return
 		end
 		r.walking = nil
 		r.feet = to
 		place(r)
 		dress(r)
 		pose(r)
+		if ladder and up then
+			fade(rig, 0)
+		end
 	end)
 end
 
@@ -1109,12 +1205,11 @@ local function lightBunk(mesh: Instance)
 	end)
 end
 
--- docs/25 B: the Lookout's add-ons (LookoutMesh) at night: a warm light in the Lv2 lantern, and the Lv3 searchlight
--- sweeps slowly round its drum (SweepPivot, DockPieces) with a plain SpotLight, only while you are within LIVELY.
+-- docs/25 B: the Lookout's add-ons (LookoutMesh) at night: a warm light in the Lv2 lantern and a plain SpotLight on the
+-- Lv3 searchlight's drum (SweepPivot, DockPieces), which sweeps day and night with the moorings below.
 -- The HQ's Lv5 beacon lamp (HQMesh) gets the same steady warm light.
 local LANTERNS = { LookoutMesh = "Lv2_L03_Lantern", HQMesh = "Lv5_L05_Beacon" }
-type Lookout =
-	{ lantern: PointLight?, beam: SpotLight?, drum: BasePart?, sweep: Tween?, at: Vector3 }
+type Lookout = { lantern: PointLight?, beam: SpotLight?, at: Vector3 }
 local lookouts: { [Model]: Lookout } = {}
 
 local function lightLookout(mesh: Instance)
@@ -1138,7 +1233,7 @@ local function lightLookout(mesh: Instance)
 		end
 		local drum = mesh:FindFirstChild("Lv3_L04_Searchlight", true)
 		local pivot = drum and drum:FindFirstChild("SweepPivot")
-		if drum and drum:IsA("BasePart") and pivot and pivot:IsA("Attachment") then
+		if pivot and pivot:IsA("Attachment") then
 			local spot = Instance.new("SpotLight")
 			spot.Face = Enum.NormalId.Front
 			spot.Color = Color3.fromRGB(255, 244, 214)
@@ -1148,26 +1243,8 @@ local function lightLookout(mesh: Instance)
 			spot.Enabled = false
 			spot.Parent = pivot
 			o.beam = spot
-			o.drum = drum
 		end
 	end)
-end
-
--- made on the first night it plays, so the build's drop-in has long settled the drum: it turns round the world up
--- axis through the drum centre, 40 degrees each side of the front
-local function sweepOf(drum: BasePart, beam: SpotLight): Tween
-	local p = CFrame.new((beam.Parent :: Attachment).WorldPosition)
-	local still = p:ToObjectSpace(drum.CFrame)
-	local yaw = Instance.new("NumberValue")
-	yaw.Changed:Connect(function(a: number)
-		drum.CFrame = p * CFrame.Angles(0, math.rad(a), 0) * still
-	end)
-	yaw.Value = -40
-	return TweenService:Create(
-		yaw,
-		TweenInfo.new(7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-		{ Value = 40 }
-	)
 end
 
 local function lookoutPass()
@@ -1175,9 +1252,6 @@ local function lookoutPass()
 	local me = eye()
 	for mesh, o in lookouts do
 		if not mesh.Parent then
-			if o.sweep then
-				o.sweep:Cancel()
-			end
 			lookouts[mesh] = nil
 			continue
 		end
@@ -1185,115 +1259,121 @@ local function lookoutPass()
 		if o.lantern then
 			o.lantern.Enabled = lit
 		end
-		if o.beam and o.drum then
-			local on = night and (o.at - me).Magnitude < LIVELY
+		if o.beam then
 			o.beam.Enabled = lit
-			if on and not o.sweep then
-				o.sweep = sweepOf(o.drum, o.beam)
-			end
-			local sweep = o.sweep
-			if sweep and on and sweep.PlaybackState ~= Enum.PlaybackState.Playing then
-				sweep:Play()
-			elseif sweep and not on and sweep.PlaybackState == Enum.PlaybackState.Playing then
-				sweep:Pause()
-			end
 		end
 	end
 end
 
 -- docs/25 B: the Rescue Boathouse's moored RIB (Lv2) and lifeboat (Lv3) (RescueBoathouseMesh) bob gently on their
--- slips, only while you are within LIVELY; the berth and the boats' _COL boxes stay put. The Air Station's Lv2
--- windsock (AirStationMesh) sways the same way, turning about its pole (mesh frame x -45.6, z 18.7) instead, and
--- the Sub Pen's Lv2 mini-sub (SubPenMesh) rolls a little on its straps about the hook block (x -3.95, y 10).
+-- slips; the Air Station's Lv2 windsock (AirStationMesh) sways about its pole (mesh frame x -45.6, z 18.7), the Sub
+-- Pen's Lv2 mini-sub (SubPenMesh) rolls a little on its straps about the hook block (x -3.95, y 10) and the Lookout's
+-- Lv3 searchlight sweeps 40 degrees each side of the front about its drum centre (world up). Only within LIVELY; the
+-- _COL boxes stay put. Range, pole and parts are read off the parts themselves when the pass first sees them, not off
+-- the mesh Model the moment it lands (a streamed model can land before its PrimaryPart resolves, so its pivot reads
+-- the template's origin), and the motion is plain per-frame math, no tweens to stall (playtest 2026-10-28: 0 degrees).
 type Mooring = {
-	boats: { BasePart },
-	bob: Tween?,
-	at: Vector3,
+	parts: { BasePart }?,
+	born: number,
 	pole: CFrame?,
 	swing: number,
 	period: number,
+	t: number,
+	last: number,
+	on: boolean,
 }
 local moorings: { [Model]: Mooring } = {}
 local MOORED = {
 	RescueBoathouseMesh = { "Lv2_L04_RIB", "Lv3_L03_Lifeboat" },
 	AirStationMesh = { "Lv2_L04_Windsock" },
 	SubPenMesh = { "Lv2_L03_MiniSub" },
+	LookoutMesh = { "Lv3_L04_Searchlight" },
 }
--- in the mesh frame, turning about the pole's Y: swing in radians, half a period in seconds
-local POLES: { [string]: { pole: CFrame, swing: number, period: number } } = {
+-- swing: radians each side (studs of heave with no pole); period: seconds per side; pole: in the mesh frame, turning
+-- about its Y (the searchlight's is its SweepPivot)
+local POLES: { [string]: { pole: CFrame?, swing: number, period: number } } = {
 	AirStationMesh = { pole = CFrame.new(-45.6, 0, 18.7), swing = math.rad(14), period = 3.4 },
 	SubPenMesh = { -- Y along the hull
 		pole = CFrame.new(-3.95, 10, 0) * CFrame.Angles(math.pi / 2, 0, 0),
 		swing = math.rad(4),
 		period = 2.8,
 	},
+	LookoutMesh = { swing = math.rad(40), period = 7 },
 }
 
 local function moorBoats(mesh: Instance)
-	local names = MOORED[mesh.Name]
-	if not names or not mesh:IsA("Model") or moorings[mesh] then
+	if not MOORED[mesh.Name] or not mesh:IsA("Model") or moorings[mesh] then
 		return
 	end
 	local spec = POLES[mesh.Name]
-	local o: Mooring = {
-		boats = {},
-		at = mesh:GetPivot().Position,
-		pole = if spec then mesh:GetPivot() * spec.pole else nil,
+	moorings[mesh] = {
 		swing = if spec then spec.swing else 0.18,
 		period = if spec then spec.period else 2.6,
+		born = os.clock(),
+		t = 0,
+		last = 0,
+		on = false,
 	}
-	moorings[mesh] = o
-	-- shortcut: read once, 2 s after the mesh lands (like the lookout); a boat streamed in later stays still
-	task.delay(2, function()
-		for _, name in names do
-			local boat = mesh:FindFirstChild(name, true)
-			if boat and boat:IsA("BasePart") then
-				table.insert(o.boats, boat)
-			end
-		end
-	end)
 end
 
--- moves the boats by the change in height (the windsock by the change in turn), so a rise or rebuild that sets their
--- CFrame is never fought for long
-local function bobOf(o: Mooring): Tween
-	local heave = Instance.new("NumberValue")
-	local last = 0
-	local pole = o.pole
-	heave.Changed:Connect(function(y: number)
-		for _, boat in o.boats do
-			boat.CFrame = if pole
-				then pole * CFrame.Angles(0, y - last, 0) * pole:ToObjectSpace(boat.CFrame)
-				else boat.CFrame + Vector3.new(0, y - last, 0)
+-- the named parts (none at a level without them), once the mesh has any parts at all
+local function mooredParts(mesh: Model, o: Mooring): { BasePart }?
+	if not mesh:FindFirstChildWhichIsA("BasePart", true) then
+		return nil
+	end
+	local parts = {}
+	for _, name in MOORED[mesh.Name] do
+		local p = mesh:FindFirstChild(name, true)
+		if p and p:IsA("BasePart") then
+			table.insert(parts, p)
 		end
-		last = y
-	end)
-	return TweenService:Create(
-		heave,
-		TweenInfo.new(o.period, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-		{ Value = o.swing }
-	)
+	end
+	local spec = POLES[mesh.Name]
+	local first = parts[1]
+	if first and spec then
+		local pivot = first:FindFirstChild("SweepPivot")
+		-- an uploaded part's own pivot is the mesh frame (AssetLoader sets every PivotOffset to the authored pivot)
+		o.pole = if spec.pole
+			then first:GetPivot() * spec.pole
+			elseif pivot and pivot:IsA("Attachment") then CFrame.new(pivot.WorldPosition)
+			else nil
+	end
+	return parts
 end
 
 local function mooringPass()
 	local me = eye()
 	for mesh, o in moorings do
 		if not mesh.Parent then
-			if o.bob then
-				o.bob:Cancel()
-			end
 			moorings[mesh] = nil
 			continue
 		end
-		local on = #o.boats > 0 and (o.at - me).Magnitude < LIVELY
-		if on and not o.bob then
-			o.bob = bobOf(o)
+		if not o.parts and os.clock() - o.born > 6 then -- after the build's drop-in (~5 s) has set the parts down
+			o.parts = mooredParts(mesh, o)
 		end
-		local bob = o.bob
-		if bob and on and bob.PlaybackState ~= Enum.PlaybackState.Playing then
-			bob:Play()
-		elseif bob and not on and bob.PlaybackState == Enum.PlaybackState.Playing then
-			bob:Pause()
+		local first = o.parts and o.parts[1]
+		o.on = first ~= nil
+			and (first.Position - me).Magnitude < LIVELY
+			and (o.pole ~= nil or POLES[mesh.Name] == nil)
+	end
+end
+
+-- every frame: moves the parts by the change in heave / turn, so a rise or rebuild that sets their CFrame is never
+-- fought for long; each one's clock runs only while it is on, so it starts from rest with no jump
+local function sway(dt: number)
+	for _, o in moorings do
+		if not o.on then
+			continue
+		end
+		o.t += dt
+		local a = o.swing * math.sin(o.t * math.pi / o.period)
+		local d = a - o.last
+		o.last = a
+		local pole = o.pole
+		for _, p in o.parts :: { BasePart } do
+			p.CFrame = if pole
+				then pole * CFrame.Angles(0, d, 0) * pole:ToObjectSpace(p.CFrame)
+				else p.CFrame + Vector3.new(0, d, 0)
 		end
 	end
 end
@@ -1411,6 +1491,7 @@ function WorkerController.Start()
 	for _, d in root:GetDescendants() do
 		track(d)
 	end
+	RunService.Heartbeat:Connect(sway)
 	local lightsAt = 0
 	while true do
 		cullPass()
