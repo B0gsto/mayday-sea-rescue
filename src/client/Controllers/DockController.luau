@@ -47,6 +47,7 @@ local CosmeticPicker = require(UI:WaitForChild("CosmeticPicker"))
 local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
+local Layout = require(UI:WaitForChild("Layout"))
 
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 
@@ -65,7 +66,7 @@ local DockController = {}
 local LIST_W = 440 -- the right-hand list, du
 local CARD_BUY_H = 168 -- a card with its buy buttons
 local CARD_H = 104 -- owned / not for sale yet
-local STRIP_H = 160 -- the focus strip: name, a two-line desc, the badge row
+local STRIP_H = 160 -- the focus strip: name, the badge row
 local OUTLINE = Color3.fromRGB(255, 214, 60)
 local ARROW = Color3.fromRGB(76, 200, 84) -- the "build me" arrow's Lego green (no glow, docs/25 J)
 local STAR_ON = Color3.fromRGB(255, 206, 46)
@@ -897,7 +898,7 @@ function DockController.Pulse(key: string?)
 	end
 end
 
--- The focus strip: the item's drawing, name, one line and the two buy buttons (or its badge).
+-- The focus strip: the item's drawing, name and the two buy buttons (or its badge); no sentence (show, don't tell).
 local function refreshStrip()
 	local holder, content = focusStrip, stripContent
 	if not holder or not content then
@@ -909,6 +910,21 @@ local function refreshStrip()
 	if not item then
 		return
 	end
+	-- keep the Hud's Cash counter (desktop: left edge, under the menu) clear: start right of any left-half HUD
+	-- box in the strip's band
+	local canvas = holder.Parent :: Frame
+	local s = canvas:GetAttribute("KitScale") or 1
+	local vp = canvas.AbsoluteSize
+	local bottom = vp.Y - S.margin * s
+	local top = bottom - STRIP_H * s
+	local left = S.margin
+	for _, box in Layout.hudBoxes() do
+		if box.min.X < vp.X / 2 and box.max.Y > top and box.min.Y < bottom then
+			left = math.max(left, box.max.X / s + S.margin)
+		end
+	end
+	holder.Position = UDim2.new(0, left, 1, -S.margin)
+	holder.Size = UDim2.new(1, -(LIST_W + 2 * S.margin + left), 0, STRIP_H)
 	local st = statusOf(item)
 	local well = artWell(content, item, 96)
 	well.AnchorPoint = Vector2.new(0, 0.5)
@@ -925,11 +941,6 @@ local function refreshStrip()
 	name.TextXAlignment = Enum.TextXAlignment.Left
 	name.TextWrapped = false
 	name.TextTruncate = Enum.TextTruncate.AtEnd
-	local line = Style.label(words, DockBlueprints.desc(item), Theme.Text.small)
-	line.Position = UDim2.fromOffset(0, 38)
-	line.Size = UDim2.new(1, 0, 0, 52)
-	line.TextXAlignment = Enum.TextXAlignment.Left
-	line.TextYAlignment = Enum.TextYAlignment.Top
 	if st.forSale then
 		local slot = Instance.new("Frame")
 		slot.BackgroundTransparency = 1
