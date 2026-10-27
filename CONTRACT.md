@@ -112,7 +112,10 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   hospital + ambulance are `M_Bld_ClinicAddons` (`ClinicMesh`, kept 1x, on the tent's flanks; the flagpole gives way at
   Lv2, the bloom patch and corner tree at Lv3); its `ATT_Work_*` are the Medics' Lv2/Lv3 spots. The Lookout's Lv2
   gallery + lantern and Lv3 searchlight (`Lv3_L04_Searchlight`, swept at night by `WorkerController`) + radar are
-  `M_Bld_LookoutAddons` (`LookoutMesh`, kept 1x); its `ATT_Watch_*` are the first one (Lv2) / two (Lv3) Rescuers' spots. The Depot model holds `DepotMesh` (the Lv1..n
+  `M_Bld_LookoutAddons` (`LookoutMesh`, kept 1x); its `ATT_Watch_*` are the first one (Lv2) / two (Lv3) Rescuers' spots. The Boat Yard's Lv2 portal crane + hoisted engine + tool bench
+  and Lv3 dry dock are `M_Bld_BoatYardAddons` (`BoatYardMesh`, kept 1x, beside the code workboat; the code gantry and
+  tool chests give way at Lv2, the east slip planks at Lv3; the name sign moves onto the crane girder); its `ATT_Work_*`
+  are the Mechanics' Lv2/Lv3 spots. The Depot model holds `DepotMesh` (the Lv1..n
   layers and `Marks`: `ATT_PickUp_*` / `ATT_DropOff_*` bays, `ATT_BargeMoor`, `ATT_QuayLoad`, `ATT_QuayLand`) and
   `FreightQuay` (west plate edge, sea level). Client: `DepotController` (barge from `BargeNext` via
   `shared/BargePath`, `Stack_1..4` from `DepotStock` / `DepotCap`, empty-crate icon on `SiteWaiting`) and

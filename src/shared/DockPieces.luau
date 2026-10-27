@@ -546,7 +546,8 @@ end
 
 -- Level add-ons (docs/25 B): the Workshop's Lv2 saw-bench lean-to / Lv3 boat frame (M_Bld_WorkshopAddons), the
 -- Fish Market's Lv2 stalls / Lv3 smokehouse (M_Bld_FishMarketAddons), the Clinic's Lv2 pavilion / Lv3 hospital
--- (M_Bld_ClinicAddons) and the Lookout's Lv2 lantern / Lv3 searchlight (M_Bld_LookoutAddons): meshes Lv<l>_L<nn>_*
+-- (M_Bld_ClinicAddons), the Lookout's Lv2 lantern / Lv3 searchlight (M_Bld_LookoutAddons) and the Boat Yard's Lv2
+-- crane / Lv3 dry dock (M_Bld_BoatYardAddons): meshes Lv<l>_L<nn>_*
 -- and Lv<l>_COL authored in the yard's final (scaled) frame round its ground centre, so they stay 1x (KEEP_1X
 -- `name`). False when the level is 1 or the mesh is not loaded (the Lv1 yard stands alone, everything included).
 local function addonMesh(m: Model, at: CFrame, n: number, asset: string, name: string): boolean
@@ -1729,9 +1730,14 @@ local function fishMarket(m: Model, b: CFrame, level: number?)
 end
 
 -- Mechanic: a boat up on a cradle under a gantry crane, tool chests beside it
-local function boatYard(m: Model, b: CFrame)
+local function boatYard(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.BoatYard
 	local at = b * def.spot
+	-- Lv2 portal crane + hoisted engine and a tool bench, Lv3 dry dock on the east side (M_Bld_BoatYardAddons): the
+	-- code gantry and tool chests give way to the crane and bench, the east slip planks to the dock's caisson
+	local lv = if addonMesh(m, at, level or 1, "M_Bld_BoatYardAddons", "BoatYardMesh")
+		then level or 1
+		else 1
 	local w, d = yardSize(def)
 	local spec = HUTS.BoatYard
 	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
@@ -1781,58 +1787,80 @@ local function boatYard(m: Model, b: CFrame)
 		brick(m, "CabinPane", Vector3.new(0.25, 1.8, 3.4), boat * CFrame.new(x, 10.9, 3.2), PANE)
 	end
 	brick(m, "CabinRoof", Vector3.new(5.4, 0.4, 5), boat * CFrame.new(0, 12.9, 3.2), BRICK_RED)
-	-- a tall yellow gantry over the boat, its chain and hook down to the deck
-	for _, x in { -8.5, 8.5 } do
-		brick(m, "Leg", Vector3.new(1.2, 23, 1.2), boat * CFrame.new(x, 12.3, 0), BRICK_YELLOW)
+	if lv < 2 then
+		-- a tall yellow gantry over the boat, its chain and hook down to the deck
+		for _, x in { -8.5, 8.5 } do
+			brick(m, "Leg", Vector3.new(1.2, 23, 1.2), boat * CFrame.new(x, 12.3, 0), BRICK_YELLOW)
+		end
+		brick(m, "Beam", Vector3.new(19, 1.2, 1.2), boat * CFrame.new(0, 24.4, 0), BRICK_YELLOW)
+		brick(m, "Cable", Vector3.new(0.4, 12.1, 0.4), boat * CFrame.new(0, 17.75, 0), DBG)
+		for i = 0, 2 do
+			brick(
+				m,
+				"Chain",
+				Vector3.new(0.5, 0.6, 0.5),
+				boat * CFrame.new(0, 11.45 - i * 0.6, 0) * CFrame.Angles(0, i * math.pi / 2, 0),
+				DBG
+			)
+		end
+		brick(m, "Hook", Vector3.new(1.1, 1.1, 1.1), boat * CFrame.new(0, 9.65, 0), BRICK_ORANGE)
+		brick(m, "HookTip", Vector3.new(0.4, 0.9, 0.4), boat * CFrame.new(0, 9.1, 0), BRICK_ORANGE)
 	end
-	brick(m, "Beam", Vector3.new(19, 1.2, 1.2), boat * CFrame.new(0, 24.4, 0), BRICK_YELLOW)
-	brick(m, "Cable", Vector3.new(0.4, 12.1, 0.4), boat * CFrame.new(0, 17.75, 0), DBG)
-	for i = 0, 2 do
-		brick(
-			m,
-			"Chain",
-			Vector3.new(0.5, 0.6, 0.5),
-			boat * CFrame.new(0, 11.45 - i * 0.6, 0) * CFrame.Angles(0, i * math.pi / 2, 0),
-			DBG
-		)
-	end
-	brick(m, "Hook", Vector3.new(1.1, 1.1, 1.1), boat * CFrame.new(0, 9.65, 0), BRICK_ORANGE)
-	brick(m, "HookTip", Vector3.new(0.4, 0.9, 0.4), boat * CFrame.new(0, 9.1, 0), BRICK_ORANGE)
 	sign(
 		m,
 		Vector3.new(7, 2, 0.4),
-		boat * CFrame.new(0, 24.4, -0.9),
+		-- Lv2+: standing on the crane's girder over the dock (scaled: x 14.1, girder top 18.26, girder mid z 5.7)
+		if lv < 2 then boat * CFrame.new(0, 24.4, -0.9) else boat * CFrame.new(12.28, 16.88, 4.96),
 		BRICK_YELLOW,
 		def.name,
 		spec.icon
 	)
 	-- tool chests and a tyre stack beside the hull
-	local tools = at * CFrame.new(w / 2 - 4, 0, -d / 2 + 8)
-	studTop(
-		brick(m, "ToolChest", Vector3.new(3.6, 2.2, 2), tools * CFrame.new(0, 1.1, 0), BRICK_RED)
-	)
-	studTop(
-		brick(
-			m,
-			"ToolChest",
-			Vector3.new(2.6, 1.6, 1.8),
-			tools * CFrame.new(-0.4, 2.8, 0.6) * CFrame.Angles(0, 0.4, 0),
-			BRICK_BLUE
+	if lv < 2 then
+		local tools = at * CFrame.new(w / 2 - 4, 0, -d / 2 + 8)
+		studTop(
+			brick(
+				m,
+				"ToolChest",
+				Vector3.new(3.6, 2.2, 2),
+				tools * CFrame.new(0, 1.1, 0),
+				BRICK_RED
+			)
 		)
-	)
-	for i = 0, 1 do
-		part(
-			m,
-			"Tyre",
-			Vector3.new(1.2, 2.6, 2.6),
-			tools * CFrame.new(3.2, 1.2 + i * 2.1, 0) * CFrame.Angles(0, 0, math.pi / 2),
-			Color3.fromRGB(40, 42, 48),
-			M.SmoothPlastic,
-			Enum.PartType.Cylinder
+		studTop(
+			brick(
+				m,
+				"ToolChest",
+				Vector3.new(2.6, 1.6, 1.8),
+				tools * CFrame.new(-0.4, 2.8, 0.6) * CFrame.Angles(0, 0.4, 0),
+				BRICK_BLUE
+			)
 		)
+		for i = 0, 1 do
+			part(
+				m,
+				"Tyre",
+				Vector3.new(1.2, 2.6, 2.6),
+				tools * CFrame.new(3.2, 1.2 + i * 2.1, 0) * CFrame.Angles(0, 0, math.pi / 2),
+				Color3.fromRGB(40, 42, 48),
+				M.SmoothPlastic,
+				Enum.PartType.Cylinder
+			)
+		end
 	end
 	-- docs/24 C r3: a wider gate lets the bow out over the path; the pad reads as a yard
 	yardFence(m, at, w, d, def.color or BRICK_YELLOW, 12, "planks")
+	if lv >= 3 then -- the caisson and pump house stand on the east planks
+		for _, p in m:GetChildren() do
+			if
+				p:IsA("BasePart")
+				and p.Name == "SlipPlank"
+				and at:PointToObjectSpace(p.Position).X > 1
+			then
+				p:Destroy()
+			end
+		end
+	end
 	yardPath(m, at, d)
 	yardClutter(m, at, w, d)
 	rock(m, at * CFrame.new(-w / 2 - 5, 0, d / 2 + 4))
@@ -2594,6 +2622,7 @@ local KEEP_1X = {
 	FishMarketMesh = true,
 	ClinicMesh = true,
 	LookoutMesh = true,
+	BoatYardMesh = true,
 	BunkhouseMesh = true,
 	FreightQuay = true,
 	Path = true,

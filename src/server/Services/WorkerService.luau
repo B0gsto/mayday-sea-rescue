@@ -104,7 +104,7 @@ end
 -- One feet spot per yard slot, in 1x yard-local studs (+Z into the yard, -Z the open front; scale multiplies
 -- them like the built model). Each one stands by its own work object (bench, stall, boat, bed) and looks at it,
 -- so 2-3 of a crew spread round the yard instead of posing in a line (docs/24 C art pass).
-type WorkSlot = { x: number, z: number, tx: number, tz: number }
+type WorkSlot = { x: number, z: number, tx: number, tz: number, y: number? } -- y: scaled feet height (default 0.8)
 local WORK_SPOTS: { [string]: { WorkSlot } } = {
 	Workshop = {
 		{ x = -3.4, z = -6.9, tx = -3.4, tz = -4.6 }, -- the low bench, left
@@ -142,8 +142,8 @@ local WORK_SPOTS: { [string]: { WorkSlot } } = {
 		{ x = -7.6, z = 1, tx = -8, tz = 3.3 }, -- the medicine crate
 	},
 }
--- docs/25 B: the Workshop's, Fish Market's and Clinic's Lv2 / Lv3 add-ons (M_Bld_WorkshopAddons,
--- M_Bld_FishMarketAddons, M_Bld_ClinicAddons, DockPieces): their ATT_Work_* marks (scaled studs from the yard centre)
+-- docs/25 B: the Workshop's, Fish Market's, Clinic's and Boat Yard's Lv2 / Lv3 add-ons (M_Bld_WorkshopAddons,
+-- M_Bld_FishMarketAddons, M_Bld_ClinicAddons, M_Bld_BoatYardAddons, DockPieces): their ATT_Work_* marks (scaled studs from the yard centre)
 -- join or replace the yard's spots, facing the bench (+X), saw or hull (+Z), the stall counter or the smokehouse rack
 -- (+-X), the bed (+Z) or the clinic counter (-Z).
 -- shortcut: assumes the add-on mesh loaded (else these spots face empty yard); check DockPieces.meshes if it fails.
@@ -203,10 +203,34 @@ for i = 3, #TENT do
 	table.insert(CLINIC_LV2, TENT[i])
 	table.insert(CLINIC_LV3, TENT[i])
 end
+-- the Mechanics' Lv2 engine stand (ATT_Work_Hull) and tool bench, then the Lv3 dock walkway (the stand's spot is on
+-- the dock wall's coping at Lv3); the code slots by the cab ladder and the gone tool chests drop out
+local YARD_BOAT = WORK_SPOTS.BoatYard
+local function mechSlot(name: string, tx: number, y: number?): WorkSlot
+	local s = addonSlot("BoatYard", "M_Bld_BoatYardAddons", name, tx, 0)
+	s.y = y
+	return s
+end
+local BOATYARD_LV2 = {
+	YARD_BOAT[1],
+	mechSlot("ATT_Work_Hull", 2),
+	mechSlot("ATT_Work_Bench", -2),
+	YARD_BOAT[3],
+	YARD_BOAT[4],
+}
+local BOATYARD_LV3 = {
+	YARD_BOAT[1],
+	mechSlot("ATT_Work_Hull", 2, AssetIds.Attachments.M_Bld_BoatYardAddons.ATT_Work_Hull.Y),
+	mechSlot("ATT_Work_Bench", -2),
+	mechSlot("ATT_Work_Dock", 2, AssetIds.Attachments.M_Bld_BoatYardAddons.ATT_Work_Dock.Y),
+	YARD_BOAT[3],
+	YARD_BOAT[4],
+}
 local ADDON_LEVELS: { [string]: { [number]: { WorkSlot } } } = {
 	Workshop = { [2] = WORKSHOP_LV2, [3] = WORKSHOP_LV3 },
 	FishShed = { [2] = FISH_LV2, [3] = FISH_LV3 },
 	Clinic = { [2] = CLINIC_LV2, [3] = CLINIC_LV3 },
+	BoatYard = { [2] = BOATYARD_LV2, [3] = BOATYARD_LV3 },
 }
 -- the first Rescuers keep watch on the Lookout's gallery deck (M_Bld_LookoutAddons), looking out front: one at the
 -- Lv2 lantern, two at Lv3 (the searchlight side too); the rest work the Rescue Boathouse
@@ -243,8 +267,8 @@ local function workSpot(
 		or (if key then WORK_SPOTS[key] else nil)
 	if list and #list > 0 then
 		local s = list[(slot - 1) % #list + 1]
-		local p = (at * CFrame.new(s.x * scale, 0.8, s.z * scale)).Position
-		local look = (at * CFrame.new(s.tx * scale, 0.8, s.tz * scale)).Position
+		local p = (at * CFrame.new(s.x * scale, s.y or 0.8, s.z * scale)).Position
+		local look = (at * CFrame.new(s.tx * scale, s.y or 0.8, s.tz * scale)).Position
 		return CFrame.lookAt(p, look)
 	end
 	local p = (at * CFrame.new((slot - (_slots + 1) / 2) * 4.5, 0.8, -(def.size.Y / 2 + 3.5))).Position
