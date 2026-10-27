@@ -1732,7 +1732,17 @@ VehicleService.ColdOpenVehicle = "JetSki"
 -- 7.7 studs/s it had closed to ~30 studs by the time they had control); the idle jet still creeps
 VehicleService.ColdOpenSpeed = 0
 
+-- s the client's black dip (ColdOpenFadeController, 0.25 s) gets before the move onto the jet ski
+local COLD_OPEN_FADE = 0.3
+
 function VehicleService.SpawnColdOpen(player: Player, cframe: CFrame): Model?
+	-- hide the jump from the build stand onto the jet ski: dip to black, move, back in (cleared even if the
+	-- spawn throws)
+	player:SetAttribute("ColdOpenFade", true)
+	task.delay(COLD_OPEN_FADE + 0.15, function()
+		player:SetAttribute("ColdOpenFade", nil)
+	end)
+	task.wait(COLD_OPEN_FADE)
 	local model = VehicleService.SpawnSeated(
 		player,
 		VehicleService.ColdOpenVehicle,
