@@ -38,6 +38,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
+local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeConfig"))
 local BadgeRules = require(Shared:WaitForChild("BadgeRules"))
@@ -1346,6 +1347,13 @@ local function release(player: Player)
 end
 
 function DockService.Init()
+	-- building meshes (the HQ's Lv1/Lv2): DockPieces keeps its Parts until the template is cached
+	AssetLoader.preload({ "M_Bld_RescueHQ" })
+	DockPieces.mesh = function(asset: string): Model?
+		return if AssetLoader.isLoaded(asset)
+			then AssetLoader.cloneStatic(asset, "LOD0", true)
+			else nil
+	end
 	local folder = Instance.new("Folder")
 	folder.Name = "Marina"
 	for i = 1, Marina.COUNT do

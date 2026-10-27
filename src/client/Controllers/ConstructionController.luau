@@ -370,9 +370,11 @@ local function startSite(plot: Model, model: Model, key: string, mine: boolean):
 	local minX, maxX, minZ, maxZ = math.huge, -math.huge, math.huge, -math.huge
 	for _, d in model:GetDescendants() do
 		if d:IsA("BasePart") then
+			-- a mesh building's BuildY (DockPieces) raises its layers in authored order, not by mesh centre
+			local y = tonumber(d:GetAttribute("BuildY")) or d.CFrame.Y
 			table.insert(parts, d)
-			table.insert(ys, d.CFrame.Y)
-			minY, maxY = math.min(minY, d.CFrame.Y), math.max(maxY, d.CFrame.Y)
+			table.insert(ys, y)
+			minY, maxY = math.min(minY, y), math.max(maxY, y)
 			ground = math.min(ground, d.CFrame.Y - d.Size.Y / 2)
 			local p = d.Position
 			minX, maxX = math.min(minX, p.X), math.max(maxX, p.X)
