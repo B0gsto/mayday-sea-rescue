@@ -6,9 +6,8 @@
 -- WaterColor is published to the ocean (Clear: blue-teal; others grey-green, darker in storm).
 -- Values are starting points (-- tune). Colours use palette hex codes from docs 05 section 3.
 --
--- ClockTime is listed for reference and for setting the scene once; the controller never moves
--- it during a storm (a sun swinging across the sky mid-storm looks broken), it only blends the
--- other values.
+-- ClockTime is listed for reference only: the day/night clock (DayClock, written by StormService)
+-- moves the sun; Calm doubles as the dusk / dawn look and Night as the 3 min moonlit night.
 
 export type Preset = {
 	-- Lighting
@@ -118,8 +117,8 @@ local Night: Preset = table.freeze({
 	ClockTime = 21.5,
 	Brightness = 0.9,
 	ExposureCompensation = 1.1,
-	Ambient = hex("#232B39"),
-	OutdoorAmbient = hex("#48597A"),
+	Ambient = hex("#2A3446"), -- moonlit blue, never pitch dark: boats and survivors read at sea -- tune
+	OutdoorAmbient = hex("#5A6C90"),
 	ColorShift_Top = hex("#6B7FA0"),
 	EnvironmentDiffuseScale = 0.8,
 	EnvironmentSpecularScale = 1,

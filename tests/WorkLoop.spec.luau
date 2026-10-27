@@ -32,4 +32,21 @@ return function(t)
 		t.expect(W.isNight(0)).toBe(true)
 		t.expect(W.isNight(6.25)).toBe(false)
 	end)
+
+	t.test("home from HOME to dawn, each worker a little late, never early", function()
+		t.expect(W.isHome(14, 1)).toBe(false)
+		t.expect(W.isHome(W.HOME - 0.01, 1)).toBe(false)
+		t.expect(W.isHome(W.HOME + W.LAG + 0.01, 1)).toBe(true)
+		t.expect(W.isHome(0.1, 1)).toBe(true) -- wraps midnight
+		t.expect(W.isHome(W.DAWN + W.LAG + 0.01, 1)).toBe(false)
+		local early, late = 0, 0
+		for seed = 1, 40 do
+			if W.isHome(W.HOME + W.LAG / 2, seed) then
+				early += 1
+			else
+				late += 1
+			end
+		end
+		t.expect(early > 0 and late > 0).toBe(true) -- a crew trickles, not one step
+	end)
 end

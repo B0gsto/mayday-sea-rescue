@@ -7,7 +7,6 @@
 -- Remotes under ReplicatedStorage.Net: Dev_Grant (S->C, { toggle = true? }), Dev_Action
 -- (C->S function: action, args -> ok, short text, data?). Chat "/dev" toggles the panel.
 -- Each action reuses the owning service's API; see CONTRACT.md "Dev board".
-local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -18,6 +17,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
+local DayClock = require(Shared:WaitForChild("DayClock"))
 local DevConfig = require(Config:WaitForChild("DevConfig"))
 local DockConfig = require(Config:WaitForChild("DockConfig"))
 local Net = require(Shared:WaitForChild("Net"))
@@ -305,8 +305,11 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 			end
 			return true, a[1]
 		end,
-		clock = function(_, _, a)
-			Lighting.ClockTime = a[1]
+		clock = function(_, _, a) -- jumps the shared day clock (StormService writes ClockTime)
+			Workspace:SetAttribute(
+				"DayClockOffset",
+				DayClock.offsetTo(Workspace:GetServerTimeNow(), a[1])
+			)
 			return true, string.format("%.1f h", a[1])
 		end,
 		event = function(_, _, a)

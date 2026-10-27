@@ -60,9 +60,17 @@ end
 -- The Bunkhouse rooms light up and show "Zzz" between these (Lighting.ClockTime; the boats' nav lights use the same).
 WorkLoop.DUSK = 18.5
 WorkLoop.DAWN = 6.25
+WorkLoop.HOME = 17.5 -- survivors down tools and walk home (DayClock: early in the 90 s dusk)
+WorkLoop.LAG = 0.3 -- hours: each worker sets off up to this late, so a crew trickles home / out
 
 function WorkLoop.isNight(clockTime: number): boolean
 	return clockTime >= WorkLoop.DUSK or clockTime < WorkLoop.DAWN
+end
+
+-- True while the worker with `seed` should be home (walking there or asleep): HOME .. DAWN, each a little late.
+function WorkLoop.isHome(clockTime: number, seed: number): boolean
+	local c = (clockTime - WorkLoop.LAG * (WorkLoop.jitter(seed, 7) - 0.75) * 2) % 24
+	return c >= WorkLoop.HOME or c < WorkLoop.DAWN
 end
 
 return WorkLoop
