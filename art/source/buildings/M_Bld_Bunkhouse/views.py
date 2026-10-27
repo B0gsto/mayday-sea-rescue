@@ -3,7 +3,7 @@
 Per row Front3Q / Side / High (turntable angles, neutral HDRI), an Interior view (Lv1: eye outside the front doorway looking in
 over the rug at the coat rail and the two bunk-room doorways; Lv1-3: through the balcony door into the Lv2 hall and dorm, the
 loft through its back door), a top-down CutAway with the roofs hidden (Lv1 plan; Lv2 plan alone; Lv3 loft + Lv4 wing) and a
-Night Front3Q (dark sky, the flat Lamp panes lit as the game lights them at dusk; the .blend keeps them unlit).
+Night Front3Q (dark sky, the flat Lamp panes and terrace bulbs lit, a warm point light per bulb, as the game lights them at dusk; the .blend keeps them unlit).
 A 5.5-stud blocky figure stands against a wall on each floor for scale.
 
     ~/RobloxProjects/tools/blender-run.sh art/source/buildings/M_Bld_Bunkhouse/views.py
@@ -97,7 +97,7 @@ roofless = lambda objs, *lvls: [o for o in objs if not any(("_%s_L04_" % k in o.
 # Interior: (eye, look, figure xy + floor z, lens)
 INTERIOR = {"Lv1": ((0.8, -9.6, 5.2), (-0.3, 0.0, 4.0), (9.5, -6.0, F1), 15.0),
             "Lv1-3": ((0.8, -9.8, F2 + 5.2), (-0.3, 0.0, F2 + 4.0), (-6.5, -7.6, F2), 15.0),
-            "Lv1-5": ((0.6, 7.4, F3 + 5.0), (0.0, -4.0, F3 + 4.0), (-3.0, -5.6, F3), 15.0)}
+            "Lv1-5": ((3.0, -1.0, F3 + 5.5), (-6.6, 0.0, F3 + 4.0), (-2.0, 4.9, F3), 20.0)}   # loft, hammocks side-on
 CUT = {"Lv1": lambda: roofless(lv("Lv1"), "Lv1"),
        "Lv1-3": lambda: roofless(lv("Lv2"), "Lv2"),
        "Lv1-5": lambda: roofless(lv("Lv3", "Lv4"), "Lv3", "Lv4")}
@@ -123,17 +123,31 @@ night.node_tree.nodes["Background"].inputs["Color"].default_value = (0.012, 0.01
 night.node_tree.nodes["Background"].inputs["Strength"].default_value = 1.0
 scene.world = night
 moon = bpy.data.objects.new("VIEWS_Moon", bpy.data.lights.new("VIEWS_Moon", "SUN"))
-moon.data.energy, moon.data.color = 0.35, (0.6, 0.7, 1.0)
+moon.data.energy, moon.data.color = 1.2, (0.6, 0.7, 1.0)
 moon.rotation_euler = (0.9, 0.2, 2.4)
 scene.collection.objects.link(moon)
 for o in scene.objects:
     if o.type == "LIGHT" and o is not moon:
         o.hide_render = True
+bulbs = [o for o in all_objs if "_Bulbs_" in o.name]
+assert bulbs
+lamps = []
+for o in bulbs:                  # a plain warm point light per bulb (12 verts each), as the game lights them
+    o.visible_shadow = False
+    vs = o.data.vertices
+    for k in range(len(vs) // 12):
+        lamp = bpy.data.objects.new("VIEWS_Bulb%02d" % k, bpy.data.lights.new("VIEWS_Bulb%02d" % k, "POINT"))
+        lamp.data.energy, lamp.data.color, lamp.data.shadow_soft_size = 40.0, (1.0, 0.75, 0.4), 0.4
+        lamp.location = o.matrix_world @ (sum((v.co for v in vs[12 * k:12 * k + 12]), Vector()) / 12)
+        scene.collection.objects.link(lamp)
+        lamps.append(lamp)
 nt = bpy.data.materials["MI_Lamp"].node_tree
 nt.links.new(nt.nodes["ALB"].outputs["Color"], nt.nodes["Principled BSDF"].inputs["Emission Color"])
 nt.nodes["Principled BSDF"].inputs["Emission Strength"].default_value = 4.0
 for group, objs in groups.items():
     show(objs)
+    for lamp in lamps:
+        lamp.hide_render = bulbs[0] not in objs
     render("level_%s_Night.png" % group, fit=(objs, VIEWS[0][1:]))
 print("[views] night")
 print("[views] done ->", OUT)

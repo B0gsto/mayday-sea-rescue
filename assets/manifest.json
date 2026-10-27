@@ -20397,6 +20397,16 @@
   "source": "assets/fbx/M_Chr_Bosun_LP/M_Chr_Bosun_LP_LOD1.fbx",
   "type": "Model"
  },
+ "Model:0c9b6c7154f05bc0061252d90686a164c037394a8901c01f0e1428325944299e": {
+  "assetId": "86122291008719",
+  "moderation": "Approved",
+  "name": "M_Bld_Bunkhouse_LOD2",
+  "rbxm": "assets/models/M_Bld_Bunkhouse_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "0c9b6c7154f05bc0061252d90686a164c037394a8901c01f0e1428325944299e",
+  "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:0d3423ee3f1149336ad7fe005d299a204b66599c117d0fe55fe3362c24a1a2e0": {
   "assetId": "136993362490504",
   "moderation": "Approved",
@@ -23467,6 +23477,16 @@
   "source": "assets/fbx/M_Kit_ThrowLine/M_Kit_ThrowLine_LOD2.fbx",
   "type": "Model"
  },
+ "Model:63bf9995e9747e816b5f349d7ce5c7cbb45dd5b59f8246108414617a6615204d": {
+  "assetId": "119151323881426",
+  "moderation": "Approved",
+  "name": "M_Bld_Bunkhouse_LOD0",
+  "rbxm": "assets/models/M_Bld_Bunkhouse_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "63bf9995e9747e816b5f349d7ce5c7cbb45dd5b59f8246108414617a6615204d",
+  "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:646940842f74d42c996c4159e4377e410d166a7207c05422023c94270bcc21e1": {
   "assetId": "120376462356030",
   "moderation": "Approved",
@@ -25575,6 +25595,16 @@
   "route": "delivery",
   "sha": "a3e0784519d414cb5b7d9040a4d094d22bf97e502bf38b7b9977292e1eef6165",
   "source": "assets/fbx/M_Rock_Boulder_04/M_Rock_Boulder_04_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:a4c10352677005f7252045ff841db5df6924cacc20b576b81d45a2b28eb1fd03": {
+  "assetId": "104644518523404",
+  "moderation": "Approved",
+  "name": "M_Bld_Bunkhouse_LOD1",
+  "rbxm": "assets/models/M_Bld_Bunkhouse_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a4c10352677005f7252045ff841db5df6924cacc20b576b81d45a2b28eb1fd03",
+  "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD1.fbx",
   "type": "Model"
  },
  "Model:a516457b5f0fd8206d1761eddedc1df66a2af4ad015aa0c272b3694dca555201": {

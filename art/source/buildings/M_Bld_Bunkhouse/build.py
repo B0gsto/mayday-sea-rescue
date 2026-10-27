@@ -12,7 +12,7 @@ Lv3 Loft         smaller loft on the Lv2 roof (hammocks), a deck plate over the 
 Lv4 Side Wing    one-storey 14 x 9 annex west of Lv1: own front doorway + 2 windows, Lv1's side doorway, washstand, one bunk,
                  studded blue roof, chimney.
 Lv5 Roof Terrace solid studded fence round the Lv3 deck, two benches against it (open floor), light poles with drooping
-                 rope-tan strands of plain coloured bulbs, a 4 x 3 flag on the loft ridge.
+                 rope-tan strands of round warm-yellow bulbs, a 4 x 3 flag on the loft ridge.
 
 Levels only add (Lv2 stands on Lv1's roof studs, Lv3 on Lv2's, the wing on Lv1's open side doorway). Every mesh is one colour
 and one construction layer L01..L05 under its level; doors carry OwnerColour in the name. Pivot = ground centre of the lot,
@@ -457,19 +457,27 @@ def build_lv2():
 
 
 # ----------------------------------------------------------------------------------------------------- Lv3
-def hammock(L, xc, colour, sag=1.7):
-    """A hammock hung front to back from two wall ropes: a lens-shaped prism seen in the y/z plane."""
+def hammock(L, xc, xp, colour, sag=2.4):
+    """A hammock hung front to back: a tapered bed sagging between its gathered ends, roped to the posts at x = xp."""
     g = G(L, "L03", "Hammock" + colour, colour)
     top, bot = [], []
+    for k in range(5):
+        t = k / 4.0
+        y, w = -4.4 + 8.8 * t, 0.4 + 1.8 * math.sin(math.pi * t)
+        z = F3 + 5.6 - sag * math.sin(math.pi * t)
+        top.append([g.bm.verts.new((xc + sx * w / 2, y, z)) for sx in (-1, 1)])
+        bot.append([g.bm.verts.new((xc + sx * w / 2, y, z - 0.3)) for sx in (-1, 1)])
     for k in range(4):
-        y = -4.6 + 9.2 * k / 3.0
-        z = F3 + 5.8 - sag * (1.0 - (y / 4.6) ** 2)
-        top.append((y, z))
-        bot.append((y, z - 0.35))
-    g.prism(top + bot[::-1], 1.6, axis='X', at=xc)
+        a, b = k, k + 1
+        g.bm.faces.new((top[a][0], top[a][1], top[b][1], top[b][0]))
+        g.bm.faces.new((bot[a][0], bot[b][0], bot[b][1], bot[a][1]))
+        for sd in (0, 1):
+            g.bm.faces.new((top[a][sd], top[b][sd], bot[b][sd], bot[a][sd]))
+    for k in (0, 4):
+        g.bm.faces.new((top[k][0], top[k][1], bot[k][1], bot[k][0]))
     rope = G(L, "L03", "Rope", "LogDark")
     for s in (-1, 1):
-        rope.beam((xc, s * 4.6, F3 + 5.8), (xc, s * 5.95, F3 + 6.9), 0.12, 0.12)
+        rope.tube((xc, s * 4.3, F3 + 5.5), (xp, s * 5.5, F3 + 7.0), 0.16)
 
 
 def build_lv3():
@@ -510,7 +518,10 @@ def build_lv3():
     G(L, "L02", "OwnerColour_Door", "OwnerColour").box((2.65, 7.9, Z3 + 2.9), (0.3, 1.9, 5.8), 0)
 
     for xc, cn in ((-7.8, "Orange"), (-5.4, "Yellow"), (5.4, "Blue"), (7.8, "Red")):
-        hammock(L, xc, cn)
+        hammock(L, xc, math.copysign(6.6, xc), cn)
+    for x in (-6.6, 6.6):                          # one post per hammock pair and end, by the front / back walls
+        for y in (-5.5, 5.5):
+            G(L, "L02", "HammockPost", "LogDark").box((x, y, F3 + 3.75), (0.8, 0.8, 7.5), 0, drop="b")
     gable_roof(L)
     att("ATT_Hammock_01", (-6.5, 0.0, F3 + 3.5))
     att("ATT_Deck_01", (1.6, 11.8, F3))
@@ -596,7 +607,7 @@ def build_lv4():
 # ----------------------------------------------------------------------------------------------------- Lv5
 def build_lv5():
     """Roof terrace on the Lv3 deck: solid fence panels with studded caps (gate at the stair head), two benches against
-    the side fences, seven light poles with drooping rope-tan strands of plain coloured bulbs, a big flag on the loft ridge."""
+    the side fences, seven light poles with drooping rope-tan strands of round warm-yellow bulbs, a big flag on the loft ridge."""
     L = "Lv5"
     zd, ht, ph = F3, 2.8, 8.0                      # deck, rail height, light pole height
     poles = ((-14.0, -10.0), (0.0, -10.0), (14.0, -10.0), (-14.0, 0.0), (14.0, 0.0), (-14.0, 10.0), (14.0, 10.0))
@@ -617,19 +628,16 @@ def build_lv5():
     for x, y in poles:
         pole.box((x, y, zd + ph / 2), (0.9, 0.9, ph), 0)
     string = G(L, "L04", "String", "Cork")          # thick rope-tan wire, reads at 30 studs
-    bulbs = ("Red", "Yellow", "Green", "Blue", "Orange")
+    bulbs = G(L, "L04", "Bulbs", "Lamp")             # warm-yellow round bulbs; the game lights them at night
     spans = ((poles[0], poles[1]), (poles[1], poles[2]), (poles[0], poles[3]), (poles[3], poles[5]),
              (poles[2], poles[4]), (poles[4], poles[6]))
-    nb = 0
     for (ax, ay), (bx, by) in spans:
         pts = [(ax + (bx - ax) * k / 4.0, ay + (by - ay) * k / 4.0, zd + ph - 0.4 - 1.8 * (1 - ((k - 2) / 2.0) ** 2))
                for k in range(5)]
         for p0, p1 in zip(pts, pts[1:]):
-            string.beam(p0, p1, 0.4, 0.4)
+            string.tube(p0, p1, 0.25)
         for p in pts[1:4]:
-            cn = bulbs[nb % len(bulbs)]
-            nb += 1
-            G(L, "L04", "Bulb" + cn, cn).box((p[0], p[1], p[2] - 0.5), (0.8, 0.8, 1.0), 0.0)
+            bulbs.ball((p[0], p[1], p[2] - 0.55), 0.42)
     # flag on the loft ridge: thick pole, 4 x 3 flag with a white and red mark, a yellow knob
     zc = E3 + 3.6 - 3.6 / 8.2 + 0.4
     G(L, "L05", "FlagPole", "Steel").box((-9.5, 0.0, zc + 4.0), (0.6, 0.6, 8.0), 0)

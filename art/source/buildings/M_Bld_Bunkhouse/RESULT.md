@@ -1,4 +1,18 @@
-# M_Bld_Bunkhouse result (round 3, 2026-10-27, docs/25 B + J walk-in, Lego style)
+# M_Bld_Bunkhouse result (round 4, 2026-10-27, docs/25 B + J walk-in, Lego style)
+
+## Round 4 (art director round 3: Lv1 / Lv1-3 8.5 passed, Lv1-5 8.0; Lv1, Lv2, Lv4 and collision untouched)
+1. **Terrace bulbs**: the 18 coloured 0.8 x 0.8 x 1.0 boxes (read as pennants) are now round warm-yellow bulbs (0.84
+   icosahedra, 20 tris each) hanging under the rope strands, one mesh `M_Bld_Bunkhouse_Lv5_L04_Bulbs_LOD0` on the `Lamp`
+   palette cell and `MI_Lamp`. The game should light it at night with plain lights (no sparkle). The strand ropes are 3-sided open
+   tubes (`Group.tube`) to pay for them, so Lv5 stays at 1,276 tris. Night render: bulbs emit (Blender only, as the panes),
+   a warm 40 W point light per bulb and a brighter moon (1.2).
+2. **Loft hammocks**: tapered beds (0.4 wide at the gathered ends, 2.2 in the middle) sagging 2.4 studs, each end roped
+   (`Rope`, 3-sided tubes) to a 0.8 x 7.5 `HammockPost` (4 posts, one per pair and end, by the front / back walls; no
+   collision). Lv3 1,180 -> 1,204 tris. The Lv1-5 Interior view now looks across the loft at the west pair side-on, with
+   the whole near hammock, its ropes and both posts in frame (the scale figure falls out of this frame).
+3. Rebuilt: validate PASS (2,700 checks, 0 failed, 125 waived: LOD UV layout only); LOD0 7,798 visual tris (FBX 9,046
+   with the 104 _COL boxes), LOD1 3,470, LOD2 1,178. Turntable, both sheets re-rendered. Needs re-uploading (not done).
+
 
 ## In-game fixes (2026-10-27, after the M_Bld_RescueHQ Studio playtest; shapes, colours and layout unchanged)
 1. **Palette texture** (Roblox ignores FBX material colours, so flat materials rendered pale grey): one set
@@ -45,7 +59,7 @@ sheet's "Studio Night" cell stays pending: it is filled only by Roblox Studio sh
 
 Budget: hidden faces are trimmed (`Group.box(drop=...)`: log course tops / bottoms under the next course or roof, side-wall
 ends, pane edges, shutter backs, resting bottoms), so validate PASS (round 3: 2,542 checks; see the fixes above for the current run). Budget class
-`large_prop`: LOD0 **7,774 tris** of 8,000 (168 meshes), LOD1 3,458 (of 4,000), LOD2 1,148 (of 2,000).
+`large_prop`: LOD0 **7,798 tris** of 8,000 (165 meshes), LOD1 3,470 (of 4,000), LOD2 1,178 (of 2,000).
 
 | Level | LOD0 tris | What it adds |
 |---|---|---|
@@ -53,7 +67,7 @@ ends, pane edges, shutter backs, resting bottoms), so validate PASS (round 3: 2,
 | Lv2 Upper Floor | 2,360 | floor plate on the Lv1 roof studs, hall + dorm (5 more bunks, bulletin board, bench, 3 rings, shelf), front balcony on 2x2 stilts (double door, fence panels), outside stair up the east wall (12 steps + landing on 2x2 stilts, open doorway, fence panels), 2 shuttered windows per side, studded roof |
 | Lv3 Loft | 1,180 | deck plate over the Lv2 roof (the terrace), 20 x 14 loft with 4 hammocks, 2 shuttered windows per side, back door, back stair (11 cantilevered treads, 2x2 stilts, sloped fence panel) up to the deck, gable roof |
 | Lv4 Side Wing | 742 | 14 x 9 annex west of Lv1 (see 1.) |
-| Lv5 Roof Terrace | 1,276 | studded fence round the deck, 2 benches, light poles + rope-tan bulb strands, flag (see 2., 3.) |
+| Lv5 Roof Terrace | 1,276 | studded fence round the deck, 2 benches, light poles + rope-tan strands of round warm bulbs, flag (see 2., 3.) |
 
 Nodes: `Lv1`..`Lv5` (empties, .blend only; the FBX importer flattens them). Meshes `M_Bld_Bunkhouse_Lv<l>_L<k>_<Word>_LOD0`,
 layers L01..L05 bottom to top per level (Lv5: L02..L05): L01 plinth / floor / rug / stair / balcony deck, L02 lower log
@@ -82,4 +96,5 @@ M_Bld_Bunkhouse --out-root build/prod/M_Bld_Bunkhouse`.
 - Lv2 roof studs are hidden under the Lv3 deck plate once Lv3 is built (levels never remove pieces).
 - The lit-window night look is a render-only emission on `MI_Lamp`; the game has to light the `Lamp` meshes at dusk.
 - Sloped stair fence panels have no collision (as the old stair rails); not walked in Studio.
-- No art-director score for round 3 yet.
+- No art-director score for round 4 yet.
+- Hammock posts have no collision (players walk through them), like the hammocks.

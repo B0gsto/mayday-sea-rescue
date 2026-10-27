@@ -22,9 +22,9 @@ AssetIds.Models = {
 	M_Ani_SealPup = { LOD0 = "rbxassetid://112624730317410" },
 	M_Ani_Turtle = { LOD0 = "rbxassetid://94334436811675" },
 	M_Bld_Bunkhouse = {
-		LOD0 = "rbxassetid://98519646118598",
-		LOD1 = "rbxassetid://127120399850932",
-		LOD2 = "rbxassetid://84461029562382",
+		LOD0 = "rbxassetid://119151323881426",
+		LOD1 = "rbxassetid://104644518523404",
+		LOD2 = "rbxassetid://86122291008719",
 	},
 	M_Bld_Cottage_02 = {
 		LOD0 = "rbxassetid://106402112670185",

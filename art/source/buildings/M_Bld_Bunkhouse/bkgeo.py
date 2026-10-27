@@ -154,6 +154,18 @@ class Group:
         rot = Vector((1.0, 0.0, 0.0)).rotation_difference(d.normalized()).to_matrix().to_4x4()
         self.box((a + b) / 2.0, (d.length, w, h), 0.0, rot=rot)
 
+    def ball(self, centre, r):
+        """A 20-tri icosahedron: the roundest look per triangle (light bulbs)."""
+        bmesh.ops.create_icosphere(self.bm, subdivisions=1, radius=r, matrix=Matrix.Translation(Vector(centre)))
+
+    def tube(self, p0, p1, r, segs=3):
+        """Open tube (no caps, 2 * segs tris) between two points, for ropes whose ends sit inside something."""
+        a, b = Vector(p0), Vector(p1)
+        d = b - a
+        rot = Vector((0.0, 0.0, 1.0)).rotation_difference(d.normalized()).to_matrix().to_4x4()
+        bmesh.ops.create_cone(self.bm, cap_ends=False, segments=segs, radius1=r, radius2=r, depth=d.length,
+                              matrix=Matrix.Translation((a + b) / 2.0) @ rot)
+
     # ---------------------------------------------------------------- finish
     def done(self):
         bm = self.bm

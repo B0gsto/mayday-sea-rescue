@@ -28,7 +28,7 @@ w = LABEL + len(VIEWS) * CELL
 h = TITLE + len(ROWS) * (HEAD + CELL)
 sheet = Image.new("RGB", (w, h), BG)
 d = ImageDraw.Draw(sheet)
-d.text((16, 12), "M_Bld_Bunkhouse - levels (neutral HDRI; CutAway = roofs off: Lv1 plan, Lv2 plan, Lv3 loft + Lv4 wing; Night = lit panes)", font=font(20), fill=INK)
+d.text((16, 12), "M_Bld_Bunkhouse - levels (neutral HDRI; CutAway = roofs off: Lv1 plan, Lv2 plan, Lv3 loft + Lv4 wing; Night = lit panes + terrace bulbs)", font=font(20), fill=INK)
 for r, (key, label) in enumerate(ROWS):
     y = TITLE + r * (HEAD + CELL)
     d.text((12, y + 8), key, font=font(18), fill=INK)
