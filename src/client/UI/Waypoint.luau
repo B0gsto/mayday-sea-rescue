@@ -120,7 +120,7 @@ function Waypoint.start(
 	disc.ZIndex = 2
 	disc.Parent = mark
 	HudTheme.corner(disc, DISC // 2)
-	HudTheme.stroke(disc, Color3.new(1, 1, 1), 2.5)
+	local ring = HudTheme.stroke(disc, Color3.new(1, 1, 1), 2.5)
 	local icon = Instance.new("Frame")
 	icon.Name = "Icon"
 	icon.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -151,8 +151,10 @@ function Waypoint.start(
 	HudTheme.outline(range)
 
 	local offerKind: string? = nil
+	local offerGolden = false
 	ops.OnOffer:Connect(function(data: { [string]: any })
 		offerKind = data.kind
+		offerGolden = data.golden == true
 	end)
 
 	-- one icon, one meaning (docs/20 rule 9): house = home, boat = your craft, else the call's icon
@@ -173,12 +175,15 @@ function Waypoint.start(
 		return if label == "Vessel" then "boat" else "swimmer", BEAM
 	end
 	local shownGlyph = ""
-	local function look(glyph: string, color: Color3)
+	local function look(glyph: string, color: Color3, golden: boolean)
 		if glyph ~= shownGlyph then
 			shownGlyph = glyph
 			Glyph.draw(glyph, icon, Color3.new(1, 1, 1))
 		end
 		disc.BackgroundColor3, tip.BackgroundColor3 = color, color
+		-- docs/25 E: a golden call's pin wears a thick pulsing gold ring
+		ring.Color = if golden then QUEST else Color3.new(1, 1, 1)
+		ring.Thickness = if golden then 4 + 1.5 * math.sin(os.clock() * 6) else 2.5
 	end
 
 	RunService.RenderStepped:Connect(function()
@@ -207,7 +212,10 @@ function Waypoint.start(
 			mark.Visible = false
 			return
 		end
-		look(glyph, color)
+		local s = ops.GetState()
+		local golden = CALL[label :: string] == true
+			and (if label == "Mayday" then offerGolden else s ~= nil and s.golden == true)
+		look(glyph, color, golden)
 		local c = cam :: Camera
 		local vp = c.ViewportSize
 		local p = c:WorldToViewportPoint((pos :: Vector3) + Vector3.new(0, 3, 0))

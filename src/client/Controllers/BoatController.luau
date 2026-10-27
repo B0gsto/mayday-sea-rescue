@@ -57,6 +57,7 @@ local Crowding = require(Shared:WaitForChild("Crowding"))
 local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
 local Helm = require(Shared:WaitForChild("Boat"):WaitForChild("Helm"))
 local NavLights = require(Shared:WaitForChild("Boat"):WaitForChild("NavLights"))
+local Nitro = require(Shared:WaitForChild("Boat"):WaitForChild("Nitro"))
 local PickupRingController = require(script.Parent.PickupRingController)
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
@@ -80,6 +81,7 @@ local visualOffset: { [Model]: number } = {}
 local telemetry: Simulator.Telemetry? = nil
 local lastThrottle = 0 -- the throttle the driven hull got last step (after the cold-open helm)
 local helm = 0 -- the eased steer (Boat/Helm)
+local nitro = Nitro.new() -- the Captain Nitro double-tap (Boat/Nitro)
 local YAW_SLACK = 1.25 -- the driven hull's yaw rate cap, as a share of its spec turnRate -- tune
 local tiltTime = 0
 local navTimer = NAV_INTERVAL
@@ -444,6 +446,16 @@ local function step(dt: number)
 					Simulator.setGrip(
 						child,
 						1 + (tonumber(localPlayer:GetAttribute("SkillGrip")) or 0)
+					)
+					-- Captain Nitro (SkillNitro): a double-tap of the throttle gives a short burst
+					Simulator.setBoost(
+						child,
+						Nitro.step(
+							nitro,
+							seat.ThrottleFloat,
+							now,
+							(tonumber(localPlayer:GetAttribute("SkillNitro")) or 0) > 0
+						)
 					)
 					telemetry = Simulator.step(child, throttle, helm, now)
 					if root and spec then

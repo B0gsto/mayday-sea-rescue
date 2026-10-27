@@ -57,6 +57,14 @@ local function publish(player: Player, data: ProgressionRules.PlayerData)
 	player:SetAttribute("SkillMentor", e.mentor)
 	player:SetAttribute("SkillRarityUp", e.rarityUp)
 	player:SetAttribute("SkillArrivalPay", e.arrivalPay)
+	-- docs/25 F rescue abilities: BoatController (Nitro), SurvivorTag (Golden Eye), OperationService
+	-- (Golden Mayday), WorkerService (Big Boat), VehicleService (Lifeguard); Pilots wait for Update 2
+	player:SetAttribute("SkillNitro", e.nitro)
+	player:SetAttribute("SkillGoldenEye", e.goldenEye)
+	player:SetAttribute("SkillGoldenCalls", e.goldenCalls)
+	player:SetAttribute("SkillBoatSeats", e.boatSeats)
+	player:SetAttribute("SkillCraftSeats", e.craftSeats)
+	player:SetAttribute("SkillPilots", e.pilots)
 	player:SetAttribute("Medals", data.medals)
 	for _, category in SkillRules.FOCUS_CATEGORIES do
 		player:SetAttribute(`SkillSlots{category}`, e.extraSlots[category] or 0)

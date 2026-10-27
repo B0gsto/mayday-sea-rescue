@@ -70,6 +70,7 @@ local Simulator = {}
 local rigs: { [Model]: Rig } = setmetatable({}, { __mode = "k" }) :: any
 -- the driver's SkillGrip bonus (BoatController; 1 = no change), local to the simulating machine
 local gripBoost: { [Model]: number? } = setmetatable({}, { __mode = "k" }) :: any
+local speedBoost: { [Model]: number? } = setmetatable({}, { __mode = "k" }) :: any
 
 -- CONTRACT: Weather (stream D) at ReplicatedStorage.Shared.Weather with getWaveParams(position, now).
 -- Loaded lazily and dynamically so this module still works before Weather.luau lands.
@@ -222,7 +223,8 @@ function Simulator.step(model: Model, throttle: number, steer: number, now: numb
 	local gravity = Workspace.Gravity
 	local h = rig.handling
 	local mult = model:GetAttribute("SpeedMultiplier")
-	local speedMult = if type(mult) == "number" then math.clamp(mult, 0.5, 3) else 1
+	local speedMult =
+		math.clamp((if type(mult) == "number" then mult else 1) * (speedBoost[model] or 1), 0.5, 3)
 	local approach = model:GetAttribute("ApproachMode") == true
 	local engine = model:GetAttribute("EngineRunning") ~= false
 
@@ -302,9 +304,15 @@ function Simulator.setGrip(model: Model, boost: number?)
 	gripBoost[model] = if b ~= 1 then b else nil
 end
 
+-- A short speed multiplier on top of SpeedMultiplier (the Nitro burst); nil or 1 resets it.
+function Simulator.setBoost(model: Model, boost: number?)
+	speedBoost[model] = if boost and boost ~= 1 then boost else nil
+end
+
 -- Zeroes every force (call when this machine stops simulating the boat).
 function Simulator.clear(model: Model)
 	gripBoost[model] = nil
+	speedBoost[model] = nil
 	local rig = Simulator.getRig(model)
 	if not rig then
 		return

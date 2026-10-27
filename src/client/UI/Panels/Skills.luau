@@ -79,7 +79,7 @@ local function effectText(kind: string, amount: number): string
 		return "Nitro burst"
 	elseif kind == "goldenEye" then
 		return "Epic+ from afar"
-	elseif kind == "boatSeats" then
+	elseif kind == "boatSeats" or kind == "craftSeats" then
 		return `+{math.floor(amount)} seats`
 	elseif kind == "traitReroll" then
 		return "Best of two"
