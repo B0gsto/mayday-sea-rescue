@@ -272,6 +272,23 @@ function SurvivorTag.attach(model: Model, inWater: boolean?): BillboardGui?
 		conns,
 		Players.LocalPlayer:GetAttributeChangedSignal("SkillGoldenEye"):Connect(paint)
 	)
+	-- the tag rides whatever root the model has now: the root streams in after other parts, the greybox
+	-- parts go when the R15 rig lands, and a survivor aboard keeps their tag (docs/25 J)
+	local function adorn()
+		local r = rootOf(model)
+		if r and gui.Adornee ~= r then
+			gui.Adornee = r
+		end
+	end
+	table.insert(conns, model:GetPropertyChangedSignal("PrimaryPart"):Connect(adorn))
+	table.insert(
+		conns,
+		model.DescendantRemoving:Connect(function(d)
+			if d == gui.Adornee then
+				task.defer(adorn)
+			end
+		end)
+	)
 	gui.Destroying:Connect(function()
 		for _, c in conns do
 			c:Disconnect()
