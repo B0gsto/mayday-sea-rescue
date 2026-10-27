@@ -142,9 +142,10 @@ local WORK_SPOTS: { [string]: { WorkSlot } } = {
 		{ x = -7.6, z = 1, tx = -8, tz = 3.3 }, -- the medicine crate
 	},
 }
--- docs/25 B: the Workshop's and Fish Market's Lv2 / Lv3 add-ons (M_Bld_WorkshopAddons, M_Bld_FishMarketAddons,
--- DockPieces): their ATT_Work_* marks (scaled studs from the yard centre) join or replace the yard's spots, facing
--- the bench (+X), saw or hull (+Z), the stall counter or the smokehouse rack (+-X).
+-- docs/25 B: the Workshop's, Fish Market's and Clinic's Lv2 / Lv3 add-ons (M_Bld_WorkshopAddons,
+-- M_Bld_FishMarketAddons, M_Bld_ClinicAddons, DockPieces): their ATT_Work_* marks (scaled studs from the yard centre)
+-- join or replace the yard's spots, facing the bench (+X), saw or hull (+Z), the stall counter or the smokehouse rack
+-- (+-X), the bed (+Z) or the clinic counter (-Z).
 -- shortcut: assumes the add-on mesh loaded (else these spots face empty yard); check DockPieces.meshes if it fails.
 local function addonSlot(key: string, asset: string, name: string, tx: number, tz: number): WorkSlot
 	local p = AssetIds.Attachments[asset][name]
@@ -179,10 +180,37 @@ for i = 3, #MARKET do
 	table.insert(FISH_LV2, MARKET[i])
 	table.insert(FISH_LV3, MARKET[i])
 end
+-- the Medics' Lv2 pavilion beds and counter, then the Lv3 hospital beds and desk, ahead of the tent's spots
+local TENT = WORK_SPOTS.Clinic
+local function medicSlot(name: string, tz: number): WorkSlot
+	return addonSlot("Clinic", "M_Bld_ClinicAddons", name, 0, tz)
+end
+local CLINIC_LV2 = {
+	TENT[1],
+	TENT[2],
+	medicSlot("ATT_Work_Bed1", 2),
+	medicSlot("ATT_Work_Bed2", 2),
+	medicSlot("ATT_Work_Bed3", 2),
+	medicSlot("ATT_Work_MedicCounter", -2),
+}
+local CLINIC_LV3 = table.clone(CLINIC_LV2)
+for _, name in
+	{ "ATT_Work_Bed4", "ATT_Work_Bed5", "ATT_Work_Bed6", "ATT_Work_Bed7", "ATT_Work_Desk" }
+do
+	table.insert(CLINIC_LV3, medicSlot(name, 2))
+end
+for i = 3, #TENT do
+	table.insert(CLINIC_LV2, TENT[i])
+	table.insert(CLINIC_LV3, TENT[i])
+end
 local ADDON_LEVELS: { [string]: { [number]: { WorkSlot } } } = {
 	Workshop = { [2] = WORKSHOP_LV2, [3] = WORKSHOP_LV3 },
 	FishShed = { [2] = FISH_LV2, [3] = FISH_LV3 },
+	Clinic = { [2] = CLINIC_LV2, [3] = CLINIC_LV3 },
 }
+-- the first Rescuers keep watch on the Lookout's gallery deck (M_Bld_LookoutAddons), looking out front: one at the
+-- Lv2 lantern, two at Lv3 (the searchlight side too); the rest work the Rescue Boathouse
+local WATCH = { "ATT_Watch_Lamp", "ATT_Watch_Spotlight" }
 
 local function workSpot(
 	bay: CFrame,
@@ -196,6 +224,18 @@ local function workSpot(
 	if not def then
 		return nil
 	end
+	local watch = if category == "Rescuer" and levels
+		then math.min(UnlockTree.levelOf(levels, "LookoutTower") - 1, #WATCH)
+		else 0
+	if slot <= watch then
+		local tower = bay * DockConfig.Buildings.LookoutTower.spot
+		local p = AssetIds.Attachments.M_Bld_LookoutAddons[WATCH[slot]]
+		return CFrame.lookAt(
+			(tower * CFrame.new(p)).Position,
+			(tower * CFrame.new(p.X, p.Y, p.Z - 4)).Position
+		)
+	end
+	slot -= math.max(watch, 0)
 	local at = bay * def.spot
 	local scale = def.scale or 1
 	local byLevel = if key and levels then ADDON_LEVELS[key] else nil

@@ -11,6 +11,7 @@
 -- (docs/25 J), and the Cash-only decorations on the Spare2 / Spare3 spare lots. Named hooks: parts
 -- "Flag" take the owner's colour, TextLabels "Count" show the rescue count. Materials stay off the
 -- MaterialService remap (no Slate, WoodPlanks, Brick, Concrete).
+local AssetIds = require(script.Parent:WaitForChild("Config"):WaitForChild("AssetIds"))
 local DockConfig = require(script.Parent:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Marina = require(script.Parent:WaitForChild("Marina"))
 local RingLayout = require(script.Parent:WaitForChild("Config"):WaitForChild("RingLayout"))
@@ -543,10 +544,43 @@ local function boathouse(m: Model, b: CFrame)
 	paintBooth(m, b)
 end
 
+-- Level add-ons (docs/25 B): the Workshop's Lv2 saw-bench lean-to / Lv3 boat frame (M_Bld_WorkshopAddons), the
+-- Fish Market's Lv2 stalls / Lv3 smokehouse (M_Bld_FishMarketAddons), the Clinic's Lv2 pavilion / Lv3 hospital
+-- (M_Bld_ClinicAddons) and the Lookout's Lv2 lantern / Lv3 searchlight (M_Bld_LookoutAddons): meshes Lv<l>_L<nn>_*
+-- and Lv<l>_COL authored in the yard's final (scaled) frame round its ground centre, so they stay 1x (KEEP_1X
+-- `name`). False when the level is 1 or the mesh is not loaded (the Lv1 yard stands alone, everything included).
+local function addonMesh(m: Model, at: CFrame, n: number, asset: string, name: string): boolean
+	local src = if n >= 2 and DockPieces.meshes then DockPieces.meshes(asset) else nil
+	if not src then
+		return false
+	end
+	src:PivotTo(at)
+	for _, d in src:GetDescendants() do
+		if d:IsA("BasePart") and (tonumber(string.match(d.Name, "^Lv(%d)_")) or 2) > n then
+			d:Destroy()
+		end
+	end
+	src.Name = name
+	src.Parent = m
+	return true
+end
+
 -- the lookout tower on the beach tower lot: chunky white legs with red cross braces, a stud deck, a glazed cabin
 -- with a red slope roof and a flag, a ladder up its open side
-local function lookout(m: Model, b: CFrame)
+local function lookout(m: Model, b: CFrame, level: number?)
 	local T = b * DockConfig.Buildings.LookoutTower.spot
+	-- Lv2 gallery + roof lantern, Lv3 searchlight + radar (M_Bld_LookoutAddons), clear of the cabin, flag and ladder
+	addonMesh(m, T, level or 1, "M_Bld_LookoutAddons", "LookoutMesh")
+	local beam = m:FindFirstChild("Lv3_L04_Searchlight", true)
+	if beam then -- its drum centre: the night sweep turns round it (WorkerController)
+		local a = Instance.new("Attachment")
+		a.Name = "SweepPivot"
+		a.Parent = beam
+		-- looking down the barrel: the tower's front, tilted up 12 degrees (the build's drum tilt)
+		a.WorldCFrame = T
+			* CFrame.new(AssetIds.Attachments.M_Bld_LookoutAddons.ATT_SearchlightPivot)
+			* CFrame.Angles(math.rad(12), 0, 0)
+	end
 	local legH, s = 20, 4
 	plinth(m, Vector3.new(11, 0.6, 11), T * CFrame.new(0, 0.3, 0))
 	for _, d in { { -s, -s }, { s, -s }, { -s, s }, { s, s } } do
@@ -1478,26 +1512,6 @@ local function rock(m: Model, at: CFrame)
 end
 
 -- Builder: an open-air carpentry yard: bench under a low lean-to, timber stacks and a half-built boat frame
--- Level add-ons (docs/25 B): the Workshop's Lv2 saw-bench lean-to / Lv3 boat frame (M_Bld_WorkshopAddons) and the
--- Fish Market's Lv2 stalls / Lv3 smokehouse (M_Bld_FishMarketAddons): meshes Lv<l>_L<nn>_* and Lv<l>_COL authored in
--- the yard's final (scaled) frame round its ground centre, so they stay 1x (KEEP_1X `name`). False when the level is
--- 1 or the mesh is not loaded (the Lv1 yard stands alone, everything included).
-local function addonMesh(m: Model, at: CFrame, n: number, asset: string, name: string): boolean
-	local src = if n >= 2 and DockPieces.meshes then DockPieces.meshes(asset) else nil
-	if not src then
-		return false
-	end
-	src:PivotTo(at)
-	for _, d in src:GetDescendants() do
-		if d:IsA("BasePart") and (tonumber(string.match(d.Name, "^Lv(%d)_")) or 2) > n then
-			d:Destroy()
-		end
-	end
-	src.Name = name
-	src.Parent = m
-	return true
-end
-
 local function workshopYard(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.Workshop
 	local at = b * def.spot
@@ -1994,9 +2008,17 @@ local function rescueBoathouse(m: Model, b: CFrame)
 end
 
 -- Medic: a white pavilion (open sides) with a big red cross, two beds and a stretcher in view
-local function clinic(m: Model, b: CFrame)
+local function clinic(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.Clinic
 	local at = b * def.spot
+	-- Lv2 pavilion on the right flank (on the flagpole's spot), Lv3 hospital + ambulance on the left (on the bloom
+	-- patch and the corner tree; DockPieces.building skips the tree on NoTree)
+	local lv = if addonMesh(m, at, level or 1, "M_Bld_ClinicAddons", "ClinicMesh")
+		then level or 1
+		else 1
+	if lv >= 3 then
+		m:SetAttribute("NoTree", true)
+	end
 	local w, d = yardSize(def)
 	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
 	for _, x in { -1, 1 } do
@@ -2041,26 +2063,34 @@ local function clinic(m: Model, b: CFrame)
 	brick(m, "RoofCross", Vector3.new(1.4, 0.5, 4), slope * CFrame.new(0, 0.55, -1.6), BRICK_RED)
 	brick(m, "RoofCross", Vector3.new(4, 0.5, 1.4), slope * CFrame.new(0, 0.55, -1.6), BRICK_RED)
 	-- docs/24 C r3: a ground flagpole with a red-cross flag beside the tent, not lost on the ridge
-	studTop(
-		brick(m, "FlagBase", Vector3.new(3.4, 0.9, 3.4), at * CFrame.new(w / 2 + 4, 0.45, -2), LBG)
-	)
-	local mast = at * CFrame.new(w / 2 + 4, 0.8, -2)
-	brick(m, "Mast", Vector3.new(1.2, 16, 1.2), mast * CFrame.new(0, 8, 0), BRICK_WHITE)
-	brick(m, "ClinicFlag", Vector3.new(6, 4, 0.35), mast * CFrame.new(3.6, 14, 0), BRICK_RED)
-	brick(
-		m,
-		"FlagCross",
-		Vector3.new(0.55, 3.2, 0.1),
-		mast * CFrame.new(3.6, 14, -0.23),
-		BRICK_WHITE
-	)
-	brick(
-		m,
-		"FlagCross",
-		Vector3.new(3.2, 0.55, 0.1),
-		mast * CFrame.new(3.6, 14, -0.23),
-		BRICK_WHITE
-	)
+	if lv < 2 then
+		studTop(
+			brick(
+				m,
+				"FlagBase",
+				Vector3.new(3.4, 0.9, 3.4),
+				at * CFrame.new(w / 2 + 4, 0.45, -2),
+				LBG
+			)
+		)
+		local mast = at * CFrame.new(w / 2 + 4, 0.8, -2)
+		brick(m, "Mast", Vector3.new(1.2, 16, 1.2), mast * CFrame.new(0, 8, 0), BRICK_WHITE)
+		brick(m, "ClinicFlag", Vector3.new(6, 4, 0.35), mast * CFrame.new(3.6, 14, 0), BRICK_RED)
+		brick(
+			m,
+			"FlagCross",
+			Vector3.new(0.55, 3.2, 0.1),
+			mast * CFrame.new(3.6, 14, -0.23),
+			BRICK_WHITE
+		)
+		brick(
+			m,
+			"FlagCross",
+			Vector3.new(3.2, 0.55, 0.1),
+			mast * CFrame.new(3.6, 14, -0.23),
+			BRICK_WHITE
+		)
+	end
 	-- two beds at the back, made up
 	for k, x in { -w / 4, w / 4 } do
 		local bed = at * CFrame.new(x, 0, d / 2 - 5.2)
@@ -2109,7 +2139,9 @@ local function clinic(m: Model, b: CFrame)
 	yardFence(m, at, w, d, def.color or BRICK_RED, nil, "picket")
 	yardPath(m, at, d)
 	yardClutter(m, at, w, d)
-	field(m, at * CFrame.new(-w / 2 - 5.5, 0, d / 2 + 5), 5, 5, 3)
+	if lv < 3 then
+		field(m, at * CFrame.new(-w / 2 - 5.5, 0, d / 2 + 5), 5, 5, 3)
+	end
 end
 
 -- the lifeboat slip (Boathouse Lv2) on its own harbour lot: an open shed over a slipway that runs off the plate
@@ -2560,6 +2592,8 @@ local KEEP_1X = {
 	DepotMesh = true,
 	WorkshopMesh = true,
 	FishMarketMesh = true,
+	ClinicMesh = true,
+	LookoutMesh = true,
 	BunkhouseMesh = true,
 	FreightQuay = true,
 	Path = true,
@@ -2602,7 +2636,7 @@ function DockPieces.building(key: string, cf: CFrame, level: number?): Model
 		end
 	end
 	local spec = HUTS[key]
-	if def and spec and spec.tree then -- a tree at the back corner (1x, like the plate's trees)
+	if def and spec and spec.tree and not m:GetAttribute("NoTree") then -- a tree at the back corner (1x, like the plate's trees)
 		tree(
 			m,
 			cf * def.spot * CFrame.new(spec.tree * (def.size.X / 2 + 3), 0, def.size.Y / 2 + 1),

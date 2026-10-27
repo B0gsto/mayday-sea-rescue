@@ -108,7 +108,11 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   frame are `M_Bld_WorkshopAddons` (`WorkshopMesh`, kept 1x, inside the code yard; the yard's sawhorse, timber and old
   boat frame give way); its `ATT_Work_*` are the Builders' Lv2/Lv3 yard spots (`WorkerService`, from `AssetIds`). The Fish Market's Lv2 flank stalls and Lv3
   smokehouse are `M_Bld_FishMarketAddons` (`FishMarketMesh`, kept 1x, beside the code market, which stays Lv1; its
-  drying rack gives way to the smokehouse); its `ATT_Work_*` are the Fishers' Lv2/Lv3 spots. The Depot model holds `DepotMesh` (the Lv1..n
+  drying rack gives way to the smokehouse); its `ATT_Work_*` are the Fishers' Lv2/Lv3 spots. The Clinic's Lv2 pavilion and Lv3
+  hospital + ambulance are `M_Bld_ClinicAddons` (`ClinicMesh`, kept 1x, on the tent's flanks; the flagpole gives way at
+  Lv2, the bloom patch and corner tree at Lv3); its `ATT_Work_*` are the Medics' Lv2/Lv3 spots. The Lookout's Lv2
+  gallery + lantern and Lv3 searchlight (`Lv3_L04_Searchlight`, swept at night by `WorkerController`) + radar are
+  `M_Bld_LookoutAddons` (`LookoutMesh`, kept 1x); its `ATT_Watch_*` are the first one (Lv2) / two (Lv3) Rescuers' spots. The Depot model holds `DepotMesh` (the Lv1..n
   layers and `Marks`: `ATT_PickUp_*` / `ATT_DropOff_*` bays, `ATT_BargeMoor`, `ATT_QuayLoad`, `ATT_QuayLand`) and
   `FreightQuay` (west plate edge, sea level). Client: `DepotController` (barge from `BargeNext` via
   `shared/BargePath`, `Stack_1..4` from `DepotStock` / `DepotCap`, empty-crate icon on `SiteWaiting`) and
