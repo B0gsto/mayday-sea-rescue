@@ -76,6 +76,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://88299832032246",
 		LOD2 = "rbxassetid://125450753092714",
 	},
+	M_Bld_SubPenAddons = {
+		LOD0 = "rbxassetid://137482702940195",
+		LOD1 = "rbxassetid://128263358273622",
+		LOD2 = "rbxassetid://103131922461206",
+	},
 	M_Bld_TrophyHallAddons = {
 		LOD0 = "rbxassetid://81374565089031",
 		LOD1 = "rbxassetid://118827626247671",
@@ -564,6 +569,13 @@ AssetIds.Attachments = {
 	M_Bld_RescueHQ = {
 		ATT_Sign_01 = Vector3.new(0, 9.45, -10.12),
 		ATT_Sign_02 = Vector3.new(0, 20.1, -9.25),
+	},
+	M_Bld_SubPenAddons = {
+		ATT_Work_Gantry = Vector3.new(-14.6, 1.2, 0),
+		ATT_Work_DiveRack = Vector3.new(-14.6, 1.2, 12.8),
+		ATT_Work_Salvage = Vector3.new(0, 1.5, 27.5),
+		ATT_Work_Crane = Vector3.new(0.4, 1.5, 30.6),
+		ATT_Sign_Salvage = Vector3.new(-9.58, 7.6, 25.7),
 	},
 	M_Bld_TrophyHallAddons = {
 		ATT_Plinth_01 = Vector3.new(22.2, 4.17, -5.4),

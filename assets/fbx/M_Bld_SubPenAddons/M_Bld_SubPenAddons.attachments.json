@@ -1,0 +1,152 @@
+{
+ "asset": "M_Bld_SubPenAddons",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Work_Gantry",
+   "parent": null,
+   "blender": [
+    14.6,
+    0.0,
+    1.2
+   ],
+   "roblox_from_origin": [
+    -14.6,
+    1.2,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -11.31,
+    -6.46,
+    -14.985
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_DiveRack",
+   "parent": null,
+   "blender": [
+    14.6,
+    12.8,
+    1.2
+   ],
+   "roblox_from_origin": [
+    -14.6,
+    1.2,
+    12.8
+   ],
+   "roblox_from_bbox_centre": [
+    -11.31,
+    -6.46,
+    -2.185
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Salvage",
+   "parent": null,
+   "blender": [
+    0.0,
+    27.5,
+    1.5
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.5,
+    27.5
+   ],
+   "roblox_from_bbox_centre": [
+    3.29,
+    -6.16,
+    12.515
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Crane",
+   "parent": null,
+   "blender": [
+    -0.4,
+    30.6,
+    1.5
+   ],
+   "roblox_from_origin": [
+    0.4,
+    1.5,
+    30.6
+   ],
+   "roblox_from_bbox_centre": [
+    3.69,
+    -6.16,
+    15.615
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Sign_Salvage",
+   "parent": null,
+   "blender": [
+    9.58,
+    25.7,
+    7.6
+   ],
+   "roblox_from_origin": [
+    -9.58,
+    7.6,
+    25.7
+   ],
+   "roblox_from_bbox_centre": [
+    -6.29,
+    -0.06,
+    10.715
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

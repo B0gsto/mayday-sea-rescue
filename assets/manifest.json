@@ -345,7 +345,8 @@
    "T_RescueBoathouse_Brick_RGH",
    "T_AirStationAddons_Brick_RGH",
    "T_HQAddons_Brick_RGH",
-   "T_TrophyHall_Brick_RGH"
+   "T_TrophyHall_Brick_RGH",
+   "T_SubPen_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -10377,6 +10378,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Details_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:7f623e67a8916ebc578d00c7cd46a9cae03dde9773ce2339f84eb569c2c099bc": {
+  "assetId": "88017781844963",
+  "imageId": "88017781844963",
+  "moderation": "Reviewing",
+  "name": "T_SubPen_Brick_ALB",
+  "sha": "7f623e67a8916ebc578d00c7cd46a9cae03dde9773ce2339f84eb569c2c099bc",
+  "source": "assets/textures/M_Bld_SubPenAddons/T_SubPen_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:7f6e7bd27b0a92c87082df283f7cde8eb68c7c2acd4c8f898dbc3006ff2a9118": {
   "assetId": "81405002122146",
   "imageId": "81405002122146",
@@ -13081,7 +13091,8 @@
    "T_RescueBoathouse_Brick_NOR",
    "T_AirStationAddons_Brick_NOR",
    "T_HQAddons_Brick_NOR",
-   "T_TrophyHall_Brick_NOR"
+   "T_TrophyHall_Brick_NOR",
+   "T_SubPen_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -17112,7 +17123,8 @@
    "T_RescueBoathouse_Brick_MET",
    "T_AirStationAddons_Brick_MET",
    "T_HQAddons_Brick_MET",
-   "T_TrophyHall_Brick_MET"
+   "T_TrophyHall_Brick_MET",
+   "T_SubPen_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -21016,6 +21028,16 @@
   "source": "assets/fbx/M_Veg_Bracken_01/M_Veg_Bracken_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:1ab25254eb22e1ce135a240df1cd47cc963737f34e49f48ace90f4b4a282b436": {
+  "assetId": "137482702940195",
+  "moderation": "Approved",
+  "name": "M_Bld_SubPenAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_SubPenAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "1ab25254eb22e1ce135a240df1cd47cc963737f34e49f48ace90f4b4a282b436",
+  "source": "assets/fbx/M_Bld_SubPenAddons/M_Bld_SubPenAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:1aca811606d5b9b2af241d9015d8cbc8d27e887336906c8d9bd4db6c0d863391": {
   "assetId": "91821253158332",
   "moderation": "Approved",
@@ -22054,6 +22076,16 @@
   "route": "delivery",
   "sha": "356695c942b3c5a6f7b12778005d3d3f73d908b968cf0a76494bc91afd385def",
   "source": "assets/fbx/M_Veh_SupplyBarge/M_Veh_SupplyBarge_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:35b4348ecc209a6a215ce966834a8d3201ed0a213b43e0b7b4646431a5a71f85": {
+  "assetId": "128263358273622",
+  "moderation": "Approved",
+  "name": "M_Bld_SubPenAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_SubPenAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "35b4348ecc209a6a215ce966834a8d3201ed0a213b43e0b7b4646431a5a71f85",
+  "source": "assets/fbx/M_Bld_SubPenAddons/M_Bld_SubPenAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:35f52797bdd562bcb5a28499b9d40d3a4319b98ef605ba65cc0ce81cb682d8fb": {
@@ -23394,6 +23426,16 @@
   "route": "delivery",
   "sha": "579ff14a0d42595310739725249ea8a70d1ca19fe4d5e7338b7a2b66e53d798d",
   "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:58019bd0e66375683b8846210572a912db56fab4548efab98cb178c48231ce0f": {
+  "assetId": "103131922461206",
+  "moderation": "Approved",
+  "name": "M_Bld_SubPenAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_SubPenAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "58019bd0e66375683b8846210572a912db56fab4548efab98cb178c48231ce0f",
+  "source": "assets/fbx/M_Bld_SubPenAddons/M_Bld_SubPenAddons_LOD2.fbx",
   "type": "Model"
  },
  "Model:585546e8d2934e0711a20d74bb215a951c77ece5d09a061ed6d74e8e0f3c0c53": {
