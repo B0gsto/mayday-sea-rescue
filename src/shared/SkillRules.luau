@@ -282,7 +282,7 @@ local SECTOR_NODES = {
 				"recruitChance",
 				0.01,
 				"Medic"
-			), -- TODO reader
+			),
 			node(
 				"DeepDivers",
 				5,
@@ -325,7 +325,7 @@ local SECTOR_NODES = {
 				"teamSpirit",
 				0.01,
 				"Any"
-			), -- TODO reader
+			),
 			node(
 				"Homecoming",
 				2,
@@ -337,7 +337,7 @@ local SECTOR_NODES = {
 				"offlineRate",
 				0.02,
 				"Any"
-			), -- TODO reader
+			),
 			node(
 				"Clover",
 				3,
@@ -349,7 +349,7 @@ local SECTOR_NODES = {
 				"rareChanceAdd",
 				0.02,
 				"Any"
-			), -- TODO reader
+			),
 			node(
 				"Mentor",
 				3,
@@ -361,7 +361,7 @@ local SECTOR_NODES = {
 				"workerCapAdd",
 				1,
 				"Any"
-			), -- TODO reader
+			),
 			node(
 				"BigFamily",
 				4,
@@ -555,7 +555,7 @@ local BRIDGES: { Row } = {
 		"payBonus",
 		0.01,
 		"Rescuer"
-	), -- TODO reader
+	),
 	node(
 		"Foreman",
 		2.75,
@@ -638,7 +638,7 @@ SkillRules.KINDS = {
 	"medicPerUnit",
 	"workerCapAdd",
 	"rareChanceAdd",
-	-- docs/25 F abilities; no reader yet (TODO reader on each node's data)
+	-- docs/25 F abilities (a node still marked TODO reader has no reader yet)
 	"nitro",
 	"goldenEye",
 	"boatSeats",

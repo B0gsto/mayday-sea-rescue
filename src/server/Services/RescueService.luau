@@ -397,6 +397,8 @@ local function spawnVictim(
 			else "any"
 		local opts: WorkerRules.RollOpts = {
 			rareAdd = if owner then tonumber(owner:GetAttribute("SkillRareChanceAdd")) or 0 else 0,
+			traitReroll = owner ~= nil
+				and (tonumber(owner:GetAttribute("SkillTraitReroll")) or 0) > 0,
 			source = source,
 			owned = if pdata then WorkerRules.ownedSpecials(pdata.workers) else nil,
 			pity = pity,

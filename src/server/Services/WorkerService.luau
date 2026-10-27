@@ -10,7 +10,8 @@
 -- client animations read (`Job`). Effects go out as player attributes the hooks read: WorkerBoatScale
 -- (VehicleService Boat to me, UI/Menu), WorkerCraftSpeed (VehicleService
 -- SpeedMultiplier), WorkerPayBonus (OperationService debrief pay); the skill tree's `Skill*` attributes
--- (SkillService) raise the same numbers, the caps, slots and the roll. Gatherers pay every minute, Rescuers
+-- (SkillService) raise the same numbers, the caps, slots and the roll; Welcome Home pays each arrival, Glow Up's
+-- Medics may raise their rarity, Mentor trains a Common every 2 h. Gatherers pay every minute, Rescuers
 -- send an NPC rescue boat out of your cove every rescuePeriod (Cash, sometimes a new worker). On join the time away
 -- pays Gatherers + Rescuers at OFFLINE_RATE, capped (attribute WorkerOffline: the client's coin burst).
 -- Studio: ServerStorage.WorkerDev:Invoke("recruit", category, rarity, name) as if landed at the first player's
@@ -72,6 +73,8 @@ local function skillOf(player: Player): WorkerRules.Skill
 		boatCapAdd = attr("SkillBoatCapAdd", 0),
 		medicCapAdd = attr("SkillMedicCapAdd", 0),
 		medicPerUnit = attr("SkillMedicPerUnit", 0),
+		offlineCapAdd = attr("SkillOfflineCapAdd", 0),
+		rarityUp = attr("SkillRarityUp", 0),
 	}
 end
 
@@ -85,7 +88,12 @@ end
 
 local function effectsOf(player: Player, data: ProgressionRules.PlayerData): WorkerRules.Effects
 	return WorkerRules.effects(
-		WorkerRules.crew(data.workers, data.dockBuildings, extraSlots(player)),
+		WorkerRules.crew(
+			data.workers,
+			data.dockBuildings,
+			extraSlots(player),
+			tonumber(player:GetAttribute("SkillTeamSpirit")) or 0
+		),
 		skillOf(player)
 	)
 end
@@ -340,6 +348,13 @@ function WorkerService.Recruit(
 		clean.special = ""
 		clean.name = WorkerRules.plainName(#data.workers + clean.rarity)
 	end
+	local welcome = tonumber(player:GetAttribute("SkillArrivalPay")) or 0
+	if clean and welcome > 0 then -- Welcome Home: every arrival pays, kept or not
+		ProgressionService.Award(player, welcome, "Workers:Welcome", true)
+	end
+	if clean and rng:NextNumber() < effectsOf(player, data).glowUp then -- Glow Up: a Medic raises them
+		WorkerRules.promote(clean, rng:NextInteger(1, 2147483646))
+	end
 	local cap = UnlockTree.bunkCap(data.dock.levels)
 		+ (tonumber(player:GetAttribute("SkillWorkerCapAdd")) or 0)
 	local i = clean and WorkerRules.admit(data.workers, clean, cap)
@@ -422,6 +437,7 @@ local function rescueTrip(player: Player, st: State, bay: CFrame, cash: number, 
 			local data = DataService.Get(player)
 			local w = WorkerRules.roll(rng:NextInteger(1, 2147483646), {
 				rareAdd = tonumber(player:GetAttribute("SkillRareChanceAdd")) or 0,
+				traitReroll = (tonumber(player:GetAttribute("SkillTraitReroll")) or 0) > 0,
 				owned = if data then WorkerRules.ownedSpecials(data.workers) else nil,
 			})
 			WorkerService.Recruit(player, w.category, w.rarity, w.name, w.trait, w.special)
@@ -449,6 +465,36 @@ local function earn(player: Player, now: number)
 	elseif now >= st.nextTrip and not st.tripBusy and typeof(bay) == "CFrame" then
 		st.nextTrip = now + fx.rescuePeriod
 		rescueTrip(player, st, bay, fx.rescuePerTrip, fx.recruitChance)
+	end
+end
+
+-- Mentor: every MENTOR_PERIOD (saved in flags.mentorAt, time away counts) a Legendary trains a Common.
+local function mentor(player: Player)
+	local data = DataService.Get(player)
+	if not data then
+		return
+	end
+	if (tonumber(player:GetAttribute("SkillMentor")) or 0) <= 0 then
+		if data.flags.mentorAt ~= nil then
+			ProgressionService.SetFlag(player, "mentorAt", nil)
+		end
+		return
+	end
+	local now = os.time()
+	local last = tonumber(data.flags.mentorAt)
+	if not last then
+		ProgressionService.SetFlag(player, "mentorAt", now)
+		return
+	end
+	local i = WorkerRules.mentor(data.workers, last, now)
+	-- the clock saves first, so a full flags table can't train every tick
+	if i and ProgressionService.SetFlag(player, "mentorAt", now) then
+		WorkerRules.promote(data.workers[i], rng:NextInteger(1, 2147483646))
+		local st = states[player]
+		if st and st.shown[i] then -- republished with the new rarity on the next sync
+			st.shown[i]:Destroy()
+			st.shown[i] = nil
+		end
 	end
 end
 
@@ -604,6 +650,7 @@ function WorkerService.Start()
 		while true do
 			local now = os.clock()
 			for _, player in Players:GetPlayers() do
+				mentor(player)
 				sync(player)
 				earn(player, now)
 			end
