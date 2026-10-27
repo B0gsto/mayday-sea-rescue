@@ -35,17 +35,19 @@ return {
 		companion = "rbxassetid://82752596877543",
 		crew = "rbxassetid://83085542846827",
 		daily = "rbxassetid://79958924558323",
-		finish_now = "rbxassetid://0", -- not uploaded yet: Style.icon draws the letter placeholder
+		finish_now = "rbxassetid://128824303756965",
 		gift = "rbxassetid://72702946079049",
 		lifebuoy = "rbxassetid://76945613397404",
 		lock = "rbxassetid://135893459775435",
 		map = "rbxassetid://111196679015076",
 		quests = "rbxassetid://123511018979555",
 		settings = "rbxassetid://124561251642705",
+		sun = "rbxassetid://110983311998307", -- Golden hour event
 		shop = "rbxassetid://133652722448118",
 		vip = "rbxassetid://89629681853633",
 		spin = "rbxassetid://130789759216108", -- stand-in sparkle until a wheel icon is uploaded
 		wave = "rbxassetid://78956573306618", -- the wake trail prize icon (Settings' wave art)
+		waves = "rbxassetid://103642240410321", -- spin wheel wake prizes
 	} :: { [string]: string },
 	-- SettingsPanel row glyphs, keyed like its SHAPES (assets/ui/settings/<key>.png)
 	SettingsArt = {

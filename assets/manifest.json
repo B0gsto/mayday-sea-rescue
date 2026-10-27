@@ -6419,6 +6419,15 @@
   "source": "assets/textures/M_Veh_Coastguard4x4/T_Coastguard4x4_Body_ALB.png",
   "type": "Image"
  },
+ "Image:4d5f866b83c813b71e5b37a94828ffae34e2682a4097fc90d78e2215ae34c9b7": {
+  "assetId": "110983311998307",
+  "imageId": "110983311998307",
+  "moderation": "Reviewing",
+  "name": "Kit_sun",
+  "sha": "4d5f866b83c813b71e5b37a94828ffae34e2682a4097fc90d78e2215ae34c9b7",
+  "source": "marketing/ui/icons/sun.png",
+  "type": "Image"
+ },
  "Image:4d6717f9abaec955e4ca15633a470faa6d241150ddb0c417efe9e055d9e2ae6e": {
   "assetId": "73216567128728",
   "imageId": "73216567128728",
@@ -7209,6 +7218,15 @@
   "name": "T_CasualtySwimmer_Atlas_RGH",
   "sha": "5723510e907c9d8b0882ade172a77b45aed5045113496412406817d5ab2643b7",
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_RGH.png",
+  "type": "Image"
+ },
+ "Image:57241deff077f67fe46650141d7c2ecca46baad5311fadf6d9929b707601ef40": {
+  "assetId": "128824303756965",
+  "imageId": "128824303756965",
+  "moderation": "Reviewing",
+  "name": "Kit_finish_now",
+  "sha": "57241deff077f67fe46650141d7c2ecca46baad5311fadf6d9929b707601ef40",
+  "source": "marketing/ui/icons/finish_now.png",
   "type": "Image"
  },
  "Image:5787e02072a5a06fb82ae3defdf68dbf992ee7ae8ea0e8ce5d27c4e815e8f6f9": {
@@ -9318,6 +9336,15 @@
   "name": "T_Chandlery_Slate_NOR",
   "sha": "73105c295bc85c5e3b96e03df38f27be7a515410e43c045e2e4aeead4a7c783f",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_NOR.png",
+  "type": "Image"
+ },
+ "Image:73300d528e75d8f0eb227f06ae2f2ba139787a66aed416ce8a3903fb141ca91a": {
+  "assetId": "103642240410321",
+  "imageId": "103642240410321",
+  "moderation": "Reviewing",
+  "name": "Kit_waves",
+  "sha": "73300d528e75d8f0eb227f06ae2f2ba139787a66aed416ce8a3903fb141ca91a",
+  "source": "marketing/ui/icons/waves.png",
   "type": "Image"
  },
  "Image:733a5f947b4b52558193c332bdca43e1114a3f635c6db3397b752cbc56b03a16": {

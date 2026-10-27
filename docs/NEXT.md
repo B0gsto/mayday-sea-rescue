@@ -39,7 +39,9 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
    "Finish now" on a running build (after B merges): tiered dev products by time left, same receipt flow.
 0b. **Icons blocked**: Gemini image quota (429) until ~2026-10-29 morning: spin.png, spin_1/5/15.png, finish_now.png,
    hourglass.png in `marketing/ui/icons/` (brief: delegate task msr-24-icons-r1). Placeholders until then; products can be
-   created without icons and get them later.
+   created without icons and get them later. 2026-10-27: Blender icons landed: Spin1/5/15 + FinishNow1/2/3 product
+   icons on the TEST universe (`tools/upload-item-icons.py --only ...`; launch: same with `--launch` and the brightwake
+   key, not done yet); Kit glyphs finish_now, waves, sun uploaded. Still open: spin, spin_1/5/15, hourglass glyphs.
 0c. ~~Climb lag at speed~~ merged 2026-10-26 (client replays the climb relative to its own hull, `Ops/ClimbPath`); playtest it.
 0. **docs/24 wave 2** after A-D merge: E tutorial, F progression/core loop pass (pacing sims with build times + spins), Opus review + Studio playtest, art-director render of C.
 
