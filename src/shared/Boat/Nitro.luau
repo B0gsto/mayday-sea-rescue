@@ -5,7 +5,7 @@
 local Nitro = {}
 
 Nitro.TAP_WINDOW = 0.35 -- s between the two presses
-Nitro.BURST = 2.5 -- s -- tune
+Nitro.BURST = 4 -- s: long enough to reach the boosted top speed (2.5 s showed only +9%) -- tune
 Nitro.COOLDOWN = 8 -- s from one burst's start to the next -- tune
 Nitro.MULT = 1.3 -- top speed and thrust during the burst -- tune
 

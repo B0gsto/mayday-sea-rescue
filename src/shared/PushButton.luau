@@ -104,7 +104,7 @@ function PushButton.build(parent: Instance, name: string, cf: CFrame, opts: Opti
 	prompt.ActionText = opts.text
 	prompt.ObjectText = opts.objectText or ""
 	prompt.HoldDuration = 0.25
-	prompt.MaxActivationDistance = 24
+	prompt.MaxActivationDistance = 12 -- at 24 the plaza wheel took E from the build stand's tablet
 	prompt.KeyboardKeyCode = Enum.KeyCode.E
 	prompt.GamepadKeyCode = Enum.KeyCode.ButtonX
 	prompt.RequiresLineOfSight = false

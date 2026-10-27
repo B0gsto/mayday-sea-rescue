@@ -104,6 +104,15 @@ local humConn: RBXScriptConnection? = nil
 type Movement = { walk: number, jump: number, jumpHeight: number }
 local savedMovement: Movement? = nil
 
+-- A one-line card label shrinks to fit (down to 12) instead of cutting its word ("Rescu...").
+local function fit(label: TextLabel, size: number)
+	label.TextScaled = true
+	local cap = Instance.new("UITextSizeConstraint")
+	cap.MaxTextSize = size
+	cap.MinTextSize = 12
+	cap.Parent = label
+end
+
 local function entryOf(item: DockBlueprints.Item): any
 	if item.kind == "Building" then
 		return DockConfig.Buildings[item.key]
@@ -722,6 +731,7 @@ local function badgeRow(parent: GuiObject, st: Status): GuiObject?
 	label.TextTruncate = Enum.TextTruncate.AtEnd
 	label.TextXAlignment = Enum.TextXAlignment.Left
 	label.Size = UDim2.new(1, if need then -62 else -32, 1, 0)
+	fit(label, Theme.Text.small)
 	label.LayoutOrder = 1
 	if need and row:IsA("GuiButton") then
 		Style.press(row, function()
@@ -842,6 +852,7 @@ local function refreshCards()
 			title.TextXAlignment = Enum.TextXAlignment.Left
 			title.TextWrapped = false
 			title.TextTruncate = Enum.TextTruncate.AtEnd
+			fit(title, Theme.Text.heading)
 			local y = 48
 			if item.kind == "Building" then
 				local row = stars(face, st)
