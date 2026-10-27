@@ -21,6 +21,11 @@ AssetIds.Models = {
 	M_Ani_Puffin = { LOD0 = "rbxassetid://94213861782005" },
 	M_Ani_SealPup = { LOD0 = "rbxassetid://112624730317410" },
 	M_Ani_Turtle = { LOD0 = "rbxassetid://94334436811675" },
+	M_Bld_AirStationAddons = {
+		LOD0 = "rbxassetid://84112272467800",
+		LOD1 = "rbxassetid://112899448179067",
+		LOD2 = "rbxassetid://116125740568218",
+	},
 	M_Bld_BoatYardAddons = {
 		LOD0 = "rbxassetid://140589371975501",
 		LOD1 = "rbxassetid://139031686279650",
@@ -467,6 +472,13 @@ AssetIds.Attachments = {
 	M_Ani_Puffin = {},
 	M_Ani_SealPup = {},
 	M_Ani_Turtle = {},
+	M_Bld_AirStationAddons = {
+		ATT_Work_RefuelPad = Vector3.new(-34.6, 0.68, 9),
+		ATT_Park_Bowser = Vector3.new(-62.8, 0.6, 8),
+		ATT_Work_FuelReel = Vector3.new(-53.6, 0.6, 5.5),
+		ATT_Work_PatrolHut = Vector3.new(41.5, 0.6, 7.5),
+		ATT_Work_FlightBoard = Vector3.new(41.5, 0.7, 22),
+	},
 	M_Bld_BoatYardAddons = {
 		ATT_Work_Hull = Vector3.new(10.5, 3.26, 6),
 		ATT_Work_Bench = Vector3.new(-15.45, 0.92, 0),

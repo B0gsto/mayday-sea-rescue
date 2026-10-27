@@ -1,0 +1,152 @@
+{
+ "asset": "M_Bld_AirStationAddons",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Work_RefuelPad",
+   "parent": null,
+   "blender": [
+    34.6,
+    9.0,
+    0.68
+   ],
+   "roblox_from_origin": [
+    -34.6,
+    0.68,
+    9.0
+   ],
+   "roblox_from_bbox_centre": [
+    -25.85,
+    -9.12,
+    -3.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Park_Bowser",
+   "parent": null,
+   "blender": [
+    62.8,
+    8.0,
+    0.6
+   ],
+   "roblox_from_origin": [
+    -62.8,
+    0.6,
+    8.0
+   ],
+   "roblox_from_bbox_centre": [
+    -54.05,
+    -9.2,
+    -4.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_FuelReel",
+   "parent": null,
+   "blender": [
+    53.6,
+    5.5,
+    0.6
+   ],
+   "roblox_from_origin": [
+    -53.6,
+    0.6,
+    5.5
+   ],
+   "roblox_from_bbox_centre": [
+    -44.85,
+    -9.2,
+    -6.5
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_PatrolHut",
+   "parent": null,
+   "blender": [
+    -41.5,
+    7.5,
+    0.6
+   ],
+   "roblox_from_origin": [
+    41.5,
+    0.6,
+    7.5
+   ],
+   "roblox_from_bbox_centre": [
+    50.25,
+    -9.2,
+    -4.5
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_FlightBoard",
+   "parent": null,
+   "blender": [
+    -41.5,
+    22.0,
+    0.7
+   ],
+   "roblox_from_origin": [
+    41.5,
+    0.7,
+    22.0
+   ],
+   "roblox_from_bbox_centre": [
+    50.25,
+    -9.1,
+    10.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

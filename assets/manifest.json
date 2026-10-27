@@ -342,7 +342,8 @@
    "T_Clinic_Brick_RGH",
    "T_LookoutAddons_Brick_RGH",
    "T_BoatYard_Brick_RGH",
-   "T_RescueBoathouse_Brick_RGH"
+   "T_RescueBoathouse_Brick_RGH",
+   "T_AirStationAddons_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -6361,6 +6362,15 @@
   "name": "T_ChandleryProps_Atlas_MET",
   "sha": "4cb0dd7b542d8086d7b18897cf4bc2f0cb967bd477443ee0515bdb073590ed18",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_MET.png",
+  "type": "Image"
+ },
+ "Image:4cb919100cf6884d7e98496f1f4324849d9f4d14e945abdc15166668b1e2112c": {
+  "assetId": "124421287079114",
+  "imageId": "124421287079114",
+  "moderation": "Reviewing",
+  "name": "T_AirStationAddons_Brick_ALB",
+  "sha": "4cb919100cf6884d7e98496f1f4324849d9f4d14e945abdc15166668b1e2112c",
+  "source": "assets/textures/M_Bld_AirStationAddons/T_AirStationAddons_Brick_ALB.png",
   "type": "Image"
  },
  "Image:4ccef3bf66a356c5edecff972b00cd00b52c672d63a8fb02bacc10400420c665": {
@@ -13039,7 +13049,8 @@
    "T_Clinic_Brick_NOR",
    "T_LookoutAddons_Brick_NOR",
    "T_BoatYard_Brick_NOR",
-   "T_RescueBoathouse_Brick_NOR"
+   "T_RescueBoathouse_Brick_NOR",
+   "T_AirStationAddons_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -17058,7 +17069,8 @@
    "T_Clinic_Brick_MET",
    "T_LookoutAddons_Brick_MET",
    "T_BoatYard_Brick_MET",
-   "T_RescueBoathouse_Brick_MET"
+   "T_RescueBoathouse_Brick_MET",
+   "T_AirStationAddons_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -23612,6 +23624,16 @@
   "source": "assets/fbx/M_Kit_OxygenBag/M_Kit_OxygenBag_LOD1.fbx",
   "type": "Model"
  },
+ "Model:63b252b85848fa98194b95b51c9d36cfa45e2e16899bfba24fc34fe94ba4bdc1": {
+  "assetId": "116125740568218",
+  "moderation": "Approved",
+  "name": "M_Bld_AirStationAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_AirStationAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "63b252b85848fa98194b95b51c9d36cfa45e2e16899bfba24fc34fe94ba4bdc1",
+  "source": "assets/fbx/M_Bld_AirStationAddons/M_Bld_AirStationAddons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:63b818751a2c647000ca19276534eebfb528e8b276c0d1999a12af5d749b6679": {
   "assetId": "112038686014339",
   "moderation": "Approved",
@@ -24330,6 +24352,16 @@
   "route": "delivery",
   "sha": "78d2ebfba09c4a4a870da6bf8d90e9bf9e5bc5ae18f2d7049416765080c0484f",
   "source": "assets/fbx/M_Hbr_Fender_Cyl_03/M_Hbr_Fender_Cyl_03_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:79c221c1b9ffa58d2940257039eb1729500b7acc1846924bff1c38090d87b466": {
+  "assetId": "112899448179067",
+  "moderation": "Approved",
+  "name": "M_Bld_AirStationAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_AirStationAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "79c221c1b9ffa58d2940257039eb1729500b7acc1846924bff1c38090d87b466",
+  "source": "assets/fbx/M_Bld_AirStationAddons/M_Bld_AirStationAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:7a38a0fb1dcc10a3969bb1f8e3646bcdcded1cb13ae91528f1a384945d70fcd9": {
@@ -25210,6 +25242,16 @@
   "route": "delivery",
   "sha": "932d92967acb1e1a48c2a7ff08c69bf4a8ae8ab5e8d75c9bb95073d265c7b0c8",
   "source": "assets/fbx/M_Hbr_Pontoon_Corner/M_Hbr_Pontoon_Corner_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:93366a852cb38311eeab5f5ce306d4671c261d9f7ff00cbbbf4fe12ae8685b66": {
+  "assetId": "84112272467800",
+  "moderation": "Approved",
+  "name": "M_Bld_AirStationAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_AirStationAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "93366a852cb38311eeab5f5ce306d4671c261d9f7ff00cbbbf4fe12ae8685b66",
+  "source": "assets/fbx/M_Bld_AirStationAddons/M_Bld_AirStationAddons_LOD0.fbx",
   "type": "Model"
  },
  "Model:938f5ce23d80b0ff285710f63e3599a6b82dd8fa164e29b6c4b182164d84fd2c": {
