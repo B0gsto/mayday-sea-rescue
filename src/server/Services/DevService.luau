@@ -35,6 +35,7 @@ local MonetizationService = require(script.Parent.MonetizationService)
 local OperationService = require(script.Parent.OperationService)
 local PetService = require(script.Parent.PetService)
 local ProgressionService = require(script.Parent.ProgressionService)
+local SkillService = require(script.Parent.SkillService)
 local StormService = require(script.Parent.StormService)
 local VehicleService = require(script.Parent.VehicleService)
 
@@ -315,6 +316,10 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 			return edit(target :: Player, function(data)
 				data.cash += math.floor(a[2])
 			end)
+		end,
+		medals = function(_, target, a)
+			SkillService.grantMedals(target :: Player, math.floor(a[2]), "Dev")
+			return true, `+{math.floor(a[2])} Medals`
 		end,
 		build = function(_, target, a)
 			local ok, msg = edit(target :: Player, function(data)

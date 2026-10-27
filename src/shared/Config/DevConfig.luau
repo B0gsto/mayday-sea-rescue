@@ -125,6 +125,7 @@ DevConfig.Actions = table.freeze({
 	clock = { num(7, 17) }, -- daylight only: the night look is buggy (2026-10-22)
 	event = { enum(DevConfig.Events), BOOL },
 	award = { PLAYER, num(0, DevConfig.MaxAmount) },
+	medals = { PLAYER, num(0, 1000) }, -- docs/25 F: Medals for testing the skill tree
 	build = { PLAYER, enum(DevConfig.Buildings) }, -- island buildings (the unlock tree)
 	unlockAll = { PLAYER },
 	pass = { PLAYER, enum(DevConfig.Passes) },
