@@ -24,6 +24,7 @@ local WHITE = Color3.fromRGB(242, 240, 232)
 type Island = {
 	plot: Model,
 	depot: Model?,
+	moor: Attachment?, -- the depot's ATT_BargeMoor, looked up in pass() (never per frame)
 	barge: Model?,
 	crates: { BasePart },
 	icon: BillboardGui?,
@@ -195,7 +196,7 @@ local function step()
 		if not (barge and depot) then
 			continue
 		end
-		local moor = DepotController.mark(depot, "ATT_BargeMoor")
+		local moor = isl.moor and isl.moor.WorldCFrame
 		local nxt = nextAt(isl.plot)
 		local at = moor and BargePath.at(now, nxt, PERIOD)
 		if not (moor and at) then
@@ -253,8 +254,13 @@ local function pass()
 				isl.icon = nil
 			end
 			isl.depot = depot
+			isl.moor = nil
 			showStock(isl)
 			showWaiting(isl)
+		end
+		if depot and not isl.moor then -- the mark may stream in after its model
+			local a = depot:FindFirstChild("ATT_BargeMoor", true)
+			isl.moor = if a and a:IsA("Attachment") then a else nil
 		end
 		local d = if depot then (depot:GetPivot().Position - at).Magnitude else math.huge
 		if isl.barge and d > FAR then

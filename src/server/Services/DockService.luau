@@ -531,6 +531,11 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 				m.Name = key
 			else
 				m = DockPieces.building(key, plot.frame, if b then wantLevel else nil)
+				-- a first mesh load yields: another sync or the owner's release may have run meanwhile
+				if plot.buildings[key] ~= have or owners[plot.index] ~= owner then
+					m:Destroy()
+					continue
+				end
 			end
 			if have then
 				have:Destroy()
@@ -849,6 +854,10 @@ local function makeSite(plot: Plot, key: string, level: number?)
 		elseif DockConfig.Decorations[key] then DockPieces.decoration(key, plot.frame)
 		else nil
 	if not m then
+		return
+	end
+	if plot.site or not owners[plot.index] then -- a first mesh load yielded: another site or a release came first
+		m:Destroy()
 		return
 	end
 	m.Name = `Site_{key}`
@@ -1401,6 +1410,9 @@ local function tickConstruction(plot: Plot, player: Player, data: any)
 		makeSite(plot, c.key, c.level)
 		syncSite(plot, data, player)
 		spawnCrew(plot, baseCrew(player))
+	end
+	if owners[plot.index] ~= player then
+		return -- released while a first mesh load yielded: the island is empty now
 	end
 	publishDepot(plot, player, data, p, rate, waited)
 	if c or data.depot.stock ~= before then
