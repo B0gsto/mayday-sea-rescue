@@ -44,8 +44,9 @@ return table.freeze({
 	shockwave_ring = { id = "rbxassetid://16477162837", layout = "Grid4x4", mode = "OneShot" },
 	-- Arro_x, a soft-edged ring disc (in model 10198615035 Rei's Particle Pack); tinted gold
 	glow_ring = { id = "rbxassetid://838367768", layout = "None", mode = "Loop" },
-	-- m27frogy, the classic thin rain streak (in model 483675631 Rain (Particle)); the wheel's spin streaks too
-	spin_streak = { id = "rbxassetid://241868005", layout = "None", mode = "Loop" },
+	-- Snaliel, an elongated drop streak (in model 10198615035): the thin rain streak vanished on the rim at 20+ studs
+	spin_streak = { id = "rbxassetid://6763809313", layout = "None", mode = "Loop" },
+	-- m27frogy, the classic thin rain streak (in model 483675631 Rain (Particle))
 	rain_streak = { id = "rbxassetid://241868005", layout = "None", mode = "Loop" },
 	-- Snaliel, an elongated drop streak (in model 10198615035)
 	sea_spray = { id = "rbxassetid://6763809313", layout = "None", mode = "Loop" },

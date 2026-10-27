@@ -85,7 +85,7 @@ local function build(l: Presets.Layer, color: Color3, parent: Instance): Particl
 		elseif l.streak then Enum.ParticleOrientation.VelocityParallel
 		else Enum.ParticleOrientation.FacingCamera
 	e.LightEmission = l.emission or 0
-	e.LightInfluence = 1 - (l.emission or 0)
+	e.LightInfluence = math.min(0.5, 1 - (l.emission or 0)) -- half lit: flat toy colours still read at night
 	if l.ring then -- from the host Part's disc edge (its size is the ring), outward
 		e.Shape = Enum.ParticleEmitterShape.Disc
 		e.ShapeStyle = Enum.ParticleEmitterShapeStyle.Surface
