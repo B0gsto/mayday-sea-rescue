@@ -1,5 +1,7 @@
 # 07 · Store page, thumbnails and trailer
 
+> **2026-10-27: the owner makes the thumbnails.** We never make, render or store thumbnails or key art; the thumbnail sections below are history. Icons and the trailer notes still apply.
+
 Last rewrite: 2026-10-25. This file owns the public face of the game: name, icon, thumbnails, trailer and
 description. The canon is `docs/00-design.md`; the live feature list is `docs/01-game-canon.md`/`docs/02-core-loop-and-mechanics.md`; prices are
 `docs/04-monetization.md`. **Only show what is live in the current build.**
