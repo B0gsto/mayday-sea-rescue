@@ -14,6 +14,7 @@ local PetController = require(Client:WaitForChild("Controllers"):WaitForChild("P
 
 local Kit = script.Parent.Parent:WaitForChild("Kit")
 local Panel = require(Kit:WaitForChild("Panel"))
+local PriceButton = require(Kit:WaitForChild("PriceButton"))
 local Style = require(Kit:WaitForChild("Style"))
 local Theme = require(Kit:WaitForChild("Theme"))
 
@@ -80,7 +81,8 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 		size = Vector2.new(720, 560),
 		onClose = onClose,
 	})
-	local cards: { { id: number, root: ImageButton, tick: Frame, meter: Frame, fill: Frame } } = {}
+	local cards: { { id: number, root: ImageButton, button: PriceButton.PriceButton, meter: Frame, fill: Frame } } =
+		{}
 
 	local function paint()
 		local view = PetController.view()
@@ -94,13 +96,18 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 				end
 			end
 			local ready = card.id == PetRules.BOSUN or (row ~= nil and row.ready)
-			card.tick.Visible = if card.id == PetRules.BOSUN
-				then current == nil
-				else current == card.id
+			local on = if card.id == PetRules.BOSUN then current == nil else current == card.id
+			-- worn: blue + gold tick; ready: green "Use"; recovering: the meter in the button's place
+			card.button.setState(if on then "owned" else "buy")
+			card.button.setText(if on then "Active" else "Use")
+			card.button.root.Visible = ready
+			local glyph = card.button.root:FindFirstChild("Glyph", true)
+			if glyph and glyph:IsA("GuiObject") then
+				glyph.Visible = on
+			end
 			card.meter.Visible = not ready
 			card.fill.Size = UDim2.fromScale(if row then row.progress else 0, 1)
 			card.root.Active = ready
-			card.root.ImageTransparency = if ready then 0 else 0.35
 		end
 	end
 
@@ -133,7 +140,8 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 		end
 		for _, chip in chips do
 			local ready = chip.id == nil or owned[chip.id] == true
-			local button = Style.button(look, UDim2.fromOffset(122, 52))
+			-- scale-to-fit: the chips share the row, so all 5 fit the narrowest panel
+			local button = Style.button(look, UDim2.new(1 / #chips, -8 + 8 / #chips, 0, 52))
 			button.Name = "Variant_" .. (chip.id or "None")
 			local _, face = Style.block(
 				button,
@@ -141,6 +149,9 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 				{ lip = 4, radius = S.cornerSmall }
 			)
 			local text = Style.label(face, chip.label, Theme.Text.small)
+			text.AnchorPoint = Vector2.new(0.5, 0.5)
+			text.Position = UDim2.fromScale(0.5, 0.5)
+			text.Size = UDim2.new(1, -10, 1, -8)
 			text.TextScaled = true
 			button.Active = ready
 			Style.press(button, function()
@@ -161,12 +172,12 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 		local host = Instance.new("Frame")
 		host.Name = "Pets"
 		host.BackgroundTransparency = 1
-		host.Position = UDim2.fromOffset(0, 64)
+		host.LayoutOrder = 1
 		host.Size = UDim2.fromScale(1, 0)
 		host.AutomaticSize = Enum.AutomaticSize.Y
 		host.Parent = panel.body
 		local grid = Instance.new("UIGridLayout")
-		grid.CellSize = UDim2.fromOffset(290, 190)
+		grid.CellSize = UDim2.new(0.5, -6, 0, 300)
 		grid.CellPadding = UDim2.fromOffset(12, 12)
 		grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 		grid.SortOrder = Enum.SortOrder.LayoutOrder
@@ -176,65 +187,49 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 			{
 				id = PetRules.BOSUN,
 				label = "Bosun",
+				rare = true,
 				model = bosunCopy(),
 			},
 		}
 		for _, r in rows do
-			table.insert(
-				entries,
-				{ id = r.id, label = r.label, model = WildlifeRig.build(r.species, r.rare) }
-			)
+			table.insert(entries, {
+				id = r.id,
+				label = r.label,
+				rare = r.rare,
+				model = WildlifeRig.build(r.species, r.rare),
+			})
 		end
 		for order, e in entries do
-			local card = Style.button(host, UDim2.fromOffset(290, 190))
+			local card = Style.button(host, UDim2.new())
 			card.Name = "Companion_" .. e.id
 			card.LayoutOrder = order
-			local _, face =
-				Style.block(card, Style.grad(if e.id == PetRules.BOSUN then "orange" else "teal"))
+			local rare = e.id == PetRules.BOSUN or e.rare == true
+			local _, face = Style.block(
+				card,
+				Style.grad(
+					if e.id == PetRules.BOSUN then "orange" elseif rare then "purple" else "teal"
+				)
+			)
+			-- the portrait well: a gold rim for rare pets (and Bosun), white for the rest
 			local art = Instance.new("Frame")
 			art.BackgroundColor3 = Color3.new(1, 1, 1)
-			art.BackgroundTransparency = 0.72
+			art.BackgroundTransparency = 0.6
 			art.Position = UDim2.fromOffset(12, 12)
-			art.Size = UDim2.fromOffset(130, 150)
+			art.Size = UDim2.new(1, -24, 1, -134)
 			Style.corner(art, S.cornerSmall)
+			local rim = Instance.new("UIStroke")
+			rim.Thickness = 4
+			rim.Color = if rare then Color3.fromHex("FFC928") else Color3.new(1, 1, 1)
+			rim.Parent = art
 			art.Parent = face
 			portrait(art, e.model)
 			local name = Style.label(face, e.label, Theme.Text.heading)
-			name.Position = UDim2.fromOffset(154, 16)
-			name.Size = UDim2.new(1, -166, 0, 40)
-			name.TextXAlignment = Enum.TextXAlignment.Left
+			name.AnchorPoint = Vector2.new(0.5, 1)
+			name.Position = UDim2.new(0.5, 0, 1, -82)
+			name.Size = UDim2.new(1, -24, 0, 38)
 			name.TextWrapped = false
 			name.TextTruncate = Enum.TextTruncate.AtEnd
-			local hint = Style.label(
-				face,
-				if e.id == PetRules.BOSUN then "First mate" else "Companion",
-				Theme.Text.small
-			)
-			hint.Position = UDim2.fromOffset(154, 58)
-			hint.Size = UDim2.new(1, -166, 0, 28)
-			hint.TextXAlignment = Enum.TextXAlignment.Left
-			local tick = Instance.new("Frame")
-			tick.AnchorPoint = Vector2.new(1, 1)
-			tick.Position = UDim2.new(1, -12, 1, -12)
-			tick.Size = UDim2.fromOffset(44, 44)
-			tick.BackgroundTransparency = 1
-			tick.Visible = false
-			tick.Parent = face
-			Style.icon(tick, "daily")
-			local meter = Instance.new("Frame")
-			meter.AnchorPoint = Vector2.new(0, 1)
-			meter.Position = UDim2.new(0, 154, 1, -26)
-			meter.Size = UDim2.new(1, -210, 0, 14)
-			meter.BackgroundColor3 = Theme.Colors.ink
-			meter.Visible = false
-			meter.Parent = face
-			Style.corner(meter, 7)
-			local fill = Instance.new("Frame")
-			fill.Size = UDim2.fromScale(0, 1)
-			fill.BackgroundColor3 = Theme.Grad.buy.bottom
-			fill.Parent = meter
-			Style.corner(fill, 7)
-			Style.press(card, function()
+			local function choose()
 				local row = nil
 				for _, r in rows do
 					if r.id == e.id then
@@ -245,8 +240,30 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 					return
 				end
 				PetController.choose(e.id)
-			end)
-			table.insert(cards, { id = e.id, root = card, tick = tick, meter = meter, fill = fill })
+			end
+			local button =
+				PriceButton.new(face, { price = 0, currency = "Cash", onActivate = choose })
+			button.root.AnchorPoint = Vector2.new(0.5, 1)
+			button.root.Position = UDim2.new(0.5, 0, 1, -10)
+			button.root.Size = UDim2.new(1, -24, 0, 64)
+			local meter = Instance.new("Frame")
+			meter.AnchorPoint = Vector2.new(0.5, 1)
+			meter.Position = UDim2.new(0.5, 0, 1, -32)
+			meter.Size = UDim2.new(1, -48, 0, 20)
+			meter.BackgroundColor3 = Theme.Colors.ink
+			meter.Visible = false
+			meter.Parent = face
+			Style.corner(meter, 10)
+			local fill = Instance.new("Frame")
+			fill.Size = UDim2.fromScale(0, 1)
+			fill.BackgroundColor3 = Theme.Grad.buy.bottom
+			fill.Parent = meter
+			Style.corner(fill, 10)
+			Style.press(card, choose)
+			table.insert(
+				cards,
+				{ id = e.id, root = card, button = button, meter = meter, fill = fill }
+			)
 		end
 		paint()
 	end
