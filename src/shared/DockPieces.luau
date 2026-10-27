@@ -2351,6 +2351,15 @@ local function levelMesh(m: Model, at: CFrame, asset: string, n: number): Model?
 				d:Destroy()
 			elseif k and string.find(d.Name, "OwnerColour", 1, true) then
 				d.Name = "Flag" -- DockService paints it the owner's colour
+				-- a textured part ignores Color, so drop the texture for the tint to show
+				for _, c in d:GetChildren() do
+					if c:IsA("SurfaceAppearance") or c.Name == "SurfaceVariants" then
+						c:Destroy()
+					end
+				end
+				if d:IsA("MeshPart") then
+					d.TextureID = ""
+				end
 			end
 		end
 	end
