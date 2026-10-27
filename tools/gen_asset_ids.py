@@ -37,7 +37,7 @@ MAPS = {"ALB": "ColorMap", "NOR": "NormalMap", "RGH": "RoughnessMap", "MET": "Me
 ALPHA_TRANSPARENCY = ("M_Veg_",)
 # Single texture sets that are alpha cards inside an otherwise opaque asset: (asset, set).
 ALPHA_TRANSPARENCY_SETS = {("M_Chr_Bosun", "Fur"), ("M_Bld_Station", "Grime"), ("M_Hbr_PropAtlas", "Rope"), ("M_Bld_Cottage_Kit", "Grime"), ("M_Sea_Morwenna", "Kelp"), ("M_Sea_AdmiraltyAnchor", "Sand"), ("M_Veh_GaleQueen", "Decals")}  # Morwenna kelp cards (S1a); anchor sand bed alpha rim (POL2); Bosun fur cards (DogService); station H3 grime decals; cottage H3b grime decals
-SHARED_BYTES = ("M_Veh_SupplyBarge", "M_Bld_WorkshopAddons", "M_Bld_FishMarketAddons", "M_Bld_ClinicAddons", "M_Bld_LookoutAddons", "M_Bld_BoatYardAddons")  # their NOR/RGH/MET are the Depot palette's bytes
+SHARED_BYTES = ("M_Veh_SupplyBarge", "M_Bld_WorkshopAddons", "M_Bld_FishMarketAddons", "M_Bld_ClinicAddons", "M_Bld_LookoutAddons", "M_Bld_BoatYardAddons", "M_Bld_RescueBoathouseAddons")  # their NOR/RGH/MET are the Depot palette's bytes
 FX_RE = re.compile(r"^assets/textures/FX/(FX_\w+)\.png$")  # FX1 / FX2 flipbooks and foam maps (docs/12 2.11)
 TEX_RE = re.compile(r"^assets/textures/(M_\w+?)/T_\w+?_([A-Za-z][A-Za-z0-9]*(?:_\d+)?)_(ALB|NOR|RGH|MET)(_Wet)?\.png$")
 

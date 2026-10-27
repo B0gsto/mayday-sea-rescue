@@ -1,0 +1,123 @@
+{
+ "asset": "M_Bld_RescueBoathouseAddons",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Work_Pontoon",
+   "parent": null,
+   "blender": [
+    20.3,
+    -4.2,
+    1.62
+   ],
+   "roblox_from_origin": [
+    -20.3,
+    1.62,
+    -4.2
+   ],
+   "roblox_from_bbox_centre": [
+    -20.3,
+    -5.04,
+    -5.11
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Fuel",
+   "parent": null,
+   "blender": [
+    20.55,
+    2.65,
+    1.62
+   ],
+   "roblox_from_origin": [
+    -20.55,
+    1.62,
+    2.65
+   ],
+   "roblox_from_bbox_centre": [
+    -20.55,
+    -5.04,
+    1.74
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Berth",
+   "parent": null,
+   "blender": [
+    -13.0,
+    2.4,
+    1.62
+   ],
+   "roblox_from_origin": [
+    13.0,
+    1.62,
+    2.4
+   ],
+   "roblox_from_bbox_centre": [
+    13.0,
+    -5.04,
+    1.49
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Davit",
+   "parent": null,
+   "blender": [
+    -13.6,
+    -2.8,
+    1.62
+   ],
+   "roblox_from_origin": [
+    13.6,
+    1.62,
+    -2.8
+   ],
+   "roblox_from_bbox_centre": [
+    13.6,
+    -5.04,
+    -3.71
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

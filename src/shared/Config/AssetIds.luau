@@ -56,6 +56,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://128495109779059",
 		LOD2 = "rbxassetid://84012891513184",
 	},
+	M_Bld_RescueBoathouseAddons = {
+		LOD0 = "rbxassetid://82108008864843",
+		LOD1 = "rbxassetid://87675721573630",
+		LOD2 = "rbxassetid://120376087293959",
+	},
 	M_Bld_RescueHQ = {
 		LOD0 = "rbxassetid://123986979842011",
 		LOD1 = "rbxassetid://88299832032246",
@@ -521,6 +526,12 @@ AssetIds.Attachments = {
 		ATT_Watch_Lamp = Vector3.new(5.6, 31.32, -9.2),
 		ATT_Watch_Spotlight = Vector3.new(-5.6, 31.32, -9.2),
 		ATT_SearchlightPivot = Vector3.new(-6.6, 44, 5.2),
+	},
+	M_Bld_RescueBoathouseAddons = {
+		ATT_Work_Pontoon = Vector3.new(-20.3, 1.62, -4.2),
+		ATT_Work_Fuel = Vector3.new(-20.55, 1.62, 2.65),
+		ATT_Work_Berth = Vector3.new(13, 1.62, 2.4),
+		ATT_Work_Davit = Vector3.new(13.6, 1.62, -2.8),
 	},
 	M_Bld_RescueHQ = {
 		ATT_Sign_01 = Vector3.new(0, 9.45, -10.12),
