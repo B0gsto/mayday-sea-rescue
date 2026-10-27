@@ -1,88 +1,108 @@
--- UnlockTree (docs/23 (q), WP-28): no ranks; each building needs the ones before it, Cash buys it once they
--- stand, Robux skips the Cash but never the order, and craft unlock through their building.
+-- UnlockTree (docs/23 (q), WP-28; docs/25 K2): levels, HQ gates, aliases, Bunkhouse cap and legacy refunds.
 return function(t)
 	local U = t.load("src/shared/UnlockTree.luau")
 	local D = t.load("src/shared/Config/DockConfig.luau")
 	local Progression = t.load("src/shared/Config/ProgressionConfig.luau")
 
-	t.test(
-		"the first tree: every prerequisite is a real building, no cycles, at most 4 steps deep",
-		function()
-			local depth: { [string]: number } = {}
-			local function deep(key: string, seen: { [string]: boolean }): number
-				t.expect(seen[key]).toBeNil() -- a cycle
-				if depth[key] then
-					return depth[key]
-				end
-				seen[key] = true
-				local d = 0
-				for _, need in D.Buildings[key].needs do
+	t.test("rows and levels are legal: real needs, sane HQ gates", function()
+		for _, key in D.BUILDINGS do
+			local b = D.Buildings[key]
+			for _, need in b.needs do
+				t.expect(D.Buildings[need] ~= nil).toBe(true)
+			end
+			for n, lvl in b.levels do
+				t.expect(lvl.hq >= 0 and lvl.hq <= 5).toBe(true)
+				for _, need in lvl.needs or {} do
 					t.expect(D.Buildings[need] ~= nil).toBe(true)
-					d = math.max(d, deep(need, seen) + 1)
 				end
-				seen[key] = nil
-				depth[key] = d
-				return d
+				if n > 1 then
+					t.expect(lvl.hq >= b.levels[n - 1].hq).toBe(true)
+				end
 			end
-			for key in D.Buildings do
-				t.expect(deep(key, {}) <= 4).toBe(true)
-			end
-			t.expect(D.Buildings.Pontoon.needs).toEqual({})
-			t.expect(D.Buildings.Workshop.needs).toEqual({})
-			t.expect(D.Buildings.FishShed.needs).toEqual({})
-			t.expect(D.Buildings.Boathouse.needs).toEqual({ "Workshop" })
-			t.expect(D.Buildings.Station.needs).toEqual({ "Boathouse", "LookoutTower" })
-			t.expect(D.Buildings.Hangar.needs).toEqual({ "Helipad" })
-			t.expect(D.Buildings.SubPen.needs).toEqual({ "Crane" })
-			t.expect(depth.Hangar).toBe(3) -- jetty, Pontoon, Lookout tower, Helipad, Hangar
 		end
-	)
-
-	t.test("Cash buys a building once its prerequisites stand, then once", function()
-		local ok, reason, price, need = U.canBuy("Boathouse", {}, 1e9)
-		t.expect({ ok, reason, price, need }).toEqual({ false, "Needs", 2500, "Workshop" })
-		ok, reason, price = U.canBuy("Boathouse", { Workshop = true }, 2499)
-		t.expect({ ok, reason, price }).toEqual({ false, "Cash", 2500 })
-		t.expect((U.canBuy("Boathouse", { Workshop = true }, 2500))).toBe(true)
-		t.expect(select(2, U.canBuy("Boathouse", { Workshop = true, Boathouse = true }, 1e9)))
-			.toBe("Owned")
-		t.expect(select(2, U.canBuy("Nope", {}, 1e9))).toBe("Owned")
-		-- the station needs both: the first missing one is named
-		t.expect(U.missing("Station", { Boathouse = true })).toBe("LookoutTower")
-		t.expect(U.missing("Station", { LookoutTower = true })).toBe("Boathouse")
-		t.expect(U.missing("Station", { Boathouse = true, LookoutTower = true })).toBeNil()
+		t.expect(U.maxLevel("HQ")).toBe(5)
+		t.expect(U.maxLevel("Workshop")).toBe(3)
+		t.expect(U.maxLevel("Nope")).toBe(0)
+		t.expect(U.levelOf({ Workshop = 2.9 }, "Workshop")).toBe(2)
+		t.expect(U.levelOf({}, "Workshop")).toBe(0)
 	end)
 
-	t.test("Robux skips the Cash, never the order", function()
-		t.expect(U.canRobux("Boathouse", {})).toBe(false)
-		t.expect(U.canRobux("Boathouse", { Workshop = true })).toBe(true)
-		t.expect(U.canRobux("Boathouse", { Workshop = true, Boathouse = true })).toBe(false)
-		t.expect(U.canRobux("Workshop", {})).toBe(true) -- a root: only the jetty
-		t.expect(U.canRobux("Nope", {})).toBe(false) -- no such building
-		t.expect(U.canRobux("Pontoon", {})).toBe(true)
+	t.test("ownedSet keeps every old reader working", function()
+		t.expect(U.ownedSet({ Harbour = 1 })).toEqual({ Harbour = true })
+		t.expect(U.ownedSet({ Harbour = 3, Boathouse = 2, AirStation = 1, HQ = 3 })).toEqual({
+			Harbour = true,
+			Pontoon = true,
+			Crane = true,
+			Boathouse = true,
+			LifeboatSlip = true,
+			AirStation = true,
+			Hangar = true,
+			Helipad = true,
+			HQ = true,
+			Station = true,
+		})
 	end)
 
-	t.test(
-		"prepaid Robux buildings build the moment their prerequisites stand, in order",
-		function()
-			local owned: { [string]: boolean } = {}
-			local prepaid: { [string]: boolean } = { Boathouse = true, Crane = true }
-			t.expect(#U.settle(owned, prepaid)).toBe(0) -- nothing stands yet
-			t.expect(prepaid.Boathouse).toBe(true)
-			owned.Workshop = true -- Boathouse needs Workshop; the Crane needs the Boathouse
-			local built = U.settle(owned, prepaid)
-			t.expect(#built).toBe(2)
-			t.expect(built[1]).toBe("Boathouse") -- never out of order
-			t.expect(built[2]).toBe("Crane")
-			t.expect(owned.Crane).toBe(true)
-			t.expect(next(prepaid)).toBeNil()
-			local p2: { [string]: boolean } = { Boathouse = true } -- already owned: just cleared
-			t.expect(#U.settle(owned, p2)).toBe(0)
-			t.expect(next(p2)).toBeNil()
-		end
-	)
+	t.test("Cash buys the next level, in order, inside the HQ gate and with the Cash", function()
+		local base = { Harbour = 1, HQ = 0 }
+		local ok, reason, price, need = U.canBuild("Workshop", 1, base, 499)
+		t.expect({ ok, reason, price, need }).toEqual({ false, "Cash", 500, nil })
+		t.expect(U.canBuild("Workshop", 1, base, 500)).toBe(true)
+		ok, reason = U.canBuild("Workshop", 2, { Workshop = 1, HQ = 0 }, 1e9)
+		t.expect({ ok, reason }).toEqual({ false, "HQ" })
+		ok, reason, price = U.canBuild("Workshop", 3, { Workshop = 1, HQ = 3 }, 1e9)
+		t.expect({ ok, reason, price }).toEqual({ false, "Order", 3000 })
+		t.expect(U.canBuild("Workshop", 2, { Workshop = 1, HQ = 2 }, 1250)).toBe(true)
+		t.expect(select(2, U.canBuild("Workshop", 1, { Workshop = 1, HQ = 1 }, 1e9))).toBe("Owned")
+		t.expect(select(2, U.canBuild("Workshop", 4, { Workshop = 3, HQ = 5 }, 1e9))).toBe("Maxed")
+		t.expect(select(2, U.canBuild("Nope", 1, {}, 1e9))).toBe("Unknown")
+	end)
 
-	t.test("craft unlock through their building", function()
+	t.test("the HQ needs every row the current HQ offers built first", function()
+		local hq1 = { Harbour = 1, HQ = 1, Depot = 1, Workshop = 1, Bunkhouse = 1, FishShed = 1 }
+		t.expect(U.nextHqNeed({ Harbour = 1, HQ = 1 })).toEqual({
+			"Depot",
+			"Workshop",
+			"Bunkhouse",
+			"FishShed",
+		})
+		t.expect(U.nextHqNeed(hq1)).toEqual({})
+		local ok, reason, _, need = U.canBuild("HQ", 2, { Harbour = 1, HQ = 1 }, 1e9)
+		t.expect({ ok, reason, need }).toEqual({ false, "Needs", "Depot" })
+		t.expect(U.canBuild("HQ", 2, hq1, 2999)).toBe(false)
+		t.expect(U.canBuild("HQ", 2, hq1, 3000)).toBe(true)
+		local hq2 = {
+			Harbour = 1,
+			HQ = 2,
+			Depot = 1,
+			Workshop = 1,
+			Bunkhouse = 1,
+			FishShed = 1,
+			Boathouse = 1,
+		}
+		ok, reason, _, need = U.canBuild("HQ", 3, hq2, 1e9)
+		t.expect({ ok, reason, need }).toEqual({ false, "Needs", "BoatYard" })
+		t.expect(U.nextHqNeed({ HQ = 5, Harbour = 3 })).toBeNil()
+	end)
+
+	t.test("Robux skips the Cash, never the order or the HQ gate", function()
+		t.expect(U.canRobux("Workshop", 1, { Harbour = 1, HQ = 0 })).toBe(true)
+		t.expect(U.canRobux("Harbour", 2, { Harbour = 1, HQ = 1 })).toBe(false)
+		t.expect(U.canRobux("Harbour", 2, { Harbour = 1, HQ = 2 })).toBe(true)
+		t.expect(U.canRobux("Workshop", 1, { Workshop = 1, HQ = 2 })).toBe(false)
+		t.expect(U.canRobux("Harbour", 3, { Harbour = 2, HQ = 2 })).toBe(false)
+		t.expect(U.canRobux("Harbour", 3, { Harbour = 2, HQ = 3 })).toBe(true)
+		t.expect(U.canRobux("Nope", 1, {})).toBe(false)
+	end)
+
+	t.test("Bunkhouse caps the crew", function()
+		t.expect(U.bunkCap({})).toBe(0)
+		t.expect(U.bunkCap({ Bunkhouse = 1 })).toBe(10)
+		t.expect(U.bunkCap({ Bunkhouse = 3 })).toBe(30)
+		t.expect(U.bunkCap({ Bunkhouse = 9 })).toBe(60)
+	end)
+
+	t.test("craft unlock through their building or its old alias", function()
 		local want = {
 			RIB = "Boathouse",
 			Lifeboat = "LifeboatSlip",
@@ -101,23 +121,47 @@ return function(t)
 			end
 		end
 		t.expect(U.craftMissing("JetSki", {})).toBeNil()
+		t.expect(U.craftMissing("Lifeboat", U.ownedSet({ Boathouse = 2 }))).toBeNil()
+		t.expect(U.craftMissing("RescueHelicopter", U.ownedSet({ AirStation = 1 }))).toBeNil()
 	end)
 
-	t.test("old dock levels migrate to tree items, idempotently", function()
-		local owned = { SubPen = true }
-		U.migrate(4, owned)
-		t.expect(owned).toEqual({
-			SubPen = true,
-			Pontoon = true,
+	t.test("legacy targets", function()
+		t.expect(U.legacyTarget("Pontoon")).toEqual("Harbour", 2)
+		t.expect(U.legacyTarget("Crane")).toEqual("Harbour", 3)
+		t.expect(U.legacyTarget("LifeboatSlip")).toEqual("Boathouse", 2)
+		t.expect(U.legacyTarget("Hangar")).toEqual("AirStation", 1)
+		t.expect(U.legacyTarget("Station")).toEqual("HQ", 3)
+		t.expect(U.legacyTarget("Workshop")).toEqual("Workshop", 1)
+		t.expect(U.legacyTarget("Nope")).toBe(nil)
+	end)
+
+	t.test("old saves migrate to levels, keep the jetty and refund merged Cash", function()
+		local levels, refund = U.migrateLegacy({
 			Workshop = true,
 			Boathouse = true,
-			LookoutTower = true,
-			Crane = true,
+			LifeboatSlip = true,
+		}, 1, 12)
+		t.expect(levels).toEqual({
+			Harbour = 1,
+			Workshop = 1,
+			Boathouse = 2,
+			Bunkhouse = 2,
+			HQ = 2,
 		})
-		U.migrate(4, owned)
-		t.expect(owned.Station).toBeNil()
-		local hangar = { Hangar = true }
-		U.migrate(1, hangar)
-		t.expect(hangar).toEqual({ Hangar = true, Helipad = true })
+		t.expect(refund).toBe(7350)
+		local again, refund2 = U.migrateLegacy({ Workshop = true }, 1, 0)
+		t.expect(again.Harbour).toBe(1)
+		t.expect(refund2).toBe(0)
+
+		local five, paid = U.migrateLegacy({}, 5, 0)
+		t.expect(five.Harbour).toBe(3)
+		t.expect(five.HQ).toBe(5)
+		t.expect(five.Boathouse).toBe(1)
+		t.expect(five.TrophyHall).toBe(1)
+		t.expect(paid).toBe(45100)
+
+		local strays, none = U.migrateLegacy({ Pontoon = true }, 1, 0)
+		t.expect(strays.Harbour).toBe(2)
+		t.expect(none).toBe(0)
 	end)
 end

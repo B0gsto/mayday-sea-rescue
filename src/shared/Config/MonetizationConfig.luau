@@ -37,7 +37,8 @@ export type Item = {
 	vehicle: string?, -- vehicle passes: the VehicleConfig id it owns (offered once its building stands)
 	spins: number?, -- spin-wheel products: free spins granted (docs/24 D)
 	dockBuilding: string?, -- island buildings and decor (DockConfig.Buildings / Decorations key); sold at the
-	-- build tablet only, once the building's prerequisites stand (Robux skips the Cash, never the order: docs/23 (q))
+	-- build tablet only, once the building's level is legal (Robux skips the Cash, never the order: docs/23 (q))
+	dockLevel: number?, -- the building level this product pays for (nil = level 1, or decor)
 	crewHire: boolean?, -- crew hire (docs/23 (j), WP-15): Robux skips the Cash
 }
 
@@ -181,7 +182,9 @@ local MonetizationConfig = {
 			price = 35,
 			order = 31,
 			ready = true,
-			dockBuilding = "Pontoon",
+			dockBuilding = "Harbour",
+
+			dockLevel = 2,
 		},
 		DockLevel3 = {
 			id = 3722223199,
@@ -191,6 +194,8 @@ local MonetizationConfig = {
 			order = 32,
 			ready = true,
 			dockBuilding = "Boathouse",
+
+			dockLevel = 1,
 		},
 		DockLevel4 = {
 			id = 3722223208,
@@ -200,6 +205,8 @@ local MonetizationConfig = {
 			order = 33,
 			ready = true,
 			dockBuilding = "LookoutTower",
+
+			dockLevel = 1,
 		},
 		DockLevel5 = {
 			id = 3722223223,
@@ -208,7 +215,9 @@ local MonetizationConfig = {
 			price = 199,
 			order = 34,
 			ready = true,
-			dockBuilding = "Station",
+			dockBuilding = "HQ",
+
+			dockLevel = 3,
 		},
 		DockGarage = {
 			id = 3722223237,
@@ -226,7 +235,9 @@ local MonetizationConfig = {
 			price = 149,
 			order = 36,
 			ready = true,
-			dockBuilding = "Hangar",
+			dockBuilding = "AirStation",
+
+			dockLevel = 1,
 		},
 		DockSubPen = {
 			id = 3722223257,
@@ -236,6 +247,8 @@ local MonetizationConfig = {
 			order = 37,
 			ready = true,
 			dockBuilding = "SubPen",
+
+			dockLevel = 1,
 		},
 		-- WP-28 (2026-10-26): the rest of the tree and the decorations (DockConfig `product`); prices docs/23 (i).
 		DockWorkshop = {
@@ -246,6 +259,8 @@ local MonetizationConfig = {
 			order = 39,
 			ready = true,
 			dockBuilding = "Workshop",
+
+			dockLevel = 1,
 		},
 		DockFishShed = {
 			id = 3722386064,
@@ -255,6 +270,8 @@ local MonetizationConfig = {
 			order = 40,
 			ready = true,
 			dockBuilding = "FishShed",
+
+			dockLevel = 1,
 		},
 		DockBoatYard = {
 			id = 3722386073,
@@ -264,6 +281,8 @@ local MonetizationConfig = {
 			order = 41,
 			ready = true,
 			dockBuilding = "BoatYard",
+
+			dockLevel = 1,
 		},
 		DockLifeboatSlip = {
 			id = 3722386079,
@@ -272,7 +291,9 @@ local MonetizationConfig = {
 			price = 99,
 			order = 42,
 			ready = true,
-			dockBuilding = "LifeboatSlip",
+			dockBuilding = "Boathouse",
+
+			dockLevel = 2,
 		},
 		DockCrane = {
 			id = 3722386091,
@@ -281,7 +302,9 @@ local MonetizationConfig = {
 			price = 99,
 			order = 43,
 			ready = true,
-			dockBuilding = "Crane",
+			dockBuilding = "Harbour",
+
+			dockLevel = 3,
 		},
 		DockHelipad = {
 			id = 3722386100,
@@ -290,7 +313,9 @@ local MonetizationConfig = {
 			price = 99,
 			order = 44,
 			ready = true,
-			dockBuilding = "Helipad",
+			dockBuilding = "AirStation",
+
+			dockLevel = 1,
 		},
 		DockRescueBoathouse = {
 			id = 3722386108,
@@ -300,6 +325,8 @@ local MonetizationConfig = {
 			order = 45,
 			ready = true,
 			dockBuilding = "RescueBoathouse",
+
+			dockLevel = 1,
 		},
 		DockTrophyHall = {
 			id = 3722386118,
@@ -309,6 +336,8 @@ local MonetizationConfig = {
 			order = 46,
 			ready = true,
 			dockBuilding = "TrophyHall",
+
+			dockLevel = 1,
 		},
 		DockClinic = {
 			id = 3722386124,
@@ -318,6 +347,8 @@ local MonetizationConfig = {
 			order = 47,
 			ready = true,
 			dockBuilding = "Clinic",
+
+			dockLevel = 1,
 		},
 		DecorFlowerBed = {
 			id = 3722386134,

@@ -53,8 +53,16 @@ local function triggered(player: Player, kind: PlatformPrompts.Kind): boolean
 	if kind == "notify" then
 		return player:GetAttribute("StreakClaim") ~= nil
 	elseif kind == "favorite" then
-		local data: any = DataService.Get(player) -- after the first island building
-		return data ~= nil and next(data.dockBuildings) ~= nil
+		local data: any = DataService.Get(player) -- after the first island building (the start's jetty doesn't count)
+		if data == nil or type(data.dockBuildings) ~= "table" then
+			return false
+		end
+		for key in data.dockBuildings do
+			if key ~= "Harbour" then
+				return true
+			end
+		end
+		return false
 	elseif kind == "invite" then
 		return player:GetAttribute("CrewOpDone") == true
 	end

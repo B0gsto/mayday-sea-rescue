@@ -183,6 +183,18 @@ DockBlueprints.GLYPHS = {
 		b(0.3, 0.68, 0.4, 0.09),
 		b(0.2, 0.8, 0.6, 0.1),
 	},
+	Depot = { -- a pile of bricks
+		b(0.08, 0.72, 0.84, 0.16),
+		b(0.14, 0.54, 0.3, 0.16),
+		b(0.5, 0.54, 0.36, 0.16),
+		b(0.26, 0.36, 0.44, 0.16),
+	},
+	Bunkhouse = { -- a hut with two bunks
+		b(0.1, 0.44, 0.8, 0.46),
+		b(0.04, 0.34, 0.92, 0.1),
+		b(0.18, 0.62, 0.28, 0.2, "hole"),
+		b(0.54, 0.62, 0.28, 0.2, "hole"),
+	},
 	Lighthouse = {
 		b(0.28, 0.82, 0.44, 0.1),
 		b(0.36, 0.38, 0.28, 0.44),
@@ -233,6 +245,11 @@ DockBlueprints.GLYPHS = {
 		b(0.39, 0.1, 0.22, 0.22, "round"),
 	},
 } :: { [string]: { Box } }
+
+local G = DockBlueprints.GLYPHS
+G.HQ = G.Station -- same station silhouette
+G.Harbour = G.Pontoon -- the jetty and pontoon
+G.AirStation = G.Hangar -- the hangar (the pad shares its card)
 
 function DockBlueprints.glyph(item: Item): { Box }
 	return DockBlueprints.GLYPHS[item.key] or DockBlueprints.GLYPHS.Boathouse

@@ -163,7 +163,7 @@ return function(t)
 		for i = 1, 50 do
 			many[i] = worker("Builder", 1)
 		end
-		t.expect(#Rules.migrate({ workers = many }).workers).toBe(W.CAP)
+		t.expect(#Rules.migrate({ workers = many }).workers).toBe(50) -- the Bunkhouse grows to fit them
 		t.expect(Rules.snapshot(data).workers[1].category).toBe("Medic")
 	end)
 end

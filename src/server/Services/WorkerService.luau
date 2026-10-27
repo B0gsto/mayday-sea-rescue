@@ -28,6 +28,7 @@ local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Marina = require(Shared:WaitForChild("Marina"))
 local ProgressionRules = require(Shared:WaitForChild("ProgressionRules"))
+local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 local WorkerRules = require(Shared:WaitForChild("WorkerRules"))
 
 local DataService = require(script.Parent.DataService)
@@ -309,7 +310,8 @@ function WorkerService.Recruit(player: Player, category: any, rarity: any, name:
 		return
 	end
 	local clean = WorkerRules.clean({ { category = category, rarity = rarity, name = name } })[1]
-	local cap = WorkerRules.CAP + (tonumber(player:GetAttribute("SkillWorkerCapAdd")) or 0)
+	local cap = UnlockTree.bunkCap(data.dock.levels)
+		+ (tonumber(player:GetAttribute("SkillWorkerCapAdd")) or 0)
 	local i = clean and WorkerRules.admit(data.workers, clean, cap)
 	if not i then
 		return

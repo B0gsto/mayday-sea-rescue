@@ -7,6 +7,7 @@ return function(t)
 	local ProgressionConfig = t.load("src/shared/Config/ProgressionConfig.luau")
 	local VehicleUpgrades = t.load("src/shared/VehicleUpgrades.luau")
 	local WorkerRules = t.load("src/shared/WorkerRules.luau")
+	local UnlockTree = t.load("src/shared/UnlockTree.luau")
 	local DiscoveryRules = t.load("src/shared/DiscoveryRules.luau")
 	local QuestRules = t.load("src/shared/Quests/Rules.luau")
 	local QuestData = t.load("src/shared/Quests/Data.luau")
@@ -102,27 +103,27 @@ return function(t)
 		data.cash = 987654321
 		data.totalRescues = 4321
 		data.coldOpenDone = true
-		local prepaid = nil
-		for _, rows in { DockConfig.Buildings, DockConfig.Blueprints, DockConfig.Decorations } do
+		data.dock = { levels = {}, prepaid = {} }
+		for key, b in DockConfig.Buildings do
+			data.dock.levels[key] = #b.levels
+		end
+		-- one Robux building still waiting for its last level
+		data.dock.levels.Harbour = 2
+		data.dock.prepaid.Harbour = 3
+		data.dockBuildings = UnlockTree.ownedSet(data.dock.levels)
+		data.dockPrepaid = { Harbour = true }
+		for _, rows in { DockConfig.Blueprints, DockConfig.Decorations } do
 			for key in rows do
 				data.dockBuildings[key] = true
 			end
 		end
-		for key in DockConfig.Buildings do
-			if key ~= "Pontoon" then
-				prepaid = key -- one Robux building still waiting for its prerequisites
-				break
-			end
-		end
-		data.dockBuildings[prepaid] = nil
-		data.dockPrepaid[prepaid] = true
 		for id, v in ProgressionConfig.Vehicles do
 			if not v.passOnly and v.price > 0 then
 				data.vehicles[id] = true
 			end
 		end
 		data.vehicleUpgrades.RIB = VehicleUpgrades.MAX_MASK
-		data.construction = { key = "Clinic", progress = 0.42, rate = 2.1, at = NOW }
+		data.construction = { key = "Clinic", level = 1, progress = 0.42, rate = 2.1, at = NOW }
 		data.vehicleUpgrades.JetSki = VehicleUpgrades.bit("Engine") + VehicleUpgrades.bit("Hull")
 		for i = 1, WorkerRules.CAP do
 			table.insert(data.workers, {
@@ -250,7 +251,7 @@ return function(t)
 			A._test.playerAdded(p)
 			local data = A.Get(p)
 			-- 50,000 + Mechanic 12,000 + gear level 2 (1,200; level 1 became the Engine upgrade) + jet ski seat 1,500
-			t.expect(data.cash).toBe(64700)
+			t.expect(data.cash).toBe(73800)
 			t.expect(data.totalRescues).toBe(321)
 			t.expect(data.coldOpenDone).toBe(true)
 			for n = 2, 4 do
@@ -273,7 +274,7 @@ return function(t)
 			local B = server(store, "job-B")
 			local again = fakePlayer(2)
 			B._test.playerAdded(again)
-			t.expect(B.Get(again).cash).toBe(64700)
+			t.expect(B.Get(again).cash).toBe(73800)
 			t.expect(B.Get(again).dockBuildings).toEqual(data.dockBuildings)
 		end
 	)

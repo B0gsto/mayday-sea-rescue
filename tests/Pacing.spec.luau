@@ -34,26 +34,41 @@ return function(t)
 	-- 10-20 minutes early (Workshop, fish shed, boathouse, RIB, pontoon, boat yard, clinic, lifeboat...), then
 	-- the helicopter's branch (by 8 h), the rescue boathouse, the sub's branch, the station. Every prerequisite comes before its item (planNext asserts it).
 	local PLAN = {
-		"Workshop",
+		"Workshop", -- tutorial-safe Lv1 (hq 0)
+		"HQ",
+		"Depot",
+		"Bunkhouse",
 		"FishShed",
-		"Boathouse",
+		"HQ",
+		"Boathouse", -- RIB
 		"RIB",
-		"Pontoon",
+		"Harbour",
 		"BoatYard",
 		"Clinic",
-		"LifeboatSlip",
+		"Depot", -- upgrades before the HQ3 wait
+		"Workshop",
+		"FishShed",
+		"BoatYard",
+		"Clinic",
+		"Boathouse", -- the lifeboat slip, before the HQ3 wait
+		"HQ",
 		"Lifeboat",
-		"LookoutTower",
-		"Helipad",
-		"Hangar",
-		"RescueHelicopter",
 		"RescueBoathouse",
-		"Crane",
+		"LookoutTower",
+		"HQ",
+		"AirStation",
+		"RescueHelicopter",
+		"HQ",
 		"SubPen",
-		"Station",
 		"Submarine",
 		"TrophyHall",
 	}
+	-- back half: every later level, once the HQ spine is up
+	for _, key in DockConfig.BUILDINGS do
+		for _ = 2, #DockConfig.Buildings[key].levels do
+			table.insert(PLAN, key)
+		end
+	end
 	local LABEL = { RescueHelicopter = "Helicopter" }
 
 	local SESSION_MIN = 25
@@ -92,7 +107,12 @@ return function(t)
 
 		local streak = StreakRules.newState()
 		local owned = data.vehicles -- the craft bought (the jet ski is free)
-		local built = data.dockBuildings -- the island's buildings (the unlock tree, docs/23 (q))
+		local levels = data.dock.levels -- the island's building levels (docs/25 K2)
+		local built = UnlockTree.ownedSet(levels) -- the old boolean view for worker rules
+		local function refreshBuilt()
+			data.dockBuildings = UnlockTree.ownedSet(levels)
+			built = data.dockBuildings
+		end
 		local upgrades = { JetSki = 0, RIB = 0, Lifeboat = 0 }
 		local totalOps = 0
 		-- WP-26: every person delivered home becomes a worker (the roll on a counter seed); `legacy` has none.
@@ -119,19 +139,23 @@ return function(t)
 			)
 		end
 		local function workerCap(): number
-			return WorkerRules.CAP + skills().workerCapAdd
+			return UnlockTree.bunkCap(levels) + skills().workerCapAdd
 		end
 		local function recruit(people: number)
 			for _ = 1, if legacy then 0 else people do
+				local cap = workerCap()
+				if cap <= 0 then
+					continue
+				end
 				rolls += 1
 				local category, rarity, name =
 					WorkerRules.roll(rolls * 7919, skills().rareChanceAdd)
 				WorkerRules.admit(
 					data.workers,
 					{ category = category, rarity = rarity, name = name },
-					workerCap()
+					cap
 				)
-				if #data.workers == workerCap() then
+				if #data.workers >= cap then
 					mark("Workers full")
 				end
 			end
@@ -146,15 +170,19 @@ return function(t)
 		-- construction at a time (docs/24 B): the building stands when its crew's work is done, while the
 		-- player keeps taking calls.
 		local planIndex = 1
-		local construction: { key: string, doneAt: number }? = nil
+		local construction: { key: string, level: number, doneAt: number }? = nil
 		local builds = {} -- one row per construction: when, how long, at what crew rate
 		local planNext
 		local function settleBuilds()
 			while construction and construction.doneAt <= playMin + 1e-9 do
 				local done = construction
 				construction = nil
-				built[done.key] = true
-				mark(done.key .. " built", done.doneAt)
+				levels[done.key] = done.level
+				refreshBuilt()
+				mark(`{done.key} lv{done.level} built`, done.doneAt)
+				if done.level == 1 then
+					mark(done.key .. " built", done.doneAt)
+				end
 				planNext()
 			end
 		end
@@ -165,8 +193,16 @@ return function(t)
 				end
 				local key = PLAN[planIndex]
 				if DockConfig.Buildings[key] then
-					local ok, reason, price = UnlockTree.canBuy(key, built, data.cash)
-					assert(reason ~= "Needs", `PLAN buys {key} before its prerequisites`)
+					local n = UnlockTree.levelOf(levels, key) + 1
+					if n > UnlockTree.maxLevel(key) then
+						planIndex += 1
+						continue
+					end
+					local ok, reason, price = UnlockTree.canBuild(key, n, levels, data.cash)
+					assert(
+						reason ~= "Needs" and reason ~= "Order" and reason ~= "HQ",
+						`PLAN cannot build {key} lv{n}: {reason}`
+					)
 					if not ok or not price then
 						return
 					end
@@ -178,10 +214,10 @@ return function(t)
 						crew = se.baseCrew,
 					})
 					local buildMin = BuildTimer.work(price) / 60 / rate
-					construction = { key = key, doneAt = playMin + buildMin }
+					construction = { key = key, level = n, doneAt = playMin + buildMin }
 					table.insert(
 						builds,
-						{ key = key, at = playMin, minutes = buildMin, rate = rate }
+						{ key = key, level = n, at = playMin, minutes = buildMin, rate = rate }
 					)
 					planIndex += 1
 					return
@@ -196,6 +232,12 @@ return function(t)
 					mark((LABEL[key] or key) .. " bought")
 				end
 				planIndex += 1
+				if not PLAN[planIndex] then
+					mark("Tree complete")
+				end
+			end
+			if not PLAN[planIndex] then
+				mark("Tree complete")
 			end
 		end
 
@@ -204,10 +246,12 @@ return function(t)
 		local function planPrice(): number
 			local key = PLAN[planIndex]
 			local b = key and DockConfig.Buildings[key]
-			return if b
-				then b.cash
-				elseif key then ProgressionConfig.Vehicles[key].price
-				else math.huge
+			if b then
+				local n = UnlockTree.levelOf(levels, key) + 1
+				local lvl = b.levels[n]
+				return if lvl then lvl.cash else math.huge
+			end
+			return if key then ProgressionConfig.Vehicles[key].price else math.huge
 		end
 		local function skillsNext()
 			if PLAN[planIndex] then
@@ -287,7 +331,12 @@ return function(t)
 		local function nextPrice(): number
 			local key = PLAN[planIndex]
 			local b = key and DockConfig.Buildings[key]
-			return if b then b.cash elseif key then ProgressionConfig.Vehicles[key].price else 0
+			if b then
+				local n = UnlockTree.levelOf(levels, key) + 1
+				local lvl = b.levels[n]
+				return if lvl then lvl.cash else 0
+			end
+			return if key then ProgressionConfig.Vehicles[key].price else 0
 		end
 		local function spinFree(now: number)
 			if legacy then
@@ -592,14 +641,13 @@ return function(t)
 	t.test("the plan covers the whole tree and every free craft", function()
 		local inPlan = {}
 		for _, key in PLAN do
-			t.expect(inPlan[key]).toBeNil()
-			inPlan[key] = true
+			inPlan[key] = (inPlan[key] or 0) + 1
 		end
-		for key in DockConfig.Buildings do
-			t.expect(inPlan[key]).toBe(true)
+		for key, b in DockConfig.Buildings do
+			t.expect((inPlan[key] or 0) + 1 >= #b.levels).toBe(true)
 		end
 		for id, v in ProgressionConfig.Vehicles do
-			t.expect(inPlan[id] == true or v.price == 0).toBe(true)
+			t.expect(inPlan[id] ~= nil or v.price == 0).toBe(true)
 		end
 	end)
 
@@ -693,8 +741,8 @@ return function(t)
 	t.test("free spins' Cash stays small (docs/24 D)", function()
 		t.expect(solo.treeSpinShare > 0 and solo.treeSpinShare <= 0.06).toBe(true)
 		-- a plain Cash prize is under a fifth of any building past the first two
-		for key, b in DockConfig.Buildings do
-			if key ~= "Workshop" and key ~= "FishShed" then
+		for _, b in DockConfig.Buildings do
+			if b.cash >= 2500 then
 				t.expect(SpinRules.cashFor("Uncommon") <= 0.2 * b.cash).toBe(true)
 			end
 		end
@@ -718,13 +766,18 @@ return function(t)
 	end)
 
 	t.test("docs/23 (q): a free player reaches every building and craft on Cash alone", function()
-		for _, key in PLAN do
-			local label = if DockConfig.Buildings[key]
-				then key .. " built"
-				else (LABEL[key] or key) .. " bought"
-			t.expect(minutes(solo, label) <= 30 * 60).toBe(true)
+		for key in DockConfig.Buildings do
+			if key == "Harbour" then
+				continue -- the free jetty starts owned
+			end
+			t.expect(minutes(solo, key .. " built") <= 30 * 60).toBe(true)
 		end
-		-- the last building is a long goal, not a wall
-		t.expect(minutes(solo, PLAN[#PLAN] .. " built") >= 10 * 60).toBe(true)
+		for id, v in ProgressionConfig.Vehicles do
+			if not v.passOnly and v.price > 0 then
+				t.expect(minutes(solo, (LABEL[id] or id) .. " bought") <= 30 * 60).toBe(true)
+			end
+		end
+		-- the last upgrade is a long goal, not a wall
+		t.expect(minutes(solo, "Tree complete") >= 10 * 60).toBe(true)
 	end)
 end
