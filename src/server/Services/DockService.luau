@@ -1571,7 +1571,8 @@ function DockService.Init()
 	for tier = 1, 3 do
 		MonetizationService.OnProduct(`FinishNow{tier}`, function(player, data: any)
 			local c = data.construction
-			if c and c.progress < 1 then
+			-- the tier must cover the time left (a client can prompt a cheaper tier's id itself)
+			if c and c.progress < 1 and BuildTimer.finishTier(siteLeft(player, data)) <= tier then
 				c.progress = 1 -- the receipt's save holds it; the next tick / rejoin finishes
 				return true
 			end

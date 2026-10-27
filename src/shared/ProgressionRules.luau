@@ -394,6 +394,20 @@ function Rules.migrate(raw: any): PlayerData
 			data.dockPrepaid[key] = true
 		end
 	end
+	-- a Robux decoration bought while another build ran waits here (dock.prepaid holds building levels only):
+	-- keep it, or the paid item is lost on rejoin
+	if type(raw.dockPrepaid) == "table" then
+		for key, paid in raw.dockPrepaid do
+			if
+				type(key) == "string"
+				and paid == true
+				and DockConfig.Decorations[key]
+				and not decorOwned[key]
+			then
+				data.dockPrepaid[key] = true
+			end
+		end
+	end
 	if type(raw.construction) == "table" then
 		local key = raw.construction.key
 		local at = num(raw.construction.at, 0)

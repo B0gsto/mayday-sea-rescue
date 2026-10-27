@@ -209,4 +209,13 @@ return function(t)
 		t.expect(s.tutorialStep).toBe(3)
 		t.expect(Rules.fromSnapshot(s).tutorialStep).toBe(3)
 	end)
+	t.test(
+		"a Robux decoration bought while a build ran survives a save and reload (R1 2026-10-28)",
+		function()
+			local d = Rules.defaultData()
+			d.dockPrepaid = { FlowerBed = true }
+			local back = Rules.migrate(Rules.migrate(d))
+			t.expect(back.dockPrepaid.FlowerBed).toBe(true)
+		end
+	)
 end

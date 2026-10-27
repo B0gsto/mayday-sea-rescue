@@ -526,6 +526,9 @@ function DataService.CommitReceipt(
 	if not data or not ledger or not waiting or not canSave(player) then
 		return false -- not loaded, temporary profile or leaving: Roblox retries later
 	end
+	if memoryMode and not game:GetService("RunService"):IsStudio() then
+		return false -- a live server without DataStores: a grant would never persist, Roblox retries later
+	end
 	if ledger[id] == nil then
 		local snapshot = Logic.deepCopy(data)
 		local ok, granted = pcall(grantFn, data)

@@ -255,6 +255,26 @@ function HudController.Init()
 	gui.Parent = playerGui
 
 	statusRegion = Layout.region(gui, "status")
+	-- a DataStore outage loads a temporary profile that is never saved (DataService): say so, one red pill
+	local notSaving = Instance.new("TextLabel")
+	notSaving.Name = "NotSaving"
+	notSaving.AnchorPoint = Vector2.new(0.5, 0)
+	notSaving.Position = UDim2.new(0.5, 0, 0, 8)
+	notSaving.Size = UDim2.fromOffset(170, 34)
+	notSaving.BackgroundColor3 = Color3.fromRGB(205, 45, 45)
+	notSaving.TextColor3 = Color3.new(1, 1, 1)
+	notSaving.Font = HudTheme.BoldFont
+	notSaving.TextSize = 20
+	notSaving.Text = "Not saving"
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(1, 0)
+	corner.Parent = notSaving
+	notSaving.Parent = gui
+	local function showNotSaving()
+		notSaving.Visible = player:GetAttribute("DataTemporary") == true
+	end
+	showNotSaving()
+	player:GetAttributeChangedSignal("DataTemporary"):Connect(showNotSaving)
 	noticeRegion = Layout.region(gui, "notice")
 	walletRegion = Layout.region(gui, "wallet")
 	buildWallet(walletRegion)
