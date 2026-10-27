@@ -547,8 +547,9 @@ end
 -- Level add-ons (docs/25 B): the Workshop's Lv2 saw-bench lean-to / Lv3 boat frame (M_Bld_WorkshopAddons), the
 -- Fish Market's Lv2 stalls / Lv3 smokehouse (M_Bld_FishMarketAddons), the Clinic's Lv2 pavilion / Lv3 hospital
 -- (M_Bld_ClinicAddons), the Lookout's Lv2 lantern / Lv3 searchlight (M_Bld_LookoutAddons), the Boat Yard's Lv2
--- crane / Lv3 dry dock (M_Bld_BoatYardAddons) and the Rescue Boathouse's Lv2 RIB / Lv3 lifeboat berths
--- (M_Bld_RescueBoathouseAddons): meshes Lv<l>_L<nn>_*
+-- crane / Lv3 dry dock (M_Bld_BoatYardAddons), the Rescue Boathouse's Lv2 RIB / Lv3 lifeboat berths
+-- (M_Bld_RescueBoathouseAddons) and the Air Station's Lv2 refuel pad / Lv3 patrol hut (M_Bld_AirStationAddons):
+-- meshes Lv<l>_L<nn>_*
 -- and Lv<l>_COL authored in the yard's final (scaled) frame round its ground centre, so they stay 1x (KEEP_1X
 -- `name`). False when the level is 1 or the mesh is not loaded (the Lv1 yard stands alone, everything included).
 local function addonMesh(m: Model, at: CFrame, n: number, asset: string, name: string): boolean
@@ -2542,10 +2543,13 @@ local function boathouseLevel(m: Model, b: CFrame, level: number?)
 	end
 end
 
--- Air Station: the hangar and its helipad, both on the air field.
-local function airStation(m: Model, b: CFrame)
+-- Air Station: the hangar and its helipad, both on the air field. Lv2 refuel pad + bowser apron on the hangar's -X side,
+-- Lv3 patrol hut in front of it (M_Bld_AirStationAddons, mesh x -63..-19, z -30..21: clear of the plinth and the +X
+-- helipad, so no Lv1 piece gives way). Mesh missing: today's look.
+local function airStation(m: Model, b: CFrame, level: number?)
 	hangar(m, b)
 	helipad(m, b)
+	addonMesh(m, b * AIR, level or 1, "M_Bld_AirStationAddons", "AirStationMesh")
 end
 
 -- The Depot (docs/25 B, D): the uploaded M_Bld_Depot (DockPieces.meshes, set by the server; a hut until it loads),

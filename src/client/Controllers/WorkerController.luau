@@ -1180,19 +1180,31 @@ local function lookoutPass()
 end
 
 -- docs/25 B: the Rescue Boathouse's moored RIB (Lv2) and lifeboat (Lv3) (RescueBoathouseMesh) bob gently on their
--- slips, only while you are within LIVELY; the berth and the boats' _COL boxes stay put
-type Mooring = { boats: { BasePart }, bob: Tween?, at: Vector3 }
+-- slips, only while you are within LIVELY; the berth and the boats' _COL boxes stay put. The Air Station's Lv2
+-- windsock (AirStationMesh) sways the same way, turning about its pole (mesh frame x -45.6, z 18.7) instead.
+type Mooring = { boats: { BasePart }, bob: Tween?, at: Vector3, pole: CFrame? }
 local moorings: { [Model]: Mooring } = {}
+local MOORED = {
+	RescueBoathouseMesh = { "Lv2_L04_RIB", "Lv3_L03_Lifeboat" },
+	AirStationMesh = { "Lv2_L04_Windsock" },
+}
 
 local function moorBoats(mesh: Instance)
-	if not mesh:IsA("Model") or mesh.Name ~= "RescueBoathouseMesh" or moorings[mesh] then
+	local names = MOORED[mesh.Name]
+	if not names or not mesh:IsA("Model") or moorings[mesh] then
 		return
 	end
-	local o: Mooring = { boats = {}, at = mesh:GetPivot().Position }
+	local o: Mooring = {
+		boats = {},
+		at = mesh:GetPivot().Position,
+		pole = if mesh.Name == "AirStationMesh"
+			then mesh:GetPivot() * CFrame.new(-45.6, 0, 18.7)
+			else nil,
+	}
 	moorings[mesh] = o
 	-- shortcut: read once, 2 s after the mesh lands (like the lookout); a boat streamed in later stays still
 	task.delay(2, function()
-		for _, name in { "Lv2_L04_RIB", "Lv3_L03_Lifeboat" } do
+		for _, name in names do
 			local boat = mesh:FindFirstChild(name, true)
 			if boat and boat:IsA("BasePart") then
 				table.insert(o.boats, boat)
@@ -1201,20 +1213,30 @@ local function moorBoats(mesh: Instance)
 	end)
 end
 
--- moves the boats by the change in height, so a rise or rebuild that sets their CFrame is never fought for long
-local function bobOf(boats: { BasePart }): Tween
+-- moves the boats by the change in height (the windsock by the change in turn), so a rise or rebuild that sets their
+-- CFrame is never fought for long
+local function bobOf(o: Mooring): Tween
 	local heave = Instance.new("NumberValue")
 	local last = 0
+	local pole = o.pole
 	heave.Changed:Connect(function(y: number)
-		for _, boat in boats do
-			boat.CFrame += Vector3.new(0, y - last, 0)
+		for _, boat in o.boats do
+			boat.CFrame = if pole
+				then pole * CFrame.Angles(0, y - last, 0) * pole:ToObjectSpace(boat.CFrame)
+				else boat.CFrame + Vector3.new(0, y - last, 0)
 		end
 		last = y
 	end)
 	return TweenService:Create(
 		heave,
-		TweenInfo.new(2.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-		{ Value = 0.18 }
+		TweenInfo.new(
+			if pole then 3.4 else 2.6,
+			Enum.EasingStyle.Sine,
+			Enum.EasingDirection.InOut,
+			-1,
+			true
+		),
+		{ Value = if pole then math.rad(14) else 0.18 }
 	)
 end
 
@@ -1230,7 +1252,7 @@ local function mooringPass()
 		end
 		local on = #o.boats > 0 and (o.at - me).Magnitude < LIVELY
 		if on and not o.bob then
-			o.bob = bobOf(o.boats)
+			o.bob = bobOf(o)
 		end
 		local bob = o.bob
 		if bob and on and bob.PlaybackState ~= Enum.PlaybackState.Playing then

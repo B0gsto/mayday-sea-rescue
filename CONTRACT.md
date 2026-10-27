@@ -120,7 +120,9 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   lifeguard chair gives way at Lv3; `WorkerController` bobs the two boats within LIVELY); its `ATT_Work_*` are the
   Rescuers' Lv2/Lv3 spots. The HQ's Lv4 radio wing + mast and Lv5 beacon tower + bridge are `M_Bld_HQAddons` (`HQMesh`,
   the station's -X side, 49..61 studs out at Lv5; the code radio mast and gold ball are only its fallback;
-  `WorkerController` lights `Lv5_L05_Beacon` at night). The Depot model holds `DepotMesh` (the Lv1..n
+  `WorkerController` lights `Lv5_L05_Beacon` at night). The Air Station's Lv2 refuel pad + bowser apron and Lv3 patrol
+  hut are `M_Bld_AirStationAddons` (`AirStationMesh`, the hangar's -X side and front; no Lv1 piece gives way;
+  `WorkerController` sways `Lv2_L04_Windsock` about its pole within LIVELY); no worker uses its `ATT_*` yet. The Depot model holds `DepotMesh` (the Lv1..n
   layers and `Marks`: `ATT_PickUp_*` / `ATT_DropOff_*` bays, `ATT_BargeMoor`, `ATT_QuayLoad`, `ATT_QuayLand`) and
   `FreightQuay` (west plate edge, sea level). Client: `DepotController` (barge from `BargeNext` via
   `shared/BargePath`, `Stack_1..4` from `DepotStock` / `DepotCap`, empty-crate icon on `SiteWaiting`) and
