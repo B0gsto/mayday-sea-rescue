@@ -520,9 +520,12 @@ end
 DockConfig.BOARD_SLOT = isle(-80, 58, -90) * CFrame.new(0, 0, 14)
 DockConfig.BOARD_SIZE = 6
 
--- The build station (WP-14d) stands on the free Spare3 lot by the spawn, clear of the decor spots.
+-- The build station (WP-14d, docs/25 J) stands at the jetty head: on the head deck west of the jetty's quay end
+-- (DockService builds it, JETTY_HEAD), its tablet facing the plate, clear of the jetty walk and the moored craft.
+-- Offsets are in the Jetty lot (x = right, y = toward the quay).
 DockConfig.BUILD_STATION =
-	{ lot = "Spare3", offset = Vector2.new(-11, 0), size = Vector2.new(16, 12) }
+	{ lot = "Jetty", offset = Vector2.new(-15, 25), size = Vector2.new(16, 12) }
+DockConfig.JETTY_HEAD = { offset = Vector2.new(-15, 28), size = Vector2.new(20, 20) } -- the deck under it
 
 -- The boathouse's paint booth (docs/23 d.3), in the berth frame: the gantry over the berth's inshore half. A craft
 -- seated inside this box opens its owner's paint card (DockController). The docked spot (z <= 0) stays out.

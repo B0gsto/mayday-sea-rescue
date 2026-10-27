@@ -7,8 +7,8 @@
 -- crane on the quay; the station (its lot): lit front, roof beacon; the trophy hall wall on its front; the
 -- helipad and hangar on their lots; the sub pen over the sub berth; the worker buildings as open work yards
 -- (docs/24 C) and the lifeboat slip on their DockConfig spot. DockService builds them (everyone sees them); a buy plays the Lego build
--- beat (shared/BuildSeq) client-side. The build station (docs/23 (j) rule 4, WP-14d) stands on the Spare3
--- lot by the spawn, and the Cash-only decorations on the Spare2 / Spare3 spare lots. Named hooks: parts
+-- beat (shared/BuildSeq) client-side. The build station (docs/23 (j) rule 4, WP-14d) stands on the jetty head
+-- (docs/25 J), and the Cash-only decorations on the Spare2 / Spare3 spare lots. Named hooks: parts
 -- "Flag" take the owner's colour, TextLabels "Count" show the rescue count. Materials stay off the
 -- MaterialService remap (no Slate, WoodPlanks, Brick, Concrete).
 local DockConfig = require(script.Parent:WaitForChild("Config"):WaitForChild("DockConfig"))
@@ -135,7 +135,7 @@ end
 -- WP-25 Lego kit ------------------------------------------------------------------------------------------
 -- Every building shares it: SmoothPlastic bricks, chunky 2-stud studs (a tinted Texture) on flat tops, a light
 -- grey stud plinth, white window frames, a door in the owner's colour (parts named "Flag" take it), solid
--- slope-brick roofs, tan tile paths to the lanes (DockPieces.base).
+-- slope-brick roofs, a tan path stub from the door to the nearest street (DockPieces.stub, DockPieces.streets).
 
 local function brick(
 	parent: Instance,
@@ -519,7 +519,6 @@ local function boathouse(m: Model, b: CFrame)
 		"Boathouse",
 		UiImages.Kit.boat_to_me
 	)
-	path(m, b, { Vector2.new(-62, 58), Vector2.new(-48, 42) })
 	-- the board slot: an empty floor square outlined in yellow (WP-5 puts the board here)
 	local slot = Instance.new("Model")
 	slot.Name = "BoardSlot"
@@ -607,7 +606,6 @@ local function lookout(m: Model, b: CFrame)
 	ladder.Material = M.SmoothPlastic
 	ladder.Anchored = true
 	ladder.Parent = m
-	path(m, b, { Vector2.new(62, -96), Vector2.new(62, -82) }) -- from the plaza to the ladder
 end
 
 -- the slipway crane: mast on the quay starboard of the berth, the boom out over the berth's inshore end
@@ -1090,7 +1088,6 @@ local function subPen(m: Model, b: CFrame)
 		"Sub Pen",
 		UiImages.Kit.lifebuoy
 	)
-	path(m, b, { Vector2.new(115, 104), Vector2.new(115, 88) })
 end
 
 -- the quest blueprint lighthouse (DockConfig.Blueprints) on its spare lot: a red and white tower, a gallery and a
@@ -1176,7 +1173,6 @@ type Hut = {
 	roof: Color3?,
 	tree: number?, -- WP-25 r8: a little tree at the back corner on this side (local X sign), clear of the neighbours
 	icon: string?,
-	path: { Vector2 },
 }
 
 local function crate(m: Model, at: CFrame, color: Color3)
@@ -1188,30 +1184,25 @@ local HUTS: { [string]: Hut } = {
 		tree = -1,
 		roof = BRICK_RED,
 		icon = UiImages.Kit.build,
-		path = { Vector2.new(43.5, -10), Vector2.new(36, -10) },
 	},
 	FishShed = {
 		tree = 1,
 		roof = BRICK_WHITE,
 		icon = UiImages.Kit.cash,
-		path = { Vector2.new(60, 105), Vector2.new(55, 105) },
 	},
 	BoatYard = {
 		tree = 1,
 		roof = BRICK_BLUE,
 		icon = UiImages.Kit.boost,
-		path = { Vector2.new(85, -94), Vector2.new(85, -82) },
 	},
 	RescueBoathouse = {
 		tree = 1,
 		roof = BRICK_WHITE,
 		icon = UiImages.Kit.lifebuoy,
-		path = { Vector2.new(-59, 99), Vector2.new(-54, 99) },
 	},
 	Clinic = {
 		tree = -1,
 		roof = BRICK_RED,
-		path = { Vector2.new(-85, -92.4), Vector2.new(-85, -82) },
 	},
 }
 
@@ -1285,9 +1276,6 @@ local function hut(m: Model, b: CFrame, key: string)
 		if key == "Clinic" then nil else def.name,
 		spec and spec.icon
 	)
-	if spec then
-		path(m, b, spec.path)
-	end
 end
 
 local LEAF = Color3.fromRGB(40, 127, 70) -- Lego dark green: reads against the plate
@@ -1588,7 +1576,6 @@ local function workshopYard(m: Model, b: CFrame)
 	yardClutter(m, at, w, d)
 	field(m, at * CFrame.new(w / 2 + 5.5, 0, d / 2 + 5), 5, 5, 1)
 	lamp(m, at, w / 2 + 9, d / 2 + 1, 0) -- a lamp over the lawn between the workshop and the boat yard
-	path(m, b, spec.path)
 end
 
 -- Gatherer: a fish market on the cove walk: two striped awning stalls, fish crates, drying racks
@@ -1684,7 +1671,6 @@ local function fishMarket(m: Model, b: CFrame)
 	yardPath(m, at, d)
 	yardClutter(m, at, w, d)
 	rock(m, at * CFrame.new(w / 2 + 5, 0, d / 2 + 4))
-	path(m, b, spec.path)
 end
 
 -- Mechanic: a boat up on a cradle under a gantry crane, tool chests beside it
@@ -1795,7 +1781,6 @@ local function boatYard(m: Model, b: CFrame)
 	yardPath(m, at, d)
 	yardClutter(m, at, w, d)
 	rock(m, at * CFrame.new(-w / 2 - 5, 0, d / 2 + 4))
-	path(m, b, spec.path)
 end
 
 -- Rescuer: an open slipway shed with the rescue boat, a lifebuoy rack and a tall lifeguard chair
@@ -1965,7 +1950,6 @@ local function rescueBoathouse(m: Model, b: CFrame)
 	yardPath(m, at, d)
 	yardClutter(m, at, w, d)
 	lamp(m, at, -w / 2 - 5, d / 2 + 4, 0)
-	path(m, b, spec.path)
 end
 
 -- Medic: a white pavilion (open sides) with a big red cross, two beds and a stretcher in view
@@ -1973,7 +1957,6 @@ local function clinic(m: Model, b: CFrame)
 	local def = DockConfig.Buildings.Clinic
 	local at = b * def.spot
 	local w, d = yardSize(def)
-	local spec = HUTS.Clinic
 	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
 	for _, x in { -1, 1 } do
 		for _, z in { -1, 1 } do
@@ -2086,7 +2069,6 @@ local function clinic(m: Model, b: CFrame)
 	yardPath(m, at, d)
 	yardClutter(m, at, w, d)
 	field(m, at * CFrame.new(-w / 2 - 5.5, 0, d / 2 + 5), 5, 5, 3)
-	path(m, b, spec.path)
 end
 
 -- the lifeboat slip (Boathouse Lv2) on its own harbour lot: an open shed over a slipway that runs off the plate
@@ -2154,50 +2136,21 @@ local function lifeboatSlip(m: Model, b: CFrame)
 	path(m, b, { Vector2.new(-80, 82), Vector2.new(-80, 70) })
 end
 
--- WP-25: the fixed set on every island plate, there from the bare start (DockService builds it with the jetty):
--- the tan paths (a loop of lanes round the station's spot from the spawn to the quay promenade, the cove walks, the
--- links to both bridges), a central plaza on the cove axis, Lego trees round the edges, a lifebuoy stand on the
--- quay and a bench by the spawn. Island (r, f) points: r = right, f = out toward the cove.
+-- docs/25 J (owner 2026-10-27): empty start. The fixed set on every plate is only its edge (DockService adds the
+-- jetty, its head deck, the berth and the sign); the streets arrive with HQ Lv1 (DockPieces.streets). Island
+-- (r, f) points: r = right, f = out toward the cove.
 local V = Vector2.new
-DockPieces.PATHS = {
-	{ V(-34, -84), V(34, -84) }, -- the back cross, past the spawn
-	{ V(0, -84), V(0, -52) }, -- the spawn walk, up to the station's door
-	{ V(-34, -84), V(-34, 23) }, -- the lanes either side of the station
-	{ V(34, -84), V(34, 23) },
-	{ V(-52, 23), V(55, 23) }, -- the quay promenade
-	{ V(55, 23), V(55, 104) }, -- the east cove walk (boathouse, fish shed)
-	{ V(-52, 23), V(-52, 148), V(-96, 148) }, -- the west cove walk to the quest tablet
-	{ V(-34, -84), V(-121, -78) }, -- to the bridges
-	{ V(34, -84), V(121, -78) },
+-- docs/25-visuals.html map: the bridge road, the avenue from the HQ's back to it (past the spawn), the quay
+-- promenades either side of the plaza and the two cove walks (the west one on to the quest tablet)
+DockPieces.STREETS = {
+	{ V(-121, -78), V(121, -78) }, -- the bridge road, bridge to bridge
+	{ V(0, -78), V(0, -28) }, -- the avenue, the spawn to the HQ's back
+	{ V(-152, 22), V(-44, 22) }, -- the quay promenades
+	{ V(44, 22), V(152, 22) },
+	{ V(-52, 22), V(-52, 148), V(-96, 148) }, -- the cove walks
+	{ V(52, 22), V(52, 148) },
 }
--- WP-25 r6: five clumps of mixed sizes (island r, f, scale) framing the plate corners and the lower quadrants
-local V3 = Vector3.new
-local TREES = {
-	-- the back-left corner, along the chamfer
-	V3(-120, -95, 0.8),
-	V3(-115, -122, 1.2),
-	V3(-102, -136, 1.5),
-	-- the back-right corner
-	V3(116, -124, 1.5),
-	V3(103, -137, 1.1),
-	V3(88, -144, 1.0),
-	-- flanking the spawn, clear of the station/flag-tower skyline
-	V3(-86, -144, 1.1),
-	V3(-78, -152, 0.9),
-	-- the east front wing
-	V3(140, 94, 1.5),
-	V3(148, 80, 0.9),
-	V3(128, 110, 1.1),
-	-- the west front wing
-	V3(-140, 92, 1.4),
-	V3(-148, 78, 0.8),
-	V3(-127, 106, 1.0),
-	V3(-115, 120, 0.8),
-}
--- a few flower patches by the spawn (docs/24 C: thin the clutter, keep the colour near the arrival)
-local FLOWERS = { V(-8, -64), V(8, -64) }
--- docs/24 C r4: the outer pair only -- the two inner lamps stood on the plaza tiles
-local LAMPS = { V(-44, 17), V(44, 17) } -- along the promenade's inland side
+DockPieces.PLAZA = { centre = V(0, 17), size = V(80, 26) } -- from the HQ's front to the jetty head (the avenue)
 local function tree(m: Model, at: CFrame, s: number)
 	brick(m, "Trunk", Vector3.new(2.4, 6 * s, 2.4), at * CFrame.new(0, 3 * s, 0), RBROWN)
 	for i, w in { 12, 8.5, 5 } do -- stacked round plates: a Lego pine, round from the build camera
@@ -2213,111 +2166,11 @@ local function tree(m: Model, at: CFrame, s: number)
 	end
 end
 
+-- The bare plate's edge: the cove's side walls, a stud-capped dark grey quay edge, yellow bollards on it, black tyre
+-- fenders below. Nothing else stands on the land until the first build.
 function DockPieces.base(b: CFrame): Model
 	local m = Instance.new("Model")
 	m.Name = "IslandSet"
-	for _, pts in DockPieces.PATHS do
-		path(m, b, pts)
-	end
-	-- docs/24 C r3: one clear plaza on the cove axis in front of the station: a darker tan tile field with a
-	-- dark border, so it reads as a place from the build camera (the paths stay light tan)
-	local plaza =
-		brick(m, "Plaza", Vector3.new(64, 0.3, 30), isle(b, 0, 4) * CFrame.new(0, 0.15, 0), PLAZA)
-	plaza.CanCollide = false
-	studTop(plaza)
-	border(plaza, PLAZA_EDGE, 24) -- a 3-stud darker tile border round the plaza
-	-- a bigger anchor statue at its centre: a Lego landmark seen from the sea and the build camera
-	local anchor = isle(b, 0, 4)
-	studTop(brick(m, "AnchorBase", Vector3.new(10, 1.2, 10), anchor * CFrame.new(0, 0.9, 0), LBG))
-	brick(m, "AnchorShaft", Vector3.new(1.8, 12, 1.8), anchor * CFrame.new(0, 7.5, 0), DBG)
-	brick(m, "AnchorStock", Vector3.new(9.4, 1.4, 1.4), anchor * CFrame.new(0, 12.4, 0), DBG)
-	part(
-		m,
-		"AnchorRing",
-		Vector3.new(0.9, 4.6, 4.6),
-		anchor * CFrame.new(0, 14.6, 0) * CFrame.Angles(0, math.pi / 2, 0),
-		BRICK_RED,
-		M.SmoothPlastic,
-		Enum.PartType.Cylinder
-	)
-	for _, x in { -1, 1 } do
-		brick(
-			m,
-			"AnchorArm",
-			Vector3.new(1.3, 5.6, 1.3),
-			anchor * CFrame.new(x * 3, 3.6, 0) * CFrame.Angles(0, 0, x * 0.7),
-			DBG
-		)
-		brick(
-			m,
-			"AnchorFluke",
-			Vector3.new(1.3, 2.6, 2.4),
-			anchor * CFrame.new(x * 4.6, 2.1, 0) * CFrame.Angles(0, 0, x * 0.45),
-			DBG
-		)
-	end
-	for _, t in TREES do
-		tree(m, isle(b, t.X, t.Y), t.Z)
-	end
-	-- a red and white lifebuoy on a white post at the quay, beside the jetty
-	local stand = isle(b, 24.5, 28)
-	studTop(
-		brick(m, "StandBase", Vector3.new(2, 0.8, 2), stand * CFrame.new(0, 0.4, 0), BRICK_WHITE)
-	)
-	brick(m, "StandPost", Vector3.new(0.8, 5, 0.8), stand * CFrame.new(0, 3, 0), BRICK_WHITE)
-	for k = 0, 7 do
-		brick(
-			m,
-			"Lifebuoy",
-			Vector3.new(1.3, 0.7, 0.6),
-			stand
-				* CFrame.new(0, 4.2, -0.7)
-				* CFrame.Angles(0, 0, k * math.pi / 4)
-				* CFrame.new(0, 1.5, 0),
-			if k % 2 == 0 then BRICK_RED else BRICK_WHITE
-		)
-	end
-	-- a bench by the spawn, facing the station
-	local bench = isle(b, 12, -80)
-	for _, x in { -2, 2 } do
-		brick(m, "BenchLeg", Vector3.new(0.8, 1.6, 2), bench * CFrame.new(x, 0.8, 0), DBG)
-	end
-	studTop(
-		brick(m, "BenchSeat", Vector3.new(6, 0.6, 2.4), bench * CFrame.new(0, 1.9, 0), BRICK_BLUE)
-	)
-	brick(m, "BenchBack", Vector3.new(6, 2, 0.6), bench * CFrame.new(0, 3, 1.1), BRICK_BLUE)
-	-- a few flower patches by the spawn
-	local blooms = { BRICK_RED, BRICK_YELLOW, BRICK_PINK, BRICK_WHITE }
-	for k, f in FLOWERS do
-		local at = isle(b, f.X, f.Y)
-		part(
-			m,
-			"Bed",
-			Vector3.new(0.6, 6, 6),
-			at * CFrame.new(0, 0.3, 0) * CFrame.Angles(0, 0, math.pi / 2),
-			LEAF,
-			M.SmoothPlastic,
-			Enum.PartType.Cylinder
-		)
-		for i = 0, 2 do
-			local a = (k + i * 2.1)
-			part(
-				m,
-				"Bloom",
-				Vector3.new(1.4, 1.4, 1.4),
-				at * CFrame.new(math.cos(a) * 1.6, 1.1, math.sin(a) * 1.6),
-				blooms[(k + i) % #blooms + 1],
-				M.SmoothPlastic,
-				Enum.PartType.Ball
-			)
-		end
-	end
-	for _, v in LAMPS do
-		lamp(m, isle(b, v.X, v.Y), 0, 0, 0)
-	end
-	-- the bunkhouse on the quay (the crew's hut), its door onto the promenade
-	cottage(m, isle(b, 21, 6), 14, 10, RBROWN, BRICK_BLUE, "Bunkhouse", UiImages.Kit.crew)
-	-- the cove's side walls: a stud-capped dark grey quay edge, yellow bollards on it, black tyre fenders below
 	local notch = RingLayout.IslandPlate.notch
 	local edge = RingLayout.IslandPlate.edge
 	for _, side in { -1, 1 } do
@@ -2355,47 +2208,77 @@ function DockPieces.base(b: CFrame): Model
 			)
 		end
 	end
-	-- WP-25 r9: a chunky red/white Lego flag tower behind the station (10 parts; the red/white lighthouse is the
-	-- Spare1 quest reward): the island's landmark from the sea and the other islands at every stage (plate stays flat)
-	local lh = isle(b, 19, -68)
-	studTop(brick(m, "TowerBase", Vector3.new(16, 2, 16), lh * CFrame.new(0, 1, 0), BRICK_RED))
-	for k = 0, 4 do
-		brick(
-			m,
-			"TowerBand",
-			Vector3.new(13.5 - k * 0.6, 15.6, 13.5 - k * 0.6),
-			lh * CFrame.new(0, 9.8 + k * 15.6, 0),
-			if k % 2 == 0 then BRICK_WHITE else BRICK_RED
-		)
-	end
-	studTop(
-		brick(m, "Gallery", Vector3.new(14, 1.6, 14), lh * CFrame.new(0, 80.8, 0), BRICK_YELLOW)
-	)
-	brick(m, "Mast", Vector3.new(2.4, 20, 2.4), lh * CFrame.new(0, 91.6, 0), BRICK_WHITE)
-	part(
-		m,
-		"MastTop",
-		Vector3.new(3.6, 3.6, 3.6),
-		lh * CFrame.new(0, 103.4, 0),
-		BRICK_YELLOW,
-		M.SmoothPlastic,
-		Enum.PartType.Ball
-	)
-	local pennant =
-		brick(m, "MastFlag", Vector3.new(0.5, 16, 26), lh * CFrame.new(0, 92.5, 14.2), BRICK_RED)
-	pennant.CanCollide = false
-	for _, n in { Enum.NormalId.Left, Enum.NormalId.Right } do
-		local d = Instance.new("Decal")
-		d.Face = n
-		d.Texture = UiImages.Kit.lifebuoy
-		d.Parent = pennant
-	end
 	for _, d in m:GetDescendants() do
-		if d:IsA("BasePart") and d.Name ~= "Path" then
+		if d:IsA("BasePart") then
 			d.CanQuery = false -- set dressing: no prompts or camera hits
 		end
 	end
 	return m
+end
+
+-- The street grid (docs/25 J: it arrives with HQ Lv1): the plaza tiles in front of the HQ, the tan stud paths.
+function DockPieces.streets(b: CFrame): Model
+	local m = Instance.new("Model")
+	m.Name = "Streets"
+	for _, pts in DockPieces.STREETS do
+		path(m, b, pts)
+	end
+	local c, s = DockPieces.PLAZA.centre, DockPieces.PLAZA.size
+	local plaza = brick(
+		m,
+		"Plaza",
+		Vector3.new(s.X, 0.3, s.Y),
+		isle(b, c.X, c.Y) * CFrame.new(0, 0.15, 0),
+		PLAZA
+	)
+	plaza.CanCollide = false
+	studTop(plaza)
+	border(plaza, PLAZA_EDGE, 24) -- a 3-stud darker tile border round the plaza
+	return m
+end
+
+-- The nearest point on the streets (or the plaza) to island point p.
+local function nearestStreet(p: Vector2): Vector2
+	local best, bestD = p, math.huge
+	local function try(q: Vector2)
+		local d = (q - p).Magnitude
+		if d < bestD then
+			best, bestD = q, d
+		end
+	end
+	for _, pts in DockPieces.STREETS do
+		for k = 1, #pts - 1 do
+			local a, ab = pts[k], pts[k + 1] - pts[k]
+			try(a + ab * math.clamp((p - a):Dot(ab) / ab:Dot(ab), 0, 1))
+		end
+	end
+	local c, h = DockPieces.PLAZA.centre, DockPieces.PLAZA.size / 2
+	try(V(math.clamp(p.X, c.X - h.X, c.X + h.X), math.clamp(p.Y, c.Y - h.Y, c.Y + h.Y)))
+	return best
+end
+
+-- docs/25 J: a building's own short path from its door (the spot's -Z side) to the nearest street: out of the door,
+-- then one turn onto the street. Returns island (r, f) points.
+function DockPieces.stub(spot: CFrame, size: Vector2): { Vector2 }
+	local function toIsle(cf: CFrame): Vector2
+		local p = Marina.ISLAND:PointToObjectSpace(cf.Position)
+		return V(p.X, -p.Z)
+	end
+	local door = toIsle(spot * CFrame.new(0, 0, -size.Y / 2))
+	local out = toIsle(spot * CFrame.new(0, 0, -size.Y / 2 - 6))
+	local q = nearestStreet(out)
+	local dir = out - door
+	local turn = if math.abs(dir.X) > math.abs(dir.Y) then V(q.X, out.Y) else V(out.X, q.Y)
+	if (turn - door):Dot(dir) < 0 then
+		turn = out -- the street is behind the door: step out first
+	end
+	local pts = { door }
+	for _, pt in { turn, q } do
+		if (pt - pts[#pts]).Magnitude > 0.5 then
+			table.insert(pts, pt)
+		end
+	end
+	return pts
 end
 
 -- Harbour levels: Lv1 is the bare jetty (the plate's fixed jetty), Lv2 the pontoon, Lv3 the crane.
@@ -2532,6 +2415,9 @@ function DockPieces.building(key: string, cf: CFrame, level: number?): Model
 			0.8
 		)
 	end
+	if def and def.spot and def.size and not AFLOAT[key] and key ~= "HQ" then -- the HQ fronts the plaza
+		path(m, cf, DockPieces.stub(def.spot, def.size))
+	end
 	if def and def.spot and def.size and not AFLOAT[key] then
 		-- WP-25 r7: a darker green bed under the lot (2 studs round it, under the paths): a framed plot, not lawn
 		local bed = brick(
@@ -2547,195 +2433,14 @@ function DockPieces.building(key: string, cf: CFrame, level: number?): Model
 	return m
 end
 
--- WP-25 r4/r6/r7: an empty lot's marker (`at` on the plate, its footprint `size`; `b` the berth frame): a low grey
--- Lego stud plate with the build glyph in the middle and a 3-stud rim in the owner's colour (SurfaceGui frames named "Rim": no parts) and a tall
--- "for sale" peg flag with the build glyph at a corner, turned to face the build camera. The flag is named "Flag"
--- (the owner's colour; DockService colours the rim with it). The paper blueprint lies on top.
-function DockPieces.lotMarker(b: CFrame, at: CFrame, size: Vector2, price: number?): Model
-	local m = Instance.new("Model")
-	m.Name = "LotMarker"
-	local pad = brick(
-		m,
-		"LotPad",
-		Vector3.new(size.X - 1, 0.4, size.Y - 1),
-		at * CFrame.new(0, 0.2, 0),
-		LBG -- WP-25 r7: a grey baseplate (white read as a missing texture; tan is the paths now)
-	)
-	pad.CanCollide = false
-	studTop(pad)
-	local gui = border(pad, DBG, 24)
-	local glyph = Instance.new("ImageLabel") -- the build glyph in the middle: "build here" from the top-down camera
-	glyph.BackgroundTransparency = 1
-	glyph.Image = UiImages.Kit.build
-	glyph.ScaleType = Enum.ScaleType.Fit
-	glyph.AnchorPoint = Vector2.new(0.5, 0.5)
-	glyph.Position = UDim2.fromScale(0.5, 0.5)
-	glyph.Size = UDim2.fromOffset(math.min(size.X, size.Y) * 3.6, math.min(size.X, size.Y) * 3.6) -- 45% (8 px a stud)
-	glyph.Parent = gui
-	for _, c in { V(0, 0), V(1, 0), V(0, 1), V(1, 1) } do -- 4-stud corner tiles: read from the build camera
-		local f = Instance.new("Frame")
-		f.Name = "Rim"
-		f.BorderSizePixel = 0
-		f.BackgroundColor3 = DBG
-		f.AnchorPoint = c
-		f.Position = UDim2.fromScale(c.X, c.Y)
-		f.Size = UDim2.fromOffset(32, 32)
-		f.Parent = gui
-	end
-	-- docs/24 C r2/r3: a locked lot reads as a site: tall orange/white stakes and a stacked crate pair (2, part budget)
-	local hx, hz = size.X / 2 - 2, size.Y / 2 - 2
-	for _, c in { V(-hx, -hz), V(hx, -hz), V(-hx, hz), V(hx, hz) } do
-		brick(
-			m,
-			"Stake",
-			Vector3.new(0.7, 6, 0.7),
-			at * CFrame.new(c.X, 3.4, c.Y),
-			if (c.X > 0) == (c.Y > 0) then BRICK_ORANGE else BRICK_WHITE
-		)
-	end
-	crate(m, at * CFrame.new(hx - 1.6, 0.4, hz - 1.6), BRICK_ORANGE)
-	crate(m, at * CFrame.new(hx - 1.6, 2.4, hz - 1.6), BRICK_BLUE)
-	local peg = at * CFrame.new(-size.X / 2 + 2.5, 0, -size.Y / 2 + 2.5)
-	studTop(brick(m, "LotPeg", Vector3.new(1.2, 13, 1.2), peg * CFrame.new(0, 6.5, 0), BRICK_WHITE))
-	local face = CFrame.new(peg.Position) * isle(b, 0, 0).Rotation -- +Z toward the island's back: the build camera
-	local f = brick(m, "Flag", Vector3.new(8, 5.2, 0.8), face * CFrame.new(4.6, 10, 0), BRICK_WHITE)
-	f.CanCollide = false
-	for _, n in { Enum.NormalId.Front, Enum.NormalId.Back } do
-		if not price then
-			local d = Instance.new("Decal")
-			d.Face = n
-			d.Texture = UiImages.Kit.build
-			d.Parent = f
-			continue
-		end
-		-- WP-25 r8: the build glyph over the lot's price (cash icon + 2.5K): what this lot buys, at a glance
-		local sgui = Instance.new("SurfaceGui")
-		sgui.Face = n
-		sgui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-		sgui.PixelsPerStud = 30
-		sgui.LightInfluence = 0.4
-		sgui.Parent = f
-		local mark = Instance.new("ImageLabel")
-		mark.BackgroundTransparency = 1
-		mark.Image = UiImages.Kit.build
-		mark.ScaleType = Enum.ScaleType.Fit
-		mark.Position = UDim2.fromScale(0, 0.04)
-		mark.Size = UDim2.fromScale(1, 0.52)
-		mark.Parent = sgui
-		local cash = mark:Clone()
-		cash.Image = UiImages.Kit.cash
-		cash.Position = UDim2.fromScale(0.06, 0.58)
-		cash.Size = UDim2.fromScale(0.3, 0.38)
-		cash.Parent = sgui
-		local label = Instance.new("TextLabel")
-		label.BackgroundTransparency = 1
-		label.Position = UDim2.fromScale(0.36, 0.58)
-		label.Size = UDim2.fromScale(0.6, 0.38)
-		label.TextScaled = true
-		label.Font = Enum.Font.FredokaOne
-		label.TextColor3 = BRICK_WHITE -- on any owner colour
-		label.TextStrokeTransparency = 0
-		label.Text = if price >= 1000 then string.format("%gK", price / 1000) else tostring(price)
-		label.Parent = sgui
-	end
-	for _, d in m:GetDescendants() do
-		if d:IsA("BasePart") then
-			d.CanQuery = false
-		end
-	end
-	return m
-end
-
--- WP-25 r9: the finish pass used to fill the lawn with garden clusters; docs/24 C opened the island up, so the
--- whole-tree pass adds nothing now (the empty lots still become gardens, DockPieces.lotGarden). Kept because
--- DockService owns the lifecycle of this model.
-function DockPieces.finish(_b: CFrame): Model
-	local m = Instance.new("Model")
-	m.Name = "Finish"
-	return m
-end
-
--- WP-25 r9: an empty lot once the whole tree is built (`at` on the plate, its footprint `size`): a finished garden,
--- not a for-sale pad: a lot bed, a tan stud patio, tulip beds either side, a white fence with a gate, bushes, a pot
-function DockPieces.lotGarden(at: CFrame, size: Vector2): Model
-	local m = Instance.new("Model")
-	m.Name = "LotGarden"
-	local bed = brick(
-		m,
-		"LotBed",
-		Vector3.new(size.X + 4, 0.26, size.Y + 4),
-		at * CFrame.new(0, 0.13, 0),
-		Color3.fromRGB(75, 151, 75)
-	)
-	studTop(bed)
-	local patio = brick(
-		m,
-		"Patio",
-		Vector3.new(size.X * 0.5, 0.4, size.Y * 0.5),
-		at * CFrame.new(0, 0.3, 0),
-		TAN
-	)
-	studTop(patio)
-	border(patio, BRICK_WHITE, 10)
-	local hx, hz = size.X / 2, size.Y / 2
-	for _, x in { -1, 1 } do
-		field(
-			m,
-			at * CFrame.new(x * hx * 0.72, 0, 0),
-			size.X * 0.2,
-			size.Y * 0.7,
-			if x < 0 then 1 else 3
-		)
-		brick(
-			m,
-			"Fence",
-			Vector3.new(hx - 3, 1.8, 0.7),
-			at * CFrame.new(x * (hx + 3) / 2, 0.9, -hz + 0.5),
-			BRICK_WHITE
-		)
-		for _, z in { -1, 1 } do
-			part(
-				m,
-				"Bush",
-				Vector3.new(3.6, 3.6, 3.6),
-				at * CFrame.new(x * hx * 0.32, 1.8, z * hz * 0.32),
-				LEAF,
-				M.SmoothPlastic,
-				Enum.PartType.Ball
-			)
-		end
-	end
-	brick(m, "Fence", Vector3.new(size.X, 1.8, 0.7), at * CFrame.new(0, 0.9, hz - 0.5), BRICK_WHITE)
-	part(
-		m,
-		"Pot",
-		Vector3.new(2.6, 4, 4),
-		at * CFrame.new(0, 1.3, 0) * CFrame.Angles(0, 0, math.pi / 2),
-		BRICK_ORANGE,
-		M.SmoothPlastic,
-		Enum.PartType.Cylinder
-	)
-	part(
-		m,
-		"Bloom",
-		Vector3.new(4, 4, 4),
-		at * CFrame.new(0, 3.6, 0),
-		BRICK_PINK,
-		M.SmoothPlastic,
-		Enum.PartType.Ball
-	)
-	for _, d in m:GetDescendants() do
-		if d:IsA("BasePart") then
-			d.CanQuery, d.CanCollide = false, d.Name == "Fence"
-		end
-	end
-	return m
-end
-
--- WP-25 r4: owner-colour tile bands across the quay walks (the promenade, both cove walks): one clear carrier part
+-- WP-25 r4: owner-colour tile bands across the quay walks (both promenades, both cove walks): one clear carrier part
 -- per walk with a SurfaceGui of band frames (few parts). Returns the frames; DockService colours them with the flag.
-local QUAY_WALKS =
-	{ { V(-52, 23), V(55, 23) }, { V(55, 23), V(55, 104) }, { V(-52, 23), V(-52, 148) } }
+local QUAY_WALKS = { -- DockPieces.STREETS' quay legs; DockService lays them with the streets
+	{ V(-152, 22), V(-44, 22) },
+	{ V(44, 22), V(152, 22) },
+	{ V(-52, 22), V(-52, 148) },
+	{ V(52, 22), V(52, 148) },
+}
 function DockPieces.quayBands(parent: Instance, b: CFrame): { Frame }
 	local out = {}
 	for _, w in QUAY_WALKS do
