@@ -4,8 +4,9 @@
 -- Only an allowed player gets Dev_Grant (the client panel stays inert without it); every
 -- Dev_Action re-checks the sender, validates the args (DevConfig.validate), is rate-limited and
 -- printed with the dev's user id. Non-devs get nil and no error text.
--- Remotes under ReplicatedStorage.Net: Dev_Grant (S->C, { toggle = true? }), Dev_Action
--- (C->S function: action, args -> ok, short text, data?). Chat "/dev" toggles the panel.
+-- Remotes under ReplicatedStorage.Net: Dev_Grant (S->C, { toggle = true?, vfx = name? }), Dev_Action
+-- (C->S function: action, args -> ok, short text, data?). Chat "/dev" toggles the panel; "/vfx <name|all>" fires
+-- the VFX bench on the dev's client.
 -- Each action reuses the owning service's API; see CONTRACT.md "Dev board".
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -477,6 +478,13 @@ function DevService.Start()
 			grant:FireClient(player, { toggle = true })
 		end
 	end
+	-- chat "/vfx <name|all>": the dev's client fires that VFX preset in front of its camera (DevController bench)
+	local function vfx(player: Player?, text: string)
+		local name = DevConfig.vfxName(text)
+		if player and name and isDev(player) then
+			grant:FireClient(player, { vfx = name })
+		end
+	end
 	if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 		local command = Instance.new("TextChatCommand")
 		command.Name = "Dev_Board"
@@ -486,11 +494,21 @@ function DevService.Start()
 			toggle(Players:GetPlayerByUserId(source.UserId))
 		end)
 		command.Parent = TextChatService:FindFirstChild("TextChatCommands") or TextChatService
+		local bench = Instance.new("TextChatCommand")
+		bench.Name = "Dev_VFX"
+		bench.PrimaryAlias = "/vfx"
+		bench.AutocompleteVisible = false
+		bench.Triggered:Connect(function(source: TextSource, text: string)
+			vfx(Players:GetPlayerByUserId(source.UserId), text)
+		end)
+		bench.Parent = command.Parent
 	else
 		local function hook(player: Player)
 			player.Chatted:Connect(function(message)
 				if message == "/dev" then
 					toggle(player)
+				else
+					vfx(player, message)
 				end
 			end)
 		end

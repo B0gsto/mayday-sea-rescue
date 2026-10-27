@@ -19,8 +19,10 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AudioController = require(script.Parent.AudioController)
 local CasualtyRig = require(Shared:WaitForChild("Casualty"):WaitForChild("CasualtyRig"))
 local ClimbPath = require(Shared:WaitForChild("Ops"):WaitForChild("ClimbPath"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local VoiceTTS = require(script.Parent.VoiceTTS)
 
 local CasualtyController = {}
@@ -106,6 +108,7 @@ end
 -- The climb plays on every client relative to its own copy of the hull (docs/NEXT 0c): the hull is
 -- network-owned by the driver, so the server's climb trails a fast boat. VehicleService.Climb sets the
 -- hull-space path on the Victim; we stop once the weld goes on and the hull carries them.
+local splashed: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
 local function climbStep()
 	local folder = Workspace:FindFirstChild("CallProps")
 	if not folder then
@@ -140,6 +143,12 @@ local function climbStep()
 		local hull = vehicle and vehicle.PrimaryPart
 		if not hull then
 			continue -- hull not replicated (yet)
+		end
+		if splashed[victim] ~= started then -- docs/26: they leave the water, once per climb
+			splashed[victim] = started
+			local at = hull.CFrame:PointToWorldSpace(start)
+			VFXKit.play("pickup_splash", CFrame.new(at))
+			AudioController.play("Splash_Entry", at, 0.6, 1.25)
 		end
 		local t = (now - started) / ClimbPath.SECONDS
 		victim:PivotTo(ClimbPath.at(hull.CFrame, start, side, hull.Size.X / 2, seat, t))

@@ -357,9 +357,14 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   `A11yPalette`. Camera: `CameraController` (third person only; `SetOverride`, `PlayCinematic`), `Camera/Cinematic`,
   `Camera/CameraMath`. Audio: `AudioConfig`, `AudioController`, `Audio/AudioMix`. Swimming: `SwimController` +
   `Explore/Snorkel`.
+- VFX (docs/26): `client/VFX/VFXKit` owns every effect: `VFXKit.play(name, cframeOrPart, { color, scale, radius,
+  height }?)` (pooled `Emit` bursts, 250-stud cull, graphics-level scaling, Reduce motion halves bursts and drops
+  light flashes). Presets are data in `client/VFX/Presets` (caps: feedback/state 40, ambience 12, spectacle 120;
+  `tests/VFXPresets.spec.luau`); every texture id lives in `shared/Config/VFXTextures`. Callers play their own sound.
 
 ## Dev board
 
 Dev-only admin panel (exempt from the no-choice rule): `DevConfig` (access: Studio, listed user ids, group rank
 >= 254; action specs and validation, `tests/DevBoard.spec.luau`), `DevService` (`Dev_Grant` S->C, `Dev_Action`
-C->S function), `DevController` + `UI/DevBoard` (Move, Teleport, Spawn, Ops, Cutscenes, World, Progress, Server).
+C->S function), `DevController` + `UI/DevBoard` (Move, Teleport, Spawn, Ops, Cutscenes, World, Progress, VFX, Server).
+Chat `/vfx <name|all>` (`DevConfig.vfxName`) fires the VFX bench on the dev's client.

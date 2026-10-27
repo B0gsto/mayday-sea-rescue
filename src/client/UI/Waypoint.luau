@@ -18,6 +18,7 @@ local AudioController =
 local Glyph = require(script.Parent.Glyph)
 local HudTheme = require(script.Parent.HudTheme)
 local Layout = require(script.Parent.Layout)
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 local Waypoint = {}
 
@@ -168,6 +169,11 @@ function Waypoint.start(
 		goldenOp = s.opId
 		AudioController.play("Music_CrateFanfare", nil, 0.8, 1.15)
 		AudioController.play("Album_Sparkle", nil, 1.2, 1)
+		local character = Players.LocalPlayer.Character
+		local root = character and character:FindFirstChild("HumanoidRootPart")
+		if root and root:IsA("BasePart") then -- docs/26: a gold burst round you
+			VFXKit.play("golden_accept", CFrame.new(root.Position), { height = 2 })
+		end
 		for k = 0, 1 do
 			local burst = Instance.new("Frame")
 			burst.Name = "GoldBurst"

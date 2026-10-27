@@ -19,6 +19,7 @@ local UI = script.Parent.Parent:WaitForChild("UI")
 local DevBoard = require(UI:WaitForChild("DevBoard"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local Layout = require(UI:WaitForChild("Layout"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 local DevController = {}
 DevController.Priority = 200
@@ -165,6 +166,68 @@ local function toggle()
 	if b then
 		b.setVisible(not b.visible())
 	end
+end
+
+-- The VFX bench (docs/26 test loop): a preset 12 studs in front of the camera, its name on screen so captured frames
+-- are labelled; "all" plays every preset 2 s apart. A new bench run stops the last one.
+local benchRun = 0
+local benchLabel: TextLabel? = nil
+local function benchFire(name: string)
+	local camera = Workspace.CurrentCamera
+	if not camera then
+		return
+	end
+	local look = camera.CFrame.LookVector * Vector3.new(1, 0, 1)
+	look = if look.Magnitude > 0.01 then look.Unit else Vector3.new(0, 0, -1)
+	local at = camera.CFrame.Position + look * 12 - Vector3.new(0, 3, 0)
+	VFXKit.play(
+		name,
+		CFrame.lookAt(at, at + look),
+		{ radius = 5, height = 6, color = Color3.fromRGB(255, 198, 64) }
+	)
+	local label = benchLabel
+	if not label then
+		local gui = Instance.new("ScreenGui")
+		gui.Name = "VFXBench"
+		gui.ResetOnSpawn = false
+		gui.DisplayOrder = 60
+		gui.Parent = player:WaitForChild("PlayerGui")
+		local l = HudTheme.label("Name", "", UDim2.fromOffset(400, 40), HudTheme.LabelFont, 28, gui)
+		l.AnchorPoint = Vector2.new(0.5, 0)
+		l.Position = UDim2.new(0.5, 0, 0, 80)
+		l.TextXAlignment = Enum.TextXAlignment.Center
+		HudTheme.outline(l)
+		benchLabel, label = l, l
+	end
+	local shown = label :: TextLabel
+	shown.Text = `vfx {name}`
+	shown.Visible = true
+	task.delay(1.9, function()
+		if shown.Text == `vfx {name}` then
+			shown.Visible = false
+		end
+	end)
+end
+
+local function bench(name: string)
+	benchRun += 1
+	local run = benchRun
+	local names: { string } = if name == "all" then VFXKit.names() else { name }
+	if name ~= "all" and not table.find(VFXKit.names(), name) then
+		if board then
+			board.setStatus(`❌ vfx: no preset {name}`)
+		end
+		return
+	end
+	task.spawn(function()
+		for _, n in names do
+			if run ~= benchRun then
+				return
+			end
+			benchFire(n)
+			task.wait(2)
+		end
+	end)
 end
 
 local function fill(b: DevBoard.Board)
@@ -359,6 +422,16 @@ local function fill(b: DevBoard.Board)
 		call("reset", { tgt() })
 	end)
 
+	-- VFX: the docs/26 bench, local to my client (chat "/vfx <name|all>" too)
+	page = b.tab("✨ VFX")
+	g = DevBoard.section(page, "Play in front of the camera")
+	for _, name in { "all", table.unpack(VFXKit.names()) } do
+		DevBoard.button(g, if name == "all" then "▶ All (2 s apart)" else `✨ {name}`, function()
+			b.setVisible(false)
+			bench(name)
+		end)
+	end
+
 	-- Server
 	page = b.tab("🖥 Server")
 	local info = Instance.new("TextLabel")
@@ -398,6 +471,10 @@ local function fill(b: DevBoard.Board)
 end
 
 local function onGrant(payload: any)
+	if board and type(payload) == "table" and type(payload.vfx) == "string" then
+		bench(payload.vfx)
+		return
+	end
 	if board then
 		if type(payload) == "table" and payload.toggle then
 			toggle()
@@ -412,6 +489,7 @@ local function onGrant(payload: any)
 		"🎬 Cutscenes",
 		"🌩 World",
 		"⭐ Progress",
+		"✨ VFX",
 		"🖥 Server",
 	})
 	board = b
