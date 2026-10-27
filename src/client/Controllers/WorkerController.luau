@@ -1088,6 +1088,95 @@ local function lightBunk(mesh: Instance)
 	end)
 end
 
+-- docs/25 B: the Lookout's add-ons (LookoutMesh) at night: a warm light in the Lv2 lantern, and the Lv3 searchlight
+-- sweeps slowly round its drum (SweepPivot, DockPieces) with a plain SpotLight, only while you are within LIVELY
+type Lookout =
+	{ lantern: PointLight?, beam: SpotLight?, drum: BasePart?, sweep: Tween?, at: Vector3 }
+local lookouts: { [Model]: Lookout } = {}
+
+local function lightLookout(mesh: Instance)
+	if not mesh:IsA("Model") or mesh.Name ~= "LookoutMesh" or lookouts[mesh] then
+		return
+	end
+	local o: Lookout = { at = mesh:GetPivot().Position }
+	lookouts[mesh] = o
+	-- shortcut: read once, 2 s after the mesh lands (like the bunk lamps); a part streamed in later stays dark
+	task.delay(2, function()
+		local lantern = mesh:FindFirstChild("Lv2_L03_Lantern", true)
+		if lantern and lantern:IsA("BasePart") then
+			local light = Instance.new("PointLight")
+			light.Color = Color3.fromRGB(255, 186, 104)
+			light.Range = 20
+			light.Brightness = 2
+			light.Enabled = false
+			light.Parent = lantern
+			o.lantern = light
+			o.at = lantern.Position
+		end
+		local drum = mesh:FindFirstChild("Lv3_L04_Searchlight", true)
+		local pivot = drum and drum:FindFirstChild("SweepPivot")
+		if drum and drum:IsA("BasePart") and pivot and pivot:IsA("Attachment") then
+			local spot = Instance.new("SpotLight")
+			spot.Face = Enum.NormalId.Front
+			spot.Color = Color3.fromRGB(255, 244, 214)
+			spot.Range = 60
+			spot.Angle = 30
+			spot.Brightness = 3
+			spot.Enabled = false
+			spot.Parent = pivot
+			o.beam = spot
+			o.drum = drum
+		end
+	end)
+end
+
+-- made on the first night it plays, so the build's drop-in has long settled the drum: it turns round the world up
+-- axis through the drum centre, 40 degrees each side of the front
+local function sweepOf(drum: BasePart, beam: SpotLight): Tween
+	local p = CFrame.new((beam.Parent :: Attachment).WorldPosition)
+	local still = p:ToObjectSpace(drum.CFrame)
+	local yaw = Instance.new("NumberValue")
+	yaw.Changed:Connect(function(a: number)
+		drum.CFrame = p * CFrame.Angles(0, math.rad(a), 0) * still
+	end)
+	yaw.Value = -40
+	return TweenService:Create(
+		yaw,
+		TweenInfo.new(7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+		{ Value = 40 }
+	)
+end
+
+local function lookoutPass()
+	local night = WorkLoop.isNight(Lighting.ClockTime)
+	local me = eye()
+	for mesh, o in lookouts do
+		if not mesh.Parent then
+			if o.sweep then
+				o.sweep:Cancel()
+			end
+			lookouts[mesh] = nil
+			continue
+		end
+		if o.lantern then
+			o.lantern.Enabled = night
+		end
+		if o.beam and o.drum then
+			local on = night and (o.at - me).Magnitude < LIVELY
+			o.beam.Enabled = night
+			if on and not o.sweep then
+				o.sweep = sweepOf(o.drum, o.beam)
+			end
+			local sweep = o.sweep
+			if sweep and on and sweep.PlaybackState ~= Enum.PlaybackState.Playing then
+				sweep:Play()
+			elseif sweep and not on and sweep.PlaybackState == Enum.PlaybackState.Playing then
+				sweep:Pause()
+			end
+		end
+	end
+end
+
 local shown = false -- once a session (the server sets it once)
 local function welcome()
 	local pay = player:GetAttribute("WorkerOffline")
@@ -1146,9 +1235,13 @@ function WorkerController.Start()
 	nightPass()
 	task.spawn(function()
 		local marina = Workspace:WaitForChild("Marina")
-		marina.DescendantAdded:Connect(lightBunk)
+		marina.DescendantAdded:Connect(function(d)
+			lightBunk(d)
+			lightLookout(d)
+		end)
 		for _, d in marina:GetDescendants() do
 			lightBunk(d)
+			lightLookout(d)
 		end
 	end)
 	local f = Instance.new("Folder")
@@ -1164,6 +1257,7 @@ function WorkerController.Start()
 	while true do
 		cullPass()
 		crewPass()
+		lookoutPass()
 		task.wait(0.25)
 	end
 end
