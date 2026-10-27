@@ -118,7 +118,9 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   are the Mechanics' Lv2/Lv3 spots. The Rescue Boathouse's Lv2 RIB pontoon (`Lv2_L04_RIB`) and Lv3 lifeboat berth
   (`Lv3_L03_Lifeboat`) are `M_Bld_RescueBoathouseAddons` (`RescueBoathouseMesh`, kept 1x, the pen's -X / +X sides; the
   lifeguard chair gives way at Lv3; `WorkerController` bobs the two boats within LIVELY); its `ATT_Work_*` are the
-  Rescuers' Lv2/Lv3 spots. The Depot model holds `DepotMesh` (the Lv1..n
+  Rescuers' Lv2/Lv3 spots. The HQ's Lv4 radio wing + mast and Lv5 beacon tower + bridge are `M_Bld_HQAddons` (`HQMesh`,
+  the station's -X side, 49..61 studs out at Lv5; the code radio mast and gold ball are only its fallback;
+  `WorkerController` lights `Lv5_L05_Beacon` at night). The Depot model holds `DepotMesh` (the Lv1..n
   layers and `Marks`: `ATT_PickUp_*` / `ATT_DropOff_*` bays, `ATT_BargeMoor`, `ATT_QuayLoad`, `ATT_QuayLand`) and
   `FreightQuay` (west plate edge, sea level). Client: `DepotController` (barge from `BargeNext` via
   `shared/BargePath`, `Stack_1..4` from `DepotStock` / `DepotCap`, empty-crate icon on `SiteWaiting`) and

@@ -1089,20 +1089,22 @@ local function lightBunk(mesh: Instance)
 end
 
 -- docs/25 B: the Lookout's add-ons (LookoutMesh) at night: a warm light in the Lv2 lantern, and the Lv3 searchlight
--- sweeps slowly round its drum (SweepPivot, DockPieces) with a plain SpotLight, only while you are within LIVELY
+-- sweeps slowly round its drum (SweepPivot, DockPieces) with a plain SpotLight, only while you are within LIVELY.
+-- The HQ's Lv5 beacon lamp (HQMesh) gets the same steady warm light.
+local LANTERNS = { LookoutMesh = "Lv2_L03_Lantern", HQMesh = "Lv5_L05_Beacon" }
 type Lookout =
 	{ lantern: PointLight?, beam: SpotLight?, drum: BasePart?, sweep: Tween?, at: Vector3 }
 local lookouts: { [Model]: Lookout } = {}
 
 local function lightLookout(mesh: Instance)
-	if not mesh:IsA("Model") or mesh.Name ~= "LookoutMesh" or lookouts[mesh] then
+	if not mesh:IsA("Model") or not LANTERNS[mesh.Name] or lookouts[mesh] then
 		return
 	end
 	local o: Lookout = { at = mesh:GetPivot().Position }
 	lookouts[mesh] = o
 	-- shortcut: read once, 2 s after the mesh lands (like the bunk lamps); a part streamed in later stays dark
 	task.delay(2, function()
-		local lantern = mesh:FindFirstChild("Lv2_L03_Lantern", true)
+		local lantern = mesh:FindFirstChild(LANTERNS[mesh.Name], true)
 		if lantern and lantern:IsA("BasePart") then
 			local light = Instance.new("PointLight")
 			light.Color = Color3.fromRGB(255, 186, 104)

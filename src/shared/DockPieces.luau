@@ -2477,8 +2477,10 @@ local function hqMesh(m: Model, b: CFrame, n: number): boolean
 	return true
 end
 
--- HQ levels: the Rescue Hut / Post mesh at Lv1/2 (a Lego hut until it loads), today's station from Lv3, a radio
--- mast at Lv4 and the gold beacon at Lv5.
+-- HQ levels: the Rescue Hut / Post mesh at Lv1/2 (a Lego hut until it loads), today's station from Lv3, then the
+-- add-ons on the station's -X side (M_Bld_HQAddons, built in the HQ spot's frame at 1x): the Lv4 walk-in radio wing
+-- + lattice mast and the Lv5 beacon tower + bridge (Lv5_L05_Beacon: WorkerController's night lamp). Mesh missing: a
+-- radio mast at Lv4 and the gold beacon at Lv5.
 local function hq(m: Model, b: CFrame, level: number?)
 	local n = level or 1
 	if n >= 3 then
@@ -2487,24 +2489,18 @@ local function hq(m: Model, b: CFrame, level: number?)
 		hut(m, b, "HQ")
 	end
 	local S = b * DockConfig.Buildings.HQ.spot
-	if n >= 4 then
-		part(
-			m,
-			"RadioMast",
-			Vector3.new(1, 26, 1),
-			S * CFrame.new(18, 13, 10),
-			GREY,
-			M.SmoothPlastic
-		)
-		part(
-			m,
-			"RadioDish",
-			Vector3.new(0.4, 6, 6),
-			S * CFrame.new(18, 25, 10),
-			BRICK_WHITE,
-			M.SmoothPlastic
-		)
+	if n < 4 or addonMesh(m, S, n, "M_Bld_HQAddons", "HQMesh") then
+		return
 	end
+	part(m, "RadioMast", Vector3.new(1, 26, 1), S * CFrame.new(18, 13, 10), GREY, M.SmoothPlastic)
+	part(
+		m,
+		"RadioDish",
+		Vector3.new(0.4, 6, 6),
+		S * CFrame.new(18, 25, 10),
+		BRICK_WHITE,
+		M.SmoothPlastic
+	)
 	if n >= 5 then
 		local lens = part(
 			m,
