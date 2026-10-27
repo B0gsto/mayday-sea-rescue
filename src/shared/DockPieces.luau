@@ -1786,7 +1786,7 @@ local function boatYard(m: Model, b: CFrame, level: number?)
 		m,
 		"HullStripe",
 		Vector3.new(7.55, 0.7, 15.15),
-		boat * CFrame.new(0, 8.25, 0),
+		boat * CFrame.new(0, 8.2, 0), -- its top stays under the hull's (8.6): no z-fight
 		BRICK_WHITE
 	)
 	brick(m, "Deck", Vector3.new(6.2, 0.5, 12.6), boat * CFrame.new(0, 8.85, 0), DBG)

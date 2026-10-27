@@ -509,6 +509,8 @@ function PrizeWheelController.Init()
 		end
 	end)
 	fetchCatalogue()
+	-- the catalogue hides paid random items until the server has read the player's policy: ask again then
+	player:GetAttributeChangedSignal("PolicyRead"):Connect(fetchCatalogue)
 end
 
 return PrizeWheelController

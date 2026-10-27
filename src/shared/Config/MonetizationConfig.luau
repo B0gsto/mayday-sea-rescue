@@ -177,7 +177,7 @@ local MonetizationConfig = {
 		-- Prices: docs/23 (i) economy check (never a better Cash deal than the Cash packs).
 		DockLevel2 = {
 			id = 3722223190,
-			name = "Pontoon",
+			name = "Harbour Pontoon",
 			description = "Builds the pontoon on your island now, no Cash needed: a second berth, lamp posts, your flag and a rescue board.",
 			price = 35,
 			order = 31,
@@ -210,7 +210,7 @@ local MonetizationConfig = {
 		},
 		DockLevel5 = {
 			id = 3722223223,
-			name = "Station",
+			name = "Lifeboat Station",
 			description = "Builds the lit station and its beacon now, no Cash needed (needs the boathouse and the lookout tower).",
 			price = 199,
 			order = 34,

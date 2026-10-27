@@ -342,6 +342,7 @@ local function checkPolicy(player: Player)
 		if ok and type(result) == "table" then
 			if player.Parent then
 				policies[player] = result
+				player:SetAttribute("PolicyRead", true) -- clients re-read the catalogue (the wheel's spin packs)
 			end
 			return
 		end
