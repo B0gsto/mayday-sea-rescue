@@ -56,6 +56,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://111381306769504",
 		LOD2 = "rbxassetid://77043246609711",
 	},
+	M_Bld_HQAddons = {
+		LOD0 = "rbxassetid://123338047039762",
+		LOD1 = "rbxassetid://113076416910083",
+		LOD2 = "rbxassetid://92239502395795",
+	},
 	M_Bld_LookoutAddons = {
 		LOD0 = "rbxassetid://82652287789521",
 		LOD1 = "rbxassetid://128495109779059",
@@ -533,6 +538,12 @@ AssetIds.Attachments = {
 		ATT_Work_Stall4 = Vector3.new(16.75, 0.95, 3),
 		ATT_Work_RackLeft = Vector3.new(1.2, 0.95, 11.5),
 		ATT_Work_RackRight = Vector3.new(-4.2, 0.95, 11.5),
+	},
+	M_Bld_HQAddons = {
+		ATT_Work_Radio = Vector3.new(-39.6, 0.72, 4),
+		ATT_RadioMast = Vector3.new(-36, 15.4, 4.2),
+		ATT_Beacon = Vector3.new(-55, 41.1, 3),
+		ATT_Balcony = Vector3.new(-55, 39.2, -3),
 	},
 	M_Bld_LookoutAddons = {
 		ATT_Watch_Lamp = Vector3.new(5.6, 31.32, -9.2),

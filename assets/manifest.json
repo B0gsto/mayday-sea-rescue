@@ -343,7 +343,8 @@
    "T_LookoutAddons_Brick_RGH",
    "T_BoatYard_Brick_RGH",
    "T_RescueBoathouse_Brick_RGH",
-   "T_AirStationAddons_Brick_RGH"
+   "T_AirStationAddons_Brick_RGH",
+   "T_HQAddons_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -9835,6 +9836,15 @@
   "source": "assets/textures/M_Rock_Cliff_07/T_Cliff07_Granite_NOR.png",
   "type": "Image"
  },
+ "Image:78c3670bd7c384bd2d6e6329b682e8ee5437c92c61ba54cec493cde4be266aa4": {
+  "assetId": "117656736877416",
+  "imageId": "117656736877416",
+  "moderation": "Reviewing",
+  "name": "T_HQAddons_Brick_ALB",
+  "sha": "78c3670bd7c384bd2d6e6329b682e8ee5437c92c61ba54cec493cde4be266aa4",
+  "source": "assets/textures/M_Bld_HQAddons/T_HQAddons_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:78cabe99f071a137bf2a07250e3d5183f2ac0727f07ed2aee9bc3eceaca8663f": {
   "assetId": "77482865945820",
   "imageId": "77482865945820",
@@ -13059,7 +13069,8 @@
    "T_LookoutAddons_Brick_NOR",
    "T_BoatYard_Brick_NOR",
    "T_RescueBoathouse_Brick_NOR",
-   "T_AirStationAddons_Brick_NOR"
+   "T_AirStationAddons_Brick_NOR",
+   "T_HQAddons_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -17088,7 +17099,8 @@
    "T_LookoutAddons_Brick_MET",
    "T_BoatYard_Brick_MET",
    "T_RescueBoathouse_Brick_MET",
-   "T_AirStationAddons_Brick_MET"
+   "T_AirStationAddons_Brick_MET",
+   "T_HQAddons_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -21020,6 +21032,16 @@
   "route": "delivery",
   "sha": "1b0deea1cb83faf8e92a58b45315d6665baa8156bf95aaa034faa1ab743d72c4",
   "source": "assets/fbx/M_Veh_RIB_Helm/M_Veh_RIB_Helm_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:1b32aa86f4edf9ecfa4ae9574938ea4b582c501d6835232fc9e4ac5126ac7ac2": {
+  "assetId": "92239502395795",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "1b32aa86f4edf9ecfa4ae9574938ea4b582c501d6835232fc9e4ac5126ac7ac2",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD2.fbx",
   "type": "Model"
  },
  "Model:1b9df1b8ef453293d559b98c921d1ee122fd134329ee649966dec2799cc44e2f": {
@@ -27840,6 +27862,16 @@
   "route": "delivery",
   "sha": "e5e2ac1989240ef0e522e1cdcce42a0923a330c0d029a429925c1413eb21e7f7",
   "source": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:e5e9aacbcf794fa52e05a935d2de33d5a99dcc66c869baaa5d881e3895eb1216": {
+  "assetId": "113076416910083",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "e5e9aacbcf794fa52e05a935d2de33d5a99dcc66c869baaa5d881e3895eb1216",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:e66062ba4b86382b40d0155fd7239ce06e9d3d48c8e21797e5ccb950021c9ed8": {
