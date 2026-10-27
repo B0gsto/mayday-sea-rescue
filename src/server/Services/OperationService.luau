@@ -19,6 +19,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
+local GoldenCalls = require(Shared:WaitForChild("Calls"):WaitForChild("GoldenCalls"))
 local OfferPacing = require(Shared:WaitForChild("Calls"):WaitForChild("OfferPacing"))
 local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local SkillRules = require(Shared:WaitForChild("SkillRules"))
@@ -482,6 +483,7 @@ local function snapshot(op: any, player: Player): { [string]: any }
 		startedAt = op.acceptedAt,
 		capAt = op.acceptedAt + op.def.capSeconds,
 		storm = op.storm,
+		golden = op.golden == true,
 		myTrack = if track then track.id else nil,
 		plan = plan,
 		results = done,
@@ -929,7 +931,7 @@ finish = function(op: any, reason: string)
 		-- Medics at work on your island (WP-26) and the Captain skill (docs/24 G) pay a share more
 		local pay = 1 + (tonumber(p:GetAttribute("WorkerPayBonus")) or 0)
 		pay *= 1 + (tonumber(p:GetAttribute("SkillPayBonus")) or 0)
-		local cash = reward.cash * pay
+		local cash = reward.cash * pay * (if op.golden then GoldenCalls.CASH_MULT else 1)
 		if cash > 0 then
 			local ok = try("ProgressionService", "Award", p, cash, paidAs)
 			if not ok then
@@ -1238,7 +1240,8 @@ local function offerPayload(op: any, tutorialIndex: number?): { [string]: any }
 		position = op.position,
 		isBig = op.isBig,
 		offerExpiresAt = op.offerExpiresAt,
-		cash = preview.cash,
+		cash = preview.cash * (if op.golden then GoldenCalls.CASH_MULT else 1),
+		golden = op.golden == true, -- the gold pin (Waypoint)
 	}
 end
 
@@ -1355,6 +1358,16 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 		home
 	)
 	op.dive = dive
+	-- docs/25 E: a golden call (never the first-session calls, the idle nudge or an animal's call)
+	if forcedKind ~= "EasyCall" and kind ~= "WildlifeRescue" and not onboardingCall(player) then
+		local _, lookout = try("DockService", "Level", player, "LookoutTower")
+		local chance = GoldenCalls.chance(
+			tonumber(lookout) or 0,
+			tonumber(player:GetAttribute("SkillGoldenCalls")) or 0
+		)
+		op.golden = rng:NextNumber() < chance
+		op.scene.golden = op.golden -- RescueService lifts one survivor to Epic+
+	end
 	if kind == "WildlifeRescue" then
 		try("SanctuaryService", "DressOffer", op, player)
 	end

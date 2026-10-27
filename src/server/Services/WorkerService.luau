@@ -417,14 +417,17 @@ local function rescueTrip(player: Player, st: State, bay: CFrame, cash: number, 
 			return -- left meanwhile
 		end
 		ProgressionService.Award(player, cash, "Workers:Rescue", true)
-		if rng:NextNumber() < chance then
-			-- an NPC rescue-boat recruit rolls at recruit time as before (no pity)
-			local data = DataService.Get(player)
-			local w = WorkerRules.roll(rng:NextInteger(1, 2147483646), {
-				rareAdd = tonumber(player:GetAttribute("SkillRareChanceAdd")) or 0,
-				owned = if data then WorkerRules.ownedSpecials(data.workers) else nil,
-			})
-			WorkerService.Recruit(player, w.category, w.rarity, w.name, w.trait, w.special)
+		-- one recruit chance per seat: Big Boat (SkillBoatSeats) adds two
+		for _ = 1, 1 + (tonumber(player:GetAttribute("SkillBoatSeats")) or 0) do
+			if rng:NextNumber() < chance then
+				-- an NPC rescue-boat recruit rolls at recruit time as before (no pity)
+				local data = DataService.Get(player)
+				local w = WorkerRules.roll(rng:NextInteger(1, 2147483646), {
+					rareAdd = tonumber(player:GetAttribute("SkillRareChanceAdd")) or 0,
+					owned = if data then WorkerRules.ownedSpecials(data.workers) else nil,
+				})
+				WorkerService.Recruit(player, w.category, w.rarity, w.name, w.trait, w.special)
+			end
 		end
 	end)
 end

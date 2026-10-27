@@ -20,6 +20,7 @@ local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic")
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local CasualtyRig = require(Shared:WaitForChild("Casualty"):WaitForChild("CasualtyRig"))
 local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
+local GoldenCalls = require(Shared:WaitForChild("Calls"):WaitForChild("GoldenCalls"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local PiwRescue = require(script.Parent.Parent.Ops.PiwRescue)
 local RipCurrent = require(Shared:WaitForChild("RipCurrent"))
@@ -422,6 +423,15 @@ local function spawnVictim(
 				special = keep:GetAttribute("Special"),
 			}
 			else WorkerRules.roll(workerRng:NextInteger(1, 2147483646), opts)
+		-- docs/25 E: a golden call's first survivor is Epic or better, in a gold glow (SurvivorTag)
+		local golden = if keep
+			then keep:GetAttribute("Golden") == true
+			else call.golden == true and not call.goldenLifted
+		if golden and not keep then
+			call.goldenLifted = true
+			GoldenCalls.lift(w :: any, WorkerRules.TRAITS, workerRng:NextNumber(), pity) -- a fresh roll (no keep)
+		end
+		model:SetAttribute("Golden", if golden then true else nil)
 		model:SetAttribute("SurvivorName", w.name)
 		model:SetAttribute("Rarity", w.rarity)
 		model:SetAttribute("Category", w.category)

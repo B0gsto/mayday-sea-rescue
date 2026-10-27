@@ -846,6 +846,12 @@ local function createVehicle(
 
 	local mask = upgradeMask(player, spec.id)
 	local fitted = VehicleUpgrades.apply(spec, mask)
+	-- Lifeguard (SkillCraftSeats): your boat seats one more survivor from its next launch (apply may return spec)
+	local extraSeats = tonumber(player:GetAttribute("SkillCraftSeats")) or 0
+	if extraSeats > 0 and not spec.craft then
+		fitted = table.clone(fitted)
+		fitted.survivorCapacity += extraSeats
+	end
 	local model = if spec.craft then Craft.build(fitted) else Builder.build(fitted, visuals)
 	model:SetAttribute("VehicleUpgrades", mask)
 	dressUpgrades(model, fitted, mask)

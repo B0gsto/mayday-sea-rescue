@@ -5,6 +5,7 @@
 -- to the WP-26 ones and the model's Name / Common, so a half-migrated server never errors.
 --   SurvivorTag.info(model) -> properties for the card
 --   SurvivorTag.attach(model, inWater?) -> one BillboardGui per model, destroyed with it
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -23,6 +24,7 @@ local NAME_W, NAME_H = 6, 1.5 -- studs (BillboardGui size is in studs: it shrink
 local LIFT = 4.2 -- studs over the root, clear of the head
 local BEAM_H = 150
 local EPIC = 4
+local GOLD = Color3.fromHex("FFC428")
 local WORK = { 1, 1.25, 1.6, 2.2, 3, 5 } -- docs/25 E work value by tier
 
 local CATEGORY_NAME = { Gatherer = "Fisher" }
@@ -201,6 +203,7 @@ function SurvivorTag.attach(model: Model, inWater: boolean?): BillboardGui?
 
 	local beam = if inWater == true then makeBeam(root) else nil
 	local spinning = false
+	local glow: Highlight? = nil
 
 	local function paint()
 		local info = SurvivorTag.info(model)
@@ -222,13 +225,35 @@ function SurvivorTag.attach(model: Model, inWater: boolean?): BillboardGui?
 			beam.Color = if mythic then RAINBOW else ColorSequence.new(info.color)
 			beam.Enabled = info.rarity >= EPIC and model:GetAttribute("OnVehicle") == nil
 		end
+		-- Golden Eye (SkillGoldenEye): Epic+ survivors in the water read from any distance
+		if inWater == true then
+			local eye = (tonumber(Players.LocalPlayer:GetAttribute("SkillGoldenEye")) or 0) > 0
+			gui.MaxDistance = if eye and info.rarity >= EPIC then math.huge else MAX_DISTANCE
+		end
+		-- docs/25 E: a golden call's survivor glows gold (the server's `Golden` attribute)
+		local golden = model:GetAttribute("Golden") == true
+		if golden and not glow then
+			local h = Instance.new("Highlight")
+			h.Name = "GoldenGlow"
+			h.FillColor, h.OutlineColor = GOLD, GOLD
+			h.FillTransparency, h.OutlineTransparency = 0.75, 0
+			h.Parent = model
+			glow = h
+		end
+		if glow then
+			glow.Enabled = golden
+		end
 	end
 	paint()
 
 	local conns: { RBXScriptConnection } = {}
-	for _, key in { "SurvivorName", "WorkerName", "Rarity", "WorkerRarity", "OnVehicle" } do
+	for _, key in { "SurvivorName", "WorkerName", "Rarity", "WorkerRarity", "OnVehicle", "Golden" } do
 		table.insert(conns, model:GetAttributeChangedSignal(key):Connect(paint))
 	end
+	table.insert(
+		conns,
+		Players.LocalPlayer:GetAttributeChangedSignal("SkillGoldenEye"):Connect(paint)
+	)
 	gui.Destroying:Connect(function()
 		for _, c in conns do
 			c:Disconnect()

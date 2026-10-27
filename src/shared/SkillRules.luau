@@ -143,7 +143,7 @@ local SECTOR_NODES = {
 				"speedMult",
 				0.01,
 				"Captain"
-			), -- TODO reader
+			),
 			node(
 				"BoatCall",
 				3,
@@ -179,7 +179,7 @@ local SECTOR_NODES = {
 				"reach",
 				1,
 				"Captain"
-			), -- TODO reader
+			),
 			node(
 				"StormRider",
 				5,
@@ -246,7 +246,7 @@ local SECTOR_NODES = {
 				"tripScale",
 				0.02,
 				"Rescuer"
-			), -- TODO reader
+			),
 			node(
 				"Recruiter",
 				3,
@@ -270,7 +270,7 @@ local SECTOR_NODES = {
 				"tripScale",
 				0.03,
 				"Rescuer"
-			), -- TODO reader
+			), -- reader: Update 2's Pilots (docs/25 F); its path already pays
 			node(
 				"GlowUp",
 				4,
@@ -385,7 +385,7 @@ local SECTOR_NODES = {
 				"rareChanceAdd",
 				0.02,
 				"Any"
-			), -- TODO reader
+			),
 			node(
 				"Celebrity",
 				5,
@@ -538,12 +538,12 @@ local BRIDGES: { Row } = {
 		0,
 		"buoy",
 		{ "BoatCall", "FastLaunch" },
-		"boatSeats",
+		"craftSeats",
 		1,
 		"tripScale",
 		0.02,
 		"Captain"
-	), -- TODO reader
+	),
 	node(
 		"WelcomeHome",
 		2.75,
@@ -641,7 +641,8 @@ SkillRules.KINDS = {
 	-- docs/25 F abilities; no reader yet (TODO reader on each node's data)
 	"nitro",
 	"goldenEye",
-	"boatSeats",
+	"boatSeats", -- the NPC rescue boat (Big Boat)
+	"craftSeats", -- your own craft (Lifeguard)
 	"traitReroll",
 	"mentor",
 	"goldenCalls",
