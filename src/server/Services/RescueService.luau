@@ -23,6 +23,7 @@ local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local PiwRescue = require(script.Parent.Parent.Ops.PiwRescue)
 local RipCurrent = require(Shared:WaitForChild("RipCurrent"))
+local SkillRules = require(Shared:WaitForChild("SkillRules"))
 local CasualtyAsset: any = (function()
 	local ok, m = pcall(require, script.Parent.Parent.Assets.CasualtyAsset)
 	if not ok then
@@ -1365,6 +1366,10 @@ local function unloadVictims(vehicle: Model, victims: { any }, patrol: boolean?)
 		local board = stat and stat:FindFirstChild("Rescued")
 		if board and board:IsA("IntValue") then
 			board.Value = data.totalRescues
+		end
+		local medals = SkillRules.rescueMedals(data.totalRescues - #victims, data.totalRescues)
+		if medals > 0 then
+			try("SkillService", "grantMedals", who, medals, "Rescue")
 		end
 	end
 	local svc = service("VehicleService")

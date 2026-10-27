@@ -38,8 +38,9 @@ history, not here.
 | `BuyGear` | C->S fn | ProgressionService: buys a craft (`vehicleId`); the name is historical |
 | `Spin_Wheel` | S->C | SpinService: one spin `{ userId, plot, segment, startTime, duration, prize, name, rarity, kind, icon, variant, option, vehicle, duplicateCash? }`; the island's wheel animates on every client |
 | `Spin_Flex` | S->C | SpinService: a Legendary / Mythic win `{ userId, name, prize, rarity, icon }` (banner + confetti) |
-| `Skill_Buy` | C->S fn | SkillService: buys a skill node `(id) -> (ok, reason)` |
-| `Skill_State` | S->C | SkillService: `{ owned, cash }` on join and after every buy |
+| `Skill_Buy` | C->S fn | SkillService: buys a skill node with Medals `(id) -> (ok, reason)` |
+| `Skill_Reset` | C->S fn | SkillService: free reset, refunds every Medal `-> (ok, refunded)` |
+| `Skill_State` | S->C | SkillService: `{ owned, medals }` on join and after every buy/reset/grant |
 
 Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService), `Upgrade_Buy` (UpgradeService),
 `PIW_Rescue` (Ops/PiwRescue), `Dock_Upgrade` / `Dock_Build` / `Dock_Finish` (DockService), `Quest_Talk` (QuestService),
@@ -210,14 +211,22 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
 - `ProgressionService`: `Award(player, cash, reason, flat?)` (storm, pass, friend and live-ops multipliers unless
   `flat`), `GetData`, `CanUseVehicle`, `OwnsVehiclePass`, `SetFlag`, `RecordTraining(player, grade)`, `Refresh`.
   leaderstats Cash + Rescued. Studio: `ServerStorage.ProgressionDev`.
-- Skills (docs/24 G): `shared/SkillRules` (pure: one `NODES` table for the Captain, Builder, Gatherer, Rescuer,
-  Mechanic, Medic and Crew branches with `col`/`row` layout and `needs`, `canBuy(owned, id, cash) -> ok, reason`,
-  `effects(owned) -> totals`). `SkillService`: `Skill_Buy`, `data.skills`, `Skill_State`; it publishes the totals
-  as player attributes `SkillSpeedMult`, `SkillGrip`, `SkillReach`, `SkillBoatScale`, `SkillPayBonus`, `SkillSwimMult`,
-  `SkillBuildRate`, `SkillExtraBuilders`, `SkillBaseCrew`, `SkillGatherMult`, `SkillOfflineAdd`, `SkillSlots<branch>`,
+- Skills (docs/25 F, K3): `shared/SkillRules` (pure: the four sectors `Captain` 315°, `Rescue` 45°, `Crew` 135°,
+  `Industry` 225° and the four `Bridge` nodes at 0/90/180/270; each keystone carries its `minor` path and
+  `nodes()` expands the dots as `<keystone>_m<i>` with `ring`/`angle` (absolute degrees, 0 = up, clockwise;
+  sector nodes stay inside their sector's ±36°, bridges sit at 0/90/180/270), `medals`, `needs` (any one owned),
+  `effect`, `focus`, `keystone`, `soon`; `SECTORS`, `byId`, `canBuy(owned, id, medals) -> ok, reason`,
+  `effects(owned) -> totals`, `refund(owned)`, `rescueMedals`, `chestMedals`; `LEGACY` = the old Cash tree for the
+  migration). `SkillService`: `Skill_Buy`, `Skill_Reset`, `data.skills`, `data.medals` and the `Medals` attribute,
+  `grantMedals(player, n, reason)` (called by rescues, gold grades, quests and the daily chest; the HQ level pays
+  `SkillRules.HQ_MEDALS` when the buildings build wires it), `Skill_State`; it publishes the totals as player
+  attributes `SkillSpeedMult`, `SkillGrip`, `SkillReach`, `SkillBoatScale`, `SkillPayBonus`, `SkillSwimMult`,
+  `SkillBuildRate`, `SkillExtraBuilders`, `SkillBaseCrew`, `SkillGatherMult`, `SkillOfflineAdd`, `SkillSlots<category>`,
   `SkillTripScale`, `SkillRecruitChance`, `SkillTripPayMult`, the cap adds (`SkillSpeedCapAdd`, `SkillBoatCapAdd`,
   `SkillMedicCapAdd`, `SkillMedicPerUnit`), `SkillWorkerCapAdd`, `SkillRareChanceAdd`. Readers default to no change:
   WorkerRules/WorkerService, BuildTimer/DockService, VehicleService, Ops/Board reach, OperationService, SwimController.
+  Effects marked `-- TODO reader` in `SkillRules` (Nitro, Golden Eye, Boat seats, Clover, Mentor, Golden Mayday,
+  Salvage, Welcome Home, Foreman, Lifeguard, ...) are data only until their systems land.
 - Workers (docs/23 (o)): `shared/WorkerRules` (pure: roll, admit, assign, effects, offline pay). RescueService
   rolls a survivor on pick-up (attributes `WorkerCategory` / `WorkerRarity` / `WorkerName`) and calls
   `WorkerService.Recruit` when they land at the driver's berth. `WorkerService`: `data.workers`, published as

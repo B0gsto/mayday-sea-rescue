@@ -22,6 +22,7 @@ local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
 local GroupReward = require(Shared:WaitForChild("GroupReward"))
 local Net = require(Shared:WaitForChild("Net"))
 local Rules = require(Shared:WaitForChild("StreakRules"))
+local SkillRules = require(Shared:WaitForChild("SkillRules"))
 local SocialConfig = require(Shared:WaitForChild("Config"):WaitForChild("SocialConfig"))
 local StreakConfig = require(Shared:WaitForChild("Config"):WaitForChild("StreakConfig"))
 
@@ -29,6 +30,7 @@ local BadgeService = require(script.Parent.BadgeService)
 local DataService = require(script.Parent.DataService)
 local GroupRewardService = require(script.Parent.GroupRewardService)
 local ProgressionService = require(script.Parent.ProgressionService)
+local SkillService = require(script.Parent.SkillService)
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
 local VehicleService = require(script.Parent:WaitForChild("VehicleService"))
 
@@ -140,6 +142,7 @@ local function open(player: Player): any
 	)
 	local reason = if claim.welcome then "Streak:Welcome" else `Streak:Day{claim.streak}`
 	ProgressionService.Award(player, claim.cash, reason, true)
+	SkillService.grantMedals(player, SkillRules.chestMedals(claim.streak), "DailyChest")
 	-- Group members get a flat +10% on the crate (G68); never multiplied, never a second crate.
 	local groupBonus = 0
 	local groupState = GroupRewardService.State(player)

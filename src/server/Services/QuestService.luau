@@ -31,6 +31,8 @@ local QuestPontoons =
 	require(script.Parent.Parent:WaitForChild("World"):WaitForChild("QuestPontoons"))
 local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local Rules = require(Shared:WaitForChild("Quests"):WaitForChild("Rules"))
+local SkillRules = require(Shared:WaitForChild("SkillRules"))
+local SkillService = require(script.Parent:WaitForChild("SkillService"))
 
 local QuestService = {}
 QuestService.Priority = 130
@@ -356,6 +358,7 @@ local function handIn(player: Player)
 		return
 	end
 	ProgressionService.Award(player, quest.cash, `Quest:{quest.id}`, true)
+	SkillService.grantMedals(player, SkillRules.QUEST_MEDALS, `Quest:{quest.id}`)
 	local boat = QuestPontoons.Giver(DockService.GetPlot(player), quest.npc)
 	-- a chain's next step: the giver stays tied up and offers it; else they sail off and the next one comes (sail)
 	if boat and not Rules.offer(s, quest.npc, today(), can(player)) then

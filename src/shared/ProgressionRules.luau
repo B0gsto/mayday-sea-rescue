@@ -19,6 +19,7 @@ export type PlayerData = {
 	-- Fitted vehicle upgrades (docs 03 section 4.1): boat id -> bitmask of VehicleUpgrades levels.
 	vehicleUpgrades: { [string]: number },
 	totalRescues: number, -- people delivered home (badges, leaderboards, the rescue board)
+	medals: number, -- the skill tree's currency (docs/25 F; SkillRules, SkillService)
 	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
 	tutorialStep: number?, -- docs/24 E: the saved tutorial beat (Onboarding.STEP_*; nil = never started)
 	dockLevel: number, -- retired dock level 1..5 (WP-28): kept as saved; migrate maps it onto the tree
@@ -29,7 +30,7 @@ export type PlayerData = {
 	construction: { key: string, progress: number, rate: number, at: number }?,
 	-- Rescued people working on your island (docs/23 (o), WP-26; WorkerRules, WorkerService), at most WorkerRules.CAP.
 	workers: { WorkerRules.Worker },
-	-- Bought player + crew skill nodes (docs/24 G; SkillRules), id -> true.
+	-- Bought player + crew skill nodes (docs/25 F; SkillRules), id -> true.
 	skills: { [string]: boolean },
 	lastSeen: number?, -- os.time of the last save (DataService): offline worker earnings count from here
 	-- Small persisted flags and settings (ProgressionService.SetFlag). A value is a boolean, a
@@ -188,6 +189,7 @@ function Rules.defaultData(): PlayerData
 		vehicles = {},
 		vehicleUpgrades = {},
 		totalRescues = 0,
+		medals = 0,
 		coldOpenDone = false,
 		dockLevel = 1,
 		dockBuildings = {},
@@ -285,6 +287,7 @@ function Rules.migrate(raw: any): PlayerData
 	data.cash = math.max(0, num(raw.cash, data.cash))
 	data.rep = math.max(0, num(raw.rep, 0))
 	data.totalRescues = math.max(0, num(raw.totalRescues, 0))
+	data.medals = math.max(0, math.floor(num(raw.medals, 0)))
 	if type(raw.vehicles) == "table" then
 		for id, owned in raw.vehicles do
 			if type(id) == "string" and ProgressionConfig.Vehicles[id] and owned == true then
@@ -359,14 +362,21 @@ function Rules.migrate(raw: any): PlayerData
 		end
 	end
 	data.skills = {}
+	local legacySkillCash = 0
 	local skillRaw = Rules.sanitizeFlag(raw.skills)
 	if type(skillRaw) == "table" then
 		for id, owned in skillRaw do
-			if owned == true and SkillRules.byId[id] then
-				data.skills[id] = true
+			if owned == true then
+				if SkillRules.byId[id] then
+					data.skills[id] = true
+				else
+					-- docs/25 F migration, once: old Cash nodes are refunded and cleared
+					legacySkillCash += SkillRules.LEGACY[id] or 0
+				end
 			end
 		end
 	end
+	data.cash += legacySkillCash
 	-- the Crew branch raises the worker cap, so an old save keeps the workers it earned
 	local cap = WorkerRules.CAP + SkillRules.effects(data.skills).workerCapAdd
 	data.workers = WorkerRules.clean(raw.workers, cap)
@@ -415,6 +425,7 @@ function Rules.snapshot(data: PlayerData): { [string]: any }
 	return {
 		cash = data.cash,
 		totalRescues = data.totalRescues,
+		medals = data.medals,
 		dockBuildings = table.clone(data.dockBuildings),
 		dockPrepaid = table.clone(data.dockPrepaid),
 		vehicles = table.clone(data.vehicles),
