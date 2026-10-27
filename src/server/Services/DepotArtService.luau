@@ -1,9 +1,9 @@
 --!strict
 -- DepotArtService (docs/25 D, K4): the uploaded building art. DockPieces builds the Depot (M_Bld_Depot), the
--- HQ's Lv1/Lv2 (M_Bld_RescueHQ) and the Workshop's Lv2/Lv3 add-ons (M_Bld_WorkshopAddons) through
--- DockPieces.meshes (the walk-in _COL hulls collide, the visual meshes don't), and the supply barge
--- M_Veh_SupplyBarge is published as ReplicatedStorage.DepotTemplates.Barge for the clients' barge visuals
--- (DepotController; clients can't load assets).
+-- HQ's Lv1/Lv2 (M_Bld_RescueHQ), the Bunkhouse's Lv1-5 (M_Bld_Bunkhouse) and the Workshop's Lv2/Lv3 add-ons
+-- (M_Bld_WorkshopAddons) through DockPieces.meshes (the walk-in _COL hulls collide, the visual meshes don't), and the
+-- supply barge M_Veh_SupplyBarge is published as ReplicatedStorage.DepotTemplates.Barge for the clients' barge
+-- visuals (DepotController; clients can't load assets).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
@@ -13,6 +13,7 @@ local DepotArtService = {}
 
 function DepotArtService.Init()
 	AssetLoader.preload({
+		"M_Bld_Bunkhouse",
 		"M_Bld_Depot",
 		"M_Bld_RescueHQ",
 		"M_Bld_WorkshopAddons",

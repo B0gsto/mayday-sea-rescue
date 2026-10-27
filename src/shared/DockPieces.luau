@@ -2324,24 +2324,15 @@ end
 -- the visual meshes don't); it waits for the first load and is nil if the asset failed (a code-built piece stands in).
 DockPieces.meshes = nil :: ((asset: string) -> Model?)?
 
--- HQ Lv1 Rescue Hut / Lv2 Rescue Post (M_Bld_RescueHQ): meshes named _Lv<l>_L<k>_ (layer k of level l,
--- ConstructionController raises them) and _Lv<l>_Col_COL; Lv2 = Lv1's meshes + Lv2's. The OwnerColour door becomes
--- a "Flag"; the sign words go on the ATT_Sign_<l> plaques as a ribbon across their lower edge. False when the mesh
--- is not loaded.
-local function hqMesh(m: Model, b: CFrame, n: number): boolean
-	local src = DockPieces.meshes and DockPieces.meshes("M_Bld_RescueHQ")
+-- A levelled building mesh (M_Bld_RescueHQ, M_Bld_Bunkhouse) at `at`: meshes named _Lv<l>_L<k>_ (layer k of level l,
+-- ConstructionController raises them) and _Lv<l>_Col_COL; level n = the meshes of levels 1..n. The OwnerColour doors
+-- become "Flag"s. Nil when the mesh is not loaded.
+local function levelMesh(m: Model, at: CFrame, asset: string, n: number): Model?
+	local src = DockPieces.meshes and DockPieces.meshes(asset)
 	if not src then
-		return false
+		return nil
 	end
-	local at = b * DockConfig.Buildings.HQ.spot
 	src:PivotTo(at)
-	local signs = {}
-	for l = 1, n do
-		local att = src:FindFirstChild(`ATT_Sign_0{l}`, true)
-		if att and att:IsA("Attachment") then
-			signs[l] = att.WorldCFrame
-		end
-	end
 	for _, d in src:GetDescendants() do
 		if d:IsA("BasePart") then
 			local lv, k = string.match(d.Name, "_Lv(%d)_L(%d+)_")
@@ -2354,6 +2345,23 @@ local function hqMesh(m: Model, b: CFrame, n: number): boolean
 		end
 	end
 	src.Parent = m
+	return src
+end
+
+-- HQ Lv1 Rescue Hut / Lv2 Rescue Post (M_Bld_RescueHQ); the sign words go on the ATT_Sign_<l> plaques as a ribbon
+-- across their lower edge. False when the mesh is not loaded.
+local function hqMesh(m: Model, b: CFrame, n: number): boolean
+	local src = levelMesh(m, b * DockConfig.Buildings.HQ.spot, "M_Bld_RescueHQ", n)
+	if not src then
+		return false
+	end
+	local signs = {}
+	for l = 1, n do
+		local att = src:FindFirstChild(`ATT_Sign_0{l}`, true)
+		if att and att:IsA("Attachment") then
+			signs[l] = att.WorldCFrame
+		end
+	end
 	for l, cf in signs do
 		local s = sign(
 			m,
@@ -2411,6 +2419,18 @@ local function hq(m: Model, b: CFrame, level: number?)
 		glow.Range = 40
 		glow.Brightness = 2
 		glow.Parent = lens
+	end
+end
+
+-- Bunkhouse Lv1-5 (docs/25 B, J): the walk-in M_Bld_Bunkhouse (hut, floors, loft + hammocks, wing, roof terrace), a
+-- Lego cottage until it loads. Kept 1x: authored at its real size (its Lv4 wing overhangs the lot by ~9 on +X).
+local function bunkhouse(m: Model, b: CFrame, level: number?)
+	local mesh =
+		levelMesh(m, b * DockConfig.Buildings.Bunkhouse.spot, "M_Bld_Bunkhouse", level or 1)
+	if mesh then
+		mesh.Name = "BunkhouseMesh"
+	else
+		hut(m, b, "Bunkhouse")
 	end
 end
 
@@ -2500,6 +2520,7 @@ end
 local BUILDINGS = {
 	HQ = hq,
 	Depot = depot,
+	Bunkhouse = bunkhouse,
 	Harbour = harbour,
 	Workshop = workshopYard,
 	FishShed = fishMarket,
@@ -2517,6 +2538,7 @@ local BUILDINGS = {
 local KEEP_1X = {
 	DepotMesh = true,
 	WorkshopMesh = true,
+	BunkhouseMesh = true,
 	FreightQuay = true,
 	Path = true,
 	Slipway = true,
