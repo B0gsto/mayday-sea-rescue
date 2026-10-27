@@ -188,6 +188,11 @@ function W.buildingOf(category: string): string?
 	return nil
 end
 
+-- A plain survivor name, picked by `n` (a special that can't join twice takes one of these).
+function W.plainName(n: number): string
+	return NAMES[1 + math.floor(n) % #NAMES]
+end
+
 -- The special ids this crew already has. shortcut: only the workers still aboard count (no Album page yet);
 -- a special never leaves (they are Legendary/Mythic, so admit never replaces them), revisit with the Album.
 function W.ownedSpecials(workers: { Worker }): { [string]: boolean }
@@ -292,13 +297,13 @@ function W.admit(workers: { Worker }, w: Worker, cap: number?): number?
 		table.insert(workers, w)
 		return #workers
 	end
-	local worst = 1
+	local worst: number? = nil -- a special never leaves (ownedSpecials counts the crew)
 	for i, other in workers do
-		if other.rarity < workers[worst].rarity then
+		if (other.special or "") == "" and (not worst or other.rarity < workers[worst].rarity) then
 			worst = i
 		end
 	end
-	if w.rarity <= workers[worst].rarity then
+	if not worst or w.rarity <= workers[worst].rarity then
 		return nil
 	end
 	workers[worst] = w

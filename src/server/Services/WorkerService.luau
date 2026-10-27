@@ -333,6 +333,12 @@ function WorkerService.Recruit(
 	local clean = WorkerRules.clean({
 		{ category = category, rarity = rarity, name = name, trait = trait, special = special },
 	})[1]
+	-- the roll checked the call owner's crew; the deliverer (crew, free roam) or a twin from the same call may
+	-- already have this special: then they join as a plain survivor
+	if clean and clean.special ~= "" and WorkerRules.ownedSpecials(data.workers)[clean.special] then
+		clean.special = ""
+		clean.name = WorkerRules.plainName(#data.workers + clean.rarity)
+	end
 	local cap = WorkerRules.CAP + (tonumber(player:GetAttribute("SkillWorkerCapAdd")) or 0)
 	local i = clean and WorkerRules.admit(data.workers, clean, cap)
 	if not i then

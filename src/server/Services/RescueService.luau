@@ -362,7 +362,13 @@ end
 local onPull: (victim: any, player: Player, forced: boolean?) -> ()
 
 -- One victim in the water (or seated on a parent floater such as a dinghy).
-local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffset: CFrame?): any
+local function spawnVictim(
+	call: any,
+	pos: Vector3,
+	parent: Floater?,
+	parentOffset: CFrame?,
+	keep: Model?
+): any
 	local model = Instance.new("Model")
 	model.Name = "Victim"
 	model:SetAttribute("CallId", call.id)
@@ -406,7 +412,16 @@ local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffs
 		then
 			opts.category = "Builder"
 		end
-		local w = WorkerRules.roll(workerRng:NextInteger(1, 2147483646), opts)
+		-- a survivor back in the water (their boat went) keeps their roll: no reroll, no extra pity
+		local w = if keep
+			then {
+				name = keep:GetAttribute("SurvivorName"),
+				rarity = keep:GetAttribute("Rarity"),
+				category = keep:GetAttribute("Category"),
+				trait = keep:GetAttribute("Trait"),
+				special = keep:GetAttribute("Special"),
+			}
+			else WorkerRules.roll(workerRng:NextInteger(1, 2147483646), opts)
 		model:SetAttribute("SurvivorName", w.name)
 		model:SetAttribute("Rarity", w.rarity)
 		model:SetAttribute("Category", w.category)
@@ -1442,8 +1457,8 @@ local function checkDeliveries()
 				if not carrier or not carrier.Parent or not v.model.Parent then
 					-- boat gone: the victim goes back in the water where it was last seen
 					victimsByModel[v.model] = nil
+					local fresh = spawnVictim(call, v.lastPos, nil, nil, v.model)
 					v.model:Destroy()
-					local fresh = spawnVictim(call, v.lastPos)
 					call.victims[i] = fresh
 					operations().OnVictimLost(call)
 				else

@@ -18,6 +18,7 @@ local SurvivorTag = {}
 local TAG = "SurvivorNameTag"
 local BEAM = "SurvivorBeam"
 local MAX_DISTANCE = 250 -- studs: a name and a beam read across the bay
+local HOME_DISTANCE = 60 -- studs: up to ~180 home workers per server; far tags cost every frame (old badge cap)
 local NAME_W, NAME_H = 6, 1.5 -- studs (BillboardGui size is in studs: it shrinks with distance)
 local LIFT = 4.2 -- studs over the root, clear of the head
 local BEAM_H = 150
@@ -177,8 +178,8 @@ function SurvivorTag.attach(model: Model, inWater: boolean?): BillboardGui?
 	gui.Adornee = root
 	gui.Size = UDim2.fromScale(NAME_W, NAME_H)
 	gui.StudsOffsetWorldSpace = Vector3.new(0, LIFT, 0)
-	gui.MaxDistance = MAX_DISTANCE
-	gui.AlwaysOnTop = true
+	gui.MaxDistance = if inWater == true then MAX_DISTANCE else HOME_DISTANCE
+	gui.AlwaysOnTop = inWater == true -- home tags hide behind buildings
 	gui.LightInfluence = 0
 	gui.ResetOnSpawn = false
 	gui.Parent = model
