@@ -295,3 +295,17 @@ amount }, focus ("Captain" | a K1 Category | "Any"), keystone = bool, soon = boo
 `<keystone>_m<i>`, between the keystone and its first need. Sector centres: Captain 315°, Rescue 45°, Crew 135°,
 Industry 225° (0° = up, clockwise). Save: `data.medals` (number), `data.skills` (owned ids). Medals: 1 per 2 people
 rescued, +1 per gold grade, +3 per quest, +5 per HQ level, daily chest +1–3.
+
+**K4. Depot and bricks (W5, section D).** `src/shared/DepotRules.luau` (pure, tested, used by the server and the
+pacing sim): `cap(depotLevel)` loads the Depot holds (Lv1 20, Lv2 40, Lv3 80; 0 with no Depot);
+`BARGE_PERIOD = 60` s; `bargeLoads(depotLevel, haulerUnits)` loads one mooring puts in the Depot (no Haulers: the
+barge crew drops 2; Lv2 doubles it); `loadsFor(work)` = `ceil(T / 10)` with T the build's `BuildTimer.work` seconds;
+a site advances one load per builder trip, so its rate is min(how fast builders carry, Depot stock + refill). No
+Depot built yet: builds run on the barge crew's drop alone, never blocked forever. Save: `data.depot = { stock }`.
+Island plot model attributes (server -> clients, next to the `Site*` ones): `DepotStock` (loads now), `DepotCap`,
+`BargeNext` (`Workspace:GetServerTimeNow()` of the next mooring), `HaulRate` and `CarryRate` (loads per minute; they
+pace the walk loops), `SiteWaiting` (true while the site waits on an empty Depot). `SiteRate` stays the site's
+effective rate. Visuals are client-side and read only these: the barge sails in to `ATT_BargeMoor` at `BargeNext`,
+stays 20 s and leaves; Haulers loop barge -> `ATT_DropOff_*`; Builders loop `ATT_PickUp_*` -> site with a brick
+stack over their heads; the pile's `Stack_1..4` show `DepotStock / DepotCap` in quarters; an empty-crate icon over
+the pile while `SiteWaiting`.
