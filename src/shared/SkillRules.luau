@@ -415,7 +415,7 @@ local SECTOR_NODES = {
 				"buildRate",
 				0.01,
 				"Builder"
-			), -- TODO reader
+			),
 			node(
 				"FreshCatch",
 				1,
@@ -451,7 +451,7 @@ local SECTOR_NODES = {
 				"depotRefill",
 				0.05,
 				"Hauler"
-			), -- TODO reader
+			),
 			node(
 				"MarketDay",
 				3,

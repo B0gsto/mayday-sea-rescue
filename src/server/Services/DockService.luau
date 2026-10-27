@@ -13,6 +13,9 @@
 -- SiteProgress / SiteRate / SiteBuilders for every client (ConstructionController). The building is not owned
 -- until the site finishes; then the model that was standing there (DockPieces, hidden above the progress
 -- height on every client) is the finished one and the build beat plays. Quest blueprints still arrive whole.
+-- Bricks (docs/25 K4, shared/DepotRules): the site draws loads from data.depot, the supply barge refills it every
+-- minute (each island's barge runs PlotIndex * BARGE_STAGGER s late), and the plot publishes DepotStock /
+-- DepotCap / BargeNext / HaulRate / CarryRate / SiteWaiting; SiteRate is the rate the site really finishes at.
 -- The build station by the spawn carries the tablet whose prompt opens the owner's top-down build mode
 -- (DockController); its catalog is DockBlueprints.catalog: tree buildings, quest blueprints and decor.
 --
@@ -43,6 +46,7 @@ local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeCon
 local BadgeRules = require(Shared:WaitForChild("BadgeRules"))
 local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
+local DepotRules = require(Shared:WaitForChild("DepotRules"))
 local DiscoveryRules = require(Shared:WaitForChild("DiscoveryRules"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local DockPieces = require(Shared:WaitForChild("DockPieces"))
@@ -706,6 +710,96 @@ local function workOf(key: string, level: number?): number
 	return BuildTimer.work(d and d.cash or 0, true)
 end
 
+local BARGE_STAGGER = 10 -- s between the islands' barges
+
+local function bargeOffset(player: Player): number
+	return (byPlayer[player] or 0) * BARGE_STAGGER
+end
+
+-- docs/25 K4: the Depot's numbers for this island now (with a site: its carry speed and loads) and the
+-- Builders' crew rate.
+local function depotParams(player: Player, data: any): (DepotRules.Params, number)
+	local e = SkillRules.effects(data.skills)
+	local skill = buildSkill(player)
+	local rate = DepotRules.crewRate(
+		data.workers,
+		{ max = skill.max, mult = skill.mult, crew = skill.crew, carry = e.buildersCarry }
+	)
+	local level = UnlockTree.levelOf(data.dock.levels, "Depot")
+	local haul = DepotRules.haulUnits(
+		data.workers,
+		data.dockBuildings,
+		{ Hauler = tonumber(player:GetAttribute("SkillSlotsHauler")) or 0 }
+	)
+	local p: DepotRules.Params =
+		{ cap = DepotRules.cap(level), drop = DepotRules.bargeLoads(level, haul, e.depotRefill) }
+	local c = data.construction
+	if c then
+		local work = workOf(c.key, c.level)
+		p.carry, p.loads = DepotRules.carrySpeed(rate, work), DepotRules.loadsFor(work)
+	end
+	return p, rate
+end
+
+-- Steps the Depot (and the site drawing from it) up to `now`: one tick, or the whole time away on join.
+-- -> s the site waited on an empty Depot, the params used, the crew rate.
+local function stepDepot(
+	player: Player,
+	data: any,
+	now: number
+): (number, DepotRules.Params, number)
+	local c = data.construction
+	local from = data.depot.at or (c and c.at) or now
+	local p, rate = depotParams(player, data)
+	local state, waited = DepotRules.advance({
+		stock = data.depot.stock,
+		progress = c and c.progress,
+		next = DepotRules.nextAt(from, bargeOffset(player)),
+	}, p, now - from)
+	data.depot.stock, data.depot.at = state.stock, now
+	if c then
+		c.progress, c.rate, c.at = state.progress or c.progress, rate, now
+	end
+	return waited, p, rate
+end
+
+-- Seconds until the running site finishes, barge waits included (the tablet's timer, the FinishNow tier).
+local function siteLeft(player: Player, data: any): number
+	local c = data.construction
+	if not c then
+		return 0
+	end
+	local p = depotParams(player, data)
+	return (
+		DepotRules.timeLeft({
+			stock = data.depot.stock,
+			progress = c.progress,
+			next = DepotRules.nextAt(os.time(), bargeOffset(player)),
+		}, p)
+	)
+end
+
+-- The K4 plot attributes the Depot, barge, Hauler and Builder visuals read.
+local function publishDepot(
+	plot: Plot,
+	player: Player,
+	data: any,
+	p: DepotRules.Params,
+	rate: number,
+	waited: number
+)
+	local t = Workspace:GetServerTimeNow()
+	plot.model:SetAttribute("DepotStock", math.floor(data.depot.stock + 1e-6))
+	plot.model:SetAttribute("DepotCap", p.cap)
+	plot.model:SetAttribute(
+		"BargeNext",
+		math.floor(t + DepotRules.nextAt(t, bargeOffset(player)) + 0.5)
+	)
+	plot.model:SetAttribute("HaulRate", p.drop * 60 / DepotRules.BARGE_PERIOD)
+	plot.model:SetAttribute("CarryRate", (p.carry or rate / DepotRules.LOAD_WORK) * 60)
+	plot.model:SetAttribute("SiteWaiting", if data.construction and waited > 0 then true else nil)
+end
+
 -- What the build cost in Cash (the FinishNow refund on a lost race), buildings and decor alike.
 local function cashOf(key: string, level: number?): number
 	local b = DockConfig.Buildings[key]
@@ -741,6 +835,7 @@ local function clearSite(plot: Plot)
 	plot.model:SetAttribute("SiteRate", nil)
 	plot.model:SetAttribute("SiteBuilders", nil)
 	plot.model:SetAttribute("SiteLevel", nil)
+	plot.model:SetAttribute("SiteWaiting", nil)
 end
 
 -- The model that rises with the progress; it stays unowned (no effects, unlocks or worker slots) until done.
@@ -769,7 +864,12 @@ local function syncSite(plot: Plot, data: any, player: Player)
 		plot.model:SetAttribute("SiteKey", c.key)
 		plot.model:SetAttribute("SiteLevel", c.level)
 		plot.model:SetAttribute("SiteProgress", c.progress)
-		plot.model:SetAttribute("SiteRate", c.rate)
+		local left = siteLeft(player, data)
+		local work = workOf(c.key, c.level)
+		plot.model:SetAttribute(
+			"SiteRate",
+			if left > 0 then (1 - c.progress) * work / left else c.rate
+		)
 		plot.model:SetAttribute(
 			"SiteBuilders",
 			#BuildTimer.builders(data.workers, buildSkill(player).max) + baseCrew(player)
@@ -1055,6 +1155,7 @@ local function startConstruction(player: Player, data: any, key: string, level: 
 			ProgressionService.Refresh(player) -- the buy's own Refresh ran before this step moved
 		end
 	end
+	stepDepot(player, data, os.time()) -- the Depot fills up to now before the site draws from it
 	data.construction = {
 		key = key,
 		level = buildLevel,
@@ -1150,7 +1251,7 @@ local function promptFinish(player: Player)
 	if not (c and byPlayer[player]) then
 		return
 	end
-	local left = BuildTimer.timeLeft(c.progress, c.rate or 1, workOf(c.key, c.level))
+	local left = siteLeft(player, data)
 	if left < FINISH_MIN_LEFT then
 		return
 	end
@@ -1277,44 +1378,34 @@ local function finishConstruction(plot: Plot, player: Player, data: any)
 	end)
 end
 
--- A build keeps going while the owner is away: advance it at the saved rate before the plot is shown.
+-- A build and the barge keep going while the owner is away: one DepotRules step before the plot is shown.
 local function applyOffline(player: Player, data: any)
-	local c = data.construction
-	if not c then
-		return
-	end
-	local now = os.time()
-	c.progress =
-		BuildTimer.advance(c.progress, c.rate or 1, now - (c.at or now), workOf(c.key, c.level))
-	c.at = now
-	local i = byPlayer[player]
-	if c.progress >= 1 and i then
-		finishConstruction(plots[i], player, data)
-		return
-	end
-	c.rate = BuildTimer.rateOf(data.workers, buildSkill(player))
+	stepDepot(player, data, os.time())
 	DataService.MarkDirty(player)
+	local c = data.construction
+	local i = byPlayer[player]
+	if c and c.progress >= 1 and i then
+		finishConstruction(plots[i], player, data)
+	end
 end
 
--- One second of a running construction; it publishes the site for every client.
+-- One second of the island's Depot and running construction; it publishes both for every client.
 local function tickConstruction(plot: Plot, player: Player, data: any)
+	local before = data.depot.stock
+	local waited, p, rate = stepDepot(player, data, os.time())
 	local c = data.construction
-	if not c then
-		return
-	end
-	local now = os.time()
-	local rate = BuildTimer.rateOf(data.workers, buildSkill(player))
-	c.progress =
-		BuildTimer.advance(c.progress, c.rate or rate, now - (c.at or now), workOf(c.key, c.level))
-	c.rate, c.at = rate, now
-	if c.progress >= 1 then
+	if c and c.progress >= 1 then
 		finishConstruction(plot, player, data)
-		return
+		p, rate = depotParams(player, data)
+	elseif c then
+		makeSite(plot, c.key, c.level)
+		syncSite(plot, data, player)
+		spawnCrew(plot, baseCrew(player))
 	end
-	makeSite(plot, c.key, c.level)
-	syncSite(plot, data, player)
-	spawnCrew(plot, baseCrew(player))
-	DataService.MarkDirty(player)
+	publishDepot(plot, player, data, p, rate, waited)
+	if c or data.depot.stock ~= before then
+		DataService.MarkDirty(player)
+	end
 end
 
 local function claim(player: Player)
@@ -1341,6 +1432,11 @@ local function release(player: Player)
 			master = nil
 		end
 		dress(plots[i], nil)
+		for _, name in
+			{ "DepotStock", "DepotCap", "BargeNext", "HaulRate", "CarryRate", "SiteWaiting" }
+		do
+			plots[i].model:SetAttribute(name, nil) -- an empty island has no Depot
+		end
 		crown()
 	end
 end
@@ -1534,7 +1630,7 @@ function DockService.Start()
 			for player, i in byPlayer do
 				local plot = plots[i]
 				local data: any = DataService.Get(player)
-				if data and data.construction and plot then
+				if data and plot then
 					tickConstruction(plot, player, data)
 				end
 			end

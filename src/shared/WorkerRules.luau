@@ -6,8 +6,8 @@
 -- Mythic roll, a chance at a named special. `roll(seed, opts)`: a deterministic server roll, never Robux; the
 -- player's pity counters and owned specials ride in opts so a special never comes twice.
 -- Delivered home they join data.workers, at most CAP. Each category works at its building (DockConfig.Buildings
--- `worker`); a built one has slots(owned) places, the best rarity first; the rest idle on the jetty (a Hauler
--- waits there until the Depot row lands). Effects come from the assigned workers only.
+-- `worker`); a built one has slots(owned) places, the best rarity first; the rest idle on the jetty (Haulers work
+-- at the Depot, DepotRules). Effects come from the assigned workers only.
 local DockConfig = require(script.Parent:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Rarity = require(script.Parent:WaitForChild("Rarity"))
 
@@ -86,7 +86,6 @@ W.SLOTS = 3 -- per worker building -- tune
 W.STATION_SLOTS = 2 -- more per building once the Station stands (the island's top tier) -- tune
 
 W.GATHER_PER = 3 -- Gatherer: Cash a minute per unit -- tune
-W.HAUL_PER = 0 -- Hauler: Depot refill a minute per unit -- stub until the Depot builder lands -- tune
 W.RESCUE_PERIOD = 300 -- s between NPC rescue boat trips -- tune
 W.RESCUE_PER = 40 -- Rescuer: Cash per trip per unit -- tune
 W.RESCUE_RECRUIT = 0.1 -- a trip brings home a new worker this often -- tune
@@ -177,8 +176,7 @@ local NAMES = {
 	"Wren",
 }
 
--- The category's building key (DockConfig.Buildings with `worker` = category), nil for an unknown one (the
--- Hauler waits on the jetty until the Depot row exists).
+-- The category's building key (DockConfig.Buildings with `worker` = category), nil for an unknown one.
 function W.buildingOf(category: string): string?
 	for key, b in DockConfig.Buildings do
 		if b.worker == category then

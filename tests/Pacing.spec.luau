@@ -16,6 +16,7 @@ return function(t)
 	local UnlockTree = t.load("src/shared/UnlockTree.luau")
 	local WorkerRules = t.load("src/shared/WorkerRules.luau")
 	local BuildTimer = t.load("src/shared/BuildTimer.luau")
+	local DepotRules = t.load("src/shared/DepotRules.luau")
 	local SkillRules = t.load("src/shared/SkillRules.luau")
 	local SpinRules = t.load("src/shared/SpinRules.luau")
 
@@ -84,7 +85,8 @@ return function(t)
 	local CALL_S, TRIP_S = 45, 35
 	local START_UTC = 1792800000 -- 2026-10-24 00:00:00 UTC
 
-	local function run(friends: number, legacy: boolean?)
+	-- `flatDepot`: the Depot never upgrades past Lv1 and no Hauler works there (docs/25 K4's slow case)
+	local function run(friends: number, legacy: boolean?, flatDepot: boolean?)
 		local data = Progression.defaultData()
 		local medals = 0
 		local friendMult = if legacy then 1 else FriendBonus.multiplier(friends)
@@ -168,6 +170,31 @@ return function(t)
 		local planIndex = 1
 		local construction: { key: string, level: number, doneAt: number }? = nil
 		local builds = {} -- one row per construction: when, how long, at what crew rate
+		-- docs/25 K4: the Depot on the play clock (s); sites draw loads from it, the barge refills it
+		local depot = { stock = DepotRules.START, next = DepotRules.BARGE_PERIOD, at = 0 }
+		local depotLost = 0 -- build minutes spent waiting on an empty Depot
+		local function depotParams(): DepotRules.Params
+			local se = skills()
+			local level = UnlockTree.levelOf(levels, "Depot")
+			if flatDepot then
+				level = math.min(level, 1)
+			end
+			local haul = if flatDepot
+				then 0
+				else DepotRules.haulUnits(
+					data.workers,
+					built,
+					{ Hauler = se.extraSlots.Hauler or 0 }
+				)
+			return {
+				cap = DepotRules.cap(level),
+				drop = DepotRules.bargeLoads(level, haul, if flatDepot then 0 else se.depotRefill),
+			}
+		end
+		local function refill(seconds: number)
+			local state = DepotRules.advance(depot, depotParams(), seconds)
+			depot.stock, depot.next = state.stock, state.next
+		end
 		local planNext
 		local function settleBuilds()
 			while construction and construction.doneAt <= playMin + 1e-9 do
@@ -212,7 +239,28 @@ return function(t)
 						mult = 1 + se.buildRate,
 						crew = se.baseCrew,
 					})
-					local buildMin = BuildTimer.work(price) / 60 / rate
+					-- the Depot fills up to now, then the site draws from it: min(carry, stock + barge)
+					local now = playMin * 60
+					refill(now - depot.at)
+					local work = BuildTimer.work(price)
+					local p = depotParams()
+					p.carry = DepotRules.carrySpeed(
+						DepotRules.crewRate(data.workers, {
+							max = BuildTimer.BUILDERS + se.extraBuilders,
+							mult = 1 + se.buildRate,
+							crew = se.baseCrew,
+							carry = se.buildersCarry,
+						}),
+						work
+					)
+					p.loads = DepotRules.loadsFor(work)
+					local secs, waited, after = DepotRules.timeLeft(
+						{ stock = depot.stock, progress = 0, next = depot.next },
+						p
+					)
+					depot.stock, depot.next, depot.at = after.stock, after.next, now + secs
+					depotLost += waited / 60
+					local buildMin = secs / 60
 					construction = { key = key, level = n, doneAt = playMin + buildMin }
 					table.insert(
 						builds,
@@ -503,6 +551,11 @@ return function(t)
 				if construction then
 					construction.doneAt = math.min(construction.doneAt, playMin)
 				end
+				-- and the barge keeps coming
+				if lastEnd then
+					refill(now - lastEnd)
+				end
+				depot.at = playMin * 60
 				settleBuilds()
 				if trackDone() then
 					finished = true
@@ -561,6 +614,7 @@ return function(t)
 			perCraft = perCraft,
 			workers = #data.workers,
 			builds = builds,
+			depotLost = depotLost,
 			spinCash = spinCash,
 			spins = spins,
 			spinMaxShare = spinMaxShare,
@@ -643,9 +697,18 @@ return function(t)
 	local before = run(0, true)
 	local solo = run(0)
 	local friend = run(1)
+	local flat = run(0, false, true)
 	report(before, "before (no streak crate)")
 	report(solo, "after, solo")
 	report(friend, "after, one friend")
+	print(
+		string.format(
+			"  depot: solo lost %.1f build min to an empty Depot (Depot Lv1, no Haulers: %.1f min; tree %.1f h)",
+			solo.depotLost,
+			flat.depotLost,
+			flat.playMin / 60
+		)
+	)
 
 	local function minutes(result: any, label: string): number
 		local entry = find(result, label)

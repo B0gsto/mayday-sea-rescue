@@ -101,6 +101,21 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   its FinishNow price. `Dock_Finish` C->S (no args) prompts `FinishNow1..3` by the site's current time left (the
   server picks; a client tier is ignored); the receipt finishes through the same path, or pays 10% of the build's
   Cash if the site already stood. Studio: `WorkerDev` `"finishbuild"`.
+- Depot and bricks (docs/25 D, K4): `src/shared/DepotRules.luau` (pure, `tests/DepotRules.spec.luau`, also stepped by
+  `tests/Pacing.spec.luau`): `cap(depotLevel)` (20 / 40 / 80, 0 with no Depot), `BARGE_PERIOD` 60 s,
+  `bargeLoads(depotLevel, haulerUnits, refill?)` (crew drop 2 + `HAUL_PER` per Hauler unit, Lv2+ x2, Hand Carts'
+  `depotRefill`), `loadsFor(work)` = `ceil(T / 10)`, `haulUnits(workers, owned, extraSlots)` (assigned Haulers:
+  rarity value x carry loads), `crewRate(workers, skill)` (BuildTimer's rate with each Builder counted once per load
+  carried: Strong 2, Brickbeard 3, Strong Backs' `buildersCarry` 2), `carrySpeed(rate, work)`, `advance(state, params,
+  dt)` (one server tick or the whole time away; with no Depot the quay holds one drop, so a site never waits
+  forever), `timeLeft(state, params)`, `nextAt(now, offset)`. Haulers work at the Depot (`DockConfig` `worker =
+  "Hauler"`, `Job` `Haul`). Saved as `data.depot = { stock, at? }` (loads, os.time of the last step; a new save
+  starts with `START` loads on the quay). `DockService` steps it every second per owner and on join; the site
+  draws loads from it (FinishNow sets progress 1 and skips the bricks). Plot model attributes: `DepotStock` (whole
+  loads), `DepotCap`, `BargeNext` (`Workspace:GetServerTimeNow()` of the next mooring; each island's barge runs
+  `PlotIndex * 10` s late), `HaulRate` and `CarryRate` (loads per minute), `SiteWaiting` (true while the site waits
+  on an empty Depot); `SiteRate` is the effective rate (`(1 - SiteProgress) * work / time left`, barge waits
+  included), so `timeLeft` readers show the real time.
 - Build tablet: the station tablet opens `DockController`'s top-down build mode (docs/25 A/J): one card per
   building (level stars, Build / Upgrade price, "MAX", padlock "Needs: HQ 2"; the HQ card's next-HQ needs as
   ticked icons), tap = camera focus on the building or its empty lot. Green Lego arrows (`BuildArrow`) bob over
@@ -238,7 +253,7 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   `ReplicatedStorage.Workers.<UserId>`, rigs in `ReplicatedStorage.WorkerRigs`, Gatherer pay, the Rescuers' NPC
   boat, `PayOffline` on join; effect attributes `WorkerBoatScale`, `WorkerCraftSpeed`, `WorkerPayBonus`
   (Builders cut build time, not Cash). Each published worker has string attribute `Job`: `Build` (at the
-  island's construction site), `Fish`, `Repair`, `Rescue`, `Heal`, `Gather` or `Idle`. Client: `WorkerController`, `UI/WorkerBadge`. Studio: `WorkerDev` `"fill"` / `"unfill"`.
+  island's construction site), `Haul`, `Fish`, `Repair`, `Rescue`, `Heal`, `Gather` or `Idle`. Client: `WorkerController`, `UI/WorkerBadge`. Studio: `WorkerDev` `"fill"` / `"unfill"`.
 - Crew (players riding together): `CrewService` (`GetCrew`, `IsCrewmate`, `Join`, `Leave`). Friends:
   `FriendService.Count`, `shared/FriendBonus`. Group reward: `GroupRewardService` + `shared/GroupReward`.
 - Daily crate: `StreakService` + `StreakRules` / `StreakConfig`; client `StreakController`, `World/StreakCrate`,
