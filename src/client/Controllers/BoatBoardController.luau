@@ -13,13 +13,13 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
-local DockConfig = require(Config:WaitForChild("DockConfig"))
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProductShelves = require(Shared:WaitForChild("ProductShelves"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
 local UiImages = require(Config:WaitForChild("UiImages"))
+local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 
 local UI = script.Parent.Parent:WaitForChild("UI")
 local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
@@ -170,7 +170,7 @@ local function paintTag(gui: BillboardGui, id: string)
 		-- the building it needs: its Lego drawing and its name
 		cash.Visible = true
 		BuildGlyph(cashIcon, { kind = "Building", key = need })
-		cashText.Text = DockConfig.Buildings[need].name
+		cashText.Text = UnlockTree.needName(need)
 	elseif unlock then
 		local coin = Instance.new("ImageLabel")
 		coin.Size = UDim2.fromScale(1, 1)

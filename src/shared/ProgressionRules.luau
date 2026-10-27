@@ -176,7 +176,7 @@ function Rules.canBuyVehicle(
 	end
 	local need = Rules.vehicleLock(data, vehicleId)
 	if need then
-		return false, `Needs {DockConfig.Buildings[need].name}`, unlock.price
+		return false, `Needs {UnlockTree.needName(need)}`, unlock.price
 	end
 	if data.cash < unlock.price then
 		return false, "Not enough Cash", unlock.price

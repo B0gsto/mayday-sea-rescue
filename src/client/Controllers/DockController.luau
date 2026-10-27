@@ -37,6 +37,7 @@ local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfi
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
+local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 
 local UI = script.Parent.Parent:WaitForChild("UI")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
@@ -322,8 +323,8 @@ local function statusOf(item: DockBlueprints.Item): Status
 		reason = {
 			icon = "lock",
 			text = if paid
-				then `Paid — builds when {DockConfig.Buildings[need].name} is built`
-				else `Needs: {DockConfig.Buildings[need].name}`,
+				then `Paid — builds when {UnlockTree.needName(need)} is built`
+				else `Needs: {UnlockTree.needName(need)}`,
 			item = { kind = "Building", key = need },
 		}
 	end

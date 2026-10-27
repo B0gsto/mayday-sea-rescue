@@ -469,7 +469,7 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 			corner.ax,
 			if corner.ax == 0 then 18 else -18,
 			corner.ay,
-			if corner.ay == 0 then 18 else -18
+			if corner.ay == 0 then 104 else -84 -- below the title / Medals / X bar, above bottom-corner HUD buttons
 		)
 		label.Size = UDim2.fromOffset(420, 52)
 		label.TextXAlignment = corner.align

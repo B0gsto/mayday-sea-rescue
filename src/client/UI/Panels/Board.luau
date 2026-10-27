@@ -11,11 +11,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
-local DockConfig = require(Config:WaitForChild("DockConfig"))
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
+local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 
 local UI = script.Parent.Parent
@@ -118,7 +118,7 @@ function Board.new(
 				coin.Visible = false -- Launch costs nothing
 			end
 		elseif need then
-			c.setLine(`Needs: {DockConfig.Buildings[need].name}`)
+			c.setLine(`Needs: {UnlockTree.needName(need)}`)
 		end
 		c.price.root.Visible = have or not (unlock and unlock.passOnly)
 

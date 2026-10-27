@@ -22,6 +22,7 @@ local player = Players.LocalPlayer
 
 local CLICK = "SurvivorInfoClick"
 local PROMPT = "SurvivorInfoPrompt"
+local CLOSE_DISTANCE = 40 -- studs from the survivor that close their card
 local CURSOR: string = (UiImages.Kit or {}).crew or ""
 
 local card: SurvivorCard.Card? = nil
@@ -41,6 +42,21 @@ local function open(model: Model)
 	end
 	shown = model
 	card.open(SurvivorTag.info(model), inWater(model))
+	task.spawn(function() -- walking or sailing away closes it
+		while shown == model and card and card.isOpen() do
+			task.wait(0.5)
+			local char = player.Character
+			local me = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
+			if
+				shown == model
+				and me
+				and (me.Position - model:GetPivot().Position).Magnitude > CLOSE_DISTANCE
+			then
+				shown = nil
+				card.close()
+			end
+		end
+	end)
 	if not hooked[model] then
 		hooked[model] = true
 		model.Destroying:Once(function()
@@ -76,9 +92,6 @@ function SurvivorController.attach(model: Model)
 	if attached[model] then
 		return
 	end
-	attached[model] = true
-	SurvivorTag.attach(model, inWater(model))
-
 	local root = model.PrimaryPart or model:FindFirstChild("HumanoidRootPart")
 	local rootPart: BasePart? = if root and root:IsA("BasePart") then root else nil
 	local parts: { BasePart } = {}
@@ -94,8 +107,10 @@ function SurvivorController.attach(model: Model)
 		rootPart = parts[1]
 	end
 	if not rootPart then
-		return
+		return -- the body has not streamed in yet: the CallProps watcher tries again on ChildAdded
 	end
+	attached[model] = true
+	SurvivorTag.attach(model, inWater(model))
 	for i = 1, math.min(#parts, 40) do
 		click(parts[i], model)
 	end

@@ -9,12 +9,12 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local BoatBuilder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
-local DockConfig = require(Config:WaitForChild("DockConfig"))
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
+local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
@@ -286,7 +286,7 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 			face,
 			if owned
 				then "Owned"
-				elseif need then `Needs: {DockConfig.Buildings[need].name}`
+				elseif need then `Needs: {UnlockTree.needName(need)}`
 				else if unlock and unlock.price > 0
 					then `{Theme.short(unlock.price)} Cash`
 					else "Locked",

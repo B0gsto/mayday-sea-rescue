@@ -179,6 +179,16 @@ function UnlockTree.bunkCap(levels: Levels): number
 	return DockConfig.BunkhouseCaps[math.min(n, #DockConfig.BunkhouseCaps)] or 0
 end
 
+-- The card name of a building key; a merged-away alias (LifeboatSlip, Hangar, ...) names its row and level.
+function UnlockTree.needName(key: string): string
+	local b = DockConfig.Buildings[key]
+	if b then
+		return b.name
+	end
+	local to, level = UnlockTree.legacyTarget(key)
+	return if to then `{DockConfig.Buildings[to].name} Lv{level}` else key
+end
+
 -- The building craft `id` needs and that is not owned yet (nil: none, or owned).
 function UnlockTree.craftMissing(id: string, owned: Owned): string?
 	local v = ProgressionConfig.Vehicles[id]

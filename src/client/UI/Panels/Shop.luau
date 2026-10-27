@@ -11,12 +11,12 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
-local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProductShelves = require(Shared:WaitForChild("ProductShelves"))
 local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
 local Telemetry = require(script.Parent.Parent.Parent:WaitForChild("Telemetry"))
+local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 
 local Kit = script.Parent.Parent:WaitForChild("Kit")
 local Card = require(Kit:WaitForChild("Card"))
@@ -108,7 +108,7 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 		local need = unlock and unlock.needs
 		return {
 			needs = if need and player:GetAttribute("Dock" .. need) ~= true
-				then DockConfig.Buildings[need].name
+				then UnlockTree.needName(need)
 				else nil,
 			offered = entry ~= nil and entry.id == id,
 			owned = player:GetAttribute("Pass_" .. ref.key) == true
