@@ -66,6 +66,7 @@ local function siteState(): NextGoal.Site?
 	end
 	return {
 		key = key,
+		level = tonumber(plot:GetAttribute("SiteLevel")),
 		progress = math.clamp(tonumber(plot:GetAttribute("SiteProgress")) or 0, 0, 1),
 		rate = tonumber(plot:GetAttribute("SiteRate")) or 1,
 	}
@@ -190,18 +191,24 @@ local function refresh()
 		startPulse(false)
 		return
 	end
-	local owned = if type(s.dockBuildings) == "table" then s.dockBuildings else {}
+	local levels = if type(s.dock) == "table" and type(s.dock.levels) == "table"
+		then s.dock.levels
+		else {}
 	-- a running site owns the chip: a frame without SiteKey (playtest 2026-10-26, not reproduced) must not flip
 	-- it to the next buy. shortcut: a 3 s hold, until the server's site state is found to drop out
 	local site = siteState()
 	if site then
 		lastSite, lastSiteAt = site, os.clock()
-	elseif lastSite and os.clock() - lastSiteAt < 3 and owned[lastSite.key] ~= true then
+	elseif
+		lastSite
+		and os.clock() - lastSiteAt < 3
+		and (tonumber(levels[lastSite.key]) or 0) < (lastSite.level or 1)
+	then
 		site = lastSite
 	end
 	local g = NextGoal.next({
 		cash = tonumber(s.cash) or 0,
-		owned = owned,
+		levels = levels,
 		construction = site,
 	})
 	if not g then
@@ -219,7 +226,7 @@ local function refresh()
 		BuildGlyph(art, { kind = "Decor", key = g.key })
 	end
 	local name = nameLabel :: TextLabel
-	name.Text = g.name
+	name.Text = if g.level > 1 then `{g.name} Lv{g.level}` else g.name
 	local fillFrame = fill :: Frame
 	local price = priceLabel :: TextLabel
 	fillFrame.Size = UDim2.fromScale(g.progress, 1)

@@ -81,7 +81,7 @@ return function(t)
 			coldOpenDone = false,
 			totalRescues = 0,
 			step = nil,
-			owned = {},
+			owned = { Harbour = true, HQ = true }, -- the start set: the jetty and the free Hut
 			constructionKey = nil,
 		}
 		for k, v in over or {} do
@@ -106,23 +106,31 @@ return function(t)
 				coldOpenDone = true,
 				totalRescues = 1,
 				step = O.STEP_SITE,
-				owned = { Workshop = true },
+				owned = { HQ = true, Workshop = true },
 			}))).toBe("Spin")
 			t.expect(O.beat(beat({
 				coldOpenDone = true,
 				totalRescues = 1,
 				step = O.STEP_DONE,
-				owned = { Workshop = true },
+				owned = { HQ = true, Workshop = true },
 			}))).toBe("Done")
 		end
 	)
+
+	t.test("the free Hut comes first: stand, site, then the cold open (docs/25 J)", function()
+		t.expect(O.beat(beat({ owned = { Harbour = true } }))).toBe("BuildHQ")
+		t.expect(O.beat(beat({ owned = { Harbour = true }, constructionKey = "HQ" })))
+			.toBe("HQSite")
+		t.expect(O.beat(beat())).toBe("ColdOpen")
+		t.expect(O.skip(beat({ owned = { Harbour = true } }))).toBe(false)
+	end)
 
 	t.test("a saved step never repeats an earlier beat", function()
 		t.expect(O.beat(beat({ coldOpenDone = true, step = O.STEP_RESCUE }))).toBe("BuildStation")
 		t.expect(O.beat(beat({
 			coldOpenDone = true,
 			step = O.STEP_SPIN,
-			owned = { Workshop = true },
+			owned = { HQ = true, Workshop = true },
 		}))).toBe("Spin")
 	end)
 
@@ -137,13 +145,14 @@ return function(t)
 		t.expect(O.beat(beat({
 			coldOpenDone = true,
 			step = O.STEP_SITE,
-			owned = { Pontoon = true },
+			owned = { HQ = true, Pontoon = true },
 			constructionKey = "Workshop",
 		}))).toBe("Build")
 	end)
 
 	t.test("the first survivor is a Builder until someone is home", function()
 		t.expect(O.buildersFirst(0, nil, {})).toBe(true)
+		t.expect(O.buildersFirst(0, nil, { Harbour = true, HQ = true })).toBe(true)
 		t.expect(O.buildersFirst(0, nil, { Pontoon = true })).toBe(false)
 		t.expect(O.buildersFirst(1, nil, {})).toBe(false)
 		t.expect(O.buildersFirst(0, O.STEP_SITE, {})).toBe(false)

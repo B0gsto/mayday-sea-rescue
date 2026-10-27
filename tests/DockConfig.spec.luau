@@ -47,14 +47,14 @@ return function(t)
 				end
 				for n, lvl in b.levels do
 					local want = math.max(b.unlockAt, n)
-					if n == 1 and (key == "Harbour" or key == "Workshop") then
+					if n == 1 and key == "Harbour" then
 						want = 0
 					end
 					t.expect(lvl.hq).toBe(want)
 				end
 			end
 			t.expect(D.Buildings.Harbour.levels[1].hq).toBe(0)
-			t.expect(D.Buildings.Workshop.levels[1].hq).toBe(0)
+			t.expect(D.Buildings.Workshop.levels[1].hq).toBe(1)
 		end
 	)
 

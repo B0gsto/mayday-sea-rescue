@@ -34,8 +34,8 @@ return function(t)
 	-- 10-20 minutes early (Workshop, fish shed, boathouse, RIB, pontoon, boat yard, clinic, lifeboat...), then
 	-- the helicopter's branch (by 8 h), the rescue boathouse, the sub's branch, the station. Every prerequisite comes before its item (planNext asserts it).
 	local PLAN = {
-		"Workshop", -- tutorial-safe Lv1 (hq 0)
-		"HQ",
+		"HQ", -- the free Rescue Hut, the tutorial's first build (docs/25 J)
+		"Workshop",
 		"Depot",
 		"Bunkhouse",
 		"FishShed",
@@ -481,6 +481,7 @@ return function(t)
 		local sessions = {}
 		local lastEnd: number? = nil
 		local finished = false
+		planNext() -- docs/25 J: the free Rescue Hut is built before the first call
 		for d = 1, 80 do
 			for s = 1, 2 do
 				if playMin >= MAX_PLAY_MIN then

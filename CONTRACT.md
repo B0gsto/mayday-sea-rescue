@@ -101,8 +101,11 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   its FinishNow price. `Dock_Finish` C->S (no args) prompts `FinishNow1..3` by the site's current time left (the
   server picks; a client tier is ignored); the receipt finishes through the same path, or pays 10% of the build's
   Cash if the site already stood. Studio: `WorkerDev` `"finishbuild"`.
-- Build tablet: the station tablet opens `DockController`'s top-down build mode (`DockBlueprints`: `onIsland`,
-  `needs`, `glyph`, drawn by `UI/BuildGlyph`; `DockBuild`: camera and spot maths). `server/Dock/BoatBoard` builds
+- Build tablet: the station tablet opens `DockController`'s top-down build mode (docs/25 A/J): one card per
+  building (level stars, Build / Upgrade price, "MAX", padlock "Needs: HQ 2"; the HQ card's next-HQ needs as
+  ticked icons), tap = camera focus on the building or its empty lot. Green Lego arrows (`BuildArrow`) bob over
+  every level buildable right now. `DockBlueprints` (`needs`, `glyph`, drawn by `UI/BuildGlyph`); `DockBuild`
+  (camera and spot maths); `shared/NextGoal` (the Next chip: next affordable level, else the HQ needs). `server/Dock/BoatBoard` builds
   every craft board (boat, hangar, sub) with scale models from `ReplicatedStorage.VehiclePreviews`; client
   `BoatBoardController` (one `BoardOpen` prompt per board -> `Menu.openBoard` -> `UI/Panels/Board` cards; Launch = Net `BoardLaunch` -> crane beat + `DockLaunch`). The boathouse paint
   booth (`DockConfig.PAINT_BOOTH`) opens `DockController`'s paint card (`UI/CosmeticPicker`). Harbour Master:
@@ -195,6 +198,8 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
 - Cold open: `StartColdOpen` seats a new player on a jet ski (`VehicleService.SpawnColdOpen`) with a swimmer just
   off their cove; `Boat/ColdOpen` (ease, drop-off), `Boat/ColdOpenFlow`, `UI/ColdOpenCue`, `UI/OnboardingReward`.
   Profile `coldOpenDone`.
+- Tutorial (docs/25 J): the first beat is the free Rescue Hut (`Onboarding.beat` `BuildHQ` -> `HQSite`); the cold
+  open waits for it (`OperationService`: no start while `DockLevelHQ` is 0), then jet ski, survivor, Workshop, spin.
 - `src/shared/Onboarding.luau` (pure): `goal()` (the tutorial chain, `CallTypes.TutorialChain`), `failsafeCall`,
   `newPlayerHud`; `OnboardingController` + `UI/OnboardingBeacon`; `OnboardingWeather` keeps the cold open calm.
   `tests/NewPlayerPace.spec.luau` and `tests/Pacing.spec.luau` check the pace.

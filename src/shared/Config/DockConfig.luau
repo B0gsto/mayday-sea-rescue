@@ -146,10 +146,9 @@ local rows: { [string]: any } = {
 		worker = "Builder",
 		color = Color3.fromRGB(250, 208, 40),
 		levels = {
-			-- Lv1 hq 0 keeps the existing tutorial able to build the Workshop first (docs/24 E)
 			{
 				cash = 500,
-				hq = 0,
+				hq = 1,
 				product = "DockWorkshop",
 				robux = 15,
 				effect = "Builders",

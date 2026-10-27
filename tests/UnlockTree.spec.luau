@@ -44,7 +44,7 @@ return function(t)
 	end)
 
 	t.test("Cash buys the next level, in order, inside the HQ gate and with the Cash", function()
-		local base = { Harbour = 1, HQ = 0 }
+		local base = { Harbour = 1, HQ = 1 }
 		local ok, reason, price, need = U.canBuild("Workshop", 1, base, 499)
 		t.expect({ ok, reason, price, need }).toEqual({ false, "Cash", 500, nil })
 		t.expect(U.canBuild("Workshop", 1, base, 500)).toBe(true)
@@ -86,7 +86,8 @@ return function(t)
 	end)
 
 	t.test("Robux skips the Cash, never the order or the HQ gate", function()
-		t.expect(U.canRobux("Workshop", 1, { Harbour = 1, HQ = 0 })).toBe(true)
+		t.expect(U.canRobux("Workshop", 1, { Harbour = 1, HQ = 0 })).toBe(false)
+		t.expect(U.canRobux("Workshop", 1, { Harbour = 1, HQ = 1 })).toBe(true)
 		t.expect(U.canRobux("Harbour", 2, { Harbour = 1, HQ = 1 })).toBe(false)
 		t.expect(U.canRobux("Harbour", 2, { Harbour = 1, HQ = 2 })).toBe(true)
 		t.expect(U.canRobux("Workshop", 1, { Workshop = 1, HQ = 2 })).toBe(false)

@@ -10,10 +10,10 @@
 -- The first calls are fail-safe: condition is held above Critical for the cold open and the next
 -- three calls, so a child who just holds the throttle cannot lose anyone.
 --
--- docs/24 E: the tutorial's saved beat (data.tutorialStep) walks the world from the cold open to the
--- first build and the first spin. `beat` is pure and reads only saved facts, so a returning player
+-- docs/24 E, docs/25 J: the tutorial's first beat is the free Rescue Hut (HQ Lv1) from the build stand, then
+-- the saved beat (data.tutorialStep) walks the world from the cold open to the next build and the first spin. `beat` is pure and reads only saved facts, so a returning player
 -- resumes where the save left them; a save that already has a building or 5+ rescues (made before
--- this tutorial existed) skips to the permanent Next chip. The build tablet tops up a new player's
+-- this tutorial existed) skips to the permanent Next chip. The start set (the jetty, the Hut) never counts. The build tablet tops up a new player's
 -- Cash to the Workshop price exactly once; the server clients the first rescued survivor as a Builder.
 local Onboarding = {}
 
@@ -30,9 +30,30 @@ Onboarding.STEP_DONE = 4 -- the chip row is gone, the Next chip leads from here
 Onboarding.DONE_HOLD = 1.6 -- s the ticked Spin chip stays up before the Next chip takes over
 Onboarding.SKIP_RESCUES = 5 -- an old save with this many rescues never starts the tutorial
 Onboarding.WORKSHOP = "Workshop"
+Onboarding.HQ = "HQ" -- the free first build (docs/25 J)
+local START = { Harbour = true, HQ = true } -- every new island has the jetty and builds the Hut first
+
+-- Any building beyond the start set: an established save.
+local function established(owned: { [string]: boolean }?): boolean
+	local map: { [string]: boolean } = owned or {}
+	for key, has in map do
+		if has == true and not START[key] then
+			return true
+		end
+	end
+	return false
+end
 
 export type Goal = "Rescue"
-export type Beat = "ColdOpen" | "Rescue" | "BuildStation" | "Build" | "Spin" | "Done"
+export type Beat =
+	"BuildHQ"
+	| "HQSite"
+	| "ColdOpen"
+	| "Rescue"
+	| "BuildStation"
+	| "Build"
+	| "Spin"
+	| "Done"
 
 export type BeatFacts = {
 	coldOpenDone: boolean,
@@ -99,20 +120,11 @@ function Onboarding.skip(f: BeatFacts): boolean
 	if f.step and f.step >= Onboarding.STEP_RESCUE then
 		return false
 	end
-	if (f.totalRescues or 0) >= Onboarding.SKIP_RESCUES then
-		return true
-	end
-	local ownedMap: { [string]: boolean } = f.owned or {}
-	for _, has in ownedMap do
-		if has == true then
-			return true
-		end
-	end
-	return false
+	return (f.totalRescues or 0) >= Onboarding.SKIP_RESCUES or established(f.owned)
 end
 
--- The one beat to show now (docs/24 E): jet ski -> first survivor -> the build tablet -> Workshop
--- site -> Spin -> done. `Build` also runs while the next tutorial call is the actual goal; the
+-- The one beat to show now (docs/24 E, docs/25 J): the build stand -> the Hut site -> jet ski -> first
+-- survivor -> the build tablet -> Workshop site -> Spin -> done. `Build` also runs while the next tutorial call is the actual goal; the
 -- controller shows the call marker then.
 function Onboarding.beat(f: BeatFacts): Beat
 	if f.step and f.step >= Onboarding.STEP_DONE then
@@ -120,6 +132,9 @@ function Onboarding.beat(f: BeatFacts): Beat
 	end
 	if Onboarding.skip(f) then
 		return "Done"
+	end
+	if (f.owned or {})[Onboarding.HQ] ~= true then
+		return if f.constructionKey == Onboarding.HQ then "HQSite" else "BuildHQ"
 	end
 	if not f.coldOpenDone then
 		return "ColdOpen"
@@ -147,16 +162,7 @@ function Onboarding.buildersFirst(
 	if (step or 0) >= Onboarding.STEP_SITE then
 		return false
 	end
-	if (totalRescues or 0) > 0 then
-		return false
-	end
-	local ownedMap: { [string]: boolean } = owned or {}
-	for _, has in ownedMap do
-		if has == true then
-			return false
-		end
-	end
-	return true
+	return (totalRescues or 0) <= 0 and not established(owned)
 end
 
 -- Cash the tutorial adds so the Workshop is affordable (0 when it already is): exactly the gap.
