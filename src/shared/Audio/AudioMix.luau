@@ -141,4 +141,45 @@ function AudioMix.gullChance(intensity: number): number
 	return clamp01(1 - intensity / 0.6)
 end
 
+export type MusicState = {
+	loading: boolean, -- the loading screen is up
+	debrief: boolean,
+	operation: boolean, -- a rescue underway
+	radio: boolean, -- the driven boat's shanty radio is on: it is the music
+	night: boolean,
+	nearHome: boolean, -- by the ring islands (AudioMix.nearHome)
+}
+
+-- The music cue that should play (nil = none). Event cues first, then the calm ones.
+function AudioMix.musicCue(s: MusicState): string?
+	if s.loading then
+		return "Music_Loading"
+	elseif s.debrief then
+		return "Music_Debrief"
+	elseif s.operation then
+		return "Music_Operation"
+	elseif s.radio then
+		return nil
+	elseif s.night then
+		return "Music_Island_Night"
+	end
+	return if s.nearHome then "Music_Island_Day" else "Music_Sea"
+end
+
+local CALM = { Music_Island_Day = true, Music_Island_Night = true, Music_Sea = true }
+
+-- Minimum hold: a calm cue gives way to another calm cue only after `hold` s, so hovering at a zone
+-- edge (or a dawn/dusk change mid-track) doesn't flip the music; event cues and silence switch at once.
+function AudioMix.holdCue(current: string?, held: number, want: string?, hold: number): string?
+	if current and want and CALM[current] and CALM[want] and held < hold then
+		return current
+	end
+	return want
+end
+
+-- Hysteresis on the island / sea edge: inside `enter` studs is near, past `leave` is not.
+function AudioMix.nearHome(dist: number, wasNear: boolean, enter: number, leave: number): boolean
+	return dist < (if wasNear then leave else enter)
+end
+
 return AudioMix

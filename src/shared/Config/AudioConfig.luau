@@ -155,7 +155,13 @@ AudioConfig.Clips = {
 	),
 	UI_FriendPop = rl(9112752910, 0.22, "Bubble Wobble Comic Bloops Slight Rhythm 4 (SFX)"),
 
-	-- Music (APM via Roblox). Two cues: an operation underway, and the debrief.
+	-- Night on the islands (AudioController: near a ring island while WorkLoop.isNight; fades slowly).
+	-- Also verified: Crickets Night 1 9112764546, Harbor Night Presence 1 9112792650.
+	Amb_Crickets = rl(9112764573, 0.3, "Crickets Night 3 (SFX)"),
+
+	-- Music (APM via Roblox). AudioMix.musicCue picks one: loading > debrief > operation, then the
+	-- calm cues (night anywhere, island near the ring, sea further out). Volumes level the tracks
+	-- by ear so each sits under the SFX (the Music group then the player's Music slider).
 	Music_CrateFanfare = rl(1837762472, 0.5, "Victory Dance (sting a) (APM)", "day-7 crate"),
 	Music_Operation = rl(1837463124, 0.35, "Tension Bed for One (APM, The Box)"),
 	Music_Debrief = rl(
@@ -163,6 +169,24 @@ AudioConfig.Clips = {
 		0.4,
 		"Cinematic Hopeful Gravitas Underscore Ambient Only (APM)"
 	),
+	-- alt: Island Life (The Box) 1837464968, 105 s
+	Music_Island_Day = rl(
+		100682372757529,
+		0.3,
+		"Coconut Calypso (2min Underscore Mix) (APM, Morten Gildberg-Hansen)",
+		"115 s"
+	),
+	-- alt: Sleepy Starlight - Alt1, NoMel (Spot On) 1848238151, 124 s
+	Music_Island_Night = rl(
+		1838620044,
+		0.4,
+		"Moonlight Guitar (Acoustic) (APM, The Music Yard)",
+		"103 s, solo guitar: a little louder"
+	),
+	-- alt: Plain Sailing (Matthew Naylor) 1836961373, 137 s
+	Music_Sea = rl(1844645532, 0.3, "Happy Sailor (APM, Lars-Luis Linek)", "137 s"),
+	-- alt: Happy Ukulele (Kapono Beamer) 1847424950, 32 s
+	Music_Loading = rl(1837851505, 0.35, "Island Pop - 60 (APM, Craig McConnell)", "60 s"),
 	-- RP-M5 stream A (Horn Pack / Siren Pack): real marine horns and siren tones, PSE via the
 	-- Roblox licensed library, each verified public (audio-search.py verify). Played by
 	-- src/client/Cosmetics/Horns and Sirens (options in Config/Cosmetics/Horn.luau, Siren.luau).
@@ -229,6 +253,10 @@ AudioConfig.Mix = {
 	bellMaxGap = 9,
 	riggingRate = 0.6, -- clinks per second at full wind
 	musicFade = 3, -- s
+	musicHold = 20, -- s a calm cue plays before another calm cue may take over
+	homeEnter = 240, -- studs from a ring island's centre: island music starts inside this
+	homeLeave = 320, -- ... and gives way to the sea music past this
+	stormDuck = 0.5, -- music level drop at full storm (the rain and thunder lead)
 }
 
 -- RP-M5 stream C (Sea Shanty Radio): the radio's tracks are station data in

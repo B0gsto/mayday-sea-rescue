@@ -119,6 +119,54 @@ return function(t)
 		t.expect(AudioMix.gap(3, 9, 1)).toBe(9)
 	end)
 
+	t.test(
+		"music cue: event cues first, then night, island or sea; the radio silences calm cues",
+		function()
+			local s = {
+				loading = false,
+				debrief = false,
+				operation = false,
+				radio = false,
+				night = false,
+				nearHome = true,
+			}
+			t.expect(AudioMix.musicCue(s)).toBe("Music_Island_Day")
+			s.nearHome = false
+			t.expect(AudioMix.musicCue(s)).toBe("Music_Sea")
+			s.night = true
+			t.expect(AudioMix.musicCue(s)).toBe("Music_Island_Night")
+			s.radio = true
+			t.expect(AudioMix.musicCue(s)).toBe(nil)
+			s.operation = true
+			t.expect(AudioMix.musicCue(s)).toBe("Music_Operation")
+			s.debrief = true
+			t.expect(AudioMix.musicCue(s)).toBe("Music_Debrief")
+			s.loading = true
+			t.expect(AudioMix.musicCue(s)).toBe("Music_Loading")
+			for _, cue in { "Music_Island_Day", "Music_Island_Night", "Music_Sea", "Music_Loading" } do
+				t.expect(AudioConfig.Clips[cue] ~= nil).toBeTruthy()
+			end
+		end
+	)
+
+	t.test(
+		"music hold: calm cues hold, events and silence switch at once; edge hysteresis",
+		function()
+			t.expect(AudioMix.holdCue("Music_Island_Day", 5, "Music_Sea", 20))
+				.toBe("Music_Island_Day")
+			t.expect(AudioMix.holdCue("Music_Island_Day", 25, "Music_Sea", 20)).toBe("Music_Sea")
+			t.expect(AudioMix.holdCue("Music_Sea", 1, "Music_Operation", 20))
+				.toBe("Music_Operation")
+			t.expect(AudioMix.holdCue("Music_Debrief", 1, "Music_Sea", 20)).toBe("Music_Sea")
+			t.expect(AudioMix.holdCue("Music_Sea", 1, nil, 20)).toBe(nil)
+			t.expect(AudioMix.holdCue(nil, 0, "Music_Sea", 20)).toBe("Music_Sea")
+			t.expect(AudioMix.nearHome(280, true, 240, 320)).toBe(true)
+			t.expect(AudioMix.nearHome(280, false, 240, 320)).toBe(false)
+			t.expect(AudioMix.nearHome(330, true, 240, 320)).toBe(false)
+			t.expect(AudioMix.nearHome(200, false, 240, 320)).toBe(true)
+		end
+	)
+
 	t.test("config: every clip has an asset id, a volume and a category", function()
 		local n = 0
 		for name, clip in AudioConfig.Clips do
