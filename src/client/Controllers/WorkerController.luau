@@ -987,7 +987,7 @@ local function near(at: Vector3): boolean
 end
 -- The dock and bridge lamps (tag NightLamp): a dim amber glow at night (a pale Neon head blooms into a white bar,
 -- audit P1-3), an unlit bulb in its own colour by day.
-local LAMP_LIT = Color3.fromRGB(230, 140, 60)
+local LAMP_LIT = Color3.fromRGB(210, 120, 50)
 local function lamp(p: Instance, on: boolean)
 	if not p:IsA("BasePart") then
 		return

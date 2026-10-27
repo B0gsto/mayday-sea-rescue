@@ -64,26 +64,26 @@ local Calm: Preset = table.freeze({
 	Brightness = 2.4,
 	ExposureCompensation = 0,
 	Ambient = hex("#3A3430"),
-	OutdoorAmbient = hex("#8A7B6E"),
+	OutdoorAmbient = hex("#8A8090"),
 	ColorShift_Top = hex("#FFC890"),
 	EnvironmentDiffuseScale = 1,
 	EnvironmentSpecularScale = 1,
-	AtmosphereDensity = 0.36,
-	AtmosphereHaze = 2.2,
-	AtmosphereColor = hex("#E3B48C"),
-	AtmosphereDecay = hex("#B8754E"),
-	AtmosphereGlare = 0.6,
+	AtmosphereDensity = 0.26, -- lighting study 2026-10-28: clearer, a blue sea under the gold (was 0.36 / haze 2.2, sepia)
+	AtmosphereHaze = 1.0,
+	AtmosphereColor = hex("#F2B888"),
+	AtmosphereDecay = hex("#6A6A98"),
+	AtmosphereGlare = 0.5,
 	CloudsCover = 0.5,
 	CloudsDensity = 0.35,
 	CloudsColor = hex("#FFD8B2"),
-	Saturation = -0.05,
-	Contrast = 0.08,
-	TintColor = hex("#FFF0E0"),
+	Saturation = 0.12,
+	Contrast = 0.12,
+	TintColor = hex("#FFF2E2"),
 	BloomIntensity = 0.3,
 	BloomSize = 24,
 	BloomThreshold = 1.1, -- glitter blooms (round 3)
 	SunRaysIntensity = 0.12, -- golden shafts
-	WaterColor = hex("#36463F"),
+	WaterColor = hex("#2A5E70"),
 })
 
 local Storm: Preset = table.freeze({
@@ -121,7 +121,7 @@ local Night: Preset = table.freeze({
 	-- Neon lamps glow instead of blooming into white bars (P1-3).
 	ExposureCompensation = 0.4,
 	Ambient = hex("#36445E"),
-	OutdoorAmbient = hex("#7A8CB4"),
+	OutdoorAmbient = hex("#8496BE"),
 	ColorShift_Top = hex("#6B7FA0"),
 	EnvironmentDiffuseScale = 0.8,
 	EnvironmentSpecularScale = 1,
@@ -140,7 +140,7 @@ local Night: Preset = table.freeze({
 	BloomSize = 24,
 	BloomThreshold = 1.3,
 	SunRaysIntensity = 0,
-	WaterColor = hex("#1E6670"),
+	WaterColor = hex("#24808C"), -- teal: reads apart from the navy sky,
 })
 
 -- Clear: the always-sunny default (user, 2026-10-22): blue sky, white clouds, warm sun, clear
