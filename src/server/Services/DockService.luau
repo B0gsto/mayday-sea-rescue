@@ -32,8 +32,9 @@
 -- WorkerDev ("finishbuild") finishes the running site at once.
 -- Harbour Master (docs/23 d.1, Marina.harbourMaster): the most people rescued among islands with a Station gets
 -- a gold name sign and a tall gold beacon; picked on join / leave / a build (nobody's island ever moves). The
--- trophy hall: a cup per rescue milestone (BadgeRules.trophies) and a plaque per island stamp (DiscoveryRules),
--- rebuilt from the profile every few seconds when it changes.
+-- trophy hall: its plinths show the owner's specials, rarest survivors, wheel prizes and rescue-milestone cups
+-- (TrophyRules), the shelf the other cups, a plaque per island stamp (DiscoveryRules); rebuilt from the profile
+-- every few seconds when it changes.
 local CollectionService = game:GetService("CollectionService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -63,6 +64,7 @@ local SkillRules = require(Shared:WaitForChild("SkillRules"))
 local SkillService = require(script.Parent:WaitForChild("SkillService"))
 local SpinService = require(script.Parent:WaitForChild("SpinService"))
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
+local TrophyRules = require(Shared:WaitForChild("TrophyRules"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 
 local DockService = {}
@@ -977,14 +979,21 @@ local function clearCrew(plot: Plot)
 	plot.crew = nil
 end
 
--- The trophy hall's cups and plaques, rebuilt only when the owner's list or the hall's plinths changed.
+-- The trophy hall's plinths (TrophyRules: specials, rare survivors, wheel prizes, cups), shelf and plaques, rebuilt
+-- only when that line, the stamps or the hall's plinths changed.
 local function syncTrophies(plot: Plot, owner: Player?)
 	local data: any = owner and DataService.Get(owner)
-	local cups, plaques = {}, {}
+	local items: { TrophyRules.Item }, plaques = {}, {}
 	if data and tableOf(data.dockBuildings).TrophyHall == true then
+		local cups = {}
 		for _, key in BadgeRules.trophies(tableOf(data.badgeCounters), tableOf(data.badgesAwarded)) do
 			table.insert(cups, BadgeConfig.Badges[key].name)
 		end
+		items = TrophyRules.items(
+			tableOf(data.workers) :: any,
+			TrophyRules.wheelPrizes(tableOf(data.flags)),
+			cups
+		)
 		local state = DiscoveryRules.decode(tableOf(data.flags).isles)
 		for _, page in DiscoveryRules.Pages do
 			if DiscoveryRules.has(state, page.id, 4) then -- bit 4: the island stamp
@@ -993,17 +1002,18 @@ local function syncTrophies(plot: Plot, owner: Player?)
 		end
 	end
 	local names = {}
+	for _, it in items do
+		table.insert(names, `{it.kind}:{it.name}:{it.rarity}:{it.category}`)
+	end
 	for _, p in plaques do
 		table.insert(names, p.name)
 	end
-	-- the add-on mesh's plinths take the first cups (DockPieces.trophies): 8 at Lv2, 14 at Lv3
+	-- the add-on mesh's plinths take the first items (DockPieces.trophies): 8 at Lv2, 14 at Lv3
 	local hall = plot.buildings.TrophyHall
 	local plinths = if hall and hall:FindFirstChild("TrophyHallMesh")
 		then (if (plot.levels.TrophyHall or 1) >= 3 then 14 else 8)
 		else 0
-	local key = if data
-		then `{table.concat(cups, ",")}|{table.concat(names, ",")}|{plinths}`
-		else ""
+	local key = if data then `{table.concat(names, ",")}|{plinths}` else ""
 	if key == plot.trophyKey then
 		return
 	end
@@ -1012,8 +1022,8 @@ local function syncTrophies(plot: Plot, owner: Player?)
 		plot.trophies:Destroy()
 		plot.trophies = nil
 	end
-	if #cups + #plaques > 0 then
-		local m = DockPieces.trophies(plot.frame, cups, plaques, plinths)
+	if #items + #plaques > 0 then
+		local m = DockPieces.trophies(plot.frame, items, plaques, plinths)
 		m.Parent = plot.model
 		plot.trophies = m
 	end

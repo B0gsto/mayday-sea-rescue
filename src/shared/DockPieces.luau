@@ -14,6 +14,7 @@
 local AssetIds = require(script.Parent:WaitForChild("Config"):WaitForChild("AssetIds"))
 local DockConfig = require(script.Parent:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Marina = require(script.Parent:WaitForChild("Marina"))
+local Rarity = require(script.Parent:WaitForChild("Rarity"))
 local RingLayout = require(script.Parent:WaitForChild("Config"):WaitForChild("RingLayout"))
 local UiImages = require(script.Parent:WaitForChild("Config"):WaitForChild("UiImages"))
 
@@ -1196,7 +1197,7 @@ local function plate(
 	cf: CFrame,
 	color: Color3,
 	text: string
-)
+): TextLabel
 	local p = part(parent, name, size, cf, color, M.SmoothPlastic)
 	p.CanCollide = false
 	local gui = Instance.new("SurfaceGui")
@@ -1212,6 +1213,7 @@ local function plate(
 	label.TextColor3 = Color3.fromRGB(250, 246, 236)
 	label.Text = text
 	label.Parent = gui
+	return label
 end
 
 -- WP-25 worker buildings (docs/23 (o), docs/24 C): open Lego work yards on their DockConfig spot (`spot`,
@@ -2778,59 +2780,132 @@ function DockPieces.quayBands(parent: Instance, b: CFrame): { Frame }
 	return out
 end
 
--- The trophy hall's contents (docs/23 d.2, docs/25 B) around the berth CFrame b: a gold cup per name in `cups`
--- (rescue milestones), the first `plinths` of them 1.5x on the add-on mesh's ATT_Plinth_NN (8 at Lv2, 14 at Lv3, 0
--- when the mesh is not shown) and the rest on the shelf, and a plaque per island stamp above the shelf. A Model
--- "Trophies" (not parented).
+-- the Trophy Hall statues' torso colour per K1 category (Lego brick colours; "Any" = white)
+local CATEGORY_COLOUR = {
+	Builder = BRICK_ORANGE,
+	Hauler = RBROWN,
+	Gatherer = BRICK_GREEN,
+	Mechanic = DBG,
+	Medic = BRICK_WHITE,
+	Rescuer = BRICK_RED,
+}
+
+-- a little Lego survivor statue standing on `at` (k = scale), facing -Z: legs, torso in their category colour, a
+-- yellow head
+local function statue(m: Model, at: CFrame, k: number, category: string)
+	brick(m, "StatueLegs", Vector3.new(0.9, 0.8, 0.5) * k, at * CFrame.new(0, 0.55 * k, 0), NAVY)
+	brick(
+		m,
+		"StatueTorso",
+		Vector3.new(1, 0.9, 0.5) * k,
+		at * CFrame.new(0, 1.4 * k, 0),
+		CATEGORY_COLOUR[category] or BRICK_WHITE
+	)
+	part(
+		m,
+		"StatueHead",
+		Vector3.new(0.6, 0.6, 0.6) * k,
+		at * CFrame.new(0, 2.15 * k, 0) * CFrame.Angles(0, 0, math.pi / 2),
+		BRICK_YELLOW,
+		M.SmoothPlastic,
+		Enum.PartType.Cylinder
+	)
+end
+
+-- a gold cup (or a wheel prize's, in its rarity colour) standing on `at`, k = scale
+local function cup(m: Model, at: CFrame, k: number, color: Color3)
+	part(
+		m,
+		"CupBase",
+		Vector3.new(0.9, 0.4, 0.9) * k,
+		at * CFrame.new(0, 0.15 * k, 0),
+		DARK,
+		M.SmoothPlastic
+	)
+	part(
+		m,
+		"CupStem",
+		Vector3.new(0.7, 0.3, 0.3) * k,
+		at * CFrame.new(0, 0.7 * k, 0) * CFrame.Angles(0, 0, math.pi / 2),
+		color,
+		M.SmoothPlastic,
+		Enum.PartType.Cylinder
+	)
+	part(
+		m,
+		"Cup",
+		Vector3.new(1.1, 1.1, 1.1) * k,
+		at * CFrame.new(0, 1.45 * k, 0),
+		color,
+		M.SmoothPlastic,
+		Enum.PartType.Ball
+	)
+end
+
+-- The trophy hall's contents (docs/23 d.2, docs/25 B) around the berth CFrame b. `items` is the TrophyRules line:
+-- the first `plinths` stand on the add-on mesh's ATT_Plinth_NN (8 at Lv2, 14 at Lv3, 0 when the mesh is not shown)
+-- on a ring in their rarity colour, the name on the pedestal's plaque (survivors and prizes in their rarity colour):
+-- a survivor as a Lego statue, a wheel prize as a cup in its rarity colour, a rescue milestone as a gold cup. Cups
+-- past the plinths go on the wall shelf; survivors and prizes past them don't show. A plaque per island stamp above
+-- the shelf. A Model "Trophies" (not parented).
 function DockPieces.trophies(
 	b: CFrame,
-	cups: { string },
+	items: { { kind: string, name: string, rarity: number, category: string } },
 	plaques: { { name: string, colour: Color3 } },
 	plinths: number?
 ): Model
 	local m = Instance.new("Model")
 	m.Name = "Trophies"
 	local hall = b * HALL
-	local onPlinths = math.min(plinths or 0, #cups)
-	for i, name in cups do
-		local at, label, k
+	local onPlinths = math.min(plinths or 0, #items)
+	local shelf = 0
+	for i, item in items do
 		if i <= onPlinths then
 			local p: Vector3 =
 				AssetIds.Attachments.M_Bld_TrophyHallAddons[string.format("ATT_Plinth_%02d", i)]
-			at, k = hall * CFrame.new(p), 1.5
+			local at, k = hall * CFrame.new(p), 1.5
+			local tint = if item.rarity > 0 then Rarity.TIERS[item.rarity].color else nil
+			if tint then
+				part(
+					m,
+					"RarityRing",
+					Vector3.new(0.15, 1.5, 1.5),
+					at * CFrame.new(0, 0.075, 0) * CFrame.Angles(0, 0, math.pi / 2),
+					tint,
+					M.SmoothPlastic,
+					Enum.PartType.Cylinder
+				)
+			end
+			if item.kind == "survivor" then
+				statue(m, at * CFrame.new(0, 0.15, 0), 1, item.category)
+			else
+				cup(m, at * CFrame.new(0, if tint then 0.15 else 0, 0), k, tint or GOLD)
+			end
 			-- on the pedestal's red front plaque (the Lv3 gallery pedestals are 0.86x)
-			label = hall * CFrame.new(p + Vector3.new(0, -1.92, if i > 8 then -1.57 else -1.8))
-		else
-			at, k = hall * CFrame.new(-9 + (i - onPlinths - 1) * 2.25, 2.8, -0.7), 1
-			label = at * CFrame.new(0, -0.2, -0.72)
+			local label = plate(
+				m,
+				"CupName",
+				Vector3.new(1.8, 0.5, 0.05),
+				hall * CFrame.new(p + Vector3.new(0, -1.92, if i > 8 then -1.57 else -1.8)),
+				NAVY,
+				item.name
+			)
+			if tint then
+				label.TextColor3 = tint
+			end
+		elseif item.kind == "cup" then
+			shelf += 1
+			local at = hall * CFrame.new(-9 + (shelf - 1) * 2.25, 2.8, -0.7)
+			cup(m, at, 1, GOLD)
+			plate(
+				m,
+				"CupName",
+				Vector3.new(2, 0.5, 0.05),
+				at * CFrame.new(0, -0.2, -0.72),
+				NAVY,
+				item.name
+			)
 		end
-		part(
-			m,
-			"CupBase",
-			Vector3.new(0.9, 0.4, 0.9) * k,
-			at * CFrame.new(0, 0.15 * k, 0),
-			DARK,
-			M.SmoothPlastic
-		)
-		part(
-			m,
-			"CupStem",
-			Vector3.new(0.7, 0.3, 0.3) * k,
-			at * CFrame.new(0, 0.7 * k, 0) * CFrame.Angles(0, 0, math.pi / 2),
-			GOLD,
-			M.SmoothPlastic,
-			Enum.PartType.Cylinder
-		)
-		part(
-			m,
-			"Cup",
-			Vector3.new(1.1, 1.1, 1.1) * k,
-			at * CFrame.new(0, 1.45 * k, 0),
-			GOLD,
-			M.SmoothPlastic,
-			Enum.PartType.Ball
-		)
-		plate(m, "CupName", Vector3.new(if k > 1 then 1.8 else 2, 0.5, 0.05), label, NAVY, name)
 	end
 	for i, p in plaques do
 		local x = -8.75 + (i - 1) * 2.5
@@ -2853,7 +2928,7 @@ function DockPieces.trophies(
 	end
 	for _, d in m:GetDescendants() do
 		if d:IsA("BasePart") then
-			d.CanCollide = false
+			d.CanCollide, d.CanQuery, d.CanTouch = false, false, false
 		end
 	end
 	return m
