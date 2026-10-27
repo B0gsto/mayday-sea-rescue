@@ -170,4 +170,40 @@ return function(t)
 			t.expect(p.Y >= 0 and p.Y <= size.Y).toBe(true)
 		end
 	end)
+	t.test("fitBox: frames the points with padding, centred, zoom clamped", function()
+		local view = { pos = v(0, 100), size = v(1000, 600) }
+		local zoom, pan = M.fitBox({ v(100, 100), v(500, 300) }, view, 50, 0.4, 1.5)
+		t.expect(zoom).toBe(1.5) -- the box fits at 2x: clamped
+		local mid = pan + v(300, 200) * zoom
+		t.expect(mid.X).toBeCloseTo(500, 1e-6)
+		t.expect(mid.Y).toBeCloseTo(400, 1e-6)
+		local wide = M.fitBox({ v(0, 0), v(4000, 0) }, view, 0, 0.1, 1.5)
+		t.expect(wide).toBeCloseTo(0.25, 1e-6)
+	end)
+
+	t.test(
+		"fitBox from the visible skill set: a new tree zooms in, a grown one zooms out",
+		function()
+			local S = t.load("src/shared/SkillRules.luau")
+			local view = { pos = v(0, 0), size = v(1280, 720) }
+			local function fit(owned: { [string]: boolean }): number
+				local nodes = {}
+				for id in S.visible(owned) do
+					local n = S.byId[id]
+					table.insert(nodes, { id = id, ring = n.ring, angle = n.angle })
+				end
+				local pts = { M.radialSize() * 0.5 } -- the centre always
+				for _, p in M.radialLayout(nodes) do
+					table.insert(pts, p)
+				end
+				return (M.fitBox(pts, view, 110, M.MIN_ZOOM, M.MAX_ZOOM))
+			end
+			local all = {}
+			for _, n in S.nodes() do
+				all[n.id] = true
+			end
+			t.expect(fit({})).toBe(M.MAX_ZOOM)
+			t.expect(fit(all) < fit({})).toBe(true)
+		end
+	)
 end

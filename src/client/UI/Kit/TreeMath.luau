@@ -170,6 +170,26 @@ function TreeMath.zoomAbout(pan: Vector2, at: Vector2, before: number, after: nu
 	return at - (at - pan) * k
 end
 
+-- The zoom + pan that frame `pts` (content space) in `view` with `pad` du round their bounding box,
+-- zoom clamped to [lo, hi] (the radial tree opens on what you can unlock, owner 2026-10-28).
+function TreeMath.fitBox(
+	pts: { Vector2 },
+	view: View,
+	pad: number,
+	lo: number,
+	hi: number
+): (number, Vector2)
+	local x0, y0, x1, y1 = math.huge, math.huge, -math.huge, -math.huge
+	for _, p in pts do
+		x0, y0 = math.min(x0, p.X), math.min(y0, p.Y)
+		x1, y1 = math.max(x1, p.X), math.max(y1, p.Y)
+	end
+	local w, h = x1 - x0 + pad * 2, y1 - y0 + pad * 2
+	local zoom = math.clamp(math.min(view.size.X / w, view.size.Y / h), lo, hi)
+	local mid = Vector2.new(x0 + x1, y0 + y1) * 0.5
+	return zoom, view.pos + view.size * 0.5 - mid * zoom
+end
+
 -- The radial skill tree: ring 0 is the centre ("You"), rings 1..5 radiate outward; an angle in
 -- degrees, 0 = up and clockwise. Fractional rings interpolate the radius (bridges sit at 2.75).
 export type RadialNode = { id: string, ring: number, angle: number }

@@ -262,6 +262,12 @@ docs/24 G-a2 (the build tablet as a tree) is dropped.
 - **Focus on tap:** tapping a skill node moves the camera to your rarest survivor of that node's type (Captain nodes:
   you; Crew & Luck nodes: your rarest survivor of any type); the tree fades so the world shows, the node card stays.
   Tapping a building card on the build tablet moves the camera to that building (or its lot).
+- **Skill tree view (owner 2026-10-28, wins over F and "Focus on tap"):** the tree shows only nodes you own and nodes
+  you can unlock next (no "?" tiles, no links to hidden nodes; a buy pops the new neighbours in) and opens zoomed to
+  fit just those plus the centre (max zoom capped), easing out as more is revealed; tapping a node shrinks the tree
+  into a bottom-left minimap and slides in a big card (icon, name, effect, Medal price button; minimap / X / B / Esc /
+  empty tap restore it); Captain nodes never move the camera, the others focus your rarest survivor of the type; no
+  looping or orange pulses, only one gentle pop and steady outlines.
 - **Loading → play:** when the loading screen ends the camera tweens straight from the top view to the player. No orbit,
   no stop at the spawn point.
 - **Walk-in buildings, no clutter (owner 2026-10-27):** you can walk into every building and object (wide openings,

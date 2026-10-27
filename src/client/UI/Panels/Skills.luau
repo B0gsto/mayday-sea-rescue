@@ -1,8 +1,9 @@
 --!strict
 -- Skills panel (docs/25 F, J): the full-screen radial tree, its Medal wallet, buying through Skill_Buy
--- and the state snapshot (Skill_State / PlayerDataChanged / Progression_GetData). Tapping a node shows
--- its card and moves the camera to the nearest world subject for its focus (Captain: you; a category:
--- your rarest survivor of it; Any: your rarest survivor). The tree fades while the world shows through.
+-- and the state snapshot (Skill_State / PlayerDataChanged / Progression_GetData). The tree shows only
+-- the nodes you own or can unlock next (SkillRules.visible). Tapping a node shrinks the tree into a
+-- corner, shows its card and moves the camera to your rarest survivor of its category (Any: of any
+-- type); Captain nodes leave the camera alone (owner 2026-10-28: you don't zoom into yourself).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -171,11 +172,6 @@ end
 
 local function focusPoint(kind: string): Vector3?
 	if kind == "Captain" then
-		local char = player.Character
-		local root = char and char:FindFirstChild("HumanoidRootPart")
-		if root and root:IsA("BasePart") then
-			return root.Position + Vector3.new(0, 0.7, 0)
-		end
 		return nil
 	end
 	return workerPoint(if kind == "Any" then nil else kind)
@@ -196,7 +192,6 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 			focusing = false
 			CameraController.ClearOverride()
 		end
-		view.setFaded(false)
 	end
 
 	local function startFocus(at: Vector3): boolean
@@ -238,23 +233,10 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 
 	local function nodeList(): { SkillTreeView.Node }
 		local out: { SkillTreeView.Node } = {}
+		local shown = SkillRules.visible(owned)
 		for _, n in SkillRules.nodes() do
-			local near = #n.needs == 0
-			for _, need in n.needs do
-				if owned[need] then
-					near = true
-					break
-				end
-			end
-			local state: SkillTreeView.State
-			if owned[n.id] then
-				state = "owned"
-			elseif n.soon then
-				state = "soon"
-			elseif near then
-				state = "buyable"
-			else
-				state = "locked"
+			if not shown[n.id] then
+				continue
 			end
 			table.insert(out, {
 				id = n.id,
@@ -266,8 +248,7 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 				angle = n.angle,
 				sector = n.sector,
 				keystone = n.keystone,
-				revealed = owned[n.id] or near,
-				state = state,
+				state = if owned[n.id] then "owned" else "buyable",
 				focus = n.focus,
 				needs = n.needs,
 			})
@@ -317,17 +298,10 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 		onSelect = function(n: SkillTreeView.Node)
 			local kind = n.focus
 			local at = kind and focusPoint(kind)
-			if not at then
-				endFocus()
-				return
-			end
-			if startFocus(at) then
-				view.setFaded(true)
-			else
+			if not (at and startFocus(at)) then
 				endFocus()
 			end
 		end,
-		onEmpty = endFocus,
 		onEndFocus = endFocus,
 		onReset = function()
 			task.spawn(pcall, function()
