@@ -295,6 +295,57 @@ return function(t)
 		t.expect(rare / 4000 > 0.24).toBe(true) -- 34% base + the skill's 10 points
 	end)
 
+	t.test("crew skills: Team Spirit, Homecoming, Clover, Glow Up, Mentor", function()
+		-- Team Spirit: only a building with TEAM_MATES+ co-workers
+		local owned = { FishShed = true, Station = true }
+		local four, three = {}, {}
+		for i = 1, W.TEAM_MATES + 1 do
+			four[i] = worker("Gatherer", 1)
+			three[i] = if i <= W.TEAM_MATES then worker("Gatherer", 1) else nil
+		end
+		t.expect(W.crew(four, owned, nil, 0.05).units.Gatherer).toBeCloseTo(#four * 1.05, 1e-9)
+		t.expect(W.crew(three, owned, nil, 0.05).units.Gatherer).toBeCloseTo(#three, 1e-9)
+		-- Homecoming: the offline cap grows
+		local fx = W.effects(W.crew({ worker("Gatherer", 3) }, owned), { offlineCapAdd = 7200 })
+		t.expect(fx.offlineCap).toBe(W.OFFLINE_CAP + 7200)
+		t.expect(W.offlinePay(fx, 10 * 3600)).toBe(math.floor(fx.offlinePerMin * 240))
+		-- Clover: never a worse trait than the plain roll, sometimes a better one
+		local better = 0
+		for seed = 1, 2000 do
+			local a = W.roll(seed * 7919)
+			local b = W.roll(seed * 7919, { traitReroll = true })
+			t.expect(b.rarity).toBe(a.rarity)
+			if a.trait ~= "" then
+				local ra, rb = table.find(W.TRAIT_BEST, a.trait), table.find(W.TRAIT_BEST, b.trait)
+				t.expect(rb <= ra).toBe(true)
+				better += if rb < ra then 1 else 0
+			end
+		end
+		t.expect(better > 0).toBe(true)
+		-- Glow Up: off without the skill, Medic units with it, capped
+		local medics = W.crew({ worker("Medic", 6), worker("Medic", 6) }, { Clinic = true })
+		t.expect(W.effects(medics).glowUp).toBe(0)
+		t.expect(W.effects(medics, { rarityUp = 1 }).glowUp).toBe(W.GLOW_UP_CAP)
+		-- promote: one rarity up, a Common gains a trait, specials and Mythics stay
+		local c = worker("Builder", 1)
+		t.expect(W.promote(c, 42)).toBe(true)
+		t.expect(c.rarity).toBe(2)
+		t.expect(table.find(W.TRAITS, c.trait) ~= nil).toBe(true)
+		t.expect(W.promote(worker("Builder", 5, nil, "", "Brickbeard"), 1)).toBe(false)
+		t.expect(W.promote(worker("Builder", 6), 1)).toBe(false)
+		-- Mentor: needs a Legendary, a Common and MENTOR_PERIOD; picks the first Common
+		local crew = {
+			worker("Medic", 2),
+			worker("Builder", 1),
+			worker("Rescuer", 5),
+			worker("Gatherer", 1),
+		}
+		t.expect(W.mentor(crew, 0, W.MENTOR_PERIOD)).toBe(2)
+		t.expect(W.mentor(crew, 0, W.MENTOR_PERIOD - 1)).toBe(nil)
+		t.expect(W.mentor({ worker("Builder", 1), worker("Medic", 4) }, 0, 1e9)).toBe(nil)
+		t.expect(W.mentor({ worker("Rescuer", 5), worker("Medic", 2) }, 0, 1e9)).toBe(nil)
+	end)
+
 	t.test(
 		"saves: old rarities remap, workers cleaned and capped, old crew paid back once",
 		function()

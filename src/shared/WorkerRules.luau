@@ -43,6 +43,8 @@ export type Effects = {
 	recruitChance: number, -- a trip brings home a new worker this often
 	offlineRate: number, -- share of the gather/trip rate paid while away
 	offlinePerMin: number, -- Cash a minute while away (NightOwl and Bolt at full rate)
+	offlineCap: number, -- s of time away that pays (Homecoming 2 h -> 4 h)
+	glowUp: number, -- chance an arrival goes up one rarity (Glow Up: the assigned Medics)
 }
 -- SkillRules.effects totals: the skill tree's deltas the effects math reads (nil/0 = no skills).
 export type Skill = {
@@ -55,6 +57,8 @@ export type Skill = {
 	boatCapAdd: number?,
 	medicCapAdd: number?,
 	medicPerUnit: number?,
+	offlineCapAdd: number?,
+	rarityUp: number?,
 }
 export type Pity = { epic: number, legendary: number }
 export type RollOpts = {
@@ -63,6 +67,7 @@ export type RollOpts = {
 	category: string?, -- forced category (the tutorial's first Builder)
 	owned: { [string]: boolean }?, -- special ids this player already has
 	pity: Pity?, -- the player's counters: only their own calls pass this
+	traitReroll: boolean?, -- Clover: the trait rolls twice, the better one stays (W.TRAIT_BEST)
 }
 
 local W = {}
@@ -95,6 +100,10 @@ W.SPEED_PER, W.SPEED_CAP = 0.03, 0.15 -- Mechanic: craft top speed +3% per unit,
 W.PAY_PER, W.PAY_CAP = 0.03, 0.2 -- Medic: call pay +3% per unit, cap +20%
 W.OFFLINE_RATE = 0.15 -- Gatherers and Rescuers earn this share while you are away (0.1 of the old 2 Cash/min read as worthless, playtest 2; 0.3 outearned play at the 2026-10-26 rates) -- tune
 W.OFFLINE_CAP = 2 * 3600 -- s
+W.TRAIT_BEST = { "Cheerful", "NightOwl", "Strong", "Lucky", "Speedy" } -- Clover keeps the earlier one -- tune
+W.TEAM_MATES = 3 -- Team Spirit: co-workers at the same building it needs
+W.MENTOR_PERIOD = 2 * 3600 -- s: a Legendary trains one Common to Uncommon this often (Mentor)
+W.GLOW_UP_PER, W.GLOW_UP_CAP = 0.02, 0.1 -- Glow Up: arrival rarity +1 chance per Medic unit, cap -- tune
 
 -- Named specials (docs/25 E). Nova and Old Bones only come with their events (Splashdown, Wreck Reef at
 -- night), so they never roll yet; Pearl only from calls at Mermaid Lagoon.
@@ -233,6 +242,7 @@ function W.roll(seed: number, opts: RollOpts?): Worker
 	s, d = step(s)
 	s, e = step(s)
 	s, f = step(s)
+	local _, g = step(s)
 	local category = o.category or W.CATEGORIES[1 + math.floor(a * #W.CATEGORIES) % #W.CATEGORIES]
 	local bonus = math.clamp(o.rareAdd or 0, 0, 0.5) * 100
 	local pick, rarity = b * 100, 1
@@ -266,6 +276,15 @@ function W.roll(seed: number, opts: RollOpts?): Worker
 		end
 	end
 	local trait = if rarity >= 2 then W.TRAITS[1 + math.floor(d * #W.TRAITS) % #W.TRAITS] else ""
+	if trait ~= "" and o.traitReroll then
+		local again = W.TRAITS[1 + math.floor(g * #W.TRAITS) % #W.TRAITS]
+		if
+			(table.find(W.TRAIT_BEST, again) :: number)
+			< table.find(W.TRAIT_BEST, trait) :: number
+		then
+			trait = again
+		end
+	end
 	local special = ""
 	local name = NAMES[1 + math.floor(c * #NAMES) % #NAMES]
 	if rarity >= W.LEGENDARY then
@@ -310,6 +329,33 @@ function W.admit(workers: { Worker }, w: Worker, cap: number?): number?
 	return worst
 end
 
+-- One rarity up (Mentor, Glow Up): a Common gets a trait from `seed`; specials and Mythics stay. -> changed?
+function W.promote(w: Worker, seed: number): boolean
+	if w.special ~= "" or w.rarity >= Rarity.MYTHIC then
+		return false
+	end
+	w.rarity += 1
+	if w.trait == "" then
+		local _, d = step(math.floor(math.abs(seed)) % 2147483646 + 1)
+		w.trait = W.TRAITS[1 + math.floor(d * #W.TRAITS) % #W.TRAITS]
+	end
+	return true
+end
+
+-- Mentor: the Common a Legendary-or-better trains once `now - last` reaches MENTOR_PERIOD (the first one
+-- rescued), nil while it isn't due or there is no Legendary or no Common.
+function W.mentor(workers: { Worker }, last: number, now: number): number?
+	if now - last < W.MENTOR_PERIOD then
+		return nil
+	end
+	local teacher, pupil = false, nil
+	for i, w in workers do
+		teacher = teacher or w.rarity >= W.LEGENDARY
+		pupil = pupil or (if w.rarity == 1 then i else nil)
+	end
+	return if teacher then pupil else nil
+end
+
 -- Places in each built worker building (extra: SkillRules' Gatherer slot).
 function W.slots(owned: { [string]: boolean }, extra: number?): number
 	return W.SLOTS + (if owned.Station then W.STATION_SLOTS else 0) + (extra or 0)
@@ -347,11 +393,13 @@ function W.assign(
 end
 
 -- The assigned crew: rarity-weighted units per category, Cheerful +5% per co-worker at the same building,
--- Captain Marlow x2 (his boat pays double), and the NightOwl/Bolt and Lucky shares effects reads.
+-- Captain Marlow x2 (his boat pays double), Team Spirit (+teamSpirit with TEAM_MATES+ co-workers), and the
+-- NightOwl/Bolt and Lucky shares effects reads.
 function W.crew(
 	workers: { Worker },
 	owned: { [string]: boolean },
-	extraSlots: { [string]: number }?
+	extraSlots: { [string]: number }?,
+	teamSpirit: number?
 ): Crew
 	local out: Crew = { units = {}, night = {}, lucky = 0 }
 	for _, category in W.CATEGORIES do
@@ -360,8 +408,10 @@ function W.crew(
 	end
 	local place = W.assign(workers, owned, extraSlots)
 	local cheerful: { [string]: number } = {}
+	local count: { [string]: number } = {}
 	for i in place do
 		local w = workers[i]
+		count[w.category] = (count[w.category] or 0) + 1
 		if w.trait == "Cheerful" then
 			cheerful[w.category] = (cheerful[w.category] or 0) + 1
 		end
@@ -374,6 +424,9 @@ function W.crew(
 		end
 		if w.trait ~= "Cheerful" then
 			value *= 1 + W.CHEERFUL * (cheerful[w.category] or 0)
+		end
+		if count[w.category] - 1 >= W.TEAM_MATES then
+			value *= 1 + (teamSpirit or 0)
 		end
 		out.units[w.category] += value
 		if w.trait == "NightOwl" or w.special == "Bolt" then
@@ -422,12 +475,16 @@ function W.effects(crew: Crew, skill: Skill?): Effects
 		offlineRate = offlineRate,
 		-- NightOwl and Bolt pay full rate away; everyone else pays offlineRate
 		offlinePerMin = awayPerMin * offlineRate + nightPerMin * (1 - math.min(offlineRate, 1)),
+		offlineCap = W.OFFLINE_CAP + (s.offlineCapAdd or 0),
+		glowUp = if (s.rarityUp or 0) > 0
+			then math.min(u("Medic") * W.GLOW_UP_PER, W.GLOW_UP_CAP)
+			else 0,
 	}
 end
 
 -- Cash earned while away `seconds` (Gatherers + Rescuers; NightOwl and Bolt at full rate, capped).
 function W.offlinePay(fx: Effects, seconds: number): number
-	local minutes = math.clamp(seconds, 0, W.OFFLINE_CAP) / 60
+	local minutes = math.clamp(seconds, 0, fx.offlineCap) / 60
 	return math.floor(fx.offlinePerMin * minutes)
 end
 
