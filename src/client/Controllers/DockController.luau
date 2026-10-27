@@ -988,9 +988,9 @@ local function unfocus()
 end
 
 -- Build mode is a full-screen view: the world HUD (minimap, map, waypoints, ops, dev button) steps aside so
--- the cards and the strip read; the main Hud (Cash) stays.
+-- the cards and the strip read; the main Hud (Cash) and the left menu buttons stay.
 -- shortcut: keyed by ScreenGui name; switch to a HUD hide API if the HUD gets one.
-local HUD_KEEP = { Hud = true, BuildTablet = true, Freecam = true, ProximityPrompts = true }
+local HUD_KEEP = { Hud = true, Menu = true, BuildTablet = true, Freecam = true, ProximityPrompts = true }
 local hiddenGuis: { ScreenGui } = {}
 
 local function hideHud(on: boolean)
