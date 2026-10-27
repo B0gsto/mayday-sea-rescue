@@ -269,8 +269,9 @@ local SECTOR_NODES = {
 				1,
 				"tripScale",
 				0.03,
-				"Rescuer"
-			), -- reader: Update 2's Pilots (docs/25 F); its path already pays
+				"Rescuer",
+				true
+			), -- soon: Update 2's Pilots (docs/25 F) read it
 			node(
 				"GlowUp",
 				4,
