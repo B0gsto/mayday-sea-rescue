@@ -124,8 +124,10 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   hut are `M_Bld_AirStationAddons` (`AirStationMesh`, the hangar's -X side and front; no Lv1 piece gives way;
   `WorkerController` sways `Lv2_L04_Windsock` about its pole within LIVELY); no worker uses its `ATT_*` yet. The Trophy Hall's Lv2 navy dome rotunda + 8 wing plinths and Lv3
   gold dome, portico and galleries + 6 plinths are `M_Bld_TrophyHallAddons` (`TrophyHallMesh`, round the code wall; the
-  code gold dome is only its fallback); `DockService` puts the first cups on its `ATT_Plinth_01..08` (Lv2) / `..14`
-  (Lv3) via `DockPieces.trophies(b, cups, plaques, plinths)`, the rest on the wall shelf. The Sub Pen's Lv2 gantry +
+  code gold dome is only its fallback); `DockService` fills its `ATT_Plinth_01..08` (Lv2) / `..14`
+  (Lv3) in `TrophyRules.items` order (owned specials, Epic+ survivors rarest and best trait first as Lego statues in
+  their category colour, wheel prizes as rarity-colour cups, then the milestone cups; a rarity ring and a
+  rarity-colour name each) via `DockPieces.trophies(b, items, plaques, plinths)`; cups past them go on the shelf. The Sub Pen's Lv2 gantry +
   hanging mini-sub + dive rack and Lv3 salvage wet dock are `M_Bld_SubPenAddons` (`SubPenMesh`, the pen's -X rim and
   its back; no Lv1 piece gives way; `WorkerController` rolls `Lv2_L03_MiniSub` on its straps within LIVELY); no worker
   uses its `ATT_*` yet. The Boathouse's Lv3 quick-launch bay is `M_Bld_BoathouseAddons` (`BoathouseMesh`, kept 1x, on
