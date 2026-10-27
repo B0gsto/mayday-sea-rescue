@@ -1476,13 +1476,12 @@ local function rock(m: Model, at: CFrame)
 end
 
 -- Builder: an open-air carpentry yard: bench under a low lean-to, timber stacks and a half-built boat frame
--- Workshop Lv2 saw-bench lean-to and Lv3 boat frame (M_Bld_WorkshopAddons, docs/25 B): meshes Lv<l>_L<nn>_* and
--- Lv<l>_COL authored in the yard's final (scaled) frame round its ground centre, so they stay 1x. False when the
--- level is 1 or the mesh is not loaded (the Lv1 yard stands alone, sawhorse and boat frame included).
-local function workshopMesh(m: Model, at: CFrame, n: number): boolean
-	local src = if n >= 2 and DockPieces.meshes
-		then DockPieces.meshes("M_Bld_WorkshopAddons")
-		else nil
+-- Level add-ons (docs/25 B): the Workshop's Lv2 saw-bench lean-to / Lv3 boat frame (M_Bld_WorkshopAddons) and the
+-- Fish Market's Lv2 stalls / Lv3 smokehouse (M_Bld_FishMarketAddons): meshes Lv<l>_L<nn>_* and Lv<l>_COL authored in
+-- the yard's final (scaled) frame round its ground centre, so they stay 1x (KEEP_1X `name`). False when the level is
+-- 1 or the mesh is not loaded (the Lv1 yard stands alone, everything included).
+local function addonMesh(m: Model, at: CFrame, n: number, asset: string, name: string): boolean
+	local src = if n >= 2 and DockPieces.meshes then DockPieces.meshes(asset) else nil
 	if not src then
 		return false
 	end
@@ -1492,7 +1491,7 @@ local function workshopMesh(m: Model, at: CFrame, n: number): boolean
 			d:Destroy()
 		end
 	end
-	src.Name = "WorkshopMesh"
+	src.Name = name
 	src.Parent = m
 	return true
 end
@@ -1501,7 +1500,7 @@ local function workshopYard(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.Workshop
 	local at = b * def.spot
 	-- the add-ons take the sawhorse's job and stand where the timber stack and the old boat frame were
-	local addons = workshopMesh(m, at, level or 1)
+	local addons = addonMesh(m, at, level or 1, "M_Bld_WorkshopAddons", "WorkshopMesh")
 	local w, d = yardSize(def)
 	local spec = HUTS.Workshop
 	local front = -d / 2
@@ -1608,9 +1607,12 @@ local function workshopYard(m: Model, b: CFrame, level: number?)
 end
 
 -- Gatherer: a fish market on the cove walk: two striped awning stalls, fish crates, drying racks
-local function fishMarket(m: Model, b: CFrame)
+local function fishMarket(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.FishShed
 	local at = b * def.spot
+	-- Lv2 flank stalls, Lv3 smokehouse at the back (M_Bld_FishMarketAddons); the smokehouse stands on the drying rack
+	local smokehouse = addonMesh(m, at, level or 1, "M_Bld_FishMarketAddons", "FishMarketMesh")
+		and (level or 1) >= 3
 	local w, d = yardSize(def)
 	local spec = HUTS.FishShed
 	local front = -d / 2
@@ -1647,19 +1649,27 @@ local function fishMarket(m: Model, b: CFrame)
 		Enum.PartType.Cylinder
 	)
 	-- a hanging line of fish at the back-left: two posts, a bar and five chunky fish
-	local rack = at * CFrame.new(-w / 4, 0, d / 2 - 3)
-	for _, x in { -4.6, 4.6 } do
-		brick(m, "RackPost", Vector3.new(0.8, 7, 0.8), rack * CFrame.new(x, 4.3, 0), BRICK_WHITE)
-	end
-	brick(m, "RackBar", Vector3.new(10, 0.8, 0.8), rack * CFrame.new(0, 7.4, 0), BRICK_WHITE)
-	for i = -2, 2 do
-		brick(
-			m,
-			"Fish",
-			Vector3.new(0.8, 2.2, 1.5),
-			rack * CFrame.new(i * 2.1, 5.8, 0),
-			if i % 2 == 0 then BRICK_ORANGE else BRICK_WHITE
-		)
+	if not smokehouse then
+		local rack = at * CFrame.new(-w / 4, 0, d / 2 - 3)
+		for _, x in { -4.6, 4.6 } do
+			brick(
+				m,
+				"RackPost",
+				Vector3.new(0.8, 7, 0.8),
+				rack * CFrame.new(x, 4.3, 0),
+				BRICK_WHITE
+			)
+		end
+		brick(m, "RackBar", Vector3.new(10, 0.8, 0.8), rack * CFrame.new(0, 7.4, 0), BRICK_WHITE)
+		for i = -2, 2 do
+			brick(
+				m,
+				"Fish",
+				Vector3.new(0.8, 2.2, 1.5),
+				rack * CFrame.new(i * 2.1, 5.8, 0),
+				if i % 2 == 0 then BRICK_ORANGE else BRICK_WHITE
+			)
+		end
 	end
 	-- ice crates of fish at each counter's end, a hanging scale by the right stall
 	for _, s in
@@ -2538,6 +2548,7 @@ local BUILDINGS = {
 local KEEP_1X = {
 	DepotMesh = true,
 	WorkshopMesh = true,
+	FishMarketMesh = true,
 	BunkhouseMesh = true,
 	FreightQuay = true,
 	Path = true,

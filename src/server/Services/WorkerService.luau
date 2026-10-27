@@ -142,12 +142,13 @@ local WORK_SPOTS: { [string]: { WorkSlot } } = {
 		{ x = -7.6, z = 1, tx = -8, tz = 3.3 }, -- the medicine crate
 	},
 }
--- docs/25 B: the Workshop's Lv2 / Lv3 add-ons (M_Bld_WorkshopAddons, DockPieces) replace the sawhorse and the old
--- boat frame: their ATT_Work_* marks (scaled studs from the yard centre), facing the bench (+X), saw or hull (+Z).
+-- docs/25 B: the Workshop's and Fish Market's Lv2 / Lv3 add-ons (M_Bld_WorkshopAddons, M_Bld_FishMarketAddons,
+-- DockPieces): their ATT_Work_* marks (scaled studs from the yard centre) join or replace the yard's spots, facing
+-- the bench (+X), saw or hull (+Z), the stall counter or the smokehouse rack (+-X).
 -- shortcut: assumes the add-on mesh loaded (else these spots face empty yard); check DockPieces.meshes if it fails.
-local function addonSlot(name: string, tx: number, tz: number): WorkSlot
-	local p = AssetIds.Attachments.M_Bld_WorkshopAddons[name]
-	local s = DockConfig.Buildings.Workshop.scale or 1
+local function addonSlot(key: string, asset: string, name: string, tx: number, tz: number): WorkSlot
+	local p = AssetIds.Attachments[asset][name]
+	local s = DockConfig.Buildings[key].scale or 1
 	return { x = p.X / s, z = p.Z / s, tx = (p.X + tx) / s, tz = (p.Z + tz) / s }
 end
 local YARD = WORK_SPOTS.Workshop
@@ -155,20 +156,40 @@ local WORKSHOP_LV2 = {
 	YARD[1],
 	YARD[2],
 	YARD[3],
-	addonSlot("ATT_Work_Bench2", 2, 0),
-	addonSlot("ATT_Work_Bench3", 2, 0),
-	addonSlot("ATT_Work_SawBench", 0, 2),
+	addonSlot("Workshop", "M_Bld_WorkshopAddons", "ATT_Work_Bench2", 2, 0),
+	addonSlot("Workshop", "M_Bld_WorkshopAddons", "ATT_Work_Bench3", 2, 0),
+	addonSlot("Workshop", "M_Bld_WorkshopAddons", "ATT_Work_SawBench", 0, 2),
 }
 local WORKSHOP_LV3 = table.clone(WORKSHOP_LV2)
-table.insert(WORKSHOP_LV3, addonSlot("ATT_Work_BoatFrame", 0, 2))
-local WORKSHOP_LEVELS: { [number]: { WorkSlot } } = { [2] = WORKSHOP_LV2, [3] = WORKSHOP_LV3 }
+table.insert(
+	WORKSHOP_LV3,
+	addonSlot("Workshop", "M_Bld_WorkshopAddons", "ATT_Work_BoatFrame", 0, 2)
+)
+-- the Fishers' 4 (Lv2) / 8 (Lv3) slots reach the new stalls and racks before the market's crate spots
+local MARKET = WORK_SPOTS.FishShed
+local function fishSlot(name: string, tx: number): WorkSlot
+	return addonSlot("FishShed", "M_Bld_FishMarketAddons", name, tx, 0)
+end
+local FISH_LV2 =
+	{ MARKET[1], MARKET[2], fishSlot("ATT_Work_Stall3", 2), fishSlot("ATT_Work_Stall4", -2) }
+local FISH_LV3 = table.clone(FISH_LV2)
+table.insert(FISH_LV3, fishSlot("ATT_Work_RackLeft", 2))
+table.insert(FISH_LV3, fishSlot("ATT_Work_RackRight", -2))
+for i = 3, #MARKET do
+	table.insert(FISH_LV2, MARKET[i])
+	table.insert(FISH_LV3, MARKET[i])
+end
+local ADDON_LEVELS: { [string]: { [number]: { WorkSlot } } } = {
+	Workshop = { [2] = WORKSHOP_LV2, [3] = WORKSHOP_LV3 },
+	FishShed = { [2] = FISH_LV2, [3] = FISH_LV3 },
+}
 
 local function workSpot(
 	bay: CFrame,
 	category: string,
 	slot: number,
 	_slots: number,
-	level: number?
+	levels: { [string]: number }?
 ): CFrame?
 	local key = WorkerRules.buildingOf(category)
 	local def = key and DockConfig.Buildings[key]
@@ -177,12 +198,9 @@ local function workSpot(
 	end
 	local at = bay * def.spot
 	local scale = def.scale or 1
-	local list = if key == "Workshop"
-			and level
-			and WORKSHOP_LEVELS[level]
-		then WORKSHOP_LEVELS[level]
-		elseif key then WORK_SPOTS[key]
-		else nil
+	local byLevel = if key and levels then ADDON_LEVELS[key] else nil
+	local list = (byLevel and levels and byLevel[UnlockTree.levelOf(levels, key :: string)])
+		or (if key then WORK_SPOTS[key] else nil)
 	if list and #list > 0 then
 		local s = list[(slot - 1) % #list + 1]
 		local p = (at * CFrame.new(s.x * scale, 0.8, s.z * scale)).Position
@@ -303,7 +321,6 @@ local function sync(player: Player)
 	end
 	local place = WorkerRules.assign(data.workers, data.dockBuildings, extraSlots(player))
 	local slots = WorkerRules.slots(data.dockBuildings)
-	local workshopLv = UnlockTree.levelOf(data.dock.levels, "Workshop")
 	local site = siteKey(player)
 	local order, count = {}, 0
 	local maxBuilders = BuildTimer.BUILDERS
@@ -322,7 +339,7 @@ local function sync(player: Player)
 			spot = buildSpot(bay, site, order[i], count)
 			job = "Build"
 		elseif place[i] then
-			spot = workSpot(bay, w.category, place[i], slots, workshopLv)
+			spot = workSpot(bay, w.category, place[i], slots, data.dock.levels)
 			job = JOB[w.category] or "Idle"
 		else
 			idle += 1

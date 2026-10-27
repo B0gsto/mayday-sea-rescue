@@ -106,7 +106,9 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   loads; the Bunkhouse's Lv1-5 are `M_Bld_Bunkhouse`, `BunkhouseMesh`, kept 1x, a cottage until it loads) and publishes
   `ReplicatedStorage.DepotTemplates.Barge`. The Workshop's Lv2 saw-bench lean-to and Lv3 boat
   frame are `M_Bld_WorkshopAddons` (`WorkshopMesh`, kept 1x, inside the code yard; the yard's sawhorse, timber and old
-  boat frame give way); its `ATT_Work_*` are the Builders' Lv2/Lv3 yard spots (`WorkerService`, from `AssetIds`). The Depot model holds `DepotMesh` (the Lv1..n
+  boat frame give way); its `ATT_Work_*` are the Builders' Lv2/Lv3 yard spots (`WorkerService`, from `AssetIds`). The Fish Market's Lv2 flank stalls and Lv3
+  smokehouse are `M_Bld_FishMarketAddons` (`FishMarketMesh`, kept 1x, beside the code market, which stays Lv1; its
+  drying rack gives way to the smokehouse); its `ATT_Work_*` are the Fishers' Lv2/Lv3 spots. The Depot model holds `DepotMesh` (the Lv1..n
   layers and `Marks`: `ATT_PickUp_*` / `ATT_DropOff_*` bays, `ATT_BargeMoor`, `ATT_QuayLoad`, `ATT_QuayLand`) and
   `FreightQuay` (west plate edge, sea level). Client: `DepotController` (barge from `BargeNext` via
   `shared/BargePath`, `Stack_1..4` from `DepotStock` / `DepotCap`, empty-crate icon on `SiteWaiting`) and
