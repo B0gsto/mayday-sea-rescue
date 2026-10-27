@@ -41,24 +41,15 @@ return function(t)
 		t.expect(cells[#cells].id).toBe("Lighthouse")
 	end)
 
-	t.test("a node sits right of all its prerequisites", function()
-		local cells = buildCells()
-		local col: { [string]: number } = {}
-		for _, cell in cells do
-			col[cell.id] = cell.col
-		end
-		for _, cell in cells do
-			local building = DockConfig.Buildings[cell.id]
-			for _, need in building.needs do
-				t.expect(col[need] ~= nil).toBe(true)
-				t.expect(cell.col > col[need]).toBe(true)
+	t.test(
+		"level rows all sit in the first column (HQ gates replace the old prerequisite tree)",
+		function()
+			for _, cell in buildCells() do
+				t.expect(cell.col).toBe(0)
+				t.expect(DockConfig.Buildings[cell.id].needs).toEqual({})
 			end
 		end
-		t.expect(col.Workshop).toBe(0)
-		t.expect(col.Boathouse).toBe(1)
-		t.expect(col.Station).toBe(2)
-		t.expect(col.TrophyHall).toBe(col.Station + 1)
-	end)
+	)
 
 	t.test("no two nodes share a cell", function()
 		local seen: { [string]: boolean } = {}

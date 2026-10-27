@@ -22,13 +22,14 @@ export type PlayerData = {
 	medals: number, -- the skill tree's currency (docs/25 F; SkillRules, SkillService)
 	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
 	tutorialStep: number?, -- docs/24 E: the saved tutorial beat (Onboarding.STEP_*; nil = never started)
-	dockLevel: number, -- retired dock level 1..5 (WP-28): kept as saved; migrate maps it onto the tree
-	dockBuildings: { [string]: boolean }, -- the unlock tree (DockConfig.Buildings), blueprints and decor
-	-- Robux-paid buildings waiting for their prerequisites or for the one running site (docs/24 B).
-	dockPrepaid: { [string]: boolean },
-	-- The one site being built (docs/24 B): key, progress 0..1, crew rate and the last server tick (os.time).
-	construction: { key: string, progress: number, rate: number, at: number }?,
-	-- Rescued people working on your island (docs/23 (o), WP-26; WorkerRules, WorkerService), at most WorkerRules.CAP.
+	dockLevel: number, -- retired dock level 1..5 (WP-28): kept as saved; migrate maps it onto levels
+	-- docs/25 K2: the source of truth for buildings, key -> built level, and Robux-paid waits, key -> level.
+	dock: { levels: { [string]: number }, prepaid: { [string]: number } },
+	dockBuildings: { [string]: boolean }, -- derived: UnlockTree.ownedSet + blueprints/decor (old readers)
+	dockPrepaid: { [string]: boolean }, -- derived: prepaid levels as booleans (old readers)
+	-- The one site being built (docs/24 B): key, level, progress 0..1, crew rate and the last server tick.
+	construction: { key: string, level: number?, progress: number, rate: number, at: number }?,
+	-- Rescued people working on your island (docs/23 (o), WP-26; WorkerRules, WorkerService), at most the Bunkhouse cap.
 	workers: { WorkerRules.Worker },
 	-- Survivors since the last Epic+ / Legendary+ roll on this player's own calls (docs/25 E pity).
 	pity: WorkerRules.Pity,
@@ -194,7 +195,8 @@ function Rules.defaultData(): PlayerData
 		medals = 0,
 		coldOpenDone = false,
 		dockLevel = 1,
-		dockBuildings = {},
+		dock = { levels = { Harbour = 1 }, prepaid = {} },
+		dockBuildings = UnlockTree.ownedSet({ Harbour = 1 }),
 		dockPrepaid = {},
 		workers = {},
 		pity = { epic = 0, legendary = 0 },
@@ -313,43 +315,108 @@ function Rules.migrate(raw: any): PlayerData
 	local tutorial = math.floor(num(raw.tutorialStep, 0))
 	data.tutorialStep = if tutorial >= 1 then math.clamp(tutorial, 1, 4) else nil
 	data.dockLevel = math.clamp(math.floor(num(raw.dockLevel, 1)), 1, 5)
+	-- Keep blueprints/decor from the old boolean map; building booleans now derive from levels.
+	local legacyBuildings: { [string]: boolean } = {}
+	local decorOwned: { [string]: boolean } = {}
 	if type(raw.dockBuildings) == "table" then
 		for key, owned in raw.dockBuildings do
-			if
-				type(key) == "string"
-				and owned == true
-				and (
-					DockConfig.Buildings[key] ~= nil
-					or DockConfig.Blueprints[key] ~= nil
-					or DockConfig.Decorations[key] ~= nil
-				)
-			then
-				data.dockBuildings[key] = true
+			if type(key) == "string" and owned == true then
+				local target = UnlockTree.legacyTarget(key)
+				if DockConfig.Buildings[key] or target then
+					legacyBuildings[key] = true
+				elseif DockConfig.Blueprints[key] or DockConfig.Decorations[key] then
+					decorOwned[key] = true
+				end
 			end
 		end
 	end
-	UnlockTree.migrate(data.dockLevel, data.dockBuildings) -- WP-28: old dock levels -> tree items
-	if type(raw.dockPrepaid) == "table" then
-		for key, paid in raw.dockPrepaid do
-			if
-				type(key) == "string"
-				and paid == true
-				and (DockConfig.Buildings[key] ~= nil or DockConfig.Decorations[key] ~= nil)
-			then
-				data.dockPrepaid[key] = true
+	local levels: { [string]: number } = {}
+	local refund = 0
+	local newDock = type(raw.dock) == "table" and type(raw.dock.levels) == "table"
+	if newDock then
+		for key, n in raw.dock.levels do
+			if type(key) == "string" and DockConfig.Buildings[key] then
+				local clean =
+					math.clamp(math.floor(num(n, 0)), 0, #DockConfig.Buildings[key].levels)
+				if clean >= 1 then
+					levels[key] = clean
+				end
 			end
+		end
+		-- A save that gained the new `dock` shell before levels were written still migrates its old booleans.
+		if next(levels) == nil and next(legacyBuildings) ~= nil then
+			local migrated, paid = UnlockTree.migrateLegacy(
+				legacyBuildings,
+				data.dockLevel,
+				if type(raw.workers) == "table" then #raw.workers else 0
+			)
+			levels, refund = migrated :: { [string]: number }, paid
+		end
+	else
+		local people = if type(raw.workers) == "table" then #raw.workers else 0
+		local migrated, paid = UnlockTree.migrateLegacy(legacyBuildings, data.dockLevel, people)
+		levels, refund = migrated :: { [string]: number }, paid
+	end
+	data.cash += refund
+	data.dock = { levels = levels, prepaid = {} }
+	local prepaid = data.dock.prepaid
+	if newDock and type(raw.dock.prepaid) == "table" then
+		for key, n in raw.dock.prepaid do
+			if type(key) == "string" and DockConfig.Buildings[key] then
+				local clean =
+					math.clamp(math.floor(num(n, 1)), 1, #DockConfig.Buildings[key].levels)
+				if clean > (levels[key] or 0) then
+					prepaid[key] = math.max(clean, prepaid[key] or 0)
+				end
+			end
+		end
+	elseif type(raw.dockPrepaid) == "table" then
+		for key, paid in raw.dockPrepaid do
+			if type(key) == "string" and paid == true then
+				local target, targetLevel = UnlockTree.legacyTarget(key)
+				if target and targetLevel and targetLevel > (levels[target] or 0) then
+					prepaid[target] = math.max(targetLevel, prepaid[target] or 0)
+				end
+			end
+		end
+	end
+	data.dockBuildings = UnlockTree.ownedSet(levels)
+	for key in decorOwned do
+		data.dockBuildings[key] = true
+	end
+	data.dockPrepaid = {}
+	for key, n in prepaid do
+		if n > (levels[key] or 0) then
+			data.dockPrepaid[key] = true
 		end
 	end
 	if type(raw.construction) == "table" then
 		local key = raw.construction.key
 		local at = num(raw.construction.at, 0)
+		local level = nil
+		if type(key) == "string" and DockConfig.Buildings[key] then
+			level = math.clamp(
+				math.floor(num(raw.construction.level, 1)),
+				1,
+				#DockConfig.Buildings[key].levels
+			)
+		elseif type(key) == "string" then
+			local target, targetLevel = UnlockTree.legacyTarget(key)
+			if target and targetLevel then
+				key, level = target, targetLevel
+			end
+		end
 		if
 			type(key) == "string"
 			and at > 0
-			and (DockConfig.Buildings[key] ~= nil or DockConfig.Decorations[key] ~= nil)
+			and (
+				(DockConfig.Buildings[key] ~= nil and level ~= nil)
+				or DockConfig.Decorations[key] ~= nil
+			)
 		then
 			data.construction = {
 				key = key,
+				level = level,
 				progress = math.clamp(num(raw.construction.progress, 0), 0, 1),
 				rate = math.clamp(num(raw.construction.rate, 1), 1, 20),
 				at = at,
@@ -380,8 +447,12 @@ function Rules.migrate(raw: any): PlayerData
 		end
 	end
 	data.cash += legacySkillCash
-	-- the Crew branch raises the worker cap, so an old save keeps the workers it earned
-	local cap = WorkerRules.CAP + SkillRules.effects(data.skills).workerCapAdd
+	-- the Bunkhouse + the Crew branch set the worker cap; an old save never loses the people it earned
+	local earned = if type(raw.workers) == "table" then #raw.workers else 0
+	local cap = math.max(
+		UnlockTree.bunkCap(data.dock.levels) + SkillRules.effects(data.skills).workerCapAdd,
+		earned
+	)
 	-- v2 (docs/25 E): the old rarities 1 / 2 / 3 (common / rare / legendary) become 1 / 3 / 5, no traits
 	data.workers = WorkerRules.clean(raw.workers, cap, num(raw.version, 0) < 2)
 	if type(raw.pity) == "table" then
@@ -440,6 +511,7 @@ function Rules.snapshot(data: PlayerData): { [string]: any }
 		cash = data.cash,
 		totalRescues = data.totalRescues,
 		medals = data.medals,
+		dock = { levels = table.clone(data.dock.levels), prepaid = table.clone(data.dock.prepaid) },
 		dockBuildings = table.clone(data.dockBuildings),
 		dockPrepaid = table.clone(data.dockPrepaid),
 		vehicles = table.clone(data.vehicles),

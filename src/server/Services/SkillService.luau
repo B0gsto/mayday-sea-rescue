@@ -5,8 +5,8 @@
 -- (WorkerRules/WorkerService, BuildTimer/DockService, VehicleService, Ops/Board, OperationService,
 -- SwimController). Attributes are set on join and after every buy, so an old save or a player with no
 -- skills reads the same values as before (no effect). A free reset refunds every Medal and clears the tree.
--- Medals: `grantMedals` is called where rescues, grades, quests and the daily chest pay (HQ levels wire
--- it in the buildings build). Player attributes: `Medals`.
+-- Medals: `grantMedals` is called where rescues, grades, quests and the daily chest pay, and DockService
+-- when an HQ level finishes building. Player attributes: `Medals`.
 -- Remotes: Skill_Buy C->S fn (id) -> ok, reason; Skill_Reset C->S fn -> ok, refunded;
 -- Skill_State S->C { owned, medals } for the tree panel.
 -- shortcut: no Robux skip for nodes; Medals never come from Robux (docs/25 I.1).
@@ -99,7 +99,7 @@ local function reset(player: Player): (boolean, string?)
 	return true, `{refunded}`
 end
 
--- Medals from the world: rescues, gold grades, quests, the daily chest (HQ levels wire it next).
+-- Medals from the world: rescues, gold grades, quests, the daily chest and HQ levels (DockService).
 function SkillService.grantMedals(player: Player, n: number, reason: string): number
 	local data = DataService.Get(player)
 	local count = math.floor(tonumber(n) or 0)

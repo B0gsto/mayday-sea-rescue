@@ -54,6 +54,8 @@ local NpcFactory = require(script.Parent.Parent.Npc.NpcFactory)
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local PrizeWheel = require(Shared:WaitForChild("PrizeWheel"))
 local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
+local SkillRules = require(Shared:WaitForChild("SkillRules"))
+local SkillService = require(script.Parent:WaitForChild("SkillService"))
 local SpinService = require(script.Parent:WaitForChild("SpinService"))
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
@@ -81,6 +83,7 @@ type Plot = {
 	bands: { Frame }, -- the quay walks's tile bands, the flag colour (WP-25 r4)
 	markers: { [string]: Model }, -- empty lots' pads and peg flags (WP-25 r4)
 	buildings: { [string]: Model },
+	levels: { [string]: number }, -- the level each standing model shows
 	counts: { TextLabel },
 	trophies: Model?,
 	trophyKey: string,
@@ -90,6 +93,7 @@ type Plot = {
 	finish: Model?, -- WP-25 r9: the garden clusters on the open lawn, while the whole tree is built
 	site: Model?, -- the building being built (DockPieces, still not owned), while a construction runs
 	siteKey: string?,
+	siteLevel: number?,
 	crew: { { model: Model, height: number } }?, -- the two base builder NPCs walking to / from the site
 	wheel: Model?, -- the prize wheel set on the plaza (docs/24 D)
 	wheelPrompt: ProximityPrompt?,
@@ -436,6 +440,7 @@ local function buildPlot(folder: Instance, i: number): Plot
 		markers = {},
 		counts = {},
 		buildings = {},
+		levels = {},
 		trophyKey = "",
 		wheel = wheel,
 		wheelPrompt = wheelPrompt,
@@ -462,7 +467,7 @@ end
 local MARKED: { [string]: { spot: CFrame, size: Vector2 } } = {}
 for _, key in BUILT do
 	local def = DockConfig.Buildings[key]
-	if key == "Pontoon" or key == "Crane" or key == "TrophyHall" or key == "SubPen" then
+	if key == "Pontoon" or key == "Crane" or key == "Harbour" then
 		continue
 	elseif def then
 		MARKED[key] = { spot = def.spot, size = def.size }
@@ -472,17 +477,18 @@ for _, key in BUILT do
 	end
 end
 
--- The owner's bought buildings stand on the plot; beat: new ones play the build animation.
+-- The owner's bought buildings stand on the plot at their level; beat: new ones play the build animation.
 local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 	local data: any = owner and DataService.Get(owner)
 	local owned = if data and type(data.dockBuildings) == "table" then data.dockBuildings else {}
+	local levels = if data and data.dock then data.dock.levels else {}
 	if not owner then
 		plot.counts = {}
 	end
-	-- WP-25 r9: the whole tree built -> empty lots turn into gardens, the open lawn gets garden clusters
+	-- WP-25 r9: every building maxed -> empty lots turn into gardens, the open lawn gets garden clusters
 	local complete = owner ~= nil
 	for _, key in DockConfig.BUILDINGS do
-		complete = complete and owned[key] == true
+		complete = complete and UnlockTree.levelOf(levels, key) >= #DockConfig.Buildings[key].levels
 	end
 	if complete and not plot.finish then
 		local made = DockPieces.finish(plot.frame)
@@ -493,16 +499,22 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 		plot.finish = nil
 	end
 	for _, key in BUILT do
-		local want = owner ~= nil and owned[key] == true
+		local b = DockConfig.Buildings[key]
+		local wantLevel = if b then UnlockTree.levelOf(levels, key) else 0
+		local want = if b then wantLevel >= 1 else owner ~= nil and owned[key] == true
 		local have = plot.buildings[key]
-		if want and not have and owner then
+		local shown = plot.levels[key] or 0
+		if want and owner and (not have or (b and shown < wantLevel)) then
 			local m
-			if plot.siteKey == key and plot.site then
+			if b and plot.siteKey == key and plot.site and (plot.siteLevel or 1) == wantLevel then
 				m = plot.site -- the site finished: the bricks that stood there are the building
-				plot.site, plot.siteKey = nil, nil
+				plot.site, plot.siteKey, plot.siteLevel = nil, nil, nil
 				m.Name = key
 			else
-				m = DockPieces.building(key, plot.frame)
+				m = DockPieces.building(key, plot.frame, if b then wantLevel else nil)
+			end
+			if have then
+				have:Destroy()
 			end
 			for _, d in m:GetDescendants() do
 				if d.Name == "Flag" and d:IsA("BasePart") then
@@ -518,9 +530,11 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 				announceBuild(plot, nil, key)
 			end
 			plot.buildings[key] = m
+			plot.levels[key] = wantLevel
 		elseif have and not want then
 			have:Destroy()
 			plot.buildings[key] = nil
+			plot.levels[key] = nil
 		end
 		local stale = plot.markers[key]
 		if stale and stale:GetAttribute("Garden") ~= complete then -- the tree got finished (or reset)
@@ -561,7 +575,22 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 				end
 			end
 		end
-		plot.berth:SetAttribute(key, if want then true else nil)
+		if b then
+			plot.berth:SetAttribute(key, if want then true else nil)
+			plot.berth:SetAttribute(`{key}Level`, if want then wantLevel else nil)
+		else
+			plot.berth:SetAttribute(key, if want then true else nil)
+		end
+		if owner then
+			owner:SetAttribute("Dock" .. key, want)
+			if b then
+				owner:SetAttribute(`DockLevel{key}`, wantLevel)
+			end
+		end
+	end
+	-- old boards read the merged aliases (Hangar, Helipad, Station, ...)
+	for _, key in { "Pontoon", "Crane", "LifeboatSlip", "Hangar", "Helipad", "Station" } do
+		plot.berth:SetAttribute(key, if owned[key] == true then true else nil)
 		if owner then
 			owner:SetAttribute("Dock" .. key, owned[key] == true)
 		end
@@ -570,6 +599,36 @@ end
 
 local function tableOf(v: any): { [string]: any }
 	return if type(v) == "table" then v else {}
+end
+
+-- Re-derive the old boolean maps after levels change; decor and quest blueprints stay booleans.
+local function deriveDock(data: any)
+	data.dock = if type(data.dock) == "table"
+		then data.dock
+		else { levels = { Harbour = 1 }, prepaid = {} }
+	data.dock.levels = tableOf(data.dock.levels)
+	data.dock.prepaid = tableOf(data.dock.prepaid)
+	local oldOwned = tableOf(data.dockBuildings)
+	local oldPrepaid = tableOf(data.dockPrepaid)
+	local out = UnlockTree.ownedSet(data.dock.levels)
+	for key, owned in oldOwned do
+		if DockConfig.Blueprints[key] or DockConfig.Decorations[key] then
+			out[key] = owned
+		end
+	end
+	data.dockBuildings = out
+	local prepaid: { [string]: boolean } = {}
+	for key, n in data.dock.prepaid do
+		if n > UnlockTree.levelOf(data.dock.levels, key) then
+			prepaid[key] = true
+		end
+	end
+	for key, paid in oldPrepaid do
+		if DockConfig.Decorations[key] then
+			prepaid[key] = paid
+		end
+	end
+	data.dockPrepaid = prepaid
 end
 
 -- The owner's decorations (WP-14d) stand on their spare lots; beat: new ones play the build animation.
@@ -661,20 +720,20 @@ local function baseCrew(player: Player): number
 	return BuildTimer.BASE_CREW + (tonumber(player:GetAttribute("SkillBaseCrew")) or 0)
 end
 
-local function workOf(key: string): number
+local function workOf(key: string, level: number?): number
 	local b = DockConfig.Buildings[key]
 	if b then
-		return BuildTimer.work(b.cash)
+		return BuildTimer.work(b.levels[math.clamp(level or 1, 1, #b.levels)].cash)
 	end
 	local d = DockConfig.Decorations[key]
 	return BuildTimer.work(d and d.cash or 0, true)
 end
 
 -- What the build cost in Cash (the FinishNow refund on a lost race), buildings and decor alike.
-local function cashOf(key: string): number
+local function cashOf(key: string, level: number?): number
 	local b = DockConfig.Buildings[key]
 	if b then
-		return b.cash
+		return b.levels[math.clamp(level or 1, 1, #b.levels)].cash
 	end
 	local d = DockConfig.Decorations[key]
 	return d and d.cash or 0
@@ -699,21 +758,22 @@ local function clearSite(plot: Plot)
 		plot.site:Destroy()
 		plot.site = nil
 	end
-	plot.siteKey = nil
+	plot.siteKey, plot.siteLevel = nil, nil
 	plot.model:SetAttribute("SiteKey", nil)
 	plot.model:SetAttribute("SiteProgress", nil)
 	plot.model:SetAttribute("SiteRate", nil)
 	plot.model:SetAttribute("SiteBuilders", nil)
+	plot.model:SetAttribute("SiteLevel", nil)
 end
 
 -- The model that rises with the progress; it stays unowned (no effects, unlocks or worker slots) until done.
-local function makeSite(plot: Plot, key: string)
-	if plot.siteKey == key and plot.site then
+local function makeSite(plot: Plot, key: string, level: number?)
+	if plot.siteKey == key and plot.siteLevel == level and plot.site then
 		return
 	end
 	clearSite(plot)
 	local m = if DockConfig.Buildings[key]
-		then DockPieces.building(key, plot.frame)
+		then DockPieces.building(key, plot.frame, level)
 		elseif DockConfig.Decorations[key] then DockPieces.decoration(key, plot.frame)
 		else nil
 	if not m then
@@ -722,7 +782,7 @@ local function makeSite(plot: Plot, key: string)
 	m.Name = `Site_{key}`
 	m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic -- clients hide its parts: they must all arrive together
 	m.Parent = plot.model
-	plot.site, plot.siteKey = m, key
+	plot.site, plot.siteKey, plot.siteLevel = m, key, level
 end
 
 -- The one construction's state for clients (ConstructionController draws it; the tablet shows its timer).
@@ -730,6 +790,7 @@ local function syncSite(plot: Plot, data: any, player: Player)
 	local c = data.construction
 	if c then
 		plot.model:SetAttribute("SiteKey", c.key)
+		plot.model:SetAttribute("SiteLevel", c.level)
 		plot.model:SetAttribute("SiteProgress", c.progress)
 		plot.model:SetAttribute("SiteRate", c.rate)
 		plot.model:SetAttribute(
@@ -993,9 +1054,16 @@ local function dress(plot: Plot, owner: Player?)
 end
 
 -- One construction at a time per island (docs/24 B): the site rises from nothing, the crew walks over.
-local function startConstruction(player: Player, data: any, key: string)
-	-- docs/24 E: a tutorial Workshop (Cash or Robux) advances the saved step so a rejoin is at the site
-	if key == Onboarding.WORKSHOP and (data.tutorialStep or 0) < Onboarding.STEP_SITE then
+local function startConstruction(player: Player, data: any, key: string, level: number?)
+	local buildLevel = if DockConfig.Buildings[key]
+		then math.clamp(level or 1, 1, #DockConfig.Buildings[key].levels)
+		else nil
+	-- docs/24 E: a tutorial Workshop Lv1 (Cash or Robux) advances the saved step so a rejoin is at the site
+	if
+		key == Onboarding.WORKSHOP
+		and (buildLevel or 1) == 1
+		and (data.tutorialStep or 0) < Onboarding.STEP_SITE
+	then
 		local beat = Onboarding.beat({
 			coldOpenDone = data.coldOpenDone == true,
 			totalRescues = data.totalRescues or 0,
@@ -1012,6 +1080,7 @@ local function startConstruction(player: Player, data: any, key: string)
 	end
 	data.construction = {
 		key = key,
+		level = buildLevel,
 		progress = 0,
 		rate = BuildTimer.rateOf(data.workers, buildSkill(player)),
 		at = os.time(),
@@ -1019,7 +1088,7 @@ local function startConstruction(player: Player, data: any, key: string)
 	DataService.MarkDirty(player)
 	local i = byPlayer[player]
 	if i then
-		makeSite(plots[i], key)
+		makeSite(plots[i], key, buildLevel)
 		syncSite(plots[i], data, player)
 		spawnCrew(plots[i], baseCrew(player))
 	end
@@ -1031,23 +1100,26 @@ local function startPrepaid(player: Player, data: any)
 	if data.construction then
 		return
 	end
-	local prepaid = tableOf(data.dockPrepaid)
-	local owned = tableOf(data.dockBuildings)
-	for key in prepaid do
-		if owned[key] then
-			prepaid[key] = nil -- already standing (a Dev grant): nothing to build
-		end
-	end
+	deriveDock(data)
+	local levels = data.dock.levels
+	-- one paid level per row waits: the next one that is legal now starts
 	for _, key in DockConfig.BUILDINGS do
-		if prepaid[key] and UnlockTree.missing(key, owned) == nil then
-			prepaid[key] = nil
-			startConstruction(player, data, key)
-			return
+		local n = tableOf(data.dock.prepaid)[key]
+		if n then
+			local current = UnlockTree.levelOf(levels, key)
+			if n <= current then
+				data.dock.prepaid[key] = nil
+			elseif n == current + 1 and UnlockTree.canBuild(key, n, levels, math.huge) then
+				data.dock.prepaid[key] = nil
+				deriveDock(data)
+				startConstruction(player, data, key, n)
+				return
+			end
 		end
 	end
 	for _, key in DockConfig.DECOR do
-		if prepaid[key] then
-			prepaid[key] = nil
+		if tableOf(data.dockPrepaid)[key] then
+			data.dockPrepaid[key] = nil
 			startConstruction(player, data, key)
 			return
 		end
@@ -1062,7 +1134,7 @@ local function resumeSite(plot: Plot, player: Player, data: any)
 		clearCrew(plot)
 		return
 	end
-	makeSite(plot, c.key)
+	makeSite(plot, c.key, c.level)
 	syncSite(plot, data, player)
 	spawnCrew(plot, baseCrew(player))
 	DataService.MarkDirty(player)
@@ -1101,7 +1173,7 @@ local function promptFinish(player: Player)
 	if not (c and byPlayer[player]) then
 		return
 	end
-	local left = BuildTimer.timeLeft(c.progress, c.rate or 1, workOf(c.key))
+	local left = BuildTimer.timeLeft(c.progress, c.rate or 1, workOf(c.key, c.level))
 	if left < FINISH_MIN_LEFT then
 		return
 	end
@@ -1113,8 +1185,8 @@ local function promptFinish(player: Player)
 end
 
 -- Cash purchase of tree building `key` once its prerequisites stand (Robux goes through its product).
-local function buyBuilding(player: Player, data: any, key: string): (boolean, string)
-	data.dockBuildings = tableOf(data.dockBuildings)
+local function buyBuilding(player: Player, data: any, key: string, level: number): (boolean, string)
+	deriveDock(data)
 	-- docs/24 E: the tutorial tops up a short wallet to exactly the Workshop price, once (the buy's
 	-- coin burst shows it). startConstruction moves the saved step on (Robux starts the same site).
 	local beat = Onboarding.beat({
@@ -1125,16 +1197,13 @@ local function buyBuilding(player: Player, data: any, key: string): (boolean, st
 		constructionKey = if data.construction then data.construction.key else nil,
 	})
 	if key == Onboarding.WORKSHOP and beat == "BuildStation" then
-		local gap = Onboarding.topUp(
-			data.cash,
-			DockConfig.Buildings[key] and DockConfig.Buildings[key].cash or 0
-		)
+		local gap = Onboarding.topUp(data.cash, DockConfig.Buildings[key].levels[1].cash)
 		if gap > 0 then
 			data.cash += gap
 			DataService.MarkDirty(player)
 		end
 	end
-	local ok, reason, price = UnlockTree.canBuy(key, data.dockBuildings, data.cash)
+	local ok, reason, price = UnlockTree.canBuild(key, level, data.dock.levels, data.cash)
 	if not ok or not price then
 		return false, reason or "Owned"
 	end
@@ -1142,7 +1211,7 @@ local function buyBuilding(player: Player, data: any, key: string): (boolean, st
 	Telemetry.CashSpent(player, price, data.cash, "Dock", key)
 	Telemetry.Funnel(player, "FirstBuilding") -- the first island building (WP-28: replaces FirstRank)
 	ProgressionService.Refresh(player)
-	startConstruction(player, data, key)
+	startConstruction(player, data, key, level)
 	return true, "ok"
 end
 
@@ -1170,14 +1239,17 @@ local function buy(player: Player, key: any): (boolean, string)
 	if data.construction then
 		return false, "Building" -- one site at a time (docs/24 B)
 	end
-	if type(key) == "string" and type(data.dockPrepaid) == "table" and data.dockPrepaid[key] then
-		return false, "Owned" -- Robux paid already: it builds next, never charge Cash for it too
-	end
-	if busy[player] then
-		return false, "Busy"
-	end
 	if type(key) == "string" and DockConfig.Buildings[key] then
-		return buyBuilding(player, data, key)
+		local n = UnlockTree.levelOf(data.dock.levels, key) + 1
+		if type(data.dockPrepaid) == "table" and data.dockPrepaid[key] then
+			return false, "Owned" -- Robux paid already: it builds next, never charge Cash for it too
+		end
+		if busy[player] then
+			return false, "Busy"
+		end
+		return buyBuilding(player, data, key, n)
+	elseif busy[player] then
+		return false, "Busy"
 	elseif type(key) == "string" and DockConfig.Decorations[key] then
 		return buyDecor(player, data, key)
 	end
@@ -1190,10 +1262,21 @@ local function finishConstruction(plot: Plot, player: Player, data: any)
 	if not c then
 		return
 	end
-	lastBuild[player] = { key = c.key, cash = cashOf(c.key) }
+	lastBuild[player] = { key = c.key, cash = cashOf(c.key, c.level) }
 	data.construction = nil
-	data.dockBuildings = tableOf(data.dockBuildings)
-	data.dockBuildings[c.key] = true
+	if DockConfig.Buildings[c.key] then
+		local n = math.clamp(c.level or 1, 1, #DockConfig.Buildings[c.key].levels)
+		if n > UnlockTree.levelOf(data.dock.levels, c.key) then
+			data.dock.levels[c.key] = n
+			if c.key == "HQ" then
+				SkillService.grantMedals(player, SkillRules.HQ_MEDALS, "HQ") -- docs/25 K3, once per new level
+			end
+		end
+	else
+		data.dockBuildings = tableOf(data.dockBuildings)
+		data.dockBuildings[c.key] = true
+	end
+	deriveDock(data)
 	DataService.MarkDirty(player)
 	syncBuildings(plot, player, false)
 	syncDecor(plot, player, false)
@@ -1224,7 +1307,8 @@ local function applyOffline(player: Player, data: any)
 		return
 	end
 	local now = os.time()
-	c.progress = BuildTimer.advance(c.progress, c.rate or 1, now - (c.at or now), workOf(c.key))
+	c.progress =
+		BuildTimer.advance(c.progress, c.rate or 1, now - (c.at or now), workOf(c.key, c.level))
 	c.at = now
 	local i = byPlayer[player]
 	if c.progress >= 1 and i then
@@ -1243,13 +1327,14 @@ local function tickConstruction(plot: Plot, player: Player, data: any)
 	end
 	local now = os.time()
 	local rate = BuildTimer.rateOf(data.workers, buildSkill(player))
-	c.progress = BuildTimer.advance(c.progress, c.rate or rate, now - (c.at or now), workOf(c.key))
+	c.progress =
+		BuildTimer.advance(c.progress, c.rate or rate, now - (c.at or now), workOf(c.key, c.level))
 	c.rate, c.at = rate, now
 	if c.progress >= 1 then
 		finishConstruction(plot, player, data)
 		return
 	end
-	makeSite(plot, c.key)
+	makeSite(plot, c.key, c.level)
 	syncSite(plot, data, player)
 	spawnCrew(plot, baseCrew(player))
 	DataService.MarkDirty(player)
@@ -1321,41 +1406,63 @@ function DockService.Init()
 
 	Net.event("Dock_Finish").OnServerEvent:Connect(promptFinish)
 
-	-- Robux skips the Cash, never the order: a building whose prerequisites are missing is granted as prepaid
-	-- (show builds it once they stand; decor needs only the jetty); a retried receipt is harmless
-	for _, rows: { [string]: any } in { DockConfig.Buildings :: any, DockConfig.Decorations } do
-		for key, b in rows do
-			if b.product then
-				MonetizationService.OnProduct(b.product, function(_player, data: any)
-					data.dockBuildings = tableOf(data.dockBuildings)
-					data.dockPrepaid = tableOf(data.dockPrepaid)
-					local building = DockConfig.Buildings[key]
+	-- Robux skips the Cash, never the order: a level whose HQ gate/prerequisites are missing is granted as
+	-- prepaid (show builds it once legal); a retried receipt for the same level is harmless.
+	for _, key in DockConfig.BUILDINGS do
+		local b = DockConfig.Buildings[key]
+		for n, lvl in b.levels do
+			local target = n
+			if lvl.product then
+				MonetizationService.OnProduct(lvl.product, function(_player, data: any)
+					deriveDock(data)
+					local current = UnlockTree.levelOf(data.dock.levels, key)
+					local paid = data.dock.prepaid[key]
+					local building = data.construction
 					if
-						data.dockBuildings[key]
-						or data.dockPrepaid[key]
-						or (data.construction and data.construction.key == key)
+						target <= current
+						or (paid and paid >= target)
+						or (building and building.key == key and (building.level or 1) == target)
 					then
 						return true
 					end
-					if building and not UnlockTree.canRobux(key, data.dockBuildings) then
-						data.dockPrepaid[key] = true -- paid, waits for the prerequisite
-						return true
-					end
 					if data.construction then
-						data.dockPrepaid[key] = true -- paid, waits its turn
+						data.dock.prepaid[key] = math.max(paid or 0, target)
+						deriveDock(data)
 						return true
 					end
-					data.construction = {
-						key = key,
-						progress = 0,
-						rate = BuildTimer.rateOf(data.workers, buildSkill(_player)),
-						at = os.time(),
-					}
+					if UnlockTree.canRobux(key, target, data.dock.levels) then
+						startConstruction(_player, data, key, target)
+					else
+						data.dock.prepaid[key] = math.max(paid or 0, target)
+						deriveDock(data)
+					end
 					return true
 				end, function(player)
 					show(player, false)
 				end)
 			end
+		end
+	end
+	for key, d in DockConfig.Decorations do
+		if d.product then
+			MonetizationService.OnProduct(d.product, function(_player, data: any)
+				deriveDock(data)
+				if
+					data.dockBuildings[key]
+					or data.dockPrepaid[key]
+					or (data.construction and data.construction.key == key)
+				then
+					return true
+				end
+				if data.construction then
+					data.dockPrepaid[key] = true
+					return true
+				end
+				startConstruction(_player, data, key)
+				return true
+			end, function(player)
+				show(player, false)
+			end)
 		end
 	end
 	-- Robux Finish now (docs/24 B): finish through the same path as FinishBuild; a receipt that lands after
@@ -1399,19 +1506,23 @@ function DockService.Init()
 				DataService.MarkDirty(player)
 				return true
 			elseif cmd == "reset" and data then -- back to the bare start (art renders)
+				data.dock = { levels = { Harbour = 1 }, prepaid = {} }
 				data.dockBuildings, data.dockPrepaid = {}, {}
+				deriveDock(data)
 				DataService.MarkDirty(player)
 				show(player, false)
 				return true
 			elseif cmd == "building" and data then
-				data.dockBuildings = if type(data.dockBuildings) == "table"
-					then data.dockBuildings
-					else {}
-				for key in DockConfig.Buildings do
-					if n == key or n == "all" then
-						data.dockBuildings[key] = true
+				deriveDock(data)
+				local name, levelText = string.match(tostring(n), "^(.-):(%d+)$")
+				for key, b in DockConfig.Buildings do
+					if n == key or name == key or n == "all" then
+						data.dock.levels[key] = if n == "all"
+							then #b.levels
+							else math.clamp(tonumber(levelText) or #b.levels, 1, #b.levels)
 					end
 				end
+				deriveDock(data)
 				DataService.MarkDirty(player)
 				show(player, true)
 				return true
@@ -1503,11 +1614,22 @@ function DockService.GetSpawn(player: Player): CFrame?
 	return if i then Marina.spawn(i) else nil
 end
 
--- Does the player own island building `key` (DockConfig.Buildings)? VehicleService: the pontoon's second
--- berth, the crane's no-wait relaunch.
-function DockService.Owns(player: Player, key: string): boolean
+-- The level of island building `key` (0 when unbuilt); decor returns 1/0.
+function DockService.Level(player: Player, key: string): number
 	local data: any = DataService.Get(player)
-	return data ~= nil and type(data.dockBuildings) == "table" and data.dockBuildings[key] == true
+	if not data then
+		return 0
+	end
+	if DockConfig.Buildings[key] then
+		return UnlockTree.levelOf(if data.dock then data.dock.levels else {}, key)
+	end
+	return if type(data.dockBuildings) == "table" and data.dockBuildings[key] == true then 1 else 0
+end
+
+-- Does the player own island building `key` (DockConfig.Buildings), merged aliases included? VehicleService:
+-- the pontoon's second berth, the crane's no-wait relaunch.
+function DockService.Owns(player: Player, key: string): boolean
+	return DockService.Level(player, key) >= 1
 end
 
 function DockService.Berths(): { BasePart }

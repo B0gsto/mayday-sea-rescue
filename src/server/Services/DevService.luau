@@ -19,9 +19,11 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local DevConfig = require(Config:WaitForChild("DevConfig"))
+local DockConfig = require(Config:WaitForChild("DockConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
+local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
 local CosmeticsService = require(script.Parent.CosmeticsService)
@@ -316,11 +318,33 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 		end,
 		build = function(_, target, a)
 			local ok, msg = edit(target :: Player, function(data)
+				data.dock = if type(data.dock) == "table"
+					then data.dock
+					else { levels = { Harbour = 1 }, prepaid = {} }
+				data.dock.levels = if type(data.dock.levels) == "table"
+					then data.dock.levels
+					else {}
+				local old: { [string]: boolean } = if type(data.dockBuildings) == "table"
+					then data.dockBuildings
+					else {}
+				data.dockBuildings = old
 				for _, key in DevConfig.Buildings do
 					if key ~= "All" and (a[2] == "All" or a[2] == key) then
-						data.dockBuildings[key] = true
+						local b = DockConfig.Buildings[key]
+						if b then
+							data.dock.levels[key] = #b.levels
+						else
+							data.dockBuildings[key] = true
+						end
 					end
 				end
+				local out = UnlockTree.ownedSet(data.dock.levels)
+				for key, owned in old do
+					if DockConfig.Blueprints[key] or DockConfig.Decorations[key] then
+						out[key] = owned
+					end
+				end
+				data.dockBuildings = out
 			end)
 			DockService.Refresh(target :: Player)
 			return ok, msg

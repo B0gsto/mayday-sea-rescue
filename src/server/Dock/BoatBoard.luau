@@ -499,10 +499,10 @@ function BoatBoard.start(launch: Launch)
 		},
 		{
 			name = "HangarBoard",
-			building = "Hangar",
-			vehicles = DockConfig.Buildings.Hangar.vehicles :: { string },
-			rack = B.Hangar.board,
-			targets = B.Hangar.targets,
+			building = "AirStation",
+			vehicles = DockConfig.Buildings.AirStation.vehicles :: { string },
+			rack = B.AirStation.board,
+			targets = B.AirStation.targets,
 			from = Vector3.new(0, 0, 10),
 			ground = true,
 			launch = water,
@@ -514,7 +514,6 @@ function BoatBoard.start(launch: Launch)
 			rack = B.SubPen.board,
 			targets = B.SubPen.targets,
 			from = Vector3.new(0, 8, 0),
-			hook = B.SubPen.hook,
 			launch = water,
 		},
 	}

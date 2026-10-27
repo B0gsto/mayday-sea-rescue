@@ -1,31 +1,40 @@
 --!strict
--- DockConfig (docs/23 (q), WP-28): the unlock tree. Every buildable thing on your island is one row of
--- `Buildings`: its Cash price, what it `needs` (other rows; {} = only the bare jetty you start with), an optional
--- Robux product (skips the Cash, never `needs`), where it stands (`spot`, berth frame) and its footprint. Adding
--- content = adding a row (and its key to BUILDINGS). The rules that read it: shared/UnlockTree
--- (tests/UnlockTree.spec.luau). Piece geometry lives in shared/DockPieces; DockService builds it, the build
--- tablet prices it.
---   Jetty (start)
---   +- Pontoon (2nd berth) -- Lookout tower -- Helipad -- Hangar -> Helicopter
---   |    +- Clinic                 +- Rescue boathouse
---   +- Workshop -+- Boathouse -> RIB, boat board, paint booth, Robux boats
---   |            |    +- Lifeboat slip -> Lifeboat
---   |            |    +- Crane -- Sub pen -> Submarine
---   |            +- Boat yard
---   +- Fish shed
---   +- Station (Boathouse + Lookout tower) -- Trophy hall
---   Prices and pacing: docs/23 (r) (tests/Pacing; R$ floors in tests/DockConfig cap the late Cash prices).
+-- DockConfig (docs/23 (q), WP-28; docs/25 K2 buildings v2): every buildable on your island is one row of
+-- `Buildings`. A row has a `levels` array (index = level): the Cash price, the HQ level it needs, its Robux
+-- product (skips the Cash, never the order) and the visible add-on it brings. `unlockAt` is the HQ that first
+-- offers the row (the HQ gate), `needs` are extra building keys (row-level, normally {}), `spot` / `size` place
+-- it on the plate in the berth frame. Old one-time rows merged into levels: Pontoon/Crane -> Harbour,
+-- LifeboatSlip -> Boathouse Lv2, Helipad/Hangar -> Air Station, Station -> HQ Lv3. Adding content = adding a
+-- row (and its key to BUILDINGS). Rules: shared/UnlockTree (tests/UnlockTree.spec.luau); pieces:
+-- shared/DockPieces; server: DockService.
+--   HQ Lv1 (free) gates every district; each HQ level raises every building's max level.
+--   HQ1 Harbour, Depot, Workshop, Bunkhouse, Fish Market
+--   HQ2 Boathouse -> RIB, Boat Yard, Clinic; Boathouse Lv2 -> Lifeboat
+--   HQ3 Rescue Boathouse, Lookout Tower; Harbour Lv3 -> crane  HQ4 Air Station -> helicopter
+--   HQ5 Sub Pen -> submarine, Trophy Hall
 --   Decor: the jetty only.
 local Marina = require(script.Parent.Parent:WaitForChild("Marina"))
+
+export type Level = {
+	cash: number,
+	hq: number, -- the HQ level needed for this level
+	robux: number?, -- its launch price (docs/23 (i): never a cheaper way to Cash than the packs)
+	product: string?, -- MonetizationConfig.Products key (skips the Cash, never the order)
+	effect: string?, -- the server flag this level switches on (DockService / BoatBoard / WorkerService)
+	piece: string?, -- the visible add-on (DockPieces)
+	needs: { string }?, -- extra building keys for this level (usually nil)
+}
 
 export type Building = {
 	name: string, -- the card's 1-3 words
 	desc: string, -- the build tablet's focus line, <= 10 words
-	cash: number,
-	needs: { string }, -- DockConfig.Buildings keys that must be owned first
-	product: string?, -- MonetizationConfig.Products key
-	robux: number?, -- its launch price (docs/23 (i): never a cheaper way to Cash than the packs)
-	spot: CFrame, -- berth frame, on the ground: the paper blueprint and the build camera's focus
+	levels: { Level },
+	unlockAt: number, -- the first HQ level that offers this row
+	cash: number, -- level 1's Cash (kept for the current build tablet; levels are the source of truth)
+	needs: { string }, -- DockConfig.Buildings keys that must be owned first (row-level; normally {})
+	product: string?, -- level 1's MonetizationConfig.Products key
+	robux: number?, -- level 1's launch price
+	spot: CFrame, -- berth frame, on the ground: the lot marker and the build camera's focus
 	size: Vector2, -- footprint (x / z of `spot`)
 	vehicles: { string }?, -- its own vehicle board's craft, in order (BoatBoard)
 	worker: string?, -- a worker building (WP-26): a Lego cottage (DockPieces), its workers in front of the door (-Z)
@@ -35,207 +44,356 @@ export type Building = {
 
 local DockConfig = {}
 
-local LOTS = Marina.LOTS
 -- a spot on the island, `right` / `fwd` studs from its centre (RingLayout's island frame), turned `yaw` degrees
 local function isle(right: number, fwd: number, yaw: number?): CFrame
 	return Marina.ISLAND * CFrame.new(right, 0, -fwd) * CFrame.Angles(0, math.rad(yaw or 0), 0)
 end
 
--- card order (roughly the tree's, left to right)
+-- card order (the map's districts, HQ spine first)
 DockConfig.BUILDINGS = {
-	"Pontoon",
+	"HQ",
+	"Harbour",
+	"Depot",
 	"Workshop",
+	"Bunkhouse",
 	"FishShed",
 	"Boathouse",
-	"LookoutTower",
 	"BoatYard",
-	"LifeboatSlip",
-	"Crane",
-	"Helipad",
-	"RescueBoathouse",
-	"SubPen",
-	"Hangar",
-	"Station",
-	"TrophyHall",
 	"Clinic",
+	"RescueBoathouse",
+	"LookoutTower",
+	"AirStation",
+	"SubPen",
+	"TrophyHall",
 }
 
-DockConfig.Buildings = {
-	Pontoon = {
-		name = "Pontoon",
-		desc = "Moors a second boat beside your jetty.",
-		cash = 2500, -- tune
+-- The Bunkhouse's people cap by level (docs/25 B); WorkerRules.W.CAP stays untouched, WorkerService reads this.
+DockConfig.BunkhouseCaps = { 10, 20, 30, 45, 60 }
+
+local rows: { [string]: any } = {
+	HQ = {
+		name = "Rescue Station",
+		desc = "The island's heart: every district grows from it.",
+		unlockAt = 1,
 		needs = {},
-		product = "DockLevel2",
-		robux = 35,
-		spot = CFrame.new(16, 2.1, 2),
-		size = Vector2.new(8, 50),
+		spot = isle(0, -12, 0), -- the plaza at the head of the cove, facing the jetty
+		size = Vector2.new(54, 32),
+		levels = {
+			{ cash = 0, hq = 0, effect = "HQ", piece = "Hut" }, -- the free first build (tutorial)
+			{ cash = 3000, hq = 1, effect = "HQ", piece = "Post" },
+			{
+				cash = 12000,
+				hq = 2,
+				product = "DockLevel5",
+				robux = 199,
+				effect = "HQ",
+				piece = "Station",
+			},
+			{ cash = 30000, hq = 3, effect = "HQ", piece = "Base" },
+			{ cash = 60000, hq = 4, effect = "HQ", piece = "HQ" },
+		} :: { Level },
+	},
+	Harbour = {
+		name = "Harbour",
+		desc = "Jetty, pontoon and crane on the cove.",
+		unlockAt = 1,
+		needs = {},
+		spot = isle(-28, 100, 0), -- the pontoon on the west side of the cove (on the water)
+		size = Vector2.new(8, 80),
+		levels = {
+			{ cash = 0, hq = 0, effect = "Jetty", piece = "Jetty" }, -- the start: the jetty is already there
+			{
+				cash = 2500,
+				hq = 2,
+				product = "DockLevel2",
+				robux = 35,
+				effect = "Pontoon",
+				piece = "Pontoon",
+			},
+			{
+				cash = 15000,
+				hq = 3,
+				product = "DockCrane",
+				robux = 99,
+				effect = "Crane",
+				piece = "Crane",
+			},
+		} :: { Level },
+	},
+	Depot = {
+		name = "Depot",
+		desc = "Brick pile and freight quay: builds start here.",
+		unlockAt = 1,
+		needs = {},
+		spot = isle(-90, -2, -90), -- work yard, open front onto the plaza
+		size = Vector2.new(36, 30),
+		scale = 1.15,
+		color = Color3.fromRGB(250, 208, 40),
+		levels = {
+			{ cash = 700, hq = 1, effect = "Depot", piece = "Yard" },
+			{ cash = 1750, hq = 2, effect = "Depot", piece = "Pile" },
+			{ cash = 4200, hq = 3, effect = "Depot", piece = "Conveyor" },
+		} :: { Level },
 	},
 	Workshop = {
 		name = "Workshop",
-		desc = "Builders work here. Unlocks the boathouse.",
-		cash = 500, -- tune: the first build, right after the first rescue (tests/NewPlayerPace)
+		desc = "Builders work here.",
+		unlockAt = 1,
 		needs = {},
-		product = "DockWorkshop",
-		robux = 15,
-		spot = isle(60, -10, 90), -- open front onto the east lane (WP-25 layout)
-		size = Vector2.new(29, 22), -- docs/24 C r3: pads 1.5x bigger (within the lot)
+		spot = isle(-135, -35, -90), -- the work yard's open front onto the plaza lane
+		size = Vector2.new(36, 26),
 		scale = 1.2,
 		worker = "Builder",
 		color = Color3.fromRGB(250, 208, 40),
+		levels = {
+			-- Lv1 hq 0 keeps the existing tutorial able to build the Workshop first (docs/24 E)
+			{
+				cash = 500,
+				hq = 0,
+				product = "DockWorkshop",
+				robux = 15,
+				effect = "Builders",
+				piece = "Yard",
+			},
+			{ cash = 1250, hq = 2, effect = "BuilderSlots5", piece = "SawBench" },
+			{ cash = 3000, hq = 3, effect = "BuilderSlots8", piece = "BoatFrame" },
+		} :: { Level },
+	},
+	Bunkhouse = {
+		name = "Bunkhouse",
+		desc = "Homes for the people you rescue.",
+		unlockAt = 1,
+		needs = {},
+		spot = isle(130, -18, 90), -- village, open front onto the plaza
+		size = Vector2.new(40, 46),
+		scale = 1.2,
+		color = Color3.fromRGB(80, 190, 90),
+		levels = {
+			{ cash = 800, hq = 1, effect = "People10", piece = "Hut" },
+			{ cash = 2000, hq = 2, effect = "People20", piece = "Floor" },
+			{ cash = 4800, hq = 3, effect = "People30", piece = "Floor" },
+			{ cash = 8000, hq = 4, effect = "People45", piece = "Hammocks" },
+			{ cash = 18000, hq = 5, effect = "People60", piece = "Lights" },
+		} :: { Level },
 	},
 	FishShed = {
-		name = "Fish shed",
-		desc = "Gatherers work here.",
-		cash = 1500, -- tune
+		name = "Fish Market",
+		desc = "Fishers work the stalls and the pier.",
+		unlockAt = 1,
 		needs = {},
-		product = "DockFishShed",
-		robux = 35,
-		spot = isle(73, 105, 90), -- on the east quay, open front onto the cove walk
-		size = Vector2.new(27, 20), -- docs/24 C r3: pads 1.5x bigger
+		spot = isle(133, 68, 90), -- harbour east, open front onto the cove walk
+		size = Vector2.new(40, 34),
 		scale = 1.15,
 		worker = "Gatherer",
 		color = Color3.fromRGB(40, 96, 208),
+		levels = {
+			{
+				cash = 600,
+				hq = 1,
+				product = "DockFishShed",
+				robux = 35,
+				effect = "Fishers",
+				piece = "Stalls",
+			},
+			{ cash = 1500, hq = 2, effect = "FishSlots4", piece = "Stalls" },
+			{ cash = 3600, hq = 3, effect = "FishSlots8", piece = "Smokehouse" },
+		} :: { Level },
 	},
 	Boathouse = {
 		name = "Boathouse",
 		desc = "Pick and paint boats. Unlocks the RIB.",
-		cash = 2500, -- tune
-		needs = { "Workshop" },
-		product = "DockLevel3",
-		robux = 35,
-		spot = LOTS.Boathouse.cf,
-		size = Vector2.new(34, 40) * 1.2,
+		unlockAt = 2,
+		needs = {},
+		spot = isle(-80, 58, -90), -- harbour west, the doors open onto the cove
+		size = Vector2.new(44, 36),
 		scale = 1.2,
-	},
-	LookoutTower = {
-		name = "Lookout tower",
-		desc = "A tall tower to spot calls from.",
-		cash = 19000, -- tune
-		needs = { "Pontoon" },
-		product = "DockLevel4",
-		robux = 75,
-		spot = LOTS.LifeguardTower.cf,
-		size = Vector2.new(10, 10) * 1.5,
-		scale = 1.5,
+		levels = {
+			{
+				cash = 900,
+				hq = 2,
+				product = "DockLevel3",
+				robux = 35,
+				effect = "RIB",
+				piece = "Boathouse",
+			},
+			{
+				cash = 2250,
+				hq = 2,
+				product = "DockLifeboatSlip",
+				robux = 99,
+				effect = "LifeboatSlip",
+				piece = "Slip",
+			},
+			{ cash = 5400, hq = 3, effect = "QuickLaunch", piece = "QuickBay" },
+		} :: { Level },
 	},
 	BoatYard = {
-		name = "Boat yard",
+		name = "Boat Yard",
 		desc = "Mechanics work here.",
-		cash = 5000, -- tune
-		needs = { "Workshop" },
-		product = "DockBoatYard",
-		robux = 75,
-		spot = isle(85, -105), -- back right, open front onto the bridge path
-		size = Vector2.new(32, 22), -- docs/24 C r3: pads 1.5x bigger
+		unlockAt = 2,
+		needs = {},
+		spot = isle(-132, 72, -90), -- harbour west, open front onto the cove walk
+		size = Vector2.new(36, 40),
 		scale = 1.15,
 		worker = "Mechanic",
 		color = Color3.fromRGB(250, 140, 30),
-	},
-	LifeboatSlip = {
-		name = "Lifeboat slip",
-		desc = "A slipway for the big lifeboat.",
-		cash = 8000, -- tune
-		needs = { "Boathouse" },
-		product = "DockLifeboatSlip",
-		robux = 99,
-		spot = isle(138, 20, -90), -- on the east edge, the slipway runs off the plate into the sea
-		size = Vector2.new(16, 22) * 1.5,
-		scale = 1.5,
-		color = Color3.fromRGB(60, 160, 220),
-	},
-	Crane = {
-		name = "Crane",
-		desc = "A slipway crane: relaunch with no wait.",
-		cash = 25000, -- tune
-		needs = { "Boathouse" },
-		product = "DockCrane",
-		robux = 99,
-		spot = CFrame.new(16, Marina.DECK_TOP, 66),
-		size = Vector2.new(8, 8),
-	},
-	Helipad = {
-		name = "Helipad",
-		desc = "A landing pad for a helicopter.",
-		cash = 22000, -- tune
-		needs = { "LookoutTower" },
-		product = "DockHelipad",
-		robux = 99,
-		spot = LOTS.Helipad.cf,
-		size = LOTS.Helipad.size,
-	},
-	RescueBoathouse = {
-		name = "Rescue boathouse",
-		desc = "Rescuers work here.",
-		cash = 16000, -- tune
-		needs = { "LookoutTower" },
-		product = "DockRescueBoathouse",
-		robux = 99,
-		spot = isle(-70, 99, -90), -- on the west quay, open front onto the cove walk
-		size = Vector2.new(29, 22), -- docs/24 C r3: pads 1.5x bigger
-		scale = 1.15,
-		worker = "Rescuer",
-		color = Color3.fromRGB(224, 56, 40),
-	},
-	SubPen = {
-		name = "Sub pen",
-		desc = "A sub pen to launch your submarine.",
-		cash = 38000, -- tune
-		needs = { "Crane" },
-		product = "DockSubPen",
-		robux = 149,
-		spot = LOTS.SubPen.cf,
-		size = LOTS.SubPen.size,
-		vehicles = { "Submarine" },
-	},
-	Hangar = {
-		name = "Hangar",
-		desc = "A hangar for your rescue helicopter.",
-		cash = 32000, -- tune
-		needs = { "Helipad" },
-		product = "DockHangar",
-		robux = 149,
-		spot = LOTS.Hangar.cf,
-		size = LOTS.Hangar.size * 1.3,
-		scale = 1.3,
-		vehicles = { "RescueHelicopter" },
-	},
-	Station = {
-		name = "Station",
-		desc = "A lit station and a beacon for the harbour.",
-		cash = 51000, -- tune
-		needs = { "Boathouse", "LookoutTower" },
-		product = "DockLevel5",
-		robux = 199,
-		spot = LOTS.Station.cf,
-		size = Vector2.new(60, 44),
-	},
-	TrophyHall = {
-		name = "Trophy hall",
-		desc = "Cups and island stamps on the station wall.",
-		cash = 38000, -- tune
-		needs = { "Station" },
-		product = "DockTrophyHall",
-		robux = 149,
-		spot = LOTS.Station.cf * CFrame.new(-15.5, 0, -18),
-		size = Vector2.new(20, 6),
+		levels = {
+			{
+				cash = 1000,
+				hq = 2,
+				product = "DockBoatYard",
+				robux = 75,
+				effect = "Mechanics",
+				piece = "Cradle",
+			},
+			{ cash = 2500, hq = 2, effect = "Gantry", piece = "Gantry" },
+			{ cash = 6000, hq = 3, effect = "DryDock", piece = "DryDock" },
+		} :: { Level },
 	},
 	Clinic = {
 		name = "Clinic",
-		desc = "Medics work here.",
-		cash = 8000, -- tune
-		needs = { "Pontoon" },
-		product = "DockClinic",
-		robux = 199,
-		spot = isle(-85, -105), -- back left, open front onto the bridge path
-		size = Vector2.new(27, 22), -- docs/24 C r3: pads 1.5x bigger
+		desc = "Medics meet every arrival.",
+		unlockAt = 2,
+		needs = {},
+		spot = isle(75, -5, 90), -- village, open front onto the plaza
+		size = Vector2.new(36, 28),
 		scale = 1.15,
 		worker = "Medic",
 		color = Color3.fromRGB(242, 240, 232),
+		levels = {
+			{
+				cash = 1200,
+				hq = 2,
+				product = "DockClinic",
+				robux = 199,
+				effect = "Medics",
+				piece = "Tent",
+			},
+			{ cash = 3000, hq = 2, effect = "Pavilion", piece = "Pavilion" },
+			{ cash = 7200, hq = 3, effect = "Hospital", piece = "Hospital" },
+		} :: { Level },
 	},
-} :: { [string]: Building }
+	RescueBoathouse = {
+		name = "Rescue Boathouse",
+		desc = "Rescuers run their own boats from here.",
+		unlockAt = 3,
+		needs = {},
+		spot = isle(80, 58, 90), -- harbour east, the doors open onto the cove
+		size = Vector2.new(44, 36),
+		scale = 1.15,
+		worker = "Rescuer",
+		color = Color3.fromRGB(224, 56, 40),
+		levels = {
+			{
+				cash = 1500,
+				hq = 3,
+				product = "DockRescueBoathouse",
+				robux = 99,
+				effect = "Rescuers",
+				piece = "Dinghy",
+			},
+			{ cash = 3750, hq = 3, effect = "RescueRIB", piece = "RIB" },
+			{ cash = 9000, hq = 3, effect = "RescueLifeboat", piece = "Lifeboat" },
+		} :: { Level },
+	},
+	LookoutTower = {
+		name = "Lookout Tower",
+		desc = "Spot calls from farther out.",
+		unlockAt = 3,
+		needs = {},
+		spot = isle(62, -95, 0), -- air field, at the back of the plaza
+		size = Vector2.new(16, 16),
+		scale = 1.5,
+		levels = {
+			{
+				cash = 1600,
+				hq = 3,
+				product = "DockLevel4",
+				robux = 75,
+				effect = "CallsFar",
+				piece = "Tower",
+			},
+			{ cash = 4000, hq = 3, effect = "GoldCalls15", piece = "Lamp" },
+			{ cash = 9600, hq = 3, effect = "GoldCalls2", piece = "Spotlight" },
+		} :: { Level },
+	},
+	AirStation = {
+		name = "Air Station",
+		desc = "Helipad and hangar for the helicopter.",
+		unlockAt = 4,
+		needs = {},
+		spot = isle(88, -124, 0), -- the hangar; the pad sits 38 right, 27 fwd (DockPieces)
+		size = Vector2.new(42, 28),
+		vehicles = { "RescueHelicopter" },
+		levels = {
+			{
+				cash = 1800,
+				hq = 4,
+				product = "DockHangar",
+				robux = 149,
+				effect = "Helicopter",
+				piece = "HelipadHangar",
+			},
+			{ cash = 4500, hq = 4, effect = "Refuel", piece = "RefuelPad" },
+			{ cash = 10800, hq = 4, effect = "Patrol", piece = "PatrolHut" },
+		} :: { Level },
+	},
+	SubPen = {
+		name = "Sub Pen",
+		desc = "A domed pen for the submarine.",
+		unlockAt = 5,
+		needs = {},
+		spot = isle(90, 128, 0), -- harbour east, down the quay
+		size = Vector2.new(40, 40),
+		vehicles = { "Submarine" },
+		levels = {
+			{
+				cash = 1900,
+				hq = 5,
+				product = "DockSubPen",
+				robux = 149,
+				effect = "Submarine",
+				piece = "Dome",
+			},
+			{ cash = 4750, hq = 5, effect = "DeepDives", piece = "Gantry" },
+			{ cash = 11400, hq = 5, effect = "Salvage", piece = "Salvage" },
+		} :: { Level },
+	},
+	TrophyHall = {
+		name = "Trophy Hall",
+		desc = "Cups, stamps and quest trophies on display.",
+		unlockAt = 5,
+		needs = {},
+		spot = isle(0, -122, 0), -- landmarks, behind the plaza
+		size = Vector2.new(50, 28),
+		levels = {
+			{
+				cash = 2000,
+				hq = 5,
+				product = "DockTrophyHall",
+				robux = 149,
+				effect = "Trophies",
+				piece = "Hall",
+			},
+			{ cash = 5000, hq = 5, effect = "TrophyPlinths", piece = "Dome" },
+			{ cash = 12000, hq = 5, effect = "TrophyWheel", piece = "GoldDome" },
+		} :: { Level },
+	},
+}
 
--- Old saves (the dock-level ladder before WP-28): what each old level owns in the tree (ProgressionRules.migrate).
+-- Fill level 1 back onto the row (the current build tablet still reads these) and the row's needs default.
+for _, b in rows do
+	b.cash = b.levels[1].cash
+	b.product = b.levels[1].product
+	b.robux = b.levels[1].robux
+	b.needs = b.needs or {}
+end
+DockConfig.Buildings = rows :: { [string]: Building }
+
+-- The lifeboat slip add-on (Boathouse Lv2) on its own map lot, facing the sea.
+DockConfig.BOATHOUSE_SLIP = isle(-80, 112, 0)
+
+-- Old saves (the dock-level ladder before WP-28): what each old level owns in the tree (UnlockTree.migrateLegacy).
 DockConfig.LEVEL_ITEMS = {
 	[2] = { "Pontoon" },
 	[3] = { "Workshop", "Boathouse" },
@@ -334,14 +492,16 @@ DockConfig.Decorations = {
 	},
 } :: { [string]: Decor }
 
--- The building a MonetizationConfig product key builds, or nil.
-function DockConfig.buildingFor(productKey: string): string?
+-- The building (and level) a MonetizationConfig product key builds: -> key, level.
+function DockConfig.buildingFor(productKey: string): (string?, number?)
 	for key, b in DockConfig.Buildings do
-		if b.product == productKey then
-			return key
+		for n, l in b.levels do
+			if l.product == productKey then
+				return key, n
+			end
 		end
 	end
-	return nil
+	return nil, nil
 end
 
 -- Which building's board holds craft `id` (nil: the boat board's).
@@ -357,7 +517,7 @@ end
 -- Where the boat board (WP-5) stands, in the berth frame (Marina.berth): on the boathouse floor (its lot)
 -- by the back wall, facing the roll-up door and the cove. The boathouse keeps a clear
 -- BOARD_SIZE x BOARD_SIZE floor area centred here.
-DockConfig.BOARD_SLOT = Marina.LOTS.Boathouse.cf * CFrame.new(0, 0, 14)
+DockConfig.BOARD_SLOT = isle(-80, 58, -90) * CFrame.new(0, 0, 14)
 DockConfig.BOARD_SIZE = 6
 
 -- The build station (WP-14d) stands on the free Spare3 lot by the spawn, clear of the decor spots.

@@ -18,7 +18,6 @@ local UiImages = require(script.Parent:WaitForChild("Config"):WaitForChild("UiIm
 
 local DockPieces = {}
 
-local WOOD = Color3.fromRGB(105, 64, 40) -- WP-25: Lego reddish brown
 local DARK = Color3.fromRGB(84, 62, 44)
 local WHITE = Color3.fromRGB(242, 240, 232)
 local STEEL = Color3.fromRGB(190, 194, 198)
@@ -54,7 +53,7 @@ local TOP = Marina.DECK_TOP
 local LOT = Marina.LOTS
 -- the station: half width, half depth, height; the trophy hall is on its front wall, left of the door
 local ST = { hw = 26, hd = 15, h = 16 }
-local HALL = LOT.Station.cf * CFrame.new(-15.5, 0, -ST.hd - 0.5) -- -Z = out of the wall
+local HALL = DockConfig.Buildings.TrophyHall.spot -- the trophy wall lot, -Z = its front
 
 local function part(
 	parent: Instance,
@@ -470,7 +469,7 @@ end
 -- the boathouse on its lot, the roll-up door facing the cove, a clear marked floor spot for the boat
 -- board (DockConfig.BOARD_SLOT) by the back wall; the paint booth over the berth
 local function boathouse(m: Model, b: CFrame)
-	local L = b * LOT.Boathouse.cf -- -Z = the doors
+	local L = b * DockConfig.Buildings.Boathouse.spot -- -Z = the doors
 	local hw, hd, h = 15, 18, 14
 	local y = h / 2
 	plinth(m, Vector3.new(hw * 2 + 3, 0.4, hd * 2 + 3), L * CFrame.new(0, 0.2, 0))
@@ -520,7 +519,7 @@ local function boathouse(m: Model, b: CFrame)
 		"Boathouse",
 		UiImages.Kit.boat_to_me
 	)
-	path(m, b, { Vector2.new(55, 62), Vector2.new(62, 62) })
+	path(m, b, { Vector2.new(-62, 58), Vector2.new(-48, 42) })
 	-- the board slot: an empty floor square outlined in yellow (WP-5 puts the board here)
 	local slot = Instance.new("Model")
 	slot.Name = "BoardSlot"
@@ -546,7 +545,7 @@ end
 -- the lookout tower on the beach tower lot: chunky white legs with red cross braces, a stud deck, a glazed cabin
 -- with a red slope roof and a flag, a ladder up its open side
 local function lookout(m: Model, b: CFrame)
-	local T = b * LOT.LifeguardTower.cf
+	local T = b * DockConfig.Buildings.LookoutTower.spot
 	local legH, s = 20, 4
 	plinth(m, Vector3.new(11, 0.6, 11), T * CFrame.new(0, 0.3, 0))
 	for _, d in { { -s, -s }, { s, -s }, { -s, s }, { s, s } } do
@@ -608,7 +607,7 @@ local function lookout(m: Model, b: CFrame)
 	ladder.Material = M.SmoothPlastic
 	ladder.Anchored = true
 	ladder.Parent = m
-	path(m, b, { Vector2.new(110, -79), Vector2.new(118, -51) }) -- from the bridge path to the ladder
+	path(m, b, { Vector2.new(62, -96), Vector2.new(62, -82) }) -- from the plaza to the ladder
 end
 
 -- the slipway crane: mast on the quay starboard of the berth, the boom out over the berth's inshore end
@@ -668,7 +667,7 @@ end
 -- red base course, a window row, a blue stud roof behind a white parapet, a door in the owner's colour under a
 -- sign; the lit front (neon stripes, floodlights), a beacon on the roof, light strips down the jetty
 local function station(m: Model, b: CFrame)
-	local S = b * LOT.Station.cf -- -Z = the front
+	local S = b * DockConfig.Buildings.HQ.spot -- -Z = the front
 	local hw, hd, h = ST.hw, ST.hd, ST.h
 	local door = 5
 	plinth(m, Vector3.new(hw * 2 + 4, 0.5, hd * 2 + 4), S * CFrame.new(0, 0.25, 0))
@@ -883,28 +882,27 @@ end
 
 -- WP-10b buildings (WP-19b: on their own lots) ------------------------------------------------------
 
-local HELI = LOT.Helipad.cf * CFrame.new(0, 0.6, 0) -- the helicopter's spot: the pad centre
-local PEN = { hx = 8, hz = 20, top = 16 } -- the sub pen gantry round the sub berth (Marina.SUB frame)
-local PEN_JETTY = LOT.Jetty.cf.X - LOT.Jetty.size.X / 2 - Marina.SUB.X -- the jetty's edge, sub berth frame
+local AIR = DockConfig.Buildings.AirStation.spot
+local HELI = AIR * CFrame.new(38, 0.6, -27) -- the helicopter's spot: the pad centre
+local SUB = DockConfig.Buildings.SubPen.spot
 
 -- In the berth frame: `board` = the vehicle board's rack (models along
 -- its X, facing its -Z), `targets[id]` = where that craft spawns (the berth when absent), `hook` = the gantry
 -- height the sub hangs from.
 DockPieces.Buildings = {
-	Hangar = {
-		board = LOT.Hangar.cf * CFrame.new(0, 0.2, 9),
+	AirStation = {
+		board = AIR * CFrame.new(0, 0.2, 9),
 		targets = { RescueHelicopter = HELI } :: { [string]: CFrame },
 	},
 	SubPen = {
-		board = Marina.SUB * CFrame.new(PEN_JETTY - 6, TOP, 0) * CFrame.Angles(0, math.pi / 2, 0),
+		board = SUB * CFrame.new(0, 0.2, 9),
 		targets = { Submarine = Marina.SUB } :: { [string]: CFrame },
-		hook = PEN.top - 0.5,
 	},
 }
 
 -- the helipad on its lot (an H, an edge line and lights)
 local function helipad(m: Model, b: CFrame)
-	local P = b * LOT.Helipad.cf
+	local P = b * DockConfig.Buildings.AirStation.spot * CFrame.new(38, 0, -27)
 	studTop(brick(m, "Pad", Vector3.new(36, 0.6, 36), P * CFrame.new(0, 0.3, 0), GREY))
 	for _, e in { { 0, -14, 28, 0.5 }, { 0, 14, 28, 0.5 }, { -14, 0, 0.5, 28 }, { 14, 0, 0.5, 28 } } do
 		part(
@@ -977,12 +975,11 @@ local function helipad(m: Model, b: CFrame)
 		).CanCollide =
 			false
 	end
-	path(m, b, { Vector2.new(-37, -40), Vector2.new(-65, -40) })
 end
 
 -- the hangar on its lot, open toward the pad
 local function hangar(m: Model, b: CFrame)
-	local H = b * LOT.Hangar.cf -- -Z = the open front, toward the pad
+	local H = b * DockConfig.Buildings.AirStation.spot -- -Z = the open front, toward the pad
 	local hw, hd, h = 17, 14, 14
 	plinth(m, Vector3.new(hw * 2 + 3, 0.4, hd * 2 + 3), H * CFrame.new(0, 0.2, 0))
 	brick(m, "Wall", Vector3.new(hw * 2, h, 0.8), H * CFrame.new(0, h / 2, hd), WHITE)
@@ -1029,49 +1026,49 @@ local function hangar(m: Model, b: CFrame)
 		)
 	end
 	sign(m, Vector3.new(11, 2.2, 0.4), H * CFrame.new(0, h - 1.5, -hd - 0.6), BRICK_WHITE, "Hangar")
-	path(m, b, { Vector2.new(-37, 5), Vector2.new(-88, 5), Vector2.new(-88, 18) })
 end
 
--- the sub pen (docs/24 C): a round moon pool ringed by a stud deck, a yellow gantry and a white dome cap
+-- the sub pen (docs/24 C, moved to its own harbour lot): a ringed stud deck, a yellow gantry and a white dome cap.
+-- The submarine still launches from the old sub berth (Marina.SUB); the board is on this deck.
 local function subPen(m: Model, b: CFrame)
-	local P = b * Marina.SUB
-	local hx, hz, top = PEN.hx, PEN.hz, PEN.top
-	-- the round walkway: eight tangent deck segments round the pool
-	for i = 0, 7 do
-		local a = i * math.pi / 4
-		studTop(
-			brick(
-				m,
-				"Walk",
-				Vector3.new(9.4, 1, 5.6),
-				P * CFrame.new(math.sin(a) * 13, 0.5, math.cos(a) * 13) * CFrame.Angles(0, a, 0),
-				BRICK_WHITE
-			)
-		)
-	end
-	-- four gantry legs, a square beam frame and the trolley (the hook stays at PEN.top - 0.5)
+	local S = b * DockConfig.Buildings.SubPen.spot -- -Z = the front, toward the plaza
+	local hx, top = 8, 16
+	plinth(m, Vector3.new(38, 0.8, 38), S * CFrame.new(0, 0.4, 0), BRICK_WHITE)
+	studTop(brick(m, "Deck", Vector3.new(30, 0.8, 30), S * CFrame.new(0, 0.8, 0), GREY))
+	-- a round moon pool in the middle (the sub surfaces here in the fiction; the real berth stays Marina.SUB)
+	part(
+		m,
+		"Pool",
+		Vector3.new(1, 16, 16),
+		S * CFrame.new(0, 1.25, 0) * CFrame.Angles(0, 0, math.pi / 2),
+		Color3.fromRGB(30, 90, 140),
+		M.SmoothPlastic,
+		Enum.PartType.Cylinder
+	).CanCollide =
+		false
+	-- four gantry legs and a square beam frame over the pool
 	for _, x in { -hx - 2, hx + 2 } do
-		for _, z in { -hz, hz } do
+		for _, z in { -hx, hx } do
 			brick(
 				m,
 				"Leg",
 				Vector3.new(1.6, top + 6, 1.6),
-				P * CFrame.new(x, (top - 6) / 2, z),
+				S * CFrame.new(x, (top - 6) / 2, z),
 				GREY
 			)
 		end
-		brick(m, "Beam", Vector3.new(1.4, 1.4, hz * 2 + 1.6), P * CFrame.new(x, top, 0), YELLOW)
+		brick(m, "Beam", Vector3.new(1.4, 1.4, hx * 2 + 1.6), S * CFrame.new(x, top, 0), YELLOW)
 	end
-	for _, z in { -hz, hz } do
-		brick(m, "Beam", Vector3.new(hx * 2 + 4, 1.4, 1.4), P * CFrame.new(0, top, z), YELLOW)
+	for _, z in { -hx, hx } do
+		brick(m, "Beam", Vector3.new(hx * 2 + 4, 1.4, 1.4), S * CFrame.new(0, top, z), YELLOW)
 	end
-	brick(m, "Trolley", Vector3.new(hx * 2, 1.4, 2.4), P * CFrame.new(0, top + 0.2, 0), BRICK_RED)
-	-- the dome: a yellow ring on the beams and a white cap (a whole ball, its lower half under the ring)
+	brick(m, "Trolley", Vector3.new(hx * 2, 1.4, 2.4), S * CFrame.new(0, top + 0.2, 0), BRICK_RED)
+	-- the dome: a yellow ring on the beams and a white cap
 	part(
 		m,
 		"DomeRing",
 		Vector3.new(1.2, hx * 2 + 9, hx * 2 + 9),
-		P * CFrame.new(0, top + 1.2, 0) * CFrame.Angles(0, 0, math.pi / 2),
+		S * CFrame.new(0, top + 1.2, 0) * CFrame.Angles(0, 0, math.pi / 2),
 		BRICK_YELLOW,
 		M.SmoothPlastic,
 		Enum.PartType.Cylinder
@@ -1080,19 +1077,20 @@ local function subPen(m: Model, b: CFrame)
 		m,
 		"Dome",
 		Vector3.new(hx * 2, 8, hx * 2),
-		P * CFrame.new(0, top + 4.8, 0),
+		S * CFrame.new(0, top + 4.8, 0),
 		BRICK_WHITE,
 		M.SmoothPlastic,
 		Enum.PartType.Ball
 	)
-	-- a plank from the jetty onto the walkway
-	brick(
+	sign(
 		m,
-		"Plank",
-		Vector3.new(PEN_JETTY - hx - 2.5 + 0.5, 0.4, 3),
-		P * CFrame.new((PEN_JETTY + hx + 2.5) / 2, TOP - 0.2, -8),
-		WOOD
+		Vector3.new(10, 2.2, 0.4),
+		S * CFrame.new(0, 8, -18),
+		BRICK_WHITE,
+		"Sub Pen",
+		UiImages.Kit.lifebuoy
 	)
+	path(m, b, { Vector2.new(115, 104), Vector2.new(115, 88) })
 end
 
 -- the quest blueprint lighthouse (DockConfig.Blueprints) on its spare lot: a red and white tower, a gallery and a
@@ -2091,14 +2089,11 @@ local function clinic(m: Model, b: CFrame)
 	path(m, b, spec.path)
 end
 
--- the lifeboat slip on the island's edge: an open shed (white posts, blue slope roof) over a slipway that runs
--- off the plate into the sea, with rails and a winch
+-- the lifeboat slip (Boathouse Lv2) on its own harbour lot: an open shed over a slipway that runs off the plate
+-- into the sea. It is kept at 1x inside the boathouse's model and faces +fwd (local -Z).
 local function lifeboatSlip(m: Model, b: CFrame)
-	local def = DockConfig.Buildings.LifeboatSlip
-	local at = b * def.spot -- -Z = toward the sea
-	local D = def.size.Y -- the scaled footprint: the slipway and the path stay 1x (DockPieces.building)
-	local w, d = def.size.X / (def.scale or 1), D / (def.scale or 1)
-	local h = 11
+	local at = b * DockConfig.BOATHOUSE_SLIP -- -Z = toward the sea
+	local w, d, h = 22, 50, 11
 	plinth(m, Vector3.new(w + 2, 0.8, d), at * CFrame.new(0, 0.4, 0))
 	for _, x in { -1, 1 } do
 		for _, z in { -1, 1 } do
@@ -2124,28 +2119,25 @@ local function lifeboatSlip(m: Model, b: CFrame)
 		"Lifeboat",
 		UiImages.Kit.lifebuoy
 	)
-	-- the slipway: flat from the shed to the plate's edge (EDGE studs out from the island centre), then down
-	-- into the sea
-	local slipR = Marina.ISLAND:ToObjectSpace(def.spot).X -- the slip's island-frame right (it faces +right)
-	local edge = -(RingLayout.IslandPlate.edge - slipR)
-	local flatLen = D / 2 - 2 - edge
+	-- flat from the shed to the plate's edge, then down into the sea
+	local edge = 26
 	brick(
 		m,
 		"Slipway",
-		Vector3.new(7, 0.6, flatLen),
-		at * CFrame.new(0, 0.3, (D / 2 - 2 + edge) / 2),
+		Vector3.new(7, 0.6, edge),
+		at * CFrame.new(0, 0.3, -d / 2 - edge / 2 + 2),
 		TAN
 	)
-	local from = (at * CFrame.new(0, 0, edge)).Position
-	local to = (at * CFrame.new(0, -Marina.DECK_TOP - 1.5, edge - 16)).Position
+	local from = (at * CFrame.new(0, 0, -d / 2 - edge + 2)).Position
+	local to = (at * CFrame.new(0, -Marina.DECK_TOP - 1.5, -d / 2 - edge - 18)).Position
 	local mid = CFrame.lookAt((from + to) / 2, to) * CFrame.new(0, 0.3, 0)
 	brick(m, "Slipway", Vector3.new(7, 0.6, (to - from).Magnitude + 0.6), mid, TAN)
 	for _, x in { -2.6, 2.6 } do
 		brick(
 			m,
 			"SlipRail",
-			Vector3.new(0.6, 0.6, flatLen),
-			at * CFrame.new(x, 0.9, (D / 2 - 2 + edge) / 2),
+			Vector3.new(0.6, 0.6, edge),
+			at * CFrame.new(x, 0.9, -d / 2 - edge / 2 + 2),
 			DBG
 		)
 		brick(
@@ -2159,7 +2151,7 @@ local function lifeboatSlip(m: Model, b: CFrame)
 	studTop(
 		brick(m, "Winch", Vector3.new(3, 2, 2), at * CFrame.new(0, 1.8, d / 2 - 1.5), BRICK_YELLOW)
 	)
-	path(m, b, { Vector2.new(57, 23), Vector2.new(slipR - D / 2 - 2, 23) })
+	path(m, b, { Vector2.new(-80, 82), Vector2.new(-80, 70) })
 end
 
 -- WP-25: the fixed set on every island plate, there from the bare start (DockService builds it with the jetty):
@@ -2406,37 +2398,112 @@ function DockPieces.base(b: CFrame): Model
 	return m
 end
 
+-- Harbour levels: Lv1 is the bare jetty (the plate's fixed jetty), Lv2 the pontoon, Lv3 the crane.
+local function harbour(m: Model, b: CFrame, level: number?)
+	if (level or 1) >= 2 then
+		pontoon(m, b)
+	end
+	if (level or 1) >= 3 then
+		slipCrane(m, b)
+	end
+end
+
+-- HQ levels: a hut at Lv1/2, today's station from Lv3, a radio mast at Lv4 and the gold beacon at Lv5.
+local function hq(m: Model, b: CFrame, level: number?)
+	local n = level or 1
+	if n >= 3 then
+		station(m, b)
+	else
+		hut(m, b, "HQ")
+	end
+	local S = b * DockConfig.Buildings.HQ.spot
+	if n >= 4 then
+		part(
+			m,
+			"RadioMast",
+			Vector3.new(1, 26, 1),
+			S * CFrame.new(18, 13, 10),
+			GREY,
+			M.SmoothPlastic
+		)
+		part(
+			m,
+			"RadioDish",
+			Vector3.new(0.4, 6, 6),
+			S * CFrame.new(18, 25, 10),
+			BRICK_WHITE,
+			M.SmoothPlastic
+		)
+	end
+	if n >= 5 then
+		local lens = part(
+			m,
+			"GoldBeacon",
+			Vector3.new(2.4, 2.4, 2.4),
+			S * CFrame.new(-18, 22, 10),
+			GOLD,
+			M.Neon,
+			Enum.PartType.Ball
+		)
+		local glow = Instance.new("PointLight")
+		glow.Color = GOLD
+		glow.Range = 40
+		glow.Brightness = 2
+		glow.Parent = lens
+	end
+end
+
+-- Boathouse Lv2 adds the lifeboat slip on its own harbour lot (kept 1x while the boathouse scales).
+local function boathouseLevel(m: Model, b: CFrame, level: number?)
+	boathouse(m, b)
+	if (level or 1) >= 2 then
+		local slip = Instance.new("Model")
+		slip.Name = "LifeboatSlip"
+		lifeboatSlip(slip, b)
+		slip.Parent = m
+	end
+end
+
+-- Air Station: the hangar and its helipad, both on the air field.
+local function airStation(m: Model, b: CFrame)
+	hangar(m, b)
+	helipad(m, b)
+end
+
 local BUILDINGS = {
-	Pontoon = pontoon,
+	HQ = hq,
+	Harbour = harbour,
 	Workshop = workshopYard,
 	FishShed = fishMarket,
 	BoatYard = boatYard,
 	RescueBoathouse = rescueBoathouse,
 	Clinic = clinic,
-	Boathouse = boathouse,
+	Boathouse = boathouseLevel,
 	LookoutTower = lookout,
-	Crane = slipCrane,
-	Station = station,
 	TrophyHall = trophyHall,
-	Helipad = helipad,
-	Hangar = hangar,
+	AirStation = airStation,
 	SubPen = subPen,
-	LifeboatSlip = lifeboatSlip,
 	Lighthouse = lighthouse,
-} :: { [string]: (Model, CFrame) -> () }
+} :: { [string]: (Model, CFrame, number?) -> () }
 
-local KEEP_1X =
-	{ Path = true, Slipway = true, SlipRail = true, BoardSlot = true, PaintBooth = true }
-local AFLOAT = { Pontoon = true, SubPen = true, TrophyHall = true, Crane = true } -- no lot bed: on the water or a wall
+local KEEP_1X = {
+	Path = true,
+	Slipway = true,
+	SlipRail = true,
+	BoardSlot = true,
+	PaintBooth = true,
+	LifeboatSlip = true,
+}
+local AFLOAT = { Harbour = true } -- no lot bed: on the water
 
 -- The pieces of building `key` (DockConfig.Buildings, Blueprints) around the berth frame `cf`, as a Model
 -- named `key`. A worker building with no builder of its own is a plain Lego hut.
-function DockPieces.building(key: string, cf: CFrame): Model
+function DockPieces.building(key: string, cf: CFrame, level: number?): Model
 	local m = Instance.new("Model")
 	m.Name = key
 	local fn = BUILDINGS[key]
 	if fn then
-		fn(m, cf)
+		fn(m, cf, level)
 	elseif DockConfig.Buildings[key] then
 		hut(m, cf, key)
 	end

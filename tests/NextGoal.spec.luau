@@ -5,36 +5,36 @@ return function(t)
 	local BuildTimer = t.load("src/shared/BuildTimer.luau")
 
 	local function facts(over)
-		local f = { cash = 0, owned = {}, construction = nil }
+		local f = { cash = 0, owned = { Harbour = true }, construction = nil }
 		for k, v in over or {} do
 			f[k] = v
 		end
 		return f
 	end
 
-	t.test("a fresh island builds the first unlock-order building (Pontoon)", function()
+	t.test("a fresh island builds the free HQ first", function()
 		local g = N.next(facts())
 		t.expect(g.kind).toBe("Build")
-		t.expect(g.key).toBe(DockConfig.BUILDINGS[1])
-		t.expect(g.price).toBe(DockConfig.Buildings[g.key].cash)
+		t.expect(g.key).toBe("HQ")
+		t.expect(g.price).toBe(0)
 		t.expect(g.progress).toBe(0)
+		t.expect(N.next(facts({ owned = { Harbour = true, HQ = true } })).key).toBe("Depot")
 	end)
 
-	t.test("owned buildings are skipped; a missing prerequisite holds a later row back", function()
-		local g = N.next(facts({ owned = { Pontoon = true } }))
+	t.test("owned buildings are skipped in unlock order", function()
+		local g = N.next(facts({ owned = { Harbour = true, HQ = true, Depot = true } }))
 		t.expect(g.key).toBe("Workshop")
 		t.expect(g.name).toBe("Workshop")
-		-- Boathouse needs the Workshop; Fish shed is earlier in the order and free
-		g = N.next(facts({ owned = { Pontoon = true, Workshop = true } }))
-		t.expect(g.key).toBe("FishShed")
-		t.expect(g.progress).toBe(0)
+		g = N.next(facts({ owned = { Harbour = true, HQ = true, Depot = true, Workshop = true } }))
+		t.expect(g.key).toBe("Bunkhouse")
 	end)
 
 	t.test("the Cash bar fills to the price", function()
-		local price = DockConfig.Buildings.Pontoon.cash
-		local g = N.next(facts({ cash = price / 2 }))
+		local price = DockConfig.Buildings.Depot.cash
+		local owned = { Harbour = true, HQ = true }
+		local g = N.next(facts({ cash = price / 2, owned = owned }))
 		t.expect(g.progress).toBeCloseTo(0.5, 1e-9)
-		t.expect(N.next(facts({ cash = price * 3 })).progress).toBe(1)
+		t.expect(N.next(facts({ cash = price * 3, owned = owned })).progress).toBe(1)
 	end)
 
 	t.test("a running site is the goal and shows its progress and time left", function()

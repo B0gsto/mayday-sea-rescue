@@ -102,7 +102,8 @@ return function(t)
 
 	t.test("old dock levels map onto the tree; Rep and the level stay saved", function()
 		local lv3 = Rules.migrate({ dockLevel = 3, rep = 4200 })
-		t.expect(lv3.dockBuildings).toEqual({ Pontoon = true, Workshop = true, Boathouse = true })
+		t.expect(lv3.dockBuildings)
+			.toEqual({ Harbour = true, Pontoon = true, Workshop = true, Boathouse = true, HQ = true })
 		t.expect(lv3.dockLevel).toBe(3)
 		t.expect(lv3.rep).toBe(4200)
 		local lv5 = Rules.migrate({ dockLevel = 5, dockBuildings = { Hangar = true } })
@@ -119,13 +120,17 @@ return function(t)
 				"Helipad", -- the old hangar came with its pad
 			}
 		do
-			t.expect(lv5.dockBuildings[key]).toBe(true)
+			if not lv5.dockBuildings[key] then
+				error("missing " .. key)
+			end
 		end
 		t.expect(lv5.dockBuildings.SubPen).toBeNil()
-		t.expect(next(Rules.migrate({ dockLevel = 1 }).dockBuildings)).toBeNil()
+		t.expect(lv5.dockBuildings.AirStation).toBe(true)
+		t.expect(Rules.migrate({ dockLevel = 1 }).dockBuildings)
+			.toEqual({ Harbour = true, HQ = true })
 		-- idempotent: saving re-runs migrate on the live table
 		t.expect(Rules.migrate(Rules.migrate({ dockLevel = 2 })).dockBuildings)
-			.toEqual({ Pontoon = true })
+			.toEqual({ Harbour = true, Pontoon = true, HQ = true })
 	end)
 
 	t.test("a fresh profile starts with the docs 03 starting Cash", function()

@@ -218,8 +218,8 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   `effect`, `focus`, `keystone`, `soon`; `SECTORS`, `byId`, `canBuy(owned, id, medals) -> ok, reason`,
   `effects(owned) -> totals`, `refund(owned)`, `rescueMedals`, `chestMedals`; `LEGACY` = the old Cash tree for the
   migration). `SkillService`: `Skill_Buy`, `Skill_Reset`, `data.skills`, `data.medals` and the `Medals` attribute,
-  `grantMedals(player, n, reason)` (called by rescues, gold grades, quests and the daily chest; the HQ level pays
-  `SkillRules.HQ_MEDALS` when the buildings build wires it), `Skill_State`; it publishes the totals as player
+  `grantMedals(player, n, reason)` (called by rescues, gold grades, quests and the daily chest; DockService pays
+  `SkillRules.HQ_MEDALS` when an HQ level finishes building), `Skill_State`; it publishes the totals as player
   attributes `SkillSpeedMult`, `SkillGrip`, `SkillReach`, `SkillBoatScale`, `SkillPayBonus`, `SkillSwimMult`,
   `SkillBuildRate`, `SkillExtraBuilders`, `SkillBaseCrew`, `SkillGatherMult`, `SkillOfflineAdd`, `SkillSlots<category>`,
   `SkillTripScale`, `SkillRecruitChance`, `SkillTripPayMult`, the cap adds (`SkillSpeedCapAdd`, `SkillBoatCapAdd`,
