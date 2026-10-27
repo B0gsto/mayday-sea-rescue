@@ -1,14 +1,24 @@
 --!strict
 -- Album panel: one card per discovery page. A page shows its found stickers; tapping a card opens
 -- a larger page so a small sticker can be read. State comes from DiscoveryController.
+-- Below the pages, the Specials (docs/25 E): one card per WorkerRules.SPECIALS, a grey silhouette until you
+-- have them, then their name in their rarity colour, type icon and what makes them special; tapping one
+-- opens the survivor card. Owned = in your saved workers (the PlayerDataChanged snapshot, as the Crew panel).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DiscoveryController = require(
 	script.Parent.Parent.Parent:WaitForChild("Controllers"):WaitForChild("DiscoveryController")
 )
+local Net = require(Shared:WaitForChild("Net"))
+local Rarity = require(Shared:WaitForChild("Rarity"))
 local Rules = require(Shared:WaitForChild("DiscoveryRules"))
-local Sticker = require(script.Parent.Parent:WaitForChild("Sticker"))
+local WorkerRules = require(Shared:WaitForChild("WorkerRules"))
+local UI = script.Parent.Parent
+local Sticker = require(UI:WaitForChild("Sticker"))
+local SurvivorCard = require(UI:WaitForChild("SurvivorCard"))
+local SurvivorTag = require(UI:WaitForChild("SurvivorTag"))
+local WorkerBadge = require(UI:WaitForChild("WorkerBadge"))
 
 local Kit = script.Parent.Parent:WaitForChild("Kit")
 local Panel = require(Kit:WaitForChild("Panel"))
@@ -17,6 +27,41 @@ local Theme = require(Kit:WaitForChild("Theme"))
 
 local S = Theme.Size
 local Album = {}
+
+-- what makes each special special (docs/25 E), as a 1-3 word label
+local PERK = {
+	Brickbeard = "3 stacks",
+	BigLou = "Refill x2",
+	CaptainMarlow = "Trips x2",
+	DrCoral = "Rarity up",
+	Bolt = "Works offline",
+	Pearl = "Golden fish",
+	Nova = "Counts x5",
+	OldBones = "Night salvage",
+}
+local SPECIAL_W, SPECIAL_H = 160, 196
+local GREY = Color3.fromHex("8A8F99")
+
+-- a grey person shape (head + shoulders) with a "?" for a special not found yet
+local function silhouette(parent: Instance)
+	local head = Instance.new("Frame")
+	head.BackgroundColor3 = GREY
+	head.AnchorPoint = Vector2.new(0.5, 0)
+	head.Position = UDim2.fromScale(0.5, 0.04)
+	head.Size = UDim2.fromScale(0.42, 0.42)
+	Style.corner(head, 999)
+	head.Parent = parent
+	local body = Instance.new("Frame")
+	body.BackgroundColor3 = GREY
+	body.AnchorPoint = Vector2.new(0.5, 1)
+	body.Position = UDim2.fromScale(0.5, 1)
+	body.Size = UDim2.fromScale(0.8, 0.46)
+	Style.corner(body, 26)
+	body.Parent = parent
+	local q = Style.label(parent, "?", Theme.Text.title)
+	q.Name = "Unknown"
+	q.ZIndex = 2
+end
 
 local function fullPage(state: Rules.State, id: string): boolean
 	return Rules.complete(state, id)
@@ -30,6 +75,16 @@ function Album.new(canvas: Frame, onClose: () -> ())
 		onClose = onClose,
 	})
 	local preview: GuiObject? = nil
+	local workers: { WorkerRules.Worker } = {}
+	local buildings: { [string]: boolean } = {}
+	-- the survivor card over the panel (Sibling ZIndex: the holder lifts the whole card above the list)
+	local cardHost = Instance.new("Frame")
+	cardHost.Name = "SpecialCard"
+	cardHost.BackgroundTransparency = 1
+	cardHost.Size = UDim2.fromScale(1, 1)
+	cardHost.ZIndex = 8
+	cardHost.Parent = panel.root
+	local survivorCard = SurvivorCard.new(cardHost)
 
 	local function closePreview()
 		if preview then
@@ -147,12 +202,132 @@ function Album.new(canvas: Frame, onClose: () -> ())
 				showPage(page)
 			end)
 		end
+
+		-- Specials: a header with the found count, then one card each
+		local owned = WorkerRules.ownedSpecials(workers)
+		local found = 0
+		for _, sp in WorkerRules.SPECIALS do
+			if owned[sp.id] then
+				found += 1
+			end
+		end
+		local header = Instance.new("Frame")
+		header.Name = "SpecialsHeader"
+		header.BackgroundTransparency = 1
+		header.Size = UDim2.new(1, 0, 0, 44)
+		header.LayoutOrder = 2
+		header.Parent = panel.body
+		local icon = Instance.new("Frame")
+		icon.BackgroundTransparency = 1
+		icon.Size = UDim2.fromOffset(40, 40)
+		icon.Parent = header
+		Style.icon(icon, "vip")
+		local title = Style.label(header, "Specials", Theme.Text.heading, true)
+		title.Position = UDim2.fromOffset(50, 0)
+		title.Size = UDim2.new(1, -170, 1, 0)
+		title.TextXAlignment = Enum.TextXAlignment.Left
+		title.TextWrapped = false
+		local counter =
+			Style.label(header, `{found}/{#WorkerRules.SPECIALS}`, Theme.Text.heading, true)
+		counter.Name = "Found"
+		counter.AnchorPoint = Vector2.new(1, 0)
+		counter.Position = UDim2.fromScale(1, 0)
+		counter.Size = UDim2.new(0, 110, 1, 0)
+		counter.TextXAlignment = Enum.TextXAlignment.Right
+
+		local specials = Instance.new("Frame")
+		specials.Name = "Specials"
+		specials.BackgroundTransparency = 1
+		specials.Size = UDim2.fromScale(1, 0)
+		specials.AutomaticSize = Enum.AutomaticSize.Y
+		specials.LayoutOrder = 3
+		specials.Parent = panel.body
+		local sgrid = Instance.new("UIGridLayout")
+		sgrid.CellSize = UDim2.fromOffset(SPECIAL_W, SPECIAL_H)
+		sgrid.CellPadding = UDim2.fromOffset(14, 14)
+		sgrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		sgrid.SortOrder = Enum.SortOrder.LayoutOrder
+		sgrid.Parent = specials
+		local place = WorkerRules.assign(workers, buildings)
+		for order, sp in WorkerRules.SPECIALS do
+			local index: number? = nil
+			for i, w in workers do
+				if w.special == sp.id then
+					index = i
+					break
+				end
+			end
+			local art = Instance.new("Frame")
+			art.BackgroundTransparency = 1
+			art.AnchorPoint = Vector2.new(0.5, 0)
+			art.Position = UDim2.new(0.5, 0, 0, 12)
+			art.Size = UDim2.fromOffset(84, 84)
+			if not index then
+				local slot = Instance.new("Frame")
+				slot.Name = "Special_" .. sp.id
+				slot.BackgroundTransparency = 1
+				slot.LayoutOrder = order
+				slot.Parent = specials
+				local _, face = Style.block(slot, Style.grad("disabled"))
+				art.Parent = face
+				silhouette(art)
+				continue
+			end
+			local w = workers[index]
+			local tier = Rarity.TIERS[sp.rarity]
+			local card = Style.button(specials, UDim2.fromOffset(SPECIAL_W, SPECIAL_H))
+			card.Name = "Special_" .. sp.id
+			card.LayoutOrder = order
+			local _, face = Style.block(card, Style.grad("ink"))
+			art.Parent = face
+			WorkerBadge.icon(art, sp.category)
+			local name = Style.label(face, sp.name, Theme.Text.body)
+			name.Position = UDim2.fromOffset(6, 102)
+			name.Size = UDim2.new(1, -12, 0, 32)
+			name.TextWrapped = false
+			name.TextScaled = true
+			name.TextColor3 = tier.color
+			local cap = Instance.new("UITextSizeConstraint")
+			cap.MaxTextSize = Theme.Text.body
+			cap.MinTextSize = 12
+			cap.Parent = name
+			local perk = Style.label(face, PERK[sp.id] or tier.name, Theme.Text.small)
+			perk.Position = UDim2.fromOffset(6, 138)
+			perk.Size = UDim2.new(1, -12, 0, 40)
+			Style.press(card, function()
+				local workplace = if place[index]
+					then WorkerRules.buildingOf(w.category) or ""
+					else ""
+				survivorCard.open(SurvivorTag.fromWorker(w, workplace), false)
+			end)
+		end
 	end
 
 	rebuild()
 	DiscoveryController.Changed:Connect(function()
 		if panel.isOpen() then
 			rebuild()
+		end
+	end)
+	local function onData(raw: any)
+		if type(raw) == "table" and type(raw.workers) == "table" then
+			workers = WorkerRules.clean(raw.workers)
+			buildings = if type(raw.dockBuildings) == "table" then raw.dockBuildings else {}
+			if panel.isOpen() then
+				rebuild()
+			end
+		end
+	end
+	Net.event("PlayerDataChanged").OnClientEvent:Connect(onData)
+	task.spawn(function()
+		local remote = Net.init():WaitForChild("Progression_GetData", 10)
+		if remote and remote:IsA("RemoteFunction") then
+			local ok, raw = pcall(function()
+				return remote:InvokeServer()
+			end)
+			if ok then
+				onData(raw)
+			end
 		end
 	end)
 
@@ -163,6 +338,7 @@ function Album.new(canvas: Frame, onClose: () -> ())
 		end,
 		close = function()
 			closePreview()
+			survivorCard.close()
 			panel.close()
 		end,
 		isOpen = panel.isOpen,
