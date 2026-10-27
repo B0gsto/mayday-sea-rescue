@@ -36,6 +36,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://115192072017821",
 		LOD2 = "rbxassetid://94162998733864",
 	},
+	M_Bld_FishMarketAddons = {
+		LOD0 = "rbxassetid://119456446142869",
+		LOD1 = "rbxassetid://111381306769504",
+		LOD2 = "rbxassetid://77043246609711",
+	},
 	M_Bld_RescueHQ = {
 		LOD0 = "rbxassetid://98767043445996",
 		LOD1 = "rbxassetid://90696032490593",
@@ -473,6 +478,12 @@ AssetIds.Attachments = {
 		ATT_DropOff_Lv3 = Vector3.new(-14.5, 2.35, 11.1),
 		ATT_ConveyorEnd = Vector3.new(0.5, 7.1, -1),
 		ATT_BargeMoor = Vector3.new(-32.8, 0.5, 0),
+	},
+	M_Bld_FishMarketAddons = {
+		ATT_Work_Stall3 = Vector3.new(-16.75, 0.95, 3),
+		ATT_Work_Stall4 = Vector3.new(16.75, 0.95, 3),
+		ATT_Work_RackLeft = Vector3.new(1.2, 0.95, 11.5),
+		ATT_Work_RackRight = Vector3.new(-4.2, 0.95, 11.5),
 	},
 	M_Bld_RescueHQ = {
 		ATT_Sign_01 = Vector3.new(0, 9.45, -10.12),

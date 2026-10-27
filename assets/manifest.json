@@ -337,7 +337,8 @@
  "Image:04893d1e34c571ce758292468bede9ea90a026a41d1828f116fe258d59128139": {
   "aliases": [
    "T_Barge_Hull_RGH",
-   "T_WorkshopAddons_Brick_RGH"
+   "T_WorkshopAddons_Brick_RGH",
+   "T_FishMarket_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -12946,7 +12947,8 @@
  "Image:9f434a0f8f97d5cd291c118eceb20bcaff796e8ba49034620802353fdbf77242": {
   "aliases": [
    "T_Barge_Hull_NOR",
-   "T_WorkshopAddons_Brick_NOR"
+   "T_WorkshopAddons_Brick_NOR",
+   "T_FishMarket_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -15111,6 +15113,9 @@
   "type": "Image"
  },
  "Image:be8e6942fb33172f96c83406382be2d1a97bfb3b62315b94f87d07f67ccebaf6": {
+  "aliases": [
+   "T_FishMarket_Brick_ALB"
+  ],
   "assetId": "101612034075338",
   "imageId": "101612034075338",
   "moderation": "Reviewing",
@@ -16929,7 +16934,8 @@
  "Image:d69112264db6c2c1b6f6bc930b7d7cf38c27a4fead1b5000259265c5405c66ef": {
   "aliases": [
    "T_Barge_Hull_MET",
-   "T_WorkshopAddons_Brick_MET"
+   "T_WorkshopAddons_Brick_MET",
+   "T_FishMarket_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -20173,6 +20179,16 @@
   "source": "assets/fbx/M_Kit_ParaFlare/M_Kit_ParaFlare_LOD2.fbx",
   "type": "Model"
  },
+ "Model:0708c018721ab9c028db7279cd43fb5090c5ad6f79dfbdee5dfddf3b477c9ea6": {
+  "assetId": "119456446142869",
+  "moderation": "Approved",
+  "name": "M_Bld_FishMarketAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_FishMarketAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "0708c018721ab9c028db7279cd43fb5090c5ad6f79dfbdee5dfddf3b477c9ea6",
+  "source": "assets/fbx/M_Bld_FishMarketAddons/M_Bld_FishMarketAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:077df8e12eb708225ab72c0101f35ba6879eb673dc6ffa2dbde39c298ed25d97": {
   "assetId": "136502334061261",
   "moderation": "Approved",
@@ -21971,6 +21987,16 @@
   "route": "delivery",
   "sha": "3b68368d084a73d663ec5ba15d93300f33b8830602255207e089f6bd82f8a750",
   "source": "assets/fbx/M_Hbr_NetPile/M_Hbr_NetPile_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:3c20b156d385d5500953dbcddd810a10cd9c719d7a4f7570b6463b1a0d35d4d3": {
+  "assetId": "111381306769504",
+  "moderation": "Approved",
+  "name": "M_Bld_FishMarketAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_FishMarketAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "3c20b156d385d5500953dbcddd810a10cd9c719d7a4f7570b6463b1a0d35d4d3",
+  "source": "assets/fbx/M_Bld_FishMarketAddons/M_Bld_FishMarketAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:3c28d518191e3264ee9c82fca4e4c03f3628a6967a4a7e8e1157793938473350": {
@@ -28031,6 +28057,16 @@
   "route": "delivery",
   "sha": "fa29130901c0c429a58864845a5353c87d7431dd3e10d168477447ed35189f04",
   "source": "assets/fbx/M_Prop_Chandlery/M_Prop_Chandlery_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:faab59498789fcda80934fa6de8ae512e087a34474ea288b0d519881bbb3faf1": {
+  "assetId": "77043246609711",
+  "moderation": "Approved",
+  "name": "M_Bld_FishMarketAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_FishMarketAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "faab59498789fcda80934fa6de8ae512e087a34474ea288b0d519881bbb3faf1",
+  "source": "assets/fbx/M_Bld_FishMarketAddons/M_Bld_FishMarketAddons_LOD2.fbx",
   "type": "Model"
  },
  "Model:fac756fa171f85fcb8b9d72d1610731eff6cfee38aade361ad9dab5cc2f5605f": {

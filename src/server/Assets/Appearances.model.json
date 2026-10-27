@@ -474,6 +474,28 @@
    ]
   },
   {
+   "Name": "M_Bld_FishMarketAddons",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://101612034075338",
+        "NormalMap": "rbxassetid://134063939343985",
+        "RoughnessMap": "rbxassetid://77394710200809",
+        "MetalnessMap": "rbxassetid://82741558542658"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Bld_TrimSheet",
    "ClassName": "Folder",
    "Children": [
