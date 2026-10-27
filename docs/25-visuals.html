@@ -1,0 +1,321 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- docs/25 visual board: HQ spine, island map (districts + worker flows), radial skill tree mock. Data-driven. -->
+<style>
+  body { margin: 0; }
+  h3 { margin: 18px 0 8px; font-size: 15px; }
+  .spine { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .hq { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px; font-size: 11px; }
+  .hq b { display: block; font-size: 12px; }
+  .hq .lv { color: var(--muted-foreground); font-size: 10px; margin-bottom: 5px; }
+  .chip { display: inline-block; margin: 2px 2px 0 0; padding: 1px 6px; border-radius: 9px; background: var(--secondary); font-size: 10.5px; }
+  .chip.u { border: 1px dashed var(--border); background: none; color: var(--muted-foreground); }
+  .box { padding: 16px; border-radius: var(--radius); }
+  .sea { background: #2b7fc4; }
+  .chart { background: #08121d; position: relative; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 11.5px; margin-top: 8px; }
+  .legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+  .top { display: flex; justify-content: flex-end; gap: 8px; align-items: center; }
+  .medal { background: #13263a; color: #ffe082; font: 800 15px var(--font-sans); padding: 4px 12px 4px 6px; border-radius: 20px; border: 2px solid #ffca28; }
+  .medal span { display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(#ffe082, #f9a825); vertical-align: -4px; margin-right: 6px; border: 2px solid #8d6e00; }
+  .x { width: 30px; height: 30px; border-radius: 8px; background: #e53935; border: 2px solid #7f0000; color: #fff; font: 900 18px var(--font-sans); display: flex; align-items: center; justify-content: center; }
+  svg text { font-family: var(--font-sans); }
+  .halo { paint-order: stroke; stroke-linejoin: round; }
+  .flow { fill: none; stroke-width: 2.6; stroke-dasharray: 3 4; animation: dash 1s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset: -14; } }
+  .pulse { transform-box: fill-box; transform-origin: center; animation: pulse 1.6s ease-out infinite; }
+  @keyframes pulse { from { transform: scale(1); opacity: .9; } to { transform: scale(1.45); opacity: 0; } }
+  .note { font-size: 11.5px; color: var(--muted-foreground); margin-top: 6px; }
+</style></head>
+<body>
+
+<h3>Progression spine: the HQ has 5 levels</h3>
+<div class="spine" id="spine"></div>
+
+<h3>Island map (320-stud plate, sea at the bottom)</h3>
+<div class="box sea"><svg id="map" viewBox="-215 -200 430 410" width="100%"></svg></div>
+<div class="legend" id="legend"></div>
+<div class="note">Numbers = HQ level that unlocks it. L2/L3 = a level of the building next to it. Dashed = later update. The Hangar is shown mid-build.</div>
+
+<h3>Skill tree: player + survivors, full screen</h3>
+<div class="box chart">
+  <div class="top"><div class="medal"><span></span>14</div><div class="x">✕</div></div>
+  <svg id="tree" viewBox="-540 -540 1080 1080" width="100%"></svg>
+</div>
+<div class="note">Mid-game save. Bright = owned, pulsing = can buy, dim = locked, dashed = next update's ring. In game, locked names stay hidden until a neighbour is owned.</div>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+function el(parent, tag, attrs, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text !== undefined) e.textContent = text;
+  parent.appendChild(e); return e;
+}
+function label(svg, x, y, txt, size, fill, halo) {
+  const t = el(svg, 'text', { x, y, 'text-anchor': 'middle', 'font-size': size, 'font-weight': 800, fill, stroke: halo, 'stroke-width': size / 3.2, class: 'halo' });
+  txt.split('\n').forEach((line, i) => el(t, 'tspan', { x, dy: i ? size * 1.05 : 0 }, line));
+  return t;
+}
+
+// ---------- HQ spine ----------
+const SPINE = [
+  ['HQ 1 · Rescue Hut', 'start · max Lv1', ['Harbour', 'Depot', 'Workshop', 'Bunkhouse', 'Fish Market']],
+  ['HQ 2 · Rescue Post', '3k · max Lv2', ['Boathouse (RIB)', 'Boat Yard', 'Clinic']],
+  ['HQ 3 · Lifeboat Stn', '12k · max Lv3', ['Rescue Boathouse', 'Lookout']],
+  ['HQ 4 · Coastguard Base', '30k · Bunkhouse 4', ['Air Station (heli)', 'U1: Lumber Camp', 'U1: Quarry']],
+  ['HQ 5 · Coastguard HQ', '60k · Bunkhouse 5', ['Sub Pen', 'Trophy Hall', 'Gold beacon']],
+];
+document.getElementById('spine').innerHTML = SPINE.map(([t, lv, cs]) =>
+  `<div class="hq"><b>${t}</b><div class="lv">${lv}</div>${cs.map(c => `<span class="chip ${c.startsWith('U1') ? 'u' : ''}">${c}</span>`).join('')}</div>`).join('');
+
+// ---------- island map ----------
+const map = document.getElementById('map');
+const PLATE = '-140,-160 140,-160 160,-140 160,140 140,160 45,160 45,30 -45,30 -45,160 -140,160 -160,140 -160,-140';
+el(el(el(map, 'defs', {}), 'clipPath', { id: 'plate' }), 'polygon', { points: PLATE });
+el(map, 'text', { x: 0, y: -186, 'text-anchor': 'middle', 'font-size': 9, 'font-weight': 800, fill: '#d6ecff', 'letter-spacing': 1 }, 'LAGOON · your neighbours see this side');
+el(map, 'text', { x: 0, y: 203, 'text-anchor': 'middle', 'font-size': 9, 'font-weight': 800, fill: '#d6ecff', 'letter-spacing': 1 }, 'OPEN SEA · calls');
+el(map, 'polygon', { points: PLATE, fill: '#4caf50', stroke: '#e8d5a3', 'stroke-width': 4 });
+const zones = el(map, 'g', { 'clip-path': 'url(#plate)' });
+[
+  // [name, x, y, w, h, colour, dashed, label corner: tl / tr / bl]
+  ['WORK YARD', -160, -55, 115, 85, '#ffb300', 0, 'tr'], ['PLAZA', -45, -55, 90, 85, '#fff59d', 0, 'tl'], ['VILLAGE', 45, -55, 115, 85, '#a5d6a7', 0, 'tr'],
+  ['HARBOUR W', -160, 30, 115, 130, '#4fc3f7', 0, 'tl'], ['HARBOUR E', 45, 30, 115, 130, '#4fc3f7', 0, 'tr'],
+  ['WILD CORNER · U1', -160, -160, 115, 75, '#8d6e63', 1, 'bl'], ['LANDMARKS', -45, -160, 90, 75, '#ffd54f', 0, 'tl'], ['AIR FIELD', 45, -160, 115, 75, '#bbdefb', 0, 'bl'],
+].forEach(([n, x, y, w, h, c, dash, at]) => {
+  el(zones, 'rect', { x: x + 2, y: y + 2, width: w - 4, height: h - 4, rx: 4, fill: c, 'fill-opacity': .18, stroke: c, 'stroke-opacity': .55, 'stroke-dasharray': dash ? '5 3' : 'none' });
+  el(zones, 'text', { x: at === 'tr' ? x + w - 6 : x + 6, y: at === 'bl' ? y + h - 6 : y + 10, 'text-anchor': at === 'tr' ? 'end' : 'start',
+    'font-size': 6.5, 'font-weight': 900, fill: '#0b3d12', 'letter-spacing': .6 }, n);
+});
+// stud paths
+[[[0, 30], [0, -100]], [[-200, -70], [200, -70]], [[-160, 22], [-45, 22]], [[45, 22], [160, 22]], [[-52, 30], [-52, 150]], [[52, 30], [52, 150]]]
+  .forEach(p => el(map, 'polyline', { points: p.join(' '), stroke: '#e8d5a3', 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round' }));
+// bridges
+[[-205, -76], [160, -76]].forEach(([x, y]) => {
+  el(map, 'rect', { x, y, width: 45, height: 12, fill: '#e8d5a3', stroke: '#d32f2f', 'stroke-width': 1.5 });
+  el(map, 'text', { x: x + 22.5, y: y - 3, 'text-anchor': 'middle', 'font-size': 6.5, 'font-weight': 800, fill: '#fff' }, 'bridge');
+});
+// cove: jetty, pontoon, crane, moored boats
+el(map, 'rect', { x: -4, y: 30, width: 8, height: 122, fill: '#a1887f', stroke: '#5d4037' });
+el(map, 'rect', { x: -31, y: 60, width: 6, height: 80, fill: '#bcaaa4', stroke: '#5d4037' });
+el(map, 'rect', { x: 22, y: 34, width: 11, height: 11, fill: '#ffca28', stroke: '#5d4037' });
+[[-14, 112], [14, 82]].forEach(([x, y]) => el(map, 'ellipse', { cx: x, cy: y, rx: 4, ry: 10, fill: '#eceff1', stroke: '#37474f' }));
+label(map, 0, 166, 'Jetty', 7, '#fff', '#0d47a1');
+label(map, -28, 150, 'Pontoon\nL2', 6.5, '#fff', '#0d47a1');
+label(map, 30, 54, 'Crane L3', 6.5, '#fff', '#0d47a1');
+// sea extras: freight quay + barge, quest pontoon, fishing pier, lifeboat ramp
+el(map, 'rect', { x: -172, y: -3, width: 12, height: 26, fill: '#a1887f', stroke: '#5d4037' });
+el(map, 'rect', { x: -195, y: -8, width: 16, height: 36, rx: 3, fill: '#546e7a', stroke: '#263238' });
+[0, 1, 2].forEach(i => el(map, 'rect', { x: -192, y: -4 + i * 10, width: 10, height: 7, fill: '#ffb300', stroke: '#6d4c00', 'stroke-width': .6 }));
+label(map, -187, -14, 'Barge', 7, '#fff', '#0d47a1');
+el(map, 'rect', { x: -113, y: 160, width: 6, height: 34, fill: '#a1887f', stroke: '#5d4037' });
+label(map, -91, 186, 'Quest\npontoon', 6.5, '#fff', '#0d47a1');
+el(map, 'rect', { x: 153, y: 65, width: 36, height: 6, fill: '#a1887f', stroke: '#5d4037' });
+label(map, 180, 61, 'Pier', 6.5, '#fff', '#0d47a1');
+el(map, 'rect', { x: -88, y: 137, width: 16, height: 30, fill: '#90a4ae', stroke: '#455a64' });
+
+// buildings: [label, cx, cy, w, h, fill, badge, shape]
+const BLD = [
+  ['Rescue Station\n(HQ)', 0, -12, 54, 32, '#e53935', 'HQ'],
+  ['Depot', -90, -2, 36, 30, '#ffb300', 1, 'brick'],
+  ['Workshop', -135, -35, 36, 26, '#8d6e63', 1],
+  ['Bunkhouse', 130, -18, 40, 46, '#43a047', 1],
+  ['Fish\nMarket', 133, 68, 40, 34, '#29b6f6', 1],
+  ['Boathouse', -80, 58, 44, 32, '#1e88e5', 2],
+  ['Lifeboat\nslip', -80, 112, 22, 50, '#64b5f6', 'L2'],
+  ['Boat\nYard', -132, 72, 36, 40, '#7e57c2', 2],
+  ['Clinic', 75, -5, 36, 28, '#f5f5f5', 2, 'cross'],
+  ['Rescue\nBoathouse', 80, 58, 44, 32, '#ef6c00', 3],
+  ['Lookout', 62, -112, 16, 16, '#e53935', 3],
+  ['Hangar', 100, -135, 42, 28, '#90a4ae', 4, 'site'],
+  ['Trophy Hall', 0, -122, 50, 28, '#fdd835', 5],
+  ['Canteen', 80, -42, 34, 20, 'none', 'U2', 'dash'],
+];
+const bl = el(map, 'g', {});
+BLD.forEach(([n, x, y, w, h, c, b, shape]) => {
+  el(bl, 'rect', { x: x - w / 2, y: y - h / 2, width: w, height: h, rx: 2.5, fill: c, stroke: shape === 'dash' ? '#fff' : '#1b1b1b', 'stroke-width': 1.2,
+    'stroke-dasharray': shape === 'dash' ? '3 2' : (shape === 'site' ? '4 2' : 'none') });
+  if (shape === 'site') el(bl, 'rect', { x: x - w / 2 - 3, y: y - h / 2 - 3, width: w + 6, height: h + 6, fill: 'none', stroke: '#fff', 'stroke-width': 2, 'stroke-dasharray': '3 3' });
+  if (shape === 'cross') { el(bl, 'rect', { x: x - 2, y: y - 9, width: 4, height: 12, fill: '#e53935' }); el(bl, 'rect', { x: x - 6, y: y - 5, width: 12, height: 4, fill: '#e53935' }); }
+  if (shape === 'brick') for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) el(bl, 'circle', { cx: x - 10 + i * 10, cy: y - 8 + j * 9, r: 2.6, fill: '#ffe082', stroke: '#6d4c00', 'stroke-width': .6 });
+  label(bl, x, shape === 'cross' || shape === 'brick' ? y + h / 2 + 8 : y + 2.5 - (n.includes('\n') ? 3.5 : 0), n, 7, '#fff', '#1b1b1b');
+  const bx = x - w / 2, by = y - h / 2;
+  el(bl, 'circle', { cx: bx, cy: by, r: 5.5, fill: b === 5 ? '#ffca28' : (String(b).startsWith('U') ? '#78909c' : '#fff'), stroke: '#1b1b1b', 'stroke-width': 1 });
+  el(bl, 'text', { x: bx, y: by + 2.3, 'text-anchor': 'middle', 'font-size': String(b).length > 1 ? 5 : 6.5, 'font-weight': 900, fill: '#1b1b1b' }, b);
+});
+// round pieces: sub pen, helipad, lighthouse, wheel, tablet
+[['Sub Pen', 115, 128, 20, '#00acc1', 5], ['H', 138, -108, 14, '#455a64', 4], ['Lighthouse', -138, 140, 9, '#fafafa', 'Q'], ['Wheel', -30, 18, 7, '#ab47bc', '']].forEach(([n, x, y, r, c, b]) => {
+  el(bl, 'circle', { cx: x, cy: y, r, fill: c, stroke: '#1b1b1b', 'stroke-width': 1.2 });
+  if (n === 'Lighthouse') el(bl, 'circle', { cx: x, cy: y, r: 4, fill: '#e53935' });
+  label(bl, x, n === 'H' ? y + 3.5 : y + r + 8, n === 'H' ? 'H' : n, n === 'H' ? 10 : 7, '#fff', '#1b1b1b');
+  if (n === 'H') label(bl, x, y + r + 8, 'Helipad', 7, '#fff', '#1b1b1b');
+  if (b !== '') { el(bl, 'circle', { cx: x - r * .75, cy: y - r * .75, r: 5.5, fill: b === 5 ? '#ffca28' : (b === 'Q' ? '#ce93d8' : '#fff'), stroke: '#1b1b1b' });
+    el(bl, 'text', { x: x - r * .75, y: y - r * .75 + 2.3, 'text-anchor': 'middle', 'font-size': 6.5, 'font-weight': 900, fill: '#1b1b1b' }, b); }
+});
+el(bl, 'rect', { x: 25, y: 13, width: 10, height: 8, fill: '#26c6da', stroke: '#1b1b1b' });
+label(bl, 30, 30, 'Tablet', 7, '#fff', '#1b1b1b');
+// wild corner (update 1): grove + rocks
+[[-140, -135], [-128, -142], [-116, -132], [-134, -120], [-120, -118], [-145, -110]].forEach(([x, y]) => el(map, 'circle', { cx: x, cy: y, r: 6, fill: '#2e7d32', stroke: '#1b5e20' }));
+el(map, 'polygon', { points: '-90,-140 -78,-148 -62,-142 -58,-126 -72,-118 -88,-124', fill: '#9e9e9e', stroke: '#424242' });
+label(map, -128, -100, 'Lumber Camp', 7, '#fff', '#3e2723');
+label(map, -74, -106, 'Quarry', 7, '#fff', '#3e2723');
+el(map, 'circle', { cx: 28, cy: -148, r: 4, fill: '#e53935', stroke: '#fff', 'stroke-width': 1.5 });
+
+// worker flows
+const FLOWS = [
+  ['Haulers: barge → Depot', '#ffd54f', [[-187, 10], [-166, 10], [-108, 4]]],
+  ['Builders: Depot → site', '#ff7043', [[-90, -17], [-60, -70], [80, -70], [96, -121]]],
+  ['Fishers: pier → market', '#80deea', [[188, 68], [153, 70]]],
+  ['Arrivals: jetty → clinic → job', '#b2ff59', [[0, 150], [0, 26], [57, 8], [110, -12]]],
+  ['Rescuers: out to sea', '#00e5ff', [[72, 74], [32, 100], [26, 150], [26, 196]]],
+  ['Mechanics: yard → your boat', '#ea80fc', [[-114, 82], [-60, 92], [-18, 110]]],
+  ['U1: logs + stone → Depot', '#bcaaa4', [[-122, -112], [-100, -20]], [[-75, -118], [-84, -18]]],
+];
+FLOWS.forEach(([n, c, ...lines]) => lines.forEach(p => el(map, 'polyline', { points: p.join(' '), class: 'flow', stroke: c, 'stroke-width': 3 })));
+document.getElementById('legend').innerHTML = FLOWS.map(([n, c]) => `<span><i style="background:${c}"></i>${n}</span>`).join('');
+
+// ---------- radial skill tree ----------
+const tree = document.getElementById('tree');
+const SEC = {
+  cap: { a: 315, c: '#ff8a65', n: 'CAPTAIN', s: 'you + your craft' },
+  res: { a: 45, c: '#4dd0e1', n: 'RESCUE', s: 'rescuers · mechanics · medics' },
+  crew: { a: 135, c: '#b388ff', n: 'CREW & LUCK', s: 'your survivors' },
+  ind: { a: 225, c: '#ffd54f', n: 'INDUSTRY', s: 'builders · haulers · fishers' },
+};
+const R = [0, 150, 245, 340, 435, 520], SPREAD = 36;
+const ringR = r => R[Math.floor(r)] + (r % 1) * ((R[Math.ceil(r)] || 0) - R[Math.floor(r)]);
+const pol = (r, deg) => { const t = deg * Math.PI / 180; return [r * Math.sin(t), -r * Math.cos(t)]; };
+// [id, sector, ring, offset (-1..1 across the sector) or absolute angle for bridges, name, icon, parents, flag o=owned s=soon]
+const K = [
+  ['c1', 'cap', 1, -.5, 'Throttle', 'bolt', ['root'], 'o'], ['c2', 'cap', 1, .5, 'Fins', 'drop', ['root'], 'o'],
+  ['c3', 'cap', 2, -.6, 'Long Reach', 'buoy', ['c1'], 'o'], ['c4', 'cap', 2, .15, 'Grip', 'chev', ['c1', 'c2'], 'o'],
+  ['c5', 'cap', 3, -.3, 'Nitro', 'bolt', ['c3', 'c4'], 'o'], ['c6', 'cap', 3, .55, 'Boat Call', 'boat', ['c4'], ''],
+  ['c7', 'cap', 4, -.6, 'Bounty', 'coin', ['c5'], ''], ['c8', 'cap', 4, .2, 'Golden Eye', 'eye', ['c5', 'c6'], ''],
+  ['c9', 'cap', 5, -.25, 'Storm Rider', 'q', ['c7', 'c8'], 's'],
+  ['r1', 'res', 1, -.5, 'Tune-up', 'gear', ['root'], 'o'], ['r2', 'res', 1, .5, 'First Aid', 'cross', ['root'], 'o'],
+  ['r3', 'res', 2, -.55, 'Fast Launch', 'boat', ['r1'], 'o'], ['r4', 'res', 2, .2, 'Spare Parts', 'gear', ['r1', 'r2'], ''],
+  ['r5', 'res', 3, -.3, 'Big Boat', 'boat', ['r3'], ''], ['r6', 'res', 3, .55, 'Recruiter', 'star', ['r4'], ''],
+  ['r7', 'res', 4, -.5, 'Air Patrol', 'plane', ['r5'], ''], ['r8', 'res', 4, .3, 'Glow Up', 'cross', ['r5', 'r6'], ''],
+  ['r9', 'res', 5, 0, 'Deep Divers', 'q', ['r7', 'r8'], 's'],
+  ['k1', 'crew', 1, -.5, 'Bunks', 'house', ['root'], 'o'], ['k2', 'crew', 1, .5, 'Lucky Flare', 'clover', ['root'], 'o'],
+  ['k3', 'crew', 2, -.5, 'Team Spirit', 'heart', ['k1'], ''], ['k4', 'crew', 2, .3, 'Homecoming', 'house', ['k1', 'k2'], 'o'],
+  ['k5', 'crew', 3, .45, 'Clover', 'clover', ['k4'], ''], ['k6', 'crew', 3, -.35, 'Mentor', 'star', ['k3', 'k4'], ''],
+  ['k7', 'crew', 4, -.5, 'Big Family', 'house', ['k6'], ''], ['k8', 'crew', 4, .3, 'Golden Mayday', 'sun', ['k5', 'k6'], ''],
+  ['k9', 'crew', 5, .1, 'Celebrity', 'q', ['k8'], 's'],
+  ['i1', 'ind', 1, .5, 'Strong Backs', 'brick', ['root'], 'o'], ['i2', 'ind', 1, -.5, 'Fresh Catch', 'fish', ['root'], 'o'],
+  ['i3', 'ind', 2, .55, 'Hard Hats', 'hat', ['i1'], 'o'], ['i4', 'ind', 2, -.2, 'Hand Carts', 'cart', ['i1', 'i2'], 'o'],
+  ['i5', 'ind', 3, -.55, 'Market Day', 'fish', ['i4'], ''], ['i6', 'ind', 3, .3, 'Double Site', 'brick', ['i3', 'i4'], 'o'],
+  ['i7', 'ind', 4, -.35, 'Night Shift', 'moon', ['i5', 'i6'], ''], ['i8', 'ind', 4, .45, 'Golden Bricks', 'brick', ['i6'], ''],
+  ['i9', 'ind', 5, .45, 'Lumberjacks', 'q', ['i8'], 's'], ['i10', 'ind', 5, -.1, 'Miners', 'q', ['i7'], 's'],
+  ['b1', null, 2.75, 0, 'Lifeguard', 'buoy', ['c6', 'r3'], ''], ['b2', null, 2.75, 90, 'Welcome Home', 'heart', ['r6', 'k3'], ''],
+  ['b3', null, 2.75, 180, 'Foreman', 'hat', ['k5', 'i5'], ''], ['b4', null, 2.75, 270, 'Salvage', 'cart', ['i3', 'c3'], 'o'],
+];
+const N = { root: { x: 0, y: 0, ang: 0, r: 0, own: true } };
+K.forEach(([id, s, ring, off, name, icon, par, f]) => {
+  const ang = s ? SEC[s].a + off * SPREAD : off, r = ringR(ring), [x, y] = pol(r, ang);
+  N[id] = { id, s, ring, ang, r, x, y, name, icon, par, own: f === 'o', soon: f === 's', col: s ? SEC[s].c : '#cfd8dc' };
+});
+Object.values(N).forEach(n => { if (n.par) n.open = !n.own && !n.soon && n.par.some(p => N[p].own); });
+
+// background rings + sector boundaries
+R.slice(1).forEach((r, i) => el(tree, 'circle', { cx: 0, cy: 0, r, fill: 'none', stroke: i === 4 ? '#2c425a' : '#16263a', 'stroke-width': 2, 'stroke-dasharray': i === 4 ? '8 8' : 'none' }));
+[0, 90, 180, 270].forEach(a => { const [x, y] = pol(530, a); el(tree, 'line', { x1: 0, y1: 0, x2: x, y2: y, stroke: '#122033', 'stroke-width': 2, 'stroke-dasharray': '4 10' }); });
+el(tree, 'text', { x: 0, y: -528, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, fill: '#4f6680', 'letter-spacing': 2 }, 'UPDATES ADD RINGS HERE');
+Object.values(SEC).forEach(({ a, c, n, s }) => {
+  const right = a < 180, bottom = a > 90 && a < 270, x = right ? 525 : -525, anc = right ? 'end' : 'start';
+  el(tree, 'text', { x, y: bottom ? 498 : -488, 'text-anchor': anc, 'font-size': 46, 'font-weight': 900, fill: c }, n);
+  el(tree, 'text', { x, y: bottom ? 526 : -458, 'text-anchor': anc, 'font-size': 17, 'font-weight': 700, fill: c, 'fill-opacity': .7 }, s);
+});
+
+// edges with winding minor-node paths (the Valhalla dots)
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const gEdge = el(tree, 'g', {}), gDot = el(tree, 'g', {});
+function chain(a, b, col, state) { // state: own | open | lock
+  const d = Math.hypot(b.x - a.x, b.y - a.y), n = Math.max(2, Math.round(d / 50));
+  const a0 = a.r ? a.ang : b.ang, nx = -(b.y - a.y) / d, ny = (b.x - a.x) / d, pts = [[a.x, a.y]];
+  for (let i = 1; i <= n; i++) {
+    const t = i / (n + 1), [px, py] = pol(a.r + (b.r - a.r) * t, a0 + (b.ang - a0) * t), j = (rnd() - .5) * 46 * Math.sin(Math.PI * t);
+    pts.push([px + nx * j, py + ny * j]);
+  }
+  pts.push([b.x, b.y]);
+  el(gEdge, 'polyline', { points: pts.join(' '), fill: 'none', stroke: col, 'stroke-width': state === 'own' ? 4 : 2.5, 'stroke-opacity': state === 'own' ? .95 : .3 });
+  pts.slice(1, -1).forEach((p, i) => dot(p, col, state === 'own' ? 'own' : (state === 'open' && i === 0 ? 'open' : 'lock')));
+}
+function dot([x, y], col, st) {
+  if (st === 'open') el(gDot, 'circle', { cx: x, cy: y, r: 7, fill: 'none', stroke: col, 'stroke-width': 2.5, class: 'pulse' });
+  el(gDot, 'circle', { cx: x, cy: y, r: 6.5, fill: st === 'own' ? col : '#0d1b2a', stroke: st === 'lock' ? '#34465a' : col, 'stroke-width': 2.5 });
+}
+Object.values(N).forEach(n => (n.par || []).forEach(p => {
+  const a = N[p], st = a.own && n.own ? 'own' : (a.own && !n.soon ? 'open' : 'lock');
+  chain(a, n, n.s ? n.col : '#9fb0c0', st);
+}));
+// spurs: short dead-end stat paths off every other keystone
+K.forEach(([id], i) => {
+  const n = N[id]; if (n.soon || !n.s || i % 2) return;
+  const side = i % 4 ? 1 : -1;
+  let prev = [n.x, n.y];
+  [34, 64].forEach((len, k) => {
+    const [x, y] = pol(n.r + len * .55, n.ang + side * (len / n.r) * 70);
+    el(gEdge, 'line', { x1: prev[0], y1: prev[1], x2: x, y2: y, stroke: n.col, 'stroke-width': n.own ? 3.5 : 2.5, 'stroke-opacity': n.own ? .9 : .3 });
+    dot([x, y], n.col, n.own ? (k ? 'open' : 'own') : 'lock'); prev = [x, y];
+  });
+});
+
+// icons (drawn in a -8..8 box)
+function star(pts, ro, ri) { let d = ''; for (let k = 0; k < pts * 2; k++) { const [x, y] = pol(k % 2 ? ri : ro, k * 180 / pts); d += (k ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1); } return d + 'Z'; }
+function gear() { let d = ''; for (let k = 0; k < 16; k++) { const [x, y] = pol(k % 4 < 2 ? 8.5 : 6, k * 22.5 - 11); d += (k ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1); } return d + 'Z M-2.8,0 a2.8,2.8 0 1,0 5.6,0 a2.8,2.8 0 1,0 -5.6,0 Z'; }
+const circ = (cx, cy, r) => `M${cx - r},${cy} a${r},${r} 0 1,0 ${2 * r},0 a${r},${r} 0 1,0 ${-2 * r},0 Z`;
+const IC = {
+  bolt: 'M2,-8.5 L-5.5,1 L-0.5,1 L-2,8.5 L5.5,-1 L0.5,-1 Z', drop: 'M0,-8.5 C5,-2 6.5,3 0,8.5 C-6.5,3 -5,-2 0,-8.5 Z',
+  buoy: circ(0, 0, 8) + circ(0, 0, 3.8), chev: 'M-9,-6 L-3,0 L-9,6 L-5.5,6 L0.5,0 L-5.5,-6 Z M-1,-6 L5,0 L-1,6 L2.5,6 L8.5,0 L2.5,-6 Z',
+  boat: 'M-9,1 L9,1 L5.5,7 L-5.5,7 Z M-1,-8.5 L1,-8.5 L1,1 L-1,1 Z M1.5,-7.5 L7.5,-0.5 L1.5,-0.5 Z',
+  coin: circ(0, 0, 8.5) + 'M-1.4,-5.5 h2.8 v11 h-2.8 Z', eye: 'M-9,0 Q0,-9 9,0 Q0,9 -9,0 Z' + circ(0, 0, 3.2),
+  gear: gear(), cross: 'M-2.8,-8 h5.6 v5.2 h5.2 v5.6 h-5.2 v5.2 h-5.6 v-5.2 h-5.2 v-5.6 h5.2 Z', star: star(5, 9, 3.8), sun: star(8, 9, 5),
+  house: 'M0,-8.5 L9,-0.5 L6,-0.5 L6,8 L-6,8 L-6,-0.5 L-9,-0.5 Z', heart: 'M0,8 C-11,0 -7.5,-9.5 0,-3.5 C7.5,-9.5 11,0 0,8 Z',
+  clover: circ(0, -4.2, 3.9) + circ(4.2, 0, 3.9) + circ(0, 4.2, 3.9) + circ(-4.2, 0, 3.9),
+  brick: 'M-9,-2 h18 v8.5 h-18 Z M-7,-5.8 h5 v3.8 h-5 Z M2,-5.8 h5 v3.8 h-5 Z', fish: 'M-9,0 C-4.5,-6.5 3,-6.5 5,0 C3,6.5 -4.5,6.5 -9,0 Z M4,0 L9.5,-5.5 L9.5,5.5 Z',
+  hat: 'M-9,2.5 h18 v3.5 h-18 Z M-6.5,2.5 A6.5,7 0 0,1 6.5,2.5 Z', cart: 'M-8.5,-6 h17 v8.5 h-17 Z' + circ(-4.5, 6, 2.4) + circ(4.5, 6, 2.4),
+  moon: 'M2,-8.5 A8.5,8.5 0 1,0 8.5,3 A7,7 0 1,1 2,-8.5 Z',
+  plane: 'M0,-9 L1.7,-2.6 L9,1 L9,3.2 L1.7,1.3 L1.2,5.8 L3.6,7.8 L3.6,9 L0,8.1 L-3.6,9 L-3.6,7.8 L-1.2,5.8 L-1.7,1.3 L-9,3.2 L-9,1 L-1.7,-2.6 Z',
+};
+const EVEN = { buoy: 1, coin: 1, eye: 1, gear: 1 };
+function oct(r) { let p = []; for (let k = 0; k < 8; k++) p.push(pol(r, 22.5 + k * 45).map(v => v.toFixed(1)).join(',')); return p.join(' '); }
+
+// keystones + labels
+const gK = el(tree, 'g', {});
+Object.values(N).forEach(n => {
+  if (!n.par) return;
+  const big = n.ring >= 3 ? 23 : 21, g = el(gK, 'g', { transform: `translate(${n.x.toFixed(1)},${n.y.toFixed(1)})` });
+  if (n.open) el(g, 'polygon', { points: oct(big), fill: 'none', stroke: n.col, 'stroke-width': 3, class: 'pulse' });
+  el(g, 'polygon', { points: oct(big), fill: n.own ? n.col : '#0d1b2a', stroke: n.own ? '#fff' : n.open ? n.col : n.soon ? '#6b7d90' : '#34465a',
+    'stroke-width': n.own ? 2.5 : 3, 'stroke-dasharray': n.soon ? '6 4' : 'none' });
+  if (n.icon === 'q') el(g, 'text', { y: 8, 'text-anchor': 'middle', 'font-size': 24, 'font-weight': 900, fill: '#6b7d90' }, '?');
+  else el(g, 'path', { d: IC[n.icon], transform: 'scale(1.3)', 'fill-rule': EVEN[n.icon] ? 'evenodd' : 'nonzero', fill: n.own ? '#132232' : n.open ? n.col : '#4a5c70' });
+  const ly = n.y + big + 19;
+  label(tree, n.x, ly, n.name, 17, n.own ? '#fff' : n.open ? n.col : '#71839a', '#08121d');
+  if (n.soon) el(tree, 'text', { x: n.x, y: ly + 16, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 800, fill: '#71839a', 'letter-spacing': 2 }, 'SOON');
+});
+// centre: compass rose
+el(tree, 'circle', { cx: 0, cy: 0, r: 40, fill: '#0d1b2a', stroke: '#fff', 'stroke-width': 3 });
+el(tree, 'path', { d: star(4, 34, 7), fill: '#eceff1' });
+el(tree, 'path', { d: star(4, 22, 5), transform: 'rotate(45)', fill: '#90a4ae' });
+el(tree, 'circle', { cx: 0, cy: 0, r: 6, fill: '#ff5252' });
+label(tree, 0, 64, 'YOU', 16, '#fff', '#08121d');
+
+// selected node + its card (Clover)
+const sel = N.k5;
+el(tree, 'circle', { cx: sel.x, cy: sel.y, r: 33, fill: 'none', stroke: '#fff', 'stroke-width': 2.5, 'stroke-dasharray': '7 5' });
+el(tree, 'line', { x1: sel.x - 8, y1: sel.y + 54, x2: 105, y2: 400, stroke: '#fff', 'stroke-width': 2, 'stroke-opacity': .6 });
+const card = el(tree, 'g', { transform: 'translate(-125,400)' });
+el(card, 'rect', { width: 250, height: 100, rx: 16, fill: '#13263a', stroke: sel.col, 'stroke-width': 3 });
+const ci = el(card, 'g', { transform: 'translate(42,50)' });
+el(ci, 'polygon', { points: oct(25), fill: sel.col, stroke: '#fff', 'stroke-width': 2.5 });
+el(ci, 'path', { d: IC.clover, transform: 'scale(1.4)', fill: '#132232' });
+el(card, 'text', { x: 80, y: 38, 'font-size': 24, 'font-weight': 900, fill: '#fff' }, 'Clover');
+el(card, 'text', { x: 80, y: 62, 'font-size': 16, 'font-weight': 700, fill: '#b0bec5' }, 'Best trait');
+el(card, 'circle', { cx: 90, cy: 80, r: 8, fill: '#ffca28', stroke: '#8d6e00', 'stroke-width': 2 });
+el(card, 'text', { x: 104, y: 86, 'font-size': 17, 'font-weight': 900, fill: '#ffe082' }, '5');
+el(card, 'rect', { x: 140, y: 64, width: 96, height: 28, rx: 9, fill: '#43a047', stroke: '#1b5e20', 'stroke-width': 2.5 });
+el(card, 'text', { x: 188, y: 84, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 900, fill: '#fff' }, 'Unlock');
+</script>
+</body></html>
