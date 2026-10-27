@@ -41,7 +41,10 @@ type Site = {
 	props: Model,
 	center: Vector3,
 	parts: { BasePart },
-	ys: { number },
+	ys: { number }, -- each part's rise key: its height, or its layer on a layered asset
+	lo: number,
+	hi: number,
+	kept: { [BasePart]: boolean }, -- the lower levels' parts: the standing building shows them
 	hidden: { [BasePart]: boolean },
 	original: { [BasePart]: number },
 	minY: number,
@@ -363,23 +366,58 @@ local function confetti(at: Vector3)
 	end)
 end
 
+-- docs/25 J: a layered asset (Lv<k>_L<nn>_ meshes, e.g. the Depot) rises layer by layer, the pile with its rack;
+-- nil: a lower level's part (no Lv<k>_: Lv1, like the quay and the paths), which the standing building shows
+local function layerOf(part: BasePart, level: number): number?
+	local lv = tonumber(string.match(part.Name, "^Lv(%d)_")) or 1
+	if lv < level then
+		return nil
+	end
+	local layer = tonumber(string.match(part.Name, "_L(%d%d)_"))
+	if layer then
+		return layer
+	end
+	return if string.find(part.Name, "_Stack_", 1, true) then 3.5 else 0 -- 0: hulls and marks, there from the start
+end
+
 local function startSite(plot: Model, model: Model, key: string, mine: boolean): Site
-	local parts, ys = {}, {}
+	local parts, ys, kept = {}, {}, {}
 	local minY, maxY = math.huge, -math.huge
 	local ground = math.huge
 	local minX, maxX, minZ, maxZ = math.huge, -math.huge, math.huge, -math.huge
+	local level = tonumber(plot:GetAttribute("SiteLevel")) or 1
+	local layered = false
 	for _, d in model:GetDescendants() do
-		if d:IsA("BasePart") then
-			table.insert(parts, d)
-			table.insert(ys, d.CFrame.Y)
-			minY, maxY = math.min(minY, d.CFrame.Y), math.max(maxY, d.CFrame.Y)
-			ground = math.min(ground, d.CFrame.Y - d.Size.Y / 2)
-			local p = d.Position
-			minX, maxX = math.min(minX, p.X), math.max(maxX, p.X)
-			minZ, maxZ = math.min(minZ, p.Z), math.max(maxZ, p.Z)
+		if d:IsA("BasePart") and string.match(d.Name, "_L%d%d_") then
+			layered = true
+			break
 		end
 	end
+	local lo, hi = math.huge, -math.huge
+	for _, d in model:GetDescendants() do
+		if not d:IsA("BasePart") then
+			continue
+		end
+		local rise = if layered then layerOf(d, level) else d.CFrame.Y
+		if not rise then
+			kept[d] = true
+			continue
+		end
+		table.insert(parts, d)
+		table.insert(ys, rise)
+		lo, hi = math.min(lo, rise), math.max(hi, rise)
+		local holder = d:FindFirstAncestorWhichIsA("Model")
+		if holder and holder ~= model and holder:GetAttribute("SiteApart") then
+			continue -- the fence and sign go round the lot, not round a far quay
+		end
+		minY, maxY = math.min(minY, d.CFrame.Y), math.max(maxY, d.CFrame.Y)
+		ground = math.min(ground, d.CFrame.Y - d.Size.Y / 2)
+		local p = d.Position
+		minX, maxX = math.min(minX, p.X), math.max(maxX, p.X)
+		minZ, maxZ = math.min(minZ, p.Z), math.max(maxZ, p.Z)
+	end
 	if #parts == 0 then
+		lo, hi = 0, 0
 		minY, maxY, ground = 0, 0, 0
 		minX, maxX, minZ, maxZ = 0, 0, 0, 0
 	end
@@ -391,6 +429,9 @@ local function startSite(plot: Model, model: Model, key: string, mine: boolean):
 		center = Vector3.new((minX + maxX) / 2, minY, (minZ + maxZ) / 2),
 		parts = parts,
 		ys = ys,
+		lo = lo,
+		hi = hi,
+		kept = kept,
 		hidden = {},
 		original = {},
 		minY = minY,
@@ -411,6 +452,9 @@ local function startSite(plot: Model, model: Model, key: string, mine: boolean):
 		dust = nil :: any,
 		prompt = nil,
 	}
+	for part in kept do
+		hide(part, site, true)
+	end
 	makeProps(site)
 	if mine then
 		addFinishPrompt(site)
@@ -421,7 +465,7 @@ end
 
 local function update(site: Site, progress: number, rate: number, builders: number)
 	local p = math.clamp(progress, 0, 1)
-	local cutoff = site.minY + (site.maxY - site.minY) * p
+	local cutoff = site.lo + (site.hi - site.lo) * p
 	for n, part in site.parts do
 		local hid = site.ys[n] > cutoff + 1e-3 -- the resting height: a part mid-drop must not hide again
 		if not hid and site.hidden[part] and site.ready then
@@ -466,6 +510,9 @@ end
 -- The last bricks drop with the BuildSeq bounce; confetti, then the dressing goes.
 local function finish(site: Site)
 	local parts, ys = {}, {}
+	for part in site.kept do
+		hide(part, site, false) -- already standing: no drop
+	end
 	for part in site.hidden do
 		table.insert(parts, part)
 		table.insert(ys, part.CFrame.Y)
