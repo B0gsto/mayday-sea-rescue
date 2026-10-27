@@ -1476,9 +1476,32 @@ local function rock(m: Model, at: CFrame)
 end
 
 -- Builder: an open-air carpentry yard: bench under a low lean-to, timber stacks and a half-built boat frame
-local function workshopYard(m: Model, b: CFrame)
+-- Workshop Lv2 saw-bench lean-to and Lv3 boat frame (M_Bld_WorkshopAddons, docs/25 B): meshes Lv<l>_L<nn>_* and
+-- Lv<l>_COL authored in the yard's final (scaled) frame round its ground centre, so they stay 1x. False when the
+-- level is 1 or the mesh is not loaded (the Lv1 yard stands alone, sawhorse and boat frame included).
+local function workshopMesh(m: Model, at: CFrame, n: number): boolean
+	local src = if n >= 2 and DockPieces.meshes
+		then DockPieces.meshes("M_Bld_WorkshopAddons")
+		else nil
+	if not src then
+		return false
+	end
+	src:PivotTo(at)
+	for _, d in src:GetDescendants() do
+		if d:IsA("BasePart") and (tonumber(string.match(d.Name, "^Lv(%d)_")) or 2) > n then
+			d:Destroy()
+		end
+	end
+	src.Name = "WorkshopMesh"
+	src.Parent = m
+	return true
+end
+
+local function workshopYard(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.Workshop
 	local at = b * def.spot
+	-- the add-ons take the sawhorse's job and stand where the timber stack and the old boat frame were
+	local addons = workshopMesh(m, at, level or 1)
 	local w, d = yardSize(def)
 	local spec = HUTS.Workshop
 	local front = -d / 2
@@ -1517,15 +1540,19 @@ local function workshopYard(m: Model, b: CFrame)
 	)
 	-- a sawhorse by the front-left post, a plank stack by the front-right, a toolbox on the bench
 	local horse = at * CFrame.new(-w / 2 + 1.4, 0, front + 4.1)
-	studTop(brick(m, "Sawhorse", Vector3.new(4.4, 0.5, 0.9), horse * CFrame.new(0, 2.6, 0), RBROWN))
-	for _, x in { -1.5, 1.5 } do
-		brick(
-			m,
-			"SawhorseLeg",
-			Vector3.new(0.45, 2.9, 0.8),
-			horse * CFrame.new(x, 1.3, 0) * CFrame.Angles(0, 0, -x * 0.12),
-			RBROWN
+	if not addons then
+		studTop(
+			brick(m, "Sawhorse", Vector3.new(4.4, 0.5, 0.9), horse * CFrame.new(0, 2.6, 0), RBROWN)
 		)
+		for _, x in { -1.5, 1.5 } do
+			brick(
+				m,
+				"SawhorseLeg",
+				Vector3.new(0.45, 2.9, 0.8),
+				horse * CFrame.new(x, 1.3, 0) * CFrame.Angles(0, 0, -x * 0.12),
+				RBROWN
+			)
+		end
 	end
 	for i = 0, 2 do
 		studTop(
@@ -1553,22 +1580,24 @@ local function workshopYard(m: Model, b: CFrame)
 	brick(m, "CrateHalf", Vector3.new(3.2, 1.6, 0.5), half * CFrame.new(0, 1.8, 1.35), RBROWN)
 	brick(m, "CrateHalf", Vector3.new(0.5, 1.6, 2.7), half * CFrame.new(-1.35, 1.8, 0), RBROWN)
 	-- timber stacks and the half-built boat frame deeper in the yard
-	local tim = at * CFrame.new(w / 2 - 4, 0, 1.5)
-	for i = 0, 2 do
-		studTop(
-			brick(
-				m,
-				"Timber",
-				Vector3.new(7, 1.2, 2),
-				tim * CFrame.new(0, 1.4 + i * 1.3, -i * 0.4),
-				RBROWN
+	if not addons then
+		local tim = at * CFrame.new(w / 2 - 4, 0, 1.5)
+		for i = 0, 2 do
+			studTop(
+				brick(
+					m,
+					"Timber",
+					Vector3.new(7, 1.2, 2),
+					tim * CFrame.new(0, 1.4 + i * 1.3, -i * 0.4),
+					RBROWN
+				)
 			)
-		)
-	end
-	local boat = at * CFrame.new(-w / 4, 0, 2.4)
-	brick(m, "Keel", Vector3.new(1.2, 1.2, 8.4), boat * CFrame.new(0, 2.6, 0), RBROWN)
-	for i = -1, 1 do
-		brick(m, "Rib", Vector3.new(5.6, 0.8, 0.8), boat * CFrame.new(0, 2.8, i * 2.8), RBROWN)
+		end
+		local boat = at * CFrame.new(-w / 4, 0, 2.4)
+		brick(m, "Keel", Vector3.new(1.2, 1.2, 8.4), boat * CFrame.new(0, 2.6, 0), RBROWN)
+		for i = -1, 1 do
+			brick(m, "Rib", Vector3.new(5.6, 0.8, 0.8), boat * CFrame.new(0, 2.8, i * 2.8), RBROWN)
+		end
 	end
 	-- docs/24 C r3: the pad reads as a walled yard, and its lawn corner gets the island's colour
 	yardFence(m, at, w, d, wall, nil, "rack")
@@ -2487,6 +2516,7 @@ local BUILDINGS = {
 
 local KEEP_1X = {
 	DepotMesh = true,
+	WorkshopMesh = true,
 	FreightQuay = true,
 	Path = true,
 	Slipway = true,

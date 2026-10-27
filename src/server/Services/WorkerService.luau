@@ -25,6 +25,7 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AssetIds = require(Shared:WaitForChild("Config"):WaitForChild("AssetIds"))
 local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Marina = require(Shared:WaitForChild("Marina"))
@@ -141,7 +142,34 @@ local WORK_SPOTS: { [string]: { WorkSlot } } = {
 		{ x = -7.6, z = 1, tx = -8, tz = 3.3 }, -- the medicine crate
 	},
 }
-local function workSpot(bay: CFrame, category: string, slot: number, _slots: number): CFrame?
+-- docs/25 B: the Workshop's Lv2 / Lv3 add-ons (M_Bld_WorkshopAddons, DockPieces) replace the sawhorse and the old
+-- boat frame: their ATT_Work_* marks (scaled studs from the yard centre), facing the bench (+X), saw or hull (+Z).
+-- shortcut: assumes the add-on mesh loaded (else these spots face empty yard); check DockPieces.meshes if it fails.
+local function addonSlot(name: string, tx: number, tz: number): WorkSlot
+	local p = AssetIds.Attachments.M_Bld_WorkshopAddons[name]
+	local s = DockConfig.Buildings.Workshop.scale or 1
+	return { x = p.X / s, z = p.Z / s, tx = (p.X + tx) / s, tz = (p.Z + tz) / s }
+end
+local YARD = WORK_SPOTS.Workshop
+local WORKSHOP_LV2 = {
+	YARD[1],
+	YARD[2],
+	YARD[3],
+	addonSlot("ATT_Work_Bench2", 2, 0),
+	addonSlot("ATT_Work_Bench3", 2, 0),
+	addonSlot("ATT_Work_SawBench", 0, 2),
+}
+local WORKSHOP_LV3 = table.clone(WORKSHOP_LV2)
+table.insert(WORKSHOP_LV3, addonSlot("ATT_Work_BoatFrame", 0, 2))
+local WORKSHOP_LEVELS: { [number]: { WorkSlot } } = { [2] = WORKSHOP_LV2, [3] = WORKSHOP_LV3 }
+
+local function workSpot(
+	bay: CFrame,
+	category: string,
+	slot: number,
+	_slots: number,
+	level: number?
+): CFrame?
 	local key = WorkerRules.buildingOf(category)
 	local def = key and DockConfig.Buildings[key]
 	if not def then
@@ -149,7 +177,12 @@ local function workSpot(bay: CFrame, category: string, slot: number, _slots: num
 	end
 	local at = bay * def.spot
 	local scale = def.scale or 1
-	local list = if key then WORK_SPOTS[key] else nil
+	local list = if key == "Workshop"
+			and level
+			and WORKSHOP_LEVELS[level]
+		then WORKSHOP_LEVELS[level]
+		elseif key then WORK_SPOTS[key]
+		else nil
 	if list and #list > 0 then
 		local s = list[(slot - 1) % #list + 1]
 		local p = (at * CFrame.new(s.x * scale, 0.8, s.z * scale)).Position
@@ -270,6 +303,7 @@ local function sync(player: Player)
 	end
 	local place = WorkerRules.assign(data.workers, data.dockBuildings, extraSlots(player))
 	local slots = WorkerRules.slots(data.dockBuildings)
+	local workshopLv = UnlockTree.levelOf(data.dock.levels, "Workshop")
 	local site = siteKey(player)
 	local order, count = {}, 0
 	local maxBuilders = BuildTimer.BUILDERS
@@ -288,7 +322,7 @@ local function sync(player: Player)
 			spot = buildSpot(bay, site, order[i], count)
 			job = "Build"
 		elseif place[i] then
-			spot = workSpot(bay, w.category, place[i], slots)
+			spot = workSpot(bay, w.category, place[i], slots, workshopLv)
 			job = JOB[w.category] or "Idle"
 		else
 			idle += 1

@@ -1,6 +1,7 @@
 --!strict
--- DepotArtService (docs/25 D, K4): the uploaded building art. DockPieces builds the Depot (M_Bld_Depot) and the
--- HQ's Lv1/Lv2 (M_Bld_RescueHQ) through DockPieces.meshes (the walk-in _COL hulls collide, the visual meshes don't), and the supply barge
+-- DepotArtService (docs/25 D, K4): the uploaded building art. DockPieces builds the Depot (M_Bld_Depot), the
+-- HQ's Lv1/Lv2 (M_Bld_RescueHQ) and the Workshop's Lv2/Lv3 add-ons (M_Bld_WorkshopAddons) through
+-- DockPieces.meshes (the walk-in _COL hulls collide, the visual meshes don't), and the supply barge
 -- M_Veh_SupplyBarge is published as ReplicatedStorage.DepotTemplates.Barge for the clients' barge visuals
 -- (DepotController; clients can't load assets).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -11,7 +12,12 @@ local DockPieces = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild
 local DepotArtService = {}
 
 function DepotArtService.Init()
-	AssetLoader.preload({ "M_Bld_Depot", "M_Bld_RescueHQ", "M_Veh_SupplyBarge" })
+	AssetLoader.preload({
+		"M_Bld_Depot",
+		"M_Bld_RescueHQ",
+		"M_Bld_WorkshopAddons",
+		"M_Veh_SupplyBarge",
+	})
 	-- shortcut: yields while the first load runs, so a plot synced in that second waits; two syncs of one plot in
 	-- that window could both place a Depot (DockService keeps the last). Make the sync re-entrant if it shows.
 	DockPieces.meshes = function(asset: string): Model?

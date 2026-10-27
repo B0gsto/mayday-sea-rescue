@@ -103,7 +103,9 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   Cash if the site already stood. Studio: `WorkerDev` `"finishbuild"`. Layered meshes (`Lv<k>_L<nn>_`) rise layer by
   layer; a level's site keeps the lower levels hidden (the standing building shows them).
 - Depot art (docs/25 D, K4): `DepotArtService` sets `DockPieces.meshes` (the Depot is `M_Bld_Depot`, a hut until it
-  loads) and publishes `ReplicatedStorage.DepotTemplates.Barge`. The Depot model holds `DepotMesh` (the Lv1..n
+  loads) and publishes `ReplicatedStorage.DepotTemplates.Barge`. The Workshop's Lv2 saw-bench lean-to and Lv3 boat
+  frame are `M_Bld_WorkshopAddons` (`WorkshopMesh`, kept 1x, inside the code yard; the yard's sawhorse, timber and old
+  boat frame give way); its `ATT_Work_*` are the Builders' Lv2/Lv3 yard spots (`WorkerService`, from `AssetIds`). The Depot model holds `DepotMesh` (the Lv1..n
   layers and `Marks`: `ATT_PickUp_*` / `ATT_DropOff_*` bays, `ATT_BargeMoor`, `ATT_QuayLoad`, `ATT_QuayLand`) and
   `FreightQuay` (west plate edge, sea level). Client: `DepotController` (barge from `BargeNext` via
   `shared/BargePath`, `Stack_1..4` from `DepotStock` / `DepotCap`, empty-crate icon on `SiteWaiting`) and
