@@ -319,7 +319,7 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
 - Live ops: `LiveOps` (pure), `LiveOpsService`, `LiveOpsController`. Re-engagement: `PlatformPrompts` +
   `PlatformPromptService` / `PlatformPromptController`; `NotifyDue` + `NotifyService`.
 - Badges and leaderboards: `BadgeConfig` (keys are stable; id 0 = off), `BadgeRules`, `BadgeService` (`Award`,
-  `Count`, `Once`), `LeaderboardRules`, `LeaderboardService` (a rescue board beside every island's spawn).
+  `Count`, `Once`), `LeaderboardRules`, `LeaderboardService` (`Board(face)`: DockService stands one on each plaza with the HQ).
 - Analytics: `TelemetryNames` (fixed name lists), `Telemetry/Events` (pure mapping), `TelemetryService` (the only
   `AnalyticsService` caller), client `src/client/Telemetry.luau` (`once`, `send`, `shop`, `stalled` over
   `Telemetry_Client`; values checked server-side).

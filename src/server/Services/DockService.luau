@@ -50,6 +50,7 @@ local DepotRules = require(Shared:WaitForChild("DepotRules"))
 local DiscoveryRules = require(Shared:WaitForChild("DiscoveryRules"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local DockPieces = require(Shared:WaitForChild("DockPieces"))
+local LeaderboardService = require(script.Parent:WaitForChild("LeaderboardService"))
 local Marina = require(Shared:WaitForChild("Marina"))
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
@@ -102,6 +103,7 @@ type Plot = {
 	wheelPrompt: ProximityPrompt?,
 	wheelCount: TextLabel?,
 	wheelConn: RBXScriptConnection?,
+	board: Model?, -- the rescue board on the plaza, with the wheel (docs/25 J)
 }
 
 local plots: { Plot } = {}
@@ -480,6 +482,9 @@ local function placeWheel(plot: Plot)
 	plot.wheelPrompt = cap and cap:FindFirstChildOfClass("ProximityPrompt")
 	plot.wheelCount = if count and count:IsA("TextLabel") then count else nil
 	paintWheel(plot)
+	-- the rescue board mirrors the wheel east of the avenue, facing the cove
+	plot.board = LeaderboardService.Board(plot.frame * Marina.ISLAND * CFrame.new(28, 5.7, -14))
+	plot.board.Parent = plot.model
 end
 
 -- docs/25 J: the streets (plaza, avenue, lanes, bridge road, the quay walks' owner bands) and the prize wheel stand
@@ -505,7 +510,10 @@ local function syncStreets(plot: Plot, owner: Player?, beat: boolean)
 		if plot.wheel then
 			plot.wheel:Destroy()
 		end
-		plot.wheel, plot.wheelPrompt, plot.wheelCount = nil, nil, nil
+		if plot.board then
+			plot.board:Destroy()
+		end
+		plot.wheel, plot.wheelPrompt, plot.wheelCount, plot.board = nil, nil, nil, nil
 	end
 end
 
