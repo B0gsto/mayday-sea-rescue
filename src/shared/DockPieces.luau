@@ -292,7 +292,8 @@ end
 
 -- a tan Lego plate path on the island plate through island (r, f) points, 8 wide, one part per leg (the
 -- legs overlap at the corners)
-local function path(parent: Instance, b: CFrame, pts: { Vector2 })
+-- `lift` stacks path layers (plaza 0, streets 0.04, building stubs 0.1) so overlapping tops never z-fight.
+local function path(parent: Instance, b: CFrame, pts: { Vector2 }, lift: number)
 	for k = 1, #pts - 1 do
 		local from, to =
 			isle(b, pts[k].X, pts[k].Y).Position, isle(b, pts[k + 1].X, pts[k + 1].Y).Position
@@ -300,7 +301,7 @@ local function path(parent: Instance, b: CFrame, pts: { Vector2 })
 			parent,
 			"Path",
 			Vector3.new(8, 0.3, (to - from).Magnitude + 8),
-			CFrame.lookAt((from + to) / 2, to) * CFrame.new(0, 0.15 + (k % 2) * 0.02, 0), -- no z-fight at corners
+			CFrame.lookAt((from + to) / 2, to) * CFrame.new(0, 0.15 + lift + (k % 2) * 0.02, 0), -- no z-fight at corners
 			TAN -- WP-25 r7: warm tan walks (grey read cold against the plate)
 		)
 		p.CanCollide, p.CastShadow = false, false
@@ -2172,7 +2173,7 @@ local function lifeboatSlip(m: Model, b: CFrame)
 	studTop(
 		brick(m, "Winch", Vector3.new(3, 2, 2), at * CFrame.new(0, 1.8, d / 2 - 1.5), BRICK_YELLOW)
 	)
-	path(m, b, { Vector2.new(-80, 82), Vector2.new(-80, 70) })
+	path(m, b, { Vector2.new(-80, 82), Vector2.new(-80, 70) }, 0.1)
 end
 
 -- docs/25 J (owner 2026-10-27): empty start. The fixed set on every plate is only its edge (DockService adds the
@@ -2260,7 +2261,7 @@ function DockPieces.streets(b: CFrame): Model
 	local m = Instance.new("Model")
 	m.Name = "Streets"
 	for _, pts in DockPieces.STREETS do
-		path(m, b, pts)
+		path(m, b, pts, 0.04)
 	end
 	local c, s = DockPieces.PLAZA.centre, DockPieces.PLAZA.size
 	local plaza = brick(
@@ -2608,7 +2609,7 @@ function DockPieces.building(key: string, cf: CFrame, level: number?): Model
 		)
 	end
 	if def and def.spot and def.size and not AFLOAT[key] and key ~= "HQ" then -- the HQ fronts the plaza
-		path(m, cf, DockPieces.stub(def.spot, def.size))
+		path(m, cf, DockPieces.stub(def.spot, def.size), 0.1)
 	end
 	if def and def.spot and def.size and not AFLOAT[key] then
 		-- WP-25 r7: a darker green bed under the lot (2 studs round it, under the paths): a framed plot, not lawn
@@ -2616,7 +2617,13 @@ function DockPieces.building(key: string, cf: CFrame, level: number?): Model
 			m,
 			"LotBed",
 			Vector3.new(def.size.X + 4, 0.26, def.size.Y + 4),
-			cf * def.spot * CFrame.new(0, 0.13, 0),
+			cf
+				* def.spot
+				* CFrame.new(
+					0,
+					0.13 - ((table.find(DockConfig.BUILDINGS, key) or 0) % 8) * 0.005,
+					0
+				), -- overlapping beds: never coplanar
 			Color3.fromRGB(75, 151, 75)
 		)
 		bed.CanCollide, bed.CanQuery = false, false
