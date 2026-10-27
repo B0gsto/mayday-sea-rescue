@@ -29,6 +29,8 @@ export type PlayerData = {
 	construction: { key: string, progress: number, rate: number, at: number }?,
 	-- Rescued people working on your island (docs/23 (o), WP-26; WorkerRules, WorkerService), at most WorkerRules.CAP.
 	workers: { WorkerRules.Worker },
+	-- Survivors since the last Epic+ / Legendary+ roll on this player's own calls (docs/25 E pity).
+	pity: WorkerRules.Pity,
 	-- Bought player + crew skill nodes (docs/24 G; SkillRules), id -> true.
 	skills: { [string]: boolean },
 	lastSeen: number?, -- os.time of the last save (DataService): offline worker earnings count from here
@@ -193,6 +195,7 @@ function Rules.defaultData(): PlayerData
 		dockBuildings = {},
 		dockPrepaid = {},
 		workers = {},
+		pity = { epic = 0, legendary = 0 },
 		skills = {},
 		flags = {},
 		cosmetics = {},
@@ -369,7 +372,18 @@ function Rules.migrate(raw: any): PlayerData
 	end
 	-- the Crew branch raises the worker cap, so an old save keeps the workers it earned
 	local cap = WorkerRules.CAP + SkillRules.effects(data.skills).workerCapAdd
-	data.workers = WorkerRules.clean(raw.workers, cap)
+	-- v2 (docs/25 E): the old rarities 1 / 2 / 3 (common / rare / legendary) become 1 / 3 / 5, no traits
+	data.workers = WorkerRules.clean(raw.workers, cap, num(raw.version, 0) < 2)
+	if type(raw.pity) == "table" then
+		data.pity = {
+			epic = math.clamp(math.floor(num(raw.pity.epic, 0)), 0, WorkerRules.PITY_EPIC),
+			legendary = math.clamp(
+				math.floor(num(raw.pity.legendary, 0)),
+				0,
+				WorkerRules.PITY_LEGENDARY
+			),
+		}
+	end
 	local seen = num(raw.lastSeen, 0)
 	data.lastSeen = if seen > 0 then seen else nil
 	if type(raw.flags) == "table" then
@@ -405,7 +419,7 @@ function Rules.migrate(raw: any): PlayerData
 			(data :: any)[key] = Rules.sanitizeFlag(raw[key])
 		end
 	end
-	-- version 1 is current; future migrations go here, keyed on raw.version
+	-- version 2 is current; future migrations go here, keyed on raw.version
 	data.version = ProgressionConfig.SchemaVersion
 	return data
 end

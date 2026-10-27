@@ -129,6 +129,8 @@ return function(t)
 				category = WorkerRules.CATEGORIES[1 + i % #WorkerRules.CATEGORIES],
 				rarity = 1 + i % 3,
 				name = `Worker{i}`,
+				trait = "",
+				special = "",
 			})
 		end
 		-- quests: Keeper Ives' chain on its last step (handed back next), every other quest done once

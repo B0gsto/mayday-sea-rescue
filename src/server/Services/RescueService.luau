@@ -374,6 +374,53 @@ local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffs
 	addPart(f, root, CFrame.identity)
 	model.PrimaryPart = root
 	local creature = call.wildlifeSpecies ~= nil -- the sanctuary's animal replaces the person (SanctuaryService)
+	-- docs/25 K1: the survivor rolls when they spawn, so the tag shows in the water. A player's own call
+	-- counts for pity and specials; free roam and the server-wide ferry roll without pity (no owner).
+	if not creature then
+		local owner: Player? = call.owner
+		local pdata = if owner then DataService.Get(owner) else nil
+		local pity: WorkerRules.Pity? = nil
+		if pdata then
+			pdata.pity = pdata.pity or { epic = 0, legendary = 0 }
+			pity = pdata.pity
+		end
+		local source = if type(call.source) == "string"
+			then call.source
+			elseif CallLogic.zoneIdAt(pos) == "MermaidLagoon" then "MermaidLagoon"
+			else "any"
+		local opts: WorkerRules.RollOpts = {
+			rareAdd = if owner then tonumber(owner:GetAttribute("SkillRareChanceAdd")) or 0 else 0,
+			source = source,
+			owned = if pdata then WorkerRules.ownedSpecials(pdata.workers) else nil,
+			pity = pity,
+		}
+		-- docs/24 E: the first survivor home is always a Builder (the tutorial's build station beat)
+		if
+			pdata
+			and Onboarding.buildersFirst(
+				pdata.totalRescues,
+				pdata.tutorialStep,
+				pdata.dockBuildings
+			)
+		then
+			opts.category = "Builder"
+		end
+		local w = WorkerRules.roll(workerRng:NextInteger(1, 2147483646), opts)
+		model:SetAttribute("SurvivorName", w.name)
+		model:SetAttribute("Rarity", w.rarity)
+		model:SetAttribute("Category", w.category)
+		model:SetAttribute("Trait", w.trait)
+		model:SetAttribute("Special", w.special)
+		model:SetAttribute("Workplace", "")
+		-- the current badge reads these; the survivors v2 tag reads the K1 names above
+		model:SetAttribute("WorkerCategory", w.category)
+		model:SetAttribute("WorkerRarity", w.rarity)
+		model:SetAttribute("WorkerName", w.name)
+		CollectionService:AddTag(model, "WorkerBadge")
+		if owner then
+			DataService.MarkDirty(owner)
+		end
+	end
 	local rig: Model? = nil
 	if not creature then
 		if parent then
@@ -972,28 +1019,6 @@ onPull = function(victim: any, player: Player, forced: boolean?)
 	victim.state = "Aboard"
 	victim.carrier = vehicle
 	victim.model:SetAttribute("PrivateTo", nil) -- aboard: everyone sees them
-	-- WP-26: a person picked up rolls the worker they become at home (the client draws the badge)
-	if not call.wildlifeSpecies and victim.model:GetAttribute("WorkerCategory") == nil then
-		-- docs/24 E: the first survivor home is always a Builder (the tutorial's build station beat)
-		local owner = driverOf(vehicle) or player
-		local rare = tonumber(owner:GetAttribute("SkillRareChanceAdd")) or 0
-		local category, rarity, name = WorkerRules.roll(workerRng:NextInteger(1, 2147483646), rare)
-		local pdata = DataService.Get(owner)
-		if
-			pdata
-			and Onboarding.buildersFirst(
-				pdata.totalRescues,
-				pdata.tutorialStep,
-				pdata.dockBuildings
-			)
-		then
-			category = "Builder"
-		end
-		victim.model:SetAttribute("WorkerCategory", category)
-		victim.model:SetAttribute("WorkerRarity", rarity)
-		victim.model:SetAttribute("WorkerName", name)
-		CollectionService:AddTag(victim.model, "WorkerBadge")
-	end
 	if victim.prompt then
 		victim.prompt:Destroy()
 		victim.prompt = nil
@@ -1383,15 +1408,17 @@ local function unloadVictims(vehicle: Model, victims: { any }, patrol: boolean?)
 	-- WP-26: landed at your own berth, each person becomes one of your workers
 	local home = driver ~= nil and ColdOpen.atDropOff(from, driver:GetAttribute("BayCFrame"))
 	for _, v in victims do
-		local category = v.model:GetAttribute("WorkerCategory")
+		local category = v.model:GetAttribute("Category")
 		if home and type(category) == "string" then
 			try(
 				"WorkerService",
 				"Recruit",
 				driver,
 				category,
-				v.model:GetAttribute("WorkerRarity"),
-				v.model:GetAttribute("WorkerName")
+				v.model:GetAttribute("Rarity"),
+				v.model:GetAttribute("SurvivorName"),
+				v.model:GetAttribute("Trait"),
+				v.model:GetAttribute("Special")
 			)
 		end
 		v.state = "Delivered"
