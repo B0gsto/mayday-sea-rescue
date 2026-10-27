@@ -1,7 +1,8 @@
 # M_Bld_FishMarketAddons result (docs/25 B + J, 2026-10-27, art-director round 3)
 
-Validate PASS (283 checks, 0 failed, 57 waived: gameplay node/layer naming, flat-palette LOD UV layout). LOD0 5,816
-tris / 11 visual meshes (budget 8,000): Lv2 3,384, Lv3 2,432; LOD1 2,908, LOD2 1,452; COL 144 (Lv2) + 132 (Lv3). Set: 1
+Validate PASS (388 checks, 0 failed, 78 waived: gameplay node/layer naming, flat-palette LOD UV layout). LOD0 5,816
+tris / 11 visual meshes (budget 8,000): Lv2 3,384, Lv3 2,432; LOD1 2,908, LOD2 1,452; COL 23 boxes x 12 tris (Lv2 12,
+Lv3 11), all in the LOD0 FBX. Set: 1
 (T_FishMarket_Brick, 16-cell flat palette, 1024; palette unchanged). Size 36.60 x 18.20 x 12.98 studs = 12.20 x 6.07 x
 4.33 m. Origin the code market's ground centre, add-ons sit on its plinth top at z 0.92, built at the market's final
 1.15 scale (place with no extra scale).
@@ -34,9 +35,11 @@ Lv1 market is still `fishMarket()` in `src/shared/DockPieces.luau`. Lv2: two fla
 Lv3: 9 x 8 walk-in smokehouse at x -3..6, y 8..16, chimney to 13.7.
 
 Nodes (layers bottom to top): `Lv2` (`L01_Base`, `L02_Counters`, `L03_Frames`, `L04_Awnings`, `L05_Stock`), `Lv3`
-(`L01_Base`, `L02_Walls`, `L03_Roof`, `L04_Racks`, `L05_Fish`, `L06_Chimney`). Collision `Lv2_COL`, `Lv3_COL`: separate
-convex boxes (counters, crate stacks, upper posts, awnings; smokehouse walls in six bites, roof/chimney overhead, side
-racks, bench); the door and walkway stay open. Attachments (plinth top): ATT_Work_Stall3 (16.75, 3.0, 0.95),
+(`L01_Base`, `L02_Walls`, `L03_Roof`, `L04_Racks`, `L05_Fish`, `L06_Chimney`). Collision: one simple box per object,
+`Lv2_Col01_COL`..`Lv2_Col12_COL` (per stall: counter, awning, two upper posts, two crate stacks) and
+`Lv3_Col01_COL`..`Lv3_Col11_COL` (smokehouse walls in six bites, roof/chimney overhead, chimney, two side racks, bench).
+Roblox hulls each mesh, so a merged `_COL` would fill the 6-stud doorway and the vendor tiles; split boxes keep the door,
+interior walkway and the fishers' tiles open. Attachments (plinth top): ATT_Work_Stall3 (16.75, 3.0, 0.95),
 ATT_Work_Stall4 (-16.75, 3.0, 0.95) (round 3: moved onto the vendor tiles), ATT_Work_RackLeft (-1.2, 11.5, 0.95), ATT_Work_RackRight (4.2, 11.5, 0.95).
 
 Renders: `build/prod/M_Bld_FishMarketAddons/review/M_Bld_FishMarketAddons/2026-10-27_sheet.png` plus turntable and
@@ -51,3 +54,8 @@ awning studs are visual (collision stays flat boxes); awning valance bottom 6.64
 tall orange tags from the door. The stall fish face the customer, so from the low stall-detail angle (behind the
 counter end) they overlap visually; they read best from the square. LOD1/LOD2 are 50%/25% of LOD0. Awaiting the
 round-3 art-director score.
+
+Collision fix (2026-10-27, after the HQ Studio playtest showed a merged multi-box `_COL` hulled shut across its door):
+split `Lv2_COL` / `Lv3_COL` into 23 single-box `_COL` objects (`out_cols` in build.py). Visual meshes, LODs and the
+texture set are unchanged (same tri counts; texture PNGs byte-identical). Re-ran build, lod, validate, export,
+turntable. Not yet checked in Studio.

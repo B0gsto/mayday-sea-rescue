@@ -129,9 +129,9 @@ scene.collection.objects.link(moon)
 for o in scene.objects:
     if o.type == "LIGHT" and o is not moon:
         o.hide_render = True
-lamp = bpy.data.materials["MI_Lamp"].node_tree.nodes["Principled BSDF"]
-lamp.inputs["Emission Color"].default_value = lamp.inputs["Base Color"].default_value
-lamp.inputs["Emission Strength"].default_value = 4.0
+nt = bpy.data.materials["MI_Lamp"].node_tree
+nt.links.new(nt.nodes["ALB"].outputs["Color"], nt.nodes["Principled BSDF"].inputs["Emission Color"])
+nt.nodes["Principled BSDF"].inputs["Emission Strength"].default_value = 4.0
 for group, objs in groups.items():
     show(objs)
     render("level_%s_Night.png" % group, fit=(objs, VIEWS[0][1:]))

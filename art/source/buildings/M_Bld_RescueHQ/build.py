@@ -13,9 +13,10 @@ gable scaled down (1-stud overhang, ridge studs, lifebuoy sign on its pedestal),
 radar bar), and an 8-stud side wing (red-cross plaque on the street face) with a medic counter facing the east doorway.
 
 Both levels share the origin (lot centre, ground level); the door faces Blender -Y = Roblox -Z. Every mesh is one colour
-and one construction layer L01..L07 under its level empty. Door leaves carry OwnerColour in the name. No PBR sets: flat
-Material colours (docs/05 5).
+and one construction layer L01..L07 under its level empty. Door leaves carry OwnerColour in the name. One flat palette set
+T_RescueHQ_Brick (palette.py, maketex.py): each mesh's UVs sit in its colour's cell (Roblox ignores FBX colours).
 
+    python3 art/source/buildings/M_Bld_RescueHQ/maketex.py --out build/prod/M_Bld_RescueHQ/textures/M_Bld_RescueHQ
     ~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- --build \
       art/source/buildings/M_Bld_RescueHQ/build.py --out-root build/prod/M_Bld_RescueHQ \
       --steps build,validate,export,turntable
@@ -33,15 +34,11 @@ sys.path.insert(0, HERE)
 import hqgeo as H  # noqa: E402
 import budgets  # noqa: E402
 import names  # noqa: E402
+import palette as P  # noqa: E402
 import versions  # noqa: E402
 
 NAME = "M_Bld_RescueHQ"
-MATS = {k: H.material(k, *v) for k, v in {
-    "White": ("#F2F0E8", 0.42), "Cream": ("#E4DFCB", 0.5), "Plinth": ("#A3A2A5", 0.55), "Red": ("#E03828", 0.40),
-    "Navy": ("#1E2C42", 0.40), "Steel": ("#8A8E94", 0.35, 0.35), "Gold": ("#DEB23C", 0.30, 0.55),
-    "Glass": ("#96CDF0", 0.12, 0.0, 0.62), "OwnerColour": ("#E03828", 0.38), "Tan": ("#CDB68A", 0.55),
-    "Wood": ("#8B5A2B", 0.5), "Sea": ("#2F7FC1", 0.45), "Yellow": ("#F2C230", 0.5),
-    "RoofLine": ("#B82A1C", 0.45)}.items()}
+MATS = {k: H.material(k, *v) for k, v in [*P.COLOURS.items(), P.OWNER]}
 
 CH, GROOVE = 1.1, 0.1
 BRICK = float(os.environ.get("HQ_BRICK", "6.0"))   # 1x6 brick length (studs): 1x4 bricks cost 30% more wall triangles than the 2k budget allows
@@ -54,7 +51,7 @@ GL = {}                               # one Group per (level, layer, word)
 def G(level, layer, word, mat):
     key = (level, layer, word)
     if key not in GL:
-        GL[key] = H.Group("%s_%s_%s_%s_LOD0" % (NAME, level, layer, word), MATS[mat])
+        GL[key] = H.Group("%s_%s_%s_%s_LOD0" % (NAME, level, layer, word), MATS[mat], P.CELL_OF[mat])
     return GL[key]
 
 
@@ -454,7 +451,7 @@ def build_lv2():
 LOD_FLOOR = {"LOD1": 40, "LOD2": 24}
 
 
-def box_uv(obj):
+def box_uv(obj, cell):
     me = obj.data
     uv = me.uv_layers.get("UVMap") or me.uv_layers.new(name="UVMap")
     lo = [min(v.co[i] for v in me.vertices) for i in range(3)]
@@ -466,7 +463,7 @@ def box_uv(obj):
         a, b = [i for i in range(3) if i != axis]
         for li in poly.loop_indices:
             co = me.vertices[me.loops[li].vertex_index].co
-            uv.data[li].uv = ((co[a] - lo[a]) / span[a], (co[b] - lo[b]) / span[b])
+            uv.data[li].uv = P.cell_uv(cell, (co[a] - lo[a]) / span[a], (co[b] - lo[b]) / span[b])
 
 
 def add_lods(spec):
@@ -486,7 +483,7 @@ def add_lods(spec):
                     if target >= tris:
                         break
                     target = min(tris, target + 4)
-            box_uv(obj)
+            box_uv(obj, P.CELL_OF[src.data.materials[0].name[len("MI_"):]])
             versions.weighted_normals(obj)
             entry = {"object": obj, "role": "visual", "lod": lod, "of": src.name}
             if e.get("set"):
@@ -496,11 +493,13 @@ def add_lods(spec):
 
 
 def collision(level, boxes):
-    """One _COL per level: separate convex boxes. Doorways, the east door and the interiors stay open."""
-    g = H.Group("%s_%s_Col_COL" % (NAME, level), MATS["Plinth"])
-    for c, s in boxes:
+    """One _COL object per box: Roblox hulls a multi-box MeshPart into pieces that fill the doorways."""
+    out = []
+    for i, (c, s) in enumerate(boxes, 1):
+        g = H.Group("%s_%s_Col%02d_COL" % (NAME, level, i), MATS["Plinth"])
         g.box(c, s, 0.0)
-    return g.done()
+        out.append(g.done())
+    return out
 
 
 def span(x0, x1, y0, y1, z0, z1):
@@ -539,14 +538,14 @@ def build():
         ob = g.done()
         ob.parent = lv1 if level == "Lv1" else lv2
         visual.append(ob)
-    cols = [col_lv1(), col_lv2()]
+    cols = col_lv1() + col_lv2()
     for ob in cols:
         ob.parent = lv1 if "_Lv1_" in ob.name else lv2
 
     meshes = []
     for ob in visual:
         ob.data.name = ob.name
-        meshes.append({"object": ob, "set": "OwnerColour" if "OwnerColour" in ob.name else None})
+        meshes.append({"object": ob, "set": "Brick"})
     meshes += [{"object": c} for c in cols]
 
     pts = [ob.matrix_world @ v.co for ob in visual for v in ob.data.vertices]
@@ -565,9 +564,11 @@ def build():
         "name": NAME, "budget": "hero_building", "tier": "standard",
         "dims_m": (dims[0] / 3.0, dims[1] / 3.0, dims[2] / 3.0),
         "size_note": "Lv1 + Lv2 together incl. the 8-stud east wing, the flag pole and the mast",
-        "origin": "free", "sets": [],
-        "waivers": {"texture sets": "Lego rule docs/05 5: flat Material colours, no per-building PBR set",
-                    "LOD UV layout": "Lego flat colours: no texture is sampled, so the LOD UV layout is not kept"},
+        "origin": "free", "tiling": True,
+        "sets": [{"name": "RescueHQ", "set": "Brick", "size": 1024, "wet": False}],   # maketex.py, flat palette cells
+        "waivers": {"texture sets": "Lego rule docs/05 5: one flat palette set (like M_Bld_Depot), no PBR scans",
+                    "LOD UV layout": "flat palette cells (one colour per mesh): LOD UVs are re-projected inside the "
+                                     "same cell, not a unique unwrap (tiling=True skips the density check)"},
         "meshes": meshes, "attachments": [att1, att2],
         "closeups": [
             {"name": "Lv1Door", "target": [0.0, -9.0, 6.0], "dist": 22.0, "az": 24.0, "el": 10.0},

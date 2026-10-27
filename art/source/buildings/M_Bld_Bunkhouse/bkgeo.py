@@ -1,55 +1,46 @@
-"""Lego geometry for M_Bld_Bunkhouse (copied from M_Bld_RescueHQ/hqgeo.py, plus slab / pstud / beam): bevelled bricks, studs, slope slabs and the shared flat colour materials.
+"""Lego geometry for M_Bld_Bunkhouse (copied from M_Bld_RescueHQ/hqgeo.py, plus slab / pstud / beam): bevelled bricks, studs, slope slabs and the palette material.
 
 One Group is one mesh (one colour, one construction layer). Geometry is written straight into a bmesh in world
-studs; the object stays at identity so validate's transforms-applied / origin rules hold. UVs are a box projection
-(each mesh has no PBR set; the projection keeps the LOD UV layout within the pipeline's 15% area tolerance).
+studs; the object stays at identity so validate's transforms-applied / origin rules hold. UVs
+point every face at its colour's cell of the flat palette atlas T_Bunkhouse_Brick (palette.py).
 """
 import math
+import os
 
 import bmesh
 import bpy
 from mathutils import Matrix, Vector
 
+import palette as P
+
 STUD_R = 0.62
 
 
-def srgb(hex_colour):
-    """'#RRGGBB' -> linear RGB (Blender node values are scene-linear)."""
-    h = hex_colour.lstrip("#")
-    out = []
-    for i in (0, 2, 4):
-        c = int(h[i:i + 2], 16) / 255.0
-        out.append(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4)
-    return tuple(out)
-
-
-_MATS = {}
-
-
-def material(key, hex_colour, rough=0.5, metal=0.0, alpha=1.0):
-    if key in _MATS:
-        return _MATS[key]
-    mat = bpy.data.materials.new("MI_" + key)
+def material(name, tex_dir, stem):
+    """One palette material (as M_Bld_Depot/lego.py): UV -> flat ALB cell, RGH cell -> roughness."""
+    mat = bpy.data.materials.get(name)
+    if mat:
+        return mat
+    mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (*srgb(hex_colour), 1.0)
-    bsdf.inputs["Roughness"].default_value = rough
-    bsdf.inputs["Metallic"].default_value = metal
-    if alpha < 1.0:
-        bsdf.inputs["Alpha"].default_value = alpha
-        for attr, value in (("blend_method", "BLEND"), ("surface_render_method", "BLENDED")):
-            try:
-                setattr(mat, attr, value)
-            except (AttributeError, TypeError):
-                pass
-    _MATS[key] = mat
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    bsdf.inputs["Metallic"].default_value = 0.0
+    for kind, socket, space in (("ALB", "Base Color", "sRGB"), ("RGH", "Roughness", "Non-Color")):
+        tex = nt.nodes.new("ShaderNodeTexImage")
+        tex.name = kind
+        tex.interpolation = "Closest"
+        tex.image = bpy.data.images.load(os.path.join(tex_dir, stem + kind + ".png"), check_existing=True)
+        tex.image.colorspace_settings.name = space
+        nt.links.new(tex.outputs["Color"], bsdf.inputs[socket])
     return mat
 
 
 class Group:
-    def __init__(self, name, mat):
+    def __init__(self, name, mat, cell):
         self.name = name
         self.mat = mat
+        self.cell = cell
         self.bm = bmesh.new()
 
     # ---------------------------------------------------------------- primitives
@@ -168,17 +159,13 @@ class Group:
         bm = self.bm
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         bm.normal_update()
-        lo = [min(v.co[i] for v in bm.verts) for i in range(3)]
-        hi = [max(v.co[i] for v in bm.verts) for i in range(3)]
-        span = [(hi[i] - lo[i]) or 1.0 for i in range(3)]
+        u0, v0, u1, v1 = P.cell_uv(self.cell)       # one colour per Group: every face fills its palette cell
         uv = bm.loops.layers.uv.new("UVMap")
         for f in bm.faces:
-            n = f.normal
-            axis = max(range(3), key=lambda i: abs(n[i]))
-            a, b = [i for i in range(3) if i != axis]
-            for loop in f.loops:
-                co = loop.vert.co
-                loop[uv].uv = ((co[a] - lo[a]) / span[a], (co[b] - lo[b]) / span[b])
+            n = len(f.loops)
+            for k, loop in enumerate(f.loops):
+                a = 2.0 * math.pi * k / n
+                loop[uv].uv = ((u0 + u1) / 2 + (u1 - u0) / 2 * math.cos(a), (v0 + v1) / 2 + (v1 - v0) / 2 * math.sin(a))
         mesh = bpy.data.meshes.new(self.name)
         bm.to_mesh(mesh)
         bm.free()

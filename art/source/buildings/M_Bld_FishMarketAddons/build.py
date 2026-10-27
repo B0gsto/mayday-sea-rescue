@@ -18,9 +18,9 @@ walls with smoked orange/gold fish, a central rail with five hanging smoked fish
 flush against the front wall. The floor is clear.
 
 Each level is a top-level node (Lv2, Lv3) holding 5-6 construction layers (L01_* bottom to L06_* top), one palette
-mesh per layer (flat colours via UVs, one draw call per layer, like M_Bld_Depot). Collision is one <Node>_COL built
-from separate convex boxes: counters, crates, upper posts and awnings; smokehouse walls in six bites, the roof and
-chimney overhead, the side racks, bench and firewood, so the door and the interior walkway stay open.
+mesh per layer (flat colours via UVs, one draw call per layer, like M_Bld_Depot). Collision is one simple box per
+object, <Node>_ColNN_COL (Roblox hulls each mesh, so a merged proxy would fill the doorway): counters, crates, upper
+posts and awnings; smokehouse walls in six bites, the roof and chimney overhead, the side racks, bench and firewood, so the door and the interior walkway stay open.
 
     python3 art/source/buildings/M_Bld_FishMarketAddons/maketex.py \
         --out build/prod/M_Bld_FishMarketAddons/textures/M_Bld_FishMarketAddons --name FishMarket --set Brick
@@ -415,6 +415,16 @@ def build():
                       else {"object": obj, "role": "col"})
         print("[fishmarket] %-28s %5d tris" % (name, b.tris()))
 
+    def out_cols(node, c):
+        # one object per box (8 verts, 6 faces each): Roblox hulls each _COL mesh, so a merged one fills doorways
+        assert len(c.v) == 8 * (len(c.f) // 6) and len(c.f) % 6 == 0, "COL must be plain boxes"
+        for k in range(len(c.f) // 6):
+            box = lego.B()
+            box.v = c.v[8 * k:8 * k + 8]
+            box.f = [(tuple(i - 8 * k for i in f), cell) for f, cell in c.f[6 * k:6 * k + 6]]
+            assert all(0 <= i < 8 for f, _ in box.f for i in f)
+            out("%s_Col%02d_COL" % (node, k + 1), box, node)
+
     b = lego.B()
     pad(b, 11.9, 18.3, -1.5, 7.5)
     pad(b, -18.3, -11.9, -1.5, 7.5)
@@ -455,7 +465,7 @@ def build():
     c = lego.B()
     stall_col(c, STALL_X, False)
     stall_col(c, -STALL_X, True)
-    out("Lv2_COL", c, "Lv2")
+    out_cols("Lv2", c)
 
     b = lego.B()
     smokehouse_base(b)
@@ -483,7 +493,7 @@ def build():
 
     c = lego.B()
     smokehouse_col(c)
-    out("Lv3_COL", c, "Lv3")
+    out_cols("Lv3", c)
 
     atts = []
     for name, loc in (("ATT_Work_Stall3", (STALL_X + 2.75, STALL_Y, PAD)),     # the white tile behind each counter
@@ -512,7 +522,7 @@ def build():
                      "origin the market ground centre, built at the market's final 1.15 scale (place with no extra scale)",
         "sets": [{"name": SET_NAME, "set": SET, "size": 1024, "wet": False}],
         "waivers": {
-            "naming": "gameplay node/layer names (docs/25 B/J): Lv2_L01_..., Lv3_L01_..., Lv2_COL, Lv3_COL; the FBX "
+            "naming": "gameplay node/layer names (docs/25 B/J): Lv2_L01_..., Lv3_L01_..., Lv2_Col01_COL.., Lv3_Col01_COL..; the FBX "
                       "importer flattens empty parents, so the node name is the mesh name prefix",
             "LOD UV layout": "flat palette cells (one shared material): decimation merges cells, UVs are not a unique "
                              "unwrap by design (tiling=True skips the density check)",

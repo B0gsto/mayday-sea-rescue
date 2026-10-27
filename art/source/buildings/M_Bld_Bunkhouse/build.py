@@ -16,7 +16,11 @@ Lv5 Roof Terrace solid studded fence round the Lv3 deck, two benches against it 
 
 Levels only add (Lv2 stands on Lv1's roof studs, Lv3 on Lv2's, the wing on Lv1's open side doorway). Every mesh is one colour
 and one construction layer L01..L05 under its level; doors carry OwnerColour in the name. Pivot = ground centre of the lot,
-door faces Blender -Y = Roblox -Z. Flat Material colours, no PBR set (docs/05 5).
+door faces Blender -Y = Roblox -Z. Flat palette colours in one texture set
+T_Bunkhouse_Brick (palette.py, as M_Bld_Depot; Roblox ignores FBX material colours). Collision is one box per
+_Lv<l>_Col<NN>_COL object (Roblox hulls each MeshPart; doorways, stairs and interiors stay open).
+
+    python3 art/source/buildings/M_Bld_Bunkhouse/maketex.py --out build/prod/M_Bld_Bunkhouse/textures/M_Bld_Bunkhouse
 
     ~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- --build \
       art/source/buildings/M_Bld_Bunkhouse/build.py --out-root build/prod/M_Bld_Bunkhouse \
@@ -35,16 +39,15 @@ sys.path.insert(0, HERE)
 import bkgeo as H  # noqa: E402
 import budgets  # noqa: E402
 import names  # noqa: E402
+import palette as P  # noqa: E402
 import versions  # noqa: E402
 
 NAME = "M_Bld_Bunkhouse"
-MATS = {k: H.material(k, *v) for k, v in {
-    "Log1": ("#C98E52", 0.5), "Log2": ("#BC7F43", 0.5), "LogDark": ("#7A4A26", 0.5), "Cream": ("#EFE4C8", 0.55),
-    "Plinth": ("#A3A2A5", 0.55), "Floor": ("#DDC592", 0.55), "Blue": ("#2860D0", 0.4), "Red": ("#E03828", 0.4),
-    "Yellow": ("#F2C230", 0.45), "Green": ("#50BE5A", 0.45), "Orange": ("#FA8C1E", 0.45), "White": ("#F6F4EE", 0.42),
-    "Navy": ("#1E2C42", 0.4), "Lamp": ("#FFC95A", 0.5), "Steel": ("#8A8E94", 0.35), "Wood": ("#B07A44", 0.5),
-    "Cork": ("#CDB68A", 0.6), "Purple": ("#8A4FC8", 0.45), "OwnerColour": ("#E03828", 0.38),
-    "Brick": ("#B8442E", 0.5), "Glass": ("#96CDF0", 0.2)}.items()}
+SET_NAME, SET = "Bunkhouse", "Brick"
+TEX = os.path.normpath(os.path.join(HERE, "../../../../build/prod", NAME, "textures", NAME))
+STEM = "T_%s_%s_" % (SET_NAME, SET)
+MATS = {k: (H.material("MI_Lamp" if k == "Lamp" else "MI_Bunkhouse_Brick", TEX, STEM), P.CELL[k]) for k in P.COLOURS}
+# the Lamp panes keep their own material (same palette set) so views.py can light them in the night render
 
 CH, TS, GROOVE = 2.0, 1.0, 0.0                   # log course, wall thickness, groove (courses touch; two tones tell them apart)
 FLOOR, FL1 = 1.0, 1.1                            # plinth top, Lv1 floor top
@@ -66,7 +69,7 @@ ATTS = []
 def G(level, layer, word, mat):
     key = (level, layer, word)
     if key not in GL:
-        GL[key] = H.Group("%s_%s_%s_%s_LOD0" % (NAME, level, layer, word), MATS[mat])
+        GL[key] = H.Group("%s_%s_%s_%s_LOD0" % (NAME, level, layer, word), *MATS[mat])
     return GL[key]
 
 
@@ -640,21 +643,6 @@ LOD_FLOOR = {"LOD1": 12, "LOD2": 12}
 LOD_MIN = {"LOD1": 24, "LOD2": 72}      # small fittings (studs, ropes, rails, bulbs) are culled from the far LODs
 
 
-def box_uv(obj):
-    me = obj.data
-    uv = me.uv_layers.get("UVMap") or me.uv_layers.new(name="UVMap")
-    lo = [min(v.co[i] for v in me.vertices) for i in range(3)]
-    hi = [max(v.co[i] for v in me.vertices) for i in range(3)]
-    span = [(hi[i] - lo[i]) or 1.0 for i in range(3)]
-    for poly in me.polygons:
-        n = poly.normal
-        axis = max(range(3), key=lambda i: abs(n[i]))
-        a, b = [i for i in range(3) if i != axis]
-        for li in poly.loop_indices:
-            co = me.vertices[me.loops[li].vertex_index].co
-            uv.data[li].uv = ((co[a] - lo[a]) / span[a], (co[b] - lo[b]) / span[b])
-
-
 def add_lods(spec):
     out = []
     for e in [x for x in spec["meshes"] if x.get("role", "visual") == "visual" and x.get("lod", "LOD0") == "LOD0"
@@ -674,7 +662,6 @@ def add_lods(spec):
                     if target >= tris:
                         break
                     target = min(tris, target + 4)
-            box_uv(obj)
             versions.weighted_normals(obj)
             entry = {"object": obj, "role": "visual", "lod": lod, "of": src.name}
             if e.get("set"):
@@ -684,10 +671,13 @@ def add_lods(spec):
 
 
 def collision(level):
-    g = H.Group("%s_%s_Col_COL" % (NAME, level), MATS["Plinth"])
-    for c, s in COLS[level]:
+    """One object per box: Roblox hulls each MeshPart, so a multi-box _COL would fill the doorways between its boxes."""
+    out = []
+    for i, (c, s) in enumerate(COLS[level], 1):
+        g = H.Group("%s_%s_Col%02d_COL" % (NAME, level, i), *MATS["Plinth"])
         g.box(c, s, 0.0)
-    return g.done()
+        out.append(g.done())
+    return out
 
 
 def build():
@@ -707,14 +697,14 @@ def build():
         ob = g.done()
         ob.parent = NODES[level]
         visual.append(ob)
-    cols = [collision(lv) for lv in COLS if COLS[lv]]
+    cols = [ob for lv in COLS for ob in collision(lv)]
     for ob in cols:
         ob.parent = NODES[[lv for lv in COLS if "_%s_" % lv in ob.name][0]]
 
     meshes = []
     for ob in visual:
         ob.data.name = ob.name
-        meshes.append({"object": ob, "set": "OwnerColour" if "OwnerColour" in ob.name else None})
+        meshes.append({"object": ob, "set": SET})
     meshes += [{"object": c} for c in cols]
 
     pts = [ob.matrix_world @ v.co for ob in visual for v in ob.data.vertices]
@@ -730,9 +720,10 @@ def build():
         "name": NAME, "budget": "large_prop", "tier": "standard",
         "dims_m": (dims[0] / 3.0, dims[1] / 3.0, dims[2] / 3.0),
         "size_note": "Lv1 to Lv5 together incl. the Lv4 west wing, the east stair, the back stair, the balcony and the flag pole",
-        "origin": "free", "sets": [],
-        "waivers": {"texture sets": "Lego rule docs/05 5: flat Material colours, no per-building PBR set",
-                    "LOD UV layout": "Lego flat colours: no texture is sampled, so the LOD UV layout is not kept"},
+        "origin": "free", "tiling": True,
+        "sets": [{"name": SET_NAME, "set": SET, "size": P.SIZE, "wet": False}],
+        "waivers": {"LOD UV layout": "flat palette cells (one colour per mesh): decimation moves UVs inside the "
+                                     "cell, UVs are not a unique unwrap by design (tiling=True skips the density check)"},
         "meshes": meshes, "attachments": ATTS,
         "closeups": [
             {"name": "Lv1Door", "target": [0.0, -10.0, 6.0], "dist": 24.0, "az": 24.0, "el": 10.0},

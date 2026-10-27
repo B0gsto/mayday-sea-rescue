@@ -2,13 +2,15 @@
 
 One Group is one mesh (one colour, one construction layer). Geometry is written straight into a bmesh in world
 studs; the object stays at identity so validate's transforms-applied / origin rules hold. UVs are a box projection
-(each mesh has no PBR set; the projection keeps the LOD UV layout within the pipeline's 15% area tolerance).
+squeezed into the mesh's palette cell (palette.py), so the flat T_RescueHQ_Brick set shows its colour.
 """
 import math
 
 import bmesh
 import bpy
 from mathutils import Matrix, Vector
+
+import palette as P
 
 STUD_R = 0.62
 
@@ -47,9 +49,10 @@ def material(key, hex_colour, rough=0.5, metal=0.0, alpha=1.0):
 
 
 class Group:
-    def __init__(self, name, mat):
+    def __init__(self, name, mat, cell=0):
         self.name = name
         self.mat = mat
+        self.cell = cell
         self.bm = bmesh.new()
 
     # ---------------------------------------------------------------- primitives
@@ -141,7 +144,7 @@ class Group:
             a, b = [i for i in range(3) if i != axis]
             for loop in f.loops:
                 co = loop.vert.co
-                loop[uv].uv = ((co[a] - lo[a]) / span[a], (co[b] - lo[b]) / span[b])
+                loop[uv].uv = P.cell_uv(self.cell, (co[a] - lo[a]) / span[a], (co[b] - lo[b]) / span[b])
         mesh = bpy.data.meshes.new(self.name)
         bm.to_mesh(mesh)
         bm.free()

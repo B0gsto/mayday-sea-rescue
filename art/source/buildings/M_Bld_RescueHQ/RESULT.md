@@ -1,11 +1,22 @@
 # M_Bld_RescueHQ result (round 4, 2026-10-27, docs/25 J walk-in)
 
-Validate PASS (1713 checks, 0 failed, 62 waived: texture sets and LOD UV layout for the Lego flat colours). LOD0
-10,108 tris (Lv1 4,948 incl. interior, unchanged / Lv2 additions 5,160), LOD1 4,264, LOD2 2,148 (exported, incl. COL).
+Validate PASS (1637 checks, 0 failed, 59 waived: texture sets (1 flat set on a hero_building) and LOD UV layout
+for the palette cells). LOD0 10,108 visual tris (+300 in the 25 `_COL` boxes, all in the LOD0 FBX) (Lv1 4,948 incl. interior, unchanged / Lv2 additions 5,160), LOD1 4,264, LOD2 2,148 (exported, incl. COL).
 Wall triangles (skin + cream core + red base course): Lv1 1,944, Lv2 1,908 (budgets 5k / 9k / 2k). Hand-made LODs
 (floors 40 / 24 tris); steps run: build, validate, export, turntable (no `lod` step).
 Bbox 34.3 x 23.8 x 31.4 studs (Lv1 + Lv2, origin = lot centre at ground level, `origin: free`), door faces -Y
 (Roblox -Z). Flat colours, one per mesh.
+
+## Studio fix (2026-10-27): textures and walk-in collision (look, shapes and layout unchanged)
+- Texture set `T_RescueHQ_Brick` (ALB / NOR / RGH / MET, 1024, `palette.py` + `maketex.py`, like the Depot) in
+  `build/prod/M_Bld_RescueHQ/textures/M_Bld_RescueHQ/`: a 4x4 palette of the 13 round-4 colours (exact hex; per-cell
+  roughness / metal, flat normal). Each mesh's box-projected UVs are squeezed into its colour's cell (LODs too);
+  OwnerColour doors use Red's cell. Spec `sets` = that one set, every visual mesh `set: Brick`, `tiling: True`.
+  Run `maketex.py` before validate (see build.py's docstring). Glass is opaque light blue in the texture (no alpha).
+- Collision: one object per convex box, `M_Bld_RescueHQ_Lv<l>_Col<NN>_COL`: Lv1 13, Lv2 12. Roblox no longer hulls
+  several boxes into one piece, so the front / east doorways and the wing link stay fully open.
+- Game side to follow (not in this folder): `src/shared/DockPieces.luau` levelMesh reads the level from
+  `_Lv(%d)_Col_COL$`; it must also match `_Lv(%d)_Col%d+_COL$`, else every Lv2 box shows at Lv1.
 
 ## Round 4 changes (art director round 3: Lv1 8.5 ships, Lv2 8): Lv2 only, Lv1 untouched
 1. Top-down read: the deck is red tiles (`Lv2_L05_Deck` now Red, red studs) with 4 darker course lines
@@ -44,7 +55,7 @@ Attachments (moved onto the new plaques): ATT_Sign_01 (0, -10.12, 9.45), ATT_Sig
 
 ## Walk-in
 Front doorway 6 wide (5.2 clear, 6.6 high), east side doorway 6 wide, tan floor, red runner, nothing on the floor.
-`_Lv1_Col_COL` / `_Lv2_Col_COL`: per-level separate boxes, doorways and interiors open (Lv2 boxes follow the
+`_Lv1_Col01_COL`.. / `_Lv2_Col01_COL`..: one object per box, doorways and interiors open (Lv2 boxes follow the
 storey, deck, round-4 watch room + overhanging roof and thin mast; the wing link stays open).
 
 ## Renders
