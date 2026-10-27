@@ -7,10 +7,10 @@
 --   fps      Loop / PingPong frame rate; random: start on a random frame (variant sheets)
 -- Store picks: docs/26-vfx-sources.md (each id checked on economy.roblox.com; free proof = the free public model or
 -- Roblox Resources decal it ships in). A third-party image can be moderated later: replace store art with our own
--- Lego flipbooks before launch. TODO(blender flipbook): lego_plates, confetti_bricks and coin wait on our sheets.
+-- Lego flipbooks before launch. Ours win: art/source/vfx (render.py, RESULT.md), AD 8.6, 2026-10-28; the store id
+-- each replaced stays as a commented fallback.
 local Config = script.Parent
 local AssetIds = require(Config.AssetIds)
-local UiImages = require(Config.UiImages)
 
 export type Texture = {
 	id: string,
@@ -21,33 +21,62 @@ export type Texture = {
 }
 
 local Fx = (AssetIds :: any).Fx :: { [string]: string }
-local CONFETTI = "rbxassetid://241685484" -- russelnuts, a white square (in model 688963157 Confetti Particles), tinted
 
 return table.freeze({
-	-- GoldenMan_Dev, stylized splash ring rising into a crown (in model 16354714995 Golden Particle Pack)
-	splash_crown = { id = "rbxassetid://17063077953", layout = "Grid4x4", mode = "OneShot" },
-	-- dragonome, a white teardrop (in model 688959832 Rain Particle, Nanonauts)
-	droplets = { id = "rbxassetid://243132757", layout = "None", mode = "Loop" },
-	-- Roblox Resources "water_splash_ring", a soft foam donut (decal 16811365121, public domain)
-	foam_ring = { id = "rbxassetid://16811365086", layout = "None", mode = "Loop" },
+	-- ours: a Lego splash ring rising into a crown (fallback: GoldenMan_Dev 17063077953, Grid4x4)
+	splash_crown = { id = "rbxassetid://105078983093984", layout = "Grid4x4", mode = "OneShot" },
+	-- ours: chunky drop variants, one per particle (fallback: dragonome teardrop 243132757, None)
+	droplets = {
+		id = "rbxassetid://124291314580825",
+		layout = "Grid2x2",
+		mode = "Loop",
+		fps = 0,
+		random = true,
+	},
+	-- ours: a foam ring whose blobs pop out, top-down (fallback: Roblox Resources 16811365086, None)
+	foam_ring = { id = "rbxassetid://97781101719165", layout = "Grid4x4", mode = "OneShot" },
 	-- ours: the FX1 bow sheet (8x8), the boats' bow spray too
 	bow_wave = { id = Fx.FX_Spray_BowSheet, layout = "Grid8x8", mode = "OneShot" },
-	-- GoldenMan_Dev, chunky cartoon puffs that pop and shrink (in model 16354714995)
-	puff_smoke = { id = "rbxassetid://16664772965", layout = "Grid4x4", mode = "OneShot" },
-	-- TODO(blender flipbook) lego_plates: the tinted confetti square stands in for a flat Lego plate
-	lego_plates = { id = CONFETTI, layout = "None", mode = "Loop" },
-	-- TODO(blender flipbook) confetti_bricks: the tinted confetti square until our brick sheet lands
-	confetti_bricks = { id = CONFETTI, layout = "None", mode = "Loop" },
-	-- TODO(blender flipbook) coin: the HUD's coin sprite until our spinning coin sheet lands
-	coin = { id = UiImages.Hud.Coin, layout = "None", mode = "Loop" },
-	-- IxJoke, a thick white ring that grows and thins (in model 112672322113504 / 16354714995)
-	shockwave_ring = { id = "rbxassetid://16477162837", layout = "Grid4x4", mode = "OneShot" },
+	-- ours: studded puff balls that grow, shrink and pop, no alpha fade (fallback: GoldenMan_Dev 16664772965, Grid4x4)
+	puff_smoke = { id = "rbxassetid://118276956792285", layout = "Grid4x4", mode = "OneShot" },
+	-- ours: flat plate / tile variants (fallback: russelnuts white square 241685484, tinted)
+	lego_plates = {
+		id = "rbxassetid://110924692483658",
+		layout = "Grid2x2",
+		mode = "Loop",
+		fps = 0,
+		random = true,
+	},
+	-- ours: brick / plate variants (fallback: the tinted square 241685484)
+	confetti_bricks = {
+		id = "rbxassetid://101996281678498",
+		layout = "Grid2x2",
+		mode = "Loop",
+		fps = 0,
+		random = true,
+	},
+	-- ours: a spinning coin loop (fallback: the HUD coin UiImages.Hud.Coin, None)
+	coin = {
+		id = "rbxassetid://138851004137338",
+		layout = "Grid4x4",
+		mode = "Loop",
+		fps = 24,
+		random = true,
+	},
+	-- ours: one chunky white ground ring that grows, tinted (fallback: IxJoke 16477162837, Grid4x4)
+	shockwave_ring = { id = "rbxassetid://113712077274625", layout = "Grid4x4", mode = "OneShot" },
 	-- Arro_x, a soft-edged ring disc (in model 10198615035 Rei's Particle Pack); tinted gold
 	glow_ring = { id = "rbxassetid://838367768", layout = "None", mode = "Loop" },
-	-- Snaliel, an elongated drop streak (in model 10198615035): the thin rain streak vanished on the rim at 20+ studs
-	spin_streak = { id = "rbxassetid://6763809313", layout = "None", mode = "Loop" },
-	-- m27frogy, the classic thin rain streak (in model 483675631 Rain (Particle))
-	rain_streak = { id = "rbxassetid://241868005", layout = "None", mode = "Loop" },
+	-- ours: one arc, spun by the layer's RotSpeed; frames only change the sweep (fallback: Snaliel 6763809313, None)
+	spin_streak = { id = "rbxassetid://100897359653428", layout = "Grid2x2", mode = "OneShot" },
+	-- ours: rain streak variants (fallback: m27frogy 241868005, None)
+	rain_streak = {
+		id = "rbxassetid://86454296521550",
+		layout = "Grid2x2",
+		mode = "Loop",
+		fps = 0,
+		random = true,
+	},
 	-- Snaliel, an elongated drop streak (in model 10198615035)
 	sea_spray = { id = "rbxassetid://6763809313", layout = "None", mode = "Loop" },
 	-- TheeTatahThailand, a glossy round bubble (in model 5463907036 Bubble effect!)
