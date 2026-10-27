@@ -264,6 +264,10 @@ docs/24 G-a2 (the build tablet as a tree) is dropped.
   Tapping a building card on the build tablet moves the camera to that building (or its lot).
 - **Loading → play:** when the loading screen ends the camera tweens straight from the top view to the player. No orbit,
   no stop at the spawn point.
+- **Walk-in buildings, no clutter (owner 2026-10-27):** you can walk into every building and object (wide openings,
+  walkable floor, collision that keeps the doorway and interior open, never one box). Inside you see where the
+  survivors work and what they get (e.g. the Depot: brick stacks on racks by colour, marked pick-up and drop spots,
+  a clear walkway). No loose props on the floor; detail sits on walls, racks and counters.
 - **Art:** new building art is made in Blender, Lego style, as layered meshes so the construction rise still works.
   Each asset gets an art-director score; it ships at > 8/10, at most 3 rounds (a 4th only if truly necessary).
 
