@@ -84,7 +84,7 @@ end
 
 local function effectsOf(player: Player, data: ProgressionRules.PlayerData): WorkerRules.Effects
 	return WorkerRules.effects(
-		WorkerRules.units(data.workers, data.dockBuildings, extraSlots(player)),
+		WorkerRules.crew(data.workers, data.dockBuildings, extraSlots(player)),
 		skillOf(player)
 	)
 end
@@ -208,9 +208,10 @@ local function buildSpot(bay: CFrame, key: string, n: number, count: number): CF
 	return CFrame.lookAt(p, at.Position + Vector3.new(0, 0.8, 0))
 end
 
--- One worker as data for the clients (WorkerController draws the rig): attributes WorkerCategory, WorkerRarity,
--- WorkerName, Rig (a WorkerRigs template), Spot (feet CFrame), Work (at their building), From (walk in from
--- here), Job (the animation loop another client controller plays).
+-- One worker as data for the clients (WorkerController draws the rig): docs/25 K1 attributes SurvivorName,
+-- Rarity, Category, Trait, Special, Workplace (the building key, "" while waiting) and Job (the animation loop
+-- another client controller plays); plus WorkerCategory, WorkerRarity, WorkerName for the current badge, Rig
+-- (a WorkerRigs template), Spot (feet CFrame), Work (at their building) and From (walk in from here).
 local function publish(
 	parent: Instance,
 	i: number,
@@ -218,10 +219,17 @@ local function publish(
 	spot: CFrame,
 	work: boolean,
 	from: CFrame?,
-	job: string
+	job: string,
+	workplace: string?
 ): Configuration
 	local cfg = Instance.new("Configuration")
 	cfg.Name = tostring(i)
+	cfg:SetAttribute("SurvivorName", w.name)
+	cfg:SetAttribute("Rarity", w.rarity)
+	cfg:SetAttribute("Category", w.category)
+	cfg:SetAttribute("Trait", w.trait or "")
+	cfg:SetAttribute("Special", w.special or "")
+	cfg:SetAttribute("Workplace", workplace or "")
 	cfg:SetAttribute("WorkerCategory", w.category)
 	cfg:SetAttribute("WorkerRarity", w.rarity)
 	cfg:SetAttribute("WorkerName", w.name)
@@ -276,6 +284,10 @@ local function sync(player: Player)
 			idle += 1
 			spot = if idle <= WorkerService.IDLE_SHOWN then idleSpot(bay, idle) else nil
 		end
+		local workplace = if order[i] and site
+			then site
+			elseif place[i] then WorkerRules.buildingOf(w.category) or ""
+			else ""
 		local cfg = st.shown[i]
 		if not spot then
 			if cfg then
@@ -291,24 +303,36 @@ local function sync(player: Player)
 				spot,
 				job ~= "Idle",
 				if st.fresh[i] then arrival(bay) else nil,
-				job
+				job,
+				workplace
 			)
 			st.fresh[i] = nil
 		else
 			cfg:SetAttribute("Spot", spot) -- same value: no change, nothing replicates
 			cfg:SetAttribute("Work", job ~= "Idle")
 			cfg:SetAttribute("Job", job)
+			cfg:SetAttribute("Workplace", workplace)
 		end
 	end
 end
 
--- Recruit: a survivor landed at `player`'s berth (RescueService). Past the cap only a rarer one stays (admit).
-function WorkerService.Recruit(player: Player, category: any, rarity: any, name: any)
+-- Recruit: a survivor landed at `player`'s berth (RescueService), rolled at spawn. Past the cap only a rarer
+-- one stays (admit).
+function WorkerService.Recruit(
+	player: Player,
+	category: any,
+	rarity: any,
+	name: any,
+	trait: any?,
+	special: any?
+)
 	local data = DataService.Get(player)
 	if not data then
 		return
 	end
-	local clean = WorkerRules.clean({ { category = category, rarity = rarity, name = name } })[1]
+	local clean = WorkerRules.clean({
+		{ category = category, rarity = rarity, name = name, trait = trait, special = special },
+	})[1]
 	local cap = WorkerRules.CAP + (tonumber(player:GetAttribute("SkillWorkerCapAdd")) or 0)
 	local i = clean and WorkerRules.admit(data.workers, clean, cap)
 	if not i then
@@ -386,9 +410,13 @@ local function rescueTrip(player: Player, st: State, bay: CFrame, cash: number, 
 		end
 		ProgressionService.Award(player, cash, "Workers:Rescue", true)
 		if rng:NextNumber() < chance then
-			local rare = tonumber(player:GetAttribute("SkillRareChanceAdd")) or 0
-			local category, rarity, name = WorkerRules.roll(rng:NextInteger(1, 2147483646), rare)
-			WorkerService.Recruit(player, category, rarity, name)
+			-- an NPC rescue-boat recruit rolls at recruit time as before (no pity)
+			local data = DataService.Get(player)
+			local w = WorkerRules.roll(rng:NextInteger(1, 2147483646), {
+				rareAdd = tonumber(player:GetAttribute("SkillRareChanceAdd")) or 0,
+				owned = if data then WorkerRules.ownedSpecials(data.workers) else nil,
+			})
+			WorkerService.Recruit(player, w.category, w.rarity, w.name, w.trait, w.special)
 		end
 	end)
 end
@@ -505,7 +533,13 @@ function WorkerService.Init()
 						for _, category in WorkerRules.CATEGORIES do
 							for slot = 1, WorkerRules.slots({ Station = true }) do
 								n += 1
-								local w = { category = category, rarity = 1 + n % 3, name = "Fill" }
+								local w = {
+									category = category,
+									rarity = 1 + n % 3,
+									name = "Fill",
+									trait = "",
+									special = "",
+								}
 								publish(
 									ff,
 									n,
@@ -519,7 +553,13 @@ function WorkerService.Init()
 						end
 						for idle = 1, WorkerService.IDLE_SHOWN do
 							n += 1
-							local w = { category = "Medic", rarity = 1, name = "Fill" }
+							local w = {
+								category = "Medic",
+								rarity = 1,
+								name = "Fill",
+								trait = "",
+								special = "",
+							}
 							publish(ff, n, w, idleSpot(bay, idle), false, nil, "Idle")
 						end
 						ff.Parent = dataRoot

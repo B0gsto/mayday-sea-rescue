@@ -11,7 +11,7 @@ export type VehicleUnlock = {
 
 local ProgressionConfig = {}
 
-ProgressionConfig.SchemaVersion = 1
+ProgressionConfig.SchemaVersion = 2 -- v2: survivors v2 (six rarities, traits, specials, pity)
 
 ProgressionConfig.Vehicles = {
 	JetSki = { price = 0 },

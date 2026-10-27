@@ -1403,6 +1403,7 @@ end
 local function activate(op: any, player: Player)
 	op.state = "Active"
 	op.owner = player
+	op.scene.owner = player -- docs/25 K1: the survivors roll (with this player's pity) when they spawn
 	op.acceptedAt = now()
 	op.storm = weatherState() == "Storm"
 	local members = freeCrewOf(player)
@@ -1972,6 +1973,7 @@ function OperationService.StartColdOpen(
 	op.offeredTo = { player }
 	op.state = "Active"
 	op.owner = player
+	op.scene.owner = player
 	op.acceptedAt = now()
 	st.activeOpId = op.id
 	table.insert(op.members, player)

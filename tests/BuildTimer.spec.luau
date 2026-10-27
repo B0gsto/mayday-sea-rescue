@@ -32,7 +32,8 @@ return function(t)
 		t.expect(B.units(many)).toBeCloseTo(2 * W.RARITY_MULT[3] + B.BUILDERS - 2, 1e-9)
 		local mixed = { worker("Gatherer", 3), worker("Builder", 2), worker("Builder", 1) }
 		t.expect(B.builders(mixed)).toEqual({ 2, 3 })
-		t.expect(B.rateOf(mixed)).toBeCloseTo(1 + B.PER * 2.5, 1e-9)
+		t.expect(B.rateOf(mixed))
+			.toBeCloseTo(1 + B.PER * (W.RARITY_MULT[2] + W.RARITY_MULT[1]), 1e-9)
 	end)
 
 	t.test("the skill tree raises the builder count, rate and base crew", function()
