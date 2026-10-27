@@ -248,7 +248,7 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 				angle = n.angle,
 				sector = n.sector,
 				keystone = n.keystone,
-				state = if owned[n.id] then "owned" else "buyable",
+				state = if owned[n.id] then "owned" elseif n.soon then "soon" else "buyable",
 				focus = n.focus,
 				needs = n.needs,
 			})

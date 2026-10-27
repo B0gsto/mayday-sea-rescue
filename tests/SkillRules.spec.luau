@@ -189,6 +189,41 @@ return function(t)
 		end
 	end)
 
+	t.test(
+		"visible: a sector's soon nodes appear only once every buyable node of that sector is owned",
+		function()
+			local soonSector: string? = nil
+			for _, n in S.nodes() do
+				if n.soon then
+					soonSector = n.sector
+					break
+				end
+			end
+			if not soonSector then
+				return
+			end
+			local all: { [string]: boolean } = {}
+			local soonIds = {}
+			for _, n in S.nodes() do
+				if n.sector == soonSector then
+					if n.soon then
+						table.insert(soonIds, n.id)
+					else
+						all[n.id] = true
+					end
+				end
+			end
+			for _, id in soonIds do
+				t.expect(S.visible(all)[id]).toBe(true)
+			end
+			local missing = next(all)
+			all[missing :: string] = nil
+			for _, id in soonIds do
+				t.expect(S.visible(all)[id]).toBe(nil)
+			end
+		end
+	)
+
 	t.test("visible: owned + unlockable next only, rim nodes hidden, a buy reveals more", function()
 		local first = S.visible({})
 		local count = 0

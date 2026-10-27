@@ -268,6 +268,7 @@ docs/24 G-a2 (the build tablet as a tree) is dropped.
   into a bottom-left minimap and slides in a big card (icon, name, effect, Medal price button; minimap / X / B / Esc /
   empty tap restore it); Captain nodes never move the camera, the others focus your rarest survivor of the type; no
   looping or orange pulses, only one gentle pop and steady outlines.
+- **Update teasers (owner 2026-10-28):** a sector's "soon" rim nodes stay hidden until you own every buyable node of that sector, then appear greyed with a "Soon" button (not buyable).
 - **Loading → play:** when the loading screen ends the camera tweens straight from the top view to the player. No orbit,
   no stop at the spawn point.
 - **Walk-in buildings, no clutter (owner 2026-10-27):** you can walk into every building and object (wide openings,

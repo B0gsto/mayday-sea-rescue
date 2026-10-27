@@ -819,10 +819,25 @@ end
 
 -- The nodes the tree shows (owner 2026-10-28): owned ones and the ones that unlock next (needs met,
 -- affordable or not). Soon rim nodes never unlock, so they stay hidden until they ship.
+-- docs/25 J (owner 2026-10-28): an update's "soon" rim nodes appear (greyed, not buyable) once every buyable
+-- node of their sector is owned: the teaser for what the next update adds there.
 function SkillRules.visible(owned: { [string]: boolean }): { [string]: boolean }
 	local out: { [string]: boolean } = {}
+	local done: { [string]: boolean } = {}
 	for _, n in SkillRules.NODES do
-		if owned[n.id] == true or (not n.soon and needsMet(owned, n)) then
+		if done[n.sector] == nil then
+			done[n.sector] = true
+		end
+		if not n.soon and owned[n.id] ~= true then
+			done[n.sector] = false
+		end
+	end
+	for _, n in SkillRules.NODES do
+		if
+			owned[n.id] == true
+			or (not n.soon and needsMet(owned, n))
+			or (n.soon and done[n.sector])
+		then
 			out[n.id] = true
 		end
 	end

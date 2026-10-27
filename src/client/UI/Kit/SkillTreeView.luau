@@ -40,7 +40,7 @@ local DIVIDER = Color3.fromHex("122033")
 local ICON_OWNED = Color3.fromHex("132232")
 local GOLD = Color3.fromHex("FFC928")
 
-export type State = "owned" | "buyable"
+export type State = "owned" | "buyable" | "soon" -- soon: an update's teaser, greyed, never buyable
 export type Node = {
 	id: string,
 	name: string,
@@ -89,8 +89,9 @@ local MINI = 0.3 -- the minimap's share of the screen
 local FIT_PAD = 110 -- du round the visible nodes (keystone labels hang 70 below the badge)
 local TOP_BAR = 90 -- du under the title / Medals / X bar
 
+local SOON = { name = "Soon", color = Color3.fromRGB(150, 156, 168) }
 local function sectorOf(n: Node): { name: string, color: Color3 }
-	return SECTOR[n.sector] or SECTOR.Bridge
+	return if n.state == "soon" then SOON else SECTOR[n.sector] or SECTOR.Bridge
 end
 
 -- ---------------------------------------------------------------------------------------------
@@ -797,6 +798,9 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		if owned then
 			pb.setState("owned")
 			pb.setText(nil)
+		elseif n.state == "soon" then
+			pb.setState("disabled")
+			pb.setText("Soon")
 		elseif buying then
 			pb.setState("disabled")
 			pb.setText("...")
@@ -943,7 +947,7 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 				glow.ImageTransparency = 0.78
 				glow.ZIndex = 0
 			end
-		else -- unlockable next: a steady soft halo, no looping pulse (owner 2026-10-28)
+		elseif n.state == "buyable" then -- unlockable next: a steady soft halo, no looping pulse (owner 2026-10-28)
 			local halo = octImage(b, "fill", look.color, look.color, false, badge * 1.5)
 			if halo then
 				halo.ImageTransparency = 0.7
