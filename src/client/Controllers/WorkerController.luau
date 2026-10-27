@@ -4,13 +4,17 @@
 -- (ReplicatedStorage.WorkerRigs) into Workspace.WorkersLocal for each one within NEAR studs of you, drops it
 -- past FAR, animates it only within LIVELY (a still pose beyond), and walks it along a cached
 -- PathfindingService route when its Spot changes (a new recruit walks in from the jetty). At their building each
--- Job loops a stock animation with a small code-built prop (docs/24 C): Build hammers, Fish carries a crate,
--- Repair turns a wrench, Rescue scans with binoculars, Heal holds a clipboard, Gather saws, Idle stands. With the
+-- Job loops 2-3 beats of a stock animation with a small code-built prop (WorkLoop, docs/25 G): Build hammers, Fish
+-- serves at the counter, hauls a net and carries a crate back, Repair wrenches round the hull, Rescue scans with
+-- binoculars and checks the boat, Heal walks the beds with a clipboard, Gather saws, Idle stands; holds and walk
+-- speeds vary per worker so a crew never moves in step. At night (WorkLoop.isNight on Lighting.ClockTime) each
+-- Bunkhouse floor gets a warm PointLight and the roof a "Zzz". With the
 -- uploaded Depot standing (docs/25 D, K4) Haulers push a crate cart barge -> pile and a site's Builders carry brick
 -- stacks over their heads pile -> site, paced by HaulRate / CarryRate, waiting at the pile while SiteWaiting. Every
 -- rig gets its rarity name tag and info card (SurvivorController); each yard shows one crew badge (icon + count)
 -- instead of one per worker. Gatherer/Rescuer pay pops a "+$". It also plays the offline earnings welcome: a
 -- coin burst into the wallet and a Toast when the player attribute WorkerOffline arrives.
+local Lighting = game:GetService("Lighting")
 local PathfindingService = game:GetService("PathfindingService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -21,6 +25,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Marina = require(Shared:WaitForChild("Marina"))
 local Net = require(Shared:WaitForChild("Net"))
+local WorkLoop = require(Shared:WaitForChild("WorkLoop"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local CashBurst = require(UI:WaitForChild("CashBurst"))
 local DepotController = require(script.Parent:WaitForChild("DepotController"))
@@ -71,7 +76,10 @@ type Rec = {
 	loaded: { [string]: AnimationTrack },
 	lively: boolean,
 	walking: {}?, -- the running walk's token
-	carry: ("walk" | "rest")?, -- a Gatherer's crate loop, while it runs
+	carry: ("walk" | "rest")?, -- a work / haul / carry loop, while it runs
+	beat: WorkLoop.Beat?, -- the work loop's beat now (its anim and prop)
+	beatI: number?, -- the last beat played; nil until the first loop (which starts late, out of step)
+	speed: number, -- walk studs/s
 }
 
 local anims: { [string]: Animation } = {} -- one Animation per id, shared by every rig
@@ -128,8 +136,9 @@ local function pose(r: Rec)
 		else
 			want.Idle = true
 			local w = work(r)
-			if w and w.anim then
-				want[w.anim] = true
+			local anim = if r.beat then r.beat.anim else w and w.anim
+			if w and anim then
+				want[anim] = true
 			end
 		end
 	end
@@ -152,8 +161,8 @@ local function pose(r: Rec)
 		end
 		if not track.IsPlaying then
 			track:Play(0.2)
-			track:AdjustSpeed(if name == "Swing" then 0.45 else 1)
 		end
+		track:AdjustSpeed(r.beat and r.beat.speed or if name == "Swing" then 0.45 else 1)
 	end
 end
 
@@ -180,6 +189,9 @@ local function dress(r: Rec)
 	end
 	local w = work(r)
 	local want = w and w.prop
+	if w and r.beat and r.beat.prop then
+		want = if r.beat.prop == "" then nil else r.beat.prop
+	end
 	for _, d in rig:GetDescendants() do
 		if d:GetAttribute("WorkProp") and not (want and string.sub(d.Name, 1, #want) == want) then
 			d:Destroy()
@@ -236,6 +248,21 @@ local function dress(r: Rec)
 				CFrame.new(0.7, 1.35, 0.1)
 			)
 		end
+	elseif want == "Net" then -- a bundled net with a float, hauled in hand over hand
+		brick(
+			want,
+			Vector3.new(1.1, 0.8, 1.1),
+			Color3.fromRGB(40, 120, 90),
+			hand,
+			g * CFrame.new(0, 0, -0.4)
+		)
+		brick(
+			`{want}Float`,
+			Vector3.new(0.5, 0.5, 0.5),
+			Color3.fromRGB(242, 140, 30),
+			hand,
+			g * CFrame.new(0, 0.55, -0.4)
+		)
 	elseif want == "Saw" then -- a handle and a flat blade
 		brick(
 			want,
@@ -342,6 +369,7 @@ local function dropRig(r: Rec)
 		r.loaded = {}
 	end
 	r.walking = nil
+	r.beat = nil
 end
 
 -- shortcut: routes are cached 30 s by 4-stud cells, so a building placed meanwhile is walked through until then
@@ -388,47 +416,11 @@ local function stride(r: Rec, root: BasePart, to: Vector3)
 	root.CFrame = CFrame.new(at) * face
 	local tween = TweenService:Create(
 		root,
-		TweenInfo.new((target - at).Magnitude / WALK_SPEED, Enum.EasingStyle.Linear),
+		TweenInfo.new((target - at).Magnitude / r.speed, Enum.EasingStyle.Linear),
 		{ CFrame = CFrame.new(target) * face }
 	)
 	tween:Play()
 	tween.Completed:Wait()
-end
-
--- A Gatherer at its stall paces with crates along the counter and back, a short rest at each end, while near.
-local function carry(r: Rec)
-	local rig = r.rig
-	local root = rig and rig.PrimaryPart
-	if not (rig and root) then
-		return
-	end
-	-- a short step each way along the counter: wider paces walked into the next stall's worker (docs/24 C art r3)
-	local legs = { r.feet * CFrame.new(-1.2, 0, 0), r.feet * CFrame.new(1.2, 0, 0) }
-	local function on(): boolean
-		return r.rig == rig and r.lively and not r.walking and jobOf(r) == "Fish"
-	end
-	r.carry = "rest"
-	task.spawn(function()
-		local i = 0
-		while on() do
-			i = i % 2 + 1
-			r.carry = "walk"
-			pose(r)
-			stride(r, root, legs[i].Position)
-			if not on() then
-				break
-			end
-			r.carry = "rest"
-			root.CFrame = CFrame.new(root.Position) * r.feet.Rotation -- set the crate down facing the counter
-			pose(r)
-			task.wait(0.6 + math.random() * 0.8) -- uneven, so a crew never paces in step
-		end
-		r.carry = nil
-		if r.rig == rig and not r.walking then
-			place(r)
-			pose(r)
-		end
-	end)
 end
 
 -- docs/25 D flows 1 and 2: one leg after another (a route per leg); false when the loop should stop
@@ -448,6 +440,71 @@ end
 
 local function feetOf(r: Rec, root: BasePart): Vector3
 	return root.Position - Vector3.new(0, r.height, 0)
+end
+
+local function seedOf(cfg: Configuration): number
+	return (tonumber(cfg.Parent and cfg.Parent.Name) or 0) + (tonumber(cfg.Name) or 0) * 131
+end
+
+-- One pass of the worker's WorkLoop beats at its Spot (cullPass starts the next, so a Builder's site or a Depot
+-- that stands up meanwhile takes over); short straight steps inside the building, no route.
+local function loop(r: Rec)
+	local rig = r.rig
+	local root = rig and rig.PrimaryPart
+	local job = jobOf(r)
+	local beats = job and WorkLoop.BEATS[job]
+	local function on(): boolean
+		return r.rig == rig and r.lively and not r.walking and jobOf(r) == job and work(r) ~= nil
+	end
+	if not (rig and root and beats and on()) then
+		return
+	end
+	local seed = seedOf(r.cfg)
+	local home = r.feet
+	local pivot = (home * CFrame.new(0, 0, -WorkLoop.PIVOT)).Position
+	r.carry = "rest"
+	task.spawn(function()
+		if not r.beatI then
+			r.beatI = seed % #beats
+			task.wait(WorkLoop.jitter(seed, 0) * 2 - 1.4) -- the crew starts out of step
+		end
+		for _ = 1, #beats do
+			if not on() then
+				break
+			end
+			local i = (r.beatI :: number) % #beats + 1
+			r.beatI = i
+			local b = beats[i]
+			r.beat = b
+			dress(r)
+			local to = (home * CFrame.new(b.side or 0, 0, b.back or 0)).Position
+			if (to - feetOf(r, root)).Magnitude > 0.3 then
+				r.carry = "walk"
+				pose(r)
+				stride(r, root, to)
+				if not on() then
+					break
+				end
+			end
+			local flat = Vector3.new(pivot.X - to.X, 0, pivot.Z - to.Z)
+			root.CFrame = CFrame.new(root.Position)
+				* (
+					if flat.Magnitude > 0.05
+						then CFrame.lookAt(Vector3.zero, flat).Rotation
+						else home.Rotation
+				)
+			r.carry = "rest"
+			pose(r)
+			task.wait(b.hold * WorkLoop.jitter(seed, i))
+		end
+		r.carry = nil
+		if r.rig == rig and not r.walking and not on() then
+			r.beat = nil
+			place(r)
+			dress(r)
+			pose(r)
+		end
+	end)
 end
 
 local function ownerPlot(r: Rec): Model?
@@ -491,6 +548,8 @@ local function haul(r: Rec)
 	end
 	local slot = (tonumber(r.cfg.Name) or 0) % 4 - 1.5 -- side by side along the quay
 	r.carry = "rest"
+	r.beat = nil
+	dress(r)
 	task.spawn(function()
 		local trip = tonumber(r.cfg.Name) or 0
 		while on() do
@@ -590,8 +649,8 @@ local function atSite(r: Rec, plot: Model): boolean
 end
 
 -- A site's Builder: walks to a pick-up bay, waits there while the Depot is empty, carries a brick stack back and
--- hammers it on, again.
-local function supply(r: Rec)
+-- hammers it on, again. False when it does not apply (the Builder works its WorkLoop beats instead).
+local function supply(r: Rec): boolean
 	local rig = r.rig
 	local root = rig and rig.PrimaryPart
 	local plot = ownerPlot(r)
@@ -605,11 +664,14 @@ local function supply(r: Rec)
 			and atSite(r, plot :: Model)
 	end
 	if not (rig and root and plot and on()) then
-		return
+		return false
 	end
 	r.carry = "rest"
+	r.beat = nil
+	dress(r)
 	task.spawn(function()
 		local trip = tonumber(r.cfg.Name) or 0
+		task.wait(WorkLoop.jitter(seedOf(r.cfg), 0) * 3 - 2.2) -- a site's crew sets off out of step
 		while on() do
 			local picks =
 				DepotController.marks(DepotController.depot(plot :: Model) :: Model, "ATT_PickUp_")
@@ -646,12 +708,14 @@ local function supply(r: Rec)
 			pose(r)
 		end
 	end)
+	return true
 end
 
 -- Walks the rig from where it is to `to` (feet) along a route; culled or far, it is just there.
 local function walkTo(r: Rec, to: CFrame)
 	local rig = r.rig
 	local root = rig and rig.PrimaryPart
+	r.beat, r.beatI = nil, nil
 	if not (rig and root and r.lively) then
 		r.walking = nil
 		r.feet = to
@@ -695,6 +759,10 @@ local function track(cfg: Instance)
 		height = 3,
 		loaded = {},
 		lively = false,
+		-- Speedy (docs/25 E) walks 30% faster; everyone a little off the others' pace
+		speed = WALK_SPEED
+			* (if cfg:GetAttribute("Trait") == "Speedy" then 1.3 else 1)
+			* (0.8 + 0.2 * WorkLoop.jitter(seedOf(cfg), 9)),
 	}
 	recs[cfg] = r
 	cfg:GetAttributeChangedSignal("Spot"):Connect(function()
@@ -711,6 +779,7 @@ local function track(cfg: Instance)
 	end)
 	cfg:GetAttributeChangedSignal("Job")
 		:Connect(function() -- a job swap with Work already true: new prop + loop
+			r.beat, r.beatI = nil, nil
 			if not r.walking then
 				dress(r)
 				pose(r)
@@ -753,12 +822,10 @@ local function cullPass()
 		end
 		if r.lively and not r.walking and not r.carry then
 			local job = jobOf(r)
-			if job == "Fish" then
-				carry(r)
-			elseif job == "Haul" then
+			if job == "Haul" then
 				haul(r)
-			elseif job == "Build" then
-				supply(r)
+			elseif not (job == "Build" and supply(r)) then
+				loop(r)
 			end
 		end
 	end
@@ -848,6 +915,96 @@ local function paid(category: string)
 	end
 end
 
+-- docs/25 G: at night every built Bunkhouse floor glows warm from inside and a "Zzz" floats over the roof. The mesh's
+-- Lamp panes (M_Bld_Bunkhouse_Lv<l>_L<k>_Lamp_LOD0) are its windows, so one light per level sits at their middle.
+-- No clock moves Lighting.ClockTime yet (WeatherController sets it once): this keys off it so a day cycle just works.
+local bunks: { [Model]: { lights: { PointLight }, zzz: BillboardGui?, bob: Tween? } } = {}
+local function nightPass()
+	local night = WorkLoop.isNight(Lighting.ClockTime)
+	for mesh, b in bunks do
+		if not mesh.Parent then
+			bunks[mesh] = nil
+			continue
+		end
+		for _, light in b.lights do
+			light.Enabled = night
+		end
+		if b.zzz and b.bob then
+			b.zzz.Enabled = night
+			if night then
+				b.bob:Play()
+			else
+				b.bob:Pause()
+			end
+		end
+	end
+end
+
+local function lightBunk(mesh: Instance)
+	if not mesh:IsA("Model") or mesh.Name ~= "BunkhouseMesh" or bunks[mesh] then
+		return
+	end
+	local b: { lights: { PointLight }, zzz: BillboardGui?, bob: Tween? } = { lights = {} }
+	bunks[mesh] = b
+	-- shortcut: the lamps are read once, 2 s after the mesh lands; a part streamed in later stays dark
+	task.delay(2, function()
+		local floors: { [number]: { sum: Vector3, n: number, part: BasePart } } = {}
+		for _, d in mesh:GetDescendants() do
+			local lv = if d:IsA("BasePart") and string.find(d.Name, "_Lamp_", 1, true)
+				then tonumber(string.match(d.Name, "_Lv(%d)_"))
+				else nil
+			if lv then
+				local f = floors[lv] or { sum = Vector3.zero, n = 0, part = d :: BasePart }
+				floors[lv] = f
+				f.sum += (d :: BasePart).Position
+				f.n += 1
+			end
+		end
+		local top: Attachment? = nil
+		for lv, f in floors do
+			local at = Instance.new("Attachment")
+			at.Name = `NightLight{lv}`
+			at.Parent = f.part
+			at.WorldPosition = f.sum / f.n
+			local light = Instance.new("PointLight")
+			light.Color = Color3.fromRGB(255, 186, 104)
+			light.Range = 18
+			light.Brightness = 1.6
+			light.Parent = at
+			table.insert(b.lights, light)
+			if not top or at.WorldPosition.Y > top.WorldPosition.Y then
+				top = at
+			end
+		end
+		if top then
+			local gui = Instance.new("BillboardGui")
+			gui.Name = "Zzz"
+			gui.Size = UDim2.fromOffset(72, 40)
+			gui.StudsOffset = Vector3.new(0, 9, 0)
+			gui.MaxDistance = 220
+			gui.LightInfluence = 0
+			gui.Parent = top
+			local label = Instance.new("TextLabel")
+			label.BackgroundTransparency = 1
+			label.Size = UDim2.fromScale(1, 1)
+			label.Font = Enum.Font.FredokaOne
+			label.TextScaled = true
+			label.TextColor3 = Color3.fromRGB(214, 228, 255)
+			label.TextStrokeColor3 = Color3.fromRGB(30, 44, 66)
+			label.TextStrokeTransparency = 0
+			label.Text = "Zzz"
+			label.Parent = gui
+			b.zzz = gui
+			b.bob = TweenService:Create( -- plays only at night
+				gui,
+				TweenInfo.new(2.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+				{ StudsOffset = Vector3.new(0, 10.5, 0) }
+			)
+		end
+		nightPass()
+	end)
+end
+
 local shown = false -- once a session (the server sets it once)
 local function welcome()
 	local pay = player:GetAttribute("WorkerOffline")
@@ -899,6 +1056,14 @@ function WorkerController.Start()
 		end
 	end)
 	task.delay(4, welcome) -- set before this ran: wait for the HUD to be up
+	Lighting:GetPropertyChangedSignal("ClockTime"):Connect(nightPass)
+	task.spawn(function()
+		local marina = Workspace:WaitForChild("Marina")
+		marina.DescendantAdded:Connect(lightBunk)
+		for _, d in marina:GetDescendants() do
+			lightBunk(d)
+		end
+	end)
 	local f = Instance.new("Folder")
 	f.Name = "WorkersLocal"
 	f.Parent = Workspace

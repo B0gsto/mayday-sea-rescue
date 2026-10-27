@@ -266,7 +266,7 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   `ReplicatedStorage.Workers.<UserId>`, rigs in `ReplicatedStorage.WorkerRigs`, Gatherer pay, the Rescuers' NPC
   boat, `PayOffline` on join; effect attributes `WorkerBoatScale`, `WorkerCraftSpeed`, `WorkerPayBonus`
   (Builders cut build time, not Cash). Each published worker has string attribute `Job`: `Build` (at the
-  island's construction site), `Haul`, `Fish`, `Repair`, `Rescue`, `Heal`, `Gather` or `Idle`. Client: `WorkerController`, `UI/WorkerBadge`. Studio: `WorkerDev` `"fill"` / `"unfill"`.
+  island's construction site), `Haul`, `Fish`, `Repair`, `Rescue`, `Heal`, `Gather` or `Idle`. Client: `WorkerController` (each Job's 2-3 beat loop and the Bunkhouse night lights + "Zzz" from `shared/WorkLoop`, pure), `UI/WorkerBadge`. Studio: `WorkerDev` `"fill"` / `"unfill"`.
 - Crew (players riding together): `CrewService` (`GetCrew`, `IsCrewmate`, `Join`, `Leave`). Friends:
   `FriendService.Count`, `shared/FriendBonus`. Group reward: `GroupRewardService` + `shared/GroupReward`.
 - Daily crate: `StreakService` + `StreakRules` / `StreakConfig`; client `StreakController`, `World/StreakCrate`,
