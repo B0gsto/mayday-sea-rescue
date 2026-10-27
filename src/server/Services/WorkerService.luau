@@ -4,7 +4,7 @@
 -- Every 5 s per player: WorkerRules.assign places them (best rarity first) at their building on your island
 -- or on the jetty. The server only publishes them (ReplicatedStorage.Workers.<UserId>.<index>: a Configuration
 -- with the worker and its feet CFrame `Spot`); every client draws, animates, paths and culls the rigs itself
--- (WorkerController), cloned from RIGS shared R15 templates (ReplicatedStorage.WorkerRigs, NpcFactory) so a
+-- (WorkerController), cloned from shared R15 templates (ReplicatedStorage.WorkerRigs, NpcFactory) so a
 -- server of 6 full islands (~186 workers) costs the server nothing per frame. Builders walk to a running
 -- construction site (docs/24 B; DockService publishes SiteKey on the plot) and each worker carries the job its
 -- client animations read (`Job`). Effects go out as player attributes the hooks read: WorkerBoatScale
@@ -40,7 +40,6 @@ local ProgressionService = require(script.Parent.ProgressionService)
 local WorkerService = {}
 
 WorkerService.IDLE_SHOWN = 6 -- idle workers standing on the jetty (the rest are "inside") -- tune
-local RIGS = 12 -- outfit templates the clients clone (more = more variety, more memory)
 local TRIP_OUT = 260 -- studs the rescue boat sails out of the cove
 local TRIP_LEG = 22 -- s each way
 
@@ -387,7 +386,7 @@ local function publish(
 	cfg:SetAttribute("WorkerCategory", w.category)
 	cfg:SetAttribute("WorkerRarity", w.rarity)
 	cfg:SetAttribute("WorkerName", w.name)
-	cfg:SetAttribute("Rig", (i * 5 + #w.name) % RIGS + 1)
+	cfg:SetAttribute("Rig", WorkerRules.rigOf(i, w.name))
 	cfg:SetAttribute("Spot", spot)
 	cfg:SetAttribute("Work", work)
 	cfg:SetAttribute("From", from)
@@ -684,7 +683,7 @@ function WorkerService.Init()
 	local rigs = Instance.new("Folder")
 	rigs.Name = "WorkerRigs"
 	rigs.Parent = ReplicatedStorage
-	for k = 1, RIGS do -- built once; each client clones them
+	for k = 1, WorkerRules.RIGS do -- built once; each client clones them
 		task.spawn(function()
 			local model, height = NpcFactory.spawn(
 				"Passenger",

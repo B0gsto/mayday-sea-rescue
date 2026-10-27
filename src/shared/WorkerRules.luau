@@ -88,6 +88,7 @@ W.CARRY_LOAD = 2 -- Strong carries two loads
 W.SPECIAL_CARRY = 3 -- Brickbeard and Big Lou carry like x3 Strong
 W.CAP = 30 -- workers kept (full in ~1.3 h of play); past it see admit -- tune
 W.SLOTS = 3 -- per worker building -- tune
+W.RIGS = 12 -- WorkerRigs outfit templates the clients clone (more = more variety, more memory)
 W.STATION_SLOTS = 2 -- more per building once the Station stands (the island's top tier) -- tune
 
 W.GATHER_PER = 3 -- Gatherer: Cash a minute per unit -- tune
@@ -148,6 +149,11 @@ W.SPECIALS = {
 	},
 } :: { Special }
 W.specialById = {} :: { [string]: Special }
+
+-- The WorkerRigs template (1..RIGS) of the i-th saved worker: the world rig and every portrait agree.
+function W.rigOf(i: number, name: string): number
+	return (i * 5 + #name) % W.RIGS + 1
+end
 for _, special in W.SPECIALS do
 	W.specialById[special.id] = special
 end
