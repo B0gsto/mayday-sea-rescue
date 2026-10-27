@@ -115,7 +115,10 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   `M_Bld_LookoutAddons` (`LookoutMesh`, kept 1x); its `ATT_Watch_*` are the first one (Lv2) / two (Lv3) Rescuers' spots. The Boat Yard's Lv2 portal crane + hoisted engine + tool bench
   and Lv3 dry dock are `M_Bld_BoatYardAddons` (`BoatYardMesh`, kept 1x, beside the code workboat; the code gantry and
   tool chests give way at Lv2, the east slip planks at Lv3; the name sign moves onto the crane girder); its `ATT_Work_*`
-  are the Mechanics' Lv2/Lv3 spots. The Depot model holds `DepotMesh` (the Lv1..n
+  are the Mechanics' Lv2/Lv3 spots. The Rescue Boathouse's Lv2 RIB pontoon (`Lv2_L04_RIB`) and Lv3 lifeboat berth
+  (`Lv3_L03_Lifeboat`) are `M_Bld_RescueBoathouseAddons` (`RescueBoathouseMesh`, kept 1x, the pen's -X / +X sides; the
+  lifeguard chair gives way at Lv3; `WorkerController` bobs the two boats within LIVELY); its `ATT_Work_*` are the
+  Rescuers' Lv2/Lv3 spots. The Depot model holds `DepotMesh` (the Lv1..n
   layers and `Marks`: `ATT_PickUp_*` / `ATT_DropOff_*` bays, `ATT_BargeMoor`, `ATT_QuayLoad`, `ATT_QuayLand`) and
   `FreightQuay` (west plate edge, sea level). Client: `DepotController` (barge from `BargeNext` via
   `shared/BargePath`, `Stack_1..4` from `DepotStock` / `DepotCap`, empty-crate icon on `SiteWaiting`) and

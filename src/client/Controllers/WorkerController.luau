@@ -1177,6 +1177,68 @@ local function lookoutPass()
 	end
 end
 
+-- docs/25 B: the Rescue Boathouse's moored RIB (Lv2) and lifeboat (Lv3) (RescueBoathouseMesh) bob gently on their
+-- slips, only while you are within LIVELY; the berth and the boats' _COL boxes stay put
+type Mooring = { boats: { BasePart }, bob: Tween?, at: Vector3 }
+local moorings: { [Model]: Mooring } = {}
+
+local function moorBoats(mesh: Instance)
+	if not mesh:IsA("Model") or mesh.Name ~= "RescueBoathouseMesh" or moorings[mesh] then
+		return
+	end
+	local o: Mooring = { boats = {}, at = mesh:GetPivot().Position }
+	moorings[mesh] = o
+	-- shortcut: read once, 2 s after the mesh lands (like the lookout); a boat streamed in later stays still
+	task.delay(2, function()
+		for _, name in { "Lv2_L04_RIB", "Lv3_L03_Lifeboat" } do
+			local boat = mesh:FindFirstChild(name, true)
+			if boat and boat:IsA("BasePart") then
+				table.insert(o.boats, boat)
+			end
+		end
+	end)
+end
+
+-- moves the boats by the change in height, so a rise or rebuild that sets their CFrame is never fought for long
+local function bobOf(boats: { BasePart }): Tween
+	local heave = Instance.new("NumberValue")
+	local last = 0
+	heave.Changed:Connect(function(y: number)
+		for _, boat in boats do
+			boat.CFrame += Vector3.new(0, y - last, 0)
+		end
+		last = y
+	end)
+	return TweenService:Create(
+		heave,
+		TweenInfo.new(2.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+		{ Value = 0.18 }
+	)
+end
+
+local function mooringPass()
+	local me = eye()
+	for mesh, o in moorings do
+		if not mesh.Parent then
+			if o.bob then
+				o.bob:Cancel()
+			end
+			moorings[mesh] = nil
+			continue
+		end
+		local on = #o.boats > 0 and (o.at - me).Magnitude < LIVELY
+		if on and not o.bob then
+			o.bob = bobOf(o.boats)
+		end
+		local bob = o.bob
+		if bob and on and bob.PlaybackState ~= Enum.PlaybackState.Playing then
+			bob:Play()
+		elseif bob and not on and bob.PlaybackState == Enum.PlaybackState.Playing then
+			bob:Pause()
+		end
+	end
+end
+
 local shown = false -- once a session (the server sets it once)
 local function welcome()
 	local pay = player:GetAttribute("WorkerOffline")
@@ -1238,10 +1300,12 @@ function WorkerController.Start()
 		marina.DescendantAdded:Connect(function(d)
 			lightBunk(d)
 			lightLookout(d)
+			moorBoats(d)
 		end)
 		for _, d in marina:GetDescendants() do
 			lightBunk(d)
 			lightLookout(d)
+			moorBoats(d)
 		end
 	end)
 	local f = Instance.new("Folder")
@@ -1258,6 +1322,7 @@ function WorkerController.Start()
 		cullPass()
 		crewPass()
 		lookoutPass()
+		mooringPass()
 		task.wait(0.25)
 	end
 end

@@ -546,8 +546,9 @@ end
 
 -- Level add-ons (docs/25 B): the Workshop's Lv2 saw-bench lean-to / Lv3 boat frame (M_Bld_WorkshopAddons), the
 -- Fish Market's Lv2 stalls / Lv3 smokehouse (M_Bld_FishMarketAddons), the Clinic's Lv2 pavilion / Lv3 hospital
--- (M_Bld_ClinicAddons), the Lookout's Lv2 lantern / Lv3 searchlight (M_Bld_LookoutAddons) and the Boat Yard's Lv2
--- crane / Lv3 dry dock (M_Bld_BoatYardAddons): meshes Lv<l>_L<nn>_*
+-- (M_Bld_ClinicAddons), the Lookout's Lv2 lantern / Lv3 searchlight (M_Bld_LookoutAddons), the Boat Yard's Lv2
+-- crane / Lv3 dry dock (M_Bld_BoatYardAddons) and the Rescue Boathouse's Lv2 RIB / Lv3 lifeboat berths
+-- (M_Bld_RescueBoathouseAddons): meshes Lv<l>_L<nn>_*
 -- and Lv<l>_COL authored in the yard's final (scaled) frame round its ground centre, so they stay 1x (KEEP_1X
 -- `name`). False when the level is 1 or the mesh is not loaded (the Lv1 yard stands alone, everything included).
 local function addonMesh(m: Model, at: CFrame, n: number, asset: string, name: string): boolean
@@ -1867,9 +1868,20 @@ local function boatYard(m: Model, b: CFrame, level: number?)
 end
 
 -- Rescuer: an open slipway shed with the rescue boat, a lifebuoy rack and a tall lifeguard chair
-local function rescueBoathouse(m: Model, b: CFrame)
+local function rescueBoathouse(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.RescueBoathouse
 	local at = b * def.spot
+	-- Lv2 RIB pontoon on the -X side, Lv3 lifeboat berth + shed roof on the +X side (M_Bld_RescueBoathouseAddons); the
+	-- middle and the gate stay clear. The lifeguard chair stood where the Lv3 berth's back deck and roof go.
+	local lv = if addonMesh(
+			m,
+			at,
+			level or 1,
+			"M_Bld_RescueBoathouseAddons",
+			"RescueBoathouseMesh"
+		)
+		then level or 1
+		else 1
 	local w, d = yardSize(def)
 	local spec = HUTS.RescueBoathouse
 	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
@@ -1991,35 +2003,43 @@ local function rescueBoathouse(m: Model, b: CFrame)
 	for _, x in { -1.8, 1.8 } do
 		brick(m, "TableLeg", Vector3.new(0.6, 1.6, 2.4), table * CFrame.new(x, 1.7, 0), DBG)
 	end
-	-- the tall lifeguard chair by the front corner: a seat over a narrow tower with a footrest
-	local chair = at * CFrame.new(w / 2 - 4, 0, d / 2 - 3.6) -- back-right, clear of the gate clutter
-	studTop(
+	if lv < 3 then
+		-- the tall lifeguard chair by the front corner: a seat over a narrow tower with a footrest
+		local chair = at * CFrame.new(w / 2 - 4, 0, d / 2 - 3.6) -- back-right, clear of the gate clutter
+		studTop(
+			brick(
+				m,
+				"ChairBase",
+				Vector3.new(3.4, 0.8, 3.4),
+				chair * CFrame.new(0, 0.4, 0),
+				BRICK_YELLOW
+			)
+		)
+		brick(m, "ChairPost", Vector3.new(1.2, 9, 1.2), chair * CFrame.new(0, 5, 0), BRICK_WHITE)
+		studTop(
+			brick(
+				m,
+				"ChairSeat",
+				Vector3.new(3.2, 0.6, 3.2),
+				chair * CFrame.new(0, 9.8, 0),
+				BRICK_YELLOW
+			)
+		)
 		brick(
 			m,
-			"ChairBase",
-			Vector3.new(3.4, 0.8, 3.4),
-			chair * CFrame.new(0, 0.4, 0),
+			"ChairBack",
+			Vector3.new(3.2, 2.6, 0.5),
+			chair * CFrame.new(0, 11.4, 1.35),
 			BRICK_YELLOW
 		)
-	)
-	brick(m, "ChairPost", Vector3.new(1.2, 9, 1.2), chair * CFrame.new(0, 5, 0), BRICK_WHITE)
-	studTop(
 		brick(
 			m,
-			"ChairSeat",
-			Vector3.new(3.2, 0.6, 3.2),
-			chair * CFrame.new(0, 9.8, 0),
-			BRICK_YELLOW
+			"ChairStep",
+			Vector3.new(2, 0.4, 1.2),
+			chair * CFrame.new(0, 5.8, -1.7),
+			BRICK_WHITE
 		)
-	)
-	brick(
-		m,
-		"ChairBack",
-		Vector3.new(3.2, 2.6, 0.5),
-		chair * CFrame.new(0, 11.4, 1.35),
-		BRICK_YELLOW
-	)
-	brick(m, "ChairStep", Vector3.new(2, 0.4, 1.2), chair * CFrame.new(0, 5.8, -1.7), BRICK_WHITE)
+	end
 	sign(
 		m,
 		Vector3.new(6, 2, 0.4),
@@ -2623,6 +2643,7 @@ local KEEP_1X = {
 	ClinicMesh = true,
 	LookoutMesh = true,
 	BoatYardMesh = true,
+	RescueBoathouseMesh = true,
 	BunkhouseMesh = true,
 	FreightQuay = true,
 	Path = true,

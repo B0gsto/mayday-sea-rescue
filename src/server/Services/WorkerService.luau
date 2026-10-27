@@ -142,8 +142,9 @@ local WORK_SPOTS: { [string]: { WorkSlot } } = {
 		{ x = -7.6, z = 1, tx = -8, tz = 3.3 }, -- the medicine crate
 	},
 }
--- docs/25 B: the Workshop's, Fish Market's, Clinic's and Boat Yard's Lv2 / Lv3 add-ons (M_Bld_WorkshopAddons,
--- M_Bld_FishMarketAddons, M_Bld_ClinicAddons, M_Bld_BoatYardAddons, DockPieces): their ATT_Work_* marks (scaled studs from the yard centre)
+-- docs/25 B: the Workshop's, Fish Market's, Clinic's, Boat Yard's and Rescue Boathouse's Lv2 / Lv3 add-ons
+-- (M_Bld_WorkshopAddons, M_Bld_FishMarketAddons, M_Bld_ClinicAddons, M_Bld_BoatYardAddons, M_Bld_RescueBoathouseAddons,
+-- DockPieces): their ATT_Work_* marks (scaled studs from the yard centre)
 -- join or replace the yard's spots, facing the bench (+X), saw or hull (+Z), the stall counter or the smokehouse rack
 -- (+-X), the bed (+Z) or the clinic counter (-Z).
 -- shortcut: assumes the add-on mesh loaded (else these spots face empty yard); check DockPieces.meshes if it fails.
@@ -226,11 +227,39 @@ local BOATYARD_LV3 = {
 	YARD_BOAT[3],
 	YARD_BOAT[4],
 }
+-- the Rescuers' Lv2 RIB pontoon and fuel pump, then the Lv3 lifeboat walkway and davit, on the decks (WorkSlot.y);
+-- the lifeguard chair's slot drops out at Lv3 with the chair
+local SHED = WORK_SPOTS.RescueBoathouse
+local function rescueSlot(name: string, tx: number, tz: number): WorkSlot
+	local s = addonSlot("RescueBoathouse", "M_Bld_RescueBoathouseAddons", name, tx, tz)
+	s.y = AssetIds.Attachments.M_Bld_RescueBoathouseAddons[name].Y
+	return s
+end
+local SHED_LV2 = {
+	SHED[1],
+	rescueSlot("ATT_Work_Pontoon", 2, 0),
+	rescueSlot("ATT_Work_Fuel", 0, 2),
+	SHED[2],
+	SHED[3],
+	SHED[4],
+	SHED[5],
+}
+local SHED_LV3 = {
+	SHED[1],
+	rescueSlot("ATT_Work_Pontoon", 2, 0),
+	rescueSlot("ATT_Work_Berth", 2, 0),
+	rescueSlot("ATT_Work_Davit", 0, -2),
+	rescueSlot("ATT_Work_Fuel", 0, 2),
+	SHED[2],
+	SHED[3],
+	SHED[4],
+}
 local ADDON_LEVELS: { [string]: { [number]: { WorkSlot } } } = {
 	Workshop = { [2] = WORKSHOP_LV2, [3] = WORKSHOP_LV3 },
 	FishShed = { [2] = FISH_LV2, [3] = FISH_LV3 },
 	Clinic = { [2] = CLINIC_LV2, [3] = CLINIC_LV3 },
 	BoatYard = { [2] = BOATYARD_LV2, [3] = BOATYARD_LV3 },
+	RescueBoathouse = { [2] = SHED_LV2, [3] = SHED_LV3 },
 }
 -- the first Rescuers keep watch on the Lookout's gallery deck (M_Bld_LookoutAddons), looking out front: one at the
 -- Lv2 lantern, two at Lv3 (the searchlight side too); the rest work the Rescue Boathouse
