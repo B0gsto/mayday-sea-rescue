@@ -3512,6 +3512,15 @@
   "source": "assets/textures/M_Hbr_MooringBuoy/T_MooringBuoy_Buoy_RGH.png",
   "type": "Image"
  },
+ "Image:2a3ae3824972c1242518553382c82c11eb8429b8e11f869d9c3942ecc25fcdb3": {
+  "assetId": "134147352237574",
+  "imageId": "134147352237574",
+  "moderation": "Reviewing",
+  "name": "T_Boathouse_Brick_ALB",
+  "sha": "2a3ae3824972c1242518553382c82c11eb8429b8e11f869d9c3942ecc25fcdb3",
+  "source": "assets/textures/M_Bld_BoathouseAddons/T_Boathouse_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:2a462aa4659146a95ab4207fc2dbc8f210e29714f6650063b3ac24786ca53bd4": {
   "assetId": "124662096018464",
   "imageId": "124662096018464",
@@ -21938,6 +21947,16 @@
   "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD1.fbx",
   "type": "Model"
  },
+ "Model:3069660cfebaf837eac6da7b1d435a179e728e9756ce66522b8a5671f19bd6ba": {
+  "assetId": "120417238484295",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "3069660cfebaf837eac6da7b1d435a179e728e9756ce66522b8a5671f19bd6ba",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:3091318c4e9f23b86aa2c26e68107493ab66a296e441cf7cbf80960d84f5fad1": {
   "assetId": "119288429249140",
   "moderation": "Approved",
@@ -26048,6 +26067,16 @@
   "source": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD1.fbx",
   "type": "Model"
  },
+ "Model:a994e6c9ceab07a2b1a42d7ca2a3b738d1327254af3ba37cecbef277875b6bb9": {
+  "assetId": "135455322443071",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a994e6c9ceab07a2b1a42d7ca2a3b738d1327254af3ba37cecbef277875b6bb9",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:a998ef880ba8a164069f045c89b9cb13508793e0ae9adae1749a662d70bda330": {
   "assetId": "78536377005545",
   "moderation": "Approved",
@@ -27966,6 +27995,16 @@
   "route": "delivery",
   "sha": "e558b535f184b424c352b893d1c421cf32213914725e2da9e0422d85ca69c839",
   "source": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:e59db2a51873ce654f1312525a516daed6aea38936e3f04d86e8976c4ba4b77e": {
+  "assetId": "131444159336234",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "e59db2a51873ce654f1312525a516daed6aea38936e3f04d86e8976c4ba4b77e",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD0.fbx",
   "type": "Model"
  },
  "Model:e5e2ac1989240ef0e522e1cdcce42a0923a330c0d029a429925c1413eb21e7f7": {
