@@ -1,10 +1,13 @@
 --!strict
 -- CashBurst: coins fly from a screen point (a debrief pay line) into the Cash counter: they arc to
 -- the top-right HUD where the wallet lives, and a short +number floats up. Icons and one number only. Client only.
+-- Sound: Cash_Coins on the spill, a UI_Pickup tick as they land.
 
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
+local AudioController =
+	require(script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("AudioController"))
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 
@@ -59,6 +62,11 @@ function CashBurst.playAt(playerGui: Instance, start: Vector2, cash: number, sho
 		else Vector2.new(110, viewport.Y - 300)
 	local reduced = Comfort.reducedMotion()
 	local rng = Random.new()
+	-- the coins spill, then tick into the wallet as the first ones land
+	AudioController.play("Cash_Coins", nil, 0.8, 1.05)
+	task.delay(0.85, function()
+		AudioController.play("UI_Pickup", nil, 0.8, 1.2)
+	end)
 	for i = 1, (if reduced then 0 else COINS) do
 		local jitter = Vector2.new(rng:NextNumber(-14, 14), rng:NextNumber(-10, 14))
 		local coin = coinAt(gui, start + jitter, rng:NextInteger(12, 20))

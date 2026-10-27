@@ -303,10 +303,16 @@ local function reveal(payload: any, rotor: Model)
 				end)
 			end
 			local prize = prizeAt(payload, finish)
-			if SpinRules.rank(payload.rarity) >= SpinRules.rank("Epic") then
-				AudioController.play("UI_Success", finish, 0.8, 1)
+			-- the capsule pops; Rare and up add a sparkle, Epic and up the fanfare
+			local rank = SpinRules.rank(payload.rarity)
+			AudioController.play("Album_Sticker", finish, 1, 1.2)
+			if rank >= SpinRules.rank("Epic") then
+				AudioController.play("Music_CrateFanfare", finish, 1, 1)
 			else
 				AudioController.play("UI_Pickup", finish, 0.7, 1)
+			end
+			if rank >= SpinRules.rank("Rare") then
+				AudioController.play("Album_Sparkle", finish, 1, 1)
 			end
 			local spinStart = os.clock()
 			local spinConn: RBXScriptConnection? = nil
@@ -353,6 +359,7 @@ local function spin(payload: any)
 	local flapRest = flapper and flapper.CFrame
 	local flapAt = -1
 	local lastTicks = WheelMath.ticksFor(from, count)
+	AudioController.play("Rigging_Creak", pivotPart.Position, 2.5, 1.3) -- the wheel is shoved round
 	local conn: RBXScriptConnection? = nil
 	conn = RunService.Heartbeat:Connect(function()
 		local t = (Workspace:GetServerTimeNow() - start) / duration

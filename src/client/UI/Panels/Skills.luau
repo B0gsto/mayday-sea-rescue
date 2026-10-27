@@ -290,6 +290,7 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 	end
 
 	local function chime()
+		AudioController.play("UI_Click", nil, 2.5, 0.7) -- the node locks in
 		for i = 1, 3 do
 			task.delay((i - 1) * 0.06, function()
 				AudioController.play("UI_Step", nil, 0.7, 1 + (i - 1) * 0.14)

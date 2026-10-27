@@ -512,7 +512,7 @@ local function stop(site: Site)
 	site.props:Destroy()
 end
 
--- The last bricks drop with the BuildSeq bounce; confetti, then the dressing goes.
+-- The last bricks drop with the BuildSeq bounce, a Lego clack and confetti as they land (your HQ: a fanfare too).
 local function finish(site: Site)
 	local parts, ys = {}, {}
 	for part in site.kept do
@@ -530,7 +530,9 @@ local function finish(site: Site)
 		hide(part, site, false)
 	end
 	local plan = BuildSeq.plan(ys, math.random(0, 1_000_000))
+	local last = 0
 	for _, step in plan do
+		last = math.max(last, step.delay)
 		local part = parts[step.i]
 		part.CFrame = finals[step.i] + Vector3.new(0, step.drop, 0)
 		TweenService:Create(
@@ -546,7 +548,24 @@ local function finish(site: Site)
 			{ CFrame = finals[step.i] }
 		):Play()
 	end
-	confetti(Vector3.new(site.center.X, site.ground + (site.maxY - site.minY) * 0.6, site.center.Z))
+	local top =
+		Vector3.new(site.center.X, site.ground + (site.maxY - site.minY) * 0.6, site.center.Z)
+	local hq = site.key == "HQ" and site.plot.Name == `Plot{player:GetAttribute("DockPlot")}`
+	-- the last brick clacks home (a plastic snap, two quick hits), then the confetti; your HQ gets the big beat
+	task.delay(last + 0.45, function()
+		AudioController.play("Album_Sticker", top, 1, 1.5)
+		task.delay(0.07, function()
+			AudioController.play("UI_Click", top, 3, 0.75)
+		end)
+		confetti(top)
+		if hq then
+			AudioController.play("Music_CrateFanfare", nil, 1, 1)
+			AudioController.play("Bell_Buoy", top, 1.2, 1.1)
+			task.delay(0.35, function()
+				confetti(top + Vector3.new(0, 6, 0))
+			end)
+		end
+	end)
 	site.props:Destroy()
 end
 

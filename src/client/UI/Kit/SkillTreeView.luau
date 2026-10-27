@@ -1160,6 +1160,28 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 							sc.Scale = 1.35
 							Style.tween(sc, 0.4, { Scale = 1 }, Enum.EasingStyle.Back)
 						end
+						-- lock-in: one ring in the sector colour snaps out from the node and fades
+						local ringSize = if n.keystone then BADGE else DOT
+						local ring = Instance.new("Frame")
+						ring.Name = "LockIn"
+						ring.AnchorPoint = Vector2.new(0.5, 0.5)
+						ring.Position = UDim2.fromScale(0.5, 0.5)
+						ring.Size = UDim2.fromOffset(ringSize, ringSize)
+						ring.BackgroundTransparency = 1
+						ring.ZIndex = 5
+						ring.Parent = mark
+						Style.corner(ring, 999)
+						local stroke = Style.stroke(ring, 5, true)
+						stroke.Color = sectorOf(n).color
+						Style.tween(
+							ring,
+							0.5,
+							{ Size = UDim2.fromOffset(ringSize * 2.6, ringSize * 2.6) }
+						)
+						Style.tween(stroke, 0.5, { Transparency = 1 })
+						task.delay(0.6, function()
+							ring:Destroy()
+						end)
 					end
 					local path = {}
 					local need = if #n.needs > 0 then n.needs[1] else nil

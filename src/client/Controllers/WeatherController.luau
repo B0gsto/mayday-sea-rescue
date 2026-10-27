@@ -51,7 +51,7 @@ type Preset = LightingPresets.Preset
 -- Assets: placeholders until audio and textures are uploaded (empty id = silent).
 local THUNDER_SOUND_ID = AudioConfig.id("Thunder_Near") -- crack + rumble (RL stand-in)
 local RAIN_LOOP_SOUND_ID = AudioConfig.id("Rain_Heavy") -- rain bed, looped (wind is AudioController's)
-local SIREN_SOUND_ID = "" -- TODO asset: harbour storm siren, one shot
+local SIREN_SOUND_ID = AudioConfig.id("Siren_Wail") -- harbour storm siren, one shot (RL stand-in)
 -- FX2: 16 motion-blurred streak variants (random start, held) and the ripple ring on the sea.
 local RAIN_STREAKS = Flipbooks.uploaded("FX_Rain_Streak")
 local RIPPLE_MAX_RATE = 260 -- ripples/s over the RIPPLE_AREA square at full storm, High -- tune
@@ -606,7 +606,13 @@ end
 local function onStateChanged(state: string)
 	if state == "Warning" and calmLevel < 0.5 then
 		showBanner(if Weather.isGreatStorm() then "Great Storm incoming!" else "Storm incoming!")
+		sirenSound.Volume = 0.5
 		playIfReal(sirenSound)
+		task.delay(5, function() -- one rise and fall, then it fades (the clip runs long)
+			TweenService:Create(sirenSound, TweenInfo.new(1.5), { Volume = 0 }):Play()
+			task.wait(1.5)
+			sirenSound:Stop()
+		end)
 	end
 end
 
@@ -633,7 +639,7 @@ function WeatherController.Init()
 
 	createRain()
 	thunderTemplate = newSound("Thunder", THUNDER_SOUND_ID, false, 1)
-	sirenSound = newSound("StormSiren", SIREN_SOUND_ID, false, 0.8)
+	sirenSound = newSound("StormSiren", SIREN_SOUND_ID, false, 0.5)
 	createBanner()
 
 	Weather.changed:Connect(onStateChanged)
