@@ -1,0 +1,210 @@
+{
+ "asset": "M_Bld_Depot",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_PickUp_Lv1",
+   "parent": null,
+   "blender": [
+    -0.5,
+    8.6,
+    1.25
+   ],
+   "roblox_from_origin": [
+    0.5,
+    1.25,
+    8.6
+   ],
+   "roblox_from_bbox_centre": [
+    3.8491,
+    -7.775,
+    8.6
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_DropOff_Lv1",
+   "parent": null,
+   "blender": [
+    -0.5,
+    -1.0,
+    1.25
+   ],
+   "roblox_from_origin": [
+    0.5,
+    1.25,
+    -1.0
+   ],
+   "roblox_from_bbox_centre": [
+    3.8491,
+    -7.775,
+    -1.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_PickUp_Lv2",
+   "parent": null,
+   "blender": [
+    -15.1,
+    8.6,
+    1.25
+   ],
+   "roblox_from_origin": [
+    15.1,
+    1.25,
+    8.6
+   ],
+   "roblox_from_bbox_centre": [
+    18.4491,
+    -7.775,
+    8.6
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_DropOff_Lv2",
+   "parent": null,
+   "blender": [
+    -15.1,
+    -1.0,
+    1.25
+   ],
+   "roblox_from_origin": [
+    15.1,
+    1.25,
+    -1.0
+   ],
+   "roblox_from_bbox_centre": [
+    18.4491,
+    -7.775,
+    -1.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_DropOff_Lv3",
+   "parent": null,
+   "blender": [
+    14.5,
+    11.1,
+    2.35
+   ],
+   "roblox_from_origin": [
+    -14.5,
+    2.35,
+    11.1
+   ],
+   "roblox_from_bbox_centre": [
+    -11.1509,
+    -6.675,
+    11.1
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_ConveyorEnd",
+   "parent": null,
+   "blender": [
+    -0.5,
+    -1.0,
+    7.1
+   ],
+   "roblox_from_origin": [
+    0.5,
+    7.1,
+    -1.0
+   ],
+   "roblox_from_bbox_centre": [
+    3.8491,
+    -1.925,
+    -1.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_BargeMoor",
+   "parent": null,
+   "blender": [
+    32.8,
+    0.0,
+    0.5
+   ],
+   "roblox_from_origin": [
+    -32.8,
+    0.5,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -29.4509,
+    -8.525,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

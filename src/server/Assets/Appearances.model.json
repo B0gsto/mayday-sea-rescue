@@ -452,6 +452,28 @@
    ]
   },
   {
+   "Name": "M_Bld_Depot",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://131215207343243",
+        "NormalMap": "rbxassetid://134063939343985",
+        "RoughnessMap": "rbxassetid://77394710200809",
+        "MetalnessMap": "rbxassetid://82741558542658"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Bld_TrimSheet",
    "ClassName": "Folder",
    "Children": [
@@ -2684,6 +2706,28 @@
         "NormalMap": "rbxassetid://115613423123258",
         "RoughnessMap": "rbxassetid://133200381001340",
         "MetalnessMap": "rbxassetid://132031290924978"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veh_SupplyBarge",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Hull",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://101612034075338",
+        "NormalMap": "rbxassetid://134063939343985",
+        "RoughnessMap": "rbxassetid://77394710200809",
+        "MetalnessMap": "rbxassetid://82741558542658"
        }
       }
      ]

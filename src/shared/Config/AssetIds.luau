@@ -26,6 +26,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://93594095444599",
 		LOD2 = "rbxassetid://106771424616555",
 	},
+	M_Bld_Depot = {
+		LOD0 = "rbxassetid://105732848935013",
+		LOD1 = "rbxassetid://115192072017821",
+		LOD2 = "rbxassetid://94162998733864",
+	},
 	M_Chr_Bosun = {
 		LOD0 = "rbxassetid://93498658626129",
 		LOD1 = "rbxassetid://83581557797709",
@@ -402,6 +407,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://116642637177378",
 		LOD2 = "rbxassetid://101756973437405",
 	},
+	M_Veh_SupplyBarge = {
+		LOD0 = "rbxassetid://122246514856072",
+		LOD1 = "rbxassetid://125066632574795",
+		LOD2 = "rbxassetid://74080281756686",
+	},
 	M_Veh_Tidewalker = {
 		LOD0 = "rbxassetid://92287777361052",
 		LOD1 = "rbxassetid://73421756816479",
@@ -428,6 +438,15 @@ AssetIds.Attachments = {
 		ATT_Smoke_03 = Vector3.new(-0.9, 23.73, 0),
 		ATT_Smoke_04 = Vector3.new(-11.98, 23.58, 0),
 		ATT_Smoke_05 = Vector3.new(-12.88, 23.13, 0),
+	},
+	M_Bld_Depot = {
+		ATT_PickUp_Lv1 = Vector3.new(0.5, 1.25, 8.6),
+		ATT_DropOff_Lv1 = Vector3.new(0.5, 1.25, -1),
+		ATT_PickUp_Lv2 = Vector3.new(15.1, 1.25, 8.6),
+		ATT_DropOff_Lv2 = Vector3.new(15.1, 1.25, -1),
+		ATT_DropOff_Lv3 = Vector3.new(-14.5, 2.35, 11.1),
+		ATT_ConveyorEnd = Vector3.new(0.5, 7.1, -1),
+		ATT_BargeMoor = Vector3.new(-32.8, 0.5, 0),
 	},
 	M_Chr_Bosun = {
 		ATT_HarnessHandle = Vector3.new(0.0038, 2.4265, 0.4724),
@@ -832,6 +851,12 @@ AssetIds.Attachments = {
 		ATT_Float6 = Vector3.new(3.6, 0.45, 3.0761),
 		ATT_Float7 = Vector3.new(-3.6, 0.45, 9.0761),
 		ATT_Float8 = Vector3.new(3.6, 0.45, 9.0761),
+	},
+	M_Veh_SupplyBarge = {
+		ATT_Waterline = Vector3.new(0, 0, 0),
+		ATT_Bow = Vector3.new(0, 0.8, -16),
+		ATT_Stern = Vector3.new(0, 0.8, 16.8),
+		ATT_Helm = Vector3.new(0, 4, 12.5),
 	},
 	M_Veh_Tidewalker = {
 		ATT_DriverSeat = Vector3.new(0, 13.68, -2.99),
