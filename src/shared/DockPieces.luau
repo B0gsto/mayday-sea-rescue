@@ -116,8 +116,8 @@ local function lamp(parent: Instance, b: CFrame, x: number, z: number, y0: numbe
 	)
 	local light = Instance.new("PointLight")
 	light.Color = WARM
-	light.Range = 24
-	light.Brightness = 1.2
+	light.Range = 16 -- small and warm: WorkerController tints it amber at night
+	light.Brightness = 0.8
 	light.Parent = bulb
 	bulb:AddTag("NightLamp") -- WorkerController lights it at night only
 end

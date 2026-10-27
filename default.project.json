@@ -38,7 +38,9 @@
     "Lighting": {
       "$className": "Lighting",
       "$properties": {
-        "Technology": "Future"
+        "Technology": "Future",
+        "GeographicLatitude": 30,
+        "ShadowSoftness": 0.15
       }
     },
     "MaterialService": {

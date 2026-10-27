@@ -1,5 +1,6 @@
 --!strict
--- SkyAssets: uploaded Roblox image ids for the five weather skyboxes (art direction doc 05, section 6.2).
+-- SkyAssets: uploaded Roblox image ids for the weather skyboxes (art direction doc 05, section 6.2). No Night faces
+-- (dropped 2026-10-28): the engine renders dark faces black at night, so night keeps the day faces.
 -- Generated procedurally by art/ocean/bake_skies.py (pure numpy, no photographs or third-party imagery, so no
 -- third-party licence applies). Sources: assets/ocean/sky/<Preset>_<Face>.png, 1024x1024. Faces follow the Roblox
 -- Sky convention documented in the script header (Ft looks -Z, Lf looks +X, Up top edge borders Lf).
@@ -41,14 +42,6 @@ local SkyAssets: { [string]: SkyFaces } = table.freeze({
 		Lf = "rbxassetid://93516722756696",
 		Rt = "rbxassetid://95191368988574",
 		Up = "rbxassetid://134222112821358",
-	}),
-	Night = table.freeze({
-		Bk = "rbxassetid://73184372276070",
-		Dn = "rbxassetid://108887836477278",
-		Ft = "rbxassetid://78150281042462",
-		Lf = "rbxassetid://129849147616705",
-		Rt = "rbxassetid://128128601276557",
-		Up = "rbxassetid://127578886417365",
 	}),
 })
 

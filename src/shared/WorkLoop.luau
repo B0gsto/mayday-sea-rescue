@@ -60,7 +60,7 @@ end
 -- The Bunkhouse rooms light up and show "Zzz" between these (Lighting.ClockTime; the boats' nav lights use the same).
 WorkLoop.DUSK = 18.5
 WorkLoop.DAWN = 6.25
-WorkLoop.HOME = 17.5 -- survivors down tools and walk home (DayClock: early in the 90 s dusk)
+WorkLoop.HOME = 17.5 -- survivors down tools and walk home (DayClock: early in the dusk)
 WorkLoop.LAG = 0.3 -- hours: each worker sets off up to this late, so a crew trickles home / out
 
 function WorkLoop.isNight(clockTime: number): boolean
