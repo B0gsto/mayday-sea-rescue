@@ -54,6 +54,7 @@ export type Info = {
 	workplaceName: string,
 	effect: string,
 	work: number,
+	rig: number, -- the WorkerRigs template for the portrait, 0 = none (in the water)
 }
 
 local RAINBOW = ColorSequence.new({
@@ -64,6 +65,7 @@ local RAINBOW = ColorSequence.new({
 	ColorSequenceKeypoint.new(0.8, Color3.fromHex("B07CFF")),
 	ColorSequenceKeypoint.new(1, Color3.fromHex("FF5CB8")),
 })
+SurvivorTag.RAINBOW = RAINBOW
 
 local function text(model: Model, ...: string): string
 	for _, key in { ... } do
@@ -95,7 +97,8 @@ function SurvivorTag.fromWorker(
 		special: string,
 	},
 	workplace: string,
-	job: string?
+	job: string?,
+	rig: number?
 ): Info
 	local rarity = math.clamp(math.floor(w.rarity), 1, Rarity.MYTHIC)
 	local tier = Rarity.TIERS[rarity]
@@ -118,6 +121,7 @@ function SurvivorTag.fromWorker(
 			else workplace,
 		effect = EFFECT[w.category] or "",
 		work = WORK[rarity] or 1,
+		rig = rig or 0,
 	}
 end
 
@@ -129,7 +133,7 @@ function SurvivorTag.info(model: Model): Info
 		category = text(model, "Category", "WorkerCategory"),
 		trait = text(model, "Trait"),
 		special = text(model, "Special"),
-	}, text(model, "Workplace"), text(model, "Job"))
+	}, text(model, "Workplace"), text(model, "Job"), tonumber(model:GetAttribute("Rig")))
 end
 
 local function rootOf(model: Model): BasePart?

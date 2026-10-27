@@ -9,6 +9,7 @@ local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
 local UserInputService = game:GetService("UserInputService")
 
+local Portrait = require(script.Parent:WaitForChild("Portrait"))
 local Rarity =
 	require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Rarity"))
 local Style = require(script.Parent:WaitForChild("Kit"):WaitForChild("Style"))
@@ -27,6 +28,7 @@ local HEADER = 86
 local CHIP_H = 38
 local CHIP_GAP = 8
 local GOLD = Color3.fromRGB(255, 214, 60)
+local FACE = 72 -- the header portrait
 
 export type Card = {
 	open: (info: SurvivorTag.Info, water: boolean) -> (),
@@ -144,10 +146,24 @@ function SurvivorCard.new(canvas: Instance): Card
 
 		local _, face = Style.block(root, Style.grad("ink"), { shadow = true })
 
+		-- their portrait left of the name (workers only: a survivor in the water has no rig yet)
+		local left = PAD
+		if info.rig > 0 and not water then
+			local box = Instance.new("Frame")
+			box.Name = "Portrait"
+			box.BackgroundTransparency = 1
+			box.Position = UDim2.fromOffset(PAD - 4, 8)
+			box.Size = UDim2.fromOffset(FACE, FACE)
+			box.Parent = face
+			local back = Portrait.back(box, info.rarity)
+			Portrait.render(back, info.rig, info.category)
+			left = PAD - 4 + FACE + 10
+		end
+
 		local name = Style.label(face, info.name, Theme.Text.heading)
 		name.Name = "Name"
-		name.Position = UDim2.fromOffset(PAD, 10)
-		name.Size = UDim2.new(1, -(PAD * 2 + 58), 0, 42)
+		name.Position = UDim2.fromOffset(left, 10)
+		name.Size = UDim2.new(1, -(left + PAD + 58), 0, 42)
 		name.TextXAlignment = Enum.TextXAlignment.Left
 		name.TextYAlignment = Enum.TextYAlignment.Center
 		name.TextWrapped = false
@@ -160,8 +176,8 @@ function SurvivorCard.new(canvas: Instance): Card
 
 		local rarity = Style.label(face, info.rarityName, Theme.Text.small)
 		rarity.Name = "Rarity"
-		rarity.Position = UDim2.fromOffset(PAD + 2, 52)
-		rarity.Size = UDim2.new(1, -(PAD * 2), 0, 26)
+		rarity.Position = UDim2.fromOffset(left + 2, 52)
+		rarity.Size = UDim2.new(1, -(left + PAD), 0, 26)
 		rarity.TextXAlignment = Enum.TextXAlignment.Left
 		rarity.TextWrapped = false
 		rarity.TextColor3 = Rarity.TIERS[info.rarity].color

@@ -9,6 +9,8 @@ local SocialService = game:GetService("SocialService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
+local Portrait = require(script.Parent.Parent:WaitForChild("Portrait"))
+local SurvivorTag = require(script.Parent.Parent:WaitForChild("SurvivorTag"))
 local WorkerBadge = require(script.Parent.Parent:WaitForChild("WorkerBadge"))
 local WorkerRules = require(Shared:WaitForChild("WorkerRules"))
 
@@ -37,8 +39,10 @@ function Crew.new(canvas: Frame, onClose: () -> ())
 	local workers: { WorkerRules.Worker } = {}
 	local owned: { [string]: boolean } = {}
 	local refresh: () -> ()
+	local stopPortraits = function() end
 
 	local function paint()
+		stopPortraits()
 		for _, c in panel.body:GetChildren() do
 			if c:IsA("GuiObject") then
 				c:Destroy()
@@ -101,9 +105,10 @@ function Crew.new(canvas: Frame, onClose: () -> ())
 			role.TextWrapped = false
 		end
 
-		-- your workers (WP-26): one row per category, its icon and how many work / are rescued, then a chip
-		-- per person (stars + name), lit while they work at the building, grey while they wait on the jetty
+		-- your workers (WP-26): one row per category, its icon and how many work / are rescued, then a card
+		-- per person on their rarity (portrait, type, stars, name, trait), dimmed while they wait on the jetty
 		local place = WorkerRules.assign(workers, owned)
+		local slots: { Portrait.Slot } = {}
 		if #workers == 0 then
 			local none = Style.label(panel.body, "No workers", Theme.Text.heading, true)
 			none.Size = UDim2.new(1, 0, 0, 70)
@@ -127,7 +132,7 @@ function Crew.new(canvas: Frame, onClose: () -> ())
 			row.AutomaticSize = Enum.AutomaticSize.Y
 			row.Parent = panel.body
 			local chips = Instance.new("UIGridLayout")
-			chips.CellSize = UDim2.fromOffset(104, 112)
+			chips.CellSize = UDim2.fromOffset(128, 172)
 			chips.CellPadding = UDim2.fromOffset(8, 8)
 			chips.SortOrder = Enum.SortOrder.LayoutOrder
 			chips.Parent = row
@@ -155,23 +160,58 @@ function Crew.new(canvas: Frame, onClose: () -> ())
 				end
 				local chip = Instance.new("Frame")
 				chip.Name = w.name
-				chip.LayoutOrder = (4 - w.rarity) * 100 + i -- best first
+				chip.LayoutOrder = (7 - w.rarity) * 100 + i -- best first, after the category tile
 				chip.BackgroundTransparency = 1
 				chip.Parent = row
-				local _, face = Style.block(
-					chip,
-					Style.grad(if place[i] then WorkerBadge.GRAD[category] else "disabled")
+				local face = Portrait.back(chip, w.rarity)
+				local art = Instance.new("Frame")
+				art.Name = "Art"
+				art.BackgroundTransparency = 1
+				art.Position = UDim2.fromOffset(6, 6)
+				art.Size = UDim2.new(1, -12, 0, 100)
+				art.Parent = face
+				table.insert(
+					slots,
+					{
+						holder = art,
+						rig = WorkerRules.rigOf(i, w.name),
+						category = category,
+						dim = not place[i],
+					} :: Portrait.Slot
 				)
-				local stars = WorkerBadge.stars(face, w.rarity, 28)
-				stars.AnchorPoint = Vector2.new(0.5, 0)
-				stars.Position = UDim2.fromScale(0.5, 0.1)
+				local kind = Instance.new("Frame")
+				kind.BackgroundTransparency = 1
+				kind.Position = UDim2.fromOffset(8, 8)
+				kind.Size = UDim2.fromOffset(28, 28)
+				kind.ZIndex = 2
+				kind.Parent = face
+				WorkerBadge.icon(kind, category)
+				local stars = WorkerBadge.stars(face, w.rarity, 14)
+				stars.AnchorPoint = Vector2.new(1, 0)
+				stars.Position = UDim2.new(1, -8, 0, 10)
+				stars.ZIndex = 2
 				local name = Style.label(face, w.name, Theme.Text.small)
-				name.Position = UDim2.new(0, 4, 1, -44)
-				name.Size = UDim2.new(1, -8, 0, 30)
+				name.Position = UDim2.fromOffset(4, 108)
+				name.Size = UDim2.new(1, -8, 0, 28)
 				name.TextWrapped = false
 				name.TextScaled = true
+				local trait = SurvivorTag.fromWorker(w, "").traitName
+				if trait ~= "" then
+					local pill = Instance.new("Frame")
+					pill.Name = "Trait"
+					pill.BackgroundColor3 = Color3.fromRGB(28, 34, 52)
+					pill.BackgroundTransparency = 0.25
+					pill.Position = UDim2.fromOffset(10, 138)
+					pill.Size = UDim2.new(1, -20, 0, 22)
+					Style.corner(pill, 999)
+					pill.Parent = face
+					local t = Style.label(pill, trait, Theme.Text.small)
+					t.TextWrapped = false
+					t.TextScaled = true
+				end
 			end
 		end
+		stopPortraits = Portrait.lazy(panel.body, slots)
 
 		local buttons = Instance.new("Frame")
 		buttons.LayoutOrder = 10

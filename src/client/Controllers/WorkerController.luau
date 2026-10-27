@@ -353,6 +353,7 @@ local function makeRig(r: Rec): boolean
 			"WorkerCategory",
 			"WorkerRarity",
 			"WorkerName",
+			"Rig",
 		}
 	do
 		rig:SetAttribute(key, r.cfg:GetAttribute(key))

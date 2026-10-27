@@ -15,6 +15,7 @@ local Rarity = require(Shared:WaitForChild("Rarity"))
 local Rules = require(Shared:WaitForChild("DiscoveryRules"))
 local WorkerRules = require(Shared:WaitForChild("WorkerRules"))
 local UI = script.Parent.Parent
+local Portrait = require(UI:WaitForChild("Portrait"))
 local Sticker = require(UI:WaitForChild("Sticker"))
 local SurvivorCard = require(UI:WaitForChild("SurvivorCard"))
 local SurvivorTag = require(UI:WaitForChild("SurvivorTag"))
@@ -75,6 +76,7 @@ function Album.new(canvas: Frame, onClose: () -> ())
 		onClose = onClose,
 	})
 	local preview: GuiObject? = nil
+	local stopPortraits = function() end
 	local workers: { WorkerRules.Worker } = {}
 	local buildings: { [string]: boolean } = {}
 	-- the survivor card over the panel (Sibling ZIndex: the holder lifts the whole card above the list)
@@ -158,6 +160,7 @@ function Album.new(canvas: Frame, onClose: () -> ())
 	end
 
 	local function rebuild()
+		stopPortraits()
 		closePreview()
 		for _, c in panel.body:GetChildren() do
 			if c:IsA("GuiObject") then
@@ -249,6 +252,7 @@ function Album.new(canvas: Frame, onClose: () -> ())
 		sgrid.SortOrder = Enum.SortOrder.LayoutOrder
 		sgrid.Parent = specials
 		local place = WorkerRules.assign(workers, buildings)
+		local slots: { Portrait.Slot } = {}
 		for order, sp in WorkerRules.SPECIALS do
 			local index: number? = nil
 			for i, w in workers do
@@ -278,15 +282,27 @@ function Album.new(canvas: Frame, onClose: () -> ())
 			local card = Style.button(specials, UDim2.fromOffset(SPECIAL_W, SPECIAL_H))
 			card.Name = "Special_" .. sp.id
 			card.LayoutOrder = order
-			local _, face = Style.block(card, Style.grad("ink"))
+			local face = Portrait.back(card, sp.rarity)
+			art.Position = UDim2.fromOffset(8, 8)
+			art.AnchorPoint = Vector2.zero
+			art.Size = UDim2.new(1, -16, 0, 92)
 			art.Parent = face
-			WorkerBadge.icon(art, sp.category)
+			table.insert(
+				slots,
+				{ holder = art, rig = WorkerRules.rigOf(index, w.name), category = w.category } :: Portrait.Slot
+			)
+			local kind = Instance.new("Frame")
+			kind.BackgroundTransparency = 1
+			kind.Position = UDim2.fromOffset(10, 10)
+			kind.Size = UDim2.fromOffset(30, 30)
+			kind.ZIndex = 2
+			kind.Parent = face
+			WorkerBadge.icon(kind, sp.category)
 			local name = Style.label(face, sp.name, Theme.Text.body)
 			name.Position = UDim2.fromOffset(6, 102)
 			name.Size = UDim2.new(1, -12, 0, 32)
 			name.TextWrapped = false
 			name.TextScaled = true
-			name.TextColor3 = tier.color
 			local cap = Instance.new("UITextSizeConstraint")
 			cap.MaxTextSize = Theme.Text.body
 			cap.MinTextSize = 12
@@ -298,9 +314,13 @@ function Album.new(canvas: Frame, onClose: () -> ())
 				local workplace = if place[index]
 					then WorkerRules.buildingOf(w.category) or ""
 					else ""
-				survivorCard.open(SurvivorTag.fromWorker(w, workplace), false)
+				survivorCard.open(
+					SurvivorTag.fromWorker(w, workplace, nil, WorkerRules.rigOf(index, w.name)),
+					false
+				)
 			end)
 		end
+		stopPortraits = Portrait.lazy(panel.body, slots)
 	end
 
 	rebuild()
