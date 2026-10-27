@@ -24,7 +24,8 @@ class B:
             self.f.append((tuple(base + i for i in face), c))
 
     # ---------------------------------------------------------------- bricks and plates
-    def box(self, lo, hi, c=P.WHITE, bevel=None):
+    def box(self, lo, hi, c=P.WHITE, bevel=None, skip=()):
+        """`skip` drops hidden faces by name: z0 z1 (bottom, top), y0 x1 y1 x0 (the sides)."""
         x0, y0, z0 = lo
         x1, y1, z1 = hi
         if x1 < x0:
@@ -37,8 +38,8 @@ class B:
         b = min(b, 0.22 * min(x1 - x0, y1 - y0, z1 - z0))
         bot = [(x0, y0, z0), (x1, y0, z0), (x1, y1, z0), (x0, y1, z0)]
         top = [(x0 + b, y0 + b, z1), (x1 - b, y0 + b, z1), (x1 - b, y1 - b, z1), (x0 + b, y1 - b, z1)]
-        self._emit(bot + top, [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5),
-                               (2, 3, 7, 6), (3, 0, 4, 7)], c)
+        faces = [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
+        self._emit(bot + top, [f for f, k in zip(faces, ("z0", "z1", "y0", "x1", "y1", "x0")) if k not in skip], c)
 
     def studs(self, x0, x1, y0, y1, z, c, step=2.0, r=0.72, h=STUD_H, n=8):
         """A grid of round studs centred in the given top rectangle."""
@@ -58,11 +59,12 @@ class B:
             self.cyl(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, z, z + h, r, c, n)
 
     # ---------------------------------------------------------------- round bits
-    def cyl(self, cx, cy, z0, z1, r, c, n=8, top=True):
+    def cyl(self, cx, cy, z0, z1, r, c, n=8, top=True, bot=True):
         ring0 = [(cx + r * math.cos(2 * math.pi * i / n), cy + r * math.sin(2 * math.pi * i / n), z0) for i in range(n)]
         ring1 = [(x, y, z1) for x, y, _ in ring0]
         faces = [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
-        faces.append(tuple(reversed(range(n))))
+        if bot:
+            faces.append(tuple(reversed(range(n))))
         if top:
             faces.append(tuple(range(n, 2 * n)))
         self._emit(ring0 + ring1, faces, c)

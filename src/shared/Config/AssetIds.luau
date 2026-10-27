@@ -62,9 +62,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://77043246609711",
 	},
 	M_Bld_HQAddons = {
-		LOD0 = "rbxassetid://123338047039762",
-		LOD1 = "rbxassetid://113076416910083",
-		LOD2 = "rbxassetid://92239502395795",
+		LOD0 = "rbxassetid://106642845340159",
+		LOD1 = "rbxassetid://131998990185376",
+		LOD2 = "rbxassetid://102534379202889",
 	},
 	M_Bld_LookoutAddons = {
 		LOD0 = "rbxassetid://82652287789521",

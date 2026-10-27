@@ -110,6 +110,16 @@ CREST_Z1, CREST_W, CREST_H = 19.6, 7.0, 10.0
 BR_X0, BR_X1 = ROOF_X1 - 0.6, TX0
 BR_Y0, BR_Y1 = 0.4, 5.6
 BR_Z0, BR_Z1 = CAP_TOP, F2
+# Lv5 outside stair to the wing roof: straight up the front of the wing / tower gap (+Y) to a landing level with
+# the wing's east parapet cap, beside the bridge (the bridge and its knee braces fill the gap behind it)
+ST_X0, ST_X1 = 43.8, 50.0
+ST_N = 15
+ST_RISE = CAP_TOP / ST_N
+ST_RUN = 1.1
+LAND_Y0, LAND_Y1 = ROOF_Y0, BR_Y0
+ST_Y0 = LAND_Y0 - (ST_N - 1) * ST_RUN
+FH = 2.2
+RF_W, RF_F, RF_B, RF_E = 27.85, -3.0, 9.05, 43.45
 
 
 def patch_lod_names():
@@ -128,7 +138,7 @@ def studs_on(b, x0, x1, y0, y1, z, c, step=2.2, r=0.5, h=0.26, skip=(), n=6):
             x, y = x0 + (ix + 0.5) * dx, y0 + (iy + 0.5) * dy
             if any(sx0 - r < x < sx1 + r and sy0 - r < y < sy1 + r for sx0, sy0, sx1, sy1 in skip):
                 continue
-            b.cyl(x, y, z, z + h, r, c, n)
+            b.cyl(x, y, z, z + h, r, c, n, bot=False)  # studs sit on a surface: no hidden bottom
 
 
 def win_y(b, x0, x1, z0, z1, y, d):
@@ -179,19 +189,21 @@ def wing_base(b):
 def wing_walls(b):
     yf0, yf1 = WY0, WY0 + WALL
     yb0, yb1 = WY1 - WALL, WY1
+    # hidden faces trimmed: every course top lies under the next course or the roof, the first course on the plinth
     for k in range(COURSES):
         z = FLOOR + k * COURSE
         col = P.RED if k in (0, 4, 8) else P.WHITE
-        b.box((WEST_END, yf0, z), (DOOR_X0, yf1, z + COURSE), col, bevel=0.05)
-        b.box((DOOR_X1, yf0, z), (WX1, yf1, z + COURSE), col, bevel=0.05)
+        sk = ("z0", "z1") if k == 0 else ("z1",)
+        b.box((WEST_END, yf0, z), (DOOR_X0, yf1, z + COURSE), col, bevel=0.05, skip=sk)
+        b.box((DOOR_X1, yf0, z), (WX1, yf1, z + COURSE), col, bevel=0.05, skip=sk)
         if k >= 6:
-            b.box((DOOR_X0, yf0, z), (DOOR_X1, yf1, z + COURSE), col, bevel=0.05)
-        b.box((WEST_END, yb0, z), (WX1, yb1, z + COURSE), col, bevel=0.05)
-        b.box((WX0, yf1, z), (WX0 + WALL, yb0, z + COURSE), col, bevel=0.05)
-        b.box((WX1 - WALL, yf1, z), (WX1, yb0, z + COURSE), col, bevel=0.05)
+            b.box((DOOR_X0, yf0, z), (DOOR_X1, yf1, z + COURSE), col, bevel=0.05, skip=("z1",))
+        b.box((WEST_END, yb0, z), (WX1, yb1, z + COURSE), col, bevel=0.05, skip=sk)
+        b.box((WX0, yf1, z), (WX0 + WALL, yb0, z + COURSE), col, bevel=0.05, skip=sk)
+        b.box((WX1 - WALL, yf1, z), (WX1, yb0, z + COURSE), col, bevel=0.05, skip=sk)
     for x0, y0 in ((WX0 - 0.06, yf0 - 0.06), (WX0 - 0.06, yb1 - 0.49),
                    (WX1 - 0.49, yf0 - 0.06), (WX1 - 0.49, yb1 - 0.49)):
-        b.box((x0, y0, FLOOR), (x0 + 0.55, y0 + 0.55, WALL_TOP), P.RED, bevel=0.03)
+        b.box((x0, y0, FLOOR), (x0 + 0.55, y0 + 0.55, WALL_TOP), P.RED, bevel=0.03, skip=("z0", "z1"))
 
 
 def wing_trim(b):
@@ -352,26 +364,29 @@ def tower_base(b):
 def tower_walls(b):
     yf0, yf1 = TY0, TY0 + T_WALL
     yb0, yb1 = TY1 - T_WALL, TY1
+    # hidden faces trimmed as in the wing (the west course under the bridge door keeps its top: the threshold)
     for k in range(S1_N):
         z = T_FLOOR + k * S1_C
         col = P.RED if k % 4 == 0 else P.WHITE
+        sk = ("z0", "z1") if k == 0 else ("z1",)
         if k < 3:
-            b.box((TX0, yf0, z), (T_DOOR_X0, yf1, z + S1_C), col, bevel=0.04)
-            b.box((T_DOOR_X1, yf0, z), (TX1, yf1, z + S1_C), col, bevel=0.04)
+            b.box((TX0, yf0, z), (T_DOOR_X0, yf1, z + S1_C), col, bevel=0.04, skip=sk)
+            b.box((T_DOOR_X1, yf0, z), (TX1, yf1, z + S1_C), col, bevel=0.04, skip=sk)
         else:
-            b.box((TX0, yf0, z), (TX1, yf1, z + S1_C), col, bevel=0.04)
-        b.box((TX0, yb0, z), (TX1, yb1, z + S1_C), col, bevel=0.04)
+            b.box((TX0, yf0, z), (TX1, yf1, z + S1_C), col, bevel=0.04, skip=sk)
+        b.box((TX0, yb0, z), (TX1, yb1, z + S1_C), col, bevel=0.04, skip=sk)
         if z > F2 - 0.01:
-            b.box((TX0, yf1, z), (TX0 + T_WALL, W_DY0, z + S1_C), col, bevel=0.04)
-            b.box((TX0, W_DY1, z), (TX0 + T_WALL, yb0, z + S1_C), col, bevel=0.04)
+            b.box((TX0, yf1, z), (TX0 + T_WALL, W_DY0, z + S1_C), col, bevel=0.04, skip=sk)
+            b.box((TX0, W_DY1, z), (TX0 + T_WALL, yb0, z + S1_C), col, bevel=0.04, skip=sk)
         else:
-            b.box((TX0, yf1, z), (TX0 + T_WALL, yb0, z + S1_C), col, bevel=0.04)
-        b.box((TX1 - T_WALL, yf1, z), (TX1, yb0, z + S1_C), col, bevel=0.04)
+            b.box((TX0, yf1, z), (TX0 + T_WALL, yb0, z + S1_C), col, bevel=0.04,
+                  skip=sk if z + S1_C < F2 - 0.01 else ())
+        b.box((TX1 - T_WALL, yf1, z), (TX1, yb0, z + S1_C), col, bevel=0.04, skip=sk)
     b.box((TX0 + T_WALL, yf1, F2 - 0.6), (TX1 - T_WALL, yb0, F2), P.TAN, bevel=0.02)
     for j in range(U_N):
         z = LEDGE_TOP + j * U_C
         col = P.RED if (S1_N + j) % 4 == 0 else P.WHITE
-        b.box((UX0, UY0, z), (UX1, UY1, z + U_C), col, bevel=0.04)
+        b.box((UX0, UY0, z), (UX1, UY1, z + U_C), col, bevel=0.04, skip=("z1",))
 
 
 def shield(b, cx, y0, y1, ztop, W, H, col, inset=0.0):
@@ -436,6 +451,65 @@ def tower_trim(b):
     b.box((ROOF_X1 - 2.2, BR_Y0 + 0.2, ROOF_TOP), (BR_X0, BR_Y1 - 0.2, ROOF_TOP + 0.5), P.TAN, bevel=0.03)
     fence_x(b, ROOF_X1 + 0.4, BR_X1 - 0.4, BR_Y0 + 0.2, BR_Z1, 1.1)
     fence_x(b, ROOF_X1 + 0.4, BR_X1 - 0.4, BR_Y1 - 0.2, BR_Z1, 1.1)
+    stair(b)
+
+
+def post(b, x, y, z0):
+    b.box((x - 0.3, y - 0.3, z0), (x + 0.3, y + 0.3, z0 + FH + 0.8), P.RED, bevel=0.03, skip=("z0",))
+    b.cyl(x, y, z0 + FH + 0.8, z0 + FH + 1.05, 0.22, P.RED, 5, bot=False)
+
+
+def panel(b, lo, hi, z_rail):
+    """A solid white Lego fence panel with a red top rail (rail z_rail .. +0.4, 0.08 proud each side)."""
+    b.box(lo, (hi[0], hi[1], z_rail), P.WHITE, bevel=0.02, skip=("z0", "z1"))
+    ax = 0.08 if hi[0] - lo[0] < 1.0 else 0.0
+    ay = 0.08 if hi[1] - lo[1] < 1.0 else 0.0
+    b.box((lo[0] - ax, lo[1] - ay, z_rail), (hi[0] + ax, hi[1] + ay, z_rail + 0.4), P.RED, bevel=0.03)
+
+
+def stair(b):
+    """Lv5: a tan Lego stair (15 risers of 1.04, 1.1 treads, 2 studs a tread) up to a landing at the wing's east
+    cap, solid white fence panels with red rails both sides, and a fence round the wing roof's edge."""
+    for k in range(1, ST_N):
+        y = ST_Y0 + (k - 1) * ST_RUN
+        z = k * ST_RISE
+        b.box((ST_X0, y, 0.0), (ST_X1, y + ST_RUN, z), P.TAN, bevel=0.0, skip=("z0", "y1"))
+        for x in (45.9, 47.9):
+            b.cyl(x, y + ST_RUN / 2, z, z + 0.2, 0.32, P.TAN, 5, bot=False)
+    b.box((ST_X0, LAND_Y0, 0.0), (ST_X1, LAND_Y1, CAP_TOP), P.TAN, bevel=0.0, skip=("z0",))
+    # sloped side panels: bottom edge through the treads' inner corners, top FH over the nosings
+    for x0 in (ST_X0 + 0.08, ST_X1 - 0.38):
+        b.prof_x(x0, x0 + 0.3, [(ST_Y0, 0.0), (LAND_Y0, CAP_TOP - ST_RISE), (LAND_Y0, CAP_TOP + FH),
+                                (ST_Y0, ST_RISE + FH)], P.WHITE)
+        b.prof_x(x0 - 0.08, x0 + 0.38, [(ST_Y0, ST_RISE + FH), (LAND_Y0, CAP_TOP + FH),
+                                        (LAND_Y0, CAP_TOP + FH + 0.4), (ST_Y0, ST_RISE + FH + 0.4)], P.RED)
+    for x in (ST_X0 + 0.3, ST_X1 - 0.3):
+        post(b, x, ST_Y0 + 0.3, ST_RISE)
+        post(b, x, LAND_Y0 + 0.3, CAP_TOP)
+    panel(b, (ST_X1 - 0.38, LAND_Y0 + 0.6, CAP_TOP), (ST_X1 - 0.08, LAND_Y1, CAP_TOP + FH), CAP_TOP + FH)
+    # roof edge: front and back caps, the station end (clear of its gable overhang at 27.5) and the east cap
+    # behind the bridge; the landing and the bridge step plate are the two openings
+    panel(b, (RF_W, RF_F - 0.15, CAP_TOP), (ST_X0 + 0.3, RF_F + 0.15, CAP_TOP + FH), CAP_TOP + FH)
+    panel(b, (RF_W, RF_B - 0.15, CAP_TOP), (RF_E, RF_B + 0.15, CAP_TOP + FH), CAP_TOP + FH)
+    panel(b, (RF_W - 0.15, RF_F, ROOF_TOP), (RF_W + 0.15, RF_B, CAP_TOP + FH), CAP_TOP + FH)
+    panel(b, (RF_E - 0.15, BR_Y1 + 0.3, CAP_TOP), (RF_E + 0.15, RF_B, CAP_TOP + FH), CAP_TOP + FH)
+    for x, y in ((RF_W, RF_F), (RF_W, RF_B), (RF_E, RF_B), (RF_E, BR_Y1 + 0.3), (35.6, RF_F), (35.6, RF_B)):
+        post(b, x, y, CAP_TOP)
+    post(b, RF_W, 3.0, ROOF_TOP)  # no parapet at the station end
+
+
+def stair_col(c):
+    for k in range(1, ST_N):
+        y = ST_Y0 + (k - 1) * ST_RUN
+        c.box((ST_X0, y, 0.0), (ST_X1, y + ST_RUN, k * ST_RISE))
+    c.box((ST_X0, LAND_Y0, 0.0), (ST_X1, LAND_Y1, CAP_TOP))
+    top = CAP_TOP + FH + 0.4
+    c.box((ST_X0, ST_Y0, 0.0), (ST_X0 + 0.6, LAND_Y0 + 0.6, top))
+    c.box((ST_X1 - 0.6, ST_Y0, 0.0), (ST_X1, LAND_Y1, top))
+    c.box((RF_W - 0.3, RF_F - 0.3, CAP_TOP), (ST_X0 + 0.3, RF_F + 0.3, top))
+    c.box((RF_W - 0.3, RF_B - 0.3, CAP_TOP), (RF_E + 0.3, RF_B + 0.3, top))
+    c.box((RF_W - 0.3, RF_F + 0.3, CAP_TOP), (RF_W + 0.3, RF_B - 0.3, top))
+    c.box((RF_E - 0.3, BR_Y1, CAP_TOP), (RF_E + 0.3, RF_B - 0.3, top))
 
 
 def tower_balcony(b):
@@ -517,6 +591,7 @@ def tower_col(c):
     c.box((ROOF_X1, BR_Y1 - 0.5, BR_Z1), (BR_X1, BR_Y1, BR_Z1 + 2.6))
     c.box((ROOF_X1 - 2.2, BR_Y0 + 0.2, ROOF_TOP), (BR_X0, BR_Y1 - 0.2, ROOF_TOP + 0.5))
     c.box((52.5, QY0 - 1.2, 0.0), (57.5, QY0, 0.3))
+    stair_col(c)
 
 
 def build():
@@ -642,7 +717,7 @@ def build():
             {"name": "radio_room", "target": [35.0, 3.0, 5.5], "dist": 18, "az": 0, "el": 2},
             {"name": "beacon_tower", "target": [55.0, 3.0, 24.0], "dist": 78, "az": 25, "el": 12},
             {"name": "lantern", "target": [55.0, 3.0, 43.5], "dist": 20, "az": 15, "el": 8},
-            {"name": "bridge", "target": [47.0, 3.0, 17.0], "dist": 30, "az": 0, "el": 22},
+            {"name": "bridge", "target": [46.9, -5.0, 11.0], "dist": 46, "az": -30, "el": 20},
             {"name": "crest", "target": [55.0, -1.5, 14.6], "dist": 20, "az": 0, "el": 0},
         ],
     }

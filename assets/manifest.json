@@ -23507,6 +23507,16 @@
   "source": "assets/fbx/M_Veg_Hawthorn_02/M_Veg_Hawthorn_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:5ae2e36709393116557e2c2596024ee3b0a32395b86dc5479bf701b31b5d00dc": {
+  "assetId": "131998990185376",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "5ae2e36709393116557e2c2596024ee3b0a32395b86dc5479bf701b31b5d00dc",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:5b1084fe1a0c582630c633ebfb1971bee5fc4f2c463d89165290c1d3c7b78411": {
   "assetId": "132403388220603",
   "moderation": "Approved",
@@ -27197,6 +27207,16 @@
   "source": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD0.fbx",
   "type": "Model"
  },
+ "Model:cc13f0cee4bfe82896d67054fa22cbf127f77a39f9a423f78312cb590ca4b088": {
+  "assetId": "102534379202889",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "cc13f0cee4bfe82896d67054fa22cbf127f77a39f9a423f78312cb590ca4b088",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:cc844fb8e79da26fa4c0f670fec6ff58eb880480e70cd582adc8b60e2250e015": {
   "assetId": "128929400972655",
   "moderation": "Approved",
@@ -28145,6 +28165,16 @@
   "route": "delivery",
   "sha": "e96a528a6c890d141fb6fc5cb79292b9e7b14351dd25ff83d31db063c37f4994",
   "source": "assets/fbx/M_Hbr_Fender_Cyl_02/M_Hbr_Fender_Cyl_02_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:e9b9154ad0947a0028959b53c1c9df239488d0485840af5c314a2558d76887eb": {
+  "assetId": "106642845340159",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "e9b9154ad0947a0028959b53c1c9df239488d0485840af5c314a2558d76887eb",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD0.fbx",
   "type": "Model"
  },
  "Model:e9d273d0e04c782a5315e678eb18f23fcbbd6f96603272e985aa9136c948530c": {
