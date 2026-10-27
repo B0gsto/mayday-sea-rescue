@@ -191,6 +191,8 @@ local function makeBarge(isl: Island)
 end
 
 -- Per frame, near islands only: the barge's place on its path, its crates through the stay.
+local HORN_GAP = 300
+local lastHorn = -math.huge
 local function step()
 	local now = Workspace:GetServerTimeNow()
 	for _, isl in islands do
@@ -208,8 +210,10 @@ local function step()
 		-- the mark faces out to sea along the quay; the barge comes in bow first, so the path's -Z is the other way
 		barge:PivotTo(moor * CFrame.Angles(0, math.pi, 0) * at)
 		local done = BargePath.unloaded(now, nxt, PERIOD)
-		-- the barge ties up: one tug horn at the quay (3D, so only the island's neighbours hear it)
-		if done ~= nil and isl.moored == false then
+		-- the barge ties up: one tug horn at the quay (3D, so only the island's neighbours hear it), at most every
+		-- HORN_GAP s so a player working on their island doesn't hear it every minute
+		if done ~= nil and isl.moored == false and now - lastHorn >= HORN_GAP then
+			lastHorn = now
 			AudioController.play("Horn_Tug", moor.Position, 0.55, 1)
 		end
 		isl.moored = done ~= nil
