@@ -21,6 +21,7 @@ return function(t)
 	local SpinRules = t.load("src/shared/SpinRules.luau")
 
 	local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
+	local GoldenCalls = t.load("src/shared/Calls/GoldenCalls.luau")
 	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
 	local DockConfig = t.load("src/shared/Config/DockConfig.luau")
 	local RingLayout = t.load("src/shared/Config/RingLayout.luau")
@@ -499,9 +500,19 @@ return function(t)
 			data.cash += work
 			earned.workers += work
 			local pay = (1 + f.payBonus) * (1 + skills().payBonus)
-			earned.calls += reward.cash * scale * friendMult
-			earned.medic += reward.cash * scale * (pay - 1) * friendMult
-			award(reward.cash * scale * pay, storm, great)
+			-- docs/25 E: golden calls pay CASH_MULT, at their expected share (never the tutorial's calls)
+			local callCash = reward.cash
+				* (
+					if weight
+						then 1 + GoldenCalls.chance(
+							UnlockTree.levelOf(levels, "LookoutTower"),
+							skills().goldenCalls or 0
+						) * (GoldenCalls.CASH_MULT - 1)
+						else 1
+				)
+			earned.calls += callCash * scale * friendMult
+			earned.medic += callCash * scale * (pay - 1) * friendMult
+			award(callCash * scale * pay, storm, great)
 			if scale == 1 then
 				recruit(people)
 				local before = rescued

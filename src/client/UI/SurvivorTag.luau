@@ -255,6 +255,7 @@ function SurvivorTag.attach(model: Model, inWater: boolean?): BillboardGui?
 			h.Name = "GoldenGlow"
 			h.FillColor, h.OutlineColor = GOLD, GOLD
 			h.FillTransparency, h.OutlineTransparency = 0.75, 0
+			h.DepthMode = Enum.HighlightDepthMode.Occluded -- never through walls (Golden Eye's tags are the far read)
 			h.Parent = model
 			glow = h
 		end

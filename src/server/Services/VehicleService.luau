@@ -46,6 +46,7 @@ local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfi
 local Marina = require(Shared:WaitForChild("Marina"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
+local Nitro = require(Shared:WaitForChild("Boat"):WaitForChild("Nitro"))
 local RespawnPolicy = require(Shared:WaitForChild("Boat"):WaitForChild("RespawnPolicy"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
@@ -388,6 +389,10 @@ end
 local function speedLimit(record: Record): number
 	local mult = record.model:GetAttribute("SpeedMultiplier")
 	local m = if type(mult) == "number" then mult else 1
+	local driver = record.driver
+	if driver and (tonumber(driver:GetAttribute("SkillNitro")) or 0) > 0 then
+		m *= Nitro.MULT -- the burst (client-timed) may run at top speed
+	end
 	return record.spec.topSpeed * m * SPEED_TOLERANCE + SPEED_SLACK
 end
 

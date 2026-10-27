@@ -354,7 +354,14 @@ function WorkerService.Recruit(
 		ProgressionService.Award(player, welcome, "Workers:Welcome", true)
 	end
 	if clean and rng:NextNumber() < effectsOf(player, data).glowUp then -- Glow Up: a Medic raises them
-		WorkerRules.promote(clean, rng:NextInteger(1, 2147483646))
+		if WorkerRules.promote(clean, rng:NextInteger(1, 2147483646)) and data.pity then
+			-- a promoted Epic / Legendary counts like a rolled one: its pity starts again
+			if clean.rarity == WorkerRules.EPIC then
+				data.pity.epic = 0
+			elseif clean.rarity == WorkerRules.LEGENDARY then
+				data.pity.legendary = 0
+			end
+		end
 	end
 	local cap = UnlockTree.bunkCap(data.dock.levels)
 		+ (tonumber(player:GetAttribute("SkillWorkerCapAdd")) or 0)

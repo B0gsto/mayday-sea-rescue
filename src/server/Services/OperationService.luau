@@ -1358,15 +1358,14 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 		home
 	)
 	op.dive = dive
-	-- docs/25 E: a golden call (never the first-session calls, the idle nudge or an animal's call)
+	-- docs/25 E: a golden call (never the first-session calls, the idle nudge or an animal's call); rolled on
+	-- accept (activate), so declining plain offers never fishes for one
 	if forcedKind ~= "EasyCall" and kind ~= "WildlifeRescue" and not onboardingCall(player) then
 		local _, lookout = try("DockService", "Level", player, "LookoutTower")
-		local chance = GoldenCalls.chance(
+		op.goldenChance = GoldenCalls.chance(
 			tonumber(lookout) or 0,
 			tonumber(player:GetAttribute("SkillGoldenCalls")) or 0
 		)
-		op.golden = rng:NextNumber() < chance
-		op.scene.golden = op.golden -- RescueService lifts one survivor to Epic+
 	end
 	if kind == "WildlifeRescue" then
 		try("SanctuaryService", "DressOffer", op, player)
@@ -1423,6 +1422,8 @@ local function activate(op: any, player: Player)
 	op.scene.owner = player -- docs/25 K1: the survivors roll (with this player's pity) when they spawn
 	op.acceptedAt = now()
 	op.storm = weatherState() == "Storm"
+	op.golden = op.goldenChance ~= nil and rng:NextNumber() < op.goldenChance
+	op.scene.golden = op.golden -- RescueService lifts one survivor to Epic+
 	local members = freeCrewOf(player)
 	for _, p in members do
 		stateOf(p).activeOpId = op.id
