@@ -338,7 +338,9 @@
   "aliases": [
    "T_Barge_Hull_RGH",
    "T_WorkshopAddons_Brick_RGH",
-   "T_FishMarket_Brick_RGH"
+   "T_FishMarket_Brick_RGH",
+   "T_Clinic_Brick_RGH",
+   "T_LookoutAddons_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -1309,6 +1311,15 @@
   "name": "T_Station_Render_MET",
   "sha": "0f4b1668d119f77ceb6b86645573f088ab2341d7b284314d5df0be7226ea5d91",
   "source": "assets/textures/M_Bld_Station/T_Station_Render_MET.png",
+  "type": "Image"
+ },
+ "Image:0fc307738a2b3bdb16d23c15851fd9ea8f07a59640e40483bb2a39dc27a8876c": {
+  "assetId": "136353033231389",
+  "imageId": "136353033231389",
+  "moderation": "Reviewing",
+  "name": "T_LookoutAddons_Brick_ALB",
+  "sha": "0fc307738a2b3bdb16d23c15851fd9ea8f07a59640e40483bb2a39dc27a8876c",
+  "source": "assets/textures/M_Bld_LookoutAddons/T_LookoutAddons_Brick_ALB.png",
   "type": "Image"
  },
  "Image:0fec151c8074e52deb962df4b0c52d41b44f4864052c91a30820c15f5b72048f": {
@@ -12977,7 +12988,9 @@
    "T_WorkshopAddons_Brick_NOR",
    "T_FishMarket_Brick_NOR",
    "T_RescueHQ_Brick_NOR",
-   "T_Bunkhouse_Brick_NOR"
+   "T_Bunkhouse_Brick_NOR",
+   "T_Clinic_Brick_NOR",
+   "T_LookoutAddons_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -15021,6 +15034,15 @@
   "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_ALB.png",
   "type": "Image"
  },
+ "Image:bcf4364adf666a3b5c3c8de325f3dc52f7b8123faadd5bd636e5048b27d15014": {
+  "assetId": "81320045719314",
+  "imageId": "81320045719314",
+  "moderation": "Reviewing",
+  "name": "T_Clinic_Brick_ALB",
+  "sha": "bcf4364adf666a3b5c3c8de325f3dc52f7b8123faadd5bd636e5048b27d15014",
+  "source": "assets/textures/M_Bld_ClinicAddons/T_Clinic_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:bcf53e04a5c64cc6ffd99b0d70e8b1c196efd715f8763acbe11130ec36323838": {
   "aliases": [
    "T_MooringBlock_Metal_NOR"
@@ -16983,7 +17005,9 @@
    "T_Barge_Hull_MET",
    "T_WorkshopAddons_Brick_MET",
    "T_FishMarket_Brick_MET",
-   "T_Bunkhouse_Brick_MET"
+   "T_Bunkhouse_Brick_MET",
+   "T_Clinic_Brick_MET",
+   "T_LookoutAddons_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -20127,6 +20151,16 @@
   "source": "assets/fbx/M_Veg_Grass_Marram_01/M_Veg_Grass_Marram_01_LOD2.fbx",
   "type": "Model"
  },
+ "Model:00d2e1ee4ec7428ead6055b0b2b38f6f54a356b05f7f54300a0da790bd339031": {
+  "assetId": "121139299884945",
+  "moderation": "Approved",
+  "name": "M_Bld_ClinicAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_ClinicAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "00d2e1ee4ec7428ead6055b0b2b38f6f54a356b05f7f54300a0da790bd339031",
+  "source": "assets/fbx/M_Bld_ClinicAddons/M_Bld_ClinicAddons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:00ee6b3aeac194325affa7bc290cd1616e1e909efd5328f7473404b45a9b8fbb": {
   "assetId": "107584929452917",
   "moderation": "Approved",
@@ -20625,6 +20659,16 @@
   "route": "delivery",
   "sha": "1308ba01fc3c3fb9a351469398d86ee61dab33c93e73c13613c244bf70b04b98",
   "source": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:14231f3e8e4c88b0d414acfa9cf412b4f443c510fe7305be722ba8e9c12931c5": {
+  "assetId": "86608711148103",
+  "moderation": "Approved",
+  "name": "M_Bld_ClinicAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_ClinicAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "14231f3e8e4c88b0d414acfa9cf412b4f443c510fe7305be722ba8e9c12931c5",
+  "source": "assets/fbx/M_Bld_ClinicAddons/M_Bld_ClinicAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:14418c26bf33c3699483ea13af28bc48109f853bc0a36c14c33ed75a07dcbb74": {
@@ -21787,6 +21831,16 @@
   "source": "assets/fbx/M_Veg_Gorse_02/M_Veg_Gorse_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:315ee8ea86807bd085e503996c863bfa0784603b5cc0308d9e1b42dab0bf35e5": {
+  "assetId": "82652287789521",
+  "moderation": "Approved",
+  "name": "M_Bld_LookoutAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_LookoutAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "315ee8ea86807bd085e503996c863bfa0784603b5cc0308d9e1b42dab0bf35e5",
+  "source": "assets/fbx/M_Bld_LookoutAddons/M_Bld_LookoutAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:31bee1ac8061dd7569f53d3cb0d3f4075b84901b25bee13ab5edd34dba33dad9": {
   "assetId": "117362073738138",
   "moderation": "Approved",
@@ -22607,6 +22661,16 @@
   "source": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD0.fbx",
   "type": "Model"
  },
+ "Model:48656fd79e0bdfe3ce850fd59b12c780bd31ece05356794dd15f30844689cfb6": {
+  "assetId": "128495109779059",
+  "moderation": "Approved",
+  "name": "M_Bld_LookoutAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_LookoutAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "48656fd79e0bdfe3ce850fd59b12c780bd31ece05356794dd15f30844689cfb6",
+  "source": "assets/fbx/M_Bld_LookoutAddons/M_Bld_LookoutAddons_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:487525716130aefd77b81362cb2bb06ddab238f52fb9ca054037a120dde148a7": {
   "assetId": "134233387969452",
   "moderation": "Approved",
@@ -23365,6 +23429,16 @@
   "route": "delivery",
   "sha": "5ffd5e2a43a58c209563ba4b3aa23d8f6514b1a248dd760d440f337a4de3671f",
   "source": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:6098837c969638b9902d569ab7d29cae61e6ff6dac8166c8cdfa551078f0cfaa": {
+  "assetId": "83138902640216",
+  "moderation": "Approved",
+  "name": "M_Bld_ClinicAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_ClinicAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "6098837c969638b9902d569ab7d29cae61e6ff6dac8166c8cdfa551078f0cfaa",
+  "source": "assets/fbx/M_Bld_ClinicAddons/M_Bld_ClinicAddons_LOD0.fbx",
   "type": "Model"
  },
  "Model:610bd68fb5f49d472d62ee58526e265c5b3454257b8b97136578ec29f39054ae": {
@@ -25975,6 +26049,16 @@
   "route": "delivery",
   "sha": "b191ddb15b3dce17caa7bc0918a690b4bf6eafddf8ec25f4294ef93704c8f5a6",
   "source": "assets/fbx/M_Hbr_NavMark_South/M_Hbr_NavMark_South_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:b1a5b223e363b59503a97dd0ecb86aec6d5e89188f02869d0af7a851af64c681": {
+  "assetId": "84012891513184",
+  "moderation": "Approved",
+  "name": "M_Bld_LookoutAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_LookoutAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "b1a5b223e363b59503a97dd0ecb86aec6d5e89188f02869d0af7a851af64c681",
+  "source": "assets/fbx/M_Bld_LookoutAddons/M_Bld_LookoutAddons_LOD2.fbx",
   "type": "Model"
  },
  "Model:b1ad7e9c91898862fefb1d741d6c1c608338fc7384428532cf43958ba591e8f2": {

@@ -260,6 +260,28 @@
    ]
   },
   {
+   "Name": "M_Bld_ClinicAddons",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://81320045719314",
+        "NormalMap": "rbxassetid://134063939343985",
+        "RoughnessMap": "rbxassetid://77394710200809",
+        "MetalnessMap": "rbxassetid://82741558542658"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Bld_Cottage_Kit",
    "ClassName": "Folder",
    "Children": [
@@ -506,6 +528,28 @@
        "ClassName": "SurfaceAppearance",
        "Properties": {
         "ColorMap": "rbxassetid://101612034075338",
+        "NormalMap": "rbxassetid://134063939343985",
+        "RoughnessMap": "rbxassetid://77394710200809",
+        "MetalnessMap": "rbxassetid://82741558542658"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Bld_LookoutAddons",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://136353033231389",
         "NormalMap": "rbxassetid://134063939343985",
         "RoughnessMap": "rbxassetid://77394710200809",
         "MetalnessMap": "rbxassetid://82741558542658"

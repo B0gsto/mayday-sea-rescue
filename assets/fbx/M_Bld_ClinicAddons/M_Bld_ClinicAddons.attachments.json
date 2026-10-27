@@ -1,0 +1,297 @@
+{
+ "asset": "M_Bld_ClinicAddons",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Work_Bed1",
+   "parent": null,
+   "blender": [
+    -32.5,
+    -0.6,
+    1.05
+   ],
+   "roblox_from_origin": [
+    32.5,
+    1.05,
+    -0.6
+   ],
+   "roblox_from_bbox_centre": [
+    33.1824,
+    -6.775,
+    -1.35
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Bed2",
+   "parent": null,
+   "blender": [
+    -28.0,
+    -0.6,
+    1.05
+   ],
+   "roblox_from_origin": [
+    28.0,
+    1.05,
+    -0.6
+   ],
+   "roblox_from_bbox_centre": [
+    28.6824,
+    -6.775,
+    -1.35
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Bed3",
+   "parent": null,
+   "blender": [
+    -23.5,
+    -0.6,
+    1.05
+   ],
+   "roblox_from_origin": [
+    23.5,
+    1.05,
+    -0.6
+   ],
+   "roblox_from_bbox_centre": [
+    24.1824,
+    -6.775,
+    -1.35
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_MedicCounter",
+   "parent": null,
+   "blender": [
+    -30.7,
+    -5.0,
+    1.05
+   ],
+   "roblox_from_origin": [
+    30.7,
+    1.05,
+    -5.0
+   ],
+   "roblox_from_bbox_centre": [
+    31.3824,
+    -6.775,
+    -5.75
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Bed4",
+   "parent": null,
+   "blender": [
+    23.85,
+    3.8,
+    1.05
+   ],
+   "roblox_from_origin": [
+    -23.85,
+    1.05,
+    3.8
+   ],
+   "roblox_from_bbox_centre": [
+    -23.1676,
+    -6.775,
+    3.05
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Bed5",
+   "parent": null,
+   "blender": [
+    23.85,
+    10.55,
+    1.05
+   ],
+   "roblox_from_origin": [
+    -23.85,
+    1.05,
+    10.55
+   ],
+   "roblox_from_bbox_centre": [
+    -23.1676,
+    -6.775,
+    9.8
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Bed6",
+   "parent": null,
+   "blender": [
+    33.0,
+    3.8,
+    1.05
+   ],
+   "roblox_from_origin": [
+    -33.0,
+    1.05,
+    3.8
+   ],
+   "roblox_from_bbox_centre": [
+    -32.3176,
+    -6.775,
+    3.05
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Bed7",
+   "parent": null,
+   "blender": [
+    33.0,
+    10.55,
+    1.05
+   ],
+   "roblox_from_origin": [
+    -33.0,
+    1.05,
+    10.55
+   ],
+   "roblox_from_bbox_centre": [
+    -32.3176,
+    -6.775,
+    9.8
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Desk",
+   "parent": null,
+   "blender": [
+    28.4,
+    14.6,
+    1.05
+   ],
+   "roblox_from_origin": [
+    -28.4,
+    1.05,
+    14.6
+   ],
+   "roblox_from_bbox_centre": [
+    -27.7176,
+    -6.775,
+    13.85
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Park_Ambulance",
+   "parent": null,
+   "blender": [
+    31.8,
+    -11.4,
+    1.01
+   ],
+   "roblox_from_origin": [
+    -31.8,
+    1.01,
+    -11.4
+   ],
+   "roblox_from_bbox_centre": [
+    -31.1176,
+    -6.815,
+    -12.15
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

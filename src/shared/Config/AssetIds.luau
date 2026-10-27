@@ -26,6 +26,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://104644518523404",
 		LOD2 = "rbxassetid://86122291008719",
 	},
+	M_Bld_ClinicAddons = {
+		LOD0 = "rbxassetid://83138902640216",
+		LOD1 = "rbxassetid://86608711148103",
+		LOD2 = "rbxassetid://121139299884945",
+	},
 	M_Bld_Cottage_02 = {
 		LOD0 = "rbxassetid://106402112670185",
 		LOD1 = "rbxassetid://93594095444599",
@@ -40,6 +45,11 @@ AssetIds.Models = {
 		LOD0 = "rbxassetid://120908547103609",
 		LOD1 = "rbxassetid://111381306769504",
 		LOD2 = "rbxassetid://77043246609711",
+	},
+	M_Bld_LookoutAddons = {
+		LOD0 = "rbxassetid://82652287789521",
+		LOD1 = "rbxassetid://128495109779059",
+		LOD2 = "rbxassetid://84012891513184",
 	},
 	M_Bld_RescueHQ = {
 		LOD0 = "rbxassetid://123986979842011",
@@ -458,6 +468,18 @@ AssetIds.Attachments = {
 		ATT_Wing_01 = Vector3.new(21, 1.1, -4.5),
 		ATT_Flag_01 = Vector3.new(9.5, 44.961, 0),
 	},
+	M_Bld_ClinicAddons = {
+		ATT_Work_Bed1 = Vector3.new(32.5, 1.05, -0.6),
+		ATT_Work_Bed2 = Vector3.new(28, 1.05, -0.6),
+		ATT_Work_Bed3 = Vector3.new(23.5, 1.05, -0.6),
+		ATT_Work_MedicCounter = Vector3.new(30.7, 1.05, -5),
+		ATT_Work_Bed4 = Vector3.new(-23.85, 1.05, 3.8),
+		ATT_Work_Bed5 = Vector3.new(-23.85, 1.05, 10.55),
+		ATT_Work_Bed6 = Vector3.new(-33, 1.05, 3.8),
+		ATT_Work_Bed7 = Vector3.new(-33, 1.05, 10.55),
+		ATT_Work_Desk = Vector3.new(-28.4, 1.05, 14.6),
+		ATT_Park_Ambulance = Vector3.new(-31.8, 1.01, -11.4),
+	},
 	M_Bld_Cottage_02 = {
 		ATT_Lamp_Window_01 = Vector3.new(4.2, 4.5, -6.95),
 		ATT_Lamp_Window_02 = Vector3.new(-6.6, 9.825, -6.95),
@@ -484,6 +506,11 @@ AssetIds.Attachments = {
 		ATT_Work_Stall4 = Vector3.new(16.75, 0.95, 3),
 		ATT_Work_RackLeft = Vector3.new(1.2, 0.95, 11.5),
 		ATT_Work_RackRight = Vector3.new(-4.2, 0.95, 11.5),
+	},
+	M_Bld_LookoutAddons = {
+		ATT_Watch_Lamp = Vector3.new(5.6, 31.32, -9.2),
+		ATT_Watch_Spotlight = Vector3.new(-5.6, 31.32, -9.2),
+		ATT_SearchlightPivot = Vector3.new(-6.6, 44, 5.2),
 	},
 	M_Bld_RescueHQ = {
 		ATT_Sign_01 = Vector3.new(0, 9.45, -10.12),
