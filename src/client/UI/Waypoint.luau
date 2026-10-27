@@ -10,8 +10,11 @@
 --   Waypoint.metres(studs) -> "240 m" | "1.2 km"
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
+local AudioController =
+	require(script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("AudioController"))
 local Glyph = require(script.Parent.Glyph)
 local HudTheme = require(script.Parent.HudTheme)
 local Layout = require(script.Parent.Layout)
@@ -155,6 +158,41 @@ function Waypoint.start(
 	ops.OnOffer:Connect(function(data: { [string]: any })
 		offerKind = data.kind
 		offerGolden = data.golden == true
+	end)
+	-- taking a golden call: a bright fanfare and two gold rings burst off the pin
+	local goldenOp: any = nil
+	ops.OnState:Connect(function(s: any)
+		if type(s) ~= "table" or s.golden ~= true or s.opId == goldenOp then
+			return
+		end
+		goldenOp = s.opId
+		AudioController.play("Music_CrateFanfare", nil, 0.8, 1.15)
+		AudioController.play("Album_Sparkle", nil, 1.2, 1)
+		for k = 0, 1 do
+			local burst = Instance.new("Frame")
+			burst.Name = "GoldBurst"
+			burst.AnchorPoint = Vector2.new(0.5, 0.5)
+			burst.Position = UDim2.fromScale(0.5, 0.5)
+			burst.Size = UDim2.fromScale(1, 1)
+			burst.BackgroundTransparency = 1
+			burst.ZIndex = 4
+			burst.Parent = mark
+			HudTheme.corner(burst, 999)
+			local stroke = HudTheme.stroke(burst, QUEST, 6)
+			local info = TweenInfo.new(
+				0.7,
+				Enum.EasingStyle.Quad,
+				Enum.EasingDirection.Out,
+				0,
+				false,
+				k * 0.18
+			)
+			TweenService:Create(burst, info, { Size = UDim2.fromScale(3.2, 3.2) }):Play()
+			TweenService:Create(stroke, info, { Transparency = 1, Thickness = 1 }):Play()
+			task.delay(1.2, function()
+				burst:Destroy()
+			end)
+		end
 	end)
 
 	-- one icon, one meaning (docs/20 rule 9): house = home, boat = your craft, else the call's icon

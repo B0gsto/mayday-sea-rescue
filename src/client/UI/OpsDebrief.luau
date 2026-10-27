@@ -8,6 +8,8 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
+local AudioController =
+	require(script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("AudioController"))
 local CashBurst = require(script.Parent.CashBurst)
 local Glyph = require(script.Parent.Glyph)
 local Grading =
@@ -65,6 +67,9 @@ local function stars(parent: Instance, earned: number)
 				{ Size = UDim2.fromScale(1, 1), Rotation = 0, ImageTransparency = 0 },
 				0.25 + i * 0.18
 			)
+			task.delay(0.6 + i * 0.18, function() -- each star stamps down, a step higher
+				AudioController.play("Album_Sticker", nil, 0.9, 1 + (i - 1) * 0.12)
+			end)
 		else
 			s.ImageColor3 = DIM
 			s.ImageTransparency = 0.35

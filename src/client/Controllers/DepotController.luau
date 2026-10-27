@@ -11,6 +11,7 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local BargePath = require(Shared:WaitForChild("BargePath"))
 
 local DepotController = {}
@@ -28,6 +29,7 @@ type Island = {
 	barge: Model?,
 	crates: { BasePart },
 	icon: BillboardGui?,
+	moored: boolean?, -- last frame's mooring, so the horn sounds once per arrival
 }
 local islands: { [Model]: Island } = {}
 
@@ -206,6 +208,11 @@ local function step()
 		-- the mark faces out to sea along the quay; the barge comes in bow first, so the path's -Z is the other way
 		barge:PivotTo(moor * CFrame.Angles(0, math.pi, 0) * at)
 		local done = BargePath.unloaded(now, nxt, PERIOD)
+		-- the barge ties up: one tug horn at the quay (3D, so only the island's neighbours hear it)
+		if done ~= nil and isl.moored == false then
+			AudioController.play("Horn_Tug", moor.Position, 0.55, 1)
+		end
+		isl.moored = done ~= nil
 		for k, crate in isl.crates do
 			crate.LocalTransparencyModifier = if done and done > k / (#isl.crates + 1) then 1 else 0
 		end
