@@ -340,7 +340,8 @@
    "T_WorkshopAddons_Brick_RGH",
    "T_FishMarket_Brick_RGH",
    "T_Clinic_Brick_RGH",
-   "T_LookoutAddons_Brick_RGH"
+   "T_LookoutAddons_Brick_RGH",
+   "T_BoatYard_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -5533,6 +5534,15 @@
   "name": "T_NavMarkStarboard_Buoy_RGH",
   "sha": "41ab891b7d1d9d824c8a6984c85fab4e520313049a14b94f32cbbe1493cbc146",
   "source": "assets/textures/M_Hbr_NavMark_Starboard/T_NavMarkStarboard_Buoy_RGH.png",
+  "type": "Image"
+ },
+ "Image:41c897bd9f5324f997d18e35a26263f756c2e0d88ed24c59caf5cde02de13d18": {
+  "assetId": "73960840572287",
+  "imageId": "73960840572287",
+  "moderation": "Reviewing",
+  "name": "T_BoatYard_Brick_ALB",
+  "sha": "41c897bd9f5324f997d18e35a26263f756c2e0d88ed24c59caf5cde02de13d18",
+  "source": "assets/textures/M_Bld_BoatYardAddons/T_BoatYard_Brick_ALB.png",
   "type": "Image"
  },
  "Image:41dec7728cf399c423a5187460682fe201de109ce593485e49db1326ed66ec1c": {
@@ -12990,7 +13000,8 @@
    "T_RescueHQ_Brick_NOR",
    "T_Bunkhouse_Brick_NOR",
    "T_Clinic_Brick_NOR",
-   "T_LookoutAddons_Brick_NOR"
+   "T_LookoutAddons_Brick_NOR",
+   "T_BoatYard_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -17007,7 +17018,8 @@
    "T_FishMarket_Brick_MET",
    "T_Bunkhouse_Brick_MET",
    "T_Clinic_Brick_MET",
-   "T_LookoutAddons_Brick_MET"
+   "T_LookoutAddons_Brick_MET",
+   "T_BoatYard_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -20809,6 +20821,16 @@
   "route": "delivery",
   "sha": "18d7ef33daf1806b925f1e46119922bd11a911269a078b6879181156f876113a",
   "source": "assets/fbx/M_Bld_Depot/M_Bld_Depot_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:18e49b8f66619e1a64a2b0bee9c46422ee61456555185b72fb49eefe064bd1d2": {
+  "assetId": "139031686279650",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "18e49b8f66619e1a64a2b0bee9c46422ee61456555185b72fb49eefe064bd1d2",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:1929cad4df782793b622e94194988c65fd78ea3d4ce25a08bdec620d29a2f4d0": {
@@ -25421,6 +25443,16 @@
   "source": "assets/fbx/M_Bld_Cottage_01/M_Bld_Cottage_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:9ba65d96b369cea4b9520ade48f4af4e031725743e41e618ca9b794634c9ed82": {
+  "assetId": "140589371975501",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "9ba65d96b369cea4b9520ade48f4af4e031725743e41e618ca9b794634c9ed82",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:9bbb6367355ce0b78cd6db9796ce3ecca02a99d1d9a350fd3e6b5597c801134f": {
   "assetId": "140682927333593",
   "moderation": "Approved",
@@ -27549,6 +27581,16 @@
   "route": "delivery",
   "sha": "e26d8579eda2df91f5af825c2247c05e323eb4db58ccd745b945b382a33e844c",
   "source": "assets/fbx/M_Veg_SeaThrift_02/M_Veg_SeaThrift_02_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:e2a9a37519600731a437ec804ea3e0f9ccc7fab184893b6ea3eb30e0a045f523": {
+  "assetId": "118291679778146",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "e2a9a37519600731a437ec804ea3e0f9ccc7fab184893b6ea3eb30e0a045f523",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD2.fbx",
   "type": "Model"
  },
  "Model:e2b80511360081600c4200536021c25755ee55e8c91fa09b9d107e0f67603bc1": {

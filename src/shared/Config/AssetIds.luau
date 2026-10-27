@@ -21,6 +21,11 @@ AssetIds.Models = {
 	M_Ani_Puffin = { LOD0 = "rbxassetid://94213861782005" },
 	M_Ani_SealPup = { LOD0 = "rbxassetid://112624730317410" },
 	M_Ani_Turtle = { LOD0 = "rbxassetid://94334436811675" },
+	M_Bld_BoatYardAddons = {
+		LOD0 = "rbxassetid://140589371975501",
+		LOD1 = "rbxassetid://139031686279650",
+		LOD2 = "rbxassetid://118291679778146",
+	},
 	M_Bld_Bunkhouse = {
 		LOD0 = "rbxassetid://119151323881426",
 		LOD1 = "rbxassetid://104644518523404",
@@ -457,6 +462,11 @@ AssetIds.Attachments = {
 	M_Ani_Puffin = {},
 	M_Ani_SealPup = {},
 	M_Ani_Turtle = {},
+	M_Bld_BoatYardAddons = {
+		ATT_Work_Hull = Vector3.new(10.5, 3.26, 6),
+		ATT_Work_Bench = Vector3.new(-15.45, 0.92, 0),
+		ATT_Work_Dock = Vector3.new(10.5, 3.26, 13.4),
+	},
 	M_Bld_Bunkhouse = {
 		ATT_Door_01 = Vector3.new(0, 0, -12.6),
 		ATT_Sign_01 = Vector3.new(0, 9.4, -10.4),

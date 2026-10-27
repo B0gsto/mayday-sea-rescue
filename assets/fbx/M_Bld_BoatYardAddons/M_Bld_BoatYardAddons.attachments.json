@@ -1,0 +1,94 @@
+{
+ "asset": "M_Bld_BoatYardAddons",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Work_Hull",
+   "parent": null,
+   "blender": [
+    -10.5,
+    6.0,
+    3.26
+   ],
+   "roblox_from_origin": [
+    10.5,
+    3.26,
+    6.0
+   ],
+   "roblox_from_bbox_centre": [
+    9.86,
+    -6.33,
+    1.1
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Bench",
+   "parent": null,
+   "blender": [
+    15.45,
+    0.0,
+    0.92
+   ],
+   "roblox_from_origin": [
+    -15.45,
+    0.92,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -16.09,
+    -8.67,
+    -4.9
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Dock",
+   "parent": null,
+   "blender": [
+    -10.5,
+    13.4,
+    3.26
+   ],
+   "roblox_from_origin": [
+    10.5,
+    3.26,
+    13.4
+   ],
+   "roblox_from_bbox_centre": [
+    9.86,
+    -6.33,
+    8.5
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}
