@@ -148,6 +148,8 @@ local stationOnSpawn: { [Player]: boolean } = {} -- died in the cold open: next 
 local coldOpenBegunAt: { [Player]: number } = {} -- StartColdOpen may yield (SpawnColdOpen)
 local lastActiveAt: { [Player]: number } = {} -- last tick on an operation: the idle nudge's clock
 local COLD_OPEN_START_GRACE = 10 -- s before a cold open that never got its op counts as lost
+local hutUpAt: { [Player]: number } = {} -- first tick that saw the Rescue Hut standing
+local HUT_BEAT = 2.5 -- s the Hut's last bricks, confetti and HQ beat get before the cold open takes over
 local nextId = 0
 local bigOp: any = nil
 local bigLastEnd = 0 -- the last big call's end (Start: the server start), for OfferPacing.nextBigCallAt
@@ -1861,7 +1863,10 @@ local function tick()
 				else ColdOpenFlow.decide(e, OperationService.ColdOpenAuto, st.completed, true)
 			-- docs/25 J: a new island builds the free Rescue Hut first; the jet ski waits until it stands
 			local hq = player:GetAttribute("DockLevelHQ") -- nil until DockService's first sync
-			if decision == "Start" and hq ~= nil and hq ~= 0 then
+			if hq ~= nil and hq ~= 0 and not hutUpAt[player] then
+				hutUpAt[player] = t
+			end
+			if decision == "Start" and hutUpAt[player] and t - hutUpAt[player] >= HUT_BEAT then
 				OperationService.StartColdOpen(player)
 			elseif decision == "Abandon" then
 				-- its op is gone (a start error, closed without finish): hand over, never replay
@@ -2167,6 +2172,7 @@ local function onPlayerRemoving(player: Player)
 	stationOnSpawn[player] = nil
 	coldOpenBegunAt[player] = nil
 	lastActiveAt[player] = nil
+	hutUpAt[player] = nil
 	for _, op in table.clone(ops) do
 		local j = table.find(op.offeredTo, player)
 		if j then
