@@ -3,6 +3,7 @@
 -- SurfaceGui tags and billboards. Every glyph fills a square parent in scale units.
 --   Glyph.draw(kind, parent, colour)  kind: "swimmer" | "boat" | "cross" | "ring" | "check"
 --                                     | "speed" | "seat" | "coin" | "home" | "flare" | "clock" | "quest"
+--                                     | "medal"
 --   Glyph.bar(parent, size, pos, rotation, colour)  one pill (scale units), the building block
 local Glyph = {}
 
@@ -109,6 +110,16 @@ local function clock(p: Instance, c: Color3)
 	bar(p, Vector2.new(0.2, 0.08), Vector2.new(0.59, 0.5), 0, c)
 end
 
+-- a Medal: red / blue ribbons over a gold disc (the skill tree's currency)
+local function medal(p: Instance, _: Color3)
+	bar(p, Vector2.new(0.2, 0.34), Vector2.new(0.38, 0.28), -18, Color3.fromHex("3B6FD4"), 0.15)
+	bar(p, Vector2.new(0.2, 0.34), Vector2.new(0.62, 0.28), 18, Color3.fromHex("E33B3B"), 0.15)
+	bar(p, Vector2.new(0.72, 0.72), Vector2.new(0.5, 0.64), 0, Color3.fromHex("FFC928"))
+	bar(p, Vector2.new(0.46, 0.46), Vector2.new(0.5, 0.64), 0, Color3.fromHex("E09E12"))
+	bar(p, Vector2.new(0.12, 0.24), Vector2.new(0.5, 0.62), 90, Color3.fromHex("FFF0B0"), 0.2)
+	bar(p, Vector2.new(0.24, 0.12), Vector2.new(0.5, 0.62), 0, Color3.fromHex("FFF0B0"), 0.2)
+end
+
 -- a quest: "!" (the giver's glyph)
 local function quest(p: Instance, c: Color3)
 	bar(p, Vector2.new(0.18, 0.5), Vector2.new(0.5, 0.38), 0, c)
@@ -127,6 +138,7 @@ local DRAW: { [string]: (Instance, Color3) -> () } = {
 	home = home,
 	flare = flare,
 	clock = clock,
+	medal = medal,
 	quest = quest,
 }
 
