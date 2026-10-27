@@ -336,7 +336,8 @@
  },
  "Image:04893d1e34c571ce758292468bede9ea90a026a41d1828f116fe258d59128139": {
   "aliases": [
-   "T_Barge_Hull_RGH"
+   "T_Barge_Hull_RGH",
+   "T_WorkshopAddons_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -12588,6 +12589,15 @@
   "source": "assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_NOR.png",
   "type": "Image"
  },
+ "Image:9bdd5445d99d69caeb03f4f8b693acc69d78eddd228e6b0f5f463796ddaf7258": {
+  "assetId": "71625729145898",
+  "imageId": "71625729145898",
+  "moderation": "Reviewing",
+  "name": "T_WorkshopAddons_Brick_ALB",
+  "sha": "9bdd5445d99d69caeb03f4f8b693acc69d78eddd228e6b0f5f463796ddaf7258",
+  "source": "assets/textures/M_Bld_WorkshopAddons/T_WorkshopAddons_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:9be754d5aeff689355e234c642dbbc4d820eb842aa409f750d0e62f497691685": {
   "assetId": "91675619862717",
   "imageId": "91675619862717",
@@ -12935,7 +12945,8 @@
  },
  "Image:9f434a0f8f97d5cd291c118eceb20bcaff796e8ba49034620802353fdbf77242": {
   "aliases": [
-   "T_Barge_Hull_NOR"
+   "T_Barge_Hull_NOR",
+   "T_WorkshopAddons_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -16917,7 +16928,8 @@
  },
  "Image:d69112264db6c2c1b6f6bc930b7d7cf38c27a4fead1b5000259265c5405c66ef": {
   "aliases": [
-   "T_Barge_Hull_MET"
+   "T_Barge_Hull_MET",
+   "T_WorkshopAddons_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -21341,6 +21353,16 @@
   "source": "assets/fbx/M_Rock_Boulder_05/M_Rock_Boulder_05_LOD0.fbx",
   "type": "Model"
  },
+ "Model:2a0c32bccaa80d92e80f730ebe9fd2c26a26d637132f310cf7d9d4e4ccc1cca4": {
+  "assetId": "120275413380347",
+  "moderation": "Approved",
+  "name": "M_Bld_WorkshopAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_WorkshopAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "2a0c32bccaa80d92e80f730ebe9fd2c26a26d637132f310cf7d9d4e4ccc1cca4",
+  "source": "assets/fbx/M_Bld_WorkshopAddons/M_Bld_WorkshopAddons_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:2a6ec960419b65f6ceab87319c9e12df82735685b9e38e47f360b3cfd30df700": {
   "assetId": "107051405377834",
   "moderation": "Approved",
@@ -21789,6 +21811,16 @@
   "route": "delivery",
   "sha": "372201591653ec63c77338999a4bb382762d0d112387934b1cf2f861bd7f9420",
   "source": "assets/fbx/M_Rock_Ledge_02/M_Rock_Ledge_02_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:372389845002b9180882862afd00d0c6410443836c3c08a9aaffcebed237c540": {
+  "assetId": "109562110747520",
+  "moderation": "Approved",
+  "name": "M_Bld_WorkshopAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_WorkshopAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "372389845002b9180882862afd00d0c6410443836c3c08a9aaffcebed237c540",
+  "source": "assets/fbx/M_Bld_WorkshopAddons/M_Bld_WorkshopAddons_LOD0.fbx",
   "type": "Model"
  },
  "Model:37260cceb3996eb7ca606c03c5954821c934c57d5b6f83800c5ca7bce0d4aa9d": {
@@ -25619,6 +25651,16 @@
   "route": "delivery",
   "sha": "ad704b7db962e958436b5e0ee800fff9d1cf54fcc2e01590b8ca89ab33a30d11",
   "source": "assets/fbx/M_Rock_Cliff_07/M_Rock_Cliff_07_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:ad89ee22de93a2f3ae50d5a01fafe4c9b05581be08cdd22822d824a51307740b": {
+  "assetId": "129318391243494",
+  "moderation": "Approved",
+  "name": "M_Bld_WorkshopAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_WorkshopAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "ad89ee22de93a2f3ae50d5a01fafe4c9b05581be08cdd22822d824a51307740b",
+  "source": "assets/fbx/M_Bld_WorkshopAddons/M_Bld_WorkshopAddons_LOD2.fbx",
   "type": "Model"
  },
  "Model:adacff21388c6e50c1226b905694e7d4c4ed1cb26f40910fe92ead4731048a12": {

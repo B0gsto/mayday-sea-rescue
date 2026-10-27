@@ -1,0 +1,123 @@
+{
+ "asset": "M_Bld_WorkshopAddons",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Work_Bench2",
+   "parent": null,
+   "blender": [
+    -15.25,
+    3.6,
+    0.96
+   ],
+   "roblox_from_origin": [
+    15.25,
+    0.96,
+    3.6
+   ],
+   "roblox_from_bbox_centre": [
+    15.12,
+    -5.644,
+    -3.725
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_Bench3",
+   "parent": null,
+   "blender": [
+    -15.25,
+    9.9,
+    0.96
+   ],
+   "roblox_from_origin": [
+    15.25,
+    0.96,
+    9.9
+   ],
+   "roblox_from_bbox_centre": [
+    15.12,
+    -5.644,
+    2.575
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_SawBench",
+   "parent": null,
+   "blender": [
+    14.2,
+    7.85,
+    0.96
+   ],
+   "roblox_from_origin": [
+    -14.2,
+    0.96,
+    7.85
+   ],
+   "roblox_from_bbox_centre": [
+    -14.33,
+    -5.644,
+    0.525
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Work_BoatFrame",
+   "parent": null,
+   "blender": [
+    0.0,
+    7.0,
+    0.96
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.96,
+    7.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.13,
+    -5.644,
+    -0.325
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

@@ -36,6 +36,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://90696032490593",
 		LOD2 = "rbxassetid://83819932767188",
 	},
+	M_Bld_WorkshopAddons = {
+		LOD0 = "rbxassetid://109562110747520",
+		LOD1 = "rbxassetid://120275413380347",
+		LOD2 = "rbxassetid://129318391243494",
+	},
 	M_Chr_Bosun = {
 		LOD0 = "rbxassetid://93498658626129",
 		LOD1 = "rbxassetid://83581557797709",
@@ -456,6 +461,12 @@ AssetIds.Attachments = {
 	M_Bld_RescueHQ = {
 		ATT_Sign_01 = Vector3.new(0, 9.45, -10.12),
 		ATT_Sign_02 = Vector3.new(0, 20.1, -9.25),
+	},
+	M_Bld_WorkshopAddons = {
+		ATT_Work_Bench2 = Vector3.new(15.25, 0.96, 3.6),
+		ATT_Work_Bench3 = Vector3.new(15.25, 0.96, 9.9),
+		ATT_Work_SawBench = Vector3.new(-14.2, 0.96, 7.85),
+		ATT_Work_BoatFrame = Vector3.new(0, 0.96, 7),
 	},
 	M_Chr_Bosun = {
 		ATT_HarnessHandle = Vector3.new(0.0038, 2.4265, 0.4724),
