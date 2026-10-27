@@ -183,21 +183,40 @@ function Album.new(canvas: Frame, onClose: () -> ())
 			local card = Style.button(host, UDim2.fromOffset(188, 210))
 			card.Name = "Page_" .. page.id
 			card.LayoutOrder = order
-			local _, face = Style.block(card, Style.grad(if complete then "yellow" else "blue"))
+			-- dark card + a light round well: a found stamp shows in full colour, a missing one as a
+			-- solid dark silhouette (audit 2026-10-28: the pale-on-pale cards were unreadable)
+			local _, face = Style.block(card, Style.grad(if complete then "yellow" else "tabOff"))
+			local well = Instance.new("Frame")
+			well.BackgroundColor3 = Color3.new(1, 1, 1)
+			well.BackgroundTransparency = 0.1
+			well.AnchorPoint = Vector2.new(0.5, 0)
+			well.Position = UDim2.fromOffset(0, 10) + UDim2.fromScale(0.5, 0)
+			well.Size = UDim2.fromOffset(112, 112)
+			Style.corner(well, 999)
+			Style.stroke(well, S.border, true)
+			well.Parent = face
 			local art = Instance.new("Frame")
 			art.BackgroundTransparency = 1
-			art.AnchorPoint = Vector2.new(0.5, 0)
-			art.Position = UDim2.fromScale(0.5, 0.05)
-			art.Size = UDim2.fromOffset(128, 128)
-			art.Parent = face
+			art.AnchorPoint = Vector2.new(0.5, 0.5)
+			art.Position = UDim2.fromScale(0.5, 0.5)
+			art.Size = UDim2.fromScale(1.1, 1.1)
+			art.Parent = well
 			Sticker.draw(art, page.id, "Stamp", Rules.has(state, page.id, 4))
 			local name = Style.label(face, page.name, Theme.Text.small)
-			name.Position = UDim2.new(0, 8, 1, -54)
-			name.Size = UDim2.new(1, -16, 0, 28)
+			name.Position = UDim2.new(0, 8, 1, -72)
+			name.Size = UDim2.new(1, -16, 0, 26)
 			name.TextWrapped = false
-			local count = Style.label(face, `{found}/{total}`, Theme.Text.small)
-			count.Position = UDim2.new(0, 8, 1, -28)
-			count.Size = UDim2.new(1, -16, 0, 24)
+			name.TextScaled = true
+			-- the found counter: a bold dark pill
+			local pill = Instance.new("Frame")
+			pill.BackgroundColor3 = Theme.Grad.ink.bottom
+			pill.AnchorPoint = Vector2.new(0.5, 1)
+			pill.Position = UDim2.new(0.5, 0, 1, -8)
+			pill.Size = UDim2.fromOffset(96, 36)
+			Style.corner(pill, 999)
+			Style.stroke(pill, 2, true)
+			pill.Parent = face
+			Style.label(pill, `{found}/{total}`, Theme.Text.body)
 			Style.press(card, function()
 				showPage(page)
 			end)

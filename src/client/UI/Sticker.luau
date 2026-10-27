@@ -155,7 +155,6 @@ function Sticker.draw(parent: Instance, islandId: string, stickerId: string, fou
 		img.ScaleType = Enum.ScaleType.Fit
 		if not found then -- a dark silhouette until found
 			img.ImageColor3 = DARK
-			img.ImageTransparency = 0.25
 		end
 		img.Parent = f
 		return f
