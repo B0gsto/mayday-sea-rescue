@@ -2335,7 +2335,7 @@ end
 DockPieces.meshes = nil :: ((asset: string) -> Model?)?
 
 -- A levelled building mesh (M_Bld_RescueHQ, M_Bld_Bunkhouse) at `at`: meshes named _Lv<l>_L<k>_ (layer k of level l,
--- ConstructionController raises them) and _Lv<l>_Col_COL; level n = the meshes of levels 1..n. The OwnerColour doors
+-- ConstructionController raises them) and _Lv<l>_Col[NN]_COL; level n = the meshes of levels 1..n. The OwnerColour doors
 -- become "Flag"s. Nil when the mesh is not loaded.
 local function levelMesh(m: Model, at: CFrame, asset: string, n: number): Model?
 	local src = DockPieces.meshes and DockPieces.meshes(asset)
@@ -2346,7 +2346,7 @@ local function levelMesh(m: Model, at: CFrame, asset: string, n: number): Model?
 	for _, d in src:GetDescendants() do
 		if d:IsA("BasePart") then
 			local lv, k = string.match(d.Name, "_Lv(%d)_L(%d+)_")
-			local l = tonumber(lv or string.match(d.Name, "_Lv(%d)_Col_COL$")) or 1
+			local l = tonumber(lv or string.match(d.Name, "_Lv(%d)_Col%d*_COL$")) or 1
 			if l > n then
 				d:Destroy()
 			elseif k and string.find(d.Name, "OwnerColour", 1, true) then
