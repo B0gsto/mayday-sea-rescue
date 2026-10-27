@@ -20967,6 +20967,16 @@
   "source": "assets/fbx/M_Bld_Cottage_02/M_Bld_Cottage_02_LOD1.fbx",
   "type": "Model"
  },
+ "Model:23ff090630f1676ce289cbcab9c60404ca2edf0ca8a14e4740404dc5044ecf36": {
+  "assetId": "83819932767188",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueHQ_LOD2",
+  "rbxm": "assets/models/M_Bld_RescueHQ_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "23ff090630f1676ce289cbcab9c60404ca2edf0ca8a14e4740404dc5044ecf36",
+  "source": "assets/fbx/M_Bld_RescueHQ/M_Bld_RescueHQ_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:2402e1617bf0627390344ffed6b738c90fc00255d01543a7c3c058934021668a": {
   "assetId": "91781122834790",
   "moderation": "Approved",
@@ -21585,6 +21595,16 @@
   "route": "delivery",
   "sha": "32e26032bb03991a87f0f2164061ff5f5fb66e2d1a5400f68bcafd5d0a05400b",
   "source": "assets/fbx/M_Rock_IslandProxy_Kit/M_Rock_IslandProxy_Kit_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:338728648a03e19dec843c4da3c3f8a62663595119deacd0a332b1145d042ddd": {
+  "assetId": "98767043445996",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueHQ_LOD0",
+  "rbxm": "assets/models/M_Bld_RescueHQ_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "338728648a03e19dec843c4da3c3f8a62663595119deacd0a332b1145d042ddd",
+  "source": "assets/fbx/M_Bld_RescueHQ/M_Bld_RescueHQ_LOD0.fbx",
   "type": "Model"
  },
  "Model:33a3d6dc16dca7a1714072b21f3e2fd7a8c5c0c9e6d18f6ee5fd99715bec5643": {
@@ -22735,6 +22755,16 @@
   "route": "delivery",
   "sha": "542cfc00d968aa4c4bc47aae4dd92492aed5450352edf1cedb4527e8f6ed85a7",
   "source": "assets/fbx/M_Veg_SeaThrift_01/M_Veg_SeaThrift_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:5473733064ab737e5518333bc21ce664ca6ba5cd12e46fc965ff2dd266ad4c35": {
+  "assetId": "90696032490593",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueHQ_LOD1",
+  "rbxm": "assets/models/M_Bld_RescueHQ_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "5473733064ab737e5518333bc21ce664ca6ba5cd12e46fc965ff2dd266ad4c35",
+  "source": "assets/fbx/M_Bld_RescueHQ/M_Bld_RescueHQ_LOD1.fbx",
   "type": "Model"
  },
  "Model:548748396aa16d994afff366c43e9d40a8fb61f56d7ac2fe8a09442a6a666c69": {
