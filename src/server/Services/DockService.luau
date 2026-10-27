@@ -80,22 +80,21 @@ type Plot = {
 	trim: { Part }, -- its frame bricks, posts and bases, a darker shade of the face
 	studs: { Part }, -- the stud row along its top edge, the face colour
 	flag: Part,
-	bands: { Frame }, -- the quay walks's tile bands, the flag colour (WP-25 r4)
-	markers: { [string]: Model }, -- empty lots' pads and peg flags (WP-25 r4)
+	bands: { Frame }, -- the quay walks's tile bands, the flag colour (WP-25 r4), while the streets stand
+	streets: Model?, -- docs/25 J: the plaza and the street grid, from HQ Lv1
 	buildings: { [string]: Model },
 	levels: { [string]: number }, -- the level each standing model shows
 	counts: { TextLabel },
 	trophies: Model?,
 	trophyKey: string,
 	master: Model?, -- the Harbour Master's gold beacon
-	buildStation: Model?, -- the tablet station by the spawn (WP-14d), while owned
+	buildStation: Model?, -- the tablet station on the jetty head (WP-14d, docs/25 J), while owned
 	decorations: Model?, -- the owner's bought decorations
-	finish: Model?, -- WP-25 r9: the garden clusters on the open lawn, while the whole tree is built
 	site: Model?, -- the building being built (DockPieces, still not owned), while a construction runs
 	siteKey: string?,
 	siteLevel: number?,
 	crew: { { model: Model, height: number } }?, -- the two base builder NPCs walking to / from the site
-	wheel: Model?, -- the prize wheel set on the plaza (docs/24 D)
+	wheel: Model?, -- the prize wheel set on the plaza (docs/24 D), from HQ Lv1 (docs/25 J)
 	wheelPrompt: ProximityPrompt?,
 	wheelCount: TextLabel?,
 	wheelConn: RBXScriptConnection?,
@@ -349,27 +348,24 @@ local function buildPlot(folder: Instance, i: number): Plot
 		post(model, b * CFrame.new(j.x1 - 0.6, 0, z), top + 0.8, -10)
 	end
 
-	DockPieces.base(b).Parent = model -- WP-25: paths, trees, the lifebuoy stand (every island, owned or not)
+	-- docs/25 J: the jetty head, a deck off the west side of the jetty's quay end that carries the build stand
+	local head = DockConfig.JETTY_HEAD
+	local hcf = jcf * CFrame.new(head.offset.X, 0, head.offset.Y)
+	studTop(
+		part(
+			model,
+			"JettyHead",
+			Vector3.new(head.size.X, 1, head.size.Y),
+			hcf * CFrame.new(0, -0.5, 0),
+			WOOD,
+			Enum.Material.SmoothPlastic
+		)
+	)
+	for _, x in { -head.size.X / 2 + 0.6, 0, head.size.X / 2 - 0.6 } do
+		post(model, hcf * CFrame.new(x, 0, -head.size.Y / 2 + 0.6), top + 0.8, -10)
+	end
 
-	-- docs/24 D: the prize wheel set (odds board, tokens) on the open lawn west of the plaza, across the west
-	-- lane (island r -52, f -5), turned to face the jetty's quay end; clear of every lot, lamp and the hangar
-	local islandFrame = b * Marina.ISLAND
-	local foot = islandFrame * CFrame.new(-52, 0, 5)
-	local at = CFrame.lookAt(foot.Position, (islandFrame * CFrame.new(0, 0, -28)).Position)
-	local wheel = PrizeWheel.build(at, {
-		spin = function(player: Player)
-			return wheelSpin(i, player)
-		end,
-		buy = function(player: Player, key: string)
-			return wheelBuy(i, player, key)
-		end,
-	})
-	wheel:SetAttribute("Plot", i)
-	wheel.Parent = model
-	CollectionService:AddTag(wheel, "PrizeWheel")
-	local wheelCap = wheel:FindFirstChild("SpinButton", true)
-	local wheelPrompt = wheelCap and wheelCap:FindFirstChildOfClass("ProximityPrompt")
-	local wheelCount = wheel:FindFirstChild("FreeCount", true)
+	DockPieces.base(b).Parent = model -- docs/25 J: only the plate's quay edge (every island, owned or not)
 
 	-- the owner's sign (only while the island has an owner): a Lego name sign over the jetty's quay end,
 	-- facing the cove, and a flag beside it
@@ -406,7 +402,6 @@ local function buildPlot(folder: Instance, i: number): Plot
 		Enum.Material.SmoothPlastic
 	)
 	flag.CanCollide = false
-	local bands = DockPieces.quayBands(sign, b)
 
 	local berth = part(
 		model,
@@ -436,15 +431,11 @@ local function buildPlot(folder: Instance, i: number): Plot
 		trim = trim,
 		studs = studs,
 		flag = flag,
-		bands = bands,
-		markers = {},
+		bands = {},
 		counts = {},
 		buildings = {},
 		levels = {},
 		trophyKey = "",
-		wheel = wheel,
-		wheelPrompt = wheelPrompt,
-		wheelCount = if wheelCount and wheelCount:IsA("TextLabel") then wheelCount else nil,
 	}
 end
 
@@ -463,17 +454,54 @@ for key in DockConfig.Blueprints do
 	table.insert(BUILT, key)
 end
 
--- the lots that get a marker while empty (WP-25 r4): on the plate, not over the water or on another building
-local MARKED: { [string]: { spot: CFrame, size: Vector2 } } = {}
-for _, key in BUILT do
-	local def = DockConfig.Buildings[key]
-	if key == "Pontoon" or key == "Crane" or key == "Harbour" then
-		continue
-	elseif def then
-		MARKED[key] = { spot = def.spot, size = def.size }
-	else
-		local lot = Marina.LOTS[DockConfig.Blueprints[key].lot]
-		MARKED[key] = { spot = lot.cf, size = lot.size }
+-- docs/25 J: the prize wheel set (odds board, tokens) arrives with the HQ, on the plaza west of the avenue (docs/25
+-- map: island r -30), facing the cove; the set runs along the plaza, clear of the HQ and the sign's flag pole
+local function placeWheel(plot: Plot)
+	local i = plot.index
+	local at = plot.frame * Marina.ISLAND * CFrame.new(-28, 0, -14)
+	local wheel = PrizeWheel.build(at, {
+		spin = function(player: Player)
+			return wheelSpin(i, player)
+		end,
+		buy = function(player: Player, key: string)
+			return wheelBuy(i, player, key)
+		end,
+	})
+	wheel:SetAttribute("Plot", i)
+	wheel.Parent = plot.model
+	CollectionService:AddTag(wheel, "PrizeWheel")
+	local cap = wheel:FindFirstChild("SpinButton", true)
+	local count = wheel:FindFirstChild("FreeCount", true)
+	plot.wheel = wheel
+	plot.wheelPrompt = cap and cap:FindFirstChildOfClass("ProximityPrompt")
+	plot.wheelCount = if count and count:IsA("TextLabel") then count else nil
+	paintWheel(plot)
+end
+
+-- docs/25 J: the streets (plaza, avenue, lanes, bridge road, the quay walks' owner bands) and the prize wheel stand
+-- while the HQ does; a bare island has neither.
+local function syncStreets(plot: Plot, owner: Player?, beat: boolean)
+	local hq: Model? = plot.buildings.HQ
+	local want = owner ~= nil and hq ~= nil
+	if want and owner and not plot.streets then
+		local m = DockPieces.streets(plot.frame)
+		plot.bands = DockPieces.quayBands(m, plot.frame)
+		for _, f in plot.bands do
+			f.BackgroundColor3 = Marina.flagColor(owner.UserId)
+		end
+		m.Parent = plot.model
+		plot.streets = m
+		placeWheel(plot)
+		if beat then
+			announceBuild(plot, nil, "Streets")
+		end
+	elseif not want and plot.streets then
+		plot.streets:Destroy()
+		plot.streets, plot.bands = nil, {}
+		if plot.wheel then
+			plot.wheel:Destroy()
+		end
+		plot.wheel, plot.wheelPrompt, plot.wheelCount = nil, nil, nil
 	end
 end
 
@@ -484,19 +512,6 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 	local levels = if data and data.dock then data.dock.levels else {}
 	if not owner then
 		plot.counts = {}
-	end
-	-- WP-25 r9: every building maxed -> empty lots turn into gardens, the open lawn gets garden clusters
-	local complete = owner ~= nil
-	for _, key in DockConfig.BUILDINGS do
-		complete = complete and UnlockTree.levelOf(levels, key) >= #DockConfig.Buildings[key].levels
-	end
-	if complete and not plot.finish then
-		local made = DockPieces.finish(plot.frame)
-		made.Parent = plot.model
-		plot.finish = made
-	elseif plot.finish and not complete then
-		plot.finish:Destroy()
-		plot.finish = nil
 	end
 	for _, key in BUILT do
 		local b = DockConfig.Buildings[key]
@@ -536,45 +551,6 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 			plot.buildings[key] = nil
 			plot.levels[key] = nil
 		end
-		local stale = plot.markers[key]
-		if stale and stale:GetAttribute("Garden") ~= complete then -- the tree got finished (or reset)
-			stale:Destroy()
-			plot.markers[key] = nil
-		end
-		local lot, marker = MARKED[key], plot.markers[key]
-		if lot and not want and not marker then
-			local def = DockConfig.Buildings[key]
-			local made = if complete
-				then DockPieces.lotGarden(plot.frame * lot.spot, lot.size)
-				else DockPieces.lotMarker(
-					plot.frame,
-					plot.frame * lot.spot,
-					lot.size,
-					def and def.cash
-				)
-			made:SetAttribute("Garden", complete)
-			made.Parent = plot.model
-			plot.markers[key] = made
-		elseif marker and want then
-			marker:Destroy()
-			plot.markers[key] = nil
-		end
-		local mk = plot.markers[key]
-		if mk then -- the peg flag and the pad's rim take the owner's colour
-			local peg = mk:FindFirstChild("Flag")
-			if peg and peg:IsA("BasePart") then
-				peg.Color = if owner
-					then Marina.flagColor(owner.UserId)
-					else Color3.fromRGB(242, 240, 232)
-			end
-			for _, d in mk:GetDescendants() do
-				if d.Name == "Rim" and d:IsA("Frame") then
-					d.BackgroundColor3 = if owner
-						then Marina.flagColor(owner.UserId)
-						else Color3.fromRGB(99, 95, 98)
-				end
-			end
-		end
 		if b then
 			plot.berth:SetAttribute(key, if want then true else nil)
 			plot.berth:SetAttribute(`{key}Level`, if want then wantLevel else nil)
@@ -588,6 +564,7 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 			end
 		end
 	end
+	syncStreets(plot, owner, beat)
 	-- old boards read the merged aliases (Hangar, Helipad, Station, ...)
 	for _, key in { "Pontoon", "Crane", "LifeboatSlip", "Hangar", "Helipad", "Station" } do
 		plot.berth:SetAttribute(key, if owned[key] == true then true else nil)

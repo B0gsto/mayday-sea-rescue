@@ -1,6 +1,6 @@
 -- DockBuild (docs/23 (j) rule 4, WP-14d): the top-down camera frames the island from the bridge side; every
 -- catalog card has a spot and footprint; the decor is a Cash-only ladder on the spare lots, and the build
--- station stands inside Spare3.
+-- station stands on the jetty head.
 return function(t)
 	local B = t.load("src/shared/DockBuild.luau")
 	local DB = t.load("src/shared/DockBlueprints.luau")
@@ -110,13 +110,31 @@ return function(t)
 			t.expect(seen[tag]).toBeNil()
 			seen[tag] = true
 		end
-		local st = D.BUILD_STATION
-		local lot = M.LOTS[st.lot]
-		local station = D.stationSpot(frame)
-		local localCf = lot.cf:Inverse() * (frame:Inverse() * station)
-		t.expect(math.abs(localCf.X) + st.size.X / 2 <= lot.size.X / 2 + 1e-3).toBe(true)
-		t.expect(math.abs(localCf.Z) + st.size.Y / 2 <= lot.size.Y / 2 + 1e-3).toBe(true)
 	end)
+
+	t.test(
+		"docs/25 J: the build station stands on the jetty head deck, off the jetty walk",
+		function()
+			local st, head = D.BUILD_STATION, D.JETTY_HEAD
+			t.expect(st.lot).toBe("Jetty")
+			local lot = M.LOTS.Jetty
+			local localCf = lot.cf:Inverse() * (frame:Inverse() * D.stationSpot(frame))
+			-- beside the jetty (clear of its walk), on the quay half
+			t.expect(math.abs(localCf.X) - st.size.X / 2 >= lot.size.X / 2 - 1e-3).toBe(true)
+			t.expect(localCf.Z > 0).toBe(true)
+			-- inside the head deck, which meets the quay edge (notch head, island f 30) and the jetty's side
+			t.expect(math.abs(st.offset.X - head.offset.X) + st.size.X / 2 <= head.size.X / 2)
+				.toBe(true)
+			t.expect(math.abs(st.offset.Y - head.offset.Y) + st.size.Y / 2 <= head.size.Y / 2)
+				.toBe(true)
+			local deck = frame
+				* lot.cf
+				* CFrame.new(head.offset.X, 0, head.offset.Y + head.size.Y / 2)
+			local fwd = -(frame * M.ISLAND):PointToObjectSpace(deck.Position).Z
+			t.expect(math.abs(fwd - 30) < 1).toBe(true)
+			t.expect(math.abs(head.offset.X) - head.size.X / 2).toBeCloseTo(lot.size.X / 2, 3)
+		end
+	)
 
 	t.test(
 		"WP-14e: a paper blueprint lies just above its lot, turned to the berth frame",
