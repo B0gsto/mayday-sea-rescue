@@ -734,6 +734,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_NOR_Wet.png",
   "type": "Image"
  },
+ "Image:095f1939f6c0dac6484bf364c849fcf8abea0e0257294302b47ea1cd2878e675": {
+  "assetId": "101996281678498",
+  "imageId": "101996281678498",
+  "moderation": "Reviewing",
+  "name": "T_VFX_confetti_bricks",
+  "sha": "095f1939f6c0dac6484bf364c849fcf8abea0e0257294302b47ea1cd2878e675",
+  "source": "assets/textures/VFX/T_VFX_confetti_bricks.png",
+  "type": "Image"
+ },
  "Image:097cb2900021a07748569ca556625921061d5d758138aa3854eff6123c8d886d": {
   "assetId": "101476086371689",
   "imageId": "101476086371689",
@@ -2820,6 +2829,15 @@
   "name": "Mayday_T_Mat_SeabedSand_NOR",
   "sha": "21b7e25c67e3dc32a1e33e2104ff46c27f8c5d5113cdf765c2dfa608d457a896",
   "source": "assets/textures/Materials/T_Mat_SeabedSand_NOR.png",
+  "type": "Image"
+ },
+ "Image:21bab2f8a21d86af4927241b1517979c0052e28366db19d44dd10bdcd2c2b643": {
+  "assetId": "138851004137338",
+  "imageId": "138851004137338",
+  "moderation": "Reviewing",
+  "name": "T_VFX_coin",
+  "sha": "21bab2f8a21d86af4927241b1517979c0052e28366db19d44dd10bdcd2c2b643",
+  "source": "assets/textures/VFX/T_VFX_coin.png",
   "type": "Image"
  },
  "Image:21c462f655a1321b1069d72d5cae57ed30b305d3ad0a4e186fc327cb6ae11217": {
@@ -6542,6 +6560,15 @@
   "name": "Mayday_T_Mat_SandDry_RGH",
   "sha": "4e6f5bfa2388fb74bbf2a88bcaa8df07f9e947be85346d9c6c796adfe84e9f8b",
   "source": "assets/textures/Materials/T_Mat_SandDry_RGH.png",
+  "type": "Image"
+ },
+ "Image:4e754e3045d46f0d581e9c3410be44927712ff182935cee9cb21d589ca01fcac": {
+  "assetId": "97781101719165",
+  "imageId": "97781101719165",
+  "moderation": "Reviewing",
+  "name": "T_VFX_foam_ring",
+  "sha": "4e754e3045d46f0d581e9c3410be44927712ff182935cee9cb21d589ca01fcac",
+  "source": "assets/textures/VFX/T_VFX_foam_ring.png",
   "type": "Image"
  },
  "Image:4e7f99d0bf05046fdcb7025c8e2b19c367a2a2cdd36f2ed0393096c76fc315c4": {
@@ -10450,6 +10477,15 @@
   "source": "assets/textures/M_Ani_SealPup_Rare/T_SealPup_Rare_RGH.png",
   "type": "Image"
  },
+ "Image:804e4b0f0eef651818fb7bbd6f62084e487ab7665f2924dfda98ae8f6b610a5c": {
+  "assetId": "110924692483658",
+  "imageId": "110924692483658",
+  "moderation": "Reviewing",
+  "name": "T_VFX_lego_plates",
+  "sha": "804e4b0f0eef651818fb7bbd6f62084e487ab7665f2924dfda98ae8f6b610a5c",
+  "source": "assets/textures/VFX/T_VFX_lego_plates.png",
+  "type": "Image"
+ },
  "Image:808c6a8297fbdc6a67f3067370b0a2bb94a9f790ee6dd565296d674854cceba8": {
   "assetId": "126275668500447",
   "imageId": "126275668500447",
@@ -12302,6 +12338,15 @@
   "name": "T_PickupBuoy_Buoy_RGH_Wet",
   "sha": "959fcd42298a26ff2aa3332ed09fa522ee4136982379dcea57483930ee932e1f",
   "source": "assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:95a15cda32cea43b0bbb65a4e17c1bc96ca606c408c863e5de2ad89dbdabf248": {
+  "assetId": "124291314580825",
+  "imageId": "124291314580825",
+  "moderation": "Reviewing",
+  "name": "T_VFX_droplets",
+  "sha": "95a15cda32cea43b0bbb65a4e17c1bc96ca606c408c863e5de2ad89dbdabf248",
+  "source": "assets/textures/VFX/T_VFX_droplets.png",
   "type": "Image"
  },
  "Image:95b0c4fc7525648494488166a6937a6a4968ab039dc7aed9ed5c4aceb4d44a02": {
@@ -14200,6 +14245,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_KerbTile_NOR.png",
   "type": "Image"
  },
+ "Image:ae2cd7f40c46dc91355fcf732cfe6bf4d0a7e805b58a38ab87c71659a3a17cde": {
+  "assetId": "105078983093984",
+  "imageId": "105078983093984",
+  "moderation": "Reviewing",
+  "name": "T_VFX_splash_crown",
+  "sha": "ae2cd7f40c46dc91355fcf732cfe6bf4d0a7e805b58a38ab87c71659a3a17cde",
+  "source": "assets/textures/VFX/T_VFX_splash_crown.png",
+  "type": "Image"
+ },
  "Image:ae41a0b1acdcd7c330fce9dc7c67fa533f34af3a372553ca8a0d03beaaa7c145": {
   "assetId": "132835996057162",
   "imageId": "132835996057162",
@@ -14978,6 +15032,15 @@
   "name": "T_Road_CobblesTile_ALB",
   "sha": "babcb37cdd573979c0f5bb9f8879da237053ae69045959221d558504f0647e80",
   "source": "assets/textures/M_Road_Ribbon/T_Road_CobblesTile_ALB.png",
+  "type": "Image"
+ },
+ "Image:bac6c903c1d2ebe95ac364e36d5309508048800810067bfeae6f8c2769e3c5d1": {
+  "assetId": "118276956792285",
+  "imageId": "118276956792285",
+  "moderation": "Reviewing",
+  "name": "T_VFX_puff_smoke",
+  "sha": "bac6c903c1d2ebe95ac364e36d5309508048800810067bfeae6f8c2769e3c5d1",
+  "source": "assets/textures/VFX/T_VFX_puff_smoke.png",
   "type": "Image"
  },
  "Image:baf01e1348c0caa17b6b645135411cc7367fed200f242ca60539a9bc0817fe72": {
@@ -18768,6 +18831,15 @@
   "source": "assets/textures/M_Veh_Optimist/T_Optimist_Hull_NOR.png",
   "type": "Image"
  },
+ "Image:ec2f21d8c7baa5aa3a1158e8063b742713f12e9ef5cf55a5cf06d8cc47f30f5f": {
+  "assetId": "100897359653428",
+  "imageId": "100897359653428",
+  "moderation": "Reviewing",
+  "name": "T_VFX_spin_streak",
+  "sha": "ec2f21d8c7baa5aa3a1158e8063b742713f12e9ef5cf55a5cf06d8cc47f30f5f",
+  "source": "assets/textures/VFX/T_VFX_spin_streak.png",
+  "type": "Image"
+ },
  "Image:ec55563b99b2db109d02a4d042e5a774c1dc5bf883b5e27059106389be4da32d": {
   "assetId": "92327157906198",
   "imageId": "92327157906198",
@@ -19776,6 +19848,15 @@
   "source": "assets/textures/Materials/T_Mat_Earth_NOR.png",
   "type": "Image"
  },
+ "Image:fa01f6bf7b874011cd434417603de55cbf631498151c5b8f2e31e4b27c195d2d": {
+  "assetId": "86454296521550",
+  "imageId": "86454296521550",
+  "moderation": "Reviewing",
+  "name": "T_VFX_rain_streak",
+  "sha": "fa01f6bf7b874011cd434417603de55cbf631498151c5b8f2e31e4b27c195d2d",
+  "source": "assets/textures/VFX/T_VFX_rain_streak.png",
+  "type": "Image"
+ },
  "Image:fa03b714be7efadf02c64d207da9f0686aafac23c1fa60d134bc6b96e33554a0": {
   "assetId": "90554577413748",
   "imageId": "90554577413748",
@@ -20021,6 +20102,15 @@
   "name": "Mayday_T_Mat_WeedyConcrete_ALB_Wet",
   "sha": "fc9a7212afb542d3cfd8fc34342b87f9e120e9b406e15bca99c31779f2451a0c",
   "source": "assets/textures/Materials/T_Mat_WeedyConcrete_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:fccb6b71b923eac6e5c38d4f2effd637a898e66de5c2dc71b39f73cca069ea13": {
+  "assetId": "113712077274625",
+  "imageId": "113712077274625",
+  "moderation": "Reviewing",
+  "name": "T_VFX_shockwave_ring",
+  "sha": "fccb6b71b923eac6e5c38d4f2effd637a898e66de5c2dc71b39f73cca069ea13",
+  "source": "assets/textures/VFX/T_VFX_shockwave_ring.png",
   "type": "Image"
  },
  "Image:fce51609ff218e9d5128c0c070ea41006c25723623cc72994bfa12225855b539": {
