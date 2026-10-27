@@ -22,6 +22,7 @@ export type Level = {
 	product: string?, -- MonetizationConfig.Products key (skips the Cash, never the order)
 	effect: string?, -- the server flag this level switches on (DockService / BoatBoard / WorkerService)
 	piece: string?, -- the visible add-on (DockPieces)
+	name: string?, -- this level's own name (the HQ: Rescue Hut .. Coastguard HQ); nil = the row's name
 	needs: { string }?, -- extra building keys for this level (usually nil)
 }
 
@@ -80,8 +81,8 @@ local rows: { [string]: any } = {
 		spot = isle(0, -12, 0), -- the plaza at the head of the cove, facing the jetty
 		size = Vector2.new(54, 32),
 		levels = {
-			{ cash = 0, hq = 0, effect = "HQ", piece = "Hut" }, -- the free first build (tutorial)
-			{ cash = 3000, hq = 1, effect = "HQ", piece = "Post" },
+			{ cash = 0, hq = 0, effect = "HQ", piece = "Hut", name = "Rescue Hut" }, -- the free first build (tutorial)
+			{ cash = 3000, hq = 1, effect = "HQ", piece = "Post", name = "Rescue Post" },
 			{
 				cash = 12000,
 				hq = 2,
@@ -89,9 +90,10 @@ local rows: { [string]: any } = {
 				robux = 199,
 				effect = "HQ",
 				piece = "Station",
+				name = "Lifeboat Station",
 			},
-			{ cash = 80000, hq = 3, effect = "HQ", piece = "Base" },
-			{ cash = 160000, hq = 4, effect = "HQ", piece = "HQ" },
+			{ cash = 80000, hq = 3, effect = "HQ", piece = "Base", name = "Coastguard Base" },
+			{ cash = 160000, hq = 4, effect = "HQ", piece = "HQ", name = "Coastguard HQ" },
 		} :: { Level },
 	},
 	Harbour = {
@@ -492,6 +494,13 @@ DockConfig.Decorations = {
 		size = Vector2.new(7, 7),
 	},
 } :: { [string]: Decor }
+
+-- A building's name at level `n` (0 = not built yet: its Lv1 name): the HQ's Rescue Hut .. Coastguard HQ.
+function DockConfig.levelName(key: string, n: number): string
+	local b = DockConfig.Buildings[key]
+	local l = b.levels[math.clamp(n, 1, #b.levels)]
+	return l.name or b.name
+end
 
 -- The building (and level) a MonetizationConfig product key builds: -> key, level.
 function DockConfig.buildingFor(productKey: string): (string?, number?)

@@ -75,7 +75,7 @@ local doneAt: number? = nil
 local holdingTick = false
 
 local CHIPS: { { id: string, label: string, icon: string? } } = {
-	{ id = "HQ", label = "Hut" },
+	{ id = "HQ", label = DockConfig.levelName("HQ", 1) }, -- the tutorial builds HQ Lv1, as its card names it
 	{ id = "Rescue", label = "Rescue", icon = "lifebuoy" },
 	{ id = "Workshop", label = "Workshop" },
 	{ id = "Spin", label = "Spin", icon = "spin" },

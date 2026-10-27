@@ -30,10 +30,11 @@ function DockBlueprints.catalog(): { Item }
 	return out
 end
 
--- The 1-3 word name on the card: "Pontoon", "Sub pen", "Lighthouse", "Flower bed".
-function DockBlueprints.label(item: Item): string
+-- The 1-3 word name on the card: "Pontoon", "Sub pen", "Lighthouse", "Flower bed"; a building at `level`
+-- (0 / nil: not built) shows that level's name (the HQ: "Rescue Hut", "Rescue Post", ...).
+function DockBlueprints.label(item: Item, level: number?): string
 	if item.kind == "Building" then
-		return DockConfig.Buildings[item.key].name
+		return DockConfig.levelName(item.key, level or 0)
 	elseif item.kind == "Decor" then
 		return DockConfig.Decorations[item.key].name
 	end

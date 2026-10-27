@@ -5,6 +5,16 @@ return function(t)
 	local D = t.load("src/shared/DockBlueprints.luau")
 	local DockConfig = t.load("src/shared/Config/DockConfig.luau")
 
+	t.test("the HQ card names its current level (unbuilt: the Rescue Hut it builds)", function()
+		local hq = { kind = "Building", key = "HQ" }
+		t.expect(D.label(hq)).toBe("Rescue Hut")
+		t.expect(D.label(hq, 1)).toBe("Rescue Hut")
+		t.expect(D.label(hq, 2)).toBe("Rescue Post")
+		t.expect(D.label(hq, 3)).toBe("Lifeboat Station")
+		t.expect(D.label({ kind = "Building", key = "Harbour" }, 2))
+			.toBe(DockConfig.Buildings.Harbour.name)
+	end)
+
 	t.test("catalog lists every building, blueprint and decoration, in card order", function()
 		local items = D.catalog()
 		local blueprints = 0

@@ -1,7 +1,7 @@
 --!strict
 -- LeaderboardService: weekly and all-time rescue boards (docs/03 section 9.1: rescues only, never Cash
 -- or Robux; weekly boards reset Monday 00:00 UTC) on OrderedDataStores, shown on a physical service board on
--- every island by its spawn (docs/23 (p): a varnished, signwritten board on two posts, lit by a brass picture
+-- every island's plaza from HQ Lv1 (docs/25 J; docs/23 (p): a varnished, signwritten board on two posts, lit by a brass picture
 -- lamp; all six show the same rows; no HUD panel).
 --
 -- Credit: every helper of a finished operation gets its saved count (Shared.LeaderboardRules.credit).
@@ -11,16 +11,15 @@
 --
 --   LeaderboardService.GetBoard(key) -> { LeaderboardRules.Entry }   the rows last shown for a board
 --   LeaderboardService.Credit(player, increments)                    add rescue credit (other systems)
+--   LeaderboardService.Board(face) -> Model                          a new board (DockService, with the HQ)
 
 local DataStoreService = game:GetService("DataStoreService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeConfig"))
 local LeaderboardRules = require(Shared:WaitForChild("LeaderboardRules"))
-local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 
 type Entry = LeaderboardRules.Entry
 
@@ -455,30 +454,40 @@ local function refresh()
 	paintFooter()
 end
 
-local function placeBoard()
-	-- one per island, beside the spawn (RingLayout: 22 studs to its left, the face turned toward it), on two posts
-	for _, isl in RingLayout.Islands do
-		local face = isl.frame
-			* CFrame.new(-22, 1.5 + H / 2, 72)
-			* CFrame.Angles(0, -math.pi / 2, 0)
-		local board = buildBoard(face)
-		board.Name = `RescueBoard{isl.index}`
-		for _, side in { -1, 1 } do
-			part(
-				board,
-				"Post",
-				Vector3.new(0.8, H + 1.9, 0.8),
-				face * CFrame.new(side * (W / 2 + 0.4), -0.55, -T / 2),
-				Color3.fromRGB(242, 243, 242),
-				Enum.Material.SmoothPlastic
-			)
-		end
-		board.Parent = Workspace
+-- docs/25 J: nothing stands on land at the start, so DockService stands a board on each island's plaza with the
+-- HQ (beside the prize wheel) and destroys it with the streets. face: the board centre, LookVector out of its front.
+function LeaderboardService.Board(face: CFrame): Model
+	local board = buildBoard(face)
+	board.Name = "RescueBoard"
+	for _, side in { -1, 1 } do
+		part(
+			board,
+			"Post",
+			Vector3.new(0.8, H + 1.9, 0.8),
+			face * CFrame.new(side * (W / 2 + 0.4), -0.55, -T / 2),
+			Color3.fromRGB(242, 243, 242),
+			Enum.Material.SmoothPlastic
+		)
 	end
+	board.Destroying:Connect(function()
+		for _, boards in valueLabels do
+			for i = #boards, 1, -1 do
+				if boards[i][1].name:IsDescendantOf(board) then
+					table.remove(boards, i)
+				end
+			end
+		end
+		for i = #footers, 1, -1 do
+			if footers[i]:IsDescendantOf(board) then
+				table.remove(footers, i)
+			end
+		end
+	end)
 	for key, entries in shown do
 		show(key, entries)
 	end
 	paintFooter()
+	return board
 end
 
 function LeaderboardService.Init()
@@ -497,7 +506,6 @@ end
 function LeaderboardService.Start()
 	local OperationService: any = require(script.Parent:WaitForChild("OperationService"))
 	OperationService.OperationCompleted:Connect(onOperationCompleted)
-	task.spawn(placeBoard)
 	task.spawn(function()
 		local lastFlush = os.clock()
 		while true do
