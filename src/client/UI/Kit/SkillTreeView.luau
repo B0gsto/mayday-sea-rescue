@@ -2,15 +2,18 @@
 -- SkillTreeView (docs/25 F, J): the full-screen radial skill tree. Four coloured sectors radiate
 -- from a compass at the centre ("You"), keystones are octagon badges and the minor nodes are the
 -- dots on the winding paths. Drag / wheel / pinch pan and zoom, the D-pad / arrows / left stick
--- jump to the nearest node. Tapping a node shows its card and tells the panel (the camera focus);
--- tapping empty space ends the focus. Medals are the only currency.
+-- jump to the nearest node. The panel passes only the nodes you own or can unlock next, and the view
+-- frames them (owner 2026-10-28). Tapping a node (A / Return) shrinks the tree into a bottom-left
+-- minimap and slides in its card; the minimap, the card's X, B / Escape or empty space bring the tree
+-- back. Medals are the only currency.
 --   local v = SkillTreeView.new(parent, { nodes = {...}, medals = 12, onBuy = fn, ... })
---   v.setNodes(nodes, medals)   v.openAt(newestId)   v.setFaded(true)   v.close()
--- Node: { id, name, icon, effect, price, ring, angle, sector, keystone, revealed, state, focus }
+--   v.setNodes(nodes, medals)   v.openAt(newestId)   v.close()
+-- Node: { id, name, icon, effect, price, ring, angle, sector, keystone, state, focus }
 local AssetService = game:GetService("AssetService")
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
 local Counter = require(script.Parent:WaitForChild("Counter"))
@@ -34,16 +37,10 @@ local CARD = Color3.fromHex("13263A")
 local RING = Color3.fromHex("1B2D42")
 local OUTER = Color3.fromHex("2C425A")
 local DIVIDER = Color3.fromHex("122033")
-local LOCK_EDGE = Color3.fromHex("2C425A")
-local LOCK_STROKE = Color3.fromHex("34465A")
-local SOON_STROKE = Color3.fromHex("6B7D90")
-local DIM = Color3.fromHex("71839A")
-local ICON_LOCK = Color3.fromHex("4A5C70")
 local ICON_OWNED = Color3.fromHex("132232")
 local GOLD = Color3.fromHex("FFC928")
-local DIM_TEXT = Color3.fromHex("B0BEC5")
 
-export type State = "owned" | "buyable" | "locked" | "soon"
+export type State = "owned" | "buyable"
 export type Node = {
 	id: string,
 	name: string,
@@ -54,7 +51,6 @@ export type Node = {
 	angle: number,
 	sector: string,
 	keystone: boolean,
-	revealed: boolean,
 	state: State,
 	focus: string?,
 	needs: { string },
@@ -64,9 +60,8 @@ export type Props = {
 	nodes: { Node },
 	medals: number,
 	onBuy: ((string, Done) -> ())?,
-	onSelect: ((Node) -> ())?, -- the panel moves the camera and fades the tree
-	onEmpty: (() -> ())?, -- empty tap: end the camera focus
-	onEndFocus: (() -> ())?, -- B / Escape: end the focus but keep the view
+	onSelect: ((Node) -> ())?, -- a node's card opened: the panel may move the camera
+	onEndFocus: (() -> ())?, -- the full tree is back: end the camera focus
 	onClose: (() -> ())?,
 	onReset: (() -> ())?, -- the free reset (docs/25 F): every Medal back
 }
@@ -74,7 +69,6 @@ export type View = {
 	root: Frame,
 	setNodes: (nodes: { Node }, medals: number) -> (),
 	openAt: (id: string?) -> (),
-	setFaded: (on: boolean) -> (),
 	close: () -> (),
 	isOpen: () -> boolean,
 }
@@ -91,6 +85,9 @@ local BADGE = 50
 local DOT = 16
 local HIT = 90
 local DOT_HIT = 44
+local MINI = 0.3 -- the minimap's share of the screen
+local FIT_PAD = 110 -- du round the visible nodes (keystone labels hang 70 below the badge)
+local TOP_BAR = 90 -- du under the title / Medals / X bar
 
 local function sectorOf(n: Node): { name: string, color: Color3 }
 	return SECTOR[n.sector] or SECTOR.Bridge
@@ -326,16 +323,6 @@ local function drawIcon(kind: string, p: Instance, c: Color3, bg: Color3)
 	end
 end
 
-local function drawMedal(p: Instance, size: number)
-	local box = Instance.new("Frame")
-	box.BackgroundTransparency = 1
-	box.AnchorPoint = Vector2.new(0.5, 0.5)
-	box.Position = UDim2.fromScale(0.5, 0.5)
-	box.Size = UDim2.fromOffset(size, size)
-	box.Parent = p
-	Glyph.draw("medal", box, Color3.new(1, 1, 1))
-end
-
 local function clear(p: Instance)
 	for _, ch in p:GetChildren() do
 		if ch:IsA("GuiObject") then
@@ -357,7 +344,6 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	local posById: { [string]: Vector2 } = {}
 	local buttons: { [string]: ImageButton } = {}
 	local marks: { [string]: ImageButton } = {}
-	local pulses: { ImageLabel } = {}
 	local order: { string } = {}
 
 	local zoom = 1
@@ -366,30 +352,52 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	local selectionOnCard = false
 	local buying = false
 	local fitted = false
-	local faded = false
+	local mini = false
 	local medalValue = props.medals
 	local refresh: () -> ()
 	local beginDrag: (InputObject) -> ()
 	local suppressUntil = 0
+	local drag: { start: Vector2, pan: Vector2, moved: boolean, input: InputObject }? = nil
+	local pinchStart: number? = nil
+	local stickAt = 0
 
 	local root = Instance.new("Frame")
 	root.Name = "SkillTree"
-	root.BackgroundColor3 = BG
-	root.BorderSizePixel = 0
+	root.BackgroundTransparency = 1
 	root.Size = UDim2.fromScale(1, 1)
 	root.ClipsDescendants = true
 	root.Visible = false
 	root.ZIndex = 2
 	root.Parent = parent
-	local bgGrad = Instance.new("UIGradient")
-	bgGrad.Color = ColorSequence.new(BG_TOP, BG)
-	bgGrad.Rotation = 90
-	bgGrad.Parent = root
 
+	-- empty space: on the full tree it starts a drag, over the world (minimap up) it restores the tree
 	local hit = Style.button(root, UDim2.fromScale(1, 1))
 	hit.Name = "Hit"
 	hit.Selectable = false
 	hit.ZIndex = 1
+
+	-- the whole tree; one UIScale tween shrinks it into the bottom-left minimap (no per-frame layout)
+	local stage = Instance.new("Frame")
+	stage.Name = "Stage"
+	stage.BackgroundColor3 = BG
+	stage.BorderSizePixel = 0
+	stage.AnchorPoint = Vector2.new(0, 1)
+	stage.Position = UDim2.fromScale(0, 1)
+	stage.Size = UDim2.fromScale(1, 1)
+	stage.ClipsDescendants = true
+	stage.Active = false -- taps on empty chart fall through to `hit`
+	stage.ZIndex = 2
+	stage.Parent = root
+	local bgGrad = Instance.new("UIGradient")
+	bgGrad.Color = ColorSequence.new(BG_TOP, BG)
+	bgGrad.Rotation = 90
+	bgGrad.Parent = stage
+	local stageScale = Instance.new("UIScale")
+	stageScale.Parent = stage
+	local stageCorner = Style.corner(stage, 0)
+	local stageStroke = Style.stroke(stage, 8, true)
+	stageStroke.Color = Color3.new(1, 1, 1)
+	stageStroke.Transparency = 1
 
 	local content = Instance.new("Frame")
 	content.Name = "Chart"
@@ -397,7 +405,7 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	content.ClipsDescendants = false
 	content.Size = UDim2.fromOffset(1, 1)
 	content.ZIndex = 2
-	content.Parent = root
+	content.Parent = stage
 	local zoomScale = Instance.new("UIScale")
 	zoomScale.Parent = content
 
@@ -415,10 +423,7 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	nodeLayer.ZIndex = 3
 	nodeLayer.Parent = content
 
-	local ringStrokes: { { stroke: UIStroke, base: number } } = {}
-	local dividers: { { frame: Frame, base: number } } = {}
-	local edges: { { frame: Frame, base: number } } = {}
-	local dimLabels: { { label: TextLabel, stroke: UIStroke? } } = {}
+	local edges: { Frame } = {}
 
 	local size = TreeMath.radialSize()
 	content.Size = UDim2.fromOffset(size.X, size.Y)
@@ -435,10 +440,8 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		Style.corner(ring, 999)
 		local stroke = Style.stroke(ring, if i == #TreeMath.RING_RADII then 2 else 1.5, true)
 		stroke.Color = if i == #TreeMath.RING_RADII then OUTER else RING
-		local base = if i == #TreeMath.RING_RADII then 0.15 else 0.3
-		stroke.Transparency = base
+		stroke.Transparency = if i == #TreeMath.RING_RADII then 0.15 else 0.3
 		ring.Parent = content
-		table.insert(ringStrokes, { stroke = stroke, base = base })
 	end
 	local centre = size * 0.5
 	for _, angle in { 0, 90, 180, 270 } do
@@ -453,7 +456,6 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		f.BackgroundTransparency = 0.35
 		f.ZIndex = 1
 		f.Parent = content
-		table.insert(dividers, { frame = f, base = 0.35 })
 	end
 	local CORNERS = {
 		{ sector = "Captain", ax = 0, ay = 0, align = Enum.TextXAlignment.Left },
@@ -463,7 +465,7 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	}
 	for _, corner in CORNERS do
 		local look = SECTOR[corner.sector]
-		local label = Style.label(content, look.name, 40)
+		local label = Style.label(stage, look.name, 40) -- screen corners: readable at any zoom
 		label.AnchorPoint = Vector2.new(corner.ax, corner.ay)
 		label.Position = UDim2.new(
 			corner.ax,
@@ -475,13 +477,12 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		label.TextXAlignment = corner.align
 		label.TextWrapped = false
 		label.TextColor3 = look.color
-		label.ZIndex = 1
+		label.ZIndex = 7
 		local stroke = label:FindFirstChildOfClass("UIStroke")
 		if stroke then
 			stroke.Color = Theme.Colors.ink
 			stroke.Thickness = 3
 		end
-		table.insert(dimLabels, { label = label, stroke = stroke })
 	end
 
 	-- centre compass -------------------------------------------------------------------------------
@@ -514,7 +515,6 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	you.Position = UDim2.new(0.5, 0, 0.5, 60)
 	you.Size = UDim2.fromOffset(120, 24)
 	you.ZIndex = 2
-	table.insert(dimLabels, { label = you, stroke = you:FindFirstChildOfClass("UIStroke") })
 
 	local selRing = Instance.new("Frame")
 	selRing.Name = "Selection"
@@ -529,7 +529,7 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	selRing.Parent = content
 
 	-- chrome: title, medal counter and the red X ------------------------------------------------
-	local title = Style.label(root, "SKILLS", 32)
+	local title = Style.label(stage, "SKILLS", 32)
 	title.AnchorPoint = Vector2.new(0, 0)
 	title.Position = UDim2.fromOffset(24, 20)
 	title.Size = UDim2.fromOffset(220, 44)
@@ -553,7 +553,7 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	x.TextScaled = false
 
 	-- the free reset, left of the Medal counter (a circular arrow; refunds every Medal)
-	local reset = Style.button(root, UDim2.fromOffset(S.close, S.close + S.lip))
+	local reset = Style.button(stage, UDim2.fromOffset(S.close, S.close + S.lip))
 	reset.Name = "Reset"
 	reset.AnchorPoint = Vector2.new(1, 0)
 	reset.Position = UDim2.new(1, -(S.margin + S.close + 24 + S.counter.X), 0, S.margin)
@@ -569,67 +569,55 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	arrow.ZIndex = 11
 	arrow.Parent = resetFace
 
-	-- the detail card ------------------------------------------------------------------------------
+	-- the detail card: slides in on the right while the tree sits in the corner ----------------------
+	local CARD_IN = UDim2.new(1, -24, 0.5, 40)
+	local CARD_OUT = UDim2.new(1, 440, 0.5, 40)
 	local card = Instance.new("Frame")
 	card.Name = "Detail"
-	card.AnchorPoint = Vector2.new(0.5, 1)
-	card.Position = UDim2.new(0.5, 0, 1, -24)
-	card.Size = UDim2.fromOffset(500, 136)
+	card.AnchorPoint = Vector2.new(1, 0.5)
+	card.Position = CARD_OUT
+	card.Size = UDim2.fromOffset(380, 380)
 	card.BackgroundColor3 = CARD
 	card.BackgroundTransparency = 0.03
 	card.Visible = false
 	card.ZIndex = 8
-	Style.corner(card, 16)
-	local cardStroke = Style.stroke(card, 3, true)
+	Style.corner(card, 20)
+	local cardStroke = Style.stroke(card, 4, true)
 	cardStroke.Color = SECTOR.Captain.color
 	card.Parent = root
+
+	local cardX = Style.button(card, UDim2.fromOffset(52, 52 + S.lip))
+	cardX.Name = "Close"
+	cardX.AnchorPoint = Vector2.new(1, 0)
+	cardX.Position = UDim2.new(1, -12, 0, 12)
+	cardX.ZIndex = 10
+	local _, cardXFace = Style.block(cardX, Style.grad("close"), { radius = S.cornerSmall })
+	Style.label(cardXFace, "X", 26).TextScaled = false
 
 	local cardIcon = Instance.new("Frame")
 	cardIcon.Name = "Art"
 	cardIcon.BackgroundTransparency = 1
-	cardIcon.AnchorPoint = Vector2.new(0, 0.5)
-	cardIcon.Position = UDim2.new(0, 16, 0.5, 0)
-	cardIcon.Size = UDim2.fromOffset(78, 78)
+	cardIcon.AnchorPoint = Vector2.new(0.5, 0)
+	cardIcon.Position = UDim2.new(0.5, 0, 0, 22)
+	cardIcon.Size = UDim2.fromOffset(112, 112)
 	cardIcon.ZIndex = 9
 	cardIcon.Parent = card
 
-	local cardName = Style.label(card, "", 24)
-	cardName.Position = UDim2.fromOffset(112, 12)
-	cardName.Size = UDim2.new(1, -112 - 16 - 164 - 12, 0, 32)
-	cardName.TextXAlignment = Enum.TextXAlignment.Left
+	local cardName = Style.label(card, "", 28)
+	cardName.AnchorPoint = Vector2.new(0.5, 0)
+	cardName.Position = UDim2.new(0.5, 0, 0, 146)
+	cardName.Size = UDim2.new(1, -32, 0, 36)
 	cardName.TextWrapped = false
 	cardName.TextTruncate = Enum.TextTruncate.AtEnd
 	cardName.ZIndex = 9
 
-	local cardEffect = Style.label(card, "", 19)
-	cardEffect.Position = UDim2.fromOffset(112, 46)
-	cardEffect.Size = UDim2.new(1, -112 - 16 - 164 - 12, 0, 26)
-	cardEffect.TextXAlignment = Enum.TextXAlignment.Left
+	local cardEffect = Style.label(card, "", 40)
+	cardEffect.AnchorPoint = Vector2.new(0.5, 0)
+	cardEffect.Position = UDim2.new(0.5, 0, 0, 186)
+	cardEffect.Size = UDim2.new(1, -32, 0, 50)
 	cardEffect.TextWrapped = false
-	cardEffect.TextColor3 = DIM_TEXT
+	cardEffect.TextColor3 = Color3.fromHex("FFE082")
 	cardEffect.ZIndex = 9
-
-	local priceRow = Instance.new("Frame")
-	priceRow.Name = "Price"
-	priceRow.BackgroundTransparency = 1
-	priceRow.Position = UDim2.fromOffset(112, 84)
-	priceRow.Size = UDim2.fromOffset(140, 26)
-	priceRow.ZIndex = 9
-	priceRow.Parent = card
-	local priceIcon = Instance.new("Frame")
-	priceIcon.BackgroundTransparency = 1
-	priceIcon.Position = UDim2.fromOffset(0, 1)
-	priceIcon.Size = UDim2.fromOffset(24, 24)
-	priceIcon.ZIndex = 9
-	priceIcon.Parent = priceRow
-	drawMedal(priceIcon, 24)
-	local priceText = Style.label(priceRow, "", 20)
-	priceText.Position = UDim2.fromOffset(30, 0)
-	priceText.Size = UDim2.new(1, -30, 1, 0)
-	priceText.TextXAlignment = Enum.TextXAlignment.Left
-	priceText.TextColor3 = Color3.fromHex("FFE082")
-	priceText.TextWrapped = false
-	priceText.ZIndex = 9
 
 	local function activateBuy()
 		local n = if selectedId then nodesById[selectedId :: string] else nil
@@ -658,9 +646,9 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		onActivate = activateBuy,
 	})
 	pb.root.Name = "Buy"
-	pb.root.Size = UDim2.fromOffset(164, 62)
-	pb.root.AnchorPoint = Vector2.new(1, 0.5)
-	pb.root.Position = UDim2.new(1, -16, 0.5, 0)
+	pb.root.Size = UDim2.fromOffset(220, 72)
+	pb.root.AnchorPoint = Vector2.new(0.5, 1)
+	pb.root.Position = UDim2.new(0.5, 0, 1, -22)
 	pb.root.ZIndex = 10
 	Style.press(close, function()
 		if props.onClose then
@@ -683,19 +671,32 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		return root.AbsoluteSize / kitScale()
 	end
 
-	local function apply()
-		content.Position = UDim2.fromOffset(pan.X, pan.Y)
-		zoomScale.Scale = zoom
+	local moving: { Tween } = {}
+	-- place the chart; `time` tweens it there (a re-fit after a buy)
+	local function apply(time: number?)
+		for _, tw in moving do
+			tw:Cancel()
+		end
+		moving = {}
+		local at = UDim2.fromOffset(pan.X, pan.Y)
+		if time then
+			local info = TweenInfo.new(time, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+			moving = {
+				TweenService:Create(content, info, { Position = at }),
+				TweenService:Create(zoomScale, info, { Scale = zoom }),
+			}
+			for _, tw in moving do
+				tw:Play()
+			end
+		else
+			content.Position = at
+			zoomScale.Scale = zoom
+		end
 	end
 
-	-- the free part of the view: the card floats over the bottom, never over the selected node
 	local function viewRect(): TreeMath.View
 		local vp = viewportDu()
-		local bottom = if card.Visible then card.Size.Y.Offset + 34 else 0
-		return {
-			pos = Vector2.zero,
-			size = Vector2.new(math.max(vp.X, 4), math.max(vp.Y - bottom, 200)),
-		}
+		return { pos = Vector2.zero, size = Vector2.new(math.max(vp.X, 4), math.max(vp.Y, 200)) }
 	end
 
 	local function clampView()
@@ -703,76 +704,108 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		apply()
 	end
 
-	local function hideCard()
-		card.Visible = false
+	-- zoom and pan onto what you can unlock (+ the centre), not the whole tree (owner 2026-10-28)
+	local function fit(time: number?)
+		local pts = { centre }
+		for _, at in posById do
+			table.insert(pts, at)
+		end
+		local vp = viewRect()
+		local free = { pos = Vector2.new(0, TOP_BAR), size = vp.size - Vector2.new(0, TOP_BAR) }
+		zoom, pan = TreeMath.fitBox(pts, free, FIT_PAD, TreeMath.MIN_ZOOM, TreeMath.MAX_ZOOM)
+		pan = TreeMath.clampPanIn(pan, vp, size, zoom)
+		apply(time)
+	end
+
+	local function deselect()
 		selectedId = nil
 		selectionOnCard = false
 		pb.root.Selectable = false
 		selRing.Visible = false
-		clampView()
+	end
+
+	-- the tree in the bottom-left corner + the node card, or the full tree back
+	-- over the minimap: a tap anywhere on it brings the full tree back
+	local miniHit = Style.button(stage, UDim2.fromScale(1, 1))
+	miniHit.Name = "Restore"
+	miniHit.Selectable = false
+	miniHit.Visible = false
+	miniHit.ZIndex = 20
+	local function setMini(on: boolean)
+		if mini == on then
+			return
+		end
+		mini = on
+		drag = nil
+		miniHit.Visible = on
+		stageCorner.CornerRadius = UDim.new(0, if on then 60 else 0)
+		Style.tween(stageScale, 0.35, { Scale = if on then MINI else 1 })
+		Style.tween(stageStroke, 0.35, { Transparency = if on then 0 else 1 })
+		-- clear of the wallet / Cash under the hidden left menu
+		Style.tween(stage, 0.35, {
+			Position = if on then UDim2.new(0, 24, 1, -110) else UDim2.fromScale(0, 1),
+		})
+		if on then
+			card.Visible = true
+			Style.tween(card, 0.3, { Position = CARD_IN })
+		else
+			card.Visible = false
+			card.Position = CARD_OUT
+			pb.root.Selectable = false
+			if props.onEndFocus then
+				props.onEndFocus()
+			end
+		end
 	end
 
 	refresh = function()
 		local n = if selectedId then nodesById[selectedId :: string] else nil
 		if not n then
-			hideCard()
+			deselect()
+			setMini(false)
 			return
 		end
 		local look = sectorOf(n)
-		local revealed = n.revealed
 		cardStroke.Color = look.color
 		clear(cardIcon)
-		local fill = if n.state == "owned" then look.color else BG
-		local stroke = if n.state == "owned"
-			then Color3.new(1, 1, 1)
-			elseif n.state == "buyable" then look.color
-			elseif n.state == "soon" then SOON_STROKE
-			else LOCK_STROKE
+		local owned = n.state == "owned"
+		local fill = if owned then look.color else BG
 		local art = Instance.new("Frame")
 		art.BackgroundTransparency = 1
 		art.AnchorPoint = Vector2.new(0.5, 0.5)
 		art.Position = UDim2.fromScale(0.5, 0.5)
-		art.Size = UDim2.fromOffset(72, 72)
+		art.Size = UDim2.fromOffset(100, 100)
 		art.Parent = cardIcon
-		if not octImage(cardIcon, "badge", fill, stroke, n.state == "soon", 78) then
-			roundedBadge(cardIcon, fill, stroke, 78)
+		if
+			not octImage(
+				cardIcon,
+				"badge",
+				fill,
+				if owned then Color3.new(1, 1, 1) else look.color,
+				false,
+				112
+			)
+		then
+			roundedBadge(cardIcon, fill, if owned then Color3.new(1, 1, 1) else look.color, 112)
 		end
 		art.ZIndex = 2
-		local iconColour = if n.state == "owned"
-			then ICON_OWNED
-			elseif n.state == "buyable" then look.color
-			else ICON_LOCK
-		drawIcon(if revealed then n.icon else "q", art, iconColour, fill)
-		cardName.Text = if revealed then n.name else "???"
-		cardEffect.Text = if not revealed
-			then "Reach it first"
-			elseif n.state == "soon" then "Coming soon"
-			else n.effect
-		priceText.Text = Theme.short(n.price)
+		drawIcon(n.icon, art, if owned then ICON_OWNED else look.color, fill)
+		cardName.Text = n.name
+		cardEffect.Text = n.effect
 
 		local affordable = medalValue >= n.price
-		if n.state == "owned" then
+		if owned then
 			pb.setState("owned")
 			pb.setText(nil)
-		elseif n.state == "soon" then
-			pb.setState("disabled")
-			pb.setText("Soon")
-		elseif n.state == "locked" then
-			pb.setState("disabled")
-			pb.setText("Locked")
 		elseif buying then
 			pb.setState("disabled")
 			pb.setText("...")
-		elseif affordable then
-			pb.setState("buy")
-			pb.setText(nil)
 		else
-			pb.setState("disabled")
+			pb.setState(if affordable then "buy" else "disabled")
 			pb.setText(nil)
 		end
 		pb.setPrice(n.price)
-		pb.root.Selectable = n.state == "buyable" and affordable and not buying
-		card.Visible = true
+		pb.root.Selectable = mini and not owned and affordable and not buying
 	end
 
 	-- selecting a node shows its card; `open` also moves the camera (the panel) and the gamepad
@@ -804,48 +837,6 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		end
 		pan = TreeMath.clampPanIn(Vector2.new(nx, ny), view, size, zoom)
 		apply()
-	end
-
-	-- pulse the buyable halos (soft, slow)
-	local pulseClock = 0
-	RunService.Heartbeat:Connect(function(dt: number)
-		if not root.Visible then
-			return
-		end
-		pulseClock += dt
-		local wave = 0.5 + 0.5 * math.sin(pulseClock * 2.4)
-		for _, halo in pulses do
-			if halo.Parent then
-				halo.ImageTransparency = 0.55 + 0.3 * wave
-			end
-		end
-	end)
-
-	-- fade the chart (not the nodes / card) so the focused world shows through
-	local function setFaded(on: boolean)
-		if faded == on then
-			return
-		end
-		faded = on
-		local target = if on then 0.84 else 0
-		Style.tween(root, 0.3, { BackgroundTransparency = target })
-		for _, item in ringStrokes do
-			item.stroke.Transparency = if on then 0.94 else item.base
-		end
-		for _, item in dividers do
-			item.frame.BackgroundTransparency = if on then 0.92 else item.base
-		end
-		for _, item in edges do
-			item.frame.BackgroundTransparency = if on
-				then math.min(0.92, item.base + 0.5)
-				else item.base
-		end
-		for _, item in dimLabels do
-			item.label.TextTransparency = if on then 0.55 else 0
-			if item.stroke then
-				item.stroke.Transparency = if on then 0.55 else 0
-			end
-		end
 	end
 
 	local function segments(): { { a: string?, b: string } }
@@ -908,15 +899,11 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	end
 
 	local function linkLook(a: Node?, b: Node): (Color3, number, number)
-		local look = sectorOf(b).color
 		local ownedA = a == nil or a.state == "owned"
 		if ownedA and b.state == "owned" then
-			return look, 0.08, 4.5
+			return sectorOf(b).color, 0.08, 4.5
 		end
-		if ownedA and b.state == "buyable" then
-			return look, 0.5, 3.5
-		end
-		return if b.state == "soon" then SOON_STROKE else LOCK_EDGE, 0.35, 3
+		return sectorOf(b).color, 0.5, 3.5
 	end
 
 	local function addEdge(from: Vector2, to: Vector2, colour: Color3, alpha: number, thick: number)
@@ -928,21 +915,17 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		f.Position = UDim2.fromOffset(c.pos.X, c.pos.Y)
 		f.Size = UDim2.fromOffset(c.size.X, c.size.Y)
 		f.Rotation = c.rotation
-		f.BackgroundTransparency = if faded then math.min(0.92, alpha + 0.5) else alpha
+		f.BackgroundTransparency = alpha
 		f.ZIndex = 1
 		Style.corner(f, 99)
 		f.Parent = edgeLayer
-		table.insert(edges, { frame = f, base = alpha })
+		table.insert(edges, f)
 	end
 
 	local function nodeVisual(n: Node, at: Vector2)
 		local look = sectorOf(n)
 		local fill = if n.state == "owned" then look.color else BG
-		local stroke = if n.state == "owned"
-			then Color3.new(1, 1, 1)
-			elseif n.state == "buyable" then look.color
-			elseif n.state == "soon" then SOON_STROKE
-			else LOCK_STROKE
+		local stroke = if n.state == "owned" then Color3.new(1, 1, 1) else look.color
 		local hitSize = if n.keystone then HIT else DOT_HIT
 		local b = Style.button(nodeLayer, UDim2.fromOffset(hitSize, hitSize))
 		b.Name = "Node_" .. n.id
@@ -960,51 +943,36 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 				glow.ImageTransparency = 0.78
 				glow.ZIndex = 0
 			end
-		elseif n.state == "buyable" then
+		else -- unlockable next: a steady soft halo, no looping pulse (owner 2026-10-28)
 			local halo = octImage(b, "fill", look.color, look.color, false, badge * 1.5)
 			if halo then
-				halo.ImageTransparency = 0.65
+				halo.ImageTransparency = 0.7
 				halo.ZIndex = 0
-				table.insert(pulses, halo)
 			end
 		end
 		local art = Instance.new("Frame")
 		art.BackgroundTransparency = 1
 		art.AnchorPoint = Vector2.new(0.5, 0.5)
 		art.Position = UDim2.fromScale(0.5, 0.5)
-		art.Size = UDim2.fromOffset(
-			badge * (if n.keystone then 1 else 1),
-			badge * (if n.keystone then 1 else 1)
-		)
+		art.Size = UDim2.fromOffset(badge, badge)
 		art.ZIndex = 2
 		art.Parent = b
 		if n.keystone then
-			if not octImage(b, "badge", fill, stroke, n.state == "soon", BADGE) then
+			if not octImage(b, "badge", fill, stroke, false, BADGE) then
 				roundedBadge(b, fill, stroke, BADGE)
 			end
-			local iconColour = if n.state == "owned"
-				then ICON_OWNED
-				elseif n.state == "buyable" then look.color
-				else ICON_LOCK
-			drawIcon(if n.revealed then n.icon else "q", art, iconColour, fill)
-			local label = Style.label(b, if n.revealed then n.name else "???", 17)
+			drawIcon(n.icon, art, if n.state == "owned" then ICON_OWNED else look.color, fill)
+			local label = Style.label(b, n.name, 17)
 			label.AnchorPoint = Vector2.new(0.5, 0)
 			label.Position = UDim2.new(0.5, 0, 0, 48)
 			label.Size = UDim2.fromOffset(136, 22)
 			label.TextXAlignment = Enum.TextXAlignment.Center
 			label.TextWrapped = false
 			label.TextTruncate = Enum.TextTruncate.AtEnd
-			label.TextColor3 = if n.state == "owned"
-				then Color3.new(1, 1, 1)
-				elseif n.state == "buyable" then look.color
-				else DIM
+			label.TextColor3 = if n.state == "owned" then Color3.new(1, 1, 1) else look.color
 			label.ZIndex = 5
-			table.insert(dimLabels, {
-				label = label,
-				stroke = label:FindFirstChildOfClass("UIStroke"),
-			})
 		else
-			if not octImage(b, "badge", fill, stroke, n.state == "soon", DOT) then
+			if not octImage(b, "badge", fill, stroke, false, DOT) then
 				roundedBadge(b, fill, stroke, DOT)
 			end
 			if n.state == "buyable" then
@@ -1029,8 +997,8 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	end
 
 	local function rebuildEdges()
-		for _, item in edges do
-			item.frame:Destroy()
+		for _, f in edges do
+			f:Destroy()
 		end
 		edges = {}
 		edgeLayer:Destroy()
@@ -1043,9 +1011,9 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		for _, seg in segments() do
 			local a = if seg.a then nodesById[seg.a] else nil
 			local b = nodesById[seg.b]
-			local from = if seg.a and posById[seg.a] then posById[seg.a] else centre
+			local from = if seg.a then posById[seg.a] else centre -- nil: a hidden end, no link
 			local to = posById[seg.b]
-			if b and to then
+			if b and from and to then
 				local colour, alpha, thick = linkLook(a, b)
 				addEdge(from, to, colour, alpha, thick)
 			end
@@ -1078,7 +1046,8 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	end
 
 	local firstBuild = true
-	local function build(nodes: { Node })
+	-- -> did the set of shown nodes change (a buy revealed more, a reset hid them)?
+	local function build(nodes: { Node }): boolean
 		local previousState = stateById
 		local wasOwned: { [string]: boolean } = {}
 		for id, state in previousState do
@@ -1090,7 +1059,6 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		posById = {}
 		buttons = {}
 		marks = {}
-		pulses = {}
 		order = {}
 		for _, n in nodes do
 			nodesById[n.id] = n
@@ -1126,6 +1094,10 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 				table.insert(points, { id = n.id, pos = at })
 			end
 		end
+		local shownChanged = false
+		for id in previousState do
+			shownChanged = shownChanged or nodesById[id] == nil
+		end
 		if selectedId and nodesById[selectedId :: string] then
 			refresh()
 			local b = buttons[selectedId :: string]
@@ -1135,17 +1107,19 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 					else b
 			end
 		else
-			hideCard()
+			deselect()
+			setMini(false)
 		end
 		if not firstBuild then
 			for _, n in nodes do
 				local old = previousState[n.id]
-				if n.state == "buyable" and old ~= nil and old ~= "buyable" then
+				shownChanged = shownChanged or old == nil
+				if n.state == "buyable" and old ~= "buyable" then
 					local mark = marks[n.id]
-					if mark then
+					if mark then -- one gentle pop: newly reachable tiles grow in from small
 						local sc = mark:FindFirstChildOfClass("UIScale")
 						if sc then
-							sc.Scale = 0.7
+							sc.Scale = if old == nil then 0.2 else 0.7
 							Style.tween(sc, 0.35, { Scale = 1 }, Enum.EasingStyle.Back)
 						end
 					end
@@ -1235,17 +1209,15 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 			end
 		end
 		firstBuild = false
+		return shownChanged
 	end
-
-	local drag: { start: Vector2, pan: Vector2, moved: boolean, input: InputObject }? = nil
-	local pinchStart: number? = nil
-	local stickAt = 0
 
 	beginDrag = function(input: InputObject)
 		local t = input.UserInputType
 		if
 			(t == Enum.UserInputType.MouseButton1 or t == Enum.UserInputType.Touch)
 			and drag == nil
+			and not mini
 		then
 			drag = {
 				start = Vector2.new(input.Position.X, input.Position.Y),
@@ -1277,6 +1249,10 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 			return
 		end
 		selectedId = id
+		open = open or mini -- the stick in the corner state flips through the cards
+		if open then
+			setMini(true)
+		end
 		refresh()
 		if n.keystone then
 			selRing.Size = UDim2.fromOffset(HIT + 6, HIT + 6)
@@ -1323,7 +1299,7 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 				pan = TreeMath.clampPanIn(pan, viewRect(), size, zoom)
 				apply()
 			end
-		elseif t == Enum.UserInputType.MouseWheel then
+		elseif t == Enum.UserInputType.MouseWheel and not mini then
 			local view = viewRect()
 			local before = zoom
 			zoom =
@@ -1353,16 +1329,20 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		if os.clock() < suppressUntil then
 			return
 		end
-		hideCard()
-		if props.onEmpty then
-			props.onEmpty()
-		end
+		deselect()
+		setMini(false) -- over the world: the full tree comes back
 	end)
+	local function restore()
+		deselect()
+		setMini(false)
+	end
+	miniHit.Activated:Connect(restore)
+	Style.press(cardX, restore, S.cornerSmall)
 	UserInputService.TouchPinch:Connect(function(_, scale: number, _, state: Enum.UserInputState)
 		if not root.Visible then
 			return
 		end
-		if state == Enum.UserInputState.Begin then
+		if state == Enum.UserInputState.Begin and not mini then
 			pinchStart = zoom
 			drag = nil
 		elseif state == Enum.UserInputState.Change and pinchStart then
@@ -1394,11 +1374,8 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		if not root.Visible then
 			return false
 		end
-		if faded then
-			if props.onEndFocus then
-				props.onEndFocus()
-			end
-			setFaded(false)
+		if mini then
+			restore()
 			return true
 		end
 		return false
@@ -1496,23 +1473,8 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		if not fitted or #points == 0 then
 			return
 		end
-		card.Visible = false
-		selectedId = nil
-		selectionOnCard = false
-		selRing.Visible = false
-		local vp = viewportDu()
-		local fit = math.min((vp.X - 48) / size.X, (vp.Y - 48) / size.Y)
-		zoom = math.clamp(fit, 0.62, 1)
-		local view: TreeMath.View = { pos = Vector2.zero, size = vp }
-		local at = if id then posById[id] else nil
-		local want = view.pos + view.size * 0.5
-		if at then
-			want -= at * zoom
-		else
-			want -= size * zoom * 0.5
-		end
-		pan = TreeMath.clampPanIn(want, view, size, zoom)
-		apply()
+		restore()
+		fit()
 		if id then
 			addNewestHalo(id)
 			local b = buttons[id]
@@ -1527,17 +1489,21 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 			medalValue = medals
 			counter.set(medals)
 		end
-		build(nodes)
+		if build(nodes) and root.Visible then
+			fit(0.5) -- zoom out smoothly onto the newly revealed nodes
+		end
 		fitted = true
 	end
 
 	local function closeView()
 		root.Visible = false
-		card.Visible = false
-		selectedId = nil
-		selectionOnCard = false
-		selRing.Visible = false
-		setFaded(false)
+		deselect()
+		if mini then -- snap back, so the next open starts on the full tree
+			setMini(false)
+			stageScale.Scale = 1
+			stage.Position = UDim2.fromScale(0, 1)
+			stageStroke.Transparency = 1
+		end
 		local sel = GuiService.SelectedObject
 		if sel and sel:IsDescendantOf(root) then
 			GuiService.SelectedObject = nil
@@ -1551,7 +1517,6 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		root = root,
 		setNodes = setNodes,
 		openAt = openAt,
-		setFaded = setFaded,
 		close = function()
 			closeView()
 		end,

@@ -189,6 +189,29 @@ return function(t)
 		end
 	end)
 
+	t.test("visible: owned + unlockable next only, rim nodes hidden, a buy reveals more", function()
+		local first = S.visible({})
+		local count = 0
+		for id in first do
+			count += 1
+			t.expect(#S.byId[id].needs).toBe(0)
+			t.expect(S.byId[id].soon).toBe(false)
+		end
+		t.expect(count > 0).toBe(true)
+		t.expect(first.Throttle).toBe(nil)
+		local mine = table.clone(first)
+		local next = S.visible(mine)
+		local grew = 0
+		for id in next do
+			t.expect(S.byId[id].soon).toBe(false)
+			if not mine[id] then
+				grew += 1
+				t.expect(S.canBuy(mine, id, 1e9)).toBe(true) -- every new tile is buyable
+			end
+		end
+		t.expect(grew > 0).toBe(true)
+	end)
+
 	t.test("canBuy: any one need, Medals, rim nodes refuse", function()
 		t.expect({ S.canBuy({}, "Nope", 1e9) }).toEqual({ false, "Unknown" })
 		-- a keystone is reached through its own dots (1 Medal each)

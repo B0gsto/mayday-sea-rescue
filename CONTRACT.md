@@ -270,7 +270,7 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   `Industry` 225° and the four `Bridge` nodes at 0/90/180/270; each keystone carries its `minor` path and
   `nodes()` expands the dots as `<keystone>_m<i>` with `ring`/`angle` (absolute degrees, 0 = up, clockwise;
   sector nodes stay inside their sector's ±36°, bridges sit at 0/90/180/270), `medals`, `needs` (any one owned),
-  `effect`, `focus`, `keystone`, `soon`; `SECTORS`, `byId`, `canBuy(owned, id, medals) -> ok, reason`,
+  `effect`, `focus`, `keystone`, `soon`; `SECTORS`, `byId`, `canBuy(owned, id, medals) -> ok, reason`, `visible(owned) -> set` (owned + unlockable next),
   `effects(owned) -> totals`, `refund(owned)`, `rescueMedals`, `chestMedals`; `LEGACY` = the old Cash tree for the
   migration). `SkillService`: `Skill_Buy`, `Skill_Reset`, `data.skills`, `data.medals` and the `Medals` attribute,
   `grantMedals(player, n, reason)` (called by rescues, gold grades, quests and the daily chest; DockService pays

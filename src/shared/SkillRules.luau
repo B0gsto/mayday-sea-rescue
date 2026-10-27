@@ -805,6 +805,30 @@ function SkillRules.effects(owned: { [string]: boolean }): { [string]: any }
 	return out
 end
 
+local function needsMet(owned: { [string]: boolean }, n: Node): boolean
+	if #n.needs == 0 then
+		return true
+	end
+	for _, need in n.needs do
+		if owned[need] == true then
+			return true
+		end
+	end
+	return false
+end
+
+-- The nodes the tree shows (owner 2026-10-28): owned ones and the ones that unlock next (needs met,
+-- affordable or not). Soon rim nodes never unlock, so they stay hidden until they ship.
+function SkillRules.visible(owned: { [string]: boolean }): { [string]: boolean }
+	local out: { [string]: boolean } = {}
+	for _, n in SkillRules.NODES do
+		if owned[n.id] == true or (not n.soon and needsMet(owned, n)) then
+			out[n.id] = true
+		end
+	end
+	return out
+end
+
 -- May `id` be bought? -> ok, reason: "Owned" | "Soon" | "Needs" | "Medals" | "Unknown" (nil when ok).
 function SkillRules.canBuy(
 	owned: { [string]: boolean },
@@ -821,14 +845,7 @@ function SkillRules.canBuy(
 	if owned[id] == true then
 		return false, "Owned"
 	end
-	local ready = #n.needs == 0
-	for _, need in n.needs do
-		if owned[need] == true then
-			ready = true
-			break
-		end
-	end
-	if not ready then
+	if not needsMet(owned, n) then
 		return false, "Needs"
 	end
 	if (tonumber(medals) or 0) < n.medals then
