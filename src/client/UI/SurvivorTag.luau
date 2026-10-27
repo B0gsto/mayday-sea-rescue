@@ -7,6 +7,7 @@
 --   SurvivorTag.attach(model, inWater?) -> one BillboardGui per model, destroyed with it
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
@@ -233,8 +234,19 @@ function SurvivorTag.attach(model: Model, inWater: boolean?): BillboardGui?
 			spinning = true
 			task.spawn(function()
 				while rainbow.Parent and rainbow.Enabled do
-					rainbow.Rotation = (os.clock() * 70) % 360
-					task.wait(1 / 30)
+					local cam = Workspace.CurrentCamera
+					local seen = false
+					if
+						cam
+						and (root.Position - cam.CFrame.Position).Magnitude < gui.MaxDistance
+					then
+						local _, onScreen = cam:WorldToViewportPoint(root.Position)
+						seen = onScreen
+					end
+					if seen then -- off screen or past the tag's reach: idle, no 30 Hz spin
+						rainbow.Rotation = (os.clock() * 70) % 360
+					end
+					task.wait(if seen then 1 / 30 else 0.5)
 				end
 				spinning = false
 			end)

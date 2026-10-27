@@ -9,8 +9,9 @@
 --   StormService.ForceCalm()                                           -- end any storm now
 --   StormService.QueueSummon(player, tier) -> (ok, reason)  use one of the player's Storm Tickets
 -- Dev chat commands (Studio only): /storm, /storm now, /greatstorm, /calm.
--- Day/night: writes Lighting.ClockTime from DayClock every 0.5 s (replicated; the dev offset is the Workspace attribute
--- DayClockOffset, DevService "clock"); storms blend over it on the client.
+-- Day/night: every client runs Lighting.ClockTime from DayClock itself (WeatherController; the dev offset is the Workspace
+-- attribute DayClockOffset, DevService "clock"); the server writes it only every 10 s for its own readers (CottageRig's
+-- sun check), the same value clients compute. Storms blend over it on the client.
 --
 -- Storm Summon (RP-M2, docs/04 section 5): the Call the Storm / Call the Great Storm products grant a
 -- Storm Ticket on the profile (flag shop.ticketStorm / ticketGreat) and queue it. The ticket is used up
@@ -438,7 +439,7 @@ function StormService.Start()
 		while true do
 			local offset = tonumber(Workspace:GetAttribute("DayClockOffset")) or 0
 			Lighting.ClockTime = DayClock.clockTime(Workspace:GetServerTimeNow() + offset)
-			task.wait(0.5)
+			task.wait(10)
 		end
 	end)
 	local sinceIntensity = 0

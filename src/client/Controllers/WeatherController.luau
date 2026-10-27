@@ -3,8 +3,9 @@
 --   * At 10 Hz blends a day base preset (Clear, the default, Calm golden hour or Overcast)
 --     toward Calm by DayClock.warmth (the warm dusk and dawn; none 09:00-15:30), toward Night by
 --     the sun's elevation and toward Storm by Weather.getIntensity() (Lighting, Atmosphere, Clouds,
---     ColorCorrection, Bloom, SunRays; creates missing effects). The server moves ClockTime
---     (StormService, DayClock); a storm's look wins over the hour, and hides the sun.
+--     ColorCorrection, Bloom, SunRays; creates missing effects). It moves ClockTime itself every
+--     0.5 s from DayClock (server time + DayClockOffset; StormService writes the same value rarely);
+--     a storm's look wins over the hour, and hides the sun.
 --   * Sky: swaps the Sky cube faces (src/client/Ocean/SkyAssets) to the dominant preset (Storm
 --     above intensity 0.5, Night when the sun is down, else the base) - Roblox can't blend skies.
 --   * Publishes the blended water and haze colours to the ocean as Lighting attributes
@@ -670,12 +671,19 @@ function WeatherController.Start()
 
 	local sinceBlend = math.huge
 	local sinceRoof = math.huge
+	local sinceClock = math.huge
 	RunService.RenderStepped:Connect(function(dt: number)
 		local camera = Workspace.CurrentCamera
 		if not camera then
 			return
 		end
 		local now = Workspace:GetServerTimeNow()
+		sinceClock += dt
+		if sinceClock >= 0.5 then
+			sinceClock = 0
+			local offset = tonumber(Workspace:GetAttribute("DayClockOffset")) or 0
+			Lighting.ClockTime = DayClock.clockTime(now + offset)
+		end
 		sinceBlend += dt
 		if sinceBlend >= 1 / BLEND_HZ then
 			calmLevel = OnboardingWeather.step(calmLevel, calmTarget(), sinceBlend)

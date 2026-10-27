@@ -376,13 +376,21 @@ local function dropRig(r: Rec)
 	r.beat = nil
 end
 
--- shortcut: routes are cached 30 s by 4-stud cells, so a building placed meanwhile is walked through until then
+-- shortcut: routes are cached 30 s by the start's 16-stud cell and the goal's 4-stud cell (a dusk crowd heading to one
+-- door shares a route), so a building placed meanwhile is walked through until then
+local ROUTE_TTL = 30
 local routes: { [string]: { at: number, points: { Vector3 } } } = {}
 local function route(a: Vector3, b: Vector3): { Vector3 }
-	local key = `{a.X // 4},{a.Z // 4}>{b.X // 4},{b.Z // 4}`
+	local key = `{a.X // 16},{a.Z // 16}>{b.X // 4},{b.Z // 4}`
 	local hit = routes[key]
-	if hit and os.clock() - hit.at < 30 then
+	local now = os.clock()
+	if hit and now - hit.at < ROUTE_TTL then
 		return hit.points
+	end
+	for k, old in routes do -- a miss costs a ComputeAsync anyway: drop the stale ones
+		if now - old.at >= ROUTE_TTL then
+			routes[k] = nil
+		end
 	end
 	local points = { b }
 	local path = PathfindingService:CreatePath({
@@ -972,6 +980,11 @@ end
 -- docs/25 G: at night every built Bunkhouse floor glows warm from inside and a "Zzz" floats over the roof. The mesh's
 -- Lamp panes (M_Bld_Bunkhouse_Lv<l>_L<k>_Lamp_LOD0) are its windows, so one light per level sits at their middle.
 local bunks: { [Model]: { lights: { PointLight }, zzz: BillboardGui?, bob: Tween? } } = {}
+-- phones: ~100 night PointLights over the ring; only those this close to the camera shine (the Neon bulbs glow at any range)
+local LIGHT_RANGE = 250
+local function near(at: Vector3): boolean
+	return (at - eye()).Magnitude < LIGHT_RANGE
+end
 -- The dock and bridge lamps (tag NightLamp): plain warm light at night, an unlit bulb by day.
 local function lamp(p: Instance, on: boolean)
 	if not p:IsA("BasePart") then
@@ -988,7 +1001,7 @@ local function lamp(p: Instance, on: boolean)
 		light = made
 	end
 	if light then
-		light.Enabled = on
+		light.Enabled = on and near(p.Position)
 	end
 end
 local lampsLit: boolean? = nil
@@ -999,6 +1012,13 @@ local function nightPass()
 		for _, p in CollectionService:GetTagged("NightLamp") do
 			lamp(p, night)
 		end
+	elseif night then -- the camera moved: lamps in and out of LIGHT_RANGE
+		for _, p in CollectionService:GetTagged("NightLamp") do
+			local light = p:IsA("BasePart") and p:FindFirstChildOfClass("PointLight")
+			if light then
+				light.Enabled = near(p.Position)
+			end
+		end
 	end
 	for mesh, b in bunks do
 		if not mesh.Parent then
@@ -1006,7 +1026,7 @@ local function nightPass()
 			continue
 		end
 		for _, light in b.lights do
-			light.Enabled = night
+			light.Enabled = night and near((light.Parent :: Attachment).WorldPosition)
 		end
 		if b.zzz and b.bob then
 			b.zzz.Enabled = night
@@ -1160,12 +1180,13 @@ local function lookoutPass()
 			lookouts[mesh] = nil
 			continue
 		end
+		local lit = night and (o.at - me).Magnitude < LIGHT_RANGE
 		if o.lantern then
-			o.lantern.Enabled = night
+			o.lantern.Enabled = lit
 		end
 		if o.beam and o.drum then
 			local on = night and (o.at - me).Magnitude < LIVELY
-			o.beam.Enabled = night
+			o.beam.Enabled = lit
 			if on and not o.sweep then
 				o.sweep = sweepOf(o.drum, o.beam)
 			end
@@ -1389,10 +1410,15 @@ function WorkerController.Start()
 	for _, d in root:GetDescendants() do
 		track(d)
 	end
+	local lightsAt = 0
 	while true do
 		cullPass()
 		crewPass()
 		lookoutPass()
+		if os.clock() - lightsAt >= 1 then -- night lights follow the camera (LIGHT_RANGE) once a second
+			lightsAt = os.clock()
+			nightPass()
+		end
 		mooringPass()
 		bayPass()
 		task.wait(0.25)

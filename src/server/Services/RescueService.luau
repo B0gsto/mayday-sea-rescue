@@ -1069,7 +1069,8 @@ end
 local bulkParts: { BasePart } = {}
 local bulkCFrames: { CFrame } = {}
 
-local function stepFloaters(now: number)
+-- f.cf every frame (pick-up and boarding read it); the parts move only when `move` (~12 Hz, replicated to every client)
+local function stepFloaters(now: number, move: boolean)
 	table.clear(bulkParts)
 	table.clear(bulkCFrames)
 	for _, f in floaters do
@@ -1092,6 +1093,9 @@ local function stepFloaters(now: number)
 				* CFrame.Angles(0, f.yaw, 0)
 				* f.tilt
 				* CFrame.Angles(pitch, 0, roll)
+		end
+		if not move then
+			continue
 		end
 		for i, part in f.parts do
 			local arm = f.arms[i]
@@ -1769,11 +1773,16 @@ function RescueService.Start()
 	PiwRescue.start(liveCalls, function(call, player)
 		return operations().CanAct(call, player)
 	end)
-	local accum, poseAccum = 0, 0
+	local accum, poseAccum, floatAccum = 0, 0, 0
 	RunService.Heartbeat:Connect(function(dt)
 		local now = Workspace:GetServerTimeNow()
 		stepDrift(dt)
-		stepFloaters(now)
+		floatAccum += dt
+		local move = floatAccum >= 1 / 12
+		if move then
+			floatAccum = 0
+		end
+		stepFloaters(now, move)
 		poseAccum += dt
 		if poseAccum >= 0.25 then
 			poseAccum = 0
