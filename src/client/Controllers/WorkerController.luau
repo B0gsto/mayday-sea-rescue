@@ -950,7 +950,11 @@ local function lightBunk(mesh: Instance)
 	task.delay(2, function()
 		local floors: { [number]: { sum: Vector3, n: number, part: BasePart } } = {}
 		for _, d in mesh:GetDescendants() do
-			local lv = if d:IsA("BasePart") and string.find(d.Name, "_Lamp_", 1, true)
+			local lv = if d:IsA("BasePart")
+					and (
+						string.find(d.Name, "_Lamp_", 1, true)
+						or string.find(d.Name, "_Bulbs_", 1, true)
+					)
 				then tonumber(string.match(d.Name, "_Lv(%d)_"))
 				else nil
 			if lv then
