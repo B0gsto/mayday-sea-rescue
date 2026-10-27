@@ -22,9 +22,9 @@ AssetIds.Models = {
 	M_Ani_SealPup = { LOD0 = "rbxassetid://112624730317410" },
 	M_Ani_Turtle = { LOD0 = "rbxassetid://94334436811675" },
 	M_Bld_Bunkhouse = {
-		LOD0 = "rbxassetid://106782248401869",
-		LOD1 = "rbxassetid://92500713501695",
-		LOD2 = "rbxassetid://136465251486803",
+		LOD0 = "rbxassetid://121431480110937",
+		LOD1 = "rbxassetid://127120399850932",
+		LOD2 = "rbxassetid://84461029562382",
 	},
 	M_Bld_Cottage_02 = {
 		LOD0 = "rbxassetid://106402112670185",
@@ -37,14 +37,14 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://94162998733864",
 	},
 	M_Bld_FishMarketAddons = {
-		LOD0 = "rbxassetid://119456446142869",
+		LOD0 = "rbxassetid://120908547103609",
 		LOD1 = "rbxassetid://111381306769504",
 		LOD2 = "rbxassetid://77043246609711",
 	},
 	M_Bld_RescueHQ = {
-		LOD0 = "rbxassetid://98767043445996",
-		LOD1 = "rbxassetid://90696032490593",
-		LOD2 = "rbxassetid://83819932767188",
+		LOD0 = "rbxassetid://123986979842011",
+		LOD1 = "rbxassetid://88299832032246",
+		LOD2 = "rbxassetid://125450753092714",
 	},
 	M_Bld_WorkshopAddons = {
 		LOD0 = "rbxassetid://109562110747520",
