@@ -8,7 +8,7 @@ local Theme = require(script.Parent:WaitForChild("Theme"))
 
 local S = Theme.Size
 
-export type Props = { kind: "cash"?, value: number }
+export type Props = { kind: string?, value: number }
 export type Counter = { root: Frame, set: (number) -> () }
 
 local Counter = {}

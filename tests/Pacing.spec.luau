@@ -1,8 +1,8 @@
 -- Pacing: the docs/03 section 10 player (25-minute sessions, two a day, Silver grades,
 -- occasional storm, solo or with one friend) against the real config and pure rules. Prints the
 -- unlock timeline and the Cash at each session end, then asserts the targets. No ranks (docs/23 (q)):
--- progress is the island's unlock tree, bought with Cash only; once it stands the skill tree (docs/24 G)
--- takes the spare Cash, so the full progression lands at ~17 h.
+-- progress is the island's unlock tree, bought with Cash; the radial skill tree (docs/25 F) runs in
+-- parallel on Medals earned by rescuing, so the full progression lands at ~17 h.
 -- Every number comes from a config or a pure rule module; only the play pattern below is assumed.
 return function(t)
 	local ProgressionConfig = t.load("src/shared/Config/ProgressionConfig.luau")
@@ -71,6 +71,7 @@ return function(t)
 
 	local function run(friends: number, legacy: boolean?)
 		local data = Progression.defaultData()
+		local medals = 0
 		local friendMult = if legacy then 1 else FriendBonus.multiplier(friends)
 		local playMin = 0
 		local opIndex = 0
@@ -194,37 +195,30 @@ return function(t)
 			end
 		end
 
-		-- docs/24 G: the skill tree sinks spare Cash (cheapest affordable first) but never the next planned
-		-- building's price, so the unlock plan keeps its order.
-		local function planPrice(): number
-			local key = PLAN[planIndex]
-			local b = key and DockConfig.Buildings[key]
-			return if b
-				then b.cash
-				elseif key then ProgressionConfig.Vehicles[key].price
-				else math.huge
-		end
+		-- docs/25 F: Medals (1 per 2 people rescued) buy the radial tree, cheapest first, alongside the
+		-- Cash island plan; the two currencies never compete.
 		local function skillsNext()
-			if PLAN[planIndex] then
-				return -- the island tree first (docs/23 (r)); skills are the late-game Cash sink (docs/24 G)
-			end
-			while data.cash < planPrice() do
+			local bought = true
+			while bought do
+				bought = false
 				local best, bestPrice = nil, math.huge
-				for _, n in SkillRules.NODES do
+				for _, n in SkillRules.nodes() do
 					if
-						not data.skills[n.id]
-						and n.cash < bestPrice
-						and SkillRules.canBuy(data.skills, n.id, data.cash)
+						not n.soon
+						and not data.skills[n.id]
+						and n.medals < bestPrice
+						and SkillRules.canBuy(data.skills, n.id, medals)
 					then
-						best, bestPrice = n, n.cash
+						best, bestPrice = n, n.medals
 					end
 				end
 				if not best then
 					return
 				end
-				data.cash -= best.cash
+				medals -= best.medals
 				data.skills[best.id] = true
-				mark(`Skill: {best.name}`)
+				mark(`Skill: {best.id}`)
+				bought = true
 			end
 		end
 		local planBase = planNext
@@ -399,7 +393,10 @@ return function(t)
 			award(reward.cash * scale * pay, storm, great)
 			if scale == 1 then
 				recruit(people)
+				local before = rescued
 				rescued += people
+				medals += SkillRules.rescueMedals(before, rescued)
+				skillsNext()
 			end
 			spinFree(completeAt)
 			planNext()
@@ -458,6 +455,7 @@ return function(t)
 						local crate = StreakRules.claim(streak, now)
 						if crate then
 							streak = crate.state
+							medals += SkillRules.chestMedals(crate.streak) -- docs/25 F
 							award(crate.cash, false, isGreat(now))
 							mark("Streak crate")
 						end
@@ -651,17 +649,26 @@ return function(t)
 		t.expect(last >= 0.85 * 17 * 60 and last <= 1.15 * 17 * 60).toBe(true)
 	end)
 
-	t.test("the skill tree is the late-game Cash sink: every node bought", function()
+	t.test("the radial skill tree: every buyable node bought by the end of the track", function()
 		local count = 0
-		for _, n in SkillRules.NODES do
-			local entry = find(solo, `Skill: {n.name}`)
+		for _, n in SkillRules.nodes() do
+			if n.soon then
+				continue
+			end
+			local entry = find(solo, `Skill: {n.id}`)
 			t.expect(entry ~= nil).toBe(true)
 			if entry then
 				count += 1
 			end
 		end
-		t.expect(count).toBe(#SkillRules.NODES)
-		-- docs/24 G: the tree's last node is a long goal, not an early buy
+		local expected = 0
+		for _, n in SkillRules.nodes() do
+			if not n.soon then
+				expected += 1
+			end
+		end
+		t.expect(count).toBe(expected)
+		-- docs/25 F: the tree's outer rings are a long goal, not an early buy
 		local last = 0
 		for _, entry in solo.timeline do
 			last = math.max(last, entry.at)
@@ -682,8 +689,9 @@ return function(t)
 			t.expect(longest >= 2 and longest <= 6).toBe(true)
 			local full = BuildTimer.rate(BuildTimer.BUILDERS) -- a full crew of commons
 			t.expect(full >= 1.6 and full <= 2.5).toBe(true)
-			local late = solo.builds[#solo.builds].rate -- the crew the sim really has at the last build
-			t.expect(late >= 1.7 and late <= 2.6).toBe(true)
+			-- the crew the sim really has at the last build, plus the tree's buildRate minors by then (docs/25 F)
+			local late = solo.builds[#solo.builds].rate
+			t.expect(late >= 1.7 and late <= 3.3).toBe(true)
 		end
 	)
 

@@ -1,8 +1,8 @@
 --!strict
--- Skills panel (docs/24 G, G-a): the player + crew skill tree on Kit/TreeView. Lanes are the
--- SkillRules branches; a node is bought with Cash through Skill_Buy, and the server's Skill_State
--- snapshot (or the PlayerDataChanged snapshot's `skills`) refreshes the states. The green Cash
--- counter rides on the title bar so the cost and the purse read together.
+-- Skills panel (docs/25 F): the radial tree's temporary old-layout view on Kit/TreeView until the
+-- full-screen radial view lands. Lanes are SkillRules' sectors; a node is bought with Medals through
+-- Skill_Buy, and the server's Skill_State snapshot (or PlayerDataChanged's `skills`) refreshes the
+-- states. The Medal counter rides on the title bar so the cost and the purse read together.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -19,18 +19,16 @@ local Skills = {}
 
 local GROUP_LOOK: { [string]: { icon: string, color: string } } = {
 	Captain = { icon = "boat_to_me", color = "blue" },
-	Builder = { icon = "build", color = "orange" },
-	Gatherer = { icon = "cash", color = "yellow" },
-	Rescuer = { icon = "lifebuoy", color = "green" },
-	Mechanic = { icon = "boost", color = "purple" },
-	Medic = { icon = "lifebuoy", color = "pink" },
+	Rescue = { icon = "lifebuoy", color = "green" },
 	Crew = { icon = "crew", color = "teal" },
+	Industry = { icon = "build", color = "orange" },
+	Bridge = { icon = "lock", color = "locked" },
 }
 
 local GROUPS: { TreeView.Group } = {}
-for _, branch in SkillRules.BRANCHES do
-	local look = GROUP_LOOK[branch] or { icon = "boost", color = "blue" }
-	table.insert(GROUPS, { id = branch, name = branch, icon = look.icon, color = look.color })
+for _, sector in SkillRules.SECTORS do
+	local look = GROUP_LOOK[sector] or { icon = "boost", color = "blue" }
+	table.insert(GROUPS, { id = sector, name = sector, icon = look.icon, color = look.color })
 end
 
 local function pct(amount: number): string
@@ -81,6 +79,46 @@ local function effectText(kind: string, amount: number): string
 		return `+{pct(amount)} rare finds`
 	elseif kind == "extraSlots" then
 		return `+{math.floor(amount)} slot`
+	elseif kind == "nitro" then
+		return "Nitro burst"
+	elseif kind == "goldenEye" then
+		return "Epic+ from afar"
+	elseif kind == "boatSeats" then
+		return `+{math.floor(amount)} seats`
+	elseif kind == "traitReroll" then
+		return "Best of two"
+	elseif kind == "mentor" then
+		return "Mentor a Common"
+	elseif kind == "goldenCalls" then
+		return `Golden calls x{math.floor(amount)}`
+	elseif kind == "salvage" then
+		return "Salvage crates"
+	elseif kind == "arrivalPay" then
+		return "Arrivals pay"
+	elseif kind == "foreman" then
+		return "Crew build bonus"
+	elseif kind == "offlineCapAdd" then
+		return `+{math.floor(amount / 3600)} h offline`
+	elseif kind == "teamSpirit" then
+		return `+{pct(amount)} team`
+	elseif kind == "doubleBuild" then
+		return "Two sites"
+	elseif kind == "depotRefill" then
+		return `+{pct(amount)} Depot`
+	elseif kind == "buildersCarry" then
+		return `Carry {math.floor(amount)}`
+	elseif kind == "rarityUp" then
+		return "Rarity up"
+	elseif kind == "pilots" then
+		return "Air patrol"
+	elseif kind == "stormRider" then
+		return "Storm Rider"
+	elseif kind == "celebrity" then
+		return "Celebrity visits"
+	elseif kind == "lumberjacks" then
+		return "Lumberjacks"
+	elseif kind == "miners" then
+		return "Miners"
 	end
 	return kind
 end
@@ -99,12 +137,12 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 	panel.body.ScrollBarThickness = 0
 
 	local owned: { [string]: boolean } = {}
-	local cash = 0
+	local medals = 0
 
 	local tree = TreeView.new(panel.body, {
 		nodes = {},
 		groups = GROUPS,
-		cash = cash,
+		cash = medals,
 		onBuy = function(id: string)
 			task.spawn(function()
 				pcall(function()
@@ -115,37 +153,37 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 	})
 	tree.root.Size = UDim2.new(1, -8, 1, -16)
 
-	local counter = Counter.new(panel.root, { kind = "cash", value = cash })
-	counter.root.Name = "SkillsCash"
+	local counter = Counter.new(panel.root, { kind = "medal", value = medals })
+	counter.root.Name = "SkillsMedals"
 	counter.root.AnchorPoint = Vector2.new(1, 0.5)
 	counter.root.Position = UDim2.new(1, -(Theme.Size.close + 10), 0, Theme.Size.titleBar * 0.5)
 	counter.root.ZIndex = 6
 
 	local function nodes(): { TreeView.Node }
 		local out: { TreeView.Node } = {}
-		for _, n in SkillRules.NODES do
+		for _, n in SkillRules.nodes() do
 			local state: "owned" | "buyable" | "locked"
 			if owned[n.id] then
 				state = "owned"
 			else
-				local ready = true
+				local ready = #n.needs == 0
 				for _, need in n.needs do
-					if not owned[need] then
-						ready = false
+					if owned[need] then
+						ready = true
 						break
 					end
 				end
-				state = if ready then "buyable" else "locked"
+				state = if ready and not n.soon then "buyable" else "locked"
 			end
 			table.insert(out, {
 				id = n.id,
 				name = n.name,
 				icon = n.icon,
-				price = n.cash,
+				price = n.medals,
 				needs = n.needs,
-				col = n.col,
-				row = n.row,
-				group = n.branch,
+				col = n.ring,
+				row = n.angle / 36,
+				group = n.sector,
 				effect = effectText(n.effect.kind, n.effect.amount),
 				state = state,
 			})
@@ -155,8 +193,8 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 
 	local function apply(skills: any, purse: any)
 		if type(purse) == "number" then
-			cash = purse
-			counter.set(cash)
+			medals = purse
+			counter.set(medals)
 		end
 		if type(skills) == "table" then
 			owned = {}
@@ -168,18 +206,18 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 		end
 		-- rebuild only while visible: PlayerDataChanged arrives on every award
 		if panel.isOpen() then
-			tree.setNodes(nodes(), cash)
+			tree.setNodes(nodes(), medals)
 		end
 	end
 
 	Net.event("Skill_State").OnClientEvent:Connect(function(payload: any)
 		if type(payload) == "table" then
-			apply(payload.owned, payload.cash)
+			apply(payload.owned, payload.medals)
 		end
 	end)
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(function(data: any)
 		if type(data) == "table" and type(data.skills) == "table" then
-			apply(data.skills, data.cash)
+			apply(data.skills, data.medals)
 		end
 	end)
 	task.spawn(function() -- the first push may have landed before this panel was built
@@ -189,7 +227,7 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 				return remote:InvokeServer()
 			end)
 			if ok and type(data) == "table" then
-				apply(data.skills, data.cash)
+				apply(data.skills, data.medals)
 			end
 		end
 	end)
@@ -199,7 +237,7 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 	return {
 		open = function()
 			panel.open()
-			tree.setNodes(nodes(), cash)
+			tree.setNodes(nodes(), medals)
 		end,
 		close = panel.close,
 		isOpen = panel.isOpen,

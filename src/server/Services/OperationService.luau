@@ -21,6 +21,7 @@ local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic")
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local OfferPacing = require(Shared:WaitForChild("Calls"):WaitForChild("OfferPacing"))
 local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
+local SkillRules = require(Shared:WaitForChild("SkillRules"))
 local Weather = require(Shared:WaitForChild("Weather"))
 local OpsFolder = Shared:WaitForChild("Ops")
 local Board = require(OpsFolder:WaitForChild("Board"))
@@ -949,6 +950,9 @@ finish = function(op: any, reason: string)
 		end
 		p:SetAttribute("OpsLastGrade", op.grade)
 		p:SetAttribute("OpsLastKind", op.kind)
+		if op.grade == "Gold" then
+			try("SkillService", "grantMedals", p, SkillRules.GOLD_MEDALS, "Gold")
+		end
 		try("TelemetryService", "OpFinished", p, op, reason) -- RP-A1: grade, fail reason, first op
 		fire("Ops_Debrief", p, {
 			opId = op.id,
