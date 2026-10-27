@@ -129,6 +129,7 @@ local rows: { [string]: any } = {
 		spot = isle(-90, -2, -90), -- work yard, open front onto the plaza
 		size = Vector2.new(36, 30),
 		scale = 1.15,
+		worker = "Hauler",
 		color = Color3.fromRGB(250, 208, 40),
 		levels = {
 			{ cash = 700, hq = 1, effect = "Depot", piece = "Yard" },

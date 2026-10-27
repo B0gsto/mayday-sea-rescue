@@ -180,6 +180,7 @@ local JOB: { [string]: string } = {
 	Rescuer = "Rescue",
 	Medic = "Heal",
 	Builder = "Build",
+	Hauler = "Haul", -- docs/25 K4: barge -> Depot pile
 }
 
 -- The owner's plot publishes SiteKey while a construction runs (DockService).

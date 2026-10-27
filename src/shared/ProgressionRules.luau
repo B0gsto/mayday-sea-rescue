@@ -3,6 +3,7 @@
 -- migration). No ranks and no Reputation (docs/23 (q), WP-28): craft unlock through their island building
 -- (shared/UnlockTree). No services, safe to load in Lune (tests/Progression.spec.luau). Server services and
 -- the HUD both use it so they agree.
+local DepotRules = require(script.Parent.DepotRules)
 local DockConfig = require(script.Parent.Config.DockConfig)
 local MonetizationConfig = require(script.Parent.Config.MonetizationConfig)
 local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
@@ -29,6 +30,8 @@ export type PlayerData = {
 	dockPrepaid: { [string]: boolean }, -- derived: prepaid levels as booleans (old readers)
 	-- The one site being built (docs/24 B): key, level, progress 0..1, crew rate and the last server tick.
 	construction: { key: string, level: number?, progress: number, rate: number, at: number }?,
+	-- docs/25 K4: loads in the Depot (DepotRules) and the os.time it was last stepped (nil = not yet).
+	depot: { stock: number, at: number? },
 	-- Rescued people working on your island (docs/23 (o), WP-26; WorkerRules, WorkerService), at most the Bunkhouse cap.
 	workers: { WorkerRules.Worker },
 	-- Survivors since the last Epic+ / Legendary+ roll on this player's own calls (docs/25 E pity).
@@ -198,6 +201,7 @@ function Rules.defaultData(): PlayerData
 		dock = { levels = { Harbour = 1 }, prepaid = {} },
 		dockBuildings = UnlockTree.ownedSet({ Harbour = 1 }),
 		dockPrepaid = {},
+		depot = { stock = DepotRules.START },
 		workers = {},
 		pity = { epic = 0, legendary = 0 },
 		skills = {},
@@ -422,6 +426,17 @@ function Rules.migrate(raw: any): PlayerData
 				at = at,
 			}
 		end
+	end
+	if type(raw.depot) == "table" then
+		local at = num(raw.depot.at, 0)
+		data.depot = {
+			stock = math.clamp(
+				num(raw.depot.stock, DepotRules.START),
+				0,
+				DepotRules.cap(#DepotRules.CAPS)
+			),
+			at = if at > 0 then at else nil,
+		}
 	end
 	-- WP-26: the hired crew (WP-15) is gone; what it cost comes back once (saves no longer carry `crew`)
 	if type(raw.crew) == "table" then
