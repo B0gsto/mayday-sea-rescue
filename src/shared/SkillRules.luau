@@ -20,7 +20,7 @@ export type Node = {
 	name: string,
 	icon: string, -- a UiImages.Kit key, "" for no art
 	medals: number,
-	needs: { string }, -- any one owned
+	needs: { string }, -- any one owned; a keystone's first need is its own last dot
 	effect: Effect,
 	focus: string, -- "Captain" | a K1 Category | "Any" (the camera's tap-to-focus target)
 	keystone: boolean,
@@ -763,6 +763,10 @@ local function expand(): { Node }
 			}
 			add(n)
 			previous = id
+		end
+		-- the keystone is reached through its own dots (its other needs stay direct links)
+		if previous and minor.count > 0 then
+			k.needs = { previous :: string, table.unpack(k.needs, 2) }
 		end
 	end
 	return out

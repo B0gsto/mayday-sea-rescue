@@ -874,9 +874,8 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		for _, n in nodesById do
 			if n.keystone then
 				local list: { Node } = minors[n.id] or {}
-				local firstNeed = if #n.needs > 0 then n.needs[1] else nil
 				if #list > 0 then
-					local prev = firstNeed
+					local prev = if #list[1].needs > 0 then list[1].needs[1] else nil -- the chain's start
 					for _, m in list do
 						table.insert(out, { a = prev, b = m.id })
 						used[m.id] = true
@@ -1167,26 +1166,6 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 					local start = if need then posById[need] else centre
 					if start then
 						table.insert(path, start)
-						if n.keystone then
-							local base = n.id
-							local list = {}
-							for _, m in nodes do
-								if
-									not m.keystone and string.match(m.id, "^" .. base .. "_m%d+$")
-								then
-									table.insert(list, m)
-								end
-							end
-							table.sort(list, function(a: Node, b: Node): boolean
-								return (tonumber(string.match(a.id, "_(%d+)$")) or 0)
-									< (tonumber(string.match(b.id, "_(%d+)$")) or 0)
-							end)
-							for _, m in list do
-								if posById[m.id] then
-									table.insert(path, posById[m.id])
-								end
-							end
-						end
 						local at = posById[n.id]
 						if at then
 							table.insert(path, at)

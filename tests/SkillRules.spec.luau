@@ -109,6 +109,10 @@ return function(t)
 				for _, need in n.needs do
 					local other = S.byId[need]
 					t.expect(other ~= nil).toBe(true)
+					if other and not other.keystone then -- its own last dot: the chain starts at m1's need
+						local m1 = S.byId[`{n.id}_m1`]
+						other = if m1 and #m1.needs > 0 then S.byId[m1.needs[1]] else nil
+					end
 					if other and other.sector ~= "Bridge" then
 						sectors[other.sector] = true
 					end
@@ -153,7 +157,9 @@ return function(t)
 		for _, k in S.nodes() do
 			local minor = k.minor
 			if k.keystone and minor then
-				local from = if #k.needs > 0 then S.byId[k.needs[1]] else nil
+				local m1 = S.byId[`{k.id}_m1`]
+				local from = if m1 and #m1.needs > 0 then S.byId[m1.needs[1]] else nil
+				t.expect(k.needs[1]).toBe(`{k.id}_m{minor.count}`) -- reached through its own dots
 				local fromRing = if from then from.ring else 0
 				local fromAngle = if from then from.angle else k.angle
 				local previous = if from then from.id else nil
@@ -185,15 +191,29 @@ return function(t)
 
 	t.test("canBuy: any one need, Medals, rim nodes refuse", function()
 		t.expect({ S.canBuy({}, "Nope", 1e9) }).toEqual({ false, "Unknown" })
-		t.expect({ S.canBuy({}, "Throttle", 2) }).toEqual({ false, "Medals" })
-		t.expect({ S.canBuy({}, "Throttle", 3) }).toEqual({ true, nil })
+		-- a keystone is reached through its own dots (1 Medal each)
+		local function withDots(id: string, extra: { string }?): { [string]: boolean }
+			local ids = table.clone(extra or {})
+			for i = 1, S.byId[id].minor.count do
+				table.insert(ids, `{id}_m{i}`)
+			end
+			return owned(ids)
+		end
+		t.expect({ S.canBuy({}, "Throttle", 1e9) }).toEqual({ false, "Needs" })
+		t.expect({ S.canBuy({}, "Throttle_m1", 0) }).toEqual({ false, "Medals" })
+		t.expect({ S.canBuy({}, "Throttle_m1", 1) }).toEqual({ true, nil })
+		t.expect({ S.canBuy(withDots("Throttle"), "Throttle", 2) }).toEqual({ false, "Medals" })
+		t.expect({ S.canBuy(withDots("Throttle"), "Throttle", 3) }).toEqual({ true, nil })
 		t.expect({ S.canBuy(owned({ "Throttle" }), "Throttle", 1e9) }).toEqual({ false, "Owned" })
 		t.expect({ S.canBuy({}, "Nitro", 1e9) }).toEqual({ false, "Needs" })
-		-- any one owned: Nitro needs LongReach or Grip
-		t.expect({ S.canBuy(owned({ "LongReach" }), "Nitro", 1e9) }).toEqual({ true, nil })
+		-- any one owned: Nitro through its dots (from LongReach), or straight from Grip
+		t.expect({ S.canBuy(owned({ "LongReach" }), "Nitro", 1e9) }).toEqual({ false, "Needs" })
+		t.expect({ S.canBuy(withDots("Nitro", { "LongReach" }), "Nitro", 1e9) })
+			.toEqual({ true, nil })
 		t.expect({ S.canBuy(owned({ "Grip" }), "Nitro", 1e9) }).toEqual({ true, nil })
 		-- bridges cross sectors the same way
-		t.expect({ S.canBuy(owned({ "Recruiter" }), "WelcomeHome", 4) }).toEqual({ true, nil })
+		t.expect({ S.canBuy(withDots("WelcomeHome", { "Recruiter" }), "WelcomeHome", 4) })
+			.toEqual({ true, nil })
 		-- rim nodes are shown but never bought, even with every need owned
 		local all = {}
 		for _, n in S.nodes() do
