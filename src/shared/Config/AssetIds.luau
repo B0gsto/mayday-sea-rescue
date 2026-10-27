@@ -21,6 +21,11 @@ AssetIds.Models = {
 	M_Ani_Puffin = { LOD0 = "rbxassetid://94213861782005" },
 	M_Ani_SealPup = { LOD0 = "rbxassetid://112624730317410" },
 	M_Ani_Turtle = { LOD0 = "rbxassetid://94334436811675" },
+	M_Bld_Bunkhouse = {
+		LOD0 = "rbxassetid://106782248401869",
+		LOD1 = "rbxassetid://92500713501695",
+		LOD2 = "rbxassetid://136465251486803",
+	},
 	M_Bld_Cottage_02 = {
 		LOD0 = "rbxassetid://106402112670185",
 		LOD1 = "rbxassetid://93594095444599",
@@ -437,6 +442,17 @@ AssetIds.Attachments = {
 	M_Ani_Puffin = {},
 	M_Ani_SealPup = {},
 	M_Ani_Turtle = {},
+	M_Bld_Bunkhouse = {
+		ATT_Door_01 = Vector3.new(0, 0, -12.6),
+		ATT_Sign_01 = Vector3.new(0, 9.4, -10.4),
+		ATT_Bed_01 = Vector3.new(11.5, 1.1, 4.2),
+		ATT_Stair_01 = Vector3.new(-16, 0, -9.8),
+		ATT_Balcony_01 = Vector3.new(0, 12.7, -11.8),
+		ATT_Hammock_01 = Vector3.new(6.5, 27.4, 0),
+		ATT_Deck_01 = Vector3.new(-1.6, 23.9, 11.8),
+		ATT_Wing_01 = Vector3.new(21, 1.1, -4.5),
+		ATT_Flag_01 = Vector3.new(9.5, 44.961, 0),
+	},
 	M_Bld_Cottage_02 = {
 		ATT_Lamp_Window_01 = Vector3.new(4.2, 4.5, -6.95),
 		ATT_Lamp_Window_02 = Vector3.new(-6.6, 9.825, -6.95),

@@ -1,0 +1,268 @@
+{
+ "asset": "M_Bld_Bunkhouse",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Door_01",
+   "parent": null,
+   "blender": [
+    0.0,
+    -12.6,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    -12.6
+   ],
+   "roblox_from_bbox_centre": [
+    -5.45,
+    -22.6805,
+    -12.925
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Sign_01",
+   "parent": null,
+   "blender": [
+    0.0,
+    -10.4,
+    9.4
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    9.4,
+    -10.4
+   ],
+   "roblox_from_bbox_centre": [
+    -5.45,
+    -13.2805,
+    -10.725
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Bed_01",
+   "parent": null,
+   "blender": [
+    -11.5,
+    4.2,
+    1.1
+   ],
+   "roblox_from_origin": [
+    11.5,
+    1.1,
+    4.2
+   ],
+   "roblox_from_bbox_centre": [
+    6.05,
+    -21.5805,
+    3.875
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Stair_01",
+   "parent": null,
+   "blender": [
+    16.0,
+    -9.8,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -16.0,
+    0.0,
+    -9.8
+   ],
+   "roblox_from_bbox_centre": [
+    -21.45,
+    -22.6805,
+    -10.125
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Balcony_01",
+   "parent": null,
+   "blender": [
+    0.0,
+    -11.8,
+    12.7
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    12.7,
+    -11.8
+   ],
+   "roblox_from_bbox_centre": [
+    -5.45,
+    -9.9805,
+    -12.125
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Hammock_01",
+   "parent": null,
+   "blender": [
+    -6.5,
+    0.0,
+    27.4
+   ],
+   "roblox_from_origin": [
+    6.5,
+    27.4,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    1.05,
+    4.7195,
+    -0.325
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Deck_01",
+   "parent": null,
+   "blender": [
+    1.6,
+    11.8,
+    23.9
+   ],
+   "roblox_from_origin": [
+    -1.6,
+    23.9,
+    11.8
+   ],
+   "roblox_from_bbox_centre": [
+    -7.05,
+    1.2195,
+    11.475
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Wing_01",
+   "parent": null,
+   "blender": [
+    -21.0,
+    -4.5,
+    1.1
+   ],
+   "roblox_from_origin": [
+    21.0,
+    1.1,
+    -4.5
+   ],
+   "roblox_from_bbox_centre": [
+    15.55,
+    -21.5805,
+    -4.825
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Flag_01",
+   "parent": null,
+   "blender": [
+    -9.5,
+    0.0,
+    44.961
+   ],
+   "roblox_from_origin": [
+    9.5,
+    44.961,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    4.05,
+    22.2805,
+    -0.325
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

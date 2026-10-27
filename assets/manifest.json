@@ -20053,6 +20053,16 @@
   "source": "assets/textures/Materials/T_Mat_SandDry_ALB.png",
   "type": "Image"
  },
+ "Model:000bdbd4726f753178783875eb652d263ecaf83f4a8af9fc5a9242fdb2aa544b": {
+  "assetId": "92500713501695",
+  "moderation": "Approved",
+  "name": "M_Bld_Bunkhouse_LOD1",
+  "rbxm": "assets/models/M_Bld_Bunkhouse_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "000bdbd4726f753178783875eb652d263ecaf83f4a8af9fc5a9242fdb2aa544b",
+  "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:0056f9c327080ac47174b987745d78c30201061eed3cdbc7021816cb1ad31228": {
   "assetId": "92937675261460",
   "moderation": "Approved",
@@ -23761,6 +23771,16 @@
   "route": "delivery",
   "sha": "708d8ba780e0ac69f43522456cae11908ea55ab5cdea963fa565f8978831f1ca",
   "source": "assets/fbx/M_Kit_HandFlare/M_Kit_HandFlare_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:710c113bd01c78b04c58b11e93b90a3f5d63beb1a6475ef1592588a2237cd2b4": {
+  "assetId": "106782248401869",
+  "moderation": "Approved",
+  "name": "M_Bld_Bunkhouse_LOD0",
+  "rbxm": "assets/models/M_Bld_Bunkhouse_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "710c113bd01c78b04c58b11e93b90a3f5d63beb1a6475ef1592588a2237cd2b4",
+  "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD0.fbx",
   "type": "Model"
  },
  "Model:7156ee056f9a651b927ab395c8457996060df5f628c0b7faca7c4de7932b6a5a": {
@@ -27621,6 +27641,16 @@
   "route": "delivery",
   "sha": "ecdc125e14e6e1180532c2c0faf629e5e03f66bab0df62abbc42259828d00073",
   "source": "assets/fbx/M_Rock_Cliff_02/M_Rock_Cliff_02_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:ed4be27ecc980ab1005852b20ce906a30b20dec9d91a9ac89a190b59a7181764": {
+  "assetId": "136465251486803",
+  "moderation": "Approved",
+  "name": "M_Bld_Bunkhouse_LOD2",
+  "rbxm": "assets/models/M_Bld_Bunkhouse_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "ed4be27ecc980ab1005852b20ce906a30b20dec9d91a9ac89a190b59a7181764",
+  "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD2.fbx",
   "type": "Model"
  },
  "Model:ed5208c36453eaa124c3a9abd6771421bdc83ac1f9d3347e83ed59197ab855d4": {
