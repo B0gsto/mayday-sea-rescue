@@ -555,11 +555,11 @@ end
 -- G1 plants from map/generated/props.json) lives in Workspace.Dressing as Atomic models that stream by distance.
 local function setupStreaming(ws: any, map: Instance, zones: Instance)
 	ws.StreamingEnabled = true
-	ws.StreamingMinRadius = 384
-	-- RP-P1: 1024 is the docs/10 section 6.7 Low-tier budget. The radius is a place setting, not
-	-- scriptable at run time (the engine marks StreamingTargetRadius Not Scriptable), so one value
-	-- serves every tier; 2048 streamed about 40% more parts for no phone budget.
-	ws.StreamingTargetRadius = 1024
+	ws.StreamingMinRadius = 256 -- covers your own island (plate radius ~172) round you
+	-- RP-P1: the radius is a place setting, not scriptable at run time (the engine marks StreamingTargetRadius Not
+	-- Scriptable), so one value serves every tier. 512 reaches the neighbour islands (470 apart) but lets the far side
+	-- of the ring (940) stream out; the plates and bridges stay Persistent so the ring's silhouette never pops.
+	ws.StreamingTargetRadius = 512
 	ws.StreamOutBehavior = Enum.StreamOutBehavior.LowMemory
 	map.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
 	zones.ModelStreamingMode = Enum.ModelStreamingMode.Persistent

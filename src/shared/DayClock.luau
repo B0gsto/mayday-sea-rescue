@@ -1,7 +1,7 @@
 --!strict
 -- DayClock (docs/25 G): the shared day/night cycle. Lighting.ClockTime is a function of the server time (plus the
--- dev offset, Workspace attribute DayClockOffset), so the server and every client agree; StormService writes it every
--- 0.5 s (it replicates) and WeatherController blends the looks by it. One 20 min cycle: a 90 s dawn, a 14 min day that
+-- dev offset, Workspace attribute DayClockOffset), so the server and every client agree: WeatherController sets it on
+-- each client every 0.5 s and blends the looks by it; StormService sets the server's copy every 10 s. One 20 min cycle: a 90 s dawn, a 14 min day that
 -- lingers round midday (the approved Clear look), a 90 s warm dusk and a 3 min moonlit night. Pure.
 
 local DayClock = {}

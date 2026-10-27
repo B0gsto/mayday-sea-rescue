@@ -187,8 +187,8 @@ empty in config; fill it as pages are wired.
 ## 10. Streaming and performance
 
 - `StreamingEnabled` is on.
-- `StreamingMinRadius = 384`; `StreamingTargetRadius = 1024`.
-- The map and zones models are `Persistent`; dock pieces are `Persistent` so a player's island does not pop.
+- `StreamingMinRadius = 256`; `StreamingTargetRadius = 512` (neighbours in, the far side of the ring out).
+- The map, zones, island plates and bridges are `Persistent`; dock buildings are `Atomic` (a far one leaves whole).
 - The ocean is client-built and follows the camera.
 - Re-measure phone memory and load time after the hub and islands land. The old town mobile numbers are retired.
 - Keep the horizon clean: the ocean must cover the view from a player camera, with no square water edge.
