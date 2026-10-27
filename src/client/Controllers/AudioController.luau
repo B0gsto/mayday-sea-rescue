@@ -18,7 +18,9 @@
 -- gulls (quiet in a storm), underwater bed with a muffle on SFX and Ambience, boat engines (jet ski
 -- and RIB, two layers crossfaded by RPM; RPM follows the throttle), hull lap / bow wash / wake and
 -- hull slams for the driven boat, ticks for world prompts, awards, completed steps and the debrief,
--- a soft click on every HUD button, and two music cues (operation underway, debrief). Rain loop and thunder in WeatherController; the swim splash and strokes in
+-- a soft click on every HUD button, crickets by the islands at night, and one music cue at a time (AudioMix.musicCue:
+-- loading, debrief, operation, then night / island / sea, held so zone edges don't flip it; off while the driven boat's
+-- radio plays; ducked in a storm). Rain loop and thunder in WeatherController; the swim splash and strokes in
 -- SwimController; Bosun's bark in DogController.
 
 local ContentProvider = game:GetService("ContentProvider")
@@ -34,8 +36,10 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
 local AudioMix = require(Shared:WaitForChild("Audio"):WaitForChild("AudioMix"))
+local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local Weather = require(Shared:WaitForChild("Weather"))
+local WorkLoop = require(Shared:WaitForChild("WorkLoop"))
 
 type Category = AudioConfig.Category
 
@@ -444,6 +448,16 @@ local underwater = false
 local nextGull = 0
 local nextBell = 0
 local riggingCarry = 0
+local storm = 0 -- this tick's storm intensity, for the music duck
+local homeDist = math.huge -- studs (flat) to the nearest ring island centre
+
+local function islandDistance(p: Vector3): number
+	local best = math.huge
+	for _, isl in RingLayout.Islands do
+		best = math.min(best, Vector3.new(p.X - isl.center.X, 0, p.Z - isl.center.Z).Magnitude)
+	end
+	return best
+end
 
 local function setUnderwater(on: boolean)
 	if on == underwater then
@@ -468,6 +482,9 @@ local function updateAmbience(dt: number, now: number, camPos: Vector3)
 	local surface = Weather.heightAt(camPos)
 	local above = camPos.Y - surface
 	setUnderwater(above < -0.3)
+	storm = intensity
+	homeDist = islandDistance(camPos)
+	local night = WorkLoop.isNight(Lighting.ClockTime)
 
 	if lastCam and dt > 0 then
 		local v = (camPos - lastCam).Magnitude / dt
@@ -502,6 +519,10 @@ local function updateAmbience(dt: number, now: number, camPos: Vector3)
 	setBed(beds.Wave_Storm, sea.storm, dt, 1)
 	setBed(beds.Rain_OnWater, if underwater then 0 else intensity * near, dt, 1)
 	setBed(beds.Under_Ambience, if underwater then 1 else 0, dt, 6)
+	-- crickets on and just off the islands at night, swept away by a storm; slow fade with dusk and dawn
+	local shore = math.clamp(1 - (homeDist - RingLayout.IslandRadius) / 150, 0, 1)
+	local crickets = if night and not underwater and above < 120 then shore * (1 - intensity) else 0
+	setBed(beds.Amb_Crickets, crickets, dt, 0.4)
 
 	-- marina bed (3D at the harbour centre) and halyards on masts, more with the wind
 	local inHarbour = harbourDist < AudioConfig.HarbourRadius + 150
@@ -543,7 +564,12 @@ local function updateAmbience(dt: number, now: number, camPos: Vector3)
 	if now >= nextGull then
 		nextGull = now + AudioMix.gap(MIX.gullMinGap, MIX.gullMaxGap, rng:NextNumber())
 		local coastal = harbourDist < AudioConfig.CoastRadius and above < 120
-		if coastal and not underwater and rng:NextNumber() < AudioMix.gullChance(intensity) then
+		if
+			coastal
+			and not night
+			and not underwater
+			and rng:NextNumber() < AudioMix.gullChance(intensity)
+		then
 			local at = randomAround(camPos, 25, 90, rng:NextNumber(12, 35))
 			local clip = if rng:NextNumber() < 0.2
 				then "Gull_Flock"
@@ -558,19 +584,29 @@ end
 local OpsController: any = nil
 local music: { [string]: Bed } = {}
 local musicCue: string? = nil
+local musicSince = 0
+local nearHome = true
 local debriefUntil = 0
 
 local function updateMusic(dt: number, now: number)
-	local want: string? = nil
-	if now < debriefUntil then
-		want = "Music_Debrief"
-	elseif OpsController and OpsController.GetState() ~= nil then
-		want = "Music_Operation"
+	nearHome = AudioMix.nearHome(homeDist, nearHome, MIX.homeEnter, MIX.homeLeave)
+	local driven: Model? = if BoatController then BoatController.GetDrivenVehicle() else nil
+	local want = AudioMix.musicCue({
+		loading = player:GetAttribute("LoadingScreenActive") == true,
+		debrief = now < debriefUntil,
+		operation = OpsController ~= nil and OpsController.GetState() ~= nil,
+		radio = driven ~= nil and driven:GetAttribute("RadioTrack") ~= nil,
+		night = WorkLoop.isNight(Lighting.ClockTime),
+		nearHome = nearHome,
+	})
+	local cue = AudioMix.holdCue(musicCue, now - musicSince, want, MIX.musicHold)
+	if cue ~= musicCue then
+		musicCue, musicSince = cue, now
 	end
-	musicCue = want
 	local rate = 1 / math.max(MIX.musicFade, 0.1) * 2
+	local level = 1 - MIX.stormDuck * storm
 	for name, b in music do
-		setBed(b, if name == musicCue then 1 else 0, dt, rate)
+		setBed(b, if name == musicCue then level else 0, dt, rate)
 	end
 end
 
@@ -663,6 +699,7 @@ function AudioController.Init()
 			"Wave_Storm",
 			"Rain_OnWater",
 			"Under_Ambience",
+			"Amb_Crickets",
 		}
 	do
 		bed(name)
@@ -672,7 +709,16 @@ function AudioController.Init()
 	local hb = bed("Amb_Harbour", harbour)
 	hb.sound.RollOffMinDistance = 60
 	hb.sound.RollOffMaxDistance = AudioConfig.HarbourRadius + 150
-	for _, name in { "Music_Operation", "Music_Debrief" } do
+	for _, name in
+		{
+			"Music_Loading",
+			"Music_Island_Day",
+			"Music_Island_Night",
+			"Music_Sea",
+			"Music_Operation",
+			"Music_Debrief",
+		}
+	do
 		local b: Bed = {
 			sound = AudioController.newSound(name, SoundService, true),
 			base = baseVolume(name),
