@@ -1276,6 +1276,38 @@ local function mooringPass()
 	end
 end
 
+-- docs/25 B: the Boathouse's Lv3 quick-launch bay (BoathouseMesh) holds a static lifeboat on its trolley; on your
+-- own plot it is hidden (locally) while your Lifeboat is out: VehicleService's Vehicles/<name>_Lifeboat with an
+-- unanchored root (its Dock mode, at a bay, anchors it). Its _COL box stays.
+local bayBoats: { [Model]: BasePart } = {}
+local function bayBoat(mesh: Instance)
+	if mesh.Name ~= "BoathouseMesh" or not mesh:IsA("Model") then
+		return
+	end
+	-- shortcut: read once, 2 s after the mesh lands (like the moorings)
+	task.delay(2, function()
+		local boat = mesh:FindFirstChild("Lv3_L07_Lifeboat", true)
+		if boat and boat:IsA("BasePart") then
+			bayBoats[mesh] = boat
+		end
+	end)
+end
+
+local function bayPass()
+	local vehicles = Workspace:FindFirstChild("Vehicles")
+	local own = vehicles and vehicles:FindFirstChild(`{player.Name}_Lifeboat`)
+	local root = own and own:IsA("Model") and own.PrimaryPart
+	local out = root ~= nil and not root.Anchored
+	local mine = if out then DepotController.plotOf(player.UserId) else nil
+	for mesh, boat in bayBoats do
+		if not mesh.Parent then
+			bayBoats[mesh] = nil
+			continue
+		end
+		boat.LocalTransparencyModifier = if mine and mesh:IsDescendantOf(mine) then 1 else 0
+	end
+end
+
 local shown = false -- once a session (the server sets it once)
 local function welcome()
 	local pay = player:GetAttribute("WorkerOffline")
@@ -1338,11 +1370,13 @@ function WorkerController.Start()
 			lightBunk(d)
 			lightLookout(d)
 			moorBoats(d)
+			bayBoat(d)
 		end)
 		for _, d in marina:GetDescendants() do
 			lightBunk(d)
 			lightLookout(d)
 			moorBoats(d)
+			bayBoat(d)
 		end
 	end)
 	local f = Instance.new("Folder")
@@ -1360,6 +1394,7 @@ function WorkerController.Start()
 		crewPass()
 		lookoutPass()
 		mooringPass()
+		bayPass()
 		task.wait(0.25)
 	end
 end

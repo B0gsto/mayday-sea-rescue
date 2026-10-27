@@ -1,7 +1,7 @@
 --!strict
 -- DepotArtService (docs/25 D, K4): the uploaded building art. DockPieces builds the Depot (M_Bld_Depot), the
 -- HQ's Lv1/Lv2 (M_Bld_RescueHQ) and Lv4/Lv5 add-ons (M_Bld_HQAddons), the Bunkhouse's Lv1-5 (M_Bld_Bunkhouse) and the Workshop's, Fish Market's, Clinic's,
--- Lookout's, Boat Yard's, Rescue Boathouse's, Air Station's, Trophy Hall's and Sub Pen's Lv2/Lv3 add-ons (M_Bld_*Addons) through DockPieces.meshes (the walk-in _COL hulls collide, the visual meshes don't), and the
+-- Lookout's, Boat Yard's, Rescue Boathouse's, Air Station's, Trophy Hall's and Sub Pen's Lv2/Lv3 and the Boathouse's Lv3 add-ons (M_Bld_*Addons) through DockPieces.meshes (the walk-in _COL hulls collide, the visual meshes don't), and the
 -- supply barge M_Veh_SupplyBarge is published as ReplicatedStorage.DepotTemplates.Barge for the clients' barge
 -- visuals (DepotController; clients can't load assets).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -14,6 +14,7 @@ local DepotArtService = {}
 function DepotArtService.Init()
 	AssetLoader.preload({
 		"M_Bld_AirStationAddons",
+		"M_Bld_BoathouseAddons",
 		"M_Bld_BoatYardAddons",
 		"M_Bld_Bunkhouse",
 		"M_Bld_ClinicAddons",

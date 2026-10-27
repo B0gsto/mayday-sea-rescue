@@ -128,7 +128,9 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   (Lv3) via `DockPieces.trophies(b, cups, plaques, plinths)`, the rest on the wall shelf. The Sub Pen's Lv2 gantry +
   hanging mini-sub + dive rack and Lv3 salvage wet dock are `M_Bld_SubPenAddons` (`SubPenMesh`, the pen's -X rim and
   its back; no Lv1 piece gives way; `WorkerController` rolls `Lv2_L03_MiniSub` on its straps within LIVELY); no worker
-  uses its `ATT_*` yet. The Depot model holds `DepotMesh` (the Lv1..n
+  uses its `ATT_*` yet. The Boathouse's Lv3 quick-launch bay is `M_Bld_BoathouseAddons` (`BoathouseMesh`, kept 1x, on
+  the cove side between the cove walk and the jetty head; no Lv1/Lv2 piece gives way; `WorkerController` hides its
+  `Lv3_L07_Lifeboat` locally while your own Lifeboat is out, unanchored); no worker uses its `ATT_*` yet. The Depot model holds `DepotMesh` (the Lv1..n
   layers and `Marks`: `ATT_PickUp_*` / `ATT_DropOff_*` bays, `ATT_BargeMoor`, `ATT_QuayLoad`, `ATT_QuayLand`) and
   `FreightQuay` (west plate edge, sea level). Client: `DepotController` (barge from `BargeNext` via
   `shared/BargePath`, `Stack_1..4` from `DepotStock` / `DepotCap`, empty-crate icon on `SiteWaiting`) and

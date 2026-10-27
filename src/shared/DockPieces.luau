@@ -550,7 +550,7 @@ end
 -- crane / Lv3 dry dock (M_Bld_BoatYardAddons), the Rescue Boathouse's Lv2 RIB / Lv3 lifeboat berths
 -- (M_Bld_RescueBoathouseAddons), the Air Station's Lv2 refuel pad / Lv3 patrol hut (M_Bld_AirStationAddons), the
 -- Trophy Hall's Lv2 dome rotunda / Lv3 gold dome + galleries (M_Bld_TrophyHallAddons) and the Sub Pen's Lv2 gantry
--- / Lv3 salvage dock (M_Bld_SubPenAddons): meshes Lv<l>_L<nn>_*
+-- / Lv3 salvage dock (M_Bld_SubPenAddons) and the Boathouse's Lv3 quick-launch bay (M_Bld_BoathouseAddons): meshes Lv<l>_L<nn>_*
 -- and Lv<l>_COL authored in the yard's final (scaled) frame round its ground centre, so they stay 1x (KEEP_1X
 -- `name`). False when the level is 1 or the mesh is not loaded (the Lv1 yard stands alone, everything included).
 local function addonMesh(m: Model, at: CFrame, n: number, asset: string, name: string): boolean
@@ -2541,9 +2541,20 @@ local function bunkhouse(m: Model, b: CFrame, level: number?)
 	end
 end
 
--- Boathouse Lv2 adds the lifeboat slip on its own harbour lot (kept 1x while the boathouse scales).
+-- Boathouse Lv2 adds the lifeboat slip on its own harbour lot (kept 1x while the boathouse scales); Lv3 the
+-- quick-launch bay on the cove side (M_Bld_BoathouseAddons, authored at the 1.2 scale round the spot, so kept 1x:
+-- island right -47..-32.5, fwd 30..110, between the cove walk and the jetty head; clear of the boathouse, the slip and
+-- every lot, so no Lv1/Lv2 piece gives way). Its static Lv3_L07_Lifeboat leaves while yours is out (WorkerController).
+-- Mesh missing: today's look.
 local function boathouseLevel(m: Model, b: CFrame, level: number?)
 	boathouse(m, b)
+	addonMesh(
+		m,
+		b * DockConfig.Buildings.Boathouse.spot,
+		level or 1,
+		"M_Bld_BoathouseAddons",
+		"BoathouseMesh"
+	)
 	if (level or 1) >= 2 then
 		local slip = Instance.new("Model")
 		slip.Name = "LifeboatSlip"
@@ -2653,6 +2664,7 @@ local KEEP_1X = {
 	LookoutMesh = true,
 	BoatYardMesh = true,
 	RescueBoathouseMesh = true,
+	BoathouseMesh = true,
 	BunkhouseMesh = true,
 	FreightQuay = true,
 	Path = true,
