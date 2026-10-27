@@ -206,7 +206,9 @@ local function resetProfile(target: Player): (boolean, string)
 	task.spawn(function()
 		local ok = pcall(TeleportService.TeleportAsync, TeleportService, game.PlaceId, { target })
 		if not ok and target.Parent then
-			target:Kick("DEV reset: your save was wiped on purpose (DEV panel). Studio cannot auto-rejoin: press Play again.")
+			target:Kick(
+				"DEV reset: your save was wiped on purpose (DEV panel). Studio cannot auto-rejoin: press Play again."
+			)
 		end
 	end)
 	return true, "Reset"
