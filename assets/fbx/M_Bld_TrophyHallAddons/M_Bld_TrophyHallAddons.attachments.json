@@ -1,0 +1,413 @@
+{
+ "asset": "M_Bld_TrophyHallAddons",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Plinth_01",
+   "parent": null,
+   "blender": [
+    -22.2,
+    -5.4,
+    4.17
+   ],
+   "roblox_from_origin": [
+    22.2,
+    4.17,
+    -5.4
+   ],
+   "roblox_from_bbox_centre": [
+    22.2,
+    -11.955,
+    -5.25
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_02",
+   "parent": null,
+   "blender": [
+    -22.2,
+    0.0,
+    4.17
+   ],
+   "roblox_from_origin": [
+    22.2,
+    4.17,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    22.2,
+    -11.955,
+    0.15
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_03",
+   "parent": null,
+   "blender": [
+    -22.2,
+    5.4,
+    4.17
+   ],
+   "roblox_from_origin": [
+    22.2,
+    4.17,
+    5.4
+   ],
+   "roblox_from_bbox_centre": [
+    22.2,
+    -11.955,
+    5.55
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_04",
+   "parent": null,
+   "blender": [
+    -22.2,
+    10.8,
+    4.17
+   ],
+   "roblox_from_origin": [
+    22.2,
+    4.17,
+    10.8
+   ],
+   "roblox_from_bbox_centre": [
+    22.2,
+    -11.955,
+    10.95
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_05",
+   "parent": null,
+   "blender": [
+    22.2,
+    -5.4,
+    4.17
+   ],
+   "roblox_from_origin": [
+    -22.2,
+    4.17,
+    -5.4
+   ],
+   "roblox_from_bbox_centre": [
+    -22.2,
+    -11.955,
+    -5.25
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_06",
+   "parent": null,
+   "blender": [
+    22.2,
+    0.0,
+    4.17
+   ],
+   "roblox_from_origin": [
+    -22.2,
+    4.17,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -22.2,
+    -11.955,
+    0.15
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_07",
+   "parent": null,
+   "blender": [
+    22.2,
+    5.4,
+    4.17
+   ],
+   "roblox_from_origin": [
+    -22.2,
+    4.17,
+    5.4
+   ],
+   "roblox_from_bbox_centre": [
+    -22.2,
+    -11.955,
+    5.55
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_08",
+   "parent": null,
+   "blender": [
+    22.2,
+    10.8,
+    4.17
+   ],
+   "roblox_from_origin": [
+    -22.2,
+    4.17,
+    10.8
+   ],
+   "roblox_from_bbox_centre": [
+    -22.2,
+    -11.955,
+    10.95
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_09",
+   "parent": null,
+   "blender": [
+    -14.1,
+    -11.75,
+    4.28
+   ],
+   "roblox_from_origin": [
+    14.1,
+    4.28,
+    -11.75
+   ],
+   "roblox_from_bbox_centre": [
+    14.1,
+    -11.845,
+    -11.6
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_10",
+   "parent": null,
+   "blender": [
+    -18.2,
+    -11.75,
+    4.28
+   ],
+   "roblox_from_origin": [
+    18.2,
+    4.28,
+    -11.75
+   ],
+   "roblox_from_bbox_centre": [
+    18.2,
+    -11.845,
+    -11.6
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_11",
+   "parent": null,
+   "blender": [
+    -22.3,
+    -11.75,
+    4.28
+   ],
+   "roblox_from_origin": [
+    22.3,
+    4.28,
+    -11.75
+   ],
+   "roblox_from_bbox_centre": [
+    22.3,
+    -11.845,
+    -11.6
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_12",
+   "parent": null,
+   "blender": [
+    14.1,
+    -11.75,
+    4.28
+   ],
+   "roblox_from_origin": [
+    -14.1,
+    4.28,
+    -11.75
+   ],
+   "roblox_from_bbox_centre": [
+    -14.1,
+    -11.845,
+    -11.6
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_13",
+   "parent": null,
+   "blender": [
+    18.2,
+    -11.75,
+    4.28
+   ],
+   "roblox_from_origin": [
+    -18.2,
+    4.28,
+    -11.75
+   ],
+   "roblox_from_bbox_centre": [
+    -18.2,
+    -11.845,
+    -11.6
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plinth_14",
+   "parent": null,
+   "blender": [
+    22.3,
+    -11.75,
+    4.28
+   ],
+   "roblox_from_origin": [
+    -22.3,
+    4.28,
+    -11.75
+   ],
+   "roblox_from_bbox_centre": [
+    -22.3,
+    -11.845,
+    -11.6
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

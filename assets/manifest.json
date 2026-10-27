@@ -344,7 +344,8 @@
    "T_BoatYard_Brick_RGH",
    "T_RescueBoathouse_Brick_RGH",
    "T_AirStationAddons_Brick_RGH",
-   "T_HQAddons_Brick_RGH"
+   "T_HQAddons_Brick_RGH",
+   "T_TrophyHall_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -8723,6 +8724,15 @@
   "source": "assets/textures/M_Veh_BoatTrailer_JetSki/T_BoatTrailer_Galv_MET.png",
   "type": "Image"
  },
+ "Image:6b33908428812b3d5a38a1ca47eb39f0abe99615293c96d5a26af59a1c293a2a": {
+  "assetId": "136545251124305",
+  "imageId": "136545251124305",
+  "moderation": "Reviewing",
+  "name": "T_TrophyHall_Brick_ALB",
+  "sha": "6b33908428812b3d5a38a1ca47eb39f0abe99615293c96d5a26af59a1c293a2a",
+  "source": "assets/textures/M_Bld_TrophyHallAddons/T_TrophyHall_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:6b47e9947451123c8f19fd857fd8415da6a518cb978b2eda456ec61c566b8164": {
   "assetId": "115758230582511",
   "imageId": "115758230582511",
@@ -13070,7 +13080,8 @@
    "T_BoatYard_Brick_NOR",
    "T_RescueBoathouse_Brick_NOR",
    "T_AirStationAddons_Brick_NOR",
-   "T_HQAddons_Brick_NOR"
+   "T_HQAddons_Brick_NOR",
+   "T_TrophyHall_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -17100,7 +17111,8 @@
    "T_BoatYard_Brick_MET",
    "T_RescueBoathouse_Brick_MET",
    "T_AirStationAddons_Brick_MET",
-   "T_HQAddons_Brick_MET"
+   "T_HQAddons_Brick_MET",
+   "T_TrophyHall_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -24774,6 +24786,16 @@
   "source": "assets/fbx/M_Hbr_NavMark_IsolatedDanger/M_Hbr_NavMark_IsolatedDanger_LOD0.fbx",
   "type": "Model"
  },
+ "Model:832f0580f1f1287dc4a7eb1b69ddd91e96cbbedcdf0fc659694867513ad9f63f": {
+  "assetId": "118827626247671",
+  "moderation": "Approved",
+  "name": "M_Bld_TrophyHallAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_TrophyHallAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "832f0580f1f1287dc4a7eb1b69ddd91e96cbbedcdf0fc659694867513ad9f63f",
+  "source": "assets/fbx/M_Bld_TrophyHallAddons/M_Bld_TrophyHallAddons_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:83fe50cd2dcc2e26b9f3fb31cf87af914e1286189395ec4c8e5cbfc158d298b3": {
   "assetId": "128829373189723",
   "moderation": "Approved",
@@ -25994,6 +26016,16 @@
   "source": "assets/fbx/M_Veg_Heather_02/M_Veg_Heather_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:a9ad16df443de9c2ded6d9ad933aee7d79d792fddc824c4ac18285e6b3877aae": {
+  "assetId": "126283015099515",
+  "moderation": "Approved",
+  "name": "M_Bld_TrophyHallAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_TrophyHallAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "a9ad16df443de9c2ded6d9ad933aee7d79d792fddc824c4ac18285e6b3877aae",
+  "source": "assets/fbx/M_Bld_TrophyHallAddons/M_Bld_TrophyHallAddons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:a9cd7fcbe388e77826f5409b95c8659195e511f64d40a258b2b87088ed945e50": {
   "assetId": "80528380818535",
   "moderation": "Approved",
@@ -26232,6 +26264,16 @@
   "route": "delivery",
   "sha": "affa6c26664e2870d62cc2d885a91c01a46d234a98d1edcdd69017468d0e06b1",
   "source": "assets/fbx/M_Veg_Grass_Turf_01/M_Veg_Grass_Turf_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:b12f6fe6d0ba8990e6f0b84e7a532ecbdc88237789a970ab829139a040d690b6": {
+  "assetId": "81374565089031",
+  "moderation": "Approved",
+  "name": "M_Bld_TrophyHallAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_TrophyHallAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "b12f6fe6d0ba8990e6f0b84e7a532ecbdc88237789a970ab829139a040d690b6",
+  "source": "assets/fbx/M_Bld_TrophyHallAddons/M_Bld_TrophyHallAddons_LOD0.fbx",
   "type": "Model"
  },
  "Model:b13d81afd13f45324895b2137d1845ba84932412a1b90927346d2468f07bc176": {

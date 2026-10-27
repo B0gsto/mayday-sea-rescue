@@ -76,6 +76,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://88299832032246",
 		LOD2 = "rbxassetid://125450753092714",
 	},
+	M_Bld_TrophyHallAddons = {
+		LOD0 = "rbxassetid://81374565089031",
+		LOD1 = "rbxassetid://118827626247671",
+		LOD2 = "rbxassetid://126283015099515",
+	},
 	M_Bld_WorkshopAddons = {
 		LOD0 = "rbxassetid://109562110747520",
 		LOD1 = "rbxassetid://120275413380347",
@@ -559,6 +564,22 @@ AssetIds.Attachments = {
 	M_Bld_RescueHQ = {
 		ATT_Sign_01 = Vector3.new(0, 9.45, -10.12),
 		ATT_Sign_02 = Vector3.new(0, 20.1, -9.25),
+	},
+	M_Bld_TrophyHallAddons = {
+		ATT_Plinth_01 = Vector3.new(22.2, 4.17, -5.4),
+		ATT_Plinth_02 = Vector3.new(22.2, 4.17, 0),
+		ATT_Plinth_03 = Vector3.new(22.2, 4.17, 5.4),
+		ATT_Plinth_04 = Vector3.new(22.2, 4.17, 10.8),
+		ATT_Plinth_05 = Vector3.new(-22.2, 4.17, -5.4),
+		ATT_Plinth_06 = Vector3.new(-22.2, 4.17, 0),
+		ATT_Plinth_07 = Vector3.new(-22.2, 4.17, 5.4),
+		ATT_Plinth_08 = Vector3.new(-22.2, 4.17, 10.8),
+		ATT_Plinth_09 = Vector3.new(14.1, 4.28, -11.75),
+		ATT_Plinth_10 = Vector3.new(18.2, 4.28, -11.75),
+		ATT_Plinth_11 = Vector3.new(22.3, 4.28, -11.75),
+		ATT_Plinth_12 = Vector3.new(-14.1, 4.28, -11.75),
+		ATT_Plinth_13 = Vector3.new(-18.2, 4.28, -11.75),
+		ATT_Plinth_14 = Vector3.new(-22.3, 4.28, -11.75),
 	},
 	M_Bld_WorkshopAddons = {
 		ATT_Work_Bench2 = Vector3.new(15.25, 0.96, 3.6),
