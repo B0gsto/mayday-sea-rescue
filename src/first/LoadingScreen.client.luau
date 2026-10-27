@@ -655,11 +655,12 @@ local function main()
 
 	local plot = player:GetAttribute("DockPlot")
 
-	-- a new profile gets the cold-open jet ski from the server, a returning one ColdOpenDone: wait for
-	-- either so the hand-off has a fixed end
+	-- a new profile gets the cold-open jet ski from the server, a returning one ColdOpenDone, a new island
+	-- with no Rescue Hut yet builds it first (DockLevelHQ 0, docs/25 J): wait for one so the hand-off has a fixed end
 	while
 		os.clock() < deadline
 		and player:GetAttribute("ColdOpenDone") ~= true
+		and player:GetAttribute("DockLevelHQ") ~= 0
 		and coldOpenCraft() == nil
 	do
 		task.wait(0.05)

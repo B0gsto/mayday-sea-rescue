@@ -1,6 +1,8 @@
 --!strict
 -- OnboardingController: the first session's world-shown tutorial (docs/16 section 4, docs/24 E) on
 -- the client. No tutorial text and no choice UI: the world leads, a chip row counts the beats.
+--   docs/25 J: the guide arrow and pin go to the build stand -> the HQ card pulses -> the free Rescue Hut
+--   site (the beacon over it, the camera stays free) ->
 --   cold open (jet ski, first survivor, home) -> the Builder walks off the jetty -> the guide arrow
 --   and minimap pin go to the build station -> the Workshop card pulses in the tablet (the server
 --   tops the wallet up to its price) -> the chip row shows the site's timer while the next call is
@@ -9,7 +11,7 @@
 -- It reads only replicated facts: the Ops signals, the PlayerDataChanged snapshot, player and plot
 -- attributes (SiteKey / SiteProgress / SiteRate) and the Progression_GetData pull.
 -- Also here: the cold-open reward burst (B1, still seated on the jet ski), the seat pips and the
--- green home cue, and the sea-blue cover until the player sits on the cold-open jet ski (docs/20 4, 7, 8).
+-- green home cue (docs/20 4, 8). No sea-blue cover any more: a new player starts on their island.
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -73,6 +75,7 @@ local doneAt: number? = nil
 local holdingTick = false
 
 local CHIPS: { { id: string, label: string, icon: string? } } = {
+	{ id = "HQ", label = "Hut" },
 	{ id = "Rescue", label = "Rescue", icon = "lifebuoy" },
 	{ id = "Workshop", label = "Workshop" },
 	{ id = "Spin", label = "Spin", icon = "spin" },
@@ -122,16 +125,16 @@ local function wheelPoint(): Vector3?
 	return nil
 end
 
-local function workshopPoint(): Vector3?
+local function sitePoint(key: string): Vector3?
 	local pm = plotModel()
 	if not pm then
 		return nil
 	end
-	local site = pm:FindFirstChild("Site_" .. Onboarding.WORKSHOP)
+	local site = pm:FindFirstChild("Site_" .. key)
 	if site and site:IsA("Model") then
 		return site:GetPivot().Position
 	end
-	local built = pm:FindFirstChild(Onboarding.WORKSHOP)
+	local built = pm:FindFirstChild(key)
 	if built and built:IsA("Model") then
 		return built:GetPivot().Position
 	end
@@ -211,7 +214,17 @@ local function setGuide(kind: string?)
 		"TutorialHoldCall",
 		if kind == "station" or kind == "spin" then true else nil
 	)
-	if kind == "station" then
+	if kind == "hqsite" then
+		-- the Hut rises: a beacon over the site, the camera stays the player's (docs/25 J)
+		local at = sitePoint(Onboarding.HQ)
+		if not at then
+			guide = nil -- the site has not streamed in yet: retry next frame
+			return
+		end
+		local b = beacon or OnboardingBeacon.start()
+		beacon = b
+		b.show(at, "Place")
+	elseif kind == "station" then
 		local at = stationPoint()
 		if not at then
 			guide = nil -- the berth frame has not replicated yet: retry next frame
@@ -224,13 +237,13 @@ local function setGuide(kind: string?)
 			{ id = "Build", position = at, style = "Waypoint", size = 22 },
 		})
 	elseif kind == "site" then
-		glance(workshopPoint())
+		glance(sitePoint(Onboarding.WORKSHOP))
 	elseif kind == "spin" then
 		local at = wheelPoint()
 		if not at then
 			guide = nil -- the wheel has not streamed in yet: retry next frame
 		else
-			glance(workshopPoint())
+			glance(sitePoint(Onboarding.WORKSHOP))
 			local b = beacon or OnboardingBeacon.start()
 			beacon = b
 			b.show(at, "Place")
@@ -279,51 +292,6 @@ local function showReward()
 	Telemetry.once("RewardSeen") -- onboarding funnel step 6 (G64)
 	task.delay(REWARD_HOLD, function()
 		player:SetAttribute("OnboardingRewardBusy", nil)
-	end)
-end
-
--- The cold-open cover (docs/20 change 7): no visible island wait. Up from Init for a player whose profile
--- has not said "done"; fades once they sit on the cold-open jet ski, as soon as the profile says they
--- are returning, or after COVER_MAX s whatever happens.
-local COVER_MAX = 20
-local COVER_FADE = 0.8
-local function coverUntilAtSea()
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "ColdOpenCover"
-	gui.IgnoreGuiInset = true
-	gui.ResetOnSpawn = false
-	gui.DisplayOrder = 60 -- over the HUD, the menu and Cinematic
-	local sea = Instance.new("Frame")
-	sea.Size = UDim2.fromScale(1, 1)
-	sea.BackgroundColor3 = Color3.new(1, 1, 1)
-	sea.BorderSizePixel = 0
-	sea.Parent = gui
-	local grad = Instance.new("UIGradient")
-	grad.Rotation = 90
-	grad.Color = ColorSequence.new(Color3.fromRGB(40, 120, 170), Color3.fromRGB(8, 34, 58))
-	grad.Parent = sea
-	gui.Parent = playerGui
-	local t0 = os.clock()
-	local seatedAt: number? = nil
-	local conn: RBXScriptConnection
-	conn = RunService.Heartbeat:Connect(function()
-		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-		local atSea = player:GetAttribute("ColdOpenActive") == true
-			and hum ~= nil
-			and hum.SeatPart ~= nil
-		seatedAt = if atSea then seatedAt or os.clock() else nil
-		local returning = player:GetAttribute("ColdOpenDone") == true
-			and player:GetAttribute("ColdOpenActive") ~= true
-		if
-			returning
-			or (seatedAt and os.clock() - seatedAt > 0.3) -- the chase camera has settled on the ski
-			or os.clock() - t0 > COVER_MAX
-		then
-			conn:Disconnect()
-			TweenService:Create(sea, TweenInfo.new(COVER_FADE), { BackgroundTransparency = 1 })
-				:Play()
-			task.delay(COVER_FADE, gui.Destroy, gui)
-		end
 	end)
 end
 
@@ -422,8 +390,8 @@ local function makeChip(
 	icon.Position = UDim2.new(0, 6, 0.5, 0)
 	icon.Size = UDim2.fromOffset(30, 30)
 	icon.Parent = root
-	if info.id == "Workshop" then
-		BuildGlyph(icon, { kind = "Building", key = Onboarding.WORKSHOP })
+	if info.id == "Workshop" or info.id == "HQ" then
+		BuildGlyph(icon, { kind = "Building", key = info.id :: string })
 	else
 		Style.icon(icon, info.icon or "build")
 	end
@@ -493,15 +461,22 @@ local function renderChips()
 		return
 	end
 	local site = siteState()
-	local digging = site.key == Onboarding.WORKSHOP
-	local work = BuildTimer.work(DockConfig.Buildings[Onboarding.WORKSHOP].cash)
+	-- the Hut's or the Workshop's chip shows its site's timer (both are Lv1 builds)
+	local digging = if site.key == Onboarding.HQ or site.key == Onboarding.WORKSHOP
+		then site.key
+		else nil
+	local work = if digging
+		then BuildTimer.work(DockConfig.Buildings[digging].levels[1].cash)
+		else 0
 	local left = if digging then BuildTimer.timeLeft(site.progress, site.rate, work) else 0
 	local done = {
+		HQ = owned[Onboarding.HQ] == true,
 		Rescue = totalRescues >= 1,
 		Workshop = owned[Onboarding.WORKSHOP] == true,
 		Spin = (tutorialStep or 0) >= Onboarding.STEP_DONE,
 	}
 	local here: { [string]: boolean } = {
+		HQ = beat == "BuildHQ" or beat == "HQSite",
 		Rescue = beat == "Rescue",
 		Workshop = beat == "BuildStation" or beat == "Build",
 		Spin = beat == "Spin",
@@ -517,7 +492,7 @@ local function renderChips()
 				Style.grad(if current then "orange" elseif complete then "green" else "ink")
 			)
 			view.stroke.Color = if current then Color3.new(1, 1, 1) else Color3.fromHex("14121C")
-			if info.id == "Workshop" and digging and not complete then
+			if info.id == digging and not complete then
 				view.label.Text = BuildTimer.text(left)
 			else
 				view.label.Text = info.label
@@ -539,19 +514,21 @@ local function update()
 	end
 	holdingTick = beat == "Done" and doneAt ~= nil and os.clock() < doneAt
 	if dataReady then
-		local kind = if beat == "BuildStation"
+		local kind = if beat == "BuildStation" or beat == "BuildHQ"
 			then "station"
+			elseif beat == "HQSite" then "hqsite"
 			elseif beat == "Build" then "site"
 			elseif beat == "Spin" then "spin"
 			else nil
 		setGuide(kind)
 	end
 	renderChips()
-	-- the tablet's Workshop card pulses while the tutorial points at the station
+	-- the tablet's HQ / Workshop card pulses while the tutorial points at the station
 	if os.clock() >= tickAt then
 		tickAt = os.clock() + TICK
 		if guide == "station" then
-			local key = if buildTabletOpen() then Onboarding.WORKSHOP else nil
+			local want = if beat == "BuildHQ" then Onboarding.HQ else Onboarding.WORKSHOP
+			local key = if buildTabletOpen() then want else nil
 			if key ~= lastTabletPulse then
 				DockController.Pulse(key)
 				lastTabletPulse = key
@@ -561,10 +538,6 @@ local function update()
 end
 
 function OnboardingController.Init()
-	-- docs/24 E: returning players still resume a started tutorial; only the cold open is new-player only
-	if player:GetAttribute("ColdOpenDone") ~= true then
-		coverUntilAtSea()
-	end
 	beacon = OnboardingBeacon.start()
 
 	-- a delivery sets Rescued before the next snapshot (the cold open's rescue is the first chip's tick)

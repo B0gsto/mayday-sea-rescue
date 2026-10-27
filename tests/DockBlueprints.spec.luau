@@ -38,18 +38,6 @@ return function(t)
 		t.expect(D.needs({ kind = "Blueprint", key = "Lighthouse" }, {})).toBeNil()
 	end)
 
-	t.test("WP-14e: the island gets a paper for every building and decor not owned", function()
-		local items = D.onIsland({})
-		t.expect(#items).toBe(#DockConfig.BUILDINGS + #DockConfig.DECOR) -- no quest lighthouse
-		for _, item in items do
-			t.expect(D.buyable(item)).toBe(true)
-		end
-		local owned = { SubPen = true, FlowerBed = true }
-		for _, item in D.onIsland(owned) do
-			t.expect(owned[item.key]).toBeNil()
-		end
-	end)
-
 	t.test(
 		"WP-14e: every item has a short desc and its own drawing inside the unit square",
 		function()

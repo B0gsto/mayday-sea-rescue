@@ -1,20 +1,20 @@
 --!strict
--- DockController (docs/23 (j) rule 4, WP-14d; the unlock tree, docs/23 (q), WP-28): the owner's build station by
--- the spawn carries a tablet whose prompt opens the top-down build mode. The camera lifts to a Scriptable island
--- view (shared/DockBuild), movement locks, every building and decor not owned yet gets a flat paper blueprint
--- on its spot (WP-14e: blue sheet, white grid, the item's Lego line drawing; never a 3D preview; one still
--- locked behind a prerequisite is grey with a chain and a padlock). The Build tab is the shared Kit tree
--- (shared/BuildTreeLayout, Kit/TreeView) on a translucent bottom band, so the island stays visible above it;
--- the Decor tab stays the Kit panel's card list. A busy site shows its m:ss on its node and an hourglass on
--- the other buyables; the node's detail card carries the Cash / Robux buys, "Needs: <item>" (selects the
--- prerequisite) and Finish now. Tapping a paper or a node focuses it: the camera eases in to its spot
--- (0.6 s) and a flat outline pulses. Cash buys through Dock_Upgrade (greyed when the Cash is short); Robux
--- opens Roblox's purchase prompt (skips the Cash, never the prerequisites). Escape / B /
--- tapping empty sea backs out of the focus, then out of build mode (Escape is read from UserInputService:
--- Roblox keeps it from ContextActionService); the red X or a teleport closes and restores the camera and
--- controls. On a buy the pieces already exist in their final state; Dock_Build tells this controller to play
--- the Lego build beat (shared/BuildSeq): each piece drops in, staggered, with a snap and a squash, then dust.
--- Reads player attributes DockPlot, Dock<key> / Decor<key> (owned) and the PlayerDataChanged snapshot (Cash).
+-- DockController (docs/23 (j) rule 4, WP-14d; building levels, docs/25 A/B/J): the owner's build stand carries a
+-- tablet whose prompt opens the top-down build mode. The camera lifts to a Scriptable island view
+-- (shared/DockBuild), movement locks, and a Kit panel on the right lists the cards: Build (one card per building,
+-- its level as stars, Build / Upgrade with the Cash and Robux price, "MAX" when done, a padlock and
+-- "Needs: HQ 2" / the missing building when locked; the HQ card shows what the next HQ level needs as icons
+-- with ticks) and Decor. An unbuilt lot shows nothing (docs/25 J). A busy site shows its m:ss on its card and
+-- an hourglass on the other buyables. Tapping a card focuses it (owner rule): the camera eases in to the
+-- building or its empty lot (0.6 s) and a flat outline pulses; a "Needs" chip focuses what it needs. Cash
+-- buys through Dock_Upgrade (greyed when the Cash is short); Robux opens Roblox's purchase prompt (skips the
+-- Cash, never the order). Escape / B / tapping the world backs out of the focus, then out of build mode
+-- (Escape is read from UserInputService: Roblox keeps it from ContextActionService); the red X or a teleport
+-- closes and restores the camera and controls. On a buy the pieces already exist in their final state;
+-- Dock_Build tells this controller to play the Lego build beat (shared/BuildSeq): each piece drops in,
+-- staggered, with a snap and a squash, then dust. Out of build mode a bobbing green Lego arrow stands over every
+-- building you can build or upgrade right now (allowed and affordable; none while a site runs).
+-- Reads player attributes DockPlot, DockLevel<key> / Dock<key> / Decor<key> and the PlayerDataChanged snapshot (Cash).
 -- Paint booth (docs/23 d.3, WP-13): sitting in a craft inside your own boathouse's booth
 -- (DockConfig.PAINT_BOOTH) opens the paint card: a swatch strip and the existing cosmetic pickers for Livery
 -- and Decal. Leaving the booth, boarding a seat (a launch puts you in the booth) or B / the X button closes it.
@@ -30,7 +30,6 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BuildSeq = require(Shared:WaitForChild("BuildSeq"))
 local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
-local BuildTreeLayout = require(Shared:WaitForChild("BuildTreeLayout"))
 local DockBlueprints = require(Shared:WaitForChild("DockBlueprints"))
 local DockBuild = require(Shared:WaitForChild("DockBuild"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
@@ -45,6 +44,7 @@ local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
 local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local CashBurst = require(UI:WaitForChild("CashBurst"))
 local CosmeticPicker = require(UI:WaitForChild("CosmeticPicker"))
+local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
 
@@ -56,7 +56,6 @@ local PriceButtonUI = require(Kit:WaitForChild("PriceButton"))
 local Style = require(Kit:WaitForChild("Style"))
 local TabsUI = require(Kit:WaitForChild("Tabs"))
 local Theme = require(Kit:WaitForChild("Theme"))
-local TreeView = require(Kit:WaitForChild("TreeView"))
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -68,9 +67,9 @@ local CARD_BUY_H = 168 -- a card with its buy buttons
 local CARD_H = 104 -- owned / not for sale yet
 local STRIP_H = 160 -- the focus strip: name, a two-line desc, the badge row
 local OUTLINE = Color3.fromRGB(255, 214, 60)
-local PAPER = Color3.fromRGB(38, 102, 190) -- blueprint blue
-local PAPER_LOCKED = Color3.fromRGB(112, 120, 132) -- a locked item's paper: grey, with a chain
-local PAPER_PPS = 20 -- SurfaceGui pixels per stud on the paper
+local ARROW = Color3.fromRGB(76, 200, 84) -- the "build me" arrow's Lego green (no glow, docs/25 J)
+local STAR_ON = Color3.fromRGB(255, 206, 46)
+local STAR_OFF = Color3.fromRGB(40, 44, 60)
 
 local snapshot: { [string]: any } = {}
 local livePrice: { [number]: number } = {} -- product id -> Robux price, read from Roblox once
@@ -90,17 +89,9 @@ local focusStrip: Frame? = nil
 local stripContent: Frame? = nil
 local decorTabs: TabsUI.Tabs? = nil
 local cards: { ImageButton } = {}
-local pulseKey: string? = nil -- docs/24 E: the Workshop node pulses while the tutorial points at it
-local buildBand: Frame? = nil -- the Build tab's tree, a bottom band over the island view
-local buildTree: TreeView.TreeView? = nil
-local buildTabs: TabsUI.Tabs? = nil
-local bandClose: ImageButton? = nil
-local refreshTree: () -> () = function() end
+local pulseKey: string? = nil -- docs/24 E, docs/25 J: the HQ / Workshop card pulses while the tutorial points at it
 local pickTab: (number) -> () = function() end
 local closeBuild: () -> ()
-
-local papers: Folder? = nil
-local paperItems: { [Instance]: DockBlueprints.Item } = {}
 
 local modal: InputGlyph.Modal
 
@@ -126,19 +117,18 @@ local function ownedOf(item: DockBlueprints.Item): boolean
 	return player:GetAttribute(prefix .. item.key) == true
 end
 
--- What the island has: every catalog key owned (the unlock tree reads it).
-local function ownedMap(): { [string]: boolean }
-	local owned: { [string]: boolean } = {}
-	for _, item in DockBlueprints.catalog() do
-		if ownedOf(item) then
-			owned[item.key] = true
-		end
+-- The island's building levels (data.dock.levels): DockService's DockLevel<key> attributes move first, the
+-- snapshot fills in before they replicate.
+local function levelsMap(): { [string]: number }
+	local saved = type(snapshot.dock) == "table" and snapshot.dock.levels
+	local out: { [string]: number } = {}
+	for _, key in DockConfig.BUILDINGS do
+		local n = player:GetAttribute(`DockLevel{key}`)
+		out[key] = if type(n) == "number"
+			then n
+			else (type(saved) == "table" and tonumber(saved[key])) or 0
 	end
-	return owned
-end
-
-local function sameItem(a: DockBlueprints.Item?, b: DockBlueprints.Item?): boolean
-	return a ~= nil and b ~= nil and a.kind == b.kind and a.key == b.key
+	return out
 end
 
 local function aspect(): number
@@ -147,26 +137,14 @@ local function aspect(): number
 	return math.max(vp.X / math.max(vp.Y, 1), 0.3)
 end
 
--- The screen share left of the list (the island and the lot being built are framed there, not under it);
--- the Build band spans the screen, so the whole width is free there.
+-- The screen share left of the list (the island and the lot being built are framed there, not under it).
 local function free(): number
 	local p = listPanel
-	if not p or tabIndex == 1 then
+	if not p then
 		return 1
 	end
 	local vp, scale = Style.metrics(p.root)
 	return math.clamp((vp.X - (LIST_W + 2 * S.margin) * scale) / math.max(vp.X, 1), 0.4, 1)
-end
-
--- The Build tab's bottom band as a screen share (0-1), so the island is framed above it.
-local function bandShare(): number
-	local band = buildBand
-	if not band or tabIndex ~= 1 or not band.Visible then
-		return 0
-	end
-	local vp, scale = Style.metrics(band)
-	local h = vp.Y / math.max(scale, 0.05)
-	return math.clamp((S.margin + h * band.Size.Y.Scale) / math.max(h, 1), 0, 0.8)
 end
 
 local function shake(target: GuiObject?)
@@ -274,10 +252,13 @@ local drawGlyph = BuildGlyph
 -- tapping it focuses that item.
 type Reason = { icon: string, text: string, item: DockBlueprints.Item? }
 
--- What an item's card and strip show: owned / for sale (Cash and Robux buttons) / why it is locked.
+-- What an item's card and strip show: owned (a building: maxed) / for sale (Cash and Robux buttons) / why it
+-- is locked. A building's `level` / `max` are its stars; `cash` and the product are its next level's.
 type Status = {
 	owned: boolean,
-	forSale: boolean, -- not owned, its prerequisites stand, not a quest reward
+	forSale: boolean, -- the next level is allowed now (only the Cash may be short), not a quest reward
+	level: number,
+	max: number,
 	cash: number,
 	productId: number, -- 0: no Robux product
 	robux: number,
@@ -298,14 +279,63 @@ local function siteState(): { key: string?, progress: number, rate: number }
 	}
 end
 
+-- A building row's next level: allowed now (the HQ gate and needs stand), or why not ("Needs: HQ 2").
+local function buildingStatus(key: string, site: { key: string? }): Status
+	local levels = levelsMap()
+	local level = levels[key] or 0
+	local max = UnlockTree.maxLevel(key)
+	local want = math.min(level + 1, max)
+	local lvl = DockConfig.Buildings[key].levels[want]
+	local ok, why, _, need = UnlockTree.canBuild(key, level + 1, levels, math.huge)
+	local maxed = level >= max
+	local forSale = not maxed and ok
+	local product = lvl.product and MonetizationConfig.Products[lvl.product]
+	local id = if product and product.ready then product.id else 0
+	local prepaid = type(snapshot.dockPrepaid) == "table" and snapshot.dockPrepaid[key]
+	local busy: ("site" | "wait")? = nil
+	if forSale and site.key then
+		busy = if site.key == key then "site" else "wait"
+	elseif forSale and prepaid then
+		busy = "wait" -- Robux paid: it starts by itself, never offer a second buy
+	end
+	local reason: Reason? = nil
+	if maxed then
+		reason = { icon = UiImages.VehicleArt.Check, text = "MAX" }
+	elseif forSale then
+		reason = { icon = "build", text = if level == 0 then "Build" else "Upgrade" }
+	elseif why == "HQ" then
+		reason =
+			{ icon = "lock", text = `Needs: HQ {lvl.hq}`, item = { kind = "Building", key = "HQ" } }
+	elseif need then
+		reason = {
+			icon = "lock",
+			text = if prepaid then "Paid" else `Needs: {UnlockTree.needName(need)}`,
+			item = { kind = "Building", key = need },
+		}
+	end
+	return {
+		owned = maxed,
+		forSale = forSale,
+		level = level,
+		max = max,
+		cash = lvl.cash,
+		productId = id,
+		robux = livePrice[id] or lvl.robux or 0,
+		reason = reason,
+		busy = busy,
+	}
+end
+
 local function statusOf(item: DockBlueprints.Item): Status
+	local site = siteState()
+	if item.kind == "Building" then
+		return buildingStatus(item.key, site)
+	end
 	local entry = entryOf(item)
 	local owned = ownedOf(item)
-	local need = if owned then nil else DockBlueprints.needs(item, ownedMap())
-	local forSale = not owned and need == nil and DockBlueprints.buyable(item)
+	local forSale = not owned and DockBlueprints.buyable(item)
 	local product = entry and entry.product and MonetizationConfig.Products[entry.product]
 	local id = if product and product.ready then product.id else 0
-	local site = siteState()
 	local busy: ("site" | "wait")? = nil
 	if forSale and site.key then
 		busy = if site.key == item.key then "site" else "wait"
@@ -317,20 +347,12 @@ local function statusOf(item: DockBlueprints.Item): Status
 		reason = { icon = UiImages.VehicleArt.Check, text = "Owned" }
 	elseif item.kind == "Blueprint" then
 		reason = { icon = "quests", text = "Quest" }
-	elseif need then
-		local prepaid = snapshot.dockPrepaid
-		local paid = type(prepaid) == "table" and prepaid[item.key] == true -- Robux paid, waits for `need`
-		reason = {
-			icon = "lock",
-			text = if paid
-				then `Paid — builds when {UnlockTree.needName(need)} is built`
-				else `Needs: {UnlockTree.needName(need)}`,
-			item = { kind = "Building", key = need },
-		}
 	end
 	return {
 		owned = owned,
 		forSale = forSale,
+		level = if owned then 1 else 0,
+		max = 1,
 		cash = if entry and type(entry.cash) == "number" then entry.cash else 0,
 		productId = id,
 		robux = livePrice[id] or (entry and entry.robux) or 0,
@@ -346,20 +368,18 @@ local function cashBuy(item: DockBlueprints.Item)
 	end
 	local ok = remote:InvokeServer(item.key)
 	if ok then
-		-- docs/24 G: a bought building closes the tree so the player sees the site start
+		-- docs/24 G: a bought building closes the tablet so the player sees the site start
 		if displayed and item.kind == "Building" then
 			closeBuild()
 		end
 	else
-		local tree = if tabIndex == 1 then buildTree else nil
-		shake(tree and tree.root or (if focused then focusStrip else listPanel and listPanel.root))
+		shake(if focused then focusStrip else listPanel and listPanel.root)
 	end
 end
 
 local function robuxBuy(id: number)
 	if id == 0 then
-		local tree = if tabIndex == 1 then buildTree else nil
-		shake(tree and tree.root or focusStrip)
+		shake(if focused then focusStrip else listPanel and listPanel.root)
 		return
 	end
 	MarketplaceService:PromptProductPurchase(player, id)
@@ -397,33 +417,17 @@ local function finishOffered(product: any): boolean
 		and (RunService:IsStudio() or (product.ready ~= false and product.id ~= 0))
 end
 
-local priceAsked: { [number]: boolean } = {}
--- A product's live Robux price, read from Roblox once; the tree redraws when it lands.
-local function livePriceOf(id: number): number?
-	if id == 0 or livePrice[id] or priceAsked[id] then
-		return livePrice[id]
-	end
-	priceAsked[id] = true
-	task.spawn(function()
-		local ok, info = pcall(function()
-			return MarketplaceService:GetProductInfo(id, Enum.InfoType.Product)
-		end)
-		if ok and type(info) == "table" and type(info.PriceInRobux) == "number" then
-			livePrice[id] = info.PriceInRobux
-			if displayed and tabIndex == 1 then
-				refreshTree()
-			end
-		end
-	end)
-	return nil
-end
-
 local function itemWork(item: DockBlueprints.Item): number
 	if item.kind == "Decor" then
 		return BuildTimer.DECOR
 	end
 	local b = DockConfig.Buildings[item.key]
-	return BuildTimer.work(b and b.cash or 0)
+	if not b then
+		return BuildTimer.work(0)
+	end
+	-- the level going up is the next one (it is not counted until it finishes)
+	local n = math.clamp((levelsMap()[item.key] or 0) + 1, 1, #b.levels)
+	return BuildTimer.work(b.levels[n].cash)
 end
 
 local function hourglass(parent: GuiObject, side: number)
@@ -653,6 +657,24 @@ end
 
 local focusItem: (DockBlueprints.Item, number?) -> ()
 
+-- A "Needs" tap: focus what is missing and bring its card into the list's view.
+local function jumpTo(need: DockBlueprints.Item)
+	focusItem(need)
+	local content = cardsContent
+	for _, card in cards do
+		if content and card:GetAttribute("ItemKey") == need.key then
+			local _, scale = Style.metrics(content)
+			local dy = (card.AbsolutePosition.Y - content.AbsolutePosition.Y)
+				/ math.max(scale, 0.05)
+			content.CanvasPosition = Vector2.new(0, math.max(0, content.CanvasPosition.Y + dy - 8))
+			if InputGlyph.device() == "Gamepad" then
+				GuiService.SelectedObject = card
+			end
+			break
+		end
+	end
+end
+
 -- The state badge on its own row (never over the title): the reason's icon and label. A prerequisite reason
 -- is a chip with that item's drawing; tapping it focuses the prerequisite.
 local function badgeRow(parent: GuiObject, st: Status): GuiObject?
@@ -699,136 +721,91 @@ local function badgeRow(parent: GuiObject, st: Status): GuiObject?
 	label.LayoutOrder = 1
 	if need and row:IsA("GuiButton") then
 		Style.press(row, function()
-			focusItem(need)
+			jumpTo(need)
 		end, S.cornerSmall)
 	end
 	return row
 end
 
--- A Build tab node: a tree building, or a quest blueprint in the Quest lane (keys never collide).
-local function treeItem(key: string): DockBlueprints.Item
-	if DockConfig.Blueprints[key] then
-		return { kind = "Blueprint", key = key }
+-- A building's level as stars: gold up to the built level (Lv1-Lv3; HQ and Bunkhouse up to 5).
+local function stars(parent: GuiObject, st: Status): Frame
+	local row = Instance.new("Frame")
+	row.Name = "Stars"
+	row.BackgroundTransparency = 1
+	row.Parent = parent
+	Style.list(row, true, 2)
+	for i = 1, st.max do
+		local star = Style.label(row, "★", 22)
+		star.Name = `Star{i}`
+		star.Font = Enum.Font.BuilderSansMedium
+		star.TextColor3 = if i <= st.level then STAR_ON else STAR_OFF
+		star.Size = UDim2.fromOffset(22, 22)
+		star.LayoutOrder = i
 	end
-	return { kind = "Building", key = key }
+	return row
 end
 
--- docs/24 E: the server tops the purse up to the Workshop's price on the buy, so the tutorial node
--- reads affordable and pulses even before the first 500 Cash is in.
-local function treeCash(): number
-	local cash = tonumber(snapshot.cash) or 0
-	if tutorialBuild(treeItem(Onboarding.WORKSHOP)) then
-		return math.max(cash, DockConfig.Buildings[Onboarding.WORKSHOP].cash)
+-- The HQ card (docs/25 A): what the next HQ level needs, every building the current HQ offers, ticked once
+-- built (UnlockTree.nextHqNeed lists the unticked ones). Tapping an icon focuses that building.
+local function hqNeeds(parent: GuiObject): Frame?
+	local levels = levelsMap()
+	local hq = levels.HQ or 0
+	if hq < 1 or hq >= UnlockTree.maxLevel("HQ") then
+		return nil
 	end
-	return cash
-end
-
-local function buildNodes(): { TreeView.Node }
-	local site = siteState()
-	local out: { TreeView.Node } = {}
-	for _, cell in BuildTreeLayout.cells() do
-		local item = treeItem(cell.id)
-		local st = statusOf(item)
-		if st.productId ~= 0 then
-			livePriceOf(st.productId)
-		end
-		local state: TreeView.State = if st.owned
-			then "owned"
-			elseif st.busy then "busy"
-			elseif st.forSale then "buyable"
-			else "locked"
-		local prepaid = type(snapshot.dockPrepaid) == "table"
-			and snapshot.dockPrepaid[cell.id] == true
-		local effect = DockBlueprints.desc(item)
-		local note: string? = nil
-		local action: TreeView.Action? = nil
-		if st.busy == "site" then
-			local left = BuildTimer.timeLeft(site.progress, site.rate, itemWork(item))
-			note, effect = BuildTimer.text(left), BuildTimer.text(left)
-			local product, price = finishProduct(left)
-			action = {
-				price = price,
-				currency = "Robux",
-				icon = "finish_now",
-				visible = left >= 3 and finishOffered(product),
-				onActivate = function()
-					Net.event("Dock_Finish"):FireServer()
-				end,
-			}
-		elseif st.busy == "wait" then
-			effect = if prepaid then "Paid" else "Site busy"
-		elseif prepaid and not st.owned and not st.forSale then
-			effect = "Paid"
-		elseif item.kind == "Blueprint" and not st.owned then
-			-- a quest grants it (QuestService): no Cash button
-			note = "Quest"
-		end
-		local reason = st.reason
-		local need = reason and reason.item
-		table.insert(out, {
-			id = cell.id,
-			name = DockBlueprints.label(item),
-			icon = "build",
-			price = st.cash,
-			needs = if item.kind == "Building" then DockConfig.Buildings[cell.id].needs else {},
-			need = if need and need.kind == "Building" then need.key else nil,
-			robux = if st.forSale and st.productId ~= 0 then st.robux else nil,
-			col = cell.col,
-			row = cell.row,
-			group = cell.group,
-			state = state,
-			effect = effect,
-			note = note,
-			pulse = pulseKey == cell.id,
-			action = action,
-		})
-	end
-	return out
-end
-
--- docs/24 E: the tutorial points at the Workshop node while its step is up; nil stops the pulse.
-function DockController.Pulse(key: string?)
-	pulseKey = key
-	if not displayed then
-		return
-	end
-	if key and tabIndex ~= 1 then
-		pickTab(1) -- the pointed node lives on the Build tab
-	end
-	if tabIndex == 1 then
-		refreshTree()
-		if key and buildTree then
-			buildTree.select(key)
+	local row = Instance.new("Frame")
+	row.Name = "HqNeeds"
+	row.BackgroundTransparency = 1
+	row.Parent = parent
+	Style.list(row, true, 6)
+	for i, key in DockConfig.BUILDINGS do
+		if key ~= "HQ" and DockConfig.Buildings[key].unlockAt <= hq then
+			local need: DockBlueprints.Item = { kind = "Building", key = key }
+			local chip = Style.button(row, UDim2.fromOffset(28, 28))
+			chip.Name = key
+			chip.LayoutOrder = i
+			drawGlyph(chip, need)
+			if (levels[key] or 0) >= 1 then
+				local tick = Instance.new("Frame")
+				tick.Name = "Tick"
+				tick.AnchorPoint = Vector2.new(0.5, 0.5)
+				tick.Position = UDim2.fromScale(0.9, 0.1)
+				tick.Size = UDim2.fromOffset(16, 16)
+				tick.BackgroundColor3 = Color3.new(1, 1, 1)
+				tick.ZIndex = 4
+				tick.Parent = chip
+				Style.corner(tick, 8)
+				Style.gradient(tick, Style.grad("buy"))
+				Style.stroke(tick, 2, true)
+				Glyph.draw("check", tick, Color3.new(1, 1, 1))
+			end
+			Style.press(chip, function()
+				jumpTo(need)
+			end, S.cornerSmall)
 		end
 	end
+	return row
 end
 
-local function treeBuy(id: string)
-	local item = treeItem(id)
-	local st = statusOf(item)
-	if st.cash > (snapshot.cash or 0) and tutorialBuild(item) then
-		local view = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize
-			or Vector2.new(800, 600)
-		CashBurst.playAt(playerGui, view / 2, 0, false)
-	end
-	cashBuy(item)
+-- docs/24 E, docs/25 J: the card the tutorial points at wears a pulsing gold outline.
+local function pulseRing(face: GuiObject)
+	local stroke = Instance.new("UIStroke")
+	stroke.Name = "Pulse"
+	stroke.Color = OUTLINE
+	stroke.Thickness = 5
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke.Parent = face
+	TweenService:Create(
+		stroke,
+		TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+		{ Transparency = 0.85 }
+	):Play()
 end
 
-local function treeBuyRobux(id: string)
-	robuxBuy(statusOf(treeItem(id)).productId)
-end
-
-refreshTree = function()
-	local tree = buildTree
-	if tree then
-		tree.setNodes(buildNodes(), treeCash())
-	end
-end
-
--- The Decor tab stays the card list (docs/24 G-a2 keeps only the Build tab a tree).
+-- The cards of the open tab: Build (one per building, then the quest blueprints) or Decor.
 local function refreshCards()
 	local content = cardsContent
-	if not content or tabIndex ~= 2 then
+	if not content then
 		return
 	end
 	for _, card in cards do
@@ -836,8 +813,9 @@ local function refreshCards()
 	end
 	cards = {}
 	local n = 0
+	local pulsed: ImageButton? = nil
 	for _, item in DockBlueprints.catalog() do
-		if item.kind == "Decor" then
+		if (item.kind == "Decor") == (tabIndex == 2) then
 			n += 1
 			local st = statusOf(item)
 			local root = Style.button(
@@ -855,13 +833,23 @@ local function refreshCards()
 			local title = Style.label(face, DockBlueprints.label(item), Theme.Text.heading)
 			title.Name = "Title"
 			title.Position = UDim2.fromOffset(98, 8)
-			title.Size = UDim2.new(1, -108, 0, 36)
+			title.Size = UDim2.new(1, -108, 0, 32)
 			title.TextXAlignment = Enum.TextXAlignment.Left
 			title.TextWrapped = false
 			title.TextTruncate = Enum.TextTruncate.AtEnd
-			local badge = badgeRow(face, st)
+			local y = 48
+			if item.kind == "Building" then
+				local row = stars(face, st)
+				row.Position = UDim2.fromOffset(98, 42)
+				row.Size = UDim2.new(1, -108, 0, 22)
+				y = 68
+			end
+			local needs = if item.kind == "Building" and item.key == "HQ"
+				then hqNeeds(face)
+				else nil
+			local badge: GuiObject? = needs or badgeRow(face, st)
 			if badge then
-				badge.Position = UDim2.fromOffset(98, 48)
+				badge.Position = UDim2.fromOffset(98, y)
 				badge.Size = UDim2.new(1, -108, 0, 28)
 			end
 			if st.forSale then
@@ -872,6 +860,10 @@ local function refreshCards()
 				slot.Size = UDim2.new(1, -20, 0, 58)
 				slot.Parent = face
 				buyButtons(slot, item, st)
+			end
+			if pulseKey == item.key then
+				pulseRing(face)
+				pulsed = root
 			end
 			Style.press(root, function()
 				focusItem(item)
@@ -885,7 +877,20 @@ local function refreshCards()
 		and cards[1]
 		and not (sel and ui and sel:IsDescendantOf(ui))
 	then
-		GuiService.SelectedObject = cards[1]
+		GuiService.SelectedObject = pulsed or cards[1]
+	end
+end
+
+-- docs/24 E, docs/25 J: the tutorial points at the HQ / Workshop card while its beat is up; nil stops the pulse.
+function DockController.Pulse(key: string?)
+	pulseKey = key
+	if not displayed then
+		return
+	end
+	if key and tabIndex ~= 1 then
+		pickTab(1) -- the pointed card lives on the Build tab
+	else
+		refreshCards()
 	end
 end
 
@@ -897,7 +902,7 @@ local function refreshStrip()
 	end
 	content:ClearAllChildren()
 	local item = focused
-	holder.Visible = item ~= nil and tabIndex == 2
+	holder.Visible = item ~= nil
 	if not item then
 		return
 	end
@@ -938,150 +943,14 @@ local function refreshStrip()
 	end
 end
 
--- A flat paper blueprint on an empty lot: blue sheet, white grid and border, the item's line drawing.
--- Solid and only lifted off the plate, never a 3D preview (docs/23 (n), no holograms).
--- A locked item's chain: oval links across the sheet and a padlock in the middle (docs/23 (q)).
-local function chain(gui: SurfaceGui, size: Vector2)
-	local holder = Instance.new("Frame")
-	holder.Name = "Chain"
-	holder.BackgroundTransparency = 1
-	holder.AnchorPoint = Vector2.new(0.5, 0.5)
-	holder.Position = UDim2.fromScale(0.5, 0.5)
-	local long = math.min(size.X, size.Y) * PAPER_PPS
-	holder.Size = UDim2.fromOffset(long, long)
-	holder.ZIndex = 4
-	holder.Parent = gui
-	local n = 7
-	local link = long / (n - 1)
-	for i = 0, n - 1 do
-		local f = Instance.new("Frame")
-		f.Name = "Link"
-		f.BackgroundTransparency = 1
-		f.AnchorPoint = Vector2.new(0.5, 0.5)
-		f.Position = UDim2.fromScale(i / (n - 1), i / (n - 1))
-		-- alternate links: one seen flat (an oval), the next on edge (a slim bar)
-		f.Size = UDim2.fromOffset(link * 0.95, link * (if i % 2 == 0 then 0.5 else 0.22))
-		f.Rotation = 45
-		f.ZIndex = 4
-		local corner = Instance.new("UICorner")
-		corner.CornerRadius = UDim.new(0.5, 0)
-		corner.Parent = f
-		local stroke = Instance.new("UIStroke")
-		stroke.Color = Color3.fromRGB(235, 235, 240)
-		stroke.Thickness = math.max(0.3 * PAPER_PPS, link * 0.09)
-		stroke.Parent = f
-		f.Parent = holder
-	end
-	local lock = Instance.new("Frame")
-	lock.Name = "Padlock"
-	lock.BackgroundTransparency = 1
-	lock.AnchorPoint = Vector2.new(0.5, 0.5)
-	lock.Position = UDim2.fromScale(0.5, 0.5)
-	lock.Size = UDim2.fromOffset(long * 0.34, long * 0.34)
-	lock.Rotation = 90 -- upright from the build camera, like the drawing
-	lock.ZIndex = 5
-	lock.Parent = holder
-	local icon = Style.icon(lock, "lock")
-	icon.ZIndex = 5
-end
-
-local function makePaper(
-	item: DockBlueprints.Item,
-	frame: CFrame,
-	parent: Instance,
-	locked: boolean
-)
-	local cf, size = DockBuild.paper(item, frame)
-	local p = Instance.new("Part")
-	p.Name = "Blueprint"
-	p.Size = Vector3.new(size.X, 0.2, size.Y)
-	p.CFrame = cf
-	p.Color = if locked then PAPER_LOCKED else PAPER
-	p.Material = Enum.Material.SmoothPlastic
-	p.Anchored, p.CanCollide, p.CanTouch, p.CanQuery, p.CastShadow = true, false, false, true, false
-	local gui = Instance.new("SurfaceGui")
-	gui.Face = Enum.NormalId.Top
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = PAPER_PPS
-	gui.LightInfluence = 1
-	gui.Parent = p
-	local function rule(pos: UDim2, sz: UDim2)
-		local f = Instance.new("Frame")
-		f.BorderSizePixel = 0
-		f.BackgroundColor3 = Color3.new(1, 1, 1)
-		f.BackgroundTransparency = 0.6
-		f.Position = pos
-		f.Size = sz
-		f.Parent = gui
-	end
-	for x = 2, size.X - 1, 2 do
-		rule(UDim2.fromOffset(x * PAPER_PPS - 1, 0), UDim2.new(0, 2, 1, 0))
-	end
-	for z = 2, size.Y - 1, 2 do
-		rule(UDim2.fromOffset(0, z * PAPER_PPS - 1), UDim2.new(1, 0, 0, 2))
-	end
-	local inset = 0.6 * PAPER_PPS
-	local border = Instance.new("Frame")
-	border.BackgroundTransparency = 1
-	border.Position = UDim2.fromOffset(inset, inset)
-	border.Size = UDim2.new(1, -2 * inset, 1, -2 * inset)
-	local stroke = Instance.new("UIStroke")
-	stroke.Color = Color3.new(1, 1, 1)
-	stroke.Thickness = 0.35 * PAPER_PPS
-	stroke.Parent = border
-	border.Parent = gui
-	local side = math.min(size.X, size.Y) * 0.62 * PAPER_PPS
-	local art = Instance.new("Frame")
-	art.Name = "Drawing"
-	art.BackgroundTransparency = 1
-	art.AnchorPoint = Vector2.new(0.5, 0.5)
-	art.Position = UDim2.fromScale(0.5, 0.5)
-	art.Size = UDim2.fromOffset(side, side)
-	art.Rotation = 90 -- a Top-face SurfaceGui's up is the paper's -X; this turns the drawing upright from the build camera
-	art.Parent = gui
-	drawGlyph(art, item, math.max(0.25 * PAPER_PPS, side / 30))
-	if locked then
-		chain(gui, size)
-	end
-	p.Parent = parent
-	paperItems[p] = item
-end
-
-local function clearPapers()
-	if papers then
-		papers:Destroy()
-		papers = nil
-	end
-	paperItems = {}
-end
-
-local function refreshPapers()
-	clearPapers()
-	local b = plotFrame
-	if not b then
-		return
-	end
-	local owned = ownedMap()
-	local folder = Instance.new("Folder")
-	folder.Name = "BuildBlueprints"
-	for _, item in DockBlueprints.onIsland(owned) do
-		makePaper(item, b, folder, DockBlueprints.needs(item, owned) ~= nil)
-	end
-	folder.Parent = Workspace
-	papers = folder
-end
-
 local function islandView(duration: number)
 	local b = plotFrame
 	if b then
-		fly(
-			DockBuild.camera(b, DockBuild.ISLAND_RADIUS, aspect(), nil, free(), bandShare()),
-			duration
-		)
+		fly(DockBuild.camera(b, DockBuild.ISLAND_RADIUS, aspect(), nil, free()), duration)
 	end
 end
 
--- Zoom to an item's lot (from its card or its paper on the island) and show its strip. `room` widens the view
+-- Focus on tap (docs/25 J): zoom to an item's building or its empty lot and show its strip. `room` widens the view
 -- (a building going up is taller than its footprint).
 focusItem = function(item: DockBlueprints.Item, room: number?)
 	local b = plotFrame
@@ -1092,28 +961,20 @@ focusItem = function(item: DockBlueprints.Item, room: number?)
 	local spot, size = DockBuild.spot(item)
 	outlineSpot(b * spot, size)
 	local at, paperSize = DockBuild.paper(item, b)
-	fly(
-		DockBuild.focus(b, at.Position, paperSize * (room or 1), aspect(), free(), bandShare()),
-		0.6
-	)
-	if tabIndex == 2 then
-		refreshStrip()
-	end
+	fly(DockBuild.focus(b, at.Position, paperSize * (room or 1), aspect(), free()), 0.6)
+	refreshStrip()
 	AudioController.play("UI_Click")
 end
 
 local function unfocus()
 	focused = nil
 	clearOutline()
-	if tabIndex == 1 and buildTree then
-		buildTree.select(nil)
-	end
 	refreshStrip()
 	islandView(0.6)
 end
 
 -- Build mode is a full-screen view: the world HUD (minimap, map, waypoints, ops, dev button) steps aside so
--- the strip and the papers read; the main Hud (Cash) stays.
+-- the cards and the strip read; the main Hud (Cash) stays.
 -- shortcut: keyed by ScreenGui name; switch to a HUD hide API if the HUD gets one.
 local HUD_KEEP = { Hud = true, BuildTablet = true, Freecam = true, ProximityPrompts = true }
 local hiddenGuis: { ScreenGui } = {}
@@ -1140,11 +1001,7 @@ closeBuild = function()
 	end
 	displayed = false
 	focused = nil
-	if buildTree then
-		buildTree.select(nil)
-	end
 	clearOutline()
-	clearPapers()
 	refreshStrip()
 	hideHud(false)
 	if ui then
@@ -1184,58 +1041,38 @@ end
 
 local function redraw()
 	refreshCards()
-	refreshTree()
-	refreshPapers()
 	refreshStrip()
 end
 
 local syncingTabs = false
 
 local function showTab()
-	local bandUp = tabIndex == 1
-	if buildBand then
-		buildBand.Visible = displayed and bandUp
-	end
 	local p = listPanel
 	if p then
-		p.root.Visible = displayed and not bandUp
+		p.root.Visible = displayed
 	end
 	if not displayed then
 		return
 	end
-	if bandUp then
-		refreshTree()
-		if p and GuiService.SelectedObject and GuiService.SelectedObject:IsDescendantOf(p.root) then
-			GuiService.SelectedObject = nil
-		end
-	else
-		refreshCards()
-		if p then
-			p.body.CanvasPosition = Vector2.zero
-			if InputGlyph.device() == "Gamepad" and cards[1] then
-				GuiService.SelectedObject = cards[1]
-			end
+	refreshCards()
+	refreshStrip()
+	if p then
+		p.body.CanvasPosition = Vector2.zero
+		if InputGlyph.device() == "Gamepad" and cards[1] then
+			GuiService.SelectedObject = cards[1]
 		end
 	end
 end
 
 pickTab = function(i: number)
-	local changed = tabIndex ~= i
 	tabIndex = i
 	syncingTabs = true
-	local band = buildTabs
-	if band then
-		band.select(i)
-	end
-	local decor = decorTabs
-	if decor then
-		decor.select(i)
+	local tabs = decorTabs
+	if tabs then
+		tabs.select(i)
 	end
 	syncingTabs = false
 	showTab()
-	if changed and displayed then
-		islandView(0.6) -- the Build band changes the free screen: reframe above it / beside the list
-	end
 end
 
 local function onTab(i: number)
@@ -1257,7 +1094,7 @@ local function buildUI(): ScreenGui
 	gui.Parent = playerGui
 	local canvas = Style.canvas(gui)
 
-	-- Decor: the Kit panel docked on the right, full height, Build / Decor tabs on top
+	-- the Kit panel docked on the right, full height, Build / Decor tabs on top
 	local p = PanelUI.new(canvas, {
 		title = "Build",
 		icon = "build",
@@ -1270,76 +1107,11 @@ local function buildUI(): ScreenGui
 	p.root.Visible = false
 	listPanel = p
 	cardsContent = p.body
-	local TAB_LIST = { { name = "Build", icon = "build" }, { name = "Decor", icon = "gift" } }
-	decorTabs = TabsUI.new(p.top, TAB_LIST, onTab)
-
-	-- Build: the shared tree on a translucent band over the lower part of the island view
-	local band = Instance.new("Frame")
-	band.Name = "BuildTreeBand"
-	band.BackgroundTransparency = 1
-	band.AnchorPoint = Vector2.new(0.5, 1)
-	band.Position = UDim2.new(0.5, 0, 1, -S.margin)
-	band.Size = UDim2.fromScale(0.96, 0.45)
-	band.Visible = false
-	band.ZIndex = 5
-	band.Parent = canvas
-	local _, bandFace =
-		Style.block(band, Style.grad("body"), { shadow = true, radius = S.corner + 4 })
-	bandFace.BackgroundTransparency = 0.1 -- the island and the lot pulse read through it
-	buildBand = band
-
-	local top = Instance.new("Frame")
-	top.Name = "Top"
-	top.BackgroundTransparency = 1
-	top.Position = UDim2.fromOffset(S.pad, S.pad * 0.5)
-	top.Size = UDim2.new(1, -(2 * S.pad + S.close + 8), 0, S.tab)
-	top.ZIndex = 3
-	top.Parent = bandFace
-	local tabBar = TabsUI.new(top, TAB_LIST, onTab)
-	tabBar.root.Size = UDim2.fromScale(1, 1)
-	buildTabs = tabBar
-
-	local close = Style.button(bandFace, UDim2.fromOffset(S.close, S.close + S.lip))
-	close.Name = "Close"
-	close.AnchorPoint = Vector2.new(1, 0)
-	close.Position = UDim2.new(1, -S.pad, 0, S.pad * 0.5 + (S.tab - S.close - S.lip) * 0.5)
-	close.ZIndex = 4
-	local _, closeFace = Style.block(close, Style.grad("close"), { radius = S.cornerSmall })
-	Style.label(closeFace, "X", Theme.Text.title)
-	Style.press(close, closeBuild, S.cornerSmall)
-	bandClose = close
-
-	local host = Instance.new("Frame")
-	host.Name = "Tree"
-	host.BackgroundTransparency = 1
-	host.Position = UDim2.fromOffset(S.pad, S.pad * 0.5 + S.tab + 8)
-	host.Size = UDim2.new(1, -2 * S.pad, 1, -(S.pad * 1.5 + S.tab + 8))
-	host.ZIndex = 3
-	host.Parent = bandFace
-	local tree = TreeView.new(host, {
-		nodes = {},
-		groups = {
-			{ id = "Build", name = "Build", icon = "build", color = "teal" },
-			{ id = "Quest", name = "Quest", icon = "quests", color = "purple" },
-		},
-		onSelect = function(id: string)
-			focusItem(treeItem(id))
-		end,
-		onBuy = treeBuy,
-		onBuyRobux = treeBuyRobux,
-		renderIcon = function(parent: Instance, id: string)
-			drawGlyph(parent :: GuiObject, treeItem(id))
-		end,
-	})
-	tree.root.Size = UDim2.fromScale(1, 1)
-	buildTree = tree
-
-	local function sizeBand()
-		local vp = Style.metrics(band)
-		band.Size = UDim2.fromScale(0.96, if vp.Y > vp.X then 0.5 else 0.45)
-	end
-	sizeBand()
-	canvas:GetAttributeChangedSignal("KitViewport"):Connect(sizeBand)
+	decorTabs = TabsUI.new(
+		p.top,
+		{ { name = "Build", icon = "build" }, { name = "Decor", icon = "gift" } },
+		onTab
+	)
 
 	-- the focus strip, bottom left of the list
 	local holder = Instance.new("Frame")
@@ -1389,72 +1161,32 @@ local function openBuild()
 	screen.Enabled = true
 	hideHud(true)
 	local p = listPanel :: PanelUI.Panel
-	syncingTabs = true
-	if buildTabs then
-		buildTabs.select(tabIndex)
+	if pulseKey then
+		tabIndex = 1 -- the tutorial's card lives on the Build tab
 	end
-	if decorTabs then
-		decorTabs.select(tabIndex)
-	end
-	syncingTabs = false
-	showTab()
-	if tabIndex == 1 then
-		if buildBand then
-			Style.pop(buildBand, true)
+	pickTab(tabIndex)
+	Style.pop(p.root, true)
+	modal.open(p.closeButton)
+	if InputGlyph.device() == "Gamepad" and cards[1] then
+		local want = cards[1]
+		for _, card in cards do
+			if card:GetAttribute("ItemKey") == pulseKey then
+				want = card
+			end
 		end
-	else
-		Style.pop(p.root, true)
-	end
-	refreshPapers()
-	modal.open(if tabIndex == 1 then bandClose else p.closeButton)
-	if tabIndex == 1 then
-		-- skip the X in the gamepad focus: the tree's D-pad owns it (B still closes)
-		if pulseKey and buildTree then
-			buildTree.select(pulseKey)
-		elseif InputGlyph.device() == "Gamepad" then
-			GuiService.SelectedObject = nil
-		end
-	elseif InputGlyph.device() == "Gamepad" and cards[1] then
-		GuiService.SelectedObject = cards[1]
+		GuiService.SelectedObject = want
 	end
 	islandView(0.8)
 	AudioController.play("UI_Click")
 end
 
--- A click / tap on the island in build mode: a paper blueprint focuses its item; empty sea or land backs out.
+-- A click / tap on the island in build mode backs out of the focus (the cards are the way in).
 local function onWorldTap(input: InputObject, processed: boolean)
-	if not displayed or processed or not papers then
+	if not displayed or processed or not focused then
 		return
 	end
 	local kind = input.UserInputType
-	if kind ~= Enum.UserInputType.MouseButton1 and kind ~= Enum.UserInputType.Touch then
-		return
-	end
-	local camera = Workspace.CurrentCamera
-	if not camera then
-		return
-	end
-	local ray = camera:ScreenPointToRay(input.Position.X, input.Position.Y)
-	local params = RaycastParams.new()
-	params.FilterType = Enum.RaycastFilterType.Include
-	params.FilterDescendantsInstances = { papers }
-	local hit = Workspace:Raycast(ray.Origin, ray.Direction * 3000, params)
-	local item = hit and paperItems[hit.Instance]
-	if item then
-		if not sameItem(item, focused) then
-			-- a paper is also a way into its tab: buildings open their node, decor its card strip
-			if item.kind == "Building" and tabIndex ~= 1 then
-				pickTab(1)
-			elseif item.kind == "Decor" and tabIndex ~= 2 then
-				pickTab(2)
-			end
-			if item.kind == "Building" and buildTree then
-				buildTree.select(item.key)
-			else
-				focusItem(item)
-			end
-		end
-	elseif focused then
+	if kind == Enum.UserInputType.MouseButton1 or kind == Enum.UserInputType.Touch then
 		unfocus()
 	end
 end
@@ -1566,10 +1298,8 @@ local function refresh()
 		return
 	end
 	local count = 0
-	for _, key in DockConfig.BUILDINGS do
-		if player:GetAttribute("Dock" .. key) == true then
-			count += 1
-		end
+	for _, n in levelsMap() do
+		count += n -- an upgrade rings the till too
 	end
 	for _, key in DockConfig.DECOR do
 		if player:GetAttribute("Decor" .. key) == true then
@@ -1583,6 +1313,86 @@ local function refresh()
 		CashBurst.playAt(playerGui, view / 2, 0, false)
 	end
 	shownCount = count
+end
+
+-- docs/25 A: a bobbing green Lego arrow over every building you can build or upgrade right now (allowed and
+-- affordable, no site running, not Robux-paid already); none when nothing is possible. Plain parts: no
+-- particles, no glow (docs/25 J). Seen from the third-person camera, the build view too.
+local arrows: { [string]: Model } = {}
+local arrowAt: { [string]: Vector3 } = {}
+
+local function makeArrow(): Model
+	local m = Instance.new("Model")
+	m.Name = "BuildArrow"
+	local function brick(size: Vector3, cf: CFrame)
+		local p = Instance.new("Part")
+		p.Name = "Brick"
+		p.Size = size
+		p.CFrame = cf
+		p.Color = ARROW
+		p.Material = Enum.Material.SmoothPlastic
+		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow =
+			true, false, false, false, false
+		p.Parent = m
+	end
+	-- a down arrow, tip at the pivot: the shaft and a V of two bars
+	brick(Vector3.new(1.6, 6, 1.6), CFrame.new(0, 3.8, 0))
+	brick(
+		Vector3.new(1.6, 4.4, 1.6),
+		CFrame.new(1.556, 1.556, 0) * CFrame.Angles(0, 0, math.rad(-45))
+	)
+	brick(
+		Vector3.new(1.6, 4.4, 1.6),
+		CFrame.new(-1.556, 1.556, 0) * CFrame.Angles(0, 0, math.rad(45))
+	)
+	m.WorldPivot = CFrame.identity
+	return m
+end
+
+-- Over the standing building (its top), or over its empty lot.
+local function arrowSpot(key: string): Vector3?
+	local bay = player:GetAttribute("BayCFrame")
+	if typeof(bay) ~= "CFrame" then
+		return nil
+	end
+	local spot = (bay :: CFrame) * DockConfig.Buildings[key].spot
+	local i = player:GetAttribute("DockPlot")
+	local marina = Workspace:FindFirstChild("Marina")
+	local pm = if type(i) == "number" and marina then marina:FindFirstChild(`Plot{i}`) else nil
+	local built = pm and pm:FindFirstChild(key)
+	if built and built:IsA("Model") then
+		local cf, size = built:GetBoundingBox()
+		return Vector3.new(spot.X, cf.Y + size.Y / 2 + 3, spot.Z)
+	end
+	return spot.Position + Vector3.new(0, 4, 0)
+end
+
+local function refreshArrows()
+	local want: { [string]: Vector3 } = {}
+	if not siteState().key then
+		local levels = levelsMap()
+		local cash = tonumber(snapshot.cash) or 0
+		local prepaid = if type(snapshot.dockPrepaid) == "table" then snapshot.dockPrepaid else {}
+		for _, key in DockConfig.BUILDINGS do
+			local n = (levels[key] or 0) + 1
+			local at = if prepaid[key] then nil else arrowSpot(key)
+			if at and UnlockTree.canBuild(key, n, levels, cash) then
+				want[key] = at
+			end
+		end
+	end
+	for key, m in arrows do
+		if not want[key] then
+			m:Destroy()
+			arrows[key] = nil
+		end
+	end
+	for key in want do
+		local m = arrows[key] or makeArrow()
+		m.Parent = Workspace
+		arrows[key] = m
+	end
+	arrowAt = want
 end
 
 type Booth = { gui: ScreenGui, pickers: { CosmeticPicker.Picker } }
@@ -1716,9 +1526,9 @@ function DockController.Start()
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(function(data: any)
 		if type(data) == "table" then
 			snapshot = data
+			refreshArrows()
 			if displayed then
 				refreshCards()
-				refreshTree()
 				refreshStrip()
 			end
 		end
@@ -1730,15 +1540,16 @@ function DockController.Start()
 		end)
 		if ok and type(data) == "table" then
 			snapshot = data
+			refreshArrows()
 			if displayed then
 				refreshCards()
-				refreshTree()
 				refreshStrip()
 			end
 		end
 	end)
 	local function onProgress()
 		refresh()
+		refreshArrows()
 		if displayed then
 			redraw()
 		end
@@ -1746,11 +1557,25 @@ function DockController.Start()
 	player:GetAttributeChangedSignal("DockPlot"):Connect(onProgress)
 	for _, key in DockConfig.BUILDINGS do
 		player:GetAttributeChangedSignal("Dock" .. key):Connect(onProgress)
+		player:GetAttributeChangedSignal(`DockLevel{key}`):Connect(onProgress)
 	end
 	for _, key in DockConfig.DECOR do
 		player:GetAttributeChangedSignal("Decor" .. key):Connect(onProgress)
 	end
 	refresh()
+	RunService.Heartbeat:Connect(function()
+		if next(arrows) == nil then
+			return
+		end
+		local t = os.clock()
+		local bob = CFrame.new(0, math.sin(t * 3) * 0.8, 0) * CFrame.Angles(0, t * 1.5, 0)
+		for key, m in arrows do
+			local at = arrowAt[key]
+			if at then
+				m:PivotTo(CFrame.new(at) * bob)
+			end
+		end
+	end)
 	UserInputService.InputBegan:Connect(onWorldTap)
 	-- Escape backs out (focus first, then build mode); ContextActionService never sees it, so read it here
 	UserInputService.InputBegan:Connect(function(input: InputObject)
@@ -1821,29 +1646,27 @@ function DockController.Start()
 					prompt.Triggered:Connect(openBuild)
 				end
 			end
+			refreshArrows() -- buildings stream in and out: the arrows follow their tops
 			task.wait(2)
 		end
 	end)
-	-- while the tablet is open the busy lot's timer moves (docs/24 B); a new / finished site redraws the cards
+	-- a new / finished site moves the arrows and, while the tablet is open, redraws the cards; the busy
+	-- lot's timer moves without a rebuild (docs/24 B)
 	task.spawn(function()
 		local lastKey: string? = nil
 		local lastProgress = -1
 		while true do
-			if displayed then
-				local site = siteState()
-				if site.key ~= lastKey then
-					lastKey, lastProgress = site.key, site.progress
+			local site = siteState()
+			if site.key ~= lastKey then
+				lastKey, lastProgress = site.key, site.progress
+				refreshArrows()
+				if displayed then
 					refreshCards()
-					refreshTree()
 					refreshStrip()
-				elseif site.progress ~= lastProgress then
-					lastProgress = site.progress
-					if tabIndex == 1 then
-						refreshTree()
-					else
-						updateTimers()
-					end
 				end
+			elseif displayed and site.progress ~= lastProgress then
+				lastProgress = site.progress
+				updateTimers()
 			end
 			task.wait(0.5)
 		end

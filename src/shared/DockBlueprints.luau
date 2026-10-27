@@ -50,18 +50,6 @@ function DockBlueprints.needs(item: Item, owned: { [string]: boolean }): string?
 	return if item.kind == "Building" then UnlockTree.missing(item.key, owned) else nil
 end
 
--- WP-14e: the lots that get a paper blueprint in build mode: every building and decor not owned yet. Locked
--- buildings get one too (greyed with a chain, docs/23 (q)), so the whole tree reads on the island.
-function DockBlueprints.onIsland(owned: { [string]: boolean }): { Item }
-	local out: { Item } = {}
-	for _, item in DockBlueprints.catalog() do
-		if DockBlueprints.buyable(item) and owned[item.key] ~= true then
-			table.insert(out, item)
-		end
-	end
-	return out
-end
-
 -- The focus strip's one line (DockConfig `desc`).
 function DockBlueprints.desc(item: Item): string
 	if item.kind == "Building" then
