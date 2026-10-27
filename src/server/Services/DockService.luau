@@ -103,7 +103,7 @@ type Plot = {
 	wheelPrompt: ProximityPrompt?,
 	wheelCount: TextLabel?,
 	wheelConn: RBXScriptConnection?,
-	board: Model?, -- the rescue board on the plaza, with the wheel (docs/25 J)
+	rescueBoard: Model?, -- the rescue board on the plaza, with the wheel (docs/25 J)
 }
 
 local plots: { Plot } = {}
@@ -483,8 +483,9 @@ local function placeWheel(plot: Plot)
 	plot.wheelCount = if count and count:IsA("TextLabel") then count else nil
 	paintWheel(plot)
 	-- the rescue board mirrors the wheel east of the avenue, facing the cove
-	plot.board = LeaderboardService.Board(plot.frame * Marina.ISLAND * CFrame.new(28, 5.7, -14))
-	plot.board.Parent = plot.model
+	local board = LeaderboardService.Board(plot.frame * Marina.ISLAND * CFrame.new(28, 5.7, -14))
+	board.Parent = plot.model
+	plot.rescueBoard = board
 end
 
 -- docs/25 J: the streets (plaza, avenue, lanes, bridge road, the quay walks' owner bands) and the prize wheel stand
@@ -510,10 +511,10 @@ local function syncStreets(plot: Plot, owner: Player?, beat: boolean)
 		if plot.wheel then
 			plot.wheel:Destroy()
 		end
-		if plot.board then
-			plot.board:Destroy()
+		if plot.rescueBoard then
+			plot.rescueBoard:Destroy()
 		end
-		plot.wheel, plot.wheelPrompt, plot.wheelCount, plot.board = nil, nil, nil, nil
+		plot.wheel, plot.wheelPrompt, plot.wheelCount, plot.rescueBoard = nil, nil, nil, nil
 	end
 end
 
