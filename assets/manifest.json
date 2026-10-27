@@ -12382,6 +12382,15 @@
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Render_Ochre_ALB.png",
   "type": "Image"
  },
+ "Image:97692b2098401ccdd4faefdd2f9ae0ee6422fb791c39a5dca17e6eeb23ec6725": {
+  "assetId": "133365909591902",
+  "imageId": "133365909591902",
+  "moderation": "Reviewing",
+  "name": "UI_spin",
+  "sha": "97692b2098401ccdd4faefdd2f9ae0ee6422fb791c39a5dca17e6eeb23ec6725",
+  "source": "marketing/ui/icons/spin.png",
+  "type": "Image"
+ },
  "Image:977b3c98f1f6fbaf0d88c114e8d7e2ef8d437f8b0556069484d6d9279e819fae": {
   "assetId": "96625907758777",
   "imageId": "96625907758777",
@@ -15479,6 +15488,15 @@
   "name": "T_StormRunner_Engines_ALB",
   "sha": "c2226e538b78e41f279998c6df3ffdfd0282f18b195c9a07af3be3ce6febf2ef",
   "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_ALB.png",
+  "type": "Image"
+ },
+ "Image:c25be16ac1efa9b8e30a328a1327e32f5f0e809d2c2ac856e856ee98754db851": {
+  "assetId": "107259087936450",
+  "imageId": "107259087936450",
+  "moderation": "Reviewing",
+  "name": "UI_hourglass",
+  "sha": "c25be16ac1efa9b8e30a328a1327e32f5f0e809d2c2ac856e856ee98754db851",
+  "source": "marketing/ui/icons/hourglass.png",
   "type": "Image"
  },
  "Image:c2950fe777b84c8315c434968018c4204a2e32d1847411e2bb2ef85f6a48acc4": {
@@ -22022,6 +22040,16 @@
   "route": "delivery",
   "sha": "360cac0b82921339422463b415051bdd8db5c29978595ffaa274c86714e0bfee",
   "source": "assets/fbx/Spike1/M_Spike1_Tris09990.fbx",
+  "type": "Model"
+ },
+ "Model:3622a184db4dae8262e621351ff6fd07e376184057423011f314f02e5d1392c8": {
+  "assetId": "123338047039762",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "3622a184db4dae8262e621351ff6fd07e376184057423011f314f02e5d1392c8",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD0.fbx",
   "type": "Model"
  },
  "Model:36231ddba089aa23411bb8f5998c3bd3a900f54d8c4c869af6be9e9d81c0abe9": {

@@ -441,6 +441,13 @@ local function itemWork(item: DockBlueprints.Item): number
 end
 
 local function hourglass(parent: GuiObject, side: number)
+	if Style.iconId("hourglass") then
+		local img = Style.icon(parent, "hourglass")
+		img.AnchorPoint = Vector2.new(0.5, 0.5)
+		img.Position = UDim2.fromScale(0.5, 0.5)
+		img.Size = UDim2.fromOffset(side, side)
+		return
+	end
 	local box = Instance.new("Frame")
 	box.Name = "Hourglass"
 	box.BackgroundTransparency = 1

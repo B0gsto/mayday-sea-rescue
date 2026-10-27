@@ -36,6 +36,7 @@ return {
 		crew = "rbxassetid://83085542846827",
 		daily = "rbxassetid://79958924558323",
 		finish_now = "rbxassetid://128824303756965",
+		hourglass = "rbxassetid://107259087936450", -- a build waits: the tablet's busy buttons
 		gift = "rbxassetid://72702946079049",
 		lifebuoy = "rbxassetid://76945613397404",
 		lock = "rbxassetid://135893459775435",
@@ -45,7 +46,7 @@ return {
 		sun = "rbxassetid://110983311998307", -- Golden hour event
 		shop = "rbxassetid://133652722448118",
 		vip = "rbxassetid://89629681853633",
-		spin = "rbxassetid://130789759216108", -- stand-in sparkle until a wheel icon is uploaded
+		spin = "rbxassetid://133365909591902", -- the prize wheel
 		wave = "rbxassetid://78956573306618", -- the wake trail prize icon (Settings' wave art)
 		waves = "rbxassetid://103642240410321", -- spin wheel wake prizes
 	} :: { [string]: string },
