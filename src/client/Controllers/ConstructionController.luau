@@ -170,7 +170,11 @@ local function makeSign(st: Site, build: boolean)
 	gui.Parent = st.post
 	local holder, face = Style.block(gui, Style.grad("ink"), { radius = 10, lip = 4 })
 	holder.Name = "Board"
-	local title = Style.label(face, if def then def.name else st.key, Theme.Text.small)
+	local name = if build
+		then DockConfig.levelName(st.key, tonumber(st.plot:GetAttribute("SiteLevel")) or 1)
+		elseif def then def.name
+		else st.key
+	local title = Style.label(face, name, Theme.Text.small)
 	title.Position = UDim2.fromOffset(10, 6)
 	title.Size = UDim2.new(1, -100, 0, 26)
 	title.TextXAlignment = Enum.TextXAlignment.Left

@@ -834,7 +834,8 @@ local function refreshCards()
 				Style.block(root, Style.grad(if locked then "locked" else colorOf(item)))
 			local well = artWell(face, item, 76)
 			well.Position = UDim2.fromOffset(10, 10)
-			local title = Style.label(face, DockBlueprints.label(item), Theme.Text.heading)
+			local title =
+				Style.label(face, DockBlueprints.label(item, st.level), Theme.Text.heading)
 			title.Name = "Title"
 			title.Position = UDim2.fromOffset(98, 8)
 			title.Size = UDim2.new(1, -108, 0, 32)
@@ -913,7 +914,7 @@ local function refreshStrip()
 	-- keep the Hud's Cash counter (desktop: left edge, under the menu) clear: start right of any left-half HUD
 	-- box in the strip's band
 	local canvas = holder.Parent :: Frame
-	local s = canvas:GetAttribute("KitScale") or 1
+	local s = tonumber(canvas:GetAttribute("KitScale")) or 1
 	local vp = canvas.AbsoluteSize
 	local bottom = vp.Y - S.margin * s
 	local top = bottom - STRIP_H * s
@@ -936,7 +937,7 @@ local function refreshStrip()
 	words.Position = UDim2.fromOffset(112, 0)
 	words.Size = UDim2.new(1, -112 - buyW - 12, 1, 0)
 	words.Parent = content
-	local name = Style.label(words, DockBlueprints.label(item), Theme.Text.heading)
+	local name = Style.label(words, DockBlueprints.label(item, st.level), Theme.Text.heading)
 	name.Size = UDim2.new(1, 0, 0, 36)
 	name.TextXAlignment = Enum.TextXAlignment.Left
 	name.TextWrapped = false
@@ -990,7 +991,8 @@ end
 -- Build mode is a full-screen view: the world HUD (minimap, map, waypoints, ops, dev button) steps aside so
 -- the cards and the strip read; the main Hud (Cash) and the left menu buttons stay.
 -- shortcut: keyed by ScreenGui name; switch to a HUD hide API if the HUD gets one.
-local HUD_KEEP = { Hud = true, Menu = true, BuildTablet = true, Freecam = true, ProximityPrompts = true }
+local HUD_KEEP =
+	{ Hud = true, Menu = true, BuildTablet = true, Freecam = true, ProximityPrompts = true }
 local hiddenGuis: { ScreenGui } = {}
 
 local function hideHud(on: boolean)
