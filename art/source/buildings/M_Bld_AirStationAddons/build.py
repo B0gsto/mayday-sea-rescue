@@ -66,9 +66,11 @@ WSX, WSY = 45.6, 18.7                  # windsock pole, on the pad's NE corner
 WS_TOP = 16.2
 
 # ------------------------------------------------------------------ Lv3 patrol hut (north-west of the hangar)
-# The hut is authored at the old spot (coordinates below) and the whole Lv3 node is moved by HUT_SHIFT on output, so it
-# stands 13+ studs clear of the hangar plinth and 14+ studs clear of the code helipad slab (walk all round it).
-HUT_SHIFT = (-6.0, 9.0)
+# Each node is authored at its old spot and moved by SHIFT on output (island fit, 2026-10-27): the hut pad lands at
+# x 36..56, y -30..-9, in front of the refuel pad with a 6-stud lane (the old spot was off the plate); Lv2 moves 6
+# toward the hangar (pad 0.5 off the plinth) to pull the apron out of the Trophy Hall lot.
+SHIFT = {"Lv2": (-6.0, 0.0), "Lv3": (81.5, -27.0)}
+HUT_SHIFT = SHIFT["Lv3"]
 HX0, HX1, HY0, HY1 = -43.5, -27.5, 0.0, 15.0
 HPX0, HPX1, HPY0, HPY1 = -45.5, -25.5, -3.0, 18.0
 FLOOR = PD                              # hut floor = pad deck top
@@ -436,8 +438,8 @@ def build():
     def out(name, b, node):
         if b.empty():
             return
-        if node == "Lv3":
-            b.v = [(x + HUT_SHIFT[0], y + HUT_SHIFT[1], z) for x, y, z in b.v]
+        dx, dy = SHIFT[node]
+        b.v = [(x + dx, y + dy, z) for x, y, z in b.v]
         obj = b.to_object(name, mat)
         obj.parent = nodes[node]
         role = "col" if name.endswith("_COL") else "visual"
@@ -518,9 +520,9 @@ def build():
     out_cols("Lv3", c)
 
     atts = [
-        lego.attach("ATT_Work_RefuelPad", (HCX, HCY, PR)),
-        lego.attach("ATT_Park_Bowser", ((TRUCK_X0 + TRUCK_X1) / 2, 8.0, PD)),
-        lego.attach("ATT_Work_FuelReel", ((REEL[0] + REEL[2]) / 2, REEL[1] - 2.0, PD)),
+        lego.attach("ATT_Work_RefuelPad", (HCX + SHIFT["Lv2"][0], HCY, PR)),
+        lego.attach("ATT_Park_Bowser", ((TRUCK_X0 + TRUCK_X1) / 2 + SHIFT["Lv2"][0], 8.0, PD)),
+        lego.attach("ATT_Work_FuelReel", ((REEL[0] + REEL[2]) / 2 + SHIFT["Lv2"][0], REEL[1] - 2.0, PD)),
         lego.attach("ATT_Work_PatrolHut", (-35.5 + HUT_SHIFT[0], -1.5 + HUT_SHIFT[1], PD)),
         lego.attach("ATT_Work_FlightBoard", (-35.5 + HUT_SHIFT[0], 13.0 + HUT_SHIFT[1], FLOOR + 0.1)),
     ]
@@ -541,8 +543,9 @@ def build():
         "name": NAME, "budget": BUDGET, "tier": TIER,
         "dims_m": dims, "origin": "free", "tiling": True,
         "size_note": "add-ons only, on the code air station's ground beside the Lv1 hangar (37 x 31 stud plinth, top "
-                     "0.4) and its 36 x 36 helipad at Blender (-38, -27): Lv2 pad x 25..49, y -3..21 on the +X side of the "
-                     "hangar plus a striped apron to x 69, Lv3 hut pad x -51.5..-31.5, y 6..27 north-west of the hangar, 13+ studs clear of the plinth and 14+ of the code pad; front "
+                     "0.4) and its 36 x 36 helipad at Blender (-38, -27): Lv2 pad x 19..43, y -3..21 on the +X side of the "
+                     "hangar (0.5 off the plinth) plus a striped apron to x 63, Lv3 hut pad x 36..56, y -30..-9 in front of the "
+                     "refuel pad (6-stud lane), 17.5 clear of the plinth; front "
                      "-Y, origin the hangar's ground centre, built at 1x (the AirStation row has no scale)",
         "sets": [{"name": SET_NAME, "set": SET, "size": 1024, "wet": False}],
         "waivers": {
@@ -554,11 +557,11 @@ def build():
         "meshes": meshes,
         "attachments": atts,
         "closeups": [
-            {"name": "refuel_pad", "target": [49.0, 9.0, 4.0], "dist": 46, "az": -35, "el": 22},
-            {"name": "bowser", "target": [62.8, 9.0, 4.5], "dist": 24, "az": -40, "el": 12},
-            {"name": "fuel_reel", "target": [55.0, 9.5, 3.5], "dist": 15, "az": -30, "el": 16},
-            {"name": "hut", "target": [-41.5, 16.0, 9.0], "dist": 34, "az": -28, "el": 14},
-            {"name": "hut_door", "target": [-44.0, 10.0, 3.5], "dist": 15, "az": -28, "el": 10},
-            {"name": "tower", "target": [-41.5, 16.5, 15.5], "dist": 20, "az": 22, "el": 10},
+            {"name": "refuel_pad", "target": [43.0, 9.0, 4.0], "dist": 46, "az": -50, "el": 22},
+            {"name": "bowser", "target": [56.8, 9.0, 4.5], "dist": 24, "az": -60, "el": 12},
+            {"name": "fuel_reel", "target": [49.0, 9.5, 3.5], "dist": 15, "az": -30, "el": 16},
+            {"name": "hut", "target": [46.0, -20.0, 9.0], "dist": 34, "az": -28, "el": 14},
+            {"name": "hut_door", "target": [43.5, -26.0, 3.5], "dist": 15, "az": -28, "el": 10},
+            {"name": "tower", "target": [46.0, -19.5, 15.5], "dist": 20, "az": 22, "el": 10},
         ],
     }

@@ -104,7 +104,7 @@ RENDERS = (
 )
 assert all(r[1] for r in RENDERS), "empty render group: %s" % [r[0] for r in RENDERS if not r[1]]
 DETAILS = (
-    ("Crew", lv3, (-36.5, -0.5, 4.5), (-47.0, 19.0, 3.0), 38.0),
+    ("Crew", lv3, (51.0, -36.5, 4.5), (40.5, -17.0, 3.0), 38.0),
 )
 
 os.makedirs(OUT, exist_ok=True)
@@ -116,7 +116,7 @@ scene.render.resolution_percentage = 100
 scene.render.image_settings.file_format = "PNG"
 scene.render.film_transparent = False
 
-pts = turntable.corners(objs)
+pts = turntable.corners(objs + proxy_all)          # backdrop must hold the proxy-fitted cameras
 lo, hi = turntable.bounds(pts)
 size = max(hi.x - lo.x, hi.y - lo.y, 1.0)
 bpy.ops.mesh.primitive_circle_add(vertices=64, radius=size * 4.0, fill_type="NGON", location=(0, 0, lo.z - 0.002))
