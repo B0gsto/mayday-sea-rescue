@@ -7,7 +7,7 @@
 --     0.5 s from DayClock (server time + DayClockOffset; StormService writes the same value rarely);
 --     a storm's look wins over the hour, and hides the sun.
 --   * Sky: swaps the Sky cube faces (src/client/Ocean/SkyAssets) to the dominant preset (Storm
---     above intensity 0.5, Night when the sun is down, else the base) - Roblox can't blend skies.
+--     above intensity 0.5, Calm at dusk / dawn, else the base, also at night) - Roblox can't blend skies.
 --   * Publishes the blended water and haze colours to the ocean as Lighting attributes
 --     OceanWaterColor / OceanHazeColor.
 --   * Dev override (Studio shots, separate module cache): the Lighting attribute WeatherBase
@@ -215,9 +215,9 @@ local function smoothstep(e0: number, e1: number, x: number): number
 	return t * t * (3 - 2 * t)
 end
 
--- 0 by day .. 1 once the sun is well below the horizon.
+-- 0 by day .. 1 once the sun is well below the horizon (about 13 degrees: a long blue hour).
 local function nightFactor(): number
-	return 1 - smoothstep(-0.1, 0.08, Lighting:GetSunDirection().Y)
+	return 1 - smoothstep(-0.22, 0.08, Lighting:GetSunDirection().Y)
 end
 
 local function applySky(key: string)
@@ -276,13 +276,8 @@ local function computeBlend(intensity: number): Preset
 	local stormMix = if n > 0.001
 		then LightingPresets.blend(LightingPresets.Storm, LightingPresets.Night, n * 0.8)
 		else LightingPresets.Storm
-	applySky(
-		if intensity >= 0.5
-			then "Storm"
-			elseif n >= 0.5 then "Night"
-			elseif warm >= 0.5 then "Calm"
-			else name
-	)
+	-- At night the day faces stay up: the engine dims them to a moonlit navy with clouds (dark faces render black).
+	applySky(if intensity >= 0.5 then "Storm" elseif n < 0.5 and warm >= 0.5 then "Calm" else name)
 	local p = if intensity > 0.001
 		then LightingPresets.blend(dayMix, stormMix, intensity)
 		else dayMix

@@ -116,57 +116,62 @@ local Storm: Preset = table.freeze({
 local Night: Preset = table.freeze({
 	ClockTime = 21.5,
 	Brightness = 0.9,
-	ExposureCompensation = 1.1,
-	Ambient = hex("#2A3446"), -- moonlit blue, never pitch dark: boats and survivors read at sea -- tune
-	OutdoorAmbient = hex("#5A6C90"),
+	-- Moonlit, never a void (audit 2026-10-28 P1-1): the day sky faces dimmed by the engine plus a navy haze give the
+	-- sky, a blue-teal sea and a high outdoor fill keep the island and boats readable. Low exposure and bloom so the
+	-- Neon lamps glow instead of blooming into white bars (P1-3).
+	ExposureCompensation = 0.4,
+	Ambient = hex("#36445E"),
+	OutdoorAmbient = hex("#7A8CB4"),
 	ColorShift_Top = hex("#6B7FA0"),
 	EnvironmentDiffuseScale = 0.8,
 	EnvironmentSpecularScale = 1,
-	AtmosphereDensity = 0.26,
-	AtmosphereHaze = 0.5,
-	AtmosphereColor = hex("#2C3850"),
-	AtmosphereDecay = hex("#1A2236"),
+	AtmosphereDensity = 0.25,
+	AtmosphereHaze = 1.0,
+	AtmosphereColor = hex("#4A68A8"),
+	AtmosphereDecay = hex("#30487A"),
 	AtmosphereGlare = 0,
-	CloudsCover = 0.35,
+	CloudsCover = 0.45,
 	CloudsDensity = 0.40,
-	CloudsColor = hex("#2A3038"),
+	CloudsColor = hex("#5A6886"), -- moonlit cloud
 	Saturation = -0.12,
 	Contrast = 0.10,
-	TintColor = hex("#DCE4F0"),
-	BloomIntensity = 0.6,
-	BloomSize = 32,
-	BloomThreshold = 1.0,
+	TintColor = hex("#C8D6F2"),
+	BloomIntensity = 0.3,
+	BloomSize = 24,
+	BloomThreshold = 1.3,
 	SunRaysIntensity = 0,
-	WaterColor = hex("#1E2A30"),
+	WaterColor = hex("#1E6670"),
 })
 
 -- Clear: the always-sunny default (user, 2026-10-22): blue sky, white clouds, warm sun, clear
 -- distance, colours that pop. Brightness/exposure stay moderate so pale ground doesn't blow out. -- tune
 local Clear: Preset = table.freeze({
 	ClockTime = 14,
-	Brightness = 2.6,
-	ExposureCompensation = 0,
-	Ambient = hex("#2E3540"),
-	OutdoorAmbient = hex("#6E7C8C"),
+	-- Lighting study 2026-10-28 (variant C, build/status/2026-10-28/lighting): crisp and saturated, a high sun
+	-- (Lighting.GeographicLatitude 30 and ShadowSoftness 0.15 in default.project.json), an azure sea.
+	Brightness = 2.8,
+	ExposureCompensation = 0.1,
+	Ambient = hex("#2C3440"),
+	OutdoorAmbient = hex("#7A8898"),
 	ColorShift_Top = hex("#FFE6C4"), -- warm sun (map pass 2: warmer)
 	EnvironmentDiffuseScale = 1,
 	EnvironmentSpecularScale = 1, -- sky reflection and sun glints on the sea (playtest 2: 0.55 read as a matte lawn)
-	AtmosphereDensity = 0.21, -- distant land recedes, but the island reads from the air (pass 3 N8: was 0.26)
-	AtmosphereHaze = 0.4,
-	AtmosphereColor = hex("#C9D8DF"),
-	AtmosphereDecay = hex("#5C8DB8"),
-	AtmosphereGlare = 0.25,
+	AtmosphereDensity = 0.15, -- clear distance; the island still reads from the air
+	AtmosphereHaze = 0,
+	AtmosphereColor = hex("#D6E6F0"),
+	AtmosphereDecay = hex("#4F86C0"),
+	AtmosphereGlare = 0.1,
 	CloudsCover = 0.45,
 	CloudsDensity = 0.3,
 	CloudsColor = hex("#FFFFFF"),
-	Saturation = 0.2,
-	Contrast = 0.13,
-	TintColor = hex("#FFFFFF"),
-	BloomIntensity = 0.25,
-	BloomSize = 24,
-	BloomThreshold = 1.4, -- sun glitter only, not the pale ground
-	SunRaysIntensity = 0.06,
-	WaterColor = hex("#1F6E6E"), -- blue-teal, bluer than grass (playtest 2: green-teal #24493C read as lawn)
+	Saturation = 0.3,
+	Contrast = 0.18,
+	TintColor = hex("#FFFCF6"),
+	BloomIntensity = 0.15,
+	BloomSize = 20,
+	BloomThreshold = 1.8, -- sun glitter only, not the pale ground or Neon trim
+	SunRaysIntensity = 0.05,
+	WaterColor = hex("#1A6F86"), -- azure, bluer than grass (playtest 2: green-teal #24493C read as lawn)
 })
 
 local Overcast: Preset = table.freeze({

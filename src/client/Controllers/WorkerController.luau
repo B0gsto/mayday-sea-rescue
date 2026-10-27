@@ -985,22 +985,28 @@ local LIGHT_RANGE = 250
 local function near(at: Vector3): boolean
 	return (at - eye()).Magnitude < LIGHT_RANGE
 end
--- The dock and bridge lamps (tag NightLamp): plain warm light at night, an unlit bulb by day.
+-- The dock and bridge lamps (tag NightLamp): a dim amber glow at night (a pale Neon head blooms into a white bar,
+-- audit P1-3), an unlit bulb in its own colour by day.
+local LAMP_LIT = Color3.fromRGB(230, 140, 60)
 local function lamp(p: Instance, on: boolean)
 	if not p:IsA("BasePart") then
 		return
 	end
+	if p:GetAttribute("DayColor") == nil then
+		p:SetAttribute("DayColor", p.Color)
+	end
 	p.Material = if on then Enum.Material.Neon else Enum.Material.SmoothPlastic
+	p.Color = if on then LAMP_LIT else p:GetAttribute("DayColor") :: Color3
 	local light = p:FindFirstChildOfClass("PointLight")
 	if not light and on then
 		local made = Instance.new("PointLight")
-		made.Color = p.Color
-		made.Range = 24
-		made.Brightness = 1.2
+		made.Range = 16
+		made.Brightness = 0.8
 		made.Parent = p
 		light = made
 	end
 	if light then
+		light.Color = LAMP_LIT
 		light.Enabled = on and near(p.Position)
 	end
 end
