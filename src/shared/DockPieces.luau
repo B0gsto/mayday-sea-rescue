@@ -2501,7 +2501,18 @@ local function hq(m: Model, b: CFrame, level: number?)
 		hut(m, b, "HQ")
 	end
 	local S = b * DockConfig.Buildings.HQ.spot
-	if n < 4 or addonMesh(m, S, n, "M_Bld_HQAddons", "HQMesh") then
+	if n < 4 then
+		return
+	end
+	if addonMesh(m, S, n, "M_Bld_HQAddons", "HQMesh") then
+		if n >= 5 then -- the Lv5 beacon tower is the HQ's light now: the station's ridge beacon goes (no two beacons)
+			for _, name in { "BeaconMast", "BeaconBase", "Beacon" } do
+				local p = m:FindFirstChild(name)
+				if p then
+					p:Destroy()
+				end
+			end
+		end
 		return
 	end
 	part(m, "RadioMast", Vector3.new(1, 26, 1), S * CFrame.new(18, 13, 10), GREY, M.SmoothPlastic)

@@ -280,7 +280,8 @@ function SpinService.WheelSpin(player: Player): { [string]: any }
 	end
 	task.delay(WHEEL_TIME, function()
 		wheelBusy[player] = nil
-		if prize then
+		-- only the rare wins are worth telling the whole server about
+		if prize and (prize.rarity == "Legendary" or prize.rarity == "Mythic") then
 			fireFlex(player, prize)
 		end
 	end)
