@@ -13,6 +13,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local BargePath = require(Shared:WaitForChild("BargePath"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 local DepotController = {}
 
@@ -212,9 +213,24 @@ local function step()
 		local done = BargePath.unloaded(now, nxt, PERIOD)
 		-- the barge ties up: one tug horn at the quay (3D, so only the island's neighbours hear it), at most every
 		-- HORN_GAP s so a player working on their island doesn't hear it every minute
-		if done ~= nil and isl.moored == false and now - lastHorn >= HORN_GAP then
-			lastHorn = now
-			AudioController.play("Horn_Tug", moor.Position, 0.55, 1)
+		if done ~= nil and isl.moored == false then
+			if now - lastHorn >= HORN_GAP then
+				lastHorn = now
+				AudioController.play("Horn_Tug", moor.Position, 0.55, 1)
+			end
+			-- docs/26: a bow wave and foam rings at the bow's waterline (the end nearest the quay), a puff over it
+			local box, size = barge:GetBoundingBox()
+			local reach = if size.Z >= size.X
+				then box.LookVector * size.Z / 2
+				else box.RightVector * size.X / 2
+			local bow = if (box.Position + reach - moor.Position).Magnitude
+					< (box.Position - reach - moor.Position).Magnitude
+				then box.Position + reach
+				else box.Position - reach
+			VFXKit.play("barge_moor", CFrame.new(bow.X, 0, bow.Z), {
+				radius = 2,
+				height = box.Position.Y + size.Y / 2,
+			})
 		end
 		isl.moored = done ~= nil
 		for k, crate in isl.crates do

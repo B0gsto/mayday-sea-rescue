@@ -18,6 +18,7 @@ local Hud = require(
 	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
 ).Hud
 local HudTheme = require(script.Parent.HudTheme)
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 export type Debrief = {
 	show: (d: { [string]: any }, auto: number?) -> (),
@@ -292,8 +293,13 @@ function OpsDebrief.new(parent: GuiObject): Debrief
 				{ Position = OPEN }
 			):Play()
 			shownAt = os.clock()
-			-- the payout flies from the toast's coin into the HUD's Cash counter
+			-- the payout flies from the toast's coin into the HUD's Cash counter; lifebuoy plates and coins round you
 			if (tonumber(d.cash) or 0) > 0 then
+				local root = player.Character
+					and player.Character:FindFirstChild("HumanoidRootPart")
+				if root and root:IsA("BasePart") then
+					VFXKit.play("rescue_done", CFrame.new(root.Position), { radius = 3 })
+				end
 				task.delay(0.9, function()
 					local playerGui = player.PlayerGui
 					if toast.Visible and playerGui then

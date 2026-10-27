@@ -17,6 +17,7 @@ local SpinRules = require(Shared:WaitForChild("SpinRules"))
 local WheelMath = require(Shared:WaitForChild("WheelMath"))
 
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local Kit = UI:WaitForChild("Kit")
 local Style = require(Kit:WaitForChild("Style"))
@@ -82,32 +83,10 @@ local function part(
 	return p
 end
 
-local function burst(at: Vector3, color: Color3, count: number?)
-	local anchor = part("WheelConfetti", Vector3.one, CFrame.new(at), Color3.new(1, 1, 1))
-	anchor.Transparency = 1
-	local emitter = Instance.new("ParticleEmitter")
-	emitter.Texture = "rbxasset://textures/particles/sparkles_main.dds"
-	emitter.Rate = 0
-	emitter.Lifetime = NumberRange.new(1.1, 2.2)
-	emitter.Speed = NumberRange.new(12, 26)
-	emitter.SpreadAngle = Vector2.new(80, 80)
-	emitter.Acceleration = Vector3.new(0, -38, 0)
-	emitter.Size = NumberSequence.new(0.6)
-	emitter.LightEmission = 0.5
-	emitter.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 0),
-		NumberSequenceKeypoint.new(1, 1),
-	})
-	emitter.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, color),
-		ColorSequenceKeypoint.new(0.5, Color3.new(1, 1, 1)),
-		ColorSequenceKeypoint.new(1, color),
-	})
-	emitter.Parent = anchor
-	emitter:Emit(count or 70)
-	task.delay(3, function()
-		anchor:Destroy()
-	end)
+-- docs/26: the win burst, its rarity's colour, sized by rarity (Common 0.4 .. Mythic 1)
+local function burst(at: Vector3, rarity: string)
+	local scale = 0.4 + 0.12 * math.max(SpinRules.rank(rarity) - 1, 0)
+	VFXKit.play("wheel_win", CFrame.new(at), { color = rarityColor(rarity), scale = scale })
 end
 
 local function confetti(userId: number, rarity: string)
@@ -115,7 +94,7 @@ local function confetti(userId: number, rarity: string)
 	local character = winner and winner.Character
 	local root = character and character:FindFirstChild("HumanoidRootPart")
 	if root and root:IsA("BasePart") then
-		burst(root.Position + Vector3.new(0, 7, 0), rarityColor(rarity), 80)
+		burst(root.Position + Vector3.new(0, 7, 0), rarity)
 	end
 end
 
@@ -286,7 +265,7 @@ local function reveal(payload: any, rotor: Model)
 			conn:Disconnect()
 			conn = nil
 			capsule:Destroy()
-			burst(finish, color, 70)
+			burst(finish, payload.rarity)
 			if SpinRules.rank(payload.rarity) >= SpinRules.rank("Rare") then
 				local beam = part(
 					"PrizeBeam",
@@ -370,6 +349,9 @@ local function spin(payload: any)
 			lastTicks = ticks
 			flapAt = os.clock()
 			AudioController.play("UI_Prompt", pivotPart.Position, 0.45, 1.25 + math.random() * 0.2)
+			-- docs/26: streaks fly off the rim where the flapper clicks, along the rim's travel (-X at the top)
+			local at = if flapper then flapper.Position else (base * CFrame.new(0, 6.6, 0)).Position
+			VFXKit.play("wheel_spin", CFrame.fromMatrix(at, -base.RightVector, base.UpVector))
 		end
 		if flapper and flapRest then
 			local swing = math.max(0, 1 - (os.clock() - flapAt) / 0.14)

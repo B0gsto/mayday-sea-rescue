@@ -3,7 +3,8 @@
 -- SiteProgress / SiteRate / SiteBuilders attributes (DockService). Client-only Lego dressing round the lot
 -- (fence, scaffold, a small crane, brick stacks, a sign with the bar / time / crew count); the building is the
 -- server's model, its parts above the progress height hidden locally in BuildSeq's bottom-to-top order. On
--- finish the remaining bricks drop with the BuildSeq bounce, confetti pops and the fence/scaffold go away.
+-- finish the remaining bricks drop with the BuildSeq bounce, VFXKit's build_done / hq_levelup plays and the
+-- fence/scaffold go away.
 -- Late joiners reconcile to the same attributes, so they see the same state.
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -24,6 +25,7 @@ local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local Kit = UI:WaitForChild("Kit")
 local Style = require(Kit:WaitForChild("Style"))
 local Theme = require(Kit:WaitForChild("Theme"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 local ConstructionController = {}
 local player = Players.LocalPlayer
@@ -335,41 +337,6 @@ local function makeProps(st: Site)
 	st.dust.Parent = dust
 end
 
-local function confetti(at: Vector3)
-	local host = Instance.new("Part")
-	host.Name = "BuildConfetti"
-	host.Size = Vector3.new(0.2, 0.2, 0.2)
-	host.Transparency = 1
-	host.Anchored = true
-	host.CanCollide, host.CanQuery, host.CanTouch = false, false, false
-	host.Position = at
-	host.Parent = Workspace
-	for _, colour in
-		{ RED, WHITE, YELLOW, Color3.fromRGB(60, 220, 255), Color3.fromRGB(80, 190, 90) }
-	do
-		local e = Instance.new("ParticleEmitter")
-		e.Color = ColorSequence.new(colour)
-		e.LightEmission = 0.35
-		e.Size = NumberSequence.new(0.8, 0.4)
-		e.Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 0),
-			NumberSequenceKeypoint.new(1, 1),
-		})
-		e.Lifetime = NumberRange.new(1.2, 2)
-		e.Speed = NumberRange.new(14, 26)
-		e.SpreadAngle = Vector2.new(70, 70)
-		e.Acceleration = Vector3.new(0, -30, 0)
-		e.Rotation = NumberRange.new(0, 360)
-		e.RotSpeed = NumberRange.new(-240, 240)
-		e.Rate = 0
-		e.Parent = host
-		e:Emit(16)
-	end
-	task.delay(3, function()
-		host:Destroy()
-	end)
-end
-
 -- docs/25 J: a layered asset (Lv<k>_L<nn>_ meshes, e.g. the Depot and the HQ) rises layer by layer, the pile with
 -- its rack; nil: a lower level's part (no Lv<k>_: Lv1, like the quay and the paths), which the standing building
 -- shows. Parts DockPieces adds around a mesh (the HQ's sign ribbons) carry BuildLv / BuildY (a layer number).
@@ -557,13 +524,13 @@ local function finish(site: Site)
 		task.delay(0.07, function()
 			AudioController.play("UI_Click", top, 3, 0.75)
 		end)
-		confetti(top)
+		-- docs/26: plates ring the footprint, a dust ring, confetti from above the roof (never on the building)
+		local base = CFrame.new(site.center.X, site.ground, site.center.Z)
+		local fx = { radius = math.max(site.hw, site.hd) + 1, height = site.maxY - site.ground + 4 }
+		VFXKit.play(if hq then "hq_levelup" else "build_done", base, fx)
 		if hq then
 			AudioController.play("Music_CrateFanfare", nil, 1, 1)
 			AudioController.play("Bell_Buoy", top, 1.2, 1.1)
-			task.delay(0.35, function()
-				confetti(top + Vector3.new(0, 6, 0))
-			end)
 		end
 	end)
 	site.props:Destroy()

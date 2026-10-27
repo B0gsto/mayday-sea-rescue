@@ -187,6 +187,16 @@ function DevConfig.validate(action: any, args: any): (boolean, any)
 	return true, clean
 end
 
+-- Chat "/vfx <name|all>" (the DEV VFX bench): the preset name to fire on the dev's client, or nil. Only a short
+-- lowercase id passes; the client checks it against VFXKit's presets.
+function DevConfig.vfxName(text: any): string?
+	if type(text) ~= "string" then
+		return nil
+	end
+	local name = string.match(text, "^/vfx%s+([%l%d_]+)%s*$")
+	return if name and #name <= 32 then name else nil
+end
+
 -- Sliding-window rate limit: true (and the stamp is kept) while under RateMax in RateWindow.
 function DevConfig.rateOk(stamps: { number }, now: number): boolean
 	while stamps[1] and now - stamps[1] > DevConfig.RateWindow do
