@@ -5,7 +5,6 @@ local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 ReplicatedFirst:RemoveDefaultLoadingScreen()
@@ -32,7 +31,7 @@ local TIPS = {
 local TIP_SECONDS = 4
 local MIN_SHOW = 2.2
 local LOAD_TIMEOUT = 25
-local FLY_SECONDS = 6.4
+local HANDOFF_WAIT = 5 -- s to wait for the character's root before the hand-off tween
 local FOV = 62
 
 local gui = Instance.new("ScreenGui")
@@ -476,9 +475,6 @@ local function cloudsFor(y: number, base: number)
 		c.Enabled = y < base
 	end
 end
-local canSkip = false
-local skipped = false
-
 local function cleanup()
 	if finished then
 		return
@@ -500,15 +496,14 @@ local function cleanup()
 	end
 	local camera = Workspace.CurrentCamera
 	if camera then
+		local char = player.Character
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		if hum then
+			camera.CameraSubject = hum
+		end
 		camera.CameraType = Enum.CameraType.Custom
 	end
 end
-
-UserInputService.InputBegan:Connect(function()
-	if canSkip then
-		skipped = true
-	end
-end)
 
 local function main()
 	local t0 = os.clock()
@@ -561,11 +556,10 @@ local function main()
 	local firstSession = false
 	local spawnCF: CFrame = RingLayout.Islands[1].spawn
 	local orbitAngle = 0
-	local flyActive = false
-	local flyStart = 0
-	local flyIsland = ringCenter
-	local flySweep = ringCenter
-	local flyLook = ringCenter
+	local handoffActive = false
+	local handoffStart = 0
+	local handoffFrom = LoadingPath.orbit(ringCenter, orbitAngle)
+	local handoffTo = handoffFrom
 
 	local function startOrbit()
 		if reduced ~= false or cameraBound then
@@ -581,17 +575,10 @@ local function main()
 					return
 				end
 				local frame: CFrame
-				if flyActive then
-					local t = math.clamp((os.clock() - flyStart) / FLY_SECONDS, 0, 1)
-					frame = LoadingPath.flyover(
-						t,
-						ringCenter,
-						flyIsland,
-						orbitAngle,
-						flySweep,
-						flyLook,
-						finishPose(bay, firstSession, spawnCF)
-					)
+				if handoffActive then
+					local x =
+						math.clamp((os.clock() - handoffStart) / LoadingPath.HANDOFF_SECONDS, 0, 1)
+					frame = LoadingPath.handoff(handoffFrom, handoffTo, x)
 				else
 					orbitAngle += dt * LoadingPath.ORBIT_SPEED
 					frame = LoadingPath.orbit(ringCenter, orbitAngle)
@@ -637,14 +624,11 @@ local function main()
 	end
 
 	local islandCenter = ringCenter
-	local isleFrame: CFrame? = nil
 	local bayCF = bay
 	if bayCF then
 		local islandOffset = Marina and Marina.ISLAND
 		if typeof(islandOffset) == "CFrame" then
-			local frame = bayCF * islandOffset
-			isleFrame = frame
-			islandCenter = frame.Position
+			islandCenter = (bayCF * islandOffset).Position
 		end
 	end
 
@@ -670,20 +654,9 @@ local function main()
 	setProgress(1, "Ready!")
 
 	local plot = player:GetAttribute("DockPlot")
-	local look = if isleFrame
-		then (isleFrame * CFrame.new(0, 10.4, -28.5)).Position
-		else spawnCF.Position + spawnCF.LookVector * 10
-	local marinaFolder = Workspace:FindFirstChild("Marina")
-	if marinaFolder and type(plot) == "number" then
-		local plotFolder = marinaFolder:FindFirstChild(`Plot{plot}`)
-		local board = plotFolder and plotFolder:FindFirstChild("NameBoard", true)
-		if board and board:IsA("BasePart") then
-			look = board.Position
-		end
-	end
 
 	-- a new profile gets the cold-open jet ski from the server, a returning one ColdOpenDone: wait for
-	-- either (then the character) so the flight has a fixed end
+	-- either so the hand-off has a fixed end
 	while
 		os.clock() < deadline
 		and player:GetAttribute("ColdOpenDone") ~= true
@@ -692,13 +665,6 @@ local function main()
 		task.wait(0.05)
 	end
 	firstSession = coldOpenCraft() ~= nil
-	while not firstSession and os.clock() < deadline do
-		local char = player.Character
-		if char and char:FindFirstChild("HumanoidRootPart") then
-			break
-		end
-		task.wait(0.05)
-	end
 	if type(plot) == "number" then
 		local islandRow = RingLayout.Islands[plot]
 		if islandRow then
@@ -715,33 +681,32 @@ local function main()
 	end
 
 	task.wait(0.35)
-	local initialFinish = finishPose(bay, firstSession, spawnCF)
-	local from = LoadingPath.spiral(1, ringCenter, islandCenter, orbitAngle)
-	local away = (from.Position - initialFinish.Position) * Vector3.new(1, 0, 1)
-	if away.Magnitude < 1 then
-		away = Vector3.new(from.LookVector.X, 0, from.LookVector.Z)
-	end
-	if away.Magnitude < 1e-3 then
-		away = Vector3.new(0, 0, 1)
-	end
-	local sweep = look + away.Unit * 30 + Vector3.new(0, 10, 0) -- the sign reads, the lens stays clear of it
-	flyIsland = islandCenter
-	flySweep = sweep
-	flyLook = look
-	flyStart = os.clock()
-	flyActive = true
-	canSkip = true
-	fadeOverlay(0.9)
-
-	while os.clock() - flyStart < FLY_SECONDS do
-		if skipped then
+	-- the character may still be spawning: wait for its root (at most 5 s) so the hand-off ends behind it
+	local waitUntil = os.clock() + HANDOFF_WAIT
+	while os.clock() < waitUntil do
+		local char = player.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
+		if root and root:IsA("BasePart") then
 			break
 		end
 		task.wait(0.05)
 	end
-
+	fadeOverlay(0.5)
+	task.wait(0.5)
 	local final = finishPose(bay, firstSession, spawnCF)
 	local camera = Workspace.CurrentCamera
+	handoffFrom = if camera and cameraBound
+		then camera.CFrame
+		else LoadingPath.orbit(ringCenter, orbitAngle)
+	handoffTo = final
+	handoffStart = os.clock()
+	handoffActive = true
+	startOrbit() -- the orbit task may not have bound the render step yet
+
+	while os.clock() - handoffStart < LoadingPath.HANDOFF_SECONDS do
+		task.wait(0.05)
+	end
+
 	if camera then
 		camera.CameraType = Enum.CameraType.Scriptable
 		camera.CFrame = final
@@ -760,7 +725,6 @@ task.spawn(function()
 	end)
 	if not ok then
 		warn(`[LoadingScreen] {err}`)
-		canSkip = false
 		cleanup()
 		if gui.Parent then
 			fadeOverlay(0.4)
