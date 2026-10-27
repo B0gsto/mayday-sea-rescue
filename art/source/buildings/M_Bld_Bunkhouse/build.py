@@ -359,7 +359,7 @@ def build_lv1():
     col(L, -9.5, -4.5, -0.4, 0.4, dz, E1)
     col(L, 4.5, 9.5, -0.4, 0.4, dz, E1)
     col(L, -0.4, 0.4, 0.4, 9, fl, E1)
-    col(L, -14.8, 14.8, -10.8, 10.8, E1, R1)
+    col(L, -14.8, 14.2, -10.8, 10.8, E1, R1)      # stops at the east stair's inner edge (the plate overhangs it)
 
 
 # ----------------------------------------------------------------------------------------------------- Lv2
@@ -439,7 +439,7 @@ def build_lv2():
     att("ATT_Balcony_01", (0.0, -11.8, F2))
 
     fl = F2
-    col(L, -14.8, 14.8, -10.8, 10.8, Z2, fl)
+    col(L, -14.8, 14.2, -10.8, 10.8, Z2, fl)      # east stair's inner edge, as Lv1's roof
     col(L, -9, 9, -13.6, -10.8, fl - 0.6, fl)
     dz = Z2 + DOOR
     col(L, -14, -3, -10, -9, fl, E2)
@@ -453,7 +453,7 @@ def build_lv2():
     col(L, -13, -4, -0.4, 0.4, fl, E2)
     col(L, 4, 13, -0.4, 0.4, fl, E2)
     col(L, -4, 4, -0.4, 0.4, dz, E2)
-    col(L, -14.8, 14.8, -10.8, 10.8, E2, R2)
+    col(L, -14.8, 14.8, -10.8, 10.0, E2, R2)      # stops at the back treads' inner edge (y 10.0)
 
 
 # ----------------------------------------------------------------------------------------------------- Lv3
@@ -516,7 +516,7 @@ def build_lv3():
     att("ATT_Deck_01", (1.6, 11.8, F3))
 
     fl = F3
-    col(L, -14.5, 14.5, -10.5, 10.5, Z3 - 1.2, fl)
+    col(L, -14.5, 14.5, -10.5, 10.0, Z3 - 1.2, fl)    # back treads' inner edge, as Lv2's roof
     dz = Z3 + DOOR
     col(L, -10, 10, -7, -6, fl, E3)
     col(L, -10, -9, -6, 6, fl, E3)
@@ -603,6 +603,8 @@ def build_lv5():
     for a, b in (((-14.0, -10.0), (14.0, -10.0)), ((-14.0, -9.75), (-14.0, 9.75)), ((14.0, -9.75), (14.0, 9.75)),
                  ((-14.0, 10.0), (-0.4, 10.0)), ((2.5, 10.0), (14.0, 10.0))):     # solid fence, gate at the stair head
         fence(L, "L02", (*a, zd), (*b, zd), ht - 0.4)
+    (cx, cy, cz), (sx, sy, sz) = COLS[L][-1]      # the stair-side run's box stops at the back treads' edge (y 10.0)
+    COLS[L][-1] = ((cx, cy - 0.125, cz), (sx, sy - 0.25, sz))
     # benches against the side fences, the rest of the deck stays open floor
     for sx in (-1, 1):
         x = sx * 12.9

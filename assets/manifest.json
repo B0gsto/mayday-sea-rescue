@@ -20677,6 +20677,16 @@
   "source": "assets/fbx/M_Hbr_FishBox_01/M_Hbr_FishBox_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:15f910517e603bca719492fc8c4abd4b6169687be21eec0e169aa63b0672d41b": {
+  "assetId": "98519646118598",
+  "moderation": "Approved",
+  "name": "M_Bld_Bunkhouse_LOD0",
+  "rbxm": "assets/models/M_Bld_Bunkhouse_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "15f910517e603bca719492fc8c4abd4b6169687be21eec0e169aa63b0672d41b",
+  "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:166dfcd6ba0178ddc9349058a76bdc36ee6964d4064e8ed17d8c371a2e5e8a35": {
   "assetId": "123892134964088",
   "moderation": "Approved",

@@ -15,6 +15,11 @@
 3. Rebuilt: validate PASS (2,745 checks, 0 failed, 128 waived: LOD UV layout only); LOD0 7,774 visual tris (FBX 9,022
    with the 104 _COL boxes), LOD1 3,458, LOD2 1,148. Turntable, sheet and levels sheet re-rendered (no missing-texture
    pixels; night panes lit).
+4. **Stair collision** (Studio playtest: the walk stopped at the east stair's ninth step): the Lv1 roof plate and Lv2
+   floor boxes stop at x 14.2 (the east stair's inner edge), the Lv2 roof and Lv3 deck boxes at y 10.0 (the back treads'
+   inner edge), and the Lv5 stair-side fence box is 0.25 thick (y 9.75 .. 10.0); visuals unchanged. A box check (every
+   step / tread box against the boxes up to 6 studs above it) leaves only the landing's own edge fences and a 0.04 lip
+   of the Lv1 floor box at the first step. Rebuilt: validate PASS (2,745 checks), only LOD0 changed and was re-uploaded.
 
 **Game code to update (not done here, outside this folder):** `src/shared/DockPieces.luau` `levelMesh` reads the
 collision level with `_Lv(%d)_Col_COL$`; the new names need `_Lv(%d)_Col%d+_COL$`, or every _COL counts as Lv1 and the
