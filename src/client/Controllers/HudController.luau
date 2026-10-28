@@ -225,9 +225,16 @@ local function buildAward()
 	awardLabel.Visible = false
 end
 
+local coldOpen = false
+-- phones: the build tablet's list covers the wallet corner, so it hides with the menu (BuildHidesMenu)
+local function showWallet()
+	walletRegion.Visible = not coldOpen and player:GetAttribute("BuildHidesMenu") ~= true
+end
+
 local function applyColdOpen(active: boolean)
+	coldOpen = active
 	statusRegion.Visible = not active
-	walletRegion.Visible = not active
+	showWallet()
 	noticeRegion.Visible = not active
 end
 
@@ -283,6 +290,7 @@ function HudController.Init()
 	NextChip.mount(Layout.region(gui, "chips")) -- the permanent next-goal chip (docs/24 E)
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)
 	Layout.onColdOpen(applyColdOpen)
+	player:GetAttributeChangedSignal("BuildHidesMenu"):Connect(showWallet)
 
 	-- The "Join crew" prompt is on every multi-seat boat; hide it on our own. FootOnly prompts (bay
 	-- Launch, Talk) hide locally while seated: "E Launch" rode along out of the bay.

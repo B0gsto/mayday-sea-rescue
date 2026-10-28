@@ -117,7 +117,13 @@ return function(t)
 				t.expect(mt.rects.objective.pos.X).toBe(m + menu.size.X + g)
 				local _, _, ox2 = box(mt.rects.objective)
 				t.expect(ox2 <= x - g + 1e-6).toBe(true)
-				t.expect(mt.rects.wallet.pos.X).toBe(mt.rects.objective.pos.X)
+				-- the wallet under the objective, or (short phones) under the minimap; never on the screen centre,
+				-- where the character stands and waypoint pins fall back to
+				local w = mt.rects.wallet
+				local wx, wy, wx2, wy2 = box(w)
+				t.expect(w.pos.X == mt.rects.objective.pos.X or wy >= y + mini.size.Y).toBe(true)
+				local c = mt.usable / 2
+				t.expect(c.X > wx and c.X < wx2 and c.Y > wy and c.Y < wy2).toBe(false)
 			end
 		end
 	)

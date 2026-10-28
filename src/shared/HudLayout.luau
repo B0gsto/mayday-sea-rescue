@@ -262,13 +262,22 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		)
 		walletH = math.max(walletH, 40)
 		local walletW = HudLayout.WALLET_WIDTH * walletH / HudLayout.WALLET_HEIGHT
+		local walletX = objectiveX
+		-- short landscape phones (iPhone SE): under the objective the wallet hung mid-screen on the character's
+		-- head and waypoint pins parked on it (device pass 2026-10-28): it goes under the corner minimap instead
+		local corner = not portrait and walletY + walletH > u.Y * 0.4
+		if corner then
+			walletX, walletY = cardLeft - walletW, m + side + g
+		end
 		mt.rects["wallet"] =
-			rect(Vector2.new(0, 0), Vector2.new(objectiveX, walletY), Vector2.new(walletW, walletH))
-		-- the notice band beside the wallet; too narrow there (phones): under the wallet and the minimap,
-		-- between the thumbstick and jump zones (portrait: under the wallet)
+			rect(Vector2.new(0, 0), Vector2.new(walletX, walletY), Vector2.new(walletW, walletH))
+		-- the notice band beside the wallet (corner wallet: left of it); too narrow there (phones): under the
+		-- wallet and the minimap, between the thumbstick and jump zones (portrait: under the wallet)
 		local nx, ny = objectiveX + walletW + g, walletY
 		local nw = math.min(cardLeft - g - nx, 420)
-		if nx + nw > mapX then
+		if corner then
+			nx, nw = objectiveX, math.min(walletX - g - objectiveX, 420)
+		elseif nx + nw > mapX then
 			ny = math.max(ny, m + side + g) -- under the corner minimap
 		end
 		local noticeBottom = bottom - HudLayout.SUBTITLE_HEIGHT - g
