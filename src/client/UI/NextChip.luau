@@ -150,20 +150,23 @@ local function nearby(pos: Vector3): boolean
 end
 
 -- The chip's one action: open the tablet at the station, else lead there.
+-- On foot anywhere: the build tablet opens on the shown goal's card (owner 2026-10-28: the station pointer alone read as
+-- "does nothing"). At the helm it points at the station instead: build mode would freeze you at sea.
 local function activate()
-	local station = stationPoint()
-	if not station then
-		return
-	end
-	if nearby(station) then
+	local char = player.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	if hum and not hum.SeatPart then
 		local dock =
 			require(script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("DockController"))
-		if dock.OpenBuild() then
+		if dock.OpenBuild(shownKey) then
 			clearPointing()
 			return
 		end
 	end
-	pointAt(station)
+	local station = stationPoint()
+	if station then
+		pointAt(station)
+	end
 end
 
 -- At the price the amount sits on a green pill: one pop as it lands, then it rests.

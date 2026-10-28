@@ -1546,9 +1546,18 @@ local function boothCheck()
 end
 
 -- The Next chip (UI/NextChip) opens the tablet when the player already stands at the station.
-function DockController.OpenBuild(): boolean
+-- focusKey (the Next chip's goal): open on that building's or decor's card, its lot in view
+function DockController.OpenBuild(focusKey: string?): boolean
 	if not displayed then
 		openBuild()
+	end
+	if displayed and focusKey then
+		for _, item in DockBlueprints.catalog() do
+			if item.key == focusKey then
+				focusItem(item)
+				break
+			end
+		end
 	end
 	return displayed
 end
