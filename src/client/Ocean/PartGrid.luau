@@ -102,9 +102,14 @@ local function triangle(grid: PartGrid, n: number, a: Vector3, b: Vector3, c: Ve
 	cframes[n + 1] = CFrame.fromMatrix((a + c) / 2 - sink, -right, up, -back)
 end
 
+-- Crest facets: a full storm's facet means peak near 3 studs, 1.5+ is about the top 15 % of facets. -- tune
+local CREST_BUCKET = OceanPalette.SEA_BUCKET + math.ceil(OceanPalette.HALF * 0.45)
+local CREST_FOAM = Color3.fromHex("#D6E6E2")
+
 -- heightAt(x, z) -> world Y of the surface. tint: the flat-sea colour (matches the far plane);
 -- troughs and crests blend toward the palette's navy / foam. foam 0..1 (storm intensity, quantised by the
--- caller): whitecaps, the highest crests whiten (the mesh ocean's foam overlay is off while the Part grid stands in).
+-- caller): whitecaps, only the crest tips lift toward foam (the mesh ocean's foam overlay is off while the
+-- Part grid stands in); whitening whole facets read as ice floes (wx1 AD).
 function PartGrid.update(
 	grid: PartGrid,
 	cx: number,
@@ -147,8 +152,11 @@ function PartGrid.update(
 					local colour = tint:Lerp(
 						colours[b],
 						math.min(math.abs(b - OceanPalette.SEA_BUCKET) / OceanPalette.HALF, 1)
-							* (if b > OceanPalette.SEA_BUCKET then 0.35 + 0.55 * foam else 0.35)
+							* 0.35
 					)
+					if b >= CREST_BUCKET and foam > 0 then
+						colour = colour:Lerp(CREST_FOAM, 0.4 * foam)
+					end
 					parts[n + k * 2].Color = colour
 					parts[n + k * 2 + 1].Color = colour
 				end
