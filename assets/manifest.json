@@ -3167,6 +3167,15 @@
   "source": "assets/textures/M_Sea_MailSeaplane/T_MailSeaplane_Airframe_MET.png",
   "type": "Image"
  },
+ "Image:25dc5586dbbd781888f8ca43d6d2e2da748242098336070137a2653ea258847a": {
+  "assetId": "115902828261976",
+  "imageId": "115902828261976",
+  "moderation": "Reviewing",
+  "name": "UI_edge_pointer_pin",
+  "sha": "25dc5586dbbd781888f8ca43d6d2e2da748242098336070137a2653ea258847a",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-a3c74f3a/build/ui-art/edge_pointer.png",
+  "type": "Image"
+ },
  "Image:25f87ed9fdbf7fa6c6c081cb4d5523182931fe45961fb68531c8d06b1e7daa1a": {
   "assetId": "71858203933490",
   "imageId": "71858203933490",
@@ -4005,6 +4014,15 @@
   "name": "T_RIB_Deck_MET",
   "sha": "2fd201de7da17e9bde8f0fc9b6b9dc866a26b3db421d67837238dec3c870bcb5",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_MET.png",
+  "type": "Image"
+ },
+ "Image:2ff3219140a94a876fff375f5350e9673564b81ef945dbc726a6d84385c24e97": {
+  "assetId": "96011335512407",
+  "imageId": "96011335512407",
+  "moderation": "Reviewing",
+  "name": "UI_pin_Beam",
+  "sha": "2ff3219140a94a876fff375f5350e9673564b81ef945dbc726a6d84385c24e97",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-a3c74f3a/build/ui-art/pin_Beam.png",
   "type": "Image"
  },
  "Image:3059c9fb54bfaea7ecd7a61e969711b358172dd1df45d54dc6200e1821de9f29": {
@@ -7642,6 +7660,15 @@
   "source": "assets/textures/M_Veg_Wrack_Kit/T_FoliageMarine_Main_RGH.png",
   "type": "Image"
  },
+ "Image:5bcae475cb6a1af5eb3a06ece50835e92ed52273f8fd6f24192c2290afcfca10": {
+  "assetId": "102982529774636",
+  "imageId": "102982529774636",
+  "moderation": "Reviewing",
+  "name": "UI_pin_Amber",
+  "sha": "5bcae475cb6a1af5eb3a06ece50835e92ed52273f8fd6f24192c2290afcfca10",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-a3c74f3a/build/ui-art/pin_Amber.png",
+  "type": "Image"
+ },
  "Image:5be80f0ae8250ec75d9d49ad6f9bed5be7ba112b7380bcf339943b036514a61d": {
   "assetId": "71054883790015",
   "imageId": "71054883790015",
@@ -9694,6 +9721,15 @@
   "source": "assets/ui/signs/sign_street_PortHaven_St2.png",
   "type": "Image"
  },
+ "Image:76939c12af450a79cd0284f16a264f0424048431f730dee0c190b470c324e208": {
+  "assetId": "74018470016385",
+  "imageId": "74018470016385",
+  "moderation": "Reviewing",
+  "name": "UI_build_arrow",
+  "sha": "76939c12af450a79cd0284f16a264f0424048431f730dee0c190b470c324e208",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-a3c74f3a/build/ui-art/build_arrow.png",
+  "type": "Image"
+ },
  "Image:769439d9c9346cd45ad1ed54b6c01e7edee8c3de6a4bb78b6f7bb2da125906c9": {
   "assetId": "124660107845917",
   "imageId": "124660107845917",
@@ -10441,6 +10477,15 @@
   "source": "assets/textures/Materials/T_Mat_Gravel_ALB.png",
   "type": "Image"
  },
+ "Image:7fb0f06e119c9825ca421e1bad3b7becf43984b5642d7c978dca992eb42d1ffc": {
+  "assetId": "85241927129052",
+  "imageId": "85241927129052",
+  "moderation": "Reviewing",
+  "name": "UI_pin_Quest",
+  "sha": "7fb0f06e119c9825ca421e1bad3b7becf43984b5642d7c978dca992eb42d1ffc",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-a3c74f3a/build/ui-art/pin_Quest.png",
+  "type": "Image"
+ },
  "Image:7fdf6896040e725d3776bcd4e7873080ace20183b4c53b1dfb576152d9fee378": {
   "assetId": "107028419685329",
   "imageId": "107028419685329",
@@ -10763,6 +10808,15 @@
   "name": "T_RIB_Hull_MET",
   "sha": "8391f725d3c4126dedd9aaabbd8d83b91d89616e5492b73a3fb49121b146f8e9",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_MET.png",
+  "type": "Image"
+ },
+ "Image:8392de648e9758f3fe4eacb4c5d4be589df923ede62657f6a6d77d5ddde16f3a": {
+  "assetId": "126485934783621",
+  "imageId": "126485934783621",
+  "moderation": "Reviewing",
+  "name": "UI_pin_Red",
+  "sha": "8392de648e9758f3fe4eacb4c5d4be589df923ede62657f6a6d77d5ddde16f3a",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-a3c74f3a/build/ui-art/pin_Red.png",
   "type": "Image"
  },
  "Image:839faba48ca1a283519de764bd956f6b25b901c9fe700f861aaae8ef4305ddd8": {
@@ -14092,6 +14146,15 @@
   "source": "assets/textures/M_Veh_Optimist/T_Optimist_Fittings_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:ac3d0f2da072794bd035b2e8b9040701489c5c79976457db20234b8e83afeb94": {
+  "assetId": "77504682990987",
+  "imageId": "77504682990987",
+  "moderation": "Reviewing",
+  "name": "UI_pin_Craft_blue",
+  "sha": "ac3d0f2da072794bd035b2e8b9040701489c5c79976457db20234b8e83afeb94",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-a3c74f3a/build/ui-art/pin_Craft.png",
+  "type": "Image"
+ },
  "Image:ac4c3eb266f804ba1dc9f94e65d50345d3f12f4fc7f0143d75d09be63689d336": {
   "assetId": "119651059409836",
   "imageId": "119651059409836",
@@ -14489,6 +14552,15 @@
   "name": "T_Road_CobblesTile_RGH_Wet",
   "sha": "b11e07eb4fb682a98e0419f5e9cd4eb57da7ebdc8e7a33f096934b17b8a0479b",
   "source": "assets/textures/M_Road_Ribbon/T_Road_CobblesTile_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:b1297e39d742fcd3c1d801812e7e941239fbcd68b2ccca297d6a90be97e50dfc": {
+  "assetId": "90684502176230",
+  "imageId": "90684502176230",
+  "moderation": "Reviewing",
+  "name": "UI_edge_pointer",
+  "sha": "b1297e39d742fcd3c1d801812e7e941239fbcd68b2ccca297d6a90be97e50dfc",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-a3c74f3a/build/ui-art/edge_pointer.png",
   "type": "Image"
  },
  "Image:b1402b4fa1354689a98c785823dd92e47b5dede6f63d8292764b7839b9d88a71": {
@@ -16284,6 +16356,15 @@
   "name": "T_GaleQueen_Deck_ALB",
   "sha": "cc25670cb1111eace92d993fa40310ac1bc5b93a2ff03a40b5be38eea4ed146b",
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_ALB.png",
+  "type": "Image"
+ },
+ "Image:cc3fba1b9e02ac71d2f3d9311e9377f9695b960f15698dbb26fb9cef592e53a6": {
+  "assetId": "116119847629958",
+  "imageId": "116119847629958",
+  "moderation": "Reviewing",
+  "name": "UI_pin_Green",
+  "sha": "cc3fba1b9e02ac71d2f3d9311e9377f9695b960f15698dbb26fb9cef592e53a6",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-a3c74f3a/build/ui-art/pin_Green.png",
   "type": "Image"
  },
  "Image:cc4c54f0278f69937312e81fc1db69a35cf4eac586cf6d9ce6ebe33e8e60db9c": {
@@ -20027,6 +20108,15 @@
   "name": "T_FoliageMarine_Main_ALB",
   "sha": "fbe002410ad577a06530bcedf16002ef626ef721f37ae43dc7b0ae4484dfa236",
   "source": "assets/textures/M_Veg_Eelgrass_Kit/T_FoliageMarine_Main_ALB.png",
+  "type": "Image"
+ },
+ "Image:fbe6dbc2a72fb91fe05e7d93ab2c151faba25fdc82ee6eadb1e33ba54027285c": {
+  "assetId": "131434931163216",
+  "imageId": "131434931163216",
+  "moderation": "Reviewing",
+  "name": "UI_pin_Craft",
+  "sha": "fbe6dbc2a72fb91fe05e7d93ab2c151faba25fdc82ee6eadb1e33ba54027285c",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-a3c74f3a/build/ui-art/pin_Craft.png",
   "type": "Image"
  },
  "Image:fc0b96657cb91248fb769e2efd70791e75de6d9abd59ce2461fb501ac7b23fbf": {
