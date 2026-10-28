@@ -3,6 +3,7 @@
 -- rolling up and, on a day-7 crate, a gold star tag. Client only, code-built Parts and 2D frames.
 -- The number and the coin are the only text.
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
@@ -13,6 +14,9 @@ local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 local OceanQuality =
 	require(script.Parent.Parent:WaitForChild("Ocean"):WaitForChild("OceanQuality"))
+local UiImages = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
+)
 
 local StreakReward = {}
 
@@ -153,14 +157,12 @@ local function cashRoll(playerGui: Instance, fromCash: number, cash: number, wee
 	word.Parent = frame
 
 	if weekly then
-		local star = Instance.new("TextLabel")
-		star.Position = UDim2.new(1, -30, 0, 8)
-		star.Size = UDim2.fromOffset(24, 24)
+		local star = Instance.new("ImageLabel")
+		star.Position = UDim2.new(1, -40, 0, 6)
+		star.Size = UDim2.fromOffset(32, 32)
 		star.BackgroundTransparency = 1
-		star.Font = Enum.Font.BuilderSansMedium
-		star.TextSize = 22
-		star.TextColor3 = GOLD
-		star.Text = "★"
+		star.Image = UiImages.Badges.StarOn
+		star.ScaleType = Enum.ScaleType.Fit
 		star.Parent = frame
 	end
 

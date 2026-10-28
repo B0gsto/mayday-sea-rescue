@@ -115,6 +115,19 @@ local function frame(name: string, parent: Instance, props: { [string]: any }?):
 	return f
 end
 
+-- a centred, fitted sticker sprite (tools/ui-art/stickers.py)
+local function sprite(name: string, parent: Instance, image: string, px: number): ImageLabel
+	local t = Instance.new("ImageLabel")
+	t.Name = name
+	t.AnchorPoint = Vector2.new(0.5, 0.5)
+	t.Size = UDim2.fromOffset(px, px)
+	t.BackgroundTransparency = 1
+	t.Image = image
+	t.ScaleType = Enum.ScaleType.Fit
+	t.Parent = parent
+	return t
+end
+
 local function text(
 	name: string,
 	parent: Instance,
@@ -519,11 +532,8 @@ local function buildMinimap()
 	mini.overlay = frame("Blips", root, { Size = UDim2.fromScale(1, 1), ZIndex = 5 })
 	mini.pool = poolNew(mini.overlay)
 
-	local arrow = text("Player", root, "▲", 22, Color3.fromRGB(255, 255, 255))
-	arrow.AnchorPoint = Vector2.new(0.5, 0.5)
+	local arrow = sprite("Player", root, UiImages.Markers.MapPlayer, 32)
 	arrow.Position = UDim2.fromScale(0.5, 0.5)
-	arrow.Size = UDim2.fromOffset(24, 24)
-	arrow.TextStrokeTransparency = 0.2
 	arrow.ZIndex = 8
 	mini.arrow = arrow
 
@@ -778,22 +788,12 @@ local function buildFullMap()
 	full.blips = frame("Blips", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 6 })
 	full.pool = poolNew(full.blips)
 
-	-- you: a big white arrow on a blue disc, outlined, turned to your heading
-	local me = text("Player", canvas, "▲", 34, Color3.fromRGB(255, 255, 255))
-	me.AnchorPoint = Vector2.new(0.5, 0.5)
-	me.Size = UDim2.fromOffset(44, 44)
-	me.BackgroundTransparency = 0.1
-	me.BackgroundColor3 = Color3.fromRGB(30, 120, 255)
-	me.ZIndex = 8
-	corner(me)
-	stroke(me, Color3.fromRGB(255, 255, 255), 3)
-	me.TextStrokeTransparency = 0.2
+	-- you: the map arrow sticker, bigger, turned to your heading
+	local me = sprite("Player", canvas, UiImages.Markers.MapPlayer, 48)
+	me.ZIndex = 9 -- over the gamepad crosshair when they stack
 	full.me = me
-	local cross = text("Cross", canvas, "+", 34, Color3.fromRGB(255, 255, 255))
-	cross.AnchorPoint = Vector2.new(0.5, 0.5)
+	local cross = sprite("Cross", canvas, UiImages.Markers.MapCross, 72) -- its open centre frames the arrow
 	cross.Position = UDim2.fromScale(0.5, 0.5)
-	cross.Size = UDim2.fromOffset(34, 34)
-	cross.TextStrokeTransparency = 0.3
 	cross.Visible = false
 	cross.ZIndex = 8
 	full.cross = cross

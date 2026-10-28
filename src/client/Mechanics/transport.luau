@@ -1,6 +1,5 @@
 --!strict
--- transport (docs 09 step 9, section 5.7): bring them home. The ambulance pad is lit (a blinking blue
--- beacon); no panel in play, the crew braces on every hard landing. Hard slams hurt a cold casualty (the
+-- transport (docs 09 step 9, section 5.7): bring them home. The ambulance pad has a steady blue pin; no panel in play, the crew braces on every hard landing. Hard slams hurt a cold casualty (the
 -- server turns `slam` events into condition, cap 6). The server measures conditionAtEnd when the boat
 -- reaches home; this client reports when it is home: the boat (any speed) or the player on foot (they landed
 -- the casualty and walked up) inside a drop-off zone (Transport.isHome). Controls: drive.
@@ -10,6 +9,9 @@ local Workspace = game:GetService("Workspace")
 
 local BoatColdOpen =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Boat"):WaitForChild("ColdOpen"))
+local UiImages = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
+)
 
 local Step = require(script.Parent.PIW.Step)
 local Ui = require(script.Parent.PIW.Ui)
@@ -50,24 +52,30 @@ local function homePad(): BasePart?
 	return hospital or dock
 end
 
--- A code-built blinking blue beacon over the pad.
+-- A steady pin over the pad (art/source/ui/transport_pin.svg: rescue blue, a white cross): no glow, no blink.
 local function beacon(pad: BasePart): BasePart
 	local b = Instance.new("Part")
 	b.Name = "TransportBeacon"
-	b.Shape = Enum.PartType.Ball
-	b.Size = Vector3.one * 3
-	b.Material = Enum.Material.Neon
-	b.Color = Color3.fromRGB(40, 110, 255)
+	b.Size = Vector3.one
+	b.Transparency = 1
 	b.Anchored = true
 	b.CanCollide = false
 	b.CanQuery = false
-	b.CastShadow = false
+	b.CanTouch = false
 	b.Position = pad.Position + Vector3.new(0, pad.Size.Y / 2 + 8, 0)
-	local light = Instance.new("PointLight")
-	light.Color = b.Color
-	light.Range = 40
-	light.Brightness = 4
-	light.Parent = b
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "Pin"
+	gui.Size = UDim2.fromOffset(60, 81) -- 32 pt+ on a phone, the sprite's tip at the anchor
+	gui.SizeOffset = Vector2.new(0, 0.5)
+	gui.LightInfluence = 0
+	gui.MaxDistance = 1500
+	gui.Parent = b
+	local pin = Instance.new("ImageLabel")
+	pin.Size = UDim2.fromScale(1, 1)
+	pin.BackgroundTransparency = 1
+	pin.Image = UiImages.Markers.TransportPin
+	pin.ScaleType = Enum.ScaleType.Fit
+	pin.Parent = gui
 	b.Parent = Workspace
 	return b
 end
@@ -83,13 +91,12 @@ function Transport.start(
 		return Step.cleanup(s)
 	end
 	local pad = homePad()
-	local lamp = if pad then Ui.add(s.bag, beacon(pad)) else nil
+	if pad then
+		Ui.add(s.bag, beacon(pad))
+	end
 	local slams = 0
 	local function drive()
 		Step.heartbeat(s, function()
-			if lamp then
-				lamp.Transparency = if os.clock() % 0.8 < 0.4 then 0 else 0.9
-			end
 			local slam = World.slam()
 			if slam > Transport.HARD_SLAM then
 				slams += 1

@@ -17,7 +17,8 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
 local SettingsRules = require(Shared:WaitForChild("SettingsRules"))
-local SettingsArt = require(Shared:WaitForChild("Config"):WaitForChild("UiImages")).SettingsArt
+local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
+local SettingsArt = UiImages.SettingsArt
 
 local CosmeticPicker = require(script.Parent:WaitForChild("CosmeticPicker"))
 local Kit = script.Parent:WaitForChild("Kit")
@@ -350,7 +351,7 @@ local function actionRow(
 	color: string,
 	label: string,
 	onTap: () -> ()
-): (Frame, TextLabel)
+): (Frame, ImageLabel)
 	local row = rowRoot(parent, order, 82)
 	local line = row:FindFirstChild("LabelLine", true) :: Frame
 	art(line, artName, color)
@@ -358,11 +359,17 @@ local function actionRow(
 	local hit = Style.button(row, UDim2.fromScale(1, 1))
 	hit.ZIndex = 3
 	Style.press(hit, onTap)
-	local mark = Style.label(line, "", Theme.Text.body, true)
+	-- the kit's green tick (UiImages.VehicleArt.Check), shown while the row's preset is on
+	local mark = Instance.new("ImageLabel")
+	mark.Name = "Tick"
 	mark.AnchorPoint = Vector2.new(1, 0.5)
 	mark.Position = UDim2.new(1, -18, 0.5, 0)
-	mark.Size = UDim2.fromOffset(52, 52)
-	mark.TextXAlignment = Enum.TextXAlignment.Right
+	mark.Size = UDim2.fromOffset(44, 44)
+	mark.BackgroundTransparency = 1
+	mark.Image = UiImages.VehicleArt.Check
+	mark.ScaleType = Enum.ScaleType.Fit
+	mark.Visible = false
+	mark.Parent = line
 	return row, mark
 end
 
@@ -397,9 +404,7 @@ function SettingsPanel.newPanel(canvas: Frame, onClose: () -> ())
 		Comfort.setMany(d)
 	end)
 	table.insert(extra, function()
-		seasick.Text = if SettingsRules.isPreset(Comfort.all() :: any, SettingsRules.SEASICK)
-			then "✓"
-			else ""
+		seasick.Visible = SettingsRules.isPreset(Comfort.all() :: any, SettingsRules.SEASICK)
 	end)
 	order += 1
 	local _, p0 = sliderRow(

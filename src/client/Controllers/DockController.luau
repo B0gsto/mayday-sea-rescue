@@ -68,8 +68,6 @@ local CARD_BUY_H = 168 -- a card with its buy buttons
 local CARD_H = 104 -- owned / not for sale yet
 local STRIP_H = 160 -- the focus strip: name, the badge row
 local OUTLINE = Color3.fromRGB(255, 214, 60)
-local STAR_ON = Color3.fromRGB(255, 206, 46)
-local STAR_OFF = Color3.fromRGB(40, 44, 60)
 
 local snapshot: { [string]: any } = {}
 local livePrice: { [number]: number } = {} -- product id -> Robux price, read from Roblox once
@@ -748,11 +746,13 @@ local function stars(parent: GuiObject, st: Status): Frame
 	row.Parent = parent
 	Style.list(row, true, 2)
 	for i = 1, st.max do
-		local star = Style.label(row, "★", 22)
+		local star = Instance.new("ImageLabel")
 		star.Name = `Star{i}`
-		star.Font = Enum.Font.BuilderSansMedium
-		star.TextColor3 = if i <= st.level then STAR_ON else STAR_OFF
-		star.Size = UDim2.fromOffset(22, 22)
+		star.BackgroundTransparency = 1
+		star.Image = if i <= st.level then UiImages.Badges.StarOn else UiImages.Badges.StarOff
+		star.ScaleType = Enum.ScaleType.Fit
+		star.Size = UDim2.fromOffset(24, 24)
+		star.Parent = row
 		star.LayoutOrder = i
 	end
 	return row
@@ -856,8 +856,8 @@ local function refreshCards()
 			local y = 48
 			if item.kind == "Building" then
 				local row = stars(face, st)
-				row.Position = UDim2.fromOffset(98, 38)
-				row.Size = UDim2.new(1, -108, 0, 22)
+				row.Position = UDim2.fromOffset(98, 37)
+				row.Size = UDim2.new(1, -108, 0, 24)
 				y = 62 -- the badge row ends above the buy slot (SE: "Free" covered "Build")
 			end
 			local needs = if item.kind == "Building" and item.key == "HQ"
