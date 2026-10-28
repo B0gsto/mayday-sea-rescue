@@ -44,28 +44,41 @@ return function(t)
 		function()
 			local cam = B.camera(frame, B.ISLAND_RADIUS, 16 / 9, nil, 0.6)
 			local rel = cam:PointToObjectSpace(centre)
-			local vf = math.tan(math.rad(B.FOV) / 2)
+			local vf = math.tan(math.rad(B.fov(16 / 9 * 0.6)) / 2)
 			local ndcX = rel.X / (-rel.Z * vf * 16 / 9)
 			t.expect(ndcX).toBeCloseTo(-0.4, 2)
-			local plain = B.camera(frame, B.ISLAND_RADIUS, 16 / 9, nil)
-			t.expect((cam.Position - centre).Magnitude > (plain.Position - centre).Magnitude)
-				.toBe(true)
 		end
 	)
 
 	t.test("bottom band: the island centre moves into the visible area above it", function()
-		local vf = math.tan(math.rad(B.FOV) / 2)
-		local plain = B.camera(frame, B.ISLAND_RADIUS, 16 / 9, nil)
+		local vf = math.tan(math.rad(B.fov(16 / 9, 0.55)) / 2)
 		local cam = B.camera(frame, B.ISLAND_RADIUS, 16 / 9, nil, nil, 0.45)
 		local rel = cam:PointToObjectSpace(centre)
 		t.expect(rel.Y / (-rel.Z * vf)).toBeCloseTo(0.45, 2)
-		t.expect((cam.Position - centre).Magnitude > (plain.Position - centre).Magnitude).toBe(true)
 		-- the focus view is raised to the same visible middle
 		local spot = (frame * M.LOTS.Spare3.cf).Position
 		local focus = B.focus(frame, spot, Vector2.new(7, 7), 16 / 9, nil, 0.45)
 		local frel = focus:PointToObjectSpace(spot)
 		t.expect(frel.Y / (-frel.Z * vf)).toBeCloseTo(0.45, 2)
 	end)
+
+	t.test(
+		"a phone's narrow free share widens the FOV so the island stays within draw distance",
+		function()
+			local aspect, free = 667 / 375, 0.45 -- iPhone SE landscape, list on the right
+			local fov = B.fov(aspect * free)
+			t.expect(fov > B.FOV and fov <= B.MAX_FOV).toBe(true)
+			local d = B.distance(B.ISLAND_RADIUS, aspect * free, fov)
+			t.expect(d <= B.SAFE_DISTANCE + 1e-6).toBe(true)
+			local vf = math.tan(math.rad(fov) / 2)
+			t.expect(d * vf * aspect * free >= B.ISLAND_RADIUS).toBe(true) -- still fits across the free share
+			-- the low-quality cull goes by view depth (the sideways pan keeps it), measured in Studio
+			local cam = B.camera(frame, B.ISLAND_RADIUS, aspect, nil, free)
+			t.expect((centre - cam.Position):Dot(cam.LookVector)).toBeCloseTo(d, 1e-3)
+			t.expect(B.fov(100)).toBe(B.fov(1)) -- the vertical fit bounds a wide screen
+			t.expect(B.fov(0.3)).toBe(B.MAX_FOV)
+		end
+	)
 
 	t.test("every catalog item has a lot spot and a footprint", function()
 		local items = DB.catalog()

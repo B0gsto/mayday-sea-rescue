@@ -97,6 +97,7 @@ local closeBuild: () -> ()
 local modal: InputGlyph.Modal
 
 local camValue: CFrameValue? = nil
+local camFov = DockBuild.FOV
 local camTween: Tween? = nil
 local camRun = 0
 local outline: Model? = nil
@@ -170,6 +171,7 @@ local function shake(target: GuiObject?)
 end
 
 local function fly(target: CFrame, duration: number): (number, Tween)
+	camFov = DockBuild.fov(aspect() * free()) -- the FOV DockBuild framed `target` with
 	camRun += 1
 	local run = camRun
 	local cv: CFrameValue
@@ -181,12 +183,12 @@ local function fly(target: CFrame, duration: number): (number, Tween)
 		local camera = Workspace.CurrentCamera
 		made.Value = if camera then camera.CFrame else CFrame.identity
 		made:GetPropertyChangedSignal("Value"):Connect(function()
-			CameraController.SetOverride(made.Value, DockBuild.FOV)
+			CameraController.SetOverride(made.Value, camFov)
 		end)
 		camValue = made
 		cv = made
 	end
-	CameraController.SetOverride(cv.Value, DockBuild.FOV)
+	CameraController.SetOverride(cv.Value, camFov)
 	if camTween then
 		camTween:Cancel()
 	end

@@ -13,6 +13,19 @@ DockBuild.PITCH = math.rad(58) -- down from horizontal: high enough to read the 
 DockBuild.FOV = 45 -- camera FieldOfView
 DockBuild.MARGIN = 1.12 -- breathing room round the island
 DockBuild.MAX_DISTANCE = 1600
+-- Measured in Studio (cam1, 2026-10-28): at QualityLevel 1 the island stops drawing at 280-300 studs of view depth
+-- (phones on Automatic get there), leaving only fog/sky. The build views stay inside this, widening the FOV instead.
+DockBuild.SAFE_DISTANCE = 260
+DockBuild.MAX_FOV = 90
+
+-- The build views' FieldOfView: FOV while the island fits within SAFE_DISTANCE, else just wide enough to fit it there
+-- (a narrow free share on a phone), capped at MAX_FOV. Same arguments as `distance`.
+function DockBuild.fov(aspect: number, visible: number?): number
+	local share = math.min(math.max(aspect, 0.3), math.clamp(visible or 1, 0.2, 1))
+	local half =
+		math.atan(DockBuild.ISLAND_RADIUS * DockBuild.MARGIN / (DockBuild.SAFE_DISTANCE * share))
+	return math.clamp(math.deg(2 * half), DockBuild.FOV, DockBuild.MAX_FOV)
+end
 
 -- Camera distance that fits `radius` in both axes for the given viewport aspect and FOV.
 -- `visible` (0-1, default 1): the vertical share not covered by a bottom band.
@@ -25,8 +38,8 @@ end
 
 -- Sideways pan (studs, along the camera's right) that sets the look target in the middle of the left `free`
 -- share of the screen (the rest is the right-hand list).
-local function panLeft(d: number, aspect: number, free: number): number
-	return (1 - free) * d * math.tan(math.rad(DockBuild.FOV) / 2) * math.max(aspect, 0.3)
+local function panLeft(d: number, aspect: number, free: number, fov: number): number
+	return (1 - free) * d * math.tan(math.rad(fov) / 2) * math.max(aspect, 0.3)
 end
 
 -- The build-mode camera CFrame in the berth frame. `aim` (world) pulls the look target toward a selected
@@ -44,15 +57,16 @@ function DockBuild.camera(
 ): CFrame
 	local f = free or 1
 	local cover = math.clamp(band or 0, 0, 0.8)
-	local d = DockBuild.distance(radius, aspect * f, nil, 1 - cover)
+	local fov = DockBuild.fov(aspect * f, 1 - cover)
+	local d = DockBuild.distance(radius, aspect * f, fov, 1 - cover)
 	local centre = (frame * Marina.ISLAND).Position
 	local look = if aim then centre:Lerp(aim, 0.35) else centre
 	local pos = centre
 		+ Vector3.new(0, d * math.sin(DockBuild.PITCH), 0)
 		- frame.LookVector * (d * math.cos(DockBuild.PITCH))
 	local cam = CFrame.lookAt(pos, look)
-	local vf = math.tan(math.rad(DockBuild.FOV) / 2)
-	return cam + cam.RightVector * panLeft(d, aspect, f) - cam.UpVector * (cover * d * vf)
+	local vf = math.tan(math.rad(fov) / 2)
+	return cam + cam.RightVector * panLeft(d, aspect, f, fov) - cam.UpVector * (cover * d * vf)
 end
 
 -- Where an item would stand, in the berth frame, and the footprint to outline -> CFrame, Vector2.
@@ -99,15 +113,16 @@ function DockBuild.focus(
 ): CFrame
 	local r = math.max(size.X, size.Y) / 2
 	local cover = math.clamp(band or 0, 0, 0.8)
+	local fov = DockBuild.fov(aspect * (free or 1), 1 - cover)
 	local d = math.max(
-		DockBuild.distance(r * DockBuild.FOCUS_ROOM, aspect * (free or 1), nil, 1 - cover),
+		DockBuild.distance(r * DockBuild.FOCUS_ROOM, aspect * (free or 1), fov, 1 - cover),
 		DockBuild.FOCUS_MIN
 	)
 	local pos = at
 		+ Vector3.new(0, d * math.sin(DockBuild.PITCH), 0)
 		- frame.LookVector * (d * math.cos(DockBuild.PITCH))
 	local cam = CFrame.lookAt(pos, at)
-	local vf = math.tan(math.rad(DockBuild.FOV) / 2)
+	local vf = math.tan(math.rad(fov) / 2)
 	local shiftX = if free then 1 - free else DockBuild.FOCUS_SHIFT.X
 	local shiftY = if cover > 0 then cover else DockBuild.FOCUS_SHIFT.Y
 	local pan = cam.RightVector * (shiftX * d * vf * math.max(aspect, 0.3))
