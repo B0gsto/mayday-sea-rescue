@@ -59,17 +59,34 @@ local function onExit(
 		local params = RaycastParams.new()
 		params.FilterType = Enum.RaycastFilterType.Exclude
 		params.FilterDescendantsInstances = { vehicle, character :: Instance }
+		params.RespectCanCollide = true
 		local side = seat.Position + seat.CFrame.RightVector * reach
 		local at = CFrame.new(side.X, seat.Position.Y + 2, side.Z)
-		for _, dir in { seat.CFrame.RightVector, -seat.CFrame.RightVector } do
-			local p = seat.Position + dir * reach
-			local hit = workspace:Raycast(p + Vector3.new(0, 12, 0), Vector3.new(0, -24, 0), params)
-			if
-				hit
-				and hit.Material ~= Enum.Material.Water
-				and (hit.Instance :: BasePart).CanCollide
-			then
-				at = CFrame.new(hit.Position + Vector3.new(0, 3, 0))
+		-- walk out from the hull: a jet ski's berth leaves ~12 studs of water to the jetty finger (PT5: the
+		-- one probe at half a beam + 3 found only water, you swam under the jetty)
+		local found = false
+		for out = reach, reach + 12, 2 do
+			for _, dir in { seat.CFrame.RightVector, -seat.CFrame.RightVector } do
+				local p = seat.Position + dir * out
+				local hit =
+					workspace:Raycast(p + Vector3.new(0, 12, 0), Vector3.new(0, -24, 0), params)
+				if hit and hit.Material ~= Enum.Material.Water then
+					-- 2 studs further onto the deck when it goes on: the first hit can be its very edge
+					local p2 = p + dir * 2
+					local deeper = workspace:Raycast(
+						p2 + Vector3.new(0, 12, 0),
+						Vector3.new(0, -24, 0),
+						params
+					)
+					if deeper and deeper.Material ~= Enum.Material.Water then
+						hit = deeper
+					end
+					at = CFrame.new((hit :: RaycastResult).Position + Vector3.new(0, 3, 0))
+					found = true
+					break
+				end
+			end
+			if found then
 				break
 			end
 		end

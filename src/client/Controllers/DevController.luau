@@ -535,20 +535,37 @@ local function onGrant(payload: any)
 			toggle()
 		elseif
 			clickTp
-			and not processed
 			and (
 				input.UserInputType == Enum.UserInputType.MouseButton1
 				or input.UserInputType == Enum.UserInputType.Touch
 			)
 		then
+			-- not `processed`: the real client flagged world clicks as processed (rc6: never moved); skip
+			-- only clicks on a button
+			local pos = input.Position
+			for _, o in player.PlayerGui:GetGuiObjectsAtPosition(pos.X, pos.Y) do
+				if o:IsA("GuiButton") or o:IsA("TextBox") then
+					return
+				end
+			end
 			local cam = Workspace.CurrentCamera
-			local ray = cam:ViewportPointToRay(input.Position.X, input.Position.Y)
+			local ray = cam:ViewportPointToRay(pos.X, pos.Y)
+			local skip: { Instance } = { player.Character :: Instance }
 			local params = RaycastParams.new()
-			params.FilterDescendantsInstances = { player.Character :: Instance }
 			params.FilterType = Enum.RaycastFilterType.Exclude
-			local hit = Workspace:Raycast(ray.Origin, ray.Direction * 4000, params)
-			if hit then
-				call("tpPos", { hit.Position })
+			for _ = 1, 8 do -- see through invisible trigger volumes (they caught the ray at sea)
+				params.FilterDescendantsInstances = skip
+				local hit = Workspace:Raycast(ray.Origin, ray.Direction * 4000, params)
+				if not hit then
+					return
+				end
+				local part = hit.Instance
+				if part:IsA("BasePart") and part.Transparency >= 1 and not part.CanCollide then
+					table.insert(skip, part)
+				else
+					call("tpPos", { hit.Position })
+					return
+				end
 			end
 		end
 	end)

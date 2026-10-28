@@ -942,25 +942,35 @@ local function refreshStrip()
 	local well = artWell(content, item, 96)
 	well.AnchorPoint = Vector2.new(0, 0.5)
 	well.Position = UDim2.fromScale(0, 0.5)
-	local buyW = if st.forSale then (if st.productId ~= 0 then 350 else 175) else 0
+	-- the buy buttons get their own row under the name: beside it they left the name "Wo…" and sat over
+	-- the drawing on desktop and phones (rc6)
+	local buyH = if st.forSale then 64 else 0
 	local words = Instance.new("Frame")
 	words.Name = "Words"
 	words.BackgroundTransparency = 1
 	words.Position = UDim2.fromOffset(112, 0)
-	words.Size = UDim2.new(1, -112 - buyW - 12, 1, 0)
+	words.Size = UDim2.new(1, -112, 1, -(buyH + if st.forSale then 4 else 0))
 	words.Parent = content
 	local name = Style.label(words, DockBlueprints.label(item, st.level), Theme.Text.heading)
 	name.Size = UDim2.new(1, 0, 0, 36)
 	name.TextXAlignment = Enum.TextXAlignment.Left
 	name.TextWrapped = false
+	name.TextScaled = true
 	name.TextTruncate = Enum.TextTruncate.AtEnd
+	local fitText = Instance.new("UITextSizeConstraint")
+	fitText.MaxTextSize = Theme.Text.heading
+	fitText.MinTextSize = 18
+	fitText.Parent = name
 	if st.forSale then
 		local slot = Instance.new("Frame")
 		slot.BackgroundTransparency = 1
-		slot.AnchorPoint = Vector2.new(1, 0.5)
-		slot.Position = UDim2.fromScale(1, 0.5)
-		slot.Size = UDim2.fromOffset(buyW, 64)
+		slot.AnchorPoint = Vector2.new(0, 1)
 		slot.Parent = content
+		slot.Position = UDim2.new(0, 112, 1, 0)
+		slot.Size = UDim2.new(1, -112, 0, buyH)
+		local cap = Instance.new("UISizeConstraint") -- full-width buttons read as a banner on wide screens
+		cap.MaxSize = Vector2.new(if st.productId ~= 0 then 350 else 175, buyH)
+		cap.Parent = slot
 		buyButtons(slot, item, st)
 	end
 	local badge = badgeRow(words, st)
@@ -1214,6 +1224,9 @@ local function openBuild()
 		tabIndex = 1 -- the tutorial's card lives on the Build tab
 	end
 	pickTab(tabIndex)
+	-- the Kit X's close tween sinks the panel toward the screen centre: re-dock it right (the 2nd open sat on
+	-- the left over the strip and the Cash, rc6)
+	p.root.Position = UDim2.new(1, -S.margin, 0.5, 0)
 	Style.pop(p.root, true)
 	modal.open(p.closeButton)
 	if InputGlyph.device() == "Gamepad" and cards[1] then
