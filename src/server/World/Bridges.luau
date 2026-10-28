@@ -87,7 +87,7 @@ local function build(br: RingLayout.Bridge, parent: Instance)
 			part(
 				model,
 				"Rail",
-				Vector3.new(0.5, 0.5, len),
+				Vector3.new(if k % 2 == 0 then 0.5 else 0.42, if k % 2 == 0 then 0.5 else 0.42, len), -- white inside red at the overlaps
 				cf * CFrame.new(side * (half - 0.4), RAIL_H, 0),
 				if k % 2 == 0 then RED else WHITE -- WP-25 r7: slim candy-stripe rails, lighter in the bridge view
 			)

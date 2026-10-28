@@ -17,7 +17,8 @@ usage: python3 tools/studio/smoke.py <command> [args]
                        16:9 and resizes to 1920x1080 (default out build/smoke/<name>.png); warns if smaller.
                        Close the Properties panel (Window menu) for a wider viewport on a laptop screen.
   close                close TestBench-<tag> without saving, give focus back to the previous app
-  run                  open, play, console check, one shot, stop, close (verdict on the first line)
+  run                  open, play, console check, z-fight scan (tools/studio/zfight_scan.luau: any high-confidence
+                       coplanar overlap fails), one shot, stop, close (verdict on the last line)
   ops                  open, play, then play operations end to end with the stub mechanics (PersonInWater,
                        CapsizedFerry, RipCurrent, SinkingVessel, VesselFire,
                        WildlifeRescue, the cold open): the client's
@@ -230,6 +231,14 @@ def cmd_shot_full(name, out=None):
     return path
 
 
+def cmd_zfight(s):
+    """tools/studio/zfight_scan.luau on the Server: prints its report, returns the high-confidence z-fight count."""
+    ok, text = lua(s, "Server", open(os.path.join(HERE, "zfight_scan.luau")).read(), 120)
+    print(text[:4000])
+    m = re.search(r"ZFIGHT \d+ findings \((\d+) high", text)
+    return int(m.group(1)) if m else 1
+
+
 def cmd_close():
     subprocess.run([sys.executable, os.path.join(TOOLS, "studio-open.py"), "--close", TAG, "--owner", OWNER],
                    capture_output=True, text=True, timeout=180)
@@ -343,9 +352,10 @@ def main():
                     cmd_play(s, "start")
                     time.sleep(8)
                     errs = cmd_console(s)
+                    zf = cmd_zfight(s)
                     cmd_shot(s, "smoke")
                     cmd_play(s, "stop")
-                    print("smoke: %s" % ("FAIL" if errs else "PASS"))
+                    print("smoke: %s" % ("FAIL" if errs or zf else "PASS"))
                 finally:
                     cmd_close()
             elif cmd == "ops":
