@@ -494,7 +494,7 @@ local function onGrant(payload: any)
 	})
 	board = b
 	fill(b)
-	-- the DEV HUD button: left of the minimap's bottom (desktop, minimap bottom right; under it on touch), clear of the top strip (HudLayout). Studio and
+	-- the DEV HUD button: left of the minimap's bottom (desktop, minimap bottom right; under the wallet on touch), clear of the top strip (HudLayout). Studio and
 	-- the test place only: on the launch place an allowed dev opens the board with F8 or "/dev"
 	local hud = Instance.new("ScreenGui")
 	hud.Name = "DevBoardButton"
@@ -521,9 +521,10 @@ local function onGrant(payload: any)
 	HudTheme.outline(label)
 	button.Activated:Connect(toggle)
 	local function place(mt: Layout.Metrics)
-		local region = Layout.region(hud, "minimap")
+		-- touch: under the wallet's right end (on phones the wallet sits under the minimap and the old spot covered its "+")
+		local region = Layout.region(hud, if mt.touch then "wallet" else "minimap")
 		button.Position = if mt.touch
-			then UDim2.new(0, 0, 1, Layout.GAP)
+			then UDim2.new(1, -84, 1, Layout.GAP)
 			else UDim2.new(0, -(84 + Layout.GAP), 1, -44)
 		button.Parent = region
 	end
