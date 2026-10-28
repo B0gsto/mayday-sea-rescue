@@ -191,14 +191,10 @@ local function gainPop(
 	end
 	local label = gainLabel
 	if not label then
-		local l = HudTheme.label(
-			"CashGain",
-			"",
-			UDim2.fromOffset(240, 60),
-			HudTheme.NumberFont,
-			30,
-			screen
-		)
+		local l =
+			HudTheme.label("CashGain", "", UDim2.fromOffset(0, 0), HudTheme.NumberFont, 30, screen)
+		l.AutomaticSize = Enum.AutomaticSize.XY -- as wide as "+1,000,000" needs, never cut off
+		l.TextTruncate = Enum.TextTruncate.None
 		l.AnchorPoint = Vector2.new(0, 0.5)
 		l.TextXAlignment = Enum.TextXAlignment.Left
 		l.TextColor3 = Color3.new(1, 1, 1)
@@ -256,6 +252,11 @@ local function render(data: { [string]: any })
 	-- UI/CoinShower releases it coin by coin, so the wallet rolls up as the coins land
 	local held = tonumber(player:GetAttribute("CashHeld")) or 0
 	local cash = math.max(0, (tonumber(data.cash) or 0) - held)
+	-- a hold lands before the snapshot that pays it (RewardController holds, then claims): while Cash is held the
+	-- wallet never drops, it only rolls up as the coins release it
+	if held > 0 and cashShown then
+		cash = math.max(cash, cashShown)
+	end
 	-- a CoinShower landing (CoinShowerTick, its last release) owns the ticks, the till and the wallet pop
 	local showering = os.clock() - (tonumber(player:GetAttribute("CoinShowerTick")) or 0) < 0.6
 	local spilled = false
