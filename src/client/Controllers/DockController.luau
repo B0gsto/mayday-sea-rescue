@@ -1001,8 +1001,9 @@ local function unfocus()
 end
 
 -- Build mode is a full-screen view: the world HUD (minimap, map, waypoints, ops, dev button) steps aside so
--- the cards and the strip read; the main Hud (Cash) and the left menu buttons stay (phones: the menu buttons
--- covered the plot, so Menu hides them under the BuildHidesMenu attribute).
+-- the cards and the strip read; the main Hud (Cash) stays. The left menu buttons covered the plot (phones) and
+-- half of a focused lot (desktop), so Menu hides them under the BuildHidesMenu attribute; on phones the list
+-- covers the Cash corner too, so HudController hides it under BuildHidesWallet.
 -- shortcut: keyed by ScreenGui name; switch to a HUD hide API if the HUD gets one.
 local HUD_KEEP =
 	{ Hud = true, Menu = true, BuildTablet = true, Freecam = true, ProximityPrompts = true }
@@ -1010,7 +1011,8 @@ local hiddenGuis: { ScreenGui } = {}
 
 local function hideHud(on: boolean)
 	local vp = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize or Vector2.zero
-	player:SetAttribute("BuildHidesMenu", on and Theme.compact(vp, Theme.scaleFor(vp)) or nil)
+	player:SetAttribute("BuildHidesMenu", on or nil)
+	player:SetAttribute("BuildHidesWallet", on and Theme.compact(vp, Theme.scaleFor(vp)) or nil)
 	if on then
 		for _, g in playerGui:GetChildren() do
 			if g:IsA("ScreenGui") and g.Enabled and not HUD_KEEP[g.Name] then
@@ -1684,7 +1686,7 @@ function DockController.Start()
 					prompt.ActionText = "Build"
 					prompt.ObjectText = "Tablet"
 					prompt.HoldDuration = 0
-					prompt.MaxActivationDistance = 12
+					prompt.MaxActivationDistance = 15 -- 12 missed it from the dock side (13 studs, playtest 2026-10-28)
 					prompt.RequiresLineOfSight = false
 					prompt.Parent = tablet
 					prompt.Triggered:Connect(openBuild)

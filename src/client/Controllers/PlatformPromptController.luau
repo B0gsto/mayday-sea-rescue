@@ -95,7 +95,7 @@ local function show(kind: string)
 		end
 	elseif kind == "favorite" then
 		local svc = service("AvatarEditorService")
-		if svc then
+		if svc and game.PlaceId ~= 0 then -- Studio (PlaceId 0): CoreGui logs an unhandled promise
 			pcall(function()
 				svc:PromptSetFavorite(game.PlaceId, Enum.AvatarItemType.Asset, true)
 			end)

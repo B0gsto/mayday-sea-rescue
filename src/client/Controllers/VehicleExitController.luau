@@ -49,13 +49,32 @@ local function onExit(
 	humanoid.Sit = false
 	humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 	-- step off over the side: on a deck craft (Lifeboat) the jump left you standing on the seat, and
-	-- it (or the passenger seat behind) took you back within seconds; land half a beam + 3 out
+	-- it (or the passenger seat behind) took you back within seconds; land half a beam + 3 out, on the side
+	-- with a deck or shore under it (moored right, the jetty was on the left: you swam under it, playtest
+	-- 2026-10-28), else in the water on the right
 	local vehicle = vehicleOf(seat)
 	if vehicle then
 		local size = vehicle:GetExtentsSize()
-		local side = seat.Position + seat.CFrame.RightVector * (math.min(size.X, size.Z) / 2 + 3)
+		local reach = math.min(size.X, size.Z) / 2 + 3
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances = { vehicle, character :: Instance }
+		local side = seat.Position + seat.CFrame.RightVector * reach
+		local at = CFrame.new(side.X, seat.Position.Y + 2, side.Z)
+		for _, dir in { seat.CFrame.RightVector, -seat.CFrame.RightVector } do
+			local p = seat.Position + dir * reach
+			local hit = workspace:Raycast(p + Vector3.new(0, 12, 0), Vector3.new(0, -24, 0), params)
+			if
+				hit
+				and hit.Material ~= Enum.Material.Water
+				and (hit.Instance :: BasePart).CanCollide
+			then
+				at = CFrame.new(hit.Position + Vector3.new(0, 3, 0))
+				break
+			end
+		end
 		local body = character :: Model
-		body:PivotTo(CFrame.new(side.X, seat.Position.Y + 2, side.Z) * seat.CFrame.Rotation)
+		body:PivotTo(at * seat.CFrame.Rotation)
 	end
 	return Enum.ContextActionResult.Sink
 end

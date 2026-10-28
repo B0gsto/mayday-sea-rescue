@@ -766,9 +766,9 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		mini = on
 		drag = nil
 		miniHit.Visible = on
-		-- phones: the card sits right under the X, so only its own X (back to the tree) shows
-		local px, k = Style.metrics(root)
-		close.Visible = not (on and Theme.compact(px, k))
+		-- only the card's own X (back to the tree) shows while it is up: two X's read as a puzzle (phones: it sat
+		-- right under the panel's X)
+		close.Visible = not on
 		stageCorner.CornerRadius = UDim.new(0, if on then 60 else 0)
 		Style.tween(stageScale, 0.35, { Scale = if on then MINI else 1 })
 		Style.tween(stageStroke, 0.35, { Transparency = if on then 0 else 1 })
