@@ -65,7 +65,7 @@ local EPS = 1e-6
 local TILE = OceanSurface.TILE_STUDS
 local DRIFT_SPEED = 0.9 -- studs/s the ripple normal map drifts downwind (High tier) -- tune
 local STORM_ON, STORM_OFF = 0.55, 0.45 -- intensity hysteresis for the storm material -- tune
-local USE_MESH_OCEAN = false -- see rebuild(): the mesh ocean draws black sheets
+local USE_MESH_OCEAN = true -- see build(): the Part grid stays the fallback
 local FOAM_SINK = -0.9 -- foam overlay offset where there is no foam (hidden under the water)
 local FOAM_LIFT = 0.06 -- foam overlay offset on full-foam crests -- tune
 -- Shallows: the seabed depth under the camera lightens the whole sea's tint (never per-part
@@ -737,9 +737,9 @@ local function build()
 		teardown()
 		tier = OceanQuality.current()
 		local parent = folder :: Folder
-		-- shortcut: always the Part grid. The EditableMesh near/ring patches intermittently draw large
-		-- pure-black sheets (2026-10-23: 8/12 Studio shots, foam overlay on or off; 0/8 on Parts).
-		-- Set USE_MESH_OCEAN once that's fixed; Studio attribute OceanForceParts still forces Parts.
+		-- The black sheets of 2026-10-23 (8/12 Studio shots) did not come back on Studio 0.745 (2026-10-28:
+		-- 0 in 147 mesh frames, 18 of them on the unchanged 10-23 commit), so the mesh ocean is back on. The Part
+		-- grid takes over when EditableMesh fails (memory budget); Studio attribute OceanForceParts forces it.
 		local forceParts = not USE_MESH_OCEAN
 			or RunService:IsStudio() and Workspace:GetAttribute("OceanForceParts") == true
 		if forceParts or not buildMesh(parent) then

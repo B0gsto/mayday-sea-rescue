@@ -18,6 +18,7 @@ means its builder stopped mid-task: finish it there (review the diff first), the
 
 
 | Docs rewrite, second half (01–04, 07, 15, store text) | `t3/rewrite-current-design-docs` | `t3-d7464e33` | DeepSeek Flash |
+| Sea rework step 1: mesh ocean back on (`USE_MESH_OCEAN`), Part grid fallback; needs a real-client check before publish | `t3/f96b0b89` | `t3-f96b0b89` | Opus |
 
 Stale, safe to delete (cancelled, no changes): worktrees `t3-394fa9ed`, `t3-52b73544`, `t3-6558e19d`, `t3-d3311682`,
 `t3-b9289b21`. Not ours (a sibling thread): `t3/cut-seasonal-clock-events`, `t3/cut-side-progressions` — ask
