@@ -147,7 +147,7 @@ local function build()
 			model,
 			"Stripe" .. entry.slot,
 			Vector3.new(1.24, 0.28, 0.16),
-			at * CFrame.new(x, 2.0, 0.25),
+			at * CFrame.new(x, 2.04, 0.25), -- bottom 0.05 over the panel's (2.0 left 0.01)
 			entry.accent,
 			Enum.Material.SmoothPlastic
 		)
