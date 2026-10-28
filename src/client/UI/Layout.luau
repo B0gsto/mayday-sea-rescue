@@ -13,9 +13,9 @@
 --   | wallet (Cash)                                          minimap  |
 --   +------------------------------------------------------------------+
 --
--- Touch: the menu grid (UI/Menu, as many rows as fit above the thumbstick) top left, the 130 px
--- minimap right of it (tap it for the full map), the objective strip right of that, the wallet (Cash)
--- under the objective and the notice band beside or under the wallet. Nothing reaches into the
+-- Touch: the menu grid (UI/Menu, as many rows as fit above the thumbstick) top left, the objective strip
+-- right of it, the 100-130 px minimap in the top-right corner (portrait: right of the menu; tap it for the
+-- full map), the wallet (Cash) under the objective and the notice band beside or under the wallet. Nothing reaches into the
 -- thumbstick or the jump / action buttons (HudLayout).
 --
 -- Regions are transparent container Frames in "design units" (du): the usable area (the
@@ -278,6 +278,7 @@ local EDGE_REGIONS = {
 	minimap = true,
 	gauges = true,
 	quest = true,
+	chips = true, -- the Next / tutorial chips (SE device pass 2026-10-28: "40 m" slid under them)
 }
 local hudBoxes: { Box } = {}
 
@@ -327,7 +328,7 @@ function Layout.clearOfHud(at: Vector2, clear: Vector2, hang: number?): Vector2
 			return p
 		end
 	end
-	return at
+	return centre -- boxed in all the way: over the play view, never under the HUD
 end
 
 function Layout.promptBusy(): boolean

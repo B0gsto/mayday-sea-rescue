@@ -14,9 +14,9 @@
 -- Touch (thumbstick bottom left, jump / action buttons bottom right):
 --
 --   +------------------------------------------------------------------+
---   | menu menu menu menu  minimap  objective                          |
---   | menu menu menu menu  (130 px) wallet                             |
---   |                      notice                                      |
+--   | menu menu menu menu  objective / chips             minimap      |
+--   | menu menu menu menu  wallet                        (100-130 px) |
+--   |                                       notice                     |
 --   |       prompt (unchanged)                                         |
 --   | [thumbstick]                                  [jump / actions]    |
 --   +------------------------------------------------------------------+
@@ -24,8 +24,10 @@
 -- Nothing reaches into Roblox's touch controls: the bottom-left 40% x 45% thumbstick zone (portrait: the
 -- whole bottom 45%, where Roblox's dynamic stick starts) and the bottom-right 30% x 35% jump zone. The
 -- menu grid takes as many rows as fit above the stick zone (4 x 3 on phones, 3 x 4 on tablets); the
--- minimap sits right of it at 130 final px (tap it for the full map, MapController), the objective strip
--- right of that (portrait: under it) and the wallet under the objective. The notice band sits beside
+-- minimap sits in the top-right corner (portrait: right of the menu) at 30% of the safe height, 100-130 final
+-- px (tap it for the full map, MapController): top centre it hid the character and the prize wheel on an
+-- iPhone SE (device pass 2026-10-28). The objective strip sits right of the menu (portrait: under the
+-- minimap) and the wallet under the objective. The notice band sits beside
 -- the wallet, or under it in the band between the two zones. The prompt keeps its place. Phone-sized screens use this arrangement on
 -- every device (compute). The debrief toast takes the topmost free gap (debriefRect), shrinking to fit.
 -- `tests/HudLayout.spec.luau` asserts this on 16:9 / 19.5:9 / small Android phones (landscape and
@@ -42,7 +44,8 @@ HudLayout.NOTICE_MIN_WIDTH = 200 -- touch: narrower beside the wallet -> the cen
 HudLayout.WALLET_WIDTH = 280 -- the Cash card (HudController)
 HudLayout.WALLET_HEIGHT = 64
 HudLayout.PILL_HEIGHT = 36 -- desktop: clear space above the square (the minimap bezel overhangs it)
-HudLayout.TOUCH_SIDE = 130 -- final px: the touch minimap square
+HudLayout.TOUCH_SIDE = 130 -- final px: the touch minimap square (and the touch gauges square)
+HudLayout.TOUCH_SIDE_MIN = 100 -- final px: the minimap on small phones (30% of the safe height, floored here)
 HudLayout.OBJECTIVE_MIN_WIDTH = 210 -- the step card is 208 wide
 HudLayout.QUEST_WIDTH = 236 -- the quest tracker chip (UI/Menu): desktop above the minimap pill (bottom right)
 HudLayout.QUEST_HEIGHT = 50
@@ -189,8 +192,11 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	local s = math.clamp(math.min(px.Y / REF_HEIGHT, px.X / REF_WIDTH), MIN_SCALE, MAX_SCALE)
 	local u = px / s
 	local m, g = HudLayout.MARGIN, HudLayout.GAP
+	local gaugeSide = math.floor(HudLayout.TOUCH_SIDE / s + 0.5)
 	local side = if touch
-		then math.floor(HudLayout.TOUCH_SIDE / s + 0.5)
+		then math.floor(
+			math.clamp(px.Y * 0.3, HudLayout.TOUCH_SIDE_MIN, HudLayout.TOUCH_SIDE) / s + 0.5
+		)
 		else math.clamp(math.floor(u.Y * 0.31), 156, 230)
 	-- touch: as many rows as fit above the thumbstick zone (4 x 2 on phones, 2 x 4 on tablets)
 	local menu = if touch
@@ -224,13 +230,16 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		local cardLeft = u.X - m -- the right edge (no card column since the pager went)
 		mt.rects["menu"] =
 			rect(Vector2.new(0, 0), Vector2.new(m, m), Vector2.new(menu.width, menu.height))
-		mt.rects["minimap"] = rect(Vector2.new(0, 0), Vector2.new(left, m), Vector2.new(side, side))
-		-- the objective right of the minimap; no room there (portrait): under it
-		local objectiveX, objectiveY = left + side + g, m
-		if cardLeft - g - objectiveX < HudLayout.OBJECTIVE_MIN_WIDTH then
-			objectiveX, objectiveY = left, m + side + g
+		-- landscape: the minimap in the top-right corner, the objective right of the menu up to it;
+		-- portrait: the minimap right of the menu, the objective under it
+		local mapX = if portrait then left else cardLeft - side
+		mt.rects["minimap"] = rect(Vector2.new(0, 0), Vector2.new(mapX, m), Vector2.new(side, side))
+		local objectiveX, objectiveY = left, m
+		local objectiveRight = mapX - g
+		if portrait then
+			objectiveY, objectiveRight = m + side + g, cardLeft - g
 		end
-		objectiveWidth = math.min(objectiveWidth, cardLeft - g - objectiveX)
+		objectiveWidth = math.min(objectiveWidth, objectiveRight - objectiveX)
 		mt.objectiveWidth = objectiveWidth
 		mt.rects["objective"] = rect(
 			Vector2.new(0, 0),
@@ -259,6 +268,9 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		-- between the thumbstick and jump zones (portrait: under the wallet)
 		local nx, ny = objectiveX + walletW + g, walletY
 		local nw = math.min(cardLeft - g - nx, 420)
+		if nx + nw > mapX then
+			ny = math.max(ny, m + side + g) -- under the corner minimap
+		end
 		local noticeBottom = bottom - HudLayout.SUBTITLE_HEIGHT - g
 		if nw < HudLayout.NOTICE_MIN_WIDTH then
 			ny = math.max(walletY + walletH, m + side) + g
@@ -282,7 +294,7 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		)
 		mt.rects["quest"] = rect(
 			Vector2.new(0, 0),
-			Vector2.new(left, m + side + g - HudLayout.QUEST_TOUCH_HEIGHT),
+			Vector2.new(mapX, m + side + g - HudLayout.QUEST_TOUCH_HEIGHT),
 			Vector2.new(side, HudLayout.QUEST_TOUCH_HEIGHT)
 		)
 	else
@@ -342,8 +354,8 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 			math.min(HudLayout.PROMPT_HEIGHT, b - (m + HudLayout.OBJECTIVE_HEIGHT + g))
 		)
 	)
-	mt.rects["gauges"] =
-		rect(Vector2.new(1, 1), Vector2.new(u.X - m, bottom), Vector2.new(side, side))
+	local gs = if touch then gaugeSide else side
+	mt.rects["gauges"] = rect(Vector2.new(1, 1), Vector2.new(u.X - m, bottom), Vector2.new(gs, gs))
 	local stickRight = if u.X < u.Y then u.X else u.X * 0.4
 	mt.rects["debrief"] = debriefRect(
 		mt,
