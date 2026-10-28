@@ -467,12 +467,17 @@ local function sail()
 	end
 end
 
+local respawnHooks: { [Player]: RBXScriptConnection } = {}
+
 local function load(player: Player, data: any)
 	states[player] = Rules.decode(type(data.flags) == "table" and data.flags.quest or nil)
 	live[player] = {}
 	stage(player)
 	publish(player)
-	player.CharacterAdded:Connect(function()
+	if respawnHooks[player] then -- a reload (DataDev "rejoin") must not stack a second hook
+		respawnHooks[player]:Disconnect()
+	end
+	respawnHooks[player] = player.CharacterAdded:Connect(function()
 		task.wait(1)
 		if states[player] then
 			stage(player) -- the carried thing back on the new character
@@ -496,7 +501,7 @@ function QuestService.Start()
 	DataService.OnLoaded(load)
 	Players.PlayerRemoving:Connect(function(player)
 		clearLive(player)
-		states[player], live[player] = nil, nil
+		states[player], live[player], respawnHooks[player] = nil, nil, nil
 	end)
 	OperationService.OperationCompleted:Connect(function(snap: any)
 		for player, l in live do

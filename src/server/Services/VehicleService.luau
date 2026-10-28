@@ -1540,13 +1540,18 @@ local function homeAtBay(player: Player, character: Model)
 	character:PivotTo(CFrame.lookAt(pos, Vector3.new(face.X, pos.Y, face.Z)))
 end
 
+local returnHooks: { [Player]: RBXScriptConnection } = {}
+
 local function watchReturning(player: Player)
 	local function onCharacter(character: Model)
 		character:WaitForChild("HumanoidRootPart", 10)
 		task.wait() -- after the engine's spawn placement
 		homeAtBay(player, character)
 	end
-	player.CharacterAdded:Connect(onCharacter)
+	if returnHooks[player] then -- a reload (DataDev "rejoin") must not stack a second hook
+		returnHooks[player]:Disconnect()
+	end
+	returnHooks[player] = player.CharacterAdded:Connect(onCharacter)
 	if player.Character then
 		task.spawn(onCharacter, player.Character)
 	end
@@ -1605,6 +1610,7 @@ function VehicleService.Init()
 
 	DataService.OnLoaded(watchReturning)
 	Players.PlayerRemoving:Connect(function(player)
+		returnHooks[player] = nil
 		local classes: { [string]: Record } = owned[player] or {}
 		for _, record in table.clone(classes) do
 			despawnModel(record.model)
