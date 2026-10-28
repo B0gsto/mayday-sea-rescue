@@ -49,6 +49,68 @@ export type Grid = {
 
 local MeshGrid = {}
 
+local fixedWarned = false
+local function warnFixed(why: string)
+	if not fixedWarned then
+		fixedWarned = true
+		warn(`[Ocean] fixed-size EditableMesh unavailable ({why}); growable meshes`)
+	end
+end
+
+-- The client gives EditableMesh a small memory budget (Studio's is unlimited) and an empty, growable
+-- mesh reserves it as if it were full: the v64 real client ran out after ~6 ocean meshes. A fixed-size
+-- copy costs only what it holds and still takes SetPosition / SetNormal / SetUV. Returns the copy plus
+-- old -> new id maps for vertices, normals and UVs, or nil (the caller keeps the growable mesh).
+function MeshGrid.toFixed(em: EditableMesh): (EditableMesh?, { [number]: number }, { [number]: number }, {
+	[number]: number,
+})
+	local vmap, nmap, umap = {}, {}, {}
+	local okCopy, copy = pcall(function()
+		return AssetService:CreateEditableMeshAsync(Content.fromObject(em), { FixedSize = true })
+	end)
+	if not okCopy or copy == nil then
+		warnFixed(`copy failed: {copy}`)
+		return nil, vmap, nmap, umap
+	end
+	local fixed = copy :: EditableMesh
+	-- ids are not guaranteed to survive the copy: map them by order, checking every value matches
+	local okMap, mapErr = pcall(function()
+		local function map(
+			into: { [number]: number },
+			src: { number },
+			dst: { number },
+			get: (number, number) -> any
+		)
+			assert(#src == #dst, "count changed")
+			for k, id in src do
+				local a, b = get(1, id), get(2, dst[k])
+				local d = a - b
+				assert(
+					(if typeof(d) == "Vector3" then d.Magnitude else d.Magnitude) < 1e-3,
+					"value changed"
+				)
+				into[id] = dst[k]
+			end
+		end
+		local both = { em, fixed }
+		map(vmap, em:GetVertices(), fixed:GetVertices(), function(m, id)
+			return both[m]:GetPosition(id)
+		end)
+		map(nmap, em:GetNormals(), fixed:GetNormals(), function(m, id)
+			return both[m]:GetNormal(id)
+		end)
+		map(umap, em:GetUVs(), fixed:GetUVs(), function(m, id)
+			return both[m]:GetUV(id)
+		end)
+	end)
+	if not okMap or not fixed.FixedSize then
+		warnFixed(if okMap then "copy not fixed-size" else `ids: {mapErr}`)
+		fixed:Destroy()
+		return nil, vmap, nmap, umap
+	end
+	return fixed, vmap, nmap, umap
+end
+
 function MeshGrid.latticeKey(grid: Grid, i: number, j: number): number
 	return i * (grid.cells + 1) + j + 1
 end
@@ -171,6 +233,21 @@ function MeshGrid.new(
 	end
 	if not hasUVs then
 		warn("[Ocean] EditableMesh UVs unavailable; the ripple normal map will not tile")
+	end
+
+	local fixed, vmap, nmap, umap = MeshGrid.toFixed(em)
+	if fixed then
+		em:Destroy()
+		em = fixed
+		for n = 1, #vid do
+			vid[n] = vmap[vid[n]]
+			if hasNormals then
+				nid[n] = nmap[nid[n]]
+			end
+			if hasUVs then
+				uid[n] = umap[uid[n]]
+			end
+		end
 	end
 
 	local okPart, partOrErr = pcall(function()

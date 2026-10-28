@@ -89,20 +89,39 @@ local folder: Folder? = nil
 local tier: OceanQuality.Tier = OceanQuality.TIERS.High
 local mode: Mode = "None"
 local building = false
+-- Sticky for the session: once an EditableMesh fails or is lost (client memory budget), the whole
+-- sea is the Part grid; retrying would flip mesh/Parts back and forth (black patches, v64).
+local meshLost = false
+local aliveAt = 0
+local build: () -> () -- defined below step(), which calls it
 local rebuildQueued = false
 
 local near: MeshGrid.Grid? = nil
 local ring: MeshGrid.Grid? = nil
 local far: FarPlane.FarPlane? = nil
-local foam: MeshGrid.Grid? = nil
-local foamLift: { number } = {}
+-- Foam overlays: one on the near patch's own lattice, one on the ring's lattice halved, so every
+-- foam triangle lies inside one water triangle and rides exactly FOAM_LIFT above it. (One coarser
+-- foam lattice sagged up to ~0.8 studs below the water between its vertices: z-fighting, 2026-10-28.)
 -- Round 4 whitecaps: per-vertex foam that persists after the crest has passed and decays (slowly
 -- in a storm, so breaking crests leave wind-aligned streaks). World-locked: when the grid snaps,
--- the values shift with it (foamIndex maps a vertex's integer cell coordinate to its index).
-local foamPersist: { number } = {}
-local foamSpare: { number } = {}
-local foamKey: { number } = {}
-local foamIndex: { [number]: number } = {}
+-- the values shift with it (index maps a vertex's integer cell coordinate to its index).
+type Foam = {
+	grid: MeshGrid.Grid,
+	lift: { number },
+	persist: { number },
+	spare: { number },
+	key: { number },
+	index: { [number]: number },
+	edge: number, -- |local x or z| past which foam is kept under the water (the overlay's border)
+	-- Ring foam: water height = ring[a] + (ring[b] - ring[a]) * wb + (ring[c] - ring[a]) * wc.
+	-- Empty for the near foam, whose vertex n is the near patch's vertex n.
+	a: { number },
+	b: { number },
+	c: { number },
+	wb: { number },
+	wc: { number },
+}
+local foams: { Foam } = {}
 local foamT: number? = nil
 local FOAM_KEY_SPAN = 4096
 -- Crest-top positions from the last foam pass; spindrift is emitted only from these.
@@ -189,10 +208,10 @@ local function teardown()
 		Seabed.destroy(seabed)
 		seabed = nil
 	end
-	if foam then
-		MeshGrid.destroy(foam)
-		foam = nil
+	for _, fm in foams do
+		MeshGrid.destroy(fm.grid)
 	end
+	table.clear(foams)
 	if underwater then
 		Underwater.destroy(underwater)
 		underwater = nil
@@ -203,11 +222,6 @@ local function teardown()
 		sprayEmitter = nil
 		streakEmitter = nil
 	end
-	table.clear(foamLift)
-	table.clear(foamPersist)
-	table.clear(foamSpare)
-	table.clear(foamKey)
-	table.clear(foamIndex)
 	foamT = nil
 	table.clear(stitchA)
 	table.clear(stitchB)
@@ -274,33 +288,84 @@ local function buildMesh(parent: Instance): boolean
 		buildStitching(nearGrid, ringGrid)
 		far = FarPlane.new(parent, ringGrid.half, SEA, surfaceKind, Horizon.INNER_HALF)
 	else
-		warn(`[Ocean] outer ring unavailable ({ringErr}); near patch only`)
-		far = FarPlane.new(parent, nearGrid.half, SEA, surfaceKind, Horizon.INNER_HALF)
+		warn(`[Ocean] outer ring unavailable ({ringErr}); using the Part-grid fallback`)
+		return false
 	end
-	horizon = Horizon.new(parent, SEA, tint, HAZE_DEFAULT, surfaceKind)
+	if far and #far.meshes < #far.parts then
+		return false -- a strip fell back to a Part: never a half-mesh sea (FarPlane warned)
+	end
+	if RunService:IsStudio() and Workspace:GetAttribute("OceanDevFail") == "create" then
+		warn("[Ocean] OceanDevFail: simulated EditableMesh failure; using the Part-grid fallback")
+		return false
+	end
+	-- Flat Parts, not 3 more EditableMeshes: they ran the v64 real client out of budget (2026-10-28).
+	horizon = Horizon.new(parent, SEA, tint, HAZE_DEFAULT, surfaceKind, true)
 	seabed = Seabed.new(parent)
 	if tier.name ~= "Low" then
-		-- Foam overlay: half the near patch's resolution; round 4 widens it (up to twice the near
-		-- patch, inside the ring's unfaded area) so whitecaps reach past the boat in wide shots.
-		local foamCell = tier.nearCell * 2
-		local foamCells = math.clamp(
-			math.floor(tier.outerCells * tier.outerCell * 0.8 / foamCell),
-			tier.nearCells // 2,
-			tier.nearCells
-		)
-		local foamGrid = MeshGrid.new("OceanFoam", parent, foamCells, foamCell, 0, "Foam")
-		if foamGrid then
-			foam = foamGrid
-			foamGrid.part.Transparency = 1
-			for n = 1, foamGrid.count do
-				foamLift[n] = FOAM_SINK
-				foamPersist[n], foamSpare[n] = 0, 0
-				local key = (math.floor(foamGrid.lx[n] / foamCell + 0.5) + FOAM_KEY_SPAN // 2)
+		-- Foam on the near patch, plus (round 4) a ring of foam out to twice the near patch, inside
+		-- the ring's unfaded area, so whitecaps reach past the boat in wide shots.
+		local function newFoam(name: string, cells: number, cell: number, holeCells: number): Foam?
+			local grid = MeshGrid.new(name, parent, cells, cell, holeCells, "Foam")
+			if not grid then
+				return nil
+			end
+			grid.part.Transparency = 1
+			local fm: Foam = {
+				grid = grid,
+				lift = table.create(grid.count, FOAM_SINK),
+				persist = table.create(grid.count, 0),
+				spare = table.create(grid.count, 0),
+				key = table.create(grid.count, 0),
+				index = {},
+				edge = grid.half - cell * 0.5,
+				a = {},
+				b = {},
+				c = {},
+				wb = {},
+				wc = {},
+			}
+			for n = 1, grid.count do
+				local key = (math.floor(grid.lx[n] / cell + 0.5) + FOAM_KEY_SPAN // 2)
 						* FOAM_KEY_SPAN
-					+ math.floor(foamGrid.lz[n] / foamCell + 0.5)
+					+ math.floor(grid.lz[n] / cell + 0.5)
 					+ FOAM_KEY_SPAN // 2
-				foamKey[n] = key
-				foamIndex[key] = n
+				fm.key[n] = key
+				fm.index[key] = n
+			end
+			table.insert(foams, fm)
+			return fm
+		end
+		local inner = newFoam("OceanFoam", tier.nearCells, tier.nearCell, 0)
+		local span =
+			math.clamp(math.floor(tier.outerCells * 0.4) * 2, tier.holeCells, 2 * tier.holeCells)
+		local outer = if ringGrid
+			then newFoam("OceanFoamRing", span * 2, tier.outerCell / 2, tier.holeCells * 2)
+			else nil
+		if not (inner and outer) then
+			warn("[Ocean] foam mesh unavailable; using the Part-grid fallback")
+			return false
+		end
+		inner.edge = math.huge -- its border meets the ring foam
+		if outer and ringGrid then
+			-- Each ring-foam vertex sits on a ring vertex, edge midpoint or diagonal midpoint, so its
+			-- water height is the lower ring triangle (v00, v10, v01) at (ti, tj) in {0, 0.5}.
+			for n = 1, outer.grid.count do
+				local fi = (outer.grid.lx[n] + ringGrid.half) / ringGrid.cellSize
+				local fj = (outer.grid.lz[n] + ringGrid.half) / ringGrid.cellSize
+				local i, j = math.floor(fi + EPS), math.floor(fj + EPS)
+				local ti, tj = fi - i, fj - j
+				local a = ringGrid.index[MeshGrid.latticeKey(ringGrid, i, j)]
+				local b = if ti > EPS
+					then ringGrid.index[MeshGrid.latticeKey(ringGrid, i + 1, j)]
+					else a
+				local c = if tj > EPS
+					then ringGrid.index[MeshGrid.latticeKey(ringGrid, i, j + 1)]
+					else a
+				assert(
+					a > 0 and b > 0 and c > 0 and ti + tj <= 1 + EPS,
+					"[Ocean] ring foam off the ring lattice"
+				)
+				outer.a[n], outer.b[n], outer.c[n], outer.wb[n], outer.wc[n] = a, b, c, ti, tj
 			end
 		end
 	end
@@ -387,31 +452,30 @@ end
 -- Grid snapped by (dx, dz) studs: carry the persistent foam with the world (cleared if the step is
 -- not a whole number of foam cells, e.g. the first placement).
 local function shiftFoam(dx: number, dz: number)
-	local grid = foam
-	if not grid or #foamPersist == 0 then
-		return
-	end
-	local di, dj = dx / grid.cellSize, dz / grid.cellSize
-	local old, new = foamPersist, foamSpare
-	if
-		di ~= di
-		or dj ~= dj
-		or di % 1 ~= 0
-		or dj % 1 ~= 0
-		or math.abs(di) > 64
-		or math.abs(dj) > 64
-	then
-		for n = 1, grid.count do
-			old[n] = 0
+	for _, fm in foams do
+		local grid = fm.grid
+		local di, dj = dx / grid.cellSize, dz / grid.cellSize
+		local old, new = fm.persist, fm.spare
+		if
+			di ~= di
+			or dj ~= dj
+			or di % 1 ~= 0
+			or dj % 1 ~= 0
+			or math.abs(di) > 64
+			or math.abs(dj) > 64
+		then
+			for n = 1, grid.count do
+				old[n] = 0
+			end
+		else
+			local offset = di * FOAM_KEY_SPAN + dj
+			for n = 1, grid.count do
+				local src = fm.index[fm.key[n] + offset]
+				new[n] = if src then old[src] else 0
+			end
+			fm.persist, fm.spare = new, old
 		end
-		return
 	end
-	local offset = di * FOAM_KEY_SPAN + dj
-	for n = 1, grid.count do
-		local src = foamIndex[foamKey[n] + offset]
-		new[n] = if src then old[src] else 0
-	end
-	foamPersist, foamSpare = new, old
 end
 
 -- Writes every vertex for time t. Allocation-free.
@@ -449,16 +513,13 @@ local function updateMesh(t: number, ou: number, ov: number, fu: number, fv: num
 		end
 		MeshGrid.apply(nearGrid, SEA, ou, ov)
 	end
-	local foamGrid = foam
-	if foamGrid then
+	if #foams > 0 then
 		local intensity = WaveField.intensity()
 		-- Whitecaps in every weather (the North Atlantic is never glassy): rare breaking peaks on
 		-- calm swell, most crests breaking in a storm. Fresh foam is driven by crest height plus
 		-- the steepness of the downwind (front) face, so it sits on the crest lip and spills down
 		-- the face; it then persists and decays, slowly in a storm, broken into wind-aligned
 		-- streaks. Crest vertices feed the spindrift (crests only).
-		-- not 0: an opaque MeshPart ignores its TextureID alpha and the foam draws as a solid sheet
-		foamGrid.part.Transparency = 0.02
 		crestCount = 0
 		local dt = if foamT then math.clamp(t - foamT, 0, 0.5) else 0
 		foamT = t
@@ -466,41 +527,60 @@ local function updateMesh(t: number, ou: number, ov: number, fu: number, fv: num
 		-- Max slope of the sine sum (sum of k * A): about 0.22 calm, 0.29 storm.
 		local slopeMax = 0.22 + 0.07 * intensity
 		local wx, wz = WaveField.windDirection()
-		local heights, gxs, gzs, lx, lz =
-			foamGrid.heights, foamGrid.gx, foamGrid.gz, foamGrid.lx, foamGrid.lz
-		local edge = foamGrid.half - foamGrid.cellSize * 0.5
 		-- Breaking threshold drops and coverage rises as the storm builds. -- tune
 		local lo = 0.92 - 0.5 * intensity
 		local cover = 0.55 + 0.45 * math.min(intensity * 1.6, 1)
 		local decay = math.exp(-dt / (0.5 + 4 * intensity)) -- foam half-life ~0.35 s calm, ~3 s storm
 		local streakAmt = 0.25 + 0.75 * intensity
-		local persist = foamPersist
-		for n = 1, foamGrid.count do
-			local x, z = centreX + lx[n], centreZ + lz[n]
-			local h, gx, gz = WaveField.gradientAt(x, z, t)
-			local w = fadeWeight(lx[n], lz[n])
-			local hN = (h - SEA) / amp
-			local face = math.max(-(gx * wx + gz * wz), 0) / slopeMax
-			local steep = math.sqrt(gx * gx + gz * gz) / slopeMax
-			local fresh = smoothstep(lo, lo + 0.24, hN + 0.32 * face + 0.12 * steep) * cover * w
-			local p = math.max(fresh, persist[n] * decay)
-			persist[n] = p
-			-- Remnant foam: world-locked bands across the wind, wavy along it (streaks).
-			local across, along = x * -wz + z * wx, x * wx + z * wz
-			local band = 0.5
-				+ 0.5 * math.sin(across * 0.85 + 1.8 * math.sin(along * 0.045 + across * 0.11))
-			local f = math.max(fresh, p * smoothstep(0.3, 0.85, band) * streakAmt)
-			if math.abs(lx[n]) > edge or math.abs(lz[n]) > edge then
-				f = 0 -- keep the overlay's border under the water
-			elseif fresh > 0.6 and crestCount < MAX_CRESTS and (n % 3 == 0) then
-				crestCount += 1
-				crestPos[crestCount] = Vector3.new(x, h + 0.4, z)
+		for _, fm in foams do
+			local foamGrid = fm.grid
+			-- not 0: an opaque MeshPart ignores its TextureID alpha and the foam draws as a solid sheet
+			foamGrid.part.Transparency = 0.02
+			local heights, gxs, gzs, lx, lz =
+				foamGrid.heights, foamGrid.gx, foamGrid.gz, foamGrid.lx, foamGrid.lz
+			local onNear = #fm.a == 0 -- vertex n is the near patch's vertex n
+			local ringHeights = if ringGrid then ringGrid.heights else heights
+			local ia, ib, ic, wb, wc = fm.a, fm.b, fm.c, fm.wb, fm.wc
+			local stride = if onNear then 12 else 3 -- crest candidates per area as on the old 8-stud foam
+			local edge, persist, lift = fm.edge, fm.persist, fm.lift
+			for n = 1, foamGrid.count do
+				local x, z = centreX + lx[n], centreZ + lz[n]
+				local h, gx, gz, water
+				if onNear and nearGrid then
+					h, gx, gz = nearGrid.heights[n], nearGrid.gx[n], nearGrid.gz[n]
+					water = h
+				else
+					h, gx, gz = WaveField.gradientAt(x, z, t)
+					local ha = ringHeights[ia[n]]
+					water = ha
+						+ (ringHeights[ib[n]] - ha) * wb[n]
+						+ (ringHeights[ic[n]] - ha) * wc[n]
+				end
+				local w = fadeWeight(lx[n], lz[n])
+				local hN = (h - SEA) / amp
+				local face = math.max(-(gx * wx + gz * wz), 0) / slopeMax
+				local steep = math.sqrt(gx * gx + gz * gz) / slopeMax
+				local fresh = smoothstep(lo, lo + 0.24, hN + 0.32 * face + 0.12 * steep) * cover * w
+				local p = math.max(fresh, persist[n] * decay)
+				persist[n] = p
+				-- Remnant foam: world-locked bands across the wind, wavy along it (streaks).
+				local across, along = x * -wz + z * wx, x * wx + z * wz
+				local band = 0.5
+					+ 0.5
+						* math.sin(across * 0.85 + 1.8 * math.sin(along * 0.045 + across * 0.11))
+				local f = math.max(fresh, p * smoothstep(0.3, 0.85, band) * streakAmt)
+				if math.abs(lx[n]) > edge or math.abs(lz[n]) > edge then
+					f = 0 -- keep the overlay's border under the water
+				elseif fresh > 0.6 and crestCount < MAX_CRESTS and (n % stride == 0) then
+					crestCount += 1
+					crestPos[crestCount] = Vector3.new(x, h + 0.4, z)
+				end
+				heights[n] = water -- the rendered water surface, so the lift holds between vertices too
+				gxs[n], gzs[n] = gx * w, gz * w
+				lift[n] = FOAM_SINK + (FOAM_LIFT - FOAM_SINK) * math.min(f * 2.2, 1)
 			end
-			heights[n] = SEA + (h - SEA) * w
-			gxs[n], gzs[n] = gx * w, gz * w
-			foamLift[n] = FOAM_SINK + (FOAM_LIFT - FOAM_SINK) * math.min(f * 2.2, 1)
+			MeshGrid.apply(foamGrid, SEA, fu, fv, lift)
 		end
-		MeshGrid.apply(foamGrid, SEA, fu, fv, foamLift)
 	end
 end
 
@@ -626,10 +706,10 @@ local function moveParts()
 	if ring then
 		ring.part.CFrame = cf
 	end
-	if foam then
+	for _, fm in foams do
 		-- the foam heights are sampled around (centreX, centreZ); left at the origin it drew a
 		-- misplaced opaque sheet over the harbour quay (black sea patches, 2026-10-22)
-		foam.part.CFrame = cf
+		fm.grid.part.CFrame = cf
 	end
 	if far then
 		FarPlane.moveTo(far, centreX, centreZ)
@@ -642,12 +722,53 @@ local function moveParts()
 	end
 end
 
+-- Every ocean EditableMesh still exists and is still what its MeshPart shows.
+local function meshesAlive(): boolean
+	local grids = { near, ring }
+	for _, fm in foams do
+		table.insert(grids, fm.grid)
+	end
+	for _, g in grids do
+		if
+			not g
+			or not g.part.Parent
+			or g.part.MeshContent.Object ~= g.em
+			or not pcall(g.em.GetPosition, g.em, g.vid[1])
+		then
+			return false
+		end
+	end
+	if far then
+		for m, em in far.meshes do
+			if not pcall(em.GetUV, em, far.uvs[m][1]) then
+				return false
+			end
+		end
+	end
+	return true
+end
+
 local function step(dt: number)
 	local camera = Workspace.CurrentCamera
 	if not camera or mode == "None" then
 		return
 	end
 	local pos = camera.CFrame.Position
+	if mode == "Mesh" and os.clock() >= aliveAt then
+		aliveAt = os.clock() + 1
+		if RunService:IsStudio() and Workspace:GetAttribute("OceanDevFail") == "evict" and near then
+			near.em:Destroy() -- Studio test hook: a mesh evicted mid-session
+		end
+		if not meshesAlive() then
+			warn(
+				"[Ocean] EditableMesh lost (memory budget?); Part-grid ocean for the rest of the session"
+			)
+			meshLost = true
+			mode = "None" -- stop writing to the dead meshes until the rebuild
+			task.spawn(build)
+			return
+		end
+	end
 	if underwater then -- every frame (not at the tier rate): its fog slices ride the camera
 		Underwater.update(underwater, camera, OceanController.GetVisualHeight(pos.X, pos.Z))
 	end
@@ -726,7 +847,7 @@ local function step(dt: number)
 	end
 end
 
-local function build()
+function build()
 	if building then
 		rebuildQueued = true
 		return
@@ -742,11 +863,13 @@ local function build()
 		-- grid takes over when EditableMesh fails (memory budget); Studio attribute OceanForceParts forces it.
 		local forceParts = not USE_MESH_OCEAN
 			or RunService:IsStudio() and Workspace:GetAttribute("OceanForceParts") == true
-		if forceParts or not buildMesh(parent) then
+		if forceParts or meshLost or not buildMesh(parent) then
+			meshLost = not forceParts
 			teardown()
 			buildFallback(parent)
 		end
 		print(`[Ocean] {mode} ocean, {tier.name} tier`)
+		parent:SetAttribute("Mode", mode)
 	until not rebuildQueued
 	-- after every camera writer (CameraController +1, capture tour cams): at Camera + 1 a photo
 	-- camera left the wave patch behind at the player, a square of white dots in the harbour seen from the air
@@ -766,6 +889,15 @@ function OceanController.Start()
 		task.spawn(build)
 	end)
 	Wake.start(SEA) -- hull foam and wake trails behind boats (Ocean/Wake)
+	if RunService:IsStudio() then
+		-- Test hook: Workspace OceanDevFail = "create" rebuilds with a simulated EditableMesh failure,
+		-- "evict" destroys the near patch's mesh mid-session; both must end in a clean Part-grid sea.
+		Workspace:GetAttributeChangedSignal("OceanDevFail"):Connect(function()
+			if Workspace:GetAttribute("OceanDevFail") == "create" then
+				task.spawn(build)
+			end
+		end)
+	end
 	build() -- yields (CreateMeshPartAsync)
 end
 
