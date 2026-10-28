@@ -25,6 +25,7 @@ export type PartGrid = {
 	ys: { number }, -- world Y per lattice vertex (i * (cells + 1) + j + 1)
 	bucket: { number }, -- palette bucket per triangle
 	tint: Color3, -- water tint the buckets were coloured with
+	foam: number, -- whitecap strength the buckets were coloured with
 }
 
 local PartGrid = {}
@@ -74,6 +75,7 @@ function PartGrid.new(parent: Instance, cells: number, cellSize: number): PartGr
 		ys = table.create((cells + 1) * (cells + 1), 0),
 		bucket = table.create(cells * cells * 2, 0),
 		tint = Color3.new(),
+		foam = 0,
 	}
 end
 
@@ -101,17 +103,19 @@ local function triangle(grid: PartGrid, n: number, a: Vector3, b: Vector3, c: Ve
 end
 
 -- heightAt(x, z) -> world Y of the surface. tint: the flat-sea colour (matches the far plane);
--- troughs and crests blend toward the palette's navy / foam.
+-- troughs and crests blend toward the palette's navy / foam. foam 0..1 (storm intensity, quantised by the
+-- caller): whitecaps, the highest crests whiten (the mesh ocean's foam overlay is off while the Part grid stands in).
 function PartGrid.update(
 	grid: PartGrid,
 	cx: number,
 	cz: number,
 	seaLevel: number,
 	heightAt: (number, number) -> number,
-	tint: Color3
+	tint: Color3,
+	foam: number
 )
-	if tint ~= grid.tint then
-		grid.tint = tint
+	if tint ~= grid.tint or foam ~= grid.foam then
+		grid.tint, grid.foam = tint, foam
 		table.clear(grid.bucket)
 	end
 	local cells, size, half, ys = grid.cells, grid.cellSize, grid.half, grid.ys
@@ -143,7 +147,7 @@ function PartGrid.update(
 					local colour = tint:Lerp(
 						colours[b],
 						math.min(math.abs(b - OceanPalette.SEA_BUCKET) / OceanPalette.HALF, 1)
-							* 0.35
+							* (if b > OceanPalette.SEA_BUCKET then 0.35 + 0.55 * foam else 0.35)
 					)
 					parts[n + k * 2].Color = colour
 					parts[n + k * 2 + 1].Color = colour

@@ -76,7 +76,7 @@ local SPRAY_RATE = 70 -- spindrift particles/s at full storm (High) -- tune
 -- the blended preset's WaterColor and Atmosphere colour as Lighting attributes OceanWaterColor /
 -- OceanHazeColor; these are the fallbacks. North Atlantic grey-green, darker in storm. -- tune
 local TINT_CALM = Color3.fromHex("#36463F")
-local TINT_STORM = Color3.fromHex("#232C2B")
+local TINT_STORM = Color3.fromHex("#3A5F63")
 local HAZE_DEFAULT = Color3.fromHex("#A9B0B4")
 local SHALLOW_TINT = Color3.fromHex("#4F6A66") -- lighter aqua-green over sand (round 4: less olive) -- tune
 
@@ -719,7 +719,9 @@ local function step(dt: number)
 				FarPlane.setCap(far, high)
 			end
 		end
-		PartGrid.update(fallback, centreX, centreZ, SEA, fallbackHeight, tint)
+		-- whitecaps in eighths: each step recolours the whole grid once
+		local whitecaps = math.floor(WaveField.intensity() * 8 + 0.5) / 8
+		PartGrid.update(fallback, centreX, centreZ, SEA, fallbackHeight, tint, whitecaps)
 		updateLook()
 	end
 end
