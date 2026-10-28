@@ -186,7 +186,7 @@ return function(t)
 				local _, wy0, _, wy1 = box(wallet)
 				t.expect(menu.pos.X).toBe(m)
 				t.expect(wallet.pos.X).toBe(m)
-				t.expect(math.abs(wy0 - (my1 + g)) < 1e-6).toBe(true)
+				t.expect(math.abs(wy0 - (my1 + g + HudLayout.WALLET_DROP)) < 1e-6).toBe(true)
 				t.expect(my0 >= m and wy1 <= mt.usable.Y - m).toBe(true)
 				t.expect(mt.menu.rows * mt.menu.cols >= HudLayout.MENU_COUNT).toBe(true)
 				local mini = mt.rects.minimap
