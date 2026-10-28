@@ -21,10 +21,12 @@ Your asset name `<Asset>` and kind folder `<kind>` are in your task. Stop as soo
 - `build()` returns LOD0 (+ `_COL`) only; the `lod` step makes `_LOD1` / `_LOD2`.
 - Every asset must pass `tools/blender/zfight_check.py` (no coplanar overlapping faces) before upload: run.py nudges
   them right after `build()`; the log must say `[zfight] ... 0 visible pairs left` (check an FBX: header of the script).
-- Blender MCP (`blender` server, mcp-for-blender; A/B 2026-10-28 build/status/2026-10-28/mcpab: MCP 7.6 vs script 7.0) is
-  for exploring and look-and-tweak passes: open Blender GUI only inside the 2-heavy-app limit, use `look` multi-angle
-  checks, never enable telemetry or the asset integrations. The shipped geometry still comes from `build.py`: port
-  every MCP change back into the script and run the normal validate / lod / export.
+- Work in Blender through the Blender MCP (`blender` server, mcp-for-blender; owner 2026-10-28 "From now on, use blender
+  MCP"; A/B build/status/2026-10-28/mcpab: MCP 7.6 vs script 7.0): open the Blender GUI (`open -a Blender`, the add-on
+  serves localhost:9876) only inside the 2-heavy-app limit, one MCP session at a time; build and fix live with
+  `execute_blender_code` and check each step with multi-angle `look`; never enable telemetry or the asset integrations.
+  The MCP code namespace resets every call (re-import). Keep the asset rebuildable: save the .blend in art/source and
+  mirror the final geometry in the asset's `build.py`, then run the normal validate / lod / zfight / export / upload.
 
 ## Commands (every Blender run through the shared 2-slot lock; queueing is normal)
 
