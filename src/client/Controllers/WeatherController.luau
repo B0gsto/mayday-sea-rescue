@@ -224,14 +224,18 @@ end
 -- Twilight (sun from ~4 degrees up to 7.5 below: 17:45..18:30 and 05:30..06:15). The engine tints the sky faces
 -- dark orange as the sun meets the horizon, and the blue Night grade over that read as rust-brown (WX1). A warm haze
 -- band on the horizon, a lavender grade and a violet decay carry the sky to navy instead, without the glare that
--- washed out the low sun; the land dims once the sun is down. Zero by 18:30 (sun y -0.13), so the approved navy
--- 18:30 and the moonlit night are unchanged. -- tune
+-- washed out the low sun; the land holds about its sunset brightness once the sun is down. Zero by 18:30 (sun
+-- y -0.13), so the approved navy 18:30 and the moonlit night are unchanged. -- tune
 local TWILIGHT_BAND = Color3.fromHex("#F2A27A")
 local TWILIGHT_TINT = Color3.fromHex("#E2D6F2")
 local TWILIGHT_DECAY = Color3.fromHex("#3C3F7A")
-local TWILIGHT_OUTDOOR = Color3.fromRGB(75, 80, 115)
--- A storm at night: a threatening teal-slate sea (renders near #1E3A48 under the night grade), not the Night teal. -- tune
-local STORM_NIGHT_WATER = Color3.fromHex("#2E5A60")
+-- wx3: (75, 80, 115) took the land near black at 18:15 on a phone; this holds it near the 18:00 brightness
+local TWILIGHT_OUTDOOR = Color3.fromRGB(140, 135, 165)
+-- A storm at night: a teal-slate sea, renders near (40, 64, 70) (wx3; #2E5A60 rendered navy). The night light is
+-- blue, so the albedo leans warm. -- tune
+local STORM_NIGHT_WATER = Color3.fromRGB(108, 122, 97)
+-- Under the night storm deck the glossy wave facets mirrored the sky in hard-edged pale patches (wx2). -- tune
+local STORM_NIGHT_SPECULAR = 0.25
 
 local function grade(p: Preset, y: number)
 	local below = smoothstep(-0.13, -0.07, y)
@@ -315,6 +319,7 @@ local function computeBlend(intensity: number): Preset
 		stormMix.CloudsCover = LightingPresets.Storm.CloudsCover
 		stormMix.CloudsDensity = LightingPresets.Storm.CloudsDensity
 		stormMix.WaterColor = LightingPresets.Storm.WaterColor:Lerp(STORM_NIGHT_WATER, n)
+		stormMix.EnvironmentSpecularScale += (STORM_NIGHT_SPECULAR - stormMix.EnvironmentSpecularScale) * n
 	end
 	-- At night the day faces stay up: the engine dims them to a moonlit navy with clouds (dark faces render black).
 	-- The Calm (sunset-painted) faces until the sun is just below the horizon (n 0.25, about 18:05): on the horizon the
