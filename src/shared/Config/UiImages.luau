@@ -25,6 +25,22 @@ return {
 			Quest = "rbxassetid://85241927129052",
 			Beam = "rbxassetid://96011335512407",
 		},
+		-- tools/ui-art/stickers.py (uia2): the map arrow (tip up, spun about its box centre), the gamepad
+		-- crosshair, the onboarding beacon's gem + stem and its ground ring (a Decal), the drop-off pad's pin
+		MapPlayer = "rbxassetid://94128666441990",
+		MapCross = "rbxassetid://91359051719681",
+		BeaconMark = "rbxassetid://95202461577085",
+		BeaconRing = "rbxassetid://81584164235013",
+		TransportPin = "rbxassetid://82312333876842",
+	},
+	-- Small kit stickers (tools/ui-art/stickers.py, uia2): level stars, pet hearts, seat studs
+	Badges = {
+		StarOn = "rbxassetid://101115140051784",
+		StarOff = "rbxassetid://121280061755920",
+		Heart = "rbxassetid://103429639699544",
+		PipOn = "rbxassetid://79278766459351",
+		PipFull = "rbxassetid://103484297206636",
+		PipOff = "rbxassetid://119111756457195",
 	},
 	-- Icons requested in docs/18-ui-art-requests.md. Empty until uploaded: the UI draws its glyph
 	-- placeholder instead. VehicleArt: UI/BoatCard (upgrades by id, the stat rows, the tick).

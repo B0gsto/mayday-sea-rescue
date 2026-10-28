@@ -25,6 +25,7 @@ local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
+local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 
 local Client = script.Parent.Parent
 local CameraController = require(script.Parent:WaitForChild("CameraController"))
@@ -306,7 +307,7 @@ local function seatPips(): () -> ()
 	gui.ResetOnSpawn = false
 	local box = Instance.new("Frame")
 	box.AnchorPoint = Vector2.new(0.5, 0.5)
-	box.Size = UDim2.fromOffset(150, 60)
+	box.Size = UDim2.fromOffset(300, 76)
 	box.BackgroundTransparency = 1
 	box.Parent = gui
 	local scale = Instance.new("UIScale")
@@ -319,13 +320,27 @@ local function seatPips(): () -> ()
 		l.Font = Enum.Font.GothamBlack
 		l.TextScaled = true
 		l.TextColor3 = Color3.new(1, 1, 1)
-		l.TextStrokeTransparency = 0.4
+		l.TextStrokeColor3 = Color3.fromHex("14121C")
+		l.TextStrokeTransparency = 0
 		l.Parent = box
 		return l
 	end
-	local count = label(0, 0.6)
-	local pips = label(0.6, 0.4)
+	local count = label(0, 0.5)
+	-- one Lego stud per seat (tools/ui-art/stickers.py): green filled, grey empty, all red when full
+	local pips = Instance.new("Frame")
+	pips.BackgroundTransparency = 1
+	pips.Position = UDim2.fromScale(0, 0.5)
+	pips.Size = UDim2.fromScale(1, 0.5)
+	pips.Parent = box
+	local list = Instance.new("UIListLayout")
+	list.FillDirection = Enum.FillDirection.Horizontal
+	list.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	list.VerticalAlignment = Enum.VerticalAlignment.Center
+	list.Padding = UDim.new(0, 2)
+	list.SortOrder = Enum.SortOrder.LayoutOrder
+	list.Parent = pips
 	local last = 0
+	local shown = ""
 	local conn = RunService.Heartbeat:Connect(function()
 		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 		local seat = hum and hum.SeatPart
@@ -342,10 +357,27 @@ local function seatPips(): () -> ()
 		end
 		local full = n >= cap
 		count.Text = `{n}/{cap}`
-		pips.Text = string.rep("●", math.min(n, cap)) .. string.rep("○", math.max(cap - n, 0))
-		pips.TextColor3 = if full
-			then Color3.fromRGB(240, 80, 70)
-			else Color3.fromRGB(120, 235, 140)
+		if count.Text ~= shown then
+			shown = count.Text
+			for _, old in pips:GetChildren() do
+				if old:IsA("ImageLabel") then
+					old:Destroy()
+				end
+			end
+			local px = if cap <= 4 then 36 else 30
+			for i = 1, cap do
+				local pip = Instance.new("ImageLabel")
+				pip.BackgroundTransparency = 1
+				pip.Size = UDim2.fromOffset(px, px)
+				pip.ScaleType = Enum.ScaleType.Fit
+				pip.LayoutOrder = i
+				pip.Image = if i > n
+					then UiImages.Badges.PipOff
+					elseif full then UiImages.Badges.PipFull
+					else UiImages.Badges.PipOn
+				pip.Parent = pips
+			end
+		end
 		-- beside the rider, not over them: the chase camera looks down the line to the house pin
 		local cam = Workspace.CurrentCamera
 		local at, onScreen = cam:WorldToViewportPoint(
