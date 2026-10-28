@@ -110,7 +110,7 @@ local Storm: Preset = table.freeze({
 	BloomSize = 28,
 	BloomThreshold = 1.8,
 	SunRaysIntensity = 0,
-	WaterColor = hex("#232C2B"),
+	WaterColor = hex("#3A5F63"), -- stormy teal-grey: still reads as water under the dark deck (was #232C2B, near-black)
 })
 
 local Night: Preset = table.freeze({

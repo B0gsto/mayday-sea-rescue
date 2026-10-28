@@ -60,7 +60,7 @@ local RIPPLE_MAX_HEIGHT = 45 -- camera height above the sea beyond which ripples
 local BLEND_HZ = 10
 local ROOF_CHECK_SECONDS = 0.25
 local ROOF_RAY_LENGTH = 150 -- studs -- tune
-local RAIN_MAX_RATE = 900 -- particles/s at full storm, top quality -- tune
+local RAIN_MAX_RATE = 1300 -- particles/s at full storm, top quality -- tune
 local RAIN_AREA = 110 -- studs square around the camera -- tune
 local RAIN_HEIGHT = 38 -- studs above the camera -- tune
 local RAIN_FALL_SPEED = 85 -- studs/s -- tune
@@ -216,8 +216,15 @@ local function smoothstep(e0: number, e1: number, x: number): number
 end
 
 -- 0 by day .. 1 once the sun is well below the horizon (about 13 degrees: a long blue hour).
+-- Twilight floor: from sunset the warm Calm colours give way to Night quickly (a peach Calm haze with the sun on the
+-- horizon dims to a muddy rust-brown); below it the curve is unchanged, so 18:30 (n 0.78) keeps the approved look.
+local TWILIGHT_FLOOR = 0.75 -- tune
 local function nightFactor(): number
-	return 1 - smoothstep(-0.22, 0.08, Lighting:GetSunDirection().Y)
+	local y = Lighting:GetSunDirection().Y
+	return math.max(
+		1 - smoothstep(-0.22, 0.08, y),
+		TWILIGHT_FLOOR * (1 - smoothstep(-0.02, 0.08, y))
+	)
 end
 
 local function applySky(key: string)
@@ -243,8 +250,10 @@ local function applySky(key: string)
 			sky.SkyboxUp = faces.Up
 		end)
 	end
-	-- No sun or moon disc behind a solid cloud deck.
-	sky.CelestialBodiesShown = key ~= "Storm" and key ~= "Overcast"
+	-- No sun, moon or stars behind a solid cloud deck.
+	local open = key ~= "Storm" and key ~= "Overcast"
+	sky.CelestialBodiesShown = open
+	sky.StarCount = if open then 3000 else 0
 end
 
 -- The full blend for this moment: day base -> Night by the sun, -> Storm by intensity.
@@ -273,11 +282,19 @@ local function computeBlend(intensity: number): Preset
 		else DAY_PRESETS[name]
 	local n = nightFactor()
 	local dayMix = if n > 0.001 then LightingPresets.blend(day, LightingPresets.Night, n) else day
-	local stormMix = if n > 0.001
-		then LightingPresets.blend(LightingPresets.Storm, LightingPresets.Night, n * 0.8)
-		else LightingPresets.Storm
+	local stormMix = LightingPresets.Storm
+	if n > 0.001 then
+		stormMix = LightingPresets.blend(LightingPresets.Storm, LightingPresets.Night, n * 0.8)
+		-- the storm keeps its cloud deck at night; only the light darkens
+		stormMix.CloudsCover = LightingPresets.Storm.CloudsCover
+		stormMix.CloudsDensity = LightingPresets.Storm.CloudsDensity
+	end
 	-- At night the day faces stay up: the engine dims them to a moonlit navy with clouds (dark faces render black).
-	applySky(if intensity >= 0.5 then "Storm" elseif n < 0.5 and warm >= 0.5 then "Calm" else name)
+	-- The Calm (sunset-painted) faces only while the sun is up (n = 0 above ~5 degrees): the engine dims them to a
+	-- muddy rust once it nears the horizon, the day faces dim to violet / navy instead.
+	applySky(
+		if intensity >= 0.5 then "Storm" elseif n < 0.001 and warm >= 0.5 then "Calm" else name
+	)
 	local p = if intensity > 0.001
 		then LightingPresets.blend(dayMix, stormMix, intensity)
 		else dayMix
@@ -306,17 +323,19 @@ local function createRain()
 	rainEmitter.EmissionDirection = Enum.NormalId.Bottom
 	rainEmitter.Shape = Enum.ParticleEmitterShape.Box
 	rainEmitter.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
-	rainEmitter.Orientation = Enum.ParticleOrientation.VelocityParallel
+	-- World-up, not VelocityParallel: that laid the tall streak cells across the fall (sideways rain). The wind
+	-- drift (WIND_PUSH) is a few degrees at 85 studs/s, so upright streaks lose nothing.
+	rainEmitter.Orientation = Enum.ParticleOrientation.FacingCameraWorldUp
 	rainEmitter.Speed = NumberRange.new(RAIN_FALL_SPEED * 0.9, RAIN_FALL_SPEED * 1.1)
 	rainEmitter.Lifetime = NumberRange.new(0.7, 0.9)
 	if RAIN_STREAKS then
 		-- the streak fills ~70 % of its cell's height: about 1.3 studs (40 cm) of 1/50 s exposure
-		rainEmitter.Size = NumberSequence.new(1.8)
-		rainEmitter.Squash = NumberSequence.new(0.4)
+		rainEmitter.Size = NumberSequence.new(3) -- bold enough to read on a phone
+		rainEmitter.Squash = NumberSequence.new(0.1)
 		rainEmitter.Transparency = NumberSequence.new({
 			NumberSequenceKeypoint.new(0, 1),
-			NumberSequenceKeypoint.new(0.12, 0.35),
-			NumberSequenceKeypoint.new(1, 0.5),
+			NumberSequenceKeypoint.new(0.12, 0.15),
+			NumberSequenceKeypoint.new(1, 0.35),
 		})
 	else
 		rainEmitter.Size = NumberSequence.new(0.14)
@@ -328,8 +347,8 @@ local function createRain()
 		})
 	end
 	rainEmitter.Color = ColorSequence.new(LightingPresets.Palette.RainGrey)
-	rainEmitter.LightInfluence = if RAIN_STREAKS then 0.85 else 0.6
-	rainEmitter.LightEmission = 0.1
+	rainEmitter.LightInfluence = if RAIN_STREAKS then 0.5 else 0.6 -- 0.85 sank into the dark storm light
+	rainEmitter.LightEmission = 0.35
 	rainEmitter.Rate = 0
 	rainEmitter.Enabled = true
 	rainEmitter.Parent = rainPart
@@ -396,7 +415,8 @@ local function updateRain(camera: Camera, intensity: number)
 		* (WIND_PUSH * intensity)
 	local tierName = OceanQuality.current().name
 	local quality = if RAIN_STREAKS then Flipbooks.scale("rain", tierName) else qualityFactor()
-	local rate = if underRoof then 0 else RAIN_MAX_RATE * quality * intensity * intensity
+	local heavy = if Weather.isGreatStorm() then 1 else 0.5 -- a plain Storm rains lighter
+	local rate = if underRoof then 0 else RAIN_MAX_RATE * quality * heavy * intensity * intensity
 	rainEmitter.Rate = if rate < 1 then 0 else rate
 	local seaY = WorldConfig.SeaLevel
 	local above = position.Y - seaY
@@ -627,8 +647,8 @@ function WeatherController.Init()
 	bloom = findOrCreate(Lighting, "BloomEffect", "WeatherBloom")
 	sunRays = findOrCreate(Lighting, "SunRaysEffect", "WeatherSunRays")
 	sky = findOrCreate(Lighting, "Sky", "Sky")
-	sky.StarCount = 3000 -- Roblox only draws stars at night
-	sky.MoonAngularSize = 13 -- tune
+	sky.StarCount = 3000 -- Roblox only draws stars at night; none under a storm deck (applySky)
+	sky.MoonAngularSize = 9 -- tune (13 read oversized)
 	-- Visible sun and moon discs (round 3): the built-in textures, set explicitly so an empty
 	-- id from an older place file can't hide them. The sun disc drives the water's sun glitter.
 	sky.SunTextureId = "rbxasset://sky/sun.jpg"
