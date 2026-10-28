@@ -20,6 +20,7 @@ local Theme = require(Kit:WaitForChild("Theme"))
 
 local player = Players.LocalPlayer
 local S = Theme.Size
+local PANEL_SIZE = Vector2.new(720, 560)
 local Companion = {}
 
 local function portrait(parent: Frame, model: Model?)
@@ -78,7 +79,7 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 	local panel = Panel.new(canvas, {
 		title = "Pet",
 		icon = "companion",
-		size = Vector2.new(720, 560),
+		size = PANEL_SIZE,
 		onClose = onClose,
 	})
 	local cards: { { id: number, root: ImageButton, button: PriceButton.PriceButton, meter: Frame, fill: Frame } } =
@@ -151,9 +152,10 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 			local chosen = (view and view.variant) == chip.id
 			local text = Style.label(face, chip.label, Theme.Text.small)
 			text.AnchorPoint = Vector2.new(0.5, 0.5)
-			text.Position = UDim2.fromScale(0.5, 0.5)
-			-- the chosen chip's tick sits top-right: keep the centred label clear of it on both sides
-			text.Size = UDim2.new(1, if chosen then -52 else -10, 1, -8)
+			-- the chosen chip's tick sits top-right: the label shifts left, clear of it
+			text.Position = UDim2.new(0.5, if chosen then -12 else 0, 0.5, 0)
+			text.Size = UDim2.new(1, if chosen then -36 else -10, 1, -8)
+			text.TextWrapped = false -- one line that scales down (wrapped scaling clipped "Natural" on SE)
 			text.TextScaled = true
 			button.Active = ready
 			Style.press(button, function()
@@ -178,8 +180,13 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 		host.Size = UDim2.fromScale(1, 0)
 		host.AutomaticSize = Enum.AutomaticSize.Y
 		host.Parent = panel.body
+		-- short phones (SE): the card shrinks so its button stays inside the panel
+		local vp, k = Style.metrics(panel.root)
+		local cellH = if Theme.compact(vp, k)
+			then math.clamp(Theme.panelSize(vp, k, PANEL_SIZE).Y - 175, 200, 300)
+			else 300
 		local grid = Instance.new("UIGridLayout")
-		grid.CellSize = UDim2.new(0.5, -6, 0, 300)
+		grid.CellSize = UDim2.new(0.5, -6, 0, cellH)
 		grid.CellPadding = UDim2.fromOffset(12, 12)
 		grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 		grid.SortOrder = Enum.SortOrder.LayoutOrder

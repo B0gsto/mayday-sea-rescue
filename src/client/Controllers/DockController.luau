@@ -855,9 +855,9 @@ local function refreshCards()
 			local y = 48
 			if item.kind == "Building" then
 				local row = stars(face, st)
-				row.Position = UDim2.fromOffset(98, 42)
+				row.Position = UDim2.fromOffset(98, 38)
 				row.Size = UDim2.new(1, -108, 0, 22)
-				y = 68
+				y = 62 -- the badge row ends above the buy slot (SE: "Free" covered "Build")
 			end
 			local needs = if item.kind == "Building" and item.key == "HQ"
 				then hqNeeds(face)
@@ -999,13 +999,16 @@ local function unfocus()
 end
 
 -- Build mode is a full-screen view: the world HUD (minimap, map, waypoints, ops, dev button) steps aside so
--- the cards and the strip read; the main Hud (Cash) and the left menu buttons stay.
+-- the cards and the strip read; the main Hud (Cash) and the left menu buttons stay (phones: the menu buttons
+-- covered the plot, so Menu hides them under the BuildHidesMenu attribute).
 -- shortcut: keyed by ScreenGui name; switch to a HUD hide API if the HUD gets one.
 local HUD_KEEP =
 	{ Hud = true, Menu = true, BuildTablet = true, Freecam = true, ProximityPrompts = true }
 local hiddenGuis: { ScreenGui } = {}
 
 local function hideHud(on: boolean)
+	local vp = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize or Vector2.zero
+	player:SetAttribute("BuildHidesMenu", on and Theme.compact(vp, Theme.scaleFor(vp)) or nil)
 	if on then
 		for _, g in playerGui:GetChildren() do
 			if g:IsA("ScreenGui") and g.Enabled and not HUD_KEEP[g.Name] then
@@ -1119,9 +1122,22 @@ local function buildUI(): ScreenGui
 	gui.Enabled = false
 	gui.Parent = playerGui
 	local canvas = Style.canvas(gui)
+	-- phones: the full-height list starts under the Roblox top bar (the strip keeps the full screen)
+	local listArea = Instance.new("Frame")
+	listArea.Name = "ListArea"
+	listArea.BackgroundTransparency = 1
+	listArea.Parent = gui
+	local function fitListArea()
+		local vp = gui.AbsoluteSize
+		local top = if Theme.compact(vp, Theme.scaleFor(vp)) then GuiService:GetGuiInset().Y else 0
+		listArea.Position = UDim2.fromOffset(0, top)
+		listArea.Size = UDim2.new(1, 0, 1, -top)
+	end
+	fitListArea()
+	gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitListArea)
 
 	-- the Kit panel docked on the right, full height, Build / Decor tabs on top
-	local p = PanelUI.new(canvas, {
+	local p = PanelUI.new(Style.canvas(listArea), {
 		title = "Build",
 		icon = "build",
 		size = Vector2.new(LIST_W, 2000),

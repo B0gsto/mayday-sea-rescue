@@ -572,7 +572,7 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	arrow.Parent = resetFace
 
 	-- the detail card: slides in on the right while the tree sits in the corner ----------------------
-	local CARD_IN = UDim2.new(1, -24, 0.5, 40)
+	local CARD_IN = UDim2.new(1, -24, 0.5, 40) -- placeCard keeps it under the Medals / X bar
 	local CARD_OUT = UDim2.new(1, 440, 0.5, 40)
 	local card = Instance.new("Frame")
 	card.Name = "Detail"
@@ -586,6 +586,8 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	Style.corner(card, 20)
 	local cardStroke = Style.stroke(card, 4, true)
 	cardStroke.Color = SECTOR.Captain.color
+	local cardScale = Instance.new("UIScale")
+	cardScale.Parent = card
 	card.Parent = root
 
 	local cardX = Style.button(card, UDim2.fromOffset(52, 52 + S.lip))
@@ -673,6 +675,16 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		return root.AbsoluteSize / kitScale()
 	end
 
+	-- short screens (phones): the card shrinks to fit between the top bar and the bottom edge
+	local function placeCard()
+		local h = viewportDu().Y
+		local s = math.clamp((h - TOP_BAR - 16) / 380, 0.5, 1)
+		cardScale.Scale = s
+		local cy = math.max(TOP_BAR + 190 * s, math.min(h * 0.5 + 40, h - 16 - 190 * s))
+		CARD_IN = UDim2.new(1, -24, 0, cy)
+		CARD_OUT = UDim2.new(1, 440, 0, cy)
+	end
+
 	local moving: { Tween } = {}
 	-- place the chart; `time` tweens it there (a re-fit after a buy)
 	local function apply(time: number?)
@@ -722,7 +734,13 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		end
 		local vp = viewRect()
 		local free = { pos = Vector2.new(0, TOP_BAR), size = vp.size - Vector2.new(0, TOP_BAR) }
-		zoom, pan = TreeMath.fitBox(pts, free, FIT_PAD, FIT_MIN_ZOOM, TreeMath.MAX_ZOOM)
+		-- phones: open big enough that a dot's hit box is >= ~36 pt (SE: 1.17)
+		local lo = FIT_MIN_ZOOM
+		local px, k = Style.metrics(root)
+		if Theme.compact(px, k) then
+			lo = math.clamp(36 / (DOT_HIT * kitScale()), lo, TreeMath.MAX_ZOOM)
+		end
+		zoom, pan = TreeMath.fitBox(pts, free, FIT_PAD, lo, TreeMath.MAX_ZOOM)
 		pan = TreeMath.clampPanIn(pan, vp, size, zoom)
 		apply(time)
 	end
@@ -748,6 +766,9 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		mini = on
 		drag = nil
 		miniHit.Visible = on
+		-- phones: the card sits right under the X, so only its own X (back to the tree) shows
+		local px, k = Style.metrics(root)
+		close.Visible = not (on and Theme.compact(px, k))
 		stageCorner.CornerRadius = UDim.new(0, if on then 60 else 0)
 		Style.tween(stageScale, 0.35, { Scale = if on then MINI else 1 })
 		Style.tween(stageStroke, 0.35, { Transparency = if on then 0 else 1 })
@@ -756,6 +777,7 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 			Position = if on then UDim2.new(0, 24, 1, -110) else UDim2.fromScale(0, 1),
 		})
 		if on then
+			placeCard()
 			card.Visible = true
 			Style.tween(card, 0.3, { Position = CARD_IN })
 		else
@@ -1477,6 +1499,10 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 	end)
 
 	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+		placeCard()
+		if mini then
+			card.Position = CARD_IN
+		end
 		if fitted then
 			clampView()
 		end

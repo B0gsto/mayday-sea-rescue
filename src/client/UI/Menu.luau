@@ -117,7 +117,7 @@ end
 
 local function chrome()
 	if bar then
-		bar.Visible = shown() and current == nil
+		bar.Visible = shown() and current == nil and player:GetAttribute("BuildHidesMenu") ~= true
 	end
 	if chip then
 		chip.Visible = shown()
@@ -540,6 +540,7 @@ function Menu.mount()
 	end
 	Layout.onColdOpen(applyShown)
 	player:GetAttributeChangedSignal("CinematicPlaying"):Connect(applyShown)
+	player:GetAttributeChangedSignal("BuildHidesMenu"):Connect(chrome)
 	player:GetAttributeChangedSignal("MapOpen"):Connect(function()
 		if player:GetAttribute("MapOpen") == true then
 			Menu.close() -- M over an open panel: the map wins
