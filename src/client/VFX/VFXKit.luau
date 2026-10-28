@@ -4,7 +4,8 @@
 -- with its emitters built once), skipped beyond Presets.CULL studs from the camera, scaled by the graphics
 -- level and halved (no light flash) under the Settings panel's Reduce motion. Sounds stay with the caller.
 --   VFXKit.play(name, cframeOrPart, opts?) -> boolean   opts: { color, scale, radius, height }
---     radius: a `ring` layer's ring (a footprint's half width), height: where `top` layers start
+--     radius: a `ring` layer's ring (a footprint's half width; past 8 studs it grows the pieces too), height: where
+--     `top` layers start
 --   VFXKit.names() -> { string }                        every preset, sorted (the DEV `vfx` bench)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -42,13 +43,14 @@ local function level(): number
 	return if ok and type(v) == "number" then v else 0
 end
 
-local function numbers(values: { number }): NumberSequence
+local function numbers(values: { number }, k: number?): NumberSequence
+	local m = k or 1
 	if #values == 1 then
-		return NumberSequence.new(values[1])
+		return NumberSequence.new(values[1] * m)
 	end
 	local keys = {}
 	for i, v in values do
-		table.insert(keys, NumberSequenceKeypoint.new((i - 1) / (#values - 1), v))
+		table.insert(keys, NumberSequenceKeypoint.new((i - 1) / (#values - 1), v * m))
 	end
 	return NumberSequence.new(keys)
 end
@@ -186,8 +188,12 @@ function VFXKit.play(name: string, target: CFrame | BasePart, opts: Opts?): bool
 	host.part.Size = Vector3.new(r * 2, 0.2, r * 2)
 	host.part.CFrame = cf
 	host.top.Position = Vector3.new(0, o.height or 0, 0)
+	-- a whole building's footprint grows the pieces so they still read from the camera: ground rings with the
+	-- radius up to 4x (round the building, not a wash over the island), the rest by its square root
+	local grow = math.max(1, r / 8)
 	for _, slot in host.emitters do
 		local l = slot.layer
+		slot.emitter.Size = numbers(l.size, if l.flat then math.min(grow, 4) else math.sqrt(grow))
 		if l.tint then
 			slot.emitter.Color = ColorSequence.new(o.color or slot.color)
 		end
