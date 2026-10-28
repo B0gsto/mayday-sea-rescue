@@ -42,6 +42,8 @@ local player = Players.LocalPlayer
 local NEAR, FAR = 200, 240 -- studs from you: a rig is made within NEAR, dropped beyond FAR
 local LIVELY = 90 -- animated within this (the yard crew badge shows within 60)
 local WALK_SPEED = 9 -- studs/s
+local STROLL = 2.5 -- studs/s for a work loop's 1 to 3 stud steps: at a walk they were a 0.15 s hop
+local ANIM_PACE = 6.4 -- studs/s the stock R15 walk covers at speed 1 (the default Animate script's figure)
 local MAKE_PER_TICK = 8 -- rigs cloned per 0.25 s pass (no hitch when you land on a full island)
 local ANIM_IDS: { [string]: string } = { -- stock R15 animations (the default Animate script's)
 	Idle = "rbxassetid://507766666",
@@ -82,6 +84,7 @@ type Rec = {
 	beat: WorkLoop.Beat?, -- the work loop's beat now (its anim and prop)
 	beatI: number?, -- the last beat played; nil until the first loop (which starts late, out of step)
 	speed: number, -- walk studs/s
+	pace: number?, -- the running stride's studs/s (the Walk track's speed follows it)
 	sleep: boolean?, -- home for the night (walking there, or in and hidden)
 	climbing: boolean?, -- on a ladder (walkTo)
 }
@@ -168,7 +171,11 @@ local function pose(r: Rec)
 		if not track.IsPlaying then
 			track:Play(0.2)
 		end
-		track:AdjustSpeed(r.beat and r.beat.speed or if name == "Swing" then 0.45 else 1)
+		track:AdjustSpeed(
+			if name == "Walk"
+				then (r.pace or r.speed) / ANIM_PACE
+				else r.beat and r.beat.speed or if name == "Swing" then 0.45 else 1
+		)
 	end
 end
 
@@ -389,7 +396,16 @@ local function route(a: Vector3, b: Vector3): { Vector3 }
 	local hit = routes[key]
 	local now = os.clock()
 	if hit and now - hit.at < ROUTE_TTL then
-		return hit.points
+		-- another worker's route: join it at its point nearest `a` and end on `b` itself (no snap on arrival)
+		local k, best = 1, math.huge
+		for i, p in hit.points do
+			if (p - a).Magnitude < best then
+				k, best = i, (p - a).Magnitude
+			end
+		end
+		local points = table.move(hit.points, k, #hit.points, 1, {})
+		points[#points] = b
+		return points
 	end
 	for k, old in routes do -- a miss costs a ComputeAsync anyway: drop the stale ones
 		if now - old.at >= ROUTE_TTL then
@@ -417,8 +433,15 @@ local function route(a: Vector3, b: Vector3): { Vector3 }
 	return points
 end
 
--- Steps the rig's root from where it is to the feet CFrame `to`, facing the way it goes; yields.
-local function stride(r: Rec, root: BasePart, to: Vector3)
+-- Steps the rig's root from where it is to the feet CFrame `to` at `pace` (default its walk), facing the way it goes;
+-- yields.
+local function stride(r: Rec, root: BasePart, to: Vector3, pace: number?)
+	local speed = pace or r.speed
+	r.pace = speed
+	local walk = r.loaded.Walk
+	if walk then
+		walk:AdjustSpeed(speed / ANIM_PACE)
+	end
 	local target = to + Vector3.new(0, r.height, 0)
 	local at = root.Position
 	if (target - at).Magnitude <= 0.5 then
@@ -432,7 +455,7 @@ local function stride(r: Rec, root: BasePart, to: Vector3)
 	root.CFrame = CFrame.new(at) * face
 	local tween = TweenService:Create(
 		root,
-		TweenInfo.new((target - at).Magnitude / r.speed, Enum.EasingStyle.Linear),
+		TweenInfo.new((target - at).Magnitude / speed, Enum.EasingStyle.Linear),
 		{ CFrame = CFrame.new(target) * face }
 	)
 	tween:Play()
@@ -497,7 +520,7 @@ local function loop(r: Rec)
 			if (to - feetOf(r, root)).Magnitude > 0.3 then
 				r.carry = "walk"
 				pose(r)
-				stride(r, root, to)
+				stride(r, root, to, STROLL)
 				if not on() then
 					break
 				end
