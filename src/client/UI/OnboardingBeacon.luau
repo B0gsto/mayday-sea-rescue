@@ -3,7 +3,7 @@
 -- next thing, no text"). A steady ground-level ring (one pop as it appears, never a flashing pulse: owner
 -- 2026-10-28) and a diamond high over it (clear of roofs, cranes and
 -- name signs: AlwaysOnTop never drew in play, Studio 2026-10-25/26); no light column (user, 2026-10-21). Hidden while a
--- cinematic hides the HUD (OpsUiHidden). Off screen, an arrow on the screen edge points at it.
+-- cinematic hides the HUD (OpsUiHidden). Off screen, a pointer sprite on the screen edge points at it, its distance on a chip inside it.
 -- Client only. Mounted by OnboardingController (one beacon, moved from goal to goal) and by the
 -- launch step (on your boat).
 local Players = game:GetService("Players")
@@ -13,6 +13,9 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Layout = require(script.Parent:WaitForChild("Layout"))
+local UiImages = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
+) :: any
 local Weather = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Weather"))
 
 local OnboardingBeacon = {}
@@ -34,6 +37,7 @@ local COLORS: { [string]: Color3 } = {
 local RING = 24 -- studs across the steady ring
 local POP = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 local LIFT = 16 -- studs: the diamond over the goal
+local EDGE = 36 -- px: the screen-edge pointer's head (32 pt+ on a phone, CLAUDE.md "UI art")
 
 local function surfaceY(p: Vector3): number
 	local ok, h = pcall(Weather.heightAt, p)
@@ -100,31 +104,28 @@ function OnboardingBeacon.start(): Beacon
 	edgeGui.IgnoreGuiInset = true
 	edgeGui.DisplayOrder = 15
 	edgeGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
-	local arrow = Instance.new("TextLabel")
+	local arrow = Instance.new("ImageLabel")
 	arrow.Name = "Arrow"
 	arrow.AnchorPoint = Vector2.new(0.5, 0.5)
-	arrow.Size = UDim2.fromOffset(96, 96)
+	-- art/source/ui/edge_pointer.svg: a pin, tip down, its 324 box centred on the head (r 72): spun to the goal
+	arrow.Size = UDim2.fromOffset(EDGE * 324 / 144, EDGE * 324 / 144)
 	arrow.BackgroundTransparency = 1
-	arrow.Text = "▲"
-	arrow.TextSize = 96 -- the glyph draws ~30 px (44 drew ~14 px)
-	arrow.Font = Enum.Font.GothamBlack
-	arrow.TextColor3 = COLORS.Place
-	arrow.TextStrokeColor3 = NAVY
-	arrow.TextStrokeTransparency = 0
+	arrow.Image = UiImages.Markers.EdgePointer
+	arrow.ScaleType = Enum.ScaleType.Fit
 	arrow.Visible = false
 	arrow.Parent = edgeGui
 	-- the distance, upright, just inside the arrow, on a navy chip
 	local range = Instance.new("TextLabel")
 	range.Name = "Range"
 	range.AnchorPoint = Vector2.new(0.5, 0.5)
-	range.Size = UDim2.fromOffset(72, 28)
+	range.Size = UDim2.fromOffset(78, 30)
 	range.BackgroundColor3 = NAVY
 	range.BackgroundTransparency = 0.1
 	local chipCorner = Instance.new("UICorner")
 	chipCorner.CornerRadius = UDim.new(0.5, 0)
 	chipCorner.Parent = range
 	range.Font = Enum.Font.FredokaOne
-	range.TextSize = 20
+	range.TextSize = 22 -- 14 pt+ on a phone
 	range.TextColor3 = Color3.new(1, 1, 1)
 	range.TextStrokeColor3 = Color3.fromHex("06101C")
 	range.TextStrokeTransparency = 0.4
@@ -143,7 +144,7 @@ function OnboardingBeacon.start(): Beacon
 		color = COLORS[kind] or COLORS.Place
 		active = true
 		ring.Color = color
-		diamond.BackgroundColor3, stem.BackgroundColor3, arrow.TextColor3 = color, color, color
+		diamond.BackgroundColor3, stem.BackgroundColor3 = color, color
 		baseY = if kind == "Call" then surfaceY(position) else position.Y
 		ring.CFrame = CFrame.new(Vector3.new(position.X, baseY + 0.12, position.Z))
 			* CFrame.Angles(0, 0, math.rad(90))
@@ -183,7 +184,7 @@ function OnboardingBeacon.start(): Beacon
 		local cam = Workspace.CurrentCamera :: Camera
 		local vp = cam.ViewportSize
 		local p, onScreen = cam:WorldToViewportPoint(at + Vector3.new(0, LIFT, 0))
-		local margin = 48
+		local margin = 64 -- the pin's tip reaches ~40 px past its head's centre: it stays 16+ in from the edge
 		local x, y = p.X, p.Y
 		if p.Z <= 0 then -- behind the camera: the projection flips
 			x, y, onScreen = vp.X - x, vp.Y - y, false
@@ -197,11 +198,11 @@ function OnboardingBeacon.start(): Beacon
 				(vp.X / 2 - margin) / math.max(math.abs(dx), 0.01),
 				(vp.Y / 2 - margin) / math.max(math.abs(dy), 0.01)
 			)
-			arrow.Rotation = math.deg(math.atan2(dx, -dy))
+			arrow.Rotation = math.deg(math.atan2(dx, -dy)) + 180 -- the sprite's tip points down
 			-- clear of the HUD like UI/Waypoint: pinned left it hid under the menu column (playtest 2026-10-26)
 			local pin = Layout.clearOfHud(
 				Vector2.new(vp.X / 2 + dx * k, vp.Y / 2 + dy * k),
-				Vector2.new(30, 30),
+				Vector2.new(EDGE / 2, EDGE / 2),
 				40
 			)
 			dx, dy, k = pin.X - vp.X / 2, pin.Y - vp.Y / 2, 1
@@ -212,7 +213,13 @@ function OnboardingBeacon.start(): Beacon
 			if root and root:IsA("BasePart") then
 				local d = at - root.Position
 				local metres = Vector3.new(d.X, 0, d.Z).Magnitude / 3 -- 3 studs per metre
-				local inward = 40 / math.max(math.sqrt(dx * dx + dy * dy) * k, 1)
+				-- the chip sits just behind the head, on the side away from the edge
+				local len = math.max(math.sqrt(dx * dx + dy * dy) * k, 1)
+				local back = EDGE / 2
+					+ 8
+					+ math.abs(dx * k / len) * 39
+					+ math.abs(dy * k / len) * 15
+				local inward = back / len
 				range.Position = UDim2.fromOffset(
 					vp.X / 2 + dx * k * (1 - inward),
 					vp.Y / 2 + dy * k * (1 - inward)
