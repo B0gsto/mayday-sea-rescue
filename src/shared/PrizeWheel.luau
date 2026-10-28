@@ -25,6 +25,7 @@ local WHITE = Color3.fromRGB(242, 240, 232)
 local DARK = Color3.fromRGB(60, 64, 70)
 local LBG = Color3.fromRGB(163, 162, 165)
 local INK = Color3.fromRGB(30, 44, 66)
+local SUB = Color3.fromRGB(92, 98, 110) -- small print that still reads on the white board
 
 local RARITY_COLOR: { [string]: Color3 } = {
 	Common = GREY,
@@ -281,13 +282,62 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 	}
 end
 
+local function boardText(
+	parent: Instance,
+	name: string,
+	height: number,
+	x: number,
+	color: Color3,
+	align: Enum.TextXAlignment?
+): TextLabel
+	local label = Instance.new("TextLabel")
+	label.Name = name
+	label.BackgroundTransparency = 1
+	label.Position = UDim2.fromOffset(x, 0)
+	label.Size = UDim2.new(1, -x - 4, 0, height)
+	label.Font = Enum.Font.FredokaOne
+	label.TextScaled = true
+	label.TextXAlignment = align or Enum.TextXAlignment.Center
+	label.TextColor3 = color
+	label.Parent = parent
+	return label
+end
+
+-- Fills the odds board from SpinRules.nextOdds: `pity` = the viewer's own counters (next-spin odds
+-- and spins left to each guarantee), nil = the base odds and the guarantee rule.
+function PrizeWheel.showOdds(board: Instance, pity: SpinRules.Pity?)
+	local odds = SpinRules.nextOdds(pity)
+	for _, rarity in SpinRules.RARITY_ORDER do
+		local row = board:FindFirstChild(`Row{rarity}`, true)
+		if row then
+			local each = odds[rarity] / math.max(1, #SpinRules.prizesOf(rarity :: SpinRules.Rarity))
+			local main = row:FindFirstChild("Odds") :: TextLabel
+			local sub = row:FindFirstChild("Each") :: TextLabel
+			main.Text = `{rarity}  {SpinRules.percent(odds[rarity])}%`
+			sub.Text = `each {SpinRules.percent(each)}%`
+		end
+	end
+	local epic = board:FindFirstChild("PityEpic", true) :: TextLabel?
+	local legend = board:FindFirstChild("PityLegendary", true) :: TextLabel?
+	if epic and legend then
+		if pity then
+			epic.Text = `Epic+ in {math.max(1, SpinRules.PITY_EPIC - pity.epic)}`
+			legend.Text = `Legendary+ in {math.max(1, SpinRules.PITY_LEGENDARY - pity.legendary)}`
+		else
+			epic.Text = `Epic+ every {SpinRules.PITY_EPIC}`
+			legend.Text = `Legendary+ every {SpinRules.PITY_LEGENDARY}`
+		end
+	end
+end
+
 local function buildOdds(parent: Instance, at: CFrame)
 	local model = Instance.new("Model")
 	model.Name = "OddsBoard"
 	model.Parent = parent
 	local x = 11.5
 	part(model, "Post", Vector3.new(1, 10, 1), at * CFrame.new(x, 5, 0), LBG)
-	local board = part(model, "Board", Vector3.new(7, 9, 0.6), at * CFrame.new(x, 10, -0.35), WHITE)
+	local board =
+		part(model, "Board", Vector3.new(7, 10.5, 0.6), at * CFrame.new(x, 10.75, -0.35), WHITE)
 	local gui = Instance.new("SurfaceGui")
 	gui.Face = Enum.NormalId.Front
 	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
@@ -295,47 +345,79 @@ local function buildOdds(parent: Instance, at: CFrame)
 	gui.LightInfluence = 0.4
 	gui.Parent = board
 	local list = Instance.new("UIListLayout")
-	list.Padding = UDim.new(0, 2)
+	list.Padding = UDim.new(0, 1)
+	list.SortOrder = Enum.SortOrder.LayoutOrder
 	list.Parent = gui
-	local header = Instance.new("TextLabel")
-	header.Size = UDim2.new(1, 0, 0, 36)
-	header.BackgroundTransparency = 1
-	header.Font = Enum.Font.FredokaOne
-	header.TextScaled = true
-	header.TextColor3 = INK
-	header.Text = "PRIZE ODDS"
-	header.Parent = gui
-	for _, rarity in SpinRules.RARITY_ORDER do
+	local function line(name: string, height: number, color: Color3, order: number): TextLabel
+		local label = boardText(gui, name, height, 0, color)
+		label.Size = UDim2.new(1, 0, 0, height)
+		label.LayoutOrder = order
+		return label
+	end
+	line("Header", 32, INK, 0).Text = "PRIZE ODDS"
+	for i, rarity in SpinRules.RARITY_ORDER do
 		local row = Instance.new("Frame")
-		row.Size = UDim2.new(1, 0, 0, 36)
+		row.Name = `Row{rarity}`
+		row.Size = UDim2.new(1, 0, 0, 46)
 		row.BackgroundTransparency = 1
+		row.LayoutOrder = i
 		row.Parent = gui
 		local chip = Instance.new("Frame")
-		chip.Size = UDim2.fromOffset(30, 30)
-		chip.Position = UDim2.fromOffset(4, 3)
+		chip.Size = UDim2.fromOffset(26, 26)
+		chip.Position = UDim2.fromOffset(8, 1)
 		chip.BackgroundColor3 = PrizeWheel.rarityColor(rarity)
 		chip.BorderSizePixel = 0
 		chip.Parent = row
-		local label = Instance.new("TextLabel")
-		label.BackgroundTransparency = 1
-		label.Position = UDim2.fromOffset(42, 0)
-		label.Size = UDim2.new(1, -46, 1, 0)
-		label.Font = Enum.Font.FredokaOne
-		label.TextScaled = true
-		label.TextXAlignment = Enum.TextXAlignment.Left
-		label.TextColor3 = INK
-		label.Text = `{rarity}  {SpinRules.RARITIES[rarity].odds}%`
-		label.Parent = row
+		boardText(row, "Odds", 28, 42, INK, Enum.TextXAlignment.Left)
+		local each = boardText(row, "Each", 18, 42, SUB, Enum.TextXAlignment.Left)
+		each.Position = UDim2.fromOffset(42, 28)
 	end
-	local pity = Instance.new("TextLabel")
-	pity.Size = UDim2.new(1, 0, 0, 30)
-	pity.BackgroundTransparency = 1
-	pity.Font = Enum.Font.FredokaOne
-	pity.TextScaled = true
-	pity.TextColor3 = INK
-	pity.Text = `Epic+ every {SpinRules.PITY_EPIC}`
-	pity.Parent = gui
+	line("PityEpic", 24, PURPLE, 10)
+	line("PityLegendary", 24, Color3.fromRGB(200, 150, 20), 11)
+	line("Owned", 22, INK, 12).Text = "Owned → Cash"
+	line("Rounded", 16, SUB, 13).Text = "% rounded"
+	PrizeWheel.showOdds(model, nil)
 	return model
+end
+
+-- The machine's screen: the base odds as six rarity chips, readable where the R$ buttons are.
+local function screenOdds(screen: BasePart)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = "Odds"
+	gui.Face = Enum.NormalId.Front
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 40
+	gui.LightInfluence = 0
+	gui.Parent = screen
+	local panel = Instance.new("Frame")
+	panel.AnchorPoint = Vector2.new(0.5, 0.5)
+	panel.Position = UDim2.fromScale(0.5, 0.5)
+	panel.Size = UDim2.new(1, -8, 1, -8)
+	panel.BackgroundColor3 = INK
+	panel.BorderSizePixel = 0
+	panel.Parent = gui
+	Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 6)
+	local title = boardText(panel, "Title", 20, 0, WHITE)
+	title.Size = UDim2.new(1, 0, 0, 20)
+	title.Text = "ODDS"
+	local odds = SpinRules.nextOdds(nil)
+	for i, rarity in SpinRules.RARITY_ORDER do
+		local chip = Instance.new("Frame")
+		chip.Name = rarity
+		chip.Position = UDim2.new(((i - 1) % 3) / 3, 3, 0, 22 + math.floor((i - 1) / 3) * 27)
+		chip.Size = UDim2.new(1 / 3, -6, 0, 25)
+		chip.BackgroundColor3 = PrizeWheel.rarityColor(rarity)
+		chip.BorderSizePixel = 0
+		chip.Parent = panel
+		Instance.new("UICorner", chip).CornerRadius = UDim.new(0, 5)
+		local text = boardText(chip, "Text", 25, 0, WHITE)
+		text.Size = UDim2.fromScale(1, 1)
+		text.Text = `{SpinRules.percent(odds[rarity])}%`
+		local stroke = Instance.new("UIStroke")
+		stroke.Color = INK
+		stroke.Thickness = 1.5
+		stroke.Parent = text
+	end
 end
 
 local function buildMachine(parent: Instance, at: CFrame, onBuy: (Player, string) -> boolean?)
@@ -360,6 +442,7 @@ local function buildMachine(parent: Instance, at: CFrame, onBuy: (Player, string
 		M.Neon
 	)
 	screen.CanCollide = false
+	screenOdds(screen)
 	local buttons: { [string]: any } = {}
 	for i, key in { "Spin1", "Spin5", "Spin15" } do
 		local item = MonetizationConfig.Products[key]

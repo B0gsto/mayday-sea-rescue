@@ -70,6 +70,70 @@ return function(t)
 		t.expect(legends > 190).toBe(true) -- at least the 2 % pity plus the natural odds
 	end)
 
+	t.test(
+		"the board's next-spin odds are the roll's distribution, guaranteed spins included",
+		function()
+			-- sweep the rarity draw evenly over [0, 1) (the prize draw gets 0): counts / N = the roll's odds
+			local N = 100000
+			local function distribution(pity)
+				local counts: { [string]: number } = {}
+				for k = 0, N - 1 do
+					local calls = 0
+					local result = SpinRules.roll(function()
+						calls += 1
+						return if calls == 1 then (k + 0.5) / N else 0
+					end, pity)
+					counts[result.prize.rarity] = (counts[result.prize.rarity] or 0) + 1
+				end
+				return counts
+			end
+			local cases = {
+				{ pity = { epic = 0, legendary = 0 }, floor = "Common" },
+				{ pity = { epic = 8, legendary = 48 }, floor = "Common" },
+				{ pity = { epic = 9, legendary = 20 }, floor = "Epic" },
+				{ pity = { epic = 3, legendary = 49 }, floor = "Legendary" },
+			}
+			for _, case in cases do
+				local odds = SpinRules.nextOdds(case.pity)
+				local counts = distribution(case.pity)
+				local sum = 0
+				for _, rarity in SpinRules.RARITY_ORDER do
+					sum += odds[rarity]
+					t.expect((counts[rarity] or 0) * 100 / N).toBeCloseTo(odds[rarity], 0.01)
+					if rank(rarity) < rank(case.floor) then
+						t.expect(odds[rarity]).toBe(0)
+					elseif case.floor == "Common" then
+						t.expect(odds[rarity]).toBeCloseTo(SpinRules.RARITIES[rarity].odds, 1e-9)
+					end
+				end
+				t.expect(sum).toBeCloseTo(100, 1e-9)
+			end
+			-- the renormalised guaranteed odds: Epic+ 70 / 25 / 5, Legendary+ 83.3333 / 16.6667
+			local epic = SpinRules.nextOdds({ epic = 9, legendary = 0 })
+			t.expect(SpinRules.percent(epic.Epic)).toBe("70")
+			t.expect(SpinRules.percent(epic.Mythic)).toBe("5")
+			local legend = SpinRules.nextOdds({ epic = 0, legendary = 49 })
+			t.expect(SpinRules.percent(legend.Legendary)).toBe("83.3333")
+			t.expect(SpinRules.percent(legend.Mythic)).toBe("16.6667")
+			t.expect(SpinRules.percent(SpinRules.nextOdds(nil).Legendary)).toBe("2.5")
+			t.expect(SpinRules.percent(7 / 3)).toBe("2.3333")
+			-- each prize of a rarity is equally likely (the board's "each" line)
+			for _, rarity in SpinRules.RARITY_ORDER do
+				local pool = SpinRules.prizesOf(rarity)
+				local hits: { [string]: number } = {}
+				for k = 0, 999 do
+					local prize = SpinRules.prizeOfRarity(function()
+						return (k + 0.5) / 1000
+					end, rarity)
+					hits[prize.id] = (hits[prize.id] or 0) + 1
+				end
+				for _, prize in pool do
+					t.expect(hits[prize.id]).toBeCloseTo(1000 / #pool, 1)
+				end
+			end
+		end
+	)
+
 	t.test("duplicates: an owned finish / trail is known and pays Cash by rarity", function()
 		local state = SpinRules.newState()
 		local prize = SpinRules.prize("GoldFinish") :: any
