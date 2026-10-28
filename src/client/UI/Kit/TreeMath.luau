@@ -12,7 +12,7 @@ TreeMath.LANE_GAP = 18
 TreeMath.HEADER = 46
 TreeMath.PAD = 22
 TreeMath.MIN_ZOOM = 0.4
-TreeMath.MAX_ZOOM = 1.5
+TreeMath.MAX_ZOOM = 2.4 -- a new player's few nodes open big (final playtest: 1.5 left a tiny cluster)
 
 -- The radial skill tree (docs/25 F): 0 = up, clockwise, ring 2.75 for the bridges.
 TreeMath.RING_RADII = { 0, 150, 245, 340, 435, 520 }

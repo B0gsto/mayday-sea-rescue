@@ -202,7 +202,7 @@ return function(t)
 			for _, n in S.nodes() do
 				all[n.id] = true
 			end
-			t.expect(fit({})).toBe(M.MAX_ZOOM)
+			t.expect(fit({}) > 1.5 and fit({}) <= M.MAX_ZOOM).toBe(true) -- a new player's few nodes open big
 			t.expect(fit(all) < fit({})).toBe(true)
 		end
 	)

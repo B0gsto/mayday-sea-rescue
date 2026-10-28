@@ -98,7 +98,7 @@ function Portrait.render(
 	view.Name = "Portrait"
 	view.BackgroundTransparency = 1
 	view.Size = UDim2.fromScale(1, 1)
-	view.Ambient = Color3.fromRGB(150, 150, 165)
+	view.Ambient = Color3.fromRGB(190, 190, 200) -- dark rigs read almost black at 150
 	view.LightColor = Color3.fromRGB(255, 244, 226)
 	view.LightDirection = Vector3.new(0.6, -1, 0) - dir -- a warm key light from above, camera side
 	view.ImageColor3 = if dim then DIM else Color3.new(1, 1, 1)

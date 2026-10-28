@@ -558,7 +558,8 @@ end
 local function updateMinimap(dt: number, now: number)
 	local root = rootPart()
 	local cam = Workspace.CurrentCamera
-	if not root or not cam then
+	-- a menu panel (the full-screen skill tree's card sits bottom-right) hides the minimap (Menu sets MenuOpen)
+	if not root or not cam or player:GetAttribute("MenuOpen") == true then
 		mini.root.Visible = false
 		return
 	end
