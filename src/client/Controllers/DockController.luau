@@ -1337,7 +1337,7 @@ local function refresh()
 	shownCount = count
 end
 
--- docs/25 A: a bobbing green Lego arrow over every building you can build or upgrade right now (allowed and
+-- docs/25 A: a bobbing green Lego arrow over every built building you can upgrade right now (allowed and
 -- affordable, no site running, not Robux-paid already); none when nothing is possible. A flat sticker sprite
 -- (CLAUDE.md "UI art": art/source/ui/build_arrow.svg) at a fixed screen size, ~40 pt on a phone, its tip on the
 -- spot; no particles, no glow (docs/25 J). Seen from the third-person camera, the build view too.
@@ -1408,9 +1408,11 @@ local function refreshArrows()
 		local cash = tonumber(snapshot.cash) or 0
 		local prepaid = if type(snapshot.dockPrepaid) == "table" then snapshot.dockPrepaid else {}
 		for _, key in DockConfig.BUILDINGS do
-			local n = (levels[key] or 0) + 1
-			local at = if prepaid[key] then nil else arrowSpot(key)
-			if at and UnlockTree.canBuild(key, n, levels, cash) then
+			local have = levels[key] or 0
+			-- upgrades only: over an empty lot the arrow pointed at bare ground (owner, 2026-10-28); new builds are
+			-- found through the Next chip and the build tablet
+			local at = if prepaid[key] or have < 1 then nil else arrowSpot(key)
+			if at and UnlockTree.canBuild(key, have + 1, levels, cash) then
 				want[key] = at
 			end
 		end
