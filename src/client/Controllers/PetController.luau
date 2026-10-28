@@ -28,6 +28,7 @@ local Wildlife = require(Shared:WaitForChild("Config"):WaitForChild("Wildlife"))
 local WildlifeRig = require(Shared:WaitForChild("WildlifeRig"))
 
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 type PetRow = {
 	id: number,
@@ -371,6 +372,15 @@ local function applyView(next: View)
 				if adoptingId == during.id then
 					adoptingId = nil
 					playVoice(during.species, model:GetPivot().Position + Vector3.new(0, 2, 0))
+					local root = player.Character
+						and player.Character:FindFirstChild("HumanoidRootPart")
+					if root and root:IsA("BasePart") then -- the new friend arrives in a Lego puff by you
+						VFXKit.play(
+							"buy_pop",
+							root.CFrame * CFrame.new(2, -3, -2),
+							{ radius = 1.5, height = 4 }
+						)
+					end
 				end
 				task.delay(0.8, function()
 					if activeModel == model then

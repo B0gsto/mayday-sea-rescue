@@ -109,6 +109,7 @@ end
 -- network-owned by the driver, so the server's climb trails a fast boat. VehicleService.Climb sets the
 -- hull-space path on the Victim; we stop once the weld goes on and the hull carries them.
 local splashed: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
+local landed: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
 local function climbStep()
 	local folder = Workspace:FindFirstChild("CallProps")
 	if not folder then
@@ -149,8 +150,13 @@ local function climbStep()
 			local at = hull.CFrame:PointToWorldSpace(start)
 			VFXKit.play("pickup_splash", CFrame.new(at))
 			AudioController.play("Splash_Entry", at, 0.6, 1.25)
+			VFXKit.play("pickup_drops", CFrame.new(at))
 		end
 		local t = (now - started) / ClimbPath.SECONDS
+		if t >= 1 and landed[victim] ~= started then -- FX2: they land aboard (survivor_aboard)
+			landed[victim] = started
+			VFXKit.play("survivor_aboard", CFrame.new(hull.CFrame:PointToWorldSpace(seat.Position)))
+		end
 		victim:PivotTo(ClimbPath.at(hull.CFrame, start, side, hull.Size.X / 2, seat, t))
 	end
 end
