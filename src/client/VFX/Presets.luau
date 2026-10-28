@@ -122,6 +122,14 @@ local function groundRing(
 	}
 end
 
+-- a shared layer with some fields replaced
+local function with(l: Layer, patch: { [string]: any }): Layer
+	for k, v in patch do
+		(l :: any)[k] = v
+	end
+	return l
+end
+
 -- the rarity's colour (opts.color), from the play point itself (the prize pops there)
 local function tinted(l: Layer): Layer
 	l.tint, l.at = true, nil
@@ -146,6 +154,21 @@ local BUILD: { Layer } = {
 	confetti(14, { 14, 22 }, 40, { RED, WHITE, YELLOW, SEA, GREEN }),
 }
 
+local function arc(color: Color3, size: number): Layer
+	return {
+		tex = "spin_streak",
+		count = 1,
+		colors = { color },
+		size = { size, size * 1.1 },
+		transparency = { 0, 0.1, 1 },
+		lifetime = { 0.45, 0.45 },
+		speed = { 0, 0 },
+		rotation = { 200, 200 },
+		spin = { 540, 540 },
+		emission = 0.3,
+	}
+end
+
 local function concat(a: { Layer }, b: { Layer }): { Layer }
 	local out = table.clone(a)
 	table.move(b, 1, #b, #out + 1, out)
@@ -163,7 +186,11 @@ Presets.ALL = {
 		big = true,
 		layers = concat(BUILD, {
 			confetti(50, { 30, 44 }, 22, { RED, WHITE, YELLOW, GOLD }),
-			groundRing("shockwave_ring", GOLD, { 24, 26 }, 0.9),
+			-- the outer ring at 55% and half see-through: a full-size gold disc read as a flat decal over the HQ
+			with(
+				groundRing("shockwave_ring", GOLD, { 13, 14.5 }, 0.9),
+				{ transparency = { 0.5, 0.6, 0.9 } }
+			),
 			groundRing("shockwave_ring", GOLD, { 11, 12 }, 0.7, 0.25),
 		}),
 		light = { color = GOLD, brightness = 2, range = 40, time = 0.8 },
@@ -196,21 +223,37 @@ Presets.ALL = {
 			groundRing("foam_ring", FOAM, { 10, 11 }, 1),
 		},
 	},
-	-- spectacle (small): the rescue is done (OpsDebrief); lifebuoy plates and coins round you, then CashBurst
+	-- spectacle (small): the rescue is done (OpsDebrief); lifebuoy plates and coins round you, a gold stud
+	-- fountain over your head (~1.4 s), then CashBurst
 	rescue_done = {
 		job = "spectacle",
 		layers = {
-			plates({ RED, WHITE }, 14),
+			with(plates({ RED, WHITE }, 16), { size = { 3.4 }, speed = { 18, 26 } }),
 			{
 				tex = "coin",
-				count = 12,
+				count = 14,
 				colors = { WHITE },
-				size = { 3 },
+				size = { 3.6 },
 				transparency = { 0, 0, 0, 1 },
-				lifetime = { 0.9, 1.2 },
-				speed = { 20, 26 }, -- above the plates, so the coins read
-				spread = { 20, 20 },
+				lifetime = { 1, 1.3 },
+				speed = { 24, 30 }, -- above the plates, so the coins read
+				spread = { 28, 28 },
 				accel = GRAVITY,
+			},
+			{ -- gold studs rise 7-10 studs, well over the head, and fall back
+				tex = "lego_plates",
+				count = 7,
+				colors = { GOLD },
+				size = { 1.7 },
+				transparency = { 0, 0, 0, 1 },
+				lifetime = { 1.1, 1.25 },
+				speed = { 30, 35 },
+				spread = { 12, 12 },
+				accel = GRAVITY,
+				rotation = { 0, 360 },
+				spin = { -180, 180 },
+				emission = 0.3,
+				delay = 0.15,
 			},
 		},
 	},
@@ -255,21 +298,28 @@ Presets.ALL = {
 			},
 		},
 	},
-	-- feedback: a flapper tick while the prize wheel spins: one arc whirls round the flapper
+	-- feedback: a flapper tick while the prize wheel spins: a stud-thick arc whirls round the flapper and yellow
+	-- stud chips fly off the rim
 	wheel_spin = {
 		job = "feedback",
 		layers = {
-			{
-				tex = "spin_streak",
-				count = 2,
-				colors = { WHITE, GOLD },
-				size = { 3.5, 4 },
-				transparency = { 0, 0.1, 1 },
-				lifetime = { 0.45, 0.5 },
-				speed = { 0, 0 },
+			-- the sheet's arc is thin: three concentric arcs with one fixed rotation and spin stack into a band
+			arc(YELLOW, 7),
+			arc(YELLOW, 6.4),
+			arc(WHITE, 5.7),
+			{ -- along the rim's travel (+X of the play CFrame), falling away
+				tex = "confetti_bricks",
+				count = 4,
+				colors = { YELLOW },
+				dir = "Right",
+				size = { 1.9, 1.6 },
+				transparency = { 0, 0, 1 },
+				lifetime = { 0.55, 0.7 },
+				speed = { 14, 20 },
+				spread = { 35, 35 },
+				accel = GRAVITY,
 				rotation = { 0, 360 },
-				spin = { 360, 720 },
-				emission = 0.3,
+				spin = { -360, 360 },
 			},
 		},
 	},
