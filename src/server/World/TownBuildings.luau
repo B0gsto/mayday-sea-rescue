@@ -249,9 +249,9 @@ local function shell(m: Model, at: CFrame, s: Spec): number
 		g.CanCollide, g.CanQuery = true, true
 		box(
 			"Plinth",
-			Vector3.new(w + 0.1, s.drop + 1, d + 0.5),
+			Vector3.new(w + 0.1, s.drop + 1.05, d + 0.5), -- bottom 0.05 under the Ground's (no shared plane)
 			0,
-			(1 - s.drop) / 2,
+			(0.95 - s.drop) / 2,
 			0,
 			GRANITE,
 			M.Granite
@@ -291,12 +291,22 @@ local function shell(m: Model, at: CFrame, s: Spec): number
 				then -w / 2 + pw / 2
 				elseif k == c then w / 2 - pw / 2
 				else -w / 2 + k * bw
-			box("Pier", Vector3.new(pw, eave - gTop, d), x, (eave + gTop) / 2, 0, s.wall, s.wallMat)
+			-- top 0.05 under the Cornice's (no shared plane)
+			box(
+				"Pier",
+				Vector3.new(pw, eave - gTop - 0.05, d),
+				x,
+				(eave - 0.05 + gTop) / 2,
+				0,
+				s.wall,
+				s.wallMat
+			)
 		end
 		local wide = w + (if s.corner then 0.3 else 0.02)
 		for k = 1, s.floors - 2 do
 			local h0, h1 = G + (k - 1) * U + 7, G + k * U + 2.2
-			box("Band", Vector3.new(wide, h1 - h0, d), 0, (h0 + h1) / 2, 0, s.wall, s.wallMat)
+			-- 0.05 behind the piers: a neighbour's band or pier never shares its plane
+			box("Band", Vector3.new(wide, h1 - h0, d - 0.1), 0, (h0 + h1) / 2, 0, s.wall, s.wallMat)
 		end
 		box("Frieze", Vector3.new(wide, eave - head, d), 0, (eave + head) / 2, 0, s.wall, s.wallMat)
 		box("Course", Vector3.new(w + 0.4, 0.5, d + 0.6), 0, gTop - 0.25, 0, s.trim, M.Plaster)
@@ -435,6 +445,8 @@ local function shell(m: Model, at: CFrame, s: Spec): number
 		local rr = hw * s.pitch
 		ridgeY = eave + rr
 		local a = math.atan2(rr, hw)
+		-- neighbours' eaves overlap: every other house (the chimney side alternates) ends its slopes 0.05 proud
+		local lip = if s.chimney > 0 then 0.1 else 0
 		for _, sx in { -1, 1 } do
 			wedge(
 				m,
@@ -449,7 +461,7 @@ local function shell(m: Model, at: CFrame, s: Spec): number
 			part(
 				m,
 				"Slope",
-				Vector3.new(math.sqrt(hw * hw + rr * rr) + 0.8, 0.4, d + 0.8),
+				Vector3.new(math.sqrt(hw * hw + rr * rr) + 0.8, 0.4, d + 0.8 + lip),
 				at
 					* CFrame.new(sx * hw / 2, eave + rr / 2, 0)
 					* CFrame.Angles(0, 0, -sx * a)
@@ -462,7 +474,7 @@ local function shell(m: Model, at: CFrame, s: Spec): number
 		part(
 			m,
 			"Ridge",
-			Vector3.new(0.75, 0.75, d + 0.8),
+			Vector3.new(0.75, 0.75, d + 0.7), -- ends 0.05 inside the slopes' (no shared plane)
 			at * CFrame.new(0, ridgeY + 0.1, 0) * CFrame.Angles(0, 0, math.rad(45)),
 			s.ridge,
 			M.Plaster
@@ -638,7 +650,9 @@ local function shopfront(m: Model, at: CFrame, w: number, n: number, pub: boolea
 		colour:Lerp(Color3.new(), 0.3),
 		M.Wood
 	)
-	box("ShopGlass", Vector3.new(inner - dw, 5.2, 0.2), gx, 4.8, z + 0.1, GLASS, M.Glass).Reflectance =
+	-- inside the frame: ends 0.05 into the pilaster / door, top under the Mullion's, back 0.05 off the Transom's,
+	-- front 0.055 off the night glow's
+	box("ShopGlass", Vector3.new(inner - dw + 0.1, 5.1, 0.15), gx, 4.75, z + 0.075, GLASS, M.Glass).Reflectance =
 		0.3
 	local glow = box(
 		`{LIT}Shop`,
@@ -882,7 +896,7 @@ function TownBuildings.terrace(parent: Instance, lot: Lot, n: number, lo: number
 		chapelFront(m, at, lot.w, s.d, eave)
 	elseif lot.shop then
 		shopfront(m, at * CFrame.new(0, 0, -s.d / 2), lot.w, n, kind == "pub")
-		local rear = s.d / 2 + 0.1
+		local rear = s.d / 2 + 0.15 -- the door's back 0.05 proud of the Plinth's
 		doorway(m, at, lot.w / 4, rear, n + 1)
 		part(
 			m,

@@ -238,7 +238,7 @@ function StreakCrate.build(at: CFrame, opts: Options): Crate
 		lidPart(
 			"LidHandle",
 			Vector3.new(1.3 * scale, 0.26, 0.3),
-			at * CFrame.new(0, lidY + 0.05, d / 2 + 0.02),
+			at * CFrame.new(0, lidY + 0.05, d / 2 + 0.075), -- 0.05 proud of the lid's face (0.02 left 0.005)
 			IRON,
 			Enum.Material.Metal
 		)

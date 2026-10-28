@@ -447,7 +447,7 @@ local function buildMachine(parent: Instance, at: CFrame, onBuy: (Player, string
 	for i, key in { "Spin1", "Spin5", "Spin15" } do
 		local item = MonetizationConfig.Products[key]
 		local label = string.gsub(key, "Spin", "")
-		local dx = (i - 2) * 2.1
+		local dx = (i - 2) * 2.05 -- the outer buttons 0.05 inside the body's sides (no shared plane)
 		local plate = part(
 			model,
 			`Price{i}`,

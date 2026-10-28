@@ -178,9 +178,27 @@ type Face = {
 	r: number,
 	look: string,
 	mesh: boolean,
+	scale: number,
 }
 
+-- a ScaleTo'd model (the boards' craft previews at 0.07) keeps its authored gaps in proportion: depth precision is
+-- relative to view distance, so the plane tolerance scales with it
+local function scaleOf(p: BasePart): number
+	local m = p:FindFirstAncestorWhichIsA("Model")
+	while m do
+		local ok, s = pcall(function()
+			return (m :: Model):GetScale()
+		end)
+		if ok and s ~= 1 then
+			return math.min(s, 1)
+		end
+		m = m:FindFirstAncestorWhichIsA("Model")
+	end
+	return 1
+end
+
 local function faces(p: BasePart, k: string): { Face }
+	local scale = scaleOf(p)
 	local cf, s = p.CFrame, p.Size
 	local ax = axes(cf)
 	local half = { s.X / 2, s.Y / 2, s.Z / 2 }
@@ -201,6 +219,7 @@ local function faces(p: BasePart, k: string): { Face }
 				r = math.sqrt(half[j] ^ 2 + half[l] ^ 2),
 				look = look(p, name),
 				mesh = k == "mesh",
+				scale = scale,
 			})
 		end
 	end
@@ -216,7 +235,8 @@ local function sameModel(a: BasePart, b: BasePart): boolean
 end
 
 -- every visible coplanar overlap among `parts`, biggest first
-function Scan.find(parts: { BasePart }): { Finding }
+-- solid(pt): optional extra cover (Studio passes solid terrain: a face buried in the hillside never shows)
+function Scan.find(parts: { BasePart }, solid: ((Vector3) -> boolean)?): { Finding }
 	local buckets: { [string]: { Face } } = {}
 	local opaque: { [number]: { BasePart } } = {} -- 16-stud grid cells (cellKey) -> the opaque boxes touching them
 	for _, p in parts do
@@ -291,7 +311,7 @@ function Scan.find(parts: { BasePart }): { Finding }
 					and f1.look ~= f2.look
 					and (f1.c - f2.c).Magnitude < f1.r + f2.r
 					and f1.n:Dot(f2.n) > 0.9999 -- opposite faces never both show (backface culling)
-					and math.abs((f2.c - f1.c):Dot(f1.n)) < EPS_PLANE
+					and math.abs((f2.c - f1.c):Dot(f1.n)) < EPS_PLANE * math.min(f1.scale, f2.scale)
 					and not sameModel(f1.part, f2.part)
 				then
 					local pair = ids[f1.part] < ids[f2.part]
@@ -307,6 +327,15 @@ function Scan.find(parts: { BasePart }): { Finding }
 						local shared = clip(poly, f1.hu, f1.hv)
 						local area, cx, cy = polyArea(shared)
 						if area > MIN_AREA then
+							-- shortcut: under 0.01 studs wide is two abutting faces drifted by the client's replicated
+							-- (compressed) rotations, sub-pixel; reported low, not failed
+							local long = 0
+							for k = 1, #shared do
+								local a, b = shared[k], shared[k % #shared + 1]
+								long =
+									math.max(long, math.sqrt((a[1] - b[1]) ^ 2 + (a[2] - b[2]) ^ 2))
+							end
+							local sliver = area / math.max(long, 1e-6) < 0.01
 							local at = f1.c + f1.u * cx + f1.v * cy
 							-- probes: the overlap's centre and its corners pulled 10% in; the face shows if any
 							-- probe just outside it is in the open
@@ -319,7 +348,7 @@ function Scan.find(parts: { BasePart }): { Finding }
 							for _, side in { f1.n, f2.n } do
 								for _, pt in samples do
 									local probe = pt + side * OPEN
-									local covered = false
+									local covered = solid ~= nil and solid(probe)
 									local c = probe / CELL
 									for _, o in
 										opaque[cellKey(
@@ -344,8 +373,15 @@ function Scan.find(parts: { BasePart }): { Finding }
 									faceA = f1.name,
 									faceB = f2.name,
 									at = at,
-									confidence = if f1.mesh or f2.mesh then "low" else "high",
-									note = if f1.n:Dot(f2.n) > 0 then "same" else "opposite",
+									confidence = if f1.mesh
+											or f2.mesh
+											or sliver
+										then "low"
+										else "high",
+									note = if sliver
+										then "sliver"
+										elseif f1.n:Dot(f2.n) > 0 then "same"
+										else "opposite",
 								})
 							end
 						end
@@ -415,17 +451,33 @@ end
 
 -- Studio runner
 local args = (getfenv() :: any).ZF_ARGS or {}
-local root = if args.root then workspace:FindFirstChild(args.root, true) else workspace
+local root =
+	assert(if args.root then workspace:FindFirstChild(args.root, true) else workspace, "no root")
 local t0 = os.clock()
-local parts = Scan.collect({ root })
-local found = Scan.find(parts)
+local parts = Scan.collect({ workspace }) -- everything covers; `root` only scopes the report
+local terrain = workspace.Terrain
+local found = Scan.find(parts, function(pt: Vector3): boolean
+	local c = (pt / 4):Floor() * 4
+	local mats, occ = terrain:ReadVoxels(Region3.new(c, c + Vector3.new(4, 4, 4)), 4)
+	return occ[1][1][1] > 0.5 and mats[1][1][1] ~= Enum.Material.Water
+end)
+if root ~= workspace then
+	local kept = {}
+	for _, f in found do
+		if f.a:IsDescendantOf(root) or (f.b and f.b:IsDescendantOf(root)) then
+			table.insert(kept, f)
+		end
+	end
+	found = kept
+end
 local high = 0
 for _, f in found do
 	if f.confidence == "high" then
 		high += 1
 	end
 end
-print(
+-- returned, not printed: execute_luau hands back the return value only (smoke.py parses the first line)
+local lines = {
 	string.format(
 		"ZFIGHT %d findings (%d high, %d low) over %d parts in %.1fs",
 		#found,
@@ -433,10 +485,10 @@ print(
 		#found - high,
 		#parts,
 		os.clock() - t0
-	)
-)
+	),
+}
 local skip, top = args.skip or 0, args.top or 25
 for i = skip + 1, math.min(#found, skip + top) do
-	print(Scan.line(found[i]))
+	table.insert(lines, Scan.line(found[i]))
 end
-return nil
+return table.concat(lines, "\n")

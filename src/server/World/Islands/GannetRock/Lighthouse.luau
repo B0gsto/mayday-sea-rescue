@@ -185,6 +185,8 @@ function Lighthouse.build(
 	for b = 1, BANDS - 1 do
 		local r = bandRadius(b)
 		local yb = y0 + b * BAND
+		-- the top band stops 0.05 under the gallery deck and lantern floor (no shared plane)
+		local yt = yb + BAND - (if b == BANDS - 1 then 0.05 else 0)
 		local wa = phi0 + (b * BAND + 3) * THETA
 		local wi = math.round(wa / (2 * math.pi / n)) % n
 		local function isWindow(i: number): boolean
@@ -207,7 +209,7 @@ function Lighthouse.build(
 			r - 0.6,
 			r,
 			yb,
-			yb + BAND,
+			yt,
 			paint,
 			Enum.Material.Plaster,
 			ph,
@@ -221,7 +223,7 @@ function Lighthouse.build(
 			r - 0.6,
 			r,
 			yb,
-			yb + 3.2,
+			yb + 3.15, -- 0.05 under the inner sill's top, 0.1 under the window sill's
 			paint,
 			Enum.Material.Plaster,
 			ph,
@@ -234,8 +236,8 @@ function Lighthouse.build(
 			32,
 			r - 0.6,
 			r,
-			yb + 6.2,
-			yb + BAND,
+			yb + 6.25, -- 0.05 over the inner head's underside
+			yt,
 			paint,
 			Enum.Material.Plaster,
 			ph,
@@ -249,7 +251,7 @@ function Lighthouse.build(
 			R_IN,
 			r - 0.6,
 			yb,
-			yb + BAND,
+			yt,
 			WHITE,
 			Enum.Material.Plaster,
 			0,
@@ -280,7 +282,7 @@ function Lighthouse.build(
 			R_IN,
 			r - 0.6,
 			yb + 6.2,
-			yb + BAND,
+			yt,
 			WHITE,
 			Enum.Material.Plaster,
 			0,
@@ -337,7 +339,7 @@ function Lighthouse.build(
 	local phiEnd = phi0 + (STEPS - 1) * THETA
 	local u = Kit.dir(phiEnd + THETA / 2)
 	local v = Kit.dir(phiEnd + THETA / 2 + math.pi / 2)
-	local mid = Vector3.new(c.X, top - 0.3, c.Z)
+	local mid = Vector3.new(c.X, top - 0.25, c.Z) -- 0.05 over the gallery deck's top
 	Kit.part(
 		m,
 		"Floor",
@@ -373,7 +375,19 @@ function Lighthouse.build(
 	)
 
 	-- gallery: a granite deck ring on two corbel steps, iron railing
-	Kit.ring(m, "Deck", c, 24, R_IN, GALLERY_R, top - 0.8, top, GRANITE, Enum.Material.Granite)
+	-- inner face 0.05 behind the tower wall's (no shared plane)
+	Kit.ring(
+		m,
+		"Deck",
+		c,
+		24,
+		R_IN + 0.05,
+		GALLERY_R,
+		top - 0.8,
+		top,
+		GRANITE,
+		Enum.Material.Granite
+	)
 	local shellIn = bandRadius(BANDS - 1) - 0.6
 	Kit.ring(m, "Corbel", c, 32, shellIn, 9.6, top - 2.8, top - 0.8, STONE, Enum.Material.Granite)
 	Kit.ring(m, "Corbel2", c, 32, shellIn, 12, top - 1.5, top - 0.8, STONE, Enum.Material.Granite)
@@ -478,8 +492,8 @@ function Lighthouse.build(
 		Kit.part(
 			m,
 			"Mullion",
-			Vector3.new(0.4, 11.5, 0.4),
-			CFrame.new(at(c, a, ap / math.cos(math.pi / 10), top + 5.75)),
+			Vector3.new(0.4, 11.45, 0.4), -- top 0.05 under the glazing's
+			CFrame.new(at(c, a, ap / math.cos(math.pi / 10), top + 5.725)),
 			BLACK,
 			Enum.Material.Metal
 		)

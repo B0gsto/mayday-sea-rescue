@@ -76,7 +76,8 @@ local function bench(m: Model)
 			m,
 			`Back{i}`,
 			Vector3.new(5.9, 0.42, 0.12),
-			CFrame.new(0, y, 0.72 + (y - 2.15) * 0.12) * CFrame.Angles(0.12, 0, 0),
+			-- 0.05 in front of the back legs' faces (0.72 left them 0.001 apart)
+			CFrame.new(0, y, 0.67 + (y - 2.15) * 0.12) * CFrame.Angles(0.12, 0, 0),
 			OAK,
 			Enum.Material.Wood
 		)
@@ -184,11 +185,12 @@ local function aBoard(m: Model)
 	for _, side in { -1, 1 } do
 		local lean = CFrame.new(0, 1.35, side * 0.42) * CFrame.Angles(side * 0.17, 0, 0)
 		part(m, "Board", Vector3.new(1.7, 2.7, 0.12), lean, frame, Enum.Material.Wood)
-		local face = lean * CFrame.new(0, 0.05, side * 0.07)
+		-- the slate sunk into the board, its face 0.05 proud of the board's; the chalk 0.05 proud of the slate's
+		local face = lean * CFrame.new(0, 0.05, side * 0.06)
 		part(
 			m,
 			"Slate",
-			Vector3.new(1.4, 2.1, 0.02),
+			Vector3.new(1.4, 2.1, 0.1),
 			face,
 			Color3.fromRGB(30, 33, 34),
 			Enum.Material.SmoothPlastic
@@ -197,8 +199,8 @@ local function aBoard(m: Model)
 			part(
 				m,
 				`Chalk{i}`,
-				Vector3.new(w, 0.07, 0.01),
-				face * CFrame.new((i % 2) * 0.1 - 0.05, 0.75 - i * 0.38, side * 0.015),
+				Vector3.new(w, 0.07, 0.1),
+				face * CFrame.new((i % 2) * 0.1 - 0.05, 0.75 - i * 0.38, side * 0.05),
 				if i == 1 then Color3.fromRGB(236, 190, 90) else chalk,
 				Enum.Material.SmoothPlastic
 			)

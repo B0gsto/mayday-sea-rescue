@@ -507,9 +507,15 @@ local function cafe(root: Instance, island: any)
 		Vector3.new(0.6, H, 14),
 		Vector3.new(sx2 - 0.3, floorTop + H / 2, (sz1 + sz2) / 2)
 	)
-	wall("Counter", Vector3.new(22, 3.6, 0.6), Vector3.new(cx, floorTop + 1.8, sz2 - 0.3))
-	wall("Lintel", Vector3.new(22, 1.6, 0.6), Vector3.new(cx, floorTop + H - 0.8, sz2 - 0.3), WHITE)
-	for _, px in { sx1 + 1, sx2 - 1 } do
+	-- counter and lintel ends 0.1, pillars 0.05 inside the side walls' faces (no shared planes)
+	wall("Counter", Vector3.new(21.8, 3.6, 0.6), Vector3.new(cx, floorTop + 1.8, sz2 - 0.3))
+	wall(
+		"Lintel",
+		Vector3.new(21.8, 1.6, 0.6),
+		Vector3.new(cx, floorTop + H - 0.8, sz2 - 0.3),
+		WHITE
+	)
+	for _, px in { sx1 + 1.05, sx2 - 1.05 } do
 		wall("Pillar", Vector3.new(2, H, 0.8), Vector3.new(px, floorTop + H / 2, sz2 - 0.3), WHITE)
 	end
 	for _, px in { sx1, sx2 } do
