@@ -9,6 +9,7 @@
 -- device that cannot show a prompt (young account, no invite sheet, Studio) just stays quiet.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
@@ -31,6 +32,10 @@ end
 -- Platform can show this prompt at all right now. Favourite is unknown-safe: if the read fails we
 -- offer it (the server never offers twice).
 local function canPrompt(kind: string): boolean
+	-- Studio says yes to the opt-in, and its CoreGui modal then eats every HUD click (the Next chip) until dismissed
+	if RunService:IsStudio() then
+		return false
+	end
 	if kind == "notify" then
 		local svc = service("ExperienceNotificationService")
 		if not svc then
