@@ -170,6 +170,21 @@ AudioConfig.Clips = {
 	FX_Chime = rl(9048764475, 0.4, "Magical Meetup - Hit2", "quest complete"),
 	FX_Magic = rl(9116385087, 0.35, "Magic Burst 5 (SFX)", "skill unlocked"),
 	FX_Jingle = rl(9113849492, 0.35, "Coins Or Keys Jingle 6 (SFX)", "Cash gain"),
+	-- FX2b: the reward stingers (a bell ding pitched up a ladder, a power-up rise, a brick snap)
+	FX_Ding = rl(
+		9126073001,
+		0.3,
+		"Synth Sparkle Tone High Pitch Bell Tone Ding (SFX)",
+		"coin lands, survivor aboard"
+	),
+	FX_PowerUp = rl(9117886252, 0.4, "Power Up Sweeteners 12 (SFX)", "medal, skill unlock"),
+	FX_Snap = rl(
+		9125759320,
+		0.5,
+		"Plastic Switch Single Clicks Metallic Ringin (SFX)",
+		"build placed"
+	),
+	FX_Reveal = rl(9116422179, 0.35, "Magic Transformation 15 (SFX)", "medal reveal"),
 
 	-- Music (APM via Roblox). AudioMix.musicCue picks one: loading > debrief > operation, then the
 	-- calm cues (night anywhere, island near the ring, sea further out). Volumes level the tracks

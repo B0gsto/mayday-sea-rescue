@@ -1240,11 +1240,17 @@ end
 -- The Lego build beat (WP-14c): each part of a freshly built model drops from above with a stagger,
 -- lands with a squash and a snap, then a dust ring (VFXKit place_dust). Client tweens only; the server owns the final
 -- positions, so skipping this (a missed event) just shows the finished building.
-local function snapSound(at: Vector3)
-	AudioController.play("UI_Click", at, 0.5)
+local lastSnap = 0
+local function snapSound(at: Vector3, k: number) -- k: 0..1 through the beat; the click climbs a scale (FX2b)
+	local now = os.clock()
+	if now - lastSnap < 0.05 then -- a dozen bricks in one frame stay one click
+		return
+	end
+	lastSnap = now
+	AudioController.play("FX_Snap", at, 0.45, 0.9 + 0.45 * k)
 end
 
-local function playBuild(model: Model)
+local function playBuild(model: Model, mine: boolean)
 	local parts: { BasePart } = {}
 	local ys: { number } = {}
 	local base = Vector3.zero
@@ -1283,7 +1289,7 @@ local function playBuild(model: Model)
 		last = math.max(last, step.delay + 0.45)
 		tween.Completed:Connect(function()
 			if tween.PlaybackState ~= Enum.PlaybackState.Cancelled then
-				snapSound(final.Position)
+				snapSound(final.Position, step.delay / math.max(last, 0.01))
 				local size = part.Size
 				TweenService
 					:Create(part, TweenInfo.new(0.07), { Size = size * Vector3.new(1, 0.82, 1) })
@@ -1308,7 +1314,11 @@ local function playBuild(model: Model)
 	task.delay(
 		last + 0.1,
 		function() -- the last brick lands: a studded dust ring round it and a soft thud
-			VFXKit.play("place_dust", CFrame.new(at), { radius = math.max(size.X, size.Z) * 0.5 })
+			VFXKit.play(
+				"place_dust",
+				CFrame.new(at),
+				{ radius = math.max(size.X, size.Z) * 0.5, still = not mine }
+			)
 		end
 	)
 end
@@ -1655,7 +1665,7 @@ function DockController.Start()
 							2.2
 						)
 					end
-					playBuild(model)
+					playBuild(model, plot == player:GetAttribute("DockPlot"))
 				end
 			end)
 		end)

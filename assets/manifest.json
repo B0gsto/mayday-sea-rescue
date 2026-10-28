@@ -10540,6 +10540,15 @@
   "source": "assets/textures/Materials/T_Mat_NonSlipDeck_ALB.png",
   "type": "Image"
  },
+ "Image:7f3d69790d2c36230131bff312e9fdd89155f9fef598fab800dfe9976acf6f52": {
+  "assetId": "130413529136226",
+  "imageId": "130413529136226",
+  "moderation": "Reviewing",
+  "name": "UI_FX_medal",
+  "sha": "7f3d69790d2c36230131bff312e9fdd89155f9fef598fab800dfe9976acf6f52",
+  "source": "build/ui-art/medal.png",
+  "type": "Image"
+ },
  "Image:7f4d3dbbf591109ee5fb4a4d0adb07f64427df5b15612a42674d6589f1c00b79": {
   "assetId": "83956732894568",
   "imageId": "83956732894568",
@@ -12851,6 +12860,15 @@
   "name": "sparkle",
   "sha": "99feb76690dc77b1ac323700320348760cdb73a94375c5cd27dc4e2fd1288f5c",
   "source": "assets/ui/settings/sparkle.png",
+  "type": "Image"
+ },
+ "Image:9a194277c296b8dfb1ad857759f5927d949ec593b4d9dc6eb7552a7f3279fdeb": {
+  "assetId": "121915121871589",
+  "imageId": "121915121871589",
+  "moderation": "Reviewing",
+  "name": "UI_FX_rays",
+  "sha": "9a194277c296b8dfb1ad857759f5927d949ec593b4d9dc6eb7552a7f3279fdeb",
+  "source": "build/ui-art/rays.png",
   "type": "Image"
  },
  "Image:9a6778bf362f01968ab16737091dae8d514766e94c98a65bd80572819fd2ca96": {

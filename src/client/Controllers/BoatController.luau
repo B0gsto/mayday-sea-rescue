@@ -84,8 +84,12 @@ local lastThrottle = 0 -- the throttle the driven hull got last step (after the 
 local helm = 0 -- the eased steer (Boat/Helm)
 local nitro = Nitro.new() -- the Captain Nitro double-tap (Boat/Nitro)
 local boost = 1 -- last frame's Nitro multiplier: a rise is the burst (FX2 nitro_burst)
+local nitroTrail = 0 -- the last nitro_trail puff (step's `now`)
 local lastSpeed, lastBump = 0, 0 -- the driven hull's speed last frame, the last bump splash (os.clock)
-local BUMP_DECEL = 220 -- studs/s^2 of sudden slowdown that is a hit, not the throttle or drag -- tune
+local lastVel = Vector3.zero -- the driven hull's flat velocity last frame (where a bump hits)
+-- studs/s^2 of sudden slowdown that is a hit (FX2b, RIB driven in Studio: hull into a quay wall at 51-56 studs/s
+-- = 2185-2382; open-water waves, throttle off and grounding on a beach all stay under 80)
+local BUMP_DECEL = 400
 local YAW_SLACK = 1.25 -- the driven hull's yaw rate cap, as a share of its spec turnRate -- tune
 local tiltTime = 0
 local navTimer = NAV_INTERVAL
@@ -459,14 +463,25 @@ local function step(dt: number)
 						(tonumber(localPlayer:GetAttribute("SkillNitro")) or 0) > 0
 					)
 					Simulator.setBoost(child, mult)
-					if root and mult > boost then -- the burst: spray off the stern, back over the wake
+					if root and mult > 1 then -- spray off the stern, back over the wake
 						local back = -root.CFrame.LookVector
 						local at = root.Position + back * child:GetExtentsSize().Z * 0.45
 						local up = (back + Vector3.yAxis * 0.4).Unit -- the emitters fire along the up axis
-						VFXKit.play(
-							"nitro_burst",
-							CFrame.fromMatrix(at, root.CFrame.RightVector, up)
-						)
+						if mult > boost then -- the burst
+							VFXKit.play(
+								"nitro_burst",
+								CFrame.fromMatrix(at, root.CFrame.RightVector, up)
+							)
+							VFXKit.play("nitro_ring", CFrame.new(at.X, root.Position.Y - 0.5, at.Z))
+							nitroTrail = now
+						elseif now - nitroTrail > 0.1 then -- FX2b: a rooster tail (steeper) while it lasts
+							nitroTrail = now
+							local tail = (back + Vector3.yAxis * 1.3).Unit
+							VFXKit.play(
+								"nitro_trail",
+								CFrame.fromMatrix(at, root.CFrame.RightVector, tail)
+							)
+						end
 					end
 					boost = mult
 					-- a hit (rock, quay, another hull): a sudden drop in speed, not a slam off a wave
@@ -478,8 +493,11 @@ local function step(dt: number)
 						and clock - lastBump > 0.6
 					then
 						lastBump = clock
-						local bow = root.Position
-							+ root.CFrame.LookVector * child:GetExtentsSize().Z * 0.5
+						-- the contact: the end the hull was moving toward (a reversing stern hits too)
+						local ahead = if lastVel.Magnitude > 1
+							then lastVel.Unit
+							else root.CFrame.LookVector
+						local bow = root.Position + ahead * child:GetExtentsSize().Z * 0.5
 						VFXKit.play(
 							"bump_splash",
 							CFrame.new(bow),
@@ -487,6 +505,9 @@ local function step(dt: number)
 						)
 					end
 					lastSpeed = speed
+					if root then
+						lastVel = root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)
+					end
 					telemetry = Simulator.step(child, throttle, helm, now)
 					if root and spec then
 						-- a quay corner deflects, never spins: no yaw past the helm's own top rate (and the

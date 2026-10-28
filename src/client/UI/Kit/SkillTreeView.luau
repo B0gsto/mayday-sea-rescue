@@ -16,9 +16,11 @@ local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
+local Comfort = require(script.Parent.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local Counter = require(script.Parent:WaitForChild("Counter"))
 local Glyph = require(script.Parent.Parent:WaitForChild("Glyph"))
 local PriceButton = require(script.Parent:WaitForChild("PriceButton"))
+local RewardPop = require(script.Parent.Parent:WaitForChild("RewardPop"))
 local Style = require(script.Parent:WaitForChild("Style"))
 local Theme = require(script.Parent:WaitForChild("Theme"))
 local TreeMath = require(script.Parent:WaitForChild("TreeMath"))
@@ -645,6 +647,13 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 			pop.Parent = cardIcon
 			pop.Scale = 1.4 -- the bought skill's art punches out and settles
 			Style.tween(pop, 0.45, { Scale = 1 }, Enum.EasingStyle.Back)
+			-- FX2b: a sunburst turns behind it and gold stars fly off (the art's own frame, so they ride its pop)
+			if not Comfort.reducedMotion() then
+				-- kept round the art (clear of the name below); the old lock shatters off as dark plates
+				RewardPop.rays(cardIcon, Vector2.new(56, 56), 210, 1.1)
+				RewardPop.stars(cardIcon, Vector2.new(56, 56), 78, 6)
+				RewardPop.shards(cardIcon, Vector2.new(56, 56), 90, 5, Color3.fromHex("2A2F3A"))
+			end
 		end)
 	end
 

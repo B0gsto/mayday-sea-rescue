@@ -41,6 +41,9 @@ return {
 		PipOn = "rbxassetid://79278766459351",
 		PipFull = "rbxassetid://103484297206636",
 		PipOff = "rbxassetid://119111756457195",
+		-- FX2b (art/source/ui/medal.svg, rays.svg): the medal that flips into Skills, the sunburst behind a reward
+		Medal = "rbxassetid://130413529136226",
+		Rays = "rbxassetid://121915121871589",
 	},
 	-- Icons requested in docs/18-ui-art-requests.md. Empty until uploaded: the UI draws its glyph
 	-- placeholder instead. VehicleArt: UI/BoatCard (upgrades by id, the stat rows, the tick).

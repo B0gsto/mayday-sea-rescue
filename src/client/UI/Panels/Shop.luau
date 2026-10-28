@@ -2,6 +2,7 @@
 -- Shop panel: the kit Store. Tabs Passes / Packs / Boosts / Day passes (ProductShelves.storeItems)
 -- as kit Cards with live Roblox prices, owned ticks, day-pass clocks, and ProductShelves' prompt
 -- gating. Gamepad: L1 / R1 step the tabs.
+local ContentProvider = game:GetService("ContentProvider")
 local GuiService = game:GetService("GuiService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -144,6 +145,7 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 			local iconId = if ok and type(info) == "table" then info.IconImageAssetId else nil
 			if type(iconId) == "number" and iconId > 0 then
 				icons[id] = `rbxassetid://{iconId}`
+				pcall(ContentProvider.PreloadAsync, ContentProvider, { icons[id] })
 			end
 			infoFetching[id] = nil
 			if panel.isOpen() then
@@ -325,6 +327,12 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 	end)
 
 	tabs.select(1)
+	-- every shelf's prices and icons load at join, not on the first open (its icons drew blank, FX2b)
+	for _, t in TABS do
+		for _, ref in ProductShelves.storeItems(config, t.id, studio) do
+			fetchInfo(ref)
+		end
+	end
 
 	return {
 		open = function()

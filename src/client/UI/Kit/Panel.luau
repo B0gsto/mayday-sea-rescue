@@ -3,12 +3,19 @@
 -- an optional Tabs row and a scrolling list. Fits itself to the canvas (Theme.panelSize).
 --   local p = Panel.new(canvas, { title = "Shop", icon = "shop", onClose = fn })
 --   Card.new(p.body, {...})   p.open() / p.close()  p.closeButton: the X   p.top: a slot above the list (Tabs)
+local ContentProvider = game:GetService("ContentProvider")
 local GuiService = game:GetService("GuiService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
 local AudioController =
 	require(script.Parent.Parent.Parent:WaitForChild("Controllers"):WaitForChild("AudioController"))
+local Comfort = require(script.Parent.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local Style = require(script.Parent:WaitForChild("Style"))
 local Theme = require(script.Parent:WaitForChild("Theme"))
+local UiImages = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
+)
 
 local S = Theme.Size
 
@@ -32,6 +39,22 @@ export type Panel = {
 }
 
 local Panel = {}
+
+-- every uploaded UI image loads at start: a panel's first open drew its icons blank for ~0.4 s (FX2b)
+task.spawn(function()
+	local ids = {}
+	local function walk(t: { [string]: any })
+		for _, v in t do
+			if type(v) == "string" and string.find(v, "^rbxassetid://") then
+				table.insert(ids, v)
+			elseif type(v) == "table" then
+				walk(v)
+			end
+		end
+	end
+	walk(UiImages)
+	pcall(ContentProvider.PreloadAsync, ContentProvider, ids)
+end)
 
 function Panel.new(canvas: Instance, props: Props): Panel
 	local want = props.size or S.panel
@@ -197,11 +220,28 @@ function Panel.new(canvas: Instance, props: Props): Panel
 	end
 	list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fit)
 
+	-- FX2b: the dim fades rather than blinks; the window rises into place as it pops and sinks as it tucks away
+	local DIM = dim.BackgroundTransparency
+	local dimFade = TweenInfo.new(0.18, Enum.EasingStyle.Quad)
 	local function close()
 		if root.Visible then
 			AudioController.play("FX_Swoosh", nil, 1, 1.1)
 		end
-		dim.Visible = false
+		local out = TweenService:Create(dim, dimFade, { BackgroundTransparency = 1 })
+		out.Completed:Once(function(state)
+			if state == Enum.PlaybackState.Completed then
+				dim.Visible = false
+			end
+		end)
+		out:Play()
+		if not Comfort.reducedMotion() then
+			Style.tween(
+				root,
+				0.18,
+				{ Position = UDim2.new(0.5, 0, 0.5, 28) },
+				Enum.EasingStyle.Quad
+			)
+		end
 		Style.pop(root, false)
 		if GuiService.SelectedObject and GuiService.SelectedObject:IsDescendantOf(root) then
 			GuiService.SelectedObject = nil
@@ -211,6 +251,42 @@ function Panel.new(canvas: Instance, props: Props): Panel
 		end
 	end
 	Style.press(x, close, S.cornerSmall)
+
+	local function cascade()
+		local cards = {}
+		for _, c in body:GetChildren() do
+			if c:IsA("GuiObject") and c.Visible then
+				table.insert(cards, c)
+			end
+		end
+		table.sort(cards, function(a, b)
+			return a.LayoutOrder < b.LayoutOrder
+		end)
+		for i = 1, math.min(#cards, 8) do
+			-- one UIScale per object counts: a pressable card's own press scale does the pop
+			local sc = cards[i]:FindFirstChildOfClass("UIScale")
+			if not sc then
+				local u = Instance.new("UIScale")
+				u.Name = "EnterScale"
+				u.Parent = cards[i]
+				sc = u
+			end
+			local enter = sc :: UIScale
+			enter.Scale = 0.6
+			TweenService:Create(
+				enter,
+				TweenInfo.new(
+					0.3,
+					Enum.EasingStyle.Back,
+					Enum.EasingDirection.Out,
+					0,
+					false,
+					0.05 * i
+				),
+				{ Scale = 1 }
+			):Play()
+		end
+	end
 
 	root.Parent = canvas
 	fit()
@@ -225,8 +301,19 @@ function Panel.new(canvas: Instance, props: Props): Panel
 		open = function()
 			fit()
 			dim.Visible = true
+			dim.BackgroundTransparency = 1
+			TweenService:Create(dim, dimFade, { BackgroundTransparency = DIM }):Play()
 			Style.pop(root, true)
 			AudioController.play("FX_Pop", nil, 0.6, 1.1)
+			if Comfort.reducedMotion() then
+				root.Position = UDim2.fromScale(0.5, 0.5)
+				return
+			end
+			root.Position = UDim2.new(0.5, 0, 0.5, 36)
+			Style.tween(root, 0.32, { Position = UDim2.fromScale(0.5, 0.5) }, Enum.EasingStyle.Back)
+			-- the first cards cascade in one after another (a card's own pop scale, not its layout slot), a
+			-- frame later: panels (Shop) rebuild their cards right after open()
+			task.defer(cascade)
 		end,
 		close = close,
 		isOpen = function()

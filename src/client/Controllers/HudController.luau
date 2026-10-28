@@ -15,6 +15,7 @@
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
 local TweenService = game:GetService("TweenService")
 
@@ -101,13 +102,92 @@ local function roll(label: TextLabel, from: number, to: number, fmt: (number) ->
 	end)
 end
 
+-- FX2b: coins hop up out of the "+N" and dive into the wallet's coin, one ding each up a scale; the coin
+-- squashes and the counter steps cashFrom -> cashTo as each lands (3-7 coins by the amount's size)
+local spillSerial = 0 -- the newest spill steps the counter; an older one still flying only dings
+local function coinSpill(
+	screen: ScreenGui,
+	from: Vector2,
+	amount: number,
+	h: number,
+	cashFrom: number,
+	cashTo: number
+)
+	spillSerial += 1
+	local serial = spillSerial
+	local icon = coinPop.Parent :: GuiObject
+	local goal = icon.AbsolutePosition + icon.AbsoluteSize / 2
+	local n = math.clamp(2 + math.floor(math.log10(math.max(amount, 1))), 3, 7)
+	local coins = {}
+	for i = 1, n do
+		local coin = Instance.new("ImageLabel")
+		coin.Name = "GainCoin"
+		coin.BackgroundTransparency = 1
+		coin.AnchorPoint = Vector2.new(0.5, 0.5)
+		coin.Size = UDim2.fromOffset(h * 0.8, h * 0.8)
+		coin.Position = UDim2.fromOffset(from.X, from.Y)
+		coin.Image = Hud.Coin
+		coin.ZIndex = 20
+		coin.Parent = screen
+		local peak = from + Vector2.new((math.random() - 0.3) * h * 2, -h * (1.4 + math.random()))
+		table.insert(coins, { coin = coin, peak = peak, at = 0.12 + i * 0.07, i = i })
+	end
+	-- one loop flies them all (sine-in along a bezier: up out of the chip, then a dive into the coin)
+	local start = os.clock()
+	local conn: RBXScriptConnection
+	conn = RunService.RenderStepped:Connect(function()
+		local t = os.clock() - start
+		local flying = false
+		for _, c in coins do
+			if c.coin.Parent then
+				local k = math.clamp((t - c.at) / 0.6, 0, 1)
+				if k >= 1 then
+					c.coin:Destroy()
+					local step = (cashTo - cashFrom) / n
+					if serial == spillSerial then
+						roll(
+							cashLabel,
+							math.floor(cashFrom + step * (c.i - 1)),
+							if c.i == n then cashTo else math.floor(cashFrom + step * c.i),
+							HudTheme.formatNumber
+						)
+					end
+					AudioController.play("FX_Ding", nil, 0.45, 1.05 + c.i * 0.07)
+					coinPop.Scale = 1.3
+					TweenService
+						:Create(coinPop, TweenInfo.new(0.3, Enum.EasingStyle.Back), { Scale = 1 })
+						:Play()
+				else
+					flying = true
+					local e = 1 - math.cos(k * math.pi / 2)
+					local p = from:Lerp(c.peak, e):Lerp(c.peak:Lerp(goal, e), e)
+					c.coin.Position = UDim2.fromOffset(p.X, p.Y)
+					c.coin.Rotation = 360 * e
+				end
+			end
+		end
+		if not flying or t > 2 then
+			conn:Disconnect()
+			for _, c in coins do
+				c.coin:Destroy()
+			end
+			if serial == spillSerial then -- whatever happened, it ends on the total
+				roll(cashLabel, cashTo, cashTo, HudTheme.formatNumber)
+			end
+		end
+	end)
+end
+
 -- FX2: a gold "+N" pops out beside the wallet on every gain (overshoot), drifts up and fades. One label, reused.
 local gainLabel: TextLabel? = nil
 local gainSerial = 0
-local function gainPop(amount: number)
+local function gainPop(
+	amount: number,
+	cashFrom: number
+): boolean -- true: its coins step the counter
 	local screen = cashLabel:FindFirstAncestorWhichIsA("ScreenGui")
 	if not screen then
-		return
+		return false
 	end
 	local label = gainLabel
 	if not label then
@@ -161,30 +241,38 @@ local function gainPop(amount: number)
 			l.Visible = false
 		end
 	end)
+	if not still and os.clock() - CashBurst.lastAt > 1.5 then
+		-- from the middle of the "+N" (the label's left edge is its anchor; ~0.55 em per glyph)
+		local over = at + Vector2.new(#l.Text * l.TextSize * 0.28, -h * 0.6) -- over it, not on it
+		coinSpill(screen, over, amount, h, cashFrom, cashFrom + amount)
+		return true
+	end
+	return false
 end
 
 local function render(data: { [string]: any })
 	snapshot = data
 	local cash = tonumber(data.cash) or 0
+	local spilled = false
 	if cashShown and cash > cashShown then
-		if not Comfort.reducedMotion() then
-			coinPop.Scale = 1.3
-			TweenService:Create(coinPop, TweenInfo.new(0.5, Enum.EasingStyle.Back), { Scale = 1 })
-				:Play()
+		if not Comfort.reducedMotion() then -- (the coin itself squashes as gainPop's coins land)
 			cashPop.Scale = 1.25
 			TweenService:Create(cashPop, TweenInfo.new(0.45, Enum.EasingStyle.Back), { Scale = 1 })
 				:Play()
 		end
-		gainPop(cash - cashShown)
-		-- the counter ticks up as it rolls; a coin jingle unless a CashBurst already rang the coins in
+		spilled = gainPop(cash - cashShown, cashShown)
+		-- the counter ticks up as it rolls (the coins ding as they land); a coin jingle unless a CashBurst already
+		-- rang the coins in
 		for i = 0, 4 do
-			task.delay(i * 0.08, AudioController.play, "UI_Prompt", nil, 2.5, 1 + i * 0.1)
+			task.delay(i * 0.08, AudioController.play, "UI_Prompt", nil, 1.2, 1 + i * 0.1)
 		end
 		if os.clock() - CashBurst.lastAt > 1.5 then
 			AudioController.play("FX_Jingle", nil, 1, 1.05)
 		end
 	end
-	roll(cashLabel, cashShown or cash, cash, HudTheme.formatNumber)
+	if not spilled then
+		roll(cashLabel, cashShown or cash, cash, HudTheme.formatNumber)
+	end
 	cashShown = cash
 end
 

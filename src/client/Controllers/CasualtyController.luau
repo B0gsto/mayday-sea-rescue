@@ -14,14 +14,18 @@
 --     panicking or tiring calls out every few seconds, and says thanks once aboard.
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioController = require(script.Parent.AudioController)
 local CasualtyRig = require(Shared:WaitForChild("Casualty"):WaitForChild("CasualtyRig"))
 local ClimbPath = require(Shared:WaitForChild("Ops"):WaitForChild("ClimbPath"))
+local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
+local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local VoiceTTS = require(script.Parent.VoiceTTS)
 
@@ -108,6 +112,55 @@ end
 -- The climb plays on every client relative to its own copy of the hull (docs/NEXT 0c): the hull is
 -- network-owned by the driver, so the server's climb trails a fast boat. VehicleService.Climb sets the
 -- hull-space path on the Victim; we stop once the weld goes on and the hull carries them.
+-- FX2b: a lifebuoy sticker springs up over a survivor who lands aboard your craft, rises and shrinks away
+local function lifebuoyPop(victim: Model)
+	local head = victim:FindFirstChild("Head", true) or victim.PrimaryPart -- the head is in the CasualtyRig
+	if not (head and head:IsA("BasePart")) then
+		return
+	end
+	local board = Instance.new("BillboardGui")
+	board.Name = "AboardPop"
+	board.Size = UDim2.fromOffset(110, 110)
+	board.StudsOffsetWorldSpace = Vector3.new(0, 6, 0) -- over their name tag and the seat pips
+	board.AlwaysOnTop = true
+	board.LightInfluence = 0
+	board.Adornee = head
+	local img = Instance.new("ImageLabel")
+	img.BackgroundTransparency = 1
+	img.AnchorPoint = Vector2.new(0.5, 0.5)
+	img.Position = UDim2.fromScale(0.5, 0.5)
+	img.Size = UDim2.fromScale(1, 1)
+	img.Image = UiImages.Kit.lifebuoy
+	img.Parent = board
+	local sc = Instance.new("UIScale")
+	sc.Scale = 0.2
+	sc.Parent = img
+	board.Parent = head
+	-- one pop (0 -> ~1.15 -> 1 in 0.2 s), a 0.4 s hold, then it rises 2 studs and fades by 1.2 s
+	sc.Scale = 0
+	TweenService:Create(sc, TweenInfo.new(0.2, Enum.EasingStyle.Back), { Scale = 1 }):Play()
+	img.Rotation = -30
+	TweenService:Create(img, TweenInfo.new(0.3, Enum.EasingStyle.Back), { Rotation = 0 }):Play()
+	task.delay(0.6, function()
+		local out = TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+		TweenService:Create(img, out, { ImageTransparency = 1 }):Play()
+		if not Comfort.reducedMotion() then
+			TweenService:Create(board, out, { StudsOffsetWorldSpace = Vector3.new(0, 8, 0) }):Play()
+		end
+	end)
+	task.delay(1.2, board.Destroy, board)
+	-- their name tag steps aside for the beat (it covered the sticker), then comes back
+	local tag = victim:FindFirstChild("SurvivorNameTag")
+	if tag and tag:IsA("BillboardGui") and tag.Enabled then
+		tag.Enabled = false
+		task.delay(1.2, function()
+			if tag.Parent then
+				tag.Enabled = true
+			end
+		end)
+	end
+end
+
 local splashed: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
 local landed: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
 local function climbStep()
@@ -145,17 +198,24 @@ local function climbStep()
 		if not hull then
 			continue -- hull not replicated (yet)
 		end
+		local mine = (vehicle :: Instance):GetAttribute("Owner") == Players.LocalPlayer.UserId -- someone else's: no camera kick
 		if splashed[victim] ~= started then -- docs/26: they leave the water, once per climb
 			splashed[victim] = started
 			local at = hull.CFrame:PointToWorldSpace(start)
 			VFXKit.play("pickup_splash", CFrame.new(at))
 			AudioController.play("Splash_Entry", at, 0.6, 1.25)
-			VFXKit.play("pickup_drops", CFrame.new(at))
+			VFXKit.play("pickup_drops", CFrame.new(at), { still = not mine })
 		end
 		local t = (now - started) / ClimbPath.SECONDS
 		if t >= 1 and landed[victim] ~= started then -- FX2: they land aboard (survivor_aboard)
 			landed[victim] = started
-			VFXKit.play("survivor_aboard", CFrame.new(hull.CFrame:PointToWorldSpace(seat.Position)))
+			local at = hull.CFrame:PointToWorldSpace(seat.Position)
+			VFXKit.play("survivor_aboard", CFrame.new(at), { still = not mine })
+			if mine then -- FX2b: a ding a step higher per seat filled, a lifebuoy pops over their head
+				local n = tonumber((vehicle :: Instance):GetAttribute("SurvivorCount")) or 1
+				AudioController.play("FX_Ding", at, 0.7, 1 + 0.12 * math.clamp(n - 1, 0, 6))
+				lifebuoyPop(victim)
+			end
 		end
 		victim:PivotTo(ClimbPath.at(hull.CFrame, start, side, hull.Size.X / 2, seat, t))
 	end

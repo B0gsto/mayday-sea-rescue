@@ -558,8 +558,46 @@ Presets.ALL.nitro_burst = preset({
 		{ clip = "FX_Whoosh", volume = 1, pitch = 1.05 } :: FxSound,
 		{ clip = "Hull_SprayHiss", delay = 0.05, volume = 0.7, pitch = 1.15 } :: FxSound,
 	},
-	punch = { fov = -7, shake = 0.2, time = 0.45 },
+	punch = { fov = -9, shake = 0.2, time = 0.45 },
 	impactTint = COOL,
+})
+
+-- feedback: the Nitro kick on the water (BoatController, upright at the stern with nitro_burst): a flat
+-- sea-cyan ring snaps out 3 -> 18 studs, a foam ring after it
+Presets.ALL.nitro_ring = preset({
+	job = "feedback",
+	layers = {
+		with( -- 2-3 hull widths across, sea cyan so it reads on the white foam
+			groundRing("shockwave_ring", SEA, curve(3, 18, outCubic), 0.4),
+			{ transparency = { 0, 0.15, 1 } }
+		),
+		with(groundRing("foam_ring", FOAM, curve(4, 13, outCubic), 0.55), { delay = 0.04 }),
+	},
+})
+
+-- state: Captain Nitro is still burning (BoatController, every ~0.12 s of the 4 s burst): the stern jet keeps
+-- throwing streaks, drops and a puff back over the wake. Silent (the burst's whoosh and the engine carry it)
+Presets.ALL.nitro_trail = preset({
+	job = "state",
+	layers = {
+		drops(6, { 24, 32 }, 16, 2.4), -- a Layer first: the literal below then types as one
+		{
+			tex = "sea_spray",
+			count = 6,
+			colors = { WHITE, SEA },
+			streak = true,
+			size = curve(7, 2, outCubic),
+			transparency = POP,
+			lifetime = { 0.5, 0.65 },
+			speed = { 38, 48 },
+			spread = { 10, 10 },
+			accel = Vector3.new(0, -30, 0),
+		},
+		with(
+			puffs(2, WHITE, 2.2, 4.8, 0.65),
+			{ speed = { 10, 14 }, spread = { 14, 14 }, drag = 4 }
+		),
+	},
 })
 
 -- feedback: the hull bumps a rock / quay / boat (BoatController); at the bow: a small crown, drops, spray puffs;
@@ -567,11 +605,11 @@ Presets.ALL.nitro_burst = preset({
 Presets.ALL.bump_splash = preset({
 	job = "feedback",
 	layers = {
-		crown(1, 3, 6.5),
-		drops(14, { 14, 20 }, 50, 1.4),
-		puffs(4, FOAM, 1.5, 3.5, 0.6),
+		crown(2, 4, 9),
+		drops(16, { 16, 24 }, 50, 2),
+		puffs(6, FOAM, 2.2, 5, 0.65),
 		with(
-			confetti(4, { 14, 20 }, 45, { WHITE, NAVY }),
+			confetti(6, { 14, 20 }, 45, { WHITE, Color3.fromRGB(160, 165, 169) }), -- Lego light grey chips
 			{ at = "origin", size = { 2.8, 2.6 }, lifetime = { 0.6, 0.8 }, accel = GRAVITY }
 		),
 	},
@@ -689,50 +727,75 @@ Presets.ALL.buy_pop = preset({
 	sounds = { { clip = "FX_Pop", volume = 1 } :: FxSound },
 })
 
--- feedback: the Lego build beat's last brick lands (DockController): one studded dust ring round the footprint
--- and a soft settling thud (radius = the footprint)
+-- feedback: the Lego build beat's last brick lands (DockController): a white ring snaps out low round the
+-- footprint, one studded dust ring rolls after it, plates hop off the edge; a thud under a brick snap, and on
+-- your own plot a small settle shake (radius = the footprint)
 Presets.ALL.place_dust = preset({
 	job = "feedback",
 	layers = {
 		with(
-			puffs(10, DUST, 2.2, 4.2, 0.7),
-			{ ring = true, speed = { 5, 8 }, spread = { 88, 88 } }
+			groundRing("shockwave_ring", WHITE, curve(6, 15, outCubic), 0.45),
+			{ transparency = { 0, 0.3, 1 } }
 		),
-		with(plates({ WHITE, YELLOW }, 8), { size = { 1.8 }, speed = { 10, 14 } }),
+		with(
+			puffs(10, DUST, 1.8, 3.2, 0.7),
+			{ ring = true, speed = { 7, 11 }, spread = { 89, 89 }, delay = 0.04 }
+		),
+		with(plates({ WHITE, YELLOW, RED }, 12), { size = { 2 }, speed = { 12, 16 } }),
 	},
 	sounds = {
-		{ clip = "FX_Thud", volume = 0.5, pitch = 1.3 } :: FxSound,
+		{ clip = "FX_Thud", volume = 0.7, pitch = 1.25 } :: FxSound,
+		{ clip = "FX_Snap", volume = 0.8, pitch = 0.85 } :: FxSound,
 		{ clip = "FX_Pop", delay = 0.06, volume = 0.6, pitch = 0.9 } :: FxSound,
 	},
+	punch = { fov = 0, shake = 0.18, time = 0.25 },
 })
 
 -- feedback: a survivor lands aboard at the end of their climb (CasualtyController): lifebuoy plates hop off the
--- seat, a foam puff; a pop over a step tick
+-- seat, a gold ring snaps out, a foam puff; a pop over a step tick (the call site adds a ding up a scale per seat)
 Presets.ALL.survivor_aboard = preset({
 	job = "feedback",
 	layers = {
 		with(
-			plates({ RED, WHITE }, 10),
-			{ ring = false, size = { 1.8 }, speed = { 12, 16 }, spread = { 50, 50 } }
+			plates({ RED, WHITE }, 14),
+			{ ring = false, size = { 2.2 }, speed = { 14, 19 }, spread = { 55, 55 } }
 		),
-		with(puffs(5, WHITE, 1.8, 3.6, 0.55), { speed = { 3, 6 } }),
+		with(puffs(5, WHITE, 2, 4.2, 0.55), { speed = { 3, 6 } }),
 		with(
-			groundRing("shockwave_ring", YELLOW, curve(2, 7, outCubic), 0.45),
-			{ transparency = { 0.1, 0.3, 1 } }
+			groundRing("shockwave_ring", YELLOW, curve(2, 9, outCubic), 0.45),
+			{ transparency = { 0, 0.2, 1 } }
 		),
 		groundRing("foam_ring", FOAM, curve(4, 8, outCubic), 0.9), -- it settles on the water
 	},
 	sounds = {
-		{ clip = "FX_Pop", volume = 0.9, pitch = 1.15 } :: FxSound,
+		{ clip = "FX_Pop", volume = 1, pitch = 1.15 } :: FxSound,
 		{ clip = "UI_Step", delay = 0.05, volume = 0.8, pitch = 1.2 } :: FxSound,
 	},
+	punch = { fov = 2, shake = 0, time = 0.25 },
 })
 
--- feedback: layered on pickup_splash (CasualtyController): chunky sea-teal drops thrown up out of the ring
+-- feedback: layered on pickup_splash (CasualtyController) as the survivor is pulled out: a tall crown snaps up, a
+-- column of white drops shoots after them, teal drops fan out, a white ring kicks across the water; a splash, a
+-- quick rising whoosh (the yank) and a soft pop; a small zoom kick
 Presets.ALL.pickup_drops = preset({
 	job = "feedback",
-	layers = { with(drops(8, { 18, 24 }, 25, 2), { colors = { SEA } }) },
-	sounds = { { clip = "FX_SplashSmall", volume = 0.8, pitch = 1.15 } :: FxSound },
+	layers = {
+		crown(2, 4, 13),
+		drops(10, { 32, 42 }, 10, 2.8), -- tall: it clears the hull from the chase camera
+		with(drops(8, { 18, 24 }, 45, 2.2), { colors = { SEA } }),
+		with(
+			groundRing("shockwave_ring", WHITE, curve(4, 18, outCubic), 0.55),
+			{ transparency = { 0, 0.25, 1 } }
+		),
+		with(puffs(4, FOAM, 2, 4.5, 0.6), { ring = true, speed = { 6, 9 }, spread = { 80, 80 } }),
+		with(puffs(6, WHITE, 3.4, 6, 0.7), { speed = { 18, 28 }, spread = { 7, 7 }, drag = 3 }), -- the column
+	},
+	sounds = {
+		{ clip = "FX_SplashSmall", volume = 1 } :: FxSound,
+		{ clip = "FX_Whoosh", delay = 0.02, volume = 0.35, pitch = 1.7 } :: FxSound,
+		{ clip = "FX_Pop", delay = 0.06, volume = 0.6, pitch = 0.95 } :: FxSound,
+	},
+	punch = { fov = 3, shake = 0.12, time = 0.3 },
 })
 
 return Presets
