@@ -87,6 +87,7 @@ local HIT = 90
 local DOT_HIT = 44
 local MINI = 0.3 -- the minimap's share of the screen
 local FIT_PAD = 110 -- du round the visible nodes (keystone labels hang 70 below the badge)
+local FIT_MIN_ZOOM = 0.9 -- the opening fit never zooms out further: nodes stay big and legible (real client)
 local TOP_BAR = 90 -- du under the title / Medals / X bar
 
 local SOON = { name = "Soon", color = Color3.fromRGB(150, 156, 168) }
@@ -705,15 +706,23 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 		apply()
 	end
 
-	-- zoom and pan onto what you can unlock (+ the centre), not the whole tree (owner 2026-10-28)
+	-- zoom and pan onto what you can unlock (+ the centre), not the whole tree (owner 2026-10-28); never
+	-- below FIT_MIN_ZOOM, so a grown tree still opens big (pinch / scroll zoom out to MIN_ZOOM)
 	local function fit(time: number?)
 		local pts = { centre }
-		for _, at in posById do
-			table.insert(pts, at)
+		for id, at in posById do
+			if stateById[id] == "buyable" then
+				table.insert(pts, at)
+			end
+		end
+		if #pts == 1 then -- nothing left to unlock: the whole tree
+			for _, at in posById do
+				table.insert(pts, at)
+			end
 		end
 		local vp = viewRect()
 		local free = { pos = Vector2.new(0, TOP_BAR), size = vp.size - Vector2.new(0, TOP_BAR) }
-		zoom, pan = TreeMath.fitBox(pts, free, FIT_PAD, TreeMath.MIN_ZOOM, TreeMath.MAX_ZOOM)
+		zoom, pan = TreeMath.fitBox(pts, free, FIT_PAD, FIT_MIN_ZOOM, TreeMath.MAX_ZOOM)
 		pan = TreeMath.clampPanIn(pan, vp, size, zoom)
 		apply(time)
 	end

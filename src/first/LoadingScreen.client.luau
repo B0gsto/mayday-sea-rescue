@@ -31,7 +31,7 @@ local TIPS = {
 local TIP_SECONDS = 4
 local MIN_SHOW = 2.2
 local LOAD_TIMEOUT = 25
-local HANDOFF_WAIT = 5 -- s to wait for the character's root before the hand-off tween
+local HANDOFF_WAIT = 15 -- s to wait (behind the overlay) for the character before the cut to it
 local FOV = 62
 
 local gui = Instance.new("ScreenGui")
@@ -556,10 +556,6 @@ local function main()
 	local firstSession = false
 	local spawnCF: CFrame = RingLayout.Islands[1].spawn
 	local orbitAngle = 0
-	local handoffActive = false
-	local handoffStart = 0
-	local handoffFrom = LoadingPath.orbit(ringCenter, orbitAngle)
-	local handoffTo = handoffFrom
 
 	local function startOrbit()
 		if reduced ~= false or cameraBound then
@@ -574,15 +570,8 @@ local function main()
 				if not camera then
 					return
 				end
-				local frame: CFrame
-				if handoffActive then
-					local x =
-						math.clamp((os.clock() - handoffStart) / LoadingPath.HANDOFF_SECONDS, 0, 1)
-					frame = LoadingPath.handoff(handoffFrom, handoffTo, x)
-				else
-					orbitAngle += dt * LoadingPath.ORBIT_SPEED
-					frame = LoadingPath.orbit(ringCenter, orbitAngle)
-				end
+				orbitAngle += dt * LoadingPath.ORBIT_SPEED
+				local frame = LoadingPath.orbit(ringCenter, orbitAngle)
 				camera.CameraType = Enum.CameraType.Scriptable
 				camera.CFrame = frame
 				camera.FieldOfView = FOV
@@ -673,49 +662,27 @@ local function main()
 		end
 	end
 
-	if reduced ~= false then -- reduced motion, or Comfort never answered: a plain fade
-		fadeOverlay(0.9)
-		task.wait(0.9)
-		cleanup()
-		gui:Destroy()
-		return
-	end
-
-	task.wait(0.35)
-	-- the character may still be spawning: wait for its root (at most 5 s) so the hand-off ends behind it
+	-- docs/25 J: the first frame after the overlay is the normal camera behind the player, so the character
+	-- (late under streaming in the real client) is waited for here, behind the opaque overlay
 	local waitUntil = os.clock() + HANDOFF_WAIT
 	while os.clock() < waitUntil do
 		local char = player.Character
 		local root = char and char:FindFirstChild("HumanoidRootPart")
-		if root and root:IsA("BasePart") then
+		if root and root:IsA("BasePart") and char:FindFirstChildOfClass("Humanoid") then
 			break
 		end
 		task.wait(0.05)
 	end
-	fadeOverlay(0.5)
-	task.wait(0.5)
-	local final = finishPose(bay, firstSession, spawnCF)
+	task.wait(0.2) -- the server's home placement (VehicleService homeAtBay) lands a frame after the spawn
 	local camera = Workspace.CurrentCamera
-	handoffFrom = if camera and cameraBound
-		then camera.CFrame
-		else LoadingPath.orbit(ringCenter, orbitAngle)
-	handoffTo = final
-	handoffStart = os.clock()
-	handoffActive = true
-	startOrbit() -- the orbit task may not have bound the render step yet
-
-	while os.clock() - handoffStart < LoadingPath.HANDOFF_SECONDS do
-		task.wait(0.05)
-	end
-
 	if camera then
-		camera.CameraType = Enum.CameraType.Scriptable
-		camera.CFrame = final
+		camera.CFrame = finishPose(bay, firstSession, spawnCF) -- the Custom camera keeps this look direction
 		camera.FieldOfView = FOV
 	end
 	cleanup()
-	fadeOverlay(0.2)
-	task.wait(0.2)
+	task.wait(0.1) -- a couple of frames of the Custom camera before the overlay lifts
+	fadeOverlay(0.5)
+	task.wait(0.5)
 	gui:Destroy()
 end
 

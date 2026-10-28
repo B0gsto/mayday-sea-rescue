@@ -148,10 +148,12 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 				Style.grad(if ready then chip.color else "disabled"),
 				{ lip = 4, radius = S.cornerSmall }
 			)
+			local chosen = (view and view.variant) == chip.id
 			local text = Style.label(face, chip.label, Theme.Text.small)
 			text.AnchorPoint = Vector2.new(0.5, 0.5)
 			text.Position = UDim2.fromScale(0.5, 0.5)
-			text.Size = UDim2.new(1, -10, 1, -8)
+			-- the chosen chip's tick sits top-right: keep the centred label clear of it on both sides
+			text.Size = UDim2.new(1, if chosen then -52 else -10, 1, -8)
 			text.TextScaled = true
 			button.Active = ready
 			Style.press(button, function()
@@ -159,7 +161,7 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 					PetController.chooseVariant(chip.id)
 				end
 			end, S.cornerSmall)
-			if (view and view.variant) == chip.id then
+			if chosen then
 				local tick = Instance.new("Frame")
 				tick.AnchorPoint = Vector2.new(1, 0)
 				tick.Position = UDim2.new(1, -6, 0, 4)

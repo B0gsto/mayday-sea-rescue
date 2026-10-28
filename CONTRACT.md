@@ -244,8 +244,8 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
 
 ## First minutes
 
-- Loading screen (`src/first/LoadingScreen.client.luau`): preloads, orbits the ring, then one 1.2 s eased
-  tween straight to behind the player (`shared/LoadingPath`; docs/25 J: no orbit, no spawn-point stop).
+- Loading screen (`src/first/LoadingScreen.client.luau`): preloads, orbits the ring behind the overlay, waits
+  for the character, cuts to the Custom camera behind it, then lifts the overlay (`shared/LoadingPath`; docs/25 J).
   LocalPlayer attributes `LoadingScreenActive`, `CinematicPlaying`.
 - Cold open: `StartColdOpen` seats a new player on a jet ski (`VehicleService.SpawnColdOpen`) with a swimmer just
   off their cove; `Boat/ColdOpen` (ease, drop-off), `Boat/ColdOpenFlow`, `UI/ColdOpenCue`, `UI/OnboardingReward`.

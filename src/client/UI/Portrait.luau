@@ -23,7 +23,8 @@ export type Slot = {
 }
 
 local MARGIN = 80 -- px past the scroll edges a slot is built early, so a fast scroll never shows it empty
-local DIM = Color3.fromRGB(125, 128, 140) -- waiting on the jetty
+-- waiting on the jetty: faded into the card, not darkened (a x0.5 tint turned dark skin black, live client)
+local DIM_FADE = 0.3
 
 function Portrait.back(parent: Instance, rarity: number): Frame
 	local tier = Rarity.TIERS[math.clamp(rarity, 1, Rarity.MYTHIC)]
@@ -101,7 +102,7 @@ function Portrait.render(
 	view.Ambient = Color3.fromRGB(190, 190, 200) -- dark rigs read almost black at 150
 	view.LightColor = Color3.fromRGB(255, 244, 226)
 	view.LightDirection = Vector3.new(0.6, -1, 0) - dir -- a warm key light from above, camera side
-	view.ImageColor3 = if dim then DIM else Color3.new(1, 1, 1)
+	view.ImageTransparency = if dim then DIM_FADE else 0
 	view.CurrentCamera = cam
 	cam.Parent = view
 	model.Parent = view

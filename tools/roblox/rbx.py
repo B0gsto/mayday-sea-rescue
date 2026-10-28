@@ -152,7 +152,8 @@ def main():
         st = json.load(open(STATE))
         cx, cy = to_screen(st["img"][0] / 2, st["img"][1] / 2)
         dx = float(a[1]) * st["win"][3] / st["img"][0]
-        drag(cx, cy, cx + dx, cy, "r")
+        rb("mv", cx, cy); time.sleep(0.05)
+        rb("turn", cx, cy, dx)
     elif cmd == "scroll":
         n = int(a[1])
         for _ in range(abs(n)):

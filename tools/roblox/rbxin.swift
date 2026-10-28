@@ -1,5 +1,5 @@
 // Real input + window lookup for the Roblox player app (com.roblox.RobloxPlayer). Built by rbx.py.
-// usage: rbxin win | act | mv X Y | md X Y l|r | mu X Y l|r | dr X Y l|r | sc N
+// usage: rbxin win | act | mv X Y | md X Y l|r | mu X Y l|r | dr X Y l|r | sc N | turn X Y DX
 import Cocoa
 let a = CommandLine.arguments
 let src = CGEventSource(stateID: .hidSystemState)
@@ -24,5 +24,16 @@ case "md": post(CGEvent(mouseEventSource: src, mouseType: btn() == .right ? .rig
 case "mu": post(CGEvent(mouseEventSource: src, mouseType: btn() == .right ? .rightMouseUp : .leftMouseUp, mouseCursorPosition: pt(), mouseButton: btn()))
 case "dr": post(CGEvent(mouseEventSource: src, mouseType: btn() == .right ? .rightMouseDragged : .leftMouseDragged, mouseCursorPosition: pt(), mouseButton: btn()))
 case "sc": post(CGEvent(scrollWheelEvent2Source: src, units: .line, wheelCount: 1, wheel1: Int32(a[2])!, wheel2: 0, wheel3: 0))
+case "turn":
+  // the camera reads the drag's mouse deltas, which only a session-level source + tap carry (hid drags left it still)
+  let p = pt(), dx = Double(a[4])!, s = CGEventSource(stateID: .combinedSessionState), steps = 20
+  func send(_ t: CGEventType, _ x: Double, _ d: Double) {
+    let e = CGEvent(mouseEventSource: s, mouseType: t, mouseCursorPosition: CGPoint(x: x, y: p.y), mouseButton: .right)!
+    e.setIntegerValueField(.mouseEventDeltaX, value: Int64(d))
+    e.post(tap: .cgSessionEventTap)
+  }
+  send(.rightMouseDown, p.x, 0); usleep(50_000)
+  for i in 1...steps { send(.rightMouseDragged, p.x + dx * Double(i) / Double(steps), dx / Double(steps)); usleep(16_000) }
+  usleep(30_000); send(.rightMouseUp, p.x + dx, 0)
 default: exit(2)
 }
