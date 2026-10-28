@@ -38,6 +38,8 @@ end
 export type Spot = { id: string, label: string, position: Vector3 }
 
 local spots: { Spot } = {}
+-- your own build station (DevService resolves it per player; mouse-only playtests can't walk there)
+table.insert(spots, { id = "MyDock", label = "My dock (tablet)", position = Vector3.zero })
 for _, blip in MapConfig.Blips do
 	table.insert(spots, { id = blip.id, label = blip.label, position = blip.position :: Vector3 })
 end

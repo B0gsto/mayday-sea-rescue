@@ -243,6 +243,16 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 			return true, if a[1] then "Hidden" else "Visible"
 		end,
 		tpSpot = function(dev, _, a)
+			if a[1] == "MyDock" then
+				local marina = Workspace:FindFirstChild("Marina")
+				local plot = marina and marina:FindFirstChild(`Plot{dev:GetAttribute("DockPlot")}`)
+				local station = plot and plot:FindFirstChild("BuildStation")
+				if not (station and station:IsA("Model")) then
+					return false, "No dock yet"
+				end
+				return moveTo(dev, landing((station:GetPivot() * CFrame.new(5, 0, 0)).Position)),
+					a[1]
+			end
 			return moveTo(dev, landing(DevConfig.Spots[a[1]].position)), a[1]
 		end,
 		tpPlayer = function(dev, target)

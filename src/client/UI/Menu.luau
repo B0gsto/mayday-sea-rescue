@@ -117,7 +117,10 @@ end
 
 local function chrome()
 	if bar then
-		bar.Visible = shown() and current == nil and player:GetAttribute("BuildHidesMenu") ~= true
+		bar.Visible = shown()
+			and current == nil
+			and player:GetAttribute("BuildHidesMenu") ~= true
+			and player:GetAttribute("MapOpen") ~= true -- the full map is a panel too (its edge showed beside it)
 	end
 	if chip then
 		chip.Visible = shown()
