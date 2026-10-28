@@ -169,9 +169,9 @@ local function edges(parent: Instance, isl: RingLayout.Island)
 		tex.Transparency = 0.15
 		tex.Parent = p
 	end
+	-- the side walls carry DockPieces.base's stud-capped QuayCap (2.2 wide, 0.6 high), which swallowed their strips:
+	-- the strip's wall face sat in the cap's and z-fought as a flickering tan line (owner, 2026-10-28)
 	local strips = {
-		{ -hw - STRIP_W, -hw, P.notch.head, e }, -- the notch's left wall
-		{ hw, hw + STRIP_W, P.notch.head, e }, -- the notch's right wall
 		{ -hw, hw, P.notch.head - STRIP_W, P.notch.head }, -- the notch's back wall (the quay)
 	}
 	for _, s in strips do
