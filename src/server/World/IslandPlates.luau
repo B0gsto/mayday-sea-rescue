@@ -144,7 +144,11 @@ local function edges(parent: Instance, isl: RingLayout.Island)
 					if k == 3 then "Bush" else "Rock",
 					size,
 					isl.frame
-						* CFrame.new(sr * rock[1], BEACH_TOP - P.topY + size.Y / 2, -sf * rock[2])
+						* CFrame.new(
+							sr * rock[1],
+							BEACH_TOP - P.topY + size.Y / 2 - 0.05,
+							-sf * rock[2]
+						) -- 0.05 sunk: a bush top met the helipad rim's
 						* CFrame.Angles(0, k * 0.7, 0),
 					if k == 3 then BUSH elseif k % 2 == 1 then ROCK else ROCK_DARK
 				)
