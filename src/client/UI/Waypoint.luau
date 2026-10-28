@@ -18,6 +18,12 @@ local AudioController =
 local Glyph = require(script.Parent.Glyph)
 local HudTheme = require(script.Parent.HudTheme)
 local Layout = require(script.Parent.Layout)
+local UiImages = require(
+	game:GetService("ReplicatedStorage")
+		:WaitForChild("Shared")
+		:WaitForChild("Config")
+		:WaitForChild("UiImages")
+) :: any
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 local Waypoint = {}
@@ -25,12 +31,12 @@ local Waypoint = {}
 local NAVY = Color3.fromHex("0A1830")
 local GREEN = Color3.fromHex("2FA866") -- the strip's "Home" disc
 local BEAM = Color3.fromHex("FF6A3D")
-local CRAFT = Color3.fromHex("F2671F") -- your boat: orange, the boat glyph
+local CRAFT = Color3.fromHex("2C8EF0") -- your boat: blue, the boat glyph (orange is the onboarding beacon's)
 
 local STUDS_PER_M = 3
 local NEAR = 25 * STUDS_PER_M -- studs: this close the marker bobs over the target
 local BOB = 8 -- px: how far it bobs
-local DISC = 46 -- du
+local DISC = 50 -- du: the pin's head
 
 local RED = Color3.fromHex("E8332A")
 local AMBER = Color3.fromHex("FFB020")
@@ -44,10 +50,20 @@ local KIND: { [string]: { icon: string, color: Color3 } } = {
 	Diver = { icon = "cross", color = RED },
 	WildlifeRescue = { icon = "ring", color = AMBER },
 }
-local LIFT = 34 -- px: the disc floats over the target, its tip pointing down at it
+local LIFT = 52 -- px: the pin floats over the target, its tip on it
 local RIM = Vector2.new(0.36, 0.28) -- the pin ellipse's radii, share of the screen (down)
 local RIM_UP = 0.24 -- its upward radius: the top band holds the strip
 local QUEST = Color3.fromHex("FFC428") -- the quest givers' gold
+-- each colour's pin sprite (tools/ui-art/pin_variants.py renders the same six)
+local PIN = UiImages.Markers.Pin
+local PIN_FOR: { [Color3]: string } = {
+	[RED] = PIN.Red,
+	[AMBER] = PIN.Amber,
+	[GREEN] = PIN.Green,
+	[CRAFT] = PIN.Craft,
+	[QUEST] = PIN.Quest,
+	[BEAM] = PIN.Beam,
+}
 local SHOWN: { [string]: boolean } = {
 	Mayday = true,
 	Casualty = true,
@@ -100,36 +116,50 @@ function Waypoint.start(
 	refit(Layout.current())
 	Layout.onMetrics(refit)
 
-	-- the tip: a diamond half out of the disc's rim, swung round the centre to point the way
+	-- the pin (art/source/ui/waypoint_pin.svg, one sprite per colour): its box is centred on the head, so
+	-- Turn spins it about the disc to point the way (tip down over the target); the icon stays upright
 	local turn = Instance.new("Frame")
 	turn.Name = "Turn"
 	turn.Size = UDim2.fromScale(1, 1)
 	turn.BackgroundTransparency = 1
 	turn.Parent = mark
-	local tip = Instance.new("Frame")
-	tip.Name = "Tip"
-	tip.AnchorPoint = Vector2.new(0.5, 0.5)
-	tip.Position = UDim2.new(0.5, 0, 0, -1)
-	tip.Size = UDim2.fromOffset(18, 18)
-	tip.Rotation = 45
-	tip.BorderSizePixel = 0
-	tip.Parent = turn
-	HudTheme.corner(tip, 3)
-	HudTheme.stroke(tip, Color3.new(1, 1, 1), 2.5)
+	local pin = Instance.new("ImageLabel")
+	pin.Name = "Pin"
+	pin.AnchorPoint = Vector2.new(0.5, 0.5)
+	pin.Position = UDim2.fromScale(0.5, 0.5)
+	pin.Size = UDim2.fromScale(324 / 144, 324 / 144) -- the head (r 72 of the 324 box) fills the mark
+	pin.BackgroundTransparency = 1
+	pin.ScaleType = Enum.ScaleType.Fit
+	pin.Parent = turn
 
 	local disc = Instance.new("Frame")
 	disc.Name = "Disc"
 	disc.Size = UDim2.fromScale(1, 1)
-	disc.BorderSizePixel = 0
+	disc.BackgroundTransparency = 1
 	disc.ZIndex = 2
 	disc.Parent = mark
-	HudTheme.corner(disc, DISC // 2)
-	local ring = HudTheme.stroke(disc, Color3.new(1, 1, 1), 2.5)
+	-- a golden call's ring: steady solid gold just outside the pin's white rim, a dark hairline round it
+	local gold = Instance.new("Frame")
+	gold.Name = "GoldRing"
+	gold.AnchorPoint = Vector2.new(0.5, 0.5)
+	gold.Position = UDim2.fromScale(0.5, 0.5)
+	gold.Size = UDim2.fromScale(93 / 72, 93 / 72) -- the head's rim (r 72 + outline + rim)
+	gold.BackgroundTransparency = 1
+	gold.Visible = false
+	gold.Parent = disc
+	HudTheme.corner(gold, 999)
+	HudTheme.stroke(gold, QUEST, 3.5).ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	local hair = gold:Clone()
+	hair.Size = UDim2.new(1, 7, 1, 7)
+	hair.Visible = true
+	hair.Parent = gold
+	local hs = hair:FindFirstChildOfClass("UIStroke") :: UIStroke
+	hs.Color, hs.Thickness = NAVY, 1.5
 	local icon = Instance.new("Frame")
 	icon.Name = "Icon"
 	icon.AnchorPoint = Vector2.new(0.5, 0.5)
 	icon.Position = UDim2.fromScale(0.5, 0.5)
-	icon.Size = UDim2.fromScale(0.62, 0.62)
+	icon.Size = UDim2.fromScale(0.5, 0.5) -- inside the pin's white ring
 	icon.BackgroundTransparency = 1
 	icon.ZIndex = 3
 	icon.Parent = disc
@@ -138,7 +168,6 @@ function Waypoint.start(
 	local chip = Instance.new("Frame")
 	chip.Name = "Range"
 	chip.AnchorPoint = Vector2.new(0.5, 0)
-	chip.Position = UDim2.new(0.5, 0, 1, 7)
 	chip.Size = UDim2.fromOffset(0, 26)
 	chip.AutomaticSize = Enum.AutomaticSize.X
 	chip.BackgroundColor3 = NAVY
@@ -224,10 +253,9 @@ function Waypoint.start(
 			shownGlyph = glyph
 			Glyph.draw(glyph, icon, Color3.new(1, 1, 1))
 		end
-		disc.BackgroundColor3, tip.BackgroundColor3 = color, color
-		-- docs/25 E: a golden call's pin wears a thick gold ring that breathes slowly (never flashes: owner 2026-10-28)
-		ring.Color = if golden then QUEST else Color3.new(1, 1, 1)
-		ring.Thickness = if golden then 4 + 0.5 * math.sin(os.clock() * 1.6) else 2.5
+		pin.Image = PIN_FOR[color] or PIN.Beam
+		-- docs/25 E: a golden call's pin wears a gold ring, steady (never flashes: owner 2026-10-28)
+		gold.Visible = golden
 	end
 
 	RunService.RenderStepped:Connect(function()
@@ -265,7 +293,7 @@ function Waypoint.start(
 		local p = c:WorldToViewportPoint((pos :: Vector3) + Vector3.new(0, 3, 0))
 		-- right there: it bobs over them, tip down, so it reads as "this one" (playtest 2026-10-24 M8, M9)
 		local bob = if flat <= NEAR then BOB * math.abs(math.sin(os.clock() * 5)) else 0
-		local x, y = p.X, p.Y - LIFT - bob
+		local x, y = p.X, p.Y - LIFT * fit.Scale - bob
 		local behind = p.Z <= 0
 		if behind then
 			-- pin it to the side to turn toward: pinned bottom-centre it sat right under the craft and
@@ -282,18 +310,27 @@ function Waypoint.start(
 		local at: Vector2
 		if not behind and e <= 1 then
 			at = Vector2.new(x, y)
-			turn.Rotation = 180
+			turn.Rotation = 0
+			chip.AnchorPoint, chip.Position = Vector2.new(0.5, 0), UDim2.new(0.5, 0, 1, 34) -- under the tip
 		else
 			if e < 1e-6 then -- dead centre behind you: straight down
 				dy, e = 1, (1 / (vp.Y * RIM.Y)) ^ 2
 			end
 			local k = 1 / math.sqrt(e)
 			at = Vector2.new(cx + dx * k, cy + dy * k)
-			turn.Rotation = math.deg(math.atan2(dx, -dy))
+			turn.Rotation = math.deg(math.atan2(dx, -dy)) + 180 -- the sprite's tip points down
+			-- pinned: the chip hugs the head on the side away from the edge, so it stays with its pin (des1 AD)
+			local u = Vector2.new(dx, dy).Unit
+			local back = DISC / 2 * 93 / 72
+				+ 6
+				+ math.abs(u.X) * chip.AbsoluteSize.X / fit.Scale / 2
+				+ math.abs(u.Y) * 13
+			chip.AnchorPoint = Vector2.new(0.5, 0.5)
+			chip.Position = UDim2.new(0.5, -u.X * back, 0.5, -u.Y * back)
 		end
 		-- out of the HUD (menu, minimap, wallet, cards): slid in toward the centre, the tip still points the way
 		local clear = Vector2.new(DISC, DISC) * fit.Scale * 0.5 + Vector2.new(14, 14) -- strokes and labels hang past the frames
-		at = Layout.clearOfHud(at, clear, 34 * fit.Scale) -- the range chip hangs under
+		at = Layout.clearOfHud(at, clear, 60 * fit.Scale) -- the tip and range chip hang under
 		mark.Position = UDim2.fromOffset(at.X, at.Y)
 		range.Text = Waypoint.metres(flat)
 		mark.Visible = true

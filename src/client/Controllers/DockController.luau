@@ -68,7 +68,6 @@ local CARD_BUY_H = 168 -- a card with its buy buttons
 local CARD_H = 104 -- owned / not for sale yet
 local STRIP_H = 160 -- the focus strip: name, the badge row
 local OUTLINE = Color3.fromRGB(255, 214, 60)
-local ARROW = Color3.fromRGB(76, 200, 84) -- the "build me" arrow's Lego green (no glow, docs/25 J)
 local STAR_ON = Color3.fromRGB(255, 206, 46)
 local STAR_OFF = Color3.fromRGB(40, 44, 60)
 
@@ -1362,40 +1361,51 @@ local function refresh()
 end
 
 -- docs/25 A: a bobbing green Lego arrow over every building you can build or upgrade right now (allowed and
--- affordable, no site running, not Robux-paid already); none when nothing is possible. Plain parts: no
--- particles, no glow (docs/25 J). Seen from the third-person camera, the build view too.
-local arrows: { [string]: Model } = {}
+-- affordable, no site running, not Robux-paid already); none when nothing is possible. A flat sticker sprite
+-- (CLAUDE.md "UI art": art/source/ui/build_arrow.svg) at a fixed screen size, ~40 pt on a phone, its tip on the
+-- spot; no particles, no glow (docs/25 J). Seen from the third-person camera, the build view too.
+local arrows: { [string]: BasePart } = {}
 local arrowAt: { [string]: Vector3 } = {}
+local ARROW_BOB = 6 -- px
 
-local function makeArrow(): Model
-	local m = Instance.new("Model")
-	m.Name = "BuildArrow"
-	local function brick(size: Vector3, cf: CFrame)
-		local p = Instance.new("Part")
-		p.Name = "Brick"
-		p.Size = size
-		p.CFrame = cf
-		p.Color = ARROW
-		p.Material = Enum.Material.SmoothPlastic
-		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow =
-			true, false, false, false, false
-		p.Parent = m
-	end
-	-- a down arrow, tip at the pivot: the shaft and a V of two bars
-	brick(Vector3.new(1.6, 6, 1.6), CFrame.new(0, 3.8, 0))
-	brick(
-		Vector3.new(1.6, 4.4, 1.6),
-		CFrame.new(1.556, 1.556, 0) * CFrame.Angles(0, 0, math.rad(-45))
-	)
-	brick(
-		Vector3.new(1.6, 4.4, 1.6),
-		CFrame.new(-1.556, 1.556, 0) * CFrame.Angles(0, 0, math.rad(45))
-	)
-	m.WorldPivot = CFrame.identity
-	return m
+local function arrowSize(): UDim2
+	local w = math.round(56 * Layout.current().scale) -- 39 px on a phone (scale 0.7), 56 at 720p, 84 at 1080p
+	return UDim2.fromOffset(w, math.round(w * 516 / 392) + ARROW_BOB) -- the sprite's 392 x 516 px
 end
 
--- Over the standing building (its top), or over its empty lot.
+local function makeArrow(): BasePart
+	local p = Instance.new("Part")
+	p.Name = "BuildArrow"
+	p.Size = Vector3.one
+	p.Transparency = 1
+	p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow =
+		true, false, false, false, false
+	local bb = Instance.new("BillboardGui")
+	bb.Name = "Sprite"
+	bb.Size = arrowSize()
+	bb.SizeOffset = Vector2.new(0, 0.5) -- the gui's bottom (the tip) sits on the spot
+	bb.LightInfluence = 0
+	bb.MaxDistance = 1000
+	bb.Adornee = p
+	bb.Parent = p
+	local img = Instance.new("ImageLabel")
+	img.Name = "Arrow"
+	img.BackgroundTransparency = 1
+	img.Image = UiImages.Markers.BuildArrow
+	img.ScaleType = Enum.ScaleType.Fit
+	img.AnchorPoint = Vector2.new(0.5, 1)
+	img.Position = UDim2.fromScale(0.5, 1)
+	img.Size = UDim2.new(1, 0, 1, -ARROW_BOB)
+	img.Parent = bb
+	return p
+end
+Layout.onMetrics(function()
+	for _, p in arrows do
+		(p:FindFirstChild("Sprite") :: BillboardGui).Size = arrowSize()
+	end
+end)
+
+-- Over the standing building (its top), or high over its empty lot.
 local function arrowSpot(key: string): Vector3?
 	local bay = player:GetAttribute("BayCFrame")
 	if typeof(bay) ~= "CFrame" then
@@ -1410,7 +1420,8 @@ local function arrowSpot(key: string): Vector3?
 		local cf, size = built:GetBoundingBox()
 		return Vector3.new(spot.X, cf.Y + size.Y / 2 + 3, spot.Z)
 	end
-	return spot.Position + Vector3.new(0, 4, 0)
+	-- high over an empty lot: lower, the sprite stood in front of the island's name sign seen from the jetty (des1)
+	return spot.Position + Vector3.new(0, 14, 0)
 end
 
 local function refreshArrows()
@@ -1613,12 +1624,16 @@ function DockController.Start()
 		if next(arrows) == nil then
 			return
 		end
-		local t = os.clock()
-		local bob = CFrame.new(0, math.sin(t * 3) * 0.8, 0) * CFrame.Angles(0, t * 1.5, 0)
-		for key, m in arrows do
+		-- the bob is in screen px (a stud bob vanished at range): the sprite rides up and down in its gui
+		local bob = UDim2.new(0.5, 0, 1, -ARROW_BOB * (0.5 + 0.5 * math.sin(os.clock() * 3)))
+		for key, p in arrows do
 			local at = arrowAt[key]
 			if at then
-				m:PivotTo(CFrame.new(at) * bob)
+				p.CFrame = CFrame.new(at)
+				local img = p:FindFirstChild("Arrow", true) :: ImageLabel?
+				if img then
+					img.Position = bob
+				end
 			end
 		end
 	end)

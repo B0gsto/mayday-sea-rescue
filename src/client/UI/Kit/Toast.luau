@@ -19,6 +19,9 @@ function Toast.show(canvas: Instance, text: string, opts: Opts?): Frame
 	if old then
 		old:Destroy()
 	end
+	-- the look: art/source/ui/toast.html (des1 2026-10-28): a Lego brick with three studs on top, a gloss band,
+	-- the icon big and hanging off the left end, heavy text with a drop shadow
+	local h = S.toast
 	local root = Instance.new("Frame")
 	root.Name = "KitToast"
 	root.BackgroundTransparency = 1
@@ -30,28 +33,56 @@ function Toast.show(canvas: Instance, text: string, opts: Opts?): Frame
 		Enum.Font.FredokaOne,
 		Vector2.new(2000, 200)
 	).X
-	local iconW = if o.icon then 64 else 0
-	root.Size = UDim2.fromOffset(textW + iconW + (if o.icon then 40 else 56), S.toast)
+	local left = if o.icon then math.round(h * 0.96) else 28
+	root.Size = UDim2.fromOffset(left + textW + 30, h)
 	root.ZIndex = 20
-	local _, face = Style.block(root, Style.grad(o.color or "orange"), { radius = S.toast / 2 })
-	local r = Instance.new("Frame")
-	r.BackgroundTransparency = 1
-	r.Size = UDim2.fromScale(1, 1)
-	r.Parent = face
-	local l = Style.list(r, true, 8)
-	l.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	l.VerticalAlignment = Enum.VerticalAlignment.Center
+	local grad = Style.grad(o.color or "orange")
+	for i = 1, 3 do -- studs first, so the brick's top edge covers their feet
+		local stud = Instance.new("Frame")
+		stud.Name = "Stud"
+		stud.AnchorPoint = Vector2.new(0.5, 0)
+		stud.Position = UDim2.new((i + 0.5) / 4.5, 0, 0, -10)
+		stud.Size = UDim2.fromOffset(22, 22)
+		stud.BackgroundColor3 = Color3.new(1, 1, 1)
+		stud.ZIndex = 0
+		Style.corner(stud, 6)
+		Style.stroke(stud, S.border, true)
+		Style.gradient(stud, grad)
+		stud.Parent = root
+	end
+	local radius = math.round(h * 0.28)
+	local _, face = Style.block(root, grad, { radius = radius, shadow = true })
+	local gloss = Instance.new("Frame")
+	gloss.Name = "Gloss"
+	gloss.BackgroundColor3 = Color3.new(1, 1, 1)
+	gloss.BackgroundTransparency = 0.65
+	gloss.BorderSizePixel = 0
+	gloss.Position = UDim2.fromOffset(8, 5)
+	gloss.Size = UDim2.new(1, -16, 0, math.round(h * 0.25))
+	Style.corner(gloss, math.round(h * 0.13))
+	gloss.Parent = face
 	if o.icon then
 		local ic = Instance.new("Frame")
+		ic.Name = "IconHolder"
 		ic.BackgroundTransparency = 1
-		ic.Size = UDim2.fromOffset(56, 56)
-		ic.Parent = r
-		Style.icon(ic, o.icon)
+		ic.AnchorPoint = Vector2.new(0, 0.5)
+		ic.Position = UDim2.new(0, -math.round(h * 0.23), 0.5, -4)
+		ic.Size = UDim2.fromOffset(math.round(h * 1.13), math.round(h * 1.13))
+		ic.ZIndex = 3
+		ic.Parent = root
+		Style.icon(ic, o.icon).ZIndex = 3
 	end
-	local t = Style.label(r, text, Theme.Text.title)
-	t.TextWrapped = false
-	t.Size = UDim2.new(0, textW + 4, 1, 0)
-	t.LayoutOrder = 1
+	for _, shadow in { true, false } do -- an ink copy 3 du lower is the drop shadow
+		local t = Style.label(face, text, Theme.Text.title)
+		t.Name = if shadow then "TextShadow" else "Text"
+		t.TextWrapped = false
+		t.Position = UDim2.fromOffset(left, if shadow then 3 else 0)
+		t.Size = UDim2.new(0, textW + 4, 1, 0)
+		t.ZIndex = if shadow then 2 else 3 -- over the gloss
+		if shadow then
+			t.TextColor3 = Theme.Colors.ink
+		end
+	end
 	root.Parent = canvas
 	Style.pop(root, true)
 	local d = o.duration or 2.5

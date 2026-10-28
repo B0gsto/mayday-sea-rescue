@@ -5,6 +5,7 @@
 usage: python3 tools/ui-art/render.py <in.svg|in.html> <out.png> [--size W H] [--scale 2]
   --size   the page window in CSS px (default 256 256): make it larger than the drawing
   --scale  device scale factor (default 2): render at 2x the size it shows on screen, then upload
+  --keep   keep the whole page box (no trim): a sprite that rotates about a set centre (the waypoint pin's head)
 The transparent margin is trimmed. Sources live in art/source/ui/ (text, committed); PNGs stay local
 (no binaries on GitHub) and go up with ~/RobloxProjects/tools/assets.py upload . <png> --type Image."""
 import argparse
@@ -20,6 +21,7 @@ ap.add_argument("src")
 ap.add_argument("out")
 ap.add_argument("--size", nargs=2, type=int, default=[256, 256])
 ap.add_argument("--scale", type=float, default=2)
+ap.add_argument("--keep", action="store_true")
 a = ap.parse_args()
 src, out = pathlib.Path(a.src).resolve(), pathlib.Path(a.out).resolve()
 out.parent.mkdir(parents=True, exist_ok=True)
@@ -29,7 +31,7 @@ subprocess.run(
      "--default-background-color=00000000", f"--screenshot={out}", src.as_uri()],
     capture_output=True, timeout=60, check=True)
 im = Image.open(out)
-box = im.getbbox()
+box = None if a.keep else im.getbbox()
 if box:
     im.crop(box).save(out)
 print(out, Image.open(out).size)

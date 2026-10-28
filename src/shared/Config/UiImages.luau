@@ -12,6 +12,20 @@ return {
 		MinimapRing = "rbxassetid://130518444307744", -- minimap_ring_thin.png: hole 72%
 		Panel = "rbxassetid://89769136629803", -- 512x256, slice 32 px
 	},
+	-- World markers (CLAUDE.md "UI art", des1 2026-10-28): Claude SVG in art/source/ui, rendered by tools/ui-art.
+	-- Pin: UI/Waypoint's pin per colour (tools/ui-art/pin_variants.py), its box centred on the head.
+	Markers = {
+		BuildArrow = "rbxassetid://74018470016385",
+		EdgePointer = "rbxassetid://115902828261976",
+		Pin = {
+			Red = "rbxassetid://126485934783621",
+			Amber = "rbxassetid://102982529774636",
+			Green = "rbxassetid://116119847629958",
+			Craft = "rbxassetid://77504682990987",
+			Quest = "rbxassetid://85241927129052",
+			Beam = "rbxassetid://96011335512407",
+		},
+	},
 	-- Icons requested in docs/18-ui-art-requests.md. Empty until uploaded: the UI draws its glyph
 	-- placeholder instead. VehicleArt: UI/BoatCard (upgrades by id, the stat rows, the tick).
 	VehicleArt = {
