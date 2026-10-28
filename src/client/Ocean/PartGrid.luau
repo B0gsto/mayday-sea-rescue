@@ -15,9 +15,13 @@ local OceanPalette = require(script.Parent.OceanPalette)
 
 local THICKNESS = 0.1 -- wedge slab; its top face lies on the surface
 local VARIANT = "OceanWater"
+local FOAM_TEXTURE = "rbxassetid://107434961132990" -- ocean_foam.png (OceanSurface's crest foam), white with alpha
+local FOAM_STUDS = 24 -- foam texture tile -- tune
 
 export type PartGrid = {
 	parts: { WedgePart }, -- 4 per cell: triangle 1 (w1, w2), triangle 2 (w1, w2)
+	foams: { Texture }, -- per wedge: whitecap lace on its top face
+	rightUp: { boolean }, -- per triangle's first wedge: its top face is Right (else Left)
 	cframes: { CFrame },
 	cells: number,
 	cellSize: number,
@@ -48,6 +52,7 @@ function PartGrid.new(parent: Instance, cells: number, cellSize: number): PartGr
 	local hasVariant = ensureVariant()
 	local count = cells * cells * 4
 	local parts: { WedgePart } = table.create(count)
+	local foams: { Texture } = table.create(count)
 	for _ = 1, count do
 		local part = Instance.new("WedgePart")
 		part.Name = "OceanTri"
@@ -63,11 +68,20 @@ function PartGrid.new(parent: Instance, cells: number, cellSize: number): PartGr
 			part.Reflectance = 0.08 -- tune
 		end
 		part.Color = OceanPalette.colours[OceanPalette.SEA_BUCKET]
+		local foam = Instance.new("Texture")
+		foam.Texture = FOAM_TEXTURE
+		foam.StudsPerTileU = FOAM_STUDS
+		foam.StudsPerTileV = FOAM_STUDS
+		foam.Transparency = 1
+		foam.Parent = part
 		part.Parent = parent
 		table.insert(parts, part)
+		table.insert(foams, foam)
 	end
 	return {
 		parts = parts,
+		foams = foams,
+		rightUp = {},
 		cframes = table.create(count, CFrame.identity),
 		cells = cells,
 		cellSize = cellSize,
@@ -96,20 +110,28 @@ local function triangle(grid: PartGrid, n: number, a: Vector3, b: Vector3, c: Ve
 	local height = math.abs(ab:Dot(up))
 	local sink = (if right.Y > 0 then right else -right) * (THICKNESS / 2)
 	local parts, cframes = grid.parts, grid.cframes
+	-- the triangle is the wedges' X faces: the one on top carries the foam
+	local rightUp = right.Y > 0
+	if grid.rightUp[n] ~= rightUp then
+		grid.rightUp[n] = rightUp
+		grid.foams[n].Face = if rightUp then Enum.NormalId.Right else Enum.NormalId.Left
+		grid.foams[n + 1].Face = if rightUp then Enum.NormalId.Left else Enum.NormalId.Right
+	end
 	parts[n].Size = Vector3.new(THICKNESS, height, math.abs(ab:Dot(back)))
 	cframes[n] = CFrame.fromMatrix((a + b) / 2 - sink, right, up, back)
 	parts[n + 1].Size = Vector3.new(THICKNESS, height, math.abs(ac:Dot(back)))
 	cframes[n + 1] = CFrame.fromMatrix((a + c) / 2 - sink, -right, up, -back)
 end
 
--- Crest facets: a full storm's facet means peak near 3 studs, 1.5+ is about the top 15 % of facets. -- tune
-local CREST_BUCKET = OceanPalette.SEA_BUCKET + math.ceil(OceanPalette.HALF * 0.45)
-local CREST_FOAM = Color3.fromHex("#D6E6E2")
+-- Crest facets: in a full storm 0.8+ studs (bucket +5) is about the top 25 % of facets (wx3 probe). -- tune
+local CREST_BUCKET = OceanPalette.SEA_BUCKET + 5
+-- Lace opacity on a crest at full storm: the texture's own alpha leaves gaps, and 0.5 faded out by day (wx3). -- tune
+local CREST_FOAM = 0.8
 
 -- heightAt(x, z) -> world Y of the surface. tint: the flat-sea colour (matches the far plane);
 -- troughs and crests blend toward the palette's navy / foam. foam 0..1 (storm intensity, quantised by the
--- caller): whitecaps, only the crest tips lift toward foam (the mesh ocean's foam overlay is off while the
--- Part grid stands in); whitening whole facets read as ice floes (wx1 AD).
+-- caller): whitecaps, crest facets wear a foam lace texture (the mesh ocean's foam overlay is off while the
+-- Part grid stands in); whitening whole facets read as ice floes (wx1, wx2 AD).
 function PartGrid.update(
 	grid: PartGrid,
 	cx: number,
@@ -154,11 +176,11 @@ function PartGrid.update(
 						math.min(math.abs(b - OceanPalette.SEA_BUCKET) / OceanPalette.HALF, 1)
 							* 0.35
 					)
-					if b >= CREST_BUCKET and foam > 0 then
-						colour = colour:Lerp(CREST_FOAM, 0.4 * foam)
-					end
+					local lace = if b >= CREST_BUCKET then 1 - CREST_FOAM * foam else 1
 					parts[n + k * 2].Color = colour
 					parts[n + k * 2 + 1].Color = colour
+					grid.foams[n + k * 2].Transparency = lace
+					grid.foams[n + k * 2 + 1].Transparency = lace
 				end
 				t += 1
 			end
