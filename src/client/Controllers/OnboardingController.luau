@@ -16,6 +16,7 @@ local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local TextService = game:GetService("TextService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
@@ -419,6 +420,19 @@ local function makeChip(
 	Style.gradient(tick, Style.grad("buy"))
 	Style.stroke(tick, 2, true)
 	Glyph.draw("check", tick, Color3.new(1, 1, 1))
+	-- under 13 px the word is unreadable (iPhone SE device pass 2026-10-28: ~5 pt), so a narrow chip shows
+	-- its icon alone, centred, with the tick on its corner
+	local function fitLabel()
+		local need =
+			TextService:GetTextSize(label.Text, 13, Enum.Font.FredokaOne, Vector2.new(1e4, 1e4)).X
+		local roomy = label.AbsoluteSize.X >= need
+		label.Visible = roomy
+		icon.Position = if roomy then UDim2.new(0, 6, 0.5, 0) else UDim2.new(0.5, -15, 0.5, 0)
+		tick.Position = if roomy then UDim2.fromOffset(34, 10) else UDim2.new(0.5, 13, 0, 10)
+	end
+	label:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitLabel)
+	label:GetPropertyChangedSignal("Text"):Connect(fitLabel)
+	fitLabel()
 	chipViews[info.id] = { root = root, label = label, tick = tick, stroke = stroke }
 	return root
 end

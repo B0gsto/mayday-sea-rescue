@@ -87,8 +87,10 @@ return function(t)
 					t.expect(overlaps(mt.rects[HUD[i]], mt.rects[HUD[j]])).toBe(false)
 				end
 			end
-			-- the minimap is the requested ~130 px square; menu icons >= 43 px; the step card fits
-			t.expect(mt.rects.minimap.size.X * mt.scale).toBeCloseTo(130, 1)
+			-- the minimap is 30% of the safe height, 100-130 px (small phones: 100); menu icons >= 43 px; the step card fits
+			local safeH = s.screen.Y - s.insets.top - s.insets.bottom
+			t.expect(mt.rects.minimap.size.X * mt.scale)
+				.toBeCloseTo(math.clamp(safeH * 0.3, 100, 130), 1)
 			t.expect(mt.menu.icon * mt.scale >= 43).toBe(true)
 			t.expect(mt.menu.rows * mt.menu.cols >= HudLayout.MENU_COUNT).toBe(true)
 			t.expect(mt.objectiveWidth >= 208).toBe(true)
@@ -96,19 +98,25 @@ return function(t)
 		end)
 	end
 
+	-- device pass 2026-10-28: top centre, the minimap hid the character and the prize wheel on an iPhone SE
 	t.test(
-		"touch: the minimap sits right of the menu, objective and wallet right of the minimap",
+		"touch landscape: the minimap in the top-right corner, objective and wallet right of the menu",
 		function()
 			for _, s in SCREENS do
 				local mt = HudLayout.compute(s.screen, s.insets, "Touch")
 				if mt.usable.X < mt.usable.Y then
-					continue -- portrait: the objective sits under the minimap
+					continue -- portrait: the minimap right of the menu, the objective under it
 				end
 				local m, g = HudLayout.MARGIN, HudLayout.GAP
 				local menu, mini = mt.rects.menu, mt.rects.minimap
 				t.expect(menu.pos).toEqual(Vector2.new(m, m))
-				t.expect(mini.pos.X).toBe(m + menu.size.X + g)
-				t.expect(mt.rects.objective.pos.X).toBe(mini.pos.X + mini.size.X + g)
+				local x, y, x2 = box(mini)
+				t.expect(x2).toBeCloseTo(mt.usable.X - m, 3)
+				t.expect(y).toBe(m)
+				t.expect(x > 0.75 * mt.usable.X).toBe(true) -- off the centre of the play view
+				t.expect(mt.rects.objective.pos.X).toBe(m + menu.size.X + g)
+				local _, _, ox2 = box(mt.rects.objective)
+				t.expect(ox2 <= x - g + 1e-6).toBe(true)
 				t.expect(mt.rects.wallet.pos.X).toBe(mt.rects.objective.pos.X)
 			end
 		end
