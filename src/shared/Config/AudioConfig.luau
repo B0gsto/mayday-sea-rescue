@@ -138,6 +138,30 @@ AudioConfig.Clips = {
 	Shop_Till = rl(9113728648, 0.55, "Cash Register 4 (SFX)"),
 	Album_Sticker = rl(9113263851, 0.45, "Balloon Pops Slap Clap Smack 1 (SFX)", "sticker slap"),
 	Album_Sparkle = rl(9126073001, 0.35, "Synth Sparkle Tone High Pitch Bell Tone Ding (SFX)"),
+	-- FX1 spectacle layers (docs/26 "Satisfaction bar"): impact + sweetener + tail, stacked by VFX/Spectacle
+	FX_Boom = rl(
+		9125404320,
+		0.7,
+		"Boom Impact Deep Distant Thumping Hits Boomi (SFX)",
+		"low impact"
+	),
+	FX_TonalHit = rl(9120113588, 0.45, "Tonal Impact 2 (SFX)", "bright impact"),
+	FX_Whoosh = rl(
+		9125648149,
+		0.4,
+		"Magic Zoom Up Sharp Tubular Whoosh Fast Hiss (SFX)",
+		"anticipation"
+	),
+	FX_PlasticRain = rl(9113382651, 0.4, "Beads Scatter 2 (SFX)", "Lego bits landing"),
+	FX_PlasticDrop = rl(9117507083, 0.5, "Plastic Drop 4 (SFX)", "brick snap"),
+	FX_ChimeTail = rl(9119447936, 0.3, "Sparkle Bell Tree Wind Chimes 1 (SFX)", "tail"),
+	FX_ChimeHit = rl(
+		9116395089,
+		0.35,
+		"Magic Glows Soft Clusters Of Chiming Hits 4 (SFX)",
+		"sweetener"
+	),
+	FX_Coins = rl(9113850111, 0.45, "Coin Throws 8 (SFX)", "gold coins"),
 	Pet_Seal = rl(9125919816, 0.45, "Seal Bark Human Like Grunt Heaving Rhythmic (SFX)"),
 	Pet_Puffin = rl(9117236763, 0.35, "Parakeet Chirps 3 (SFX)", "stand-in puffin call"),
 	Pet_Otter = rl(

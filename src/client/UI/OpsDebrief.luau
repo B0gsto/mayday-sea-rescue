@@ -298,7 +298,8 @@ function OpsDebrief.new(parent: GuiObject): Debrief
 				local root = player.Character
 					and player.Character:FindFirstChild("HumanoidRootPart")
 				if root and root:IsA("BasePart") then
-					VFXKit.play("rescue_done", CFrame.new(root.Position), { radius = 3 })
+					local fx = if d.golden == true then "fx1_golden_rescue" else "rescue_done"
+					VFXKit.play(fx, CFrame.new(root.Position), { radius = 3, height = 3 })
 				end
 				task.delay(0.9, function()
 					local playerGui = player.PlayerGui

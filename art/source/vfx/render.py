@@ -680,6 +680,36 @@ def build_rain(sc, i):
     return sc
 
 
+# ---------------------------------------------------------------- 11 studded ring (FX1 spectacle)
+
+
+def build_stud_ring(sc):
+    sc = scene(256, 3.4, elev=90, target=(0, 0, 0), top=True)
+    # a crisp band with a ring of round studded 1x1 plates riding it; it races out, then the plates pop one by one
+    m, v = solid_ring_mat("studband", FOAM)
+    band = annulus("studband", 0.86, 1.0, m, z=0.0, seg=128)
+    key_val(v, [(1, 1.0), (11, 1.0), (16, 0.35)])
+    white = plastic("StudPlate", "#B9BEC4", 0.38)  # lit, not emissive: the studs must shade to read as Lego
+    n = 14
+    radius = [0.32 + 1.0 * (1 - (1 - (f - 1) / 15) ** 2.4) for f in range(1, 17)]
+    for f in range(1, 17):
+        band.scale = (radius[f - 1] * 1.04, radius[f - 1] * 1.04, 1)
+        band.keyframe_insert("scale", frame=f)
+    for i in range(n):
+        a = TAU * i / n
+        p = lego_piece("sp%d" % i, 1, 1, 0.32, white, round_=True)
+        pop = 11 + (i * 7 % n) * 5 / n  # pops spread over frames 11-16
+        for f in range(1, 17):
+            r = radius[f - 1] * 0.93
+            p.location = (r * math.cos(a), r * math.sin(a), 0.02)
+            p.rotation_euler = (0.35 * math.sin(a), -0.35 * math.cos(a), 0)  # tipped outward: the stud side shows
+            p.keyframe_insert("location", frame=f)
+            s = 0.25 if f < pop else (0.3 if f < pop + 1 else 0.0)
+            p.scale = (s, s, s)
+            p.keyframe_insert("scale", frame=f)
+    return sc
+
+
 # ---------------------------------------------------------------- sheet render / tile
 
 
@@ -878,6 +908,7 @@ EFFECTS = (
     ("shockwave_ring", 4, 256, build_shockwave, 0),
     ("spin_streak", 2, 512, build_spin, 4),
     ("rain_streak", 2, 512, build_rain, 4),
+    ("stud_ring", 4, 256, build_stud_ring, 0),
 )
 
 

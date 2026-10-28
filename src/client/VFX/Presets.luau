@@ -12,6 +12,14 @@
 --   tint    true: opts.color replaces the layer's colours (rarity, call kind)
 --   delay   seconds after the play
 --   emission LightEmission (docs/26: <= 0.3 except `big` presets, the biggest rewards)
+--   flash   true: skipped under Reduce motion (a big bright core)
+--   ease / fade  a curve between the size / transparency keypoints ("out" fast then settle, "in", "back" overshoot)
+-- A preset may also carry (FX1 spectacle, docs/26 "Satisfaction bar"), all timed from `impact` seconds after the play:
+--   beams   light pillars (a Beam from the origin or the `top` point straight up), opts.color tints `tint` ones
+--   punch   a camera kick: fov (degrees in) + a Camera/Shake layer; never under Reduce motion or opts.still
+--   frame   the impact frame: a 2-3 frame screen tint / saturation / brightness pop that eases back (never orange)
+--   hitstop seconds the bursts run at a fifth speed right at the impact (the HQ only)
+--   sounds  layered clips (AudioConfig names) at the play point: impact + sweetener + tail
 local Presets = {}
 
 export type Layer = {
@@ -35,7 +43,23 @@ export type Layer = {
 	tint: boolean?,
 	delay: number?,
 	emission: number?,
+	flash: boolean?,
+	ease: string?,
+	fade: string?,
 }
+export type Beam = {
+	color: Color3,
+	width: number,
+	height: number,
+	time: number,
+	emission: number?,
+	at: string?,
+	tint: boolean?,
+}
+export type Punch =
+	{ fov: number, magnitude: number, roughness: number, time: number, pos: Vector3? }
+export type Frame = { tint: Color3, saturation: number, brightness: number, contrast: number? }
+export type Sound = { clip: string, delay: number?, volume: number?, pitch: number? }
 export type Light = {
 	color: Color3,
 	brightness: number,
@@ -43,10 +67,22 @@ export type Light = {
 	time: number,
 	minScale: number?,
 }
-export type Preset = { job: string, big: boolean?, layers: { Layer }, light: Light? }
+export type Preset = {
+	job: string,
+	big: boolean?,
+	layers: { Layer },
+	light: Light?,
+	impact: number?,
+	beams: { Beam }?,
+	punch: Punch?,
+	frame: Frame?,
+	hitstop: number?,
+	sounds: { Sound }?,
+}
 
 -- docs/26 budgets: particles per play at full quality
-Presets.CAPS = table.freeze({ feedback = 40, state = 40, ambience = 12, spectacle = 120 })
+Presets.CAPS =
+	table.freeze({ feedback = 40, state = 40, ambience = 12, spectacle = 120, showcase = 160 })
 Presets.CULL = 250 -- studs from the camera: farther plays are skipped
 Presets.EMISSION = 0.3
 
@@ -361,6 +397,48 @@ Presets.ALL = {
 	},
 } :: { [string]: Preset }
 
+---------------------------------------------------------------- curves
+
+local EASE: { [string]: (number) -> number } = {
+	out = function(x)
+		return 1 - (1 - x) ^ 3
+	end,
+	["in"] = function(x)
+		return x ^ 3
+	end,
+	back = function(x) -- overshoots ~10% then settles
+		local u = x - 1
+		return 1 + 2.7 * u ^ 3 + 1.7 * u ^ 2
+	end,
+}
+
+-- Evenly spread values with an eased curve between each pair, as { time, value } keypoints (a NumberSequence takes
+-- at most 20). Unknown or no ease: the values as they are (linear).
+function Presets.curve(values: { number }, ease: string?): { { number } }
+	local f = ease and EASE[ease]
+	local segs = #values - 1
+	if not f or segs < 1 then
+		local out = {}
+		for i, v in values do
+			table.insert(out, { if segs < 1 then 0 else (i - 1) / segs, v })
+		end
+		return out
+	end
+	local m = math.min(8, math.floor(19 / segs))
+	local out = {}
+	for i = 1, segs do
+		for j = 0, m - 1 do
+			local x = j / m
+			table.insert(
+				out,
+				{ (i - 1 + x) / segs, values[i] + (values[i + 1] - values[i]) * f(x) }
+			)
+		end
+	end
+	table.insert(out, { 1, values[#values] })
+	return out
+end
+
 ---------------------------------------------------------------- validation
 
 local DIRS = { Top = true, Bottom = true, Left = true, Right = true, Front = true, Back = true }
@@ -406,11 +484,14 @@ function Presets.validate(p: any, textures: { [string]: any }): (boolean, string
 	return true, nil
 end
 
--- Seconds until every layer's last particle is gone (the pooled host is free again).
+-- Seconds until every layer's last particle and beam is gone (the pooled host is free again).
 function Presets.duration(p: Preset): number
 	local t = 0
 	for _, l in p.layers do
 		t = math.max(t, (l.delay or 0) + l.lifetime[2])
+	end
+	for _, b in (p.beams or {}) :: { Beam } do
+		t = math.max(t, (p.impact or 0) + b.time)
 	end
 	return t
 end
@@ -438,5 +519,231 @@ end
 function Presets.visible(distance: number): boolean
 	return distance <= Presets.CULL
 end
+
+---------------------------------------------------------------- FX1 spectacle
+-- The four big moments at the owner's showcase bar (docs/26 "Satisfaction bar"): a charge, then at `impact` a core
+-- flash, a fan of light rays, studded shockwave rings, a brick / coin burst, a light pillar, a light pulse, a camera
+-- punch and a layered sound. Lego bits only; nothing lands on a building (it all bursts from above the roof).
+
+local function core(color: Color3, size: number, delay: number, emission: number): Layer
+	return {
+		tex = "core_flash",
+		count = 1,
+		colors = { color },
+		at = "top",
+		size = { size * 0.3, size, size * 1.15 },
+		transparency = { 0, 0.15, 1 },
+		lifetime = { 0.35, 0.35 },
+		speed = { 0, 0 },
+		emission = emission,
+		delay = delay,
+		flash = true,
+		ease = "out", -- snaps open
+		fade = "in", -- holds bright, then drops
+	}
+end
+
+-- the wind-up: a small glow swelling over `time` (the impact follows)
+local function charge(color: Color3, size: number, time: number): Layer
+	return {
+		tex = "core_flash",
+		count = 1,
+		colors = { color },
+		at = "top",
+		size = { size * 0.15, size },
+		transparency = { 0.7, 0.1 },
+		lifetime = { time, time },
+		speed = { 0, 0 },
+		emission = 0.6,
+		ease = "in", -- the swell accelerates into the hit
+	}
+end
+
+-- god rays fanning up from the top point; they stretch out and stop (drag), then fade
+local function rays(
+	count: number,
+	colors: { Color3 },
+	length: number,
+	delay: number,
+	emission: number
+): Layer
+	return {
+		tex = "light_ray",
+		count = count,
+		colors = colors,
+		at = "top",
+		streak = true,
+		size = { length * 0.35, length, length * 0.9 },
+		transparency = { 0.1, 0.25, 1 },
+		lifetime = { 0.55, 0.75 },
+		speed = { 30, 45 },
+		spread = { 75, 75 },
+		drag = 7,
+		emission = emission,
+		delay = delay,
+		ease = "back", -- shoots out past full length and settles
+	}
+end
+
+local function studRing(color: Color3, size: number, life: number, delay: number): Layer
+	return with(groundRing("stud_ring", color, { size * 0.8, size }, life, delay), {
+		transparency = { 0, 0, 0.5 },
+	})
+end
+
+local function coins(count: number, speed: { number }, spread: number, delay: number): Layer
+	return {
+		tex = "coin",
+		count = count,
+		colors = { WHITE },
+		at = "top",
+		size = { 2.2 },
+		transparency = { 0, 0, 0, 1 },
+		lifetime = { 1.3, 1.7 },
+		speed = speed,
+		spread = { spread, spread },
+		accel = GRAVITY,
+		drag = 0.4,
+		delay = delay,
+	}
+end
+
+local function sounds(list: { { any } }): { Sound }
+	local out = {}
+	for _, s in list do
+		table.insert(out, { clip = s[1], delay = s[2], volume = s[3], pitch = s[4] })
+	end
+	return out
+end
+
+local HQ_AT = 0.32 -- the charge, then everything hits at once
+
+-- spectacle: your HQ levels up, the biggest moment in the game (the only white-hot core and the only slow-mo)
+Presets.ALL.fx1_hq_levelup = {
+	job = "showcase",
+	big = true,
+	impact = HQ_AT,
+	hitstop = 0.22,
+	layers = {
+		charge(GOLD, 8, HQ_AT),
+		core(WHITE, 22, HQ_AT, 1),
+		rays(14, { WHITE, GOLD }, 26, HQ_AT, 0.8),
+		studRing(GOLD, 16, 0.9, HQ_AT),
+		studRing(WHITE, 11, 0.75, HQ_AT + 0.18),
+		with(confetti(54, { 36, 56 }, 32, { RED, WHITE, YELLOW, NAVY, GOLD }), { delay = HQ_AT }),
+		with(plates({ RED, WHITE, YELLOW, NAVY }, 16), { delay = HQ_AT }),
+		with(table.clone(BUILD[2]), { delay = HQ_AT + 0.05 }), -- the dust ring settles
+		coins(16, { 26, 40 }, 45, HQ_AT + 0.12),
+	},
+	beams = {
+		{ color = GOLD, width = 11, height = 70, time = 1.5, emission = 1, at = "top" },
+		{ color = WHITE, width = 4, height = 80, time = 1.1, emission = 1, at = "top" },
+	},
+	light = { color = GOLD, brightness = 6, range = 60, time = 1.4 },
+	punch = {
+		fov = 7,
+		magnitude = 1.6,
+		roughness = 16,
+		time = 0.55,
+		pos = Vector3.new(0.15, 0.3, 0),
+	},
+	frame = {
+		tint = Color3.fromRGB(255, 250, 236),
+		saturation = 0.35,
+		brightness = 0.12,
+		contrast = 0.12,
+	},
+	sounds = sounds({
+		{ "FX_Whoosh", 0, 1, 0.9 },
+		{ "FX_Boom", HQ_AT, 1.2, 0.9 },
+		{ "FX_TonalHit", HQ_AT, 1, 1 },
+		{ "FX_ChimeTail", HQ_AT + 0.25, 1, 1 },
+		{ "FX_PlasticRain", HQ_AT + 1.1, 1, 1.1 },
+	}),
+}
+
+local GOLD_AT = 0.2
+
+-- spectacle: a golden call delivered (OpsDebrief): a gold pillar, gold rays and a coin fountain round you
+Presets.ALL.fx1_golden_rescue = {
+	job = "showcase",
+	big = true,
+	impact = GOLD_AT,
+	layers = {
+		charge(GOLD, 5, GOLD_AT),
+		core(GOLD, 12, GOLD_AT, 0.6),
+		rays(10, { GOLD, YELLOW }, 16, GOLD_AT, 0.6),
+		studRing(GOLD, 13, 0.85, GOLD_AT),
+		coins(26, { 26, 38 }, 30, GOLD_AT),
+		with(confetti(24, { 18, 28 }, 55, { GOLD, WHITE }), { delay = GOLD_AT }),
+		with(plates({ GOLD }, 12), { delay = GOLD_AT + 0.05, emission = 0.3 }),
+	},
+	beams = { { color = GOLD, width = 6, height = 45, time = 1.2, emission = 0.8 } },
+	light = { color = GOLD, brightness = 4, range = 30, time = 1 },
+	punch = {
+		fov = 4,
+		magnitude = 0.8,
+		roughness = 18,
+		time = 0.4,
+		pos = Vector3.new(0.05, 0.12, 0),
+	},
+	frame = { tint = Color3.fromRGB(255, 247, 224), saturation = 0.25, brightness = 0.08 },
+	sounds = sounds({
+		{ "FX_Whoosh", 0, 0.7, 1.15 },
+		{ "FX_TonalHit", GOLD_AT, 0.8, 1.2 },
+		{ "FX_Coins", GOLD_AT + 0.05, 1.2, 1 },
+		{ "FX_ChimeHit", GOLD_AT, 1, 1 },
+		{ "FX_ChimeTail", GOLD_AT + 0.4, 0.8, 1.1 },
+	}),
+}
+
+-- spectacle: a Legendary / Mythic prize pops over the wheel; opts.color = the rarity, opts.scale 0.88 / 1
+Presets.ALL.fx1_wheel_jackpot = {
+	job = "showcase",
+	big = true,
+	impact = 0,
+	layers = {
+		tinted(core(WHITE, 14, 0, 0.9)),
+		tinted(rays(10, { WHITE }, 18, 0, 0.8)),
+		with(rays(6, { WHITE }, 14, 0.05, 0.6), { at = "origin" }) :: Layer,
+		tinted(studRing(WHITE, 12, 0.8, 0)),
+		tinted(confetti(56, { 16, 30 }, 75, { WHITE })),
+		confetti(14, { 14, 24 }, 60, { WHITE, GOLD }),
+		with(coins(14, { 18, 30 }, 50, 0.08), { at = "origin" }) :: Layer,
+	},
+	beams = { { color = WHITE, width = 7, height = 50, time = 1.3, emission = 1, tint = true } },
+	light = { color = WHITE, brightness = 4, range = 36, time = 1 },
+	punch = { fov = 4, magnitude = 0.9, roughness = 18, time = 0.4 },
+	frame = { tint = WHITE, saturation = 0.3, brightness = 0.08 }, -- opts.color (the rarity) tints it lightly
+	sounds = sounds({
+		{ "FX_Boom", 0, 0.8, 1.1 },
+		{ "FX_TonalHit", 0, 0.9, 1.1 },
+		{ "FX_ChimeHit", 0.08, 1, 1 },
+		{ "FX_ChimeTail", 0.3, 0.9, 1 },
+		{ "FX_PlasticRain", 0.9, 0.8, 1.15 },
+	}),
+}
+
+-- spectacle (small): a building finished / upgraded, the Lego build snap: the last brick clacks home, a studded
+-- ring and the plates race out low, dust settles, confetti and short rays only above the roof
+Presets.ALL.fx1_build_snap = {
+	job = "spectacle",
+	impact = 0,
+	layers = {
+		studRing(WHITE, 13, 0.7, 0),
+		groundRing("shockwave_ring", WHITE, { 11, 12.5 }, 0.6, 0.1),
+		plates({ RED, WHITE, YELLOW, NAVY }, 16),
+		BUILD[2],
+		confetti(24, { 18, 28 }, 38, { RED, WHITE, YELLOW, SEA, GREEN }),
+		rays(8, { WHITE, YELLOW }, 12, 0, 0.3),
+	},
+	light = { color = WHITE, brightness = 2, range = 30, time = 0.6 },
+	punch = { fov = 2.5, magnitude = 0.5, roughness = 20, time = 0.3 },
+	sounds = sounds({
+		{ "FX_PlasticDrop", 0, 1, 1 },
+		{ "FX_ChimeHit", 0.05, 0.6, 1.2 },
+		{ "FX_PlasticRain", 0.45, 0.7, 1.2 },
+	}),
+}
 
 return Presets

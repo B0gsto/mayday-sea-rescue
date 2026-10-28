@@ -84,10 +84,16 @@ local function part(
 	return p
 end
 
--- docs/26: the win burst, its rarity's colour, sized by rarity (Common 0.4 .. Mythic 1)
-local function burst(at: Vector3, rarity: string)
+-- docs/26: the win burst, its rarity's colour, sized by rarity (Common 0.4 .. Mythic 1); over the wheel a Legendary
+-- or Mythic gets the FX1 jackpot (rays, a pillar, coins; the camera punch only for the spinner)
+local function burst(at: Vector3, rarity: string, spinner: number?)
 	local scale = 0.4 + 0.12 * math.max(SpinRules.rank(rarity) - 1, 0)
-	VFXKit.play("wheel_win", CFrame.new(at), { color = rarityColor(rarity), scale = scale })
+	local jackpot = spinner ~= nil and SpinRules.rank(rarity) >= SpinRules.rank("Legendary")
+	VFXKit.play(
+		if jackpot then "fx1_wheel_jackpot" else "wheel_win",
+		CFrame.new(at),
+		{ color = rarityColor(rarity), scale = scale, still = spinner ~= player.UserId }
+	)
 end
 
 local function confetti(userId: number, rarity: string)
@@ -266,8 +272,9 @@ local function reveal(payload: any, rotor: Model)
 			conn:Disconnect()
 			conn = nil
 			capsule:Destroy()
-			burst(finish, payload.rarity)
-			if SpinRules.rank(payload.rarity) >= SpinRules.rank("Rare") then
+			burst(finish, payload.rarity, tonumber(payload.userId) or 0)
+			local jackpot = SpinRules.rank(payload.rarity) >= SpinRules.rank("Legendary") -- FX1 has its own pillar
+			if SpinRules.rank(payload.rarity) >= SpinRules.rank("Rare") and not jackpot then
 				local beam = part(
 					"PrizeBeam",
 					Vector3.new(1.6, 36, 1.6),
@@ -291,7 +298,7 @@ local function reveal(payload: any, rotor: Model)
 			else
 				AudioController.play("UI_Pickup", finish, 0.7, 1)
 			end
-			if rank >= SpinRules.rank("Rare") then
+			if rank >= SpinRules.rank("Rare") and not jackpot then
 				AudioController.play("Album_Sparkle", finish, 1, 1)
 			end
 			local spinStart = os.clock()

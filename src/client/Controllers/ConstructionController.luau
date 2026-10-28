@@ -517,20 +517,25 @@ local function finish(site: Site)
 	end
 	local top =
 		Vector3.new(site.center.X, site.ground + (site.maxY - site.minY) * 0.6, site.center.Z)
-	local hq = site.key == "HQ" and site.plot.Name == `Plot{player:GetAttribute("DockPlot")}`
+	local mine = site.plot.Name == `Plot{player:GetAttribute("DockPlot")}`
+	local hq = site.key == "HQ" and mine
 	-- the last brick clacks home (a plastic snap, two quick hits), then the confetti; your HQ gets the big beat
 	task.delay(last + 0.45, function()
 		AudioController.play("Album_Sticker", top, 1, 1.5)
 		task.delay(0.07, function()
 			AudioController.play("UI_Click", top, 3, 0.75)
 		end)
-		-- docs/26: plates ring the footprint, a dust ring, confetti from above the roof (never on the building)
+		-- docs/26 FX1: a studded ring and plates race out low, rays and confetti only above the roof (never on the
+		-- building); your HQ gets the charge, the white-hot core and the light pillar
 		local base = CFrame.new(site.center.X, site.ground, site.center.Z)
-		local fx = { radius = math.max(site.hw, site.hd) + 1, height = site.maxY - site.ground + 4 }
-		VFXKit.play(if hq then "hq_levelup" else "build_done", base, fx)
+		local fx = {
+			radius = math.max(site.hw, site.hd) + 1,
+			height = site.maxY - site.ground + 4,
+			still = not mine,
+		}
+		VFXKit.play(if hq then "fx1_hq_levelup" else "fx1_build_snap", base, fx)
 		if hq then
-			AudioController.play("Music_CrateFanfare", nil, 1, 1)
-			AudioController.play("Bell_Buoy", top, 1.2, 1.1)
+			task.delay(0.32, AudioController.play, "Music_CrateFanfare", nil, 1, 1) -- on the impact
 		end
 	end)
 	site.props:Destroy()
