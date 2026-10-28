@@ -110,6 +110,39 @@ return function(t)
 		t.expect(Presets.visible(251)).toBe(false)
 	end)
 
+	t.test(
+		"FX2 core-loop moments exist, every sound is an AudioConfig clip, curves end on target",
+		function()
+			local Audio = t.load("src/shared/Config/AudioConfig.luau")
+			for _, name in
+				{
+					"nitro_burst",
+					"bump_splash",
+					"launch_splash",
+					"board_hop",
+					"crew_arrive",
+					"quest_done",
+					"buy_pop",
+					"place_dust",
+					"survivor_aboard",
+				}
+			do
+				local p = Presets.ALL[name] :: any
+				t.expect(p ~= nil and #p.sounds > 0).toBe(true)
+			end
+			for name, p in Presets.ALL do
+				for _, snd in (p :: any).sounds or {} do
+					if not Audio.Clips[snd.clip] then
+						error(`{name}: unknown clip {snd.clip}`)
+					end
+				end
+			end
+			local size = Presets.ALL.launch_splash.layers[4].size
+			t.expect(size[1]).toBeCloseTo(8, 1e-9)
+			t.expect(size[#size]).toBeCloseTo(14, 1e-9)
+		end
+	)
+
 	t.test("duration covers the latest delayed layer", function()
 		t.expect(Presets.duration(Presets.ALL.barge_moor)).toBeCloseTo(1.9, 1e-9)
 	end)

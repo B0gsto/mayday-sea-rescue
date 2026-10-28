@@ -271,7 +271,8 @@ function Skills.new(canvas: Frame, onClose: () -> ())
 	end
 
 	local function chime()
-		AudioController.play("UI_Click", nil, 2.5, 0.7) -- the node locks in: one sound (audit P2-18)
+		AudioController.play("UI_Click", nil, 2.5, 0.7) -- the node locks in: a click under a soft magic swell
+		AudioController.play("FX_Magic", nil, 1, 1.1)
 	end
 
 	view = SkillTreeView.new(canvas, {

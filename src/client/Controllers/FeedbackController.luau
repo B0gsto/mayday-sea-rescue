@@ -4,6 +4,8 @@
 --     their name tag pops once their rig is drawn (WorkerController + SurvivorTag).
 --   - Medals gained (player attribute `Medals` rises): a medal flips from mid-screen into the Skills button
 --     and lands with a tick. Skipped under an open panel (the Skills counter shows it there).
+--   - FX2 core loop: a Lego burst round a fresh recruit as their tag pops (crew_arrive), and a splash where your
+--     own boat is put in the water (launch_splash).
 -- Sounds go through AudioController (SFX group), so the settings panel's volume and mute apply.
 
 local Players = game:GetService("Players")
@@ -14,12 +16,13 @@ local Workspace = game:GetService("Workspace")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 local FeedbackController = {}
 
 local player = Players.LocalPlayer
 local TAG = "SurvivorNameTag" -- SurvivorTag's BillboardGui
-local MEDAL = 64 -- px
+local MEDAL = 96 -- px (it pops in at 1.6x mid-screen, then shrinks back as it flies)
 
 -- The tag springs up to twice its size and settles.
 local function pop(tag: BillboardGui)
@@ -59,6 +62,12 @@ local function joined(cfg: Instance)
 				then
 					pop(tag)
 					AudioController.play("UI_FriendPop", rig:GetPivot().Position, 1.5, 1.1)
+					local _, size = rig:GetBoundingBox()
+					VFXKit.play(
+						"crew_arrive",
+						rig:GetPivot() - Vector3.new(0, size.Y * 0.5, 0),
+						{ radius = 2, height = size.Y + 1 }
+					)
 					return
 				end
 			end
@@ -100,6 +109,29 @@ local function flip()
 	AudioController.play("Album_Sticker", nil, 0.8, 1.35)
 	local reduced = Comfort.reducedMotion()
 	if not reduced then
+		local grow = Instance.new("UIScale") -- pops in with an overshoot while it holds, then flies
+		grow.Scale = 0.2
+		grow.Parent = holder
+		local swell =
+			TweenService:Create(grow, TweenInfo.new(0.3, Enum.EasingStyle.Back), { Scale = 1.6 })
+		swell.Completed:Once(
+			function() -- then back to its own size on the way to the Skills button (a second
+				-- tween on Scale started now would cancel this one)
+				TweenService:Create(
+					grow,
+					TweenInfo.new(
+						0.6,
+						Enum.EasingStyle.Quad,
+						Enum.EasingDirection.In,
+						0,
+						false,
+						0.1
+					),
+					{ Scale = 1 }
+				):Play()
+			end
+		)
+		swell:Play()
 		TweenService:Create(
 			face,
 			TweenInfo.new(0.11, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, 5, true),
@@ -124,6 +156,7 @@ local function flip()
 	fly.Completed:Once(function()
 		gui:Destroy()
 		AudioController.play("UI_Step", nil, 1, 1.3)
+		AudioController.play("FX_Pop", nil, 0.7, 1.2)
 		local scale = target:FindFirstChildOfClass("UIScale") or Instance.new("UIScale") -- one per button
 		scale.Parent = target
 		scale.Scale = 1.18
@@ -147,6 +180,30 @@ function FeedbackController.Start()
 			flip()
 		end
 		medals = now
+	end)
+	-- your boat put in the water (the board's Launch, the free jet ski): a splash once it has streamed in
+	task.spawn(function()
+		local vehicles = Workspace:WaitForChild("Vehicles", 30)
+		if not vehicles then
+			return
+		end
+		vehicles.ChildAdded:Connect(function(m)
+			if not (m:IsA("Model") and m:GetAttribute("Owner") == player.UserId) then
+				return
+			end
+			for _ = 1, 20 do
+				if m.PrimaryPart then
+					local at = m.PrimaryPart.Position
+					VFXKit.play(
+						"launch_splash",
+						CFrame.new(at.X, math.min(at.Y, 1), at.Z),
+						{ radius = 3 }
+					)
+					return
+				end
+				task.wait(0.1)
+			end
+		end)
 	end)
 	local root = ReplicatedStorage:WaitForChild("Workers")
 	root.DescendantAdded:Connect(joined) -- existing workers never carry `From` on a rejoin

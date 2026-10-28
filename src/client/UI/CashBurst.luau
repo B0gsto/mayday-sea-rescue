@@ -15,6 +15,7 @@ local GOLD = Color3.fromRGB(255, 208, 106)
 local COINS = 12
 
 local CashBurst = {}
+CashBurst.lastAt = -math.huge -- os.clock() of the last burst (the HUD skips its own coin jingle under one)
 
 local function coinAt(parent: Instance, position: Vector2, size: number): Frame
 	local coin = Instance.new("Frame")
@@ -62,6 +63,7 @@ function CashBurst.playAt(playerGui: Instance, start: Vector2, cash: number, sho
 		else Vector2.new(110, viewport.Y - 300)
 	local reduced = Comfort.reducedMotion()
 	local rng = Random.new()
+	CashBurst.lastAt = os.clock()
 	-- the coins spill, then tick into the wallet as the first ones land
 	AudioController.play("Cash_Coins", nil, 0.8, 1.05)
 	task.delay(0.85, function()

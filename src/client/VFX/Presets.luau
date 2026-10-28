@@ -439,4 +439,300 @@ function Presets.visible(distance: number): boolean
 	return distance <= Presets.CULL
 end
 
+---------------------------------------------------------------- FX2 core loop
+-- The everyday moments at the owner's "satisfying and nice" bar (docs/26): anticipation -> impact -> settle in 2-4
+-- layers with eased size / fade curves, and a layered sound. Extra preset fields (VFXKit plays them; `sounds` and
+-- `punch` match the FX1 spectacle kit):
+--   sounds      { { clip, delay?, volume?, pitch? } }  AudioConfig clips at the play point (impact + sweetener)
+--   punch       { fov, shake, time }  a camera kick (fov degrees in, negative widens); off under Reduce motion
+--   impactTint  Color3: a soft 0.25 s colour wash on the impact (never orange); off under Reduce motion
+
+-- `n` samples of a -> b along the easing `f` (evenly spread keypoints: a curve, not a straight ramp)
+local function curve(a: number, b: number, f: (number) -> number, n: number?): { number }
+	local out = {}
+	local k = n or 6
+	for i = 0, k - 1 do
+		table.insert(out, a + (b - a) * f(i / (k - 1)))
+	end
+	return out
+end
+local function outBack(t: number): number -- overshoots ~10% then settles
+	return 1 + 2.70158 * (t - 1) ^ 3 + 1.70158 * (t - 1) ^ 2
+end
+local function outCubic(t: number): number
+	return 1 - (1 - t) ^ 3
+end
+local function inCubic(t: number): number -- holds, then goes (a fade that stays solid)
+	return t ^ 3
+end
+
+local POP = curve(0, 1, inCubic) -- solid, then a quick fade
+local COOL = Color3.fromRGB(226, 242, 255)
+
+local function puffs(count: number, color: Color3, from: number, to: number, life: number): Layer
+	return {
+		tex = "puff_smoke",
+		count = count,
+		colors = { color },
+		size = curve(from, to, outBack),
+		transparency = { 0 }, -- the studded balls pop themselves
+		lifetime = { life * 0.8, life },
+		speed = { 5, 9 },
+		spread = { 60, 60 },
+		drag = 3,
+		rotation = { 0, 360 },
+	}
+end
+
+local function drops(count: number, speed: { number }, spread: number, size: number): Layer
+	return {
+		tex = "droplets",
+		count = count,
+		colors = { WHITE },
+		size = curve(size, size * 0.35, outCubic),
+		transparency = POP,
+		lifetime = { 0.5, 0.75 },
+		speed = speed,
+		spread = { spread, spread },
+		accel = GRAVITY,
+	}
+end
+
+local function crown(count: number, from: number, to: number): Layer
+	return {
+		tex = "splash_crown",
+		count = count,
+		colors = { FOAM },
+		size = curve(from, to, outBack),
+		transparency = { 0, 0, 0.1, 0.5 },
+		lifetime = { 0.6, 0.7 },
+		speed = { 0.5, 1 },
+		spread = { 10, 10 },
+	}
+end
+
+type FxSound = { clip: string, delay: number?, volume: number?, pitch: number? }
+
+local function preset(p: { [string]: any }): Preset
+	return p :: any
+end
+
+-- feedback: Captain Nitro fires (BoatController); played at the stern with its up axis pointing back over the
+-- wake: a jet of drops, a white bow-wave fan and exhaust studs; a whoosh, a wide-FOV kick
+Presets.ALL.nitro_burst = preset({
+	job = "feedback",
+	layers = {
+		drops(14, { 26, 36 }, 14, 2.2),
+		{
+			tex = "bow_wave",
+			count = 2,
+			colors = { FOAM },
+			size = curve(2, 8, outBack),
+			transparency = { 0.15, 0.2, 1 },
+			lifetime = { 0.5, 0.6 },
+			speed = { 4, 6 },
+			spread = { 20, 20 },
+		},
+		with(
+			puffs(6, WHITE, 1.6, 4.2, 0.85),
+			{ speed = { 12, 18 }, spread = { 14, 14 }, drag = 4 }
+		),
+		{ -- the jet: long stretched spray streaks, white and sea teal
+			tex = "sea_spray",
+			count = 8,
+			colors = { WHITE, SEA },
+			streak = true,
+			size = curve(6.5, 2, outCubic),
+			transparency = POP,
+			lifetime = { 0.6, 0.8 },
+			speed = { 42, 54 },
+			spread = { 8, 8 },
+			accel = Vector3.new(0, -30, 0),
+		},
+		with(
+			plates({ WHITE, SEA }, 4),
+			{ ring = false, size = { 1.6 }, speed = { 18, 24 }, spread = { 18, 18 } }
+		),
+	},
+	sounds = {
+		{ clip = "FX_Whoosh", volume = 1, pitch = 1.05 } :: FxSound,
+		{ clip = "Hull_SprayHiss", delay = 0.05, volume = 0.7, pitch = 1.15 } :: FxSound,
+	},
+	punch = { fov = -7, shake = 0.2, time = 0.45 },
+	impactTint = COOL,
+})
+
+-- feedback: the hull bumps a rock / quay / boat (BoatController); at the bow: a small crown, drops, spray puffs;
+-- a wooden thud under a splash and a short shake
+Presets.ALL.bump_splash = preset({
+	job = "feedback",
+	layers = {
+		crown(1, 3, 6.5),
+		drops(14, { 14, 20 }, 50, 1.4),
+		puffs(4, FOAM, 1.5, 3.5, 0.6),
+		with(
+			confetti(4, { 14, 20 }, 45, { WHITE, NAVY }),
+			{ at = "origin", size = { 2.8, 2.6 }, lifetime = { 0.6, 0.8 }, accel = GRAVITY }
+		),
+	},
+	sounds = {
+		{ clip = "FX_Thud", volume = 1, pitch = 0.9 } :: FxSound,
+		{ clip = "FX_SplashSmall", delay = 0.03, volume = 0.9 } :: FxSound,
+	},
+	punch = { fov = 0, shake = 0.45, time = 0.3 },
+	impactTint = COOL,
+})
+
+-- feedback: your boat is put in the water (a launch from the board / the free jet ski): a crown, drops, a foam ring
+Presets.ALL.launch_splash = preset({
+	job = "feedback",
+	layers = {
+		crown(2, 5, 9),
+		drops(18, { 16, 24 }, 40, 1.6),
+		drops(8, { 30, 40 }, 8, 2), -- the column shoots up first
+		with(
+			groundRing("foam_ring", FOAM, curve(8, 14, outCubic), 1, 0.05),
+			{ transparency = { 0.1, 0.2, 0.7 } }
+		),
+	},
+	sounds = {
+		{ clip = "FX_Plop", volume = 1 } :: FxSound,
+		{ clip = "Splash_Entry", delay = 0.05, volume = 0.45, pitch = 1.3 } :: FxSound,
+	},
+})
+
+-- feedback: you take the helm (BoatController): the hull dips, a foam ring and a few drops; a slap and a splash
+Presets.ALL.board_hop = preset({
+	job = "feedback",
+	layers = {
+		groundRing("foam_ring", FOAM, curve(7, 12, outCubic), 0.8),
+		with(
+			groundRing("shockwave_ring", SEA, curve(4, 10, outCubic), 0.5),
+			{ transparency = { 0.2, 0.4, 1 } }
+		),
+		drops(10, { 10, 14 }, 70, 1.5),
+		puffs(4, WHITE, 1.4, 3, 0.5),
+	},
+	sounds = {
+		{ clip = "Hull_Slap", volume = 0.5, pitch = 1.2 } :: FxSound,
+		{ clip = "FX_SplashSmall", delay = 0.04, volume = 0.6, pitch = 1.1 } :: FxSound,
+	},
+})
+
+-- feedback: a new crew member arrives at your dock (FeedbackController, as their name tag pops): plates hop out
+-- round their feet, a dust ring, a few bricks over their head
+Presets.ALL.crew_arrive = preset({
+	job = "feedback",
+	layers = {
+		with(plates({ RED, WHITE, YELLOW }, 12), { size = { 1.8 }, speed = { 10, 14 } }),
+		with(
+			groundRing("shockwave_ring", WHITE, curve(3, 9, outCubic), 0.5),
+			{ transparency = { 0.2, 0.4, 1 } }
+		),
+		confetti(10, { 8, 12 }, 40, { RED, WHITE, YELLOW }),
+	},
+	sounds = { { clip = "FX_Pop", volume = 1, pitch = 1.05 } :: FxSound },
+})
+
+-- spectacle (small): a quest handed in (HudController, award reason Quest:*): bricks rain from over your head, a
+-- white ring and coins hop; a chime over the coins
+Presets.ALL.quest_done = preset({
+	job = "spectacle",
+	layers = {
+		confetti(22, { 14, 22 }, 35, { RED, WHITE, YELLOW, SEA, GREEN }),
+		with(
+			groundRing("shockwave_ring", WHITE, curve(4, 13, outCubic), 0.6),
+			{ transparency = { 0.2, 0.35, 1 } }
+		),
+		with(plates({ YELLOW, WHITE }, 10), { speed = { 14, 18 } }),
+		{
+			tex = "coin",
+			count = 6,
+			colors = { WHITE },
+			size = curve(0.8, 1.8, outBack),
+			transparency = { 0, 0, 0, 1 },
+			lifetime = { 0.7, 0.85 },
+			speed = { 22, 28 },
+			spread = { 20, 20 },
+			accel = GRAVITY,
+			delay = 0.1,
+		},
+	},
+	sounds = {
+		{ clip = "FX_Chime", volume = 1 } :: FxSound,
+		{ clip = "Cash_Coins", delay = 0.15, volume = 0.6, pitch = 1.1 } :: FxSound,
+	},
+	punch = { fov = 2, shake = 0, time = 0.35 },
+	impactTint = Color3.fromRGB(246, 248, 255),
+})
+
+-- feedback: a decor piece or a pet bought: a dust ring, plates hop, a few bricks above; till + pop
+Presets.ALL.buy_pop = preset({
+	job = "feedback",
+	layers = {
+		with(puffs(8, DUST, 2.5, 5, 0.6), { ring = true }),
+		with(plates({ RED, WHITE, YELLOW, NAVY }, 12), { size = { 2 } }),
+		confetti(8, { 10, 14 }, 35, { RED, WHITE, YELLOW, SEA }),
+		{
+			tex = "coin",
+			count = 3,
+			colors = { WHITE },
+			size = curve(1.6, 3.4, outBack),
+			transparency = { 0, 0, 0, 1 },
+			lifetime = { 0.65, 0.8 },
+			speed = { 20, 24 },
+			spread = { 15, 15 },
+			accel = GRAVITY,
+			delay = 0.08,
+		},
+	},
+	sounds = { { clip = "FX_Pop", volume = 1 } :: FxSound },
+})
+
+-- feedback: the Lego build beat's last brick lands (DockController): one studded dust ring round the footprint
+-- and a soft settling thud (radius = the footprint)
+Presets.ALL.place_dust = preset({
+	job = "feedback",
+	layers = {
+		with(
+			puffs(10, DUST, 2.2, 4.2, 0.7),
+			{ ring = true, speed = { 5, 8 }, spread = { 88, 88 } }
+		),
+		with(plates({ WHITE, YELLOW }, 8), { size = { 1.8 }, speed = { 10, 14 } }),
+	},
+	sounds = {
+		{ clip = "FX_Thud", volume = 0.5, pitch = 1.3 } :: FxSound,
+		{ clip = "FX_Pop", delay = 0.06, volume = 0.6, pitch = 0.9 } :: FxSound,
+	},
+})
+
+-- feedback: a survivor lands aboard at the end of their climb (CasualtyController): lifebuoy plates hop off the
+-- seat, a foam puff; a pop over a step tick
+Presets.ALL.survivor_aboard = preset({
+	job = "feedback",
+	layers = {
+		with(
+			plates({ RED, WHITE }, 10),
+			{ ring = false, size = { 1.8 }, speed = { 12, 16 }, spread = { 50, 50 } }
+		),
+		with(puffs(5, WHITE, 1.8, 3.6, 0.55), { speed = { 3, 6 } }),
+		with(
+			groundRing("shockwave_ring", YELLOW, curve(2, 7, outCubic), 0.45),
+			{ transparency = { 0.1, 0.3, 1 } }
+		),
+		groundRing("foam_ring", FOAM, curve(4, 8, outCubic), 0.9), -- it settles on the water
+	},
+	sounds = {
+		{ clip = "FX_Pop", volume = 0.9, pitch = 1.15 } :: FxSound,
+		{ clip = "UI_Step", delay = 0.05, volume = 0.8, pitch = 1.2 } :: FxSound,
+	},
+})
+
+-- feedback: layered on pickup_splash (CasualtyController): chunky sea-teal drops thrown up out of the ring
+Presets.ALL.pickup_drops = preset({
+	job = "feedback",
+	layers = { with(drops(8, { 18, 24 }, 25, 2), { colors = { SEA } }) },
+	sounds = { { clip = "FX_SplashSmall", volume = 0.8, pitch = 1.15 } :: FxSound },
+})
+
 return Presets

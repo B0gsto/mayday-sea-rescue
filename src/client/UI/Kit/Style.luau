@@ -270,13 +270,14 @@ function Style.pop(root: GuiObject, on: boolean)
 		scale.Scale = 0.6
 		tween(scale, 0.28, { Scale = 1 }, Enum.EasingStyle.Back)
 	else
-		local tw = TweenService:Create(
-			sc,
-			TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
-			{
-				Scale = 0.6,
-			}
-		)
+		local tw =
+			TweenService:Create( -- Back In: a small swell first (anticipation), then it tucks away
+				sc,
+				TweenInfo.new(0.18, Enum.EasingStyle.Back, Enum.EasingDirection.In),
+				{
+					Scale = 0.6,
+				}
+			)
 		tw.Completed:Once(function(state)
 			if state == Enum.PlaybackState.Completed then
 				root.Visible = false

@@ -5,19 +5,31 @@
 -- level and halved (no light flash) under the Settings panel's Reduce motion. Sounds stay with the caller.
 --   VFXKit.play(name, cframeOrPart, opts?) -> boolean   opts: { color, scale, radius, height }
 --     radius: a `ring` layer's ring (a footprint's half width; past 8 studs it grows the pieces too), height: where
---     `top` layers start
+--     `top` layers start, still: no camera punch / tint (someone else's moment)
 --   VFXKit.names() -> { string }                        every preset, sorted (the DEV `vfx` bench)
+-- FX2 presets may also carry `sounds`, `punch` and `impactTint` (Presets "FX2 core loop"); played by fx2() below.
+local ContentProvider = game:GetService("ContentProvider")
+local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
+local AudioController =
+	require(script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("AudioController"))
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local Presets = require(script.Parent:WaitForChild("Presets"))
 local VFXTextures = require(
 	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("VFXTextures")
 )
 
-export type Opts = { color: Color3?, scale: number?, radius: number?, height: number? }
+export type Opts = {
+	color: Color3?,
+	scale: number?,
+	radius: number?,
+	height: number?,
+	still: boolean?,
+}
 
 type Emitter = { emitter: ParticleEmitter, layer: Presets.Layer, base: number, color: Color3 }
 type Host =
@@ -166,6 +178,80 @@ local function take(name: string, p: Presets.Preset, now: number): Host
 	return soonest
 end
 
+-- FX2: a short decaying camera shake plus an FOV kick the camera controllers damp back (the same `punch` as the FX1
+-- kit: fov degrees in, negative widens; shake 0..1; time). Applied after the camera's step, undone before the next.
+-- shortcut: a minimal copy of FX1's punch; reconcile into one when the FX1 branch merges.
+local shakeUntil, shakeAmp, shakeTime = 0, 0, 1
+local applied = CFrame.identity
+local bound = false
+local function punch(spec: { fov: number, shake: number, time: number })
+	local camera = Workspace.CurrentCamera
+	if not camera then
+		return
+	end
+	camera.FieldOfView -= spec.fov
+	if spec.shake <= 0 then
+		return
+	end
+	if not bound then
+		bound = true
+		RunService:BindToRenderStep("VFXPunchUndo", Enum.RenderPriority.First.Value, function()
+			camera.CFrame *= applied:Inverse()
+			applied = CFrame.identity
+			if os.clock() >= shakeUntil then
+				RunService:UnbindFromRenderStep("VFXPunchUndo")
+				RunService:UnbindFromRenderStep("VFXPunch")
+				bound = false
+			end
+		end)
+		RunService:BindToRenderStep("VFXPunch", Enum.RenderPriority.Camera.Value + 1, function()
+			local k = math.max(shakeUntil - os.clock(), 0) / shakeTime
+			local a = shakeAmp * k * k * 0.08 * (tonumber(Comfort.get("shake")) or 0.6)
+			local t = os.clock() * 28
+			applied = CFrame.Angles(
+				math.noise(t, 1.3) * a,
+				math.noise(t, 7.1) * a,
+				math.noise(t, 4.7) * a * 0.5
+			)
+			camera.CFrame *= applied
+		end)
+	end
+	shakeUntil, shakeAmp, shakeTime = os.clock() + spec.time, spec.shake, spec.time
+end
+
+-- FX2: the impact frame, a soft colour wash that eases out in 0.25 s (never orange; off under Reduce motion).
+local grade: ColorCorrectionEffect? = nil
+local function impactTint(color: Color3)
+	local g = grade
+	if not (g and g.Parent) then
+		local c = Instance.new("ColorCorrectionEffect")
+		c.Name = "VFXImpactTint"
+		c.Parent = Lighting
+		g, grade = c, c
+	end
+	local c = g :: ColorCorrectionEffect
+	c.TintColor, c.Brightness = color, 0.06
+	TweenService:Create(c, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
+		TintColor = Color3.new(1, 1, 1),
+		Brightness = 0,
+	}):Play()
+end
+
+local function fx2(p: any, at: Vector3, o: Opts, reduced: boolean)
+	for _, snd in p.sounds or {} do
+		task.delay(snd.delay or 0, AudioController.play, snd.clip, at, snd.volume, snd.pitch)
+	end
+	if reduced or o.still then
+		return
+	end
+	if p.punch then
+		punch(p.punch)
+	end
+	if p.impactTint then
+		impactTint(p.impactTint)
+	end
+end
+
 function VFXKit.play(name: string, target: CFrame | BasePart, opts: Opts?): boolean
 	local p = Presets.ALL[name]
 	if not p then
@@ -214,8 +300,18 @@ function VFXKit.play(name: string, target: CFrame | BasePart, opts: Opts?): bool
 			:Create(light, TweenInfo.new(spec.time, Enum.EasingStyle.Quad), { Brightness = 0 })
 			:Play()
 	end
+	fx2(p, cf.Position, o, reduced)
 	return true
 end
+
+-- Every texture loads at start: an unloaded flipbook draws nothing, so a session's first splash came out blank.
+task.spawn(function()
+	local ids = {}
+	for _, tex in VFXTextures do
+		table.insert(ids, tex.id)
+	end
+	pcall(ContentProvider.PreloadAsync, ContentProvider, ids)
+end)
 
 function VFXKit.names(): { string }
 	local out = {}

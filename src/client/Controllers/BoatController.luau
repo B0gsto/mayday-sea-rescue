@@ -62,6 +62,7 @@ local PickupRingController = require(script.Parent.PickupRingController)
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local Unstick = require(Shared:WaitForChild("Boat"):WaitForChild("Unstick"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local MAX_VISUAL_OFFSET = 1.5 -- studs; larger errors are left to replication -- tune
@@ -82,6 +83,9 @@ local telemetry: Simulator.Telemetry? = nil
 local lastThrottle = 0 -- the throttle the driven hull got last step (after the cold-open helm)
 local helm = 0 -- the eased steer (Boat/Helm)
 local nitro = Nitro.new() -- the Captain Nitro double-tap (Boat/Nitro)
+local boost = 1 -- last frame's Nitro multiplier: a rise is the burst (FX2 nitro_burst)
+local lastSpeed, lastBump = 0, 0 -- the driven hull's speed last frame, the last bump splash (os.clock)
+local BUMP_DECEL = 220 -- studs/s^2 of sudden slowdown that is a hit, not the throttle or drag -- tune
 local YAW_SLACK = 1.25 -- the driven hull's yaw rate cap, as a share of its spec turnRate -- tune
 local tiltTime = 0
 local navTimer = NAV_INTERVAL
@@ -448,15 +452,41 @@ local function step(dt: number)
 						1 + (tonumber(localPlayer:GetAttribute("SkillGrip")) or 0)
 					)
 					-- Captain Nitro (SkillNitro): a double-tap of the throttle gives a short burst
-					Simulator.setBoost(
-						child,
-						Nitro.step(
-							nitro,
-							seat.ThrottleFloat,
-							now,
-							(tonumber(localPlayer:GetAttribute("SkillNitro")) or 0) > 0
-						)
+					local mult = Nitro.step(
+						nitro,
+						seat.ThrottleFloat,
+						now,
+						(tonumber(localPlayer:GetAttribute("SkillNitro")) or 0) > 0
 					)
+					Simulator.setBoost(child, mult)
+					if root and mult > boost then -- the burst: spray off the stern, back over the wake
+						local back = -root.CFrame.LookVector
+						local at = root.Position + back * child:GetExtentsSize().Z * 0.45
+						local up = (back + Vector3.yAxis * 0.4).Unit -- the emitters fire along the up axis
+						VFXKit.play(
+							"nitro_burst",
+							CFrame.fromMatrix(at, root.CFrame.RightVector, up)
+						)
+					end
+					boost = mult
+					-- a hit (rock, quay, another hull): a sudden drop in speed, not a slam off a wave
+					local clock = os.clock()
+					if
+						root
+						and lastSpeed > 12
+						and (lastSpeed - speed) / math.max(dt, 1 / 120) > BUMP_DECEL
+						and clock - lastBump > 0.6
+					then
+						lastBump = clock
+						local bow = root.Position
+							+ root.CFrame.LookVector * child:GetExtentsSize().Z * 0.5
+						VFXKit.play(
+							"bump_splash",
+							CFrame.new(bow),
+							{ scale = math.clamp(lastSpeed / 40, 0.5, 1) }
+						)
+					end
+					lastSpeed = speed
 					telemetry = Simulator.step(child, throttle, helm, now)
 					if root and spec then
 						-- a quay corner deflects, never spins: no yaw past the helm's own top rate (and the
@@ -501,6 +531,14 @@ local function step(dt: number)
 	simulated = nowSimulated
 	if (driving ~= nil) ~= (wasDriving ~= nil) then
 		setApproachBinding(driving ~= nil)
+	end
+	local hull = driving and driving.PrimaryPart
+	if hull and driving ~= wasDriving and not launched[driving :: Model] then -- you take the helm
+		VFXKit.play(
+			"board_hop",
+			CFrame.new(hull.Position.X, hull.Position.Y - hull.Size.Y * 0.5, hull.Position.Z)
+		)
+		lastSpeed = 0
 	end
 	updateNavLights(dt, now)
 	updateCraftPins()

@@ -5,6 +5,8 @@
 --   Card.new(p.body, {...})   p.open() / p.close()  p.closeButton: the X   p.top: a slot above the list (Tabs)
 local GuiService = game:GetService("GuiService")
 
+local AudioController =
+	require(script.Parent.Parent.Parent:WaitForChild("Controllers"):WaitForChild("AudioController"))
 local Style = require(script.Parent:WaitForChild("Style"))
 local Theme = require(script.Parent:WaitForChild("Theme"))
 
@@ -196,6 +198,9 @@ function Panel.new(canvas: Instance, props: Props): Panel
 	list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fit)
 
 	local function close()
+		if root.Visible then
+			AudioController.play("FX_Swoosh", nil, 1, 1.1)
+		end
 		dim.Visible = false
 		Style.pop(root, false)
 		if GuiService.SelectedObject and GuiService.SelectedObject:IsDescendantOf(root) then
@@ -221,6 +226,7 @@ function Panel.new(canvas: Instance, props: Props): Panel
 			fit()
 			dim.Visible = true
 			Style.pop(root, true)
+			AudioController.play("FX_Pop", nil, 0.6, 1.1)
 		end,
 		close = close,
 		isOpen = function()
