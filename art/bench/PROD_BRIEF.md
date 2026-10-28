@@ -21,6 +21,10 @@ Your asset name `<Asset>` and kind folder `<kind>` are in your task. Stop as soo
 - `build()` returns LOD0 (+ `_COL`) only; the `lod` step makes `_LOD1` / `_LOD2`.
 - Every asset must pass `tools/blender/zfight_check.py` (no coplanar overlapping faces) before upload: run.py nudges
   them right after `build()`; the log must say `[zfight] ... 0 visible pairs left` (check an FBX: header of the script).
+- Blender MCP (`blender` server, mcp-for-blender; A/B 2026-10-28 build/status/2026-10-28/mcpab: MCP 7.6 vs script 7.0) is
+  for exploring and look-and-tweak passes: open Blender GUI only inside the 2-heavy-app limit, use `look` multi-angle
+  checks, never enable telemetry or the asset integrations. The shipped geometry still comes from `build.py`: port
+  every MCP change back into the script and run the normal validate / lod / export.
 
 ## Commands (every Blender run through the shared 2-slot lock; queueing is normal)
 
