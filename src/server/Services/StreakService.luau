@@ -1,24 +1,20 @@
 --!strict
--- StreakService: the daily streak crate and the welcome-back crate (docs/15 section 1, hook H5).
--- One crate per UTC day per player, at their launch bay on the spawn path (docs/16 K12,
--- BayLaunch.CRATE; the station porch when no bay). StreakRules owns the day maths and the
--- forgiveness; StreakConfig owns the payouts. Cash goes through ProgressionService.Award and the
--- streak lives on the profile (data.flags.streak).
---
--- The crate and its day-pip sign are built locally by each client (World/StreakCrate,
--- World/StreakSign) so only that player sees their own crate open. Remotes (under
--- ReplicatedStorage.Net):
---   Streak_State  S->C  { day, streak, available, secondsToDay, preview? }
---   Streak_Get    C->S  function -> the same view (first pull)
---   Streak_Open   C->S  function -> { ok, cash, cashAfter, streak, welcome, cosmetic } or nil
--- Studio: ServerStorage.StreakDev (BindableFunction) sets today's crate to a streak day.
+-- StreakService: the daily streak reward and the welcome-back bonus (docs/15 section 1, hook H5).
+-- One reward per UTC day per player, shown by the client's join reward prompt (RewardController) and
+-- granted here only when they press Collect. StreakRules owns the day maths and the forgiveness;
+-- StreakConfig owns the payouts. Cash goes through ProgressionService.Award and the streak lives on the
+-- profile (data.flags.streak). Not collected (left first): today stays available on the next join.
+-- Remotes (under ReplicatedStorage.Net):
+--   Streak_State    S->C  { day, streak, available, secondsToDay, preview? } (preview.bonus: the group +10%)
+--   Streak_Get      C->S  function -> the same view (first pull)
+--   Streak_Collect  C->S  function -> { ok, cash, cashAfter, streak, welcome, cosmetic } or nil
+-- Studio: ServerStorage.StreakDev (BindableFunction) sets today's reward to a streak day.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
-local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
 local GroupReward = require(Shared:WaitForChild("GroupReward"))
 local Net = require(Shared:WaitForChild("Net"))
 local Rules = require(Shared:WaitForChild("StreakRules"))
@@ -32,7 +28,6 @@ local GroupRewardService = require(script.Parent.GroupRewardService)
 local ProgressionService = require(script.Parent.ProgressionService)
 local SkillService = require(script.Parent.SkillService)
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
-local VehicleService = require(script.Parent:WaitForChild("VehicleService"))
 
 local StreakService = {}
 StreakService.Priority = 90
@@ -54,7 +49,16 @@ local function stateOf(data: any): Rules.State
 	return Rules.fromFlagTable(flagOf(data))
 end
 
-local function viewOf(state: Rules.State, now: number): { [string]: any }
+-- The group members' flat +10% on the reward (G68); never multiplied, never a second reward.
+local function groupBonus(player: Player, cash: number): number
+	local groupState = GroupRewardService.State(player)
+	if not groupState then
+		return 0
+	end
+	return GroupReward.bonus(groupState, cash, SocialConfig.BonusPercent, SocialConfig.GroupId)
+end
+
+local function viewOf(player: Player, state: Rules.State, now: number): { [string]: any }
 	local view: { [string]: any } = {
 		day = Rules.dayIndex(now),
 		streak = state.streak,
@@ -62,7 +66,11 @@ local function viewOf(state: Rules.State, now: number): { [string]: any }
 		available = Rules.available(state, now),
 	}
 	if view.available then
-		view.preview = Rules.preview(state, now)
+		local preview: any = Rules.preview(state, now)
+		if preview then
+			preview.bonus = groupBonus(player, preview.cash)
+		end
+		view.preview = preview
 	end
 	return view
 end
@@ -70,7 +78,7 @@ end
 local function push(player: Player, state: Rules.State)
 	local remote = stateRemote
 	if remote and player.Parent then
-		remote:FireClient(player, viewOf(state, os.time()))
+		remote:FireClient(player, viewOf(player, state, os.time()))
 		pushedDay[player] = Rules.dayIndex(os.time())
 	end
 end
@@ -104,23 +112,12 @@ local function ensureRemoteFunction(folder: Instance, name: string): RemoteFunct
 	return created
 end
 
--- Claim today's crate. The client has already seen its own local crate; the server only checks
--- that the player is at their crate and that today is still unclaimed.
-local function open(player: Player): any
+-- Collect today's reward (the prompt's Collect button). Rules.claim refuses a second claim the same day.
+local function collect(player: Player): any
 	local data = DataService.Get(player)
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	if not data or not root or not root:IsA("BasePart") then
+	if not data then
 		return nil
 	end
-	local bay = VehicleService.GetBay(player)
-	local at = if bay then (bay.CFrame * BayLaunch.CRATE).Position else StreakConfig.PorchPosition
-	local dx = root.Position.X - at.X
-	local dz = root.Position.Z - at.Z
-	if dx * dx + dz * dz > StreakConfig.OpenRange * StreakConfig.OpenRange then
-		return nil
-	end
-
 	local claim = Rules.claim(stateOf(data), os.time())
 	if not claim then
 		return nil
@@ -143,22 +140,12 @@ local function open(player: Player): any
 	local reason = if claim.welcome then "Streak:Welcome" else `Streak:Day{claim.streak}`
 	ProgressionService.Award(player, claim.cash, reason, true)
 	SkillService.grantMedals(player, SkillRules.chestMedals(claim.streak), "DailyChest")
-	-- Group members get a flat +10% on the crate (G68); never multiplied, never a second crate.
-	local groupBonus = 0
-	local groupState = GroupRewardService.State(player)
-	if groupState then
-		groupBonus = GroupReward.bonus(
-			groupState,
-			claim.cash,
-			SocialConfig.BonusPercent,
-			SocialConfig.GroupId
-		)
-		if groupBonus > 0 then
-			ProgressionService.Award(player, groupBonus, "Group:Crew", true)
-		end
+	local bonus = groupBonus(player, claim.cash)
+	if bonus > 0 then
+		ProgressionService.Award(player, bonus, "Group:Crew", true)
 	end
 	local after = ProgressionService.GetData(player)
-	local cashAfter = if after then after.cash else before.cash + claim.cash + groupBonus
+	local cashAfter = if after then after.cash else before.cash + claim.cash + bonus
 
 	push(player, claim.state)
 	if claim.streak >= 7 then
@@ -178,8 +165,8 @@ local function open(player: Player): any
 	}
 end
 
--- Studio only: last claim was yesterday and the next crate is `tier` (1..7). Used by the
--- smoke/test snippet to see the day-7 weekly crate without waiting a week.
+-- Studio only: last claim was yesterday and the next reward is `tier` (1..7). Used by the
+-- smoke/test snippet to see the day-7 weekly reward without waiting a week.
 function StreakService.DevSet(player: Player, tier: number)
 	local data = DataService.Get(player)
 	if not data then
@@ -203,17 +190,17 @@ function StreakService.Init()
 
 	stateRemote = ensureRemoteEvent(folder, "Streak_State")
 	local get = ensureRemoteFunction(folder, "Streak_Get")
-	local openFn = ensureRemoteFunction(folder, "Streak_Open")
+	local collectFn = ensureRemoteFunction(folder, "Streak_Collect")
 
 	get.OnServerInvoke = function(player: Player)
 		local data = DataService.Get(player)
-		return if data then viewOf(stateOf(data), os.time()) else nil
+		return if data then viewOf(player, stateOf(data), os.time()) else nil
 	end
-	openFn.OnServerInvoke = open
+	collectFn.OnServerInvoke = collect
 
 	if RunService:IsStudio() then
 		-- Studio dev hook for play tests: ServerStorage.StreakDev:Invoke("day", 7) sets today's
-		-- crate to that streak day; ("break", 5) fakes a 5-day break (welcome-back crate);
+		-- reward to that streak day; ("break", 5) fakes a 5-day break (welcome-back bonus);
 		-- ("view") returns the pushed view.
 		local dev = Instance.new("BindableFunction")
 		dev.Name = "StreakDev"
@@ -242,7 +229,7 @@ function StreakService.Init()
 				return true
 			end
 			local data = DataService.Get(player)
-			return if data then viewOf(stateOf(data), os.time()) else nil
+			return if data then viewOf(player, stateOf(data), os.time()) else nil
 		end
 		dev.Parent = game:GetService("ServerStorage")
 	end
@@ -250,13 +237,19 @@ function StreakService.Init()
 	DataService.OnLoaded(function(player: Player, data: any)
 		push(player, stateOf(data))
 	end)
+	Players.PlayerAdded:Connect(function(player: Player)
+		-- the group check lands after the first push: re-send the view with its +10% (the prompt shows it)
+		player:GetAttributeChangedSignal("GroupCrew"):Connect(function()
+			refresh(player)
+		end)
+	end)
 	Players.PlayerRemoving:Connect(function(player: Player)
 		pushedDay[player] = nil
 	end)
 end
 
 function StreakService.Start()
-	-- Players who stay in the server across 00:00 UTC get the new crate appear.
+	-- Players who stay in the server across 00:00 UTC get the new day's reward prompt.
 	task.spawn(function()
 		while true do
 			task.wait(30)

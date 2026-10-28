@@ -14,8 +14,8 @@
 -- uploaded Depot standing (docs/25 D, K4) Haulers push a crate cart barge -> pile and a site's Builders carry brick
 -- stacks over their heads pile -> site, paced by HaulRate / CarryRate, waiting at the pile while SiteWaiting. Every
 -- rig gets its rarity name tag and info card (SurvivorController); each yard shows one crew badge (icon + count)
--- instead of one per worker. Gatherer/Rescuer pay pops a "+$". It also plays the offline earnings welcome: a
--- coin burst into the wallet and a Toast when the player attribute WorkerOffline arrives.
+-- instead of one per worker. Gatherer/Rescuer pay pops a "+$". The offline earnings show in the join reward
+-- prompt (RewardController).
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local PathfindingService = game:GetService("PathfindingService")
@@ -31,11 +31,8 @@ local Marina = require(Shared:WaitForChild("Marina"))
 local Net = require(Shared:WaitForChild("Net"))
 local WorkLoop = require(Shared:WaitForChild("WorkLoop"))
 local UI = script.Parent.Parent:WaitForChild("UI")
-local CashBurst = require(UI:WaitForChild("CashBurst"))
 local DepotController = require(script.Parent:WaitForChild("DepotController"))
-local Style = require(UI:WaitForChild("Kit"):WaitForChild("Style"))
 local SurvivorController = require(script.Parent:WaitForChild("SurvivorController"))
-local Toast = require(UI:WaitForChild("Kit"):WaitForChild("Toast"))
 local WorkerBadge = require(UI:WaitForChild("WorkerBadge"))
 
 local WorkerController = {}
@@ -1416,45 +1413,7 @@ local function bayPass()
 	end
 end
 
-local shown = false -- once a session (the server sets it once)
-local function welcome()
-	local pay = player:GetAttribute("WorkerOffline")
-	if shown or type(pay) ~= "number" or pay <= 0 then
-		return
-	end
-	-- the pay lands on join, under the loading screen and its flyover (playtest 2: the toast was gone by then);
-	-- these attributes clearing calls this again
-	if
-		player:GetAttribute("LoadingScreenActive") == true
-		or player:GetAttribute("CinematicPlaying") == true
-	then
-		return
-	end
-	shown = true
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "WorkerWelcome"
-	gui.ResetOnSpawn = false
-	gui.DisplayOrder = 40
-	gui.Parent = player:WaitForChild("PlayerGui")
-	Toast.show(Style.canvas(gui), `+{pay}`, { icon = "cash", color = "green", duration = 6 })
-	local camera = Workspace.CurrentCamera
-	if camera then
-		CashBurst.playAt(
-			gui.Parent :: Instance,
-			camera.ViewportSize * Vector2.new(0.5, 0.3),
-			pay,
-			false
-		)
-	end
-	task.delay(8, function()
-		gui:Destroy()
-	end)
-end
-
 function WorkerController.Start()
-	for _, name in { "WorkerOffline", "LoadingScreenActive", "CinematicPlaying" } do
-		player:GetAttributeChangedSignal(name):Connect(welcome)
-	end
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(function(data: any)
 		local award = data and data.award
 		if type(award) ~= "table" then
@@ -1466,7 +1425,6 @@ function WorkerController.Start()
 			paid("Rescuer")
 		end
 	end)
-	task.delay(4, welcome) -- set before this ran: wait for the HUD to be up
 	Lighting:GetPropertyChangedSignal("ClockTime"):Connect(nightPass)
 	CollectionService:GetInstanceAddedSignal("NightLamp"):Connect(function(p)
 		lamp(p, lampsLit == true) -- streamed in or built later

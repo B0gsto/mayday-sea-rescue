@@ -127,7 +127,7 @@ zone, then bring the survivor home). Each returns to the giver.
 | Ranks Recruit to Admiral | A long, legible ladder | Live |
 | Quests from six islanders | A reason to walk the hub and sail the ring | Live |
 | Album, fog and stickers | Exploration that remembers | Live |
-| Daily streak crate | A gentle reason to come back | Live |
+| Daily streak reward (join prompt) | A gentle reason to come back | Live |
 | Crew hiring | A living station | In progress (WP-15) |
 | Tablet build mode | Lego building, not a menu | In progress (WP-14d) |
 | New phone-free UI | The Roblox simulator look | In progress (WP-23) |
@@ -152,7 +152,7 @@ copy. The old build is preserved at git tag `pre-hub-cut`.
 | Natural storms, storm seasons, storm zones | Calm sea; Storm Summon event (in progress) |
 | Port Haven lighthouse relight zones | Keeper Ives chain unlocks a lighthouse on your island |
 | Animal sanctuary, pet adoptions, rotating stock | Wildlife calls; Bosun or one pet companion |
-| Challenges, daily/weekly contracts, rerolls | Quests, streak crate, Album |
+| Challenges, daily/weekly contracts, rerolls | Quests, daily streak reward, Album |
 | Leaderboards, trophies, badges as a ladder | Rescuer monument, trophy hall, badges as flavour |
 | Season pass, Season Logbook, seasonal events | Base game plus quests and Service Stars |
 | Private servers, gifting, ads, subscriptions | Not part of the design |

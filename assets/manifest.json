@@ -49,6 +49,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_NOR.png",
   "type": "Image"
  },
+ "Image:0036c33026eaaa0570942f7e1c9a955b76bd581ebfaf16157aa6872d277efd12": {
+  "assetId": "104141248958070",
+  "imageId": "104141248958070",
+  "moderation": "Reviewing",
+  "name": "UI_StreakPip_Next",
+  "sha": "0036c33026eaaa0570942f7e1c9a955b76bd581ebfaf16157aa6872d277efd12",
+  "source": "build/ui-art/pip_Next.png",
+  "type": "Image"
+ },
  "Image:007b1095736c862478a55f292b30139f4f8b72655d839408f828f8757d6bdba0": {
   "assetId": "135289193557103",
   "imageId": "135289193557103",
@@ -3710,6 +3719,15 @@
   "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:2ca5d36879280c4c501a9026d32c49e17bf1785e905fa881182aef5d6c2af61c": {
+  "assetId": "122421984805832",
+  "imageId": "122421984805832",
+  "moderation": "Reviewing",
+  "name": "UI_StreakPip_SevenToday",
+  "sha": "2ca5d36879280c4c501a9026d32c49e17bf1785e905fa881182aef5d6c2af61c",
+  "source": "build/ui-art/pip_SevenToday.png",
+  "type": "Image"
+ },
  "Image:2caaa0e627fe1666f4f9fff6835d2b7aeacc8a1374e613b6fcb8d55f62ab6468": {
   "assetId": "76993704409287",
   "imageId": "76993704409287",
@@ -7306,6 +7324,15 @@
   "source": "assets/textures/Spike1/T_Spike1_1024_MET.png",
   "type": "Image"
  },
+ "Image:57a899600b159676679b07a7a328f04bcc69c9498529e7582d8a0b24c2614823": {
+  "assetId": "126485653448134",
+  "imageId": "126485653448134",
+  "moderation": "Reviewing",
+  "name": "UI_StreakPip_Done",
+  "sha": "57a899600b159676679b07a7a328f04bcc69c9498529e7582d8a0b24c2614823",
+  "source": "build/ui-art/pip_Done.png",
+  "type": "Image"
+ },
  "Image:57f631344ebb63935fdc9a1477789e9697ab81bb85bfcb694ddc8594a15cd833": {
   "assetId": "72358322693256",
   "imageId": "72358322693256",
@@ -10493,6 +10520,15 @@
   "name": "T_ParkedCar03_Body_NOR",
   "sha": "7fdf6896040e725d3776bcd4e7873080ace20183b4c53b1dfb576152d9fee378",
   "source": "assets/textures/M_Road_ParkedCar_03/T_ParkedCar03_Body_NOR.png",
+  "type": "Image"
+ },
+ "Image:7feabc5588300dce907a47219fd780bfd147546b732ac9502dcb5530c0af3ad3": {
+  "assetId": "74455877198415",
+  "imageId": "74455877198415",
+  "moderation": "Reviewing",
+  "name": "UI_StreakPip_Seven",
+  "sha": "7feabc5588300dce907a47219fd780bfd147546b732ac9502dcb5530c0af3ad3",
+  "source": "build/ui-art/pip_Seven.png",
   "type": "Image"
  },
  "Image:7ff1e522540bd3a3275d137f1ca830b5e0fd4672127ac71f48aa6613cf57490d": {
@@ -15437,6 +15473,15 @@
   "name": "T_Barge_Hull_ALB",
   "sha": "be8e6942fb33172f96c83406382be2d1a97bfb3b62315b94f87d07f67ccebaf6",
   "source": "assets/textures/M_Veh_SupplyBarge/T_Barge_Hull_ALB.png",
+  "type": "Image"
+ },
+ "Image:bed8cf21a3fccaebc952532d8cfe1f31137e00a1b3b73999ea4d0107e72e495f": {
+  "assetId": "83307421569966",
+  "imageId": "83307421569966",
+  "moderation": "Reviewing",
+  "name": "UI_StreakPip_Today",
+  "sha": "bed8cf21a3fccaebc952532d8cfe1f31137e00a1b3b73999ea4d0107e72e495f",
+  "source": "build/ui-art/pip_Today.png",
   "type": "Image"
  },
  "Image:bef6b1e00984a6b8e5a68ef6f14bba6bcee0816a8b4dc9237bca66d2e121d434": {

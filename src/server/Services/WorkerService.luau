@@ -13,7 +13,7 @@
 -- (SkillService) raise the same numbers, the caps, slots and the roll; Welcome Home pays each arrival, Glow Up's
 -- Medics may raise their rarity, Mentor trains a Common every 2 h. Gatherers pay every minute, Rescuers
 -- send an NPC rescue boat out of your cove every rescuePeriod (Cash, sometimes a new worker). On join the time away
--- pays Gatherers + Rescuers at OFFLINE_RATE, capped (attribute WorkerOffline: the client's coin burst).
+-- pays Gatherers + Rescuers at OFFLINE_RATE, capped (attribute WorkerOffline: the client's join reward prompt, RewardController).
 -- Studio: ServerStorage.WorkerDev:Invoke("recruit", category, rarity, name) as if landed at the first player's
 -- berth; ("offline", seconds) pays as if they were away that long; ("finishbuild") finishes the running site;
 -- ("status") -> a summary string;

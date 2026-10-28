@@ -27,6 +27,7 @@ The game's effects follow the global VFX rules (user CLAUDE.md "VFX (all games)"
 | Survivor delivered / rescue done | spectacle (small) | a ring of lifebuoy-coloured plates and a coin burst into the wallet (CashBurst) |
 | Golden call | state + spectacle | a steady gold ring on the pin (slow breath), a gold burst on accept, the survivor's steady glow |
 | Cash / Medal gain | feedback | coins / medal flip into the counter (UI) |
+| Join reward Collect | spectacle | UI/CoinShower: wallet coins pop in across the screen, bob, then stream on curves into the wallet (rising ticks, the counter rolls in step), a till and one soft gold ring at the wallet (~2 s) |
 | Barge moors | state | a bow wave and a foam ring at the quay, a soft horn smoke puff |
 | Boat wake / spray | state | the existing Ocean/Wake trail + spray, scaled by speed; chunky foam |
 | Storm | state | rain streaks, whitecaps, spindrift (docs/05 7) |

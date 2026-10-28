@@ -1,14 +1,14 @@
 --!strict
 -- StreakRules: pure daily streak maths (docs/15 section 1 and hook H5), tested in
--- tests/Streak.spec.luau. A crate is available once per UTC day; days index from the Unix epoch.
+-- tests/Streak.spec.luau. A reward is available once per UTC day; days index from the Unix epoch.
 --
 -- The state lives in data.flags.streak as a flat table (ProgressionRules sanitizes flags that way):
 -- d = last claimed UTC day index (0 = never), s = day in the 7-day cycle (0..7), c = the day
 -- index of the last day-7 cosmetic grant (0 = none).
 --
 -- Forgiving (hard rule, docs/15 section 1): one missed day is free (a "calm day"); a longer break
--- drops the streak back three days, never to zero. Away more than 3 days turns the crate into the
--- bigger welcome-back crate once, paying its bonus on top of that day's Cash.
+-- drops the streak back three days, never to zero. Away more than 3 days turns the reward into the
+-- bigger welcome-back reward once, paying its bonus on top of that day's Cash.
 
 local Config = require(script.Parent.Config.StreakConfig)
 

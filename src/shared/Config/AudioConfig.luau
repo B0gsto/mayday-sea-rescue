@@ -133,7 +133,6 @@ AudioConfig.Clips = {
 	-- end RP-M5 stream E2
 
 	-- G43: rewards, shops, the album, pets and the seasonal events.
-	Crate_Lid = rl(9120881884, 0.55, "Wood Groan Creak Opening Wood Chest Coffin 8 (SFX)"),
 	Cash_Coins = rl(9113704200, 0.4, "Candy Machine Coin Drops Insert Vending 5 (SFX)"),
 	Shop_Till = rl(9113728648, 0.55, "Cash Register 4 (SFX)"),
 	Album_Sticker = rl(9113263851, 0.45, "Balloon Pops Slap Clap Smack 1 (SFX)", "sticker slap"),

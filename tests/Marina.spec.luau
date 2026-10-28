@@ -40,7 +40,7 @@ return function(t)
 			local jetty = M.LOTS.Jetty
 			t.expect(math.abs(M.JETTY.x0 - (jetty.cf.X + jetty.size.X / 2)) < 1e-3).toBe(true)
 			t.expect(M.JETTY.x1 < -7).toBe(true) -- a craft is 14 wide on the berth centre line
-			for _, offset in { BayLaunch.STAND, BayLaunch.CRATE, BayLaunch.SIGN } do
+			for _, offset in { BayLaunch.STAND } do
 				local p = offset.Position
 				t.expect(p.X >= M.JETTY.x0 and p.X <= M.JETTY.x1).toBe(true)
 				t.expect(p.Z >= M.JETTY.out and p.Z <= M.JETTY.z1).toBe(true)
