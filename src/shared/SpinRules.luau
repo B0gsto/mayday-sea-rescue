@@ -264,36 +264,44 @@ function SpinRules.accrue(state: State, rescued: number, now: number): (State, n
 	return nextState, added
 end
 
-local function pickWeighted(rng: () -> number, rarities: { Rarity }): Rarity
+-- The next spin's odds in percent per rarity (sums to 100), the same table the board shows and
+-- roll draws from: on a guaranteed spin the rarities below the floor are 0 and the rest renormalised.
+function SpinRules.nextOdds(pity: Pity?): { [string]: number }
+	local epics = math.max(0, math.floor(tonumber(pity and pity.epic) or 0))
+	local legends = math.max(0, math.floor(tonumber(pity and pity.legendary) or 0))
+	local floor = if legends >= SpinRules.PITY_LEGENDARY - 1
+		then SpinRules.rank("Legendary")
+		elseif epics >= SpinRules.PITY_EPIC - 1 then SpinRules.rank("Epic")
+		else 1
 	local total = 0
-	for i = 1, #rarities do
-		total += SpinRules.RARITIES[rarities[i]].odds
+	for i = floor, #ORDER do
+		total += SpinRules.RARITIES[ORDER[i]].odds
 	end
-	local roll = rng() * total
-	for i = 1, #rarities do
-		local rarity: Rarity = rarities[i]
-		roll -= SpinRules.RARITIES[rarity].odds
+	local odds: { [string]: number } = {}
+	for i, rarity in ORDER do
+		odds[rarity] = if i >= floor then SpinRules.RARITIES[rarity].odds * 100 / total else 0
+	end
+	return odds
+end
+
+-- A percentage for the board: at most 4 decimals, trailing zeros dropped (2.3333, 0.5, 50).
+function SpinRules.percent(value: number): string
+	local text = string.format("%.4f", value)
+	text = string.gsub(text, "0+$", "")
+	text = string.gsub(text, "%.$", "")
+	return text
+end
+
+local function pickWeighted(rng: () -> number, odds: { [string]: number }): Rarity
+	local roll = rng() * 100
+	for i = 1, #ORDER do
+		local rarity: Rarity = ORDER[i]
+		roll -= odds[rarity]
 		if roll < 0 then
 			return rarity
 		end
 	end
-	return rarities[#rarities]
-end
-
-function SpinRules.rollRarity(rng: () -> number): Rarity
-	return pickWeighted(rng, SpinRules.RARITY_ORDER)
-end
-
-function SpinRules.rollRarityAtLeast(rng: () -> number, floorRarity: Rarity): Rarity
-	local floor = SpinRules.rank(floorRarity)
-	local pool: { Rarity } = {}
-	for i = 1, #ORDER do
-		local rarity: Rarity = ORDER[i]
-		if SpinRules.rank(rarity) >= floor then
-			table.insert(pool, rarity)
-		end
-	end
-	return pickWeighted(rng, pool)
+	return ORDER[#ORDER]
 end
 
 local function pickPrize(rng: () -> number, rarity: Rarity): Prize
@@ -305,14 +313,7 @@ end
 function SpinRules.roll(rng: () -> number, pity: Pity?): Result
 	local epics = math.max(0, math.floor(tonumber(pity and pity.epic) or 0))
 	local legends = math.max(0, math.floor(tonumber(pity and pity.legendary) or 0))
-	local rarity: Rarity
-	if legends >= SpinRules.PITY_LEGENDARY - 1 then
-		rarity = SpinRules.rollRarityAtLeast(rng, "Legendary")
-	elseif epics >= SpinRules.PITY_EPIC - 1 then
-		rarity = SpinRules.rollRarityAtLeast(rng, "Epic")
-	else
-		rarity = SpinRules.rollRarity(rng)
-	end
+	local rarity: Rarity = pickWeighted(rng, SpinRules.nextOdds(pity))
 	local nextPity: Pity = {
 		epic = if SpinRules.rank(rarity) >= SpinRules.rank("Epic") then 0 else epics + 1,
 		legendary = if SpinRules.rank(rarity) >= SpinRules.rank("Legendary")

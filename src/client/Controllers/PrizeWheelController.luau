@@ -13,6 +13,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
+local PrizeWheel = require(Shared:WaitForChild("PrizeWheel"))
 local SpinRules = require(Shared:WaitForChild("SpinRules"))
 local WheelMath = require(Shared:WaitForChild("WheelMath"))
 
@@ -33,8 +34,8 @@ PrizeWheelController.Priority = 72
 
 local wheels: { [number]: Model } = {}
 local basePivot: { [number]: CFrame } = {}
-local angleNow: { [number]: number } = {}
 local offeredProducts: { [string]: boolean } = {}
+local spinning: { [number]: boolean } = {}
 local fxCanvas: Frame? = nil
 
 local function rarityColor(rarity: string): Color3
@@ -313,6 +314,24 @@ local function reveal(payload: any, rotor: Model)
 	end)
 end
 
+-- Only the island's owner can spin or buy at its wheel: others get no prompt and no click cursor.
+local function mine(inst: Instance): boolean
+	local wheel = inst:FindFirstAncestor("PrizeWheel") or inst
+	return wheel:GetAttribute("Plot") == player:GetAttribute("DockPlot")
+end
+
+-- The odds board: your own island's shows your next spin's odds and pity, others the base odds.
+local function paintOdds(wheel: Instance)
+	local board = wheel:FindFirstChild("OddsBoard", true)
+	if not board then
+		return
+	end
+	local epic, legend =
+		player:GetAttribute("SpinPityEpic"), player:GetAttribute("SpinPityLegendary")
+	local own = mine(wheel) and type(epic) == "number" and type(legend) == "number"
+	PrizeWheel.showOdds(board, if own then { epic = epic, legendary = legend } else nil)
+end
+
 local function spin(payload: any)
 	if type(payload) ~= "table" or type(payload.plot) ~= "number" then
 		return
@@ -330,7 +349,9 @@ local function spin(payload: any)
 	local base = basePivot[payload.plot]
 	local count = #SpinRules.SEGMENTS
 	local want = WheelMath.normalize(WheelMath.spinAngle(payload.segment or 1, count, 0))
-	local from = angleNow[payload.plot] or 0
+	-- from the rotor's real angle: after streaming out and back it sits at the server's pose, not our last stop
+	local turned = base:ToObjectSpace(rotor:GetPivot()).RightVector
+	local from = math.deg(math.atan2(turned.Y, turned.X))
 	local target = from + 5 * 360 + WheelMath.normalize(want - from)
 	local start = tonumber(payload.startTime) or Workspace:GetServerTimeNow()
 	local duration = math.max(1, tonumber(payload.duration) or 4.5)
@@ -339,6 +360,7 @@ local function spin(payload: any)
 	local flapAt = -1
 	local lastTicks = WheelMath.ticksFor(from, count)
 	AudioController.play("Rigging_Creak", pivotPart.Position, 2.5, 1.3) -- the wheel is shoved round
+	spinning[payload.plot] = true
 	local conn: RBXScriptConnection? = nil
 	conn = RunService.Heartbeat:Connect(function()
 		local t = (Workspace:GetServerTimeNow() - start) / duration
@@ -364,7 +386,8 @@ local function spin(payload: any)
 		if t >= 1 and conn then
 			conn:Disconnect()
 			conn = nil
-			angleNow[payload.plot] = target
+			spinning[payload.plot] = nil
+			paintOdds(wheel)
 			rotor:PivotTo(base * CFrame.Angles(0, 0, math.rad(target)))
 			if flapper and flapRest then
 				flapper.CFrame = flapRest
@@ -372,12 +395,6 @@ local function spin(payload: any)
 			reveal(payload, rotor)
 		end
 	end)
-end
-
--- Only the island's owner can spin or buy at its wheel: others get no prompt and no click cursor.
-local function mine(inst: Instance): boolean
-	local wheel = inst:FindFirstAncestor("PrizeWheel") or inst
-	return wheel:GetAttribute("Plot") == player:GetAttribute("DockPlot")
 end
 
 local function hidePaid(machine: Instance, index: number, hidden: boolean)
@@ -427,6 +444,7 @@ local function gate(wheel: Instance)
 		end
 	end
 	paintPaid(wheel) -- the token machine's clicks
+	paintOdds(wheel)
 end
 
 local function register(model: Instance)
@@ -442,12 +460,11 @@ local function register(model: Instance)
 	-- streaming: without its PrimaryPart the rotor's pivot is not the hub; spin() takes it later
 	if rotor and rotor:IsA("Model") and rotor.PrimaryPart then
 		basePivot[plot] = rotor:GetPivot()
-		angleNow[plot] = 0
 	end
 	gate(model)
 	-- streaming: buttons can arrive after the model
 	model.DescendantAdded:Connect(function(d)
-		if d:IsA("ProximityPrompt") or d:IsA("ClickDetector") then
+		if d:IsA("ProximityPrompt") or d:IsA("ClickDetector") or d.Name == "PityEpic" then
 			task.defer(gate, model)
 		end
 	end)
@@ -512,6 +529,16 @@ function PrizeWheelController.Init()
 			gate(wheel)
 		end
 	end)
+	-- the pity counters change as the spin starts: repaint after the wheel stops (no spoiler)
+	local function repaintOdds()
+		for plot, wheel in wheels do
+			if not spinning[plot] then
+				paintOdds(wheel)
+			end
+		end
+	end
+	player:GetAttributeChangedSignal("SpinPityEpic"):Connect(repaintOdds)
+	player:GetAttributeChangedSignal("SpinPityLegendary"):Connect(repaintOdds)
 	fetchCatalogue()
 	-- the catalogue hides paid random items until the server has read the player's policy: ask again then
 	player:GetAttributeChangedSignal("PolicyRead"):Connect(fetchCatalogue)
