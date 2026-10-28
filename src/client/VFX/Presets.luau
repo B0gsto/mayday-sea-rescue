@@ -551,10 +551,10 @@ local function charge(color: Color3, size: number, time: number): Layer
 		colors = { color },
 		at = "top",
 		size = { size * 0.15, size },
-		transparency = { 0.7, 0.1 },
+		transparency = { 0.5, 0 },
 		lifetime = { time, time },
 		speed = { 0, 0 },
-		emission = 0.6,
+		emission = 0.8,
 		ease = "in", -- the swell accelerates into the hit
 	}
 end
@@ -616,7 +616,8 @@ local function sounds(list: { { any } }): { Sound }
 	return out
 end
 
-local HQ_AT = 0.32 -- the charge, then everything hits at once
+local HQ_AT = 0.5 -- the charge, then everything hits at once
+local WARM = Color3.fromRGB(255, 236, 180) -- the white-hot core, warmed so it never blows the frame out
 
 -- spectacle: your HQ levels up, the biggest moment in the game (the only white-hot core and the only slow-mo)
 Presets.ALL.fx1_hq_levelup = {
@@ -625,19 +626,25 @@ Presets.ALL.fx1_hq_levelup = {
 	impact = HQ_AT,
 	hitstop = 0.22,
 	layers = {
-		charge(GOLD, 8, HQ_AT),
-		core(WHITE, 22, HQ_AT, 1),
-		rays(14, { WHITE, GOLD }, 26, HQ_AT, 0.8),
-		studRing(GOLD, 16, 0.9, HQ_AT),
-		studRing(WHITE, 11, 0.75, HQ_AT + 0.18),
-		with(confetti(54, { 36, 56 }, 32, { RED, WHITE, YELLOW, NAVY, GOLD }), { delay = HQ_AT }),
+		charge(GOLD, 20, HQ_AT),
+		with(core(WARM, 12, HQ_AT, 0.6), { lifetime = { 0.22, 0.22 } }), -- a hit, gone before it hides the HQ
+		with( -- under 0.5 emission and half see-through: still gold on a bright sky
+			rays(14, { GOLD, YELLOW }, 26, HQ_AT, 0.45),
+			{ transparency = { 0.4, 0.5, 1 } }
+		),
+		studRing(GOLD, 24, 1.1, HQ_AT),
+		studRing(WHITE, 17, 0.9, HQ_AT + 0.18),
+		with( -- floats down for ~2.5 s: the settle
+			confetti(60, { 36, 56 }, 32, { RED, WHITE, YELLOW, NAVY, GOLD }),
+			{ delay = HQ_AT, lifetime = { 2.2, 2.8 }, drag = 1.1, accel = Vector3.new(0, -18, 0) }
+		),
 		with(plates({ RED, WHITE, YELLOW, NAVY }, 16), { delay = HQ_AT }),
 		with(table.clone(BUILD[2]), { delay = HQ_AT + 0.05 }), -- the dust ring settles
 		coins(16, { 26, 40 }, 45, HQ_AT + 0.12),
 	},
 	beams = {
-		{ color = GOLD, width = 11, height = 70, time = 1.5, emission = 1, at = "top" },
-		{ color = WHITE, width = 4, height = 80, time = 1.1, emission = 1, at = "top" },
+		{ color = GOLD, width = 6, height = 70, time = 2.2, emission = 0.5, at = "top" },
+		{ color = WARM, width = 3, height = 80, time = 1.6, emission = 0.8, at = "top" },
 	},
 	light = { color = GOLD, brightness = 6, range = 60, time = 1.4 },
 	punch = {
@@ -662,7 +669,7 @@ Presets.ALL.fx1_hq_levelup = {
 	}),
 }
 
-local GOLD_AT = 0.2
+local GOLD_AT = 0.3
 
 -- spectacle: a golden call delivered (OpsDebrief): a gold pillar, gold rays and a coin fountain round you
 Presets.ALL.fx1_golden_rescue = {
@@ -670,15 +677,18 @@ Presets.ALL.fx1_golden_rescue = {
 	big = true,
 	impact = GOLD_AT,
 	layers = {
-		charge(GOLD, 5, GOLD_AT),
-		core(GOLD, 12, GOLD_AT, 0.6),
-		rays(10, { GOLD, YELLOW }, 16, GOLD_AT, 0.6),
+		with(charge(GOLD, 9, GOLD_AT), { emission = 0.5 }),
+		core(GOLD, 7, GOLD_AT, 0.6),
+		rays(10, { GOLD, YELLOW }, 7, GOLD_AT, 0.4),
 		studRing(GOLD, 13, 0.85, GOLD_AT),
-		coins(26, { 26, 38 }, 30, GOLD_AT),
-		with(confetti(24, { 18, 28 }, 55, { GOLD, WHITE }), { delay = GOLD_AT }),
-		with(plates({ GOLD }, 12), { delay = GOLD_AT + 0.05, emission = 0.3 }),
+		with(coins(13, { 30, 42 }, 60, GOLD_AT), { size = { 1.3 } }), -- up and out, never a pile on you
+		with(
+			confetti(24, { 18, 28 }, 55, { GOLD, WHITE }),
+			{ delay = GOLD_AT, size = { 1.4, 1.3 } }
+		),
+		with(plates({ GOLD }, 10), { delay = GOLD_AT + 0.05, emission = 0.3, size = { 1.6 } }),
 	},
-	beams = { { color = GOLD, width = 6, height = 45, time = 1.2, emission = 0.8 } },
+	beams = { { color = GOLD, width = 6, height = 45, time = 1.2, emission = 0.5 } },
 	light = { color = GOLD, brightness = 4, range = 30, time = 1 },
 	punch = {
 		fov = 4,
@@ -697,21 +707,30 @@ Presets.ALL.fx1_golden_rescue = {
 	}),
 }
 
+local WHEEL_AT = 0.2 -- a short rarity-coloured charge as the capsule pops
+
 -- spectacle: a Legendary / Mythic prize pops over the wheel; opts.color = the rarity, opts.scale 0.88 / 1
 Presets.ALL.fx1_wheel_jackpot = {
 	job = "showcase",
 	big = true,
-	impact = 0,
+	impact = WHEEL_AT,
 	layers = {
-		tinted(core(WHITE, 14, 0, 0.9)),
-		tinted(rays(10, { WHITE }, 18, 0, 0.8)),
-		with(rays(6, { WHITE }, 14, 0.05, 0.6), { at = "origin" }) :: Layer,
-		tinted(studRing(WHITE, 12, 0.8, 0)),
-		tinted(confetti(56, { 16, 30 }, 75, { WHITE })),
-		confetti(14, { 14, 24 }, 60, { WHITE, GOLD }),
-		with(coins(14, { 18, 30 }, 50, 0.08), { at = "origin" }) :: Layer,
+		with(tinted(charge(WHITE, 14, WHEEL_AT)), { emission = 0.4 }), -- low emission: pink, not a white dot
+		tinted(core(WHITE, 14, WHEEL_AT, 0.9)),
+		tinted(rays(12, { WHITE }, 18, WHEEL_AT, 0.5)), -- under 0.6 so the rarity colour still reads
+		tinted(studRing(WHITE, 12, 0.8, WHEEL_AT)),
+		tinted(studRing(WHITE, 8, 0.7, WHEEL_AT + 0.25)),
+		with(
+			tinted(confetti(56, { 16, 30 }, 55, { WHITE })),
+			{ delay = WHEEL_AT, size = { 1.6, 1.5 } }
+		),
+		with(
+			confetti(14, { 14, 24 }, 50, { WHITE, GOLD }),
+			{ delay = WHEEL_AT, size = { 1.6, 1.5 } }
+		),
+		with(coins(14, { 18, 30 }, 50, WHEEL_AT + 0.08), { at = "origin", size = { 1.8 } }) :: Layer,
 	},
-	beams = { { color = WHITE, width = 7, height = 50, time = 1.3, emission = 1, tint = true } },
+	beams = { { color = WHITE, width = 10, height = 50, time = 1.6, emission = 1, tint = true } },
 	light = { color = WHITE, brightness = 4, range = 36, time = 1 },
 	punch = { fov = 4, magnitude = 0.9, roughness = 18, time = 0.4 },
 	frame = { tint = WHITE, saturation = 0.3, brightness = 0.08 }, -- opts.color (the rarity) tints it lightly
@@ -730,12 +749,12 @@ Presets.ALL.fx1_build_snap = {
 	job = "spectacle",
 	impact = 0,
 	layers = {
-		studRing(WHITE, 13, 0.7, 0),
+		studRing(WHITE, 20, 0.8, 0),
 		groundRing("shockwave_ring", WHITE, { 11, 12.5 }, 0.6, 0.1),
-		plates({ RED, WHITE, YELLOW, NAVY }, 16),
-		BUILD[2],
-		confetti(24, { 18, 28 }, 38, { RED, WHITE, YELLOW, SEA, GREEN }),
-		rays(8, { WHITE, YELLOW }, 12, 0, 0.3),
+		plates({ RED, WHITE, YELLOW, NAVY }, 12),
+		with(table.clone(BUILD[2]), { transparency = { 0.5 }, count = 8 }), -- the dust never hides you
+		confetti(12, { 18, 28 }, 38, { RED, WHITE, YELLOW, SEA, GREEN }),
+		rays(8, { WHITE, YELLOW }, 6, 0, 0.3),
 	},
 	light = { color = WHITE, brightness = 2, range = 30, time = 0.6 },
 	punch = { fov = 2.5, magnitude = 0.5, roughness = 20, time = 0.3 },

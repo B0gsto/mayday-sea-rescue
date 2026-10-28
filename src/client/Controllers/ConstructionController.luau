@@ -535,7 +535,7 @@ local function finish(site: Site)
 		}
 		VFXKit.play(if hq then "fx1_hq_levelup" else "fx1_build_snap", base, fx)
 		if hq then
-			task.delay(0.32, AudioController.play, "Music_CrateFanfare", nil, 1, 1) -- on the impact
+			task.delay(0.5, AudioController.play, "Music_CrateFanfare", nil, 1, 1) -- on the impact (HQ_AT)
 		end
 	end)
 	site.props:Destroy()
