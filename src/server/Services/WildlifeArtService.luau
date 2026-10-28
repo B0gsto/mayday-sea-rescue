@@ -2,8 +2,7 @@
 -- WildlifeArtService (G76): publishes the static grey seal and herring gull meshes as
 -- ReplicatedStorage.WildlifeTemplates for the client's ambient wildlife (WildlifeController); clients can't load
 -- assets themselves (InsertService is server only). Each template carries attribute Parts (its BasePart count).
--- Also the low-poly pets (Shared.WildlifeRig) with an M_Ani_<pet>_Rare copy where a rare albedo exists, and the
--- daily sea chest (World/StreakCrate).
+-- Also the low-poly pets (Shared.WildlifeRig) with an M_Ani_<pet>_Rare copy where a rare albedo exists.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Assets = script.Parent.Parent:WaitForChild("Assets")
@@ -19,7 +18,6 @@ local ASSETS = {
 	"M_Ani_Turtle",
 	"M_Ani_Puffin",
 	"M_Ani_Gull",
-	"M_Prop_SeaChest",
 }
 
 -- A copy of `m` wearing the rare albedo set (Appearances.<asset>_Rare.Rare.Dry), or nil when there is none.

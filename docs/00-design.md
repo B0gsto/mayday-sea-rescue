@@ -76,8 +76,8 @@ one. The Robux-only boats are their own, faster boats on the RIB's call reach: s
 
 No ranks and no Reputation. Progress is a **linear unlock tree** on your island: each building lists what it needs
 ("Needs: Crane"), craft unlock through their building (RIB ← Boathouse, Lifeboat ← slip, Sub ← Sub pen, Helicopter ←
-Hangar), and call reach follows the best craft you can launch. Cash (from calls, quests, workers, the daily chest,
-streaks) is the only currency; it pays for buildings, craft, decor and cosmetics. Free players reach everything
+Hangar), and call reach follows the best craft you can launch. Cash (from calls, quests, workers, the daily streak
+reward) is the only currency; it pays for buildings, craft, decor and cosmetics. Free players reach everything
 (pacing sim in `tests/`: the whole tree in ~17 h of play). The tree is one config (`DockConfig.Buildings`, rules
 `shared/UnlockTree`), so new content is a new row. Badges and leaderboards count people rescued. docs/23 (q), (i).
 

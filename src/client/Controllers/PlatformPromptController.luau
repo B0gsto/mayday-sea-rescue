@@ -2,7 +2,7 @@
 -- PlatformPromptController: shows Roblox's own re-engagement prompts at good moments and never
 -- mid-rescue. The timing policy and the asked timestamps live on the server (PlatformPromptService,
 -- Shared/PlatformPrompts); this controller only watches the triggers the game already publishes:
---   StreakClaim    player attribute, set when a daily crate opens -> notification opt-in
+--   StreakClaim    player attribute, set when the daily reward is collected -> notification opt-in
 --   dockBuildings  PlayerDataChanged: a new island building -> favourite, once its Lego build beat has ended
 --   CrewOpDone     player attribute, set after a first rescue with 2+ crew -> invite
 -- Every platform call is pcall-guarded and platform eligibility is checked before asking, so a

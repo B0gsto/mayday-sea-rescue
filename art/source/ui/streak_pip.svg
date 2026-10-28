@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 172" width="160" height="172"><!-- a streak day pip: a round Lego 1x1 tile seen from above, its stud on top. This is the green "done" variant: tools/ui-art/pip_variants.py swaps the colours and the mark (tick, star or none) per state --><defs><linearGradient id="gF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A4F57A"/><stop offset="1" stop-color="#33BE4D"/></linearGradient><linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C8FFA6"/><stop offset="1" stop-color="#4FD067"/></linearGradient><linearGradient id="gStar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF7B8"/><stop offset="1" stop-color="#FFB81C"/></linearGradient></defs>
+<circle cx="80" cy="76" r="62" fill="#fff" stroke="#fff" stroke-width="26"/>
+<circle cx="80" cy="86" r="62" fill="#fff" stroke="#fff" stroke-width="26"/>
+<circle cx="80" cy="86" r="62" fill="#14121C" stroke="#14121C" stroke-width="10"/>
+<circle cx="80" cy="76" r="62" fill="#14121C" stroke="#14121C" stroke-width="10"/>
+<circle cx="80" cy="86" r="62" fill="#1F8A33"/>
+<circle cx="80" cy="76" r="62" fill="url(#gF)"/>
+<path d="M30,58 A54,54 0 0,1 62,25" fill="none" stroke="#fff" stroke-opacity="0.55" stroke-width="9" stroke-linecap="round"/>
+<circle cx="80" cy="81" r="39" fill="#1F8A33" fill-opacity="0.55"/>
+<circle cx="80" cy="75" r="39" fill="url(#gS)" stroke="#14121C" stroke-opacity="0.3" stroke-width="3"/>
+<path d="M52,66 A30,30 0 0,1 80,46" fill="none" stroke="#fff" stroke-opacity="0.7" stroke-width="7" stroke-linecap="round"/>
+<!--MARK--><g><path d="M60,76 L74,90 L101,61" fill="none" stroke="#14121C" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/><path d="M60,76 L74,90 L101,61" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></g><!--/MARK-->
+</svg>

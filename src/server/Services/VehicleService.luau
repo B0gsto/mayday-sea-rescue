@@ -1508,7 +1508,7 @@ function VehicleService.Stow(player: Player): string
 end
 
 -- K11 / docs/23: every spawn stands the player on their island (WP-19b: its spawn); a returning player (coldOpenDone) also gets
--- their craft docked beside them, the daily crate (StreakController) on the path. A new player's cold open
+-- their craft docked beside them. A new player's cold open
 -- seats them at the berth (SpawnColdOpen); someone already seated is left alone.
 local function homeAtBay(player: Player, character: Model)
 	local data = DataService.Get(player)

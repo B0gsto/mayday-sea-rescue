@@ -239,21 +239,9 @@ def main():
                     # ---- dev-hook systems ---------------------------------------------------
                     server(s, UNSEAT)
                     time.sleep(1.5)
-                    # the crate sits in the player's own lifeboat bay (StreakService.open range check)
-                    # (execute_luau runs in its own VM: a require of VehicleService there has no bays, so read the published BayCFrame)
-                    tp = server(s, """
-local p = game:GetService("Players"):GetPlayers()[1]
-local c = p.Character
-local Shared = game:GetService("ReplicatedStorage").Shared
-local bay = p:GetAttribute("BayCFrame")
-local at = if bay then (bay * require(Shared.Boat.BayLaunch).CRATE).Position
-    else require(Shared.Config.StreakConfig).PorchPosition
-if c then c:PivotTo(CFrame.new(at + Vector3.new(0, 3, 0))) end
-return "tp=" .. tostring(bay ~= nil)
-""")
                     server(s, 'return tostring(game:GetService("ServerStorage").StreakDev:Invoke("day", 7))')
-                    streak = client(s, 'local r=game:GetService("ReplicatedStorage").Net.Streak_Open:InvokeServer() return tostring(r and r.ok).."|"..tostring(r and r.streak)')
-                    system("StreakCrate", streak == "true|7", streak + " " + tp)
+                    streak = client(s, 'local r=game:GetService("ReplicatedStorage").Net.Streak_Collect:InvokeServer() return tostring(r and r.ok).."|"..tostring(r and r.streak)')
+                    system("StreakCollect", streak == "true|7", streak)
 
 
                     server(s, 'local p=game:GetService("Players"):GetPlayers()[1] local c=p.Character if c then c:PivotTo(CFrame.new(-105, 8, -30)) end return "tp"')
