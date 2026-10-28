@@ -1471,6 +1471,14 @@ function MapController.Init()
 	gui.Name = "MapHud"
 	gui.ResetOnSpawn = false
 	gui.IgnoreGuiInset = true
+	-- compact screens (phones): the panel fills the height, and over the top bar its title icon went off screen (SE)
+	local function fitInset()
+		local vp = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize
+			or Vector2.new(1280, 720)
+		gui.IgnoreGuiInset = not Theme.compact(vp, Theme.scaleFor(vp))
+	end
+	fitInset()
+	Layout.onMetrics(fitInset)
 	gui.DisplayOrder = 16
 	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	gui:SetAttribute("CinematicKeep", true) -- MapController hides itself on CinematicPlaying

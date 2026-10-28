@@ -139,6 +139,8 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 		for _, id in { "Golden", "Neon", "Rainbow", "Galaxy" } do
 			table.insert(chips, { id = id, label = id, color = "purple" })
 		end
+		local vp, k = Style.metrics(panel.root)
+		local compact = Theme.compact(vp, k)
 		for _, chip in chips do
 			local ready = chip.id == nil or owned[chip.id] == true
 			-- scale-to-fit: the chips share the row, so all 5 fit the narrowest panel
@@ -152,9 +154,11 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 			local chosen = (view and view.variant) == chip.id
 			local text = Style.label(face, chip.label, Theme.Text.small)
 			text.AnchorPoint = Vector2.new(0.5, 0.5)
-			-- the chosen chip's tick sits top-right: the label shifts left, clear of it
-			text.Position = UDim2.new(0.5, if chosen then -12 else 0, 0.5, 0)
-			text.Size = UDim2.new(1, if chosen then -36 else -10, 1, -8)
+			-- the chosen chip's tick sits top-right: the label shifts left, clear of it (compact: the tick sits on
+			-- the bottom-right corner instead, the label keeps the chip's width: "Natural" read cramped on SE)
+			local shift = chosen and not compact
+			text.Position = UDim2.new(0.5, if shift then -12 else 0, 0.5, 0)
+			text.Size = UDim2.new(1, if shift then -36 else -10, 1, -8)
 			text.TextWrapped = false -- one line that scales down (wrapped scaling clipped "Natural" on SE)
 			text.TextScaled = true
 			button.Active = ready
@@ -165,9 +169,10 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 			end, S.cornerSmall)
 			if chosen then
 				local tick = Instance.new("Frame")
-				tick.AnchorPoint = Vector2.new(1, 0)
-				tick.Position = UDim2.new(1, -6, 0, 4)
-				tick.Size = UDim2.fromOffset(18, 18)
+				tick.AnchorPoint = if compact then Vector2.new(0.5, 0.5) else Vector2.new(1, 0)
+				tick.Position = if compact then UDim2.new(1, -6, 1, -6) else UDim2.new(1, -6, 0, 4)
+				tick.Size = if compact then UDim2.fromOffset(26, 26) else UDim2.fromOffset(18, 18)
+				tick.ZIndex = 3
 				tick.BackgroundTransparency = 1
 				tick.Parent = face
 				Style.icon(tick, "daily")
@@ -181,8 +186,7 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 		host.AutomaticSize = Enum.AutomaticSize.Y
 		host.Parent = panel.body
 		-- short phones (SE): the card shrinks so its button stays inside the panel
-		local vp, k = Style.metrics(panel.root)
-		local cellH = if Theme.compact(vp, k)
+		local cellH = if compact
 			then math.clamp(Theme.panelSize(vp, k, PANEL_SIZE).Y - 175, 200, 300)
 			else 300
 		local grid = Instance.new("UIGridLayout")

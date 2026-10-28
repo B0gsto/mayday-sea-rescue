@@ -182,10 +182,13 @@ function OnboardingBeacon.start(): Beacon
 				(vp.Y / 2 - margin) / math.max(math.abs(dy), 0.01)
 			)
 			arrow.Rotation = math.deg(math.atan2(dx, -dy)) + 180 -- the sprite's tip points down
-			-- clear of the HUD like UI/Waypoint: pinned left it hid under the menu column (playtest 2026-10-26)
+			-- clear of the HUD like UI/Waypoint: pinned left it hid under the menu column (playtest 2026-10-26).
+			-- The clearance is the tip's reach (half the sprite box), not the head's: spun toward the menu, the tip
+			-- lay on the Map / Pet buttons (pt5 2026-10-28)
+			local reach = EDGE * 324 / 288 + 4
 			local pin = Layout.clearOfHud(
 				Vector2.new(vp.X / 2 + dx * k, vp.Y / 2 + dy * k),
-				Vector2.new(EDGE / 2, EDGE / 2),
+				Vector2.new(reach, reach),
 				40
 			)
 			dx, dy, k = pin.X - vp.X / 2, pin.Y - vp.Y / 2, 1

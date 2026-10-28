@@ -282,6 +282,7 @@ local function tick()
 		or player:GetAttribute("MenuOpen") == true
 		or player:GetAttribute("MapOpen") == true
 		or player:GetAttribute("CinematicPlaying") == true
+		or player:GetAttribute("DebriefShown") == true
 	if hidden then
 		r.Visible = false
 	else

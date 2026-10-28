@@ -668,21 +668,36 @@ end
 
 local focusItem: (DockBlueprints.Item, number?) -> ()
 
--- A "Needs" tap: focus what is missing and bring its card into the list's view.
-local function jumpTo(need: DockBlueprints.Item)
-	focusItem(need)
+-- Scroll the list so the card of `key` sits at its top; returns the card.
+local function scrollToCard(key: string): GuiObject?
 	local content = cardsContent
 	for _, card in cards do
-		if content and card:GetAttribute("ItemKey") == need.key then
+		if content and card:GetAttribute("ItemKey") == key then
 			local _, scale = Style.metrics(content)
 			local dy = (card.AbsolutePosition.Y - content.AbsolutePosition.Y)
 				/ math.max(scale, 0.05)
 			content.CanvasPosition = Vector2.new(0, math.max(0, content.CanvasPosition.Y + dy - 8))
-			if InputGlyph.device() == "Gamepad" then
-				GuiService.SelectedObject = card
-			end
-			break
+			return card
 		end
+	end
+	return nil
+end
+
+-- After the list (re)builds and the panel's pop settles (Style.pop, 0.28 s): AbsolutePosition is stale until then.
+local function showCardSoon(key: string)
+	task.delay(0.35, function()
+		if displayed then
+			scrollToCard(key)
+		end
+	end)
+end
+
+-- A "Needs" tap: focus what is missing and bring its card into the list's view.
+local function jumpTo(need: DockBlueprints.Item)
+	focusItem(need)
+	local card = scrollToCard(need.key)
+	if card and InputGlyph.device() == "Gamepad" then
+		GuiService.SelectedObject = card
 	end
 end
 
@@ -908,6 +923,9 @@ function DockController.Pulse(key: string?)
 		pickTab(1) -- the pointed card lives on the Build tab
 	else
 		refreshCards()
+	end
+	if key then
+		showCardSoon(key)
 	end
 end
 
@@ -1237,6 +1255,9 @@ local function openBuild()
 			end
 		end
 		GuiService.SelectedObject = want
+	end
+	if pulseKey then
+		showCardSoon(pulseKey) -- the tutorial's card sat below the fold (Workshop, pt5 2026-10-28)
 	end
 	islandView(0.8)
 	AudioController.play("UI_Click")
@@ -1581,6 +1602,7 @@ function DockController.OpenBuild(focusKey: string?): boolean
 		for _, item in DockBlueprints.catalog() do
 			if item.key == focusKey then
 				focusItem(item)
+				showCardSoon(item.key)
 				break
 			end
 		end

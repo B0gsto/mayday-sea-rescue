@@ -530,6 +530,7 @@ local function renderChips()
 		and not Layout.coldOpen()
 		and player:GetAttribute("MenuOpen") ~= true
 		and player:GetAttribute("CinematicPlaying") ~= true
+		and player:GetAttribute("DebriefShown") ~= true -- the debrief toast shares the top band (UI/OpsDebrief)
 	gui.Enabled = shown
 	if not shown then
 		return

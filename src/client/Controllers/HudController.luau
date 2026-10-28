@@ -17,6 +17,7 @@ local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
+local TextChatService = game:GetService("TextChatService")
 local TweenService = game:GetService("TweenService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -441,8 +442,24 @@ local function hideCoreGui()
 	end
 end
 
+-- Roblox's chat window sat top left over the menu column once used and ate its clicks (pt5 2026-10-28). Desktop: bottom
+-- right, narrowed, over the minimap only (M opens the map too; top right it lay on the Next / tutorial chips). Touch:
+-- top right over the minimap and wallet, only while the player has chat open (the top-bar button closes it).
+local function placeChat(m: Layout.Metrics)
+	local w = TextChatService:FindFirstChildOfClass("ChatWindowConfiguration")
+	if w then
+		w.HorizontalAlignment = Enum.HorizontalAlignment.Right
+		w.VerticalAlignment = if m.touch
+			then Enum.VerticalAlignment.Top
+			else Enum.VerticalAlignment.Bottom
+		w.WidthScale = if m.touch then 1 else 0.6
+	end
+end
+
 function HudController.Init()
 	hideCoreGui()
+	placeChat(Layout.current())
+	Layout.onMetrics(placeChat)
 	local playerGui = player:WaitForChild("PlayerGui")
 	gui = Instance.new("ScreenGui")
 	gui.Name = "Hud"

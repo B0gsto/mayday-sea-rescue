@@ -173,6 +173,10 @@ function OpsDebrief.new(parent: GuiObject): Debrief
 	local toast = HudTheme.panel("DebriefTablet", UDim2.fromOffset(340, 96), parent)
 	toast.AnchorPoint = Vector2.new(0.5, 0)
 	toast.Visible = false
+	-- the Next chip (UI/NextChip) steps aside while the toast is up: they share the top band (pt5 2026-10-28)
+	toast:GetPropertyChangedSignal("Visible"):Connect(function()
+		player:SetAttribute("DebriefShown", toast.Visible or nil)
+	end)
 	HudTheme.skin(toast)
 	-- shrinks to its HudLayout "debrief" region (a gap clear of the wallet and the edge HUD on small screens)
 	local fit = Instance.new("UIScale")
