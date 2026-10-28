@@ -21,11 +21,14 @@ local TweenService = game:GetService("TweenService")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
 local UI = script.Parent.Parent:WaitForChild("UI")
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local CashBurst = require(UI:WaitForChild("CashBurst"))
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local Layout = require(UI:WaitForChild("Layout"))
 local Menu = require(UI:WaitForChild("Menu"))
 local NextChip = require(UI:WaitForChild("NextChip"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local Hud = require(Shared:WaitForChild("Config"):WaitForChild("UiImages")).Hud
 
 local player = Players.LocalPlayer
@@ -36,6 +39,8 @@ HudController.Priority = 50
 local gui: ScreenGui
 local cashLabel: TextLabel
 local coinPop: UIScale
+local cashPop: UIScale -- the amount squashes up as it rolls (FX2)
+local awardPop: UIScale
 local awardLabel: TextLabel
 local statusRegion: Frame
 local walletRegion: Frame
@@ -57,6 +62,17 @@ local function showAward(award: { [string]: any })
 	awardLabel.Text = text
 	awardLabel.TextTransparency = 0
 	awardLabel.Visible = true
+	awardPop.Scale = if Comfort.reducedMotion() then 1 else 0.4
+	TweenService:Create(awardPop, TweenInfo.new(0.35, Enum.EasingStyle.Back), { Scale = 1 }):Play()
+	-- a quest handed in: bricks rain over you, a chime (FX2 quest_done)
+	local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+	if type(award.reason) == "string" and string.sub(award.reason, 1, 6) == "Quest:" and root then
+		VFXKit.play(
+			"quest_done",
+			CFrame.new((root :: BasePart).Position - Vector3.new(0, 3, 0)),
+			{ radius = 3, height = 7 }
+		)
+	end
 	task.delay(2, function()
 		if serial == awardSerial then
 			TweenService:Create(awardLabel, TweenInfo.new(0.6), { TextTransparency = 1 }):Play()
@@ -85,13 +101,88 @@ local function roll(label: TextLabel, from: number, to: number, fmt: (number) ->
 	end)
 end
 
+-- FX2: a gold "+N" pops out beside the wallet on every gain (overshoot), drifts up and fades. One label, reused.
+local gainLabel: TextLabel? = nil
+local gainSerial = 0
+local function gainPop(amount: number)
+	local screen = cashLabel:FindFirstAncestorWhichIsA("ScreenGui")
+	if not screen then
+		return
+	end
+	local label = gainLabel
+	if not label then
+		local l = HudTheme.label(
+			"CashGain",
+			"",
+			UDim2.fromOffset(240, 60),
+			HudTheme.NumberFont,
+			30,
+			screen
+		)
+		l.AnchorPoint = Vector2.new(0, 0.5)
+		l.TextXAlignment = Enum.TextXAlignment.Left
+		l.TextColor3 = Color3.new(1, 1, 1)
+		local gold = Instance.new("UIGradient") -- the wallet number's own gold
+		gold.Rotation = 90
+		gold.Color = ColorSequence.new(Color3.fromHex("FFE97A"), Color3.fromHex("FFB81C")) -- a deeper top: reads gold, not white
+		gold.Parent = l
+		local edge = Instance.new("UIStroke")
+		edge.Color = Color3.fromHex("3A1E00")
+		edge.Thickness = 3.5
+		edge.LineJoinMode = Enum.LineJoinMode.Round
+		edge.Parent = l
+		Instance.new("UIScale").Parent = l
+		gainLabel, label = l, l
+	end
+	local l = label :: TextLabel
+	local sc = l:FindFirstChildOfClass("UIScale") :: UIScale
+	local edge = l:FindFirstChildOfClass("UIStroke") :: UIStroke
+	gainSerial += 1
+	local serial = gainSerial
+	local h = cashLabel.AbsoluteSize.Y
+	local at = cashLabel.AbsolutePosition + Vector2.new(cashLabel.AbsoluteSize.X + h * 1.3, h * 0.5)
+	l.Text = `+{HudTheme.formatNumber(amount)}`
+	l.TextSize = math.max(28, math.floor(h * 1.05)) -- as big as the wallet number
+	l.Position = UDim2.fromOffset(at.X, at.Y)
+	l.TextTransparency, edge.Transparency = 0, 0
+	l.Visible = true
+	local still = Comfort.reducedMotion()
+	sc.Scale = if still then 1 else 0.3
+	TweenService:Create(sc, TweenInfo.new(0.3, Enum.EasingStyle.Back), { Scale = 1 }):Play()
+	local settle =
+		TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.In, 0, false, 0.65)
+	TweenService:Create(l, settle, {
+		Position = UDim2.fromOffset(at.X, at.Y - (if still then 0 else h * 0.6)),
+		TextTransparency = 1,
+	}):Play()
+	TweenService:Create(edge, settle, { Transparency = 1 }):Play()
+	task.delay(1.2, function()
+		if serial == gainSerial then
+			l.Visible = false
+		end
+	end)
+end
+
 local function render(data: { [string]: any })
 	snapshot = data
 	local cash = tonumber(data.cash) or 0
-	if cashShown and cash > cashShown and not Comfort.reducedMotion() then
-		coinPop.Scale = 1.3
-		TweenService:Create(coinPop, TweenInfo.new(0.5, Enum.EasingStyle.Back), { Scale = 1 })
-			:Play()
+	if cashShown and cash > cashShown then
+		if not Comfort.reducedMotion() then
+			coinPop.Scale = 1.3
+			TweenService:Create(coinPop, TweenInfo.new(0.5, Enum.EasingStyle.Back), { Scale = 1 })
+				:Play()
+			cashPop.Scale = 1.25
+			TweenService:Create(cashPop, TweenInfo.new(0.45, Enum.EasingStyle.Back), { Scale = 1 })
+				:Play()
+		end
+		gainPop(cash - cashShown)
+		-- the counter ticks up as it rolls; a coin jingle unless a CashBurst already rang the coins in
+		for i = 0, 4 do
+			task.delay(i * 0.08, AudioController.play, "UI_Prompt", nil, 2.5, 1 + i * 0.1)
+		end
+		if os.clock() - CashBurst.lastAt > 1.5 then
+			AudioController.play("FX_Jingle", nil, 1, 1.05)
+		end
 	end
 	roll(cashLabel, cashShown or cash, cash, HudTheme.formatNumber)
 	cashShown = cash
@@ -143,6 +234,8 @@ local function buildWallet(region: Frame)
 
 	cashLabel = HudTheme.label("Cash", "0", UDim2.fromOffset(0, 52), HudTheme.NumberFont, 42, row)
 	cashLabel.LayoutOrder = 2
+	cashPop = Instance.new("UIScale")
+	cashPop.Parent = cashLabel
 	cashLabel.AutomaticSize = Enum.AutomaticSize.X
 	cashLabel.TextTruncate = Enum.TextTruncate.None
 	-- gold number with a thick dark outline so it pops over the world (user, 2026-10-26)
@@ -223,6 +316,8 @@ local function buildAward()
 	awardLabel.TextXAlignment = Enum.TextXAlignment.Center
 	HudTheme.outline(awardLabel)
 	awardLabel.Visible = false
+	awardPop = Instance.new("UIScale")
+	awardPop.Parent = awardLabel
 end
 
 local coldOpen = false

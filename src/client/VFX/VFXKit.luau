@@ -6,8 +6,11 @@
 -- the FX1 spectacle presets' layered `sounds` (with their beams, camera punch and hit-stop, Presets header).
 --   VFXKit.play(name, cframeOrPart, opts?) -> boolean   opts: { color, scale, radius, height, still }
 --     radius: a `ring` layer's ring (a footprint's half width; past 8 studs it grows the pieces too), height: where
---     `top` layers start, still: no camera punch (someone else's moment)
+--     `top` layers start, still: no camera punch / tint (someone else's moment)
 --   VFXKit.names() -> { string }                        every preset, sorted (the DEV `vfx` bench)
+-- FX2 presets may also carry `sounds`, `punch` ({ fov, shake, time }) and `impactTint` (Presets "FX2 core loop"):
+-- the same sound loop, Camera/Shake and impact frame as FX1.
+local ContentProvider = game:GetService("ContentProvider")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
@@ -265,6 +268,11 @@ local function impactFrame(spec: Presets.Frame, color: Color3?)
 	back:Play()
 end
 
+-- FX2's `impactTint`: the same impact frame, a soft colour wash only (never orange)
+local function impactTint(color: Color3)
+	impactFrame({ tint = color, saturation = 0, brightness = 0.06 }, nil)
+end
+
 function VFXKit.play(name: string, target: CFrame | BasePart, opts: Opts?): boolean
 	local p = Presets.ALL[name]
 	if not p then
@@ -334,15 +342,19 @@ function VFXKit.play(name: string, target: CFrame | BasePart, opts: Opts?): bool
 		local kick = p.punch
 		if kick and not o.still then
 			Shake.kick(kick.fov)
-			Shake.add({
-				magnitude = kick.magnitude,
-				roughness = kick.roughness,
+			Shake.add({ -- FX2's shorthand `shake` (0..1) is ~2.3 degrees at full
+				magnitude = kick.magnitude or (kick.shake or 0) * 2.3,
+				roughness = kick.roughness or 28,
 				time = kick.time,
 				pos = kick.pos,
 			})
 		end
-		if p.frame and not o.still and not reduced then
-			impactFrame(p.frame, o.color)
+		if not o.still and not reduced then
+			if p.frame then
+				impactFrame(p.frame, o.color)
+			elseif (p :: any).impactTint then
+				impactTint((p :: any).impactTint)
+			end
 		end
 		local stop = p.hitstop
 		if stop then -- the impact frame: every burst crawls out, then snaps to full speed
@@ -358,6 +370,15 @@ function VFXKit.play(name: string, target: CFrame | BasePart, opts: Opts?): bool
 	end)
 	return true
 end
+
+-- Every texture loads at start: an unloaded flipbook draws nothing, so a session's first splash came out blank.
+task.spawn(function()
+	local ids = {}
+	for _, tex in VFXTextures do
+		table.insert(ids, tex.id)
+	end
+	pcall(ContentProvider.PreloadAsync, ContentProvider, ids)
+end)
 
 function VFXKit.names(): { string }
 	local out = {}

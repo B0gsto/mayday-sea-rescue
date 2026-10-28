@@ -146,12 +146,6 @@ AudioConfig.Clips = {
 		"low impact"
 	),
 	FX_TonalHit = rl(9120113588, 0.45, "Tonal Impact 2 (SFX)", "bright impact"),
-	FX_Whoosh = rl(
-		9125648149,
-		0.4,
-		"Magic Zoom Up Sharp Tubular Whoosh Fast Hiss (SFX)",
-		"anticipation"
-	),
 	FX_PlasticRain = rl(9113382651, 0.4, "Beads Scatter 2 (SFX)", "Lego bits landing"),
 	FX_PlasticDrop = rl(9117507083, 0.5, "Plastic Drop 4 (SFX)", "brick snap"),
 	FX_ChimeTail = rl(9119447936, 0.3, "Sparkle Bell Tree Wind Chimes 1 (SFX)", "tail"),
@@ -182,6 +176,18 @@ AudioConfig.Clips = {
 	-- Night on the islands (AudioController: near a ring island while WorkLoop.isNight; fades slowly).
 	-- Also verified: Crickets Night 1 9112764546, Harbor Night Presence 1 9112792650.
 	Amb_Crickets = rl(9112764573, 0.3, "Crickets Night 3 (SFX)"),
+
+	-- FX2 core loop (docs/26 "Satisfaction bar"): the sweeteners layered on the everyday moments (verified public,
+	-- candidates.csv SFX_FX2_*). Played by the FX2 presets' `sounds` and the HUD / panel juice.
+	FX_Whoosh = rl(9125648149, 0.45, "Magic Zoom Up Sharp Tubular Whoosh Fast Hiss (SFX)", "nitro"),
+	FX_Thud = rl(9120916241, 0.6, "Wood Impacts 3 (SFX)", "hull bump"),
+	FX_SplashSmall = rl(9117947034, 0.55, "Puddle Stomps Small Water Splashes 9 (SFX)"),
+	FX_Plop = rl(9118710042, 0.5, "Rope And Water Heavy Plopping Impacts 4 (SFX)", "boat launch"),
+	FX_Pop = rl(15675055424, 0.35, "Roblox_UI_Cute_Pop", "panel open, purchase, crew"),
+	FX_Swoosh = rl(12222200, 0.18, "swoosh.wav", "panel close"),
+	FX_Chime = rl(9048764475, 0.4, "Magical Meetup - Hit2", "quest complete"),
+	FX_Magic = rl(9116385087, 0.35, "Magic Burst 5 (SFX)", "skill unlocked"),
+	FX_Jingle = rl(9113849492, 0.35, "Coins Or Keys Jingle 6 (SFX)", "Cash gain"),
 
 	-- Music (APM via Roblox). AudioMix.musicCue picks one: loading > debrief > operation, then the
 	-- calm cues (night anywhere, island near the ring, sea further out). Volumes level the tracks

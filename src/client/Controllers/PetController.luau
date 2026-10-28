@@ -24,10 +24,12 @@ local PetAccessory = require(Shared:WaitForChild("PetAccessory"))
 local PetRules = require(Shared:WaitForChild("PetRules"))
 local PetSeat = require(Shared:WaitForChild("PetSeat"))
 local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
+local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local Wildlife = require(Shared:WaitForChild("Config"):WaitForChild("Wildlife"))
 local WildlifeRig = require(Shared:WaitForChild("WildlifeRig"))
 
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 type PetRow = {
 	id: number,
@@ -209,21 +211,19 @@ local function heartBurst(model: Model, count: number)
 	gui.MaxDistance = 90
 	gui.Parent = body
 	for i = 1, count do
-		local heart = Instance.new("TextLabel")
+		local heart = Instance.new("ImageLabel")
 		heart.Name = `Heart{i}`
 		heart.AnchorPoint = Vector2.new(0.5, 0.5)
-		heart.Position = UDim2.fromOffset(65 + (i - (count + 1) / 2) * 10, 70)
-		heart.Size = UDim2.fromOffset(22, 22)
+		heart.Position = UDim2.fromOffset(65 + (i - (count + 1) / 2) * 34, 70 + (i % 2) * 12) -- staggered, apart
+		heart.Size = UDim2.fromOffset(40, 40)
 		heart.BackgroundTransparency = 1
-		heart.Font = Enum.Font.GothamBold
-		heart.TextSize = 22
-		heart.TextColor3 = Color3.fromRGB(246, 96, 110)
-		heart.Text = "♥"
+		heart.Image = UiImages.Badges.Heart
+		heart.ScaleType = Enum.ScaleType.Fit
 		heart.Parent = gui
 		local rise = TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 		TweenService:Create(heart, rise, {
-			Position = UDim2.fromOffset(heart.Position.X.Offset, 8),
-			TextTransparency = 1,
+			Position = UDim2.fromOffset(heart.Position.X.Offset, 16),
+			ImageTransparency = 1,
 		}):Play()
 	end
 	task.delay(1.4, function()
@@ -371,6 +371,15 @@ local function applyView(next: View)
 				if adoptingId == during.id then
 					adoptingId = nil
 					playVoice(during.species, model:GetPivot().Position + Vector3.new(0, 2, 0))
+					local root = player.Character
+						and player.Character:FindFirstChild("HumanoidRootPart")
+					if root and root:IsA("BasePart") then -- the new friend arrives in a Lego puff by you
+						VFXKit.play(
+							"buy_pop",
+							root.CFrame * CFrame.new(2, -3, -2),
+							{ radius = 1.5, height = 4 }
+						)
+					end
 				end
 				task.delay(0.8, function()
 					if activeModel == model then

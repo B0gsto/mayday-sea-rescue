@@ -641,6 +641,10 @@ function SkillTreeView.new(parent: Instance, props: Props): View
 			if not ok then
 				return
 			end
+			local pop = cardIcon:FindFirstChildOfClass("UIScale") or Instance.new("UIScale")
+			pop.Parent = cardIcon
+			pop.Scale = 1.4 -- the bought skill's art punches out and settles
+			Style.tween(pop, 0.45, { Scale = 1 }, Enum.EasingStyle.Back)
 		end)
 	end
 

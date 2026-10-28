@@ -48,6 +48,7 @@ local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
 local Layout = require(UI:WaitForChild("Layout"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 
@@ -68,8 +69,6 @@ local CARD_BUY_H = 168 -- a card with its buy buttons
 local CARD_H = 104 -- owned / not for sale yet
 local STRIP_H = 160 -- the focus strip: name, the badge row
 local OUTLINE = Color3.fromRGB(255, 214, 60)
-local STAR_ON = Color3.fromRGB(255, 206, 46)
-local STAR_OFF = Color3.fromRGB(40, 44, 60)
 
 local snapshot: { [string]: any } = {}
 local livePrice: { [number]: number } = {} -- product id -> Robux price, read from Roblox once
@@ -748,11 +747,13 @@ local function stars(parent: GuiObject, st: Status): Frame
 	row.Parent = parent
 	Style.list(row, true, 2)
 	for i = 1, st.max do
-		local star = Style.label(row, "★", 22)
+		local star = Instance.new("ImageLabel")
 		star.Name = `Star{i}`
-		star.Font = Enum.Font.BuilderSansMedium
-		star.TextColor3 = if i <= st.level then STAR_ON else STAR_OFF
-		star.Size = UDim2.fromOffset(22, 22)
+		star.BackgroundTransparency = 1
+		star.Image = if i <= st.level then UiImages.Badges.StarOn else UiImages.Badges.StarOff
+		star.ScaleType = Enum.ScaleType.Fit
+		star.Size = UDim2.fromOffset(24, 24)
+		star.Parent = row
 		star.LayoutOrder = i
 	end
 	return row
@@ -856,8 +857,8 @@ local function refreshCards()
 			local y = 48
 			if item.kind == "Building" then
 				local row = stars(face, st)
-				row.Position = UDim2.fromOffset(98, 38)
-				row.Size = UDim2.new(1, -108, 0, 22)
+				row.Position = UDim2.fromOffset(98, 37)
+				row.Size = UDim2.new(1, -108, 0, 24)
 				y = 62 -- the badge row ends above the buy slot (SE: "Free" covered "Build")
 			end
 			local needs = if item.kind == "Building" and item.key == "HQ"
@@ -1237,39 +1238,10 @@ local function onWorldTap(input: InputObject, processed: boolean)
 end
 
 -- The Lego build beat (WP-14c): each part of a freshly built model drops from above with a stagger,
--- lands with a squash and a snap, then a dust puff. Client tweens only; the server owns the final
+-- lands with a squash and a snap, then a dust ring (VFXKit place_dust). Client tweens only; the server owns the final
 -- positions, so skipping this (a missed event) just shows the finished building.
 local function snapSound(at: Vector3)
 	AudioController.play("UI_Click", at, 0.5)
-end
-
-local function dustPuff(at: Vector3)
-	local p = Instance.new("Part")
-	p.Name = "BuildDust"
-	p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch = true, false, false, false
-	p.Transparency = 1
-	p.Size = Vector3.one
-	p.Position = at
-	local e = Instance.new("ParticleEmitter")
-	e.Texture = "rbxasset://textures/particles/smoke_main.dds"
-	e.Color = ColorSequence.new(Color3.fromRGB(230, 222, 205))
-	e.Size =
-		NumberSequence.new({ NumberSequenceKeypoint.new(0, 2), NumberSequenceKeypoint.new(1, 8) })
-	e.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 0.15),
-		NumberSequenceKeypoint.new(1, 1),
-	})
-	e.Lifetime = NumberRange.new(0.6, 1.1)
-	e.Speed = NumberRange.new(6, 14)
-	e.SpreadAngle = Vector2.new(90, 90)
-	e.EmissionDirection = Enum.NormalId.Top
-	e.Acceleration = Vector3.new(0, -4, 0)
-	e.Drag = 2
-	e.Enabled = false
-	e.Parent = p
-	p.Parent = Workspace
-	e:Emit(25)
-	game:GetService("Debris"):AddItem(p, 3)
 end
 
 local function playBuild(model: Model)
@@ -1332,9 +1304,13 @@ local function playBuild(model: Model)
 		end)
 		tween:Play()
 	end
-	task.delay(last + 0.3, function()
-		dustPuff(at)
-	end)
+	local size = model:GetExtentsSize()
+	task.delay(
+		last + 0.1,
+		function() -- the last brick lands: a studded dust ring round it and a soft thud
+			VFXKit.play("place_dust", CFrame.new(at), { radius = math.max(size.X, size.Z) * 0.5 })
+		end
+	)
 end
 
 -- A purchase (a building or decor landed, seen through the attributes): the till and the coin burst.
@@ -1353,6 +1329,7 @@ local function refresh()
 	end
 	if shownCount and count > shownCount then
 		AudioController.play("Shop_Till")
+		AudioController.play("FX_Pop", nil, 0.8, 1.15)
 		local view = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize
 			or Vector2.new(800, 600)
 		CashBurst.playAt(playerGui, view / 2, 0, false)

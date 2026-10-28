@@ -12,6 +12,7 @@
 local AssetService = game:GetService("AssetService")
 local MaterialService = game:GetService("MaterialService")
 
+local MeshGrid = require(script.Parent.MeshGrid)
 local OceanPalette = require(script.Parent.OceanPalette)
 local OceanSurface = require(script.Parent.OceanSurface)
 
@@ -166,6 +167,15 @@ function FarPlane._strip(
 				em:AddVertex(p + Vector3.xAxis * 0.01),
 				em:AddVertex(p + Vector3.zAxis * 0.01)
 			)
+		end
+		local fixed, _, _, umap = MeshGrid.toFixed(em) -- see MeshGrid.toFixed: the client's memory budget
+		if fixed then
+			em:Destroy()
+			em = fixed
+			made = fixed
+			for i = 1, #uv, 3 do
+				uv[i] = umap[uv[i]]
+			end
 		end
 		-- Precise, as MeshGrid: no LOD decimation of the flat sheet
 		local part = AssetService:CreateMeshPartAsync(Content.fromObject(em), {

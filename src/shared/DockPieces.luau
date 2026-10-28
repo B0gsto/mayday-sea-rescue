@@ -325,7 +325,7 @@ local function pontoon(m: Model, b: CFrame)
 	studTop(brick(m, "Pontoon", Vector3.new(6, 0.8, 50), b * CFrame.new(16, 1.6, 2), BRICK_WHITE))
 	for z = -18, 22, 10 do
 		brick(m, "Float", Vector3.new(5, 1.4, 4), b * CFrame.new(16, 0.6, z), DBG)
-		brick(m, "Cleat", Vector3.new(0.5, 0.4, 1.4), b * CFrame.new(13.4, 2.2, z), BRICK_YELLOW)
+		brick(m, "Cleat", Vector3.new(0.5, 0.4, 1.3), b * CFrame.new(13.4, 2.2, z), BRICK_YELLOW)
 	end
 	brick(m, "Edge", Vector3.new(0.4, 0.5, 50), b * CFrame.new(19.1, 1.6, 2), BRICK_BLUE)
 	lamp(m, b, 18.5, -18, 2)
@@ -419,7 +419,7 @@ local function paintBooth(m: Model, b: CFrame)
 		local beam = part(
 			booth,
 			"BoothBeam",
-			Vector3.new(xe - xw + 1.4, 1.4, 1.4),
+			Vector3.new(xe - xw + 1.5, 1.5, 1.5), -- a hair proud of the posts: no shared faces
 			b * CFrame.new((xw + xe) / 2, y1, z),
 			NAVY, -- WP-25 r7: navy, calmer over the cove than orange
 			M.SmoothPlastic
@@ -1104,7 +1104,7 @@ local function subPen(m: Model, b: CFrame, level: number?)
 				GREY
 			)
 		end
-		brick(m, "Beam", Vector3.new(1.4, 1.4, hx * 2 + 1.6), S * CFrame.new(x, top, 0), YELLOW)
+		brick(m, "Beam", Vector3.new(1.4, 1.4, hx * 2 + 1.5), S * CFrame.new(x, top, 0), YELLOW) -- ends inside the legs
 	end
 	for _, z in { -hx, hx } do
 		brick(m, "Beam", Vector3.new(hx * 2 + 4, 1.4, 1.4), S * CFrame.new(0, top, z), YELLOW)
@@ -1502,11 +1502,11 @@ end
 -- crate + barrel clusters at the pad's front corners, clear of the gate: the yard's working edges
 local function yardClutter(m: Model, at: CFrame, w: number, d: number)
 	for _, s in { -1, 1 } do
-		local x, z = s * (w / 2 - 2), -d / 2 + 1.2
+		local x, z = s * (w / 2 - 2.05), -d / 2 + 1.2 -- 0.05 inside the corner posts' outer faces
 		crate(m, at * CFrame.new(x, 0.8, z), if s < 0 then BRICK_ORANGE else BRICK_BLUE)
 		barrel(m, at * CFrame.new(x + s * 1.8, 0.8, z + 1.3))
 	end
-	crate(m, at * CFrame.new(-w / 2 + 2.1, 0.8, -d / 2 + 3.4), BRICK_YELLOW)
+	crate(m, at * CFrame.new(-w / 2 + 2.1, 0.75, -d / 2 + 3.4), BRICK_YELLOW) -- top under the orange crate's
 end
 
 -- docs/24 C r3: a bloom patch or a rock on the lawn between the yards (called by a built yard only, so the bare
@@ -1734,7 +1734,7 @@ local function fishMarket(m: Model, b: CFrame, level: number?)
 	local fishFlag =
 		brick(m, "Flag", Vector3.new(7.5, 4.2, 0.35), mast * CFrame.new(4.45, 22.6, 0), accent)
 	fishFlag.CanCollide = false
-	brick(m, "FlagStripe", Vector3.new(7.5, 1, 0.4), mast * CFrame.new(4.45, 21.2, 0), BRICK_WHITE)
+	brick(m, "FlagStripe", Vector3.new(7.6, 1, 0.4), mast * CFrame.new(4.45, 21.2, 0), BRICK_WHITE)
 	-- docs/24 C r3: the pad reads as a walled fish market; ice-blue crate clusters by the gate
 	yardFence(m, at, w, d, accent, nil, "rope")
 	yardPath(m, at, d)
@@ -1920,7 +1920,7 @@ local function rescueBoathouse(m: Model, b: CFrame, level: number?)
 	end
 	-- the rescue boat on its slip
 	local boat = at * CFrame.new(0, 0, -d / 2 + 8.5)
-	brick(m, "Hull", Vector3.new(4.4, 2, 10), boat * CFrame.new(0, 2.4, 0), BRICK_WHITE)
+	brick(m, "Hull", Vector3.new(4.4, 2, 9.9), boat * CFrame.new(0, 2.4, 0), BRICK_WHITE)
 	brick(m, "Tube", Vector3.new(4.8, 0.8, 10), boat * CFrame.new(0, 3.3, 0), BRICK_ORANGE)
 	brick(m, "Deck", Vector3.new(3.2, 0.5, 8), boat * CFrame.new(0, 3.6, 0), DBG)
 	brick(m, "Console", Vector3.new(1.8, 1.4, 1.8), boat * CFrame.new(0, 4.3, 1.6), BRICK_WHITE)
@@ -1967,7 +1967,7 @@ local function rescueBoathouse(m: Model, b: CFrame, level: number?)
 		m,
 		"TrailerBeam",
 		Vector3.new(5.2, 0.7, 0.8),
-		trailer * CFrame.new(0, 1.7, 0),
+		trailer * CFrame.new(0, 1.65, 0), -- under the studded rails' tops
 		BRICK_YELLOW
 	)
 	brick(m, "TrailerAxle", Vector3.new(6.4, 0.6, 0.6), trailer * CFrame.new(0, 1.3, 0.6), DBG)
@@ -2018,15 +2018,13 @@ local function rescueBoathouse(m: Model, b: CFrame, level: number?)
 	if lv < 3 then
 		-- the tall lifeguard chair by the front corner: a seat over a narrow tower with a footrest
 		local chair = at * CFrame.new(w / 2 - 4, 0, d / 2 - 3.6) -- back-right, clear of the gate clutter
-		studTop(
-			brick(
-				m,
-				"ChairBase",
-				Vector3.new(3.4, 0.8, 3.4),
-				chair * CFrame.new(0, 0.4, 0),
-				BRICK_YELLOW
-			)
-		)
+		studTop(brick(
+			m,
+			"ChairBase",
+			Vector3.new(3.4, 0.8, 3.4),
+			chair * CFrame.new(0, 0.45, 0), -- top just over the plinth's
+			BRICK_YELLOW
+		))
 		brick(m, "ChairPost", Vector3.new(1.2, 9, 1.2), chair * CFrame.new(0, 5, 0), BRICK_WHITE)
 		studTop(
 			brick(
@@ -2224,7 +2222,7 @@ local function lifeboatSlip(m: Model, b: CFrame)
 		end
 	end
 	local top = at * CFrame.new(0, 0.8 + h, 0)
-	brick(m, "Course", Vector3.new(w + 1, 1, d), top * CFrame.new(0, -0.5, 0), BRICK_BLUE)
+	brick(m, "Course", Vector3.new(w + 1.1, 1, d), top * CFrame.new(0, -0.5, 0), BRICK_BLUE) -- proud of the posts
 	gable(m, top, w + 2, d + 2, 5, BRICK_BLUE)
 	sign(
 		m,
@@ -2360,8 +2358,8 @@ function DockPieces.streets(b: CFrame): Model
 	local plaza = brick(
 		m,
 		"Plaza",
-		Vector3.new(s.X, 0.3, s.Y),
-		isle(b, c.X, c.Y) * CFrame.new(0, 0.15, 0),
+		Vector3.new(s.X, 0.3, s.Y - 0.05), -- its front kept 0.05 behind the berth notch wall (the plate's QuayStrip)
+		isle(b, c.X, c.Y - 0.025) * CFrame.new(0, 0.15, 0),
 		PLAZA
 	)
 	plaza.CanCollide = false
@@ -2427,6 +2425,10 @@ end
 -- Set by the server (DepotArtService): a static copy of an uploaded building mesh (the walk-in _COL hulls collide,
 -- the visual meshes don't); it waits for the first load and is nil if the asset failed (a code-built piece stands in).
 DockPieces.meshes = nil :: ((asset: string) -> Model?)?
+-- Model:ScaleTo; tests/ZFight.spec swaps in a Lune version (Lune has no ScaleTo)
+DockPieces.scaleTo = function(m: Model, s: number)
+	m:ScaleTo(s)
+end
 
 -- A levelled building mesh (M_Bld_RescueHQ, M_Bld_Bunkhouse) at `at`: meshes named _Lv<l>_L<k>_ (layer k of level l,
 -- ConstructionController raises them) and _Lv<l>_Col[NN]_COL; level n = the meshes of levels 1..n. The OwnerColour doors
@@ -2714,7 +2716,7 @@ function DockPieces.building(key: string, cf: CFrame, level: number?): Model
 		end
 		m.WorldPivot = cf * def.spot
 		if #m:GetChildren() > 0 then -- all kept 1x (the Depot's meshes): nothing to scale
-			m:ScaleTo(def.scale)
+			DockPieces.scaleTo(m, def.scale)
 		end
 		for _, d in keep do
 			d.Parent = m

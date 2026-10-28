@@ -27,12 +27,8 @@ export type Beacon = {
 	destroy: () -> (),
 }
 
--- the HUD palette (assets/ui/hud/mockup.png): rescue orange marks on navy edges
+-- the HUD palette (assets/ui/hud/mockup.png): the distance chip's navy
 local NAVY = Color3.fromHex("0A1830")
-local COLORS: { [string]: Color3 } = {
-	Place = Color3.fromHex("F2671F"), -- a spot on land
-	Call = Color3.fromRGB(255, 120, 30), -- on the water: the ring sits on the waves
-}
 
 local RING = 24 -- studs across the steady ring
 local POP = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
@@ -49,16 +45,26 @@ function OnboardingBeacon.start(): Beacon
 	folder.Name = "OnboardingBeacon"
 	folder.Parent = Workspace
 
+	-- the ground ring: art/source/ui/beacon_ring.svg on an invisible flat Part, unlit so it reads at night (no neon)
 	local ring = Instance.new("Part")
 	ring.Name = "Pulse"
-	ring.Shape = Enum.PartType.Cylinder
-	ring.Size = Vector3.new(0.1, 8, 8)
-	ring.Material = Enum.Material.Neon
-	ring.Color = COLORS.Place
+	ring.Size = Vector3.new(8, 0.1, 8)
 	ring.Transparency = 1
 	ring.Anchored, ring.CanCollide, ring.CanQuery, ring.CanTouch = true, false, false, false
 	ring.CastShadow = false
 	ring.Parent = folder
+	local ringGui = Instance.new("SurfaceGui")
+	ringGui.Face = Enum.NormalId.Top
+	ringGui.LightInfluence = 0
+	ringGui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	ringGui.PixelsPerStud = 40
+	ringGui.Parent = ring
+	local ringArt = Instance.new("ImageLabel")
+	ringArt.Size = UDim2.fromScale(1, 1)
+	ringArt.BackgroundTransparency = 1
+	ringArt.Image = UiImages.Markers.BeaconRing
+	ringArt.ImageTransparency = 1
+	ringArt.Parent = ringGui
 
 	local billboard = Instance.new("BillboardGui")
 	billboard.Name = "Mark"
@@ -70,32 +76,14 @@ function OnboardingBeacon.start(): Beacon
 	billboard.Adornee = ring
 	billboard.Parent = ring
 
-	local diamond = Instance.new("Frame")
+	-- art/source/ui/beacon_mark.svg: the orange gem over a stem that points down at the goal
+	local diamond = Instance.new("ImageLabel")
 	diamond.Name = "Diamond"
-	diamond.AnchorPoint = Vector2.new(0.5, 0.5)
-	diamond.Position = UDim2.fromScale(0.5, 0.3)
-	diamond.Size = UDim2.fromOffset(40, 40)
-	diamond.Rotation = 45
-	diamond.BackgroundColor3 = COLORS.Place
-	diamond.BorderSizePixel = 0
+	diamond.Size = UDim2.fromScale(1, 1)
+	diamond.BackgroundTransparency = 1
+	diamond.Image = UiImages.Markers.BeaconMark
+	diamond.ScaleType = Enum.ScaleType.Fit
 	diamond.Parent = billboard
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 3)
-	corner.Parent = diamond
-	local edge = Instance.new("UIStroke")
-	edge.Color = NAVY
-	edge.Thickness = 3
-	edge.Parent = diamond
-
-	local stem = Instance.new("Frame")
-	stem.Name = "Stem"
-	stem.AnchorPoint = Vector2.new(0.5, 0)
-	stem.Position = UDim2.fromScale(0.5, 0.46)
-	stem.Size = UDim2.fromOffset(4, 56)
-	stem.BackgroundColor3 = COLORS.Place
-	stem.BackgroundTransparency = 0.25
-	stem.BorderSizePixel = 0
-	stem.Parent = billboard
 
 	-- the edge arrow: pinned to the screen edge, pointing at the goal while it is off screen
 	local edgeGui = Instance.new("ScreenGui")
@@ -134,32 +122,27 @@ function OnboardingBeacon.start(): Beacon
 
 	local at: Vector3? = nil
 	local baseY = 0
-	local color = COLORS.Place
 	local active = false
 
 	local self: any = {}
 
 	function self.show(position: Vector3, kind: string)
 		at = position
-		color = COLORS[kind] or COLORS.Place
 		active = true
-		ring.Color = color
-		diamond.BackgroundColor3, stem.BackgroundColor3 = color, color
 		baseY = if kind == "Call" then surfaceY(position) else position.Y
 		ring.CFrame = CFrame.new(Vector3.new(position.X, baseY + 0.12, position.Z))
-			* CFrame.Angles(0, 0, math.rad(90))
-		ring.Size = Vector3.new(0.1, 8, 8)
-		TweenService:Create(ring, POP, { Size = Vector3.new(0.1, RING, RING) }):Play()
+		ring.Size = Vector3.new(8, 0.1, 8)
+		TweenService:Create(ring, POP, { Size = Vector3.new(RING, 0.1, RING) }):Play()
 		billboard.Enabled = true
-		diamond.Visible, stem.Visible = true, true
+		diamond.Visible = true
 		folder.Parent = Workspace
 	end
 
 	function self.hide()
 		active = false
 		at = nil
-		ring.Transparency = 1
-		diamond.Visible, stem.Visible = false, false
+		ringArt.ImageTransparency = 1
+		diamond.Visible = false
 		arrow.Visible = false
 		range.Visible = false
 	end
@@ -178,7 +161,7 @@ function OnboardingBeacon.start(): Beacon
 		arrow.Visible = false
 		range.Visible = false
 		if cutscene then
-			ring.Transparency = 1
+			ringArt.ImageTransparency = 1
 			return
 		end
 		local cam = Workspace.CurrentCamera :: Camera
@@ -231,10 +214,9 @@ function OnboardingBeacon.start(): Beacon
 			end
 		end
 		local t = os.clock()
-		ring.Transparency = 0.45
+		ringArt.ImageTransparency = 0.15
 		ring.CFrame = CFrame.new(Vector3.new(at.X, baseY + 0.12, at.Z))
-			* CFrame.Angles(0, 0, math.rad(90))
-		diamond.Rotation = 45 + math.sin(t * 1.8) * 12
+		diamond.Position = UDim2.fromOffset(0, math.sin(t * 1.8) * 4) -- a slow bob, never a flash
 	end)
 
 	function self.destroy()
