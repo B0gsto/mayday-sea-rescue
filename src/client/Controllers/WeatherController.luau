@@ -201,7 +201,7 @@ local function applyFlash(now: number)
 	local age = now - flashStart
 	local duration = LightingPresets.Flash.Duration
 	if age >= 0 and age < duration then
-		local rise = 0.05
+		local rise = 0.08 -- eases in: a soft lift, not a hard cut
 		flash = if age < rise then age / rise else (1 - (age - rise) / (duration - rise)) ^ 2
 		flash *= flashStrength
 	end
@@ -215,16 +215,42 @@ local function smoothstep(e0: number, e1: number, x: number): number
 	return t * t * (3 - 2 * t)
 end
 
--- 0 by day .. 1 once the sun is well below the horizon (about 13 degrees: a long blue hour).
--- Twilight floor: from sunset the warm Calm colours give way to Night quickly (a peach Calm haze with the sun on the
--- horizon dims to a muddy rust-brown); below it the curve is unchanged, so 18:30 (n 0.78) keeps the approved look.
-local TWILIGHT_FLOOR = 0.75 -- tune
+-- 0 by day .. 1 once the sun is well below the horizon (about 13 degrees: a long blue hour). 18:30 (sun y -0.13) is
+-- n 0.78. No floor: with the sun on the horizon (18:00) the warm Calm grade still holds (n 0.18).
 local function nightFactor(): number
-	local y = Lighting:GetSunDirection().Y
-	return math.max(
-		1 - smoothstep(-0.22, 0.08, y),
-		TWILIGHT_FLOOR * (1 - smoothstep(-0.02, 0.08, y))
-	)
+	return 1 - smoothstep(-0.22, 0.08, Lighting:GetSunDirection().Y)
+end
+
+-- Twilight (sun from ~4 degrees up to 7.5 below: 17:45..18:30 and 05:30..06:15). The engine tints the sky faces
+-- dark orange as the sun meets the horizon, and the blue Night grade over that read as rust-brown (WX1). A warm haze
+-- band on the horizon, a lavender grade and a violet decay carry the sky to navy instead, without the glare that
+-- washed out the low sun; the land dims once the sun is down. Zero by 18:30 (sun y -0.13), so the approved navy
+-- 18:30 and the moonlit night are unchanged. -- tune
+local TWILIGHT_BAND = Color3.fromHex("#F2A27A")
+local TWILIGHT_TINT = Color3.fromHex("#E2D6F2")
+local TWILIGHT_DECAY = Color3.fromHex("#3C3F7A")
+local TWILIGHT_OUTDOOR = Color3.fromRGB(75, 80, 115)
+-- A storm at night: a threatening teal-slate sea (renders near #1E3A48 under the night grade), not the Night teal. -- tune
+local STORM_NIGHT_WATER = Color3.fromHex("#2E5A60")
+
+local function grade(p: Preset, y: number)
+	local below = smoothstep(-0.13, -0.07, y)
+	local twilight = below * (1 - smoothstep(0, 0.07, y))
+	if twilight > 0.001 then
+		p.AtmosphereColor = p.AtmosphereColor:Lerp(TWILIGHT_BAND, twilight)
+		p.AtmosphereDecay = p.AtmosphereDecay:Lerp(TWILIGHT_DECAY, twilight)
+		p.AtmosphereGlare *= 1 - twilight
+		p.TintColor = p.TintColor:Lerp(TWILIGHT_TINT, twilight)
+		p.OutdoorAmbient =
+			p.OutdoorAmbient:Lerp(TWILIGHT_OUTDOOR, below * (1 - smoothstep(-0.07, 0, y)))
+	end
+	-- Low sun (6:00 and 18:00, about half an hour either side): softer bloom and rays, so the disc on the horizon
+	-- doesn't wash the island out. -- tune
+	local low = (1 - smoothstep(0.03, 0.15, y)) * smoothstep(-0.1, -0.03, y)
+	if low > 0.001 then
+		p.BloomThreshold += (math.max(p.BloomThreshold, 1.4) - p.BloomThreshold) * low
+		p.SunRaysIntensity += (math.min(p.SunRaysIntensity, 0.05) - p.SunRaysIntensity) * low
+	end
 end
 
 local function applySky(key: string)
@@ -288,16 +314,15 @@ local function computeBlend(intensity: number): Preset
 		-- the storm keeps its cloud deck at night; only the light darkens
 		stormMix.CloudsCover = LightingPresets.Storm.CloudsCover
 		stormMix.CloudsDensity = LightingPresets.Storm.CloudsDensity
+		stormMix.WaterColor = LightingPresets.Storm.WaterColor:Lerp(STORM_NIGHT_WATER, n)
 	end
 	-- At night the day faces stay up: the engine dims them to a moonlit navy with clouds (dark faces render black).
-	-- The Calm (sunset-painted) faces only while the sun is up (n = 0 above ~5 degrees): the engine dims them to a
-	-- muddy rust once it nears the horizon, the day faces dim to violet / navy instead.
-	applySky(
-		if intensity >= 0.5 then "Storm" elseif n < 0.001 and warm >= 0.5 then "Calm" else name
-	)
-	local p = if intensity > 0.001
-		then LightingPresets.blend(dayMix, stormMix, intensity)
-		else dayMix
+	-- The Calm (sunset-painted) faces until the sun is just below the horizon (n 0.25, about 18:05): on the horizon the
+	-- engine turns the day faces' white clouds a dull brown, the painted ones a sunset orange. After it the day faces
+	-- dim to violet / navy (the approved 18:30); the Calm faces would go maroon.
+	applySky(if intensity >= 0.5 then "Storm" elseif n < 0.25 and warm >= 0.5 then "Calm" else name)
+	local p = LightingPresets.blend(dayMix, stormMix, intensity) -- a fresh table: grade() writes to it
+	grade(p, Lighting:GetSunDirection().Y)
 	Lighting:SetAttribute("OceanWaterColor", p.WaterColor)
 	Lighting:SetAttribute("OceanHazeColor", p.AtmosphereColor)
 	return p
@@ -501,7 +526,7 @@ local function strike(index: number, info: WeatherMath.Strike, camera: Camera, s
 	local distance = (ground - camera.CFrame.Position).Magnitude
 	local strength = math.clamp(1.2 - distance / 2200, 0.35, 1)
 	if reducedMotion() then
-		strength *= 0.35
+		strength = 0 -- reduced motion / flashes: the bolt and thunder only
 	end
 	flashStart = os.clock()
 	flashStrength = strength
