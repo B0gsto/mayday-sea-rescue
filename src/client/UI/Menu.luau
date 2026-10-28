@@ -126,6 +126,7 @@ local function chrome()
 		chip.Visible = shown()
 			and current == nil
 			and player:GetAttribute("MapOpen") ~= true
+			and player:GetAttribute("BuildHidesMenu") ~= true -- it sat on the build list (owner, 2026-10-28)
 			and QuestData.byId[player:GetAttribute("QuestId") :: any] ~= nil
 	end
 	player:SetAttribute("MenuOpen", current ~= nil)

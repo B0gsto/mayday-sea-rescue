@@ -309,7 +309,7 @@ local function build(def: Def, berth: BasePart)
 	local back = part(
 		rack,
 		"Back",
-		Vector3.new(width, 4, 0.3),
+		Vector3.new(width - 0.1, 4, 0.3), -- 0.05 inside the shelf's ends (no shared plane)
 		base * CFrame.new(0, SHELF_H + 1.8 + (rows - 1) * STEP_UP, 1.4 + (rows - 1) * STEP_BACK),
 		BLUE,
 		Enum.Material.SmoothPlastic

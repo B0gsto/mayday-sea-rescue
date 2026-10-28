@@ -827,7 +827,8 @@ local function buildLifeboat(spec: VehicleSpec): Model
 			)
 		end
 		-- grey foredeck on the wedge top
-		bowHalf(ctx, `Foredeck{side}`, 7.95, 0.12, 12.2, 3.2, -13.0, sx, DECK_GREY)
+		-- its aft end 0.05 past the bow hull's (no shared plane)
+		bowHalf(ctx, `Foredeck{side}`, 7.95, 0.12, 12.25, 3.2, -12.95, sx, DECK_GREY)
 	end
 	-- keel, raked stem, transom
 	deco(ctx, "Keel", Vector3.new(6.4, 1.7, 38.5), Vector3.new(0, -2.55, 4.0), NAVY)
@@ -1050,7 +1051,7 @@ local function buildLifeboat(spec: VehicleSpec): Model
 			ctx,
 			`BenchRail{sx}`,
 			Vector3.new(0.16, 0.3, 9.0),
-			Vector3.new(sx * 6.75, 3.75, 11.0),
+			Vector3.new(sx * 6.72, 3.75, 11.0), -- 0.05 inside the bench's end (6.75 left 0.02)
 			ORANGE
 		)
 	end
@@ -1060,7 +1061,7 @@ local function buildLifeboat(spec: VehicleSpec): Model
 	deco(ctx, "TowBase", Vector3.new(2.0, 1.2, 2.0), Vector3.new(0, 3.55, 22.8), DARK)
 	deco(ctx, "TowPost", Vector3.new(0.9, 3.4, 0.9), Vector3.new(0, 5.45, 22.8), GREY)
 	deco(ctx, "TowCrossbar", Vector3.new(4.4, 0.45, 0.7), Vector3.new(0, 6.7, 22.8), GREY)
-	deco(ctx, "TowFairlead", Vector3.new(0.9, 0.5, 0.5), Vector3.new(0, 2.65, 25.2), DARK)
+	deco(ctx, "TowFairlead", Vector3.new(0.9, 0.5, 0.5), Vector3.new(0, 2.65, 25.25), DARK) -- centred in the transom
 	disc(
 		ctx,
 		"WinchDrum",

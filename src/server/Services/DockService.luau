@@ -21,7 +21,7 @@
 --
 -- API: GetBerth(player) -> BasePart?, GetPlot(player) -> number?, GetSpawn(player) -> CFrame?,
 -- Owns(player, key) -> boolean (a DockConfig building), Berths() -> { BasePart }, Refresh(player) (rebuild).
--- Player attributes: DockPlot (index), BayCFrame (the berth CFrame; StreakController, MapController read it),
+-- Player attributes: DockPlot (index), BayCFrame (the berth CFrame; MapController reads it),
 -- Dock<key> / Decor<key> (owned; the build tablet). Berth attributes: LaunchBay = true, PlotIndex, Owner
 -- (UserId, nil when empty), <key> = true per building standing (BoatBoard reads Boathouse / Hangar / SubPen).
 -- Remote: Dock_Upgrade C->S function (building / decor key) -> ok, reason ("Needs" | "Cash" | "Owned" |

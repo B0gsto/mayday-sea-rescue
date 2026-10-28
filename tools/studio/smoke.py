@@ -3,7 +3,7 @@
 
 usage: python3 tools/studio/smoke.py <command> [args]
 
-  open                 build (tools/build.sh) and open build/MaydaySeaRescue.rbxl as TestBench-<tag> (an old
+  open                 build (tools/build.sh) and open build/<checkout dir>.rbxl as TestBench-<tag> (an old
                        window of that tag is closed first); the studio_id is kept in build/smoke/.sid
   play start|stop      start/stop the play test (waits for the mode), Studio brought to the front
   lua <Server|Client|Edit> <file.luau | -> [--quiet]  run Luau, print its output. Never require the
@@ -44,7 +44,7 @@ OWNER = TAG
 OUT = os.path.join(REPO, "build", "smoke")
 SID_FILE = os.path.join(OUT, ".sid-" + TAG)
 PREV_FILE = os.path.join(OUT, ".previous_app-" + TAG)
-PLACE = os.path.join(REPO, "build", "MaydaySeaRescue.rbxl")
+PLACE = os.path.join(REPO, "build", os.path.basename(REPO) + ".rbxl")  # build.sh names it after the checkout dir
 ENV = dict(os.environ, PATH=os.path.expanduser("~/.rokit/bin") + ":" + os.environ.get("PATH", ""))
 LOG_ERROR = re.compile(r"\] ERROR: |failed: ")
 

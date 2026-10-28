@@ -10,13 +10,17 @@ Current design: `docs/00-design.md` (hub forest island + 6 Lego-baseplate player
 - **VFX: `docs/26-vfx.md`** (owner 2026-10-28: "master VFX"): every effect has a job, reads on a phone, custom Lego flipbook art, paired with a sound, pooled and budgeted, fired by name through `VFXKit`, tested with the DEV `vfx <name>` bench and an art-director score (8.5+). Global rules: user CLAUDE.md "VFX (all games)".
 - **No z-fighting.** Two visible faces never share a plane: lift, inset or trim by 0.04-0.05 studs (0.02 still fights from afar). `tests/ZFight.spec.luau` builds every island piece in Lune and fails check.sh on a coplanar overlap; in Studio, `smoke.py run` (or `smoke.py lua Server tools/studio/zfight_scan.luau`) scans the live world, meshes included.
 - **Gameplay code uses placeholders until art lands:** code-built Parts or existing assets; core gameplay first.
-- **Blender work goes to DeepSeek V4.1 Flash.** Delegate every Blender modelling task through T3 `delegate_task` with
-  provider `opencode`, model `opencode-go/deepseek-v4.1-flash`, variant `max`, following `art/bench/PROD_BRIEF.md`.
-  Run at most 3 at a time (OpenCode Go rolling limit, 2-slot Blender lock). Queue and status: `art/bench/QUEUE.md`.
-- **Asset escalation (owner, 2026-10-27): DeepSeek -> Sonnet -> Opus.** Every asset's art-director round is scored
-  out of 10 (ships above 8; at most 3 rounds, a 4th only if truly necessary). When DeepSeek's round fails the bar (or
-  it stalls), the next round goes to Sonnet 5.5 at high effort (`claudeAgent`, `claude-sonnet-5-5`, effort `high`);
-  when Sonnet's round fails, the next goes to Opus 5.5 at high effort. This project rule overrides "no Sonnet".
+- **Blender work goes through Blender MCP (owner, 2026-10-28: "From now on, use blender MCP").** Model, inspect and
+  fix assets in a live Blender GUI through the `blender` MCP server (mcp-for-blender, localhost:9876; never enable its
+  telemetry or Poly Haven/Sketchfab/Hyper3D), checking with multi-angle `look` as you go. The open GUI is a heavy app:
+  one Blender MCP session at a time, inside the 2-heavy-app limit. Finish every asset through the normal pipeline
+  (`art/bench/PROD_BRIEF.md`: save the .blend in art/source, write or update its `build.py` so it rebuilds, validate,
+  LODs, `zfight_check.py`, export, upload). Builders are agents that have the MCP (Claude agents); the asset
+  escalation below still sets the model per round. Queue and status: `art/bench/QUEUE.md`.
+- **Asset escalation (owner, 2026-10-27; Blender MCP from 2026-10-28): Sonnet -> Opus.** Every asset's art-director round is scored
+  out of 10 (ships above 8; at most 3 rounds, a 4th only if truly necessary). The first round goes to Sonnet 5.5 at
+  high effort (`claudeAgent`, `claude-sonnet-5-5`, effort `high`, with the Blender MCP); when its round fails the bar,
+  the next goes to Opus 5.5 at high effort. This project rule overrides "no Sonnet".
 - **Code builders: DeepSeek V4.1 Flash Free** (`opencode/deepseek-v4.1-flash-free`, variant max; the OpenCode Go subscription is capped and cancelled) via T3 `delegate_task`, several in parallel; Opus reviews. The free model stalls on cooldowns: a DeepSeek task still running after 2 hours has stalled (owner, 2026-10-27; usually rate limits), so cancel it and finish the work with Opus agents in the same worktree (assets: the next model up, per the escalation rule below). New things are Lego-style; never redesign existing finished assets.
 - Module ownership and APIs: `CONTRACT.md`. Checks: `~/RobloxProjects/tools/check.sh .`. Studio driver: `tools/studio/smoke.py`.
 - **Playtests are Opus only, never Haiku** (Studio `tools/studio/play.py` or the real client): including quick pass/fail play checks.

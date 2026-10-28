@@ -252,9 +252,14 @@ end
 
 local function render(data: { [string]: any })
 	snapshot = data
-	local cash = tonumber(data.cash) or 0
+	-- CashHeld (a local attribute): Cash already paid but not shown yet; the reward prompt holds it back and
+	-- UI/CoinShower releases it coin by coin, so the wallet rolls up as the coins land
+	local held = tonumber(player:GetAttribute("CashHeld")) or 0
+	local cash = math.max(0, (tonumber(data.cash) or 0) - held)
+	-- a CoinShower landing (CoinShowerTick, its last release) owns the ticks, the till and the wallet pop
+	local showering = os.clock() - (tonumber(player:GetAttribute("CoinShowerTick")) or 0) < 0.6
 	local spilled = false
-	if cashShown and cash > cashShown then
+	if cashShown and cash > cashShown and not showering then
 		if not Comfort.reducedMotion() then -- (the coin itself squashes as gainPop's coins land)
 			cashPop.Scale = 1.25
 			TweenService:Create(cashPop, TweenInfo.new(0.45, Enum.EasingStyle.Back), { Scale = 1 })
@@ -281,7 +286,8 @@ local function onDataChanged(data: any)
 		return
 	end
 	render(data)
-	if type(data.award) == "table" then
+	-- a held payout (CashHeld: the reward prompt's coins) shows as coins landing, not as a "+N Cash" line
+	if type(data.award) == "table" and not player:GetAttribute("CashHeld") then
 		showAward(data.award)
 	end
 end
@@ -472,6 +478,11 @@ function HudController.Init()
 	Menu.mount() -- button bar, panel registry, Boat to me
 	NextChip.mount(Layout.region(gui, "chips")) -- the permanent next-goal chip (docs/24 E)
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)
+	player:GetAttributeChangedSignal("CashHeld"):Connect(function()
+		if snapshot then
+			render(snapshot)
+		end
+	end)
 	Layout.onColdOpen(applyColdOpen)
 	player:GetAttributeChangedSignal("BuildHidesWallet"):Connect(showWallet)
 

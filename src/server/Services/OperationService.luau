@@ -970,6 +970,7 @@ finish = function(op: any, reason: string)
 			total = #op.casualties,
 			cash = math.floor(cash * mult + 0.5),
 			me = p.UserId,
+			golden = op.golden == true, -- OpsDebrief's gold delivery burst
 		})
 	end
 	closeOp(op)

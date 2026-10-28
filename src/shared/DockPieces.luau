@@ -327,7 +327,7 @@ local function pontoon(m: Model, b: CFrame)
 		brick(m, "Float", Vector3.new(5, 1.4, 4), b * CFrame.new(16, 0.6, z), DBG)
 		brick(m, "Cleat", Vector3.new(0.5, 0.4, 1.3), b * CFrame.new(13.4, 2.2, z), BRICK_YELLOW)
 	end
-	brick(m, "Edge", Vector3.new(0.4, 0.5, 50), b * CFrame.new(19.1, 1.6, 2), BRICK_BLUE)
+	brick(m, "Edge", Vector3.new(0.4, 0.5, 49.9), b * CFrame.new(19.1, 1.6, 2), BRICK_BLUE) -- ends inside the pontoon's
 	lamp(m, b, 18.5, -18, 2)
 	lamp(m, b, 18.5, 4, 2)
 	for _, z in { -4, 20, 45 } do
@@ -837,7 +837,7 @@ local function station(m: Model, b: CFrame)
 	end
 	-- light strips down both edges of the jetty
 	local jetty = LOT.Jetty
-	for _, dx in { -jetty.size.X / 2 + 0.1, jetty.size.X / 2 - 0.1 } do
+	for _, dx in { -jetty.size.X / 2 + 0.15, jetty.size.X / 2 - 0.15 } do -- 0.05 inside the jetty's sides
 		part(
 			m,
 			"JettyLight",

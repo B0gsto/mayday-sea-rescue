@@ -77,6 +77,15 @@ return table.freeze({
 		fps = 0,
 		random = true,
 	},
+	-- FX1 spectacle (docs/26 "Satisfaction bar"). ours: a ring of studded round plates riding a band; it races out
+	-- and the plates pop (render.py stud_ring)
+	stud_ring = { id = "rbxassetid://131845697391608", layout = "Grid4x4", mode = "OneShot" },
+	-- ours (glow.py): a tapered god ray along +Y, flown VelocityParallel
+	light_ray = { id = "rbxassetid://102807810048685", layout = "None", mode = "Loop" },
+	-- ours (glow.py): the light pillar's Beam texture, soft edges across its width
+	light_beam = { id = "rbxassetid://92389586692257", layout = "None", mode = "Loop" },
+	-- ours (glow.py): a crisp round core with a soft halo
+	core_flash = { id = "rbxassetid://136452411239756", layout = "None", mode = "Loop" },
 	-- Snaliel, an elongated drop streak (in model 10198615035)
 	sea_spray = { id = "rbxassetid://6763809313", layout = "None", mode = "Loop" },
 	-- TheeTatahThailand, a glossy round bubble (in model 5463907036 Bubble effect!)

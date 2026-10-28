@@ -188,7 +188,7 @@ local function flag(model: Model, at: CFrame)
 	part(
 		model,
 		"Hoist",
-		Vector3.new(0.1, 1.15, 0.08),
+		Vector3.new(0.1, 1.15, 0.16), -- 0.05 proud of the flag's faces (0.08 left 0.01)
 		at * CFrame.new(0.08, 3.8, 0),
 		Color3.fromRGB(236, 228, 208),
 		Enum.Material.Fabric
@@ -215,7 +215,7 @@ local function crew(model: Model, at: CFrame)
 	part(
 		model,
 		"Hoist",
-		Vector3.new(0.12, 1.05, 0.08),
+		Vector3.new(0.12, 1.05, 0.16), -- 0.05 proud of the flag's faces (0.08 left 0.01)
 		at * CFrame.new(0.12, 4.1, 0),
 		BRASS,
 		Enum.Material.Fabric

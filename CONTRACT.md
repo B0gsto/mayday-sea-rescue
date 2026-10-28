@@ -44,7 +44,7 @@ history, not here.
 
 Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService), `Upgrade_Buy` (UpgradeService),
 `PIW_Rescue` (Ops/PiwRescue), `Dock_Upgrade` / `Dock_Build` / `Dock_Finish` (DockService), `Quest_Talk` (QuestService),
-`Streak_State` / `Streak_Get` / `Streak_Open`, `Pet_State` / `Pet_Get` / `Pet_Equip` / `Pet_Variant`, `Cosmetics_Equip` /
+`Streak_State` / `Streak_Get` / `Streak_Collect`, `Pet_State` / `Pet_Get` / `Pet_Equip` / `Pet_Variant`, `Cosmetics_Equip` /
 `Cosmetics_Action` / `Cosmetics_Event`, `Monetization_GetCatalogue` / `Monetization_Purchased`,
 `Discovery_State` / `Discovery_Found` / `Discovery_Get`, `PlatformPrompt_Ask` / `_Offer` / `_OptIn`,
 `Telemetry_Client`, `Dev_Grant` / `Dev_Action`, and the `Ops_*` table below.
@@ -293,8 +293,11 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   island's construction site), `Haul`, `Fish`, `Repair`, `Rescue`, `Heal`, `Gather` or `Idle`. Client: `WorkerController` (each Job's 2-3 beat loop and the Bunkhouse night lights + "Zzz" from `shared/WorkLoop`, pure), `UI/WorkerBadge`, `UI/Portrait` (a worker's ViewportFrame head-and-shoulders card from their `WorkerRules.rigOf` template, built only while on screen: Crew panel, survivor card, Album specials). Studio: `WorkerDev` `"fill"` / `"unfill"`.
 - Crew (players riding together): `CrewService` (`GetCrew`, `IsCrewmate`, `Join`, `Leave`). Friends:
   `FriendService.Count`, `shared/FriendBonus`. Group reward: `GroupRewardService` + `shared/GroupReward`.
-- Daily crate: `StreakService` + `StreakRules` / `StreakConfig`; client `StreakController`, `World/StreakCrate`,
-  `World/StreakSign`, `UI/StreakReward`.
+- Join reward prompt (no world chest, owner 2026-10-28): `StreakService` + `StreakRules` / `StreakConfig` grant the
+  daily streak on `Streak_Collect`; offline crew pay is granted on join (`WorkerService`, attribute `WorkerOffline`).
+  Client `RewardController` shows `UI/RewardPrompt` (coin + amount, 7-day pip strip `UiImages.Pip`, crew row, one
+  Collect) and plays `UI/CoinShower` (`play(playerGui, amount, from?)`, releases the local `CashHeld` attribute that
+  `HudController` subtracts from the wallet).
 - Quests (docs/23 (l), (p)): `Quests/Data` (6 givers, quest chains), `Quests/Rules` (pure, `tests/Quests.spec.luau`:
   one active quest, one offer per giver per day, `talk` -> a `Dialogue` tree). `server/World/QuestPontoons` builds
   each island's quest pontoon and tablet and sails the givers' boats in and out; `QuestService` runs the quest

@@ -149,8 +149,8 @@ Thirteen quests, six givers, one a day per giver. Pay is flat; distance does not
 | 7 | 900 + a cosmetic |
 
 - One missed day is free (a calm day). A longer break drops the streak back three days, never to zero.
-- Away more than three days: the next crate is a welcome-back crate, +500 Cash, once.
-- The crate is once per UTC day. No purchase extends it, protects it or sells a second claim.
+- Away more than three days: the next reward carries a welcome-back bonus, +500 Cash, once.
+- The reward is once per UTC day, shown in the join prompt and granted on Collect. No purchase extends it, protects it or sells a second claim.
 - The day-7 cosmetic is the only random item in the streak; it is cosmetic and duplicate-protected.
 
 ### 6.3 Album

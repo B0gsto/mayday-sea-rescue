@@ -146,4 +146,22 @@ return function(t)
 	t.test("duration covers the latest delayed layer", function()
 		t.expect(Presets.duration(Presets.ALL.barge_moor)).toBeCloseTo(1.9, 1e-9)
 	end)
+
+	t.test("FX1 curves: eased keypoints keep the ends, fit a NumberSequence and ease", function()
+		local k = Presets.curve({ 2, 10, 4 }, "out")
+		t.expect(#k <= 20).toBe(true)
+		t.expect(k[1][1]).toBe(0)
+		t.expect(k[1][2]).toBe(2)
+		t.expect(k[#k][1]).toBe(1)
+		t.expect(k[#k][2]).toBe(4)
+		t.expect(k[2][2] > 2 + (10 - 2) * (k[2][1] / 0.5)).toBe(true) -- "out" is ahead of linear
+		t.expect(#Presets.curve({ 1, 2 }, nil)).toBe(2)
+		local back = Presets.curve({ 0, 1 }, "back")
+		local peak = 0
+		for _, kv in back do
+			peak = math.max(peak, kv[2])
+		end
+		t.expect(peak > 1).toBe(true) -- overshoots, then settles on 1
+		t.expect(Presets.duration(Presets.ALL.fx1_hq_levelup) >= 1.5).toBe(true) -- covers the pillar
+	end)
 end

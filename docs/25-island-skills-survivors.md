@@ -22,8 +22,9 @@ What is wrong today:
 The HQ stands on the plaza at the head of the berth cove, the first thing you see from the jetty. Its level is your
 island's level (a building, not a rank). Each HQ level unlocks new buildings and raises every building's max level.
 To upgrade the HQ you need Cash plus everything the current HQ level allows built at least once; the HQ card shows
-those as icons with ticks, so the next goal is always on screen. A green arrow floats over anything you can
-build or upgrade right now (Clash of Clans style).
+those as icons with ticks, so the next goal is always on screen. A green arrow floats over any built
+building you can upgrade right now (Clash of Clans style); none over empty lots (owner 2026-10-28: an arrow over bare
+ground makes no sense), where the Next chip and the build tablet lead instead.
 
 | HQ | Look (Lego) | Unlocks | Max building level |
 |---|---|---|---|

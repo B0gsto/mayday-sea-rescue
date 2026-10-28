@@ -43,6 +43,7 @@ HudLayout.NOTICE_HEIGHT = 120
 HudLayout.NOTICE_MIN_WIDTH = 200 -- touch: narrower beside the wallet -> the centre band under it
 HudLayout.WALLET_WIDTH = 280 -- the Cash card (HudController)
 HudLayout.WALLET_HEIGHT = 64
+HudLayout.WALLET_DROP = 18 -- desktop: extra space between the menu labels and the wallet (owner: "a bit lower down")
 HudLayout.PILL_HEIGHT = 36 -- desktop: clear space above the square (the minimap bezel overhangs it)
 HudLayout.TOUCH_SIDE = 130 -- final px: the touch minimap square (and the touch gauges square)
 HudLayout.TOUCH_SIDE_MIN = 100 -- final px: the minimap on small phones (30% of the safe height, floored here)
@@ -59,7 +60,7 @@ HudLayout.MENU_COUNT = 9 -- UI/Menu's buttons: Shop, Quests, Album, Pet, Crew, S
 
 -- The menu grid's cell per device (du): icon square, label row (text = label - 4), row gap, column gap.
 -- Touch icons are >= 44 px at the 0.7 floor; desktop labels are bigger (kit polish).
-local MENU_DESK = { icon = 72, label = 28, gap = 10, colGap = 22 }
+local MENU_DESK = { icon = 62, label = 24, gap = 9, colGap = 19 } -- owner 2026-10-28: "a bit smaller" (was 72/28/10/22)
 local MENU_TOUCH = { icon = 64, label = 24, gap = 6, colGap = 14 }
 
 -- usable px at which the HUD draws 1:1 (1080p draws 1.6x: wallet ~380x150 px, minimap ~335 px)
@@ -201,7 +202,10 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	-- touch: as many rows as fit above the thumbstick zone (4 x 2 on phones, 2 x 4 on tablets)
 	local menu = if touch
 		then menuGrid(MENU_TOUCH, u.Y * 0.55 - 4 - m)
-		else menuGrid(MENU_DESK, u.Y - 2 * m - HudLayout.WALLET_HEIGHT - g)
+		else menuGrid(
+			MENU_DESK,
+			u.Y - 2 * m - HudLayout.WALLET_HEIGHT - g - HudLayout.WALLET_DROP
+		)
 	local left = m + menu.width + g -- the left-hand HUD starts right of the menu
 	local objectiveWidth = math.clamp(math.floor(u.X * 0.3), 300, if touch then 460 else 360)
 	local outer = math.max(side, math.clamp(math.floor(u.X * 0.24), 280, 360)) -- touch prompt clearance
@@ -309,12 +313,13 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	else
 		-- the menu strip on the left edge with the wallet under it, the pair centred; the objective top left
 		-- beside the menu; the minimap bottom right with the quest chip above its pill
-		local menuTop = (u.Y - menu.height - HudLayout.WALLET_HEIGHT - g) / 2
+		local menuTop = (u.Y - menu.height - HudLayout.WALLET_HEIGHT - g - HudLayout.WALLET_DROP)
+			/ 2
 		mt.rects["menu"] =
 			rect(Vector2.new(0, 0), Vector2.new(m, menuTop), Vector2.new(menu.width, menu.height))
 		mt.rects["wallet"] = rect(
 			Vector2.new(0, 0),
-			Vector2.new(m, menuTop + menu.height + g),
+			Vector2.new(m, menuTop + menu.height + g + HudLayout.WALLET_DROP),
 			Vector2.new(HudLayout.WALLET_WIDTH, HudLayout.WALLET_HEIGHT)
 		)
 		mt.rects["objective"] = rect(

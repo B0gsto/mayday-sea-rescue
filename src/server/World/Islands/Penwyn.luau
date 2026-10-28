@@ -531,16 +531,14 @@ local function village(root: Model, padY: number)
 			GRANITE_DARK,
 			Mat.Granite
 		)
-		deco(
-			part(
-				hedges,
-				"HedgeTop",
-				Vector3.new(2.8, 1.2, len),
-				cf * CFrame.new(0, 3.9, 0),
-				HEDGE,
-				Mat.Fabric
-			)
-		)
+		deco(part(
+			hedges,
+			"HedgeTop",
+			Vector3.new(2.8, 1.2, len + 0.1), -- ends 0.05 past the wall's, like its sides
+			cf * CFrame.new(0, 3.9, 0),
+			HEDGE,
+			Mat.Fabric
+		))
 	end
 	-- the net-drying ground behind the north hedge
 	local nets = group(root, "NetGround")

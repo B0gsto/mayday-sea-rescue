@@ -139,7 +139,7 @@ is required to read a call.
 - Cash Boost and the 2x Cash pass do not stack; the higher multiplier applies.
 - Crew Boost benefits the whole crew.
 - A day pass is a rental, clearly labelled. No Day VIP until the VIP pass itself is ready.
-- Boosts never apply to quests, Album finds, the streak crate or Cash packs.
+- Boosts never apply to quests, Album finds, the daily streak reward or Cash packs.
 
 ### 5.3 Island buildings and decorations
 

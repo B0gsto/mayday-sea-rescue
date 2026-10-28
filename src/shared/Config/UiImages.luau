@@ -45,6 +45,14 @@ return {
 		Medal = "rbxassetid://130413529136226",
 		Rays = "rbxassetid://121915121871589",
 	},
+	-- UI/RewardPrompt's streak strip: art/source/ui/streak_pip.svg per state (tools/ui-art/pip_variants.py).
+	Pip = {
+		Done = "rbxassetid://126485653448134",
+		Today = "rbxassetid://83307421569966",
+		Next = "rbxassetid://104141248958070",
+		Seven = "rbxassetid://74455877198415",
+		SevenToday = "rbxassetid://122421984805832",
+	},
 	-- Icons requested in docs/18-ui-art-requests.md. Empty until uploaded: the UI draws its glyph
 	-- placeholder instead. VehicleArt: UI/BoatCard (upgrades by id, the stat rows, the tick).
 	VehicleArt = {

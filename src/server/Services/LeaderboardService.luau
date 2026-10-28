@@ -314,7 +314,7 @@ local function buildBoard(face: CFrame): Model
 	local back = part(
 		m,
 		"Board",
-		Vector3.new(W, H, T),
+		Vector3.new(W, H - 0.1, T), -- 0.05 inside the frame's top and bottom edges (no shared plane)
 		face * CFrame.new(0, 0, -T / 2),
 		NAVY,
 		Enum.Material.Wood
