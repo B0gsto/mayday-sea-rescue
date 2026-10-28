@@ -160,7 +160,7 @@ function AudioMix.musicCue(s: MusicState): string?
 		return "Music_Operation"
 	elseif s.radio then
 		return nil
-	elseif s.night then
+	elseif s.night and s.nearHome then -- the night bed belongs to the islands; open sea keeps the sea theme
 		return "Music_Island_Night"
 	end
 	return if s.nearHome then "Music_Island_Day" else "Music_Sea"

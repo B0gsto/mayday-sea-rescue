@@ -134,6 +134,8 @@ return function(t)
 			s.nearHome = false
 			t.expect(AudioMix.musicCue(s)).toBe("Music_Sea")
 			s.night = true
+			t.expect(AudioMix.musicCue(s)).toBe("Music_Sea")
+			s.nearHome = true
 			t.expect(AudioMix.musicCue(s)).toBe("Music_Island_Night")
 			s.radio = true
 			t.expect(AudioMix.musicCue(s)).toBe(nil)
