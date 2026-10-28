@@ -1,14 +1,16 @@
 --!strict
 -- NextChip: the permanent "what to build next" chip (docs/24 E/F) in the HudLayout "chips" slot.
--- Compact: the next building's Lego icon, its 1-3 word name, a Cash bar to its price. At the price it
--- pops once (never a looping pulse: owner 2026-10-28); during a construction it shows the site's progress and time left instead. Tapping / clicking
--- (or F / gamepad Y, shown as an InputGlyph) opens the build tablet when you stand at the station,
+-- The UI kit look (owner 2026-10-28: the slate bar read as a dev HUD): a blue block card, the next building's
+-- Lego icon on a white tile over its left edge, its 1-3 word name, a Cash bar to its price and coin + price.
+-- At the price the price turns into a green pill with one pop (never a looping pulse: owner 2026-10-28);
+-- during a construction it shows the site's progress and a clock + time left instead. Tapping / clicking
+-- (or F / gamepad Y, shown as a light keycap) opens the build tablet when you stand at the station,
 -- else puts the guide arrow and the minimap pin on the station for a few seconds.
 -- The tutorial's chip row (OnboardingController) owns this slot until the tutorial is done.
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TweenService = game:GetService("TweenService")
+local TextService = game:GetService("TextService")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
@@ -18,26 +20,32 @@ local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfi
 local Net = require(Shared:WaitForChild("Net"))
 local NextGoal = require(Shared:WaitForChild("NextGoal"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
+local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 
 local UI = script.Parent
 local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
-local HudTheme = require(UI:WaitForChild("HudTheme"))
+local Glyph = require(UI:WaitForChild("Glyph"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
 local Layout = require(UI:WaitForChild("Layout"))
 local OnboardingBeacon = require(UI:WaitForChild("OnboardingBeacon"))
 local Style = require(UI:WaitForChild("Kit"):WaitForChild("Style"))
+local Theme = require(UI:WaitForChild("Kit"):WaitForChild("Theme"))
 
 local player = Players.LocalPlayer
 
 local NextChip = {}
 
 local root: ImageButton? = nil
-local iconWell: Frame? = nil
+local iconArt: Frame? = nil
 local nameLabel: TextLabel? = nil
-local priceLabel: TextLabel? = nil
+local amountLabel: TextLabel? = nil
+local coinIcon: Frame? = nil
+local clockIcon: Frame? = nil
+local pill: Frame? = nil
+local amountScale: UIScale? = nil
 local fill: Frame? = nil
-local pulseScale: UIScale? = nil
-local pulsing = false
+local ready = false
+local shownKey: string? = nil
 
 local snapshot: { [string]: any }? = nil
 local beacon: OnboardingBeacon.Beacon? = nil
@@ -49,6 +57,18 @@ local lastSiteAt = 0
 
 local POINT_SECONDS = 10 -- s the arrow/pin stay after a tap
 local NEAR_STATION = 18 -- studs: close enough to open the tablet from the chip
+
+-- du inside the "chips" region (48 high): the tile hangs over the card's left edge, the amount and
+-- the keycap sit right, the name over the bar fills the rest.
+local TILE = 52
+local CARD_X = 20
+local TEXT_X = 42 -- on the card face
+local AMOUNT_MIN = 76 -- the amount box grows with its number, the bar runs up to it
+local KEY = 30
+local GAP = 8
+local BRICK = Color3.fromHex("FFC928")
+local amountW = AMOUNT_MIN
+local relayout: (() -> ())? = nil
 
 local function applyData(data: any)
 	if type(data) == "table" then
@@ -146,23 +166,18 @@ local function activate()
 	pointAt(station)
 end
 
-local function startPulse(on: boolean)
-	local scale = pulseScale
-	if not scale or pulsing == on then
+-- At the price the amount sits on a green pill: one pop as it lands, then it rests.
+local function setReady(on: boolean)
+	local sc, p = amountScale, pill
+	if not (sc and p) or ready == on then
 		return
 	end
-	pulsing = on
-	if not on then
-		TweenService:Create(scale, TweenInfo.new(0.2), { Scale = 1 }):Play()
-		return
+	ready = on
+	p.Visible = on
+	if on then
+		sc.Scale = 1.3
+		Style.tween(sc, 0.35, { Scale = 1 }, Enum.EasingStyle.Back)
 	end
-	-- one gentle pop as it becomes affordable, then it rests
-	scale.Scale = 1.1
-	TweenService:Create(
-		scale,
-		TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-		{ Scale = 1 }
-	):Play()
 end
 
 local function refresh()
@@ -179,7 +194,7 @@ local function refresh()
 		if r then
 			r.Visible = false
 		end
-		startPulse(false)
+		setReady(false)
 		return
 	end
 	local levels = if type(s.dock) == "table" and type(s.dock.levels) == "table"
@@ -204,34 +219,54 @@ local function refresh()
 	})
 	if not g then
 		r.Visible = false
-		startPulse(false)
+		setReady(false)
 		clearPointing()
 		return
 	end
 	r.Visible = true
-	local art = iconWell :: Frame
-	art:ClearAllChildren()
-	if DockConfig.Buildings[g.key] then
-		BuildGlyph(art, { kind = "Building", key = g.key })
-	else
-		BuildGlyph(art, { kind = "Decor", key = g.key })
+	if g.key ~= shownKey then
+		shownKey = g.key
+		local art = iconArt :: Frame
+		art:ClearAllChildren()
+		if DockConfig.Buildings[g.key] then
+			BuildGlyph(art, { kind = "Building", key = g.key })
+		else
+			BuildGlyph(art, { kind = "Decor", key = g.key })
+		end
+		-- yellow Lego bricks, so the drawing reads on its white tile
+		for _, b in art:GetChildren() do
+			if b:IsA("Frame") and b.BackgroundColor3 == Color3.new(1, 1, 1) then
+				b.BackgroundColor3 = BRICK
+			end
+		end
 	end
 	local name = nameLabel :: TextLabel
 	name.Text = if g.level > 1 then `{g.name} Lv{g.level}` else g.name
-	local fillFrame = fill :: Frame
-	local price = priceLabel :: TextLabel
-	fillFrame.Size = UDim2.fromScale(g.progress, 1)
-	fillFrame.BackgroundColor3 = if g.kind == "Site"
-		then HudTheme.Colors.ready
-		else HudTheme.Colors.gold
-	if g.kind == "Site" then
-		price.Text = BuildTimer.text(g.timeLeft or 0)
-		price.TextColor3 = HudTheme.Colors.ready
-	else
-		price.Text = HudTheme.formatNumber(g.price)
-		price.TextColor3 = HudTheme.Colors.gold
+	local f, num = fill :: Frame, amountLabel :: TextLabel
+	local timer = g.kind == "Site"
+	f.Size = UDim2.fromScale(g.progress, 1)
+	f.Visible = g.progress > 0.02
+	local clock, coin = clockIcon :: Frame, coinIcon :: Frame
+	-- green only means go (the full bar next to the green price pill); a running site fills white
+	Style.gradient(
+		f,
+		Style.grad(if timer then "body" elseif g.progress >= 1 then "green" else "yellow")
+	)
+	clock.Visible = timer
+	coin.Visible = not timer
+	num.Text = if timer then BuildTimer.text(g.timeLeft or 0) else Theme.short(g.price)
+	local tw = TextService:GetTextSize(
+		num.Text,
+		num.TextSize,
+		Enum.Font.FredokaOne,
+		Vector2.new(1e4, 1e4)
+	).X
+	local w = math.max(AMOUNT_MIN, math.ceil(28 + 4 + tw + 24))
+	if w ~= amountW and relayout then
+		amountW = w
+		relayout()
 	end
-	startPulse(g.kind == "Build" and g.progress >= 1)
+	setReady(g.kind == "Build" and g.progress >= 1)
 end
 
 local function tick()
@@ -269,83 +304,180 @@ function NextChip.mount(region: Frame)
 	r.Name = "NextChip"
 	r.Visible = false
 	root = r
-	local panel = Instance.new("Frame")
-	panel.Name = "Panel"
-	panel.Size = UDim2.fromScale(1, 1)
-	panel.BackgroundColor3 = Color3.new(1, 1, 1)
-	panel.BorderSizePixel = 0
-	panel.Parent = r
-	-- the UI kit look, like the tutorial chips it replaces (playtest 2026-10-26: slate read faint)
-	Style.corner(panel, 10)
-	Style.gradient(panel, Style.grad("ink"))
-	Style.stroke(panel, 3, true)
 
-	local well = Instance.new("Frame")
-	well.Name = "Icon"
-	well.BackgroundColor3 = HudTheme.Colors.panelLight
-	well.BackgroundTransparency = 0.1
-	well.Position = UDim2.fromOffset(6, 6)
-	well.Size = UDim2.fromOffset(36, 36)
-	well.Parent = panel
-	HudTheme.corner(well, 5)
+	local card = Instance.new("Frame")
+	card.Name = "Card"
+	card.BackgroundTransparency = 1
+	card.Position = UDim2.fromOffset(CARD_X, 0)
+	card.Size = UDim2.new(1, -CARD_X, 1, 0)
+	card.Parent = r
+	-- a soft drop shadow and a deeper blue than the kit's, so the card holds against a blue sky
+	local shadow = Instance.new("Frame")
+	shadow.Name = "Shadow"
+	shadow.BackgroundColor3 = Theme.Colors.shadow
+	shadow.BackgroundTransparency = 0.65
+	shadow.Position = UDim2.fromOffset(0, 4)
+	shadow.Size = UDim2.fromScale(1, 1)
+	shadow.Parent = card
+	Style.corner(shadow, 13)
+	local _, face = Style.block(
+		card,
+		{ top = Color3.fromHex("7FDCFF"), bottom = Color3.fromHex("1B6FDB") },
+		{ radius = 12, lip = 6, border = 3.5 }
+	)
+
+	-- the building's Lego icon on a white tile, tilted a touch like a sticker
+	local tile = Instance.new("Frame")
+	tile.Name = "Tile"
+	tile.BackgroundTransparency = 1
+	tile.Position = UDim2.fromOffset(0, -3)
+	tile.Size = UDim2.fromOffset(TILE, TILE)
+	tile.Rotation = -6
+	tile.ZIndex = 2
+	tile.Parent = r
+	local _, tileFace = Style.block(
+		tile,
+		{ top = Color3.new(1, 1, 1), bottom = Color3.fromHex("D6E4F2") },
+		{ radius = 12, lip = 4, border = 3 }
+	)
 	local art = Instance.new("Frame")
 	art.Name = "Art"
 	art.BackgroundTransparency = 1
 	art.AnchorPoint = Vector2.new(0.5, 0.5)
 	art.Position = UDim2.fromScale(0.5, 0.5)
-	art.Size = UDim2.fromScale(0.74, 0.74)
-	art.Parent = well
-	iconWell = art
+	art.Size = UDim2.fromScale(0.76, 0.76)
+	art.Parent = tileFace
+	iconArt = art
 
-	local name = Style.label(panel, "", 20)
+	local name = Style.label(face, "", 23)
 	name.Name = "Name"
-	name.Size = UDim2.new(1, -150, 0, 26)
-	name.Position = UDim2.fromOffset(50, 2)
+	name.Position = UDim2.fromOffset(TEXT_X, 0)
 	name.TextXAlignment = Enum.TextXAlignment.Left
 	name.TextWrapped = false
 	name.TextTruncate = Enum.TextTruncate.AtEnd
 	nameLabel = name
-	local price = Style.label(panel, "", 20)
-	price.Name = "Price"
-	price.Size = UDim2.fromOffset(80, 26)
-	price.Position = UDim2.new(1, -124, 0, 2)
-	price.TextXAlignment = Enum.TextXAlignment.Right
-	price.TextColor3 = HudTheme.Colors.gold
-	priceLabel = price
 
-	local back = Instance.new("Frame")
-	back.Name = "Bar"
-	back.BackgroundColor3 = HudTheme.Colors.locked
-	back.BackgroundTransparency = 0.25
-	back.BorderSizePixel = 0
-	back.Position = UDim2.fromOffset(50, 32)
-	back.Size = UDim2.new(1, -94, 0, 8)
-	back.Parent = panel
-	HudTheme.corner(back, 3)
+	-- the Cash bar: a deep blue trough with an ink outline, a bright fill with a gloss strip
+	local bar = Instance.new("Frame")
+	bar.Name = "Bar"
+	bar.BackgroundColor3 = Color3.fromHex("1D539C")
+	bar.Position = UDim2.fromOffset(TEXT_X, 25)
+	bar.Parent = face
+	Style.corner(bar, 6)
+	Style.stroke(bar, 2.5, true)
 	local f = Instance.new("Frame")
 	f.Name = "Fill"
-	f.BackgroundColor3 = HudTheme.Colors.gold
-	f.BorderSizePixel = 0
+	f.BackgroundColor3 = Color3.new(1, 1, 1)
 	f.Size = UDim2.fromScale(0, 1)
-	f.Parent = back
-	HudTheme.corner(f, 3)
+	f.Parent = bar
+	Style.corner(f, 6)
+	local gloss = Instance.new("Frame")
+	gloss.Name = "Gloss"
+	gloss.BackgroundColor3 = Color3.new(1, 1, 1)
+	gloss.BackgroundTransparency = 0.45
+	gloss.Position = UDim2.fromOffset(3, 2)
+	gloss.Size = UDim2.new(1, -6, 0.3, 0)
+	gloss.Parent = f
+	Style.corner(gloss, 3)
 	fill = f
 
-	local slot = Instance.new("Frame")
-	slot.Name = "Key"
-	slot.BackgroundTransparency = 1
-	slot.AnchorPoint = Vector2.new(1, 0)
-	slot.Position = UDim2.new(1, -4, 0, 4)
-	slot.Size = UDim2.fromOffset(38, 36)
-	slot.Parent = panel
-	InputGlyph.chip(slot, Enum.KeyCode.F, Enum.KeyCode.ButtonY)
+	-- coin + price (or clock + time left); at the price a green pill pops in behind them
+	local amount = Instance.new("Frame")
+	amount.Name = "Amount"
+	amount.BackgroundTransparency = 1
+	amount.AnchorPoint = Vector2.new(1, 0)
+	amount.Parent = face
+	local sc = Instance.new("UIScale")
+	sc.Parent = amount
+	amountScale = sc
+	local p =
+		Style.block(amount, Style.grad("buy"), { radius = 12, lip = 6, border = 3, studs = true })
+	p.Visible = false
+	pill = p
+	local row = Instance.new("Frame")
+	row.Name = "Row"
+	row.BackgroundTransparency = 1
+	row.Size = UDim2.new(1, 0, 1, -6)
+	row.ZIndex = 2
+	row.Parent = amount
+	local list = Style.list(row, true, 4)
+	list.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	list.VerticalAlignment = Enum.VerticalAlignment.Center
+	local coin = Instance.new("Frame")
+	coin.Name = "Coin"
+	coin.BackgroundTransparency = 1
+	coin.Size = UDim2.fromOffset(28, 28)
+	coin.LayoutOrder = 1
+	coin.Parent = row
+	local coinArt = Instance.new("ImageLabel") -- the wallet's gold coin, so the price reads as Cash
+	coinArt.BackgroundTransparency = 1
+	coinArt.Image = UiImages.Hud.Coin
+	coinArt.ScaleType = Enum.ScaleType.Fit
+	coinArt.Size = UDim2.fromScale(1, 1)
+	coinArt.Parent = coin
+	coinIcon = coin
+	local clock = Instance.new("Frame")
+	clock.Name = "Clock"
+	clock.BackgroundTransparency = 1
+	clock.Size = UDim2.fromOffset(24, 24)
+	clock.LayoutOrder = 1
+	clock.Visible = false
+	clock.Parent = row
+	-- an ink copy nudged down under the white clock reads as the outlined font
+	for i, off in { Vector2.new(1, 2), Vector2.zero } do
+		local layer = Instance.new("Frame")
+		layer.BackgroundTransparency = 1
+		layer.Position = UDim2.fromOffset(off.X, off.Y)
+		layer.Size = UDim2.fromScale(1, 1)
+		layer.Parent = clock
+		Glyph.draw("clock", layer, if i == 1 then Theme.Colors.ink else Color3.new(1, 1, 1))
+	end
+	clockIcon = clock
+	local num = Style.label(row, "", 26)
+	num.Name = "Num"
+	num.AutomaticSize = Enum.AutomaticSize.X
+	num.Size = UDim2.fromScale(0, 1)
+	num.TextWrapped = false
+	num.LayoutOrder = 2
+	amountLabel = num
 
-	local pulse = Instance.new("UIScale")
-	pulse.Name = "NextPulse"
-	pulse.Parent = r
-	pulseScale = pulse
+	-- the key hint: a light keycap on keyboard, the platform's Y button on a gamepad, none on touch
+	local key = Instance.new("Frame")
+	key.Name = "Key"
+	key.BackgroundTransparency = 1
+	key.AnchorPoint = Vector2.new(1, 0)
+	key.Position = UDim2.new(1, -GAP, 0, 6)
+	key.Size = UDim2.fromOffset(KEY, KEY)
+	key.Parent = face
+	local cap, capFace = Style.block(key, Style.grad("body"), { radius = 8, lip = 4, border = 2.5 })
+	local keyText = Style.label(capFace, "F", 18, true)
+	local padImage = Instance.new("ImageLabel")
+	padImage.Name = "Pad"
+	padImage.BackgroundTransparency = 1
+	padImage.Size = UDim2.fromScale(1, 1)
+	padImage.Parent = key
+	local function placeKey()
+		local d = InputGlyph.device()
+		local touch = d == "Touch" or Layout.current().touch
+		local image = if d == "Gamepad"
+			then UserInputService:GetImageForKeyCode(Enum.KeyCode.ButtonY)
+			else ""
+		padImage.Image = image
+		cap.Visible = image == ""
+		keyText.Text = InputGlyph.text(Enum.KeyCode.F, Enum.KeyCode.ButtonY)
+		key.Visible = not touch
+		local right = GAP + if touch then 0 else KEY + 6
+		amount.Position = UDim2.new(1, -right, 0, 3)
+		amount.Size = UDim2.fromOffset(amountW, 36)
+		local w = -(TEXT_X + amountW + right + 2)
+		name.Size = UDim2.new(1, w, 0, 24)
+		bar.Size = UDim2.new(1, w, 0, 15)
+	end
+	relayout = placeKey
+	InputGlyph.onDevice(placeKey)
+	Layout.onMetrics(placeKey)
 
-	Style.press(r, activate, HudTheme.Corner)
+	Style.press(r, activate, 12)
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(applyData)
 	task.spawn(function()
 		local getData = Net.init():WaitForChild("Progression_GetData", 30) :: RemoteFunction?
