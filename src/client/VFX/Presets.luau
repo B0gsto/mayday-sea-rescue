@@ -624,6 +624,7 @@ end
 
 local HQ_AT = 0.5 -- the charge, then everything hits at once
 local WARM = Color3.fromRGB(255, 236, 180) -- the white-hot core, warmed so it never blows the frame out
+local PALE_GOLD = Color3.fromRGB(255, 226, 140) -- rays: GOLD over the red plates read orange (AD r3)
 
 -- spectacle: your HQ levels up, the biggest moment in the game (the only white-hot core and the only slow-mo)
 Presets.ALL.fx1_hq_levelup = {
@@ -635,11 +636,11 @@ Presets.ALL.fx1_hq_levelup = {
 		charge(GOLD, 20, HQ_AT),
 		with(core(WARM, 12, HQ_AT, 0.6), { lifetime = { 0.22, 0.22 } }), -- a hit, gone before it hides the HQ
 		with( -- under 0.5 emission and half see-through: still gold on a bright sky
-			rays(14, { GOLD, YELLOW }, 26, HQ_AT, 0.45),
+			rays(14, { PALE_GOLD, WARM }, 26, HQ_AT, 0.45),
 			{ transparency = { 0.4, 0.5, 1 } }
 		),
-		studRing(GOLD, 24, 1.1, HQ_AT),
-		studRing(WHITE, 17, 0.9, HQ_AT + 0.18),
+		studRing(GOLD, 32, 1.1, HQ_AT),
+		studRing(WHITE, 22, 0.9, HQ_AT + 0.18),
 		with( -- floats down for ~2.5 s: the settle
 			confetti(60, { 36, 56 }, 32, { RED, WHITE, YELLOW, NAVY, GOLD }),
 			{ delay = HQ_AT, lifetime = { 2.2, 2.8 }, drag = 1.1, accel = Vector3.new(0, -18, 0) }
@@ -684,10 +685,10 @@ Presets.ALL.fx1_golden_rescue = {
 	impact = GOLD_AT,
 	layers = {
 		with(charge(GOLD, 9, GOLD_AT), { emission = 0.5 }),
-		core(GOLD, 7, GOLD_AT, 0.6),
+		with(core(GOLD, 5, GOLD_AT, 0.6), { lifetime = { 0.22, 0.22 } }),
 		rays(10, { GOLD, YELLOW }, 7, GOLD_AT, 0.4),
 		studRing(GOLD, 13, 0.85, GOLD_AT),
-		with(coins(13, { 30, 42 }, 60, GOLD_AT), { size = { 1.3 } }), -- up and out, never a pile on you
+		with(coins(13, { 22, 30 }, 50, GOLD_AT), { size = { 1.3 } }), -- up and out, never a pile on you
 		with(
 			confetti(24, { 18, 28 }, 55, { GOLD, WHITE }),
 			{ delay = GOLD_AT, size = { 1.4, 1.3 } }
@@ -736,7 +737,7 @@ Presets.ALL.fx1_wheel_jackpot = {
 		),
 		with(coins(14, { 18, 30 }, 50, WHEEL_AT + 0.08), { at = "origin", size = { 1.8 } }) :: Layer,
 	},
-	beams = { { color = WHITE, width = 10, height = 50, time = 1.6, emission = 1, tint = true } },
+	beams = { { color = WHITE, width = 10, height = 50, time = 1.6, emission = 0.6, tint = true } }, -- pink, not white
 	light = { color = WHITE, brightness = 4, range = 36, time = 1 },
 	punch = { fov = 4, magnitude = 0.9, roughness = 18, time = 0.4 },
 	frame = { tint = WHITE, saturation = 0.3, brightness = 0.08 }, -- opts.color (the rarity) tints it lightly
@@ -757,9 +758,12 @@ Presets.ALL.fx1_build_snap = {
 	layers = {
 		studRing(WHITE, 20, 0.8, 0),
 		groundRing("shockwave_ring", WHITE, { 11, 12.5 }, 0.6, 0.1),
-		plates({ RED, WHITE, YELLOW, NAVY }, 12),
+		plates({ RED, WHITE, YELLOW, NAVY }, 16),
 		with(table.clone(BUILD[2]), { transparency = { 0.5 }, count = 8 }), -- the dust never hides you
-		confetti(12, { 18, 28 }, 38, { RED, WHITE, YELLOW, SEA, GREEN }),
+		with(
+			confetti(20, { 18, 28 }, 38, { RED, WHITE, YELLOW, SEA, GREEN }),
+			{ lifetime = { 1.9, 2.6 } }
+		),
 		rays(8, { WHITE, YELLOW }, 6, 0, 0.3),
 	},
 	light = { color = WHITE, brightness = 2, range = 30, time = 0.6 },
