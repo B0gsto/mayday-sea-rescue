@@ -231,11 +231,11 @@ Presets.ALL = {
 			with(plates({ RED, WHITE }, 16), { size = { 3.4 }, speed = { 18, 26 } }),
 			{
 				tex = "coin",
-				count = 14,
+				count = 7, -- half (AD r3: a big coin wave hid the player; the stud fountain is the main event)
 				colors = { WHITE },
-				size = { 3.6 },
+				size = { 1.8 },
 				transparency = { 0, 0, 0, 1 },
-				lifetime = { 1, 1.3 },
+				lifetime = { 0.7, 0.85 }, -- gone before they reach the water
 				speed = { 24, 30 }, -- above the plates, so the coins read
 				spread = { 28, 28 },
 				accel = GRAVITY,
@@ -303,10 +303,16 @@ Presets.ALL = {
 	wheel_spin = {
 		job = "feedback",
 		layers = {
-			-- the sheet's arc is thin: three concentric arcs with one fixed rotation and spin stack into a band
-			arc(YELLOW, 7),
-			arc(YELLOW, 6.4),
-			arc(WHITE, 5.7),
+			-- played at the hub: three concentric arcs at the rim's radius stack into a band that sweeps the rim
+			arc(YELLOW, 13),
+			arc(YELLOW, 12.2),
+			arc(WHITE, 11.4),
+		},
+	},
+	-- feedback: yellow brick chips thrown off the rim where the flapper clicks (with wheel_spin at the hub)
+	wheel_chips = {
+		job = "feedback",
+		layers = {
 			{ -- along the rim's travel (+X of the play CFrame), falling away
 				tex = "confetti_bricks",
 				count = 4,
@@ -314,7 +320,7 @@ Presets.ALL = {
 				dir = "Right",
 				size = { 1.9, 1.6 },
 				transparency = { 0, 0, 1 },
-				lifetime = { 0.55, 0.7 },
+				lifetime = { 0.6, 0.8 }, -- still flying after the 0.45 s arc
 				speed = { 14, 20 },
 				spread = { 35, 35 },
 				accel = GRAVITY,

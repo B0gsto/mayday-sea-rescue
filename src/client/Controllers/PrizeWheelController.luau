@@ -351,7 +351,11 @@ local function spin(payload: any)
 			AudioController.play("UI_Prompt", pivotPart.Position, 0.45, 1.25 + math.random() * 0.2)
 			-- docs/26: streaks fly off the rim where the flapper clicks, along the rim's travel (-X at the top)
 			local at = if flapper then flapper.Position else (base * CFrame.new(0, 6.6, 0)).Position
-			VFXKit.play("wheel_spin", CFrame.fromMatrix(at, -base.RightVector, base.UpVector))
+			VFXKit.play(
+				"wheel_spin",
+				CFrame.fromMatrix(base.Position, -base.RightVector, base.UpVector)
+			) -- the rim band
+			VFXKit.play("wheel_chips", CFrame.fromMatrix(at, -base.RightVector, base.UpVector))
 		end
 		if flapper and flapRest then
 			local swing = math.max(0, 1 - (os.clock() - flapAt) / 0.14)
