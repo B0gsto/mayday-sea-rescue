@@ -76,7 +76,7 @@ local shownCount: number? = nil
 
 local displayed = false
 local plotFrame: CFrame? = nil
-local stationPos: Vector3? = nil
+local openedAt: Vector3? = nil -- where build mode opened (the Next chip opens it from anywhere on foot)
 local returnCf: CFrame? = nil
 local tabIndex = 1
 local focused: DockBlueprints.Item? = nil
@@ -1196,7 +1196,10 @@ local function openBuild()
 	end
 	displayed = true
 	plotFrame = b
-	stationPos = DockConfig.stationSpot(b).Position
+	local rootPart = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+	openedAt = if rootPart and rootPart:IsA("BasePart")
+		then rootPart.Position
+		else DockConfig.stationSpot(b).Position
 	local camera = Workspace.CurrentCamera
 	returnCf = if camera then camera.CFrame else nil
 	savedMovement = { walk = hum.WalkSpeed, jump = hum.JumpPower, jumpHeight = hum.JumpHeight }
@@ -1730,15 +1733,15 @@ function DockController.Start()
 			task.wait(0.5)
 		end
 	end)
-	-- close if a teleport (or respawn) takes the player off the station, or a seat (a launch) takes them
+	-- close if a teleport (or respawn) takes the player away from where build mode opened, or a seat (a launch) takes them
 	task.spawn(function()
 		while true do
-			if displayed and stationPos then
+			if displayed and openedAt then
 				local character = player.Character
 				local root = character and character:FindFirstChild("HumanoidRootPart")
 				local hum = character and character:FindFirstChildOfClass("Humanoid")
 				local at = if root and root:IsA("BasePart") then root.Position else nil
-				if not at or (at - stationPos).Magnitude > 90 or (hum and hum.SeatPart) then
+				if not at or (at - openedAt).Magnitude > 90 or (hum and hum.SeatPart) then
 					closeBuild()
 				end
 			end
