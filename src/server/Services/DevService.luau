@@ -82,6 +82,7 @@ local function moveTo(player: Player, cf: CFrame): boolean
 		if weld then
 			weld:Destroy()
 		end
+		task.wait(0.2) -- let the unseat replicate first: pivoted while still welded, the client's boat pulled you back to sea
 	end
 	character:PivotTo(cf)
 	return true
