@@ -20477,6 +20477,16 @@
   "source": "assets/fbx/M_Road_ParkedCar_02/M_Road_ParkedCar_02_LOD1.fbx",
   "type": "Model"
  },
+ "Model:0185200cc34837ea035cc7300bd6e7a6c52aaaa2327bb870956037655699eea8": {
+  "assetId": "92452060768345",
+  "moderation": "Approved",
+  "name": "M_Bld_Depot_LOD1",
+  "rbxm": "assets/models/M_Bld_Depot_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "0185200cc34837ea035cc7300bd6e7a6c52aaaa2327bb870956037655699eea8",
+  "source": "assets/fbx/M_Bld_Depot/M_Bld_Depot_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:01878829547fa6b24120133240c3bfb44ca2b35c767bc42df04913f4ae3adb0d": {
   "assetId": "83768058005616",
   "moderation": "Approved",
@@ -20505,6 +20515,16 @@
   "route": "delivery",
   "sha": "023311a45e13cb985282ead3651b5ddc72109de0d74fc0602b5ac480b97a90ec",
   "source": "assets/fbx/M_Chr_HumanBase_M/M_Chr_HumanBase_M_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:02f9bbeb36b092d18817cb203906f11c6b070786c842ca2e6efe9d77675a25c1": {
+  "assetId": "116347528135297",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_03_LOD1",
+  "rbxm": "assets/models/M_Veh_MooredBoat_03_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "02f9bbeb36b092d18817cb203906f11c6b070786c842ca2e6efe9d77675a25c1",
+  "source": "assets/fbx/M_Veh_MooredBoat_03/M_Veh_MooredBoat_03_LOD1.fbx",
   "type": "Model"
  },
  "Model:030e8cfa952562e37ad3908e90bce13ec0e26beb355a9cfe126d9b2ec2f946c0": {
@@ -20687,6 +20707,16 @@
   "source": "assets/fbx/M_Kit_TriageTags/M_Kit_TriageTags_LOD0.fbx",
   "type": "Model"
  },
+ "Model:0aedafbe2c12bb302084b256825acb4468fdee1d10a1e0d51209f3cd127030a4": {
+  "assetId": "125178379370110",
+  "moderation": "Approved",
+  "name": "M_Veh_GaleQueen_LOD2",
+  "rbxm": "assets/models/M_Veh_GaleQueen_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "0aedafbe2c12bb302084b256825acb4468fdee1d10a1e0d51209f3cd127030a4",
+  "source": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:0b07d0f9479af3aa8737f3599403b459a83ffa7e05906296c0e1689b64606844": {
   "assetId": "129419366456541",
   "moderation": "Approved",
@@ -20725,6 +20755,16 @@
   "route": "delivery",
   "sha": "0b8c418ca0a0a97cf497e8f36b07d860f6c3382ff9f2661d08d7a4a44e04d876",
   "source": "assets/fbx/M_Rock_Cliff_06/M_Rock_Cliff_06_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:0c33f241fe10779e4957889e7ec03ec5a543fec8f5b303c9ee591a4556907719": {
+  "assetId": "104184234160770",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_02_LOD1",
+  "rbxm": "assets/models/M_Veh_MooredBoat_02_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "0c33f241fe10779e4957889e7ec03ec5a543fec8f5b303c9ee591a4556907719",
+  "source": "assets/fbx/M_Veh_MooredBoat_02/M_Veh_MooredBoat_02_LOD1.fbx",
   "type": "Model"
  },
  "Model:0c83d1f2ff626769b48a232e93ba9633edee568afbffe77712dafd965cad2691": {
@@ -20967,6 +21007,16 @@
   "source": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD2.fbx",
   "type": "Model"
  },
+ "Model:13fe2cd0bf4b0f1891da59ffecf0a1c38c13532c4685f83dd450d47acda40993": {
+  "assetId": "115437109528119",
+  "moderation": "Approved",
+  "name": "M_Bld_FishMarketAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_FishMarketAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "13fe2cd0bf4b0f1891da59ffecf0a1c38c13532c4685f83dd450d47acda40993",
+  "source": "assets/fbx/M_Bld_FishMarketAddons/M_Bld_FishMarketAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:14231f3e8e4c88b0d414acfa9cf412b4f443c510fe7305be722ba8e9c12931c5": {
   "assetId": "86608711148103",
   "moderation": "Approved",
@@ -21025,6 +21075,16 @@
   "route": "delivery",
   "sha": "14f535438aa7a41f16176246b35b315ab449b82c4327d28356ecc2824d4707ab",
   "source": "assets/fbx/M_Rock_Cliff_08/M_Rock_Cliff_08_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:154e75ad94066cadac66b2d26e5743bd7819caf8d758044c98ad377dd1c366bb": {
+  "assetId": "126415054305278",
+  "moderation": "Approved",
+  "name": "M_Sea_MailSeaplane_LOD2",
+  "rbxm": "assets/models/M_Sea_MailSeaplane_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "154e75ad94066cadac66b2d26e5743bd7819caf8d758044c98ad377dd1c366bb",
+  "source": "assets/fbx/M_Sea_MailSeaplane/M_Sea_MailSeaplane_LOD2.fbx",
   "type": "Model"
  },
  "Model:157cfef9641df83c945b30a33bfa2bc65ffd1f9b13ff57d48b8e73575e2a0360": {
@@ -21317,6 +21377,16 @@
   "source": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag_LOD0.fbx",
   "type": "Model"
  },
+ "Model:1d960f70645dd32a7d90f908c9b730f9119f45e845ca8296e634586a90c2ff15": {
+  "assetId": "74871492623416",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "1d960f70645dd32a7d90f908c9b730f9119f45e845ca8296e634586a90c2ff15",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:1da706331f826fe4f170a070460361e87ccf94e6523ac995a676306adc59b641": {
   "assetId": "78123498554138",
   "moderation": "Approved",
@@ -21325,6 +21395,16 @@
   "route": "delivery",
   "sha": "1da706331f826fe4f170a070460361e87ccf94e6523ac995a676306adc59b641",
   "source": "assets/fbx/M_Hbr_Rope_Flaked/M_Hbr_Rope_Flaked_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:1da7938eda336130e7ed98232c605d587904da7105b18bd6e65a0bc5b3c5fd78": {
+  "assetId": "94258818662770",
+  "moderation": "Approved",
+  "name": "M_Veh_Tidewalker",
+  "rbxm": "assets/models/M_Veh_Tidewalker.rbxm",
+  "route": "delivery",
+  "sha": "1da7938eda336130e7ed98232c605d587904da7105b18bd6e65a0bc5b3c5fd78",
+  "source": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD0.fbx",
   "type": "Model"
  },
  "Model:1e5cab48e99e8206ecb14363eb6a94bb0a027fa886b951cd6eb1bf455a3d1070": {
@@ -21517,6 +21597,16 @@
   "source": "assets/fbx/M_Kit_RescueTube/M_Kit_RescueTube_LOD2.fbx",
   "type": "Model"
  },
+ "Model:23624a363d6038f734810bd0ee8c1f0b8505aa385bf24867738442bf6c596d4c": {
+  "assetId": "128821243112355",
+  "moderation": "Approved",
+  "name": "M_Bld_Cottage_02",
+  "rbxm": "assets/models/M_Bld_Cottage_02.rbxm",
+  "route": "delivery",
+  "sha": "23624a363d6038f734810bd0ee8c1f0b8505aa385bf24867738442bf6c596d4c",
+  "source": "assets/fbx/M_Bld_Cottage_02/M_Bld_Cottage_02_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:2385ad513514a26f201c0272a2bfc6770ed7fbb9a66ee895880fb0f35dc62dbc": {
   "assetId": "134149636198095",
   "moderation": "Approved",
@@ -21657,6 +21747,16 @@
   "source": "assets/fbx/M_Veg_SeaThrift_02/M_Veg_SeaThrift_02_LOD1.fbx",
   "type": "Model"
  },
+ "Model:2580b375f077a2442de38741b9d3c37ddbcc68e53ff1227b4e5671682cd5808d": {
+  "assetId": "78492011081478",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueHQ_LOD0",
+  "rbxm": "assets/models/M_Bld_RescueHQ_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "2580b375f077a2442de38741b9d3c37ddbcc68e53ff1227b4e5671682cd5808d",
+  "source": "assets/fbx/M_Bld_RescueHQ/M_Bld_RescueHQ_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:259ea95551634fb3bd46fee49eb6007f2aedb394deb6f879a4b64157b887a03a": {
   "assetId": "82241768209454",
   "moderation": "Approved",
@@ -21775,6 +21875,16 @@
   "route": "delivery",
   "sha": "27ba031c5135994ba17176af165ad149c47e2d5575396ce910085eb187fa15a2",
   "source": "assets/fbx/M_Ani_Gull/M_Ani_Gull_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:285986b082bc8bb62654bb9360f3cca8b78fb6765b99a032d3a0dd7c93e011a6": {
+  "assetId": "92622134969793",
+  "moderation": "Approved",
+  "name": "M_Veh_GaleQueen",
+  "rbxm": "assets/models/M_Veh_GaleQueen.rbxm",
+  "route": "delivery",
+  "sha": "285986b082bc8bb62654bb9360f3cca8b78fb6765b99a032d3a0dd7c93e011a6",
+  "source": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD0.fbx",
   "type": "Model"
  },
  "Model:286f69b1551ade3d9d08309926a98ddcc953dd8b06bb92fdd2019383826d0558": {
@@ -22177,6 +22287,16 @@
   "source": "assets/fbx/M_Veg_Gorse_02/M_Veg_Gorse_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:31550a74a8f574bd16a3348c2653c097cec27f9acb766e6214a9a44b40f5e854": {
+  "assetId": "136877981908628",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "31550a74a8f574bd16a3348c2653c097cec27f9acb766e6214a9a44b40f5e854",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:315ee8ea86807bd085e503996c863bfa0784603b5cc0308d9e1b42dab0bf35e5": {
   "assetId": "82652287789521",
   "moderation": "Approved",
@@ -22195,6 +22315,16 @@
   "route": "delivery",
   "sha": "31bee1ac8061dd7569f53d3cb0d3f4075b84901b25bee13ab5edd34dba33dad9",
   "source": "assets/fbx/M_Hbr_Ladder/M_Hbr_Ladder_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:31de261b50fa7f979bd52b631ad22238afc8727c256920804effb29059e5ee53": {
+  "assetId": "71794804925050",
+  "moderation": "Approved",
+  "name": "M_Bld_SubPenAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_SubPenAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "31de261b50fa7f979bd52b631ad22238afc8727c256920804effb29059e5ee53",
+  "source": "assets/fbx/M_Bld_SubPenAddons/M_Bld_SubPenAddons_LOD0.fbx",
   "type": "Model"
  },
  "Model:32095bd123068322263e2046779128b4e3600baa74197fa48e5c2a2558e5cf76": {
@@ -22225,6 +22355,16 @@
   "route": "delivery",
   "sha": "32e26032bb03991a87f0f2164061ff5f5fb66e2d1a5400f68bcafd5d0a05400b",
   "source": "assets/fbx/M_Rock_IslandProxy_Kit/M_Rock_IslandProxy_Kit_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:32f21a197b28ced57b8a1f76617a4ee57e085ead9dd4b389f13fa2d096e2d633": {
+  "assetId": "100240960880574",
+  "moderation": "Approved",
+  "name": "M_Veh_SupplyBarge_LOD0",
+  "rbxm": "assets/models/M_Veh_SupplyBarge_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "32f21a197b28ced57b8a1f76617a4ee57e085ead9dd4b389f13fa2d096e2d633",
+  "source": "assets/fbx/M_Veh_SupplyBarge/M_Veh_SupplyBarge_LOD0.fbx",
   "type": "Model"
  },
  "Model:338728648a03e19dec843c4da3c3f8a62663595119deacd0a332b1145d042ddd": {
@@ -22327,6 +22467,16 @@
   "source": "assets/fbx/M_Kit_Lifebuoy/M_Kit_Lifebuoy_LOD1.fbx",
   "type": "Model"
  },
+ "Model:3666435a14c2b4990519d823343526c3006cd1f309737b945c4a08fe7d2477a9": {
+  "assetId": "93356629229897",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "3666435a14c2b4990519d823343526c3006cd1f309737b945c4a08fe7d2477a9",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:368e2086ea79b6fd9222888dadeeb0adc0d83bca55c36586c87d34c6ce5f9e86": {
   "assetId": "91191442977422",
   "moderation": "Approved",
@@ -22345,6 +22495,16 @@
   "route": "delivery",
   "sha": "36a12f19e60ddae88c5610a099fad474f0ee8b0cbd285e41aa2ea86741f96913",
   "source": "assets/fbx/M_Sea_BottleField/M_Sea_BottleField_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:36e72dc869240eaa7be315c9105450bee4de679eab989e283e775e933ceb4d85": {
+  "assetId": "99029708442772",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueHQ_LOD2",
+  "rbxm": "assets/models/M_Bld_RescueHQ_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "36e72dc869240eaa7be315c9105450bee4de679eab989e283e775e933ceb4d85",
+  "source": "assets/fbx/M_Bld_RescueHQ/M_Bld_RescueHQ_LOD2.fbx",
   "type": "Model"
  },
  "Model:3717f1ab3640ba117029aef504d584f080016c7d7fd18a2a1d5a4dced9456763": {
@@ -23447,6 +23607,16 @@
   "source": "assets/fbx/M_Kit_VHFHandset/M_Kit_VHFHandset_LOD0.fbx",
   "type": "Model"
  },
+ "Model:531989bb2ca8526729266928de9b96992c722c369ca4b5b3a7c76dde9a792572": {
+  "assetId": "126080794920610",
+  "moderation": "Approved",
+  "name": "M_Bld_TrophyHallAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_TrophyHallAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "531989bb2ca8526729266928de9b96992c722c369ca4b5b3a7c76dde9a792572",
+  "source": "assets/fbx/M_Bld_TrophyHallAddons/M_Bld_TrophyHallAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:542cfc00d968aa4c4bc47aae4dd92492aed5450352edf1cedb4527e8f6ed85a7": {
   "assetId": "86384648183077",
   "moderation": "Approved",
@@ -23627,6 +23797,16 @@
   "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD0.fbx",
   "type": "Model"
  },
+ "Model:57afe9e1a586b0e654d6aededb9d9f2d9e356419ead4417b558a620c446db462": {
+  "assetId": "128863508442097",
+  "moderation": "Approved",
+  "name": "M_Veh_RIB_LOD2",
+  "rbxm": "assets/models/M_Veh_RIB_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "57afe9e1a586b0e654d6aededb9d9f2d9e356419ead4417b558a620c446db462",
+  "source": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:58019bd0e66375683b8846210572a912db56fab4548efab98cb178c48231ce0f": {
   "assetId": "103131922461206",
   "moderation": "Approved",
@@ -23675,6 +23855,16 @@
   "route": "delivery",
   "sha": "59b258c848c8f03830d3cc15266a0ae1137086feb76072f3567d5e5eae03de61",
   "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:59c6cb0857cfad0a3efbfde3b67439b4d6a480d9b8ffdf763972d6405ec1b98a": {
+  "assetId": "126378926683470",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "59c6cb0857cfad0a3efbfde3b67439b4d6a480d9b8ffdf763972d6405ec1b98a",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:5a5f2364c268203425ac15d6fa5ac288467c78bcc8d42fc74bf9bf26720411d1": {
@@ -23927,6 +24117,16 @@
   "source": "assets/fbx/M_Bld_Depot/M_Bld_Depot_LOD0.fbx",
   "type": "Model"
  },
+ "Model:6379d3a364185bc8c16d68dae96f29b0dd6afd68b48916c07647a72c679b240e": {
+  "assetId": "76170085511322",
+  "moderation": "Approved",
+  "name": "M_Veh_RIB",
+  "rbxm": "assets/models/M_Veh_RIB.rbxm",
+  "route": "delivery",
+  "sha": "6379d3a364185bc8c16d68dae96f29b0dd6afd68b48916c07647a72c679b240e",
+  "source": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:63863a460ec506136659e07cccd5a5b44480320cda205158626a22d641134b0e": {
   "assetId": "133030532979239",
   "moderation": "Approved",
@@ -23995,6 +24195,16 @@
   "route": "delivery",
   "sha": "646940842f74d42c996c4159e4377e410d166a7207c05422023c94270bcc21e1",
   "source": "assets/fbx/M_Kit_VHFHandset/M_Kit_VHFHandset_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:65220788868735b3270dfb8d1e1c6559f94521fcc92e79c563f58928809cc43f": {
+  "assetId": "70981253321625",
+  "moderation": "Approved",
+  "name": "M_Bld_TrophyHallAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_TrophyHallAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "65220788868735b3270dfb8d1e1c6559f94521fcc92e79c563f58928809cc43f",
+  "source": "assets/fbx/M_Bld_TrophyHallAddons/M_Bld_TrophyHallAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:6523c1792ba011e434447aaba5b484be51faeede954c56b8cd4a101169c57b90": {
@@ -24807,6 +25017,16 @@
   "source": "assets/fbx/M_Veg_Hawthorn_02/M_Veg_Hawthorn_02_LOD1.fbx",
   "type": "Model"
  },
+ "Model:7e6cc8a9a3a91cc8be4d15e16bb0e6f1e3c7b2c1a663c1b34d1f4bb6a7b44059": {
+  "assetId": "100344467314977",
+  "moderation": "Approved",
+  "name": "M_Bld_Bunkhouse_LOD0",
+  "rbxm": "assets/models/M_Bld_Bunkhouse_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "7e6cc8a9a3a91cc8be4d15e16bb0e6f1e3c7b2c1a663c1b34d1f4bb6a7b44059",
+  "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:7e956e27066b7bc8a1f3dd10b7076c765cad7a9b8b7bea94a27cdbff47111310": {
   "assetId": "84485808948987",
   "moderation": "Approved",
@@ -24905,6 +25125,16 @@
   "route": "delivery",
   "sha": "80fe884ad8694df2f2142e073cd295d386a102383edc1c527b237a0762b38b29",
   "source": "assets/fbx/M_Sea_SandRipples/M_Sea_SandRipples_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:811075857e0d0f96c1e4fb95f6cb0e2df3b3fe8cce0266d40d8ea3cfeaf257b7": {
+  "assetId": "103291157010262",
+  "moderation": "Approved",
+  "name": "M_Sea_Morwenna",
+  "rbxm": "assets/models/M_Sea_Morwenna.rbxm",
+  "route": "delivery",
+  "sha": "811075857e0d0f96c1e4fb95f6cb0e2df3b3fe8cce0266d40d8ea3cfeaf257b7",
+  "source": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna_LOD0.fbx",
   "type": "Model"
  },
  "Model:8134cb0af82c53751a7215295dfcbf4f8082774041852564cc6967b51b33aa9e": {
@@ -25085,6 +25315,16 @@
   "route": "delivery",
   "sha": "843f34f189ca6a63286ba07db0ab9c7e6dd262b6d1af00910aaf9a4471c76b1d",
   "source": "assets/fbx/M_Kit_ThermalBlanket/M_Kit_ThermalBlanket_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:849225d1536ff04a033ee5c8139501f59960ab486ae6a5c5a6a7584dc173ea72": {
+  "assetId": "88934160850061",
+  "moderation": "Approved",
+  "name": "M_Hbr_QuayKit_Head",
+  "rbxm": "assets/models/M_Hbr_QuayKit_Head.rbxm",
+  "route": "delivery",
+  "sha": "849225d1536ff04a033ee5c8139501f59960ab486ae6a5c5a6a7584dc173ea72",
+  "source": "assets/fbx/M_Hbr_QuayKit_Head/M_Hbr_QuayKit_Head_LOD0.fbx",
   "type": "Model"
  },
  "Model:852127b970c313d283581b0b9df5bec8f804924dcc78ab7d231bc685d0e54443": {
@@ -25517,6 +25757,16 @@
   "source": "assets/fbx/M_Rock_NeedlesEye/M_Rock_NeedlesEye_LOD0.fbx",
   "type": "Model"
  },
+ "Model:924089818b958a348531dfce37013707424301ad28e5e52c9e91bf052e750041": {
+  "assetId": "95948285566575",
+  "moderation": "Approved",
+  "name": "M_Veh_GaleQueen_LOD1",
+  "rbxm": "assets/models/M_Veh_GaleQueen_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "924089818b958a348531dfce37013707424301ad28e5e52c9e91bf052e750041",
+  "source": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:9253afd0bddede33b41a91e77f0514c284586444e2f17400d9e68411a2154695": {
   "assetId": "139076406661993",
   "moderation": "Approved",
@@ -25657,6 +25907,16 @@
   "source": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD2.fbx",
   "type": "Model"
  },
+ "Model:9482ffaa3f27b64b98378b5f81c7b8244aa390a52326fa999aa97ba989548fdd": {
+  "assetId": "71254246910044",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "9482ffaa3f27b64b98378b5f81c7b8244aa390a52326fa999aa97ba989548fdd",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:950d7b217082e9cb5e20f27b3b8c32cdd9ca591f1de55cd6bd16c38d4c1a8255": {
   "assetId": "136395746826912",
   "moderation": "Approved",
@@ -25665,6 +25925,16 @@
   "route": "delivery",
   "sha": "950d7b217082e9cb5e20f27b3b8c32cdd9ca591f1de55cd6bd16c38d4c1a8255",
   "source": "assets/fbx/M_Hbr_QuayKit_Corner/M_Hbr_QuayKit_Corner_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:953d84e722a3f9c2eba94bc83d37f854c58dc312ec25a1120dd187c675e00220": {
+  "assetId": "119435262429668",
+  "moderation": "Approved",
+  "name": "M_Sea_MailSeaplane_LOD1",
+  "rbxm": "assets/models/M_Sea_MailSeaplane_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "953d84e722a3f9c2eba94bc83d37f854c58dc312ec25a1120dd187c675e00220",
+  "source": "assets/fbx/M_Sea_MailSeaplane/M_Sea_MailSeaplane_LOD1.fbx",
   "type": "Model"
  },
  "Model:9578c532b7241c0e15e7a99551741e0fe5b6ab8512465036f81f814ffb6f7a5c": {
@@ -25715,6 +25985,16 @@
   "route": "delivery",
   "sha": "96cc53785c41a0602eb36801a58f072bc2b353a2f357bec4a18d5ddb9d8c4bd8",
   "source": "assets/fbx/M_Veg_Kelp_Kit/M_Veg_Kelp_Kit_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:96f953e3281a807a8e76b44dc49870b10e5667f4eacc263062dea71d9b8e4c9c": {
+  "assetId": "124917422873700",
+  "moderation": "Approved",
+  "name": "M_Veh_RIB_LOD1",
+  "rbxm": "assets/models/M_Veh_RIB_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "96f953e3281a807a8e76b44dc49870b10e5667f4eacc263062dea71d9b8e4c9c",
+  "source": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD1.fbx",
   "type": "Model"
  },
  "Model:976c8e1d169521759c979bce5cfb59f44a80a4fbd2b08f3655074597d608a087": {
@@ -25837,6 +26117,16 @@
   "source": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD2.fbx",
   "type": "Model"
  },
+ "Model:9a281877811e919531f106849ec59d974b42f0d8b6e100c96d5fd6715f7d4642": {
+  "assetId": "123627259593304",
+  "moderation": "Approved",
+  "name": "M_Bld_LookoutAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_LookoutAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "9a281877811e919531f106849ec59d974b42f0d8b6e100c96d5fd6715f7d4642",
+  "source": "assets/fbx/M_Bld_LookoutAddons/M_Bld_LookoutAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:9a6b208b4a45b7d25d8c9b7bfdea9b605322745cc6fa5074f24b44e27ed7ed45": {
   "assetId": "105694641554631",
   "moderation": "Approved",
@@ -25845,6 +26135,16 @@
   "route": "delivery",
   "sha": "9a6b208b4a45b7d25d8c9b7bfdea9b605322745cc6fa5074f24b44e27ed7ed45",
   "source": "assets/fbx/M_Hbr_QuayKit_Steps/M_Hbr_QuayKit_Steps_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:9a6e58eac5f671795afa33512205f9bd8b3c71990fe8ff3c0970980f27968af2": {
+  "assetId": "100666529005239",
+  "moderation": "Approved",
+  "name": "M_Bld_Cottage_02_LOD1",
+  "rbxm": "assets/models/M_Bld_Cottage_02_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9a6e58eac5f671795afa33512205f9bd8b3c71990fe8ff3c0970980f27968af2",
+  "source": "assets/fbx/M_Bld_Cottage_02/M_Bld_Cottage_02_LOD1.fbx",
   "type": "Model"
  },
  "Model:9aab9a359d7e1dc29f623a2f0939b00f1a46c10aa87ccc93f8c667c76665c54c": {
@@ -25975,6 +26275,16 @@
   "route": "delivery",
   "sha": "9e9950f231617304f5199110b3ce55e96b0bddd7be7af1b9a570f2b186191c93",
   "source": "assets/fbx/M_Road_CornishHedge/M_Road_CornishHedge_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:9eeb8ab72b3287d5d79f78f73d19b307b27392118bdbd7fdbd18507a4ccbf04f": {
+  "assetId": "77780701235189",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9eeb8ab72b3287d5d79f78f73d19b307b27392118bdbd7fdbd18507a4ccbf04f",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:9f4595664bf245578faa0af9372a3c745352e457345bcbe3ba5ee1cc9bc87b4d": {
@@ -26147,6 +26457,16 @@
   "source": "assets/fbx/M_Rock_Boulder_04/M_Rock_Boulder_04_LOD2.fbx",
   "type": "Model"
  },
+ "Model:a49726e7c6d19dab4c647b0408bda224b6d2fd27de1249a2bb9240b9edb62562": {
+  "assetId": "80221844929327",
+  "moderation": "Approved",
+  "name": "M_Bld_Depot_LOD0",
+  "rbxm": "assets/models/M_Bld_Depot_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "a49726e7c6d19dab4c647b0408bda224b6d2fd27de1249a2bb9240b9edb62562",
+  "source": "assets/fbx/M_Bld_Depot/M_Bld_Depot_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:a4c10352677005f7252045ff841db5df6924cacc20b576b81d45a2b28eb1fd03": {
   "assetId": "104644518523404",
   "moderation": "Approved",
@@ -26187,6 +26507,16 @@
   "source": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD0.fbx",
   "type": "Model"
  },
+ "Model:a5df49d9279c9ce4155bb5fd7a737cc9333aa004a1b992a6b0da4bb7208910b8": {
+  "assetId": "90986050920613",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "a5df49d9279c9ce4155bb5fd7a737cc9333aa004a1b992a6b0da4bb7208910b8",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:a621c36713e45abaa553a13337327db58b59e2546c56b199a4eeb5258a74ee45": {
   "assetId": "75760602093481",
   "moderation": "Approved",
@@ -26205,6 +26535,16 @@
   "route": "delivery",
   "sha": "a78ca17a213153518c4b7e54d548decbf0f3f87df540c3d93d28f4bd57a7b51b",
   "source": "assets/fbx/M_Kit_HeavingLine/M_Kit_HeavingLine_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:a78ef38929d44a86433cff576877f9011635dfef0ddab78defdf235250e67276": {
+  "assetId": "124723913575938",
+  "moderation": "Approved",
+  "name": "M_Bld_SubPenAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_SubPenAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a78ef38929d44a86433cff576877f9011635dfef0ddab78defdf235250e67276",
+  "source": "assets/fbx/M_Bld_SubPenAddons/M_Bld_SubPenAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:a7a9c2c0a5dcd14e3a1bc68103f0bfacdba0897a5d14c9487d7863699d927152": {
@@ -26417,6 +26757,16 @@
   "source": "assets/fbx/M_Bld_WorkshopAddons/M_Bld_WorkshopAddons_LOD2.fbx",
   "type": "Model"
  },
+ "Model:ad932e86f3fdb228e8d4378b167127c71cfff3324af934891682e387ae472c72": {
+  "assetId": "113055104607876",
+  "moderation": "Approved",
+  "name": "M_Bld_WorkshopAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_WorkshopAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "ad932e86f3fdb228e8d4378b167127c71cfff3324af934891682e387ae472c72",
+  "source": "assets/fbx/M_Bld_WorkshopAddons/M_Bld_WorkshopAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:adacff21388c6e50c1226b905694e7d4c4ed1cb26f40910fe92ead4731048a12": {
   "assetId": "77484820368293",
   "moderation": "Approved",
@@ -26465,6 +26815,16 @@
   "route": "delivery",
   "sha": "ae26df29a61dd0778ade69480b0a33df5b7c2106ece819ad8f17480b37af34ff",
   "source": "assets/fbx/M_Bld_Cottage_01/M_Bld_Cottage_01_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:ae39432f9822d262c64500958d45cbc8c71e52fdcd52110bbb91810be4ebc2af": {
+  "assetId": "83037637010288",
+  "moderation": "Approved",
+  "name": "M_Sea_MailSeaplane",
+  "rbxm": "assets/models/M_Sea_MailSeaplane.rbxm",
+  "route": "delivery",
+  "sha": "ae39432f9822d262c64500958d45cbc8c71e52fdcd52110bbb91810be4ebc2af",
+  "source": "assets/fbx/M_Sea_MailSeaplane/M_Sea_MailSeaplane_LOD0.fbx",
   "type": "Model"
  },
  "Model:ae6fb24ede60ede28e42503de337b95fd07db6c2b4ea10bb4f8f443a72aa2af2": {
@@ -26707,6 +27067,16 @@
   "source": "assets/fbx/M_Rock_Boulder_03/M_Rock_Boulder_03_LOD1.fbx",
   "type": "Model"
  },
+ "Model:b5f4182cee990331845fd4c11003755d53751869a7d9dd8de3625036c642ecb6": {
+  "assetId": "78672729879295",
+  "moderation": "Approved",
+  "name": "M_Sea_Liferaft_LOD1",
+  "rbxm": "assets/models/M_Sea_Liferaft_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b5f4182cee990331845fd4c11003755d53751869a7d9dd8de3625036c642ecb6",
+  "source": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:b600778cdc9fbcb1951d518f62bd5bd73b0e4eabff0b1cd256a03c50f4e30682": {
   "assetId": "133177303047818",
   "moderation": "Approved",
@@ -26735,6 +27105,16 @@
   "route": "delivery",
   "sha": "b6c82c465dba130bcb58a723805271e6957185e7c1e1dc7bbc57b17d2c7ee7b1",
   "source": "assets/fbx/M_Veg_Gorse_03/M_Veg_Gorse_03_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:b6d4ebe70c8ab82ca1de076769673de95c4505c46e704cdf7a69193bad7f1b32": {
+  "assetId": "74690146932448",
+  "moderation": "Approved",
+  "name": "M_Bld_LookoutAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_LookoutAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b6d4ebe70c8ab82ca1de076769673de95c4505c46e704cdf7a69193bad7f1b32",
+  "source": "assets/fbx/M_Bld_LookoutAddons/M_Bld_LookoutAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:b752ce4a7367f927c984e933dd4eacec856aaed3f4b049265d1dd5ea254b9c18": {
@@ -26977,6 +27357,16 @@
   "source": "assets/fbx/M_Veh_JetSki_CloseUp/M_Veh_JetSki_CloseUp_LOD0.fbx",
   "type": "Model"
  },
+ "Model:bd725dcc0e09ca3ccd070c1a22dc8d4580365a4ecfb3f542ed50217803b376df": {
+  "assetId": "84895130458997",
+  "moderation": "Approved",
+  "name": "M_Veh_JetSki",
+  "rbxm": "assets/models/M_Veh_JetSki.rbxm",
+  "route": "delivery",
+  "sha": "bd725dcc0e09ca3ccd070c1a22dc8d4580365a4ecfb3f542ed50217803b376df",
+  "source": "assets/fbx/M_Veh_JetSki/M_Veh_JetSki_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:bd7f7245bcdf521eccdfd62c0d5942d9a03da0108ed9d2df16ba8abebfb55156": {
   "assetId": "108456407734712",
   "moderation": "Approved",
@@ -26995,6 +27385,16 @@
   "route": "delivery",
   "sha": "bd86c128ceacf1e92718519177ec7fb936237780c2cb44186425152a05081c2d",
   "source": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:be04b72ccd22b3d64e9a75a747514aa322cf75c6f0e8a11ff0ad78cf6dfa5b1c": {
+  "assetId": "121253151652562",
+  "moderation": "Approved",
+  "name": "M_Bld_Cottage_02_LOD2",
+  "rbxm": "assets/models/M_Bld_Cottage_02_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "be04b72ccd22b3d64e9a75a747514aa322cf75c6f0e8a11ff0ad78cf6dfa5b1c",
+  "source": "assets/fbx/M_Bld_Cottage_02/M_Bld_Cottage_02_LOD2.fbx",
   "type": "Model"
  },
  "Model:be325c858ac3258f144c2a87a29c94ca68114f7e5eb6743af4e2100e4c6aa721": {
@@ -27057,6 +27457,16 @@
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD2.fbx",
   "type": "Model"
  },
+ "Model:c0233049b5dda6ee8061109cf86ffaae5ed0c084c135eb9654c9b6bd4ec5edff": {
+  "assetId": "94883452713263",
+  "moderation": "Approved",
+  "name": "M_Veh_JetSki_LOD1",
+  "rbxm": "assets/models/M_Veh_JetSki_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c0233049b5dda6ee8061109cf86ffaae5ed0c084c135eb9654c9b6bd4ec5edff",
+  "source": "assets/fbx/M_Veh_JetSki/M_Veh_JetSki_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:c0a470857330f95c87887223ac4d995fcad7f2460704eef56d35add664564b38": {
   "assetId": "116398732722463",
   "moderation": "Approved",
@@ -27117,6 +27527,16 @@
   "source": "assets/fbx/M_Veg_Heather_02/M_Veg_Heather_02_LOD1.fbx",
   "type": "Model"
  },
+ "Model:c1b8259a3d7785c13129d3884a0a6489e54121651e1154433772b88e6b3fcd76": {
+  "assetId": "102806090359138",
+  "moderation": "Approved",
+  "name": "M_Bld_HarbourLight",
+  "rbxm": "assets/models/M_Bld_HarbourLight.rbxm",
+  "route": "delivery",
+  "sha": "c1b8259a3d7785c13129d3884a0a6489e54121651e1154433772b88e6b3fcd76",
+  "source": "assets/fbx/M_Bld_HarbourLight/M_Bld_HarbourLight_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:c1f7f7e5eb63ea14a3251ce818426e36de24004278d42caf217c2ab555252028": {
   "assetId": "80503584501089",
   "moderation": "Approved",
@@ -27125,6 +27545,16 @@
   "route": "delivery",
   "sha": "c1f7f7e5eb63ea14a3251ce818426e36de24004278d42caf217c2ab555252028",
   "source": "assets/fbx/M_Bld_Cottage_05/M_Bld_Cottage_05_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:c2c102dbed629b184309ac6f3acd6ce3c6a9ecb1cb25abde1cf99ccd0a83bd72": {
+  "assetId": "103661295214965",
+  "moderation": "Approved",
+  "name": "M_Veh_Tidewalker_LOD2",
+  "rbxm": "assets/models/M_Veh_Tidewalker_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "c2c102dbed629b184309ac6f3acd6ce3c6a9ecb1cb25abde1cf99ccd0a83bd72",
+  "source": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD2.fbx",
   "type": "Model"
  },
  "Model:c32932252f102d4ce7687e82f556912b7a3469c13ae2e6610fb94919c0e18dae": {
@@ -27157,6 +27587,16 @@
   "source": "assets/fbx/M_Bld_AirStationAddons/M_Bld_AirStationAddons_LOD2.fbx",
   "type": "Model"
  },
+ "Model:c4ba4945dab463adcbada21143ae17db2b9511b282865d3efa7de4fee6188746": {
+  "assetId": "129800156046304",
+  "moderation": "Approved",
+  "name": "M_Bld_SubPenAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_SubPenAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "c4ba4945dab463adcbada21143ae17db2b9511b282865d3efa7de4fee6188746",
+  "source": "assets/fbx/M_Bld_SubPenAddons/M_Bld_SubPenAddons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:c4cda1411adf57bcf7c6ee0c8ce3fc3299f8fad52ccb65f96eae55e98d705728": {
   "assetId": "96176184056961",
   "moderation": "Approved",
@@ -27185,6 +27625,16 @@
   "route": "delivery",
   "sha": "c533b36b3be7cf1313d6c544bb3583ad150db950652d3357b628e8b1810fbf5e",
   "source": "assets/fbx/M_Veh_JetSki_GildedGull/M_Veh_JetSki_GildedGull_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:c55188f74f8e97cd4ee83502665af5b717092aeeb3d448672399713022c6dcbe": {
+  "assetId": "91018428054266",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_03",
+  "rbxm": "assets/models/M_Veh_MooredBoat_03.rbxm",
+  "route": "delivery",
+  "sha": "c55188f74f8e97cd4ee83502665af5b717092aeeb3d448672399713022c6dcbe",
+  "source": "assets/fbx/M_Veh_MooredBoat_03/M_Veh_MooredBoat_03_LOD0.fbx",
   "type": "Model"
  },
  "Model:c570425fccb4baa2bd9c497b9b7a4b2c06c58b48f891aa669fd206806bc768d9": {
@@ -27637,6 +28087,26 @@
   "source": "assets/fbx/M_Bld_BoatyardShed/M_Bld_BoatyardShed_LOD2.fbx",
   "type": "Model"
  },
+ "Model:d43e87d0240748aac53e56e6408e163cfebc11e7b0588c11a111c22cee8688af": {
+  "assetId": "76983532828627",
+  "moderation": "Approved",
+  "name": "M_Sea_Liferaft",
+  "rbxm": "assets/models/M_Sea_Liferaft.rbxm",
+  "route": "delivery",
+  "sha": "d43e87d0240748aac53e56e6408e163cfebc11e7b0588c11a111c22cee8688af",
+  "source": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:d49511c7dd11a537f7578aa0a2abb02a85137877c3da99d35d69a2ab8c88eadb": {
+  "assetId": "125837717635951",
+  "moderation": "Approved",
+  "name": "M_Sea_Liferaft_LOD2",
+  "rbxm": "assets/models/M_Sea_Liferaft_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "d49511c7dd11a537f7578aa0a2abb02a85137877c3da99d35d69a2ab8c88eadb",
+  "source": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:d4cb1e4335c23ed1953fb535c2ffafa156338cf3f360473e88c52d2455f9159e": {
   "assetId": "139906280413380",
   "moderation": "Approved",
@@ -27697,6 +28167,16 @@
   "source": "assets/fbx/M_Veh_MooredBoat_01/M_Veh_MooredBoat_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:d7422dc2e710b95985b6c05e07b1a9cb3ff08f72e79d8d6158fbc968b8871917": {
+  "assetId": "96431724820310",
+  "moderation": "Approved",
+  "name": "M_Veh_Tidewalker_LOD1",
+  "rbxm": "assets/models/M_Veh_Tidewalker_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d7422dc2e710b95985b6c05e07b1a9cb3ff08f72e79d8d6158fbc968b8871917",
+  "source": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:d76d16aadca11816593041a1b72834df31e5919500c83010c5b34693258f1c14": {
   "assetId": "95439636376736",
   "moderation": "Approved",
@@ -27727,6 +28207,16 @@
   "source": "assets/fbx/M_Hbr_NavMark_IsolatedDanger/M_Hbr_NavMark_IsolatedDanger_LOD2.fbx",
   "type": "Model"
  },
+ "Model:d821eae9923d2c5db950e9ad27a9e901d972f3bbd7e5273bd0ca35b09f9773be": {
+  "assetId": "107864865206598",
+  "moderation": "Approved",
+  "name": "M_Bld_Depot_LOD2",
+  "rbxm": "assets/models/M_Bld_Depot_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "d821eae9923d2c5db950e9ad27a9e901d972f3bbd7e5273bd0ca35b09f9773be",
+  "source": "assets/fbx/M_Bld_Depot/M_Bld_Depot_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:d8b6459488f51176fb7cc5126f3173e3e7ad4dbd9b2143207e543f0a25d5e44e": {
   "assetId": "78467639544173",
   "moderation": "Approved",
@@ -27737,6 +28227,16 @@
   "source": "assets/fbx/M_Rock_Boulder_02/M_Rock_Boulder_02_LOD1.fbx",
   "type": "Model"
  },
+ "Model:d8c16891d18337dc82cf74d213c1612902cd7fe2e2fe33b6b38c8f4bca129853": {
+  "assetId": "121160699877774",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueHQ_LOD1",
+  "rbxm": "assets/models/M_Bld_RescueHQ_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d8c16891d18337dc82cf74d213c1612902cd7fe2e2fe33b6b38c8f4bca129853",
+  "source": "assets/fbx/M_Bld_RescueHQ/M_Bld_RescueHQ_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:d8ee8ac1ca071c1c51ed8a38b304253db94767901cd035d4d2ad498c4a3155c4": {
   "assetId": "133308451141950",
   "moderation": "Approved",
@@ -27745,6 +28245,16 @@
   "route": "delivery",
   "sha": "d8ee8ac1ca071c1c51ed8a38b304253db94767901cd035d4d2ad498c4a3155c4",
   "source": "assets/fbx/M_Bld_Harbourmaster/M_Bld_Harbourmaster_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:d9076c8db2e4146e0e7a6be07274fb6a5d0dbe7c22a3b2ccdaf173b2da34924a": {
+  "assetId": "98040582611546",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_02",
+  "rbxm": "assets/models/M_Veh_MooredBoat_02.rbxm",
+  "route": "delivery",
+  "sha": "d9076c8db2e4146e0e7a6be07274fb6a5d0dbe7c22a3b2ccdaf173b2da34924a",
+  "source": "assets/fbx/M_Veh_MooredBoat_02/M_Veh_MooredBoat_02_LOD0.fbx",
   "type": "Model"
  },
  "Model:d956a9d654d60193ffd8d14ec4d0fc209516f2f744012a8e4f4dc38704db7bd0": {
@@ -28277,6 +28787,16 @@
   "source": "assets/fbx/M_Veg_Hawthorn_01/M_Veg_Hawthorn_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:e827c0554ce6d08d5d890c205aade29e53374f4a3f90f489f7b1ec513e1a1417": {
+  "assetId": "138806569334848",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueBoathouseAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "e827c0554ce6d08d5d890c205aade29e53374f4a3f90f489f7b1ec513e1a1417",
+  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:e8c3fcb4978d9fd6558ca9f697f20626c48f14c77fc5018165c5800238b72bbf": {
   "assetId": "71070295467654",
   "moderation": "Approved",
@@ -28507,6 +29027,16 @@
   "source": "assets/fbx/M_Veg_Heather_01/M_Veg_Heather_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:eda9f29fb395b00775be9d0aca65d3984e44dd4759ccebee6c5f9a0a9254e071": {
+  "assetId": "101617065548352",
+  "moderation": "Approved",
+  "name": "M_Bld_Bunkhouse_LOD1",
+  "rbxm": "assets/models/M_Bld_Bunkhouse_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "eda9f29fb395b00775be9d0aca65d3984e44dd4759ccebee6c5f9a0a9254e071",
+  "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:edb849e7b39feafd39eaf6f70006e5738afefca37ab3b613589f60290f1d0886": {
   "assetId": "131516979736560",
   "moderation": "Approved",
@@ -28575,6 +29105,16 @@
   "route": "delivery",
   "sha": "ef46f76926c9af1de59c66035ed4de03bd67d6040392305d7287998e2b73f258",
   "source": "assets/fbx/M_Kit_Strobe/M_Kit_Strobe_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:efc1e6b2efa7597ea3b9c7ae3055e1e5622b7d5be9bc08925b9fdafdf798dfd3": {
+  "assetId": "99906960240274",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons_LOD0",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "efc1e6b2efa7597ea3b9c7ae3055e1e5622b7d5be9bc08925b9fdafdf798dfd3",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD0.fbx",
   "type": "Model"
  },
  "Model:f00607bd44ce9e9c16ca0dbd6db23eb8639004950ef9b9152002f7d94bd292ea": {
@@ -28847,6 +29387,16 @@
   "source": "assets/fbx/M_Hbr_Fender_Tyre/M_Hbr_Fender_Tyre_LOD1.fbx",
   "type": "Model"
  },
+ "Model:f9e68cf9cf479fc24118ad131d50ce32a339d3f67b806d7eaf3cecaaf25a8376": {
+  "assetId": "104830334132846",
+  "moderation": "Approved",
+  "name": "M_Veg_Gorse_03_LOD0",
+  "rbxm": "assets/models/M_Veg_Gorse_03_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "f9e68cf9cf479fc24118ad131d50ce32a339d3f67b806d7eaf3cecaaf25a8376",
+  "source": "assets/fbx/M_Veg_Gorse_03/M_Veg_Gorse_03_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:fa14c769022ad6aa4e7f3b34e1487411df381159e0ba544ed424bf67861b3143": {
   "assetId": "127846056803031",
   "moderation": "Approved",
@@ -28935,6 +29485,16 @@
   "route": "delivery",
   "sha": "fbc35c09e09ce9c88be840486b8a55b2d21ba1fb21c72f00db699cc74a935b37",
   "source": "assets/fbx/M_Kit_StretcherBasket/M_Kit_StretcherBasket_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:fbdfc6369efaf8f3af85428ba5f302138a68225849fb1297feac9d067693044c": {
+  "assetId": "76677393857795",
+  "moderation": "Approved",
+  "name": "M_Bld_TrophyHallAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_TrophyHallAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "fbdfc6369efaf8f3af85428ba5f302138a68225849fb1297feac9d067693044c",
+  "source": "assets/fbx/M_Bld_TrophyHallAddons/M_Bld_TrophyHallAddons_LOD2.fbx",
   "type": "Model"
  },
  "Model:fc0ae948424d581fce196581c987b454f824e9cbdf62131e2a945bd25796888e": {

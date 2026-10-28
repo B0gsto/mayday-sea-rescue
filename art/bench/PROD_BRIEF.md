@@ -19,6 +19,8 @@ Your asset name `<Asset>` and kind folder `<kind>` are in your task. Stop as soo
   CC0 scan textures where they help (the repo already has Poly Haven scans; see `tools/blender/scan_ingest.py`).
   No placeholder art. Add the `ATT_*` attachments gameplay needs (the docs/12 row or docs/09 mention them).
 - `build()` returns LOD0 (+ `_COL`) only; the `lod` step makes `_LOD1` / `_LOD2`.
+- Every asset must pass `tools/blender/zfight_check.py` (no coplanar overlapping faces) before upload: run.py nudges
+  them right after `build()`; the log must say `[zfight] ... 0 visible pairs left` (check an FBX: header of the script).
 
 ## Commands (every Blender run through the shared 2-slot lock; queueing is normal)
 

@@ -30,6 +30,7 @@ import common  # noqa: E402
 import export  # noqa: E402
 import validate  # noqa: E402
 import versions  # noqa: E402
+import zfight_check  # noqa: E402
 
 STEPS = ("build", "lod", "bake", "validate", "export", "turntable", "clips", "clips-rbxm")
 DEFAULT_STEPS = "build,lod,bake,validate,export,turntable"
@@ -94,6 +95,7 @@ def run(build_file, steps, args):
     spec.setdefault("asset", asset)
     validate.classify(spec)
     print("[run] built %s (%s) in %s" % (spec["name"], asset, scene_from))
+    zfight_check.fix([e["object"] for e in spec["meshes"] if e["role"] == "visual"])   # no coplanar overlaps ship
 
     if "lod" in steps:
         versions.run_lod(spec)
