@@ -66,7 +66,7 @@ local GLANCE = 1.4 -- s the camera looks at a freshly built site (beat 4 / beat 
 local TICK = 0.5 -- s between the site timer and the tablet-open checks
 
 local chipsGui: ScreenGui? = nil
-local chipViews: { [string]: { root: Frame, label: TextLabel, tick: Frame, stroke: UIStroke } } = {}
+local chipViews: { [string]: { block: Frame, label: TextLabel, tick: Frame, scale: UIScale } } = {}
 local beat: Onboarding.Beat = "ColdOpen"
 local guide: string? = nil
 local lastTabletPulse: string? = nil
@@ -371,69 +371,88 @@ end
 local function makeChip(
 	bar: Frame,
 	info: { id: string, label: string, icon: string? },
-	index: number
+	x: number,
+	w: number
 ): Frame
-	-- the UI kit look (playtest 2026-10-26: the slate chips were small and faint): gradient blocks, ink outlines, FredokaOne
+	-- the UI kit look, one family with the Next chip (owner 2026-10-28): block chips with a 3D lip, the
+	-- icon on a white tile, FredokaOne
 	local root = Instance.new("Frame")
 	root.Name = "Chip_" .. info.id
-	root.Position = UDim2.new((index - 1) / #CHIPS, 3, 0, 0)
-	root.Size = UDim2.new(1 / #CHIPS, -6, 1, 0)
-	root.BackgroundColor3 = Color3.new(1, 1, 1)
-	root.BorderSizePixel = 0
+	root.BackgroundTransparency = 1
+	root.Position = UDim2.new(x, 3, 0, 0)
+	root.Size = UDim2.new(w, -6, 1, 0)
 	root.Parent = bar
-	Style.corner(root, 10)
-	Style.gradient(root, Style.grad("ink"))
-	local stroke = Style.stroke(root, 3, true)
+	local block, face =
+		Style.block(root, Style.grad("locked"), { radius = 10, lip = 5, border = 3 })
 	local icon = Instance.new("Frame")
 	icon.Name = "Icon"
 	icon.BackgroundTransparency = 1
 	icon.AnchorPoint = Vector2.new(0, 0.5)
-	icon.Position = UDim2.new(0, 6, 0.5, 0)
-	icon.Size = UDim2.fromOffset(30, 30)
-	icon.Parent = root
+	icon.Position = UDim2.new(0, 5, 0.5, 0)
+	icon.Size = UDim2.fromOffset(32, 32)
+	icon.Parent = face
+	local _, tileFace = Style.block(
+		icon,
+		{ top = Color3.new(1, 1, 1), bottom = Color3.fromHex("D6E4F2") },
+		{ radius = 8, lip = 3, border = 2.5 }
+	)
+	local art = Instance.new("Frame")
+	art.BackgroundTransparency = 1
+	art.AnchorPoint = Vector2.new(0.5, 0.5)
+	art.Position = UDim2.fromScale(0.5, 0.5)
+	art.Size = UDim2.fromScale(0.8, 0.8)
+	art.Parent = tileFace
 	if info.id == "Workshop" or info.id == "HQ" then
-		BuildGlyph(icon, { kind = "Building", key = info.id :: string })
+		BuildGlyph(art, { kind = "Building", key = info.id :: string })
+		-- yellow Lego bricks on the white tile, as on the Next chip
+		for _, b in art:GetChildren() do
+			if b:IsA("Frame") and b.BackgroundColor3 == Color3.new(1, 1, 1) then
+				b.BackgroundColor3 = Color3.fromHex("FFC928")
+			end
+		end
 	else
-		Style.icon(icon, info.icon or "build")
+		Style.icon(art, info.icon or "build")
 	end
-	local label = Style.label(root, info.label, 20)
-	label.Position = UDim2.fromOffset(40, 0)
-	label.Size = UDim2.new(1, -44, 1, 0)
+	local label = Style.label(face, info.label, 20)
+	label.Position = UDim2.fromOffset(44, 0)
+	label.Size = UDim2.new(1, -48, 1, 0)
 	label.TextXAlignment = Enum.TextXAlignment.Left
 	label.TextWrapped = false
-	label.TextScaled = true
-	local fit = Instance.new("UITextSizeConstraint")
-	fit.MaxTextSize = 22
-	fit.Parent = label
 	-- the tick: a badge on the icon's corner, so the word keeps the chip's width
 	local tick = Instance.new("Frame")
 	tick.Name = "Tick"
 	tick.AnchorPoint = Vector2.new(0.5, 0.5)
-	tick.Position = UDim2.fromOffset(34, 10)
-	tick.Size = UDim2.fromOffset(18, 18)
+	tick.Position = UDim2.fromOffset(35, 7)
+	tick.Size = UDim2.fromOffset(17, 17)
 	tick.BackgroundColor3 = Color3.new(1, 1, 1)
 	tick.BorderSizePixel = 0
 	tick.Visible = false
 	tick.ZIndex = 3
-	tick.Parent = root
+	tick.Parent = face
 	Style.corner(tick, 9)
 	Style.gradient(tick, Style.grad("buy"))
 	Style.stroke(tick, 2, true)
 	Glyph.draw("check", tick, Color3.new(1, 1, 1))
 	-- under 13 px the word is unreadable (iPhone SE device pass 2026-10-28: ~5 pt), so a narrow chip shows
 	-- its icon alone, centred, with the tick on its corner
+	-- one line (TextScaled wrapped "Rescue Hut"): the largest size up to 20 du that fits the width
 	local function fitLabel()
+		local px = label.AbsoluteSize.Y / 43 -- screen px per du (the face is 43 du high)
 		local need =
-			TextService:GetTextSize(label.Text, 13, Enum.Font.FredokaOne, Vector2.new(1e4, 1e4)).X
-		local roomy = label.AbsoluteSize.X >= need
+			TextService:GetTextSize(label.Text, 20, Enum.Font.FredokaOne, Vector2.new(1e4, 1e4)).X
+		local size = math.min(20, 20 * label.AbsoluteSize.X / math.max(1, need * px))
+		label.TextSize = size
+		local roomy = size * px >= 13
 		label.Visible = roomy
-		icon.Position = if roomy then UDim2.new(0, 6, 0.5, 0) else UDim2.new(0.5, -15, 0.5, 0)
-		tick.Position = if roomy then UDim2.fromOffset(34, 10) else UDim2.new(0.5, 13, 0, 10)
+		icon.Position = if roomy then UDim2.new(0, 5, 0.5, 0) else UDim2.new(0.5, -16, 0.5, 0)
+		tick.Position = if roomy then UDim2.fromOffset(35, 7) else UDim2.new(0.5, 13, 0, 7)
 	end
 	label:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitLabel)
 	label:GetPropertyChangedSignal("Text"):Connect(fitLabel)
 	fitLabel()
-	chipViews[info.id] = { root = root, label = label, tick = tick, stroke = stroke }
+	local scale = Instance.new("UIScale") -- the current beat's chip stands a step larger
+	scale.Parent = root
+	chipViews[info.id] = { block = block, label = label, tick = tick, scale = scale }
 	return root
 end
 
@@ -454,8 +473,17 @@ local function mountChips()
 	bar.Size = UDim2.fromScale(1, 1)
 	bar.Parent = Layout.region(gui, "chips")
 	chipsGui = gui
+	-- each chip as wide as its icon + word, so every word gets the same text size
+	local widths, total = {}, 0
 	for i, info in CHIPS do
-		makeChip(bar, info, i)
+		widths[i] = 50
+			+ TextService:GetTextSize(info.label, 20, Enum.Font.FredokaOne, Vector2.new(1e4, 1e4)).X
+		total += widths[i]
+	end
+	local x = 0
+	for i, info in CHIPS do
+		makeChip(bar, info, x / total, widths[i] / total)
+		x += widths[i]
 	end
 end
 
@@ -501,11 +529,11 @@ local function renderChips()
 			local complete = done[info.id] == true
 			local current = here[info.id] == true
 			view.tick.Visible = complete
-			Style.gradient(
-				view.root,
-				Style.grad(if current then "orange" elseif complete then "green" else "ink")
+			view.scale.Scale = if current then 1.06 else 1
+			Style.recolor(
+				view.block,
+				Style.grad(if current then "blue" elseif complete then "green" else "locked")
 			)
-			view.stroke.Color = if current then Color3.new(1, 1, 1) else Color3.fromHex("14121C")
 			if info.id == digging and not complete then
 				view.label.Text = BuildTimer.text(left)
 			else
