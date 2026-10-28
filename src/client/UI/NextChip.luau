@@ -283,6 +283,7 @@ local function tick()
 		or player:GetAttribute("MapOpen") == true
 		or player:GetAttribute("CinematicPlaying") == true
 		or player:GetAttribute("DebriefShown") == true
+		or player:GetAttribute("BuildHidesMenu") == true -- the build list half-covered it (rc7); the tablet is open anyway
 	if hidden then
 		r.Visible = false
 	else
