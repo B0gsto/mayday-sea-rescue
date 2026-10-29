@@ -33,6 +33,7 @@ type Island = {
 	moored: boolean?, -- last frame's mooring, so the horn sounds once per arrival
 }
 local islands: { [Model]: Island } = {}
+local wharves: { [Model]: Island } = {} -- docs/27: the Freight Wharf's second barge (depot = the SeaPlate2 model)
 
 local function eye(): Vector3
 	local root = Players.LocalPlayer.Character
@@ -196,48 +197,52 @@ local HORN_GAP = 300
 local lastHorn = -math.huge
 local function step()
 	local now = Workspace:GetServerTimeNow()
-	for _, isl in islands do
-		local barge, depot = isl.barge, isl.depot
-		if not (barge and depot) then
-			continue
-		end
-		local moor = isl.moor and isl.moor.WorldCFrame
-		local nxt = nextAt(isl.plot)
-		local at = moor and BargePath.at(now, nxt, PERIOD)
-		if not (moor and at) then
-			barge.Parent = nil
-			continue
-		end
-		-- the mark faces out to sea along the quay; the barge comes in bow first, so the path's -Z is the other way
-		barge:PivotTo(moor * CFrame.Angles(0, math.pi, 0) * at)
-		local done = BargePath.unloaded(now, nxt, PERIOD)
-		-- the barge ties up: one tug horn at the quay (3D, so only the island's neighbours hear it), at most every
-		-- HORN_GAP s so a player working on their island doesn't hear it every minute
-		if done ~= nil and isl.moored == false then
-			if now - lastHorn >= HORN_GAP then
-				lastHorn = now
-				AudioController.play("Horn_Tug", moor.Position, 0.55, 1)
+	for _, list in { islands, wharves } do
+		for _, isl in list do
+			local barge, depot = isl.barge, isl.depot
+			if not (barge and depot) then
+				continue
 			end
-			-- docs/26: a bow wave and foam rings at the bow's waterline (the end nearest the quay), a puff over it
-			local box, size = barge:GetBoundingBox()
-			local reach = if size.Z >= size.X
-				then box.LookVector * size.Z / 2
-				else box.RightVector * size.X / 2
-			local bow = if (box.Position + reach - moor.Position).Magnitude
-					< (box.Position - reach - moor.Position).Magnitude
-				then box.Position + reach
-				else box.Position - reach
-			VFXKit.play("barge_moor", CFrame.new(bow.X, 0, bow.Z), {
-				radius = 2,
-				height = box.Position.Y + size.Y / 2,
-			})
-		end
-		isl.moored = done ~= nil
-		for k, crate in isl.crates do
-			crate.LocalTransparencyModifier = if done and done > k / (#isl.crates + 1) then 1 else 0
-		end
-		if barge.Parent ~= Workspace then
-			barge.Parent = Workspace
+			local moor = isl.moor and isl.moor.WorldCFrame
+			local nxt = nextAt(isl.plot)
+			local at = moor and BargePath.at(now, nxt, PERIOD)
+			if not (moor and at) then
+				barge.Parent = nil
+				continue
+			end
+			-- the mark faces out to sea along the quay; the barge comes in bow first, so the path's -Z is the other way
+			barge:PivotTo(moor * CFrame.Angles(0, math.pi, 0) * at)
+			local done = BargePath.unloaded(now, nxt, PERIOD)
+			-- the barge ties up: one tug horn at the quay (3D, so only the island's neighbours hear it), at most every
+			-- HORN_GAP s so a player working on their island doesn't hear it every minute
+			if done ~= nil and isl.moored == false then
+				if now - lastHorn >= HORN_GAP then
+					lastHorn = now
+					AudioController.play("Horn_Tug", moor.Position, 0.55, 1)
+				end
+				-- docs/26: a bow wave and foam rings at the bow's waterline (the end nearest the quay), a puff over it
+				local box, size = barge:GetBoundingBox()
+				local reach = if size.Z >= size.X
+					then box.LookVector * size.Z / 2
+					else box.RightVector * size.X / 2
+				local bow = if (box.Position + reach - moor.Position).Magnitude
+						< (box.Position - reach - moor.Position).Magnitude
+					then box.Position + reach
+					else box.Position - reach
+				VFXKit.play("barge_moor", CFrame.new(bow.X, 0, bow.Z), {
+					radius = 2,
+					height = box.Position.Y + size.Y / 2,
+				})
+			end
+			isl.moored = done ~= nil
+			for k, crate in isl.crates do
+				crate.LocalTransparencyModifier = if done and done > k / (#isl.crates + 1)
+					then 1
+					else 0
+			end
+			if barge.Parent ~= Workspace then
+				barge.Parent = Workspace
+			end
 		end
 	end
 end
@@ -294,6 +299,35 @@ local function pass()
 			dropBarge(isl)
 		elseif not isl.barge and d < NEAR then
 			makeBarge(isl)
+		end
+		-- docs/27: a built Freight Wharf moors a second barge on the same schedule
+		local plate = plot:FindFirstChild("SeaPlate2")
+		local w: Island? = wharves[plot]
+		if w and w.depot ~= plate then
+			dropBarge(w)
+			wharves[plot], w = nil, nil
+		end
+		if plate and plate:IsA("Model") and not w then
+			w = { plot = plot, depot = plate, crates = {} }
+			wharves[plot] = w
+		end
+		if w and plate then
+			if not w.moor then
+				local a = plate:FindFirstChild("ATT_BargeMoor", true)
+				w.moor = if a and a:IsA("Attachment") then a else nil
+			end
+			local dw = if w.moor then (w.moor.WorldPosition - at).Magnitude else math.huge
+			if w.barge and dw > FAR then
+				dropBarge(w)
+			elseif not w.barge and dw < NEAR then
+				makeBarge(w)
+			end
+		end
+	end
+	for plot, w in wharves do
+		if not plot.Parent then
+			dropBarge(w)
+			wharves[plot] = nil
 		end
 	end
 end

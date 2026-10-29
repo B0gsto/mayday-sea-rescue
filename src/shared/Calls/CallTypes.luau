@@ -366,6 +366,7 @@ end
 CallTypes.Areas = {
 	Shore = 40, -- studs off the player islands' rims (RingLayout radii)
 	BridgeClear = 36, -- studs from a bridge's centre line: half its deck + 30
+	PlateClear = 30, -- studs off the sea plates and the ramp (RingLayout.SEA_KEEP_OUT), built or not
 	OuterMin = 1200, -- "Outer" area: this far from the ring centre, well past the six islands
 	MapMargin = 120, -- stay this far inside GameConfig.MapRadius
 }

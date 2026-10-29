@@ -22,7 +22,7 @@ return function(t)
 		local edge = R.IslandPlate.edge
 		for _, key in D.BUILDINGS do
 			local def = D.Buildings[key]
-			if key == "HQ" or key == "Harbour" then
+			if key == "HQ" or key == "Harbour" or string.find(key, "^SeaPlate") then -- afloat
 				continue
 			end
 			local pts = P.stub(def.spot, def.size)

@@ -40,6 +40,7 @@ TelemetryNames.Custom = table.freeze({
 	"InputDead", -- input held with no response (client-detected): device, where
 	"SessionStart", -- value = days since the first session: day bucket, gap bucket, New / Returning
 	"SessionEnd", -- value = seconds played: length bucket, device, day bucket
+	"PlateBuilt", -- docs/27: a sea plate stood (value = minutes this session): plate, length bucket, day bucket
 } :: { string })
 
 -- LogOnboardingFunnelStepEvent step names, in step order. Roblox treats a skipped step as
@@ -71,6 +72,8 @@ TelemetryNames.Funnels = table.freeze({
 	Vehicle = table.freeze({ "Spawned", "Boarded", "Underway" }),
 	Explore = table.freeze({ "Sighted", "Reached", "Stamped" }),
 	Companion = table.freeze({ "Rescued", "Adopted", "Chosen" }),
+	-- docs/27 sea plates, one session per plate: Used = the first ramp jump (P1) / the first second barge (P2)
+	Expand = table.freeze({ "CardSeen", "Bought", "Built", "Used" }),
 } :: { [string]: { string } })
 
 local function index(list: { string }): { [string]: boolean }

@@ -40,7 +40,9 @@
       "FinishNow3": 3722675370,
       "Spin1": 3722675390,
       "Spin5": 3722675407,
-      "Spin15": 3722675411
+      "Spin15": 3722675411,
+      "DockSeaPlate1": 3723693626,
+      "DockSeaPlate2": 3723693636
     },
     "GamePasses": {
       "DoubleCash": 2040015521,
@@ -61,5 +63,5 @@
       "SubmarinePass": 2052480096
     }
   },
-  "placeVersion": 77
+  "placeVersion": 78
 }

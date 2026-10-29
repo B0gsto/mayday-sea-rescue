@@ -7,6 +7,7 @@ usage: python3 tools/studio/play.py <command> [args]
   start | stop          start / stop the play test (fresh session each start)
   close                 close the window without saving
   look [name]           screenshot of the game view -> build/play/<name>.png; prints the path
+                        (Studio's capture draws no ProximityPrompt UI: see prompts with smoke.py shot --full)
   press KEY [KEY ...]   tap keys (Roblox KeyCode names: E, Space, One, Escape, Return, Slash, LeftShift ...)
   hold KEY[+KEY] MS     hold keys together for MS ms (hold W 2000, hold W+A 800, hold LeftShift+W 3000)
   click X Y [right]     click at X,Y in the coordinates of the last `look` image

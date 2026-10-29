@@ -11,7 +11,7 @@ usage: python3 tools/studio/smoke.py <command> [args]
                        that takes over the W/A/S/D actions, so the real one stops driving (ThrottleFloat 0)
   keys <key> <ms>      hold a key on the client (e.g. keys W 2000)
   console              save the console to build/smoke/console.txt; print error lines and the last 25 lines
-  shot <name>          screen_capture to build/smoke/<name>.png, downscaled to 768 px
+  shot <name>          screen_capture to build/smoke/<name>.png, downscaled to 768 px (no ProximityPrompt UI: use --full)
   shot <name> --full [out.png]  full-size shot: grows the window to the screen, screencaptures it, keeps the
                        rendered game (drops Studio chrome and the top 8%: Roblox topbar buttons), centre-crops
                        16:9 and resizes to 1920x1080 (default out build/smoke/<name>.png); warns if smaller.

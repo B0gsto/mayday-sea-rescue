@@ -171,6 +171,8 @@ return function(t)
 				DockRescueBoathouse = true,
 				DockTrophyHall = true,
 				DockClinic = true,
+				DockSeaPlate1 = true, -- docs/27
+				DockSeaPlate2 = true,
 				DecorFlowerBed = true, -- DockService grants decor too
 				DecorPicnicTable = true,
 				DecorLampRow = true,

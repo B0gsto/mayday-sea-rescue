@@ -196,7 +196,7 @@ def main():
     batch, gap, rounds = int(arg("--batch", 8)), arg("--gap", 3), int(arg("--rounds", 4))
     # the publish window holds one of the machine's 2 heavy slots for its life (queued before the studio lock)
     hold_window.heavy_slot(r"RobloxStudio -protocolString.*task:EditPlace.placeId:%d" % PLACE, "mayday publish",
-                           os.path.join(REPO, "build", ".slot-publish-%d" % PLACE))
+                           os.path.join(REPO, "build", ".slot-publish-%d" % PLACE), priority=5)  # publishes go first
     with studio_lock(owner="mayday publish", timeout=3600, cap=3600):
         # a killed earlier run leaves an auto-recovery file, whose startup modal disables File > Publish to Roblox
         for f in glob.glob(os.path.join(AUTOSAVES, "%d_AutoRecovery_*.rbxl" % PLACE)):

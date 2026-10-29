@@ -642,6 +642,34 @@ local function lookout(m: Model, b: CFrame, level: number?)
 	end
 	gable(m, T * CFrame.new(0, legH + 5.2, 0), 12, 12, 4, BRICK_RED)
 	flag(m, T, 0, 0, legH + 9.4, 6)
+	-- the spotting scope at the front window (walk-in action, BuildingActController: Look -> the nearest survivor)
+	local scope = T * CFrame.new(0, legH + 0.8, -2.6)
+	for i = 0, 2 do
+		part(
+			m,
+			"ScopeLeg",
+			Vector3.new(0.25, 2.6, 0.25),
+			scope
+				* CFrame.Angles(0, math.rad(i * 120), 0)
+				* CFrame.new(0, 1.25, 0.45)
+				* CFrame.Angles(math.rad(-12), 0, 0),
+			DBG,
+			M.SmoothPlastic
+		).CanCollide =
+			false
+	end
+	local tube = part(
+		m,
+		"Telescope",
+		Vector3.new(2.6, 0.7, 0.7),
+		scope * CFrame.new(0, 2.7, -0.3) * CFrame.Angles(0, math.pi / 2, math.rad(-8)),
+		BRICK_YELLOW,
+		M.SmoothPlastic,
+		Enum.PartType.Cylinder
+	)
+	tube.CanCollide = false
+	tube:SetAttribute("Act", "Telescope")
+	tube:AddTag("BuildingAct")
 	local ladder = Instance.new("TrussPart")
 	ladder.Name = "Ladder"
 	ladder.Size = Vector3.new(2, legH, 2)
@@ -748,7 +776,8 @@ local function station(m: Model, b: CFrame)
 		Vector3.new(door * 2 - 1, 8.5, 0.3),
 		S * CFrame.new(0, 4.75, -hd + 0.3),
 		BRICK_RED
-	) -- the door
+	).CanCollide =
+		false -- the door: walk-in (docs/25 J), it never blocks the doorway
 	-- the red base course round the walls (a gap for the door)
 	brick(
 		m,
@@ -1547,6 +1576,14 @@ local function workshopYard(m: Model, b: CFrame, level: number?)
 	local at = b * def.spot
 	-- the add-ons take the sawhorse's job and stand where the timber stack and the old boat frame were
 	local addons = addonMesh(m, at, level or 1, "M_Bld_WorkshopAddons", "WorkshopMesh")
+	local mesh = m:FindFirstChild("WorkshopMesh")
+	if mesh then -- walk-in (docs/25 J): the Lv2 hull is one block over the whole back of the yard; its pieces collide instead
+		for _, d in mesh:GetDescendants() do
+			if d:IsA("BasePart") and string.sub(d.Name, 1, 3) == "Lv2" then
+				d.CanCollide = d.Name ~= "Lv2_COL" and d.Name ~= "Lv2_L05_Roof"
+			end
+		end
+	end
 	local w, d = yardSize(def)
 	local spec = HUTS.Workshop
 	local front = -d / 2
@@ -2182,6 +2219,13 @@ local function clinic(m: Model, b: CFrame, level: number?)
 			bed * CFrame.new(0, 2.9, 2.1),
 			if k == 1 then BRICK_CYAN else BRICK_PINK
 		)
+		-- walk-in act (docs/25 J): step onto the cot and you lie on it, head on the pillow (Jump gets up)
+		local rest = Instance.new("Seat")
+		rest.Name = "CotSeat"
+		rest.Size = Vector3.new(2, 0.2, 2)
+		rest.CFrame = bed * CFrame.new(0, 2.7, -0.6) * CFrame.Angles(math.rad(90), 0, 0)
+		rest.Transparency, rest.CanCollide, rest.CastShadow, rest.Anchored = 1, false, false, true
+		rest.Parent = m
 	end
 	-- docs/24 C r3: a big stretcher at the open front, with a red cross on the blanket
 	local st = at * CFrame.new(0, 0, -d / 2 + 5.5)
@@ -2614,6 +2658,7 @@ end
 local DEPOT_SHIFT = CFrame.new(-6, 0, 0) -- the body is authored 6 off the lot centre (its quay was beside it)
 local QUAY_AT = Vector2.new(-173, 2) -- island (right, fwd) of the quay centre: past the beach step
 local QUAY_X = -18 -- the quay's centre in the export
+local DEPOT_SOLID = { Foundation = true, Base = true, Rack = true, Roof = true, Trestles = true }
 local function depot(m: Model, b: CFrame, level: number?)
 	local src = DockPieces.meshes and DockPieces.meshes("M_Bld_Depot")
 	if not src then
@@ -2668,8 +2713,196 @@ local function depot(m: Model, b: CFrame, level: number?)
 		end
 	end
 	src:Destroy()
+	-- walk-in (docs/25 J): the export's Lv<l>_COL hulls are solid blocks over each shed, so they go and the open
+	-- sheds collide on their own parts: the slab, rack, roof, trestles, and a thin invisible wall down each side
+	for _, d in body:GetChildren() do
+		if d:IsA("BasePart") then
+			if string.match(d.Name, "_COL$") then
+				d.CanCollide = false
+			elseif DEPOT_SOLID[string.match(d.Name, "^Lv%d_L%d+_(%a+)$") or ""] then
+				d.CanCollide = true
+			elseif string.match(d.Name, "^Lv%d_L%d+_Frame$") then
+				for _, x in { -1, 1 } do
+					local side = part(
+						body,
+						"SideCol",
+						Vector3.new(0.6, d.Size.Y, d.Size.Z),
+						d.CFrame * CFrame.new(x * (d.Size.X / 2 - 0.3), 0, 0),
+						WHITE,
+						M.SmoothPlastic
+					)
+					side.Transparency = 1
+					side.CastShadow, side.CanTouch = false, false
+				end
+			end
+		end
+	end
 	pier:SetAttribute("SiteApart", true) -- ConstructionController: not inside the site's fence
 	body.Parent, pier.Parent = m, m
+end
+
+-- docs/27 sea plates (RingLayout.SeaPlates): a studded tan Lego deck on 2 x 3 round-brick pillars off the island's
+-- front edge, red/white rim bricks on its three sea sides, bollards and two lamps along the outer edge and a gangway
+-- plank over the beach step to the island wing. Placeholder Parts until the Blender kit lands. Every part carries
+-- BuildY (ConstructionController's layered rise): the submerged shafts (1) and the two pillar courses above the
+-- water (2, 3) rise with the build's progress; the deck and the rest (PLATE_TOP) wait for the finish, where the
+-- plate_drop beat lowers the deck. The Ramp Wharf adds the jump ramp (RingLayout.RAMP: a low-friction wedge, its
+-- invisible RampLip at the top edge) and the teal brick (docs/27 seed 1; DockService binds its prompt); the Freight
+-- Wharf adds the second barge's ATT_BargeMoor (DepotController moors a barge there) along its outer face.
+DockPieces.PLATE_TOP = 4.2 -- BuildY of everything shown at the finish
+local TEAL = Color3.fromRGB(0, 160, 170) -- Lego dark turquoise: the mystery brick
+local function seaPlate(m: Model, b: CFrame, key: string)
+	local r = RingLayout.SeaPlates[key].rect
+	local w, d = r[2] - r[1], r[4] - r[3]
+	local C = isle(b, (r[1] + r[2]) / 2, (r[3] + r[4]) / 2) -- y 0 = the deck top (world PlateauY), -Z = out to sea
+	local T = RingLayout.SEA_PLATE_DECK
+	local sea = -RingLayout.PlateauY -- local y of the waterline
+	m:SetAttribute("SeaSite", true) -- ConstructionController: a site on the water
+	local deck = brick(m, "Deck", Vector3.new(w, T, d), C * CFrame.new(0, -T / 2, 0), TAN)
+	studTop(deck)
+	-- pillars: a shaft from the seabed (world -40) to just under the water, then two courses up to the deck
+	local function round(
+		name: string,
+		y0: number,
+		y1: number,
+		at: CFrame,
+		color: Color3,
+		layer: number
+	)
+		local p = part(
+			m,
+			name,
+			Vector3.new(y1 - y0, 4.4, 4.4),
+			at * CFrame.new(0, (y0 + y1) / 2, 0) * CFrame.Angles(0, 0, math.pi / 2),
+			color,
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+		p:SetAttribute("BuildY", layer)
+	end
+	for _, px in { -w / 2 + 8, 0, w / 2 - 8 } do
+		for _, pz in { -d / 2 + 8, d / 2 - 8 } do
+			local at = C * CFrame.new(px, 0, pz)
+			round("Plate_L01_Shaft", sea - 40, sea - 1, at, DBG, 1)
+			round("Plate_L02_Course", sea - 1, sea + 1, at, LBG, 2)
+			round("Plate_L03_Course", sea + 1, -T, at, DBG, 3)
+		end
+	end
+	-- rim bricks on the three sea sides (12 long, red / white), each a glued contact on the deck
+	local RIM_H, RIM_L = 1.2, 12
+	local function rimRun(x0: number, z0: number, x1: number, z1: number)
+		local len = math.max(math.abs(x1 - x0), math.abs(z1 - z0))
+		local n = math.max(1, math.floor(len / RIM_L + 0.5))
+		for k = 1, n do
+			local u = (k - 0.5) / n
+			local along = math.abs(x1 - x0) > math.abs(z1 - z0)
+			local size = if along
+				then Vector3.new(len / n, RIM_H, 1)
+				else Vector3.new(1, RIM_H, len / n)
+			local p = brick(
+				m,
+				"Rim",
+				size,
+				C * CFrame.new(x0 + (x1 - x0) * u, RIM_H / 2, z0 + (z1 - z0) * u),
+				if k % 2 == 0 then WHITE else RED
+			)
+			studTop(p)
+		end
+	end
+	rimRun(-w / 2 + 0.5, -d / 2 + 0.5, w / 2 - 0.5, -d / 2 + 0.5) -- the outer edge
+	rimRun(-w / 2 + 0.5, -d / 2 + 1, -w / 2 + 0.5, d / 2) -- left
+	rimRun(w / 2 - 0.5, -d / 2 + 1, w / 2 - 0.5, d / 2) -- right
+	-- bollards inside the outer rim, two lamps at its corners
+	for k = -2, 2 do
+		local bl = part(
+			m,
+			"Bollard",
+			Vector3.new(1.6, 1.8, 1.8),
+			C * CFrame.new(k * w / 5, 0.8, -d / 2 + 3) * CFrame.Angles(0, 0, math.pi / 2),
+			DBG,
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+		bl.Name = "Bollard"
+	end
+	for _, sx in { -1, 1 } do
+		lamp(m, C, sx * (w / 2 - 4), -d / 2 + 4, 0)
+	end
+	-- the gangway over the trim and beach step (fwd 160-168) to the island wing, 0.06 proud of both tops
+	local gx = if (r[1] + r[2]) < 0 then r[2] - 30 else r[1] + 30 -- 30 in from the channel side
+	brick(
+		m,
+		"Gangway",
+		Vector3.new(14, 0.5, 12),
+		isle(b, gx, r[3] - 3) * CFrame.new(0, -0.19, 0),
+		RBROWN
+	)
+	if key == "SeaPlate1" then
+		local R = RingLayout.RAMP
+		local at = isle(b, R.at.X, R.at.Y) * CFrame.Angles(0, math.rad(R.yaw), 0) -- -Z: the jump's way
+		local low = sea - 2 -- the toe under the water
+		local h = sea + R.lip - low
+		local ramp = Instance.new("WedgePart")
+		ramp.Name = "Ramp"
+		ramp.Size = Vector3.new(R.width, h, R.length)
+		ramp.CFrame = at * CFrame.new(0, low + h / 2, 0) * CFrame.Angles(0, math.pi, 0) -- tall face out to sea
+		ramp.Color = YELLOW
+		ramp.Material = M.SmoothPlastic
+		ramp.Anchored = true
+		ramp.CustomPhysicalProperties = PhysicalProperties.new(0.7, 0.05, 0, 100, 1) -- a hull slides up it
+		ramp.Parent = m
+		for _, sx in { -1, 1 } do -- red side rails, below the slope (never on the running surface)
+			local rail = brick(
+				m,
+				"RampRail",
+				Vector3.new(0.6, h * 0.5, R.length),
+				at * CFrame.new(sx * (R.width / 2 + 0.3), low + h * 0.25, 0),
+				RED
+			)
+			rail.CanCollide = false
+		end
+		local lip = part(
+			m,
+			"RampLip",
+			Vector3.new(R.width, 5, 3),
+			at * CFrame.new(0, sea + R.lip + 1.5, -R.length / 2 + 1.5),
+			WHITE,
+			M.SmoothPlastic
+		)
+		lip.Transparency = 1
+		lip.CanCollide, lip.CanQuery, lip.CastShadow = false, false, false
+		-- docs/27 seed 1: a teal brick washed up by the outer rim (DockService: tap it, it goes to the Trophy Hall)
+		local teal = brick(
+			m,
+			"TealBrick",
+			Vector3.new(2, 1.2, 4),
+			C * CFrame.new(-w / 2 + 24, 0.6, -d / 2 + 5) * CFrame.Angles(0, 0.5, 0),
+			TEAL
+		)
+		studTop(teal)
+	else
+		-- the second barge lies along the outer face, bow toward the channel (DepotController: the mark looks out to
+		-- sea along the quay, the barge's +X away from it)
+		local marks = part(m, "Marks", Vector3.one, C, WHITE, M.SmoothPlastic)
+		marks.Transparency = 1
+		marks.CanCollide, marks.CanQuery, marks.CanTouch, marks.CastShadow =
+			false, false, false, false
+		local a = Instance.new("Attachment")
+		a.Name = "ATT_BargeMoor"
+		a.CFrame = CFrame.new(10, sea, -d / 2 - 9.5) * CFrame.Angles(0, -math.pi / 2, 0) -- the barge is 15.8 wide
+		a.Parent = marks
+	end
+	for _, p in m:GetDescendants() do
+		if p:IsA("BasePart") and p:GetAttribute("BuildY") == nil then
+			p:SetAttribute("BuildY", DockPieces.PLATE_TOP)
+		end
+	end
+end
+local function seaPlate1(m: Model, b: CFrame)
+	seaPlate(m, b, "SeaPlate1")
+end
+local function seaPlate2(m: Model, b: CFrame)
+	seaPlate(m, b, "SeaPlate2")
 end
 
 local BUILDINGS = {
@@ -2688,7 +2921,20 @@ local BUILDINGS = {
 	AirStation = airStation,
 	SubPen = subPen,
 	Lighthouse = lighthouse,
+	SeaPlate1 = seaPlate1,
+	SeaPlate2 = seaPlate2,
 } :: { [string]: (Model, CFrame, number?) -> () }
+
+-- docs/25 J: the one thing a player does inside each building (the part that carries it, the act);
+-- BuildingActController plays it. The Lookout's scope is its own part (lookout), the Clinic's cots are seats
+-- (clinic); the boathouse, hangar and sub pen have their craft boards (BoatBoard), the trophy hall its plinths.
+local ACTS: { [string]: { string } } = {
+	Workshop = { "Bench", "Build" }, -- the plans on the bench: build mode
+	FishShed = { "Counter", "Shop" }, -- the market counter: the shop
+	BoatYard = { "Console", "Boats" }, -- the yard console: your craft board
+	RescueBoathouse = { "Console", "Crew" }, -- the duty console: your crew
+	Depot = { "Lv1_L03_Rack", "Barge" }, -- the brick rack: watch the supply barge
+}
 
 local KEEP_1X = {
 	DepotMesh = true,
@@ -2708,7 +2954,7 @@ local KEEP_1X = {
 	PaintBooth = true,
 	LifeboatSlip = true,
 }
-local AFLOAT = { Harbour = true } -- no lot bed: on the water
+local AFLOAT = { Harbour = true, SeaPlate1 = true, SeaPlate2 = true } -- no lot bed: on the water
 
 -- The pieces of building `key` (DockConfig.Buildings, Blueprints) around the berth frame `cf`, as a Model
 -- named `key`. A worker building with no builder of its own is a plain Lego hut.
@@ -2740,6 +2986,12 @@ function DockPieces.building(key: string, cf: CFrame, level: number?): Model
 		for _, d in keep do
 			d.Parent = m
 		end
+	end
+	local act = ACTS[key]
+	local spot = act and m:FindFirstChild(act[1], true)
+	if act and spot then -- the walk-in act (BuildingActController)
+		spot:SetAttribute("Act", act[2])
+		spot:AddTag("BuildingAct")
 	end
 	local spec = HUTS[key]
 	if def and spec and spec.tree and not m:GetAttribute("NoTree") then -- a tree at the back corner (1x, like the plate's trees)

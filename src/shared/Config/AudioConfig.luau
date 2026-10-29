@@ -282,11 +282,9 @@ function AudioConfig.id(clipName: string): string
 	return if c then c.id else ""
 end
 
--- Places (studs). Harbour centre for the marina bed, rigging and gulls; the bell buoy off the
--- harbour mouth (MapConfig.Places "Harbour Mouth").
+-- Places (studs). Harbour centre for the marina bed, rigging and gulls.
 AudioConfig.HarbourCentre = Vector3.new(0, 4, 330) -- inside the ring, south of the lagoon centre
 AudioConfig.HarbourRadius = 200 -- the marina bed and rigging fade out past this
-AudioConfig.BellBuoy = Vector3.new(-60, 5.25, 880) -- SeamarkRules No2Bell, ATT_Bell height
 AudioConfig.CoastRadius = 900 -- gulls only within this of the harbour centre
 
 -- Mix constants (tune by ear).
@@ -299,8 +297,6 @@ AudioConfig.Mix = {
 	gullMaxGap = 22,
 	petVoiceMinGap = 18, -- s between a following pet's calls
 	petVoiceMaxGap = 32,
-	bellMinGap = 3.5, -- s between bell strokes in a calm (shorter in a storm)
-	bellMaxGap = 9,
 	riggingRate = 0.6, -- clinks per second at full wind
 	musicFade = 3, -- s
 	musicHold = 20, -- s a calm cue plays before another calm cue may take over

@@ -17,6 +17,7 @@ D.CREW_DROP = 2 -- loads the barge crew drops itself (no Haulers) -- tune
 D.HAUL_PER = 0.5 -- loads per mooring per Hauler unit (rarity value x carry loads) -- tune
 D.LEVEL_MULT = { 1, 2, 2 } -- the barge drop per Depot level (Lv2 doubles it; Lv3 adds room) -- tune
 D.LOAD_WORK = 10 -- s of one-crew work per load
+D.WHARF_MULT = 1.5 -- docs/27: the Freight Wharf (SeaPlate2) moors a second barge -- tune
 D.START = 6 -- loads on the quay in a new save: the Rescue Hut, Workshop and Depot never wait -- tune
 
 export type State = {
@@ -41,13 +42,20 @@ function D.cap(depotLevel: number?): number
 	return D.CAPS[depotLevel or 0] or 0
 end
 
--- Loads one mooring puts in the Depot. `refill` is SkillRules' depotRefill share (Hand Carts +50%).
-function D.bargeLoads(depotLevel: number?, haulerUnits: number?, refill: number?): number
+-- Loads one mooring puts in the Depot. `refill` is SkillRules' depotRefill share (Hand Carts +50%); `wharf`: the
+-- Freight Wharf stands (WHARF_MULT).
+function D.bargeLoads(
+	depotLevel: number?,
+	haulerUnits: number?,
+	refill: number?,
+	wharf: boolean?
+): number
 	local level = math.clamp(depotLevel or 0, 0, #D.LEVEL_MULT)
 	local mult = if level > 0 then D.LEVEL_MULT[level] else 1
 	return (D.CREW_DROP + D.HAUL_PER * math.max(0, haulerUnits or 0))
 		* mult
 		* (1 + math.max(0, refill or 0))
+		* (if wharf then D.WHARF_MULT else 1)
 end
 
 function D.loadsFor(work: number): number
