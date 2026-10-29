@@ -75,6 +75,8 @@ def main():
     if not a:
         sys.exit(__doc__)
     cmd = a[0]
+    if cmd == "open":
+        smoke.claim_slot()
     with studio_lock(owner="mayday play", timeout=1800):
         if cmd == "open":
             return smoke.cmd_open()

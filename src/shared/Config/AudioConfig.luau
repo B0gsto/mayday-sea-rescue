@@ -99,6 +99,12 @@ AudioConfig.Clips = {
 
 	-- Harbour and coast.
 	Amb_Harbour = rl(9112829678, 0.5, "Marina Ambience 5 (SFX)"),
+	Amb_Belt = rl(
+		9113910422,
+		0.3,
+		"Conveyor Belt 2 (SFX)",
+		"looped; ConveyorController, one emitter at the nearest belt"
+	),
 	Rigging_Clink_1 = rl(9114462292, 0.25, "Flagpole Hit 1 (SFX)", "halyard on a mast"),
 	Rigging_Clink_2 = rl(9114462293, 0.25, "Flagpole Hit 3 (SFX)"),
 	Rigging_Clink_3 = rl(9114462450, 0.25, "Flagpole Hit 4 (SFX)"),

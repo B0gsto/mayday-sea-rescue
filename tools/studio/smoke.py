@@ -34,8 +34,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 TOOLS = os.path.expanduser("~/RobloxProjects/tools")
 sys.path.insert(0, TOOLS)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import studio_window as sw  # noqa: E402
 from studio import StudioSession, studio_lock  # noqa: E402
+import hold_window  # noqa: E402  (tools/studio: a Studio window holds one of the 2 heavy slots)
 
 # Each tool opens its own TestBench window so one never closes another's: smoke.py "mayday-smoke"
 # (default), art/ocean/capture.sh "mayday-ocean", lookdev captures "mayday-lookdev" (set MAYDAY_STUDIO_TAG).
@@ -315,11 +317,25 @@ def cmd_ops(s):
     return fails
 
 
+def claim_slot():
+    """Queue for a heavy slot (outside the studio lock, so holders can still close) before opening our window."""
+    pattern = r"RobloxStudio -protocolString.*TestBench-%s\.rbxl" % TAG
+    if hold_window.alive(pattern):  # reopening: close ours first so its holder hands the slot back
+        with studio_lock(owner="mayday smoke", timeout=1800):
+            subprocess.run([sys.executable, os.path.join(TOOLS, "studio-open.py"), "--close", TAG, "--owner", OWNER],
+                           capture_output=True, text=True, timeout=180)
+        time.sleep(12)
+    os.makedirs(OUT, exist_ok=True)
+    hold_window.heavy_slot(pattern, "mayday " + TAG, os.path.join(OUT, ".slot-" + TAG))
+
+
 def main():
     args = sys.argv[1:]
     if not args:
         sys.exit(__doc__)
     cmd = args[0]
+    if cmd in ("open", "run", "ops"):
+        claim_slot()
     with studio_lock(owner="mayday smoke", timeout=1800):
         if cmd == "open":
             return cmd_open()

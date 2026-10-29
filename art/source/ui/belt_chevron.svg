@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+<!-- Conveyor belt tile (convey1): one chevron pointing down (image top lands on the lane's back end, Studio-checked), tiled on each lane's top and
+tinted by Texture.Color3. White with a grey lip under it (the Lego plate edge); transparent elsewhere. Seamless. -->
+<path d="M44,86 L128,164 L212,86" fill="none" stroke="#B9BEC6" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,10)"/>
+<path d="M44,86 L128,164 L212,86" fill="none" stroke="#FFFFFF" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
