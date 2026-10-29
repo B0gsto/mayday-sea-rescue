@@ -666,8 +666,9 @@ function WorkerService.PayOffline(player: Player, data: ProgressionRules.PlayerD
 	local away = if data.lastSeen then os.time() - data.lastSeen else 0
 	local pay = WorkerRules.offlinePay(effectsOf(player, data), away)
 	if pay > 0 then
-		ProgressionService.Award(player, pay, "Workers:Offline", true)
+		-- the attribute first: the client holds the pay off the wallet before the paid snapshot lands
 		player:SetAttribute("WorkerOffline", pay)
+		ProgressionService.Award(player, pay, "Workers:Offline", true)
 	end
 end
 

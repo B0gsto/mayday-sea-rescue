@@ -413,7 +413,7 @@ local function onPlayerAdded(player: Player)
 	loaded[player] = data
 	player:SetAttribute("DataLoaded", true)
 	if loadedEvent then
-		loadedEvent:Fire(player, data)
+		loadedEvent:Fire(player)
 	end
 end
 
@@ -595,7 +595,14 @@ function DataService.OnLoaded(fn: (Player, PlayerData) -> ()): RBXScriptConnecti
 	if not loadedEvent then
 		loadedEvent = Instance.new("BindableEvent")
 	end
-	local connection = (loadedEvent :: BindableEvent).Event:Connect(fn)
+	-- the live table: a BindableEvent hands each handler a deep copy, frozen at load (a stale snapshot push
+	-- after WorkerService's offline pay rolled the wallet back on the client, rc8)
+	local connection = (loadedEvent :: BindableEvent).Event:Connect(function(player: Player)
+		local data = loaded[player]
+		if data then
+			fn(player, data)
+		end
+	end)
 	for player, data in loaded do
 		task.spawn(fn, player, data)
 	end
