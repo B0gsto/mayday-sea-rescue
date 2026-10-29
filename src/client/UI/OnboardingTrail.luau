@@ -2,8 +2,8 @@
 -- OnboardingTrail: the steps from you to the beacon's goal (owner 2026-10-29: "add some nice steps of where do you
 -- need to go for the tutorial"). A line of Lego chevrons (art/source/ui/trail_chevron.svg) flat on the ground,
 -- tips toward the goal, along a walkable route (PathfindingService; a straight line when there is none), ending at
--- the goal. A calm wave runs along them toward the goal (each step brightens and grows a little in turn),
--- never a flash. Hidden in a vehicle, with a panel or the build tablet open, near the goal, and whenever the beacon
+-- the goal. A calm wave runs along them toward the goal (each step brightens toward white and grows a little in
+-- turn), never a flash. Hidden in a vehicle, with a panel or the build tablet open, near the goal, and whenever the beacon
 -- is. Client only, pooled: OnboardingBeacon owns one and steps it every frame.
 local PathfindingService = game:GetService("PathfindingService")
 local Players = game:GetService("Players")
@@ -23,9 +23,10 @@ export type Trail = {
 }
 
 local MAX = 24 -- pooled steps
-local SPACING = 7 -- studs between steps
-local TILE = 6 -- studs across a step
-local FIRST = 5 -- studs ahead of you to the first step
+local WIDTH = 10 -- studs across a step
+local LENGTH = 13 -- studs along the path: stretched 1.3x so the V survives the low camera's foreshortening
+local SPACING = 20 -- studs between steps (~1.5 steps): far ones stay apart, never a dotted line
+local FIRST = 4 + LENGTH / 2 -- the first step's centre: its near edge 4 studs ahead, never under you or the dog
 local END = 3 -- studs short of the goal: the last step
 local ARRIVE = 10 -- studs from the goal: arrived, the steps go
 local LIFT = 0.05 -- off the ground: never coplanar with the plate or a lot (CLAUDE.md "No z-fighting")
@@ -66,12 +67,12 @@ function OnboardingTrail.start(parent: Instance): Trail
 	folder.Name = "Trail"
 	folder.Parent = parent
 
-	type Tile = { part: Part, art: ImageLabel, s: number }
+	type Tile = { part: Part, art: ImageLabel, glow: ImageLabel, s: number }
 	local tiles: { Tile } = {}
 	for i = 1, MAX do
 		local part = Instance.new("Part")
 		part.Name = "Step"
-		part.Size = Vector3.new(TILE, 0.05, TILE)
+		part.Size = Vector3.new(WIDTH, 0.05, LENGTH)
 		part.Transparency = 1
 		part.Anchored, part.CanCollide, part.CanQuery, part.CanTouch = true, false, false, false
 		part.CastShadow = false
@@ -83,15 +84,23 @@ function OnboardingTrail.start(parent: Instance): Trail
 		gui.PixelsPerStud = 40
 		gui.Enabled = false
 		gui.Parent = part
+		-- the art is two 488x636 frames side by side: the sky-blue step, then the same step brightened toward white
 		local art = Instance.new("ImageLabel")
 		art.AnchorPoint = Vector2.new(0.5, 0.5)
 		art.Position = UDim2.fromScale(0.5, 0.5)
 		art.Size = UDim2.fromScale(0.9, 0.9)
 		art.BackgroundTransparency = 1
 		art.Image = UiImages.Markers.TrailChevron
+		art.ImageRectSize = Vector2.new(488, 636)
 		art.ScaleType = Enum.ScaleType.Fit
 		art.Parent = gui
-		tiles[i] = { part = part, art = art, s = 0 }
+		local glow = art:Clone()
+		glow.AnchorPoint = Vector2.zero
+		glow.Position = UDim2.new()
+		glow.Size = UDim2.fromScale(1, 1)
+		glow.ImageRectOffset = Vector2.new(488, 0)
+		glow.Parent = art
+		tiles[i] = { part = part, art = art, glow = glow, s = 0 }
 	end
 
 	local placed = 0 -- steps in use
@@ -211,11 +220,12 @@ function OnboardingTrail.start(parent: Instance): Trail
 			local wave = 0.5 + 0.5 * math.cos(2 * math.pi * (now / PERIOD - t.s / WAVE))
 			local pos = t.part.Position
 			local near = math.clamp(
-				(Vector3.new(pos.X - here.X, 0, pos.Z - here.Z).Magnitude - 1.5) / 4,
+				(Vector3.new(pos.X - here.X, 0, pos.Z - here.Z).Magnitude - LENGTH / 2) / 4,
 				0,
 				1
 			)
-			t.art.ImageTransparency = 1 - near * (0.7 + 0.3 * wave)
+			t.art.ImageTransparency = 1 - near
+			t.glow.ImageTransparency = 1 - near * 0.75 * wave
 			local size = 0.86 + 0.14 * wave
 			t.art.Size = UDim2.fromScale(size, size)
 		end

@@ -32,6 +32,7 @@ local NAVY = Color3.fromHex("0A1830")
 
 local LIFT = 16 -- studs: the diamond over the goal
 local EDGE = 36 -- px: the screen-edge pointer's head (32 pt+ on a phone, CLAUDE.md "UI art")
+local ARRIVE = 10 -- studs from the goal: arrived, no edge pointer (the trail's ARRIVE)
 
 local function surfaceY(p: Vector3): number
 	local ok, h = pcall(Weather.heightAt, p)
@@ -157,7 +158,14 @@ function OnboardingBeacon.start(): Beacon
 		if p.Z <= 0 then -- behind the camera: the projection flips
 			x, y, onScreen = vp.X - x, vp.Y - y, false
 		end
-		if not onScreen or x < margin or x > vp.X - margin or y < margin or y > vp.Y - margin then
+		local char = Players.LocalPlayer.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
+		local d = if root and root:IsA("BasePart") then at - root.Position else nil
+		local arrived = d ~= nil and Vector3.new(d.X, 0, d.Z).Magnitude <= ARRIVE -- a "0 m" pointer read as broken
+		if
+			not arrived
+			and (not onScreen or x < margin or x > vp.X - margin or y < margin or y > vp.Y - margin)
+		then
 			local dx, dy = x - vp.X / 2, y - vp.Y / 2
 			if math.abs(dx) + math.abs(dy) < 0.01 then
 				dy = 1
@@ -179,10 +187,7 @@ function OnboardingBeacon.start(): Beacon
 			dx, dy, k = pin.X - vp.X / 2, pin.Y - vp.Y / 2, 1
 			arrow.Position = UDim2.fromOffset(pin.X, pin.Y)
 			arrow.Visible = true
-			local char = Players.LocalPlayer.Character
-			local root = char and char:FindFirstChild("HumanoidRootPart")
-			if root and root:IsA("BasePart") then
-				local d = at - root.Position
+			if d then
 				local metres = Vector3.new(d.X, 0, d.Z).Magnitude / 3 -- 3 studs per metre
 				-- the chip sits just behind the head, on the side away from the edge
 				local len = math.max(math.sqrt(dx * dx + dy * dy) * k, 1)
