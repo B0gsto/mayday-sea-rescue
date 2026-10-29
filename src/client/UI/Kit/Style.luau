@@ -206,8 +206,9 @@ local function tween(inst: Instance, t: number, props: { [string]: any }, style:
 end
 
 -- Hover / selection grows 6%, press squashes to 90% and bounces back; onActivate on release.
--- Works for mouse, touch (Activated) and gamepad (selection + ButtonA).
-function Style.press(button: GuiButton, onActivate: (() -> ())?, radius: number?)
+-- Works for mouse, touch (Activated) and gamepad (selection + ButtonA). `still`: no hover growth (list cards,
+-- which a clipping scroll column would cut).
+function Style.press(button: GuiButton, onActivate: (() -> ())?, radius: number?, still: boolean?)
 	button.AutoButtonColor = false
 	button.Selectable = true
 	button.SelectionImageObject = ring(radius or S.corner)
@@ -215,7 +216,7 @@ function Style.press(button: GuiButton, onActivate: (() -> ())?, radius: number?
 	sc.Parent = button
 	local over = false
 	local function rest()
-		tween(sc, 0.25, { Scale = if over then 1.06 else 1 }, Enum.EasingStyle.Back)
+		tween(sc, 0.25, { Scale = if over and not still then 1.06 else 1 }, Enum.EasingStyle.Back)
 	end
 	button.MouseEnter:Connect(function()
 		over = true
