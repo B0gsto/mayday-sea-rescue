@@ -509,6 +509,7 @@ function W.clean(raw: any, cap: number?, legacy: boolean?): { Worker }
 			type(w) == "table"
 			and table.find(W.CATEGORIES, w.category)
 			and type(w.rarity) == "number"
+			and w.rarity == w.rarity -- NaN
 			and type(w.name) == "string"
 		then
 			local rarity = math.clamp(math.floor(w.rarity), 1, Rarity.MYTHIC)
