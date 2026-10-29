@@ -16,7 +16,7 @@ def alive(pattern):
     return subprocess.run(["pgrep", "-f", pattern], capture_output=True).returncode == 0
 
 
-def heavy_slot(pattern, owner, ready, say=print):
+def heavy_slot(pattern, owner, ready, say=print, priority=0):
     """Queue for a heavy slot before opening the window matching `pattern`; returns once a detached holder has it."""
     if alive(pattern):
         return  # that window is already open, so its holder already has a slot
@@ -24,7 +24,7 @@ def heavy_slot(pattern, owner, ready, say=print):
         os.remove(ready)
     env = {k: v for k, v in os.environ.items() if k != "ROBLOX_LOCKS_HELD"}
     subprocess.Popen([sys.executable, os.path.join(TOOLS, "locks.py"), "run", "--owner", owner, "--cap", "7200",
-                      "--timeout", "7200", "--quiet", "heavy", "--", sys.executable, HERE, pattern, ready],
+                      "--timeout", "7200", "--priority", str(priority), "--quiet", "heavy", "--", sys.executable, HERE, pattern, ready],
                      stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                      start_new_session=True, env=env)
     t0, said = time.time(), 0.0
