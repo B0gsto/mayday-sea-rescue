@@ -21,28 +21,10 @@ local CHECK = 1 -- s between near / far checks
 local HYSTERESIS = 80 -- studs past `near` before a group is removed
 local NOSE_UP = CFrame.Angles(math.rad(70), 0, 0) -- bottling: head out of the water, body hanging below
 
--- spots: low rocks from map/generated/props.json, the first two dry ones are used; sea: open water the seals face, where
--- the bottling seal swims
-local SEAL_SITES = {
-	{
-		centre = Vector3.new(1460, 0, 720),
-		spots = {
-			Vector3.new(1485.3, 0, 712.7),
-			Vector3.new(1492.1, 0, 729.7),
-			Vector3.new(1425.7, 0, 680),
-		},
-		sea = Vector3.new(1455, 0, 790),
-	},
-	{
-		centre = Vector3.new(-550, 0, 35),
-		spots = {
-			Vector3.new(-522.7, 0, 20.5),
-			Vector3.new(-579, 0, 46.6),
-			Vector3.new(-538.4, 0, 22.3),
-		},
-		sea = Vector3.new(-550, 0, 95),
-	},
-}
+type SealSite = { centre: Vector3, spots: { Vector3 }, sea: Vector3 }
+-- spots: low rock ledges, the first two dry ones are used; sea: open water the seals face, where the bottling seal
+-- swims. Empty since the ring cut: the hub-era sites lay on Plot4's plate and in open sea (no rocks there now).
+local SEAL_SITES: { SealSite } = {}
 local SEAL_NEAR = 450
 local HARBOUR = Vector3.new(-40, 0, 60)
 local GULL_NEAR = 600
@@ -173,7 +155,7 @@ local function spawnAnimal(asset: string, kind: Kind, parent: Instance): Animal?
 	return a
 end
 
-local function buildSeals(site: typeof(SEAL_SITES[1]), model: Model): { Animal }
+local function buildSeals(site: SealSite, model: Model): { Animal }
 	local out = {}
 	for i, spot in site.spots do
 		if #out >= 2 then
