@@ -1442,9 +1442,8 @@ function WorkerController.Start()
 		if type(award) ~= "table" then
 			return
 		end
-		if award.reason == "Workers:Gather" then
-			paid("Gatherer")
-		elseif award.reason == "Workers:Rescue" then
+		-- the Gatherers' per-minute pay shows nothing (owner 2026-10-29: no effect for the per-minute income)
+		if award.reason == "Workers:Rescue" then
 			paid("Rescuer")
 		end
 	end)
