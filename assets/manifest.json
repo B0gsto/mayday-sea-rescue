@@ -25656,6 +25656,16 @@
   "source": "assets/fbx/M_Veg_Wrack_Kit/M_Veg_Wrack_Kit_LOD1.fbx",
   "type": "Model"
  },
+ "Model:85f01f6f83c06953944cd3f28643884aebc56e3c9e39d902d7b0454e4e7c522f": {
+  "assetId": "81092225516494",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD0",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "85f01f6f83c06953944cd3f28643884aebc56e3c9e39d902d7b0454e4e7c522f",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:85f7812116bef40c03f40624199953f82de014063a04c8b9f60dfe417a8e958b": {
   "assetId": "107404077758895",
   "moderation": "Approved",
@@ -25884,6 +25894,16 @@
   "route": "delivery",
   "sha": "8c4928267dfcfeda2bd4dfcdf39c9304c958fa86ea34acea0349bec71681c5b1",
   "source": "assets/fbx/M_Road_CornishHedge/M_Road_CornishHedge_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:8c8e8819dccecf31e736014c99d82764d559dee1322df568bb6e4729d52afd22": {
+  "assetId": "130553205124624",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD1",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "8c8e8819dccecf31e736014c99d82764d559dee1322df568bb6e4729d52afd22",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD1.fbx",
   "type": "Model"
  },
  "Model:8c9ca9bcaa9bb5f83adf78dff03d480f99b5016b4408327c73f829ae92d6b203": {
@@ -29104,6 +29124,16 @@
   "route": "delivery",
   "sha": "e827c0554ce6d08d5d890c205aade29e53374f4a3f90f489f7b1ec513e1a1417",
   "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:e84cbb1193ef50d90a1e11d8838cdb526c6cb0ed751c1b851fd94fca2c80bfa4": {
+  "assetId": "115318732571211",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD2",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "e84cbb1193ef50d90a1e11d8838cdb526c6cb0ed751c1b851fd94fca2c80bfa4",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD2.fbx",
   "type": "Model"
  },
  "Model:e8c3fcb4978d9fd6558ca9f697f20626c48f14c77fc5018165c5800238b72bbf": {

@@ -653,6 +653,15 @@ end
 local function slipCrane(m: Model, b: CFrame)
 	local mastH = 24
 	local base = b * CFrame.new(16, TOP, 66)
+	-- the Lego crane (M_Prop_JettyCrane: base at its origin, jib along its front toward the berth); Parts until it loads
+	local src = DockPieces.meshes and DockPieces.meshes("M_Prop_JettyCrane")
+	if src then
+		local aim = (b * CFrame.new(0, TOP, 30)).Position
+		src:PivotTo(CFrame.lookAt(base.Position, aim))
+		src.Name = "JettyCraneMesh"
+		src.Parent = m
+		return
+	end
 	studTop(
 		brick(m, "CraneBase", Vector3.new(4.4, 1.2, 4.4), base * CFrame.new(0, 0.6, 0), BRICK_RED)
 	)
