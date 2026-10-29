@@ -184,9 +184,9 @@ local function critter(model: Model, at: Vector3, species: string?)
 				d.CanTouch = false
 			end
 		end
-		local _, size = rig:GetBoundingBox()
-		rig:PivotTo(CFrame.new(at + Vector3.new(0, size.Y / 2, 0)))
 		rig.Parent = model
+		-- setCFrame, not PivotTo: the rig's mesh upgrade re-poses from it (PivotTo left them at the origin)
+		WildlifeRig.setCFrame(rig, CFrame.new(at))
 	else
 		part(
 			model,

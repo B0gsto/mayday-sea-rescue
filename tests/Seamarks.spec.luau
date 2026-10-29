@@ -17,15 +17,11 @@ return function(t)
 
 	-- the dims.md characteristic of each nav-mark asset (art/reference/<asset>/dims.md) and its period
 	local CHAR = {
-		M_Hbr_NavMark_Port = { "Fl R 4s", 4 },
-		M_Hbr_NavMark_Starboard = { "Fl G 5s", 5 },
-		M_Hbr_NavMark_Bell = { "Fl(2) R 10s", 10 },
 		M_Hbr_NavMark_North = { "Q W", 1 },
 		M_Hbr_NavMark_East = { "Q(3) W 10s", 10 },
 		M_Hbr_NavMark_South = { "Q(6)+LFl W 15s", 15 },
 		M_Hbr_NavMark_West = { "Q(9) W 15s", 15 },
 		M_Hbr_NavMark_IsolatedDanger = { "Fl(2) W 5s", 5 },
-		M_Hbr_NavMark_SafeWater = { "LFl W 10s", 10 },
 	}
 
 	t.test("every mark is a unique, uploaded HP2b asset with its own dims.md light", function()
@@ -45,7 +41,7 @@ return function(t)
 			end
 		end
 		for asset in CHAR do
-			t.expect(used[asset]).toBe(true) -- all nine nav-mark types are in the world
+			t.expect(used[asset]).toBe(true) -- every listed nav-mark type is in the world
 		end
 	end)
 
@@ -74,42 +70,9 @@ return function(t)
 		t.expect(R.isOn(s, 6.5)).toBe(true) -- the 2 s long flash after six quick ones
 		t.expect(R.isOn(s, 7.9)).toBe(true)
 		t.expect(R.isOn(s, 8.1)).toBe(false)
-		t.expect(R.phase("No1")).toBe(R.phase("No1"))
-		t.expect(R.phase("No1") >= 0 and R.phase("No1") < 1).toBe(true)
+		t.expect(R.phase("GullStone")).toBe(R.phase("GullStone"))
+		t.expect(R.phase("GullStone") >= 0 and R.phase("GullStone") < 1).toBe(true)
 	end)
-
-	t.test(
-		"IALA A lateral: red to port (west) and green to starboard (east) entering north, paired",
-		function()
-			local ports, stbds = {}, {}
-			for _, m in R.Marks do
-				if m.map == "SeamarkPort" then
-					t.expect(m.x < 0).toBe(true)
-					table.insert(ports, m)
-				elseif m.map == "SeamarkStarboard" then
-					t.expect(m.x > 0).toBe(true)
-					table.insert(stbds, m)
-				end
-			end
-			t.expect(#ports).toBe(#stbds)
-			for _, p in ports do
-				local paired = false
-				for _, s in stbds do
-					if math.abs(s.z - p.z) < 1 then
-						paired = true
-						t.expect(s.x - p.x > 60).toBe(true) -- wider than the 60-stud harbour mouth
-					end
-				end
-				t.expect(paired).toBe(true)
-			end
-			-- the bell buoy is the outermost port mark; the fairway buoy lies beyond it on the centre line
-			local bell, fair = mark("No2Bell"), mark("Fairway")
-			for _, p in ports do
-				t.expect(p.z <= bell.z).toBe(true)
-			end
-			t.expect(fair.z > bell.z and math.abs(fair.x) < 1).toBe(true)
-		end
-	)
 
 	t.test("cardinals lie on their named side of the danger they mark", function()
 		local reefs = {}

@@ -130,12 +130,6 @@ function AudioMix.gap(minGap: number, maxGap: number, u: number): number
 	return minGap + (maxGap - minGap) * clamp01(u)
 end
 
--- Bell buoy: the swell rocks it more often and harder in a storm.
-function AudioMix.bellGap(intensity: number, minGap: number, maxGap: number, u: number): number
-	local scale = lerp(1, 0.4, clamp01(intensity))
-	return AudioMix.gap(minGap, maxGap, u) * scale
-end
-
 -- Gulls go quiet (they sit it out) as a storm builds.
 function AudioMix.gullChance(intensity: number): number
 	return clamp01(1 - intensity / 0.6)
