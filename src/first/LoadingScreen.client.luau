@@ -31,6 +31,7 @@ local TIPS = {
 local TIP_SECONDS = 4
 local MIN_SHOW = 2.2
 local LOAD_TIMEOUT = 25
+local UI_TIMEOUT = 40 -- s from the start the overlay holds for the HUD art (img1: blank menu tiles after a fade)
 local HANDOFF_WAIT = 15 -- s to wait (behind the overlay) for the character before the cut to it
 local FOV = 62
 
@@ -333,7 +334,7 @@ local function resolveComfort(): boolean
 	return ready and mod.reducedMotion() == true
 end
 
-local function collectAssets(UiImages: any): { Instance | string }
+local function collectAssets(sources: { any }, folders: { string }): { Instance | string }
 	local out: { Instance | string } = {}
 	local seen: { [any]: boolean } = {}
 	local function add(value: Instance | string)
@@ -353,12 +354,10 @@ local function collectAssets(UiImages: any): { Instance | string }
 			end
 		end
 	end
-	if type(UiImages) == "table" then
-		collect(UiImages.Kit)
-		collect(UiImages.Hud)
-		collect(UiImages.VehicleArt)
+	for _, source in sources do
+		collect(source)
 	end
-	for _, name in { "Vehicles", "Marina", "Npcs", "Map", "Dressing" } do
+	for _, name in folders do
 		local folder = Workspace:FindFirstChild(name)
 		if folder then
 			for _, child in folder:GetChildren() do
@@ -540,6 +539,15 @@ local function main()
 	local RingLayout = loadModule(config and waitChild(config, "RingLayout", 5))
 	local UiImages = loadModule(config and waitChild(config, "UiImages", 5))
 	local Marina = loadModule(shared and waitChild(shared, "Marina", 5))
+	local MapConfig = loadModule(config and waitChild(config, "MapConfig", 5))
+
+	-- every HUD sprite and the map tiles, fetched at once from the start (not after the harbour wait, not batched)
+	local uiReady = false
+	task.spawn(function()
+		local ui = collectAssets({ UiImages, MapConfig and MapConfig.Tiles }, {})
+		pcall(ContentProvider.PreloadAsync, ContentProvider, ui)
+		uiReady = true
+	end)
 
 	if not (LoadingPath and RingLayout) then
 		barActive = false
@@ -621,7 +629,7 @@ local function main()
 		end
 	end
 
-	local assets = collectAssets(UiImages)
+	local assets = collectAssets({}, { "Vehicles", "Marina", "Npcs", "Map", "Dressing" })
 	local preloaded = false
 	task.spawn(function()
 		preloaded = preload(assets, deadline)
@@ -636,7 +644,7 @@ local function main()
 		task.wait(0.05)
 	end
 
-	while os.clock() - t0 < MIN_SHOW do
+	while os.clock() - t0 < MIN_SHOW or (not uiReady and os.clock() - t0 < UI_TIMEOUT) do
 		task.wait(0.05)
 	end
 	barActive = false
