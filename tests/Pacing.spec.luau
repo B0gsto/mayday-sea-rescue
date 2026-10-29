@@ -53,8 +53,8 @@ return function(t)
 		"BoatYard",
 		"Clinic",
 		"Boathouse", -- the lifeboat slip, before the HQ3 wait
+		"Lifeboat", -- needs only the slip: the boat first, then HQ3
 		"HQ",
-		"Lifeboat",
 		"RescueBoathouse",
 		"LookoutTower",
 		"HQ",
@@ -77,8 +77,9 @@ return function(t)
 	local MAX_PLAY_MIN = 40 * 60
 	local HOUR = 60
 
-	-- docs/03 section 10.1: the three-operation cold open chain is about 13 minutes.
-	local TUTORIAL_MIN = { 1.5, 5.75, 5.75 }
+	-- The three tutorial calls as NewPlayerPace walks them (call 2 runs 1.2 -> 3.3 min; was docs/03's 13 min chain,
+	-- which hid how fast the first goals fall)
+	local TUTORIAL_MIN = { 1.5, 2.5, 2.5 }
 	-- docs/23 (2026-10-25): every later call is a real CallLogic call (zone tier by the best craft, pay x
 	-- distancePay). Its clock: per call the answer, the offer gap and the debrief; per trip out and back to
 	-- the dock at the docs/02 cruise (CallLogic.travelSeconds) plus slow down, climb on and climb off.
@@ -87,8 +88,12 @@ return function(t)
 	local START_UTC = 1792800000 -- 2026-10-24 00:00:00 UTC
 
 	-- `flatDepot`: the Depot never upgrades past Lv1 and no Hauler works there (docs/25 K4's slow case)
-	local function run(friends: number, legacy: boolean?, flatDepot: boolean?)
+	-- `paid`: the 2x Cash pass and the Starter Kit's 3,000 (the owner's account owns every pass it created)
+	local function run(friends: number, legacy: boolean?, flatDepot: boolean?, paid: boolean?)
 		local data = Progression.defaultData()
+		if paid then
+			data.cash += 3000
+		end
 		local medals = 0
 		local friendMult = if legacy then 1 else FriendBonus.multiplier(friends)
 		local playMin = 0
@@ -102,10 +107,18 @@ return function(t)
 
 		local timeline = {}
 		local seen = {}
+		local totalOps = 0
+		local spent = 0 -- Cash paid for buildings, craft and upgrades (the stage table: data.cash + spent = earned)
 		local function mark(label: string, at: number?)
 			if not seen[label] then
 				seen[label] = true
-				table.insert(timeline, { at = at or playMin, label = label, cash = data.cash })
+				table.insert(timeline, {
+					at = at or playMin,
+					label = label,
+					cash = data.cash,
+					ops = totalOps,
+					gross = data.cash + spent,
+				})
 			end
 		end
 
@@ -118,7 +131,6 @@ return function(t)
 			built = data.dockBuildings
 		end
 		local upgrades = { JetSki = 0, RIB = 0, Lifeboat = 0 }
-		local totalOps = 0
 		-- WP-26: every person delivered home becomes a worker (the roll on a counter seed); `legacy` has none.
 		-- Rescuer boats' occasional extra worker is left out (the cap is reached within hours anyway).
 		local rolls = 0
@@ -234,6 +246,7 @@ return function(t)
 						return
 					end
 					data.cash -= price
+					spent += price
 					local se = skills()
 					local rate = BuildTimer.rateOf(data.workers, {
 						max = BuildTimer.BUILDERS + se.extraBuilders,
@@ -276,6 +289,7 @@ return function(t)
 						return
 					end
 					data.cash -= price
+					spent += price
 					owned[key] = true
 					mark((LABEL[key] or key) .. " bought")
 				end
@@ -359,6 +373,7 @@ return function(t)
 					)
 					if ok then
 						data.cash -= price
+						spent += price
 						upgrades[vehicleId] += VehicleUpgrades.bit(upgradeId)
 						local upgrade = VehicleUpgrades.entry(vehicleId, upgradeId)
 						mark(
@@ -379,6 +394,7 @@ return function(t)
 		local rescued = 0
 		local spinCash, spins, spinMaxShare = 0, 0, 0
 		local earned = { calls = 0, medic = 0, workers = 0, offline = 0 } -- where the Cash came from
+		local samples = {} -- after every op: play minute, ops, Cash earned so far (the stage table)
 		local treeSpinShare = nil -- spins' share of all Cash earned by the time the last tree item is bought
 		local function nextPrice(): number
 			local key = PLAN[planIndex]
@@ -422,7 +438,8 @@ return function(t)
 			data.cash += (Progression.applyAward(
 				cash * friendMult,
 				if storm then "Storm" else "Calm",
-				great == true
+				great == true,
+				if paid then 2 else 1
 			))
 			upgradesNext()
 			planNext()
@@ -532,6 +549,7 @@ return function(t)
 
 			totalOps += 1
 			opIndex += 1
+			table.insert(samples, { at = playMin, ops = totalOps, gross = data.cash + spent })
 			if totalOps == 1 then
 				mark("First rescue")
 			end
@@ -631,6 +649,7 @@ return function(t)
 			spinMaxShare = spinMaxShare,
 			earned = earned,
 			treeSpinShare = treeSpinShare or 0,
+			samples = samples,
 		}
 	end
 
@@ -646,7 +665,15 @@ return function(t)
 	local function report(result: any, name: string)
 		print(`\nPacing: {name} (Cash at session end; unlock timeline)`)
 		for _, entry in result.timeline do
-			print(string.format("  %5.1f min  %-26s cash %7d", entry.at, entry.label, entry.cash))
+			print(
+				string.format(
+					"  %5.1f min  %-26s cash %7d  rescue %d",
+					entry.at,
+					entry.label,
+					entry.cash,
+					entry.ops
+				)
+			)
 		end
 		for i, session in result.sessions do
 			if i <= 12 or i % 10 == 0 then
@@ -705,6 +732,79 @@ return function(t)
 		end
 	end
 
+	-- A Cash goal: a building level, a craft or a craft upgrade (not skills, crates or the lv1 alias).
+	local function isGoal(label: string): boolean
+		if string.find(label, "lv%d+ built$") or string.find(label, " bought$") then
+			return true
+		end
+		return not (
+			string.find(label, "^Skill:")
+			or string.find(label, " built$")
+			or label == "First rescue"
+			or label == "Streak crate"
+			or label == "Workers full"
+			or label == "Tree complete"
+			or string.find(label, "^HQ")
+		)
+	end
+
+	-- Per stage of play: Cash earned a minute and a rescue, the goals reached, and how many rescues one took.
+	local STAGES = { 0, 10, 30, 60, 120, 300, 600, 1200 }
+	local function stages(result: any): { any }
+		local function at(minute: number): any
+			local last = { at = 0, ops = 0, gross = 0 }
+			for _, sample in result.samples do
+				if sample.at > minute then
+					break
+				end
+				last = sample
+			end
+			return last
+		end
+		local rows = {}
+		for i = 1, #STAGES - 1 do
+			local a, b = STAGES[i], math.min(STAGES[i + 1], result.playMin)
+			if b <= a then
+				break
+			end
+			local s0, s1 = at(a), at(b)
+			local goals = 0
+			for _, entry in result.timeline do
+				if entry.at > a and entry.at <= b and isGoal(entry.label) then
+					goals += 1
+				end
+			end
+			local ops = s1.ops - s0.ops
+			local gross = s1.gross - s0.gross
+			table.insert(rows, {
+				from = a,
+				to = b,
+				perMin = gross / math.max(b - a, 1e-6),
+				perRescue = if ops > 0 then gross / ops else 0,
+				goals = goals,
+				rescuesPerGoal = if goals > 0 then ops / goals else math.huge,
+			})
+		end
+		return rows
+	end
+
+	local function stageReport(result: any, name: string)
+		print(`\nEconomy stages: {name} (min | Cash/min | Cash/rescue | goals | rescues per goal)`)
+		for _, row in stages(result) do
+			print(
+				string.format(
+					"  %4d-%-4d %6.0f %7.0f %4d %6.1f",
+					row.from,
+					row.to,
+					row.perMin,
+					row.perRescue,
+					row.goals,
+					row.rescuesPerGoal
+				)
+			)
+		end
+	end
+
 	local before = run(0, true)
 	local solo = run(0)
 	local friend = run(1)
@@ -712,6 +812,10 @@ return function(t)
 	report(before, "before (no streak crate)")
 	report(solo, "after, solo")
 	report(friend, "after, one friend")
+	local paid = run(0, false, false, true)
+	stageReport(solo, "solo, no passes")
+	stageReport(paid, "solo, 2x Cash + Starter Kit (the owner's account)")
+	print(string.format("  paid: tree %.1f h", paid.playMin / 60))
 	print(
 		string.format(
 			"  depot: solo lost %.1f build min to an empty Depot (Depot Lv1, no Haulers: %.1f min; tree %.1f h)",
