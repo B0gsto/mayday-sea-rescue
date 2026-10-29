@@ -9,7 +9,10 @@
 --   same from the sub at a wreck. deliver: you carry it from the pontoon; walk it to the flag. rescue: a call is offered at the zone
 --   (OperationService.OfferCall), done when its survivor is delivered (OperationCompleted). Then back to the
 --   giver ("?") to hand in: Cash (flat), and the chain's last step adds its blueprint to your island.
--- Player attributes (QuestController / MapController / TalkController read them): QuestId, QuestStage
+-- Gate (owner 2026-10-29): quests stay out of sight (no givers, tablet, offers, menu button) until the unlock tree
+-- opens them (DockConfig.Unlocks.Quests: the Rescue Post); a save that already had quests keeps them. The first
+-- opening sets QuestReveal (QuestController's calm intro) once per player (flag `quest`.o).
+-- Player attributes (QuestController / MapController / TalkController read them): QuestsOpen, QuestReveal, QuestId, QuestStage
 -- ("go" | "back"), QuestTarget (Vector3: the thing, then the giver), QuestOffer_<npcId> (today's offer).
 -- Studio: ServerStorage.QuestDev:Invoke("accept", npcId: ties its boat up, puts you beside it) | ("tablet": to your
 -- quest tablet) | ("reach") | ("hand") | ("tp": to the pin) | ("chain") | ("set", questId:
@@ -33,6 +36,7 @@ local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayou
 local Rules = require(Shared:WaitForChild("Quests"):WaitForChild("Rules"))
 local SkillRules = require(Shared:WaitForChild("SkillRules"))
 local SkillService = require(script.Parent:WaitForChild("SkillService"))
+local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 
 local QuestService = {}
 QuestService.Priority = 130
@@ -259,15 +263,32 @@ local function today(): number
 	return Rules.day(os.time())
 end
 
--- The client's view: today's offers, the active quest and where the pin goes.
+-- The tree gate: the HQ level (DockConfig.Unlocks.Quests), opened before, or a save that had quests.
+local function isOpen(player: Player, s: Rules.State): boolean
+	local data: any = DataService.Get(player)
+	local dock = data and type(data.dock) == "table" and data.dock
+	local levels = if dock and type(dock.levels) == "table" then dock.levels else {}
+	return Rules.open(s, UnlockTree.unlocked("Quests", levels))
+end
+
+-- The client's view: open or not, today's offers, the active quest and where the pin goes.
 local function publish(player: Player)
 	local s = states[player]
 	if not s then
 		return
 	end
+	local open = isOpen(player, s)
+	if open and not s.open then
+		if not Rules.started(s) then
+			player:SetAttribute("QuestReveal", true) -- the first time: the intro plays once
+		end
+		s.open = true
+		save(player)
+	end
+	player:SetAttribute("QuestsOpen", open)
 	local day, ok = today(), can(player)
 	for _, npc in Data.Npcs do
-		local offer = Rules.offer(s, npc.id, day, ok)
+		local offer = if open then Rules.offer(s, npc.id, day, ok) else nil
 		player:SetAttribute(`QuestOffer_{npc.id}`, if offer then offer.id else nil)
 	end
 	local quest = questOf(player)
@@ -383,7 +404,7 @@ local function onTalk(player: Player, npcId: any, action: any)
 	local s, root, i = states[player], rootOf(player), DockService.GetPlot(player)
 	-- only a giver tied up at your own island; a hand-in from beside them or from your tablet (the menu accepts too)
 	local boat = if type(npcId) == "string" then QuestPontoons.Giver(i, npcId) else nil
-	if not (s and root and i and boat) then
+	if not (s and s.open and root and i and boat) then
 		return
 	end
 	local giver = boat.model:GetPivot().Position + Vector3.new(0, 3, 0)
@@ -416,6 +437,9 @@ end
 -- givers already there (a chain giver stays moored), then the rest.
 local function wanted(player: Player, i: number): { [string]: Data.Npc }
 	local s, out, n = states[player], {}, 0
+	if not s.open then
+		return out -- quests not open yet: no givers come
+	end
 	local quest = questOf(player)
 	local day, ok = today(), can(player)
 	if quest then
@@ -451,6 +475,7 @@ local function sail()
 			QuestPontoons.Clear(i)
 			skipper[i] = owner
 		end
+		QuestPontoons.ShowTablet(i, if owner then states[owner].open == true else false)
 		if owner then
 			local want = wanted(owner, i)
 			for _, b in QuestPontoons.Boats(i) do

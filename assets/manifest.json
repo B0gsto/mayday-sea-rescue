@@ -12311,6 +12311,15 @@
   "source": "assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Frame_ALB.png",
   "type": "Image"
  },
+ "Image:9277915b38d3af42a4e70c087b8540751631a7d5cca726e61ec7bef0cb52a590": {
+  "assetId": "136235158774044",
+  "imageId": "136235158774044",
+  "moderation": "Reviewing",
+  "name": "BeltChevron",
+  "sha": "9277915b38d3af42a4e70c087b8540751631a7d5cca726e61ec7bef0cb52a590",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-29/convey1/belt_chevron_down.png",
+  "type": "Image"
+ },
  "Image:92ce6eed16d1f1ddc631d3caa90fcb2a2a1b3255bdb951b0447f1a249b04f985": {
   "assetId": "133080607858423",
   "imageId": "133080607858423",
@@ -17417,6 +17426,15 @@
   "name": "T_LifeguardTower_Frame_RGH",
   "sha": "d4ff27813363578dd653ec222df6ee2e48d4266c556f2b02d74dba6ce0f12fc8",
   "source": "assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Frame_RGH.png",
+  "type": "Image"
+ },
+ "Image:d52337f624997d3595e5ade5b986bf05bf4e507bbc95f5c326d4c24026908d52": {
+  "assetId": "78049657862775",
+  "imageId": "78049657862775",
+  "moderation": "Reviewing",
+  "name": "BeltChevron",
+  "sha": "d52337f624997d3595e5ade5b986bf05bf4e507bbc95f5c326d4c24026908d52",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-29/convey1/belt_chevron.png",
   "type": "Image"
  },
  "Image:d53bc303e61476c8be79b4273f8d5db4c896a3e459cea65aead78637dafdc0fd": {

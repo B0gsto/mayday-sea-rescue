@@ -31,6 +31,8 @@ TOOLS = os.path.expanduser("~/RobloxProjects/tools")
 sys.path.insert(0, TOOLS)
 sys.path.insert(0, os.path.join(REPO, "tools", "world"))
 from studio import StudioSession, studio_lock  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import hold_window  # noqa: E402
 import studio_terrain  # noqa: E402
 
 LAUNCH = os.path.join(REPO, "deploy", "state-launch.json")
@@ -192,6 +194,9 @@ def main():
     if studio_pids():
         sys.exit("a Studio already has a roblox-studio: place open; close it first (its edits would be published)")
     batch, gap, rounds = int(arg("--batch", 8)), arg("--gap", 3), int(arg("--rounds", 4))
+    # the publish window holds one of the machine's 2 heavy slots for its life (queued before the studio lock)
+    hold_window.heavy_slot(r"RobloxStudio -protocolString.*task:EditPlace.placeId:%d" % PLACE, "mayday publish",
+                           os.path.join(REPO, "build", ".slot-publish-%d" % PLACE))
     with studio_lock(owner="mayday publish", timeout=3600, cap=3600):
         # a killed earlier run leaves an auto-recovery file, whose startup modal disables File > Publish to Roblox
         for f in glob.glob(os.path.join(AUTOSAVES, "%d_AutoRecovery_*.rbxl" % PLACE)):
