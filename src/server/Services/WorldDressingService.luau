@@ -247,6 +247,7 @@ function WorldDressingService.Start()
 			"SkerryLight",
 			"Islands", -- docs/21 archipelago: World/Islands/<Id>.luau, one per island
 			"Bridges", -- docs/23 (p): the ring of neighbour bridges between the player islands
+			"Conveyors", -- convey1: the moving walkway ring over the bridges and bridge roads, a spur per island
 			"IslandPlates", -- WP-24: the six player islands are flat Lego baseplates, not terrain
 		}
 	do
