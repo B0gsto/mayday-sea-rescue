@@ -267,10 +267,14 @@ def main():
                 start = len(log_lines(log))
                 menu = ["swift", os.path.join(HERE, "studio-menu.swift"), str(pid), "File"]
                 end = time.time() + 300  # Studio can still be busy after the pack pass: wait for the item to enable
+                item = "Publish to Roblox"  # Studio 2026-10-28 renamed it to "Publish" (with "Publish As" beside it)
                 while True:
-                    r = subprocess.run(menu + ["Publish to Roblox"], capture_output=True, text=True, timeout=120)
+                    r = subprocess.run(menu + [item], capture_output=True, text=True, timeout=120)
                     if r.returncode == 0:
                         break
+                    if "no item" in r.stdout and item != "Publish":
+                        item = "Publish"
+                        continue
                     if r.returncode != 3 or time.time() > end:
                         files = subprocess.run(menu, capture_output=True, text=True, timeout=60).stdout
                         sys.exit("File > Publish to Roblox failed: %s\nFile menu:\n%s" % (r.stdout.strip(), files))
