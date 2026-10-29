@@ -164,4 +164,30 @@ return function(t)
 		t.expect(peak > 1).toBe(true) -- overshoots, then settles on 1
 		t.expect(Presets.duration(Presets.ALL.fx1_hq_levelup) >= 1.5).toBe(true) -- covers the pillar
 	end)
+
+	-- user rule: every VFX moment has a sound. A preset carries its `sounds`, or its caller plays them (listed here);
+	-- a new preset without either fails (build/status/2026-10-29/aud1 has the full moment table)
+	t.test("every preset is paired with a sound", function()
+		local CALLER = {
+			build_done = "unused: ConstructionController plays fx1_build_snap",
+			hq_levelup = "unused: ConstructionController plays fx1_hq_levelup",
+			pickup_splash = "CasualtyController: Splash_Entry",
+			rescue_done = "AudioController OnDebrief: UI_Success; CashBurst: Cash_Coins",
+			golden_accept = "Waypoint: Music_CrateFanfare + Album_Sparkle",
+			wheel_spin = "PrizeWheelController: UI_Prompt flapper tick",
+			wheel_chips = "PrizeWheelController: UI_Prompt flapper tick",
+			wheel_win = "PrizeWheelController: Album_Sticker pop / Spin_Flex FX_Chime",
+			chimney_puff = "ambience: silent by design",
+			nitro_ring = "under nitro_burst's FX_Whoosh",
+			nitro_trail = "the engine flare (AudioController RPM)",
+		}
+		for name, p in Presets.ALL do
+			if not CALLER[name] and #((p :: any).sounds or {}) == 0 then
+				error(`{name}: no sounds and no caller sound listed`)
+			end
+		end
+		for name in CALLER do
+			t.expect(Presets.ALL[name] ~= nil).toBe(true)
+		end
+	end)
 end
