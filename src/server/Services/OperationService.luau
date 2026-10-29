@@ -934,10 +934,13 @@ finish = function(op: any, reason: string)
 		local pay = 1 + (tonumber(p:GetAttribute("WorkerPayBonus")) or 0)
 		pay *= 1 + (tonumber(p:GetAttribute("SkillPayBonus")) or 0)
 		local cash = reward.cash * pay * (if op.golden then GoldenCalls.CASH_MULT else 1)
+		local paid: number? = nil -- what actually landed (passes, friends, events, storm): the debrief shows it
 		if cash > 0 then
-			local ok = try("ProgressionService", "Award", p, cash, paidAs)
+			local ok, got = try("ProgressionService", "Award", p, cash, paidAs)
 			if not ok then
 				warn(`[OperationService] could not award {p.Name} {cash} Cash`)
+			elseif type(got) == "number" then
+				paid = got
 			end
 		end
 		if op.coldOpen then
@@ -968,7 +971,7 @@ finish = function(op: any, reason: string)
 			condition = op.history,
 			saved = op.saved,
 			total = #op.casualties,
-			cash = math.floor(cash * mult + 0.5),
+			cash = paid or math.floor(cash * mult + 0.5), -- a 2x Cash pass showed +500 for +1000 paid (rc9)
 			me = p.UserId,
 			golden = op.golden == true, -- OpsDebrief's gold delivery burst
 		})

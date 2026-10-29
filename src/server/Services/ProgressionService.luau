@@ -124,11 +124,17 @@ local function push(player: Player, data: Rules.PlayerData, extra: { [string]: a
 	Telemetry.CashFlow(player, extra, data.cash) -- every Cash source travels as extra.award
 end
 
-function ProgressionService.Award(player: Player, cash: number, reason: string, flat: boolean?)
+-- -> the Cash actually added (multipliers applied), or nil when dropped
+function ProgressionService.Award(
+	player: Player,
+	cash: number,
+	reason: string,
+	flat: boolean?
+): number?
 	local data = DataService.Get(player)
 	if not data then
 		warn(`[ProgressionService] Award to {player.Name} before data loaded ({reason}); dropped`)
-		return
+		return nil
 	end
 	local state, isGreat, paid = nil, false, 1
 	if not flat then
@@ -141,6 +147,7 @@ function ProgressionService.Award(player: Player, cash: number, reason: string, 
 	data.cash += finalCash
 	DataService.MarkDirty(player)
 	push(player, data, { award = { cash = finalCash, multiplier = mult, reason = reason } })
+	return finalCash
 end
 
 -- A finished operation (OperationService calls it once per player at the debrief): a graded one
