@@ -50,8 +50,9 @@ local function triggered(player: Player, kind: PlatformPrompts.Kind): boolean
 	if forceOn() then
 		return true
 	end
-	if kind == "notify" then
-		return player:GetAttribute("StreakClaim") ~= nil
+	if kind == "notify" then -- after a rescue debrief (owner 2026-10-28): someone delivered home at least once
+		local data: any = DataService.Get(player)
+		return data ~= nil and (tonumber(data.totalRescues) or 0) >= 1
 	elseif kind == "favorite" then
 		local data: any = DataService.Get(player) -- after the first island building (the start's jetty doesn't count)
 		if data == nil or type(data.dockBuildings) ~= "table" then

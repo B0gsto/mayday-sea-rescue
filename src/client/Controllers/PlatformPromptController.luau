@@ -2,7 +2,8 @@
 -- PlatformPromptController: shows Roblox's own re-engagement prompts at good moments and never
 -- mid-rescue. The timing policy and the asked timestamps live on the server (PlatformPromptService,
 -- Shared/PlatformPrompts); this controller only watches the triggers the game already publishes:
---   StreakClaim    player attribute, set when the daily reward is collected -> notification opt-in
+--   DebriefShown   player attribute (UI/OpsDebrief): when a rescue debrief closes -> notification opt-in (owner
+--                  2026-10-28: a calm moment after a rescue, not on top of the daily reward Collect)
 --   dockBuildings  PlayerDataChanged: a new island building -> favourite, once its Lego build beat has ended
 --   CrewOpDone     player attribute, set after a first rescue with 2+ crew -> invite
 -- Every platform call is pcall-guarded and platform eligibility is checked before asking, so a
@@ -153,10 +154,12 @@ local function countOf(owned: any): number
 end
 
 function PlatformPromptController.Init()
-	player:GetAttributeChangedSignal("StreakClaim"):Connect(function()
-		task.delay(4, function()
-			PlatformPromptController.Request("notify")
-		end)
+	player:GetAttributeChangedSignal("DebriefShown"):Connect(function()
+		if player:GetAttribute("DebriefShown") ~= true then -- the debrief card just closed
+			task.delay(2, function()
+				PlatformPromptController.Request("notify")
+			end)
+		end
 	end)
 	player:GetAttributeChangedSignal("CrewOpDone"):Connect(function()
 		if player:GetAttribute("CrewOpDone") == true then
