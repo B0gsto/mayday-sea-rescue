@@ -172,6 +172,9 @@ function Menu.open(name: string)
 	if not (mounted and p and shown()) then
 		return
 	end
+	if name == pulseName then
+		Menu.pulse(nil) -- found it (the quest reveal's ring)
+	end
 	if current == name then
 		return
 	end
@@ -335,7 +338,8 @@ local function dressBoat(b: IconButton.IconButton)
 	end
 end
 
--- the quest cards you can act on now (the tablet's rows: an offer you can accept, a quest ready to hand in)
+-- the quest cards you can act on now (the tablet's rows: an offer you can accept, a quest ready to hand in); the
+-- button itself only once quests are open (QuestService QuestsOpen, owner 2026-10-29: not at the first start)
 local function questBadge()
 	local n = 0
 	for _, r in QuestTablet.rows(true) do
@@ -345,7 +349,9 @@ local function questBadge()
 	end
 	local q = buttons.Quests
 	if q then
-		q.setBadge(if n > 0 then n else nil)
+		local open = player:GetAttribute("QuestsOpen") == true
+		q.root.Visible = open
+		q.setBadge(if open and n > 0 then n else nil)
 	end
 end
 

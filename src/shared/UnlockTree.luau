@@ -165,6 +165,12 @@ function UnlockTree.nextHqNeed(levels: Levels): { string }?
 	return out
 end
 
+-- Is system `name` (DockConfig.Unlocks) open on this island? An unknown name is always open.
+function UnlockTree.unlocked(name: string, levels: Levels): boolean
+	local u = DockConfig.Unlocks[name]
+	return u == nil or UnlockTree.levelOf(levels, u.key) >= u.level
+end
+
 -- The Bunkhouse's people cap at its current level (the Hut's few bunks when not built).
 function UnlockTree.bunkCap(levels: Levels): number
 	local n = UnlockTree.levelOf(levels, "Bunkhouse")

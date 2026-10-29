@@ -846,7 +846,10 @@ local function refreshCards()
 	local n = 0
 	local pulsed: ImageButton? = nil
 	for _, item in DockBlueprints.catalog() do
-		if (item.kind == "Decor") == (tabIndex == 2) then
+		if
+			(item.kind == "Decor") == (tabIndex == 2)
+			and (item.kind ~= "Blueprint" or player:GetAttribute("QuestsOpen") == true) -- quest rewards once quests open
+		then
 			n += 1
 			local st = statusOf(item)
 			local root = Style.button(

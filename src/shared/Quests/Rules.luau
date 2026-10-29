@@ -5,7 +5,8 @@
 --   Rotation: each giver offers one quest a day (Rules.offer: a day seed over the ones not yet done, chain steps in
 --   order); a giver whose quest was finished today offers nothing more till tomorrow, except the next step of the
 --   chain just handed in, which is offered at once. When every quest of a giver is done, their pool starts over.
---   Save: profile flag `quest` = { a = active id, s = stage, x<id> = true (done), n<giver> = the day of their last }.
+--   Save: profile flag `quest` = { a = active id, s = stage, x<id> = true (done), n<giver> = the day of their last,
+--   o = true (quests opened: Rules.open) }.
 --   `next` (the chain step just unlocked) is session only: it is not encoded.
 local CallTypes = require(script.Parent.Parent:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local Data = require(script.Parent:WaitForChild("Data"))
@@ -18,6 +19,7 @@ export type State = {
 	done: { [string]: boolean },
 	last: { [string]: number },
 	next: string?,
+	open: boolean?, -- quests opened once (the reveal played); stays open
 }
 
 local Rules = {}
@@ -52,6 +54,7 @@ function Rules.decode(flag: any): State
 		s.active = flag.a
 		s.stage = if flag.s == "back" then "back" else "go"
 	end
+	s.open = flag.o == true or nil
 	for id in Data.byId do
 		if flag["x" .. id] == true then
 			s.done[id] = true
@@ -66,7 +69,7 @@ function Rules.decode(flag: any): State
 end
 
 function Rules.encode(s: State): { [string]: any }
-	local out: { [string]: any } = { a = s.active, s = s.stage }
+	local out: { [string]: any } = { a = s.active, s = s.stage, o = s.open }
 	for id in s.done do
 		out["x" .. id] = true
 	end
@@ -74,6 +77,17 @@ function Rules.encode(s: State): { [string]: any }
 		out["n" .. id] = day
 	end
 	return out
+end
+
+-- Some quest history: a save from before the gate keeps its quests (no reveal for it).
+function Rules.started(s: State): boolean
+	return s.active ~= nil or next(s.done) ~= nil or next(s.last) ~= nil
+end
+
+-- Quests are on for this player: the tree gate (`unlocked`: UnlockTree.unlocked("Quests")), opened before, or a
+-- save that already had quests.
+function Rules.open(s: State, unlocked: boolean): boolean
+	return unlocked or s.open == true or Rules.started(s)
 end
 
 local function islandRow(id: string): any
