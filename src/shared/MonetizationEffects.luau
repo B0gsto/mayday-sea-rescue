@@ -93,10 +93,11 @@ function Effects.passActive(owned: boolean, dayPassEnds: number?, now: number): 
 	return owned or num(dayPassEnds) > now
 end
 
--- Studio-only test mode (Workspace attribute "DevNoPasses" = true): the player owns no game passes and no
--- day passes, to test the free path on a dev account that owns them all. Never on a live server.
-function Effects.devNoPasses(isStudio: boolean, attribute: any): boolean
-	return isStudio and attribute == true
+-- Test mode: the player owns no game passes and no day passes, to test the free path on a dev account that owns
+-- them all. Studio: Workspace attribute "DevNoPasses" = true (every player). Any server: the player's "DevFreePlayer"
+-- attribute, which only DevService sets (the DEV "Free player" toggle); saved data and receipts stay untouched.
+function Effects.devNoPasses(isStudio: boolean, attribute: any, freePlayer: any): boolean
+	return (isStudio and attribute == true) or freePlayer == true
 end
 
 -- Adds hours of real time from now, or from the current end when one is running; returns the new end.

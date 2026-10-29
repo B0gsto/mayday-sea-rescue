@@ -245,6 +245,11 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 			setInvisible(dev, a[1])
 			return true, if a[1] then "Hidden" else "Visible"
 		end,
+		freePlayer = function(dev, _, a)
+			dev:SetAttribute("DevFreePlayer", if a[1] then true else nil)
+			pcall(CosmeticsService.Refresh, dev)
+			return true, if a[1] then "No passes" else "Passes back"
+		end,
 		tpSpot = function(dev, _, a)
 			if a[1] == "MyDock" then
 				local marina = Workspace:FindFirstChild("Marina")
