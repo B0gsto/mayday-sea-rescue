@@ -557,6 +557,9 @@ end
 local function addonMesh(m: Model, at: CFrame, n: number, asset: string, name: string): boolean
 	local src = if n >= 2 and DockPieces.meshes then DockPieces.meshes(asset) else nil
 	if not src then
+		if n >= 2 and DockPieces.meshes then
+			m:SetAttribute("MissingMesh", asset) -- DockService rebuilds it once the mesh loads
+		end
 		return false
 	end
 	src:PivotTo(at)
@@ -1312,6 +1315,10 @@ local function cottage(
 end
 
 local function hut(m: Model, b: CFrame, key: string)
+	if not DockPieces.standIns then -- live place: the lot stays empty until the mesh loads (see DockPieces.standIns)
+		m:SetAttribute("MissingMesh", key)
+		return
+	end
 	local def = DockConfig.Buildings[key]
 	local spec = HUTS[key]
 	local at = b * def.spot
@@ -2425,6 +2432,9 @@ end
 -- Set by the server (DepotArtService): a static copy of an uploaded building mesh (the walk-in _COL hulls collide,
 -- the visual meshes don't); it waits for the first load and is nil if the asset failed (a code-built piece stands in).
 DockPieces.meshes = nil :: ((asset: string) -> Model?)?
+-- False on live places (DepotArtService): a building whose mesh didn't load gets no code-built cottage (owner
+-- 2026-10-29: never ship basic houses); its model is tagged MissingMesh and rebuilt once the mesh loads.
+DockPieces.standIns = true
 -- Model:ScaleTo; tests/ZFight.spec swaps in a Lune version (Lune has no ScaleTo)
 DockPieces.scaleTo = function(m: Model, s: number)
 	m:ScaleTo(s)

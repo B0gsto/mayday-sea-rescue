@@ -15,7 +15,8 @@
 --     parts of another LOD are removed; visual parts are unanchored, Massless and non-colliding, and
 --     small parts cast no shadow. RenderFidelity and CollisionFidelity are Studio-only writes, so
 --     the upload's values are kept (Automatic).
--- InsertService:LoadAsset only loads assets the experience owner created (or free ones).
+-- InsertService:LoadAsset only loads assets the experience owner created, free ones, or ones whose owner granted
+-- the universe Use (tools/asset_load_check.py --grant; publish_studio.py --launch runs it).
 
 local CollectionService = game:GetService("CollectionService")
 local InsertService = game:GetService("InsertService")
@@ -371,7 +372,11 @@ local function load(asset: string, lod: string): Model?
 	end
 	local ok, result = pcall(InsertService.LoadAsset, InsertService, id)
 	if not ok or typeof(result) ~= "Instance" then
-		warn(`[AssetLoader] LoadAsset {asset} {lod} ({id}) failed: {result}`)
+		-- "not authorized": the place's universe lacks a Use grant (group-owned launch place, user-owned uploads)
+		warn(
+			`[AssetLoader] FALLBACK: LoadAsset {asset} {lod} ({id}) failed: {result} -- shipping the greybox;`
+				.. " run tools/asset_load_check.py [--launch] [--grant]"
+		)
 		return nil
 	end
 	local container = result :: Instance

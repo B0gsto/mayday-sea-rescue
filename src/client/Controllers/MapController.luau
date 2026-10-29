@@ -23,6 +23,7 @@
 --      attribute), then a call offer, then your own waypoint. An offer never takes the pin from a quest.
 --      GetTargets(): { Vector3 }
 local ContextActionService = game:GetService("ContextActionService")
+local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -1011,16 +1012,30 @@ local function placeFog(scale: number, size: Vector2, c: Vector2)
 	end
 end
 
+-- px per design unit (the canvas UIScale times the panel's pop scale): markers are placed in design
+-- units, screen input and Absolute* are in pixels
+local function kitScale(): number
+	local r = full.panel.root
+	return if r.Size.X.Offset > 0 then r.AbsoluteSize.X / r.Size.X.Offset else 1
+end
+
 local function fullScale(): (number, Vector2)
-	local size = full.root.AbsoluteSize
+	local size = full.root.AbsoluteSize / kitScale() -- design units (pixels drew the map shrunk to the top-left)
 	return math.min(size.X, size.Y) / 2 / full.radius, size
 end
 
 local function screenToWorld(p: Vector2): Vector2
 	local scale, size = fullScale()
 	local origin = full.root.AbsolutePosition
-	local local_ = p - origin - size / 2
+	local local_ = (p - origin) / kitScale() - size / 2
 	return full.center + local_ / scale
+end
+
+-- an input's point in the map gui's space: InputObject.Position starts below the top bar inset, the
+-- gui ignores the inset except on compact screens (the pin landed 58 px above the cursor)
+local function inputPoint(input: InputObject): Vector2
+	local p = Vector2.new(input.Position.X, input.Position.Y)
+	return if gui.IgnoreGuiInset then p + GuiService:GetGuiInset() else p
 end
 
 local function placeWaypointAt(screen: Vector2)
@@ -1065,8 +1080,12 @@ local function placeNames(c: Vector2, scale: number, size: Vector2, marks: { { V
 	end
 	for _, o in panels do
 		if o.Visible then
-			local p = o.AbsolutePosition - origin
-			table.insert(blocked, { p - Vector2.new(6, 6), p + o.AbsoluteSize + Vector2.new(6, 6) })
+			local k = kitScale()
+			local p = (o.AbsolutePosition - origin) / k
+			table.insert(
+				blocked,
+				{ p - Vector2.new(6, 6), p + o.AbsoluteSize / k + Vector2.new(6, 6) }
+			)
 		end
 	end
 	local r = full.radius :: number
@@ -1251,20 +1270,16 @@ local function bindFullMapInput()
 			end
 			if drag.moved then
 				local scale = fullScale()
-				full.center = drag.center - delta / scale
+				full.center = drag.center - delta / (scale * kitScale())
 			end
 		elseif t == Enum.UserInputType.MouseWheel then
-			local before = screenToWorld(
-				Vector2.new(input.Position.X, input.Position.Y) + full.root.AbsolutePosition
-			)
+			local before = screenToWorld(inputPoint(input))
 			full.radius = math.clamp(
 				full.radius * 0.85 ^ input.Position.Z,
 				MapConfig.FullMap.minRadius,
 				MapConfig.FullMap.maxRadius
 			)
-			local after = screenToWorld(
-				Vector2.new(input.Position.X, input.Position.Y) + full.root.AbsolutePosition
-			)
+			local after = screenToWorld(inputPoint(input))
 			full.center += before - after
 		end
 	end)
@@ -1280,7 +1295,7 @@ local function bindFullMapInput()
 			local d = drag
 			drag = nil
 			if isOpen and not d.moved and pinchStart == nil then
-				placeWaypointAt(Vector2.new(input.Position.X, input.Position.Y))
+				placeWaypointAt(inputPoint(input))
 			end
 		end
 	end)

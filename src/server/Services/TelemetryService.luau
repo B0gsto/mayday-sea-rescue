@@ -29,10 +29,12 @@
 -- Device(type), Shop(step, app, item?, currency?), InputDead(context),
 -- StuckReset(context).
 local AnalyticsService = game:GetService("AnalyticsService")
+local DataStoreService = game:GetService("DataStoreService")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local ScriptContext = game:GetService("ScriptContext")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
@@ -63,6 +65,18 @@ local sessions: { [Player]: Session } = {}
 local clientRemote: RemoteEvent? = nil
 local dayChecked: { [Player]: boolean } = {}
 local knownItems: { [string]: boolean } = {}
+-- Session trail (live-ops monitoring): each player's event lines, saved on leave to the
+-- SessionTrail_v1 DataStore (key "<userId>_<joinUnix>") and read by tools/trail.py via Open Cloud.
+local TRAIL_STORE = "SessionTrail_v1"
+local TRAIL_MAX = 600
+local trails: { [number]: { joined: number, lines: { string } } } = {}
+
+local function trailAdd(userId: number, text: string)
+	local trail = trails[userId]
+	if trail and #trail.lines < TRAIL_MAX then
+		table.insert(trail.lines, `{os.time() - trail.joined} {text}`)
+	end
+end
 
 local function trackerOf(player: Player): Events.Tracker
 	local t = trackers[player]
@@ -76,6 +90,10 @@ end
 local function note(text: string)
 	local recent = TelemetryService.Recent
 	table.insert(recent, text)
+	local id, rest = string.match(text, "^(%d+) (.*)$")
+	if id and rest then
+		trailAdd(tonumber(id) :: number, rest)
+	end
 	if #recent > RECENT_MAX then
 		table.remove(recent, 1)
 	end
@@ -587,7 +605,23 @@ local function addKnown(list: { string })
 	end
 end
 
+local function saveTrail(userId: number)
+	local trail = trails[userId]
+	trails[userId] = nil
+	if not trail or RunService:IsStudio() then
+		return
+	end
+	send("SessionTrail", function()
+		DataStoreService:GetDataStore(TRAIL_STORE):SetAsync(`{userId}_{trail.joined}`, {
+			job = JOB,
+			place = game.PlaceVersion,
+			lines = trail.lines,
+		})
+	end)
+end
+
 local function onJoin(player: Player)
+	trails[player.UserId] = trails[player.UserId] or { joined = os.time(), lines = {} }
 	sessions[player] = sessions[player] or { joinedAt = os.clock() }
 	TelemetryService.Funnel(player, "Joined")
 	watchFriends(player)
@@ -651,6 +685,7 @@ function TelemetryService.Init()
 				)
 			)
 		end
+		saveTrail(player.UserId)
 		trackers[player] = nil
 		buckets[player] = nil
 		shops[player] = nil
@@ -686,6 +721,42 @@ end
 
 function TelemetryService.Start()
 	devHook()
+	ScriptContext.Error:Connect(function(message: string, stack: string)
+		local line = `ERR {string.sub(message, 1, 200)} @ {string.sub(
+			string.gsub(stack, "\n", " | "),
+			1,
+			200
+		)}`
+		for userId in trails do
+			trailAdd(userId, line)
+		end
+	end)
+	game:BindToClose(function()
+		for userId in table.clone(trails) do
+			saveTrail(userId)
+		end
+	end)
+	task.spawn(function()
+		while true do
+			task.wait(30)
+			for _, player in Players:GetPlayers() do
+				local root = player.Character
+					and player.Character:FindFirstChild("HumanoidRootPart")
+				local humanoid = player.Character
+					and player.Character:FindFirstChildOfClass("Humanoid")
+				local seat = humanoid and humanoid.SeatPart
+				local where = if root and root:IsA("BasePart")
+					then `{math.floor(root.Position.X)},{math.floor(root.Position.Y)},{math.floor(
+						root.Position.Z
+					)}`
+					else "nochar"
+				trailAdd(
+					player.UserId,
+					`pos {where}{if seat then " seat " .. seat:GetFullName() else ""}`
+				)
+			end
+		end
+	end)
 	task.spawn(function()
 		local weather = ReplicatedStorage:WaitForChild("Weather", 60)
 		if weather then

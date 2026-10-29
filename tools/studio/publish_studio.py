@@ -93,7 +93,9 @@ def run(cmd, timeout=900):
 
 
 def studio_pids():
-    r = subprocess.run(["pgrep", "-f", "RobloxStudio -protocolString roblox-studio:1"], capture_output=True, text=True)
+    # cloud places only: other agents' local test benches (task:EditFile) are not published
+    r = subprocess.run(["pgrep", "-f", "RobloxStudio -protocolString roblox-studio:1.*task:EditPlace"],
+                       capture_output=True, text=True)
     return {int(p) for p in r.stdout.split()}
 
 
@@ -172,7 +174,9 @@ def main():
         # the repo keeps the test universe's ids; build with the launch ones, then put the file back
         if subprocess.run(["git", "diff", "--quiet", "--", MONETIZATION], cwd=REPO).returncode != 0:
             sys.exit(MONETIZATION + " has uncommitted changes; commit them first")
-        key = os.path.expanduser(TARGET.get("apiKey", "~/RobloxProjects/.roblox-api-key"))
+        # the group-owned universe can't LoadAsset the owner's user-uploaded models without a Use grant
+        run([sys.executable, os.path.join(REPO, "tools", "asset_load_check.py"), "--launch", "--grant"])
+        key =os.path.expanduser(TARGET.get("apiKey", "~/RobloxProjects/.roblox-api-key"))
         os.environ["ROBLOX_API_KEY_FILE"] = key
         try:
             run([sys.executable, os.path.join(TOOLS, "deploy.py"), REPO, str(UNIVERSE), str(PLACE),

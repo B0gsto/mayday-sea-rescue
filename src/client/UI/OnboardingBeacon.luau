@@ -1,18 +1,18 @@
 --!strict
 -- OnboardingBeacon: the one next goal, shown in the world (docs/15 section 3, "a beacon on the
--- next thing, no text"). A steady ground-level ring (one pop as it appears, never a flashing pulse: owner
--- 2026-10-28) and a diamond high over it (clear of roofs, cranes and
--- name signs: AlwaysOnTop never drew in play, Studio 2026-10-25/26); no light column (user, 2026-10-21). Hidden while a
+-- next thing, no text"). A diamond high over it (clear of roofs, cranes and name signs: AlwaysOnTop never drew in
+-- play, Studio 2026-10-25/26); no light column (user, 2026-10-21) and no ground ring (owner 2026-10-29: "remove this
+-- ugly circle"). Hidden while a
 -- cinematic hides the HUD (OpsUiHidden). Off screen, a pointer sprite on the screen edge points at it, its distance on a chip inside it.
 -- Client only. Mounted by OnboardingController (one beacon, moved from goal to goal) and by the
--- launch step (on your boat).
+-- launch step (on your boat). Under it, UI/OnboardingTrail lays the steps on the ground from you to the goal.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Layout = require(script.Parent:WaitForChild("Layout"))
+local OnboardingTrail = require(script.Parent:WaitForChild("OnboardingTrail"))
 local UiImages = require(
 	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
 ) :: any
@@ -30,8 +30,6 @@ export type Beacon = {
 -- the HUD palette (assets/ui/hud/mockup.png): the distance chip's navy
 local NAVY = Color3.fromHex("0A1830")
 
-local RING = 24 -- studs across the steady ring
-local POP = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 local LIFT = 16 -- studs: the diamond over the goal
 local EDGE = 36 -- px: the screen-edge pointer's head (32 pt+ on a phone, CLAUDE.md "UI art")
 
@@ -45,26 +43,14 @@ function OnboardingBeacon.start(): Beacon
 	folder.Name = "OnboardingBeacon"
 	folder.Parent = Workspace
 
-	-- the ground ring: art/source/ui/beacon_ring.svg on an invisible flat Part, unlit so it reads at night (no neon)
-	local ring = Instance.new("Part")
-	ring.Name = "Pulse"
-	ring.Size = Vector3.new(8, 0.1, 8)
-	ring.Transparency = 1
-	ring.Anchored, ring.CanCollide, ring.CanQuery, ring.CanTouch = true, false, false, false
-	ring.CastShadow = false
-	ring.Parent = folder
-	local ringGui = Instance.new("SurfaceGui")
-	ringGui.Face = Enum.NormalId.Top
-	ringGui.LightInfluence = 0
-	ringGui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	ringGui.PixelsPerStud = 40
-	ringGui.Parent = ring
-	local ringArt = Instance.new("ImageLabel")
-	ringArt.Size = UDim2.fromScale(1, 1)
-	ringArt.BackgroundTransparency = 1
-	ringArt.Image = UiImages.Markers.BeaconRing
-	ringArt.ImageTransparency = 1
-	ringArt.Parent = ringGui
+	-- an invisible anchor on the goal: the diamond's adornee
+	local anchor = Instance.new("Part")
+	anchor.Name = "Goal"
+	anchor.Size = Vector3.new(8, 0.1, 8)
+	anchor.Transparency = 1
+	anchor.Anchored, anchor.CanCollide, anchor.CanQuery, anchor.CanTouch = true, false, false, false
+	anchor.CastShadow = false
+	anchor.Parent = folder
 
 	local billboard = Instance.new("BillboardGui")
 	billboard.Name = "Mark"
@@ -73,8 +59,8 @@ function OnboardingBeacon.start(): Beacon
 	billboard.AlwaysOnTop = false
 	billboard.LightInfluence = 0
 	billboard.MaxDistance = 1500
-	billboard.Adornee = ring
-	billboard.Parent = ring
+	billboard.Adornee = anchor
+	billboard.Parent = anchor
 
 	-- art/source/ui/beacon_mark.svg: the orange gem over a stem that points down at the goal
 	local diamond = Instance.new("ImageLabel")
@@ -120,6 +106,7 @@ function OnboardingBeacon.start(): Beacon
 	range.Visible = false
 	range.Parent = edgeGui
 
+	local trail = OnboardingTrail.start(folder) -- the steps on the ground from you to the goal
 	local at: Vector3? = nil
 	local baseY = 0
 	local active = false
@@ -130,9 +117,7 @@ function OnboardingBeacon.start(): Beacon
 		at = position
 		active = true
 		baseY = if kind == "Call" then surfaceY(position) else position.Y
-		ring.CFrame = CFrame.new(Vector3.new(position.X, baseY + 0.12, position.Z))
-		ring.Size = Vector3.new(8, 0.1, 8)
-		TweenService:Create(ring, POP, { Size = Vector3.new(RING, 0.1, RING) }):Play()
+		anchor.CFrame = CFrame.new(Vector3.new(position.X, baseY + 0.12, position.Z))
 		billboard.Enabled = true
 		diamond.Visible = true
 		folder.Parent = Workspace
@@ -141,10 +126,10 @@ function OnboardingBeacon.start(): Beacon
 	function self.hide()
 		active = false
 		at = nil
-		ringArt.ImageTransparency = 1
 		diamond.Visible = false
 		arrow.Visible = false
 		range.Visible = false
+		trail.step(nil, false)
 	end
 
 	function self.target(): Vector3?
@@ -158,10 +143,10 @@ function OnboardingBeacon.start(): Beacon
 		-- not CameraType: the jet ski's chase camera is Scriptable too, so the mark never drew on the water
 		local cutscene = Players.LocalPlayer:GetAttribute("OpsUiHidden") == true
 		billboard.Enabled = not cutscene
+		trail.step(Vector3.new(at.X, baseY, at.Z), not cutscene)
 		arrow.Visible = false
 		range.Visible = false
 		if cutscene then
-			ringArt.ImageTransparency = 1
 			return
 		end
 		local cam = Workspace.CurrentCamera :: Camera
@@ -217,13 +202,13 @@ function OnboardingBeacon.start(): Beacon
 			end
 		end
 		local t = os.clock()
-		ringArt.ImageTransparency = 0.15
-		ring.CFrame = CFrame.new(Vector3.new(at.X, baseY + 0.12, at.Z))
+		anchor.CFrame = CFrame.new(Vector3.new(at.X, baseY + 0.12, at.Z))
 		diamond.Position = UDim2.fromOffset(0, math.sin(t * 1.8) * 4) -- a slow bob, never a flash
 	end)
 
 	function self.destroy()
 		conn:Disconnect()
+		trail.destroy()
 		folder:Destroy()
 		edgeGui:Destroy()
 	end

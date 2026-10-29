@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-22 -22 244 244" width="244" height="244"><!-- the onboarding trail's ground step (UI/OnboardingTrail): a Lego chevron, tip toward the goal; white sticker rim, hard outline, sky gradient + Lego lip. Rendered square at 244 px, kept whole (, centred so it spins about its middle) --><defs><linearGradient id="gF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#8FCBFF"/></linearGradient><linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#C4E4FF"/></linearGradient></defs>
+<path d="M100,20 L184,104 L184,178 L100,94 L16,178 L16,104 Z" transform="translate(0,12)" fill="#fff" stroke="#fff" stroke-width="30" stroke-linejoin="round"/>
+<path d="M100,20 L184,104 L184,178 L100,94 L16,178 L16,104 Z" fill="#fff" stroke="#fff" stroke-width="30" stroke-linejoin="round"/>
+<path d="M100,20 L184,104 L184,178 L100,94 L16,178 L16,104 Z" transform="translate(0,12)" fill="#14121C" stroke="#14121C" stroke-width="12" stroke-linejoin="round"/>
+<path d="M100,20 L184,104 L184,178 L100,94 L16,178 L16,104 Z" fill="#14121C" stroke="#14121C" stroke-width="12" stroke-linejoin="round"/>
+<path d="M100,20 L184,104 L184,178 L100,94 L16,178 L16,104 Z" transform="translate(0,12)" fill="#2F7FD0"/>
+<path d="M100,20 L184,104 L184,178 L100,94 L16,178 L16,104 Z" fill="url(#gF)"/>
+<path d="M100,38 L170,108 L170,120 L100,50 Z" fill="#fff" fill-opacity="0.85"/>
+</svg>
