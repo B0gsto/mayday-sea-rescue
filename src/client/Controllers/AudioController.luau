@@ -456,7 +456,6 @@ local lastCam: Vector3? = nil
 local apparent = 0 -- smoothed listener speed, studs/s
 local underwater = false
 local nextGull = 0
-local nextBell = 0
 local riggingCarry = 0
 local storm = 0 -- this tick's storm intensity, for the music duck
 local homeDist = math.huge -- studs (flat) to the nearest ring island centre
@@ -549,24 +548,6 @@ local function updateAmbience(dt: number, now: number, camPos: Vector3)
 			local pick = rng:NextInteger(1, 4)
 			local clip = if pick == 4 then "Rigging_Creak" else `Rigging_Clink_{pick}`
 			AudioController.play(clip, at, rng:NextNumber(0.6, 1), rng:NextNumber(0.85, 1.15))
-		end
-	end
-
-	-- bell buoy, rocked by the swell
-	if now >= nextBell then
-		nextBell = now
-			+ AudioMix.bellGap(intensity, MIX.bellMinGap, MIX.bellMaxGap, rng:NextNumber())
-		if (AudioConfig.BellBuoy - camPos).Magnitude < 900 then
-			local s = AudioController.play(
-				"Bell_Buoy",
-				AudioConfig.BellBuoy,
-				rng:NextNumber(0.7, 1),
-				rng:NextNumber(0.96, 1.03)
-			)
-			if s then
-				s.RollOffMinDistance = 40
-				s.RollOffMaxDistance = 900
-			end
 		end
 	end
 

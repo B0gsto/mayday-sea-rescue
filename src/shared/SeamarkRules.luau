@@ -3,13 +3,8 @@
 -- server placement (src/server/World/Seamarks.luau) and the client motion / flash (SeamarkController). Unit-tested
 -- in tests/Seamarks.spec.luau. No requires: safe to load in Lune.
 --
--- IALA Region A (art/reference/M_Hbr_NavMark_*/dims.md). The south channel into the lagoon (docs/23 (p): between
--- Plot2 and Plot3, under their bridge at z 400). A vessel entering from seaward
--- steers north (-Z), so its port hand is west (-X): red cans
--- (even numbers) on the west of the channel, green cones (odd numbers) on the east, numbered from seaward. The
--- fairway buoy (safe water) is the landfall mark at the head of the channel and the bell buoy the outer port-hand
--- mark. Cardinals sit on the named side of the danger they mark (a West mark: pass to the west of it), with
--- depths read off map/generated/terrain_height.i16.
+-- IALA Region A (art/reference/M_Hbr_NavMark_*/dims.md). Cardinals sit on the named side of the danger they mark (a West
+-- mark: pass to the west of it), with depths read off map/generated/terrain_height.i16.
 --
 --   SeamarkRules.Marks                   { Mark }: id, asset, name, x, z, yaw (deg), light?, map? (blip style)
 --   SeamarkRules.Lights[characteristic]  { color, seq = { on, off, on, off, ... } } seconds, one period
@@ -68,81 +63,9 @@ SeamarkRules.Lights = {
 	["LFl W 10s"] = { color = WHITE, seq = { 2, 8 } },
 } :: { [string]: Light }
 
-local PORT, STBD = "M_Hbr_NavMark_Port", "M_Hbr_NavMark_Starboard"
 local MOOR, PICK = "M_Hbr_MooringBuoy", "M_Hbr_PickupBuoy"
 
 local marks: { Mark } = {
-	-- the harbour approach (lateral, entering north from seaward)
-	{
-		id = "Fairway",
-		asset = "M_Hbr_NavMark_SafeWater",
-		name = "Lagoon Fairway",
-		x = 0,
-		z = 1080,
-		yaw = 12,
-		light = "LFl W 10s",
-		map = "SeamarkSafe",
-	},
-	{
-		id = "No2Bell",
-		asset = "M_Hbr_NavMark_Bell",
-		name = "No 2 Bell",
-		x = -60,
-		z = 880,
-		yaw = 200,
-		light = "Fl(2) R 10s",
-		map = "SeamarkPort",
-	},
-	{
-		id = "No1",
-		asset = STBD,
-		name = "No 1",
-		x = 60,
-		z = 880,
-		yaw = 35,
-		light = "Fl G 5s",
-		map = "SeamarkStarboard",
-	},
-	{
-		id = "No4",
-		asset = PORT,
-		name = "No 4",
-		x = -55,
-		z = 660,
-		yaw = 140,
-		light = "Fl R 4s",
-		map = "SeamarkPort",
-	},
-	{
-		id = "No3",
-		asset = STBD,
-		name = "No 3",
-		x = 55,
-		z = 660,
-		yaw = 290,
-		light = "Fl G 5s",
-		map = "SeamarkStarboard",
-	},
-	{
-		id = "No6",
-		asset = PORT,
-		name = "No 6",
-		x = -50,
-		z = 520,
-		yaw = 75,
-		light = "Fl R 4s",
-		map = "SeamarkPort",
-	},
-	{
-		id = "No5",
-		asset = STBD,
-		name = "No 5",
-		x = 50,
-		z = 520,
-		yaw = 180,
-		light = "Fl G 5s",
-		map = "SeamarkStarboard",
-	},
 	-- the Morwenna wreck (WorldConfig.POIs, off the ring past Plot1 and Plot6): clear water to its west
 	{
 		id = "MorwennaWest",
