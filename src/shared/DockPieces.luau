@@ -639,6 +639,35 @@ local function lookout(m: Model, b: CFrame, level: number?)
 	end
 	gable(m, T * CFrame.new(0, legH + 5.2, 0), 12, 12, 4, BRICK_RED)
 	flag(m, T, 0, 0, legH + 9.4, 6)
+	-- the spotting scope at the front window (walk-in action, BuildingActController: Look -> the nearest survivor)
+	local scope = T * CFrame.new(0, legH + 0.8, -2.6)
+	for i = 0, 2 do
+		part(
+			m,
+			"ScopeLeg",
+			Vector3.new(0.25, 2.6, 0.25),
+			scope * CFrame.Angles(0, math.rad(i * 120), 0) * CFrame.new(0, 1.25, 0.45) * CFrame.Angles(
+				math.rad(-12),
+				0,
+				0
+			),
+			DBG,
+			M.SmoothPlastic
+		).CanCollide =
+			false
+	end
+	local tube = part(
+		m,
+		"Telescope",
+		Vector3.new(2.6, 0.7, 0.7),
+		scope * CFrame.new(0, 2.7, -0.3) * CFrame.Angles(0, math.pi / 2, math.rad(-8)),
+		BRICK_YELLOW,
+		M.SmoothPlastic,
+		Enum.PartType.Cylinder
+	)
+	tube.CanCollide = false
+	tube:SetAttribute("Act", "Telescope")
+	tube:AddTag("BuildingAct")
 	local ladder = Instance.new("TrussPart")
 	ladder.Name = "Ladder"
 	ladder.Size = Vector3.new(2, legH, 2)
