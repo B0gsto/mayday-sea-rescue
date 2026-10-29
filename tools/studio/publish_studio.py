@@ -93,7 +93,9 @@ def run(cmd, timeout=900):
 
 
 def studio_pids():
-    r = subprocess.run(["pgrep", "-f", "RobloxStudio -protocolString roblox-studio:1"], capture_output=True, text=True)
+    # cloud places only: other agents' local test benches (task:EditFile) are not published
+    r = subprocess.run(["pgrep", "-f", "RobloxStudio -protocolString roblox-studio:1.*task:EditPlace"],
+                       capture_output=True, text=True)
     return {int(p) for p in r.stdout.split()}
 
 
