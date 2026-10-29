@@ -544,8 +544,14 @@ local function main()
 	-- every HUD sprite and the map tiles, fetched at once from the start (not after the harbour wait, not batched)
 	local uiReady = false
 	task.spawn(function()
-		local ui = collectAssets({ UiImages, MapConfig and MapConfig.Tiles }, {})
-		pcall(ContentProvider.PreloadAsync, ContentProvider, ui)
+		-- as ImageLabels: PreloadAsync on a bare id string fails for these images (img1, Studio: 68 of 117 Failure)
+		local labels: { Instance } = {}
+		for _, id in collectAssets({ UiImages, MapConfig and MapConfig.Tiles }, {}) do
+			local sprite = Instance.new("ImageLabel")
+			sprite.Image = id :: string
+			table.insert(labels, sprite)
+		end
+		pcall(ContentProvider.PreloadAsync, ContentProvider, labels)
 		uiReady = true
 	end)
 
