@@ -39,6 +39,7 @@ local ProgressionService = require(script.Parent.ProgressionService)
 local SkillService = require(script.Parent.SkillService)
 local StormService = require(script.Parent.StormService)
 local VehicleService = require(script.Parent.VehicleService)
+local WorkerRules = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("WorkerRules"))
 local WorkerService = require(script.Parent.WorkerService)
 
 local DevService = {}
@@ -288,7 +289,12 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 			return entry ~= nil, if entry then "At sanctuary" else "Refused"
 		end,
 		recruit = function(_, target, a) -- an Uncommon crew member of that category, as if rescued (they work if the building stands)
-			WorkerService.Recruit(target :: Player, a[2], 2, nil)
+			WorkerService.Recruit(
+				target :: Player,
+				a[2],
+				2,
+				WorkerRules.plainName(math.random(1, 9999))
+			) -- no name: clean() drops them
 			return true, "Recruited"
 		end,
 		bosun = function(_, target)
