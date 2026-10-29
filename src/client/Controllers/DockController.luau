@@ -389,7 +389,7 @@ local function robuxBuy(id: number)
 end
 
 -- The build tablet's busy state (docs/24 B): the lot being built shows its timer and bar, every other buy
--- button is an hourglass and refuses.
+-- row keeps its prices greyed out behind an hourglass and refuses.
 local timerRows: { { label: TextLabel, fill: Frame?, work: number, finish: any? } } = {}
 local finishAsked: { [number]: boolean } = {}
 
@@ -467,21 +467,12 @@ local function hourglass(parent: GuiObject, side: number)
 	bar(side * 0.09, long, 0.64, 0.64, 38)
 end
 
-local function busyRow(parent: GuiObject, item: DockBlueprints.Item, st: Status)
+local function busyRow(parent: GuiObject, item: DockBlueprints.Item)
 	local row = Instance.new("Frame")
 	row.Name = "Busy"
 	row.BackgroundTransparency = 1
 	row.Size = UDim2.fromScale(1, 1)
 	row.Parent = parent
-	if st.busy == "wait" then
-		local button = Style.button(row, UDim2.fromScale(1, 1))
-		local _, face = Style.block(button, Style.grad("disabled"), { studs = true })
-		hourglass(face, 42)
-		Style.press(button, function()
-			shake(row)
-		end)
-		return
-	end
 	local site = siteState()
 	local work = itemWork(item)
 	local left = BuildTimer.timeLeft(site.progress, site.rate, work)
@@ -512,10 +503,9 @@ local function busyRow(parent: GuiObject, item: DockBlueprints.Item, st: Status)
 	local bolt = Instance.new("Frame")
 	bolt.Name = "FinishIcon"
 	bolt.BackgroundTransparency = 1
-	bolt.Position = UDim2.fromOffset(5, 3)
-	bolt.Size = UDim2.fromOffset(22, 22)
-	bolt.ZIndex = 3
-	bolt.Parent = finish.root
+	bolt.Size = UDim2.fromOffset(30, 30)
+	bolt.LayoutOrder = 0 -- first in the button's row: icon, Robux glyph, price
+	bolt.Parent = (finish.root:FindFirstChildWhichIsA("UIListLayout", true) :: UIListLayout).Parent
 	Style.icon(bolt, "finish_now")
 	local bar = Instance.new("Frame")
 	bar.Name = "Bar"
@@ -579,8 +569,8 @@ local function tutorialBuild(item: DockBlueprints.Item): boolean
 end
 
 local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Status)
-	if st.busy then
-		busyRow(parent, item, st)
+	if st.busy == "site" then
+		busyRow(parent, item)
 		return
 	end
 	local row = Instance.new("Frame")
@@ -590,11 +580,22 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 	row.Parent = parent
 	Style.list(row, true, 10)
 	local both = st.productId ~= 0
-	local width = if both then UDim2.new(0.5, -5, 1, 0) else UDim2.fromScale(1, 1)
+	local wait = st.busy == "wait"
+	local glass = if wait then 44 else 0 -- another build runs: an hourglass leads the greyed prices
+	local width = if both then UDim2.new(0.5, -5 - glass / 2, 1, 0) else UDim2.new(1, -glass, 1, 0)
+	if wait then
+		local box = Instance.new("Frame")
+		box.Name = "Wait"
+		box.BackgroundTransparency = 1
+		box.Size = UDim2.new(0, glass - 10, 1, 0)
+		box.LayoutOrder = -1
+		box.Parent = row
+		hourglass(box, 34)
+	end
 	local cashButton = PriceButtonUI.new(row, {
 		price = st.cash,
 		currency = "Cash",
-		state = if st.cash > (snapshot.cash or 0) and not tutorialBuild(item)
+		state = if wait or (st.cash > (snapshot.cash or 0) and not tutorialBuild(item))
 			then "disabled"
 			else "buy",
 		onActivate = function()
@@ -619,6 +620,7 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 	local rb = PriceButtonUI.new(row, {
 		price = st.robux,
 		currency = "Robux",
+		state = if wait then "disabled" else "buy",
 		onActivate = function()
 			robuxBuy(id)
 		end,
@@ -820,13 +822,21 @@ end
 
 -- docs/24 E, docs/25 J: the card the tutorial points at wears a steady gold outline that pops in once
 -- (never a blinking pulse: owner 2026-10-28).
+-- The ring sits on an inset frame, so it stays inside the card's bounds (never wider than the list's column).
 local function pulseRing(face: GuiObject)
+	local inset = Instance.new("Frame")
+	inset.Name = "Pulse"
+	inset.BackgroundTransparency = 1
+	inset.Position = UDim2.fromOffset(6, 6)
+	inset.Size = UDim2.new(1, -12, 1, -12)
+	inset.ZIndex = 5
+	Style.corner(inset, S.corner - 6)
+	inset.Parent = face
 	local stroke = Instance.new("UIStroke")
-	stroke.Name = "Pulse"
 	stroke.Color = OUTLINE
-	stroke.Thickness = 10
+	stroke.Thickness = 0
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	stroke.Parent = face
+	stroke.Parent = inset
 	TweenService:Create(
 		stroke,
 		TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
@@ -904,7 +914,7 @@ local function refreshCards()
 			end
 			Style.press(root, function()
 				focusItem(item)
-			end, S.corner)
+			end, S.corner, true)
 			table.insert(cards, root)
 		end
 	end
