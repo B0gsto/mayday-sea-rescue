@@ -71,6 +71,10 @@ DockConfig.BUILDINGS = {
 -- The Bunkhouse's people cap by level (docs/25 B); WorkerRules.W.CAP stays untouched, WorkerService reads this.
 DockConfig.BunkhouseCaps = { 10, 20, 30, 45, 60 }
 DockConfig.HutCap = 5 -- people the Rescue Hut sleeps before a Bunkhouse stands (the tutorial's first Builder)
+-- Systems the tree opens (UnlockTree.unlocked): a building key and the level it must reach. Quests (owner 2026-10-29:
+-- "presented later, not at the first start"): the Rescue Post (HQ Lv2), the first new district after the tutorial.
+DockConfig.Unlocks =
+	{ Quests = { key = "HQ", level = 2 } } :: { [string]: { key: string, level: number } }
 
 local rows: { [string]: any } = {
 	HQ = {
