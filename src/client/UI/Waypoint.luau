@@ -3,9 +3,17 @@
 -- call, in the world. MapController's objective (your craft while you are off it, the offered call,
 -- the nearest survivor or vessel, the drop-off once they are aboard) gets a screen marker (no light pillar: user, 2026-10-21): the call-type icon on a disc
 -- (KIND below) with its distance under it, pinned to the screen edge with its tip pointing
--- the way while off screen. Close in (NEAR) it never hides: it bobs over the target, tip down, until
--- the goal is done (docs/20 rule 2). The strip shows the same icon and distance (onGoal); the minimap
--- has no pill. Hidden under a panel or the full map, and in cinematics (OpsUiHidden). Mounted by OpsHud.
+-- the way while off screen. Close in (NEAR) it bobs over the target, tip down (docs/20 rule 2). The strip
+-- shows the same icon and distance (onGoal); the minimap has no pill.
+-- When the pin shows (owner 2026-10-29: "too big and clutter the screen", a pin over his own island on foot):
+--   Craft     your call is taken and you are off your craft: the way back to it (never with no call taken).
+--   Casualty / Vessel  your taken call, while you are on your craft (off it, Craft leads).
+--   Drop-off  survivors aboard: home.
+--   Mayday    an offered call, only while you are on a craft (at sea); on foot on the islands, no pin.
+--   Quest     the quest you took.
+--   Any kind  hides within REACHED (you are there), and the call kinds wait while the tutorial's
+--             island beats lead (TutorialHoldCall); the onboarding beacon only marks island spots
+--             (site, station, wheel), never these targets. Hidden under a panel or the full map, and in cinematics (OpsUiHidden). Mounted by OpsHud.
 --   Waypoint.start(ops, map, onGoal)  onGoal(label, glyph, colour, "240 m") or onGoal(nil) each frame
 --   Waypoint.metres(studs) -> "240 m" | "1.2 km"
 local Players = game:GetService("Players")
@@ -35,8 +43,9 @@ local CRAFT = Color3.fromHex("2C8EF0") -- your boat: blue, the boat glyph (orang
 
 local STUDS_PER_M = 3
 local NEAR = 25 * STUDS_PER_M -- studs: this close the marker bobs over the target
-local BOB = 8 -- px: how far it bobs
-local DISC = 50 -- du: the pin's head
+local REACHED = 30 -- studs (BoatController's BOARD_RANGE): this close you are there, the pin goes
+local BOB = 4 -- px: how far it bobs
+local DISC = 36 -- du: the pin's head (x0.8 on a phone, ~35 pt with its rim; was 50)
 
 local RED = Color3.fromHex("E8332A")
 local AMBER = Color3.fromHex("FFB020")
@@ -50,7 +59,7 @@ local KIND: { [string]: { icon: string, color: Color3 } } = {
 	Diver = { icon = "cross", color = RED },
 	WildlifeRescue = { icon = "ring", color = AMBER },
 }
-local LIFT = 52 -- px: the pin floats over the target, its tip on it
+local LIFT = 38 -- px: the pin floats over the target, its tip on it
 local RIM = Vector2.new(0.36, 0.28) -- the pin ellipse's radii, share of the screen (down)
 local RIM_UP = 0.24 -- its upward radius: the top band holds the strip
 local QUEST = Color3.fromHex("FFC428") -- the quest givers' gold
@@ -107,6 +116,7 @@ function Waypoint.start(
 	mark.Size = UDim2.fromOffset(DISC, DISC)
 	mark.BackgroundTransparency = 1
 	mark.Visible = false
+	mark:SetAttribute("HudRegion", true) -- HudTheme's 14 px text floor counts the fit scale
 	mark.Parent = gui
 	local fit = Instance.new("UIScale")
 	fit.Parent = mark
@@ -148,9 +158,9 @@ function Waypoint.start(
 	gold.Visible = false
 	gold.Parent = disc
 	HudTheme.corner(gold, 999)
-	HudTheme.stroke(gold, QUEST, 3.5).ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	HudTheme.stroke(gold, QUEST, 2.5).ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	local hair = gold:Clone()
-	hair.Size = UDim2.new(1, 7, 1, 7)
+	hair.Size = UDim2.new(1, 5, 1, 5)
 	hair.Visible = true
 	hair.Parent = gold
 	local hs = hair:FindFirstChildOfClass("UIStroke") :: UIStroke
@@ -168,17 +178,17 @@ function Waypoint.start(
 	local chip = Instance.new("Frame")
 	chip.Name = "Range"
 	chip.AnchorPoint = Vector2.new(0.5, 0)
-	chip.Size = UDim2.fromOffset(0, 26)
+	chip.Size = UDim2.fromOffset(0, 20)
 	chip.AutomaticSize = Enum.AutomaticSize.X
 	chip.BackgroundColor3 = NAVY
-	chip.BackgroundTransparency = 0.1
+	chip.BackgroundTransparency = 0.3
 	chip.BorderSizePixel = 0
 	chip.Parent = mark
-	HudTheme.corner(chip, 13)
+	HudTheme.corner(chip, 10)
 	local pad = Instance.new("UIPadding")
-	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 10), UDim.new(0, 10)
+	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 7), UDim.new(0, 7)
 	pad.Parent = chip
-	local range = HudTheme.label("Text", "", UDim2.fromScale(0, 1), HudTheme.NumberFont, 18, chip)
+	local range = HudTheme.label("Text", "", UDim2.fromScale(0, 1), HudTheme.NumberFont, 15, chip)
 	range.AutomaticSize = Enum.AutomaticSize.X
 	range.TextTruncate = Enum.TextTruncate.None
 	HudTheme.outline(range)
@@ -280,7 +290,15 @@ function Waypoint.start(
 		end
 		local glyph, color = style(label :: string)
 		onGoal(label, glyph, color, Waypoint.metres(flat))
-		if hidden or map.IsOpen() or player:GetAttribute("MenuOpen") == true then
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		local aboard = hum ~= nil and hum.SeatPart ~= nil
+		if
+			hidden
+			or map.IsOpen()
+			or player:GetAttribute("MenuOpen") == true
+			or flat <= REACHED
+			or (label == "Mayday" and not aboard)
+		then
 			mark.Visible = false
 			return
 		end
@@ -311,7 +329,7 @@ function Waypoint.start(
 		if not behind and e <= 1 then
 			at = Vector2.new(x, y)
 			turn.Rotation = 0
-			chip.AnchorPoint, chip.Position = Vector2.new(0.5, 0), UDim2.new(0.5, 0, 1, 34) -- under the tip
+			chip.AnchorPoint, chip.Position = Vector2.new(0.5, 0), UDim2.new(0.5, 0, 1, 25) -- under the tip
 		else
 			if e < 1e-6 then -- dead centre behind you: straight down
 				dy, e = 1, (1 / (vp.Y * RIM.Y)) ^ 2
@@ -324,13 +342,13 @@ function Waypoint.start(
 			local back = DISC / 2 * 93 / 72
 				+ 6
 				+ math.abs(u.X) * chip.AbsoluteSize.X / fit.Scale / 2
-				+ math.abs(u.Y) * 13
+				+ math.abs(u.Y) * 10
 			chip.AnchorPoint = Vector2.new(0.5, 0.5)
 			chip.Position = UDim2.new(0.5, -u.X * back, 0.5, -u.Y * back)
 		end
 		-- out of the HUD (menu, minimap, wallet, cards): slid in toward the centre, the tip still points the way
 		local clear = Vector2.new(DISC, DISC) * fit.Scale * 0.5 + Vector2.new(14, 14) -- strokes and labels hang past the frames
-		at = Layout.clearOfHud(at, clear, 60 * fit.Scale) -- the tip and range chip hang under
+		at = Layout.clearOfHud(at, clear, 44 * fit.Scale) -- the tip and range chip hang under
 		mark.Position = UDim2.fromOffset(at.X, at.Y)
 		range.Text = Waypoint.metres(flat)
 		mark.Visible = true
