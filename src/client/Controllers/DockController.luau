@@ -48,6 +48,7 @@ local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
 local Layout = require(UI:WaitForChild("Layout"))
+local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
@@ -1224,6 +1225,7 @@ local function openBuild()
 	end
 	displayed = true
 	plotFrame = b
+	Telemetry.once("TabletOpened") -- onboarding funnel step 2
 	local rootPart = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 	openedAt = if rootPart and rootPart:IsA("BasePart")
 		then rootPart.Position

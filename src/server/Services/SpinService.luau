@@ -29,6 +29,7 @@ local DataService = require(script.Parent.DataService)
 local MonetizationService = require(script.Parent.MonetizationService)
 local PetService = require(script.Parent.PetService)
 local ProgressionService = require(script.Parent.ProgressionService)
+local Telemetry = require(script.Parent.TelemetryService)
 
 local SpinService = {}
 SpinService.Priority = 72 -- after ProgressionService (30), CosmeticsService (40) and PetService (66)
@@ -228,6 +229,7 @@ function SpinService.Spin(player: Player): { [string]: any }
 		data.tutorialStep = Onboarding.STEP_DONE
 		DataService.MarkDirty(player)
 		ProgressionService.Refresh(player)
+		Telemetry.Funnel(player, "FirstSpin")
 	end
 	if SpinRules.rank(prize.rarity) >= SpinRules.rank("Legendary") then
 		task.spawn(DataService.Save, player, false) -- a big win is saved right away

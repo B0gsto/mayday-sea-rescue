@@ -30,15 +30,26 @@ return function(t)
 			seen[s.name] = true
 			t.expect(Events.funnelStep(s.name).step).toBe(i)
 		end
-		t.expect(Events.funnelStep("Joined").step).toBe(1)
-		t.expect(Events.funnelStep("AtSea").step).toBe(2)
-		t.expect(Events.funnelStep("FirstBoard").step).toBe(3)
-		t.expect(Events.funnelStep("FirstDelivery").step).toBe(4)
-		t.expect(Events.funnelStep("Call2Accepted").step).toBe(6)
-		t.expect(Events.funnelStep("MenuOpened").step).toBe(9)
-		t.expect(Events.funnelStep("FirstUpgrade").step).toBe(10)
-		t.expect(Events.funnelStep("FirstBuilding").step).toBe(11)
-		t.expect(Events.funnelStep("Day2Return").step).toBe(#Events.Funnel)
+		-- the real first session (docs/24 E, docs/25 J; PT5 2026-10-28), in this exact order
+		local order = {
+			"Joined",
+			"TabletOpened",
+			"HutPlaced",
+			"HutBuilt",
+			"AtSea",
+			"FirstBoard",
+			"FirstDelivery",
+			"WorkshopPlaced",
+			"WorkshopBuilt",
+			"FirstSpin",
+			"NextBuild",
+			"HQ2Placed",
+			"FirstVehicle",
+		}
+		t.expect(#Events.Funnel).toBe(#order)
+		for i, name in order do
+			t.expect(Events.funnelStep(name).step).toBe(i)
+		end
 		t.expect(Events.funnelStep("FirstDailyCrate")).toBe(nil) -- a custom event, not in order
 		-- every cold open step id maps onto an onboarding step
 		for _, name in Events.ColdOpenSteps do
@@ -107,14 +118,30 @@ return function(t)
 		t.expect(Events.Devices.Toaster).toBe(nil)
 	end)
 
-	t.test("Day2Return only fires on a later UTC day with a previous session", function()
+	t.test("utcDay counts whole UTC days", function()
 		t.expect(Events.utcDay(0)).toBe(0)
 		t.expect(Events.utcDay(86400 * 3 + 10)).toBe(3)
-		t.expect(Events.day2Return(2, 3)).toBe(true)
-		t.expect(Events.day2Return(2, 2)).toBe(false)
-		t.expect(Events.day2Return(3, 2)).toBe(false)
-		t.expect(Events.day2Return(nil, 3)).toBe(false)
-		t.expect(Events.day2Return("2", 3)).toBe(false)
+	end)
+
+	t.test("builds map onto the tutorial's onboarding steps", function()
+		local function steps(key, level, finished, done)
+			return table.concat(Events.buildSteps(key, level, finished, done), ",")
+		end
+		t.expect(steps("HQ", 1, false, false)).toBe("HutPlaced")
+		t.expect(steps("HQ", 1, true, false)).toBe("HutBuilt")
+		t.expect(steps("Workshop", 1, false, false)).toBe("WorkshopPlaced")
+		t.expect(steps("Workshop", 1, true, false)).toBe("WorkshopBuilt")
+		-- before the tutorial spin no other build counts (a Depot first must not skip the Workshop)
+		t.expect(steps("Depot", 1, false, false)).toBe("")
+		t.expect(steps("HQ", 2, false, false)).toBe("")
+		t.expect(steps("Depot", 1, false, true)).toBe("NextBuild")
+		t.expect(steps("HQ", 2, false, true)).toBe("NextBuild,HQ2Placed")
+		t.expect(steps("Depot", 1, true, true)).toBe("")
+		for _, key in { "HQ", "Workshop", "Depot" } do
+			for _, name in Events.buildSteps(key, 2, false, true) do
+				t.expect(Events.funnelStep(name) ~= nil).toBe(true)
+			end
+		end
 	end)
 
 	t.test("session buckets cover day N, the gap and the session length", function()
@@ -189,7 +216,6 @@ return function(t)
 		t.expect(out[2].fields.CustomField02).toBe("Silver")
 		t.expect(out[2].fields.CustomField03).toBe("Rare")
 		t.expect(Events.delivered(facts())).toBe(true)
-		t.expect(Events.countsAsFirstOp(facts())).toBe(true)
 	end)
 
 	t.test("timeouts and bystanders", function()
@@ -204,11 +230,10 @@ return function(t)
 		t.expect(Events.opEvents(noSaved)[1].value).toBe(0)
 	end)
 
-	t.test("the cold open is delivered but never the first station call", function()
+	t.test("the cold open counts as a delivery", function()
 		local out = Events.opEvents(facts({ coldOpen = true }))
 		t.expect(out[1].fields.CustomField03).toBe("ColdOpen")
 		t.expect(Events.delivered(facts({ coldOpen = true }))).toBe(true)
-		t.expect(Events.countsAsFirstOp(facts({ coldOpen = true }))).toBe(false)
 		local noRarity = facts()
 		noRarity.rarity = nil
 		t.expect(Events.opEvents(noRarity)[2].fields.CustomField03).toBe("None")

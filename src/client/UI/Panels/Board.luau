@@ -25,6 +25,7 @@ local Card = require(Kit:WaitForChild("Card"))
 local Panel = require(Kit:WaitForChild("Panel"))
 local PriceButton = require(Kit:WaitForChild("PriceButton"))
 local Style = require(Kit:WaitForChild("Style"))
+local Telemetry = require(UI.Parent:WaitForChild("Telemetry"))
 local Theme = require(Kit:WaitForChild("Theme"))
 
 local player = Players.LocalPlayer
@@ -75,6 +76,7 @@ function Board.new(
 			return
 		end
 		busy = true
+		Telemetry.shop("BuyTapped", "Board", id, "Cash")
 		task.spawn(function()
 			pcall(function()
 				return Net.func("BuyGear"):InvokeServer(id)
@@ -240,6 +242,7 @@ function Board.new(
 			panel.body.CanvasPosition = Vector2.zero
 			panel.open()
 			refresh()
+			Telemetry.shop("PanelOpened", "Board")
 		end,
 		close = panel.close,
 		isOpen = panel.isOpen,

@@ -51,7 +51,6 @@ local function fit(player: Player, vehicleId: string, upgradeId: string): (boole
 	data.cash -= price
 	data.vehicleUpgrades[vehicleId] = mask + VehicleUpgrades.bit(upgradeId)
 	Telemetry.CashSpent(player, price, data.cash, "Upgrade", `{vehicleId}:{upgradeId}`)
-	Telemetry.Funnel(player, "FirstUpgrade")
 	Telemetry.Shop(player, "Bought", nil, `{vehicleId}:{upgradeId}`, "Cash")
 	DataService.MarkDirty(player)
 	ProgressionService.Refresh(player, { upgrade = { vehicleId = vehicleId, id = upgradeId } })

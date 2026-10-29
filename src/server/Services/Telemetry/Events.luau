@@ -36,23 +36,23 @@ Events.SHOP_IDLE = 120 -- seconds: a shop step after this long starts a new shop
 Events.CLIENT_BURST = 8 -- client-reported events per player, then one per CLIENT_REFILL seconds
 Events.CLIENT_REFILL = 2
 
--- The onboarding funnel in the order a new player meets it (docs/16 §4 beats B0-B7, docs/20).
+-- The onboarding funnel in the order a new player meets it (docs/24 E, docs/25 J; PT5 2026-10-28).
 -- Roblox treats a skipped step as completed, so the numbers MUST follow the real order. Rebuilt
--- 2026-10-24, before launch; after launch only append.
+-- 2026-10-29, before launch; after launch only append. Every step is server-side but TabletOpened.
 Events.Funnel = {
 	{ step = 1, name = "Joined" }, -- PlayerAdded
-	{ step = 2, name = "AtSea" }, -- the cold open put them on the jet ski at sea
-	{ step = 3, name = "FirstBoard" }, -- the first survivor climbed aboard
-	{ step = 4, name = "FirstDelivery" }, -- the first call delivered (the cold open)
-	{ step = 5, name = "RewardSeen" }, -- the first reward burst played (client reports it)
-	{ step = 6, name = "Call2Accepted" }, -- the first station call is theirs
-	{ step = 7, name = "Call2Delivered" },
-	{ step = 8, name = "Call3Delivered" },
-	{ step = 9, name = "MenuOpened" }, -- the first menu panel opened
-	{ step = 10, name = "FirstUpgrade" }, -- the first vehicle upgrade bought with Cash
-	{ step = 11, name = "FirstBuilding" },
-	{ step = 12, name = "FirstVehicle" }, -- the first vehicle bought with Cash
-	{ step = 13, name = "Day2Return" }, -- first session on a later UTC day
+	{ step = 2, name = "TabletOpened" }, -- the build tablet opened (client reports it)
+	{ step = 3, name = "HutPlaced" }, -- the free Rescue Hut (HQ Lv1) site started
+	{ step = 4, name = "HutBuilt" }, -- the Hut stands; the cold open waits for it
+	{ step = 5, name = "AtSea" }, -- the cold open put them on the jet ski at sea
+	{ step = 6, name = "FirstBoard" }, -- the first survivor climbed aboard
+	{ step = 7, name = "FirstDelivery" }, -- the first call delivered (the cold open)
+	{ step = 8, name = "WorkshopPlaced" }, -- the tutorial Workshop site started (Cash top-up or Robux)
+	{ step = 9, name = "WorkshopBuilt" }, -- the Workshop stands: the tutorial spin is handed out
+	{ step = 10, name = "FirstSpin" }, -- the tutorial spin used: the Next chip takes over
+	{ step = 11, name = "NextBuild" }, -- the first build after the tutorial (the Next chip's)
+	{ step = 12, name = "HQ2Placed" }, -- the Rescue Post (HQ Lv2) site started
+	{ step = 13, name = "FirstVehicle" }, -- the first vehicle bought with Cash (the RIB: Boathouse, HQ Lv2)
 } :: { FunnelStep }
 
 -- cold open step id (OperationService.ColdOpenPlan) -> onboarding step name
@@ -63,7 +63,7 @@ Events.ColdOpenSteps = {
 -- Values the client may report (Telemetry_Client). Anything else is dropped: a client cannot grow
 -- the dashboard's field cardinality.
 Events.Devices = { Touch = true, Gamepad = true, Keyboard = true, Console = true, VR = true }
-Events.ShopApps = { Store = true }
+Events.ShopApps = { Store = true, Board = true }
 Events.InputContexts = { Foot = true, Boat = true, Swim = true }
 
 local GRADE_VALUE: { [string]: number } = { Gold = 3, Silver = 2, Bronze = 1, Fail = 0 }
@@ -75,6 +75,24 @@ function Events.funnelStep(name: string): FunnelStep?
 		end
 	end
 	return nil
+end
+
+-- Onboarding steps a construction start (or finish) completes: the free Hut, the tutorial Workshop,
+-- then, once the tutorial's spin is done, the first build (any) and the Rescue Post (HQ Lv2).
+function Events.buildSteps(
+	key: string,
+	level: number,
+	finished: boolean,
+	tutorialDone: boolean
+): { string }
+	if key == "HQ" and level == 1 then
+		return { if finished then "HutBuilt" else "HutPlaced" }
+	elseif key == "Workshop" and level == 1 then
+		return { if finished then "WorkshopBuilt" else "WorkshopPlaced" }
+	elseif finished or not tutorialDone then
+		return {}
+	end
+	return if key == "HQ" and level == 2 then { "NextBuild", "HQ2Placed" } else { "NextBuild" }
 end
 
 -- step number of `name` in a recurring funnel's step list (TelemetryNames.Funnels.X), nil if unknown
@@ -159,15 +177,9 @@ function Events.knownItem(item: any, known: { [string]: boolean }): boolean
 	return true
 end
 
--- UTC day number for the Day2Return funnel step (one session per day).
+-- UTC day number (SessionStart: days since the first session, the gap since the last).
 function Events.utcDay(unixTime: number): number
 	return math.floor(unixTime / 86400)
-end
-
--- True when this session starts on a later UTC day than the last recorded one. A missing or
--- corrupt previous value is not a return (a first session is never Day2Return).
-function Events.day2Return(previousDay: any, today: number): boolean
-	return type(previousDay) == "number" and previousDay > 0 and today > previousDay
 end
 
 local function bucket(n: number, edges: { number }, labels: { string }): string
@@ -288,12 +300,6 @@ end
 -- Whether this finish delivered someone this player helped (onboarding FirstDelivery)
 function Events.delivered(f: OpFacts): boolean
 	return f.helped and f.reason == "Complete"
-end
-
--- Whether this finish is the player's first station call delivered (Call2Delivered): a call they
--- helped on, ended as a rescue. The cold open does not count.
-function Events.countsAsFirstOp(f: OpFacts): boolean
-	return Events.delivered(f) and not f.coldOpen
 end
 
 -- StormJoined: one per player per storm (the storm's StormId), on the turn to Storm or on joining a
