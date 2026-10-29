@@ -327,15 +327,13 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 			Vector2.new(left, m),
 			Vector2.new(objectiveWidth, objectiveHeight)
 		)
-		-- the top band right of the objective: the goal chip at the very top, award pops under it
+		-- the top band right of the objective: the goal chip hugs the top right corner (owner 2026-10-29:
+		-- centred was too central), award pops under the band's middle
 		local x0 = left + objectiveWidth + g
 		local x1 = u.X - m
 		local chipsW = math.min(x1 - x0, HudLayout.CHIPS_WIDTH)
-		mt.rects["chips"] = rect(
-			Vector2.new(0.5, 0),
-			Vector2.new((x0 + x1) / 2, m),
-			Vector2.new(chipsW, HudLayout.CHIPS_HEIGHT)
-		)
+		mt.rects["chips"] =
+			rect(Vector2.new(1, 0), Vector2.new(x1, m), Vector2.new(chipsW, HudLayout.CHIPS_HEIGHT))
 		mt.noticeWidth = math.min(x1 - x0, 420)
 		mt.rects["notice"] = rect(
 			Vector2.new(0.5, 0),
