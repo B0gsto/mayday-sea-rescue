@@ -65,7 +65,8 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
 - `map/Build.luau` builds the greybox and `Map.Spawns` (one SpawnLocation per island spawn); the bake is open water
   with a sand seabed. Also `WorldService`, `TerrainOnly` (+ `TerrainOnlyService` / `TerrainOnlyController`),
   `StreetController` (lighthouse beams, beach flag), `SeamarkController`, `WildlifeController`,
-  `WildlifeArtService`.
+  `WildlifeArtService`, `SeaLifeController` (client-only sea life from `Shared/SeaLife`: fishing boats, dolphin
+  pods, a breaching whale, Lego sandbars + danger buoys, Morwenna wreck buoys, flotsam).
 
 ## Your island (DockService)
 
@@ -218,8 +219,9 @@ fail: a slow one grades Bronze (`Condition.overdue`; the big call ends on its ca
   `RemoveVictim`, `GetTargets`, `Cleanup`; `server/Ops/PiwRescue` / `PiwWays` make a survivor answer the boat
   (`PIW_Rescue` C->S). `NpcService` owns `Workspace.Npcs` (the cold open shore party; `server/Npc/NpcFactory`
   builds every R15 NPC from `Config/NpcOutfits`).
-- Free-roam swimmers: `AmbientRescueService` keeps up to 8 mission-less swimmers, one in view off each
-  player's cove; boarded with `Ops/Board`, paid on delivery.
+- Free-roam survivors: `AmbientRescueService` keeps `Calls/AmbientMix.cap` mission-less scenes (9 with one player,
+  24 with six; lone swimmers, clusters of 2-3, capsized dinghies), one in view off each player's cove and 3 within
+  500 studs of every player driving at sea; boarded with `Ops/Board`, paid on delivery.
 - Wildlife: `SanctuaryService` dresses the WildlifeRescue survivor as an animal (`WildlifeRig`); it recovers in
   `PetService`'s sanctuary, then can follow you as your companion.
 

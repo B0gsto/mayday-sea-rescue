@@ -524,8 +524,8 @@ function Presets.count(base: number, scale: number, level: number, reduced: bool
 	return math.max(1, math.floor(n + 0.5))
 end
 
-function Presets.visible(distance: number): boolean
-	return distance <= Presets.CULL
+function Presets.visible(distance: number, cull: number?): boolean
+	return distance <= (cull or Presets.CULL)
 end
 
 ---------------------------------------------------------------- FX1 spectacle
@@ -974,6 +974,36 @@ Presets.ALL.launch_splash = preset({
 	sounds = {
 		{ clip = "FX_Plop", volume = 1 } :: FxSound,
 		{ clip = "Splash_Entry", delay = 0.05, volume = 0.45, pitch = 1.3 } :: FxSound,
+	},
+})
+
+-- ambience: a Lego dolphin of a passing pod dives back in (SeaLifeController): a small crown and drops; a plop
+Presets.ALL.dolphin_leap = preset({
+	job = "ambience",
+	layers = {
+		crown(1, 2.5, 6),
+		drops(10, { 12, 18 }, 35, 1.4),
+	},
+	sounds = { { clip = "FX_SplashSmall", volume = 0.7, pitch = 1.15 } :: FxSound },
+})
+
+-- spectacle: the Lego whale breaches out at sea and crashes back (SeaLifeController): a wide crown, a tall
+-- column of drops, foam puffs and a foam ring; a deep splash under a slap
+Presets.ALL.whale_breach = preset({
+	job = "spectacle",
+	cull = 700, -- a far-off breach is the point: it reads across open sea
+	layers = {
+		crown(3, 8, 22),
+		drops(26, { 24, 34 }, 40, 3),
+		puffs(8, FOAM, 4, 9, 1.1),
+		with(
+			groundRing("foam_ring", FOAM, curve(14, 30, outCubic), 1.4, 0.05),
+			{ transparency = { 0.1, 0.25, 0.8 } }
+		),
+	},
+	sounds = {
+		{ clip = "Splash_Entry", volume = 1, pitch = 0.6 } :: FxSound,
+		{ clip = "Hull_Slam", delay = 0.05, volume = 0.6, pitch = 0.7 } :: FxSound,
 	},
 })
 
