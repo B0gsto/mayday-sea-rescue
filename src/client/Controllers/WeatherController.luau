@@ -58,6 +58,12 @@ local RIPPLE_AREA = 70 -- studs square around the camera -- tune
 local RIPPLE_MAX_HEIGHT = 45 -- camera height above the sea beyond which ripples are not drawn
 
 local BLEND_HZ = 10
+-- Build mode's top-down camera (DockController, player attribute BuildView) sees the plate from 260+ studs, through
+-- haze the low third-person camera never looks through, and at the sun's mirror angle: the haze washed the plate pale
+-- and the sun's glint on it bloomed white (owner, bview1 2026-10-29). Eased with the camera's flight. -- tune
+local BUILD_HAZE = 0.25 -- share of the Atmosphere density kept in build mode
+local BUILD_EASE = 0.8 -- seconds, the build camera's flight
+local buildMix = 0
 local ROOF_CHECK_SECONDS = 0.25
 local ROOF_RAY_LENGTH = 150 -- studs -- tune
 local RAIN_MAX_RATE = 1300 -- particles/s at full storm, top quality -- tune
@@ -328,6 +334,12 @@ local function computeBlend(intensity: number): Preset
 	applySky(if intensity >= 0.5 then "Storm" elseif n < 0.25 and warm >= 0.5 then "Calm" else name)
 	local p = LightingPresets.blend(dayMix, stormMix, intensity) -- a fresh table: grade() writes to it
 	grade(p, Lighting:GetSunDirection().Y)
+	if buildMix > 0 then
+		p.AtmosphereDensity *= 1 - (1 - BUILD_HAZE) * buildMix
+		p.AtmosphereGlare *= 1 - buildMix
+		p.BloomIntensity *= 1 - buildMix
+		p.SunRaysIntensity *= 1 - buildMix
+	end
 	Lighting:SetAttribute("OceanWaterColor", p.WaterColor)
 	Lighting:SetAttribute("OceanHazeColor", p.AtmosphereColor)
 	return p
@@ -732,6 +744,9 @@ function WeatherController.Start()
 		sinceBlend += dt
 		if sinceBlend >= 1 / BLEND_HZ then
 			calmLevel = OnboardingWeather.step(calmLevel, calmTarget(), sinceBlend)
+			local step = sinceBlend / BUILD_EASE
+			local view = if Players.LocalPlayer:GetAttribute("BuildView") then 1 else 0
+			buildMix += math.clamp(view - buildMix, -step, step)
 			sinceBlend = 0
 			intensity = OnboardingWeather.localIntensity(Weather.getIntensity(now), calmLevel)
 			current = computeBlend(intensity)
