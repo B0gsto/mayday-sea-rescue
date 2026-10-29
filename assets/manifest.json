@@ -354,18 +354,18 @@
  },
  "Image:04893d1e34c571ce758292468bede9ea90a026a41d1828f116fe258d59128139": {
   "aliases": [
-   "T_Barge_Hull_RGH",
-   "T_WorkshopAddons_Brick_RGH",
-   "T_FishMarket_Brick_RGH",
-   "T_Clinic_Brick_RGH",
-   "T_LookoutAddons_Brick_RGH",
-   "T_BoatYard_Brick_RGH",
-   "T_RescueBoathouse_Brick_RGH",
    "T_AirStationAddons_Brick_RGH",
+   "T_Barge_Hull_RGH",
+   "T_BoatYard_Brick_RGH",
+   "T_BuildStation_Brick_RGH",
+   "T_Clinic_Brick_RGH",
+   "T_FishMarket_Brick_RGH",
    "T_HQAddons_Brick_RGH",
-   "T_TrophyHall_Brick_RGH",
+   "T_LookoutAddons_Brick_RGH",
+   "T_RescueBoathouse_Brick_RGH",
    "T_SubPen_Brick_RGH",
-   "T_BuildStation_Brick_RGH"
+   "T_TrophyHall_Brick_RGH",
+   "T_WorkshopAddons_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -13408,20 +13408,20 @@
  },
  "Image:9f434a0f8f97d5cd291c118eceb20bcaff796e8ba49034620802353fdbf77242": {
   "aliases": [
+   "T_AirStationAddons_Brick_NOR",
    "T_Barge_Hull_NOR",
-   "T_WorkshopAddons_Brick_NOR",
-   "T_FishMarket_Brick_NOR",
-   "T_RescueHQ_Brick_NOR",
+   "T_BoatYard_Brick_NOR",
+   "T_BuildStation_Brick_NOR",
    "T_Bunkhouse_Brick_NOR",
    "T_Clinic_Brick_NOR",
-   "T_LookoutAddons_Brick_NOR",
-   "T_BoatYard_Brick_NOR",
-   "T_RescueBoathouse_Brick_NOR",
-   "T_AirStationAddons_Brick_NOR",
+   "T_FishMarket_Brick_NOR",
    "T_HQAddons_Brick_NOR",
-   "T_TrophyHall_Brick_NOR",
+   "T_LookoutAddons_Brick_NOR",
+   "T_RescueBoathouse_Brick_NOR",
+   "T_RescueHQ_Brick_NOR",
    "T_SubPen_Brick_NOR",
-   "T_BuildStation_Brick_NOR"
+   "T_TrophyHall_Brick_NOR",
+   "T_WorkshopAddons_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -17550,19 +17550,19 @@
  },
  "Image:d69112264db6c2c1b6f6bc930b7d7cf38c27a4fead1b5000259265c5405c66ef": {
   "aliases": [
+   "T_AirStationAddons_Brick_MET",
    "T_Barge_Hull_MET",
-   "T_WorkshopAddons_Brick_MET",
-   "T_FishMarket_Brick_MET",
+   "T_BoatYard_Brick_MET",
+   "T_BuildStation_Brick_MET",
    "T_Bunkhouse_Brick_MET",
    "T_Clinic_Brick_MET",
-   "T_LookoutAddons_Brick_MET",
-   "T_BoatYard_Brick_MET",
-   "T_RescueBoathouse_Brick_MET",
-   "T_AirStationAddons_Brick_MET",
+   "T_FishMarket_Brick_MET",
    "T_HQAddons_Brick_MET",
-   "T_TrophyHall_Brick_MET",
+   "T_LookoutAddons_Brick_MET",
+   "T_RescueBoathouse_Brick_MET",
    "T_SubPen_Brick_MET",
-   "T_BuildStation_Brick_MET"
+   "T_TrophyHall_Brick_MET",
+   "T_WorkshopAddons_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -21194,7 +21194,7 @@
   "rbxm": "assets/models/M_Prop_BuildStation_LOD1.rbxm",
   "route": "delivery",
   "sha": "0e1d4bd4c21c05f7a8c0f8a9e79bcffb184610b2c97716a59e9e4aa5261f0a17",
-  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-484fbf5d/assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD1.fbx",
+  "source": "assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD1.fbx",
   "type": "Model"
  },
  "Model:0e43fe7fdfda7219c7577ef14147264ab1e8533a999e77e2306073214a04bff1": {
@@ -25394,7 +25394,7 @@
   "rbxm": "assets/models/M_Prop_BuildStation_LOD2.rbxm",
   "route": "delivery",
   "sha": "7f78b0478d3ce206321b365e24c70c8d7fbfd31e3465272a10f3ff278bd549f2",
-  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-484fbf5d/assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD2.fbx",
+  "source": "assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD2.fbx",
   "type": "Model"
  },
  "Model:7ff52831b9ee8f0bdde5de49c517454caa8ed497644aa3c825e18674545e6d66": {
@@ -25714,7 +25714,7 @@
   "rbxm": "assets/models/M_Prop_JettyCrane_LOD0.rbxm",
   "route": "delivery",
   "sha": "85f01f6f83c06953944cd3f28643884aebc56e3c9e39d902d7b0454e4e7c522f",
-  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-484fbf5d/assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD0.fbx",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD0.fbx",
   "type": "Model"
  },
  "Model:85f7812116bef40c03f40624199953f82de014063a04c8b9f60dfe417a8e958b": {
@@ -25804,7 +25804,7 @@
   "rbxm": "assets/models/M_Prop_BuildStation_LOD0.rbxm",
   "route": "delivery",
   "sha": "88a62180bcb4af72a987671c1655c82270371205558d1e2af61afae8e9da27d0",
-  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-484fbf5d/assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD0.fbx",
+  "source": "assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD0.fbx",
   "type": "Model"
  },
  "Model:88cf34d31e9b919124372ed5a65ab7cab23b28782d5e7ac5961aecfa2eb832b5": {
@@ -25954,7 +25954,7 @@
   "rbxm": "assets/models/M_Prop_JettyCrane_LOD1.rbxm",
   "route": "delivery",
   "sha": "8c8e8819dccecf31e736014c99d82764d559dee1322df568bb6e4729d52afd22",
-  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-484fbf5d/assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD1.fbx",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD1.fbx",
   "type": "Model"
  },
  "Model:8c9ca9bcaa9bb5f83adf78dff03d480f99b5016b4408327c73f829ae92d6b203": {
@@ -29184,7 +29184,7 @@
   "rbxm": "assets/models/M_Prop_JettyCrane_LOD2.rbxm",
   "route": "delivery",
   "sha": "e84cbb1193ef50d90a1e11d8838cdb526c6cb0ed751c1b851fd94fca2c80bfa4",
-  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-484fbf5d/assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD2.fbx",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD2.fbx",
   "type": "Model"
  },
  "Model:e8c3fcb4978d9fd6558ca9f697f20626c48f14c77fc5018165c5800238b72bbf": {
