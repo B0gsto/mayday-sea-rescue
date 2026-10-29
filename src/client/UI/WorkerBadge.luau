@@ -90,10 +90,11 @@ function WorkerBadge.crew(adornee: Instance, category: string, parent: Instance)
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "CrewTag"
 	gui.Adornee = adornee
-	gui.Size = UDim2.fromOffset(92, 44)
+	gui.Size = UDim2.fromOffset(92, 88) -- bottom half empty: the badge's lower edge sits on its anchor at any distance
 	gui.MaxDistance = 60
 	gui.LightInfluence = 0
 	local icon = Instance.new("Frame")
+	icon.Name = "Icon"
 	icon.BackgroundTransparency = 1
 	icon.Size = UDim2.fromOffset(40, 40)
 	icon.Position = UDim2.fromOffset(2, 2)
@@ -103,7 +104,7 @@ function WorkerBadge.crew(adornee: Instance, category: string, parent: Instance)
 	n.Name = "Count"
 	n.TextXAlignment = Enum.TextXAlignment.Left
 	n.Position = UDim2.fromOffset(46, 0)
-	n.Size = UDim2.new(1, -46, 1, 0)
+	n.Size = UDim2.new(1, -46, 0, 44)
 	gui.Parent = parent
 	return gui
 end

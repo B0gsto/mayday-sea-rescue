@@ -1035,9 +1035,13 @@ local function crewPass()
 			crews[key] = c
 		end
 		local crew = c :: { gui: BillboardGui, at: Attachment }
-		crew.at.WorldPosition = g.sum / #g.rigs + Vector3.new(0, 7.5, 0)
+		-- over the name tags (SurvivorTag: root + 4.2, ~1.5 studs tall), not on them (owner 2026-10-29)
+		crew.at.WorldPosition = g.sum / #g.rigs + Vector3.new(0, 8.4, 0)
+		local solo = #g.rigs < 2
 		local count = crew.gui:FindFirstChild("Count") :: TextLabel
-		count.Text = if #g.rigs > 1 then `x{#g.rigs}` else ""
+		count.Text = if solo then "" else `x{#g.rigs}`
+		local icon = crew.gui:FindFirstChild("Icon") :: Frame
+		icon.Position = UDim2.fromOffset(if solo then 26 else 2, 2) -- a lone icon centres
 	end
 	for key, c in crews do
 		if not groups[key] then

@@ -117,28 +117,19 @@ function SurvivorController.attach(model: Model)
 
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = PROMPT
-	prompt.ActionText = "Info"
-	prompt.ObjectText = SurvivorTag.info(model).name
+	prompt.ActionText = "Info" -- no ObjectText: the name tag over the head already says who (owner 2026-10-29)
 	prompt.HoldDuration = 0
 	prompt.MaxActivationDistance = 12
 	prompt.RequiresLineOfSight = false
 	prompt.KeyboardKeyCode = Enum.KeyCode.Q
 	prompt.GamepadKeyCode = Enum.KeyCode.ButtonY
-	prompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
+	prompt.Exclusivity = Enum.ProximityPromptExclusivity.OnePerButton -- the nearest one only, still beside E / X
 	prompt.Parent = rootPart
 	prompt.Triggered:Connect(function(who: Player)
 		if who == player then
 			open(model)
 		end
 	end)
-
-	for _, key in { "SurvivorName", "WorkerName" } do
-		model:GetAttributeChangedSignal(key):Connect(function()
-			if prompt.Parent then
-				prompt.ObjectText = SurvivorTag.info(model).name
-			end
-		end)
-	end
 end
 
 local function personish(model: Model): boolean
