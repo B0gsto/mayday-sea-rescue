@@ -570,3 +570,56 @@ packs: Station <= 51.7k, Sub pen / Hangar / Trophy <= 38.7k, Crane / Helipad <= 
 249 R$ pass (<= 64.8k). After the helicopter only ~220k can be spent, ~6.5 h at ~550 Cash/min, so the tree lands
 at ~15 h (inside the 17 h +/- 15% the sim asserts). To reach 17 h without longer gaps: re-price the late Robux
 skips / Sub pass (MonetizationConfig), or add late rows (building tiers), not more Cash per item.
+
+## (s) Economy pass 2026-10-29
+
+Owner (real client): "players get too many coins for a rescue and can build freely stuff". Measured, then numbers only.
+
+**What a rescue pays (no passes):** the three tutorial calls 500 / 600 / 600 flat; from call 4 `550 x call weight
+(0.8-1.5) x grade (Silver 1.0) x distance (x1-x4, jet ski avg x2.25)`, so ~1,100-1,300 early, ~2,000 at 2-5 h,
+~3-4k later (Medics up to +20%, the Captain skill, golden calls x2 on top). Then `Award` multiplies: storm x1.5 /
+Great Storm x2, 2x Cash pass or Cash Boost +1, Crew Boost +0.5, friends +10% each (cap +30%), Golden Hour x2.
+Flat (no multipliers): Starter Kit 3,000 once, spins, quests, streak, Gatherers / Rescuers / offline.
+
+**Root causes.** (1) Buildings v2 (docs/25) priced every row's Lv1 flat at 500-2,000 Cash all the way up the tree
+(Air Station 1,800 at HQ4, Sub Pen 1,900 at HQ5, when a rescue pays ~3-4k there), and HQ1/HQ2 rows at 600-1,200
+when a rescue pays ~1,100: one rescue bought each building. (2) The owner's account owns every pass it created
+(Roblox gives a creator its own passes): 2x Cash on every call and the Starter Kit's 3,000 on the first join (its
+launch save: 2,110 Cash after one rescue, `shop.starterKit`). The test-place save (970k Cash, HQ 5, every craft
+after 2 rescues) is DEV `award` / `unlockAll` / builds, not gameplay. (3) The multipliers stacked without a cap
+(2x + Crew Boost x friends x Golden Hour x Great Storm ~x13). (4) The sim played the tutorial chain at 13 min
+(docs/03), not the ~6 min NewPlayerPace walks, so early pace looked slower than it is.
+
+No free-build bug found: a Cash buy checks and charges in one step (no yield, `busy` + one site at a time),
+Robux-prepaid levels never charge Cash too, the tutorial top-up only fills the Workshop's 500 once, Finish now
+pays back 10% only for a receipt that lands after the site stood, quest blueprints are the never-sold Lighthouse,
+and the old-save refund runs once (the migrated `dock` then exists).
+
+**Changes.** Prices (DockConfig; Robux skips unchanged, all still >= 1.3x packs): Depot 700 / 2,000 / 14,000 ->
+1,200 / 4,000 / 15,000; Workshop Lv2-3 1,500 / 11,000 -> 3,000 / 12,000 (Lv1 500 stays the tutorial build);
+Bunkhouse 800 / 3,000 / 10,000 / 25,000 / 50,000 -> 1,800 / 4,500 / 12,000 / 25,000 / 40,000; Fish Market 600 /
+1,750 / 11,000 -> 1,500 / 4,000 / 12,000; Harbour Lv2 2,500 -> 3,000; Boathouse 900 / 2,250 -> 2,000 / 4,500;
+Boat Yard 1,000 / 3,000 -> 2,500 / 4,500; Clinic 1,200 / 3,500 -> 3,000 / 5,000; Rescue Boathouse and Lookout Lv1
+1,500-1,600 -> 7,000; Air Station Lv1 1,800 -> 10,000; Sub Pen / Trophy Hall Lv1 1,900-2,000 -> 12,000; HQ 3,000 /
+12,000 / 80,000 / 160,000 -> 3,300 / 16,000 / 65,000 / 100,000 (the late spine pays for the earlier rows). First-hour
+prices stay <= ~3,300 so their builds stay under a minute (BuildTimer). Live awards cap at x5
+(`ProgressionConfig.MaxCashMultiplier`): 2x Cash in a Great Storm with friends still lands, Golden Hour on top
+cannot. Sim: the tutorial calls take 1.5 / 2.5 / 2.5 min (NewPlayerPace), the plan buys the Lifeboat before HQ3,
+and it prints a stage table and a 2x Cash + Starter Kit run.
+
+| Stage (solo, no passes) | Cash/min | Cash/rescue | Rescues per goal, before | after |
+|---|---:|---:|---:|---:|
+| 0-10 min | 277 | 692 | 1.0 (4 goals) | 2.0 (2) |
+| 10-30 min | 246 | 701 | 3.5 | 3.5 |
+| 30-60 min | 224-303 | 840-1,012 | 1.8 | 2.7 |
+| 1-2 h | 413-452 | 1,240-1,290 | 2.9 | 2.3 |
+| 2-5 h | 605-640 | ~2,000 | 6.2 | 6.1 |
+| 5-10 h | ~860 | ~3,100 | 16.4 | 11.6 |
+| 10 h to the end | ~1,150 | ~4,200 | 4.8 | 5.0 |
+| 2x Cash + Starter Kit, first hour | 500-815 | 1,400-2,000 | 0.9-1.0 | 1.0-1.8 |
+
+First goals, rescue count before -> after: Depot 2 -> 3, Bunkhouse 3 -> 6, Fish Market 4 -> 8, HQ Lv2 8 -> 12,
+Boathouse 10 -> 14, RIB 12 -> 17. Milestones after (solo): Lifeboat 2:55, Helicopter 7:34, the whole tree 16.9 h
+(was 16.8 h on the same sim); one friend 16.2 h; 2x Cash 15.1 h (Medal-paced skill nodes hold the tail).
+The 5-10 h row is the sim's plan (it keeps every Lv2/Lv3 for after HQ5); a player buys those in that gap.
+
