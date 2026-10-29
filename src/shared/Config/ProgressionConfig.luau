@@ -29,6 +29,9 @@ ProgressionConfig.Vehicles = {
 -- docs 03 section 2: Cash x1.5 in storms, x2 in a Great Storm.
 ProgressionConfig.StormCashMultiplier = 1.5
 ProgressionConfig.GreatStormCashMultiplier = 2
+-- The most a live award multiplies (ProgressionRules.applyAward): 2x Cash x a Great Storm x friends tops out here,
+-- so Golden Hour on top of all that cannot turn one call into a building (owner 2026-10-29: "the economy is broken").
+ProgressionConfig.MaxCashMultiplier = 5
 
 ProgressionConfig.MaxCrew = 4 -- docs 02 section 7
 

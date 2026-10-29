@@ -166,10 +166,11 @@ saves stay compatible: new rows default to "not built" and new `data` keys defau
   reach P1, and the AD scores the plate drop 8.5+.
 
 Slice 0 status (2026-10-29, EXPAND1, branch `t3/c7f27af7`): rows SeaPlate1/2 (`DockConfig.SEA_PLATE_CASH` 1,500 /
-6,000, R$ 15 / 35 products with id 0 until deploy.py creates them), Part placeholder decks on pillars (layered rise),
+4,500 on the docs/23 (s) curve, R$ 15 / 35 products with id 0 until deploy.py creates them), Part placeholder decks on pillars (layered rise),
 `plate_drop` + `ramp_jump` presets, the ramp (no counter: free toy), the quest pontoon shift, the second barge
 (`DepotRules.WHARF_MULT`), the `Expand` funnel + `PlateBuilt`, seed 1 (teal brick -> a "?" Trophy Hall cup). The
-plates join the HQ gate (HQ2 needs P1, HQ3 needs P2). Pacing: P1 at 13.8 min, P2 ~1:45-2:20. Open: Blender assets
+plates join the HQ gate (HQ2 needs P1, HQ3 needs P2). Pacing (ECON1 curve): P1 at 12.1 min (after the Depot), P2 at ~3:30 before HQ3; first-hour
+milestones ~5 min later (Pacing bounds widened: Boathouse <= 50, RIB <= 65, Lifeboat <= 195 min). Open: Blender assets
 (deck/rim/pillar kit, ramp, kiosk, crane cab), the crane-cab lever, AD score of plate_drop, ECON1 prices.
 
 **Update 1 "Outer Wharves", ~8 agent-days (+ docs/25 D Timber & Stone, already planned).**

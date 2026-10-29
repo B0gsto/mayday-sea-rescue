@@ -88,7 +88,13 @@ function Rules.applyAward(
 	paid: number?,
 	flat: boolean?
 ): (number, number)
-	local mult = if flat then 1 else Rules.stormCashMultiplier(state, isGreatStorm) * num(paid, 1)
+	-- passes, boosts, friends, events and storms multiply, but never past the cap (owner 2026-10-29)
+	local mult = if flat
+		then 1
+		else math.min(
+			Rules.stormCashMultiplier(state, isGreatStorm) * num(paid, 1),
+			ProgressionConfig.MaxCashMultiplier
+		)
 	-- NaN or inf would poison data.cash and the next load would reset the profile to defaults
 	return math.floor(math.clamp(num(cash, 0), 0, 1e9) * mult + 0.5), mult
 end

@@ -4,7 +4,7 @@
 -- API (server, see CONTRACT.md):
 --   ProgressionService.Award(player, cash, reason, flat?)   applies the storm and paid Cash multipliers
 --     (2x Cash, Cash Boost, Crew Boost: Monetization/CashEffects, RP-M2; friends; Golden Hour);
---     flat = true skips every multiplier for passive rewards
+--     flat = true skips every multiplier for passive rewards; together they cap at x5 (MaxCashMultiplier)
 --   ProgressionService.Refresh(player, extra?)  re-push the snapshot (after a purchase grant)
 --   ProgressionService.GetData(player) -> { cash, totalRescues, dockBuildings, vehicles, ... }?
 --   ProgressionService.CanUseVehicle(player, vehicleId) -> boolean (and a reason; Cash-owned OR pass-owned)

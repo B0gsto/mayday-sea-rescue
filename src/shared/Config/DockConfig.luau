@@ -78,7 +78,7 @@ DockConfig.BunkhouseCaps = { 10, 20, 30, 45, 60 }
 DockConfig.HutCap = 5 -- people the Rescue Hut sleeps before a Bunkhouse stands (the tutorial's first Builder)
 
 -- docs/27 placeholder prices (ECON1 owns the retune; tests/NewPlayerPace + tests/Pacing check the pace)
-DockConfig.SEA_PLATE_CASH = { SeaPlate1 = 1500, SeaPlate2 = 6000 }
+DockConfig.SEA_PLATE_CASH = { SeaPlate1 = 1500, SeaPlate2 = 4500 } -- ~2 early / ~3 HQ2-stage rescues (docs/23 (s))
 
 -- a sea plate's lot: its RingLayout.SeaPlates rect centre, the deck top (island frame, Y 0 = the plate top)
 local function seaSpot(key: string): (CFrame, Vector2)
@@ -98,9 +98,9 @@ local rows: { [string]: any } = {
 		size = Vector2.new(54, 32),
 		levels = {
 			{ cash = 0, hq = 0, effect = "HQ", piece = "Hut", name = "Rescue Hut" }, -- the free first build (tutorial)
-			{ cash = 3000, hq = 1, effect = "HQ", piece = "Post", name = "Rescue Post" },
+			{ cash = 3300, hq = 1, effect = "HQ", piece = "Post", name = "Rescue Post" },
 			{
-				cash = 12000,
+				cash = 16000,
 				hq = 2,
 				product = "DockLevel5",
 				robux = 199,
@@ -108,8 +108,8 @@ local rows: { [string]: any } = {
 				piece = "Station",
 				name = "Lifeboat Station",
 			},
-			{ cash = 80000, hq = 3, effect = "HQ", piece = "Base", name = "Coastguard Base" },
-			{ cash = 160000, hq = 4, effect = "HQ", piece = "HQ", name = "Coastguard HQ" },
+			{ cash = 65000, hq = 3, effect = "HQ", piece = "Base", name = "Coastguard Base" },
+			{ cash = 100000, hq = 4, effect = "HQ", piece = "HQ", name = "Coastguard HQ" },
 		} :: { Level },
 	},
 	Harbour = {
@@ -122,7 +122,7 @@ local rows: { [string]: any } = {
 		levels = {
 			{ cash = 0, hq = 0, effect = "Jetty", piece = "Jetty" }, -- the start: the jetty is already there
 			{
-				cash = 2500,
+				cash = 3000,
 				hq = 2,
 				product = "DockLevel2",
 				robux = 35,
@@ -150,9 +150,9 @@ local rows: { [string]: any } = {
 		worker = "Hauler",
 		color = Color3.fromRGB(250, 208, 40),
 		levels = {
-			{ cash = 700, hq = 1, effect = "Depot", piece = "Yard" },
-			{ cash = 2000, hq = 2, effect = "Depot", piece = "Pile" },
-			{ cash = 14000, hq = 3, effect = "Depot", piece = "Conveyor" },
+			{ cash = 1200, hq = 1, effect = "Depot", piece = "Yard" },
+			{ cash = 4000, hq = 2, effect = "Depot", piece = "Pile" },
+			{ cash = 15000, hq = 3, effect = "Depot", piece = "Conveyor" },
 		} :: { Level },
 	},
 	Workshop = {
@@ -174,8 +174,8 @@ local rows: { [string]: any } = {
 				effect = "Builders",
 				piece = "Yard",
 			},
-			{ cash = 1500, hq = 2, effect = "BuilderSlots5", piece = "SawBench" },
-			{ cash = 11000, hq = 3, effect = "BuilderSlots8", piece = "BoatFrame" },
+			{ cash = 3000, hq = 2, effect = "BuilderSlots5", piece = "SawBench" },
+			{ cash = 12000, hq = 3, effect = "BuilderSlots8", piece = "BoatFrame" },
 		} :: { Level },
 	},
 	SeaPlate1 = {
@@ -224,11 +224,11 @@ local rows: { [string]: any } = {
 		scale = 1.2,
 		color = Color3.fromRGB(80, 190, 90),
 		levels = {
-			{ cash = 800, hq = 1, effect = "People10", piece = "Hut" },
-			{ cash = 3000, hq = 2, effect = "People20", piece = "Floor" },
-			{ cash = 10000, hq = 3, effect = "People30", piece = "Floor" },
+			{ cash = 1800, hq = 1, effect = "People10", piece = "Hut" },
+			{ cash = 4500, hq = 2, effect = "People20", piece = "Floor" },
+			{ cash = 12000, hq = 3, effect = "People30", piece = "Floor" },
 			{ cash = 25000, hq = 4, effect = "People45", piece = "Hammocks" },
-			{ cash = 50000, hq = 5, effect = "People60", piece = "Lights" },
+			{ cash = 40000, hq = 5, effect = "People60", piece = "Lights" },
 		} :: { Level },
 	},
 	FishShed = {
@@ -243,15 +243,15 @@ local rows: { [string]: any } = {
 		color = Color3.fromRGB(40, 96, 208),
 		levels = {
 			{
-				cash = 600,
+				cash = 1500,
 				hq = 1,
 				product = "DockFishShed",
 				robux = 35,
 				effect = "Fishers",
 				piece = "Stalls",
 			},
-			{ cash = 1750, hq = 2, effect = "FishSlots4", piece = "Stalls" },
-			{ cash = 11000, hq = 3, effect = "FishSlots8", piece = "Smokehouse" },
+			{ cash = 4000, hq = 2, effect = "FishSlots4", piece = "Stalls" },
+			{ cash = 12000, hq = 3, effect = "FishSlots8", piece = "Smokehouse" },
 		} :: { Level },
 	},
 	Boathouse = {
@@ -264,7 +264,7 @@ local rows: { [string]: any } = {
 		scale = 1.2,
 		levels = {
 			{
-				cash = 900,
+				cash = 2000,
 				hq = 2,
 				product = "DockLevel3",
 				robux = 35,
@@ -272,7 +272,7 @@ local rows: { [string]: any } = {
 				piece = "Boathouse",
 			},
 			{
-				cash = 2250,
+				cash = 4500,
 				hq = 2,
 				product = "DockLifeboatSlip",
 				robux = 99,
@@ -294,14 +294,14 @@ local rows: { [string]: any } = {
 		color = Color3.fromRGB(250, 140, 30),
 		levels = {
 			{
-				cash = 1000,
+				cash = 2500,
 				hq = 2,
 				product = "DockBoatYard",
 				robux = 75,
 				effect = "Mechanics",
 				piece = "Cradle",
 			},
-			{ cash = 3000, hq = 2, effect = "Gantry", piece = "Gantry" },
+			{ cash = 4500, hq = 2, effect = "Gantry", piece = "Gantry" },
 			{ cash = 16000, hq = 3, effect = "DryDock", piece = "DryDock" },
 		} :: { Level },
 	},
@@ -317,14 +317,14 @@ local rows: { [string]: any } = {
 		color = Color3.fromRGB(242, 240, 232),
 		levels = {
 			{
-				cash = 1200,
+				cash = 3000,
 				hq = 2,
 				product = "DockClinic",
 				robux = 199,
 				effect = "Medics",
 				piece = "Tent",
 			},
-			{ cash = 3500, hq = 2, effect = "Pavilion", piece = "Pavilion" },
+			{ cash = 5000, hq = 2, effect = "Pavilion", piece = "Pavilion" },
 			{ cash = 18000, hq = 3, effect = "Hospital", piece = "Hospital" },
 		} :: { Level },
 	},
@@ -340,7 +340,7 @@ local rows: { [string]: any } = {
 		color = Color3.fromRGB(224, 56, 40),
 		levels = {
 			{
-				cash = 1500,
+				cash = 7000,
 				hq = 3,
 				product = "DockRescueBoathouse",
 				robux = 99,
@@ -361,7 +361,7 @@ local rows: { [string]: any } = {
 		scale = 1.5,
 		levels = {
 			{
-				cash = 1600,
+				cash = 7000,
 				hq = 3,
 				product = "DockLevel4",
 				robux = 75,
@@ -382,7 +382,7 @@ local rows: { [string]: any } = {
 		vehicles = { "RescueHelicopter" },
 		levels = {
 			{
-				cash = 1800,
+				cash = 10000,
 				hq = 4,
 				product = "DockHangar",
 				robux = 149,
@@ -403,7 +403,7 @@ local rows: { [string]: any } = {
 		vehicles = { "Submarine" },
 		levels = {
 			{
-				cash = 1900,
+				cash = 12000,
 				hq = 5,
 				product = "DockSubPen",
 				robux = 149,
@@ -423,7 +423,7 @@ local rows: { [string]: any } = {
 		size = Vector2.new(50, 28),
 		levels = {
 			{
-				cash = 2000,
+				cash = 12000,
 				hq = 5,
 				product = "DockTrophyHall",
 				robux = 149,

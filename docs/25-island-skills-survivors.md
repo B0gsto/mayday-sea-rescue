@@ -34,7 +34,7 @@ ground makes no sense), where the Next chip and the build tablet lead instead.
 | 4 Coastguard Base | + radio mast wing | Air Station (helicopter); Update 1: Lumber Camp, Quarry | 3 (Bunkhouse 4) |
 | 5 Coastguard HQ | + gold beacon tower | Sub Pen, Trophy Hall, Harbour Master gold beacon | 3 (Bunkhouse 5) |
 
-HQ prices: Lv2 3k, Lv3 12k, Lv4 80k, Lv5 160k Cash (tune with tests/Pacing; the last level fills the ~17 h track).
+HQ prices: Lv2 3.3k, Lv3 16k, Lv4 65k, Lv5 100k Cash (economy pass 2026-10-29, docs/23 (s); tune with tests/Pacing).
 
 ## B. Buildings and their levels
 
