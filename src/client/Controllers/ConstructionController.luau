@@ -1,7 +1,8 @@
 --!strict
 -- ConstructionController (docs/24 B): every island's build site, drawn from the plot's SiteKey /
 -- SiteProgress / SiteRate / SiteBuilders attributes (DockService). Client-only Lego dressing round the lot
--- (fence, scaffold, a small crane, brick stacks, a sign with the bar / time / crew count); the building is the
+-- (fence, scaffold, a small crane, brick stacks); a billboard over the roof (bar / time / crew count, your own site:
+-- a Robux Finish button) pops in only near the site and draws on top of the walls. The building is the
 -- server's model, its parts above the progress height hidden locally in BuildSeq's bottom-to-top order. On
 -- finish the remaining bricks drop with the BuildSeq bounce, VFXKit's build_done / hq_levelup plays and the
 -- fence/scaffold go away.
@@ -11,6 +12,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -23,6 +25,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local Kit = UI:WaitForChild("Kit")
+local PriceButtonUI = require(Kit:WaitForChild("PriceButton"))
 local Style = require(Kit:WaitForChild("Style"))
 local Theme = require(Kit:WaitForChild("Theme"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
@@ -67,11 +70,17 @@ type Site = {
 	post: Part,
 	dust: ParticleEmitter,
 	prompt: ProximityPrompt?,
+	gui: BillboardGui,
+	root: Frame,
+	near: boolean,
+	finish: PriceButtonUI.PriceButton?,
+	price: number,
 }
 
 local sites: { [number]: Site } = {}
 local livePrice: { [number]: number } = {}
 local finishAsked: { [number]: boolean } = {}
+local SHOW_NEAR, HIDE_FAR = 50, 60 -- studs from the site: the billboard pops in / out (a gap, so it never flickers)
 
 -- The FinishNow product for a site's time left, with the live Robux price when there is an id.
 local function finishProduct(left: number): (any, number)
@@ -100,10 +109,34 @@ local function finishOffered(product: any): boolean
 		and (RunService:IsStudio() or (product.ready ~= false and product.id ~= 0))
 end
 
--- The site's Finish prompt (the owner only): E / X / tap opens the server's tier prompt.
+local function padUser(): boolean
+	return string.sub(UserInputService:GetLastInputType().Name, 1, 7) == "Gamepad"
+end
+
+-- The owner's Finish: a green Robux button on the billboard (click / tap) and, for gamepads only, a stand-near
+-- prompt (billboard buttons are out of pad selection). Both ask the server for its tier prompt; the button greys
+-- out until that purchase prompt closes.
 local function addFinishPrompt(site: Site)
 	if site.prompt then
 		return
+	end
+	local function ask()
+		local finish = site.finish
+		if finish and not finish.root.Active then
+			return -- a purchase prompt is already open
+		end
+		if finish then
+			finish.setState("disabled")
+			task.delay(
+				15,
+				function() -- shortcut: no Finished event when the server declines; 15 s re-arms the button
+					if finish.root.Parent then
+						finish.setState("buy")
+					end
+				end
+			)
+		end
+		Net.event("Dock_Finish"):FireServer()
 	end
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "FinishNow"
@@ -111,11 +144,18 @@ local function addFinishPrompt(site: Site)
 	prompt.HoldDuration = 0
 	prompt.MaxActivationDistance = 16
 	prompt.RequiresLineOfSight = false
+	prompt.Enabled = false
 	prompt.Parent = site.post
-	prompt.Triggered:Connect(function()
-		Net.event("Dock_Finish"):FireServer()
-	end)
+	prompt.Triggered:Connect(ask)
 	site.prompt = prompt
+	local finish = PriceButtonUI.new(site.root, { price = 0, currency = "Robux", onActivate = ask })
+	finish.root.Name = "Finish"
+	finish.root.AnchorPoint = Vector2.new(0.5, 1)
+	finish.root.Position = UDim2.fromScale(0.5, 1)
+	finish.root.Size = UDim2.fromOffset(150, 52)
+	finish.root.Visible = false
+	site.finish = finish
+	site.gui.Size = UDim2.fromOffset(230, 92 + 6 + 52)
 end
 
 local function brick(
@@ -160,18 +200,31 @@ local function hide(part: BasePart, st: Site, on: boolean)
 	end
 end
 
--- The site's billboard: progress bar, time left and the hammer count.
+-- The site's billboard over the roof: progress bar, time left and the hammer count. Under PlayerGui (adorned to
+-- the sign post) so its Finish button takes clicks and taps; on top so the walls never hide it.
 local function makeSign(st: Site, build: boolean)
 	local def = if build then DockConfig.Buildings[st.key] else DockConfig.Decorations[st.key]
 	local gui = Instance.new("BillboardGui")
-	gui.Name = "ConstructionSign"
+	gui.Name = `ConstructionSign_{st.plot.Name}`
 	gui.Size = UDim2.fromOffset(230, 92)
-	gui.StudsOffset = Vector3.new(0, 9, 0)
-	gui.MaxDistance = 260
-	gui.AlwaysOnTop = false
 	gui.Adornee = st.post
-	gui.Parent = st.post
-	local holder, face = Style.block(gui, Style.grad("ink"), { radius = 10, lip = 4 })
+	gui.StudsOffsetWorldSpace = Vector3.new(0, st.maxY - st.ground + 2, st.hd + 1.5) -- post -> over the lot centre
+	gui.AlwaysOnTop = true
+	gui.Active = true
+	gui.ResetOnSpawn = false
+	gui.Parent = player:WaitForChild("PlayerGui")
+	st.gui = gui
+	st.root = Instance.new("Frame")
+	st.root.Name = "Root"
+	st.root.BackgroundTransparency = 1
+	st.root.Size = UDim2.fromScale(1, 1)
+	st.root.Visible = false
+	st.root.Parent = gui
+	local board = Instance.new("Frame")
+	board.BackgroundTransparency = 1
+	board.Size = UDim2.fromOffset(230, 92)
+	board.Parent = st.root
+	local holder, face = Style.block(board, Style.grad("ink"), { radius = 10, lip = 4 })
 	holder.Name = "Board"
 	local name = if build
 		then DockConfig.levelName(st.key, tonumber(st.plot:GetAttribute("SiteLevel")) or 1)
@@ -446,15 +499,20 @@ local function startSite(plot: Model, model: Model, key: string, mine: boolean):
 		post = nil :: any,
 		dust = nil :: any,
 		prompt = nil,
+		gui = nil :: any,
+		root = nil :: any,
+		near = false,
+		finish = nil,
+		price = -1,
 	}
 	for part in kept do
 		hide(part, site, true)
 	end
 	makeProps(site)
+	makeSign(site, DockConfig.Buildings[key] ~= nil)
 	if mine then
 		addFinishPrompt(site)
 	end
-	makeSign(site, DockConfig.Buildings[key] ~= nil)
 	return site
 end
 
@@ -486,10 +544,28 @@ local function update(site: Site, progress: number, rate: number, builders: numb
 	local left = BuildTimer.timeLeft(p, rate, work)
 	site.timer.Text = BuildTimer.text(left)
 	site.count.Text = `x{builders}`
-	if site.prompt then
+	if site.prompt and site.finish then
 		local product, price = finishProduct(left)
-		site.prompt.Enabled = left >= 3 and finishOffered(product)
+		local offered = left >= 3 and finishOffered(product)
+		site.prompt.Enabled = offered and padUser()
 		site.prompt.ObjectText = `R$ {price}`
+		site.finish.root.Visible = offered
+		if price ~= site.price then
+			site.price = price
+			site.finish.setPrice(price)
+		end
+	end
+end
+
+-- Pop the billboard in near the site (measured from the lot's edge: big lots too), out when walking away.
+local function showNear(site: Site, at: Vector3)
+	local dx = math.max(math.abs(at.X - site.center.X) - site.hw, 0)
+	local dz = math.max(math.abs(at.Z - site.center.Z) - site.hd, 0)
+	local d = math.sqrt(dx * dx + dz * dz)
+	local near = if site.near then d < HIDE_FAR else d < SHOW_NEAR
+	if near ~= site.near then
+		site.near = near
+		Style.pop(site.root, near)
 	end
 end
 
@@ -500,6 +576,7 @@ local function stop(site: Site)
 		end
 	end
 	site.props:Destroy()
+	site.gui:Destroy()
 end
 
 -- docs/27 plate_drop (spectacle, ~3 s): anticipation 0.5 s, the deck lowers from above on the crane hook while its
@@ -649,6 +726,8 @@ local function finish(site: Site)
 		end
 	end)
 	site.props:Destroy()
+	Style.pop(site.root, false)
+	task.delay(0.2, site.gui.Destroy, site.gui)
 end
 
 local function reconcile()
@@ -714,9 +793,19 @@ local function eye(): Vector3
 end
 
 function ConstructionController.Start()
+	MarketplaceService.PromptProductPurchaseFinished:Connect(function()
+		local site = sites[tonumber(player:GetAttribute("DockPlot")) or 0]
+		if site and site.finish then
+			site.finish.setState("buy")
+		end
+	end)
 	task.spawn(function()
 		while true do
 			reconcile()
+			local at = eye()
+			for _, site in sites do
+				showNear(site, at)
+			end
 			task.wait(0.25)
 		end
 	end)

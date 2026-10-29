@@ -1563,10 +1563,12 @@ function DockService.Init()
 	remote.Name = "Dock_Upgrade"
 	remote.OnServerInvoke = function(player: Player, key: any): (boolean, string)
 		local ok, reason = buy(player, key)
-		busy[player] = true -- one purchase per second
-		task.delay(1, function()
-			busy[player] = nil
-		end)
+		if reason ~= "Busy" then -- one purchase per second; a refused tap must not re-arm it (taps < 1 s apart stuck it)
+			busy[player] = true
+			task.delay(1, function()
+				busy[player] = nil
+			end)
+		end
 		return ok, reason
 	end
 	remote.Parent = folderNet

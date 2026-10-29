@@ -5,13 +5,18 @@
 -- QuestService's player attributes (QuestOffer_<npcId>, QuestId, QuestStage). Also puts the "Quests" prompt on your
 -- own island's QuestTablet (Workspace.QuestPontoons.Island<plot>), which opens UI/QuestTablet. And moored quest boats
 -- (Workspace.QuestBoats, Moored) bob and sway on the shared wave field with their giver, locally (the server leaves
--- them still at the slot).
+-- them still at the slot). Quests open later (QuestService gate): on QuestReveal, once per player, a calm wordless
+-- intro: the Quests button appears with one pop of its steady gold ring and a chime, and when the first giver has tied
+-- up, the camera eases over to them and back (skippable).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
+local Menu = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Menu"))
 local QuestData =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Quests"):WaitForChild("Data"))
 local QuestTablet = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("QuestTablet"))
@@ -30,6 +35,7 @@ local bobs: { [Model]: Bob } = {} -- moored boat -> its still (server) pivot and
 local function glyphFor(m: Model): string?
 	if
 		player:GetAttribute("CinematicPlaying") == true -- the talk shot (and any cutscene): it filled the top of the frame
+			and player:GetAttribute("CinematicId") ~= "QuestReveal" -- the reveal shows the "!"
 		or m:GetAttribute("QuestIsland") ~= player:GetAttribute("DockPlot") -- someone else's givers
 		or m:GetAttribute("Leaving") == true
 	then
@@ -163,7 +169,7 @@ local function tabletPrompt()
 	local plot = player:GetAttribute("DockPlot")
 	local folder = Workspace:FindFirstChild("QuestPontoons")
 	for _, isl in if folder then folder:GetChildren() else {} do
-		local tablet = isl:FindFirstChild("QuestTablet")
+		local tablet = isl:FindFirstChild("QuestTablet", true) -- under TabletStand, once quests open
 		local prompt = tablet and tablet:FindFirstChild("QuestPrompt")
 		local mine = isl.Name == `Island{plot}`
 		if prompt and not mine then
@@ -184,6 +190,70 @@ local function tabletPrompt()
 	end
 end
 
+-- on foot, no cutscene, panel or build view: the reveal never cuts into play
+local function free(): boolean
+	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	return hum ~= nil
+		and hum.SeatPart == nil
+		and player:GetAttribute("CinematicPlaying") ~= true
+		and player:GetAttribute("MenuOpen") ~= true
+		and player:GetAttribute("BuildHidesMenu") ~= true
+end
+
+-- my first moored giver (nil while they are still sailing in)
+local function moored(npcs: Instance): Model?
+	for _, m in npcs:GetChildren() do
+		if
+			m:IsA("Model")
+			and m:GetAttribute("QuestIsland") == player:GetAttribute("DockPlot")
+			and m:GetAttribute("Moored") == true
+			and m:GetAttribute("Leaving") ~= true
+		then
+			return m
+		end
+	end
+	return nil
+end
+
+local revealed = false
+local function reveal(npcs: Instance)
+	if revealed or player:GetAttribute("QuestReveal") ~= true then
+		return
+	end
+	revealed = true
+	task.spawn(function()
+		repeat
+			task.wait(1)
+		until free()
+		Menu.pulse("Quests") -- one pop, then a steady ring till the panel opens
+		AudioController.play("UI_Success")
+		local giver, t0 = moored(npcs), os.clock()
+		while not giver and os.clock() - t0 < 60 do -- they sail in (~26 s)
+			task.wait(1)
+			giver = moored(npcs)
+		end
+		repeat
+			task.wait(0.5)
+		until free()
+		local cam = Workspace.CurrentCamera
+		if not (giver and cam) then
+			return
+		end
+		local at = giver:GetPivot().Position + Vector3.new(0, 2, 0)
+		local flat = Vector3.new(at.X - cam.CFrame.Position.X, 0, at.Z - cam.CFrame.Position.Z)
+		local dir = if flat.Magnitude > 1 then flat.Unit else Vector3.zAxis
+		local eye = at - dir * 26 + Vector3.new(0, 10, 0)
+		CameraController.PlayCinematic({
+			{ from = cam.CFrame, to = CFrame.lookAt(eye, at), duration = 1.8 },
+			{
+				from = CFrame.lookAt(eye, at),
+				to = CFrame.lookAt(eye + dir * 5, at),
+				duration = 2.6,
+			},
+		}, { id = "QuestReveal", skippable = true })
+	end)
+end
+
 function QuestController.Start()
 	player.AttributeChanged:Connect(function(name)
 		if
@@ -195,6 +265,10 @@ function QuestController.Start()
 		end
 	end)
 	local npcs = Workspace:WaitForChild("Npcs")
+	reveal(npcs)
+	player:GetAttributeChangedSignal("QuestReveal"):Connect(function()
+		reveal(npcs)
+	end)
 	task.spawn(function()
 		while true do
 			for _, c in npcs:GetChildren() do

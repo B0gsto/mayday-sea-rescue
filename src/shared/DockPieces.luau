@@ -656,6 +656,15 @@ end
 local function slipCrane(m: Model, b: CFrame)
 	local mastH = 24
 	local base = b * CFrame.new(16, TOP, 66)
+	-- the Lego crane (M_Prop_JettyCrane: base at its origin, jib along its front toward the berth); Parts until it loads
+	local src = DockPieces.meshes and DockPieces.meshes("M_Prop_JettyCrane")
+	if src then
+		local aim = (b * CFrame.new(0, TOP, 30)).Position
+		src:PivotTo(CFrame.lookAt(base.Position, aim))
+		src.Name = "JettyCraneMesh"
+		src.Parent = m
+		return
+	end
 	studTop(
 		brick(m, "CraneBase", Vector3.new(4.4, 1.2, 4.4), base * CFrame.new(0, 0.6, 0), BRICK_RED)
 	)
@@ -3157,135 +3166,149 @@ function DockPieces.buildStation(b: CFrame): Model
 	local at = DockConfig.stationSpot(b)
 	local baseY = 0.8
 
-	part(
-		m,
-		"Base",
-		Vector3.new(16, baseY, 12),
-		at * CFrame.new(0, baseY / 2, 0),
-		BRICK_BLUE,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"BackWall",
-		Vector3.new(16, 4, 0.8),
-		at * CFrame.new(0, baseY + 2, -5.4),
-		BRICK_YELLOW,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"SideWallL",
-		Vector3.new(0.8, 2.4, 10),
-		at * CFrame.new(-7.4, baseY + 1.2, 0),
-		BRICK_WHITE,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"SideWallR",
-		Vector3.new(0.8, 2.4, 10),
-		at * CFrame.new(7.4, baseY + 1.2, 0),
-		BRICK_WHITE,
-		M.SmoothPlastic
-	)
-	brickStuds(m, at, 16, 12, baseY + 0.25, BRICK_BLUE)
-
-	-- toolbox
-	part(
-		m,
-		"Toolbox",
-		Vector3.new(4.4, 2, 2.6),
-		at * CFrame.new(-4.6, baseY + 1, -2.8),
-		BRICK_RED,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"ToolboxLid",
-		Vector3.new(4.6, 0.5, 2.8),
-		at * CFrame.new(-4.6, baseY + 2.25, -2.8),
-		BRICK_WHITE,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"ToolboxHandle",
-		Vector3.new(1.8, 0.35, 0.35),
-		at * CFrame.new(-4.6, baseY + 2.7, -2.8),
-		GREY,
-		M.SmoothPlastic
-	)
-
-	-- mini crane
-	local crane = at * CFrame.new(4.6, baseY, -2.6)
-	part(
-		m,
-		"CraneBase",
-		Vector3.new(3, 0.8, 3),
-		crane * CFrame.new(0, 0.4, 0),
-		BRICK_ORANGE,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"CraneMast",
-		Vector3.new(0.8, 7, 0.8),
-		crane * CFrame.new(0, 4.3, 0),
-		BRICK_YELLOW,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"CraneJib",
-		Vector3.new(0.7, 0.7, 5.5),
-		crane * CFrame.new(0, 7.7, 1.8) * CFrame.Angles(math.rad(-18), 0, 0),
-		BRICK_YELLOW,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"CraneCable",
-		Vector3.new(0.12, 3.2, 0.12),
-		crane * CFrame.new(0, 5.4, 4.2),
-		GREY,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"CraneHook",
-		Vector3.new(0.9, 0.9, 0.9),
-		crane * CFrame.new(0, 3.6, 4.2),
-		BRICK_RED,
-		M.SmoothPlastic
-	)
-
 	-- tablet on its stand at the spawn-side edge, its screen turned toward the spawn (+Z, Marina.spawn)
 	local stand = at * CFrame.new(0, baseY, 3.6)
 	local face = stand
 		* CFrame.new(0, 5.4, 0)
 		* CFrame.Angles(0, math.pi, 0)
 		* CFrame.Angles(math.rad(-8), 0, 0)
-	part(
-		m,
-		"TabletStand",
-		Vector3.new(2.2, 0.6, 2.2),
-		stand * CFrame.new(0, 0.3, 0),
-		GREY,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"TabletPost",
-		Vector3.new(0.6, 3.6, 0.6),
-		stand * CFrame.new(0, 2.4, 0),
-		STEEL,
-		M.SmoothPlastic
-	)
+	-- the Lego kiosk (M_Prop_BuildStation, same footprint; its tablet frame holds the Tablet Part in a recess 8 degrees back)
+	local src = DockPieces.meshes and DockPieces.meshes("M_Prop_BuildStation")
+	if src then
+		src:PivotTo(at)
+		src.Name = "StationMesh"
+		src.Parent = m
+		face = at
+			* CFrame.new(0, 6.2, 3.6)
+			* CFrame.Angles(math.rad(-8), 0, 0)
+			* CFrame.new(0, 0, -0.15)
+			* CFrame.Angles(0, math.pi, 0)
+	else -- Parts until the mesh loads
+		part(
+			m,
+			"Base",
+			Vector3.new(16, baseY, 12),
+			at * CFrame.new(0, baseY / 2, 0),
+			BRICK_BLUE,
+			M.SmoothPlastic
+		)
+		part(
+			m,
+			"BackWall",
+			Vector3.new(16, 4, 0.8),
+			at * CFrame.new(0, baseY + 2, -5.4),
+			BRICK_YELLOW,
+			M.SmoothPlastic
+		)
+		part(
+			m,
+			"SideWallL",
+			Vector3.new(0.8, 2.4, 10),
+			at * CFrame.new(-7.4, baseY + 1.2, 0),
+			BRICK_WHITE,
+			M.SmoothPlastic
+		)
+		part(
+			m,
+			"SideWallR",
+			Vector3.new(0.8, 2.4, 10),
+			at * CFrame.new(7.4, baseY + 1.2, 0),
+			BRICK_WHITE,
+			M.SmoothPlastic
+		)
+		brickStuds(m, at, 16, 12, baseY + 0.25, BRICK_BLUE)
+
+		-- toolbox
+		part(
+			m,
+			"Toolbox",
+			Vector3.new(4.4, 2, 2.6),
+			at * CFrame.new(-4.6, baseY + 1, -2.8),
+			BRICK_RED,
+			M.SmoothPlastic
+		)
+		part(
+			m,
+			"ToolboxLid",
+			Vector3.new(4.6, 0.5, 2.8),
+			at * CFrame.new(-4.6, baseY + 2.25, -2.8),
+			BRICK_WHITE,
+			M.SmoothPlastic
+		)
+		part(
+			m,
+			"ToolboxHandle",
+			Vector3.new(1.8, 0.35, 0.35),
+			at * CFrame.new(-4.6, baseY + 2.7, -2.8),
+			GREY,
+			M.SmoothPlastic
+		)
+
+		-- mini crane
+		local crane = at * CFrame.new(4.6, baseY, -2.6)
+		part(
+			m,
+			"CraneBase",
+			Vector3.new(3, 0.8, 3),
+			crane * CFrame.new(0, 0.4, 0),
+			BRICK_ORANGE,
+			M.SmoothPlastic
+		)
+		part(
+			m,
+			"CraneMast",
+			Vector3.new(0.8, 7, 0.8),
+			crane * CFrame.new(0, 4.3, 0),
+			BRICK_YELLOW,
+			M.SmoothPlastic
+		)
+		part(
+			m,
+			"CraneJib",
+			Vector3.new(0.7, 0.7, 5.5),
+			crane * CFrame.new(0, 7.7, 1.8) * CFrame.Angles(math.rad(-18), 0, 0),
+			BRICK_YELLOW,
+			M.SmoothPlastic
+		)
+		part(
+			m,
+			"CraneCable",
+			Vector3.new(0.12, 3.2, 0.12),
+			crane * CFrame.new(0, 5.4, 4.2),
+			GREY,
+			M.SmoothPlastic
+		)
+		part(
+			m,
+			"CraneHook",
+			Vector3.new(0.9, 0.9, 0.9),
+			crane * CFrame.new(0, 3.6, 4.2),
+			BRICK_RED,
+			M.SmoothPlastic
+		)
+
+		part(
+			m,
+			"TabletStand",
+			Vector3.new(2.2, 0.6, 2.2),
+			stand * CFrame.new(0, 0.3, 0),
+			GREY,
+			M.SmoothPlastic
+		)
+		part(
+			m,
+			"TabletPost",
+			Vector3.new(0.6, 3.6, 0.6),
+			stand * CFrame.new(0, 2.4, 0),
+			STEEL,
+			M.SmoothPlastic
+		)
+	end
+
 	local tablet = part(
 		m,
 		"Tablet",
-		Vector3.new(6.4, 4.2, 0.35),
+		if src then Vector3.new(5.6, 3.4, 0.1) else Vector3.new(6.4, 4.2, 0.35),
 		face,
 		Color3.fromRGB(24, 28, 38),
 		M.SmoothPlastic

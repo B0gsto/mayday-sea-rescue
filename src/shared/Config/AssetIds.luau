@@ -218,6 +218,16 @@ AssetIds.Models = {
 		LOD0 = "rbxassetid://116545210869864",
 		LOD1 = "rbxassetid://120420678094169",
 	},
+	M_Prop_BuildStation = {
+		LOD0 = "rbxassetid://70642628167082",
+		LOD1 = "rbxassetid://134441018157921",
+		LOD2 = "rbxassetid://84319557185198",
+	},
+	M_Prop_JettyCrane = {
+		LOD0 = "rbxassetid://81092225516494",
+		LOD1 = "rbxassetid://130553205124624",
+		LOD2 = "rbxassetid://115318732571211",
+	},
 	M_Prop_SeaChest = { LOD0 = "rbxassetid://84375480737186" },
 	M_Rock_Boulder_01 = {
 		LOD0 = "rbxassetid://83907500439876",
@@ -737,6 +747,12 @@ AssetIds.Attachments = {
 	},
 	M_Hbr_Rope_Coil = {
 		ATT_End = Vector3.new(-1.5063, 0.0298, -0.5325),
+	},
+	M_Prop_BuildStation = {
+		ATT_Screen = Vector3.new(0, 6.2, 3.6),
+	},
+	M_Prop_JettyCrane = {
+		ATT_Hook = Vector3.new(0, 14, -39.4),
 	},
 	M_Prop_SeaChest = {
 		ATT_LidHinge = Vector3.new(0, 3.1, -1.8),

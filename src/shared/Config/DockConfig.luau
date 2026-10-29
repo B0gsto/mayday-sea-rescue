@@ -76,6 +76,10 @@ DockConfig.BUILDINGS = {
 -- The Bunkhouse's people cap by level (docs/25 B); WorkerRules.W.CAP stays untouched, WorkerService reads this.
 DockConfig.BunkhouseCaps = { 10, 20, 30, 45, 60 }
 DockConfig.HutCap = 5 -- people the Rescue Hut sleeps before a Bunkhouse stands (the tutorial's first Builder)
+-- Systems the tree opens (UnlockTree.unlocked): a building key and the level it must reach. Quests (owner 2026-10-29:
+-- "presented later, not at the first start"): the Rescue Post (HQ Lv2), the first new district after the tutorial.
+DockConfig.Unlocks =
+	{ Quests = { key = "HQ", level = 2 } } :: { [string]: { key: string, level: number } }
 
 -- docs/27 placeholder prices (ECON1 owns the retune; tests/NewPlayerPace + tests/Pacing check the pace)
 DockConfig.SEA_PLATE_CASH = { SeaPlate1 = 1500, SeaPlate2 = 4500 } -- ~2 early / ~3 HQ2-stage rescues (docs/23 (s))

@@ -1,7 +1,7 @@
 --!strict
 -- QuestPontoons (docs/23 (p), WP-27): each island's Lego quest pontoon (RingLayout.Islands[i].quest.pontoon) and quest
--- tablet on its stand (lots.QuestTablet; the screen part is named "QuestTablet", QuestController binds its prompt on
--- your own island), in Workspace.QuestPontoons.Island<i>. And the quest boats: a giver (NpcFactory R15, in
+-- tablet on its stand (lots.QuestTablet; Island<i>.TabletStand, only while the owner's quests are open; the screen
+-- part is named "QuestTablet", QuestController binds its prompt on your own island), in Workspace.QuestPontoons.Island<i>. And the quest boats: a giver (NpcFactory R15, in
 -- Workspace.Npcs, named by npc id) stands in a small Lego boat that sails in from out at sea to a free mooring slot
 -- (quest.slots), and sails off again (turn, out to sea, gone). QuestService decides who comes; this module moves them.
 -- Rig attributes: QuestIsland (island index), Moored (true once tied up), Leaving (true while sailing off). The boat
@@ -65,6 +65,7 @@ local function offset(i: number): Vector3
 	local f, S = RingLayout.Islands[i].frame, RingLayout.QUEST_SHIFT
 	return f.RightVector * S.X + f.LookVector * S.Y
 end
+local stands: { [number]: Model } = {} -- island -> its quest tablet stand
 local boatFolder: Folder
 local npcFolder: Instance
 
@@ -140,18 +141,22 @@ local function buildIsland(i: number, isl: RingLayout.Island, parent: Instance)
 	part(m, Vector3.new(0.15, 1.8, 2.8), pole * CFrame.new(0, 3, 1.4), GOLD, M.Fabric)
 
 	-- the tablet: a yellow Lego brick, the build tablet's stand and post, the screen facing back onto the plate
+	-- (its own model, parented only while its owner's quests are open: ShowTablet)
+	local t = Instance.new("Model")
+	t.Name = "TabletStand"
+	stands[i] = t
 	local T = isl.lots.QuestTablet.cframe
-	part(m, Vector3.new(3.2, 0.8, 3.2), T * CFrame.new(0, 0.4, 0), YELLOW, M.SmoothPlastic, true)
+	part(t, Vector3.new(3.2, 0.8, 3.2), T * CFrame.new(0, 0.4, 0), YELLOW, M.SmoothPlastic, true)
 	for _, x in { -0.8, 0.8 } do
 		for _, z in { -0.8, 0.8 } do
-			stud(m, T * CFrame.new(x, 0.9, z), YELLOW)
+			stud(t, T * CFrame.new(x, 0.9, z), YELLOW)
 		end
 	end
 	local stand = T * CFrame.new(0, 0.8, 0)
-	part(m, Vector3.new(2.2, 0.6, 2.2), stand * CFrame.new(0, 0.3, 0), GREY, M.Metal, true)
-	part(m, Vector3.new(0.6, 3.6, 0.6), stand * CFrame.new(0, 2.4, 0), STEEL, M.Metal, true)
+	part(t, Vector3.new(2.2, 0.6, 2.2), stand * CFrame.new(0, 0.3, 0), GREY, M.Metal, true)
+	part(t, Vector3.new(0.6, 3.6, 0.6), stand * CFrame.new(0, 2.4, 0), STEEL, M.Metal, true)
 	local tablet = part(
-		m,
+		t,
 		Vector3.new(6.4, 4.2, 0.35),
 		stand * CFrame.new(0, 5.4, 0) * CFrame.Angles(math.rad(-8), 0, 0),
 		Color3.fromRGB(24, 28, 38),
@@ -188,6 +193,13 @@ local function buildIsland(i: number, isl: RingLayout.Island, parent: Instance)
 	icon.Parent = screen
 	m.Parent = parent
 	models[i] = m
+	if shifted[i] then -- its owner's Ramp Wharf stood before the pontoons were built
+		local delta = offset(i)
+		m:PivotTo(m:GetPivot() + delta)
+		if not t:IsDescendantOf(m) then
+			t:PivotTo(t:GetPivot() + delta)
+		end
+	end
 end
 
 -- A small Lego boat (~12 x 5), pivot at sea level, LookVector = bow.
@@ -410,9 +422,12 @@ function QuestPontoons.Shift(i: number, on: boolean)
 	local before = offset(i)
 	shifted[i] = on or nil
 	local delta = offset(i) - before
-	local m = models[i]
+	local m, t = models[i], stands[i]
 	if m then
 		m:PivotTo(m:GetPivot() + delta)
+	end
+	if t and not (m and t:IsDescendantOf(m)) then -- the stand is out of the world while no quests are open
+		t:PivotTo(t:GetPivot() + delta)
 	end
 	for _, b in QuestPontoons.Boats(i) do
 		b.home += delta
@@ -420,6 +435,15 @@ function QuestPontoons.Shift(i: number, on: boolean)
 		if b.state == "moored" then
 			place(b, b.home)
 		end
+	end
+end
+
+-- The quest tablet of island i stands only while its owner has quests open (QuestService.sail).
+function QuestPontoons.ShowTablet(i: number, on: boolean)
+	local t, m = stands[i], Workspace:FindFirstChild("QuestPontoons")
+	local isl = m and m:FindFirstChild(`Island{i}`)
+	if t and isl then
+		t.Parent = if on then isl else nil
 	end
 end
 
