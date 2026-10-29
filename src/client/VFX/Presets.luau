@@ -1143,11 +1143,11 @@ Presets.ALL.plate_drop = preset({
 	job = "spectacle",
 	layers = {
 		with(
-			groundRing("foam_ring", FOAM, curve(40, 135, outCubic), 1.3),
+			groundRing("foam_ring", FOAM, curve(12, 50, outCubic), 1.3), -- x4 by VFXKit at a plate radius
 			{ transparency = { 0, 0.2, 0.75 } }
 		),
 		with(
-			groundRing("shockwave_ring", WHITE, curve(30, 115, outCubic), 0.7, 0.04),
+			groundRing("shockwave_ring", WHITE, curve(10, 40, outCubic), 0.7, 0.04),
 			{ transparency = { 0, 0.3, 1 } }
 		),
 		with(crown(6, 8, 18), { ring = true }),

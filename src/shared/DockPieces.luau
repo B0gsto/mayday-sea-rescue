@@ -2811,7 +2811,7 @@ local function seaPlate(m: Model, b: CFrame, key: string)
 			false, false, false, false
 		local a = Instance.new("Attachment")
 		a.Name = "ATT_BargeMoor"
-		a.CFrame = CFrame.new(10, sea, -d / 2 - 7) * CFrame.Angles(0, -math.pi / 2, 0)
+		a.CFrame = CFrame.new(10, sea, -d / 2 - 9.5) * CFrame.Angles(0, -math.pi / 2, 0) -- the barge is 15.8 wide
 		a.Parent = marks
 	end
 	for _, p in m:GetDescendants() do
