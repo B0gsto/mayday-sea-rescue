@@ -26,7 +26,7 @@ local SPUR_R, SPUR_END = -48, 12 -- island frame: west of the HQ (|r| <= 27), ea
 local BED = Color3.fromRGB(40, 96, 208) -- Lego blue (the bridge beam)
 local RUBBER = Color3.fromRGB(39, 42, 49)
 local CAP = Color3.fromRGB(163, 162, 165) -- light bluish grey roller
-local CHEVRON = "rbxassetid://78049657862775" -- art/source/ui/belt_chevron.svg
+local CHEVRON = "rbxassetid://136235158774044" -- art/source/ui/belt_chevron.svg
 local MAT = Enum.Material.SmoothPlastic
 
 local function part(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): Part

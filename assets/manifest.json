@@ -12280,6 +12280,15 @@
   "source": "assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Frame_ALB.png",
   "type": "Image"
  },
+ "Image:9277915b38d3af42a4e70c087b8540751631a7d5cca726e61ec7bef0cb52a590": {
+  "assetId": "136235158774044",
+  "imageId": "136235158774044",
+  "moderation": "Reviewing",
+  "name": "BeltChevron",
+  "sha": "9277915b38d3af42a4e70c087b8540751631a7d5cca726e61ec7bef0cb52a590",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-29/convey1/belt_chevron_down.png",
+  "type": "Image"
+ },
  "Image:92ce6eed16d1f1ddc631d3caa90fcb2a2a1b3255bdb951b0447f1a249b04f985": {
   "assetId": "133080607858423",
   "imageId": "133080607858423",
