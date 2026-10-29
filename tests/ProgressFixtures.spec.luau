@@ -539,6 +539,30 @@ return function(t)
 		end
 	end)
 
+	t.test("quests stay hidden until the tree gate; a save with quests keeps them", function()
+		local function open(raw)
+			local d = load(raw)
+			local s = QuestRules.decode(d.flags.quest)
+			return QuestRules.open(s, UnlockTree.unlocked("Quests", d.dock.levels)), s
+		end
+		for _, name in { "brandNew", "beatBuildHQ", "beatSpin", "beatDone", "brokeEarly" } do
+			t.expect({ name, (open(F[name]())) }).toEqual({ name, false })
+		end
+		t.expect((open(F.midGame()))).toBe(true) -- the Rescue Post stands
+		-- an old save mid-quest at HQ Lv1: quest and progress kept, quests open, and the open bit round-trips
+		local raw = F.beatDone()
+		raw.flags = { quest = { a = "Dog", s = "back", xBell = true, nQuestMaud = 20123 } }
+		local ok, s = open(raw)
+		t.expect(ok).toBe(true)
+		t.expect(s.active).toBe("Dog")
+		t.expect(s.stage).toBe("back")
+		t.expect(s.done.Bell).toBe(true)
+		t.expect(QuestRules.started(s)).toBe(true) -- no reveal for it
+		s.open = true
+		t.expect(QuestRules.decode(QuestRules.encode(s)).open).toBe(true)
+		t.expect(QuestRules.decode(QuestRules.encode(QuestRules.new())).open).toBeNil()
+	end)
+
 	t.test("legacy saves keep what they earned and drop removed content", function()
 		local d = load(F.legacyRanks())
 		t.expect(d.rep).toBe(4200) -- kept as saved, never read

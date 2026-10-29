@@ -9,6 +9,7 @@ return function(t)
 	local Marina = t.load("src/shared/Marina.luau")
 	local IslandPlates = t.load("src/server/World/IslandPlates.luau")
 	local Bridges = t.load("src/server/World/Bridges.luau")
+	local Conveyors = t.load("src/server/World/Conveyors.luau")
 	DP.scaleTo = function(m: Model, s: number) -- Model:ScaleTo round its WorldPivot (BaseParts are all it moves here)
 		local pivot = m.WorldPivot
 		for _, d in m:GetDescendants() do
@@ -62,10 +63,11 @@ return function(t)
 	local b = Marina.berth(1)
 	local ground = { plates, DP.base(b), DP.streets(b) }
 
-	t.test("the plates, quay edges, streets and bridges", function()
+	t.test("the plates, quay edges, streets, bridges and belts", function()
 		local world = Instance.new("Folder")
 		IslandPlates.place(world)
 		Bridges.place(world)
+		Conveyors.place(world)
 		for i = 1, Marina.COUNT do
 			DP.base(Marina.berth(i)).Parent = world
 			DP.streets(Marina.berth(i)).Parent = world
