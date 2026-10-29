@@ -388,14 +388,22 @@ end
 
 function BayDecor.Init() end
 
+local ownedHooks: { [Player]: RBXScriptConnection } = {}
+
 function BayDecor.Start()
 	DataService.OnLoaded(function(player: Player)
 		build(player)
-		player:GetAttributeChangedSignal("CosOwned"):Connect(function()
+		if ownedHooks[player] then -- a reload (DataDev "rejoin") must not stack a second hook
+			ownedHooks[player]:Disconnect()
+		end
+		ownedHooks[player] = player:GetAttributeChangedSignal("CosOwned"):Connect(function()
 			build(player)
 		end)
 	end)
-	Players.PlayerRemoving:Connect(remove)
+	Players.PlayerRemoving:Connect(function(player: Player)
+		ownedHooks[player] = nil
+		remove(player)
+	end)
 end
 
 return BayDecor
