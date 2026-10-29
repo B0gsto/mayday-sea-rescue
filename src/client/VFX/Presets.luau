@@ -339,6 +339,8 @@ Presets.ALL = {
 				delay = 0.1,
 			},
 		},
+		-- the bow wave's wash, every mooring (the tug horn is rationed to HORN_GAP in DepotController)
+		sounds = { { clip = "FX_SplashSmall", volume = 0.5, pitch = 0.7 } },
 	},
 	-- feedback: a flapper tick while the prize wheel spins: a stud-thick arc whirls round the flapper and yellow
 	-- stud chips fly off the rim

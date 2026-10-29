@@ -72,6 +72,7 @@ function PushButton.build(parent: Instance, name: string, cf: CFrame, opts: Opti
 	sound.Name = "Click"
 	sound.SoundId = CLICK.id
 	sound.Volume = CLICK.volume
+	sound.RollOffMaxDistance = 60 -- a button click, not heard across the island
 	sound.Parent = base
 
 	local pressing = false

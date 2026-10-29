@@ -525,6 +525,9 @@ function PrizeWheelController.Init()
 			}
 		)
 		confetti(payload.userId, payload.rarity)
+		if tonumber(payload.userId) ~= player.UserId then -- the winner already hears the jackpot at the wheel
+			AudioController.play("FX_Chime", nil, 0.6)
+		end
 	end)
 
 	for _, model in CollectionService:GetTagged("PrizeWheel") do

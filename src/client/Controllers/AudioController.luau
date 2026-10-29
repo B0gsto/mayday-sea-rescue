@@ -199,10 +199,19 @@ local function emitterAt(at: Vector3): Attachment
 	return a
 end
 
+local lastPlayed: { [string]: number } = {} -- clip -> os.clock() of its last one shot
+local stingUntil = 0 -- a music one shot (a fanfare) is playing: the music bed ducks under it
+
 function AudioController.play(name: string, at: Vector3?, volume: number?, pitch: number?): Sound?
 	local clip = AudioConfig.Clips[name]
-	if not clip then
+	local t = os.clock()
+	-- the same clip twice in one frame (a button's own click on top of the global one) only stacks louder
+	if not clip or t - (lastPlayed[name] or -1) < 0.04 then
 		return nil
+	end
+	lastPlayed[name] = t
+	if AudioConfig.categoryOf(name) == "Music" then
+		stingUntil = t + 4 -- shortcut: a fixed 4 s for the crate fanfare sting; read TimeLength if longer stings land
 	end
 	local parent: Instance = if at then emitterAt(at) else SoundService
 	local s = AudioController.newSound(name, parent, false)
@@ -244,7 +253,8 @@ local function setBed(b: Bed, level: number, dt: number, rate: number?)
 	b.level += (level - b.level) * k
 	local v = b.base * b.level
 	b.sound.Volume = v
-	if v > 0.003 and not b.sound.IsPlaying then
+	-- a one-shot bed (the debrief) that ended starts again only when it is faded back up, never on its fade-out
+	if v > 0.003 and not b.sound.IsPlaying and (b.sound.Looped or level > b.level) then
 		b.sound.TimePosition = if b.fromStart then 0 else rng:NextNumber(0, 10) -- desynchronise loops
 		b.sound:Play()
 	elseif v <= 0.003 and b.sound.IsPlaying then
@@ -605,6 +615,10 @@ local function updateMusic(dt: number, now: number)
 	end
 	local rate = 1 / math.max(MIX.musicFade, 0.1) * 2
 	local level = 1 - MIX.stormDuck * storm
+	if now < stingUntil then -- the fanfare leads, the bed dips fast under it
+		level *= 0.25
+		rate = 6
+	end
 	for name, b in music do
 		setBed(b, if name == musicCue then level else 0, dt, rate)
 	end
@@ -677,7 +691,11 @@ local function hookTicks()
 		local ev = net and net:WaitForChild("PlayerDataChanged", 30)
 		if ev and ev:IsA("RemoteEvent") then
 			ev.OnClientEvent:Connect(function(data: any)
-				if type(data) == "table" and type(data.award) == "table" then
+				if
+					type(data) == "table"
+					and type(data.award) == "table"
+					and data.award.reason ~= "Workers:Gather" -- per-minute crew pay stays quiet (owner 2026-10-29)
+				then
 					AudioController.play("UI_Pickup", nil, 1, rng:NextNumber(0.98, 1.06))
 				end
 			end)
@@ -728,6 +746,9 @@ function AudioController.Init()
 		music[name] = b
 	end
 	music.Music_Debrief.sound.Looped = false
+	music.Music_Debrief.sound.Ended:Connect(function()
+		debriefUntil = 0 -- the track is over: back to the calm cue, not 70 s of silence
+	end)
 
 	-- settings binding through player attributes, for code that prefers them
 	for _, cat in AudioConfig.Categories do
@@ -777,6 +798,18 @@ function AudioController.Start()
 			AudioController.play(if d and d.grade == "Fail" then "UI_Fail" else "UI_Success")
 		end)
 	end
+
+	-- world Sounds made outside this controller (server flares, island beds, buttons, Creator Store models) join
+	-- a group so the Settings sliders reach them: loops are ambience, the rest SFX
+	local function adopt(d: Instance)
+		if d:IsA("Sound") and d.SoundGroup == nil then
+			d.SoundGroup = AudioController.group(if d.Looped then "Ambience" else "SFX")
+		end
+	end
+	for _, d in Workspace:GetDescendants() do
+		adopt(d)
+	end
+	Workspace.DescendantAdded:Connect(adopt)
 
 	local gui = player:WaitForChild("PlayerGui")
 	for _, d in gui:GetDescendants() do
