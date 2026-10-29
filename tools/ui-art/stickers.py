@@ -79,16 +79,6 @@ def beacon():
     return gem_defs, stem_l + gem + facet
 
 
-def ring():
-    """The beacon's ground ring (a Decal on a flat Part, 24 studs): orange band, rims both sides, four inward ticks."""
-    c = lambda col, w: f'<circle cx="200" cy="200" r="160" fill="none" stroke="{col}" stroke-width="{w}"/>'
-    ticks = "".join(f'<path d="M178,48 L222,48 L200,108 Z" transform="rotate({a} 200 200)" fill="#FF9A3D" stroke="#fff" stroke-width="14" stroke-linejoin="round" paint-order="stroke"/>'
-                    f'<path d="M178,48 L222,48 L200,108 Z" transform="rotate({a} 200 200)" fill="#FF9A3D" stroke="{INK}" stroke-width="6" stroke-linejoin="round"/>'
-                    for a in (0, 90, 180, 270))
-    defs = '<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE2A8"/><stop offset="1" stop-color="#FF9A3D"/></linearGradient>'
-    return defs, c(INK, 90) + c("#fff", 78) + c(INK, 54) + c("url(#g)", 40) + c("#fff", 6).replace('r="160"', 'r="168"').replace('stroke="#fff"', 'stroke="#fff" stroke-opacity="0.6"') + ticks
-
-
 def transport_pin():
     """The drop-off pad's marker: the waypoint pin in rescue blue with a white medical cross in its head."""
     src = (SRC / "waypoint_pin.svg").read_text()
@@ -110,9 +100,6 @@ for name, (layers, note) in STICKERS.items():
     render(name, 244, 256, keep=name == "map_player")
 svg("beacon_mark", beacon(), box=(-22, -10, 244, 372), note="the onboarding beacon over the goal: gem + stem")
 render("beacon_mark", 244, 372)
-svg("beacon_ring", ring(), box=(0, 0, 400, 400), note="the beacon's steady ground ring (Decal, top face)")
-subprocess.run([sys.executable, str(ROOT / "tools/ui-art/render.py"), str(SRC / "beacon_ring.svg"),
-                str(OUT / "beacon_ring.png"), "--size", "400", "400", "--scale", "2.56", "--keep"], check=True)  # 1024 px: it spans 24 studs
 transport_pin()
 subprocess.run([sys.executable, str(ROOT / "tools/ui-art/render.py"), str(SRC / "transport_pin.svg"),
                 str(OUT / "transport_pin.png"), "--size", "324", "324", "--scale", "3"], check=True)

@@ -4,12 +4,36 @@
 -- Lookout's, Boat Yard's, Rescue Boathouse's, Air Station's, Trophy Hall's and Sub Pen's Lv2/Lv3 and the Boathouse's Lv3 add-ons (M_Bld_*Addons) through DockPieces.meshes (the walk-in _COL hulls collide, the visual meshes don't), and the
 -- supply barge M_Veh_SupplyBarge is published as ReplicatedStorage.DepotTemplates.Barge for the clients' barge
 -- visuals (DepotController; clients can't load assets).
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local DockPieces = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("DockPieces"))
 
 local DepotArtService = {}
+
+local retrying: { [string]: boolean } = {}
+
+-- A live place never shows a code-built stand-in: a mesh that failed to load is retried (AssetLoader warns each
+-- failure) and every player's plot is rebuilt once it loads (its buildings are tagged MissingMesh).
+local function retry(asset: string)
+	if retrying[asset] then
+		return
+	end
+	retrying[asset] = true
+	task.spawn(function()
+		while not AssetLoader.getTemplate(asset, "LOD0") do
+			warn(`[DepotArtService] {asset} still not loaded: its buildings stand empty, retrying`)
+			task.wait(AssetLoader.RETRY_AFTER)
+		end
+		retrying[asset] = nil
+		local DockService = require(script.Parent:WaitForChild("DockService")) :: any
+		for _, player in Players:GetPlayers() do
+			DockService.Refresh(player)
+		end
+	end)
+end
 
 function DepotArtService.Init()
 	AssetLoader.preload({
@@ -31,8 +55,13 @@ function DepotArtService.Init()
 	})
 	-- shortcut: yields while the first load runs, so a plot synced in that second waits; two syncs of one plot in
 	-- that window could both place a Depot (DockService keeps the last). Make the sync re-entrant if it shows.
+	DockPieces.standIns = RunService:IsStudio()
 	DockPieces.meshes = function(asset: string): Model?
-		return AssetLoader.cloneStatic(asset, "LOD0", true)
+		local m = AssetLoader.cloneStatic(asset, "LOD0", true)
+		if not m and not DockPieces.standIns then
+			retry(asset)
+		end
+		return m
 	end
 end
 
