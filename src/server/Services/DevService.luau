@@ -39,6 +39,7 @@ local ProgressionService = require(script.Parent.ProgressionService)
 local SkillService = require(script.Parent.SkillService)
 local StormService = require(script.Parent.StormService)
 local VehicleService = require(script.Parent.VehicleService)
+local WorkerService = require(script.Parent.WorkerService)
 
 local DevService = {}
 DevService.Priority = 200 -- after every service it drives
@@ -285,6 +286,10 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 				PetService.DevReady(p)
 			end
 			return entry ~= nil, if entry then "At sanctuary" else "Refused"
+		end,
+		recruit = function(_, target, a) -- an Uncommon crew member of that category, as if rescued (they work if the building stands)
+			WorkerService.Recruit(target :: Player, a[2], 2, nil)
+			return true, "Recruited"
 		end,
 		bosun = function(_, target)
 			local p = target :: Player

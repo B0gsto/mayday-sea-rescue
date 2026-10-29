@@ -120,6 +120,7 @@ DevConfig.Actions = table.freeze({
 	tpPos = { POSITION },
 	vehicle = { PLAYER, enum(DevConfig.Vehicles) },
 	pet = { PLAYER, enum(DevConfig.Species) },
+	recruit = { PLAYER, enum({ "Builder", "Hauler", "Gatherer", "Rescuer", "Mechanic", "Medic" }) }, -- a crew member (live tests)
 	bosun = { PLAYER },
 	op = { PLAYER, enum(DevConfig.Ops) },
 	opEnd = { PLAYER, BOOL }, -- true: complete (graded), false: cancel

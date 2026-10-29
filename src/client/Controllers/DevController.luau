@@ -328,6 +328,12 @@ local function fill(b: DevBoard.Board)
 			call("pet", { tgt(), id })
 		end)
 	end
+	g = DevBoard.section(page, "Crew (target)") -- recruit as if rescued: they work if their building stands
+	for _, category in { "Builder", "Hauler", "Gatherer", "Rescuer", "Mechanic", "Medic" } do
+		DevBoard.button(g, `👷 {category}`, function()
+			call("recruit", { tgt(), category })
+		end)
+	end
 
 	-- Ops
 	page = b.tab("🆘 Ops")
