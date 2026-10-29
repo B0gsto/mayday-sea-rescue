@@ -6,6 +6,7 @@
 --   icon(parent, name)         UiImages.Kit art, else a neutral placeholder tile with the letter
 --   press(button, onActivate)  hover grow, press squash + bounce, gamepad ring, sounds-free
 --   pop(root, on)              pop-in / pop-out
+local ContentProvider = game:GetService("ContentProvider")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
@@ -156,18 +157,7 @@ end
 
 -- A square icon filling `parent` (keep it square with the parent's size). Placeholder: a white
 -- tile with the name's first letter, so the kit renders before the art lands.
-function Style.icon(parent: Instance, name: string): GuiObject
-	local id = Style.iconId(name)
-	if id then
-		local img = Instance.new("ImageLabel")
-		img.Name = "Icon"
-		img.BackgroundTransparency = 1
-		img.Image = id
-		img.ScaleType = Enum.ScaleType.Fit
-		img.Size = UDim2.fromScale(1, 1)
-		img.Parent = parent
-		return img
-	end
+local function placeholder(parent: Instance, name: string): Frame
 	local box = Instance.new("Frame")
 	box.Name = "Icon"
 	box.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -180,6 +170,33 @@ function Style.icon(parent: Instance, name: string): GuiObject
 	l.TextScaled = true
 	box.Parent = parent
 	return box
+end
+
+function Style.icon(parent: Instance, name: string): GuiObject
+	local id = Style.iconId(name)
+	if not id then
+		return placeholder(parent, name)
+	end
+	local img = Instance.new("ImageLabel")
+	img.Name = "Icon"
+	img.BackgroundTransparency = 1
+	img.Image = id
+	img.ScaleType = Enum.ScaleType.Fit
+	img.Size = UDim2.fromScale(1, 1)
+	img.Parent = parent
+	-- img1: art still downloading shows the letter tile until it lands, never an empty tile
+	if ContentProvider:GetAssetFetchStatus(id) ~= Enum.AssetFetchStatus.Success then
+		local box = placeholder(parent, name)
+		local conn = ContentProvider:GetAssetFetchStatusChangedSignal(id):Connect(function(status)
+			if status == Enum.AssetFetchStatus.Success then
+				box:Destroy()
+			end
+		end)
+		box.Destroying:Once(function()
+			conn:Disconnect()
+		end)
+	end
+	return img
 end
 
 -- Gamepad selection ring: a thick yellow rounded outline drawn over the selected button.
