@@ -17,6 +17,7 @@ return {
 	Markers = {
 		BuildArrow = "rbxassetid://74018470016385",
 		EdgePointer = "rbxassetid://115902828261976",
+		TrailChevron = "rbxassetid://89149604135562", -- art/source/ui/trail_chevron.svg: the onboarding trail step
 		Pin = {
 			Red = "rbxassetid://126485934783621",
 			Amber = "rbxassetid://102982529774636",
@@ -30,7 +31,6 @@ return {
 		MapPlayer = "rbxassetid://94128666441990",
 		MapCross = "rbxassetid://91359051719681",
 		BeaconMark = "rbxassetid://95202461577085",
-		BeaconRing = "rbxassetid://81584164235013",
 		TransportPin = "rbxassetid://82312333876842",
 	},
 	-- Small kit stickers (tools/ui-art/stickers.py, uia2): level stars, pet hearts, seat studs
