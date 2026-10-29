@@ -143,6 +143,15 @@ function CrewService.Join(player: Player, target: Player): (boolean, string)
 	return true, "ok"
 end
 
+local function freeSeat(model: Model): Seat?
+	for _, d in model:GetDescendants() do
+		if d:IsA("Seat") and not d.Occupant and not d.Disabled then
+			return d
+		end
+	end
+	return nil
+end
+
 local function seatPassenger(player: Player, model: Model)
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -177,8 +186,8 @@ local function addJoinPrompt(owner: Player, model: Model)
 	prompt:SetAttribute("CrewOwner", owner.UserId) -- the HUD hides it for the owner
 	prompt.Parent = root
 	prompt.Triggered:Connect(function(player)
-		if player == owner then
-			return
+		if player == owner or not freeSeat(model) then
+			return -- full boat: joining would leave them crew on the dock (REV2)
 		end
 		local ok = CrewService.Join(player, owner)
 		if ok then
@@ -188,15 +197,8 @@ local function addJoinPrompt(owner: Player, model: Model)
 end
 
 function CrewService.Init()
-	Net.event("CrewJoin").OnServerEvent:Connect(function(player, payload: any)
-		if type(payload) ~= "table" or type(payload.targetUserId) ~= "number" then
-			return
-		end
-		local target = Players:GetPlayerByUserId(payload.targetUserId)
-		if target then
-			CrewService.Join(player, target)
-		end
-	end)
+	-- CrewJoin is server -> client only (member updates): joining goes through the hull's prompt, in reach of the
+	-- boat (a remote join let anyone ride any crew's calls and pay from anywhere, REV2)
 	Net.event("CrewLeave").OnServerEvent:Connect(function(player)
 		CrewService.Leave(player)
 	end)

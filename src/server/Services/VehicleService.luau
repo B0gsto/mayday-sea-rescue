@@ -582,7 +582,16 @@ local function watchSeats(model: Model)
 					record.lastOccupiedAt = os.clock() -- someone sat down or just left
 				end
 			end)
+			-- the boat despawned with a rider: give their body its mass back
 			seatPart.Destroying:Connect(function()
+				local rider = masslessParts[seatPart]
+				if rider then
+					for _, part in rider do
+						if part.Parent then
+							part.Massless = false
+						end
+					end
+				end
 				masslessParts[seatPart] = nil
 			end)
 		end
