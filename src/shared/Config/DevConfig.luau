@@ -114,6 +114,7 @@ local POSITION: Arg = { kind = "position" }
 DevConfig.Actions = table.freeze({
 	god = { BOOL },
 	invisible = { BOOL },
+	freePlayer = { BOOL }, -- you own no passes this session (MonetizationService DevFreePlayer)
 	tpSpot = { enum(DevConfig.SpotOrder) },
 	tpPlayer = { PLAYER },
 	bring = { PLAYER },
