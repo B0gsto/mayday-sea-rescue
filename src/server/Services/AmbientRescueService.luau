@@ -11,7 +11,8 @@
 -- Timed spawns go to the Outer ring or, FAR of the time, off an outer island. Nothing spawns in the lagoon or
 -- within HOME_CLEAR of a berth (the coves are the missions'). K13 (docs/16): one is always in view off each
 -- player's cove mouth. At the cap the oldest scene nobody is near makes way. A cold-open player gets no spawns
--- near them and boards nobody free-roam (their own swimmer comes first).
+-- near them and boards nobody free-roam (their own swimmer comes first). Sight spawns are the added density: they
+-- pay the lower tier (CASH x the Bronze grade); timed and cove-mouth ones pay CASH.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -82,7 +83,7 @@ end
 
 local function onDelivered(scene: Scene, n: number, driver: Player?)
 	if driver then
-		pcall(ProgressionService.Award, driver, AmbientRescueService.CASH * n, "AmbientRescue")
+		pcall(ProgressionService.Award, driver, scene.pay * n, "AmbientRescue")
 	end
 	if count(scene, "Water") + count(scene, "Aboard") == 0 then
 		remove(scene) -- a cluster stays until its last survivor is home
@@ -136,7 +137,8 @@ local function roll(): number
 	return rng:NextNumber()
 end
 
-local function spawnAt(pos: Vector3): Scene
+-- extra: a sight spawn (sea1's added density) pays the Bronze grade share of CASH, the lower tier (ECON1)
+local function spawnAt(pos: Vector3, extra: boolean?): Scene
 	nextId += 1
 	local mix = AmbientMix.pick(roll())
 	local scene: Scene = {
@@ -150,6 +152,9 @@ local function spawnAt(pos: Vector3): Scene
 		opsDriven = true, -- no hold prompt: the server boards them (below)
 		ambient = true,
 		bornAt = os.clock(),
+		pay = math.floor(
+			AmbientRescueService.CASH * (if extra then CallTypes.Payout.Grade.Bronze else 1)
+		),
 	}
 	scene.onDelivered = function(n: number, driver: Player?)
 		onDelivered(scene, n, driver)
@@ -274,7 +279,7 @@ local function stepSight()
 			remove(oldest)
 			table.remove(swimming, table.find(swimming, oldest) :: number)
 		end
-		table.insert(swimming, spawnAt(pos))
+		table.insert(swimming, spawnAt(pos, e.want > 1))
 		return -- one spawn per check: the sea fills over a few seconds, never in one frame
 	end
 end
