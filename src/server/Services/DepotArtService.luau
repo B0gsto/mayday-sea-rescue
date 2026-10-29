@@ -27,6 +27,7 @@ function DepotArtService.Init()
 		"M_Bld_SubPenAddons",
 		"M_Bld_TrophyHallAddons",
 		"M_Bld_WorkshopAddons",
+		"M_Prop_BuildStation",
 		"M_Veh_SupplyBarge",
 	})
 	-- shortcut: yields while the first load runs, so a plot synced in that second waits; two syncs of one plot in
