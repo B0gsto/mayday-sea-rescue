@@ -500,11 +500,12 @@ local function onGrant(payload: any)
 	})
 	board = b
 	fill(b)
-	-- the DEV HUD button: left of the minimap's bottom (desktop, minimap bottom right; under the wallet on touch), clear of the top strip (HudLayout). Studio and
-	-- the test place only: on the launch place an allowed dev opens the board with F8 or "/dev"
+	-- the DEV HUD button: left of the minimap's bottom (desktop, minimap bottom right; under the wallet on touch), clear of
+	-- the top strip (HudLayout). Every place, launch included (owner 2026-10-29: "the dev button on Prod also"): this only
+	-- runs after Dev_Grant, which the server sends to allowed devs alone (DevConfig.isAllowed), so players never see it
 	local hud = Instance.new("ScreenGui")
 	hud.Name = "DevBoardButton"
-	hud.Enabled = RunService:IsStudio() or game.PlaceId == 85419402278824 -- deploy/target.json
+	hud.Enabled = true
 	hud.ResetOnSpawn = false
 	hud.DisplayOrder = 59
 	Layout.prepare(hud)
