@@ -198,3 +198,11 @@ saves stay compatible: new rows default to "not built" and new `data` keys defau
 4. Is a shared crack in the centre lagoon OK? (It puts the friends pillar at the heart of the ring. The other choice
    is a private gate on every island's P8, which has fewer meetings and costs more parts.)
 5. Should the P1 ramp be a free toy, or should jump height feed a leaderboard/badge?
+
+## 7. Owner decisions (2026-10-29)
+
+1. **Direction C** (the Deep + Tide-Tech automation blend), as proposed.
+2. **Sub blasters**: the Deep has real sub combat. The submarine knocks monsters out with blasters. Keep it kid-safe: knocked out, not killed, with no gore. The calm/flip/untangle actions can stay as extra moves.
+3. **Steady teal light strip OK** on Tide-Tech (future-era) buildings only. It stays calm and steady, never flashing or pulsing. Every other building still never glows.
+4. **A private Deep gate on every island**, not a shared centre crack. Each island's outermost sea plate holds its own gate.
+5. Not answered: the P1 ramp is a free toy for now, with no leaderboard.
