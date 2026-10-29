@@ -1,13 +1,13 @@
 --!strict
 -- OnboardingController: the first session's world-shown tutorial (docs/16 section 4, docs/24 E) on
--- the client. No tutorial text and no choice UI: the world leads, a chip row counts the beats.
+-- the client. No tutorial text and no choice UI: the world leads (the beacon and its ground trail).
 --   docs/25 J: the guide arrow and pin go to the build stand -> the HQ card pulses -> the free Rescue Hut
 --   site (the beacon over it, the camera stays free) ->
 --   cold open (jet ski, first survivor, home) -> the Builder walks off the jetty -> the guide arrow
 --   and minimap pin go to the build station -> the Workshop card pulses in the tablet (the server
---   tops the wallet up to its price) -> the chip row shows the site's timer while the next call is
---   the goal -> the finished Workshop grants one spin and the arrow points at your island's prize wheel -> the chip row
---   gives way to the permanent Next chip (UI/NextChip).
+--   tops the wallet up to its price) -> the next call is the goal while the site runs -> the finished Workshop
+--   grants one spin and the arrow points at your island's prize wheel -> the permanent Next chip (UI/NextChip).
+--   No chip row of beats at the top (owner 2026-10-29: "it does not make sense to have it there").
 -- It reads only replicated facts: the Ops signals, the PlayerDataChanged snapshot, player and plot
 -- attributes (SiteKey / SiteProgress / SiteRate) and the Progression_GetData pull.
 -- Also here: the cold-open reward burst (B1, still seated on the jet ski), the seat pips and the
@@ -16,12 +16,10 @@ local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local TextService = game:GetService("TextService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
-local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
@@ -33,14 +31,11 @@ local DockController = require(script.Parent:WaitForChild("DockController"))
 local MapController = require(script.Parent:WaitForChild("MapController"))
 local Telemetry = require(Client:WaitForChild("Telemetry"))
 local UI = Client:WaitForChild("UI")
-local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
 local ColdOpenCue = require(UI:WaitForChild("ColdOpenCue"))
-local Glyph = require(UI:WaitForChild("Glyph"))
 local Layout = require(UI:WaitForChild("Layout"))
 local Menu = require(UI:WaitForChild("Menu"))
 local OnboardingBeacon = require(UI:WaitForChild("OnboardingBeacon"))
 local OnboardingReward = require(UI:WaitForChild("OnboardingReward"))
-local Style = require(UI:WaitForChild("Kit"):WaitForChild("Style"))
 
 local OnboardingController = {}
 OnboardingController.Priority = 85 -- after OpsController (80), before DockController (100)
@@ -66,22 +61,11 @@ local REWARD_HOLD = 4 -- s the reward burst keeps the debrief tablet back (Onboa
 local GLANCE = 1.4 -- s the camera looks at a freshly built site (beat 4 / beat 6)
 local TICK = 0.5 -- s between the site timer and the tablet-open checks
 
-local chipsGui: ScreenGui? = nil
-local chipViews: { [string]: { block: Frame, label: TextLabel, tick: Frame, scale: UIScale } } = {}
 local beat: Onboarding.Beat = "ColdOpen"
 local guide: string? = nil
 local lastTabletPulse: string? = nil
 local glanceSerial = 0
 local tickAt = 0
-local doneAt: number? = nil
-local holdingTick = false
-
-local CHIPS: { { id: string, label: string, icon: string? } } = {
-	{ id = "HQ", label = DockConfig.levelName("HQ", 1) }, -- the tutorial builds HQ Lv1, as its card names it
-	{ id = "Rescue", label = "Rescue", icon = "lifebuoy" },
-	{ id = "Workshop", label = "Workshop" },
-	{ id = "Spin", label = "Spin", icon = "spin" },
-}
 
 local function rootPosition(): Vector3?
 	local character = player.Character
@@ -399,195 +383,11 @@ local function seatPips(): () -> ()
 	end
 end
 
--- The tutorial's top row of goal chips (docs/24 E): icon + 1-3 words + a tick when the beat is done.
-local function makeChip(
-	bar: Frame,
-	info: { id: string, label: string, icon: string? },
-	x: number,
-	w: number
-): Frame
-	-- the UI kit look, one family with the Next chip (owner 2026-10-28): block chips with a 3D lip, the
-	-- icon on a white tile, FredokaOne
-	local root = Instance.new("Frame")
-	root.Name = "Chip_" .. info.id
-	root.BackgroundTransparency = 1
-	root.Position = UDim2.new(x, 3, 0, 0)
-	root.Size = UDim2.new(w, -6, 1, 0)
-	root.Parent = bar
-	local block, face =
-		Style.block(root, Style.grad("locked"), { radius = 10, lip = 5, border = 3 })
-	local icon = Instance.new("Frame")
-	icon.Name = "Icon"
-	icon.BackgroundTransparency = 1
-	icon.AnchorPoint = Vector2.new(0, 0.5)
-	icon.Position = UDim2.new(0, 5, 0.5, 0)
-	icon.Size = UDim2.fromOffset(32, 32)
-	icon.Parent = face
-	local _, tileFace = Style.block(
-		icon,
-		{ top = Color3.new(1, 1, 1), bottom = Color3.fromHex("D6E4F2") },
-		{ radius = 8, lip = 3, border = 2.5 }
-	)
-	local art = Instance.new("Frame")
-	art.BackgroundTransparency = 1
-	art.AnchorPoint = Vector2.new(0.5, 0.5)
-	art.Position = UDim2.fromScale(0.5, 0.5)
-	art.Size = UDim2.fromScale(0.8, 0.8)
-	art.Parent = tileFace
-	if info.id == "Workshop" or info.id == "HQ" then
-		BuildGlyph(art, { kind = "Building", key = info.id :: string })
-		-- yellow Lego bricks on the white tile, as on the Next chip
-		for _, b in art:GetChildren() do
-			if b:IsA("Frame") and b.BackgroundColor3 == Color3.new(1, 1, 1) then
-				b.BackgroundColor3 = Color3.fromHex("FFC928")
-			end
-		end
-	else
-		Style.icon(art, info.icon or "build")
-	end
-	local label = Style.label(face, info.label, 20)
-	label.Position = UDim2.fromOffset(44, 0)
-	label.Size = UDim2.new(1, -48, 1, 0)
-	label.TextXAlignment = Enum.TextXAlignment.Left
-	label.TextWrapped = false
-	-- the tick: a badge on the icon's corner, so the word keeps the chip's width
-	local tick = Instance.new("Frame")
-	tick.Name = "Tick"
-	tick.AnchorPoint = Vector2.new(0.5, 0.5)
-	tick.Position = UDim2.fromOffset(35, 7)
-	tick.Size = UDim2.fromOffset(17, 17)
-	tick.BackgroundColor3 = Color3.new(1, 1, 1)
-	tick.BorderSizePixel = 0
-	tick.Visible = false
-	tick.ZIndex = 3
-	tick.Parent = face
-	Style.corner(tick, 9)
-	Style.gradient(tick, Style.grad("buy"))
-	Style.stroke(tick, 2, true)
-	Glyph.draw("check", tick, Color3.new(1, 1, 1))
-	-- under 13 px the word is unreadable (iPhone SE device pass 2026-10-28: ~5 pt), so a narrow chip shows
-	-- its icon alone, centred, with the tick on its corner
-	-- one line (TextScaled wrapped "Rescue Hut"): the largest size up to 20 du that fits the width
-	local function fitLabel()
-		local px = label.AbsoluteSize.Y / 43 -- screen px per du (the face is 43 du high)
-		local need =
-			TextService:GetTextSize(label.Text, 20, Enum.Font.FredokaOne, Vector2.new(1e4, 1e4)).X
-		local size = math.min(20, 20 * label.AbsoluteSize.X / math.max(1, need * px))
-		label.TextSize = size
-		local roomy = size * px >= 13
-		label.Visible = roomy
-		icon.Position = if roomy then UDim2.new(0, 5, 0.5, 0) else UDim2.new(0.5, -16, 0.5, 0)
-		tick.Position = if roomy then UDim2.fromOffset(35, 7) else UDim2.new(0.5, 13, 0, 7)
-	end
-	label:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitLabel)
-	label:GetPropertyChangedSignal("Text"):Connect(fitLabel)
-	fitLabel()
-	local scale = Instance.new("UIScale") -- the current beat's chip stands a step larger
-	scale.Parent = root
-	chipViews[info.id] = { block = block, label = label, tick = tick, scale = scale }
-	return root
-end
-
-local function mountChips()
-	if chipsGui then
-		return
-	end
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "TutorialChips"
-	gui.ResetOnSpawn = false
-	gui.DisplayOrder = 17 -- over the HUD, under the menu panels
-	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	Layout.prepare(gui)
-	gui.Parent = playerGui
-	local bar = Instance.new("Frame")
-	bar.Name = "Bar"
-	bar.BackgroundTransparency = 1
-	bar.Size = UDim2.fromScale(1, 1)
-	bar.Parent = Layout.region(gui, "chips")
-	chipsGui = gui
-	-- each chip as wide as its icon + word, so every word gets the same text size
-	local widths, total = {}, 0
-	for i, info in CHIPS do
-		widths[i] = 50
-			+ TextService:GetTextSize(info.label, 20, Enum.Font.FredokaOne, Vector2.new(1e4, 1e4)).X
-		total += widths[i]
-	end
-	local x = 0
-	for i, info in CHIPS do
-		makeChip(bar, info, x / total, widths[i] / total)
-		x += widths[i]
-	end
-end
-
-local function renderChips()
-	local gui = chipsGui
-	if not gui then
-		return
-	end
-	local shown = dataReady
-		and beat ~= "ColdOpen"
-		and (beat ~= "Done" or holdingTick)
-		and not Layout.coldOpen()
-		and player:GetAttribute("MenuOpen") ~= true
-		and player:GetAttribute("CinematicPlaying") ~= true
-		and player:GetAttribute("DebriefShown") ~= true -- the debrief toast shares the top band (UI/OpsDebrief)
-	gui.Enabled = shown
-	if not shown then
-		return
-	end
-	local site = siteState()
-	-- the Hut's or the Workshop's chip shows its site's timer (both are Lv1 builds)
-	local digging = if site.key == Onboarding.HQ or site.key == Onboarding.WORKSHOP
-		then site.key
-		else nil
-	local work = if digging
-		then BuildTimer.work(DockConfig.Buildings[digging].levels[1].cash)
-		else 0
-	local left = if digging then BuildTimer.timeLeft(site.progress, site.rate, work) else 0
-	local done = {
-		HQ = owned[Onboarding.HQ] == true,
-		Rescue = totalRescues >= 1,
-		Workshop = owned[Onboarding.WORKSHOP] == true,
-		Spin = (tutorialStep or 0) >= Onboarding.STEP_DONE,
-	}
-	local here: { [string]: boolean } = {
-		HQ = beat == "BuildHQ" or beat == "HQSite",
-		Rescue = beat == "Rescue",
-		Workshop = beat == "BuildStation" or beat == "Build",
-		Spin = beat == "Spin",
-	}
-	for _, info in CHIPS do
-		local view = chipViews[info.id]
-		if view then
-			local complete = done[info.id] == true
-			local current = here[info.id] == true
-			view.tick.Visible = complete
-			view.scale.Scale = if current then 1.06 else 1
-			Style.recolor(
-				view.block,
-				Style.grad(if current then "blue" elseif complete then "green" else "locked")
-			)
-			if info.id == digging and not complete then
-				view.label.Text = BuildTimer.text(left)
-			else
-				view.label.Text = info.label
-			end
-		end
-	end
-end
-
 local function update()
 	if rewardPending and os.clock() >= rewardAt then
 		showReward()
 	end
 	beat = currentBeat()
-	-- the Spin chip ticks for a moment after the first spin before the Next chip takes the slot
-	if beat == "Done" and tutorialStep and tutorialStep >= Onboarding.STEP_DONE then
-		doneAt = doneAt or os.clock() + Onboarding.DONE_HOLD
-	else
-		doneAt = nil
-	end
-	holdingTick = beat == "Done" and doneAt ~= nil and os.clock() < doneAt
 	if dataReady then
 		local kind = if beat == "BuildStation" or beat == "BuildHQ"
 			then "station"
@@ -597,7 +397,6 @@ local function update()
 			else nil
 		setGuide(kind)
 	end
-	renderChips()
 	-- the tablet's HQ / Workshop card pulses while the tutorial points at the station
 	if os.clock() >= tickAt then
 		tickAt = os.clock() + TICK
@@ -615,7 +414,7 @@ end
 function OnboardingController.Init()
 	beacon = OnboardingBeacon.start()
 
-	-- a delivery sets Rescued before the next snapshot (the cold open's rescue is the first chip's tick)
+	-- a delivery sets Rescued before the next snapshot
 	local function readRescued()
 		local n = player:GetAttribute("Rescued")
 		if type(n) == "number" then
@@ -651,8 +450,7 @@ end
 function OnboardingController.Start()
 	ColdOpenCue.home() -- every delivery, for the session
 	seatPips()
-	mountChips()
-	-- pull the first snapshot: the beat, the reward's Cash roll and the chip row all read it
+	-- pull the first snapshot: the beat and the reward's Cash roll read it
 	task.spawn(function()
 		local net = Net.init()
 		local getData = net:WaitForChild("Progression_GetData", 30)
