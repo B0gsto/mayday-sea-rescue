@@ -30,7 +30,8 @@ local DockService = require(Services:WaitForChild("DockService"))
 local BoatBoard = {}
 
 local SLOT = 4.4 -- studs between models
-local MODEL_LEN = 3.6 -- a scale model's longest side
+local MODEL_MARGIN = 0.5 -- studs between a scale model and its pad's ends
+local MODEL_DEPTH, MODEL_H = 2.2, 2.4 -- a scale model's widest beam and tallest mast
 local SHELF_H = 2.6
 -- With the boathouse: the boat board stands in it (DockConfig.BOARD_SLOT, 17 studs between its walls): rows of
 -- ROW_N, each STEP higher and further back
@@ -114,6 +115,35 @@ local function inert(source: Model): Model
 		end
 	end
 	return m
+end
+
+-- the visible parts' box in the model's pivot frame: its size and its centre (pivot space)
+local function visibleBox(m: Model): (Vector3, Vector3)
+	local pivot = m:GetPivot()
+	local lo, hi = Vector3.one * math.huge, -Vector3.one * math.huge
+	for _, d in m:GetDescendants() do
+		if d:IsA("BasePart") and d.Transparency < 0.95 then
+			local h = d.Size / 2
+			for _, c in
+				{
+					Vector3.new(1, 1, 1),
+					Vector3.new(1, 1, -1),
+					Vector3.new(1, -1, 1),
+					Vector3.new(1, -1, -1),
+				}
+			do
+				for _, sign in { 1, -1 } do
+					local v = pivot:PointToObjectSpace(d.CFrame * (h * c * sign))
+					lo, hi = lo:Min(v), hi:Max(v)
+				end
+			end
+		end
+	end
+	if lo.X > hi.X then -- nothing visible: the whole model
+		local cf, size = m:GetBoundingBox()
+		return size, pivot:PointToObjectSpace(cf.Position)
+	end
+	return hi - lo, (hi + lo) / 2
 end
 
 local function displayName(id: string): string?
@@ -346,7 +376,12 @@ local function build(def: Def, berth: BasePart)
 	open.MaxActivationDistance = 10
 	open.RequiresLineOfSight = false
 	open:SetAttribute("FootOnly", true)
-	open.Parent = back
+	-- on the front shelf's front edge, under the models: a prompt on the backboard hid its name strip
+	local openAt = Instance.new("Attachment")
+	openAt.Name = "OpenSpot"
+	openAt.Parent = back
+	openAt.WorldPosition = (base * CFrame.new(0, SHELF_H - 0.9, -1.7)).Position
+	open.Parent = openAt
 
 	local board: Board = { def = def, rack = rack, back = back, busy = false }
 	if def.hook then
@@ -413,12 +448,21 @@ local function build(def: Def, berth: BasePart)
 				m = inert(m)
 			end
 			m.Name = "Model"
-			local size = m:GetExtentsSize()
-			m:ScaleTo(m:GetScale() * MODEL_LEN / math.max(size.X, size.Z, 0.1))
-			-- side on to the player, sitting on the pad
-			m:PivotTo(slot * CFrame.Angles(0, math.pi / 2, 0))
-			local cf, box = m:GetBoundingBox()
-			m:PivotTo(m:GetPivot() + Vector3.new(0, slot.Y + 0.1 - (cf.Y - box.Y / 2), 0))
+			-- fit the visible hull (the invisible root and body boxes differ per craft) into the pad, centred
+			local box, mid = visibleBox(m)
+			local k = math.min(
+				(pad.Size.X - 2 * MODEL_MARGIN) / math.max(box.Z, 0.1),
+				MODEL_DEPTH / math.max(box.X, 0.1),
+				MODEL_H / math.max(box.Y, 0.1)
+			)
+			m:ScaleTo(m:GetScale() * k) -- about the pivot: the box and its centre scale by k
+			-- side on to the player, resting on the pad (0.04 over its top: no shared plane)
+			m:PivotTo(
+				slot
+					* CFrame.new(0, 0.14 + box.Y * k / 2, 0)
+					* CFrame.Angles(0, math.pi / 2, 0)
+					* CFrame.new(-mid * k)
+			)
 			m.Parent = pad
 		end)
 	end
@@ -490,7 +534,8 @@ function BoatBoard.start(launch: Launch)
 		{
 			name = "BoatBoard",
 			vehicles = boats(),
-			rack = CFrame.new(4, Marina.DECK_TOP, 69), -- on the quay at the cove's head, facing the berth
+			-- on the quay at the cove's head, its back to the berth: you use it from the plate, not the curb
+			rack = CFrame.new(4, Marina.DECK_TOP, 69) * CFrame.Angles(0, math.pi, 0),
 			targets = {},
 			from = Vector3.new(0, 14.5, 0),
 			hook = JIB_Y,

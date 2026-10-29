@@ -9,7 +9,7 @@
     "name": "Brightwake Games"
   },
   "apiKey": "~/RobloxProjects/.roblox-api-key-brightwake",
-  "visibility": "PRIVATE",
+  "visibility": "PUBLIC",
   "teamCreate": false,
   "createdAt": "2026-10-20T17:52:32Z",
   "window": "Mayday: Sea Rescue (placeId: 74810284434342)"

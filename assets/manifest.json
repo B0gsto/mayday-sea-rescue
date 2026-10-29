@@ -364,7 +364,8 @@
    "T_AirStationAddons_Brick_RGH",
    "T_HQAddons_Brick_RGH",
    "T_TrophyHall_Brick_RGH",
-   "T_SubPen_Brick_RGH"
+   "T_SubPen_Brick_RGH",
+   "T_BuildStation_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -2067,6 +2068,15 @@
   "name": "T_HbrProps_Metal_MET",
   "sha": "18526f4eea2d9fedfc41a7dd4ea31981352c484ac64295084b5dc8f28c318bfe",
   "source": "assets/textures/M_Hbr_PropAtlas/T_HbrProps_Metal_MET.png",
+  "type": "Image"
+ },
+ "Image:185608eacb1e23330a75f1c385c5866c2364bfb7136ef32557ccd805fdbe1652": {
+  "assetId": "95343043756882",
+  "imageId": "95343043756882",
+  "moderation": "Reviewing",
+  "name": "Marker_TrailChevron2",
+  "sha": "185608eacb1e23330a75f1c385c5866c2364bfb7136ef32557ccd805fdbe1652",
+  "source": "build/status/2026-10-29/steps2/trail_chevron2.png",
   "type": "Image"
  },
  "Image:1865ef1821238b0422d770513645ad4da0248f6a4bd8f2756eef154d03e805c3": {
@@ -9376,6 +9386,15 @@
   "source": "assets/textures/M_Sea_LostPot/T_LostPot_Shell_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:70eddcf7e26776e64c564274b9ccef725753563f2577380ffcef44b7b8718946": {
+  "assetId": "89149604135562",
+  "imageId": "89149604135562",
+  "moderation": "Reviewing",
+  "name": "Marker_TrailChevron",
+  "sha": "70eddcf7e26776e64c564274b9ccef725753563f2577380ffcef44b7b8718946",
+  "source": "assets/ui/markers/trail_chevron.png",
+  "type": "Image"
+ },
  "Image:712c8e6fc3e8b488ab099232c47145f767efb30ac4a0534822d70cdae2c0e77b": {
   "assetId": "123349681431061",
   "imageId": "123349681431061",
@@ -9685,6 +9704,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Render_RGH.png",
   "type": "Image"
  },
+ "Image:7447ea84b02e92010b54cd4f3dd34087c9a9d556541eaf3aeff4042e55cbf2cc": {
+  "assetId": "122460484493925",
+  "imageId": "122460484493925",
+  "moderation": "Reviewing",
+  "name": "Marker_TrailChevron",
+  "sha": "7447ea84b02e92010b54cd4f3dd34087c9a9d556541eaf3aeff4042e55cbf2cc",
+  "source": "assets/ui/markers/trail_chevron.png",
+  "type": "Image"
+ },
  "Image:744d6e96ad62722894fc40119af7b8f9b83c548fd41709bd083653918d083a9c": {
   "assetId": "96847335271417",
   "imageId": "96847335271417",
@@ -9956,6 +9984,9 @@
   "type": "Image"
  },
  "Image:786fe6969f9479bdbd3d5893e3bb4671eef3a3bef1796f013ebb62369b30aac5": {
+  "aliases": [
+   "T_BuildStation_Brick_ALB"
+  ],
   "assetId": "83844922369104",
   "imageId": "83844922369104",
   "moderation": "Reviewing",
@@ -13380,7 +13411,8 @@
    "T_AirStationAddons_Brick_NOR",
    "T_HQAddons_Brick_NOR",
    "T_TrophyHall_Brick_NOR",
-   "T_SubPen_Brick_NOR"
+   "T_SubPen_Brick_NOR",
+   "T_BuildStation_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -17511,7 +17543,8 @@
    "T_AirStationAddons_Brick_MET",
    "T_HQAddons_Brick_MET",
    "T_TrophyHall_Brick_MET",
-   "T_SubPen_Brick_MET"
+   "T_SubPen_Brick_MET",
+   "T_BuildStation_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -21134,6 +21167,16 @@
   "route": "delivery",
   "sha": "0e1d10d990c1e06b206faa646c069769e17da3a440c3e815c0d6466cce4e0874",
   "source": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:0e1d4bd4c21c05f7a8c0f8a9e79bcffb184610b2c97716a59e9e4aa5261f0a17": {
+  "assetId": "134441018157921",
+  "moderation": "Approved",
+  "name": "M_Prop_BuildStation_LOD1",
+  "rbxm": "assets/models/M_Prop_BuildStation_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "0e1d4bd4c21c05f7a8c0f8a9e79bcffb184610b2c97716a59e9e4aa5261f0a17",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-484fbf5d/assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD1.fbx",
   "type": "Model"
  },
  "Model:0e43fe7fdfda7219c7577ef14147264ab1e8533a999e77e2306073214a04bff1": {
@@ -25326,6 +25369,16 @@
   "source": "assets/fbx/M_Veg_Heather_01/M_Veg_Heather_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:7f78b0478d3ce206321b365e24c70c8d7fbfd31e3465272a10f3ff278bd549f2": {
+  "assetId": "84319557185198",
+  "moderation": "Approved",
+  "name": "M_Prop_BuildStation_LOD2",
+  "rbxm": "assets/models/M_Prop_BuildStation_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "7f78b0478d3ce206321b365e24c70c8d7fbfd31e3465272a10f3ff278bd549f2",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-484fbf5d/assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:7ff52831b9ee8f0bdde5de49c517454caa8ed497644aa3c825e18674545e6d66": {
   "assetId": "121544299346636",
   "moderation": "Approved",
@@ -25636,6 +25689,16 @@
   "source": "assets/fbx/M_Veg_Wrack_Kit/M_Veg_Wrack_Kit_LOD1.fbx",
   "type": "Model"
  },
+ "Model:85f01f6f83c06953944cd3f28643884aebc56e3c9e39d902d7b0454e4e7c522f": {
+  "assetId": "81092225516494",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD0",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "85f01f6f83c06953944cd3f28643884aebc56e3c9e39d902d7b0454e4e7c522f",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-484fbf5d/assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:85f7812116bef40c03f40624199953f82de014063a04c8b9f60dfe417a8e958b": {
   "assetId": "107404077758895",
   "moderation": "Approved",
@@ -25714,6 +25777,16 @@
   "route": "delivery",
   "sha": "881368863450d5831e23857bc6490e4ac7db3189f1a8beea29814e930c84053c",
   "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:88a62180bcb4af72a987671c1655c82270371205558d1e2af61afae8e9da27d0": {
+  "assetId": "70642628167082",
+  "moderation": "Approved",
+  "name": "M_Prop_BuildStation_LOD0",
+  "rbxm": "assets/models/M_Prop_BuildStation_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "88a62180bcb4af72a987671c1655c82270371205558d1e2af61afae8e9da27d0",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-484fbf5d/assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD0.fbx",
   "type": "Model"
  },
  "Model:88cf34d31e9b919124372ed5a65ab7cab23b28782d5e7ac5961aecfa2eb832b5": {
@@ -25854,6 +25927,16 @@
   "route": "delivery",
   "sha": "8c4928267dfcfeda2bd4dfcdf39c9304c958fa86ea34acea0349bec71681c5b1",
   "source": "assets/fbx/M_Road_CornishHedge/M_Road_CornishHedge_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:8c8e8819dccecf31e736014c99d82764d559dee1322df568bb6e4729d52afd22": {
+  "assetId": "130553205124624",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD1",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "8c8e8819dccecf31e736014c99d82764d559dee1322df568bb6e4729d52afd22",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-484fbf5d/assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD1.fbx",
   "type": "Model"
  },
  "Model:8c9ca9bcaa9bb5f83adf78dff03d480f99b5016b4408327c73f829ae92d6b203": {
@@ -29076,6 +29159,16 @@
   "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD0.fbx",
   "type": "Model"
  },
+ "Model:e84cbb1193ef50d90a1e11d8838cdb526c6cb0ed751c1b851fd94fca2c80bfa4": {
+  "assetId": "115318732571211",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD2",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "e84cbb1193ef50d90a1e11d8838cdb526c6cb0ed751c1b851fd94fca2c80bfa4",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-484fbf5d/assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:e8c3fcb4978d9fd6558ca9f697f20626c48f14c77fc5018165c5800238b72bbf": {
   "assetId": "71070295467654",
   "moderation": "Approved",
@@ -29977,41 +30070,5 @@
   "sha": "ff72bda161daf5bf94ea42f1027a85be643fed957d38d0e06369be10ae3eb700",
   "source": "assets/fbx/M_Prop_SeaChest/M_Prop_SeaChest_LOD0.fbx",
   "type": "Model"
- },
- "Image:4408cd094ac1db377ebb595f0a87eb437e5be0bc25ffedc96423af916014efce": {
-  "assetId": "136452411239756",
-  "imageId": "136452411239756",
-  "moderation": "Reviewing",
-  "name": "FX1_core_flash",
-  "sha": "4408cd094ac1db377ebb595f0a87eb437e5be0bc25ffedc96423af916014efce",
-  "source": "build/prod/vfx/FX1_core_flash.png",
-  "type": "Image"
- },
- "Image:bd3f8665ffdba409488fb499abba44b3fd864cf9d80d6acc2979963384c7e4e1": {
-  "assetId": "92389586692257",
-  "imageId": "92389586692257",
-  "moderation": "Reviewing",
-  "name": "FX1_light_beam",
-  "sha": "bd3f8665ffdba409488fb499abba44b3fd864cf9d80d6acc2979963384c7e4e1",
-  "source": "build/prod/vfx/FX1_light_beam.png",
-  "type": "Image"
- },
- "Image:c85adc00e616f9aeb6e0a8a7a3e130f3a97c7464f90d5e4d3829884cb4e57984": {
-  "assetId": "102807810048685",
-  "imageId": "102807810048685",
-  "moderation": "Reviewing",
-  "name": "FX1_light_ray",
-  "sha": "c85adc00e616f9aeb6e0a8a7a3e130f3a97c7464f90d5e4d3829884cb4e57984",
-  "source": "build/prod/vfx/FX1_light_ray.png",
-  "type": "Image"
- },
- "Image:f935105ceafa69362a27d70eef0ab60bc3b7461dee5d9c2d4ea706b339661f97": {
-  "assetId": "131845697391608",
-  "imageId": "131845697391608",
-  "moderation": "Reviewing",
-  "name": "FX1_stud_ring",
-  "sha": "f935105ceafa69362a27d70eef0ab60bc3b7461dee5d9c2d4ea706b339661f97",
-  "source": "build/prod/vfx/FX1_stud_ring.png",
-  "type": "Image"
  }
 }

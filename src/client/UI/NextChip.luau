@@ -191,7 +191,7 @@ local function refresh()
 		doneAt = nil
 	end
 	if done and s and doneAt == nil then
-		doneAt = os.clock() + Onboarding.DONE_HOLD + 0.5 -- the tutorial's ticked Spin chip keeps the slot first
+		doneAt = os.clock() + 0.5
 	end
 	if not (r and s and done and doneAt and os.clock() >= doneAt) then
 		if r then

@@ -534,7 +534,9 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 		local want = if b then wantLevel >= 1 else owner ~= nil and owned[key] == true
 		local have = plot.buildings[key]
 		local shown = plot.levels[key] or 0
-		if want and owner and (not have or (b and shown < wantLevel)) then
+		-- MissingMesh: built while its mesh failed to load (DepotArtService refreshes once it loads)
+		local stale = if have then have:GetAttribute("MissingMesh") ~= nil else false
+		if want and owner and (not have or stale or (b and shown < wantLevel)) then
 			local m
 			if b and plot.siteKey == key and plot.site and (plot.siteLevel or 1) == wantLevel then
 				m = plot.site -- the site finished: the bricks that stood there are the building

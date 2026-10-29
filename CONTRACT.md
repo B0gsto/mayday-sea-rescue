@@ -268,7 +268,7 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   as saved, never read), `migrate` (old dock levels onto the tree, old crew hires paid back), `snapshot`,
   `canBuyVehicle`, `vehicleLock`. `ProgressionConfig`: craft unlocks (`needs` building, Cash price).
 - `ProgressionService`: `Award(player, cash, reason, flat?)` (storm, pass, friend and live-ops multipliers unless
-  `flat`), `GetData`, `CanUseVehicle`, `OwnsVehiclePass`, `SetFlag`, `RecordTraining(player, grade)`, `Refresh`.
+  `flat`, together capped at `ProgressionConfig.MaxCashMultiplier` x5), `GetData`, `CanUseVehicle`, `OwnsVehiclePass`, `SetFlag`, `RecordTraining(player, grade)`, `Refresh`.
   leaderstats Cash + Rescued. Studio: `ServerStorage.ProgressionDev`.
 - Skills (docs/25 F, K3): `shared/SkillRules` (pure: the four sectors `Captain` 315°, `Rescue` 45°, `Crew` 135°,
   `Industry` 225° and the four `Bridge` nodes at 0/90/180/270; each keystone carries its `minor` path and
