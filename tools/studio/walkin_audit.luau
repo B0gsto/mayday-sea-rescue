@@ -6,16 +6,15 @@
 --   python3 tools/studio/smoke.py lua Server tools/studio/walkin_audit.luau
 --   (echo 'WA_ARGS = { key = "Clinic", level = 2, keep = true }'; cat tools/studio/walkin_audit.luau) \
 --     | python3 tools/studio/smoke.py lua Server -    -- one building/level; keep = leave it standing for shots
-local Players = game:GetService("Players")
 local PathfindingService = game:GetService("PathfindingService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AssetLoader = require(ServerScriptService.Server.Assets.AssetLoader)
 local DockConfig = require(Shared.Config.DockConfig)
 local DockPieces = require(Shared.DockPieces)
-local DockService = require(ServerScriptService.Server.Services.DockService)
-local AssetLoader = require(ServerScriptService.Server.Assets.AssetLoader)
 DockPieces.meshes = DockPieces.meshes
 	or function(asset: string): Model?
 		return AssetLoader.cloneStatic(asset, "LOD0", true)
@@ -24,7 +23,23 @@ DockPieces.meshes = DockPieces.meshes
 local args = (getfenv() :: any).WA_ARGS or {}
 local player = Players:GetPlayers()[1]
 assert(player, "no player")
-local berth = DockService.GetBerth(player)
+-- this script runs in its own VM (a fresh DockService has no plots): find the berth by its Owner attribute
+local berth: BasePart? = nil
+for _ = 1, 60 do
+	for _, d in workspace:GetDescendants() do
+		if
+			d:IsA("BasePart")
+			and d:GetAttribute("Owner") == player.UserId
+			and d:GetAttribute("PlotIndex") ~= nil
+		then
+			berth = d
+		end
+	end
+	if berth then
+		break
+	end
+	task.wait(0.5)
+end
 assert(berth, "no plot")
 local frame = berth.CFrame -- the berth frame (DockService plot.frame = Marina.berth = the berth part)
 
@@ -67,7 +82,10 @@ local function audit(key: string, level: number, keep: boolean): string
 			local s = p.Size
 			local face = math.max(s.X * s.Z, s.X * s.Y, s.Y * s.Z)
 			if math.min(s.X, s.Y, s.Z) > 4 and face > 0.35 * area then
-				table.insert(boxes, `{p.Name}({math.floor(s.X)}x{math.floor(s.Y)}x{math.floor(s.Z)})`)
+				table.insert(
+					boxes,
+					`{p.Name}({math.floor(s.X)}x{math.floor(s.Y)}x{math.floor(s.Z)})`
+				)
 			end
 		elseif p:IsA("ProximityPrompt") then
 			table.insert(prompts, `prompt:{p.ActionText}`)
@@ -78,8 +96,9 @@ local function audit(key: string, level: number, keep: boolean): string
 	-- the start: 8 in front of the lot's front edge (-Z), on the ground
 	local start = floor((at * CFrame.new(0, 3, -d / 2 - 8)).Position)
 	local clear, reach = 0, 0
-	local path = PathfindingService:CreatePath({ AgentRadius = 1.5, AgentHeight = 5, AgentCanJump = true })
-	for i = -2, 2 do
+	local path =
+		PathfindingService:CreatePath({ AgentRadius = 1.5, AgentHeight = 5, AgentCanJump = true })
+	for i = -2, if args.fast then -3 else 2 do
 		for j = -2, 2 do
 			local top = floor((at * CFrame.new(i * w * 0.18, 3, j * d * 0.18)).Position)
 			if top then
@@ -105,7 +124,10 @@ local function audit(key: string, level: number, keep: boolean): string
 		"%-15s L%d mesh=%s box=%s fit=%d/25 reach=%d/%d acts=%s",
 		key,
 		level,
-		if #mesh > 0 then table.concat(mesh, "+") else "CODE",
+		if #mesh > 0
+			then table.concat(mesh, "+")
+			elseif m:GetAttribute("MissingMesh") then "MISSING"
+			else "CODE",
 		if #boxes > 0 then table.concat(boxes, ",") else "-",
 		clear,
 		reach,
@@ -119,10 +141,14 @@ local out = {}
 for _, key in DockConfig.BUILDINGS do
 	if key ~= "Harbour" and (args.key == nil or args.key == key) then
 		for l = 1, #DockConfig.Buildings[key].levels do
-			if args.level == nil or args.level == l then
+			if
+				(args.level == nil and not args.top)
+				or args.level == l
+				or (args.top and l == #DockConfig.Buildings[key].levels)
+			then
 				table.insert(out, audit(key, l, args.keep == true))
 			end
 		end
 	end
 end
-print(table.concat(out, "\n"))
+return table.concat(out, "\n")
