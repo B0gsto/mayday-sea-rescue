@@ -195,8 +195,10 @@ function ProgressionService.SetFlag(player: Player, name: string, value: any): b
 			return false
 		end
 		local count = 0
-		for _ in data.flags do
-			count += 1
+		for key in data.flags do
+			if not Rules.RETIRED_FLAGS[key] then -- the save drops retired flags first when over the budget
+				count += 1
+			end
 		end
 		if data.flags[name] == nil and clean ~= nil and count >= Rules.MAX_FLAGS then
 			return false

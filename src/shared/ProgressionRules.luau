@@ -285,8 +285,24 @@ end
 
 local CREW_REFUND = { Mechanic = 12000, Lifeguard = 9000, Dispatcher = 15000 } -- WP-15 hire prices
 
+-- Flags of cut systems (album, hub fog, lighthouses, challenges, events, logbook): kept as saved while
+-- there is room, never read. SetFlag does not count them, so they never block a live flag.
+local RETIRED_FLAGS: { [string]: boolean } = {
+	album = true,
+	foghub = true,
+	lighthouses = true,
+	challenges = true,
+	challengeMonth = true,
+	halloween = true,
+	logbook = true,
+	offDuty = true,
+	BeachFlag = true,
+	HarbourLight = true,
+}
+
 -- Fills missing fields and upgrades old versions. Accepts anything (corrupt saves included).
 Rules.MAX_FLAGS = MAX_FLAGS
+Rules.RETIRED_FLAGS = RETIRED_FLAGS
 
 function Rules.migrate(raw: any): PlayerData
 	local data = Rules.defaultData()
@@ -362,6 +378,7 @@ function Rules.migrate(raw: any): PlayerData
 		levels, refund = migrated :: { [string]: number }, paid
 	end
 	data.cash += refund
+	levels.Harbour = math.max(levels.Harbour or 0, 1) -- every island has the jetty (a corrupt `dock` lost it)
 	data.dock = { levels = levels, prepaid = {} }
 	local prepaid = data.dock.prepaid
 	if newDock and type(raw.dock.prepaid) == "table" then
@@ -498,13 +515,21 @@ function Rules.migrate(raw: any): PlayerData
 	data.lastSeen = if seen > 0 then seen else nil
 	if type(raw.flags) == "table" then
 		local n = 0
-		for name, value in raw.flags do
-			-- "station" was the removed Crew Pay idle-income pot: dropped so it frees its flag slot
-			if name ~= "station" and Rules.validFlagName(name) and n < MAX_FLAGS then
-				local clean = Rules.sanitizeFlag(value)
-				if clean ~= nil then
-					data.flags[name] = clean
-					n += 1
+		-- live flags first: past the budget, a retired flag gives way instead of a random live one (shop, streak)
+		for pass = 1, 2 do
+			for name, value in raw.flags do
+				-- "station" was the removed Crew Pay idle-income pot: dropped so it frees its flag slot
+				if
+					name ~= "station"
+					and Rules.validFlagName(name)
+					and (RETIRED_FLAGS[name] == true) == (pass == 2)
+					and n < MAX_FLAGS
+				then
+					local clean = Rules.sanitizeFlag(value)
+					if clean ~= nil then
+						data.flags[name] = clean
+						n += 1
+					end
 				end
 			end
 		end
