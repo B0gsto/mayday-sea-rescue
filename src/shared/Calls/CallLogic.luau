@@ -71,6 +71,9 @@ function CallLogic.isWater(pos: Vector3, area: string): boolean
 			return false
 		end
 	end
+	if RingLayout.nearSeaPlate(pos.X, pos.Z, A.PlateClear) then -- docs/27: built or not
+		return false
+	end
 	for _, bridge in RingLayout.Bridges do
 		if segmentDistance(pos, bridge.from, bridge.to) < A.BridgeClear then
 			return false

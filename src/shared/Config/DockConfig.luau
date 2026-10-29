@@ -12,8 +12,11 @@
 --   HQ2 Boathouse -> RIB, Boat Yard, Clinic; Boathouse Lv2 -> Lifeboat
 --   HQ3 Rescue Boathouse, Lookout Tower; Harbour Lv3 -> crane  HQ4 Air Station -> helicopter
 --   HQ5 Sub Pen -> submarine, Trophy Hall
+--   Sea plates (docs/27 section 1): SeaPlate1 Ramp Wharf (HQ1 + Workshop), SeaPlate2 Freight Wharf (HQ2 + Depot),
+--   Lego decks on pillars off the island's front edge (RingLayout.SeaPlates). Prices: DockConfig.SEA_PLATE_CASH.
 --   Decor: the jetty only.
 local Marina = require(script.Parent.Parent:WaitForChild("Marina"))
+local RingLayout = require(script.Parent:WaitForChild("RingLayout"))
 
 export type Level = {
 	cash: number,
@@ -56,6 +59,8 @@ DockConfig.BUILDINGS = {
 	"Harbour",
 	"Depot",
 	"Workshop",
+	"SeaPlate1", -- docs/27: right after the Workshop, so the Next chip offers it as soon as it is affordable
+	"SeaPlate2",
 	"Bunkhouse",
 	"FishShed",
 	"Boathouse",
@@ -71,6 +76,17 @@ DockConfig.BUILDINGS = {
 -- The Bunkhouse's people cap by level (docs/25 B); WorkerRules.W.CAP stays untouched, WorkerService reads this.
 DockConfig.BunkhouseCaps = { 10, 20, 30, 45, 60 }
 DockConfig.HutCap = 5 -- people the Rescue Hut sleeps before a Bunkhouse stands (the tutorial's first Builder)
+
+-- docs/27 placeholder prices (ECON1 owns the retune; tests/NewPlayerPace + tests/Pacing check the pace)
+DockConfig.SEA_PLATE_CASH = { SeaPlate1 = 1500, SeaPlate2 = 6000 }
+
+-- a sea plate's lot: its RingLayout.SeaPlates rect centre, the deck top (island frame, Y 0 = the plate top)
+local function seaSpot(key: string): (CFrame, Vector2)
+	local r = RingLayout.SeaPlates[key].rect
+	return isle((r[1] + r[2]) / 2, (r[3] + r[4]) / 2), Vector2.new(r[2] - r[1], r[4] - r[3])
+end
+local p1Spot, p1Size = seaSpot("SeaPlate1")
+local p2Spot, p2Size = seaSpot("SeaPlate2")
 
 local rows: { [string]: any } = {
 	HQ = {
@@ -160,6 +176,42 @@ local rows: { [string]: any } = {
 			},
 			{ cash = 1500, hq = 2, effect = "BuilderSlots5", piece = "SawBench" },
 			{ cash = 11000, hq = 3, effect = "BuilderSlots8", piece = "BoatFrame" },
+		} :: { Level },
+	},
+	SeaPlate1 = {
+		name = "Ramp Wharf",
+		desc = "Grow your island out to sea. Jump ramp!",
+		unlockAt = 1,
+		needs = { "Workshop" },
+		spot = p1Spot,
+		size = p1Size,
+		levels = {
+			{
+				cash = DockConfig.SEA_PLATE_CASH.SeaPlate1,
+				hq = 1,
+				product = "DockSeaPlate1",
+				robux = 15,
+				effect = "RampWharf",
+				piece = "Plate",
+			},
+		} :: { Level },
+	},
+	SeaPlate2 = {
+		name = "Freight Wharf",
+		desc = "A second barge mooring: more bricks.",
+		unlockAt = 2,
+		needs = { "Depot" },
+		spot = p2Spot,
+		size = p2Size,
+		levels = {
+			{
+				cash = DockConfig.SEA_PLATE_CASH.SeaPlate2,
+				hq = 2,
+				product = "DockSeaPlate2",
+				robux = 35,
+				effect = "FreightWharf",
+				piece = "Plate",
+			},
 		} :: { Level },
 	},
 	Bunkhouse = {

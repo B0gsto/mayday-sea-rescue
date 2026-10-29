@@ -69,6 +69,8 @@ return function(t)
 			DockRescueBoathouse = 99,
 			DockTrophyHall = 149,
 			DockClinic = 199,
+			DockSeaPlate1 = 15, -- docs/27 sea plates (Robux skips the Cash)
+			DockSeaPlate2 = 35,
 			DecorFlowerBed = 35,
 			DecorPicnicTable = 49,
 			DecorLampRow = 75,

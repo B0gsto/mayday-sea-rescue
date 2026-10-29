@@ -1136,4 +1136,51 @@ Presets.ALL.pickup_drops = preset({
 	punch = { fov = 3, shake = 0.12, time = 0.3 },
 })
 
+-- spectacle: a sea plate lands (docs/27 plate_drop; ConstructionController lowers the deck, then plays this at the
+-- deck centre on the water, radius = the plate's half width): one deep stud-snap, foam and white rings burst out
+-- under the whole plate, splash crowns and spray, Lego plates skip out low, a dust puff settles; gulls after
+Presets.ALL.plate_drop = preset({
+	job = "spectacle",
+	layers = {
+		with(
+			groundRing("foam_ring", FOAM, curve(40, 135, outCubic), 1.3),
+			{ transparency = { 0, 0.2, 0.75 } }
+		),
+		with(
+			groundRing("shockwave_ring", WHITE, curve(30, 115, outCubic), 0.7, 0.04),
+			{ transparency = { 0, 0.3, 1 } }
+		),
+		with(crown(6, 8, 18), { ring = true }),
+		with(drops(30, { 20, 30 }, 55, 2.4), { ring = true }),
+		with(plates({ RED, WHITE, YELLOW, SEA }, 24), { speed = { 22, 32 }, spread = { 20, 20 } }),
+		with(puffs(10, FOAM, 4, 9, 0.9), { ring = true, speed = { 6, 10 }, spread = { 80, 80 } }),
+	},
+	sounds = {
+		{ clip = "FX_PlasticDrop", volume = 1, pitch = 0.55 } :: FxSound, -- the deep CLICK
+		{ clip = "FX_Thud", delay = 0.02, volume = 0.8, pitch = 0.6 } :: FxSound,
+		{ clip = "Splash_Entry", delay = 0.08, volume = 0.7, pitch = 0.8 } :: FxSound,
+		{ clip = "Gull_Flock", delay = 0.9, volume = 0.6 } :: FxSound,
+	},
+	punch = { fov = 3, shake = 0.35, time = 0.35 },
+})
+
+-- feedback: a craft flies off the Ramp Wharf's jump ramp (SeaPlateController, at the lip): a spray fan off the lip,
+-- a foam ring under it; a whoosh and a splash
+Presets.ALL.ramp_jump = preset({
+	job = "feedback",
+	layers = {
+		crown(2, 5, 10),
+		drops(16, { 18, 26 }, 35, 2),
+		with(
+			groundRing("foam_ring", FOAM, curve(6, 14, outCubic), 0.9),
+			{ transparency = { 0.1, 0.3, 0.8 } }
+		),
+	},
+	sounds = {
+		{ clip = "FX_Whoosh", volume = 0.6, pitch = 1.3 } :: FxSound,
+		{ clip = "FX_SplashSmall", delay = 0.05, volume = 0.7 } :: FxSound,
+	},
+	punch = { fov = -4, shake = 0, time = 0.35 },
+})
+
 return Presets

@@ -38,6 +38,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
+local RingLayout = require(Config:WaitForChild("RingLayout"))
 local TelemetryNames = require(Shared:WaitForChild("TelemetryNames"))
 local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
@@ -311,6 +312,24 @@ function TelemetryService.Companion(player: Player, species: string, step: strin
 	TelemetryService.Step(player, "Companion", species, step, species)
 end
 
+-- Expand funnel (docs/27): CardSeen -> Bought -> Built -> Used, one session per sea plate. Built also logs
+-- PlateBuilt (value = minutes this session, the length and day buckets).
+function TelemetryService.Expand(player: Player, plate: string, step: string)
+	TelemetryService.Step(player, "Expand", plate, step, plate)
+	local session = sessions[player]
+	if step == "Built" and session then
+		local seconds = os.clock() - session.joinedAt
+		TelemetryService.Custom(
+			player,
+			"PlateBuilt",
+			math.floor(seconds / 60),
+			plate,
+			Events.lengthBucket(seconds),
+			session.day
+		)
+	end
+end
+
 -- A Robux prompt closed (MonetizationService, from MarketplaceService's Prompt*PurchaseFinished).
 function TelemetryService.RobuxPrompt(player: Player, kind: string, key: string, purchased: boolean)
 	if not (player and player.Parent) then
@@ -515,6 +534,22 @@ end
 local function clientStep(player: Player, name: string, a: any, b: any, c: any, d: any)
 	if name == "TabletOpened" then
 		TelemetryService.Funnel(player, "TabletOpened")
+	elseif name == "Expand" then
+		-- the build card focused (any plate), or the first ramp jump (an owned Ramp Wharf only)
+		if
+			type(b) == "string"
+			and RingLayout.SeaPlates[b] ~= nil
+			and (
+				a == "CardSeen"
+				or (
+					a == "Used"
+					and b == "SeaPlate1"
+					and player:GetAttribute("DockSeaPlate1") == true
+				)
+			)
+		then
+			TelemetryService.Expand(player, b, a)
+		end
 	elseif name == "Device" then
 		local session = sessions[player]
 		if session and Events.Devices[a] then

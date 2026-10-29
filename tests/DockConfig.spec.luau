@@ -13,7 +13,7 @@ return function(t)
 			t.expect(b ~= nil).toBe(true)
 			t.expect(#b.name > 0 and #string.split(b.name, " ") <= 3).toBe(true)
 			t.expect(#string.split(b.desc, " ") <= 10).toBe(true)
-			t.expect(#b.levels >= 3).toBe(true)
+			t.expect(#b.levels >= (if string.find(key, "^SeaPlate") then 1 else 3)).toBe(true) -- docs/27: one level
 			t.expect(b.unlockAt >= 1 and b.unlockAt <= 5).toBe(true)
 			t.expect(b.size.X > 0 and b.size.Y > 0).toBe(true)
 			for n, lvl in b.levels do
@@ -106,8 +106,8 @@ return function(t)
 		local boxes = {}
 		for _, key in D.BUILDINGS do
 			local b = D.Buildings[key]
-			if key == "Harbour" then
-				continue -- on the water
+			if key == "Harbour" or string.find(key, "^SeaPlate") then
+				continue -- on the water (sea plates: tests/SeaPlates.spec.luau)
 			end
 			local l = Marina.ISLAND:ToObjectSpace(b.spot)
 			local hx = (math.abs(l.XVector.X) * b.size.X + math.abs(l.ZVector.X) * b.size.Y) / 2

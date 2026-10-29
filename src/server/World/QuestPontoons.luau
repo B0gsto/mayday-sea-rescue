@@ -54,6 +54,17 @@ export type Boat = {
 }
 
 local fleets: { [number]: { [number]: Boat } } = {}
+local shifted: { [number]: boolean? } = {} -- docs/27: island i's owner has the Ramp Wharf (RingLayout.QUEST_SHIFT)
+local models: { [number]: Model } = {}
+
+-- world offset of island i's pontoon, boats and tablet (zero until its owner's Ramp Wharf stands)
+local function offset(i: number): Vector3
+	if not shifted[i] then
+		return Vector3.zero
+	end
+	local f, S = RingLayout.Islands[i].frame, RingLayout.QUEST_SHIFT
+	return f.RightVector * S.X + f.LookVector * S.Y
+end
 local boatFolder: Folder
 local npcFolder: Instance
 
@@ -176,6 +187,7 @@ local function buildIsland(i: number, isl: RingLayout.Island, parent: Instance)
 	icon.ScaleType = Enum.ScaleType.Fit
 	icon.Parent = screen
 	m.Parent = parent
+	models[i] = m
 end
 
 -- A small Lego boat (~12 x 5), pivot at sea level, LookVector = bow.
@@ -276,12 +288,12 @@ end
 
 -- where island i's quest tablet screen is
 function QuestPontoons.TabletAt(i: number): Vector3
-	return RingLayout.Islands[i].lots.QuestTablet.cframe.Position + Vector3.new(0, 4, 0)
+	return RingLayout.Islands[i].lots.QuestTablet.cframe.Position + Vector3.new(0, 4, 0) + offset(i)
 end
 
 -- a point on the pontoon deck beside the boat (dev teleports, the pin)
 function QuestPontoons.Beside(b: Boat): Vector3
-	local P = RingLayout.Islands[b.island].quest.pontoon
+	local P = RingLayout.Islands[b.island].quest.pontoon + offset(b.island)
 	return (P * CFrame.new(0, 3, P:PointToObjectSpace(b.home.Position).Z)).Position
 end
 
@@ -299,8 +311,8 @@ function QuestPontoons.Arrive(i: number, npc: Data.Npc): Boat?
 	if not slot then
 		return nil
 	end
-	local home = slots[slot]
-	local P = RingLayout.Islands[i].quest.pontoon
+	local home = slots[slot] + offset(i)
+	local P = RingLayout.Islands[i].quest.pontoon + offset(i)
 	local side = math.sign(home:PointToObjectSpace(P.Position).X)
 	local lane = home * CFrame.new(-side * LANE, 0, 0)
 	local start = lane * CFrame.new(0, 0, OUT) -- home's LookVector points at the plate: +Z is out to sea
@@ -325,11 +337,11 @@ function QuestPontoons.Arrive(i: number, npc: Data.Npc): Boat?
 	b.model:SetAttribute("Giver", npc.id)
 	b.model:SetAttribute("QuestIsland", i)
 	run(b, IN_TIME, function(a: number): CFrame
-		if a < 0.85 then
+		if a < 0.85 then -- b.lane / b.home: QuestPontoons.Shift may move them mid-way
 			local u = a / 0.85
-			return start:Lerp(lane, 1 - (1 - u) * (1 - u))
+			return start:Lerp(b.lane, 1 - (1 - u) * (1 - u))
 		end
-		return lane:Lerp(home, ease((a - 0.85) / 0.15))
+		return b.lane:Lerp(b.home, ease((a - 0.85) / 0.15))
 	end, function()
 		b.state = "moored"
 		setRig(b, "Moored", true)
@@ -387,6 +399,27 @@ function QuestPontoons.Snap(b: Boat)
 		b.path, b.done = nil, nil
 		place(b, b.home)
 		done()
+	end
+end
+
+-- docs/27: island i's pontoon, tablet and boats move out to its owner's Ramp Wharf (on) or back (off).
+function QuestPontoons.Shift(i: number, on: boolean)
+	if (shifted[i] == true) == on then
+		return
+	end
+	local before = offset(i)
+	shifted[i] = on or nil
+	local delta = offset(i) - before
+	local m = models[i]
+	if m then
+		m:PivotTo(m:GetPivot() + delta)
+	end
+	for _, b in QuestPontoons.Boats(i) do
+		b.home += delta
+		b.lane += delta
+		if b.state == "moored" then
+			place(b, b.home)
+		end
 	end
 end
 

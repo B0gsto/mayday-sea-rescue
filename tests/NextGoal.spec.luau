@@ -34,7 +34,15 @@ return function(t)
 		t.expect(g.kind).toBe("Build")
 		t.expect(g.level).toBe(1)
 		t.expect(g.key ~= "HQ" and g.key ~= "Depot").toBe(true)
-		local all = { Harbour = 1, HQ = 1, Depot = 1, Workshop = 1, Bunkhouse = 1, FishShed = 1 }
+		local all = {
+			Harbour = 1,
+			HQ = 1,
+			Depot = 1,
+			Workshop = 1,
+			SeaPlate1 = 1,
+			Bunkhouse = 1,
+			FishShed = 1,
+		}
 		g = N.next(facts({ cash = 1, levels = all }))
 		t.expect(g.key).toBe("HQ")
 		t.expect(g.level).toBe(2)

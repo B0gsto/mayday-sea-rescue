@@ -239,6 +239,23 @@ local G = DockBlueprints.GLYPHS
 G.HQ = G.Station -- same station silhouette
 G.Harbour = G.Pontoon -- the jetty and pontoon
 G.AirStation = G.Hangar -- the hangar (the pad shares its card)
+G.SeaPlate1 = { -- docs/27: a deck on three pillars, the jump ramp off its end
+	b(0.05, 0.42, 0.62, 0.1),
+	b(0.1, 0.52, 0.07, 0.38),
+	b(0.33, 0.52, 0.07, 0.38),
+	b(0.56, 0.52, 0.07, 0.38),
+	b(0.72, 0.56, 0.24, 0.08),
+	b(0.84, 0.46, 0.12, 0.1),
+}
+G.SeaPlate2 = { -- docs/27: a deck on three pillars, the barge alongside
+	b(0.05, 0.42, 0.62, 0.1),
+	b(0.1, 0.52, 0.07, 0.38),
+	b(0.33, 0.52, 0.07, 0.38),
+	b(0.56, 0.52, 0.07, 0.38),
+	b(0.7, 0.6, 0.26, 0.14),
+	b(0.74, 0.5, 0.08, 0.1),
+	b(0.84, 0.5, 0.08, 0.1),
+}
 
 function DockBlueprints.glyph(item: Item): { Box }
 	return DockBlueprints.GLYPHS[item.key] or DockBlueprints.GLYPHS.Boathouse

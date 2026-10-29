@@ -36,6 +36,7 @@ return function(t)
 		t.expect(D.bargeLoads(2, 0)).toBe(4)
 		t.expect(D.bargeLoads(1, 3)).toBe(2 + 3 * D.HAUL_PER)
 		t.expect(D.bargeLoads(1, 0, 0.5)).toBe(3) -- Hand Carts
+		t.expect(D.bargeLoads(2, 0, 0, true)).toBe(6) -- docs/27: the Freight Wharf's second barge
 		t.expect(D.loadsFor(20)).toBe(2)
 		t.expect(D.loadsFor(21)).toBe(3)
 		t.expect(D.loadsFor(600)).toBe(60)

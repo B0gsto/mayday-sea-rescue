@@ -59,10 +59,19 @@ return function(t)
 	end)
 
 	t.test("the HQ needs every row the current HQ offers built first", function()
-		local hq1 = { Harbour = 1, HQ = 1, Depot = 1, Workshop = 1, Bunkhouse = 1, FishShed = 1 }
+		local hq1 = {
+			Harbour = 1,
+			HQ = 1,
+			Depot = 1,
+			Workshop = 1,
+			SeaPlate1 = 1,
+			Bunkhouse = 1,
+			FishShed = 1,
+		}
 		t.expect(U.nextHqNeed({ Harbour = 1, HQ = 1 })).toEqual({
 			"Depot",
 			"Workshop",
+			"SeaPlate1",
 			"Bunkhouse",
 			"FishShed",
 		})
@@ -76,12 +85,13 @@ return function(t)
 			HQ = 2,
 			Depot = 1,
 			Workshop = 1,
+			SeaPlate1 = 1,
 			Bunkhouse = 1,
 			FishShed = 1,
 			Boathouse = 1,
 		}
 		ok, reason, _, need = U.canBuild("HQ", 3, hq2, 1e9)
-		t.expect({ ok, reason, need }).toEqual({ false, "Needs", "BoatYard" })
+		t.expect({ ok, reason, need }).toEqual({ false, "Needs", "SeaPlate2" }) -- docs/27: the plates join the tree
 		t.expect(U.canRobux("HQ", 3, hq2)).toBe(false) -- Robux skips the Cash, never the HQ's needs
 		t.expect(U.nextHqNeed({ HQ = 5, Harbour = 3 })).toBeNil()
 	end)

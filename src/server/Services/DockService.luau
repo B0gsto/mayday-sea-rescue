@@ -60,6 +60,9 @@ local NpcFactory = require(script.Parent.Parent.Npc.NpcFactory)
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local PrizeWheel = require(Shared:WaitForChild("PrizeWheel"))
 local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
+local QuestPontoons =
+	require(script.Parent.Parent:WaitForChild("World"):WaitForChild("QuestPontoons"))
+local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local SkillRules = require(Shared:WaitForChild("SkillRules"))
 local SkillService = require(script.Parent:WaitForChild("SkillService"))
 local SpinService = require(script.Parent:WaitForChild("SpinService"))
@@ -585,6 +588,33 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 		end
 	end
 	syncStreets(plot, owner, beat)
+	-- docs/27: the quest pontoon moves out to the Ramp Wharf; its teal brick waits until it is picked up
+	QuestPontoons.Shift(plot.index, owner ~= nil and UnlockTree.levelOf(levels, "SeaPlate1") >= 1)
+	local plate: Model? = plot.buildings.SeaPlate1
+	local teal = plate and plate:FindFirstChild("TealBrick")
+	if teal and data and type(data.flags) == "table" and data.flags.tealBrick then
+		teal:Destroy()
+	elseif teal and not teal:FindFirstChild("TealPrompt") then
+		local prompt = Instance.new("ProximityPrompt")
+		prompt.Name = "TealPrompt"
+		prompt.ActionText = "Pick up"
+		prompt.HoldDuration = 0.2
+		prompt.MaxActivationDistance = 10
+		prompt.RequiresLineOfSight = false
+		prompt.Triggered:Connect(function(who: Player)
+			local d: any = DataService.Get(who)
+			if who ~= owners[plot.index] or not d then
+				return
+			end
+			if type(d.flags) ~= "table" then
+				d.flags = {}
+			end
+			d.flags.tealBrick = true -- docs/27 seed 1: a "?" plinth in the Trophy Hall (syncTrophies' pass)
+			DataService.MarkDirty(who)
+			teal:Destroy()
+		end)
+		prompt.Parent = teal
+	end
 	-- old boards read the merged aliases (Hangar, Helipad, Station, ...)
 	for _, key in { "Pontoon", "Crane", "LifeboatSlip", "Hangar", "Helipad", "Station" } do
 		plot.berth:SetAttribute(key, if owned[key] == true then true else nil)
@@ -747,8 +777,15 @@ local function depotParams(player: Player, data: any): (DepotRules.Params, numbe
 		data.dockBuildings,
 		{ Hauler = tonumber(player:GetAttribute("SkillSlotsHauler")) or 0 }
 	)
-	local p: DepotRules.Params =
-		{ cap = DepotRules.cap(level), drop = DepotRules.bargeLoads(level, haul, e.depotRefill) }
+	local p: DepotRules.Params = {
+		cap = DepotRules.cap(level),
+		drop = DepotRules.bargeLoads(
+			level,
+			haul,
+			e.depotRefill,
+			UnlockTree.levelOf(data.dock.levels, "SeaPlate2") >= 1
+		),
+	}
 	local c = data.construction
 	if c then
 		local work = workOf(c.key, c.level)
@@ -989,6 +1026,9 @@ local function syncTrophies(plot: Plot, owner: Player?)
 		for _, key in BadgeRules.trophies(tableOf(data.badgeCounters), tableOf(data.badgesAwarded)) do
 			table.insert(cups, BadgeConfig.Badges[key].name)
 		end
+		if tableOf(data.flags).tealBrick then
+			table.insert(cups, "?") -- docs/27 seed 1: the teal brick from the Ramp Wharf
+		end
 		items = TrophyRules.items(
 			tableOf(data.workers) :: any,
 			TrophyRules.wheelPrizes(tableOf(data.flags)),
@@ -1197,6 +1237,9 @@ local function startConstruction(player: Player, data: any, key: string, level: 
 		false,
 		(data.tutorialStep or 0) >= Onboarding.STEP_DONE
 	)
+	if RingLayout.SeaPlates[key] then
+		Telemetry.Expand(player, key, "Bought")
+	end
 	stepDepot(player, data, os.time()) -- the Depot fills up to now before the site draws from it
 	data.construction = {
 		key = key,
@@ -1383,6 +1426,16 @@ local function finishConstruction(plot: Plot, player: Player, data: any)
 	end
 	lastBuild[player] = { key = c.key, cash = cashOf(c.key, c.level) }
 	Telemetry.Build(player, c.key, c.level or 1, true, false)
+	if RingLayout.SeaPlates[c.key] then
+		Telemetry.Expand(player, c.key, "Built")
+		if c.key == "SeaPlate2" then -- Used: the second barge's first mooring (DepotController draws it)
+			task.delay(DepotRules.nextAt(os.time(), bargeOffset(player)) + 1, function()
+				if player.Parent then
+					Telemetry.Expand(player, c.key, "Used")
+				end
+			end)
+		end
+	end
 	data.construction = nil
 	if DockConfig.Buildings[c.key] then
 		local n = math.clamp(c.level or 1, 1, #DockConfig.Buildings[c.key].levels)

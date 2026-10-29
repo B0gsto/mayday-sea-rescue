@@ -2653,6 +2653,170 @@ local function depot(m: Model, b: CFrame, level: number?)
 	body.Parent, pier.Parent = m, m
 end
 
+-- docs/27 sea plates (RingLayout.SeaPlates): a studded tan Lego deck on 2 x 3 round-brick pillars off the island's
+-- front edge, red/white rim bricks on its three sea sides, bollards and two lamps along the outer edge and a gangway
+-- plank over the beach step to the island wing. Placeholder Parts until the Blender kit lands. Every part carries
+-- BuildY (ConstructionController's layered rise): the submerged shafts (1) and the two pillar courses above the
+-- water (2, 3) rise with the build's progress; the deck and the rest (PLATE_TOP) wait for the finish, where the
+-- plate_drop beat lowers the deck. The Ramp Wharf adds the jump ramp (RingLayout.RAMP: a low-friction wedge, its
+-- invisible RampLip at the top edge) and the teal brick (docs/27 seed 1; DockService binds its prompt); the Freight
+-- Wharf adds the second barge's ATT_BargeMoor (DepotController moors a barge there) along its outer face.
+DockPieces.PLATE_TOP = 4.2 -- BuildY of everything shown at the finish
+local TEAL = Color3.fromRGB(0, 160, 170) -- Lego dark turquoise: the mystery brick
+local function seaPlate(m: Model, b: CFrame, key: string)
+	local r = RingLayout.SeaPlates[key].rect
+	local w, d = r[2] - r[1], r[4] - r[3]
+	local C = isle(b, (r[1] + r[2]) / 2, (r[3] + r[4]) / 2) -- y 0 = the deck top (world PlateauY), -Z = out to sea
+	local T = RingLayout.SEA_PLATE_DECK
+	local sea = -RingLayout.PlateauY -- local y of the waterline
+	m:SetAttribute("SeaSite", true) -- ConstructionController: a site on the water
+	local deck = brick(m, "Deck", Vector3.new(w, T, d), C * CFrame.new(0, -T / 2, 0), TAN)
+	studTop(deck)
+	-- pillars: a shaft from the seabed (world -40) to just under the water, then two courses up to the deck
+	local function round(
+		name: string,
+		y0: number,
+		y1: number,
+		at: CFrame,
+		color: Color3,
+		layer: number
+	)
+		local p = part(
+			m,
+			name,
+			Vector3.new(y1 - y0, 4.4, 4.4),
+			at * CFrame.new(0, (y0 + y1) / 2, 0) * CFrame.Angles(0, 0, math.pi / 2),
+			color,
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+		p:SetAttribute("BuildY", layer)
+	end
+	for _, px in { -w / 2 + 8, 0, w / 2 - 8 } do
+		for _, pz in { -d / 2 + 8, d / 2 - 8 } do
+			local at = C * CFrame.new(px, 0, pz)
+			round("Plate_L01_Shaft", sea - 40, sea - 1, at, DBG, 1)
+			round("Plate_L02_Course", sea - 1, sea + 1, at, LBG, 2)
+			round("Plate_L03_Course", sea + 1, -T, at, DBG, 3)
+		end
+	end
+	-- rim bricks on the three sea sides (12 long, red / white), each a glued contact on the deck
+	local RIM_H, RIM_L = 1.2, 12
+	local function rimRun(x0: number, z0: number, x1: number, z1: number)
+		local len = math.max(math.abs(x1 - x0), math.abs(z1 - z0))
+		local n = math.max(1, math.floor(len / RIM_L + 0.5))
+		for k = 1, n do
+			local u = (k - 0.5) / n
+			local along = math.abs(x1 - x0) > math.abs(z1 - z0)
+			local size = if along
+				then Vector3.new(len / n, RIM_H, 1)
+				else Vector3.new(1, RIM_H, len / n)
+			local p = brick(
+				m,
+				"Rim",
+				size,
+				C * CFrame.new(x0 + (x1 - x0) * u, RIM_H / 2, z0 + (z1 - z0) * u),
+				if k % 2 == 0 then WHITE else RED
+			)
+			studTop(p)
+		end
+	end
+	rimRun(-w / 2 + 0.5, -d / 2 + 0.5, w / 2 - 0.5, -d / 2 + 0.5) -- the outer edge
+	rimRun(-w / 2 + 0.5, -d / 2 + 1, -w / 2 + 0.5, d / 2) -- left
+	rimRun(w / 2 - 0.5, -d / 2 + 1, w / 2 - 0.5, d / 2) -- right
+	-- bollards inside the outer rim, two lamps at its corners
+	for k = -2, 2 do
+		local bl = part(
+			m,
+			"Bollard",
+			Vector3.new(1.6, 1.8, 1.8),
+			C * CFrame.new(k * w / 5, 0.8, -d / 2 + 3) * CFrame.Angles(0, 0, math.pi / 2),
+			DBG,
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+		bl.Name = "Bollard"
+	end
+	for _, sx in { -1, 1 } do
+		lamp(m, C, sx * (w / 2 - 4), -d / 2 + 4, 0)
+	end
+	-- the gangway over the trim and beach step (fwd 160-168) to the island wing, 0.06 proud of both tops
+	local gx = if (r[1] + r[2]) < 0 then r[2] - 30 else r[1] + 30 -- 30 in from the channel side
+	brick(
+		m,
+		"Gangway",
+		Vector3.new(14, 0.5, 12),
+		isle(b, gx, r[3] - 3) * CFrame.new(0, -0.19, 0),
+		RBROWN
+	)
+	if key == "SeaPlate1" then
+		local R = RingLayout.RAMP
+		local at = isle(b, R.at.X, R.at.Y) * CFrame.Angles(0, math.rad(R.yaw), 0) -- -Z: the jump's way
+		local low = sea - 2 -- the toe under the water
+		local h = sea + R.lip - low
+		local ramp = Instance.new("WedgePart")
+		ramp.Name = "Ramp"
+		ramp.Size = Vector3.new(R.width, h, R.length)
+		ramp.CFrame = at * CFrame.new(0, low + h / 2, 0) * CFrame.Angles(0, math.pi, 0) -- tall face out to sea
+		ramp.Color = YELLOW
+		ramp.Material = M.SmoothPlastic
+		ramp.Anchored = true
+		ramp.CustomPhysicalProperties = PhysicalProperties.new(0.7, 0.05, 0, 100, 1) -- a hull slides up it
+		ramp.Parent = m
+		for _, sx in { -1, 1 } do -- red side rails, below the slope (never on the running surface)
+			local rail = brick(
+				m,
+				"RampRail",
+				Vector3.new(0.6, h * 0.5, R.length),
+				at * CFrame.new(sx * (R.width / 2 + 0.3), low + h * 0.25, 0),
+				RED
+			)
+			rail.CanCollide = false
+		end
+		local lip = part(
+			m,
+			"RampLip",
+			Vector3.new(R.width, 5, 3),
+			at * CFrame.new(0, sea + R.lip + 1.5, -R.length / 2 + 1.5),
+			WHITE,
+			M.SmoothPlastic
+		)
+		lip.Transparency = 1
+		lip.CanCollide, lip.CanQuery, lip.CastShadow = false, false, false
+		-- docs/27 seed 1: a teal brick washed up by the outer rim (DockService: tap it, it goes to the Trophy Hall)
+		local teal = brick(
+			m,
+			"TealBrick",
+			Vector3.new(2, 1.2, 4),
+			C * CFrame.new(-w / 2 + 24, 0.6, -d / 2 + 5) * CFrame.Angles(0, 0.5, 0),
+			TEAL
+		)
+		studTop(teal)
+	else
+		-- the second barge lies along the outer face, bow toward the channel (DepotController: the mark looks out to
+		-- sea along the quay, the barge's +X away from it)
+		local marks = part(m, "Marks", Vector3.one, C, WHITE, M.SmoothPlastic)
+		marks.Transparency = 1
+		marks.CanCollide, marks.CanQuery, marks.CanTouch, marks.CastShadow =
+			false, false, false, false
+		local a = Instance.new("Attachment")
+		a.Name = "ATT_BargeMoor"
+		a.CFrame = CFrame.new(10, sea, -d / 2 - 7) * CFrame.Angles(0, -math.pi / 2, 0)
+		a.Parent = marks
+	end
+	for _, p in m:GetDescendants() do
+		if p:IsA("BasePart") and p:GetAttribute("BuildY") == nil then
+			p:SetAttribute("BuildY", DockPieces.PLATE_TOP)
+		end
+	end
+end
+local function seaPlate1(m: Model, b: CFrame)
+	seaPlate(m, b, "SeaPlate1")
+end
+local function seaPlate2(m: Model, b: CFrame)
+	seaPlate(m, b, "SeaPlate2")
+end
+
 local BUILDINGS = {
 	HQ = hq,
 	Depot = depot,
@@ -2669,6 +2833,8 @@ local BUILDINGS = {
 	AirStation = airStation,
 	SubPen = subPen,
 	Lighthouse = lighthouse,
+	SeaPlate1 = seaPlate1,
+	SeaPlate2 = seaPlate2,
 } :: { [string]: (Model, CFrame, number?) -> () }
 
 local KEEP_1X = {
@@ -2689,7 +2855,7 @@ local KEEP_1X = {
 	PaintBooth = true,
 	LifeboatSlip = true,
 }
-local AFLOAT = { Harbour = true } -- no lot bed: on the water
+local AFLOAT = { Harbour = true, SeaPlate1 = true, SeaPlate2 = true } -- no lot bed: on the water
 
 -- The pieces of building `key` (DockConfig.Buildings, Blueprints) around the berth frame `cf`, as a Model
 -- named `key`. A worker building with no builder of its own is a plain Lego hut.

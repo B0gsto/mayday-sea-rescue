@@ -38,6 +38,7 @@ return function(t)
 	local PLAN = {
 		"HQ", -- the free Rescue Hut, the tutorial's first build (docs/25 J)
 		"Workshop",
+		"SeaPlate1", -- docs/27: the Ramp Wharf at ~8-14 min (the Next chip offers it right after the Workshop)
 		"Depot",
 		"Bunkhouse",
 		"FishShed",
@@ -53,6 +54,7 @@ return function(t)
 		"BoatYard",
 		"Clinic",
 		"Boathouse", -- the lifeboat slip, before the HQ3 wait
+		"SeaPlate2", -- docs/27: the Freight Wharf, an HQ3 need
 		"HQ",
 		"Lifeboat",
 		"RescueBoathouse",
@@ -189,7 +191,12 @@ return function(t)
 				)
 			return {
 				cap = DepotRules.cap(level),
-				drop = DepotRules.bargeLoads(level, haul, if flatDepot then 0 else se.depotRefill),
+				drop = DepotRules.bargeLoads(
+					level,
+					haul,
+					if flatDepot then 0 else se.depotRefill,
+					not flatDepot and UnlockTree.levelOf(levels, "SeaPlate2") >= 1
+				),
 			}
 		end
 		local function refill(seconds: number)
@@ -763,8 +770,16 @@ return function(t)
 	end)
 
 	t.test("the lifeboat at about 1:30-3:00", function()
-		between(solo, "Lifeboat bought", 90, 180)
+		between(solo, "Lifeboat bought", 90, 190) -- docs/27: the Freight Wharf (6k) is an HQ3 need; ECON1 retunes
 	end)
+
+	t.test(
+		"docs/27: the Ramp Wharf lands at 8-14 min, the Freight Wharf in the first ~2 h",
+		function()
+			between(solo, "SeaPlate1 built", 8, 14)
+			between(solo, "SeaPlate2 built", 30, 130)
+		end
+	)
 
 	t.test("helicopter in week 1", function()
 		-- docs 03 section 10.2 said 8 h; docs/23 (r): 9 h, so the Robux-capped late prices still fill a ~17 h tree

@@ -75,6 +75,53 @@ RingLayout.IslandPlate = {
 	},
 }
 
+-- docs/27 sea plates: Lego decks on pillars off the island's front edge (fwd 168 = past the trim and beach step),
+-- either side of the berth channel (|right| < 40, 80 wide, straight out to sea). Island-frame rects { r0, r1, f0,
+-- f1 }, deck top at Y. P1 carries the jump ramp (a wedge in the water off its outer end, angled 30 deg away from the
+-- channel so a craft leaving the cove bears left onto it); P2 moors a second supply barge along its outer face.
+-- Built or not, the keep-out (plates + ramp) holds no calls and the sea routes go round it. Only plates in this
+-- table exist (P3+ are docs/27 later updates). tests/SeaPlates.spec.luau checks the docs/27 limits.
+RingLayout.SeaPlates = {
+	SeaPlate1 = { rect = { -163, -40, 168, 264 } },
+	SeaPlate2 = { rect = { 40, 163, 168, 264 } },
+} :: { [string]: { rect: { number } } }
+RingLayout.SEA_PLATE_DECK = 1 -- deck thickness (top at Y); the pillars show 2 courses above the water
+RingLayout.RAMP = { at = Vector2.new(-50, 300), yaw = 30, length = 32, width = 14, lip = 6 } -- island frame
+RingLayout.SEA_KEEP_OUT = {
+	RingLayout.SeaPlates.SeaPlate1.rect,
+	RingLayout.SeaPlates.SeaPlate2.rect,
+	{ -70, -30, 276, 324 }, -- the ramp's footprint (RAMP, turned)
+}
+-- With SeaPlate1 built the quest pontoon, its boats and tablet move out with the island (docs/27: P1's outer-left
+-- corner), clear of the ramp and the channel: island-frame shift (right, fwd).
+RingLayout.QUEST_SHIFT = Vector2.new(-20, 104)
+
+-- island-frame (right, fwd) within `margin` of the sea plates' keep-out
+local function inKeepOut(right: number, fwd: number, margin: number): boolean
+	for _, r in RingLayout.SEA_KEEP_OUT do
+		if
+			right >= r[1] - margin
+			and right <= r[2] + margin
+			and fwd >= r[3] - margin
+			and fwd <= r[4] + margin
+		then
+			return true
+		end
+	end
+	return false
+end
+
+-- a world point within `margin` studs of any island's sea plates or ramp (built or not)
+function RingLayout.nearSeaPlate(worldX: number, worldZ: number, margin: number): boolean
+	for _, isl in RingLayout.Islands do
+		local l = isl.frame:PointToObjectSpace(Vector3.new(worldX, Y, worldZ))
+		if inKeepOut(l.X, -l.Z, margin) then
+			return true
+		end
+	end
+	return false
+end
+
 -- a world point on island `isl`'s plate
 function RingLayout.onPlate(isl: Island, worldX: number, worldZ: number): boolean
 	local l = isl.frame:PointToObjectSpace(Vector3.new(worldX, Y, worldZ))
@@ -93,7 +140,7 @@ end
 
 -- Sea routing (playtest 2026-10-26: the home pin pointed straight across the plate, so following it beached the
 -- boat 60 m out): seaRoute(from, to) -> (leg, length). `leg` is where to steer now: `to` itself, or a node of an
--- ring of 8 nodes round the first plate the straight line crosses (its front node sits just outside the cove mouth,
+-- ring of nodes round the first plate (and its sea plates) the straight line crosses (its front node sits just outside the cove mouth,
 -- so a berth in the cove is reached through the mouth). Legs keep ROUTE_CLEAR off the plate (its trim skirt and the
 -- bridge piers stand just outside it); the nodes sit in the plates' square-notched corners, clear of the neighbours. `length` is the route's flat length. No way round (a point on
 -- a plate) gives (to, straight-line length).
@@ -108,7 +155,14 @@ local OCTAGON = {
 	{ -ROUTE_D, -ROUTE_D },
 	{ -ROUTE_R, 0 },
 	{ -ROUTE_D, ROUTE_D },
+	-- docs/27: past the sea plates and the ramp, so a route from the cove mouth goes out the channel first
+	{ 0, 350 },
+	{ ROUTE_D, 350 },
+	{ -ROUTE_D, 350 },
 }
+
+local OBSTACLES = table.clone(RingLayout.IslandPlate.rects) -- the plate and the sea plates' keep-out
+table.move(RingLayout.SEA_KEEP_OUT, 1, #RingLayout.SEA_KEEP_OUT, #OBSTACLES + 1, OBSTACLES)
 
 local function localOf(isl: Island, p: Vector3): Vector2
 	local l = isl.frame:PointToObjectSpace(Vector3.new(p.X, Y, p.Z))
@@ -120,7 +174,7 @@ end
 local function entry(a: Vector2, b: Vector2): number?
 	local d = b - a
 	local best: number? = nil
-	for _, r in RingLayout.IslandPlate.rects do
+	for _, r in OBSTACLES do
 		local t0, t1 = 0, 1
 		for _, ax in
 			{
