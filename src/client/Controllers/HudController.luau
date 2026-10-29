@@ -260,8 +260,11 @@ local function render(data: { [string]: any })
 	end
 	-- a CoinShower landing (CoinShowerTick, its last release) owns the ticks, the till and the wallet pop
 	local showering = os.clock() - (tonumber(player:GetAttribute("CoinShowerTick")) or 0) < 0.6
+	-- the Gatherers' per-minute pay just rolls the counter: no pop, coins or jingle every minute (owner 2026-10-29)
+	local award = data.award
+	local quiet = type(award) == "table" and award.reason == "Workers:Gather"
 	local spilled = false
-	if cashShown and cash > cashShown and not showering then
+	if cashShown and cash > cashShown and not showering and not quiet then
 		if not Comfort.reducedMotion() then -- (the coin itself squashes as gainPop's coins land)
 			cashPop.Scale = 1.25
 			TweenService:Create(cashPop, TweenInfo.new(0.45, Enum.EasingStyle.Back), { Scale = 1 })
@@ -289,7 +292,11 @@ local function onDataChanged(data: any)
 	end
 	render(data)
 	-- a held payout (CashHeld: the reward prompt's coins) shows as coins landing, not as a "+N Cash" line
-	if type(data.award) == "table" and not player:GetAttribute("CashHeld") then
+	if
+		type(data.award) == "table"
+		and data.award.reason ~= "Workers:Gather" -- per-minute crew pay stays quiet
+		and not player:GetAttribute("CashHeld")
+	then
 		showAward(data.award)
 	end
 end
