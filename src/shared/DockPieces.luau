@@ -642,6 +642,34 @@ local function lookout(m: Model, b: CFrame, level: number?)
 	end
 	gable(m, T * CFrame.new(0, legH + 5.2, 0), 12, 12, 4, BRICK_RED)
 	flag(m, T, 0, 0, legH + 9.4, 6)
+	-- the spotting scope at the front window (walk-in action, BuildingActController: Look -> the nearest survivor)
+	local scope = T * CFrame.new(0, legH + 0.8, -2.6)
+	for i = 0, 2 do
+		part(
+			m,
+			"ScopeLeg",
+			Vector3.new(0.25, 2.6, 0.25),
+			scope
+				* CFrame.Angles(0, math.rad(i * 120), 0)
+				* CFrame.new(0, 1.25, 0.45)
+				* CFrame.Angles(math.rad(-12), 0, 0),
+			DBG,
+			M.SmoothPlastic
+		).CanCollide =
+			false
+	end
+	local tube = part(
+		m,
+		"Telescope",
+		Vector3.new(2.6, 0.7, 0.7),
+		scope * CFrame.new(0, 2.7, -0.3) * CFrame.Angles(0, math.pi / 2, math.rad(-8)),
+		BRICK_YELLOW,
+		M.SmoothPlastic,
+		Enum.PartType.Cylinder
+	)
+	tube.CanCollide = false
+	tube:SetAttribute("Act", "Telescope")
+	tube:AddTag("BuildingAct")
 	local ladder = Instance.new("TrussPart")
 	ladder.Name = "Ladder"
 	ladder.Size = Vector3.new(2, legH, 2)
@@ -748,7 +776,8 @@ local function station(m: Model, b: CFrame)
 		Vector3.new(door * 2 - 1, 8.5, 0.3),
 		S * CFrame.new(0, 4.75, -hd + 0.3),
 		BRICK_RED
-	) -- the door
+	).CanCollide =
+		false -- the door: walk-in (docs/25 J), it never blocks the doorway
 	-- the red base course round the walls (a gap for the door)
 	brick(
 		m,
@@ -1547,6 +1576,14 @@ local function workshopYard(m: Model, b: CFrame, level: number?)
 	local at = b * def.spot
 	-- the add-ons take the sawhorse's job and stand where the timber stack and the old boat frame were
 	local addons = addonMesh(m, at, level or 1, "M_Bld_WorkshopAddons", "WorkshopMesh")
+	local mesh = m:FindFirstChild("WorkshopMesh")
+	if mesh then -- walk-in (docs/25 J): the Lv2 hull is one block over the whole back of the yard; its pieces collide instead
+		for _, d in mesh:GetDescendants() do
+			if d:IsA("BasePart") and string.sub(d.Name, 1, 3) == "Lv2" then
+				d.CanCollide = d.Name ~= "Lv2_COL" and d.Name ~= "Lv2_L05_Roof"
+			end
+		end
+	end
 	local w, d = yardSize(def)
 	local spec = HUTS.Workshop
 	local front = -d / 2
@@ -2182,6 +2219,13 @@ local function clinic(m: Model, b: CFrame, level: number?)
 			bed * CFrame.new(0, 2.9, 2.1),
 			if k == 1 then BRICK_CYAN else BRICK_PINK
 		)
+		-- walk-in act (docs/25 J): step onto the cot and you lie on it, head on the pillow (Jump gets up)
+		local rest = Instance.new("Seat")
+		rest.Name = "CotSeat"
+		rest.Size = Vector3.new(2, 0.2, 2)
+		rest.CFrame = bed * CFrame.new(0, 2.7, -0.6) * CFrame.Angles(math.rad(90), 0, 0)
+		rest.Transparency, rest.CanCollide, rest.CastShadow, rest.Anchored = 1, false, false, true
+		rest.Parent = m
 	end
 	-- docs/24 C r3: a big stretcher at the open front, with a red cross on the blanket
 	local st = at * CFrame.new(0, 0, -d / 2 + 5.5)
@@ -2614,6 +2658,7 @@ end
 local DEPOT_SHIFT = CFrame.new(-6, 0, 0) -- the body is authored 6 off the lot centre (its quay was beside it)
 local QUAY_AT = Vector2.new(-173, 2) -- island (right, fwd) of the quay centre: past the beach step
 local QUAY_X = -18 -- the quay's centre in the export
+local DEPOT_SOLID = { Foundation = true, Base = true, Rack = true, Roof = true, Trestles = true }
 local function depot(m: Model, b: CFrame, level: number?)
 	local src = DockPieces.meshes and DockPieces.meshes("M_Bld_Depot")
 	if not src then
@@ -2668,6 +2713,30 @@ local function depot(m: Model, b: CFrame, level: number?)
 		end
 	end
 	src:Destroy()
+	-- walk-in (docs/25 J): the export's Lv<l>_COL hulls are solid blocks over each shed, so they go and the open
+	-- sheds collide on their own parts: the slab, rack, roof, trestles, and a thin invisible wall down each side
+	for _, d in body:GetChildren() do
+		if d:IsA("BasePart") then
+			if string.match(d.Name, "_COL$") then
+				d.CanCollide = false
+			elseif DEPOT_SOLID[string.match(d.Name, "^Lv%d_L%d+_(%a+)$") or ""] then
+				d.CanCollide = true
+			elseif string.match(d.Name, "^Lv%d_L%d+_Frame$") then
+				for _, x in { -1, 1 } do
+					local side = part(
+						body,
+						"SideCol",
+						Vector3.new(0.6, d.Size.Y, d.Size.Z),
+						d.CFrame * CFrame.new(x * (d.Size.X / 2 - 0.3), 0, 0),
+						WHITE,
+						M.SmoothPlastic
+					)
+					side.Transparency = 1
+					side.CastShadow, side.CanTouch = false, false
+				end
+			end
+		end
+	end
 	pier:SetAttribute("SiteApart", true) -- ConstructionController: not inside the site's fence
 	body.Parent, pier.Parent = m, m
 end
@@ -2856,6 +2925,17 @@ local BUILDINGS = {
 	SeaPlate2 = seaPlate2,
 } :: { [string]: (Model, CFrame, number?) -> () }
 
+-- docs/25 J: the one thing a player does inside each building (the part that carries it, the act);
+-- BuildingActController plays it. The Lookout's scope is its own part (lookout), the Clinic's cots are seats
+-- (clinic); the boathouse, hangar and sub pen have their craft boards (BoatBoard), the trophy hall its plinths.
+local ACTS: { [string]: { string } } = {
+	Workshop = { "Bench", "Build" }, -- the plans on the bench: build mode
+	FishShed = { "Counter", "Shop" }, -- the market counter: the shop
+	BoatYard = { "Console", "Boats" }, -- the yard console: your craft board
+	RescueBoathouse = { "Console", "Crew" }, -- the duty console: your crew
+	Depot = { "Lv1_L03_Rack", "Barge" }, -- the brick rack: watch the supply barge
+}
+
 local KEEP_1X = {
 	DepotMesh = true,
 	WorkshopMesh = true,
@@ -2906,6 +2986,12 @@ function DockPieces.building(key: string, cf: CFrame, level: number?): Model
 		for _, d in keep do
 			d.Parent = m
 		end
+	end
+	local act = ACTS[key]
+	local spot = act and m:FindFirstChild(act[1], true)
+	if act and spot then -- the walk-in act (BuildingActController)
+		spot:SetAttribute("Act", act[2])
+		spot:AddTag("BuildingAct")
 	end
 	local spec = HUTS[key]
 	if def and spec and spec.tree and not m:GetAttribute("NoTree") then -- a tree at the back corner (1x, like the plate's trees)
