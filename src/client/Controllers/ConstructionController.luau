@@ -534,9 +534,11 @@ local function update(site: Site, progress: number, rate: number, builders: numb
 	end
 end
 
--- Pop the billboard in near the site, out when walking away.
+-- Pop the billboard in near the site (measured from the lot's edge: big lots too), out when walking away.
 local function showNear(site: Site, at: Vector3)
-	local d = (site.center - at).Magnitude
+	local dx = math.max(math.abs(at.X - site.center.X) - site.hw, 0)
+	local dz = math.max(math.abs(at.Z - site.center.Z) - site.hd, 0)
+	local d = math.sqrt(dx * dx + dz * dz)
 	local near = if site.near then d < HIDE_FAR else d < SHOW_NEAR
 	if near ~= site.near then
 		site.near = near
