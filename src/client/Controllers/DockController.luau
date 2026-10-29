@@ -21,6 +21,7 @@
 local GuiService = game:GetService("GuiService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -1041,6 +1042,8 @@ local hiddenGuis: { ScreenGui } = {}
 local function hideHud(on: boolean)
 	local vp = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize or Vector2.zero
 	player:SetAttribute("BuildHidesMenu", on or nil)
+	player:SetAttribute("BuildView", on or nil) -- WeatherController clears the haze and glare for the top-down view
+	ProximityPromptService.Enabled = not on -- the tablet's own "Build" prompt floated over the island view
 	player:SetAttribute("BuildHidesWallet", on and Theme.compact(vp, Theme.scaleFor(vp)) or nil)
 	if on then
 		for _, g in playerGui:GetChildren() do
