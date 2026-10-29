@@ -31,7 +31,6 @@ local Client = script.Parent.Parent
 local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local DockController = require(script.Parent:WaitForChild("DockController"))
 local MapController = require(script.Parent:WaitForChild("MapController"))
-local Telemetry = require(Client:WaitForChild("Telemetry"))
 local UI = Client:WaitForChild("UI")
 local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
 local ColdOpenCue = require(UI:WaitForChild("ColdOpenCue"))
@@ -291,7 +290,6 @@ local function showReward()
 		fromCash = math.max(0, cash - awardCash),
 		anchor = rootPosition(),
 	})
-	Telemetry.once("RewardSeen") -- onboarding funnel step 6 (G64)
 	task.delay(REWARD_HOLD, function()
 		player:SetAttribute("OnboardingRewardBusy", nil)
 	end)

@@ -1190,6 +1190,13 @@ local function startConstruction(player: Player, data: any, key: string, level: 
 			ProgressionService.Refresh(player) -- the buy's own Refresh ran before this step moved
 		end
 	end
+	Telemetry.Build(
+		player,
+		key,
+		buildLevel or 1,
+		false,
+		(data.tutorialStep or 0) >= Onboarding.STEP_DONE
+	)
 	stepDepot(player, data, os.time()) -- the Depot fills up to now before the site draws from it
 	data.construction = {
 		key = key,
@@ -1322,7 +1329,6 @@ local function buyBuilding(player: Player, data: any, key: string, level: number
 	end
 	data.cash -= price
 	Telemetry.CashSpent(player, price, data.cash, "Dock", key)
-	Telemetry.Funnel(player, "FirstBuilding") -- the first island building (WP-28: replaces FirstRank)
 	ProgressionService.Refresh(player)
 	startConstruction(player, data, key, level)
 	return true, "ok"
@@ -1376,6 +1382,7 @@ local function finishConstruction(plot: Plot, player: Player, data: any)
 		return
 	end
 	lastBuild[player] = { key = c.key, cash = cashOf(c.key, c.level) }
+	Telemetry.Build(player, c.key, c.level or 1, true, false)
 	data.construction = nil
 	if DockConfig.Buildings[c.key] then
 		local n = math.clamp(c.level or 1, 1, #DockConfig.Buildings[c.key].levels)

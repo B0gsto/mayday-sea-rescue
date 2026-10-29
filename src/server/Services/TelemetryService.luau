@@ -10,6 +10,7 @@
 -- Custom: the fixed TelemetryNames.Custom list.
 --
 --   TelemetryService.Funnel(player, stepName)                         onboarding step (once per player)
+--   TelemetryService.Build(player, key, level, finished, tutorialDone)  onboarding build steps (DockService)
 --   TelemetryService.Step(player, funnel, sessionId, stepName, a?, b?, c?)   any recurring funnel step
 --   TelemetryService.Call(player, opId, step, kind?)                   Call funnel (session = the call)
 --   TelemetryService.Shop(player, step, app?, item?, currency?)        Shop funnel (session = the visit)
@@ -24,7 +25,7 @@
 --   TelemetryService.ColdOpenStarted(player) / ColdOpenStep(player, stepId) / ColdOpenEnded(player, reason)
 --   TelemetryService.OpFinished(player, op, reason)                    op: OperationService's live op table
 --   TelemetryService.Recent -> { string }                              last events (Studio: ServerStorage.TelemetryDev)
--- Client (Telemetry_Client, rate limited, every value checked against a fixed set): RewardSeen,
+-- Client (Telemetry_Client, rate limited, every value checked against a fixed set): TabletOpened,
 -- Device(type), Shop(step, app, item?, currency?), InputDead(context),
 -- StuckReset(context).
 local AnalyticsService = game:GetService("AnalyticsService")
@@ -124,6 +125,19 @@ function TelemetryService.Funnel(player: Player, stepName: string)
 	send("Onboarding", function()
 		AnalyticsService:LogOnboardingFunnelStepEvent(player, s.step, s.name)
 	end)
+end
+
+-- A construction started (or finished): the onboarding steps it completes (Events.buildSteps).
+function TelemetryService.Build(
+	player: Player,
+	key: string,
+	level: number,
+	finished: boolean,
+	tutorialDone: boolean
+)
+	for _, step in Events.buildSteps(key, level, finished, tutorialDone) do
+		TelemetryService.Funnel(player, step)
+	end
 end
 
 -- Any recurring funnel step (LogFunnelStepEvent). Each step is sent once per session id: Roblox
@@ -257,9 +271,6 @@ function TelemetryService.Shop(
 	shops[player] = s
 	s.at = now
 	s.app = app or s.app
-	if n <= 2 then
-		TelemetryService.Funnel(player, "MenuOpened")
-	end
 	TelemetryService.Step(player, "Shop", s.id, step, s.app, item or "None", currency or "None")
 end
 
@@ -350,13 +361,6 @@ function TelemetryService.OpFinished(player: Player, op: any, reason: string)
 		TelemetryService.Call(player, op.id, "Delivered", facts.kind)
 		TelemetryService.Funnel(player, "FirstDelivery")
 	end
-	if Events.countsAsFirstOp(facts) then
-		TelemetryService.Funnel(player, "Call2Delivered")
-		local done = player:GetAttribute("OpsCompleted")
-		if type(done) == "number" and done >= 3 then
-			TelemetryService.Funnel(player, "Call3Delivered")
-		end
-	end
 end
 
 local function stormCheck(player: Player, midStorm: boolean)
@@ -378,7 +382,7 @@ local function service(name: string): any?
 	return if ok and type(result) == "table" then result else nil
 end
 
--- Profile loaded: Day2Return, and SessionStart (value = days since the first session, the day and
+-- Profile loaded: SessionStart (value = days since the first session, the day and
 -- gap buckets, New / Returning). flags.firstSessionDay / lastSessionDay are written once per day,
 -- after the events, so a same-day rejoin is not a return.
 local function sessionDay(player: Player, data: any)
@@ -392,9 +396,6 @@ local function sessionDay(player: Player, data: any)
 	local first = if type(flags) == "table" then flags.firstSessionDay else nil
 	previous = if type(previous) == "number" and previous > 0 then previous else nil
 	first = if type(first) == "number" and first > 0 then first else (previous or today)
-	if Events.day2Return(previous, today) then
-		TelemetryService.Funnel(player, "Day2Return")
-	end
 	local days = math.max(0, today - first)
 	local day = Events.dayBucket(days)
 	local session = sessions[player]
@@ -451,7 +452,7 @@ local function watchFriends(player: Player)
 end
 
 -- Call accepted: OperationService has no start signal, so read its live list once a second. One
--- Call/Accepted per participant per call; the first non-cold-open call is onboarding Call2Accepted.
+-- Call/Accepted per participant per call.
 local function pollOps()
 	local operations = service("OperationService")
 	if not operations or type(operations.GetActiveOperations) ~= "function" then
@@ -478,9 +479,6 @@ local function pollOps()
 						tostring(info.kind),
 						callContext(player, info.isBig)
 					)
-					if player:GetAttribute("ColdOpenActive") ~= true then
-						TelemetryService.Funnel(player, "Call2Accepted")
-					end
 				end
 			end
 		end
@@ -515,8 +513,8 @@ end
 -- What only the client knows. Every value is checked against a fixed set (a client cannot grow the
 -- dashboard's field cardinality) and the remote is rate limited (Events.allow).
 local function clientStep(player: Player, name: string, a: any, b: any, c: any, d: any)
-	if name == "RewardSeen" then
-		TelemetryService.Funnel(player, "RewardSeen")
+	if name == "TabletOpened" then
+		TelemetryService.Funnel(player, "TabletOpened")
 	elseif name == "Device" then
 		local session = sessions[player]
 		if session and Events.Devices[a] then

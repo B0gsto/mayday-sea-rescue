@@ -185,8 +185,8 @@ function Menu.open(name: string)
 	end
 	current = name
 	chrome()
+	Telemetry.shop("MenuOpened") -- before p.open(): its PanelOpened must land in this visit
 	p.open()
-	Telemetry.shop("MenuOpened") -- a menu panel opened
 	local sel = GuiService.SelectedObject
 	if
 		not (sel and sel:IsDescendantOf(p.root) and (not sel:IsA("GuiButton") or sel.Selectable))
