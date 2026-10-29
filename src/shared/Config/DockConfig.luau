@@ -308,7 +308,7 @@ local rows: { [string]: any } = {
 		desc = "Spot calls from farther out.",
 		unlockAt = 3,
 		needs = {},
-		spot = isle(72, -95, 0), -- air field, at the back of the plaza; 10 east of the Air Station patrol hut (Lv3)
+		spot = isle(-88, -98, 0), -- behind the plaza, west of the Lighthouse (Spare1) and its Trophy Hall path
 		size = Vector2.new(16, 16),
 		scale = 1.5,
 		levels = {
@@ -329,7 +329,7 @@ local rows: { [string]: any } = {
 		desc = "Helipad and hangar for the helicopter.",
 		unlockAt = 4,
 		needs = {},
-		spot = isle(88, -124, 0), -- the hangar; the pad sits 38 right, 27 fwd (DockPieces)
+		spot = isle(54, -136, 0), -- the hangar; the pad sits 38 right, 27 fwd (DockPieces), clear of the bridge foot and the plate's cut corner
 		size = Vector2.new(42, 28),
 		vehicles = { "RescueHelicopter" },
 		levels = {
@@ -371,7 +371,7 @@ local rows: { [string]: any } = {
 		desc = "Cups, stamps and quest trophies on display.",
 		unlockAt = 5,
 		needs = {},
-		spot = isle(0, -122, 0), -- landmarks, behind the plaza
+		spot = isle(-62, -127, 0), -- landmarks, behind the Lighthouse (Spare1); west of the Air Station's Lv2 apron
 		size = Vector2.new(50, 28),
 		levels = {
 			{
@@ -439,7 +439,7 @@ DockConfig.Decorations = {
 		desc = "Bright Lego flowers by your spawn.",
 		color = "pink",
 		lot = "Spare2",
-		offset = Vector2.new(-10, 0),
+		offset = Vector2.new(11, 3), -- Spare2 faces the back (+x = west, +z = fwd): west of the hangar's path
 		size = Vector2.new(8, 8),
 	},
 	PicnicTable = {
@@ -450,7 +450,7 @@ DockConfig.Decorations = {
 		desc = "A picnic table for crew breaks.",
 		color = "green",
 		lot = "Spare2",
-		offset = Vector2.new(0, 0),
+		offset = Vector2.new(1, 3),
 		size = Vector2.new(8, 8),
 	},
 	LampRow = {
@@ -461,7 +461,7 @@ DockConfig.Decorations = {
 		desc = "A row of lamps that glow at night.",
 		color = "yellow",
 		lot = "Spare2",
-		offset = Vector2.new(10, 0),
+		offset = Vector2.new(6, -9),
 		size = Vector2.new(9, 6),
 	},
 	FlagPole = {
