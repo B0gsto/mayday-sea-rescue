@@ -36,6 +36,7 @@ local TILT_OVER = 60 -- ... reached this many studs past the first
 local LAYERS = 3 -- the art over two darker copies ...
 local GAP = 0.2 -- ... this far apart: a 0.4 stud Lego plate
 local EDGE = Color3.fromRGB(70, 120, 190) -- the copies' tint: the plate's dark blue edge
+local REST = Color3.fromRGB(190, 218, 255) -- the top's tint at rest: the unlit art's white rim washed out at dusk
 local END = 3 -- studs short of the goal: the last step
 local ARRIVE = 10 -- studs from the goal: arrived, the steps go
 local LIFT = 0.05 -- off the ground: never coplanar with the plate or a lot (CLAUDE.md "No z-fighting")
@@ -106,7 +107,7 @@ function OnboardingTrail.start(parent: Instance): Trail
 			art.BackgroundTransparency = 1
 			art.Image = UiImages.Markers.TrailChevron
 			art.ImageRectSize = Vector2.new(488, 636)
-			art.ImageColor3 = if k < LAYERS then EDGE else Color3.new(1, 1, 1)
+			art.ImageColor3 = if k < LAYERS then EDGE else REST
 			art.ScaleType = Enum.ScaleType.Fit
 			art.Parent = gui
 			layers[k], arts[k] = part, art
@@ -116,6 +117,7 @@ function OnboardingTrail.start(parent: Instance): Trail
 		glow.Position = UDim2.new()
 		glow.Size = UDim2.fromScale(1, 1)
 		glow.ImageRectOffset = Vector2.new(488, 0)
+		glow.ImageColor3 = Color3.new(1, 1, 1)
 		glow.Parent = arts[LAYERS]
 		tiles[i] = { layers = layers, arts = arts, glow = glow, s = 0, tail = 1 }
 	end
@@ -276,6 +278,7 @@ function OnboardingTrail.start(parent: Instance): Trail
 			t.glow.ImageTransparency = 1 - alpha * 0.8 * pulse
 			local size = 0.86 + 0.12 * pulse
 			t.arts[LAYERS].Size = UDim2.fromScale(size, size)
+			t.arts[LAYERS].ImageColor3 = REST:Lerp(Color3.new(1, 1, 1), pulse)
 		end
 	end
 
