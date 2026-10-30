@@ -72,7 +72,7 @@ function OnboardingTrail.start(parent: Instance): Trail
 	for i = 1, MAX do
 		local part = Instance.new("Part")
 		part.Name = "Step"
-		part.Size = Vector3.new(WIDTH, 0.05, LENGTH)
+		part.Size = Vector3.new(LENGTH, 0.05, WIDTH) -- X along the path: a Top-face canvas's up runs along -X
 		part.Transparency = 1
 		part.Anchored, part.CanCollide, part.CanQuery, part.CanTouch = true, false, false, false
 		part.CastShadow = false
@@ -153,7 +153,7 @@ function OnboardingTrail.start(parent: Instance): Trail
 			n += 1
 			local t = tiles[n]
 			local at = Vector3.new(p.X, y + LIFT, p.Z)
-			t.part.CFrame = CFrame.lookAt(at, at + dir)
+			t.part.CFrame = CFrame.lookAt(at, at + dir) * CFrame.Angles(0, -math.pi / 2, 0) -- -X = dir: the art's tip
 			t.s = s
 			s += SPACING
 		end

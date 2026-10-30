@@ -32,7 +32,7 @@ local NAVY = Color3.fromHex("0A1830")
 
 local LIFT = 16 -- studs: the diamond over the goal
 local EDGE = 36 -- px: the screen-edge pointer's head (32 pt+ on a phone, CLAUDE.md "UI art")
-local ARRIVE = 10 -- studs from the goal: arrived, no edge pointer (the trail's ARRIVE)
+local ARRIVE = 15 -- studs from the goal: arrived, no edge pointer (inside 5 m it would read "0 m")
 
 local function surfaceY(p: Vector3): number
 	local ok, h = pcall(Weather.heightAt, p)
