@@ -36,6 +36,19 @@ def patch_lod_names():
     names.with_suffix = lambda n, s: base(n) + "_" + s
 
 
+def smooth(pts, k):
+    """Catmull-Rom through pts, k samples per span."""
+    ext = [pts[0]] + list(pts) + [pts[-1]]
+    out = []
+    for i in range(1, len(ext) - 2):
+        p0, p1, p2, p3 = ext[i - 1], ext[i], ext[i + 1], ext[i + 2]
+        for j in range(k):
+            t = j / k
+            out.append(tuple(0.5 * (2 * p1[c] + (-p0[c] + p2[c]) * t + (2 * p0[c] - 5 * p1[c] + 4 * p2[c] - p3[c]) * t * t
+                                    + (-p0[c] + 3 * p1[c] - 3 * p2[c] + p3[c]) * t ** 3) for c in range(2)))
+    return out + [pts[-1]]
+
+
 def ring(z, r, n=N):
     return [(r * math.cos(2 * math.pi * i / n), r * math.sin(2 * math.pi * i / n), z) for i in range(n)]
 
@@ -57,12 +70,14 @@ def cup(b):
     b.loft([ring(z, r) for z, r in BOWL], P.YELLOW)
     b.cyl(0, 0, 6.45, 6.9, 2.62, P.YELLOW, N)                                       # the lip
     b.cyl(0, 0, 6.85, 6.97, 2.25, P.ORANGE, N)                                      # the shadowed inside
+    arc = smooth(HANDLE, 4)
     for s in (-1, 1):                                                               # ear handles
-        pts = [(s * x, 0, z) for x, z in HANDLE]
+        pts = [(s * x, 0, z) for x, z in arc]
         for p0, p1 in zip(pts, pts[1:]):
-            b.beam(p0, p1, 0.55, 0.55, P.YELLOW)
-        for x, y, z in pts[1:-1]:
-            b.box((x - 0.29, -0.29, z - 0.29), (x + 0.29, 0.29, z + 0.29), P.YELLOW, bevel=0.08)
+            d = [(p1[i] - p0[i]) for i in range(3)]
+            L = math.sqrt(sum(v * v for v in d))
+            e = [0.1 * v / L for v in d]                                            # overlap the joints
+            b.beam([p0[i] - e[i] for i in range(3)], [p1[i] + e[i] for i in range(3)], 0.55, 0.55, P.YELLOW)
     # a red star sticker on the bowl's front (-Y)
     cz, ro, ri = 4.95, 0.75, 0.32
     star = [((ro if i % 2 == 0 else ri) * math.sin(math.pi * i / 5), (ro if i % 2 == 0 else ri) * math.cos(math.pi * i / 5))
@@ -95,6 +110,7 @@ def build():
         "sets": [{"name": SET_NAME, "set": SET, "size": 1024, "wet": False}],
         "waivers": {
             "naming": "layer names L01_Base, L02_Cup: DockPieces places the Model as one piece",
+            "_COL proxy": "roof ornament on the Lv1 hall's lintel, out of reach: nothing collides with it",
             "LOD UV layout": "flat palette cells (one shared material): decimation merges cells, UVs are not a unique "
                              "unwrap by design (tiling=True skips the density check)",
         },

@@ -974,9 +974,12 @@ local function furnishStation(m: Model, S: CFrame, level: number)
 		box("Dado", 0.15, 2.4, id * 2 - 0.2, x, 0.75, 0, BRICK_BLUE)
 		box("Cove", 0.15, 0.6, id * 2 - 0.2, x, 14.4, 0, BRICK_RED)
 	end
-	for _, z in { id - 0.03, -id + 0.03 } do -- 0.02 into the wall: no face on the wall's plane
-		box("Lining", iw * 2, 11.35, 0.1, 0, 3.1, z, CREAM)
+	-- 0.02 into the wall: no face on the wall's plane; the front's is cut round the door (x +-5, 9 high), 0.05 clear of its jambs
+	box("Lining", iw * 2, 11.35, 0.1, 0, 3.1, id - 0.03, CREAM)
+	for _, side in { -1, 1 } do
+		box("Lining", iw - 5.05, 11.35, 0.1, side * (iw + 5.05) / 2, 3.1, -id + 0.03, CREAM)
 	end
+	box("Lining", 10.2, 5.4, 0.1, 0, 9.05, -id + 0.03, CREAM)
 	for _, x in { iw - 0.03, -iw + 0.03 } do
 		box("Lining", 0.1, 11.35, id * 2, x, 3.1, 0, CREAM)
 	end
@@ -1174,7 +1177,7 @@ local LV1_PLINTHS = {
 }
 local SHELF1 = { -8.1, -5.9, 5.9, 8.1 }
 local DOOR = 4.5 -- half the Lv1 door's width
-local NICHE = Color3.fromRGB(70, 120, 200)
+local NICHE = Color3.fromRGB(35, 70, 150)
 local function smallHall(m: Model, H: CFrame)
 	local function box(
 		name: string,
