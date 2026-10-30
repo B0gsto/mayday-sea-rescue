@@ -277,6 +277,9 @@ local function fill(b: DevBoard.Board)
 	DevBoard.toggle(g, "👁 Invisible", function(on)
 		call("invisible", { on })
 	end)
+	DevBoard.toggle(g, "🆓 Free player", function(on)
+		call("freePlayer", { on })
+	end)
 	DevBoard.slider(page, "Fly speed", 10, 400, flySpeed, function(v)
 		flySpeed = v
 	end)
@@ -527,6 +530,23 @@ local function onGrant(payload: any)
 	label.TextXAlignment = Enum.TextXAlignment.Center
 	HudTheme.outline(label)
 	button.Activated:Connect(toggle)
+	-- "Free player" on (DevService sets the attribute): a small tag over the DEV button
+	local free = HudTheme.label(
+		"FreePlayer",
+		"🆓 FREE",
+		UDim2.fromScale(1, 0.6),
+		HudTheme.LabelFont,
+		HudTheme.TextSize.small,
+		button
+	)
+	free.Position = UDim2.fromScale(0, -0.65)
+	free.TextXAlignment = Enum.TextXAlignment.Center
+	HudTheme.outline(free)
+	local function syncFree()
+		free.Visible = player:GetAttribute("DevFreePlayer") == true
+	end
+	syncFree()
+	player:GetAttributeChangedSignal("DevFreePlayer"):Connect(syncFree)
 	local function place(mt: Layout.Metrics)
 		-- touch: under the wallet's right end (on phones the wallet sits under the minimap and the old spot covered its "+")
 		local region = Layout.region(hud, if mt.touch then "wallet" else "minimap")

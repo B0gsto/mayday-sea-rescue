@@ -172,8 +172,12 @@ function MonetizationService.OnProduct(
 	}
 end
 
-local function noPasses(): boolean
-	return Effects.devNoPasses(RunService:IsStudio(), workspace:GetAttribute("DevNoPasses"))
+local function noPasses(player: Player): boolean
+	return Effects.devNoPasses(
+		RunService:IsStudio(),
+		workspace:GetAttribute("DevNoPasses"),
+		player:GetAttribute("DevFreePlayer")
+	)
 end
 
 local function grantPass(player: Player, key: string, isNewPurchase: boolean)
@@ -181,8 +185,8 @@ local function grantPass(player: Player, key: string, isNewPurchase: boolean)
 	if not owned or owned[key] or MonetizationConfig.GamePasses[key].ready == false then
 		return -- a retired pass (ready = false) is never owned, even if bought back when it sold
 	end
-	if noPasses() and not isNewPurchase then
-		return -- DevNoPasses: the account's real passes stay unowned; a (test) purchase still grants
+	if noPasses(player) and not isNewPurchase then
+		return -- DevNoPasses / DevFreePlayer: the account's real passes stay unowned; a (test) purchase still grants
 	end
 	owned[key] = true
 	player:SetAttribute("Pass_" .. key, true)
@@ -221,7 +225,7 @@ function MonetizationService.OwnsPass(player: Player, key: string): boolean
 	local owned = ownedPasses[player]
 	return Effects.passActive(
 		owned ~= nil and owned[key] == true,
-		if noPasses() then 0 else Effects.dayPassEnds(shopOf(DataService.Get(player)), key),
+		if noPasses(player) then 0 else Effects.dayPassEnds(shopOf(DataService.Get(player)), key),
 		os.time()
 	)
 end
@@ -230,7 +234,7 @@ local function publishDayPasses(player: Player, data: PlayerData)
 	for _, item in MonetizationConfig.Products do
 		local passKey = item.dayPassFor
 		if passKey then
-			local ends = if noPasses() then 0 else Effects.dayPassEnds(shopOf(data), passKey)
+			local ends = if noPasses(player) then 0 else Effects.dayPassEnds(shopOf(data), passKey)
 			player:SetAttribute("DayPass_" .. passKey, if ends > os.time() then ends else nil)
 		end
 	end
@@ -352,8 +356,24 @@ local function checkPolicy(player: Player)
 	-- left nil: paid random items stay hidden for this player (docs/04 section 8)
 end
 
+-- the no-pass mode flipped mid-session: drop the player's passes and check them again
+local function recheckPasses(player: Player)
+	for key in MonetizationConfig.GamePasses do
+		player:SetAttribute("Pass_" .. key, nil)
+	end
+	ownedPasses[player] = nil
+	checkPasses(player)
+	local data = DataService.Get(player)
+	if data then
+		publishDayPasses(player, data)
+	end
+end
+
 local function onPlayerAdded(player: Player)
 	task.spawn(checkPolicy, player)
+	player:GetAttributeChangedSignal("DevFreePlayer"):Connect(function()
+		recheckPasses(player)
+	end)
 	checkPasses(player)
 end
 
@@ -441,15 +461,7 @@ function MonetizationService.Start()
 	-- DevNoPasses flipped mid-session (smoke.py lua): drop or re-check every player's passes
 	workspace:GetAttributeChangedSignal("DevNoPasses"):Connect(function()
 		for _, player in Players:GetPlayers() do
-			for key in MonetizationConfig.GamePasses do
-				player:SetAttribute("Pass_" .. key, nil)
-			end
-			ownedPasses[player] = nil
-			checkPasses(player)
-			local data = DataService.Get(player)
-			if data then
-				publishDayPasses(player, data)
-			end
+			recheckPasses(player)
 		end
 	end)
 end

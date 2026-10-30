@@ -189,14 +189,14 @@ def main():
     else:
         run([os.path.join(TOOLS, "build.sh"), REPO])
     run(["lune", "run", os.path.join(REPO, "tools", "world", "make_work_place.luau"),
-         os.path.join(REPO, "build", "MaydaySeaRescue.rbxl"), os.path.join(REPO, "build", "MaydayPublish.rbxl"),
+         os.path.join(REPO, "build", os.path.basename(REPO) + ".rbxl"), os.path.join(REPO, "build", "MaydayPublish.rbxl"),
          os.path.join(REPO, "map", "generated")])
     if studio_pids():
         sys.exit("a Studio already has a roblox-studio: place open; close it first (its edits would be published)")
     batch, gap, rounds = int(arg("--batch", 8)), arg("--gap", 3), int(arg("--rounds", 4))
     # the publish window holds one of the machine's 2 heavy slots for its life (queued before the studio lock)
     hold_window.heavy_slot(r"RobloxStudio -protocolString.*task:EditPlace.placeId:%d" % PLACE, "mayday publish",
-                           os.path.join(REPO, "build", ".slot-publish-%d" % PLACE))
+                           os.path.join(REPO, "build", ".slot-publish-%d" % PLACE), priority=5)  # publishes go first
     with studio_lock(owner="mayday publish", timeout=3600, cap=3600):
         # a killed earlier run leaves an auto-recovery file, whose startup modal disables File > Publish to Roblox
         for f in glob.glob(os.path.join(AUTOSAVES, "%d_AutoRecovery_*.rbxl" % PLACE)):

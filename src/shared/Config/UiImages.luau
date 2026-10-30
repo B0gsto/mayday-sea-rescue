@@ -17,7 +17,7 @@ return {
 	Markers = {
 		BuildArrow = "rbxassetid://74018470016385",
 		EdgePointer = "rbxassetid://115902828261976",
-		TrailChevron = "rbxassetid://89149604135562", -- art/source/ui/trail_chevron.svg: the onboarding trail step
+		TrailChevron = "rbxassetid://95343043756882", -- art/source/ui/trail_chevron.svg (render --keep): the onboarding trail step, 2 frames
 		Pin = {
 			Red = "rbxassetid://126485934783621",
 			Amber = "rbxassetid://102982529774636",
@@ -88,6 +88,7 @@ return {
 		shop = "rbxassetid://133652722448118",
 		vip = "rbxassetid://89629681853633",
 		spin = "rbxassetid://133365909591902", -- the prize wheel
+		chat = "rbxassetid://74341805468542", -- idle crew chatting (art/source/ui/chat.svg, tools/ui-art/stickers.py)
 		wave = "rbxassetid://78956573306618", -- the wake trail prize icon (Settings' wave art)
 		waves = "rbxassetid://103642240410321", -- spin wheel wake prizes
 	} :: { [string]: string },

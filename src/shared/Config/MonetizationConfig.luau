@@ -329,7 +329,7 @@ local MonetizationConfig = {
 			dockLevel = 1,
 		},
 		DockSeaPlate1 = {
-			id = 0,
+			id = 3723693626,
 			name = "Ramp Wharf",
 			description = "Builds the Ramp Wharf sea plate on your island now, no Cash needed (needs the Workshop).",
 			price = 15,
@@ -340,7 +340,7 @@ local MonetizationConfig = {
 			dockLevel = 1,
 		},
 		DockSeaPlate2 = {
-			id = 0,
+			id = 3723693636,
 			name = "Freight Wharf",
 			description = "Builds the Freight Wharf sea plate on your island now, no Cash needed (needs the Depot).",
 			price = 35,
