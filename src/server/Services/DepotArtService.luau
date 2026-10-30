@@ -1,6 +1,6 @@
 --!strict
 -- DepotArtService (docs/25 D, K4): the uploaded building art. DockPieces builds the Depot (M_Bld_Depot), the
--- HQ's Lv1/Lv2 (M_Bld_RescueHQ) and Lv4/Lv5 add-ons (M_Bld_HQAddons), the Bunkhouse's Lv1-5 (M_Bld_Bunkhouse) and the Workshop's, Fish Market's, Clinic's,
+-- HQ's Lv1/Lv2 (M_Bld_RescueHQ), Lv4/Lv5 add-ons (M_Bld_HQAddons) and Lv3-5 furniture (M_Prop_HQInterior), the Lv1 Trophy Hall's cup (M_Prop_TrophyCup), the Bunkhouse's Lv1-5 (M_Bld_Bunkhouse) and the Workshop's, Fish Market's, Clinic's,
 -- Lookout's, Boat Yard's, Rescue Boathouse's, Air Station's, Trophy Hall's and Sub Pen's Lv2/Lv3 and the Boathouse's Lv3 add-ons (M_Bld_*Addons) through DockPieces.meshes (the walk-in _COL hulls collide, the visual meshes don't), and the
 -- supply barge M_Veh_SupplyBarge is published as ReplicatedStorage.DepotTemplates.Barge for the clients' barge
 -- visuals (DepotController; clients can't load assets).
@@ -52,7 +52,9 @@ function DepotArtService.Init()
 		"M_Bld_TrophyHallAddons",
 		"M_Bld_WorkshopAddons",
 		"M_Prop_BuildStation",
+		"M_Prop_HQInterior",
 		"M_Prop_JettyCrane",
+		"M_Prop_TrophyCup",
 		"M_Veh_SupplyBarge",
 	})
 	-- shortcut: yields while the first load runs, so a plot synced in that second waits; two syncs of one plot in
