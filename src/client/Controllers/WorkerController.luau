@@ -16,7 +16,7 @@
 -- rig gets its rarity name tag and info card (SurvivorController); each yard shows one crew badge (icon + count)
 -- instead of one per worker. Gatherer/Rescuer pay pops a "+$". The offline earnings show in the join reward
 -- prompt (RewardController). Idle workers (no slot) spend the day in the commons (shared/Hangout, owner 2026-10-29):
--- Leisure is the activity, Rest the sit / lie spot; poses are Motor6D C0 turns over the stock Idle (no uploaded
+-- Leisure is the activity, Rest the sit / lie spot; poses are joint turns over the stock Idle (no uploaded
 -- animations: they would not play in the group-owned launch place), small held props (phone, bowl, cone), a chat
 -- bubble or Zzz popping now and then from one pooled billboard per rig.
 local CollectionService = game:GetService("CollectionService")
@@ -35,6 +35,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local WorkLoop = require(Shared:WaitForChild("WorkLoop"))
 local UI = script.Parent.Parent:WaitForChild("UI")
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local DepotController = require(script.Parent:WaitForChild("DepotController"))
 local SurvivorController = require(script.Parent:WaitForChild("SurvivorController"))
 local WorkerBadge = require(UI:WaitForChild("WorkerBadge"))
@@ -91,7 +92,8 @@ type Rec = {
 	pace: number?, -- the running stride's studs/s (the Walk track's speed follows it)
 	sleep: boolean?, -- home for the night (walking there, or in and hidden)
 	climbing: boolean?, -- on a ladder (walkTo)
-	base: { [Motor6D]: CFrame }?, -- the rig's own joint C0s (leisure poses turn them)
+	turns: { [Instance]: CFrame }?, -- joint -> the leisure pose's turn on top of the playing Idle (applyTurns)
+	held: { [Instance]: { CFrame } }?, -- joint -> { the Animator's Transform, the one applyTurns wrote }
 	mood: BillboardGui?, -- the pooled chat bubble / Zzz over the head
 	lonely: boolean?, -- a chatter with nobody near: on the phone instead
 	gesture: AnimationTrack?, -- a chatter's one-shot point
@@ -105,9 +107,9 @@ local POSES: { [string]: { [string]: Vector3 } } = {
 		LeftKnee = Vector3.new(-90, 0, 0),
 		RightKnee = Vector3.new(-90, 0, 0),
 	},
-	Phone = {
-		RightShoulder = Vector3.new(55, 0, 0),
-		RightElbow = Vector3.new(65, 0, 0),
+	Phone = { -- held at the chest, under the eyes (55 / 65 held it over the face)
+		RightShoulder = Vector3.new(25, 0, 0),
+		RightElbow = Vector3.new(75, 0, 0),
 		Neck = Vector3.new(-22, 0, 0),
 	},
 	Eat = {
@@ -129,7 +131,7 @@ local POSES: { [string]: { [string]: Vector3 } } = {
 	},
 	Sleep = { Neck = Vector3.new(8, 0, 0) },
 }
-local LEISURE_PROP: { [string]: string } = { Phone = "Phone", Eat = "Bowl", Cone = "Cone" }
+local LEISURE_PROP: { [string]: string } = { Phone = "Phone", Eat = "Spoon", Cone = "Cone" } -- the bowl is on the table
 local SIT_LIFT = 1.05 -- the root over a seat top (R15 at RootHeight 3; scales with the rig)
 local LIE_LIFT = 0.55 -- the root's half depth over a bed
 
@@ -192,7 +194,9 @@ local function restOf(r: Rec): CFrame?
 	return if typeof(rest) == "CFrame" and leisureOf(r) then rest else nil
 end
 
--- Turns the joints to the leisure pose (or back to the rig's own); C0 composes with the playing Idle.
+-- Turns the joints to the leisure pose (or back to the rig's own). The turns compose with the playing Idle each frame
+-- (applyTurns): the rigs' joints are AnimationConstraints (Roblox's avatar joint upgrade), which ignore C0 and
+-- attachment turns (Studio 2026-10-30: no pose showed), so only their Transform poses them.
 local function joints(r: Rec)
 	local rig = r.rig
 	if not rig then
@@ -211,21 +215,43 @@ local function joints(r: Rec)
 			end
 		end
 	end
-	if not r.base then
-		if next(want) == nil then
-			return
-		end
-		local base = {}
+	local turns: { [Instance]: CFrame } = {}
+	if next(want) ~= nil then
 		for _, d in rig:GetDescendants() do
-			if d:IsA("Motor6D") then
-				base[d] = d.C0
+			local v = want[d.Name]
+			if v and (d:IsA("Motor6D") or d:IsA("AnimationConstraint")) then
+				turns[d] = CFrame.Angles(math.rad(v.X), math.rad(v.Y), math.rad(v.Z))
 			end
 		end
-		r.base = base
 	end
-	for m, c0 in r.base :: { [Motor6D]: CFrame } do
-		local v = want[m.Name]
-		m.C0 = if v then c0 * CFrame.Angles(math.rad(v.X), math.rad(v.Y), math.rad(v.Z)) else c0
+	local held: { [Instance]: { CFrame } } = r.held or {}
+	for j, h in held do -- joints let go: back to the Animator's own
+		if not turns[j] then
+			(j :: any).Transform = h[1]
+		end
+	end
+	r.turns, r.held = if next(turns) then turns else nil, nil
+end
+
+-- Every frame after the Animator: each posed joint's Transform turned by its leisure turn. A joint the playing track
+-- skips keeps the Transform written last frame, so that one turns from the Animator's last instead (no stacking).
+local function applyTurns()
+	for _, r in recs do
+		local turns = r.turns
+		if turns and r.rig then
+			local held = r.held or {}
+			r.held = held
+			for j, turn in turns do
+				local tf: CFrame = (j :: any).Transform
+				local h = held[j]
+				if h and tf == h[2] then
+					tf = h[1]
+				end
+				local out = tf * turn;
+				(j :: any).Transform = out
+				held[j] = { tf, out }
+			end
+		end
 	end
 end
 
@@ -372,22 +398,22 @@ local function dress(r: Rec)
 			hand,
 			g * CFrame.new(0, 0.35, -0.29)
 		)
-	elseif want == "Bowl" then -- a noodle bowl
-		local bowl = brick(
-			want,
-			Vector3.new(0.5, 1.1, 1.1),
-			Color3.fromRGB(224, 56, 40),
-			hand,
-			g * CFrame.new(0, 0.1, -0.5) * CFrame.Angles(0, 0, math.pi / 2)
-		)
-		bowl.Shape = Enum.PartType.Cylinder
+	elseif want == "Spoon" then -- a spoon with a round bite of noodles (the bowl sits on the canteen table)
 		brick(
-			`{want}Food`,
-			Vector3.new(0.8, 0.12, 0.8),
+			want,
+			Vector3.new(0.12, 0.7, 0.12),
+			Color3.fromRGB(235, 235, 240),
+			hand,
+			g * CFrame.new(0, 0.35, -0.1)
+		)
+		local bite = brick(
+			`{want}Bite`,
+			Vector3.new(0.34, 0.34, 0.34),
 			Color3.fromRGB(250, 208, 40),
 			hand,
-			g * CFrame.new(0, 0.38, -0.5)
+			g * CFrame.new(0, 0.8, -0.1)
 		)
+		bite.Shape = Enum.PartType.Ball
 	elseif want == "Cone" then -- a cone and a pink scoop
 		brick(
 			want,
@@ -532,7 +558,7 @@ local function dropRig(r: Rec)
 		r.rig:Destroy()
 		r.rig = nil
 		r.loaded = {}
-		r.base, r.mood, r.gesture = nil, nil, nil
+		r.turns, r.held, r.mood, r.gesture = nil, nil, nil, nil
 	end
 	r.walking = nil
 	r.climbing = nil
@@ -1121,6 +1147,27 @@ local function untrack(cfg: Instance)
 	end
 end
 
+-- a chat pop's bloop / a Zzz's slow breath (a swoosh pitched down): soft, 3D, heard only near the camera, and at most
+-- one of each per gap over the whole commons so a crowd never chatters on
+local MOOD_EAR, MOOD_GAP = 28, { chat = 4, zzz = 6 }
+local moodHeard = { chat = 0, zzz = 0 }
+local function moodSound(at: Vector3, zzz: boolean)
+	local key, now = if zzz then "zzz" else "chat", os.clock()
+	if
+		now - moodHeard[key] < MOOD_GAP[key]
+		or (at - (Workspace.CurrentCamera :: Camera).CFrame.Position).Magnitude > MOOD_EAR
+	then
+		return
+	end
+	moodHeard[key] = now
+	local s = if zzz
+		then AudioController.play("FX_Swoosh", at, 0.8, 0.5 + 0.1 * math.random())
+		else AudioController.play("UI_FriendPop", at, 0.6, 0.95 + 0.2 * math.random())
+	if s then
+		s.RollOffMinDistance, s.RollOffMaxDistance = 4, MOOD_EAR
+	end
+end
+
 -- the pooled billboard over a resting worker: the chat bubble sticker or the Bunkhouse's "Zzz"
 local function mood(r: Rec, rig: Model, zzz: boolean)
 	local gui = r.mood
@@ -1162,6 +1209,10 @@ local function mood(r: Rec, rig: Model, zzz: boolean)
 	g.Size = UDim2.fromOffset(10, 9)
 	g.StudsOffset = Vector3.new(if zzz then 0.8 else 0.9, 1.6, 0)
 	g.Enabled = true
+	local head = g.Adornee
+	if head and head:IsA("BasePart") then
+		moodSound(head.Position, zzz)
+	end
 	TweenService:Create(
 		g,
 		TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
@@ -1240,25 +1291,26 @@ local function lounge(r: Rec)
 			task.wait(3.5 * j)
 		elseif act == "Eat" or act == "Cone" then
 			local m = rig:FindFirstChild(if act == "Eat" then "RightElbow" else "Neck", true)
-			local base = m and r.base and r.base[m :: Motor6D]
-			if m and m:IsA("Motor6D") and base then
+			local held = m and r.turns and r.turns[m]
+			if m and held then
 				local to = if act == "Eat"
 					then CFrame.Angles(math.rad(115), 0, 0)
 					else CFrame.Angles(math.rad(-18), 0, 0)
-				local tween = TweenService:Create(
-					m,
-					TweenInfo.new(
-						0.35,
-						Enum.EasingStyle.Sine,
-						Enum.EasingDirection.InOut,
-						0,
-						true,
-						0.3
-					),
-					{ C0 = base * to }
-				)
-				tween:Play()
-				tween.Completed:Wait()
+				local function ease(from: CFrame, goal: CFrame)
+					local t0 = os.clock()
+					repeat
+						local a = math.min((os.clock() - t0) / 0.35, 1)
+						local turns = r.turns
+						if not (on() and turns and turns[m]) then
+							return
+						end
+						turns[m] = from:Lerp(goal, (1 - math.cos(a * math.pi)) / 2)
+						RunService.Heartbeat:Wait()
+					until a >= 1
+				end
+				ease(held, to)
+				task.wait(0.3)
+				ease(to, held)
 				if on() then
 					joints(r) -- back to the held pose exactly
 				end
@@ -1801,6 +1853,7 @@ function WorkerController.Start()
 		track(d)
 	end
 	RunService.Heartbeat:Connect(sway)
+	RunService.PreSimulation:Connect(applyTurns)
 	local lightsAt = 0
 	while true do
 		cullPass()

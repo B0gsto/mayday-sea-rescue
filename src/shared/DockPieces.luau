@@ -56,6 +56,17 @@ local TOP = Marina.DECK_TOP
 local LOT = Marina.LOTS
 -- the station: half width, half depth, height; the trophy hall is on its front wall, left of the door
 local ST = { hw = 26, hd = 15, h = 16 }
+local CREAM = Color3.fromRGB(236, 222, 190) -- the station's inner walls
+-- the pendant lamps (x, z) of M_Prop_HQInterior's Lv3_L03_Ceiling (its build.py PENDANTS)
+local PENDANTS = {
+	Vector2.new(0, -2),
+	Vector2.new(-10, -3),
+	Vector2.new(10, -3),
+	Vector2.new(-10, 7),
+	Vector2.new(10, 7),
+	Vector2.new(-20, 2),
+	Vector2.new(20, 2),
+}
 local HALL = DockConfig.Buildings.TrophyHall.spot -- the trophy wall lot, -Z = its front
 
 local function part(
@@ -917,11 +928,13 @@ local function station(m: Model, b: CFrame)
 	glow.Parent = lens
 end
 
--- The station's furnished inside (docs/25 J, walk-in audit 2026-10-29), Lego bricks on the wall spans and counters
--- between the windows, the floor walkway (door to desk, x +-5) left clear. Lv3: floor, red runner, dispatch desk
--- with radio, the wall map of the ring (the walk-in act: its "Map" prompt opens the full map), the mission board of
--- rescued-survivor photos, a counter, ceiling lamps. Lv4 adds crew lockers and a coffee / rest corner, Lv5 the
--- rescue gear racks (life rings, helmets). Inner faces: x +-25.6, z +-14.6; floor top 0.75.
+-- The station's furnished inside (docs/25 J, walk-in audit 2026-10-29, int2 2026-10-30). The furniture is
+-- M_Prop_HQInterior (Lv3: sea-chart table mid-hall + dispatch console facing the door, framed windows, clock,
+-- pinboards, beams + pendant lamps; Lv4: lockers + benches, coffee counter + fridge, sofa corner), placed by
+-- stationInterior; here the room shell and the walk-in act: floor, rug, runner (the door-to-table walkway, x +-5,
+-- stays clear), dado, cream lining, cove, the pendants' lights, the wall map of the ring (its "Map" prompt opens the
+-- full map), the mission board of rescued-survivor photos, the counter; Lv5 the rescue gear racks (life rings,
+-- helmets). Inner faces: x +-25.6, z +-14.6; floor top 0.75.
 local function furnishStation(m: Model, S: CFrame, level: number)
 	local iw, id = ST.hw - 0.4, ST.hd - 0.4
 	local function box(
@@ -950,22 +963,10 @@ local function furnishStation(m: Model, S: CFrame, level: number)
 	local floor =
 		box("Floor", iw * 2 - 0.1, 0.2, id * 2 - 0.1, 0, 0.55, 0, Color3.fromRGB(118, 130, 150))
 	studTop(floor)
-	-- a navy rug with a lifebuoy mid-hall, the red runner from the door to it and on to the desk
-	box("Rug", 14, 0.05, 14, 0, 0.76, 0, NAVY)
-	for i, c in { BRICK_RED, BRICK_WHITE, NAVY } do
-		part(
-			m,
-			"RugRing",
-			Vector3.new(0.05, 7 - (i - 1) * 2, 7 - (i - 1) * 2),
-			S * CFrame.new(0, 0.81 + i * 0.01, 0) * CFrame.Angles(0, 0, math.pi / 2),
-			c,
-			M.SmoothPlastic,
-			Enum.PartType.Cylinder
-		)
-	end
-	box("Runner", 4, 0.06, 7.6, 0, 0.8, -10.8, BRICK_RED)
-	box("Runner", 4, 0.06, 2.8, 0, 0.8, 8.4, BRICK_RED)
-	-- a blue dado round the hall and a red cove under the ceiling: the white walls read as a room
+	-- a navy rug under the chart table, the red runner from the door to it
+	box("Rug", 14, 0.05, 11, 0, 0.76, -1, NAVY)
+	box("Runner", 4, 0.06, 8.1, 0, 0.8, -10.55, BRICK_RED)
+	-- a blue dado round the hall, cream walls over it and a red cove under the ceiling: the hall reads as a room
 	box("Dado", iw * 2 - 0.2, 2.4, 0.15, 0, 0.75, id - 0.1, BRICK_BLUE)
 	box("Cove", iw * 2 - 0.2, 0.6, 0.15, 0, 14.4, id - 0.1, BRICK_RED)
 	box("Cove", iw * 2 - 0.2, 0.6, 0.15, 0, 14.4, -id + 0.1, BRICK_RED)
@@ -973,54 +974,30 @@ local function furnishStation(m: Model, S: CFrame, level: number)
 		box("Dado", 0.15, 2.4, id * 2 - 0.2, x, 0.75, 0, BRICK_BLUE)
 		box("Cove", 0.15, 0.6, id * 2 - 0.2, x, 14.4, 0, BRICK_RED)
 	end
-	-- ceiling lamps (soft, not neon): the windows are solid bricks, so the hall lights itself
-	for _, x in { -16, 0, 16 } do
+	-- 0.02 into the wall: no face on the wall's plane; the front's is cut round the door (x +-5, 9 high), 0.05 clear of its jambs
+	box("Lining", iw * 2, 11.35, 0.1, 0, 3.1, id - 0.03, CREAM)
+	for _, side in { -1, 1 } do
+		box("Lining", iw - 5.05, 11.35, 0.1, side * (iw + 5.05) / 2, 3.1, -id + 0.03, CREAM)
+	end
+	box("Lining", 10.2, 5.4, 0.1, 0, 9.05, -id + 0.03, CREAM)
+	for _, x in { iw - 0.03, -iw + 0.03 } do
+		box("Lining", 0.1, 11.35, id * 2, x, 3.1, 0, CREAM)
+	end
+	-- the warm light under each pendant lamp of M_Prop_HQInterior (its Lv3_L03_Ceiling)
+	for _, p in PENDANTS do
 		local bulb = part(
 			m,
 			"HallLamp",
-			Vector3.new(0.3, 3, 3),
-			S * CFrame.new(x, 14.85, 0) * CFrame.Angles(0, 0, math.pi / 2),
-			BRICK_WHITE,
-			M.SmoothPlastic,
-			Enum.PartType.Cylinder
+			Vector3.new(0.4, 0.4, 0.4),
+			S * CFrame.new(p.X, 10.6, p.Y),
+			WARM,
+			M.SmoothPlastic
 		)
+		bulb.Transparency = 1
 		local light = Instance.new("PointLight")
-		light.Color, light.Range, light.Brightness = WARM, 32, 0.5
+		light.Color, light.Range, light.Brightness = WARM, 22, 0.45
 		light.Parent = bulb
 	end
-
-	-- dispatch desk against the back wall, facing the door: radio, screen, lamp, mug; a chair behind
-	local dz = 11.2
-	box("DeskBody", 8, 2.6, 2.6, 0, 0.75, dz, BRICK_BLUE)
-	box("DeskStripe", 8.02, 0.5, 0.1, 0, 2.2, dz - 1.34, BRICK_RED)
-	studTop(box("DeskTop", 8.4, 0.35, 3.2, 0, 3.35, dz, BRICK_WHITE))
-	box("Radio", 3.2, 1.3, 1.4, -1.8, 3.7, dz + 0.4, GREY)
-	for _, x in { -2.6, -1.0 } do
-		disc("RadioDial", 0.7, 0.15, CFrame.new(x, 4.4, dz - 0.37), STEEL)
-	end
-	box("RadioKey", 0.35, 0.3, 0.1, -0.1, 4.55, dz - 0.34, BRICK_RED)
-	box("RadioKey", 0.35, 0.3, 0.1, -0.1, 4.05, dz - 0.34, BRICK_GREEN)
-	box("RadioAerial", 0.12, 3.2, 0.12, -3.1, 5, dz + 0.8, DBG)
-	box("ScreenFoot", 1.2, 0.2, 1, 2, 3.7, dz + 0.4, DBG)
-	box("ScreenPost", 0.3, 0.9, 0.3, 2, 3.9, dz + 0.4, DBG)
-	box("Screen", 2.6, 1.7, 0.25, 2, 4.8, dz + 0.4, DBG)
-	box("ScreenGlass", 2.2, 1.3, 0.05, 2, 5, dz + 0.255, PANE)
-	box("LampBase", 0.8, 0.2, 0.8, 3.5, 3.7, dz - 0.6, DBG)
-	box("LampArm", 0.15, 1.5, 0.15, 3.5, 3.9, dz - 0.6, DBG)
-	box("LampShade", 1, 0.5, 1, 3.5, 5.3, dz - 0.6, BRICK_YELLOW)
-	part(
-		m,
-		"Mug",
-		Vector3.new(0.7, 0.6, 0.6),
-		S * CFrame.new(-3.7, 4.05, dz - 0.8) * CFrame.Angles(0, 0, math.pi / 2),
-		BRICK_RED,
-		M.SmoothPlastic,
-		Enum.PartType.Cylinder
-	)
-	box("ChairFoot", 1.6, 0.2, 1.6, 0, 0.75, 13.5, DBG)
-	box("ChairPost", 0.3, 1, 0.3, 0, 0.95, 13.5, DBG)
-	box("ChairSeat", 1.9, 0.4, 1.9, 0, 1.9, 13.5, BRICK_RED)
-	box("ChairBack", 1.9, 2.2, 0.35, 0, 2.3, 14.15, BRICK_RED)
 
 	-- the front wall: counter, ring map, mission board (the spans left of the door have no windows)
 	local fz = -id
@@ -1109,46 +1086,6 @@ local function furnishStation(m: Model, S: CFrame, level: number)
 		"Rescued"
 	)
 
-	if level < 4 then
-		return
-	end
-	-- crew lockers in the back wall gaps between windows (x -16..-11, 11..16)
-	local COLOURS = { BRICK_BLUE, BRICK_ORANGE, BRICK_GREEN }
-	for _, bx2 in { -13.5, 13.5 } do
-		for i = 1, 3 do
-			local x = bx2 + (i - 2) * 1.5
-			box("Locker", 1.44, 6.4, 1.4, x, 0.75, id - 0.75, COLOURS[i])
-			box("LockerVent", 1, 0.3, 0.06, x, 6.1, id - 1.48, DBG)
-			box("LockerHandle", 0.15, 0.9, 0.2, x + 0.45, 3.3, id - 1.55, STEEL)
-		end
-	end
-	-- coffee corner on the right wall: counter, machine, mugs, a fridge; a sofa to rest on
-	local wx = iw
-	box("CoffeeCounter", 1.85, 2.7, 7, wx - 1, 0.75, -10.4, BRICK_WHITE)
-	studTop(box("CoffeeTop", 2.1, 0.3, 7.2, wx - 1.15, 3.45, -10.4, RBROWN))
-	box("CoffeeMachine", 1.2, 1.8, 1.4, wx - 0.9, 3.75, -12.4, DBG)
-	box("CoffeeLight", 0.1, 0.25, 0.25, wx - 1.55, 5, -12.4, BRICK_RED)
-	box("CoffeeJug", 0.7, 0.8, 0.7, wx - 1.5, 3.75, -12.4, BRICK_WHITE)
-	for _, z in { -10.2, -9.4, -8.6 } do
-		part(
-			m,
-			"Mug",
-			Vector3.new(0.7, 0.6, 0.6),
-			S * CFrame.new(wx - 1.4, 4.05, z) * CFrame.Angles(0, 0, math.pi / 2),
-			BRICK_YELLOW,
-			M.SmoothPlastic,
-			Enum.PartType.Cylinder
-		)
-	end
-	box("Fridge", 1.9, 4.2, 2, wx - 1.05, 0.75, -4.9, BRICK_WHITE)
-	box("FridgeSeam", 0.06, 0.12, 1.9, wx - 2.02, 2.6, -4.9, DBG)
-	box("FridgeHandle", 0.15, 1.2, 0.2, wx - 2.1, 3.5, -4.1, STEEL)
-	box("SofaBack", 0.8, 3.4, 5.6, wx - 0.45, 0.75, 4, BRICK_RED)
-	studTop(box("SofaSeat", 2, 1, 5.6, wx - 1.8, 0.75, 4, BRICK_PINK))
-	for _, z in { 0.8, 7.2 } do
-		box("SofaArm", 2.5, 1.9, 0.8, wx - 1.4, 0.75, z, BRICK_RED)
-	end
-
 	if level < 5 then
 		return
 	end
@@ -1207,6 +1144,7 @@ end
 
 local function stationInterior(m: Model, S: CFrame, level: number)
 	furnishStation(m, S, level)
+	addonMesh(m, S, level, "M_Prop_HQInterior", "HQInteriorMesh")
 	for _, d in m:GetChildren() do -- wall decor and lamps never block
 		local n = d.Name
 		if
@@ -1225,18 +1163,21 @@ local function stationInterior(m: Model, S: CFrame, level: number)
 	end
 end
 
--- The Lv1 trophy hall (walk-in audit: it was only a wall): a small Lego hall on the wall's lot, 21 wide, 13 deep
--- behind the board wall, a 6-wide door in the middle (the board, its frame and the cup shelf are cut round it),
--- stud floor, red runner, windows, a blue stud roof, ceiling lamps and four plinths inside (DockPieces.trophies
--- puts the first four trophies on them). In the hall's frame (-Z = front); floor top 0.5.
+-- The Lv1 trophy hall (walk-in audit: it was only a wall; int2 2026-10-30): a small Lego hall on the wall's lot, 21
+-- wide, 13 deep behind the board wall, a 9-wide door in the middle (the board, its frame and the cup shelf are cut
+-- round it) so all four plinths show from outside: a stepped row at the back (the first two trophies raised in the
+-- middle), each in a gold-framed backlit niche, on a red rug with a gold border; windows, a blue stud roof, ceiling
+-- lamps, the Lego cup (M_Prop_TrophyCup) on the lintel (trophyHall). DockPieces.trophies puts the first four
+-- trophies on the plinths. In the hall's frame (-Z = front); floor top 0.5; back wall inner face z 12.6.
 local LV1_PLINTHS = {
-	Vector3.new(-7, 3, 5),
-	Vector3.new(7, 3, 5),
-	Vector3.new(-7, 3, 10.4),
-	Vector3.new(7, 3, 10.4),
+	Vector3.new(-2.3, 3.6, 10.4),
+	Vector3.new(2.3, 3.6, 10.4),
+	Vector3.new(-6.6, 3, 9.6),
+	Vector3.new(6.6, 3, 9.6),
 }
-local SHELF1 = { -9, -6.75, -4.5, 4.5, 6.75, 9 }
-local DOOR = 3 -- half the Lv1 door's width
+local SHELF1 = { -8.1, -5.9, 5.9, 8.1 }
+local DOOR = 4.5 -- half the Lv1 door's width
+local NICHE = Color3.fromRGB(35, 70, 150)
 local function smallHall(m: Model, H: CFrame)
 	local function box(
 		name: string,
@@ -1251,15 +1192,27 @@ local function smallHall(m: Model, H: CFrame)
 		return brick(m, name, Vector3.new(w, h, d), H * CFrame.new(x, y0 + h / 2, z), color)
 	end
 	studTop(box("HallFloor", 21.6, 0.5, 13.1, 0, 0, 6.85, LBG))
-	box("Runner", 3, 0.06, 12.4, 0, 0.55, 6.8, BRICK_RED)
+	box("RugBorder", 10, 0.06, 10.6, 0, 0.53, 6.3, BRICK_YELLOW)
+	box("Rug", 9, 0.06, 9.8, 0, 0.56, 6.3, BRICK_RED)
 	-- walls: the front with its door, the sides and the back, windows on the three
 	for _, side in { -1, 1 } do
 		box("HallWall", 10.1 - DOOR, 8.85, 0.9, side * (10.1 + DOOR) / 2, 0.5, 0.65, WHITE)
 		box("HallWall", 0.8, 8.85, 13, side * 10.5, 0.5, 6.9, WHITE)
 		-- the board and its frame, either side of the door
-		box("TrophyFrame", 7.5, 7, 0.2, side * 6.75, 1.9, 0.05, BRICK_YELLOW)
-		box("TrophyBoard", 6.9, 6.4, 0.2, side * 6.55, 2.2, 0, BRICK_BLUE)
-		studTop(box("TrophyShelf", 7, 0.4, 1.4, side * 6.5, 2.4, -0.7, BRICK_WHITE))
+		box("TrophyFrame", 10.5 - DOOR, 7, 0.2, side * (10.5 + DOOR) / 2, 1.9, 0.05, BRICK_YELLOW)
+		box("TrophyBoard", 9.9 - DOOR, 6.4, 0.2, side * (10.3 + DOOR) / 2, 2.2, 0, BRICK_BLUE)
+		studTop(
+			box(
+				"TrophyShelf",
+				10.1 - DOOR,
+				0.4,
+				1.4,
+				side * (10.3 + DOOR) / 2,
+				2.4,
+				-0.7,
+				BRICK_WHITE
+			)
+		)
 		for _, z in { 3.5, 9.5 } do
 			window(
 				m,
@@ -1293,10 +1246,24 @@ local function smallHall(m: Model, H: CFrame)
 		light.Parent = bulb
 	end
 	for _, p in LV1_PLINTHS do
-		studTop(box("TrophyPlinth", 3, 2.5, 3, p.X, 0.5, p.Z, LBG))
+		studTop(box("TrophyPlinth", 3, p.Y - 0.5, 3, p.X, 0.5, p.Z, LBG))
+		-- its niche on the back wall: a gold plate and cap round a glowing blue back, a warm light on the trophy
+		box("NicheFrame", 3.2, 3.8, 0.35, p.X, p.Y + 0.2, 12.45, BRICK_YELLOW)
+		studTop(box("NicheCap", 3.6, 0.4, 0.8, p.X, p.Y + 4, 12.22, BRICK_YELLOW))
+		local glow = box("NicheGlow", 2.6, 3.2, 0.1, p.X, p.Y + 0.5, 12.24, NICHE)
+		glow.Material = M.Neon
+		local light = Instance.new("PointLight")
+		light.Color, light.Range, light.Brightness = WARM, 7, 0.8
+		light.Parent = glow
 	end
-	sign(m, Vector3.new(5.4, 1.4, 0.4), H * CFrame.new(6.2, 1.2, 0), BRICK_YELLOW, "Trophies")
-	sign(m, Vector3.new(7, 1.5, 0.3), H * CFrame.new(0, 7.2, 12.45), BRICK_YELLOW, "Hall of Fame")
+	sign(m, Vector3.new(5, 1.4, 0.4), H * CFrame.new(7.4, 1.2, 0), BRICK_YELLOW, "Trophies")
+	sign(
+		m,
+		Vector3.new(7, 1.05, 0.3),
+		H * CFrame.new(0, 8.475, 12.45),
+		BRICK_YELLOW,
+		"Hall of Fame"
+	)
 end
 
 -- the trophy hall: a blue board in a yellow frame, a shelf and a name sign on its lot, framed by two white columns
@@ -1338,7 +1305,16 @@ local function trophyHall(m: Model, b: CFrame, level: number?)
 		)
 	end
 	brick(m, "Lintel", Vector3.new(21, 1, 1.2), b * HALL * CFrame.new(0, 9.5, -0.4), BRICK_WHITE)
-	if not mesh then
+	local trophyCup = if not mesh
+			and (level or 1) == 1
+			and DockPieces.meshes
+		then DockPieces.meshes("M_Prop_TrophyCup")
+		else nil
+	if trophyCup then -- on the lintel, its base 0.03 into it, its front 0.05 behind the lintel's
+		trophyCup:PivotTo(b * HALL * CFrame.new(0, 9.97, 1.05))
+		trophyCup.Name = "TrophyCupMesh"
+		trophyCup.Parent = m
+	elseif not mesh then
 		part(
 			m,
 			"Dome",
@@ -2904,6 +2880,48 @@ function DockPieces.hangout(b: CFrame): Model
 			)
 		end
 	end
+	-- the table is laid: a noodle bowl and a cup at each eater's place (WorkerController hands them a spoon), bread and
+	-- an apple on a plate between them
+	local T = F + 2.8
+	for _, s in Hangout.SPOTS do
+		if s.prop == "Canteen" and s.rest then
+			local z = s.rest.Z + (if s.rest.Z < -0.5 then 1.6 else -1.6)
+			cyl(
+				"FoodBowl",
+				Vector3.new(0.5, 1.1, 1.1),
+				c * CFrame.new(s.rest.X, T + 0.25, z) * up,
+				BRICK_RED
+			)
+			cyl(
+				"FoodNoodles",
+				Vector3.new(0.1, 0.9, 0.9),
+				c * CFrame.new(s.rest.X, T + 0.53, z) * up,
+				BRICK_YELLOW
+			)
+			cyl(
+				"FoodCup",
+				Vector3.new(0.7, 0.5, 0.5),
+				c * CFrame.new(s.rest.X * 1.56, T + 0.35, z) * up,
+				BRICK_BLUE
+			)
+		end
+	end
+	cyl(
+		"FoodPlate",
+		Vector3.new(0.12, 1.8, 1.8),
+		c * CFrame.new(0, T + 0.06, -0.5) * up,
+		BRICK_WHITE
+	)
+	brick(m, "FoodBread", Vector3.new(0.9, 0.45, 0.55), c * CFrame.new(-0.3, T + 0.345, -0.5), GOLD)
+	part(
+		m,
+		"FoodApple",
+		Vector3.new(0.5, 0.5, 0.5),
+		c * CFrame.new(0.4, T + 0.37, -0.45),
+		RED,
+		M.SmoothPlastic,
+		Enum.PartType.Ball
+	)
 	for _, s in Hangout.SPOTS do
 		if s.prop == "Canteen" and s.rest then
 			local h = s.rest.Y - F - 0.05
@@ -3843,7 +3861,11 @@ function DockPieces.trophies(
 		end
 	end
 	for i, p in plaques do
-		local x = -8.75 + (i - 1) * 2.5
+		-- shortcut: the Lv1 row shows the first 7 (clear of the columns); add a second row if Lv1 players stamp more
+		if lv1 and i > 7 then
+			break
+		end
+		local x = if lv1 then (i - (math.min(#plaques, 7) + 1) / 2) * 2.3 else -8.75 + (i - 1) * 2.5
 		part(
 			m,
 			"PlaqueRim",

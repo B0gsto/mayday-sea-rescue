@@ -223,12 +223,22 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://91952663271231",
 		LOD2 = "rbxassetid://82770258514696",
 	},
+	M_Prop_HQInterior = {
+		LOD0 = "rbxassetid://114681053879263",
+		LOD1 = "rbxassetid://95736914543128",
+		LOD2 = "rbxassetid://72639338712780",
+	},
 	M_Prop_JettyCrane = {
 		LOD0 = "rbxassetid://131828506127675",
 		LOD1 = "rbxassetid://86006746697409",
 		LOD2 = "rbxassetid://73426253708503",
 	},
 	M_Prop_SeaChest = { LOD0 = "rbxassetid://84375480737186" },
+	M_Prop_TrophyCup = {
+		LOD0 = "rbxassetid://92823988374506",
+		LOD1 = "rbxassetid://134752567419348",
+		LOD2 = "rbxassetid://88117011028129",
+	},
 	M_Rock_Boulder_01 = {
 		LOD0 = "rbxassetid://83907500439876",
 		LOD1 = "rbxassetid://72304120830687",
@@ -751,12 +761,14 @@ AssetIds.Attachments = {
 	M_Prop_BuildStation = {
 		ATT_Screen = Vector3.new(0, 6.2, 3.6),
 	},
+	M_Prop_HQInterior = {},
 	M_Prop_JettyCrane = {
 		ATT_Hook = Vector3.new(0, 13.4, -36.8),
 	},
 	M_Prop_SeaChest = {
 		ATT_LidHinge = Vector3.new(0, 3.1, -1.8),
 	},
+	M_Prop_TrophyCup = {},
 	M_Rock_Boulder_01 = {},
 	M_Rock_Boulder_02 = {},
 	M_Rock_Boulder_03 = {},

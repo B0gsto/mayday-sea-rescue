@@ -191,8 +191,13 @@ def main():
     run(["lune", "run", os.path.join(REPO, "tools", "world", "make_work_place.luau"),
          os.path.join(REPO, "build", os.path.basename(REPO) + ".rbxl"), os.path.join(REPO, "build", "MaydayPublish.rbxl"),
          os.path.join(REPO, "map", "generated")])
-    if studio_pids():
-        sys.exit("a Studio already has a roblox-studio: place open; close it first (its edits would be published)")
+    # another publish's cloud-place window (publishes run one after another): wait for it to close, up to 1 h
+    t0 = time.time()
+    while studio_pids():
+        if time.time() - t0 > 3600:
+            sys.exit("a Studio already has a roblox-studio: place open; close it first (its edits would be published)")
+        print("[publish] another cloud-place Studio session is open (a publish in progress?); waiting ...", flush=True)
+        time.sleep(60)
     batch, gap, rounds = int(arg("--batch", 8)), arg("--gap", 3), int(arg("--rounds", 4))
     # the publish window holds one of the machine's 2 heavy slots for its life (queued before the studio lock)
     hold_window.heavy_slot(r"RobloxStudio -protocolString.*task:EditPlace.placeId:%d" % PLACE, "mayday publish",

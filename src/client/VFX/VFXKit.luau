@@ -281,7 +281,10 @@ function VFXKit.play(name: string, target: CFrame | BasePart, opts: Opts?): bool
 	end
 	local cf = if typeof(target) == "CFrame" then target else (target :: BasePart).CFrame
 	local camera = Workspace.CurrentCamera
-	if camera and not Presets.visible((camera.CFrame.Position - cf.Position).Magnitude) then
+	if
+		camera
+		and not Presets.visible((camera.CFrame.Position - cf.Position).Magnitude, (p :: any).cull)
+	then
 		return false
 	end
 	local o: Opts = opts or {}
