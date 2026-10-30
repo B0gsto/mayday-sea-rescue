@@ -1384,6 +1384,12 @@ local function simulateServerOwned(dt: number)
 		if not model.Parent then
 			records[model] = nil
 		elseif record.mode == "Drift" or record.resetting then
+			-- live v16: the rider's split or a reset's unanchor hands the hull back to the nearest client, whose
+			-- physics then lags these server forces: the empty hull bucked, flipped and recovered every 8 s
+			local root = record.root
+			if not root.Anchored and root:GetNetworkOwner() ~= nil then
+				setOwner(root, nil)
+			end
 			if not Craft.idle(model, record.spec, dt) then
 				Simulator.step(model, 0, 0, now)
 			end
