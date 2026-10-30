@@ -50,6 +50,7 @@ type Rig = {
 	clock: number,
 	lens: Part?,
 	light: PointLight?,
+	stale: boolean, -- a joint streamed in after bones were read
 }
 
 local rigs: { [Model]: Rig } = {}
@@ -293,8 +294,15 @@ local function add(model: Instance)
 		clock = 0,
 		lens = nil,
 		light = nil,
+		stale = false,
 	}
 	rigs[model] = r
+	-- the rig streams in part by part (each Motor6D arrives with its Part1): re-read the joints, else late limbs stay unposed
+	model.DescendantAdded:Connect(function(d)
+		if d:IsA("Motor6D") or d:IsA("Bone") then
+			r.stale = true
+		end
+	end)
 	makeStrobe(r)
 end
 
@@ -317,8 +325,8 @@ local function step(dt: number)
 		if not model.Parent then
 			continue
 		end
-		if next(r.bones) == nil or not r.bones.Root then
-			r.bones = CasualtyRig.bones(model) -- streamed in late
+		if r.stale or next(r.bones) == nil or not r.bones.Root then
+			r.bones, r.stale = CasualtyRig.bones(model), false -- streamed in late
 			makeStrobe(r)
 			if not r.bones.Root then
 				continue
