@@ -3006,7 +3006,8 @@ function DockPieces.buildStation(b: CFrame): Model
 		* CFrame.new(0, 5.4, 0)
 		* CFrame.Angles(0, math.pi, 0)
 		* CFrame.Angles(math.rad(-8), 0, 0)
-	-- the Lego kiosk (M_Prop_BuildStation, same footprint; its tablet frame holds the Tablet Part in a recess 8 degrees back)
+	-- the Lego kiosk (M_Prop_BuildStation, same footprint; its yellow tablet frame holds the Tablet Part in a 7.4 x 4.2
+	-- recess 8 degrees back)
 	local src = DockPieces.meshes and DockPieces.meshes("M_Prop_BuildStation")
 	if src then
 		src:PivotTo(at)
@@ -3142,7 +3143,7 @@ function DockPieces.buildStation(b: CFrame): Model
 	local tablet = part(
 		m,
 		"Tablet",
-		if src then Vector3.new(5.6, 3.4, 0.1) else Vector3.new(6.4, 4.2, 0.35),
+		if src then Vector3.new(7.3, 4.1, 0.1) else Vector3.new(6.4, 4.2, 0.35),
 		face,
 		Color3.fromRGB(24, 28, 38),
 		M.SmoothPlastic
@@ -3159,8 +3160,8 @@ function DockPieces.buildStation(b: CFrame): Model
 	screen.Name = "Display"
 	screen.AnchorPoint = Vector2.new(0.5, 0.5)
 	screen.Position = UDim2.fromScale(0.5, 0.5)
-	screen.Size = UDim2.new(1, -28, 1, -28) -- the dark bezel round it
-	screen.BackgroundColor3 = Color3.fromRGB(30, 58, 104) -- WP-25: a calm deep blue, not glaring
+	screen.Size = UDim2.new(1, -20, 1, -20) -- the dark bezel round it
+	screen.BackgroundColor3 = Color3.fromRGB(232, 241, 252) -- AD 2026-10-30: a light panel so the glyph reads on a phone
 	screen.BorderSizePixel = 0
 	screen.Parent = gui
 	local round = Instance.new("UICorner")
@@ -3170,7 +3171,7 @@ function DockPieces.buildStation(b: CFrame): Model
 	icon.Name = "BuildIcon"
 	icon.AnchorPoint = Vector2.new(0.5, 0.5)
 	icon.Position = UDim2.fromScale(0.5, 0.5)
-	icon.Size = UDim2.fromScale(0.7, 0.7)
+	icon.Size = UDim2.fromScale(0.86, 0.86)
 	icon.BackgroundTransparency = 1
 	icon.Image = UiImages.Kit.build
 	icon.ScaleType = Enum.ScaleType.Fit
