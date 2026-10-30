@@ -2,7 +2,8 @@
 -- WildlifeArtService (G76): publishes the static grey seal and herring gull meshes as
 -- ReplicatedStorage.WildlifeTemplates for the client's ambient wildlife (WildlifeController); clients can't load
 -- assets themselves (InsertService is server only). Each template carries attribute Parts (its BasePart count).
--- Also the low-poly pets (Shared.WildlifeRig) with an M_Ani_<pet>_Rare copy where a rare albedo exists.
+-- Also the low-poly pets (Shared.WildlifeRig) with an M_Ani_<pet>_Rare copy where a rare albedo exists, and the
+-- fishing boats (LOD1) that work lazy loops round the ring (SeaLifeController, sea1).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Assets = script.Parent.Parent:WaitForChild("Assets")
@@ -18,6 +19,8 @@ local ASSETS = {
 	"M_Ani_Turtle",
 	"M_Ani_Puffin",
 	"M_Ani_Gull",
+	"M_Veh_MooredBoat_02@LOD1",
+	"M_Veh_MooredBoat_03@LOD1",
 }
 
 -- A copy of `m` wearing the rare albedo set (Appearances.<asset>_Rare.Rare.Dry), or nil when there is none.
@@ -48,8 +51,10 @@ end
 function WildlifeArtService.Start()
 	local folder = Instance.new("Folder")
 	folder.Name = "WildlifeTemplates"
-	for _, asset in ASSETS do
-		local m = AssetLoader.clone(asset, "LOD0")
+	for _, entry in ASSETS do
+		local split = string.split(entry, "@") -- "<asset>@<lod>", LOD0 by default
+		local asset = split[1]
+		local m = AssetLoader.clone(asset, split[2] or "LOD0")
 		if m then
 			local parts = 0
 			for _, d in m:GetDescendants() do

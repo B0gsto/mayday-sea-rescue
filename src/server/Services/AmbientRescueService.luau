@@ -5,43 +5,50 @@
 -- auto_board rule (Ops/Board.ready: a boat with room within reach takes them at any speed, docs/24 A; the
 -- server reads the boat itself, no client input) and paid on delivery to a pad via the scene's onDelivered
 -- hook. Smaller pay than a call.
--- They swim in the open water between the six islands and the outer islands (CallTypes zone Outer, docs/23
--- (p)), never in the lagoon or a cove. K13 (docs/16): one is always in view off each player's cove mouth
--- (checked every MOUTH_CHECK s, so an idle player sees one within ~45 s); at the cap the oldest one nobody is
--- near makes way for it. Not while a cold open runs (that player's own swimmer comes first).
+-- sea1 (owner 2026-10-29, "too empty"): Shared.Calls.AmbientMix sets the density: a cap that grows with the
+-- server (9 with one player, 24 with six), a lone swimmer, a cluster of 2-3 or a capsized dinghy of two, and
+-- IN_SIGHT scenes kept within SIGHT of every player driving at sea (spawned SIGHT_MIN+ out, ahead of the bow).
+-- Timed spawns go to the Outer ring or, FAR of the time, off an outer island. Nothing spawns in the lagoon or
+-- within HOME_CLEAR of a berth (the coves are the missions'). K13 (docs/16): one is always in view off each
+-- player's cove mouth. At the cap the oldest scene nobody is near makes way. A cold-open player gets no spawns
+-- near them and boards nobody free-roam (their own swimmer comes first). Sight spawns are the added density: they
+-- pay the lower tier (AmbientMix.CASH x the Bronze grade); timed and cove-mouth ones pay CASH.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AmbientMix = require(Shared:WaitForChild("Calls"):WaitForChild("AmbientMix"))
 local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local CraftBoard = require(Shared:WaitForChild("Ops"):WaitForChild("CraftBoard"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
+local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
 
 local ProgressionService = require(script.Parent.ProgressionService) :: any
 local RescueService = require(script.Parent.RescueService) :: any
 
 local AmbientRescueService = {}
 
-AmbientRescueService.CAP = 8 -- free-roam swimmers in the water server-wide (one off each of 6 coves + 2) -- tune
-AmbientRescueService.RESPAWN = 45 -- s between spawns while under the cap -- tune
+AmbientRescueService.RESPAWN = 20 -- s between timed spawns while under the cap -- tune
 AmbientRescueService.MAX_AGE = 360 -- s unrescued before they are swept off (a fresh one spawns elsewhere)
 AmbientRescueService.CLEAR = 120 -- studs from any player when one appears (no pop-in beside you)
-AmbientRescueService.SPACING = 150 -- studs between free-roam swimmers
-AmbientRescueService.CASH = 120 -- per survivor delivered (a Silver call pays 550)
-AmbientRescueService.ZONES = { "Outer" }
+AmbientRescueService.SPACING = 150 -- studs between free-roam scenes
 AmbientRescueService.MOUTH_OUT = 350 -- studs straight out from a player's berth: just past their cove -- tune
 AmbientRescueService.MOUTH_VIEW = 220 -- studs from that point: in view from the cove -- tune
-AmbientRescueService.MOUTH_CHECK = 5 -- s
+AmbientRescueService.SIGHT_CHECK = 3 -- s
 
 type Scene = { [string]: any }
 
 local scenes: { Scene } = {}
 local nextId = 0
 local rng = Random.new()
+local FAR_ZONES: { string } = {}
+for _, island in WorldConfig.Islands do
+	table.insert(FAR_ZONES, island.id)
+end
 
 -- The boat the player sits in (seated only: a parked craft never picks anyone up).
 local function seatedVehicle(player: Player): Model?
@@ -65,11 +72,21 @@ local function remove(scene: Scene)
 	RescueService.Cleanup(scene)
 end
 
-local function onDelivered(scene: Scene, count: number, driver: Player?)
-	if driver then
-		pcall(ProgressionService.Award, driver, AmbientRescueService.CASH * count, "AmbientRescue")
+local function count(scene: Scene, state: string): number
+	local n = 0
+	for _, v in scene.victims do
+		n += if v.state == state then 1 else 0
 	end
-	remove(scene)
+	return n
+end
+
+local function onDelivered(scene: Scene, n: number, driver: Player?)
+	if driver then
+		pcall(ProgressionService.Award, driver, scene.pay * n, "AmbientRescue")
+	end
+	if count(scene, "Water") + count(scene, "Aboard") == 0 then
+		remove(scene) -- a cluster stays until its last survivor is home
+	end
 end
 
 local function playersClear(p: Vector3): boolean
@@ -85,8 +102,26 @@ local function playersClear(p: Vector3): boolean
 	return true
 end
 
+-- Off every berth by HOME_CLEAR (the coves are the missions' and the cold open's).
+local function homesClear(p: Vector3): boolean
+	for _, player in Players:GetPlayers() do
+		local bay = player:GetAttribute("BayCFrame")
+		if
+			typeof(bay) == "CFrame"
+			and CallLogic.flatDistance(CallLogic.homeOf(bay), p) < AmbientMix.HOME_CLEAR
+		then
+			return false
+		end
+	end
+	return true
+end
+
 local function clearSpot(p: Vector3): boolean
-	if not playersClear(p) or not RescueService.ClearWater(p, RescueService.CLEAR_SPAWN) then
+	if
+		not playersClear(p)
+		or not homesClear(p)
+		or not RescueService.ClearWater(p, RescueService.CLEAR_SPAWN)
+	then
 		return false
 	end
 	for _, s in scenes do
@@ -101,23 +136,25 @@ local function roll(): number
 	return rng:NextNumber()
 end
 
-local function spawnAt(pos: Vector3): Scene
+-- extra: a sight spawn (sea1's added density) pays the Bronze grade share of CASH, the lower tier (ECON1)
+local function spawnAt(pos: Vector3, extra: boolean?): Scene
 	nextId += 1
-	local spec = CallTypes.Kinds.Swimmer
+	local mix = AmbientMix.pick(roll())
 	local scene: Scene = {
 		id = `AMB{nextId}`, -- never an op id: PIW_Rescue and OperationService.CanAct ignore it
-		kind = "Swimmer",
-		spec = spec,
+		kind = mix.kind,
+		spec = CallTypes.Kinds[mix.kind],
 		position = pos,
-		total = 1,
+		total = mix.total,
 		victims = {},
 		isBig = false,
 		opsDriven = true, -- no hold prompt: the server boards them (below)
 		ambient = true,
 		bornAt = os.clock(),
+		pay = math.floor(AmbientMix.CASH * (if extra then CallTypes.Payout.Grade.Bronze else 1)),
 	}
-	scene.onDelivered = function(count: number, driver: Player?)
-		onDelivered(scene, count, driver)
+	scene.onDelivered = function(n: number, driver: Player?)
+		onDelivered(scene, n, driver)
 	end
 	RescueService.SpawnCall(scene)
 	table.insert(scenes, scene)
@@ -126,8 +163,10 @@ end
 
 local function spawnOne(): Scene?
 	for _ = 1, 8 do
-		local zones = AmbientRescueService.ZONES
-		local pos = CallLogic.pickSpawnPoint(zones[rng:NextInteger(1, #zones)], roll)
+		local zone = if roll() < AmbientMix.FAR
+			then FAR_ZONES[rng:NextInteger(1, #FAR_ZONES)]
+			else "Outer"
+		local pos = CallLogic.pickSpawnPoint(zone, roll)
 		if clearSpot(pos) then
 			return spawnAt(pos)
 		end
@@ -138,71 +177,107 @@ end
 local function swimmingScenes(): { Scene }
 	local out = {}
 	for _, scene in scenes do
-		local v = scene.victims[1]
-		if v and v.state == "Water" then
+		if count(scene, "Water") > 0 then
 			table.insert(out, scene)
 		end
 	end
 	return out
 end
 
--- K13: keep one swimmer in view off each player's cove mouth (open water past it), within the cap.
-local function stepMouth()
-	local mouths = {}
+type Eye = { at: Vector3, view: number, want: number, ahead: Vector3?, area: string }
+
+-- Where the server keeps survivors in view: off each cove mouth (K13), and round every player driving at sea.
+local function eyes(): { Eye }
+	local out: { Eye } = {}
 	for _, player in Players:GetPlayers() do
-		if player:GetAttribute("ColdOpenActive") == true then
-			return
-		end
 		local bay = player:GetAttribute("BayCFrame")
-		if typeof(bay) == "CFrame" then
-			local home = CallLogic.homeOf(bay)
-			local out = (home - CallTypes.STATION).Unit * AmbientRescueService.MOUTH_OUT
-			table.insert(mouths, home + out)
+		if player:GetAttribute("ColdOpenActive") == true or typeof(bay) ~= "CFrame" then
+			continue
+		end
+		local home = CallLogic.homeOf(bay)
+		local out1 = (home - CallTypes.STATION).Unit * AmbientRescueService.MOUTH_OUT
+		table.insert(
+			out,
+			{ at = home + out1, view = AmbientRescueService.MOUTH_VIEW, want = 1, area = "Open" }
+		)
+		local v = seatedVehicle(player)
+		local at = v and v:GetPivot()
+		if at and CallLogic.isWater(at.Position, "Open") then
+			table.insert(out, {
+				at = Vector3.new(at.Position.X, 0, at.Position.Z),
+				view = AmbientMix.SIGHT,
+				want = AmbientMix.IN_SIGHT,
+				ahead = Vector3.new(at.LookVector.X, 0, at.LookVector.Z),
+				area = "Open",
+			})
 		end
 	end
+	return out
+end
+
+local function inView(scene: Scene, e: Eye): boolean
+	return CallLogic.flatDistance(scene.position, e.at) <= e.view
+end
+
+-- A spot for an eye: in its view ring, mostly ahead of the bow for a boat.
+local function sightSpot(e: Eye): Vector3?
+	for _ = 1, 16 do
+		local p
+		if e.ahead and e.ahead.Magnitude > 0.1 then
+			local a = (roll() * 2 - 1) * math.rad(70)
+			local d = CFrame.Angles(0, a, 0):VectorToWorldSpace(e.ahead.Unit)
+			local r = AmbientMix.SIGHT_MIN + roll() * (e.view - 40 - AmbientMix.SIGHT_MIN)
+			p = e.at + d * r
+		else
+			p = CallLogic.ringPoint(e.at, 40, e.view - 20, roll)
+		end
+		if CallLogic.isWater(p, e.area) and clearSpot(p) then
+			return p
+		end
+	end
+	return nil
+end
+
+local function stepSight()
+	local list = eyes()
 	local swimming = swimmingScenes()
-	local oldest: Scene? = nil
-	local mouth: Vector3? = nil
-	for _, m in mouths do
-		local seen = false
+	for _, e in list do
+		local seen = 0
 		for _, scene in swimming do
-			seen = seen
-				or CallLogic.flatDistance(scene.position, m) <= AmbientRescueService.MOUTH_VIEW
+			seen += if inView(scene, e) then 1 else 0
 		end
-		if not seen then
-			mouth = m
-			break
+		if seen >= e.want then
+			continue
 		end
-	end
-	if not mouth then
-		return
-	end
-	for _, scene in swimming do
-		local inView = false
-		for _, m in mouths do
-			inView = inView
-				or CallLogic.flatDistance(scene.position, m) <= AmbientRescueService.MOUTH_VIEW
+		local pos = sightSpot(e)
+		if not pos then
+			continue
 		end
-		if
-			not inView
-			and playersClear(scene.position)
-			and (not oldest or scene.bornAt < oldest.bornAt)
-		then
-			oldest = scene
-		end
-	end
-	for _ = 1, 20 do
-		local pos = CallLogic.ringPoint(mouth, 40, AmbientRescueService.MOUTH_VIEW - 20, roll)
-		if CallLogic.isWater(pos, "Outer") and clearSpot(pos) then
-			if #swimming >= AmbientRescueService.CAP then
-				if not oldest then
-					return
+		if #swimming >= AmbientMix.cap(#Players:GetPlayers()) then
+			-- make way: the oldest scene out of every view, nobody near, nobody aboard
+			local oldest: Scene? = nil
+			for _, scene in swimming do
+				local watched = false
+				for _, o in list do
+					watched = watched or inView(scene, o)
 				end
-				remove(oldest)
+				if
+					not watched
+					and count(scene, "Aboard") == 0
+					and playersClear(scene.position)
+					and (not oldest or scene.bornAt < oldest.bornAt)
+				then
+					oldest = scene
+				end
 			end
-			spawnAt(pos)
-			return
+			if not oldest then
+				return
+			end
+			remove(oldest)
+			table.remove(swimming, table.find(swimming, oldest) :: number)
 		end
+		table.insert(swimming, spawnAt(pos, e.want > 1))
+		return -- one spawn per check: the sea fills over a few seconds, never in one frame
 	end
 end
 
@@ -294,39 +369,42 @@ function AmbientRescueService.StepBoarding(
 	end
 end
 
+local function notColdOpen(player: Player): boolean
+	return player:GetAttribute("ColdOpenActive") ~= true
+end
+
 local function stepBoarding(dt: number)
 	local boats = AmbientRescueService.SeatedBoats()
 	for _, scene in scenes do
-		AmbientRescueService.StepBoarding(scene, dt, boats)
+		AmbientRescueService.StepBoarding(scene, dt, boats, notColdOpen)
 	end
 end
 
 local function stepLife()
 	local now = os.clock()
 	for _, scene in table.clone(scenes) do
-		local v = scene.victims[1]
+		local water, aboard = count(scene, "Water"), count(scene, "Aboard")
 		-- boarding failed (no room after all), or nobody came for them in time
 		if
-			not v
-			or v.state == "Recovered"
-			or (v.state == "Water" and now - scene.bornAt > AmbientRescueService.MAX_AGE)
+			water + aboard == 0
+			or (aboard == 0 and now - scene.bornAt > AmbientRescueService.MAX_AGE)
 		then
 			remove(scene)
 		end
 	end
-	if #swimmingScenes() < AmbientRescueService.CAP and #Players:GetPlayers() > 0 then
+	if #swimmingScenes() < AmbientMix.cap(#Players:GetPlayers()) and #Players:GetPlayers() > 0 then
 		spawnOne()
 	end
 end
 
 function AmbientRescueService.Start()
 	local boardAccum, lifeAccum = 0, AmbientRescueService.RESPAWN - 10 -- the first one about 10 s in
-	local mouthAccum = 0
+	local sightAccum = 0
 	RunService.Heartbeat:Connect(function(dt)
-		mouthAccum += dt
-		if mouthAccum >= AmbientRescueService.MOUTH_CHECK then
-			mouthAccum = 0
-			stepMouth()
+		sightAccum += dt
+		if sightAccum >= AmbientRescueService.SIGHT_CHECK then
+			sightAccum = 0
+			stepSight()
 		end
 		boardAccum += dt
 		if boardAccum >= 0.1 then

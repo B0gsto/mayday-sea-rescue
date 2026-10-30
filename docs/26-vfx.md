@@ -34,6 +34,8 @@ The game's effects follow the global VFX rules (user CLAUDE.md "VFX (all games)"
 | Storm | state | rain streaks, whitecaps, spindrift (docs/05 7) |
 | Prize wheel | spectacle | spin streaks on the rim, a win burst sized by rarity |
 | Chimneys (smokehouse, cottages) | ambience | a slow puff every few seconds, round studded smoke, near the player only |
+| Dolphin leap (sea1) | ambience | `dolphin_leap`: a small crown + drops where a Lego dolphin of a passing pod dives back in, a soft splash; near the camera only |
+| Whale breach (sea1) | spectacle | `whale_breach`: wide crown, tall drop column, foam puffs and ring, a deep splash under a slap; reads out to 700 studs (preset `cull`) |
 
 ## Satisfaction bar (owner, 2026-10-28)
 
