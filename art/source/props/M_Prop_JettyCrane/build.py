@@ -2,6 +2,9 @@
 white pole, flat navy boom, dangling hook; owner 2026-10-29: "it looks cheap, needs to be redone via Blender").
 Round 2 (AD round 1 6.5/10: "stock Lego crane, cheap bits"): wider studded base, a real counter-jib with ballast
 bricks, a jib that tapers to a red tip cap, stiff rod ties, a chunky hook block with a hook and one smooth life ring.
+Round 3 (AD round 2 7.6/10): a deep zigzag (Warren) truss on the tower instead of X braces ("reads as XXX"), two chunky
+yellow ties instead of three thin dark rods, a yellow operator cab with a big windscreen at the slewing ring, and a
+bigger hook block and a ~2x life ring so both read over the water.
 
 Same envelope as the Parts crane: origin the mast's ground centre (the base stands on the jetty deck), jib reaching
 39.4 studs toward the berth along -Y (Blender front = Roblox -Z: the game turns the Model with CFrame.lookAt toward
@@ -36,13 +39,13 @@ SINK = 0.04
 Z0 = -0.06                   # base bottom just below the deck top: never coplanar with it
 B1_W, B1_H = 7.6, 1.2        # red studded footing
 B2_W, B2_H = 5.0, 2.0        # grey plinth top
-HW = 1.5                     # tower post offset (posts at +-HW)
+HW = 1.75                    # tower post offset (posts at +-HW)
 JIB_Z = 20.0                 # jib axis height
 TOWER_Z0, TOWER_Z1 = B2_H, JIB_Z - 1.9
 JIB_L = 39.4                 # reach toward -Y
 COUNTER = 8.0                # counter-jib length toward +Y
 HOOK_Y = -JIB_L + 2.6        # trolley + hook line
-HOOK_Z = 11.0                # hook block centre
+HOOK_Z = 13.4                # hook block centre
 
 
 def patch_lod_names():
@@ -101,42 +104,43 @@ def tower(b):
     zs = [TOWER_Z0 + (TOWER_Z1 - TOWER_Z0) * i / nb for i in range(nb + 1)]
     for sx in (-1, 1):
         for sy in (-1, 1):
-            b.box((sx * HW - 0.45, sy * HW - 0.45, TOWER_Z0 - SINK), (sx * HW + 0.45, sy * HW + 0.45, TOWER_Z1),
-                  P.WHITE, bevel=0.06)
+            b.box((sx * HW - 0.6, sy * HW - 0.6, TOWER_Z0 - SINK), (sx * HW + 0.6, sy * HW + 0.6, TOWER_Z1),
+                  P.WHITE, bevel=0.08)
     for z in zs[1:]:                                     # square frames at each level (inside the posts' faces)
         for sy in (-1, 1):
-            b.box((-HW, sy * HW - 0.3, z - 0.3), (HW, sy * HW + 0.3, z + 0.3), P.WHITE, bevel=0.03)
+            b.box((-HW, sy * HW - 0.45, z - 0.38), (HW, sy * HW + 0.45, z + 0.38), P.WHITE, bevel=0.05)
         for sx in (-1, 1):
-            b.box((sx * HW - 0.28, -HW, z - 0.28), (sx * HW + 0.28, HW, z + 0.28), P.WHITE, bevel=0.03)
-    for i in range(nb):                                  # red X braces on the four faces
+            b.box((sx * HW - 0.42, -HW, z - 0.36), (sx * HW + 0.42, HW, z + 0.36), P.WHITE, bevel=0.05)
+    for i in range(nb):                                  # one deep red diagonal per panel, zigzagging up (Warren truss)
         a, e = zs[i], zs[i + 1]
+        k = 1 if i % 2 == 0 else -1
         for s in (-1, 1):
-            b.beam((-HW, s * HW, a), (HW, s * HW, e), 0.4, 0.4, P.RED)
-            b.beam((HW, s * HW, a), (-HW, s * HW, e), 0.4, 0.4, P.RED)
-            b.beam((s * HW, -HW, a), (s * HW, HW, e), 0.4, 0.4, P.RED)
-            b.beam((s * HW, HW, a), (s * HW, -HW, e), 0.4, 0.4, P.RED)
+            b.beam((-k * HW, s * HW, a), (k * HW, s * HW, e), 1.0, 0.7, P.RED)
+            b.beam((s * HW, k * HW, a), (s * HW, -k * HW, e), 0.96, 0.66, P.RED)
     # slewing ring, deck, cab, A-frame, beacon
     z = TOWER_Z1
     b.cyl(0, 0, z - SINK, z + 0.9, 3.0, P.DBG, 20)
     b.box((-2.8, -2.8, z + 0.9 - SINK), (2.8, 2.8, z + 1.3), P.ORANGE, bevel=0.08)
     cz = z + 1.3
-    b.box((-3.9, -2.4, cz - SINK), (-1.0, 1.8, cz + 3.4), P.RED, bevel=0.14)                 # cab
-    b.box((-3.96, -2.0, cz + 1.1), (-3.8, 1.4, cz + 2.9), P.INK, bevel=0.0)                   # side window
-    b.box((-3.7, -2.46, cz + 1.1), (-1.2, -2.3, cz + 2.9), P.INK, bevel=0.0)                  # windscreen
-    for y in (-1.0, 0.8):
-        stud(b, -2.45, y, cz + 3.4, P.RED, 0.52, 0.36)
+    # yellow operator cab on the slewing deck: big glass windscreen toward the jib, side window, red studded roof
+    b.box((-4.4, -2.7, cz - SINK), (-1.1, 1.9, cz + 3.8), P.YELLOW, bevel=0.16)
+    b.box((-4.1, -2.85, cz + 1.2), (-1.4, -2.6, cz + 3.4), P.WHITE, bevel=0.04)               # windscreen frame
+    b.box((-3.85, -2.93, cz + 1.45), (-1.65, -2.62, cz + 3.15), P.GLASS, bevel=0.0)             # windscreen
+    b.box((-4.52, -2.2, cz + 1.2), (-4.3, 1.2, cz + 3.4), P.WHITE, bevel=0.04)                # side window frame
+    b.box((-4.6, -1.95, cz + 1.45), (-4.32, 0.95, cz + 3.15), P.GLASS, bevel=0.0)              # side window
+    b.box((-4.6, -2.95, cz + 3.8 - SINK), (-0.9, 2.15, cz + 4.3), P.RED, bevel=0.12)          # roof
+    for y in (-1.4, 0.6):
+        stud(b, -2.75, y, cz + 4.3, P.RED, 0.55, 0.38)
     apex = (0, 0.4, JIB_Z + 8.5)
     for sx in (-1, 1):
         b.beam((sx * 1.2, -0.2, cz), apex, 0.55, 0.55, P.WHITE)
         b.beam((sx * 1.2, 1.4, cz), apex, 0.55, 0.55, P.WHITE)
     b.box((-0.55, -0.15, apex[2] - 0.2), (0.55, 0.95, apex[2] + 0.75), P.RED, bevel=0.08)    # beacon
-    # stiff rod ties (phone-readable): apex to two points on the jib and to the counter-jib end
-    _, d1 = jib_half(-14.0)
-    _, d2 = jib_half(-27.0)
+    # two chunky yellow ties (AD r2: thin dark rods read as lines): apex to mid-jib and to the counter-jib end
+    _, d1 = jib_half(-21.0)
     tz = apex[2] - 0.3
-    b.beam((0, 0.2, tz), (0, -14.0, JIB_Z + d1 + 0.2), 0.62, 0.62, P.DBG)
-    b.beam((0, 0.2, tz), (0, -27.0, JIB_Z + d2 + 0.2), 0.62, 0.62, P.DBG)
-    b.beam((0, 0.6, tz), (0, COUNTER - 0.6, JIB_Z + 1.2), 0.62, 0.62, P.DBG)
+    b.beam((0, 0.2, tz), (0, -21.0, JIB_Z + d1 + 0.3), 1.1, 0.8, P.YELLOW)
+    b.beam((0, 0.6, tz), (0, COUNTER - 0.6, JIB_Z + 1.2), 1.1, 0.8, P.YELLOW)
 
 
 def jib(b):
@@ -193,33 +197,35 @@ def hook(b):
         for dy in (-0.55, 0.55):
             b.cyl_x(sx * w, y + dy, zc - 0.25, 0.32, 0.5, P.DBG, 10)
     # two stiff falls to the hook block
-    top = HOOK_Z + 1.1
+    top = HOOK_Z + 1.6
     for sx in (-1, 1):
         b.box((sx * 0.6 - 0.23, y - 0.23, top - SINK), (sx * 0.6 + 0.23, y + 0.23, zc - 1.3 + SINK), P.DBG,
               bevel=0.0)
     # chunky yellow hook block with a red band and sheave hubs
-    b.box((-1.5, y - 1.05, HOOK_Z - 1.1), (1.5, y + 1.05, HOOK_Z + 1.1), P.YELLOW, bevel=0.24)
-    b.box((-1.56, y - 1.11, HOOK_Z - 0.28), (1.56, y + 1.11, HOOK_Z + 0.28), P.RED, bevel=0.0)
-    b.cyl_x(0, y, HOOK_Z + 0.6, 0.6, 3.3, P.DBG, 14)
-    stud(b, 0, y, HOOK_Z + 1.1, P.YELLOW, 0.3, 0.3)
+    HB = 1.6                                                                                   # block half height
+    b.box((-2.2, y - 1.5, HOOK_Z - HB), (2.2, y + 1.5, HOOK_Z + HB), P.YELLOW, bevel=0.3)
+    b.box((-2.27, y - 1.57, HOOK_Z - 0.4), (2.27, y + 1.57, HOOK_Z + 0.4), P.RED, bevel=0.0)
+    b.cyl_x(0, y, HOOK_Z + 0.85, 0.85, 4.75, P.DBG, 16)
+    for sx in (-1, 1):
+        stud(b, sx * 1.0, y, HOOK_Z + HB, P.YELLOW, 0.5, 0.36)
     # the hook: a shank and a J curve in the x-z plane
-    hc = HOOK_Z - 2.4                                                                          # bowl centre
-    b.box((-0.28, y - 0.28, hc + 0.4), (0.28, y + 0.28, HOOK_Z - 1.1 + SINK), P.DBG, bevel=0.05)
-    R = 0.85
+    R = 1.15
+    hc = HOOK_Z - HB - 1.9                                                                     # bowl centre
+    b.box((-0.36, y - 0.36, hc + 0.5), (0.36, y + 0.36, HOOK_Z - HB + SINK), P.DBG, bevel=0.06)
     pts = [(R * math.cos(a), hc + R * math.sin(a)) for a in
            [math.radians(d_) for d_ in (100, 150, 200, 250, 290, 330, 10, 40)]]
-    pts[0] = (0.0, hc + 0.6)
+    pts[0] = (0.0, hc + 0.75)
     for (xa, za), (xe, ze) in zip(pts, pts[1:]):
-        b.beam((xa, y, za), (xe, y, ze), 0.55, 0.55, P.DBG)
-    b.box((pts[-1][0] - 0.24, y - 0.24, pts[-1][1] - 0.1), (pts[-1][0] + 0.24, y + 0.24, pts[-1][1] + 0.5),
+        b.beam((xa, y, za), (xe, y, ze), 0.72, 0.72, P.DBG)
+    b.box((pts[-1][0] - 0.32, y - 0.32, pts[-1][1] - 0.1), (pts[-1][0] + 0.32, y + 0.32, pts[-1][1] + 0.6),
           P.DBG, bevel=0.08)                                                                   # tip
     # life ring hung on the hook bowl: one smooth red torus, four white bands (a hair proud of it)
-    RR, rr = 1.9, 0.55
+    RR, rr = 3.5, 1.0                                                                          # AD r2: ~2x
     rc = hc - R - 0.05 + rr - RR
-    torus_arc(b, 0, y, rc, RR, rr, 0, 2 * math.pi, P.RED, seg=32, mnr=12)
+    torus_arc(b, 0, y, rc, RR, rr, 0, 2 * math.pi, P.RED, seg=36, mnr=12)
     for k in range(4):
         a = math.radians(45 + 90 * k)
-        torus_arc(b, 0, y, rc, RR, rr + 0.06, a - 0.28, a + 0.28, P.WHITE, seg=4, mnr=12)
+        torus_arc(b, 0, y, rc, RR, rr + 0.07, a - 0.26, a + 0.26, P.WHITE, seg=4, mnr=12)
 
 
 # ------------------------------------------------------------------ build
@@ -272,7 +278,7 @@ def build():
         "attachments": atts,
         "closeups": [
             {"name": "cab", "target": [0, 0, 21], "dist": 22, "az": -35, "el": 14},
-            {"name": "hook", "target": [0, HOOK_Y, 9], "dist": 14, "az": -60, "el": 10},
+            {"name": "hook", "target": [0, HOOK_Y, 9], "dist": 20, "az": -60, "el": 10},
             {"name": "base", "target": [0, 4, 6], "dist": 26, "az": -40, "el": 18},
         ],
     }

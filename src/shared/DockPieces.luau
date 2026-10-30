@@ -4523,7 +4523,7 @@ function DockPieces.buildStation(b: CFrame): Model
 	icon.Name = "BuildIcon"
 	icon.AnchorPoint = Vector2.new(0.5, 0.5)
 	icon.Position = UDim2.fromScale(0.5, 0.5)
-	icon.Size = UDim2.fromScale(0.86, 0.86)
+	icon.Size = UDim2.fromScale(1.3, 1.3) -- AD 2026-10-30: glyph ~1.5x; the sticker's own margin keeps it inside
 	icon.BackgroundTransparency = 1
 	icon.Image = UiImages.Kit.build
 	icon.ScaleType = Enum.ScaleType.Fit
