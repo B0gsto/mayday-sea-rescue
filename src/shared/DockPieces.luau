@@ -928,6 +928,162 @@ local function station(m: Model, b: CFrame)
 	glow.Parent = lens
 end
 
+-- a SurfaceGui on `p`'s front (int3: window views, the Lv5 ops screens), unlit by `light` (0..1)
+local function frontGui(p: BasePart, light: number): SurfaceGui
+	p.CanQuery, p.CanTouch = false, false
+	local gui = Instance.new("SurfaceGui")
+	gui.Face = Enum.NormalId.Front
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 32
+	gui.LightInfluence = light
+	gui.Parent = p
+	return gui
+end
+
+-- a Frame at scale (x, y, w, h); `round` = its UICorner scale, `top` = a top-to-bottom gradient to `color` from `top`
+local function rect(
+	parent: Instance,
+	x: number,
+	y: number,
+	w: number,
+	h: number,
+	color: Color3,
+	z: number,
+	round: number?,
+	top: Color3?
+): Frame
+	local f = Instance.new("Frame")
+	f.BorderSizePixel = 0
+	f.BackgroundColor3 = if top then Color3.new(1, 1, 1) else color
+	f.Position, f.Size, f.ZIndex = UDim2.fromScale(x, y), UDim2.fromScale(w, h), z
+	if round then
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(round, 0)
+		c.Parent = f
+	end
+	if top then
+		local g = Instance.new("UIGradient")
+		g.Color = ColorSequence.new(top, color)
+		g.Rotation = 90
+		g.Parent = f
+	end
+	f.Parent = parent
+	return f
+end
+
+-- a window's sea + sky (int3, AD: flat blue-white panes): sky deep to pale, a cloud, a far island on every other
+-- pane (`i`), the horizon, the sea with wave dashes; `round` clips it to a porthole
+local function seaView(p: BasePart, i: number, round: boolean?)
+	local gui = frontGui(p, 0.3)
+	local root: GuiObject = if round then Instance.new("CanvasGroup") else Instance.new("Frame")
+	root.BorderSizePixel = 0
+	root.BackgroundTransparency = 1
+	root.Size = UDim2.fromScale(1, 1)
+	root.Parent = gui
+	if round then
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(0.5, 0)
+		c.Parent = root
+	end
+	rect(root, 0, 0, 1, 0.6, Color3.fromRGB(200, 232, 250), 1, nil, Color3.fromRGB(64, 146, 226))
+	local cx, cy = 0.08 + (i * 0.29) % 0.5, 0.14 + (i % 2) * 0.12
+	rect(root, cx, cy + 0.04, 0.42, 0.08, Color3.new(1, 1, 1), 2, 0.5)
+	rect(root, cx + 0.1, cy, 0.2, 0.1, Color3.new(1, 1, 1), 2, 0.5)
+	if i % 2 == 1 then
+		rect(root, 0.5 - (i % 3) * 0.2, 0.545, 0.3, 0.1, Color3.fromRGB(70, 150, 80), 2, 0.5)
+	end
+	rect(root, 0, 0.58, 1, 0.42, Color3.fromRGB(16, 74, 140), 3, nil, Color3.fromRGB(46, 150, 206))
+	rect(root, 0, 0.575, 1, 0.012, Color3.fromRGB(235, 248, 255), 4)
+	for k = 0, 2 do
+		rect(
+			root,
+			0.1 + ((i + k) * 0.31) % 0.7,
+			0.67 + k * 0.1,
+			0.16,
+			0.018,
+			Color3.fromRGB(190, 230, 250),
+			4,
+			0.5
+		)
+	end
+end
+
+-- the Lv5 ops screens (int3): 1 radar, 2 the ring map, 3 the weather, 4 the call list, 5 the lifebuoy alert, 6 a bar
+-- chart. Unlit: they glow.
+local function opsScreen(p: BasePart, k: number)
+	local gui = frontGui(p, 0)
+	local DEEP, GREEN_C = Color3.fromRGB(6, 26, 44), Color3.fromRGB(90, 235, 150)
+	local bg = rect(gui, 0, 0, 1, 1, DEEP, 1, nil, Color3.fromRGB(18, 60, 96))
+	local a = 2.9 / 4 -- the screen's height over its width: circles stay round
+	local function dot(x: number, y: number, d: number, color: Color3, z: number)
+		return rect(gui, x - d * a / 2, y - d / 2, d * a, d, color, z, 0.5)
+	end
+	if k == 1 then
+		for _, d in { 0.9, 0.6, 0.3 } do
+			local ring = dot(0.5, 0.5, d, DEEP, 2)
+			ring.BackgroundTransparency = 1
+			local st = Instance.new("UIStroke")
+			st.Color, st.Thickness = GREEN_C, 2
+			st.Parent = ring
+		end
+		rect(gui, 0.5 - 0.45 * a, 0.495, 0.9 * a, 0.01, GREEN_C, 2)
+		rect(gui, 0.4975, 0.05, 0.005, 0.9, GREEN_C, 2)
+		local sweep = rect(gui, 0.5, 0.49, 0.32 * a, 0.02, GREEN_C, 3)
+		sweep.AnchorPoint, sweep.Position, sweep.Rotation =
+			Vector2.new(0, 0.5), UDim2.fromScale(0.5, 0.5), -35
+		for _, b in { { 0.62, 0.32 }, { 0.38, 0.66 }, { 0.66, 0.7 } } do
+			dot(b[1], b[2], 0.07, BRICK_YELLOW, 4)
+		end
+	elseif k == 2 then
+		bg.BackgroundColor3 = Color3.fromRGB(24, 110, 180)
+		for j = 0, 5 do
+			local t = math.rad(30 + 60 * j)
+			local x, y = 0.5 + 0.3 * math.cos(t), 0.5 + 0.34 * math.sin(t)
+			dot(x, y, 0.22, TAN, 2)
+			dot(x, y, 0.15, BRICK_GREEN, 3)
+		end
+		dot(0.5, 0.5, 0.3, TAN, 2)
+		dot(0.5, 0.5, 0.22, Color3.fromRGB(30, 130, 60), 3)
+		dot(0.66, 0.2, 0.08, BRICK_RED, 4)
+	elseif k == 3 then
+		bg:Destroy()
+		rect(gui, 0, 0, 1, 1, Color3.fromRGB(160, 215, 245), 1, nil, Color3.fromRGB(50, 130, 220))
+		for j, icon in { UiImages.Kit.sun, UiImages.Kit.waves } do
+			local img = Instance.new("ImageLabel")
+			img.BackgroundTransparency, img.Image, img.ScaleType = 1, icon, Enum.ScaleType.Fit
+			img.Position, img.Size, img.ZIndex =
+				UDim2.fromScale(0.06 + (j - 1) * 0.46, 0.12), UDim2.fromScale(0.42, 0.76), 2
+			img.Parent = gui
+		end
+	elseif k == 4 then
+		rect(gui, 0.06, 0.08, 0.88, 0.14, BRICK_RED, 2, 0.2)
+		for r = 0, 3 do
+			local y = 0.3 + r * 0.17
+			rect(gui, 0.06, y, 0.64, 0.11, BRICK_WHITE, 2, 0.3)
+			dot(
+				0.84,
+				y + 0.055,
+				0.11,
+				({ BRICK_RED, BRICK_YELLOW, BRICK_GREEN, BRICK_GREEN })[r + 1],
+				2
+			)
+		end
+	elseif k == 5 then
+		bg.BackgroundColor3 = Color3.fromRGB(150, 24, 20)
+		local img = Instance.new("ImageLabel")
+		img.BackgroundTransparency, img.Image, img.ScaleType =
+			1, UiImages.Kit.lifebuoy, Enum.ScaleType.Fit
+		img.Position, img.Size, img.ZIndex =
+			UDim2.fromScale(0.1, 0.08), UDim2.fromScale(0.8, 0.84), 2
+		img.Parent = gui
+	else
+		for j, h in { 0.35, 0.55, 0.45, 0.7, 0.62, 0.8 } do
+			rect(gui, 0.08 + (j - 1) * 0.145, 0.88 - h, 0.1, h, BRICK_CYAN, 2, 0.15)
+		end
+		rect(gui, 0.05, 0.88, 0.9, 0.02, BRICK_WHITE, 3)
+	end
+end
+
 -- The station's furnished inside (docs/25 J, walk-in audit 2026-10-29, int2 2026-10-30). The furniture is
 -- M_Prop_HQInterior (Lv3: sea-chart table mid-hall + dispatch console facing the door, framed windows, clock,
 -- pinboards, beams + pendant lamps; Lv4: lockers + benches, coffee counter + fridge, sofa corner), placed by
@@ -963,9 +1119,88 @@ local function furnishStation(m: Model, S: CFrame, level: number)
 	local floor =
 		box("Floor", iw * 2 - 0.1, 0.2, id * 2 - 0.1, 0, 0.55, 0, Color3.fromRGB(118, 130, 150))
 	studTop(floor)
-	-- a navy rug under the chart table, the red runner from the door to it
-	box("Rug", 14, 0.05, 11, 0, 0.76, -1, NAVY)
+	-- int3: the stud floor broken up: a light tile border round the walls, yellow walkway lines from the door, the
+	-- navy rug on a yellow edge under the chart table, a green rug in the left bay, the red runner from the door
+	for _, z in { id - 0.6, -id + 0.6 } do
+		box("FloorBorder", iw * 2, 0.07, 1.2, 0, 0.72, z, LBG) -- sunk 0.03: its bottom clear of the dado's
+	end
+	for _, x in { iw - 0.6, -iw + 0.6 } do
+		box("FloorBorder", 1.2, 0.07, id * 2 - 2.4, x, 0.72, 0, LBG)
+	end
+	for _, x in { -2.6, 2.6 } do
+		box("WalkLine", 0.3, 0.04, 6.2, x, 0.75, -10.2, BRICK_YELLOW)
+	end
+	box("RugEdge", 15, 0.04, 12, 0, 0.75, -1, BRICK_YELLOW)
+	box("Rug", 14, 0.05, 11, 0, 0.79, -1, NAVY)
+	box("RugEdge", 10.8, 0.04, 13.8, -17, 0.75, 1, BRICK_WHITE)
+	box("Rug", 10, 0.05, 13, -17, 0.79, 1, Color3.fromRGB(46, 128, 96))
 	box("Runner", 4, 0.06, 8.1, 0, 0.8, -10.55, BRICK_RED)
+	-- a sea + sky view in each pane of M_Prop_HQInterior (its WINDOWS: panes u +-1.6, y 4.9..9.1, 0.12 off the wall)
+	local views: { [string]: { number } } = {
+		back = { -18, -9, 0, 9, 18 },
+		front = { 9, 15, 21 },
+		left = { -8, 0, 8 },
+		right = { -8, 0, 8 },
+	}
+	for side, us in views do
+		for i, u in us do
+			local at = if side == "back"
+				then CFrame.new(u, 7, id - 0.15)
+				elseif side == "front" then CFrame.new(u, 7, -id + 0.15) * CFrame.Angles(
+					0,
+					math.pi,
+					0
+				)
+				elseif side == "left" then CFrame.new(-iw + 0.15, 7, u) * CFrame.Angles(
+					0,
+					-math.pi / 2,
+					0
+				)
+				else CFrame.new(iw - 0.15, 7, u) * CFrame.Angles(0, math.pi / 2, 0)
+			seaView(
+				part(m, "WindowView", Vector3.new(3.3, 4.3, 0.03), S * at, PANE, M.SmoothPlastic),
+				i
+			)
+		end
+	end
+	-- the door from inside (int3: it read as a flat red slab): a blue casing, raised panels and a porthole in the
+	-- owner's colour ("Flag"), a gold handle; the slab's room face is z -14.55
+	for _, x in { -4.95, 4.95 } do
+		box("DoorCasing", 0.9, 8.85, 0.35, x, 0.75, -14.325, BRICK_BLUE)
+	end
+	studTop(box("DoorCasing", 11.2, 0.8, 0.4, 0, 9, -14.3, BRICK_BLUE))
+	for _, x in { -2, 2 } do
+		box("Flag", 3.2, 3, 0.12, x, 1.2, -14.5, BRICK_RED)
+	end
+	local port = CFrame.new(0, 6.6, -14.45) * CFrame.Angles(0, math.pi / 2, 0)
+	part(
+		m,
+		"DoorPort",
+		Vector3.new(0.2, 2.6, 2.6),
+		S * port,
+		GOLD,
+		M.SmoothPlastic,
+		Enum.PartType.Cylinder
+	)
+	local view = part(
+		m,
+		"DoorPortView",
+		Vector3.new(2, 2, 0.03),
+		S * CFrame.new(0, 6.6, -14.33) * CFrame.Angles(0, math.pi, 0),
+		PANE,
+		M.SmoothPlastic
+	)
+	view.Transparency = 1 -- the round view is its SurfaceGui
+	seaView(view, 2, true)
+	part(
+		m,
+		"DoorHandle",
+		Vector3.new(0.6, 0.6, 0.6),
+		S * CFrame.new(3.3, 4.6, -14.3),
+		GOLD,
+		M.SmoothPlastic,
+		Enum.PartType.Ball
+	)
 	-- a blue dado round the hall, cream walls over it and a red cove under the ceiling: the hall reads as a room
 	box("Dado", iw * 2 - 0.2, 2.4, 0.15, 0, 0.75, id - 0.1, BRICK_BLUE)
 	box("Cove", iw * 2 - 0.2, 0.6, 0.15, 0, 14.4, id - 0.1, BRICK_RED)
@@ -1140,6 +1375,30 @@ local function furnishStation(m: Model, S: CFrame, level: number)
 		box("GearCrate", 1.6, 1.6, 1.5, rx + 1, 0.75, z - 1, BRICK_ORANGE)
 		box("GearCrate", 1.6, 1.6, 1.5, rx + 1, 0.75, z + 1, BRICK_ORANGE)
 	end
+	-- int3 (AD: Lv5 read as Lv4): the ops screen wall over the dispatch console (its back z 9.4), on two legs in
+	-- front of the clock and the sea charts: six screens in a navy bezel that lights the console
+	for _, x in { -6.1, 6.1 } do
+		box("ScreenLeg", 0.8, 6.85, 0.8, x, 0.75, 11.9, NAVY)
+	end
+	local bezel = box("ScreenWall", 13, 6.4, 0.5, 0, 7.6, 11.9, NAVY)
+	studTop(box("ScreenTrim", 13.4, 0.3, 0.7, 0, 14, 11.9, BRICK_YELLOW))
+	for r = 0, 1 do
+		for c = -1, 1 do
+			local scr = part(
+				m,
+				"Screen",
+				Vector3.new(4, 2.9, 0.1),
+				S * CFrame.new(c * 4.2, 12.35 - r * 3.1, 11.6),
+				INK,
+				M.SmoothPlastic
+			)
+			opsScreen(scr, r * 3 + c + 2)
+		end
+	end
+	local glow = Instance.new("SurfaceLight")
+	glow.Face, glow.Color, glow.Range, glow.Brightness, glow.Angle =
+		Enum.NormalId.Front, Color3.fromRGB(120, 200, 255), 16, 1, 70
+	glow.Parent = bezel
 end
 
 local function stationInterior(m: Model, S: CFrame, level: number)
@@ -1151,6 +1410,11 @@ local function stationInterior(m: Model, S: CFrame, level: number)
 			d:IsA("BasePart")
 			and (
 				n == "HallLamp"
+				or n == "Flag"
+				or n == "FloorBorder"
+				or n == "WalkLine"
+				or n == "WindowView"
+				or string.find(n, "^Door")
 				or string.find(n, "^Map")
 				or string.find(n, "^Photo")
 				or string.find(n, "^Board")
@@ -1163,21 +1427,41 @@ local function stationInterior(m: Model, S: CFrame, level: number)
 	end
 end
 
--- The Lv1 trophy hall (walk-in audit: it was only a wall; int2 2026-10-30): a small Lego hall on the wall's lot, 21
--- wide, 13 deep behind the board wall, a 9-wide door in the middle (the board, its frame and the cup shelf are cut
--- round it) so all four plinths show from outside: a stepped row at the back (the first two trophies raised in the
--- middle), each in a gold-framed backlit niche, on a red rug with a gold border; windows, a blue stud roof, ceiling
--- lamps, the Lego cup (M_Prop_TrophyCup) on the lintel (trophyHall). DockPieces.trophies puts the first four
--- trophies on the plinths. In the hall's frame (-Z = front); floor top 0.5; back wall inner face z 12.6.
-local LV1_PLINTHS = {
-	Vector3.new(-2.3, 3.6, 10.4),
-	Vector3.new(2.3, 3.6, 10.4),
-	Vector3.new(-6.6, 3, 9.6),
-	Vector3.new(6.6, 3, 9.6),
+-- The Lv1 trophy hall (walk-in audit: it was only a wall; int2/int3 2026-10-30): a small Lego hall on the wall's lot,
+-- 21 wide, 13 deep behind the board wall, a 9-wide door under a lit arch in the middle (the board, its frame and the
+-- cup shelf are cut round it) so all four niches show from outside: a row of four on the back wall (the middle two
+-- raised), each a stepped plinth with a gold trim inside gold sides and cap, a blue gradient back and a spotlight on
+-- the trophy; a red rug with a gold border, bunting under the blue stud roof, windows, ceiling lamps; outside a
+-- pediment with the Lego cup (M_Prop_TrophyCup) on it (trophyHall). DockPieces.trophies puts the first four
+-- trophies in the niches, 2x. In the hall's frame (-Z = front); floor top 0.5; back wall inner face z 12.6.
+local LV1_PLINTHS = { -- the trophy's foot: the plinth's top centre
+	Vector3.new(-2.55, 2.9, 11),
+	Vector3.new(2.55, 2.9, 11),
+	Vector3.new(-7.55, 2.3, 11),
+	Vector3.new(7.55, 2.3, 11),
 }
+local LV1_K = 2 -- the Lv1 niche trophies' scale
 local SHELF1 = { -8.1, -5.9, 5.9, 8.1 }
 local DOOR = 4.5 -- half the Lv1 door's width
 local NICHE = Color3.fromRGB(35, 70, 150)
+-- a pennant hanging from `top` (its top edge's centre), in top's XY plane: two mirrored slope bricks meeting at the tip
+local function pennant(m: Model, top: CFrame, w: number, h: number, color: Color3)
+	for _, side in { -1, 1 } do
+		local wdg = Instance.new("WedgePart")
+		wdg.Name = "Pennant"
+		wdg.Size = Vector3.new(0.08, h, w / 2)
+		-- local Z (the wedge's run) along top's X; flipped so the tall back edge hangs at the middle
+		wdg.CFrame = top
+			* CFrame.new(side * w / 4, -h / 2 - 0.05, 0)
+			* CFrame.Angles(0, math.pi / 2, 0)
+			* (if side < 0 then CFrame.Angles(0, 0, math.pi) else CFrame.Angles(math.pi, 0, 0))
+		wdg.Color = color
+		wdg.Material = M.SmoothPlastic
+		wdg.Anchored, wdg.CanCollide, wdg.CanQuery, wdg.CanTouch = true, false, false, false
+		wdg.Parent = m
+	end
+end
+
 local function smallHall(m: Model, H: CFrame)
 	local function box(
 		name: string,
@@ -1192,8 +1476,8 @@ local function smallHall(m: Model, H: CFrame)
 		return brick(m, name, Vector3.new(w, h, d), H * CFrame.new(x, y0 + h / 2, z), color)
 	end
 	studTop(box("HallFloor", 21.6, 0.5, 13.1, 0, 0, 6.85, LBG))
-	box("RugBorder", 10, 0.06, 10.6, 0, 0.53, 6.3, BRICK_YELLOW)
-	box("Rug", 9, 0.06, 9.8, 0, 0.56, 6.3, BRICK_RED)
+	box("RugBorder", 10, 0.06, 8, 0, 0.53, 4.9, BRICK_YELLOW)
+	box("Rug", 9, 0.06, 7.2, 0, 0.56, 4.9, BRICK_RED)
 	-- walls: the front with its door, the sides and the back, windows on the three
 	for _, side in { -1, 1 } do
 		box("HallWall", 10.1 - DOOR, 8.85, 0.9, side * (10.1 + DOOR) / 2, 0.5, 0.65, WHITE)
@@ -1245,25 +1529,130 @@ local function smallHall(m: Model, H: CFrame)
 		light.Color, light.Range, light.Brightness = WARM, 24, 0.5
 		light.Parent = bulb
 	end
+	-- the niches: a stepped plinth (grey step, gold trim, stud top step), gold sides and a stud cap, a gradient back
+	-- (deep blue to sky, unlit) and a spotlight under the cap on the trophy
 	for _, p in LV1_PLINTHS do
-		studTop(box("TrophyPlinth", 3, p.Y - 0.5, 3, p.X, 0.5, p.Z, LBG))
-		-- its niche on the back wall: a gold plate and cap round a glowing blue back, a warm light on the trophy
-		box("NicheFrame", 3.2, 3.8, 0.35, p.X, p.Y + 0.2, 12.45, BRICK_YELLOW)
-		studTop(box("NicheCap", 3.6, 0.4, 0.8, p.X, p.Y + 4, 12.22, BRICK_YELLOW))
-		local glow = box("NicheGlow", 2.6, 3.2, 0.1, p.X, p.Y + 0.5, 12.24, NICHE)
-		glow.Material = M.Neon
-		local light = Instance.new("PointLight")
-		light.Color, light.Range, light.Brightness = WARM, 7, 0.8
-		light.Parent = glow
+		local lo = p.Y - 1.4
+		box("TrophyPlinth", 4.8, lo, 3.25, p.X, 0.5, 10.925, LBG)
+		box("PlinthTrim", 5, 0.2, 3.35, p.X, p.Y - 0.9, 10.875, GOLD)
+		studTop(box("TrophyPlinth", 4, 0.7, 2.6, p.X, p.Y - 0.7, 11, LBG))
+		for _, s in { -1, 1 } do
+			box("NicheSide", 0.3, 6.1, 2.95, p.X + s * 2.25, p.Y - 0.7, 11.075, GOLD)
+		end
+		studTop(box("NicheCap", 5, 0.35, 3.3, p.X, p.Y + 5.4, 10.95, GOLD))
+		local back = box("NicheBack", 4.1, 5.35, 0.1, p.X, p.Y, 12.5, NICHE)
+		rect(
+			frontGui(back, 0),
+			0,
+			0,
+			1,
+			1,
+			Color3.fromRGB(20, 40, 110),
+			1,
+			nil,
+			Color3.fromRGB(120, 200, 255)
+		)
+		local spotLamp = box("NicheLamp", 1.4, 0.15, 1.4, p.X, p.Y + 5.25, 10.8, WARM)
+		spotLamp.Material = M.Neon
+		local spot = Instance.new("SpotLight")
+		spot.Face, spot.Color, spot.Angle, spot.Range, spot.Brightness =
+			Enum.NormalId.Bottom, WARM, 60, 9, 4
+		spot.Parent = spotLamp
 	end
-	sign(m, Vector3.new(5, 1.4, 0.4), H * CFrame.new(7.4, 1.2, 0), BRICK_YELLOW, "Trophies")
-	sign(
-		m,
-		Vector3.new(7, 1.05, 0.3),
-		H * CFrame.new(0, 8.475, 12.45),
-		BRICK_YELLOW,
-		"Hall of Fame"
-	)
+	-- bunting: two sagging strings of red, yellow, blue and white pennants across the hall
+	local FLAGS = { BRICK_RED, BRICK_YELLOW, BRICK_BLUE, BRICK_WHITE }
+	for _, z in { 2.2, 6.6 } do
+		local function at(x: number): Vector3
+			return Vector3.new(x, 8.85 - 0.45 * (1 - (x / 10) ^ 2), z)
+		end
+		for j = 0, 15 do
+			local x0, x1 = -9.9 + j * 1.32, -9.9 + (j + 1) * 1.32
+			local a, c = at(x0), at(x1)
+			local d = c - a
+			part(
+				m,
+				"BuntingString",
+				Vector3.new(d.Magnitude + 0.05, 0.1, 0.1),
+				H * CFrame.new((a + c) / 2) * CFrame.Angles(0, 0, math.atan2(d.Y, d.X)),
+				BRICK_WHITE,
+				M.SmoothPlastic
+			).CanCollide =
+				false
+			pennant(m, H * CFrame.new(at((x0 + x1) / 2)), 0.9, 0.75, FLAGS[j % 4 + 1])
+		end
+	end
+end
+
+-- The Lv1 hall's front (int3, AD: a plain white frame box): square gold-capped bases and capitals on the two columns,
+-- a white pediment on the lintel with gold rakes, "Hall of Fame" and a gold apex block for the Lego cup, a gold
+-- cornice round the walls, and a lit arch in the door: alternating gold and white voussoirs on a 7.5 radius (springs
+-- y 5, crown 6.5), white stepped spandrels, warm marquee bulbs and a light. In the hall's frame (-Z = front).
+local function hallFront(m: Model, H: CFrame)
+	local function box(name: string, size: Vector3, cf: CFrame, color: Color3): BasePart
+		return brick(m, name, size, H * cf, color)
+	end
+	for _, x in { -9.8, 9.8 } do
+		box("ColumnBase", Vector3.new(2.1, 0.7, 2.1), CFrame.new(x, 0.4, -0.5), BRICK_WHITE)
+		studTop(box("ColumnBase", Vector3.new(1.9, 0.25, 1.9), CFrame.new(x, 0.875, -0.5), GOLD))
+		box("Capital", Vector3.new(2.4, 0.5, 2.4), CFrame.new(x, 8.75, -0.5), GOLD)
+	end
+	for _, side in { -1, 1 } do
+		local wdg = Instance.new("WedgePart")
+		wdg.Name = "Pediment"
+		wdg.Size = Vector3.new(1, 2.4, 10.5)
+		wdg.CFrame = H
+			* CFrame.new(side * 5.25, 11.2, -0.4)
+			* CFrame.Angles(0, -side * math.pi / 2, 0)
+		wdg.Color, wdg.Material, wdg.Anchored = BRICK_WHITE, M.SmoothPlastic, true
+		wdg.Parent = m
+		-- the gold rake along its slope, 0.1 proud of its front, stopping inside the apex block (no shared face)
+		local a = math.atan2(2.4, 10.5)
+		box(
+			"Rake",
+			Vector3.new(math.sqrt(10.5 ^ 2 + 2.4 ^ 2) - 1, 0.35, 1.2),
+			CFrame.new(side * (5.25 + 0.5 * math.cos(a)), 11.35 - 0.5 * math.sin(a), -0.4)
+				* CFrame.Angles(0, 0, -side * a),
+			GOLD
+		)
+	end
+	studTop(box("ApexBlock", Vector3.new(4.4, 0.8, 2.4), CFrame.new(0, 12.2, -0.4), GOLD))
+	sign(m, Vector3.new(6, 0.95, 0.2), H * CFrame.new(0, 10.6, -1), BRICK_YELLOW, "Hall of Fame")
+	for _, x in { -10.95, 10.95 } do
+		box("Cornice", Vector3.new(0.2, 0.45, 13.2), CFrame.new(x, 8.65, 6.8), GOLD)
+	end
+	box("Cornice", Vector3.new(22.1, 0.45, 0.2), CFrame.new(0, 8.65, 13.5), GOLD)
+	-- the arch: voussoirs round (0, -1), the intrados on r 7.5, from -36.87 to 36.87 degrees off the vertical
+	local half = math.asin(4.5 / 7.5)
+	for i = 0, 8 do
+		local t = -half + (i + 0.5) * (2 * half / 9)
+		local at = CFrame.new(7.7 * math.sin(t), -1 + 7.7 * math.cos(t), 0) -- intrados r 7.45: its crown under y 6.5
+		local v = box(
+			"Voussoir",
+			Vector3.new(1.15, 0.5, 1.3),
+			at * CFrame.new(0, 0, if i % 2 == 0 then 0.3 else 0.25) * CFrame.Angles(0, 0, -t),
+			if i % 2 == 0 then GOLD else BRICK_WHITE
+		)
+		local bulb = part(
+			m,
+			"ArchBulb",
+			Vector3.new(0.35, 0.35, 0.35),
+			H * at * CFrame.new(0, 0, -0.45),
+			WARM,
+			M.Neon,
+			Enum.PartType.Ball
+		)
+		bulb.CanCollide = false
+		if i == 4 then
+			local light = Instance.new("PointLight")
+			light.Color, light.Range, light.Brightness = WARM, 12, 1.2
+			light.Parent = v
+		end
+	end
+	for _, x in { -4, -3, -2, 2, 3, 4 } do -- the spandrels, stepped: each from the arch at its inner edge to y 6.5
+		local u = math.abs(x) - 0.5
+		local y0 = -1 + math.sqrt(7.5 ^ 2 - u ^ 2)
+		box("Spandrel", Vector3.new(1, 6.5 - y0, 1.1), CFrame.new(x, (y0 + 6.5) / 2, 0.55), WHITE)
+	end
 end
 
 -- the trophy hall: a blue board in a yellow frame, a shelf and a name sign on its lot, framed by two white columns
@@ -1305,13 +1694,17 @@ local function trophyHall(m: Model, b: CFrame, level: number?)
 		)
 	end
 	brick(m, "Lintel", Vector3.new(21, 1, 1.2), b * HALL * CFrame.new(0, 9.5, -0.4), BRICK_WHITE)
+	local lv1 = (level or 1) == 1
+	if lv1 then
+		hallFront(m, b * HALL)
+	end
 	local trophyCup = if not mesh
-			and (level or 1) == 1
+			and lv1
 			and DockPieces.meshes
 		then DockPieces.meshes("M_Prop_TrophyCup")
 		else nil
-	if trophyCup then -- on the lintel, its base 0.03 into it, its front 0.05 behind the lintel's
-		trophyCup:PivotTo(b * HALL * CFrame.new(0, 9.97, 1.05))
+	if trophyCup then -- on the pediment's apex block, its base 0.03 into it
+		trophyCup:PivotTo(b * HALL * CFrame.new(0, 12.57, -0.4))
 		trophyCup.Name = "TrophyCupMesh"
 		trophyCup.Parent = m
 	elseif not mesh then
@@ -3726,10 +4119,33 @@ local CATEGORY_COLOUR = {
 	Rescuer = BRICK_RED,
 }
 
--- a little Lego survivor statue standing on `at` (k = scale), facing -Z: legs, torso in their category colour, a
--- yellow head
+-- a little Lego survivor statue standing on `at` (k = scale), facing -Z: legs, torso and arms in their category
+-- colour, yellow hands and head, two dot eyes
 local function statue(m: Model, at: CFrame, k: number, category: string)
 	brick(m, "StatueLegs", Vector3.new(0.9, 0.8, 0.5) * k, at * CFrame.new(0, 0.55 * k, 0), NAVY)
+	for _, s in { -1, 1 } do
+		brick(
+			m,
+			"StatueArm",
+			Vector3.new(0.28, 0.8, 0.45) * k,
+			at * CFrame.new(s * 0.64 * k, 1.42 * k, 0),
+			CATEGORY_COLOUR[category] or BRICK_WHITE
+		)
+		brick(
+			m,
+			"StatueHand",
+			Vector3.new(0.26, 0.22, 0.3) * k,
+			at * CFrame.new(s * 0.64 * k, 0.92 * k, 0),
+			BRICK_YELLOW
+		)
+		brick(
+			m,
+			"StatueEye",
+			Vector3.new(0.08, 0.1, 0.04) * k,
+			at * CFrame.new(s * 0.12 * k, 2.2 * k, -0.28 * k),
+			INK
+		)
+	end
 	brick(
 		m,
 		"StatueTorso",
@@ -3804,13 +4220,20 @@ function DockPieces.trophies(
 					"ATT_Plinth_%02d",
 					i
 				)]
-			local at, k = hall * CFrame.new(p), if lv1 then 1 else 1.5
+			local at, k = hall * CFrame.new(p), if lv1 then LV1_K else 1.5
 			local tint = if item.rarity > 0 then Rarity.TIERS[item.rarity].color else nil
+			-- the Lv1 niches' gold cups are the roof's Lego cup (M_Prop_TrophyCup: 7.6 wide, 7 tall), 0.54x
+			local lego = if lv1
+					and not tint
+					and item.kind ~= "survivor"
+					and DockPieces.meshes
+				then DockPieces.meshes("M_Prop_TrophyCup")
+				else nil
 			if tint then
 				part(
 					m,
 					"RarityRing",
-					Vector3.new(0.15, 1.5, 1.5),
+					Vector3.new(0.15, 1.5, 1.5) * (if lv1 then 1.6 else 1),
 					at * CFrame.new(0, 0.075, 0) * CFrame.Angles(0, 0, math.pi / 2),
 					tint,
 					M.SmoothPlastic,
@@ -3818,21 +4241,26 @@ function DockPieces.trophies(
 				)
 			end
 			if item.kind == "survivor" then
-				statue(m, at * CFrame.new(0, 0.15, 0), 1, item.category)
+				statue(m, at * CFrame.new(0, 0.15, 0), if lv1 then LV1_K else 1, item.category)
+			elseif lego then
+				lego:ScaleTo(0.54)
+				lego:PivotTo(at * CFrame.new(0, -0.03, 0))
+				lego.Parent = m
 			else
 				cup(m, at * CFrame.new(0, if tint then 0.15 else 0, 0), k, tint or GOLD)
 			end
 			-- on the pedestal's red front plaque (the Lv3 gallery pedestals are 0.86x)
+			-- the Lv1 one on the niche plinth's lower step (front z 9.3, 0.5 up to p.Y - 0.9)
 			local label = plate(
 				m,
 				"CupName",
-				Vector3.new(1.8, 0.5, 0.05),
+				if lv1 then Vector3.new(3, 0.6, 0.05) else Vector3.new(1.8, 0.5, 0.05),
 				hall
 					* CFrame.new(
 						p
 							+ (
 								if lv1
-									then Vector3.new(0, -1.25, -1.55)
+									then Vector3.new(0, -(p.Y + 0.4) / 2, -1.75)
 									else Vector3.new(0, -1.92, if i > 8 then -1.57 else -1.8)
 							)
 					),
@@ -3870,7 +4298,7 @@ function DockPieces.trophies(
 			m,
 			"PlaqueRim",
 			Vector3.new(2.3, 1.9, 0.1),
-			hall * CFrame.new(x, if lv1 then 7.6 else 6.6, -0.15),
+			hall * CFrame.new(x, if lv1 then 7.95 else 6.6, -0.15),
 			GOLD,
 			M.SmoothPlastic
 		)
@@ -3878,7 +4306,7 @@ function DockPieces.trophies(
 			m,
 			"Plaque",
 			Vector3.new(2.1, 1.7, 0.1),
-			hall * CFrame.new(x, if lv1 then 7.6 else 6.6, -0.22),
+			hall * CFrame.new(x, if lv1 then 7.95 else 6.6, -0.22),
 			p.colour,
 			p.name
 		)
