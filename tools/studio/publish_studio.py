@@ -189,7 +189,7 @@ def main():
     else:
         run([os.path.join(TOOLS, "build.sh"), REPO])
     run(["lune", "run", os.path.join(REPO, "tools", "world", "make_work_place.luau"),
-         os.path.join(REPO, "build", "MaydaySeaRescue.rbxl"), os.path.join(REPO, "build", "MaydayPublish.rbxl"),
+         os.path.join(REPO, "build", os.path.basename(REPO) + ".rbxl"), os.path.join(REPO, "build", "MaydayPublish.rbxl"),
          os.path.join(REPO, "map", "generated")])
     if studio_pids():
         sys.exit("a Studio already has a roblox-studio: place open; close it first (its edits would be published)")
