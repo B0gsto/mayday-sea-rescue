@@ -1,9 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-22 -22 244 244" width="244" height="244"><!-- the onboarding trail's ground step (UI/OnboardingTrail): a Lego chevron, tip toward the goal; white sticker rim, hard outline, sky gradient + Lego lip. Rendered square at 244 px, kept whole (, centred so it spins about its middle) --><defs><linearGradient id="gF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#8FCBFF"/></linearGradient><linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#C4E4FF"/></linearGradient></defs>
-<path d="M100,20 L184,104 L184,178 L100,94 L16,178 L16,104 Z" transform="translate(0,12)" fill="#fff" stroke="#fff" stroke-width="30" stroke-linejoin="round"/>
-<path d="M100,20 L184,104 L184,178 L100,94 L16,178 L16,104 Z" fill="#fff" stroke="#fff" stroke-width="30" stroke-linejoin="round"/>
-<path d="M100,20 L184,104 L184,178 L100,94 L16,178 L16,104 Z" transform="translate(0,12)" fill="#14121C" stroke="#14121C" stroke-width="12" stroke-linejoin="round"/>
-<path d="M100,20 L184,104 L184,178 L100,94 L16,178 L16,104 Z" fill="#14121C" stroke="#14121C" stroke-width="12" stroke-linejoin="round"/>
-<path d="M100,20 L184,104 L184,178 L100,94 L16,178 L16,104 Z" transform="translate(0,12)" fill="#2F7FD0"/>
-<path d="M100,20 L184,104 L184,178 L100,94 L16,178 L16,104 Z" fill="url(#gF)"/>
-<path d="M100,38 L170,108 L170,120 L100,50 Z" fill="#fff" fill-opacity="0.85"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 488 318" width="488" height="318"><!-- the onboarding trail's ground step (UI/OnboardingTrail): a chunky Lego chevron, tip toward the goal, stretched 1.3x along the path so it survives the low camera's foreshortening. Two 244x318 frames: left the sky-blue step, right the same step brightened toward white (the travelling wave fades it in over the left). White sticker rim, hard 22 px outline, white top highlight only --><defs>
+<path id="v" d="M100,14 L186,128 L186,232 L100,128 L14,232 L14,128 Z" stroke-linejoin="round"/>
+<path id="hl" d="M100,32 L174,130 L174,148 L100,50 L26,148 L26,130 Z"/>
+<linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5AB4F5"/><stop offset="0.55" stop-color="#3A9BEA"/><stop offset="1" stop-color="#2580D2"/></linearGradient>
+<linearGradient id="gW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2FAFF"/><stop offset="0.55" stop-color="#CDE9FF"/><stop offset="1" stop-color="#A9D6FC"/></linearGradient>
+</defs>
+<g transform="translate(22,22)">
+<use xlink:href="#v" fill="#fff" stroke="#fff" stroke-width="40"/>
+<use xlink:href="#v" fill="#14121C" stroke="#14121C" stroke-width="22"/>
+<use xlink:href="#v" fill="url(#gB)"/>
+<use xlink:href="#hl" fill="#fff" fill-opacity="0.9"/>
+</g>
+<g transform="translate(266,22)">
+<use xlink:href="#v" fill="#fff" stroke="#fff" stroke-width="40"/>
+<use xlink:href="#v" fill="#14121C" stroke="#14121C" stroke-width="22"/>
+<use xlink:href="#v" fill="url(#gW)"/>
+<use xlink:href="#hl" fill="#fff"/>
+</g>
 </svg>
