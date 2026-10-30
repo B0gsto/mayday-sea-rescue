@@ -263,6 +263,9 @@ local function stationBeat(player: Player): boolean
 				totalRescues = math.max(1, data.totalRescues or 0),
 				step = data.tutorialStep,
 				owned = data.dockBuildings or {},
+				constructionKey = if type(data.construction) == "table"
+					then data.construction.key
+					else nil,
 			})
 			== "BuildStation"
 end

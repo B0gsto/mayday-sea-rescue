@@ -580,6 +580,9 @@ function Rules.snapshot(data: PlayerData): { [string]: any }
 		skills = table.clone(data.skills),
 		coldOpenDone = data.coldOpenDone,
 		tutorialStep = data.tutorialStep,
+		construction = if type((data :: any).construction) == "table"
+			then table.clone((data :: any).construction)
+			else nil,
 		flags = Rules.migrate({ flags = data.flags }).flags, -- a deep, clean copy
 	}
 end
