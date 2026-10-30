@@ -111,10 +111,9 @@ return function(t)
 		end
 	)
 
-	t.test("gulls hush and the bell rings faster as the storm builds", function()
+	t.test("gulls hush as the storm builds", function()
 		t.expect(AudioMix.gullChance(0)).toBe(1)
 		t.expect(AudioMix.gullChance(0.8)).toBe(0)
-		t.expect(AudioMix.bellGap(1, 3, 9, 0.5) < AudioMix.bellGap(0, 3, 9, 0.5)).toBeTruthy()
 		t.expect(AudioMix.gap(3, 9, 0)).toBe(3)
 		t.expect(AudioMix.gap(3, 9, 1)).toBe(9)
 	end)

@@ -12,8 +12,11 @@
 --   HQ2 Boathouse -> RIB, Boat Yard, Clinic; Boathouse Lv2 -> Lifeboat
 --   HQ3 Rescue Boathouse, Lookout Tower; Harbour Lv3 -> crane  HQ4 Air Station -> helicopter
 --   HQ5 Sub Pen -> submarine, Trophy Hall
+--   Sea plates (docs/27 section 1): SeaPlate1 Ramp Wharf (HQ1 + Workshop), SeaPlate2 Freight Wharf (HQ2 + Depot),
+--   Lego decks on pillars off the island's front edge (RingLayout.SeaPlates). Prices: DockConfig.SEA_PLATE_CASH.
 --   Decor: the jetty only.
 local Marina = require(script.Parent.Parent:WaitForChild("Marina"))
+local RingLayout = require(script.Parent:WaitForChild("RingLayout"))
 
 export type Level = {
 	cash: number,
@@ -56,6 +59,8 @@ DockConfig.BUILDINGS = {
 	"Harbour",
 	"Depot",
 	"Workshop",
+	"SeaPlate1", -- docs/27: right after the Workshop, so the Next chip offers it as soon as it is affordable
+	"SeaPlate2",
 	"Bunkhouse",
 	"FishShed",
 	"Boathouse",
@@ -75,6 +80,17 @@ DockConfig.HutCap = 5 -- people the Rescue Hut sleeps before a Bunkhouse stands 
 -- "presented later, not at the first start"): the Rescue Post (HQ Lv2), the first new district after the tutorial.
 DockConfig.Unlocks =
 	{ Quests = { key = "HQ", level = 2 } } :: { [string]: { key: string, level: number } }
+
+-- docs/27 placeholder prices (ECON1 owns the retune; tests/NewPlayerPace + tests/Pacing check the pace)
+DockConfig.SEA_PLATE_CASH = { SeaPlate1 = 1500, SeaPlate2 = 4500 } -- ~2 early / ~3 HQ2-stage rescues (docs/23 (s))
+
+-- a sea plate's lot: its RingLayout.SeaPlates rect centre, the deck top (island frame, Y 0 = the plate top)
+local function seaSpot(key: string): (CFrame, Vector2)
+	local r = RingLayout.SeaPlates[key].rect
+	return isle((r[1] + r[2]) / 2, (r[3] + r[4]) / 2), Vector2.new(r[2] - r[1], r[4] - r[3])
+end
+local p1Spot, p1Size = seaSpot("SeaPlate1")
+local p2Spot, p2Size = seaSpot("SeaPlate2")
 
 local rows: { [string]: any } = {
 	HQ = {
@@ -164,6 +180,42 @@ local rows: { [string]: any } = {
 			},
 			{ cash = 3000, hq = 2, effect = "BuilderSlots5", piece = "SawBench" },
 			{ cash = 12000, hq = 3, effect = "BuilderSlots8", piece = "BoatFrame" },
+		} :: { Level },
+	},
+	SeaPlate1 = {
+		name = "Ramp Wharf",
+		desc = "Grow your island out to sea. Jump ramp!",
+		unlockAt = 1,
+		needs = { "Workshop" },
+		spot = p1Spot,
+		size = p1Size,
+		levels = {
+			{
+				cash = DockConfig.SEA_PLATE_CASH.SeaPlate1,
+				hq = 1,
+				product = "DockSeaPlate1",
+				robux = 15,
+				effect = "RampWharf",
+				piece = "Plate",
+			},
+		} :: { Level },
+	},
+	SeaPlate2 = {
+		name = "Freight Wharf",
+		desc = "A second barge mooring: more bricks.",
+		unlockAt = 2,
+		needs = { "Depot" },
+		spot = p2Spot,
+		size = p2Size,
+		levels = {
+			{
+				cash = DockConfig.SEA_PLATE_CASH.SeaPlate2,
+				hq = 2,
+				product = "DockSeaPlate2",
+				robux = 35,
+				effect = "FreightWharf",
+				piece = "Plate",
+			},
 		} :: { Level },
 	},
 	Bunkhouse = {
@@ -308,7 +360,7 @@ local rows: { [string]: any } = {
 		desc = "Spot calls from farther out.",
 		unlockAt = 3,
 		needs = {},
-		spot = isle(72, -95, 0), -- air field, at the back of the plaza; 10 east of the Air Station patrol hut (Lv3)
+		spot = isle(-88, -98, 0), -- behind the plaza, west of the Lighthouse (Spare1) and its Trophy Hall path
 		size = Vector2.new(16, 16),
 		scale = 1.5,
 		levels = {
@@ -329,7 +381,7 @@ local rows: { [string]: any } = {
 		desc = "Helipad and hangar for the helicopter.",
 		unlockAt = 4,
 		needs = {},
-		spot = isle(88, -124, 0), -- the hangar; the pad sits 38 right, 27 fwd (DockPieces)
+		spot = isle(54, -136, 0), -- the hangar; the pad sits 38 right, 27 fwd (DockPieces), clear of the bridge foot and the plate's cut corner
 		size = Vector2.new(42, 28),
 		vehicles = { "RescueHelicopter" },
 		levels = {
@@ -371,7 +423,7 @@ local rows: { [string]: any } = {
 		desc = "Cups, stamps and quest trophies on display.",
 		unlockAt = 5,
 		needs = {},
-		spot = isle(0, -122, 0), -- landmarks, behind the plaza
+		spot = isle(-62, -127, 0), -- landmarks, behind the Lighthouse (Spare1); west of the Air Station's Lv2 apron
 		size = Vector2.new(50, 28),
 		levels = {
 			{
@@ -439,7 +491,7 @@ DockConfig.Decorations = {
 		desc = "Bright Lego flowers by your spawn.",
 		color = "pink",
 		lot = "Spare2",
-		offset = Vector2.new(-10, 0),
+		offset = Vector2.new(11, 3), -- Spare2 faces the back (+x = west, +z = fwd): west of the hangar's path
 		size = Vector2.new(8, 8),
 	},
 	PicnicTable = {
@@ -450,7 +502,7 @@ DockConfig.Decorations = {
 		desc = "A picnic table for crew breaks.",
 		color = "green",
 		lot = "Spare2",
-		offset = Vector2.new(0, 0),
+		offset = Vector2.new(1, 3),
 		size = Vector2.new(8, 8),
 	},
 	LampRow = {
@@ -461,7 +513,7 @@ DockConfig.Decorations = {
 		desc = "A row of lamps that glow at night.",
 		color = "yellow",
 		lot = "Spare2",
-		offset = Vector2.new(10, 0),
+		offset = Vector2.new(6, -9),
 		size = Vector2.new(9, 6),
 	},
 	FlagPole = {

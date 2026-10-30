@@ -57,6 +57,9 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   Station, Boathouse, Helipad (`clearRadius`), Hangar, SubPen, Jetty, LifeguardTower, Spare1..3, QuestTablet;
   `quest` = { pontoon, slots }), `Bridges` (island i -> i + 1) + `deckY` / `deckAt`, `IslandPlate` + `onPlate` /
   `plateContains`, `seaRoute(from, to) -> (leg, length)` (round the plates, into a cove through its mouth).
+  docs/27 sea plates: `SeaPlates` (island-frame rects of SeaPlate1/2), `RAMP`, `SEA_KEEP_OUT` (no calls, routes go
+  round, built or not: `nearSeaPlate(x, z, margin)`), `QUEST_SHIFT` (QuestPontoons.Shift moves the pontoon, boats and
+  tablet out once the owner's Ramp Wharf stands); `tests/SeaPlates.spec.luau`.
 - `WorldDressingService` places the world at run time: `server/World/Seamarks`, `CoastArt`,
   `SkerryLight`, `Islands` (one module per outer island: Penwyn, GannetRock, MermaidLagoon, ...), `Bridges` (the
   six Lego neighbour bridges), `IslandPlates` (one Persistent `Plate<n>` per island), plus the scattered rocks'

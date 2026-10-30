@@ -79,11 +79,8 @@ return function(t)
 	local function clear(label: string, m: Instance): number
 		local n = 0
 		for _, d in m:GetDescendants() do
-			-- paths and stubs are flat tiles the belt may cover; invisible helpers do not show. shortcut: the Air
-			-- Station helipad's north edge already lies under the east bridge foot (its deck cuts the pad too); the belt
-			-- follows the deck there until the pad moves south
-			local pad = label:sub(1, 10) == "AirStation" and d.Name:sub(1, 3) == "Pad"
-			if d:IsA("BasePart") and d.Transparency < 1 and d.Name ~= "Path" and not pad then
+			-- paths and stubs are flat tiles the belt may cover; invisible helpers do not show
+			if d:IsA("BasePart") and d.Transparency < 1 and d.Name ~= "Path" then
 				for _, p in here do
 					if cuts(p, d, 0.05) then
 						n += 1

@@ -19,6 +19,22 @@ return function(t)
 		t.expect(Effects.devNoPasses(true, "true")).toBe(false)
 	end)
 
+	t.test("DEV Free player owns no passes on any server", function()
+		t.expect(Effects.devNoPasses(false, nil, true)).toBe(true) -- live: the player's DevFreePlayer flag
+		t.expect(Effects.devNoPasses(false, nil, nil)).toBe(false)
+		t.expect(Effects.devNoPasses(false, true, false)).toBe(false)
+		t.expect(Effects.devNoPasses(false, nil, "true")).toBe(false)
+		t.expect(Effects.devNoPasses(true, nil, true)).toBe(true)
+		-- the ownership read (MonetizationService.OwnsPass): grantPass skips owned passes, day passes read 0
+		local now = 1000
+		local function owns(freePlayer)
+			local off = Effects.devNoPasses(false, nil, freePlayer)
+			return Effects.passActive(not off, if off then 0 else now + 60, now)
+		end
+		t.expect(owns(true)).toBe(false)
+		t.expect(owns(nil)).toBe(true)
+	end)
+
 	t.test("Cash packs pay docs/04 4.1 at the top live zone, matching the card", function()
 		local cpm = Effects.cashPerMinute(Config.CashPackZones, 1)
 		t.expect(cpm).toBe(100) -- Calm Bay ~6,000 Cash per hour
@@ -171,6 +187,8 @@ return function(t)
 				DockRescueBoathouse = true,
 				DockTrophyHall = true,
 				DockClinic = true,
+				DockSeaPlate1 = true, -- docs/27
+				DockSeaPlate2 = true,
 				DecorFlowerBed = true, -- DockService grants decor too
 				DecorPicnicTable = true,
 				DecorLampRow = true,

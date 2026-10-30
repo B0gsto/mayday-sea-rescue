@@ -39,6 +39,7 @@ return function(t)
 		"HQ", -- the free Rescue Hut, the tutorial's first build (docs/25 J)
 		"Workshop",
 		"Depot",
+		"SeaPlate1", -- docs/27: the Ramp Wharf at ~8-14 min (the Next chip offers it after the cheaper Depot)
 		"Bunkhouse",
 		"FishShed",
 		"HQ",
@@ -54,6 +55,7 @@ return function(t)
 		"Clinic",
 		"Boathouse", -- the lifeboat slip, before the HQ3 wait
 		"Lifeboat", -- needs only the slip: the boat first, then HQ3
+		"SeaPlate2", -- docs/27: the Freight Wharf, an HQ3 need
 		"HQ",
 		"RescueBoathouse",
 		"LookoutTower",
@@ -201,7 +203,12 @@ return function(t)
 				)
 			return {
 				cap = DepotRules.cap(level),
-				drop = DepotRules.bargeLoads(level, haul, if flatDepot then 0 else se.depotRefill),
+				drop = DepotRules.bargeLoads(
+					level,
+					haul,
+					if flatDepot then 0 else se.depotRefill,
+					not flatDepot and UnlockTree.levelOf(levels, "SeaPlate2") >= 1
+				),
 			}
 		end
 		local function refill(seconds: number)
@@ -861,13 +868,19 @@ return function(t)
 	)
 
 	t.test("boathouse and RIB in the first hour", function()
-		between(solo, "Boathouse built", 15, 45)
-		between(solo, "RIB bought", 20, 60)
+		-- docs/27: the Ramp Wharf (~2 early rescues at ~12 min) moves both ~5 min later
+		between(solo, "Boathouse built", 15, 50)
+		between(solo, "RIB bought", 20, 65)
 		between(friend, "RIB bought", 15, 60)
 	end)
 
 	t.test("the lifeboat at about 1:30-3:00", function()
-		between(solo, "Lifeboat bought", 90, 180)
+		between(solo, "Lifeboat bought", 90, 195) -- docs/27: the Ramp Wharf comes first
+	end)
+
+	t.test("docs/27: the Ramp Wharf lands at 8-14 min, the Freight Wharf before HQ3", function()
+		between(solo, "SeaPlate1 built", 8, 14)
+		t.expect(minutes(solo, "SeaPlate2 built") < minutes(solo, "HQ lv3 built")).toBe(true)
 	end)
 
 	t.test("helicopter in week 1", function()

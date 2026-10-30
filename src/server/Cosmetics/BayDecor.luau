@@ -22,7 +22,6 @@ for i = 1, 8 do
 	table.insert(SLOTS, Vector3.new(-10.5, 0, 8 + (i - 1) * 2.5))
 end
 local FACE_WATER = CFrame.Angles(0, -math.pi / 2, 0)
-local FALLBACK = CFrame.new(-104, 3, 30)
 local WOOD = Color3.fromRGB(112, 84, 58)
 local IRON = Color3.fromRGB(54, 58, 62)
 local GREEN = Color3.fromRGB(54, 106, 62)
@@ -356,7 +355,10 @@ local function build(player: Player)
 		return
 	end
 	local bay = DockService.GetBerth(player)
-	local origin = if bay then bay.CFrame else FALLBACK
+	if not bay then
+		return -- no island (full server): nowhere to stand the decor
+	end
+	local origin = bay.CFrame
 	local model = Instance.new("Model")
 	model.Name = NAME
 	for i, key in keys do

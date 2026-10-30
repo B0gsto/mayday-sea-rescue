@@ -61,6 +61,7 @@ type Site = {
 	maxZ: number,
 	hw: number,
 	hd: number,
+	sea: boolean, -- docs/27: a sea plate (its model's SeaSite): props float on scaffold barges
 	progress: number,
 	ready: boolean,
 	bar: Frame,
@@ -285,6 +286,19 @@ local function makeProps(st: Site)
 		{ offset = Vector3.new(-hw, 0, 0), along = hd * 2, flat = false },
 		{ offset = Vector3.new(hw, 0, 0), along = hd * 2, flat = false },
 	}
+	if st.sea then
+		runs = {} -- docs/27: no fence on the water; the crew works off floating Lego scaffold barges
+		at += Vector3.new(0, 0.6, 0)
+		for _, b in { { -hw + 3, -hd - 4, 9, 9 }, { 0, -hd - 1.5, 6, 4 }, { -5, hd + 2, 14, 5 } } do
+			brick(
+				props,
+				"ScaffoldBarge",
+				Vector3.new(b[3], 1.4, b[4]),
+				at * CFrame.new(b[1], -0.7, b[2]),
+				YELLOW
+			)
+		end
+	end
 	for _, run in runs do
 		local offset, along, flat = run.offset, run.along, run.flat
 		for n = 0, 2 do
@@ -307,12 +321,14 @@ local function makeProps(st: Site)
 		end
 	end
 	for _, corner in
-		{
-			Vector3.new(-hw, 0, -hd),
-			Vector3.new(hw, 0, -hd),
-			Vector3.new(-hw, 0, hd),
-			Vector3.new(hw, 0, hd),
-		}
+		(if st.sea
+			then {}
+			else {
+				Vector3.new(-hw, 0, -hd),
+				Vector3.new(hw, 0, -hd),
+				Vector3.new(-hw, 0, hd),
+				Vector3.new(hw, 0, hd),
+			}) :: { Vector3 }
 	do
 		brick(
 			props,
@@ -324,12 +340,14 @@ local function makeProps(st: Site)
 	end
 	-- scaffold poles at the corners of the building, with two rails on the front
 	for _, corner in
-		{
-			Vector3.new(-st.hw, 0, -st.hd),
-			Vector3.new(st.hw, 0, -st.hd),
-			Vector3.new(-st.hw, 0, st.hd),
-			Vector3.new(st.hw, 0, st.hd),
-		}
+		(if st.sea
+			then {} -- the rising pillars are the scaffold
+			else {
+				Vector3.new(-st.hw, 0, -st.hd),
+				Vector3.new(st.hw, 0, -st.hd),
+				Vector3.new(-st.hw, 0, st.hd),
+				Vector3.new(st.hw, 0, st.hd),
+			}) :: { Vector3 }
 	do
 		brick(
 			props,
@@ -339,7 +357,7 @@ local function makeProps(st: Site)
 			STEEL
 		)
 	end
-	for _, y in { 4, 8 } do
+	for _, y in (if st.sea then {} else { 4, 8 }) :: { number } do
 		brick(
 			props,
 			"ScaffoldRail",
@@ -441,6 +459,10 @@ local function startSite(plot: Model, model: Model, key: string, mine: boolean):
 		minX, maxX = math.min(minX, p.X), math.max(maxX, p.X)
 		minZ, maxZ = math.min(minZ, p.Z), math.max(maxZ, p.Z)
 	end
+	local sea = model:GetAttribute("SeaSite") == true
+	if sea then
+		ground, minY = 0, math.max(minY, 0) -- the waterline, not the seabed under the pillars
+	end
 	if #parts == 0 then
 		lo, hi = 0, 0
 		minY, maxY, ground = 0, 0, 0
@@ -468,6 +490,7 @@ local function startSite(plot: Model, model: Model, key: string, mine: boolean):
 		maxZ = maxZ,
 		hw = (maxX - minX) / 2 + 1,
 		hd = (maxZ - minZ) / 2 + 1,
+		sea = sea,
 		progress = 0,
 		ready = false,
 		bar = nil :: any,
@@ -556,6 +579,89 @@ local function stop(site: Site)
 	site.gui:Destroy()
 end
 
+-- docs/27 plate_drop (spectacle, ~3 s): anticipation 0.5 s, the deck lowers from above on the crane hook while its
+-- shadow grows on the water (a brick rattle); impact, the deep snap with rings out from under the plate (VFXKit
+-- plate_drop, its camera kick off under Reduce motion); settle, the rim bricks pop in left to right, then the
+-- bollards, lamps and the rest drop in with the BuildSeq bounce. Never a sparkle.
+local DROP_T, DECK_LIFT = 0.5, 14
+local function plateDrop(site: Site, parts: { BasePart }, finals: { CFrame }, mine: boolean)
+	local camera = Workspace.CurrentCamera
+	local right = if camera then camera.CFrame.RightVector else Vector3.xAxis
+	local deck, rim, rest = {}, {}, {}
+	for i, part in parts do
+		local row = { part = part, final = finals[i] }
+		if part.Name == "Deck" or part.Name == "Gangway" then
+			table.insert(deck, row)
+		elseif part.Name == "Rim" then
+			table.insert(rim, row)
+		else
+			table.insert(rest, row)
+		end
+	end
+	table.sort(rim, function(a, b)
+		return a.final.Position:Dot(right) < b.final.Position:Dot(right)
+	end)
+	local centre = Vector3.new(site.center.X, 0, site.center.Z)
+	local size = Vector3.new(site.maxX - site.minX, 0.2, site.maxZ - site.minZ)
+	local shadow = brick(
+		site.plot,
+		"PlateShadow",
+		size * 0.55,
+		CFrame.new(centre + Vector3.new(0, 0.3, 0)),
+		GREY
+	)
+	shadow.Transparency = 0.75
+	TweenService:Create(
+		shadow,
+		TweenInfo.new(DROP_T, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+		{ Size = size, Transparency = 0.45 }
+	):Play()
+	AudioController.play("FX_PlasticRain", centre, 0.6, 0.75) -- the brick rattle on the hook
+	for _, row in deck do
+		hide(row.part, site, false)
+		row.part.CFrame = row.final + Vector3.new(0, DECK_LIFT, 0)
+		TweenService:Create(
+			row.part,
+			TweenInfo.new(DROP_T, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+			{ CFrame = row.final }
+		):Play()
+	end
+	task.delay(DROP_T, function()
+		shadow:Destroy()
+		VFXKit.play("plate_drop", CFrame.new(centre), {
+			radius = math.max(site.hw, site.hd),
+			height = 6,
+			still = not mine,
+		})
+	end)
+	local function pop(row: { part: BasePart, final: CFrame }, at: number, lift: number)
+		task.delay(at, function()
+			if not site.model.Parent then
+				return
+			end
+			hide(row.part, site, false)
+			row.part.CFrame = row.final + Vector3.new(0, lift, 0)
+			TweenService:Create(
+				row.part,
+				TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+				{ CFrame = row.final }
+			):Play()
+		end)
+	end
+	for k, row in rim do
+		pop(row, DROP_T + 0.15 + 0.6 * (k - 1) / math.max(#rim - 1, 1), 3)
+	end
+	local ys = {}
+	for i, row in rest do
+		ys[i] = row.final.Y
+	end
+	for _, step in BuildSeq.plan(ys, math.random(0, 1_000_000)) do
+		pop(rest[step.i], DROP_T + 0.8 + math.min(step.delay, 0.8), 4)
+	end
+	task.delay(DROP_T + 1.1, AudioController.play, "FX_PlasticRain", centre, 0.5, 1.15) -- the rim clicks home
+	site.props:Destroy()
+end
+
 -- The last bricks drop with the BuildSeq bounce, a Lego clack and confetti as they land (your HQ: a fanfare too).
 local function finish(site: Site)
 	local parts, ys = {}, {}
@@ -569,6 +675,10 @@ local function finish(site: Site)
 	local finals = {}
 	for i, part in parts do
 		finals[i] = part.CFrame
+	end
+	if site.sea then
+		plateDrop(site, parts, finals, site.plot.Name == `Plot{player:GetAttribute("DockPlot")}`)
+		return
 	end
 	for _, part in parts do
 		hide(part, site, false)

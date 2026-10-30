@@ -1028,6 +1028,9 @@ focusItem = function(item: DockBlueprints.Item, room: number?)
 		return
 	end
 	focused = item
+	if string.find(item.key, "^SeaPlate") then
+		Telemetry.send("Expand", "CardSeen", item.key) -- docs/27 Expand funnel (the server keeps the first)
+	end
 	local spot, size = DockBuild.spot(item)
 	outlineSpot(b * spot, size)
 	local at, paperSize = DockBuild.paper(item, b)

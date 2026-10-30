@@ -15,7 +15,10 @@
 -- stacks over their heads pile -> site, paced by HaulRate / CarryRate, waiting at the pile while SiteWaiting. Every
 -- rig gets its rarity name tag and info card (SurvivorController); each yard shows one crew badge (icon + count)
 -- instead of one per worker. Gatherer/Rescuer pay pops a "+$". The offline earnings show in the join reward
--- prompt (RewardController).
+-- prompt (RewardController). Idle workers (no slot) spend the day in the commons (shared/Hangout, owner 2026-10-29):
+-- Leisure is the activity, Rest the sit / lie spot; poses are Motor6D C0 turns over the stock Idle (no uploaded
+-- animations: they would not play in the group-owned launch place), small held props (phone, bowl, cone), a chat
+-- bubble or Zzz popping now and then from one pooled billboard per rig.
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local PathfindingService = game:GetService("PathfindingService")
@@ -29,6 +32,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Marina = require(Shared:WaitForChild("Marina"))
 local Net = require(Shared:WaitForChild("Net"))
+local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local WorkLoop = require(Shared:WaitForChild("WorkLoop"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local DepotController = require(script.Parent:WaitForChild("DepotController"))
@@ -87,7 +91,47 @@ type Rec = {
 	pace: number?, -- the running stride's studs/s (the Walk track's speed follows it)
 	sleep: boolean?, -- home for the night (walking there, or in and hidden)
 	climbing: boolean?, -- on a ladder (walkTo)
+	base: { [Motor6D]: CFrame }?, -- the rig's own joint C0s (leisure poses turn them)
+	mood: BillboardGui?, -- the pooled chat bubble / Zzz over the head
+	lonely: boolean?, -- a chatter with nobody near: on the phone instead
+	gesture: AnimationTrack?, -- a chatter's one-shot point
 }
+
+-- Leisure poses: joint -> C0 turn (rx, ry, rz degrees); "Sit" joins any act with a seat
+local POSES: { [string]: { [string]: Vector3 } } = {
+	Sit = {
+		LeftHip = Vector3.new(90, 0, 0),
+		RightHip = Vector3.new(90, 0, 0),
+		LeftKnee = Vector3.new(-90, 0, 0),
+		RightKnee = Vector3.new(-90, 0, 0),
+	},
+	Phone = {
+		RightShoulder = Vector3.new(55, 0, 0),
+		RightElbow = Vector3.new(65, 0, 0),
+		Neck = Vector3.new(-22, 0, 0),
+	},
+	Eat = {
+		RightShoulder = Vector3.new(35, 0, 0),
+		RightElbow = Vector3.new(50, 0, 0),
+		LeftShoulder = Vector3.new(40, 0, 0),
+		LeftElbow = Vector3.new(40, 0, 0),
+	},
+	Cone = {
+		RightShoulder = Vector3.new(35, 0, 0),
+		RightElbow = Vector3.new(80, 0, 0),
+		Neck = Vector3.new(-6, 0, 0),
+	},
+	Warm = {
+		RightShoulder = Vector3.new(50, 0, 0),
+		RightElbow = Vector3.new(30, 0, 0),
+		LeftShoulder = Vector3.new(50, 0, 0),
+		LeftElbow = Vector3.new(30, 0, 0),
+	},
+	Sleep = { Neck = Vector3.new(8, 0, 0) },
+}
+local LEISURE_PROP: { [string]: string } = { Phone = "Phone", Eat = "Bowl", Cone = "Cone" }
+local SIT_LIFT = 1.05 -- the root over a seat top (R15 at RootHeight 3; scales with the rig)
+local LIE_LIFT = 0.55 -- the root's half depth over a bed
 
 local anims: { [string]: Animation } = {} -- one Animation per id, shared by every rig
 for name, id in ANIM_IDS do
@@ -134,6 +178,57 @@ local function work(r: Rec): { anim: string?, prop: string? }?
 	return job and JOBS[job]
 end
 
+-- The idle worker's activity while settled at its hangout spot (nil: working, walking or none).
+local function leisureOf(r: Rec): string?
+	local act = r.cfg:GetAttribute("Leisure")
+	if type(act) ~= "string" or work(r) or r.walking or r.climbing then
+		return nil
+	end
+	return if act == "Chat" and r.lonely then "Phone" else act
+end
+
+local function restOf(r: Rec): CFrame?
+	local rest = r.cfg:GetAttribute("Rest")
+	return if typeof(rest) == "CFrame" and leisureOf(r) then rest else nil
+end
+
+-- Turns the joints to the leisure pose (or back to the rig's own); C0 composes with the playing Idle.
+local function joints(r: Rec)
+	local rig = r.rig
+	if not rig then
+		return
+	end
+	local act = leisureOf(r)
+	local want: { [string]: Vector3 } = {}
+	if act then
+		local turns: { [string]: Vector3 } = POSES[act] or {} -- Chat has none
+		for k, v in turns do
+			want[k] = v
+		end
+		if r.cfg:GetAttribute("Rest") ~= nil and act ~= "Sleep" then
+			for k, v in POSES.Sit do
+				want[k] = v
+			end
+		end
+	end
+	if not r.base then
+		if next(want) == nil then
+			return
+		end
+		local base = {}
+		for _, d in rig:GetDescendants() do
+			if d:IsA("Motor6D") then
+				base[d] = d.C0
+			end
+		end
+		r.base = base
+	end
+	for m, c0 in r.base :: { [Motor6D]: CFrame } do
+		local v = want[m.Name]
+		m.C0 = if v then c0 * CFrame.Angles(math.rad(v.X), math.rad(v.Y), math.rad(v.Z)) else c0
+	end
+end
+
 -- Plays the tracks the worker should show now (none when far or culled); tracks load once per rig.
 local function pose(r: Rec)
 	local want: { [string]: boolean } = {}
@@ -156,6 +251,7 @@ local function pose(r: Rec)
 			track:Stop(0.2)
 		end
 	end
+	joints(r)
 	local hum = r.rig and r.rig:FindFirstChildOfClass("Humanoid")
 	if not hum or next(want) == nil then
 		return
@@ -201,7 +297,7 @@ local function dress(r: Rec)
 		return
 	end
 	local w = work(r)
-	local want = w and w.prop
+	local want = if w then w.prop else LEISURE_PROP[leisureOf(r) or ""]
 	if w and r.beat and r.beat.prop then
 		want = if r.beat.prop == "" then nil else r.beat.prop
 	end
@@ -261,6 +357,53 @@ local function dress(r: Rec)
 				CFrame.new(0.7, 1.35, 0.1)
 			)
 		end
+	elseif want == "Phone" then -- a Lego phone, screen to the face
+		brick(
+			want,
+			Vector3.new(0.6, 1.0, 0.14),
+			Color3.fromRGB(30, 34, 40),
+			hand,
+			g * CFrame.new(0, 0.35, -0.2)
+		)
+		brick(
+			`{want}Screen`,
+			Vector3.new(0.5, 0.86, 0.04),
+			Color3.fromRGB(110, 200, 255),
+			hand,
+			g * CFrame.new(0, 0.35, -0.29)
+		)
+	elseif want == "Bowl" then -- a noodle bowl
+		local bowl = brick(
+			want,
+			Vector3.new(0.5, 1.1, 1.1),
+			Color3.fromRGB(224, 56, 40),
+			hand,
+			g * CFrame.new(0, 0.1, -0.5) * CFrame.Angles(0, 0, math.pi / 2)
+		)
+		bowl.Shape = Enum.PartType.Cylinder
+		brick(
+			`{want}Food`,
+			Vector3.new(0.8, 0.12, 0.8),
+			Color3.fromRGB(250, 208, 40),
+			hand,
+			g * CFrame.new(0, 0.38, -0.5)
+		)
+	elseif want == "Cone" then -- a cone and a pink scoop
+		brick(
+			want,
+			Vector3.new(0.4, 0.9, 0.4),
+			Color3.fromRGB(212, 160, 90),
+			hand,
+			g * CFrame.new(0, 0.45, -0.1)
+		)
+		local scoop = brick(
+			`{want}Scoop`,
+			Vector3.new(0.65, 0.65, 0.65),
+			Color3.fromRGB(250, 120, 190),
+			hand,
+			g * CFrame.new(0, 1.05, -0.1)
+		)
+		scoop.Shape = Enum.PartType.Ball
 	elseif want == "Net" then -- a bundled net with a float, hauled in hand over hand
 		brick(
 			want,
@@ -335,8 +478,16 @@ end
 
 local function place(r: Rec)
 	local rig = r.rig
-	if rig then
+	if not rig then
+		return
+	end
+	local rest = restOf(r)
+	if not rest then
 		rig:PivotTo(r.feet * CFrame.new(0, r.height, 0))
+	elseif leisureOf(r) == "Sleep" then -- on the back, head to the rest's +Z
+		rig:PivotTo(r.feet * rest * CFrame.new(0, LIE_LIFT, 0) * CFrame.Angles(math.pi / 2, 0, 0))
+	else
+		rig:PivotTo(r.feet * rest * CFrame.new(0, SIT_LIFT * r.height / 3, 0))
 	end
 end
 
@@ -381,6 +532,7 @@ local function dropRig(r: Rec)
 		r.rig:Destroy()
 		r.rig = nil
 		r.loaded = {}
+		r.base, r.mood, r.gesture = nil, nil, nil
 	end
 	r.walking = nil
 	r.climbing = nil
@@ -824,7 +976,11 @@ local function walkTo(r: Rec, to: CFrame)
 		return
 	end
 	local token = {}
+	local rested = restOf(r) ~= nil
 	r.walking = token
+	if rested then -- up off the seat / bed onto its feet spot
+		root.CFrame = r.feet * CFrame.new(0, r.height, 0)
+	end
 	dress(r)
 	pose(r)
 	task.spawn(function()
@@ -938,6 +1094,15 @@ local function track(cfg: Instance)
 			pose(r)
 		end
 	end)
+	cfg:GetAttributeChangedSignal("Leisure")
+		:Connect(function() -- a new spot's act lands before its Spot
+			r.lonely = nil
+			if not r.walking then
+				place(r)
+				dress(r)
+				pose(r)
+			end
+		end)
 	cfg:GetAttributeChangedSignal("Job")
 		:Connect(function() -- a job swap with Work already true: new prop + loop
 			r.beat, r.beatI = nil, nil
@@ -954,6 +1119,158 @@ local function untrack(cfg: Instance)
 		recs[r.cfg] = nil
 		dropRig(r)
 	end
+end
+
+-- the pooled billboard over a resting worker: the chat bubble sticker or the Bunkhouse's "Zzz"
+local function mood(r: Rec, rig: Model, zzz: boolean)
+	local gui = r.mood
+	if not gui then
+		local g = Instance.new("BillboardGui")
+		g.Name = "Mood"
+		g.Size = UDim2.fromOffset(44, 40)
+		g.MaxDistance = 90
+		g.LightInfluence = 0
+		g.Enabled = false
+		g.Adornee = (rig:FindFirstChild("Head") or rig.PrimaryPart) :: BasePart
+		local icon = Instance.new("ImageLabel")
+		icon.Name = "Bubble"
+		icon.BackgroundTransparency = 1
+		icon.Size = UDim2.fromScale(1, 1)
+		icon.Image = UiImages.Kit.chat
+		icon.ScaleType = Enum.ScaleType.Fit
+		icon.Parent = g
+		local label = Instance.new("TextLabel")
+		label.Name = "Zzz"
+		label.BackgroundTransparency = 1
+		label.Size = UDim2.fromScale(1, 1)
+		label.Font = Enum.Font.FredokaOne
+		label.TextScaled = true
+		label.TextColor3 = Color3.fromRGB(214, 228, 255)
+		label.TextStrokeColor3 = Color3.fromRGB(30, 44, 66)
+		label.TextStrokeTransparency = 0
+		label.Text = "Zzz"
+		label.Parent = g
+		g.Parent = rig
+		r.mood, gui = g, g
+	end
+	local g = gui :: BillboardGui
+	local icon = g:FindFirstChild("Bubble") :: ImageLabel
+	local label = g:FindFirstChild("Zzz") :: TextLabel
+	icon.Visible, label.Visible = not zzz, zzz
+	icon.ImageTransparency, label.TextTransparency, label.TextStrokeTransparency = 0, 0, 0
+	-- one pop in, drift up, fade out (no loop, no flashing)
+	g.Size = UDim2.fromOffset(10, 9)
+	g.StudsOffset = Vector3.new(if zzz then 0.8 else 0.9, 1.6, 0)
+	g.Enabled = true
+	TweenService:Create(
+		g,
+		TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+		{ Size = UDim2.fromOffset(44, 40) }
+	):Play()
+	TweenService:Create(
+		g,
+		TweenInfo.new(2.2, Enum.EasingStyle.Sine),
+		{ StudsOffset = g.StudsOffset + Vector3.new(0, 1.2, 0) }
+	):Play()
+	local fadeOut =
+		TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.In, 0, false, 1.8)
+	TweenService:Create(icon, fadeOut, { ImageTransparency = 1 }):Play()
+	TweenService:Create(label, fadeOut, { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+	task.delay(2.3, function()
+		if r.mood == g then
+			g.Enabled = false
+		end
+	end)
+end
+
+-- a chatter with another chatter (of any island) within this many studs has company
+local function company(r: Rec): boolean
+	for cfg, o in recs do
+		if
+			o ~= r
+			and o.rig
+			and cfg:GetAttribute("Leisure") == "Chat"
+			and not o.walking
+			and (o.feet.Position - r.feet.Position).Magnitude < 8
+		then
+			return true
+		end
+	end
+	return false
+end
+
+-- One beat of an idle worker's activity at its hangout spot (cullPass starts the next): bites, licks, a chat line
+-- (bubble or a gesture), a snore.
+local function lounge(r: Rec)
+	local rig = r.rig
+	local act = leisureOf(r)
+	local function on(): boolean
+		return r.rig == rig and r.lively and leisureOf(r) == act
+	end
+	if not (rig and act and on()) then
+		return
+	end
+	local seed = seedOf(r.cfg)
+	r.carry = "rest"
+	task.spawn(function()
+		local j = WorkLoop.jitter(seed, math.floor(os.clock()) % 7)
+		if act == "Chat" or (act == "Phone" and r.lonely) then
+			local lonely = not company(r)
+			if lonely ~= (r.lonely == true) then
+				r.lonely = lonely or nil
+				dress(r)
+				pose(r)
+			elseif not lonely then
+				if j > 1.05 then
+					mood(r, rig :: Model, false)
+				elseif j < 0.9 then -- a quick gesture with the stock point (its own track: the work loop's Point loops)
+					local animator = rig:FindFirstChildWhichIsA("Animator", true)
+					if animator and not r.gesture then
+						r.gesture = (animator :: Animator):LoadAnimation(anims.Point)
+					end
+					if r.gesture then
+						r.gesture.Looped = false
+						r.gesture:Play(0.2)
+					end
+				end
+			end
+			task.wait(3 * j)
+		elseif act == "Sleep" then
+			mood(r, rig :: Model, true)
+			task.wait(3.5 * j)
+		elseif act == "Eat" or act == "Cone" then
+			local m = rig:FindFirstChild(if act == "Eat" then "RightElbow" else "Neck", true)
+			local base = m and r.base and r.base[m :: Motor6D]
+			if m and m:IsA("Motor6D") and base then
+				local to = if act == "Eat"
+					then CFrame.Angles(math.rad(115), 0, 0)
+					else CFrame.Angles(math.rad(-18), 0, 0)
+				local tween = TweenService:Create(
+					m,
+					TweenInfo.new(
+						0.35,
+						Enum.EasingStyle.Sine,
+						Enum.EasingDirection.InOut,
+						0,
+						true,
+						0.3
+					),
+					{ C0 = base * to }
+				)
+				tween:Play()
+				tween.Completed:Wait()
+				if on() then
+					joints(r) -- back to the held pose exactly
+				end
+			end
+			task.wait(2.2 * j)
+		else
+			task.wait(4 * j)
+		end
+		if r.rig == rig then
+			r.carry = nil
+		end
+	end)
 end
 
 -- The cull / LOD pass: makes and drops rigs by distance, stills far ones, starts a recruit's walk in.
@@ -1001,7 +1318,9 @@ local function cullPass()
 			end
 		elseif r.lively and not r.walking and not r.carry then
 			local job = jobOf(r)
-			if job == "Haul" then
+			if not work(r) then
+				lounge(r)
+			elseif job == "Haul" then
 				haul(r)
 			elseif not (job == "Build" and supply(r)) then
 				loop(r)
