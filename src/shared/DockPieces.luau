@@ -946,9 +946,32 @@ local function furnishStation(m: Model, S: CFrame, level: number)
 			Enum.PartType.Cylinder
 		)
 	end
-	local floor = box("Floor", iw * 2 - 0.1, 0.2, id * 2 - 0.1, 0, 0.55, 0, LBG)
+	local floor =
+		box("Floor", iw * 2 - 0.1, 0.2, id * 2 - 0.1, 0, 0.55, 0, Color3.fromRGB(118, 130, 150))
 	studTop(floor)
-	box("Runner", 4, 0.06, 23, 0, 0.8, -3, BRICK_RED)
+	-- a navy rug with a lifebuoy mid-hall, the red runner from the door to it and on to the desk
+	box("Rug", 14, 0.05, 14, 0, 0.76, 0, NAVY)
+	for i, c in { BRICK_RED, BRICK_WHITE, NAVY } do
+		part(
+			m,
+			"RugRing",
+			Vector3.new(0.05, 7 - (i - 1) * 2, 7 - (i - 1) * 2),
+			S * CFrame.new(0, 0.81 + i * 0.01, 0) * CFrame.Angles(0, 0, math.pi / 2),
+			c,
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+	end
+	box("Runner", 4, 0.06, 7.6, 0, 0.8, -10.8, BRICK_RED)
+	box("Runner", 4, 0.06, 2.8, 0, 0.8, 8.4, BRICK_RED)
+	-- a blue dado round the hall and a red cove under the ceiling: the white walls read as a room
+	box("Dado", iw * 2 - 0.2, 2.4, 0.15, 0, 0.75, id - 0.1, BRICK_BLUE)
+	box("Cove", iw * 2 - 0.2, 0.6, 0.15, 0, 14.4, id - 0.1, BRICK_RED)
+	box("Cove", iw * 2 - 0.2, 0.6, 0.15, 0, 14.4, -id + 0.1, BRICK_RED)
+	for _, x in { -iw + 0.1, iw - 0.1 } do
+		box("Dado", 0.15, 2.4, id * 2 - 0.2, x, 0.75, 0, BRICK_BLUE)
+		box("Cove", 0.15, 0.6, id * 2 - 0.2, x, 14.4, 0, BRICK_RED)
+	end
 	-- ceiling lamps (soft, not neon): the windows are solid bricks, so the hall lights itself
 	for _, x in { -16, 0, 16 } do
 		local bulb = part(
@@ -961,7 +984,7 @@ local function furnishStation(m: Model, S: CFrame, level: number)
 			Enum.PartType.Cylinder
 		)
 		local light = Instance.new("PointLight")
-		light.Color, light.Range, light.Brightness = WARM, 32, 0.9
+		light.Color, light.Range, light.Brightness = WARM, 32, 0.5
 		light.Parent = bulb
 	end
 
@@ -1193,6 +1216,7 @@ local function stationInterior(m: Model, S: CFrame, level: number)
 				or string.find(n, "^Photo")
 				or string.find(n, "^Board")
 				or string.find(n, "^LifeRing")
+				or string.find(n, "^Rug")
 			)
 		then
 			d.CanCollide = false
@@ -1264,7 +1288,7 @@ local function smallHall(m: Model, H: CFrame)
 		)
 		bulb.CanCollide = false
 		local light = Instance.new("PointLight")
-		light.Color, light.Range, light.Brightness = WARM, 24, 0.9
+		light.Color, light.Range, light.Brightness = WARM, 24, 0.5
 		light.Parent = bulb
 	end
 	for _, p in LV1_PLINTHS do
@@ -3525,7 +3549,7 @@ function DockPieces.trophies(
 					"ATT_Plinth_%02d",
 					i
 				)]
-			local at, k = hall * CFrame.new(p), 1.5
+			local at, k = hall * CFrame.new(p), if lv1 then 1 else 1.5
 			local tint = if item.rarity > 0 then Rarity.TIERS[item.rarity].color else nil
 			if tint then
 				part(
