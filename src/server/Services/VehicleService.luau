@@ -1515,6 +1515,23 @@ stowRecord = function(record: Record): string
 	return "Despawned"
 end
 
+-- The first delivery (OperationService): the rider is let off and the craft docks at the bay. The client stands
+-- them at the build tablet (OnboardingController): it owns its character, so a server PivotTo here was undone.
+function VehicleService.StepAshore(player: Player)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local seat = humanoid and humanoid.SeatPart
+	if not (humanoid and seat) or humanoid.Health <= 0 then
+		return
+	end
+	humanoid.Sit = false
+	local weld = seat:FindFirstChild("SeatWeld")
+	if weld then
+		weld:Destroy()
+	end
+	VehicleService.Stow(player)
+end
+
 -- The cold open ended off the craft (OperationService): bring the jet ski home to the bay so the
 -- next launch step points at the quay, not at a hull drifting out at sea.
 function VehicleService.Stow(player: Player): string
