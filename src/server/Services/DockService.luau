@@ -1052,8 +1052,10 @@ local function syncTrophies(plot: Plot, owner: Player?)
 	end
 	-- the add-on mesh's plinths take the first items (DockPieces.trophies): 8 at Lv2, 14 at Lv3
 	local hall = plot.buildings.TrophyHall
+	local smallHall = hall and (plot.levels.TrophyHall or 1) == 1 or false -- the Lv1 code hall: 4 plinths inside
 	local plinths = if hall and hall:FindFirstChild("TrophyHallMesh")
 		then (if (plot.levels.TrophyHall or 1) >= 3 then 14 else 8)
+		elseif smallHall then 4
 		else 0
 	local key = if data then `{table.concat(names, ",")}|{plinths}` else ""
 	if key == plot.trophyKey then
@@ -1065,7 +1067,7 @@ local function syncTrophies(plot: Plot, owner: Player?)
 		plot.trophies = nil
 	end
 	if #items + #plaques > 0 then
-		local m = DockPieces.trophies(plot.frame, items, plaques, plinths)
+		local m = DockPieces.trophies(plot.frame, items, plaques, plinths, smallHall)
 		m.Parent = plot.model
 		plot.trophies = m
 	end

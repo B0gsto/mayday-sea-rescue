@@ -6,7 +6,7 @@
 --   first), then eases back; no survivor out: a look out to sea.
 --   Barge (Depot rack): the same look, at the nearest supply barge (or its mooring when none is out).
 --   Build (Workshop bench): build mode. Shop (Fish Market counter): the shop. Crew (Rescue Boathouse console): the
---   crew. Boats (Boat Yard console): your craft board.
+--   crew. Boats (Boat Yard console): your craft board. Map (HQ Station wall map): the full map. Clinic cots: lieFlat.
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -14,6 +14,7 @@ local Workspace = game:GetService("Workspace")
 
 local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local DockController = require(script.Parent:WaitForChild("DockController"))
+local MapController = require(script.Parent:WaitForChild("MapController"))
 local Menu = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Menu"))
 
 local BuildingActController = {}
@@ -129,6 +130,10 @@ local ACTS: { [string]: (BasePart) -> () } = {
 		Menu.open("Crew")
 		done()
 	end,
+	Map = function()
+		MapController.Open()
+		done()
+	end,
 }
 
 local function add(p: Instance)
@@ -167,7 +172,23 @@ local function add(p: Instance)
 	end)
 end
 
+-- The Clinic cot (CotSeat) tips you onto your back, but the sit animation bends your legs up. While you lie there,
+-- stop the playing tracks every frame: the rig's neutral pose (arms down, legs straight) reads as lying. No custom
+-- animation (they don't play on the group-owned launch place).
+local function lieFlat()
+	local hum = Players.LocalPlayer.Character
+		and Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+	local seat = hum and hum.SeatPart
+	if seat and seat.Name == "CotSeat" then
+		local animator = hum:FindFirstChildOfClass("Animator")
+		for _, track in if animator then animator:GetPlayingAnimationTracks() else {} do
+			track:Stop(0)
+		end
+	end
+end
+
 function BuildingActController.Start()
+	RunService.RenderStepped:Connect(lieFlat)
 	CollectionService:GetInstanceAddedSignal(TAG):Connect(add)
 	for _, p in CollectionService:GetTagged(TAG) do
 		add(p)
