@@ -162,14 +162,14 @@ BadgeConfig.Badges = table.freeze({
 		rescued = 2000,
 	},
 	FriendCrew = {
-		id = 0,
+		id = 2920701089421882,
 		name = "Crew Up",
 		description = "Join a crew with a friend.",
 		icon = "Two clasped hands over a boat deck",
 		count = 1,
 	},
 	FerryHero = {
-		id = 0,
+		id = 28712508987980,
 		name = "Ferry Hero",
 		description = "Bring a survivor home from the capsized ferry.",
 		icon = "A ferry with a life ring",
