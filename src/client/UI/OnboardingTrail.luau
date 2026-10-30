@@ -29,7 +29,9 @@ local LENGTH = 13 -- studs along the path: stretched 1.3x so the V survives the 
 local SPACING = 15 -- studs between step centres (x their growth): a 2 stud gap, the path reads continuous
 local FIRST = 11 + LENGTH / 2 -- the first step's centre: its near edge 11 studs ahead, clear of the avatar's legs
 local CLEAR = 7 -- studs: a step whose near edge comes this close to you or the camera's line to you is gone
-local HALO = 0.012 -- of the screen height: a step over your avatar on screen is gone, this close fades (it read as a hat)
+local HALO = 0.012 -- of the screen height: a near step over your avatar on screen dims, over this margin (it read as a hat) ...
+local NEAR = 18 -- ... only within this many studs of you (further ones always draw: a straight route hides behind you) ...
+local DIM = 0.38 -- ... to this opacity, never gone
 local GROW = 0.3 -- far steps grow up to 1.3x (more piles them into one stack at the goal) ...
 local GROW_OVER = 100 -- ... over this many studs past the first
 local TILT = math.rad(8) -- far steps tip up toward you by at most this (pivot on the near edge) ...
@@ -298,14 +300,18 @@ function OnboardingTrail.start(parent: Instance): Trail
 			local gap = (off - line * along).Magnitude - top.Size.X / 2
 			local alpha = math.clamp((gap - CLEAR) / 4, 0, 1) * t.tail
 			local lo, hi
-			if cam and charLo then
+			if
+				cam
+				and charLo
+				and Vector3.new(pos.X - here.X, 0, pos.Z - here.Z).Magnitude < NEAR
+			then
 				lo, hi = screenBox(cam, top.CFrame, top.Size)
 			end
 			if lo and hi and charLo and charHi then
 				-- the screen gap between the two boxes (negative when they overlap)
 				local d =
 					math.max(lo.X - charHi.X, charLo.X - hi.X, lo.Y - charHi.Y, charLo.Y - hi.Y)
-				alpha *= math.clamp(d / halo, 0, 1)
+				alpha *= DIM + (1 - DIM) * math.clamp(d / halo, 0, 1)
 			end
 			for _, art in t.arts do
 				art.ImageTransparency = 1 - alpha
