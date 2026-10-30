@@ -28,6 +28,17 @@ local function vehicleOf(seat: BasePart?): Model?
 	return nil
 end
 
+-- Unseats now. The SeatWeld goes before any PivotTo: the server drops it only once the jump replicates, and
+-- pivoting a still-welded character dragged the hull along onto the jetty (live v21: Flipped after a delivery)
+local function stepOff(humanoid: Humanoid, seat: BasePart)
+	humanoid.Sit = false
+	humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	local weld = seat:FindFirstChild("SeatWeld")
+	if weld then
+		weld:Destroy()
+	end
+end
+
 local function reach(vehicle: Model): number
 	local size = vehicle:GetExtentsSize()
 	return math.min(size.X, size.Z) / 2 + 3
@@ -85,8 +96,7 @@ local function onExit(
 	if craft and craft:GetAttribute("Airborne") == true then
 		return Enum.ContextActionResult.Sink -- flying heli (local attribute): land first
 	end
-	humanoid.Sit = false
-	humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	stepOff(humanoid, seat)
 	-- step off over the side: on a deck craft (Lifeboat) the jump left you standing on the seat, and
 	-- it (or the passenger seat behind) took you back within seconds; land half a beam + 3 out, on the side
 	-- with a deck or shore under it (moored right, the jetty was on the left: you swam under it, playtest
@@ -163,8 +173,7 @@ function VehicleExitController.Ashore(dir: Vector3): boolean
 	if not at then
 		return false
 	end
-	humanoid.Sit = false
-	humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	stepOff(humanoid, seat)
 	character:PivotTo(at * CFrame.lookAlong(Vector3.zero, dir))
 	return true
 end
