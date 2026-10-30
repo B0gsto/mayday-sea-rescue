@@ -171,6 +171,9 @@ def booth(b):
         b.box((s * 2.55, BY0 - 0.14, 4.95), (s * 5.05, BY0 + 0.2, 7.45), P.GLASS, bevel=0.0)  # pane
         b.box((s * 3.72, BY0 - 0.2, 4.95), (s * 3.88, BY0 + 0.2, 7.45), P.WHITE, bevel=0.0)   # mullion
         b.box((s * 2.0, BY0 - 0.3, 4.3), (s * 5.6, BY0 + 0.2, 4.7), P.YELLOW, bevel=0.04)    # sill
+    # yellow band along each side wall (AD r2: from the side it read as a little house), into the back wall and pillar
+    for s in (-1, 1):
+        b.box((s * (BX - 0.3), BY0 + 0.5, 5.3), (s * (BX + 0.06), BY1 - 0.5, 6.5), P.YELLOW, bevel=0.08)
     # counter between the side walls, yellow top overhanging toward the tablet
     b.box((-(BX - 1.04), BY1 - 1.5, TOP - SINK), (BX - 1.04, BY1 - 0.12, 3.4), P.WHITE, bevel=0.1)
     b.box((-(BX - 0.98), BY1 - 1.7, 3.3), (BX - 0.98, BY1 + 0.25, 3.85), P.YELLOW, bevel=0.08)
@@ -216,8 +219,9 @@ def roof(b):
     dz = bz + 0.4 - SINK
     dome(b, 0, cy, dz, [(0, 2.55), (0.9, 2.5), (1.7, 2.2), (2.35, 1.65), (2.75, 0.95), (2.9, 0.3)], P.YELLOW, 24)
     b.box((-0.35, cy - 1.9, dz + 2.1), (0.35, cy + 1.9, dz + 3.02), P.ORANGE, bevel=0.12)  # ridge
-    disc_y(b, 0, cy + 2.3, dz + 1.15, 0.8, 0.5, P.WHITE)                                   # badge on the front
-    disc_y(b, 0, cy + 2.36, dz + 1.15, 0.5, 0.5, P.RED)
+    # a white "+" on the hat front (AD r2: the red-in-white disc read as a cyclops eye)
+    b.box((-0.24, cy + 1.9, dz + 0.45), (0.24, cy + 2.62, dz + 1.75), P.WHITE, bevel=0.06)
+    b.box((-0.68, cy + 1.92, dz + 0.86), (0.68, cy + 2.58, dz + 1.34), P.WHITE, bevel=0.06)
 
 
 # ------------------------------------------------------------------ build
