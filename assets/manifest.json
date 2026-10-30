@@ -19365,6 +19365,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:ed51f7719286f7eb69fc6a5c38c1a74771b5b6eef7ece5ab5cda016fe565314c": {
+  "assetId": "74341805468542",
+  "imageId": "74341805468542",
+  "moderation": "Reviewing",
+  "name": "UI_Kit_Chat",
+  "sha": "ed51f7719286f7eb69fc6a5c38c1a74771b5b6eef7ece5ab5cda016fe565314c",
+  "source": "build/ui-art/chat.png",
+  "type": "Image"
+ },
  "Image:ed5f413c9bc20922e52f11253af7e99b970708bc58f3989b982b997851b4ade7": {
   "assetId": "100007816151198",
   "imageId": "100007816151198",

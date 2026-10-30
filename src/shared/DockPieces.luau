@@ -13,6 +13,7 @@
 -- MaterialService remap (no Slate, WoodPlanks, Brick, Concrete).
 local AssetIds = require(script.Parent:WaitForChild("Config"):WaitForChild("AssetIds"))
 local DockConfig = require(script.Parent:WaitForChild("Config"):WaitForChild("DockConfig"))
+local Hangout = require(script.Parent:WaitForChild("Hangout"))
 local Marina = require(script.Parent:WaitForChild("Marina"))
 local Rarity = require(script.Parent:WaitForChild("Rarity"))
 local RingLayout = require(script.Parent:WaitForChild("Config"):WaitForChild("RingLayout"))
@@ -2407,7 +2408,8 @@ function DockPieces.base(b: CFrame): Model
 	return m
 end
 
--- The street grid (docs/25 J: it arrives with HQ Lv1): the plaza tiles in front of the HQ, the tan stud paths.
+-- The street grid (docs/25 J: it arrives with HQ Lv1): the plaza tiles in front of the HQ, the tan stud paths, the
+-- commons (DockPieces.hangout).
 function DockPieces.streets(b: CFrame): Model
 	local m = Instance.new("Model")
 	m.Name = "Streets"
@@ -2425,6 +2427,241 @@ function DockPieces.streets(b: CFrame): Model
 	plaza.CanCollide = false
 	studTop(plaza)
 	border(plaza, PLAZA_EDGE, 24) -- a 3-stud darker tile border round the plaza
+	DockPieces.hangout(b).Parent = m -- the idle crew's commons arrives with the streets
+	return m
+end
+
+-- The idle crew's commons behind the HQ (shared/Hangout, owner 2026-10-29), placeholder Lego props that arrive with the
+-- streets: a walk-in canteen hut (table, four stools, a soup counter), a campfire between two log benches, two park
+-- benches, a hammock and an ice-cream cart. Front = each prop's -Z; heights match Hangout's seats.
+function DockPieces.hangout(b: CFrame): Model
+	local m = Instance.new("Model")
+	m.Name = "Hangout"
+	local function cyl(name: string, size: Vector3, cf: CFrame, color: Color3): BasePart
+		return part(m, name, size, cf, color, M.SmoothPlastic, Enum.PartType.Cylinder)
+	end
+	local up = CFrame.Angles(0, 0, math.pi / 2) -- a cylinder standing on end
+	-- canteen: 14 x 12, floor plate, three walls, red studded roof, striped awning over the open front
+	local c = Hangout.frame(b, "Canteen")
+	local F = Hangout.CANTEEN_FLOOR
+	studTop(brick(m, "CanteenFloor", Vector3.new(14, F, 12), c * CFrame.new(0, F / 2, 0), TAN))
+	brick(
+		m,
+		"CanteenWall",
+		Vector3.new(14, 6.95, 0.8),
+		c * CFrame.new(0, F + 3.475, 5.6),
+		BRICK_WHITE
+	)
+	for _, x in { -6.6, 6.6 } do
+		brick(
+			m,
+			"CanteenWall",
+			Vector3.new(0.8, 6.95, 11.2),
+			c * CFrame.new(x, F + 3.475, -0.4),
+			BRICK_WHITE
+		)
+		brick(
+			m,
+			"CanteenWindow",
+			Vector3.new(0.9, 2.4, 3.2),
+			c * CFrame.new(x, F + 4, -0.5),
+			Color3.fromRGB(150, 210, 240)
+		)
+	end
+	studTop(
+		brick(
+			m,
+			"CanteenRoof",
+			Vector3.new(15.6, 0.8, 13.6),
+			c * CFrame.new(0, F + 7.4, 0),
+			BRICK_RED
+		)
+	)
+	for k = 0, 5 do
+		brick(
+			m,
+			"CanteenAwning",
+			Vector3.new(15.6 / 6, 1, 0.4),
+			c * CFrame.new(-7.8 + 15.6 / 12 * (2 * k + 1), F + 6.5, -6.6),
+			if k % 2 == 0 then BRICK_RED else BRICK_WHITE
+		)
+	end
+	brick(m, "Counter", Vector3.new(10, 2.8, 1.4), c * CFrame.new(0, F + 1.4, 4.4), BRICK_BLUE)
+	brick(
+		m,
+		"CounterTop",
+		Vector3.new(10.4, 0.25, 1.8),
+		c * CFrame.new(0, F + 2.925, 4.4),
+		BRICK_WHITE
+	)
+	cyl("SoupPot", Vector3.new(1.2, 1.6, 1.6), c * CFrame.new(-2.5, F + 3.65, 4.4) * up, DBG)
+	cyl("Soup", Vector3.new(0.1, 1.3, 1.3), c * CFrame.new(-2.5, F + 4.27, 4.4) * up, BRICK_ORANGE)
+	studTop(
+		brick(m, "Table", Vector3.new(6, 0.4, 3), c * CFrame.new(0, F + 2.6, -0.5), BRICK_YELLOW)
+	)
+	for _, x in { -2.5, 2.5 } do
+		for _, z in { -1.5, 0.5 } do
+			brick(
+				m,
+				"TableLeg",
+				Vector3.new(0.5, 2.35, 0.5),
+				c * CFrame.new(x, F + 1.225, z),
+				RBROWN
+			)
+		end
+	end
+	for _, s in Hangout.SPOTS do
+		if s.prop == "Canteen" and s.rest then
+			local h = s.rest.Y - F - 0.05
+			cyl(
+				"Stool",
+				Vector3.new(h, 1.2, 1.2),
+				c * CFrame.new(s.rest.X, F + 0.05 + h / 2, s.rest.Z) * up,
+				BRICK_RED
+			)
+		end
+	end
+	-- campfire: a stone ring, crossed logs, a two-tone Lego flame (its core glows at night), two log benches
+	local f = Hangout.frame(b, "Campfire")
+	for k = 0, 5 do
+		local a = k / 6 * math.pi * 2
+		brick(
+			m,
+			"FireStone",
+			Vector3.new(1, 0.7, 1),
+			f * CFrame.Angles(0, a, 0) * CFrame.new(0, 0.35, -1.7),
+			DBG
+		)
+	end
+	for i, a in { 0.5, -0.5 } do -- crossed, one 0.1 higher (no shared top)
+		brick(
+			m,
+			"FireLog",
+			Vector3.new(0.6, 0.6, 2.6),
+			f * CFrame.Angles(0, a, 0) * CFrame.new(0, 0.2 + 0.1 * i, 0),
+			RBROWN
+		)
+	end
+	brick(
+		m,
+		"Flame",
+		Vector3.new(1.1, 1.5, 1.1),
+		f * CFrame.new(0, 1.3, 0) * CFrame.Angles(0, math.pi / 4, 0),
+		BRICK_ORANGE
+	)
+	brick(
+		m,
+		"FlameCore",
+		Vector3.new(0.6, 1.0, 0.6),
+		f * CFrame.new(0, 2.3, 0) * CFrame.Angles(0, math.pi / 4, 0),
+		BRICK_YELLOW
+	):AddTag("NightLamp")
+	for _, z in { -4.5, 4.5 } do
+		cyl(
+			"LogBench",
+			Vector3.new(5, Hangout.LOG, Hangout.LOG),
+			f * CFrame.new(0, Hangout.LOG / 2, z),
+			RBROWN
+		)
+	end
+	-- park benches: green Lego seat and back on dark legs
+	for _, key in { "BenchA", "BenchB" } do
+		local at = Hangout.frame(b, key)
+		local B = Hangout.BENCH
+		studTop(
+			brick(
+				m,
+				"BenchSeat",
+				Vector3.new(5, 0.4, 1.6),
+				at * CFrame.new(0, B - 0.2, 0),
+				BRICK_GREEN
+			)
+		)
+		brick(
+			m,
+			"BenchBack",
+			Vector3.new(5, 1.2, 0.35),
+			at * CFrame.new(0, B + 1.0, 0.95),
+			BRICK_GREEN
+		)
+		for _, x in { -2.1, 2.1 } do
+			brick(
+				m,
+				"BenchLeg",
+				Vector3.new(0.4, B - 0.45, 1.4),
+				at * CFrame.new(x, (B - 0.45) / 2, 0),
+				DBG
+			)
+			brick(
+				m,
+				"BenchPost",
+				Vector3.new(0.3, 0.9, 0.3),
+				at * CFrame.new(x, B + 0.2, 0.95),
+				DBG
+			)
+		end
+	end
+	-- hammock: two posts, a striped bed and its ropes
+	local h = Hangout.frame(b, "Hammock")
+	for _, z in { -4.5, 4.5 } do
+		brick(m, "HammockPost", Vector3.new(0.6, 4, 0.6), h * CFrame.new(0, 2, z), RBROWN)
+		brick(
+			m,
+			"HammockRope",
+			Vector3.new(0.15, 0.15, 1.2),
+			h * CFrame.new(0, Hangout.HAMMOCK - 0.1, z * 0.83),
+			WHITE
+		)
+	end
+	for k = 0, 2 do
+		brick(
+			m,
+			"HammockBed",
+			Vector3.new(1.8, 0.25, 7 / 3),
+			h * CFrame.new(0, Hangout.HAMMOCK - 0.125, -3.5 + 7 / 6 * (2 * k + 1)),
+			if k == 1 then BRICK_WHITE else BRICK_ORANGE
+		)
+	end
+	-- ice-cream cart: white body with a pink band, wheels, a striped umbrella, cones on top
+	local k = Hangout.frame(b, "Cart")
+	brick(m, "CartBody", Vector3.new(4, 2.2, 2.4), k * CFrame.new(0, 1.6, 0), BRICK_WHITE)
+	brick(m, "CartBand", Vector3.new(4.1, 0.5, 2.5), k * CFrame.new(0, 1.9, 0), BRICK_PINK)
+	studTop(
+		brick(m, "CartTop", Vector3.new(4.2, 0.25, 2.6), k * CFrame.new(0, 2.825, 0), BRICK_CYAN)
+	)
+	for _, x in { -2.15, 2.15 } do
+		cyl("CartWheel", Vector3.new(0.3, 1.1, 1.1), k * CFrame.new(x, 0.55, 0), DBG)
+	end
+	cyl(
+		"UmbrellaPole",
+		Vector3.new(3.2, 0.2, 0.2),
+		k * CFrame.new(1.6, 2.95 + 1.6, 0.9) * up,
+		WHITE
+	)
+	cyl("Umbrella", Vector3.new(0.4, 4.4, 4.4), k * CFrame.new(1.6, 6.35, 0.9) * up, BRICK_PINK)
+	cyl("UmbrellaTop", Vector3.new(0.3, 1.4, 1.4), k * CFrame.new(1.6, 6.7, 0.9) * up, BRICK_WHITE)
+	for i, x in { -1.2, -0.4, 0.4 } do
+		cyl(
+			"ConeShow",
+			Vector3.new(0.7, 0.4, 0.4),
+			k * CFrame.new(x, 3.3, -0.5) * up,
+			Color3.fromRGB(212, 160, 90)
+		)
+		part(
+			m,
+			"Scoop",
+			Vector3.new(0.6, 0.6, 0.6),
+			k * CFrame.new(x, 3.85, -0.5),
+			({ BRICK_PINK, BRICK_WHITE, BRICK_YELLOW })[i],
+			M.SmoothPlastic,
+			Enum.PartType.Ball
+		)
+	end
+	for _, d in m:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.CanTouch = false
+		end
+	end
 	return m
 end
 

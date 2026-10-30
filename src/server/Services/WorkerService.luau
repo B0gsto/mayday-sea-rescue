@@ -28,6 +28,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AssetIds = require(Shared:WaitForChild("Config"):WaitForChild("AssetIds"))
 local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
+local Hangout = require(Shared:WaitForChild("Hangout"))
 local Marina = require(Shared:WaitForChild("Marina"))
 local ProgressionRules = require(Shared:WaitForChild("ProgressionRules"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
@@ -39,7 +40,8 @@ local ProgressionService = require(script.Parent.ProgressionService)
 
 local WorkerService = {}
 
-WorkerService.IDLE_SHOWN = 6 -- idle workers standing on the jetty (the rest are "inside") -- tune
+WorkerService.IDLE_SHOWN = 6 -- idle workers on the jetty before the HQ (the rest are "inside"); then the commons (Hangout)
+WorkerService.MOVE_CHANCE = 0.25 -- per 5 s sync: one idle worker walks to another free hangout spot (~every 20 s)
 local TRIP_OUT = 260 -- studs the rescue boat sails out of the cove
 local TRIP_LEG = 22 -- s each way
 
@@ -48,6 +50,7 @@ type State = {
 	data: Folder, -- ReplicatedStorage.Workers.<UserId>: the shown workers
 	shown: { [number]: Configuration }, -- by data.workers index (the list only grows)
 	fresh: { [number]: boolean }, -- recruited this session: walks in from the jetty
+	lounge: { [number]: number }, -- idle worker index -> Hangout.SPOTS index
 	nextTrip: number,
 	tripBusy: boolean,
 	gatherAt: number,
@@ -395,6 +398,12 @@ local function publish(
 	return cfg
 end
 
+-- the idle worker's activity (WorkerController poses it) and its sit / lie spot relative to the Spot; nil clears
+local function lounge(cfg: Configuration, act: string?, rest: CFrame?)
+	cfg:SetAttribute("Leisure", act)
+	cfg:SetAttribute("Rest", rest)
+end
+
 -- Publishes every shown worker (ReplicatedStorage.Workers.<UserId>) and the effects.
 local function sync(player: Player)
 	local data = DataService.Get(player)
@@ -423,9 +432,33 @@ local function sync(player: Player)
 			count = k
 		end
 	end
+	local idleList = {}
+	for i in data.workers do
+		if not (order[i] and site) and not place[i] then
+			table.insert(idleList, i)
+		end
+	end
+	local levels = data.dock and data.dock.levels or {}
+	local commons = UnlockTree.levelOf(levels, "HQ") >= 1 -- the props arrive with the streets
+	local seats = if commons
+		then Hangout.seat(
+			idleList,
+			st.lounge,
+			UnlockTree.levelOf(levels, "Bunkhouse") >= 1,
+			if rng:NextNumber() < WorkerService.MOVE_CHANCE and #idleList > 0
+				then idleList[rng:NextInteger(1, #idleList)]
+				else nil,
+			function(n)
+				return rng:NextInteger(1, n)
+			end
+		)
+		else {}
+	st.lounge = seats
 	local idle = 0
 	for i, w in data.workers do
 		local spot: CFrame? = nil
+		local rest: CFrame? = nil
+		local act: string? = nil
 		local job = "Idle"
 		if order[i] and site then
 			spot = buildSpot(bay, site, order[i], count)
@@ -433,6 +466,12 @@ local function sync(player: Player)
 		elseif place[i] then
 			spot = workSpot(bay, w.category, place[i], slots, data.dock.levels)
 			job = JOB[w.category] or "Idle"
+		elseif commons then
+			local k = seats[i]
+			if k then
+				spot, rest = Hangout.place(bay, Hangout.SPOTS[k])
+				act = Hangout.SPOTS[k].act
+			end
 		else
 			idle += 1
 			spot = if idle <= WorkerService.IDLE_SHOWN then idleSpot(bay, idle) else nil
@@ -459,8 +498,10 @@ local function sync(player: Player)
 				job,
 				workplace
 			)
+			lounge(st.shown[i], act, rest)
 			st.fresh[i] = nil
 		else
+			lounge(cfg, act, rest) -- before Spot: the walk reads where it ends
 			cfg:SetAttribute("Spot", spot) -- same value: no change, nothing replicates
 			cfg:SetAttribute("Work", job ~= "Idle")
 			cfg:SetAttribute("Job", job)
@@ -709,6 +750,7 @@ function WorkerService.Init()
 			data = df,
 			shown = {},
 			fresh = {},
+			lounge = {},
 			nextTrip = now + effectsOf(player, data).rescuePeriod,
 			tripBusy = false,
 			gatherAt = now + 60,
@@ -760,7 +802,7 @@ function WorkerService.Init()
 								)
 							end
 						end
-						for idle = 1, WorkerService.IDLE_SHOWN do
+						for _, s in Hangout.SPOTS do -- every hangout spot taken (the bunks too)
 							n += 1
 							local w = {
 								category = "Medic",
@@ -769,7 +811,8 @@ function WorkerService.Init()
 								trait = "",
 								special = "",
 							}
-							publish(ff, n, w, idleSpot(bay, idle), false, nil, "Idle")
+							local feet, rest = Hangout.place(bay, s)
+							lounge(publish(ff, n, w, feet, false, nil, "Idle"), s.act, rest)
 						end
 						ff.Parent = dataRoot
 					end
