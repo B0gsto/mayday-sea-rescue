@@ -2510,6 +2510,48 @@ function DockPieces.hangout(b: CFrame): Model
 			)
 		end
 	end
+	-- the table is laid: a noodle bowl and a cup at each eater's place (WorkerController hands them a spoon), bread and
+	-- an apple on a plate between them
+	local T = F + 2.8
+	for _, s in Hangout.SPOTS do
+		if s.prop == "Canteen" and s.rest then
+			local z = s.rest.Z + (if s.rest.Z < -0.5 then 1.6 else -1.6)
+			cyl(
+				"FoodBowl",
+				Vector3.new(0.5, 1.1, 1.1),
+				c * CFrame.new(s.rest.X, T + 0.25, z) * up,
+				BRICK_RED
+			)
+			cyl(
+				"FoodNoodles",
+				Vector3.new(0.1, 0.9, 0.9),
+				c * CFrame.new(s.rest.X, T + 0.53, z) * up,
+				BRICK_YELLOW
+			)
+			cyl(
+				"FoodCup",
+				Vector3.new(0.7, 0.5, 0.5),
+				c * CFrame.new(s.rest.X * 1.56, T + 0.35, z) * up,
+				BRICK_BLUE
+			)
+		end
+	end
+	cyl(
+		"FoodPlate",
+		Vector3.new(0.12, 1.8, 1.8),
+		c * CFrame.new(0, T + 0.06, -0.5) * up,
+		BRICK_WHITE
+	)
+	brick(m, "FoodBread", Vector3.new(0.9, 0.45, 0.55), c * CFrame.new(-0.3, T + 0.345, -0.5), GOLD)
+	part(
+		m,
+		"FoodApple",
+		Vector3.new(0.5, 0.5, 0.5),
+		c * CFrame.new(0.4, T + 0.37, -0.45),
+		RED,
+		M.SmoothPlastic,
+		Enum.PartType.Ball
+	)
 	for _, s in Hangout.SPOTS do
 		if s.prop == "Canteen" and s.rest then
 			local h = s.rest.Y - F - 0.05
