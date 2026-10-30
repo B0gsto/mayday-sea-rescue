@@ -1149,7 +1149,7 @@ end
 
 -- a chat pop's bloop / a Zzz's slow breath (a swoosh pitched down): soft, 3D, heard only near the camera, and at most
 -- one of each per gap over the whole commons so a crowd never chatters on
-local MOOD_EAR, MOOD_GAP = 28, { chat = 2.5, zzz = 5 }
+local MOOD_EAR, MOOD_GAP = 28, { chat = 4, zzz = 6 }
 local moodHeard = { chat = 0, zzz = 0 }
 local function moodSound(at: Vector3, zzz: boolean)
 	local key, now = if zzz then "zzz" else "chat", os.clock()
