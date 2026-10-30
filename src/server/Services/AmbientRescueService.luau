@@ -12,7 +12,7 @@
 -- within HOME_CLEAR of a berth (the coves are the missions'). K13 (docs/16): one is always in view off each
 -- player's cove mouth. At the cap the oldest scene nobody is near makes way. A cold-open player gets no spawns
 -- near them and boards nobody free-roam (their own swimmer comes first). Sight spawns are the added density: they
--- pay the lower tier (CASH x the Bronze grade); timed and cove-mouth ones pay CASH.
+-- pay the lower tier (AmbientMix.CASH x the Bronze grade); timed and cove-mouth ones pay CASH.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -36,7 +36,6 @@ AmbientRescueService.RESPAWN = 20 -- s between timed spawns while under the cap 
 AmbientRescueService.MAX_AGE = 360 -- s unrescued before they are swept off (a fresh one spawns elsewhere)
 AmbientRescueService.CLEAR = 120 -- studs from any player when one appears (no pop-in beside you)
 AmbientRescueService.SPACING = 150 -- studs between free-roam scenes
-AmbientRescueService.CASH = 120 -- per survivor delivered (a Silver call pays 550)
 AmbientRescueService.MOUTH_OUT = 350 -- studs straight out from a player's berth: just past their cove -- tune
 AmbientRescueService.MOUTH_VIEW = 220 -- studs from that point: in view from the cove -- tune
 AmbientRescueService.SIGHT_CHECK = 3 -- s
@@ -152,9 +151,7 @@ local function spawnAt(pos: Vector3, extra: boolean?): Scene
 		opsDriven = true, -- no hold prompt: the server boards them (below)
 		ambient = true,
 		bornAt = os.clock(),
-		pay = math.floor(
-			AmbientRescueService.CASH * (if extra then CallTypes.Payout.Grade.Bronze else 1)
-		),
+		pay = math.floor(AmbientMix.CASH * (if extra then CallTypes.Payout.Grade.Bronze else 1)),
 	}
 	scene.onDelivered = function(n: number, driver: Player?)
 		onDelivered(scene, n, driver)
