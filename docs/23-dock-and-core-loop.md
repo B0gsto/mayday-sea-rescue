@@ -623,3 +623,25 @@ Boathouse 10 -> 14, RIB 12 -> 17. Milestones after (solo): Lifeboat 2:55, Helico
 (was 16.8 h on the same sim); one friend 16.2 h; 2x Cash 15.1 h (Medal-paced skill nodes hold the tail).
 The 5-10 h row is the sim's plan (it keeps every Lv2/Lv3 for after HQ5); a player buys those in that gap.
 
+
+**Free-roam on top of calls (2026-10-30, after sea1).** Free-roam survivors (AmbientRescueService) board any boat
+with a free seat and pay only on delivery home (`AmbientMix.CASH` 120; the sight spawns kept ahead of every boat pay
+x Bronze = 90; no workers, no Medals, the call's Award multipliers). The sim now takes them where calls leave room:
+the cove-mouth one in the ~26 s offer gap after each call (1 a call, 120) and up to 2 sight spawns in the seats a
+call leaves empty (RIB / Lifeboat; the jet ski's one seat is the call's), +10 s detour each. Pure free-roam earns
+~100 Cash/min on the jet ski and ~190-230 on the RIB / Lifeboat (sea1: 7-8k / 12-15k an hour), a third to a half of
+calls at the same stage, so farming it never beats calls. Pay and density stay as sea1 set them.
+
+| Stage (solo, no passes) | Cash/min, calls only | with free-roam | rescues per goal, calls only | with free-roam | free-roam share |
+|---|---:|---:|---:|---:|---:|
+| 0-10 min | 277 | 289 | 2.0 | 2.0 | 4% |
+| 10-30 min | 238 | 293 | 2.3 | 2.3 | 14% |
+| 30-60 min | 215 | 259 | 4.0 | 2.7 | 11% |
+| 1-2 h | 402 | 502 | 2.0 | 2.1 | 9% |
+| 2-5 h | 523 | 650 | 5.1 | 5.4 | 6% |
+| 5-10 h | 851 | 885 | 13.8 | 12.0 | 4% |
+| 10 h to the end | 1,169 | 1,237 | 5.2 | 4.5 | 3% |
+
+Free-roam is 4.5% of all Cash to the end (369 people); the whole tree is 16.4 h with it, 17.3 h calls only (the
+same sim before the free-roam step; Lifeboat 2:42, Helicopter 7:09). `Pacing.spec` asserts free-roam stays at most
+10% of earned Cash.

@@ -25,6 +25,7 @@ return function(t)
 	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
 	local DockConfig = t.load("src/shared/Config/DockConfig.luau")
 	local RingLayout = t.load("src/shared/Config/RingLayout.luau")
+	local AmbientMix = t.load("src/shared/Calls/AmbientMix.luau")
 	-- docs/23 (k): calls count from the player's island berth; the sim plays every island in turn (the east
 	-- island has Skerry Isle on its doorstep, the west one sails farther), so the averages are the server's
 	local HOMES = {}
@@ -87,11 +88,26 @@ return function(t)
 	-- the dock at the docs/02 cruise (CallLogic.travelSeconds) plus slow down, climb on and climb off.
 	-- Victims over the craft's seats mean another trip. -- tune
 	local CALL_S, TRIP_S = 45, 35
+	-- Free-roam survivors (AmbientRescueService, sea1) on top of calls. They board any boat with a free seat and
+	-- pay on delivery home, so a player takes them where calls leave room: the cove-mouth one (K13, CASH) in
+	-- the ~26 s offer gap after each call (OfferPacing.AfterOp, already inside CALL_S), and up to FREE_PATH
+	-- sight spawns (CASH x Bronze, IN_SIGHT kept ahead of every boat) in the seats the call leaves empty, each
+	-- a DETOUR_S swing. The jet ski's one seat is always the call's. No workers or Medals (onDelivered pays only). -- tune
+	local FREE_GAP, FREE_PATH, DETOUR_S = 1, 2, 10
+	local FREE_MOUTH = AmbientMix.CASH
+	local FREE_SIGHT = math.floor(AmbientMix.CASH * CallTypes.Payout.Grade.Bronze)
 	local START_UTC = 1792800000 -- 2026-10-24 00:00:00 UTC
 
 	-- `flatDepot`: the Depot never upgrades past Lv1 and no Hauler works there (docs/25 K4's slow case)
 	-- `paid`: the 2x Cash pass and the Starter Kit's 3,000 (the owner's account owns every pass it created)
-	local function run(friends: number, legacy: boolean?, flatDepot: boolean?, paid: boolean?)
+	-- `callsOnly`: no free-roam pickups (the ECON1 sim, for the before/after table)
+	local function run(
+		friends: number,
+		legacy: boolean?,
+		flatDepot: boolean?,
+		paid: boolean?,
+		callsOnly: boolean?
+	)
 		local data = Progression.defaultData()
 		if paid then
 			data.cash += 3000
@@ -400,7 +416,8 @@ return function(t)
 		local got = {}
 		local rescued = 0
 		local spinCash, spins, spinMaxShare = 0, 0, 0
-		local earned = { calls = 0, medic = 0, workers = 0, offline = 0 } -- where the Cash came from
+		local earned = { calls = 0, medic = 0, workers = 0, offline = 0, freeRoam = 0 } -- where the Cash came from
+		local freePeople = 0
 		local samples = {} -- after every op: play minute, ops, Cash earned so far (the stage table)
 		local treeSpinShare = nil -- spins' share of all Cash earned by the time the last tree item is bought
 		local function nextPrice(): number
@@ -454,7 +471,7 @@ return function(t)
 
 		-- the next real call (docs/23 e.2): its pay weight x distancePay and minutes
 		local perCraft = {}
-		local function nextCall(storm: boolean): (number, number, number)
+		local function nextCall(storm: boolean): (number, number, number, number)
 			local ids = { "JetSki" }
 			for id in owned do
 				table.insert(ids, id)
@@ -491,6 +508,14 @@ return function(t)
 				end
 			end
 			local pay = CallLogic.distancePay(distance)
+			local victims = choice.victims or spec.victims
+			local seats = VehicleConfig[best].survivorCapacity
+			local path = if callsOnly
+				then 0
+				else math.min(FREE_PATH, seats * math.ceil(victims / seats) - victims)
+			local freeCash = if callsOnly then 0 else FREE_GAP * FREE_MOUTH + path * FREE_SIGHT
+			freePeople += if callsOnly then 0 else FREE_GAP + path
+			seconds += path * DETOUR_S
 			local row = perCraft[best] or { calls = 0, minutes = 0, pay = 0 }
 			perCraft[best] = row
 			row.calls += 1
@@ -498,7 +523,8 @@ return function(t)
 			row.pay += pay
 			return Operations.Defs[Operations.FromCallKind[choice.kind]].weight * pay,
 				seconds / 60,
-				choice.victims or spec.victims
+				victims,
+				freeCash
 		end
 
 		local function runOperation(
@@ -506,7 +532,8 @@ return function(t)
 			planned: number,
 			now: number,
 			weight: number?,
-			people: number
+			people: number,
+			freeCash: number
 		)
 			local completeAt = now + minutes * 60
 			playMin += minutes
@@ -537,6 +564,9 @@ return function(t)
 			earned.calls += callCash * scale * friendMult
 			earned.medic += callCash * scale * (pay - 1) * friendMult
 			award(callCash * scale * pay, storm, great)
+			-- free-roam: ProgressionService.Award with the call's multipliers, no Medic bonus or golden share
+			earned.freeRoam += freeCash * scale * friendMult
+			award(freeCash * scale, storm, great)
 			if scale == 1 then
 				recruit(people)
 				local before = rescued
@@ -556,7 +586,10 @@ return function(t)
 
 			totalOps += 1
 			opIndex += 1
-			table.insert(samples, { at = playMin, ops = totalOps, gross = data.cash + spent })
+			table.insert(
+				samples,
+				{ at = playMin, ops = totalOps, gross = data.cash + spent, free = earned.freeRoam }
+			)
 			if totalOps == 1 then
 				mark("First rescue")
 			end
@@ -599,12 +632,12 @@ return function(t)
 				end
 				local cashAtStart = data.cash
 				while remaining > 0.01 do
-					local planned, weight, people = TUTORIAL_MIN[totalOps + 1], nil, 1
+					local planned, weight, people, freeCash = TUTORIAL_MIN[totalOps + 1], nil, 1, 0
 					if not planned then
-						weight, planned, people = nextCall(opIndex % 5 == 4)
+						weight, planned, people, freeCash = nextCall(opIndex % 5 == 4)
 					end
 					local minutes = math.min(planned, remaining)
-					runOperation(minutes, planned, now, weight, people)
+					runOperation(minutes, planned, now, weight, people, freeCash)
 					now += minutes * 60
 					remaining -= minutes
 					if trackDone() then
@@ -657,6 +690,7 @@ return function(t)
 			earned = earned,
 			treeSpinShare = treeSpinShare or 0,
 			samples = samples,
+			freePeople = freePeople,
 		}
 	end
 
@@ -707,9 +741,11 @@ return function(t)
 		local e = result.earned
 		print(
 			string.format(
-				"  earned: calls %d, medic bonus %d, workers %d, offline %d, spins %d (%d spins, %.1f%% of Cash to the tree's end, max %.0f%% of the next price)",
+				"  earned: calls %d, medic bonus %d, free-roam %d (%d people), workers %d, offline %d, spins %d (%d spins, %.1f%% of Cash to the tree's end, max %.0f%% of the next price)",
 				e.calls,
 				e.medic,
+				e.freeRoam,
+				result.freePeople,
 				e.workers,
 				e.offline,
 				result.spinCash,
@@ -759,7 +795,7 @@ return function(t)
 	local STAGES = { 0, 10, 30, 60, 120, 300, 600, 1200 }
 	local function stages(result: any): { any }
 		local function at(minute: number): any
-			local last = { at = 0, ops = 0, gross = 0 }
+			local last = { at = 0, ops = 0, gross = 0, free = 0 }
 			for _, sample in result.samples do
 				if sample.at > minute then
 					break
@@ -788,6 +824,7 @@ return function(t)
 				to = b,
 				perMin = gross / math.max(b - a, 1e-6),
 				perRescue = if ops > 0 then gross / ops else 0,
+				freeShare = (s1.free - s0.free) / math.max(gross, 1e-6),
 				goals = goals,
 				rescuesPerGoal = if goals > 0 then ops / goals else math.huge,
 			})
@@ -796,17 +833,20 @@ return function(t)
 	end
 
 	local function stageReport(result: any, name: string)
-		print(`\nEconomy stages: {name} (min | Cash/min | Cash/rescue | goals | rescues per goal)`)
+		print(
+			`\nEconomy stages: {name} (min | Cash/min | Cash/rescue | goals | rescues per goal | free-roam share)`
+		)
 		for _, row in stages(result) do
 			print(
 				string.format(
-					"  %4d-%-4d %6.0f %7.0f %4d %6.1f",
+					"  %4d-%-4d %6.0f %7.0f %4d %6.1f %5.0f%%",
 					row.from,
 					row.to,
 					row.perMin,
 					row.perRescue,
 					row.goals,
-					row.rescuesPerGoal
+					row.rescuesPerGoal,
+					row.freeShare * 100
 				)
 			)
 		end
@@ -822,6 +862,25 @@ return function(t)
 	local paid = run(0, false, false, true)
 	stageReport(solo, "solo, no passes")
 	stageReport(paid, "solo, 2x Cash + Starter Kit (the owner's account)")
+	local callsOnly = run(0, false, false, false, true)
+	stageReport(callsOnly, "solo, calls only (no free-roam)")
+	print(
+		string.format(
+			"  tree: %.1f h with free-roam, %.1f h calls only; free-roam %.1f%% of earned",
+			solo.playMin / 60,
+			callsOnly.playMin / 60,
+			100
+				* solo.earned.freeRoam
+				/ (
+					solo.earned.calls
+					+ solo.earned.medic
+					+ solo.earned.freeRoam
+					+ solo.earned.workers
+					+ solo.earned.offline
+					+ solo.spinCash
+				)
+		)
+	)
 	print(string.format("  paid: tree %.1f h", paid.playMin / 60))
 	print(
 		string.format(
@@ -924,7 +983,7 @@ return function(t)
 		end
 		t.expect(last >= 0.85 * 17 * 60 and last <= 1.15 * 17 * 60).toBe(true)
 		local e = solo.earned
-		local earned = e.calls + e.medic + e.workers + e.offline + solo.spinCash
+		local earned = e.calls + e.medic + e.freeRoam + e.workers + e.offline + solo.spinCash
 		t.expect(solo.cash < 0.10 * earned).toBe(true)
 	end)
 
@@ -974,6 +1033,12 @@ return function(t)
 			t.expect(late >= 1.7 and late <= 4.2).toBe(true)
 		end
 	)
+
+	t.test("free-roam tops up calls, never carries the economy (docs/23 (s))", function()
+		local e = solo.earned
+		local all = e.calls + e.medic + e.freeRoam + e.workers + e.offline + solo.spinCash
+		t.expect(e.freeRoam > 0 and e.freeRoam <= 0.10 * all).toBe(true)
+	end)
 
 	t.test("free spins' Cash stays small (docs/24 D)", function()
 		t.expect(solo.treeSpinShare > 0 and solo.treeSpinShare <= 0.06).toBe(true)
