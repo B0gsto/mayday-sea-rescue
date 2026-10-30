@@ -1442,6 +1442,28 @@
    ]
   },
   {
+   "Name": "M_Prop_HQInterior",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://132058009966716",
+        "NormalMap": "rbxassetid://134063939343985",
+        "RoughnessMap": "rbxassetid://77394710200809",
+        "MetalnessMap": "rbxassetid://82741558542658"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Prop_JettyCrane",
    "ClassName": "Folder",
    "Children": [
@@ -1479,6 +1501,28 @@
         "NormalMap": "rbxassetid://87943631556973",
         "RoughnessMap": "rbxassetid://137764212303379",
         "MetalnessMap": "rbxassetid://80651752753959"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Prop_TrophyCup",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://132058009966716",
+        "NormalMap": "rbxassetid://134063939343985",
+        "RoughnessMap": "rbxassetid://77394710200809",
+        "MetalnessMap": "rbxassetid://82741558542658"
        }
       }
      ]
