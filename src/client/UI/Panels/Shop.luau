@@ -283,8 +283,11 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 		panel.body.CanvasPosition = Vector2.zero
 		fetchCatalogue(false)
 		paint()
+		if not panel.isOpen() then
+			return -- built at join (tabs.select below): not a view, it logged ItemViewed for every player
+		end
 		Telemetry.shop("ItemViewed", "Store", nil, "Robux")
-		if UserInputService.GamepadEnabled and panel.isOpen() and cards[1] then
+		if UserInputService.GamepadEnabled and cards[1] then
 			GuiService.SelectedObject = cards[1].card.price.root
 		end
 	end
@@ -337,8 +340,8 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 	return {
 		open = function()
 			panel.open()
-			setTab(tab)
 			Telemetry.shop("PanelOpened", "Store")
+			setTab(tab)
 		end,
 		close = panel.close,
 		isOpen = panel.isOpen,
