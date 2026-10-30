@@ -32,11 +32,13 @@ local STUDS = "rbxassetid://18878365966" -- a white 4 x 4 stud tile (IslandPlate
 local QUALITY = { High = 1, Medium = 0.75, Low = 0.5 }
 local LEAP_NEAR = 300 -- dolphins leap only this close to the camera
 local LEAP_TIME = 1.2
-local BREACH_TIME = 3.2
+local BREACH_TIME = 4.2
 local CALL_NEAR = 220 -- gull calls this close
 
 local SAND = Color3.fromRGB(226, 201, 140)
 local SAND_TOP = Color3.fromRGB(236, 214, 160)
+local WET_SAND = Color3.fromRGB(196, 172, 118)
+local ROCK = Color3.fromRGB(150, 152, 150)
 local RED = Color3.fromRGB(196, 40, 28)
 local BLACK = Color3.fromRGB(27, 42, 53)
 local BLUE = Color3.fromRGB(13, 105, 172)
@@ -272,17 +274,26 @@ local function buildWhale(model: Model): { Thing }
 			CFrame.new(6.5, -2, -6) * CFrame.Angles(0, 0, -0.4),
 		},
 	}
+	for _, x in { -1, 1 } do -- eyes on the head's flanks: white, then a dark pupil
+		local eye: { any } =
+			{ part(model, Vector3.new(0.2, 1.2, 1.2), BELLY), CFrame.new(x * 3.6, 0, -16) }
+		local pupil: { any } =
+			{ part(model, Vector3.new(0.2, 0.6, 0.6), BLACK), CFrame.new(x * 3.75, 0, -16.1) }
+		table.insert(list, eye)
+		table.insert(list, pupil)
+	end
 	local at, nextAt = -math.huge, os.clock() + 8
 	return {
 		thing(list, function(t, clock)
 			local p, dir = SeaLife.at(SeaLife.Whale, t)
-			local y = surface(p) - 3.6 + 0.4 * math.sin(clock * 0.6) -- the back just awash
+			-- mostly under; the back rolls up awash now and then so you can find her between breaches
+			local y = surface(p) - 5.2 + 1.6 * math.max(0, math.sin(clock * 0.4))
 			local pitch, roll = 0, 0
 			local u = (clock - at) / BREACH_TIME
 			if u >= 0 and u < 1 then
-				local h = SeaLife.leap(u, 16)
+				local h = SeaLife.leap(u, 20)
 				y += h
-				pitch = 1.1 * (1 - 2 * u) -- nose up out of the sea, then over
+				pitch = 1.3 * (1 - 2 * u) -- nose up out of the sea, then over
 				roll = u * math.pi * 0.5 -- lands on its side
 			elseif u >= 1 and at > -math.huge then
 				at = -math.huge
@@ -366,6 +377,20 @@ local function buildSandbar(s: typeof(SeaLife.Sandbars[1]), model: Model): { Thi
 	base.CFrame = cf * CFrame.new(0, 0.7 - 1.5, 0)
 	local upper = part(model, Vector3.new(s.size.X * 0.55, 1, s.size.Y * 0.5), SAND_TOP, nil, true)
 	upper.CFrame = cf * CFrame.new(-s.size.X * 0.08, 1.15 - 0.5, 0)
+	-- the wet shallows round it (top 0.3: awash in any swell) and a few Lego rocks sunk into the sand
+	local rim = part(model, Vector3.new(s.size.X + 24, 3, s.size.Y + 24), WET_SAND)
+	rim.CFrame = cf * CFrame.new(0, 0.3 - 1.5, 0)
+	for _, r in
+		{
+			{ Vector3.new(6, 3, 5), Vector3.new(-0.38, 0, 0.3), 0.3 },
+			{ Vector3.new(4, 2, 4), Vector3.new(-0.3, 0, 0.38), -0.5 },
+			{ Vector3.new(3, 1.6, 3), Vector3.new(0.4, 0, -0.35), 0.9 },
+		} :: { { any } }
+	do
+		part(model, r[1], ROCK, nil, true).CFrame = cf
+			* CFrame.new(r[2].X * s.size.X, 0.7 + r[1].Y / 2 - 0.3, r[2].Z * s.size.Y)
+			* CFrame.Angles(0, r[3], 0)
+	end
 	local out: { Thing } = {}
 	for i, x in { -1, 1 } do
 		table.insert(
@@ -376,6 +401,7 @@ local function buildSandbar(s: typeof(SeaLife.Sandbars[1]), model: Model): { Thi
 	if s.wreck then
 		-- a small Lego fishing boat run aground on the upper plate, listing, her mast snapped
 		local w = cf * CFrame.new(s.size.X * 0.12, 1.15, 4) * CFrame.Angles(0, 0.5, 0.28)
+		local k = 1.5 -- reads from a boat a few hundred studs off
 		for _, e in
 			{
 				{ Vector3.new(7, 2, 18), BROWN, CFrame.new(0, 1, 0) },
@@ -400,7 +426,9 @@ local function buildSandbar(s: typeof(SeaLife.Sandbars[1]), model: Model): { Thi
 				},
 			} :: { { any } }
 		do
-			part(model, e[1], e[2], nil, e[1].X > 3).CFrame = w * e[3]
+			local rel: CFrame = e[3]
+			part(model, e[1] * k, e[2], nil, e[1].X > 3).CFrame = w
+				* (rel - rel.Position + rel.Position * k)
 		end
 		local over = cf.Position
 		for i = 1, 2 do
