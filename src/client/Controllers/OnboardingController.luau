@@ -173,6 +173,46 @@ local function glance(at: Vector3?)
 	end)
 end
 
+-- The first delivery (OperationService lets the rider off and docks the jet ski): stand on the jetty head in front
+-- of the build tablet, facing it, so the reward burst and the station beacon play there. Live v21: 11 of 19 new
+-- players quit still seated at sea after it, the station on land behind them.
+local function stepToStation()
+	local bay = player:GetAttribute("BayCFrame")
+	local char = player.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	local root = char and char:FindFirstChild("HumanoidRootPart")
+	if typeof(bay) ~= "CFrame" or not (char and hum and root and root:IsA("BasePart")) then
+		return
+	end
+	local t0 = os.clock()
+	while hum.SeatPart and os.clock() - t0 < 2 do
+		hum.Sit = false
+		task.wait()
+	end
+	if hum.SeatPart then
+		return -- still welded: never drag the hull along
+	end
+	local station = DockConfig.stationSpot(bay)
+	local at = (station * CFrame.new(0, 0, 8)).Position -- the deck in front of the tablet, inside its open range
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { char }
+	local hit = Workspace:Raycast(at + Vector3.new(0, 12, 0), Vector3.new(0, -30, 0), params)
+	local feet = (if hit then hit.Position else at)
+		+ Vector3.new(0, hum.HipHeight + root.Size.Y / 2 + 0.2, 0)
+	root.AssemblyLinearVelocity = Vector3.zero
+	root.AssemblyAngularVelocity = Vector3.zero
+	local face = Vector3.new(station.X, feet.Y, station.Z)
+	char:PivotTo(CFrame.lookAt(feet, face))
+	-- the Foot camera keeps the ride's heading: turn it to look over the shoulder at the tablet
+	task.wait()
+	local cam = Workspace.CurrentCamera
+	cam.CFrame = CFrame.lookAt(
+		feet + (feet - face).Unit * 16 + Vector3.new(0, 7, 0),
+		face + Vector3.new(0, 3, 0)
+	)
+end
+
 local function buildTabletOpen(): boolean
 	local gui = playerGui:FindFirstChild("BuildTablet")
 	return gui ~= nil and gui:IsA("ScreenGui") and gui.Enabled
@@ -432,6 +472,9 @@ function OnboardingController.Init()
 			player:SetAttribute("OnboardingRewardBusy", true) -- OpsHud holds the debrief
 		end
 		rewardAt = os.clock() + REWARD_DELAY
+		if rewardPending and player:GetAttribute("ColdOpenHandover") == "Ride" then
+			task.spawn(stepToStation)
+		end
 	end)
 	player:GetAttributeChangedSignal("ColdOpenDone"):Connect(function()
 		if player:GetAttribute("ColdOpenDone") == true and not active then

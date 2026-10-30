@@ -373,6 +373,10 @@ local function endColdOpen(player: Player, reason: string)
 	if how == "Respawn" then
 		try("VehicleService", "Stow", player) -- nobody left to ride it: it waits at the bay
 		stationOnSpawn[player] = true
+	elseif how == "Ride" and ColdOpenFlow.rescued(reason) then
+		-- live v21: 11 of 19 first deliveries quit still seated at sea, the build station on land behind them.
+		-- Dock the jet ski and stand them at the tablet: the reward burst and the station beacon play there.
+		try("VehicleService", "StepAshore", player)
 	end
 end
 
