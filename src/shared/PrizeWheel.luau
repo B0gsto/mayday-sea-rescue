@@ -472,6 +472,9 @@ local function buildMachine(parent: Instance, at: CFrame, onBuy: (Player, string
 		-- R and close range: the paid buttons never take the SPIN button's E
 		made.prompt.KeyboardKeyCode = Enum.KeyCode.R
 		made.prompt.MaxActivationDistance = 8
+		-- the nearest cap's prompt billboard covers all three caps: a clickable one took every click / tap (a hold
+		-- that never completed); not clickable, clicks and taps reach the cap's own ClickDetector
+		made.prompt.ClickablePrompt = false
 		buttons[key] = made
 	end
 	return { model = model, buttons = buttons }
