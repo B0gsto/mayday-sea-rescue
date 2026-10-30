@@ -1444,6 +1444,13 @@ local LV1_K = 2 -- the Lv1 niche trophies' scale
 local SHELF1 = { -8.1, -5.9, 5.9, 8.1 }
 local DOOR = 4.5 -- half the Lv1 door's width
 local NICHE = Color3.fromRGB(35, 70, 150)
+-- int4 (AD: a yellow-white glare): warm mid-tone lining, dark wood floor and ceiling, muted gold, so only the
+-- spotlit trophies are bright
+local HALL_WALL = Color3.fromRGB(152, 108, 76) -- medium nougat
+local HALL_WOOD = Color3.fromRGB(96, 58, 38) -- wainscot, niche frames, beams
+local HALL_FLOOR = Color3.fromRGB(70, 48, 36)
+local HALL_CEIL = Color3.fromRGB(132, 94, 62)
+local HALL_GOLD = Color3.fromRGB(176, 140, 78)
 -- a pennant hanging from `top` (its top edge's centre), in top's XY plane: two mirrored slope bricks meeting at the tip
 local function pennant(m: Model, top: CFrame, w: number, h: number, color: Color3)
 	for _, side in { -1, 1 } do
@@ -1475,8 +1482,8 @@ local function smallHall(m: Model, H: CFrame)
 	): BasePart
 		return brick(m, name, Vector3.new(w, h, d), H * CFrame.new(x, y0 + h / 2, z), color)
 	end
-	studTop(box("HallFloor", 21.6, 0.5, 13.1, 0, 0, 6.85, LBG))
-	box("RugBorder", 10, 0.06, 8, 0, 0.53, 4.9, BRICK_YELLOW)
+	studTop(box("HallFloor", 21.6, 0.46, 13.1, 0, 0.04, 6.85, HALL_FLOOR)) -- its bottom off the lot bed's
+	box("RugBorder", 10, 0.06, 8, 0, 0.53, 4.9, HALL_GOLD)
 	box("Rug", 9, 0.06, 7.2, 0, 0.56, 4.9, BRICK_RED)
 	-- walls: the front with its door, the sides and the back, windows on the three
 	for _, side in { -1, 1 } do
@@ -1514,19 +1521,48 @@ local function smallHall(m: Model, H: CFrame)
 		window(m, H * CFrame.new(x, 5.5, 13.4) * CFrame.Angles(0, math.pi, 0), 3.6, 4.5)
 	end
 	studTop(box("HallRoof", 22.2, 0.6, 13.8, 0, 9.35, 6.9, BRICK_BLUE))
-	for _, z in { 4, 10 } do
+	-- the lining, 0.04 into the walls: a wood wainscot under a gold rail, nougat above (the side and back walls run
+	-- behind the front's ends); a wood ceiling under the blue roof, beamed into 3 x 3 coffers
+	local function lining(
+		name: string,
+		w: number,
+		h: number,
+		d: number,
+		x: number,
+		y0: number,
+		z: number
+	)
+		box(name, w, 2.1, d, x, y0, z, HALL_WOOD)
+		box(name, w, h - 2.15, d, x, y0 + 2.15, z, HALL_WALL)
+	end
+	for _, side in { -1, 1 } do
+		lining("HallLining", 0.16, 8.5, 11.48, side * 10.06, 0.5, 6.88)
+		lining("HallLining", 10 - DOOR - 0.1, 6.1, 0.16, side * (10 + DOOR + 0.1) / 2, 0.5, 1.14)
+		box("ChairRail", 0.3, 0.2, 11.4, side * 9.9, 2.55, 6.88, HALL_GOLD)
+		box("ChairRail", 9.67 - DOOR, 0.2, 0.3, side * (10.17 + DOOR) / 2, 2.55, 1.3, HALL_GOLD)
+	end
+	box("HallLining", 20, 2.45, 0.18, 0, 6.55, 1.15, HALL_WALL) -- over the door and the side pieces' tops
+	lining("HallLining", 20, 8.5, 0.16, 0, 0.5, 12.62)
+	box("HallCeiling", 20.3, 0.12, 11.6, 0, 8.95, 6.85, HALL_CEIL)
+	for _, z in { 4.93, 8.77 } do
+		box("CeilingBeam", 20, 0.55, 0.5, 0, 8.43, z, HALL_WOOD)
+	end
+	for _, x in { -3.37, 3.37 } do
+		box("CeilingBeam", 0.5, 0.5, 11.44, x, 8.46, 6.88, HALL_WOOD)
+	end
+	for _, z in { 3.02, 10.7 } do
 		local bulb = part(
 			m,
 			"HallLamp",
 			Vector3.new(0.3, 2.4, 2.4),
-			H * CFrame.new(0, 9.2, z) * CFrame.Angles(0, 0, math.pi / 2),
+			H * CFrame.new(0, 8.78, z) * CFrame.Angles(0, 0, math.pi / 2),
 			BRICK_WHITE,
 			M.SmoothPlastic,
 			Enum.PartType.Cylinder
 		)
 		bulb.CanCollide = false
 		local light = Instance.new("PointLight")
-		light.Color, light.Range, light.Brightness = WARM, 24, 0.5
+		light.Color, light.Range, light.Brightness = WARM, 18, 0.7
 		light.Parent = bulb
 	end
 	-- the niches: a stepped plinth (grey step, gold trim, stud top step), gold sides and a stud cap, a gradient back
@@ -1534,12 +1570,12 @@ local function smallHall(m: Model, H: CFrame)
 	for _, p in LV1_PLINTHS do
 		local lo = p.Y - 1.4
 		box("TrophyPlinth", 4.8, lo, 3.25, p.X, 0.5, 10.925, LBG)
-		box("PlinthTrim", 5, 0.2, 3.35, p.X, p.Y - 0.9, 10.875, GOLD)
+		box("PlinthTrim", 5, 0.2, 3.35, p.X, p.Y - 0.9, 10.875, HALL_GOLD)
 		studTop(box("TrophyPlinth", 4, 0.7, 2.6, p.X, p.Y - 0.7, 11, LBG))
 		for _, s in { -1, 1 } do
-			box("NicheSide", 0.3, 6.1, 2.95, p.X + s * 2.25, p.Y - 0.7, 11.075, GOLD)
+			box("NicheSide", 0.3, 6.1, 2.95, p.X + s * 2.25, p.Y - 0.7, 11.075, HALL_WOOD)
 		end
-		studTop(box("NicheCap", 5, 0.35, 3.3, p.X, p.Y + 5.4, 10.95, GOLD))
+		studTop(box("NicheCap", 5, 0.35, 3.3, p.X, p.Y + 5.4, 10.95, HALL_WOOD))
 		local back = box("NicheBack", 4.1, 5.35, 0.1, p.X, p.Y, 12.5, NICHE)
 		rect(
 			frontGui(back, 0),
@@ -1556,7 +1592,7 @@ local function smallHall(m: Model, H: CFrame)
 		spotLamp.Material = M.Neon
 		local spot = Instance.new("SpotLight")
 		spot.Face, spot.Color, spot.Angle, spot.Range, spot.Brightness =
-			Enum.NormalId.Bottom, WARM, 60, 9, 4
+			Enum.NormalId.Bottom, WARM, 40, 7, 2.5
 		spot.Parent = spotLamp
 	end
 	-- bunting: two sagging strings of red, yellow, blue and white pennants across the hall
