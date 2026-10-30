@@ -64,6 +64,7 @@ local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local Unstick = require(Shared:WaitForChild("Boat"):WaitForChild("Unstick"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
+local VehicleExitController = require(script.Parent.VehicleExitController)
 
 local MAX_VISUAL_OFFSET = 1.5 -- studs; larger errors are left to replication -- tune
 local VISUAL_SMOOTHING = 10 -- 1/s -- tune
@@ -202,9 +203,13 @@ local function unstickBoat(model: Model, throttle: number, speed: number, dt: nu
 	if throttle > 0.05 and math.abs(speed) < Unstick.SPEED then
 		local wedged, normal = dockContact(model)
 		if Unstick.step(state, dt, wedged, speed, throttle) and normal then
-			Telemetry.send("StuckReset", "Boat") -- analytics H14: the wall push-off fired
-			local root = model.PrimaryPart
+			-- nobody aboard and dry land ahead: driving into the shore lands you on it (else push off the wall)
+			local empty = (tonumber(model:GetAttribute("SurvivorCount")) or 0) == 0
+			local root = if empty and VehicleExitController.Ashore(-normal)
+				then nil
+				else model.PrimaryPart
 			if root then
+				Telemetry.send("StuckReset", "Boat") -- analytics H14: the wall push-off fired
 				root.AssemblyLinearVelocity += normal * Unstick.NUDGE
 				-- swing the bow off the wall too (head-on: toward the side being steered, else right)
 				local side = normal:Dot(root.CFrame.RightVector)

@@ -28,6 +28,45 @@ local function vehicleOf(seat: BasePart?): Model?
 	return nil
 end
 
+local function reach(vehicle: Model): number
+	local size = vehicle:GetExtentsSize()
+	return math.min(size.X, size.Z) / 2 + 3
+end
+
+-- A deck or shore to stand on beside the hull along one of `dirs`, or nil (only water there).
+local function landSpot(
+	seat: BasePart,
+	vehicle: Model,
+	character: Model,
+	dirs: { Vector3 },
+	skip: Instance?
+): CFrame?
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { vehicle, character, skip :: Instance }
+	params.RespectCanCollide = true
+	-- walk out from the hull: a jet ski's berth leaves ~12 studs of water to the jetty finger (PT5: the
+	-- one probe at half a beam + 3 found only water, you swam under the jetty)
+	local r = reach(vehicle)
+	for out = r, r + 12, 2 do
+		for _, dir in dirs do
+			local p = seat.Position + dir * out
+			local hit = workspace:Raycast(p + Vector3.new(0, 12, 0), Vector3.new(0, -24, 0), params)
+			if hit and hit.Material ~= Enum.Material.Water then
+				-- 2 studs further onto the deck when it goes on: the first hit can be its very edge
+				local p2 = p + dir * 2
+				local deeper =
+					workspace:Raycast(p2 + Vector3.new(0, 12, 0), Vector3.new(0, -24, 0), params)
+				if deeper and deeper.Material ~= Enum.Material.Water then
+					hit = deeper
+				end
+				return CFrame.new((hit :: RaycastResult).Position + Vector3.new(0, 3, 0))
+			end
+		end
+	end
+	return nil
+end
+
 local function onExit(
 	_: string,
 	state: Enum.UserInputState,
@@ -54,43 +93,14 @@ local function onExit(
 	-- 2026-10-28), else in the water on the right
 	local vehicle = vehicleOf(seat)
 	if vehicle then
-		local size = vehicle:GetExtentsSize()
-		local reach = math.min(size.X, size.Z) / 2 + 3
-		local params = RaycastParams.new()
-		params.FilterType = Enum.RaycastFilterType.Exclude
-		params.FilterDescendantsInstances = { vehicle, character :: Instance }
-		params.RespectCanCollide = true
-		local side = seat.Position + seat.CFrame.RightVector * reach
-		local at = CFrame.new(side.X, seat.Position.Y + 2, side.Z)
-		-- walk out from the hull: a jet ski's berth leaves ~12 studs of water to the jetty finger (PT5: the
-		-- one probe at half a beam + 3 found only water, you swam under the jetty)
-		local found = false
-		for out = reach, reach + 12, 2 do
-			for _, dir in { seat.CFrame.RightVector, -seat.CFrame.RightVector } do
-				local p = seat.Position + dir * out
-				local hit =
-					workspace:Raycast(p + Vector3.new(0, 12, 0), Vector3.new(0, -24, 0), params)
-				if hit and hit.Material ~= Enum.Material.Water then
-					-- 2 studs further onto the deck when it goes on: the first hit can be its very edge
-					local p2 = p + dir * 2
-					local deeper = workspace:Raycast(
-						p2 + Vector3.new(0, 12, 0),
-						Vector3.new(0, -24, 0),
-						params
-					)
-					if deeper and deeper.Material ~= Enum.Material.Water then
-						hit = deeper
-					end
-					at = CFrame.new((hit :: RaycastResult).Position + Vector3.new(0, 3, 0))
-					found = true
-					break
-				end
-			end
-			if found then
-				break
-			end
-		end
 		local body = character :: Model
+		local side = seat.Position + seat.CFrame.RightVector * reach(vehicle)
+		local at = landSpot(
+			seat,
+			vehicle,
+			body,
+			{ seat.CFrame.RightVector, -seat.CFrame.RightVector }
+		) or CFrame.new(side.X, seat.Position.Y + 2, side.Z)
 		body:PivotTo(at * seat.CFrame.Rotation)
 	end
 	return Enum.ContextActionResult.Sink
@@ -132,6 +142,31 @@ local function onCharacter(character: Model)
 			onSeated(true, humanoid.SeatPart)
 		end
 	end
+end
+
+-- Driven into a shore with nobody aboard (BoatController's wedge): step off onto it toward `dir`, like Space.
+-- False when there is only water that way (the push-off frees the hull instead). Playtest 2026-10-30: after the
+-- first delivery new players drove at the build-station beacon on land and the push-off bounced them back, again.
+function VehicleExitController.Ashore(dir: Vector3): boolean
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local seat = humanoid and humanoid.SeatPart
+	local vehicle = vehicleOf(seat)
+	if
+		not (character and humanoid and seat and vehicle)
+		or player:GetAttribute("ColdOpenDone") ~= true
+	then
+		return false
+	end
+	-- the wedge counts moored hulls too: never step onto one
+	local at = landSpot(seat, vehicle, character, { dir }, workspace:FindFirstChild("Vehicles"))
+	if not at then
+		return false
+	end
+	humanoid.Sit = false
+	humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	character:PivotTo(at * CFrame.lookAlong(Vector3.zero, dir))
+	return true
 end
 
 function VehicleExitController.Init() end

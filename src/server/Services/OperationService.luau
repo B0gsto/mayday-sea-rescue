@@ -150,6 +150,11 @@ local lastActiveAt: { [Player]: number } = {} -- last tick on an operation: the 
 local COLD_OPEN_START_GRACE = 10 -- s before a cold open that never got its op counts as lost
 local hutUpAt: { [Player]: number } = {} -- first tick that saw the Rescue Hut standing
 local HUT_BEAT = 2.5 -- s the Hut's last bricks, confetti and HQ beat get before the cold open takes over
+-- docs/24 E: after the cold open the tutorial leads to the build station; the next call waits for the Workshop site
+-- (it is the goal while the site runs), at most STATION_HOLD s. Playtest 2026-10-30: the call came 15 s after the
+-- delivery, auto-accepted on the jet ski, so its "Go" strip and craft pin fought the station beacon.
+local stationHoldUntil: { [Player]: number } = {}
+local STATION_HOLD = 120 -- s -- tune
 local nextId = 0
 local bigOp: any = nil
 local bigLastEnd = 0 -- the last big call's end (Start: the server start), for OfferPacing.nextBigCallAt
@@ -247,6 +252,21 @@ local function onboardingCall(player: Player?): boolean
 	return type(total) == "number" and Onboarding.failsafeCall(total)
 end
 
+-- True while the tutorial's beat is the build station (the Workshop not placed yet). Only asked after a rescued cold
+-- open, whose delivery the saved total may not count yet (the offer tick can run in the same frame).
+local function stationBeat(player: Player): boolean
+	local ok, data = try("ProgressionService", "GetData", player)
+	return ok
+		and type(data) == "table"
+		and Onboarding.beat({
+				coldOpenDone = data.coldOpenDone == true,
+				totalRescues = math.max(1, data.totalRescues or 0),
+				step = data.tutorialStep,
+				owned = data.dockBuildings or {},
+			})
+			== "BuildStation"
+end
+
 local function markColdOpenDone(player: Player)
 	player:SetAttribute("ColdOpenDone", true)
 	-- CONTRACT: ProgressionService.SetFlag(player, "coldOpenDone", true) persists it (stream E).
@@ -325,6 +345,9 @@ local function endColdOpen(player: Player, reason: string)
 	end
 	player:SetAttribute("ColdOpenActive", nil)
 	markColdOpenDone(player)
+	if ColdOpenFlow.rescued(reason) then
+		stationHoldUntil[player] = now() + STATION_HOLD
+	end
 	try("TelemetryService", "ColdOpenEnded", player, reason) -- RP-A1 onboarding funnel
 	local ok, v = try("VehicleService", "GetVehicle", player)
 	if ok and typeof(v) == "Instance" and v:IsA("Model") then
@@ -1877,7 +1900,12 @@ local function tick()
 				if t - (coldOpenBegunAt[player] or -math.huge) > COLD_OPEN_START_GRACE then
 					endColdOpen(player, "Lost")
 				end
-			elseif decision == "Offer" and not inWater(player) and not busy(player) then
+			elseif
+				decision == "Offer"
+				and not inWater(player)
+				and not busy(player)
+				and not (t < (stationHoldUntil[player] or 0) and stationBeat(player))
+			then
 				-- two idle minutes on the quay: the board nudges an easy call, not a random one
 				local onFoot, stationDistance = stationIdle(player)
 				local nudge = st.completed >= #Grading.Payout.Tutorial
@@ -2177,6 +2205,7 @@ local function onPlayerRemoving(player: Player)
 	coldOpenBegunAt[player] = nil
 	lastActiveAt[player] = nil
 	hutUpAt[player] = nil
+	stationHoldUntil[player] = nil
 	for _, op in table.clone(ops) do
 		local j = table.find(op.offeredTo, player)
 		if j then

@@ -123,6 +123,10 @@ local function buildIsland(i: number, isl: RingLayout.Island, parent: Instance)
 			end
 		end
 	end
+	-- invisible skirt from the deck's underside into the water: a jet ski's hull fit under the deck and its rider
+	-- wedged there (playtest 2026-10-30, the ride home round island 1); now hulls meet the pontoon's side
+	part(m, Vector3.new(w, 3.9, len), P * CFrame.new(0, -3.05, 0), WHITE, M.SmoothPlastic, true).Transparency =
+		1
 	for _, slot in isl.quest.slots do
 		local s = P:PointToObjectSpace(slot.Position)
 		local at = P * CFrame.new(math.sign(s.X) * (w / 2 - 0.6), 0.6, s.Z)
