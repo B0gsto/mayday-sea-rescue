@@ -14592,6 +14592,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:aee14beb0e3c0c44a8ad61d8f76d7b8ddbef7fcd1595830e323f602e6abcb441": {
+  "assetId": "111428906965825",
+  "imageId": "111428906965825",
+  "moderation": "Reviewing",
+  "name": "Marker_TrailChevron3",
+  "sha": "aee14beb0e3c0c44a8ad61d8f76d7b8ddbef7fcd1595830e323f602e6abcb441",
+  "source": "build/status/2026-10-30/steps4/trail_chevron3.png",
+  "type": "Image"
+ },
  "Image:aee39a3616684dff4043da9476d83991a0f9d6116c956fc1813b15c1f89aff2b": {
   "assetId": "120021264122077",
   "imageId": "120021264122077",

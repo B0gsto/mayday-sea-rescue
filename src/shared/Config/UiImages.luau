@@ -17,7 +17,7 @@ return {
 	Markers = {
 		BuildArrow = "rbxassetid://74018470016385",
 		EdgePointer = "rbxassetid://115902828261976",
-		TrailChevron = "rbxassetid://95343043756882", -- art/source/ui/trail_chevron.svg (render --keep): the onboarding trail step, 2 frames
+		TrailChevron = "rbxassetid://111428906965825", -- art/source/ui/trail_chevron.svg (render --keep --size 520 338): the onboarding trail step, 2 frames
 		Pin = {
 			Red = "rbxassetid://126485934783621",
 			Amber = "rbxassetid://102982529774636",

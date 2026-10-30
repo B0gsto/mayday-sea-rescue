@@ -29,9 +29,10 @@ local LENGTH = 13 -- studs along the path: stretched 1.3x so the V survives the 
 local SPACING = 15 -- studs between step centres (x their growth): a 2 stud gap, the path reads continuous
 local FIRST = 11 + LENGTH / 2 -- the first step's centre: its near edge 11 studs ahead, clear of the avatar's legs
 local CLEAR = 7 -- studs: a step whose near edge comes this close to you or the camera's line to you is gone
-local GROW = 0.6 -- far steps grow up to 1.6x ...
+local HALO = 0.04 -- of the screen height: a step this close on screen to your avatar fades (it read as a hat)
+local GROW = 0.3 -- far steps grow up to 1.3x (more piles them into one stack at the goal) ...
 local GROW_OVER = 100 -- ... over this many studs past the first
-local TILT = math.rad(14) -- far steps tip up toward you by at most this (pivot on the near edge) ...
+local TILT = math.rad(8) -- far steps tip up toward you by at most this (pivot on the near edge) ...
 local TILT_OVER = 60 -- ... reached this many studs past the first
 local LAYERS = 3 -- the art over two darker copies ...
 local GAP = 0.2 -- ... this far apart: a 0.4 stud Lego plate
@@ -45,6 +46,23 @@ local WAVE = 8 * SPACING -- studs between pulses
 local SHARP = 8 -- the pulse is cos^SHARP: one step or two lit at a time, the rest at rest
 local REROUTE = 1 -- s: at most one route per second
 local STRAY = 5 -- studs moved before a new route
+
+-- a box's on-screen bounds (min, max viewport px), or nil when any corner is behind the camera
+local function screenBox(cam: Camera, cf: CFrame, size: Vector3): (Vector2?, Vector2?)
+	local lo, hi = Vector2.new(math.huge, math.huge), Vector2.new(-math.huge, -math.huge)
+	for x = -0.5, 0.5 do
+		for y = -0.5, 0.5 do
+			for z = -0.5, 0.5 do
+				local v = cam:WorldToViewportPoint(cf * (size * Vector3.new(x, y, z)))
+				if v.Z <= 0 then
+					return nil, nil
+				end
+				lo, hi = lo:Min(Vector2.new(v.X, v.Y)), hi:Max(Vector2.new(v.X, v.Y))
+			end
+		end
+	end
+	return lo, hi
+end
 
 local function surfaceY(p: Vector3): number
 	local ok, h = pcall(Weather.heightAt, p)
@@ -99,14 +117,14 @@ function OnboardingTrail.start(parent: Instance): Trail
 			gui.PixelsPerStud = 32
 			gui.Enabled = false
 			gui.Parent = part
-			-- the art is two 488x636 frames side by side: the sky-blue step, then the same step brightened toward white
+			-- the art is two 520x676 frames side by side: the sky-blue step, then the same step brightened toward white
 			local art = Instance.new("ImageLabel")
 			art.AnchorPoint = Vector2.new(0.5, 0.5)
 			art.Position = UDim2.fromScale(0.5, 0.5)
 			art.Size = UDim2.fromScale(0.86, 0.86)
 			art.BackgroundTransparency = 1
 			art.Image = UiImages.Markers.TrailChevron
-			art.ImageRectSize = Vector2.new(488, 636)
+			art.ImageRectSize = Vector2.new(520, 676)
 			art.ImageColor3 = if k < LAYERS then EDGE else REST
 			art.ScaleType = Enum.ScaleType.Fit
 			art.Parent = gui
@@ -116,7 +134,7 @@ function OnboardingTrail.start(parent: Instance): Trail
 		glow.AnchorPoint = Vector2.zero
 		glow.Position = UDim2.new()
 		glow.Size = UDim2.fromScale(1, 1)
-		glow.ImageRectOffset = Vector2.new(488, 0)
+		glow.ImageRectOffset = Vector2.new(520, 0)
 		glow.ImageColor3 = Color3.new(1, 1, 1)
 		glow.Parent = arts[LAYERS]
 		tiles[i] = { layers = layers, arts = arts, glow = glow, s = 0, tail = 1 }
@@ -260,6 +278,13 @@ function OnboardingTrail.start(parent: Instance): Trail
 		local eye = if cam then cam.CFrame.Position else here
 		local line = Vector3.new(here.X - eye.X, 0, here.Z - eye.Z)
 		local lineLen = line.Magnitude
+		-- your avatar's on-screen box: a step drawn over or just past it reads as a hat or a halo
+		local charLo, charHi
+		if cam and char then
+			local cf, size = (char :: Model):GetBoundingBox()
+			charLo, charHi = screenBox(cam, cf, size)
+		end
+		local halo = if cam then HALO * cam.ViewportSize.Y else 1
 		for i = 1, placed do
 			local t = tiles[i]
 			-- 0..1, one narrow crest travelling toward the goal: a smooth cosine power, never on/off
@@ -272,6 +297,16 @@ function OnboardingTrail.start(parent: Instance): Trail
 				else 1
 			local gap = (off - line * along).Magnitude - top.Size.X / 2
 			local alpha = math.clamp((gap - CLEAR) / 4, 0, 1) * t.tail
+			local lo, hi
+			if cam and charLo then
+				lo, hi = screenBox(cam, top.CFrame, top.Size)
+			end
+			if lo and hi and charLo and charHi then
+				-- the screen gap between the two boxes (negative when they overlap)
+				local d =
+					math.max(lo.X - charHi.X, charLo.X - hi.X, lo.Y - charHi.Y, charLo.Y - hi.Y)
+				alpha *= math.clamp(d / halo, 0, 1)
+			end
 			for _, art in t.arts do
 				art.ImageTransparency = 1 - alpha
 			end
