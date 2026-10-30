@@ -113,7 +113,10 @@ local function custom(player: Player, event: Events.Custom)
 		warn(`[TelemetryService] {event.name} is not on the fixed TelemetryNames list; dropped`)
 		return
 	end
-	note(`{player.UserId} custom {event.name} {event.value}`)
+	local f = event.fields
+	note(
+		`{player.UserId} custom {event.name} {event.value} {f.CustomField01 or ""} {f.CustomField02 or ""} {f.CustomField03 or ""}`
+	)
 	send(event.name, function()
 		AnalyticsService:LogCustomEvent(player, event.name, event.value, event.fields)
 	end)
@@ -178,7 +181,7 @@ function TelemetryService.Step(
 	if not (player.Parent and Events.first(trackerOf(player), `{funnel}:{sessionId}:{n}`)) then
 		return
 	end
-	note(`{player.UserId} {funnel} {sessionId} {n} {stepName}`)
+	note(`{player.UserId} {funnel} {sessionId} {n} {stepName} {a or ""} {b or ""} {c or ""}`)
 	send(funnel, function()
 		AnalyticsService:LogFunnelStepEvent(
 			player,
