@@ -7,6 +7,7 @@
 --   onCollect(from): once, `from` is the big coin's centre on screen (UI/CoinShower springs from it)
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -285,6 +286,7 @@ function RewardPrompt.show(playerGui: Instance, reward: Reward, onCollect: (Vect
 		end
 		done = true
 		ContextActionService:UnbindAction(action)
+		ProximityPromptService.Enabled = true
 		device:Disconnect()
 		if GuiService.SelectedObject == button then
 			GuiService.SelectedObject = nil
@@ -302,6 +304,8 @@ function RewardPrompt.show(playerGui: Instance, reward: Reward, onCollect: (Vect
 	if RunService:IsStudio() then -- Studio: a capture bench collects by changing Workspace attribute RewardCollect
 		Workspace:GetAttributeChangedSignal("RewardCollect"):Once(collect)
 	end
+	-- a new player spawns at the build tablet: its E prompt would open under the card (the bound E never sinks it)
+	ProximityPromptService.Enabled = false
 	ContextActionService:BindActionAtPriority(
 		action,
 		function(_, state)
