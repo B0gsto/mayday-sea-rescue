@@ -190,7 +190,7 @@ function OnboardingTrail.start(parent: Instance): Trail
 			s += SPACING * grow
 		end
 		-- out of steps short of the goal: the last three fade out instead of stopping dead (the beacon marks the rest)
-		local last = n == MAX and tiles[MAX].layers[1].Position
+		local last = if n == MAX then tiles[MAX].layers[1].Position else nil
 		if last and Vector3.new(goal.X - last.X, 0, goal.Z - last.Z).Magnitude > 2 * SPACING then
 			for k = 1, 3 do
 				tiles[MAX - 3 + k].tail = 1 - k / 4
