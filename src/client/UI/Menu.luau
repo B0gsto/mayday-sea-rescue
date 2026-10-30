@@ -246,8 +246,12 @@ local function boatWait(): (number, number)
 	return left, cooldown
 end
 
--- Seated in a craft (the server answers "Occupied"): the Boat tile rests grey and wordless, no error.
-local function aboard(): boolean
+-- Seated in a craft (the server answers "Occupied"), or no Rescue Hut yet (the server answers "NoHut"): the Boat
+-- tile rests grey and wordless, no error.
+local function resting(): boolean
+	if player:GetAttribute("DockLevelHQ") == 0 then
+		return true
+	end
 	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 	local seat = hum and hum.SeatPart
 	local craft = seat and seat:FindFirstAncestorWhichIsA("Model")
@@ -297,7 +301,7 @@ local function dressBoat(b: IconButton.IconButton)
 	local function paint()
 		local left, cooldown = boatWait()
 		local wait = left > 0
-		local seated = aboard()
+		local seated = resting()
 		if (wait or seated) ~= waiting then
 			waiting = wait or seated
 			Style.recolor(holder, Style.grad(if waiting then "disabled" else "red"))
@@ -321,7 +325,7 @@ local function dressBoat(b: IconButton.IconButton)
 		end
 	end)
 	return function()
-		if sending or boatWait() > 0 or aboard() then
+		if sending or boatWait() > 0 or resting() then
 			return
 		end
 		sending = true

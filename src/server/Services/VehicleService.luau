@@ -1537,7 +1537,12 @@ local function homeAtBay(player: Player, character: Model)
 	then
 		return
 	end
-	if data and data.coldOpenDone and not byPlayer[player] then
+	if
+		data
+		and data.coldOpenDone
+		and not byPlayer[player]
+		and DockService.Level(player, "HQ") >= 1
+	then
 		local id = bayCraft(player)
 		if id then
 			spawnVehicle(player, id, bay, true, true, "Bay")
@@ -1602,6 +1607,9 @@ function VehicleService.Init()
 				) > 0
 			then
 				return false, "Cooldown"
+			end
+			if DockService.Level(player, "HQ") < 1 then
+				return false, "NoHut" -- the free Rescue Hut comes first (the Menu's Boat tile rests grey)
 			end
 			local current, bay = byPlayer[player], bayFor(player)
 			local id = if current and current.model.Parent

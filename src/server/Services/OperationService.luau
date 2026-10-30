@@ -1905,6 +1905,7 @@ local function tick()
 				end
 			elseif
 				decision == "Offer"
+				and hutUpAt[player] ~= nil -- no calls before the Rescue Hut stands (a save from before it skipped the cold open)
 				and not inWater(player)
 				and not busy(player)
 				and not (t < (stationHoldUntil[player] or 0) and stationBeat(player))
