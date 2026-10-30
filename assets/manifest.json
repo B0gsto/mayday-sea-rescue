@@ -5494,6 +5494,18 @@
   "source": "art/map/v2/gale_isles_map_r3c3.png",
   "type": "Image"
  },
+ "Image:3faa319c1920ac2d1b67d89c187fdeda67c3121d7b964980f7649ea93a2ee6f3": {
+  "aliases": [
+   "T_TrophyCup_Brick_ALB"
+  ],
+  "assetId": "132058009966716",
+  "imageId": "132058009966716",
+  "moderation": "Reviewing",
+  "name": "T_HQInterior_Brick_ALB",
+  "sha": "3faa319c1920ac2d1b67d89c187fdeda67c3121d7b964980f7649ea93a2ee6f3",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-1765274a/assets/textures/M_Prop_HQInterior/T_HQInterior_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:3faa3e210054ae539b5766a23f04a36029f347e1aa1ce38fa032072171db572d": {
   "assetId": "122985718913326",
   "imageId": "122985718913326",
@@ -21865,6 +21877,16 @@
   "source": "assets/fbx/M_Veg_Gorse_01/M_Veg_Gorse_01_LOD2.fbx",
   "type": "Model"
  },
+ "Model:20e61d18afc572992aa3ae30e83f9f7174d64f7b2cd409a2770bed6cc0884f7f": {
+  "assetId": "95736914543128",
+  "moderation": "Approved",
+  "name": "M_Prop_HQInterior_LOD1",
+  "rbxm": "assets/models/M_Prop_HQInterior_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "20e61d18afc572992aa3ae30e83f9f7174d64f7b2cd409a2770bed6cc0884f7f",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-1765274a/assets/fbx/M_Prop_HQInterior/M_Prop_HQInterior_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:2112f96a25b0edf4d3e76865f8620ec8a5b5ad356f73e8ff6958ae235dac41ce": {
   "assetId": "121645364088634",
   "moderation": "Approved",
@@ -24115,6 +24137,16 @@
   "source": "assets/fbx/M_Veh_Optimist/M_Veh_Optimist_LOD0.fbx",
   "type": "Model"
  },
+ "Model:5710c1daca28d51c6283bb83909141297fd63661141d657c4de6a3fef00cecd1": {
+  "assetId": "130715758413221",
+  "moderation": "Approved",
+  "name": "M_Prop_BuildStation_LOD1",
+  "rbxm": "assets/models/M_Prop_BuildStation_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "5710c1daca28d51c6283bb83909141297fd63661141d657c4de6a3fef00cecd1",
+  "source": "assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:572481d9e5ad33c61c994bc6f340e0452d5fbe224fb5e63af72034630a9b8bb5": {
   "assetId": "105507506298853",
   "moderation": "Approved",
@@ -24305,6 +24337,16 @@
   "source": "assets/fbx/M_Veh_MooredBoat_02/M_Veh_MooredBoat_02_LOD2.fbx",
   "type": "Model"
  },
+ "Model:5d9ca598f1ff9a9fa9c081359da62a2ecf7e93b7a5926c7bfa9190d0535a6827": {
+  "assetId": "106368753823603",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD0",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "5d9ca598f1ff9a9fa9c081359da62a2ecf7e93b7a5926c7bfa9190d0535a6827",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:5dc87fc57c1c2d1af6fe814a0ce8f55adb104a9238b681a6bd45e67779b964c1": {
   "assetId": "139769087173124",
   "moderation": "Approved",
@@ -24423,6 +24465,16 @@
   "route": "delivery",
   "sha": "626958f7d4505165595b8a85d565bfea908068523f361dbcfc9b7f82d2fe871f",
   "source": "assets/fbx/M_Hbr_LobsterPot_02/M_Hbr_LobsterPot_02_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:6290b82464ead8f48bcb2f5b93e60b50bae3e4860a4176cee8eb3e9f21f726ff": {
+  "assetId": "92823988374506",
+  "moderation": "Approved",
+  "name": "M_Prop_TrophyCup_LOD0",
+  "rbxm": "assets/models/M_Prop_TrophyCup_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "6290b82464ead8f48bcb2f5b93e60b50bae3e4860a4176cee8eb3e9f21f726ff",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-1765274a/assets/fbx/M_Prop_TrophyCup/M_Prop_TrophyCup_LOD0.fbx",
   "type": "Model"
  },
  "Model:62cc98423b3aecc5c01e07f0ca4cd2cc752435f66d115cc79d81d9796d372360": {
@@ -25855,6 +25907,16 @@
   "source": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD0.fbx",
   "type": "Model"
  },
+ "Model:89a8f487550aa52e61477ca193de274a06728351157f92ddf0f3c4b6f8e3725c": {
+  "assetId": "128444450926609",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD2",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "89a8f487550aa52e61477ca193de274a06728351157f92ddf0f3c4b6f8e3725c",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:89c26b77c1bc4f17642ae776c85043738d7b4747899de4e6713c065f75ba08f7": {
   "assetId": "139042053030032",
   "moderation": "Approved",
@@ -26075,6 +26137,16 @@
   "source": "assets/fbx/M_Bld_Cottage_04/M_Bld_Cottage_04_LOD2.fbx",
   "type": "Model"
  },
+ "Model:8eebf027e1ac416ceb97d22cb509af3d2f3359915735dd37d51259a6c0affc64": {
+  "assetId": "72639338712780",
+  "moderation": "Approved",
+  "name": "M_Prop_HQInterior_LOD2",
+  "rbxm": "assets/models/M_Prop_HQInterior_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "8eebf027e1ac416ceb97d22cb509af3d2f3359915735dd37d51259a6c0affc64",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-1765274a/assets/fbx/M_Prop_HQInterior/M_Prop_HQInterior_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:8f2fd683c0ccfa6505c21fe62cd660444a6718256cd44e1be838d517e177c1be": {
   "assetId": "134175689008960",
   "moderation": "Approved",
@@ -26113,6 +26185,16 @@
   "route": "delivery",
   "sha": "9054d2addedc999efb01322a0e6af4dfb8d39f3ef1d85e30b8700eed58179e86",
   "source": "assets/fbx/M_Rock_Cliff_02/M_Rock_Cliff_02_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:9097d4993e4f6816561cc8a796eb48a825daf2f760092c2b3b834a405b5406b1": {
+  "assetId": "114681053879263",
+  "moderation": "Approved",
+  "name": "M_Prop_HQInterior_LOD0",
+  "rbxm": "assets/models/M_Prop_HQInterior_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "9097d4993e4f6816561cc8a796eb48a825daf2f760092c2b3b834a405b5406b1",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-1765274a/assets/fbx/M_Prop_HQInterior/M_Prop_HQInterior_LOD0.fbx",
   "type": "Model"
  },
  "Model:90ae22a5174af159004b2a4662d0a285bc3b0887f23b6a97c7a20372ca99deb3": {
@@ -26795,6 +26877,16 @@
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD1.fbx",
   "type": "Model"
  },
+ "Model:a29100b551b41fc07b6759153149611aa2a2a812f006b38036e7cbb4741390cd": {
+  "assetId": "139601515640401",
+  "moderation": "Approved",
+  "name": "M_Prop_BuildStation_LOD0",
+  "rbxm": "assets/models/M_Prop_BuildStation_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "a29100b551b41fc07b6759153149611aa2a2a812f006b38036e7cbb4741390cd",
+  "source": "assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:a2a64784593911451d172c61f6dd969e31502c71704df09effe40a688d4f66c0": {
   "assetId": "125465635219347",
   "moderation": "Approved",
@@ -26925,6 +27017,16 @@
   "source": "assets/fbx/M_Hbr_LobsterPot_01/M_Hbr_LobsterPot_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:a6aee964135ea3ba3469ae458129ba394f58202d6e12bd323c44989014cf8bf6": {
+  "assetId": "119538327623944",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD1",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a6aee964135ea3ba3469ae458129ba394f58202d6e12bd323c44989014cf8bf6",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:a78ca17a213153518c4b7e54d548decbf0f3f87df540c3d93d28f4bd57a7b51b": {
   "assetId": "117966274728142",
   "moderation": "Approved",
@@ -26995,6 +27097,16 @@
   "source": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD1.fbx",
   "type": "Model"
  },
+ "Model:a988be543573ed78c1eeac0586a1723135dae66403905fe88715eb3fb8da0e5a": {
+  "assetId": "88117011028129",
+  "moderation": "Approved",
+  "name": "M_Prop_TrophyCup_LOD2",
+  "rbxm": "assets/models/M_Prop_TrophyCup_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "a988be543573ed78c1eeac0586a1723135dae66403905fe88715eb3fb8da0e5a",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-1765274a/assets/fbx/M_Prop_TrophyCup/M_Prop_TrophyCup_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:a994e6c9ceab07a2b1a42d7ca2a3b738d1327254af3ba37cecbef277875b6bb9": {
   "assetId": "135455322443071",
   "moderation": "Approved",
@@ -27053,6 +27165,16 @@
   "route": "delivery",
   "sha": "aaaad1e705c7af1752f439e2bd261456a2db34790c2308ce7784721bc36660f0",
   "source": "assets/fbx/M_Veg_SeaThrift_01/M_Veg_SeaThrift_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:ab3fcaedb0eec65735fb1cfe81e5645015e5aef01d7ca30e28593415a783fbc1": {
+  "assetId": "80648501804201",
+  "moderation": "Approved",
+  "name": "M_Prop_BuildStation_LOD2",
+  "rbxm": "assets/models/M_Prop_BuildStation_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "ab3fcaedb0eec65735fb1cfe81e5645015e5aef01d7ca30e28593415a783fbc1",
+  "source": "assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD2.fbx",
   "type": "Model"
  },
  "Model:ab4ad9cf27460d4a6f78edd140a556efcf14c7cd2364ebeda843695273ee117d": {
@@ -29113,6 +29235,16 @@
   "route": "delivery",
   "sha": "e59db2a51873ce654f1312525a516daed6aea38936e3f04d86e8976c4ba4b77e",
   "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:e5c933f06716d7d1f3136affc2c4604b7473dbce77980bd377183a43dd013cf3": {
+  "assetId": "134752567419348",
+  "moderation": "Approved",
+  "name": "M_Prop_TrophyCup_LOD1",
+  "rbxm": "assets/models/M_Prop_TrophyCup_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "e5c933f06716d7d1f3136affc2c4604b7473dbce77980bd377183a43dd013cf3",
+  "source": "../../.t3/worktrees/MaydaySeaRescue/t3-1765274a/assets/fbx/M_Prop_TrophyCup/M_Prop_TrophyCup_LOD1.fbx",
   "type": "Model"
  },
  "Model:e5e2ac1989240ef0e522e1cdcce42a0923a330c0d029a429925c1413eb21e7f7": {
