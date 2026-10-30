@@ -19,6 +19,8 @@ STUD = "M100,30 A70,70 0 1,1 99.9,30 Z"
 CROSS = ("M89,8 L111,8 L111,56 L89,56 Z M89,144 L111,144 L111,192 L89,192 Z M8,89 L56,89 L56,111 L8,111 Z "
          "M144,89 L192,89 L192,111 L144,111 Z")
 GEM = "M100,14 L186,100 L100,186 L14,100 Z"
+# a speech bubble, tail down-left
+CHAT = "M40,30 L160,30 Q186,30 186,56 L186,118 Q186,144 160,144 L92,144 L56,176 Q50,181 51,173 L58,144 L40,144 Q14,144 14,118 L14,56 Q14,30 40,30 Z"
 
 
 def stud_top(light, dark):
@@ -65,6 +67,9 @@ STICKERS = {
     "map_player": (sticker(ARROW, "#6CC4FF", "#1C78E0", None, lip_dy=0,
                            extra='<path d="M100,30 L100,136 L42,170 Z" fill="#fff" fill-opacity="0.35"/>'),
                    "you on the map: a blue arrow, tip up, its box centred to spin about"),
+    "chat": (sticker(CHAT, "#8FD3FF", "#3D9BF0", "#1F64B5", gloss="M36,70 C36,56 44,50 56,50",
+                     extra="".join(f'<circle cx="{x}" cy="87" r="13" fill="#fff" stroke="{INK}" stroke-width="6"/>' for x in (64, 100, 136))),
+             "idle crew chatting (WorkerController): a wordless speech bubble, three dots"),
 }
 
 
