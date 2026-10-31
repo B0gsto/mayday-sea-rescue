@@ -136,11 +136,30 @@ local function focusFirst(root: Instance)
 	if not UserInputService.GamepadEnabled then
 		return
 	end
+	-- the first button in reading order (creation order put cards rebuilt by sort, or a hidden Tabs row, first);
+	-- the panel's red X only when nothing else is selectable
+	local best: GuiButton? = nil
 	for _, d in root:GetDescendants() do
-		if d:IsA("GuiButton") and d.Selectable and d.Visible then
-			GuiService.SelectedObject = d
-			return
+		if d:IsA("GuiButton") and d.Selectable then
+			local p: Instance? = d
+			while p and p ~= root and (not p:IsA("GuiObject") or p.Visible) do
+				p = p.Parent
+			end
+			local skip = p ~= root or (best and best.Name ~= "Close" and d.Name == "Close")
+			if
+				not skip
+				and (
+					not best
+					or (best.Name == "Close" and d.Name ~= "Close")
+					or Theme.readsBefore(d.AbsolutePosition, best.AbsolutePosition)
+				)
+			then
+				best = d
+			end
 		end
+	end
+	if best then
+		GuiService.SelectedObject = best
 	end
 end
 

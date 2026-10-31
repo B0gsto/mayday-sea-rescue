@@ -162,6 +162,15 @@ function Theme.iconColumns(viewport: Vector2, scale: number, count: number): num
 	return math.ceil(count / rows)
 end
 
+-- Gamepad reading order: true when a sits before b (top row first, then left). Positions within half a
+-- row (24 px) count as one row, so cards in a grid line up left to right.
+function Theme.readsBefore(a: Vector2, b: Vector2): boolean
+	if math.abs(a.Y - b.Y) > 24 then
+		return a.Y < b.Y
+	end
+	return a.X < b.X
+end
+
 -- Price / counter text: 950, 1,250, 12.5K, 3.4M.
 function Theme.short(n: number): string
 	n = math.floor(n)
