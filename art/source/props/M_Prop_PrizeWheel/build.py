@@ -213,19 +213,22 @@ def tile_outline(a, r0, r1, side, d):
 
 
 GEM = [(-0.36, 0.56), (0.36, 0.56), (0.7, 0.14), (0.0, -0.7), (-0.7, 0.14)]
-R_GEM, R_DISC = 4.9, 1.12           # disc edge stays clear of the divider bases (half chord at R_GEM is 1.27)
+R_GEM, R_DISC = 4.9, 0.98           # disc just rims the gem (max reach 0.9) so the tile colour fills the wedge
 
 
 def gem(b, a, rarity, rank):
-    """A white disc and a big faceted gem on tile angle a, tip toward the hub (upright at the pointer)."""
+    """A disc in a light shade of the tile and a big faceted gem on tile angle a, tip toward the hub (upright at the
+    pointer)."""
     cx, cy, cz = HUB
     o = (cx + R_GEM * math.cos(a), cy + R_GEM * math.sin(a), cz)
+    face, lip = P.DISC[rank]
     lathe(b, Fr(o), [(0, -0.40), (R_DISC, -0.40), (R_DISC, -0.56), (R_DISC - 0.1, -0.645), (0, -0.645)], 16,
-          [P.WHITE, P.LSIL, P.WHITE, P.WHITE])
+          [face, lip, face, face])
     fr = Fr((o[0], o[1], cz), (-math.sin(a), math.cos(a), 0), (math.cos(a), math.sin(a), 0), (0, 0, -1))
     s = 1.27 + 0.01 * rank
     pts = [(x * s, y * s) for x, y in GEM]
     base, light, dark = P.RARITY[rank]
+    base = P.C0G if rank == 0 else base           # Common: a silver-white gem on the warm grey tile
     table = [(x * 0.42, y * 0.42 + 0.06) for x, y in pts]
     n = len(pts)
     verts = [fr.pt(x, y, 0.6) for x, y in pts] + [fr.pt(x, y, 1.45) for x, y in table]
@@ -265,7 +268,7 @@ def rotor(b):
         # raised divider: white crest, shaded silver flanks, on a navy contact strip
         prism(b, ra, 2.2, 6.15, [(-0.17, -0.38), (0.17, -0.38), (0.08, -0.92), (-0.08, -0.92)], P.WHITE,
               [P.LSIL, P.LSIL, P.WHITE, P.LSIL])
-        cbox(b, (2.2, -0.25, -0.49), (6.05, 0.25, -0.40), P.INK, bev=0.03, fr=ra)
+        prism(b, ra, 2.2, 6.05, [(-0.25, -0.40), (0.25, -0.40), (0.25, -0.49), (-0.25, -0.49)], P.INK, [P.INK] * 4)  # 0.09 thick: no chamfer
     # pegs (yellow, white tips) at the tile boundaries, on the rim face
     for i in range(N_SEG):
         a = (i + 0.5) * STEP
@@ -273,12 +276,25 @@ def rotor(b):
         lathe(b, f, [(0, -0.55), (0.4, -0.55), (0.4, -1.3), (0.28, -1.55), (0, -1.6)], 10,
               [P.YELLOW, P.YELLOW, P.WHITE, P.WHITE])
     # hub: chrome shoulder, polished gold dome, red enamel centre
-    lathe(b, fr, [(1.5, -0.40), (2.25, -0.40), (2.25, -0.62), (2.05, -0.84), (1.5, -0.84)], 32, P.CHROME)
+    lathe(b, fr, [(1.5, -0.40), (1.86, -0.40), (1.86, -0.56), (1.8, -0.67), (1.66, -0.73), (1.5, -0.73)], 40,
+          P.CHROME)                                                                                       # slim bevelled ring
     lathe(b, fr, [(0, -0.78), (1.52, -0.78), (1.52, -0.92), (1.3, -1.12), (0.85, -1.28), (0.55, -1.325), (0, -1.34)], 32,
           [P.GOLD, P.GOLD, P.GOLD, P.GOLD, P.GOLD, P.RED, P.RED])
 
 
 # ------------------------------------------------------------------ stand
+def star(b, c, r, z0, z1, col):
+    """A flat five-point star facing -z (front) at centre c = (x, y), from z0 back to z1 front; fans keep it convex-safe."""
+    pts = [(c[0] + (r if k % 2 == 0 else 0.45 * r) * math.cos(math.pi / 2 + k * math.pi / 5),
+            c[1] + (r if k % 2 == 0 else 0.45 * r) * math.sin(math.pi / 2 + k * math.pi / 5)) for k in range(10)]
+    verts = [(c[0], c[1], z0), (c[0], c[1], z1)] + [(x, y, z0) for x, y in pts] + [(x, y, z1) for x, y in pts]
+    faces = []
+    for k in range(10):
+        j = (k + 1) % 10
+        faces += [(0, 2 + j, 2 + k), (1, 12 + k, 12 + j), (2 + k, 2 + j, 12 + j, 12 + k)]
+    b._emit(verts, faces, col)
+
+
 def stand(b):
     cbox(b, (-8, 0, -3), (8, 1.2, 3), P.BLUE, bev=0.16)
     for x in range(-7, 8, 2):
@@ -304,6 +320,9 @@ def stand(b):
     for x in (-0.95, 0.95):
         stud(b, (x, 20.4, -4.0), (0, 1, 0), P.BLUE)
     cbox(b, (-1.5, 19.05, -5.7), (1.5, 19.95, -5.55), P.YELLOW, bev=0.04)                                      # front tile
+    for x, r in ((-0.95, 0.27), (0.0, 0.37), (0.95, 0.27)):                                                  # three prize stars
+        star(b, (x, 19.5), r + 0.08, -5.69, -5.75, P.INK)
+        star(b, (x, 19.5), r, -5.72, -5.8, P.WHITE)
     for s in (-1, 1):
         cbox(b, (min(s * 1.35, s * 1.8), 17.2, -5.45), (max(s * 1.35, s * 1.8), 18.75, -4.33), P.BLUE, bev=0.15)
     lathe(b, Fr(HINGE, (0, 1, 0), (0, 0, 1), (1, 0, 0)),

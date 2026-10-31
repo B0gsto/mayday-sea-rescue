@@ -1497,9 +1497,9 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://127897426291027",
-        "RoughnessMap": "rbxassetid://84404228511082",
-        "MetalnessMap": "rbxassetid://132223528155264"
+        "ColorMap": "rbxassetid://78798076375644",
+        "RoughnessMap": "rbxassetid://115334106151964",
+        "MetalnessMap": "rbxassetid://132954919033257"
        }
       }
      ]

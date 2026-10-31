@@ -234,9 +234,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://73426253708503",
 	},
 	M_Prop_PrizeWheel = {
-		LOD0 = "rbxassetid://97184488264751",
-		LOD1 = "rbxassetid://116553799953798",
-		LOD2 = "rbxassetid://101911048150193",
+		LOD0 = "rbxassetid://129217762017798",
+		LOD1 = "rbxassetid://135939226711921",
+		LOD2 = "rbxassetid://105607060270391",
 	},
 	M_Prop_SeaChest = { LOD0 = "rbxassetid://84375480737186" },
 	M_Prop_TrophyCup = {

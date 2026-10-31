@@ -16,7 +16,7 @@ CELLS = [
     ((40, 96, 208), 0.35, 0.0),     # 8  blue
     ((172, 24, 30), 0.4, 0.0),      # 9  dark red
     # rarity segments: base, light facet, dark facet (SpinRules order: Common .. Mythic)
-    ((150, 152, 160), 0.4, 0.0), ((222, 224, 230), 0.3, 0.0), ((92, 95, 106), 0.45, 0.0),       # 10-12 Common
+    ((118, 110, 104), 0.45, 0.0), ((240, 242, 247), 0.25, 0.0), ((140, 146, 158), 0.35, 0.0),      # 10-12 Common (warm grey tile, silver facets)
     ((70, 185, 85), 0.4, 0.0), ((175, 240, 160), 0.3, 0.0), ((30, 120, 55), 0.45, 0.0),         # 13-15 Uncommon
     ((40, 110, 220), 0.4, 0.0), ((150, 205, 255), 0.3, 0.0), ((20, 60, 150), 0.45, 0.0),        # 16-18 Rare
     ((150, 80, 210), 0.4, 0.0), ((215, 165, 250), 0.3, 0.0), ((92, 40, 150), 0.45, 0.0),        # 19-21 Epic
@@ -27,10 +27,21 @@ CELLS = [
     ((80, 220, 255), 0.25, 0.1),    # 30 cyan (rainbow gem)
     ((150, 230, 60), 0.3, 0.0),     # 31 lime (rainbow gem)
     ((42, 44, 48), 0.55, 0.0),      # 32 black
+    ((208, 213, 222), 0.25, 0.3),   # 33 silver-white (Common gem)
 ]
+
+
+def _mix(rgb, t):
+    return tuple(round(v + (255 - v) * t) for v in rgb)
+
+
+# gem discs: a light shade of their own tile (34-39) and a mid-shade lip (40-45), so colour fills the wedge from afar
+CELLS += [(_mix(CELLS[c][0], 0.5), 0.4, 0.0) for c in (10, 13, 16, 19, 22, 25)]
+CELLS += [(_mix(CELLS[c][0], 0.22), 0.4, 0.0) for c in (10, 13, 16, 19, 22, 25)]
 (WHITE, LSIL, DBG, INK, RED, ORANGE, YELLOW, STONE, BLUE, RRED,
  C0, C0L, C0D, C1, C1L, C1D, C2, C2L, C2D, C3, C3L, C3D, C4, C4L, C4D, C5, C5L, C5D,
- CHROME, GOLD, CYAN, LIME, BLACK) = range(len(CELLS))
+ CHROME, GOLD, CYAN, LIME, BLACK, C0G) = range(34)
+DISC = [(34 + k, 40 + k) for k in range(6)]   # (face, lip) per rarity
 RARITY = [(C0, C0L, C0D), (C1, C1L, C1D), (C2, C2L, C2D), (C3, C3L, C3D), (C4, C4L, C4D), (C5, C5L, C5D)]
 RARITY_NAMES = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"]
 

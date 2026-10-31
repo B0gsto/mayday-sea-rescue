@@ -528,6 +528,15 @@
   "source": "assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_RGH.png",
   "type": "Image"
  },
+ "Image:069cbfd5700ae0277c34adedee94f3046ddb3d3a65a113dba6f80967e7c24042": {
+  "assetId": "132954919033257",
+  "imageId": "132954919033257",
+  "moderation": "Reviewing",
+  "name": "T_PrizeWheel_Brick_MET",
+  "sha": "069cbfd5700ae0277c34adedee94f3046ddb3d3a65a113dba6f80967e7c24042",
+  "source": "assets/textures/M_Prop_PrizeWheel/T_PrizeWheel_Brick_MET.png",
+  "type": "Image"
+ },
  "Image:06adf290ffed91446b5c740d19218c2156f362ed829e7fd12a5d7aaaf55bab94": {
   "assetId": "79170372308203",
   "imageId": "79170372308203",
@@ -16152,6 +16161,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_RGH.png",
   "type": "Image"
  },
+ "Image:c58009e1cff2dcbb1067cd65e8b06be106cd882472916866f348057e677901d7": {
+  "assetId": "115334106151964",
+  "imageId": "115334106151964",
+  "moderation": "Reviewing",
+  "name": "T_PrizeWheel_Brick_RGH",
+  "sha": "c58009e1cff2dcbb1067cd65e8b06be106cd882472916866f348057e677901d7",
+  "source": "assets/textures/M_Prop_PrizeWheel/T_PrizeWheel_Brick_RGH.png",
+  "type": "Image"
+ },
  "Image:c5a9f956f729eca1bf0385de65132e8ba716479e5e9b0e7841009dcf91be466c": {
   "assetId": "78150281042462",
   "imageId": "78150281042462",
@@ -18932,6 +18950,15 @@
   "name": "T_Bridle_Hardware_MET",
   "sha": "e4c1b8cb92d0141d1278ee08becdc80ae4606e4021f36df8d932cb93b126e067",
   "source": "assets/textures/M_Kit_Bridle/T_Bridle_Hardware_MET.png",
+  "type": "Image"
+ },
+ "Image:e4dceae524e80525b58ddf144ce6e8d2d41821cac51e6bb4c2550d650155f30c": {
+  "assetId": "78798076375644",
+  "imageId": "78798076375644",
+  "moderation": "Reviewing",
+  "name": "T_PrizeWheel_Brick_ALB",
+  "sha": "e4dceae524e80525b58ddf144ce6e8d2d41821cac51e6bb4c2550d650155f30c",
+  "source": "assets/textures/M_Prop_PrizeWheel/T_PrizeWheel_Brick_ALB.png",
   "type": "Image"
  },
  "Image:e519676d1069c677aa3f91cf2c0e050f2f38edd97af2b75fca1144ea5b110fe4": {
@@ -24612,6 +24639,16 @@
   "source": "assets/fbx/M_Kit_HandFlare/M_Kit_HandFlare_LOD0.fbx",
   "type": "Model"
  },
+ "Model:617c3aed93063681289274901bdcdc555503c36fa9180a279d988258ff69138e": {
+  "assetId": "135939226711921",
+  "moderation": "Approved",
+  "name": "M_Prop_PrizeWheel_LOD1",
+  "rbxm": "assets/models/M_Prop_PrizeWheel_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "617c3aed93063681289274901bdcdc555503c36fa9180a279d988258ff69138e",
+  "source": "assets/fbx/M_Prop_PrizeWheel/M_Prop_PrizeWheel_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:61878dccee4fc273b18caeeb35aac05e1054a7e9c8413610f744b4f19825b463": {
   "assetId": "112286102839687",
   "moderation": "Approved",
@@ -25950,6 +25987,16 @@
   "route": "delivery",
   "sha": "8525406f5dbdab81b7444f4012057550109dd1d2a67e64dd22bada9735098654",
   "source": "assets/fbx/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:8575674ea781f299226cbcb23e13565d0c4ef784905923741637b04c61e26df6": {
+  "assetId": "129217762017798",
+  "moderation": "Approved",
+  "name": "M_Prop_PrizeWheel",
+  "rbxm": "assets/models/M_Prop_PrizeWheel.rbxm",
+  "route": "delivery",
+  "sha": "8575674ea781f299226cbcb23e13565d0c4ef784905923741637b04c61e26df6",
+  "source": "assets/fbx/M_Prop_PrizeWheel/M_Prop_PrizeWheel_LOD0.fbx",
   "type": "Model"
  },
  "Model:85ed3af3b923ee10ab26da33f7e1929fa80e19bfcc8667abf6f455da9150cff2": {
@@ -30360,6 +30407,16 @@
   "route": "delivery",
   "sha": "fd60c953886786b5f3be14f658b9a616e25cfb4cde39e8b794f27173c329f09c",
   "source": "assets/fbx/M_Bld_Cottage_01/M_Bld_Cottage_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:fdec08926371cfd1386f03da2f87425840be07f4f7642cf2b59d03fe6c5a75b6": {
+  "assetId": "105607060270391",
+  "moderation": "Approved",
+  "name": "M_Prop_PrizeWheel_LOD2",
+  "rbxm": "assets/models/M_Prop_PrizeWheel_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "fdec08926371cfd1386f03da2f87425840be07f4f7642cf2b59d03fe6c5a75b6",
+  "source": "assets/fbx/M_Prop_PrizeWheel/M_Prop_PrizeWheel_LOD2.fbx",
   "type": "Model"
  },
  "Model:fe02247a2698a4a5f714bf6c19130f141014f334de5320076af5697f12f42956": {

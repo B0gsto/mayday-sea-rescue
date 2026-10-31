@@ -170,7 +170,7 @@ class B:
                 uv.data[li].uv = uvc
             poly.use_smooth = True
         try:
-            mesh.set_sharp_from_angle(angle=math.radians(50))
+            mesh.set_sharp_from_angle(angle=math.radians(40))   # 45-deg chamfers stay crisp: no smear on big faces
         except Exception:
             pass
         mesh.materials.append(material)
