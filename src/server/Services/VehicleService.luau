@@ -396,6 +396,13 @@ local function speedLimit(record: Record): number
 	return record.spec.topSpeed * m * SPEED_TOLERANCE + SPEED_SLACK
 end
 
+-- No Rescue Hut yet, or the build-station beat after the first delivery (OperationService sets CraftHeld, 120 s
+-- at most): the bay's Launch and Boat to me answer no and the owner can't board (live v23: the jet ski pulled
+-- new players away from the build tablet). Boarding checks only CraftHeld: the cold open seats before any Hut in tests.
+local function craftHeld(player: Player): boolean
+	return DockService.Level(player, "HQ") < 1 or player:GetAttribute("CraftHeld") == true
+end
+
 local function dock(record: Record)
 	record.mode = "Dock"
 	local root = record.root
@@ -435,7 +442,17 @@ end
 local function onDriverChanged(record: Record)
 	local humanoid = record.seat.Occupant
 	local player = if humanoid then Players:GetPlayerFromCharacter(humanoid.Parent) else nil
-	if humanoid and player ~= record.owner and not crewMayHelm(record, player) then
+	if
+		humanoid
+		and (
+			if player == record.owner
+				then player:GetAttribute("CraftHeld") == true -- the build-station beat (held)
+				else not crewMayHelm(record, player)
+		)
+	then
+		if player == record.owner then
+			record.seat.Disabled = true -- a craft that came out mid-hold: holdSeats lets it go with the rest
+		end
 		local weld = record.seat:FindFirstChild("SeatWeld")
 		if weld then
 			weld:Destroy()
@@ -1438,7 +1455,9 @@ local function addPrompts()
 			end
 			local id = bayCraft(player)
 			local ok, reason: any = false, "NoCraft"
-			if id then
+			if craftHeld(player) then
+				return -- BoatController hides this prompt meanwhile; live v23 trail A launched before the Hut
+			elseif id then
 				ok, reason = spawnVehicle(player, id, bay, nil, nil, "Bay")
 			end
 			if not ok then
@@ -1579,6 +1598,14 @@ end
 
 local returnHooks: { [Player]: RBXScriptConnection } = {}
 
+-- CraftHeld (the build-station beat): the owner's helms are disabled, so walking onto the seat can't board either.
+local function holdSeats(player: Player)
+	local classes: { [string]: Record } = owned[player] or {}
+	for _, record in classes do
+		record.seat.Disabled = player:GetAttribute("CraftHeld") == true
+	end
+end
+
 local function watchReturning(player: Player)
 	local function onCharacter(character: Model)
 		character:WaitForChild("HumanoidRootPart", 10)
@@ -1589,6 +1616,9 @@ local function watchReturning(player: Player)
 		returnHooks[player]:Disconnect()
 	end
 	returnHooks[player] = player.CharacterAdded:Connect(onCharacter)
+	player:GetAttributeChangedSignal("CraftHeld"):Connect(function()
+		holdSeats(player)
+	end)
 	if player.Character then
 		task.spawn(onCharacter, player.Character)
 	end
@@ -1625,8 +1655,8 @@ function VehicleService.Init()
 			then
 				return false, "Cooldown"
 			end
-			if DockService.Level(player, "HQ") < 1 then
-				return false, "NoHut" -- the free Rescue Hut comes first (the Menu's Boat tile rests grey)
+			if craftHeld(player) then
+				return false, "NoHut" -- the free Rescue Hut and then the Workshop come first (the Boat tile rests grey)
 			end
 			local current, bay = byPlayer[player], bayFor(player)
 			local id = if current and current.model.Parent
@@ -1644,6 +1674,9 @@ function VehicleService.Init()
 		end
 		if type(vehicleId) ~= "string" then
 			return false, "BadRequest"
+		end
+		if docked ~= true and craftHeld(player) then
+			return false, "NoHut"
 		end
 		return spawnVehicle(player, vehicleId, nil, nil, docked == true, "Menu")
 	end

@@ -246,10 +246,10 @@ local function boatWait(): (number, number)
 	return left, cooldown
 end
 
--- Seated in a craft (the server answers "Occupied"), or no Rescue Hut yet (the server answers "NoHut"): the Boat
+-- Seated in a craft (the server answers "Occupied"), or no Rescue Hut / the Workshop beat (the server answers "NoHut"): the Boat
 -- tile rests grey and wordless, no error.
 local function resting(): boolean
-	if player:GetAttribute("DockLevelHQ") == 0 then
+	if player:GetAttribute("DockLevelHQ") == 0 or player:GetAttribute("CraftHeld") == true then
 		return true
 	end
 	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")

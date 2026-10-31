@@ -688,6 +688,12 @@ end
 
 local launchHidden: { [ProximityPrompt]: boolean } = {}
 
+-- No Rescue Hut yet, or the build-station beat (server CraftHeld): no Launch, no Board, no pin; the jet ski waits.
+local function held(): boolean
+	return localPlayer:GetAttribute("DockLevelHQ") == 0
+		or localPlayer:GetAttribute("CraftHeld") == true
+end
+
 -- A berth's Launch hides while you have a craft out, and always on other players' berths (docs/23).
 local function hideLaunch(prompt: ProximityPrompt)
 	local bay = prompt.Parent
@@ -696,7 +702,7 @@ local function hideLaunch(prompt: ProximityPrompt)
 		and bay
 		and bay:GetAttribute("LaunchBay") ~= nil
 		and prompt.Enabled
-		and (next(craftPins) or bay:GetAttribute("Owner") ~= localPlayer.UserId)
+		and (next(craftPins) or held() or bay:GetAttribute("Owner") ~= localPlayer.UserId)
 	then
 		prompt.Enabled = false
 		launchHidden[prompt] = true
@@ -712,14 +718,14 @@ updateCraftPins = function()
 		if not model.Parent then
 			craftPins[model] = nil
 		else
-			pin.gui.Enabled = not (seat and seat:IsDescendantOf(model))
+			pin.gui.Enabled = not (seat and seat:IsDescendantOf(model)) and not held()
 			local count = tonumber(model:GetAttribute("SurvivorCount")) or 0
 			if pin.count ~= count then
 				paintPips(pin, count)
 			end
 		end
 	end
-	if not next(craftPins) then
+	if not next(craftPins) and not held() then
 		for prompt in launchHidden do
 			local bay = prompt.Parent
 			if bay and bay:GetAttribute("Owner") == localPlayer.UserId then
@@ -751,9 +757,10 @@ local function addBoardPrompt(model: Instance)
 		craftPins[model] = buildCraftPin(model, root)
 	end
 	local function refresh()
-		prompt.Enabled = seat.Occupant == nil
+		prompt.Enabled = seat.Occupant == nil and not held()
 	end
 	seat:GetPropertyChangedSignal("Occupant"):Connect(refresh)
+	localPlayer:GetAttributeChangedSignal("CraftHeld"):Connect(refresh)
 	refresh()
 	prompt.Triggered:Connect(function()
 		local character = localPlayer.Character
