@@ -818,7 +818,7 @@ local function land(site: Site)
 		local base = CFrame.new(site.center.X, site.ground, site.center.Z)
 		local fx = {
 			radius = math.max(site.hw, site.hd) + 1,
-			height = site.maxY - site.ground + 4,
+			height = site.maxY - site.ground + 8, -- confetti well clear of the ridge (F1 AD r2)
 			still = not mine,
 		}
 		local snap = if site.level >= 3
@@ -842,7 +842,23 @@ end
 -- watch beat: the camera eases over (WATCH_EASE), holds through the drop and the snap, eases back to where it was.
 -- Skippable; reduced motion cuts instead of easing. Never seated, on a call, under a panel or from afar, nor for
 -- the tutorial beats.
-local WATCH_EASE, WATCH_HOLD = 0.9, 3.4 -- s; the hold covers the drop + fx1_build_snap (OnboardingController SITE_HOLD)
+local WATCH_EASE, WATCH_HOLD = 0.9, 3.4 -- s; the shortest hold: a small drop + fx1_build_snap (OnboardingController SITE_HOLD)
+local BURST = 1.2 -- s the snap's rings and confetti play before the camera eases back
+
+-- How long the camera holds: the whole drop (a big building's span is ~4.2 s) and the snap's burst.
+local function holdFor(site: Site): number
+	local n = if site.drop then #site.drop.parts else 0
+	if not site.drop then
+		for _ in site.hidden do
+			n += 1
+		end
+	end
+	if site.sea then
+		return WATCH_HOLD
+	end
+	return math.max(WATCH_HOLD, BuildSeq.span(n) + BuildSeq.FALL + BuildSeq.SETTLE + BURST)
+end
+
 local function watch(site: Site): number?
 	if tutorialBeat(site) then
 		return nil
@@ -868,15 +884,15 @@ local function watch(site: Site): number?
 	local height = site.maxY - site.ground
 	local at = Vector3.new(site.center.X, site.ground + height * 0.4, site.center.Z)
 	local side = (cam.CFrame.Position - at) * Vector3.new(1, 0, 1)
-	local dist = math.max(site.hw, site.hd, height) * 1.6 + 16
+	local dist = math.max(site.hw, site.hd, height) * 2 + 18 -- the whole lot and the burst in shot (F1 AD r2)
 	local eye = at
 		+ (if side.Magnitude > 1 then side.Unit else Vector3.zAxis) * dist
-		+ Vector3.new(0, dist * 0.55, 0)
+		+ Vector3.new(0, dist * 0.42, 0)
 	local view = CFrame.lookAt(eye, at)
 	local back, fov = cam.CFrame, cam.FieldOfView
 	if CameraController.Comfort.reducedMotion() then
 		CameraController.PlayCinematic(
-			{ { from = view, duration = WATCH_HOLD, fov = fov, handheld = 0 } },
+			{ { from = view, duration = holdFor(site), fov = fov, handheld = 0 } },
 			{
 				skippable = true,
 			}
@@ -886,7 +902,7 @@ local function watch(site: Site): number?
 	local push = view * CFrame.new(0, 0, -dist * 0.08) -- a slow push-in while the bricks land
 	CameraController.PlayCinematic({
 		{ from = back, to = view, duration = WATCH_EASE, fov = fov, toFov = 50, handheld = 0 },
-		{ from = view, to = push, duration = WATCH_HOLD, fov = 50, handheld = 0.15 },
+		{ from = view, to = push, duration = holdFor(site), fov = 50, handheld = 0.15 },
 		{ from = push, to = back, duration = WATCH_EASE, fov = 50, toFov = fov, handheld = 0 },
 	}, { skippable = true })
 	return WATCH_EASE
@@ -957,7 +973,7 @@ local function replayMissed()
 			end
 			task.wait(lead)
 			land(site)
-			task.wait(WATCH_HOLD + WATCH_EASE + 0.3) -- the camera is home again before the next one
+			task.wait(holdFor(site) + WATCH_EASE + 0.3) -- the camera is home again before the next one
 		end
 	end
 	replaying = false

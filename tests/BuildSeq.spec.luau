@@ -102,4 +102,18 @@ return function(t)
 		t.expect(B.unlockTarget("Depot", 1, lv("Depot"), vehicles, unlocks)).toBe("Next")
 		t.expect(B.unlockTarget("Garden", 1, nil, vehicles, unlocks)).toBe("Next")
 	end)
+
+	t.test("span bounds the plan's last delay", function()
+		for _, n in { 1, 2, 9, 30, 200 } do
+			local ys = {}
+			for i = 1, n do
+				table.insert(ys, i)
+			end
+			for seed = 1, 5 do
+				local plan = B.plan(ys, seed)
+				t.expect(plan[#plan].delay <= B.span(n) + 1e-9).toBe(true)
+			end
+		end
+		t.expect(B.span(1)).toBe(0)
+	end)
 end

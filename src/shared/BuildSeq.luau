@@ -58,6 +58,15 @@ function BuildSeq.plan(ys: { number }, seed: number?): { Step }
 	return out
 end
 
+-- The latest step delay plan() can give `n` parts: the stagger span plus its jitter (the watch camera holds for it).
+function BuildSeq.span(n: number): number
+	if n <= 1 then
+		return 0
+	end
+	local stagger = math.clamp(BuildSeq.TARGET / (n - 1), BuildSeq.MIN_STAG, BuildSeq.MAX_STAG)
+	return (n - 1) * stagger + math.min(BuildSeq.JITTER, stagger)
+end
+
 -- One click per course as it lands (a course: a higher rise key than the last click's), from the plan's start, never
 -- closer than CLICK_GAP, its pitch rising with the course's height.
 function BuildSeq.clicks(plan: { Step }, ys: { number }): { Click }

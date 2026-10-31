@@ -767,7 +767,7 @@ local function buildSnap(tier: number): Preset
 		plates({ RED, WHITE, YELLOW, NAVY }, ({ 16, 16, 24 })[tier]),
 		with(table.clone(BUILD[2]), { transparency = { 0.5 }, count = 8 }), -- the dust never hides you
 		with(
-			confetti(({ 20, 36, 44 })[tier], { 18, 28 }, 38, { RED, WHITE, YELLOW, SEA, GREEN }),
+			confetti(({ 20, 36, 54 })[tier], { 18, 28 }, 38, { RED, WHITE, YELLOW, SEA, GREEN }),
 			{ lifetime = { 1.9, 2.6 } }
 		),
 		rays(({ 8, 10, 12 })[tier], { WHITE, YELLOW }, 5 + tier, 0, 0.3),
@@ -788,7 +788,12 @@ local function buildSnap(tier: number): Preset
 		table.insert(
 			layers,
 			with(
-				confetti(({ 0, 24, 30 })[tier], { 28, 40 }, 30, { GOLD, WHITE, RED }),
+				confetti(
+					({ 0, 24, 36 })[tier],
+					{ 28, 40 },
+					30,
+					if tier >= 3 then { GOLD } else { GOLD, WHITE, RED }
+				),
 				{ delay = 0.25, lifetime = { 2.1, 2.8 }, drag = 1 }
 			)
 		)
@@ -804,7 +809,7 @@ local function buildSnap(tier: number): Preset
 		impact = 0,
 		layers = layers,
 		beams = if tier >= 3
-			then { { color = GOLD, width = 4, height = 40, time = 1.3, emission = 0.3, at = "top" } }
+			then { { color = GOLD, width = 7, height = 60, time = 1.6, emission = 0.3, at = "top" } }
 			else nil,
 		light = {
 			color = if tier >= 2 then GOLD else WHITE,
