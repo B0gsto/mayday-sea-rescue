@@ -30,6 +30,10 @@
 -- minimap) and the wallet under the objective. The notice band sits beside
 -- the wallet, or under it in the band between the two zones. The prompt keeps its place. Phone-sized screens use this arrangement on
 -- every device (compute). The debrief toast takes the topmost free gap (debriefRect), shrinking to fit.
+-- Driving on touch (TouchDriveController): the stock thumbstick and jump button hide and the drive pad takes their
+-- zones: "steer" bottom left (LEFT, RIGHT, step off above LEFT), "drive" bottom right (GO in the corner, BRAKE left
+-- of it, a small column left of that: approach on boats, rise over dive on the heli and sub). Its sizes are
+-- mt.pad (du); a small button is >= 44 px at the 0.7 floor. Desktop: zero-size rects in the same corners.
 -- `tests/HudLayout.spec.luau` asserts this on 16:9 / 19.5:9 / small Android phones (landscape and
 -- portrait) and 4:3 tablets.
 local HudLayout = {}
@@ -56,6 +60,9 @@ HudLayout.CHIPS_HEIGHT = 48 -- touch: under the 64 du step card, inside OBJECTIV
 HudLayout.DEBRIEF_WIDTH = 340 -- the end-of-call toast (UI/OpsDebrief), drawn scaled to its region's width
 HudLayout.DEBRIEF_HEIGHT = 96
 HudLayout.DEBRIEF_MIN = 0.7 -- the smallest the toast may shrink to fit a gap
+HudLayout.PAD_MIN = 92 -- du: a steer button (64 px at the 0.7 phone floor)
+HudLayout.PAD_MAX = 130
+HudLayout.PAD_GAP = 10 -- du between the pad's buttons
 HudLayout.MENU_COUNT = 9 -- UI/Menu's buttons: Shop, Quests, Album, Pet, Crew, Skills, Settings, Map, Boat
 
 -- The menu grid's cell per device (du): icon square, label row (text = label - 4), row gap, column gap.
@@ -81,6 +88,8 @@ export type RegionName =
 	| "quest"
 	| "chips"
 	| "debrief"
+	| "steer"
+	| "drive"
 
 export type Rect = {
 	anchor: Vector2,
@@ -101,6 +110,8 @@ export type Menu = {
 	height: number,
 }
 
+export type Pad = { steer: number, go: number, brake: number, small: number } -- touch drive pad buttons, du
+
 export type Metrics = {
 	scale: number,
 	usable: Vector2, -- design units
@@ -110,6 +121,7 @@ export type Metrics = {
 	centreWidth: number, -- prompt
 	noticeWidth: number,
 	menu: Menu,
+	pad: Pad,
 	rects: { [string]: Rect },
 }
 
@@ -211,6 +223,18 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	local outer = math.max(side, math.clamp(math.floor(u.X * 0.24), 280, 360)) -- touch prompt clearance
 	local bottom = u.Y - m
 	local objectiveHeight = HudLayout.OBJECTIVE_HEIGHT
+	-- the drive pad's steer button: a fifth of the height, narrow enough that "drive" clears the prompt on tablets
+	local steerSize = math.clamp(
+		math.floor(math.min(u.Y * 0.2, u.X * 0.095)),
+		HudLayout.PAD_MIN,
+		HudLayout.PAD_MAX
+	)
+	local function r(f: number): number
+		return math.floor(steerSize * f + 0.5)
+	end
+	local pg = HudLayout.PAD_GAP
+	local small = math.max(r(0.66), 64)
+	local driveW = small + r(0.74) + r(1.12) + 2 * pg -- "drive": small column, brake, go
 	local mt: Metrics = {
 		scale = s,
 		usable = u,
@@ -220,6 +244,7 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		centreWidth = math.min(u.X - 2 * (outer + 2 * m), 640),
 		noticeWidth = 0,
 		menu = menu,
+		pad = { steer = steerSize, go = r(1.12), brake = r(0.74), small = small },
 		rects = {},
 	}
 	-- status is empty now (the friend chip lives in the wallet): a zero-height line, so it never
@@ -288,9 +313,10 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		if nw < HudLayout.NOTICE_MIN_WIDTH then
 			ny = math.max(walletY + walletH, m + side) + g
 			nx = if portrait then objectiveX else math.max(left, math.ceil(u.X * 0.4) + 1)
+			-- landscape: clear of the drive pad too (it reaches a little past the jump zone on small phones)
 			local x1 = if portrait
 				then cardLeft - g
-				else math.min(cardLeft - g, math.floor(u.X * 0.7))
+				else math.min(cardLeft - g, math.floor(u.X * 0.7), u.X - m - driveW - g)
 			nw = math.min(x1 - nx, 420)
 		end
 		if portrait or nx < u.X * 0.4 then
@@ -365,6 +391,18 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 			mt.centreWidth,
 			math.min(HudLayout.PROMPT_HEIGHT, b - (m + HudLayout.OBJECTIVE_HEIGHT + g))
 		)
+	)
+	local pad = mt.pad
+	-- the drive pad (touch): steer bottom left, throttle bottom right, in the stock controls' zones
+	mt.rects["steer"] = rect(
+		Vector2.new(0, 1),
+		Vector2.new(m, bottom),
+		if touch then Vector2.new(2 * pad.steer + pg, pad.steer + pg + pad.small) else Vector2.zero
+	)
+	mt.rects["drive"] = rect(
+		Vector2.new(1, 1),
+		Vector2.new(u.X - m, bottom),
+		if touch then Vector2.new(driveW, math.max(pad.go, 2 * pad.small + pg)) else Vector2.zero
 	)
 	local gs = if touch then gaugeSide else side
 	mt.rects["gauges"] = rect(Vector2.new(1, 1), Vector2.new(u.X - m, bottom), Vector2.new(gs, gs))

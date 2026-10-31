@@ -73,6 +73,54 @@ STICKERS = {
 }
 
 
+# the touch drive pad (TouchDriveController): a round Lego button each, a white icon with the hard outline on top
+DISC = "M100,14 A86,86 0 1,1 99.9,14 Z"
+DISC_GLOSS = "M44,78 A60,60 0 0,1 78,40"
+
+
+def icon(d, extra=""):
+    """a white pad icon over the disc: the dark outline first, then the fill (reads on any sea or sky)"""
+    return (f'<path d="{d}" fill="{INK}" stroke="{INK}" stroke-width="20" stroke-linejoin="round"/>'
+            f'<path d="{d}" fill="#fff" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>' + extra)
+
+
+def pad(top, bottom, lip, d, extra=""):
+    return sticker(DISC, top, bottom, lip, lip_dy=14, gloss=DISC_GLOSS, extra=icon(d, extra))
+
+
+ARROW_LEFT = "M38,100 L94,48 L94,78 L158,78 L158,122 L94,122 L94,152 Z"
+ARROW_RIGHT = "M162,100 L106,48 L106,78 L42,78 L42,122 L106,122 L106,152 Z"
+GROOVES = lambda ys, x0, x1: "".join(f'<path d="M{x0},{y} L{x1},{y}" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>' for y in ys)
+PEDAL_GO = "M82,36 L118,36 Q134,36 134,52 L134,148 Q134,164 118,164 L82,164 Q66,164 66,148 L66,52 Q66,36 82,36 Z"
+PEDAL_BRAKE = "M62,64 L138,64 Q154,64 154,80 L154,120 Q154,136 138,136 L62,136 Q46,136 46,120 L46,80 Q46,64 62,64 Z"
+# a turtle seen side-on, facing right: shell dome, head, two feet, a tail
+TURTLE = ("M40,124 Q44,62 98,58 Q148,62 152,116 L162,116 Q168,96 160,88 Q170,82 180,92 Q186,110 168,124 Z "
+          "M56,124 L80,124 L80,144 Q80,150 74,150 L62,150 Q56,150 56,144 Z M118,124 L142,124 L142,144 Q142,150 136,150 "
+          "L124,150 Q118,150 118,144 Z")
+SHELL = (f'<path d="M58,116 Q66,80 98,74 Q130,80 138,112" fill="none" stroke="{INK}" stroke-width="7" stroke-linecap="round"/>'
+         f'<path d="M98,74 L98,116 M74,90 L80,116 M122,90 L116,116" stroke="{INK}" stroke-width="7" stroke-linecap="round"/>'
+         f'<circle cx="168" cy="100" r="5" fill="{INK}"/>')
+# a door with a fat arrow stepping out of it
+DOOR = "M50,40 L112,40 L112,160 L50,160 Z"
+DOOR_ARROW = "M96,82 L130,82 L130,58 L170,100 L130,142 L130,118 L96,118 Z"
+LIFT_UP = "M100,34 L150,86 L122,86 L122,128 L78,128 L78,86 L50,86 Z M54,144 L146,144 L146,166 L54,166 Z"
+LIFT_DOWN = "M100,128 L150,76 L122,76 L122,34 L78,34 L78,76 L50,76 Z M54,144 L146,144 L146,166 L54,166 Z"
+STICKERS.update({
+    "pad_left": (pad("#86CEFF", "#2A86E8", "#1A55A8", ARROW_LEFT), "touch drive pad: steer left (held = full lock)"),
+    "pad_right": (pad("#86CEFF", "#2A86E8", "#1A55A8", ARROW_RIGHT), "touch drive pad: steer right"),
+    "pad_go": (pad("#7BE27A", "#2FA84A", "#1A6E2E", PEDAL_GO, GROOVES((66, 92, 118, 144), 84, 116)),
+               "touch drive pad: throttle, a tall green pedal"),
+    "pad_brake": (pad("#FF8A7D", "#E0303A", "#A3161E", PEDAL_BRAKE, GROOVES((86, 114), 66, 134)),
+                  "touch drive pad: brake / reverse, a wide red pedal"),
+    "pad_slow": (pad("#FFE873", "#FFB000", "#C27400", TURTLE, SHELL), "touch drive pad: approach (slow helm), a turtle"),
+    "pad_exit": (sticker(DISC, "#C3B1FF", "#7A5CE0", "#4E36A8", lip_dy=14, gloss=DISC_GLOSS,
+                         extra=icon(DOOR) + icon(DOOR_ARROW)),
+                 "touch drive pad: step off, a door and an arrow out"),
+    "pad_up": (pad("#7FF0E2", "#1FB3A6", "#13776E", LIFT_UP), "touch drive pad: climb / rise (heli, sub)"),
+    "pad_down": (pad("#7FF0E2", "#1FB3A6", "#13776E", LIFT_DOWN), "touch drive pad: descend / dive (heli, sub)"),
+})
+
+
 def beacon():
     """The onboarding beacon's mark: a gem over a short stem that ends in a point (one sprite, 80x120 billboard)."""
     stem = "M88,190 L112,190 L104,330 Q100,342 96,330 Z"

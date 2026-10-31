@@ -114,6 +114,9 @@ local function device(): string
 	return "Keyboard"
 end
 
+-- "Touch" | "Gamepad" | "Keyboard": the device the HUD is laid out for (TouchDriveController shows its pad on Touch)
+Layout.device = device
+
 local function metricsNow(gui: ScreenGui?): Metrics
 	local px = if gui then gui.AbsoluteSize else Vector2.zero
 	-- Studio only: Workspace attribute HudViewport (Vector2 px) lays the HUD out for that screen in the
@@ -279,6 +282,8 @@ local EDGE_REGIONS = {
 	gauges = true,
 	quest = true,
 	chips = true, -- the Next / tutorial chips (SE device pass 2026-10-28: "40 m" slid under them)
+	steer = true, -- the touch drive pad (TouchDriveController)
+	drive = true,
 }
 local hudBoxes: { Box } = {}
 
