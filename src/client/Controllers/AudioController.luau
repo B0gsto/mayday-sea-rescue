@@ -676,6 +676,7 @@ local function hookTicks()
 					type(data) == "table"
 					and type(data.award) == "table"
 					and data.award.reason ~= "Workers:Gather" -- per-minute crew pay stays quiet (owner 2026-10-29)
+					and data.award.reason ~= "spin" -- the wheel's capsule pop rings it in
 				then
 					AudioController.play("UI_Pickup", nil, 1, rng:NextNumber(0.98, 1.06))
 				end

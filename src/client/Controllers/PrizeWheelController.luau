@@ -273,6 +273,9 @@ local function reveal(payload: any, rotor: Model)
 			conn = nil
 			capsule:Destroy()
 			burst(finish, payload.rarity, tonumber(payload.userId) or 0)
+			if tonumber(payload.userId) == player.UserId then
+				player:SetAttribute("SpinRevealed", os.clock()) -- HudController lands the held Cash now
+			end
 			local jackpot = SpinRules.rank(payload.rarity) >= SpinRules.rank("Legendary") -- FX1 has its own pillar
 			if SpinRules.rank(payload.rarity) >= SpinRules.rank("Rare") and not jackpot then
 				local beam = part(
