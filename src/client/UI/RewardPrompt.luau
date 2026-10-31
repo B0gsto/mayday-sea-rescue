@@ -178,18 +178,33 @@ function RewardPrompt.show(playerGui: Instance, reward: Reward, onCollect: (Vect
 		+ 38
 		+ (if hasDay then PIP_TODAY + 4 + 14 else 0)
 		+ (if crew > 0 then 72 + 14 else 0)
+	-- the fit scale sits on a holder: the card's own UIScale is Style.pop's (one UIScale per object)
+	local holder = Instance.new("Frame")
+	holder.Name = "CardFit"
+	holder.BackgroundTransparency = 1
+	holder.AnchorPoint = Vector2.new(0.5, 0.5)
+	holder.Position = UDim2.new(0.5, 0, 0.5, -6)
+	holder.Size = UDim2.fromOffset(WIDTH, bodyH + 34)
+	holder.Parent = canvas
 	local root = Instance.new("Frame")
 	root.Name = "Card"
 	root.BackgroundTransparency = 1
-	root.AnchorPoint = Vector2.new(0.5, 0.5)
-	root.Position = UDim2.new(0.5, 0, 0.5, -6)
-	root.Size = UDim2.fromOffset(WIDTH, bodyH + 34)
-	root.Parent = canvas
+	root.Size = UDim2.fromScale(1, 1)
+	root.Parent = holder
 	-- short screens: the card shrinks to fit (it is never cut)
 	local vp, scale = Style.metrics(canvas)
 	local fit = Instance.new("UIScale")
 	fit.Scale = math.min(1, vp.Y / scale * 0.94 / (bodyH + 34), vp.X / scale * 0.94 / WIDTH)
-	fit.Parent = root
+	if Layout.current().touch then
+		-- phones: small and off the centre (the opening shot and the tablet's Build cue stay clear), no dim.
+		-- 0.5 px per du: the pip digits (28 du) stay 14 pt, Collect (88 du) 44 pt
+		fit.Scale = math.min(fit.Scale, 0.5 / scale)
+		dim.BackgroundTransparency = 1
+		local landscape = vp.X > vp.Y
+		holder.AnchorPoint = if landscape then Vector2.new(1, 0.5) else Vector2.new(0.5, 1)
+		holder.Position = if landscape then UDim2.new(1, -24, 0.5, 0) else UDim2.new(0.5, 0, 1, -24)
+	end
+	fit.Parent = holder
 
 	local bodyBox = Instance.new("Frame")
 	bodyBox.Name = "Body"

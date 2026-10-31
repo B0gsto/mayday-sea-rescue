@@ -123,6 +123,12 @@ function ColdOpen.atDropOff(pos: Vector3, bay: any): boolean
 	return p ~= nil and Vector3.new(pos.X - p.X, 0, pos.Z - p.Z).Magnitude <= ColdOpen.DROP_RADIUS
 end
 
+-- A craft's delivery counts with both the craft and its rider (the driver's root, nil: none) in the zone: the
+-- craft's pivot alone counted a first delivery from outside it (live trail 2026-10-31).
+function ColdOpen.deliveryHome(craft: Vector3, rider: Vector3?, bay: any): boolean
+	return rider ~= nil and ColdOpen.atDropOff(craft, bay) and ColdOpen.atDropOff(rider, bay)
+end
+
 -- The nearest shore point to `pos` (flat) and its distance.
 function ColdOpen.nearestShore(pos: Vector3): (any, number)
 	local best, bestD = ColdOpen.SHORE[1], math.huge
