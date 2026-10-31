@@ -6,6 +6,9 @@
 -- moment you talk; a reply with an `action` goes to the server (Quest_Talk). At someone else's island (rig attribute
 -- QuestIsland ~= your DockPlot) or sailing off they only say their idle line. B, Esc, the close button or walking away ends it and the camera eases back. Not during an operation,
 -- a cinematic or in a seat. The camera moves are Camera/Cinematic shots (CameraController owns the camera).
+-- Alive without clips (Talk/TalkPose, Transform turns on top of the stock Idle): a giver glances round, turns
+-- their head to you when you come near, eases round to face you while you talk, nods and bobs through a line and
+-- makes one gesture per line (nod, shrug, point, arms wide).
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
@@ -21,6 +24,7 @@ local QuestRules =
 local UI = script.Parent.Parent:WaitForChild("UI")
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
+local TalkPose = require(script.Parent:WaitForChild("Talk"):WaitForChild("TalkPose"))
 local VoiceTTS = require(script.Parent.VoiceTTS)
 
 local TalkController = {}
@@ -31,6 +35,10 @@ local EASE_IN, EASE_OUT = 0.8, 0.6 -- s
 local TALK_FOV = 45
 local TYPE_RATE = 60 -- characters per second the line types in at
 local KEYS = { Enum.KeyCode.One, Enum.KeyCode.Two, Enum.KeyCode.Three }
+local LOOK_RANGE = 28 -- studs: a giver turns their head to you this close
+local ALIVE_RANGE = 150 -- studs from the camera: past this nobody sees the head, so no turns
+local TURN_RATE = 6 -- 1/s: how fast the body eases round to face you (and back)
+local GESTURE_DELAY = 0.15 -- s after a line starts: the gesture lands with the voice
 
 local cameraController: any = nil
 local opsController: any = nil
@@ -42,6 +50,19 @@ type Talk = {
 	back: CFrame,
 }
 local talking: Talk? = nil
+-- every quest giver's procedural pose state
+type Rig = {
+	seed: number,
+	yaw: number,
+	pitch: number,
+	face: CFrame?, -- rotation the body eases to: toward you while talking, back home after
+	gi: number, -- the gesture of the line shown (TalkPose.GESTURES, cycling)
+	gAt: number, -- os.clock() it starts
+	joints: { [string]: Instance },
+	scanAt: number,
+	held: { [Instance]: { CFrame } }, -- joint -> { the Animator's Transform, the one written here }
+}
+local rigs: { [Model]: Rig } = {}
 -- every TalkPrompt; strong keys (a weak table loses Instance keys to GC while they live), pruned when destroyed
 local prompts: { [ProximityPrompt]: true } = {}
 local gui: ScreenGui
@@ -112,6 +133,11 @@ show = function(id: string?)
 	lineLabel.Text = node.line
 	lineLabel.MaxVisibleGraphemes = 0
 	VoiceTTS.speak(node.line, t.tree.cast or "PATROL", { at = t.model, channel = "talk" })
+	local rig = rigs[t.model]
+	if rig then
+		rig.gi += 1
+		rig.gAt = os.clock() + GESTURE_DELAY
+	end
 	typing = 0
 	for _, c in list:GetChildren() do
 		if c:IsA("GuiButton") then
@@ -157,12 +183,10 @@ local function begin(model: Model, tree: Dialogue.Tree)
 	if busy() or not (npcRoot and me) then
 		return
 	end
-	local home = model:GetPivot()
-	-- the NPC turns to face the player (local only; the server's next move overrides it)
-	local npcPos = home.Position
-	local toMe = (me.Position - npcPos) * Vector3.new(1, 0, 1)
-	if toMe.Magnitude > 0.1 then
-		model:PivotTo(CFrame.lookAt(npcPos, npcPos + toMe))
+	local home = model:GetPivot() -- animate() eases them round to face you (local only)
+	local rig = rigs[model]
+	if rig then
+		rig.gi = 0 -- the greeting is a nod
 	end
 	-- over the player's right shoulder, framing the NPC's face
 	local ahead = (npcRoot.Position - me.Position) * Vector3.new(1, 0, 1)
@@ -220,8 +244,9 @@ finish = function()
 	gui.Enabled = false
 	modal.close()
 	ContextActionService:UnbindAction("Talk_Reply")
-	if t.model.Parent then
-		t.model:PivotTo(t.home)
+	local rig = rigs[t.model]
+	if rig then
+		rig.face = t.home.Rotation -- eases back round (animate)
 	end
 	local me = rootOf(player.Character)
 	local cam = Workspace.CurrentCamera
@@ -233,10 +258,106 @@ finish = function()
 				to = me.CFrame * t.back,
 				duration = EASE_OUT,
 				fov = cam.FieldOfView,
-				toFov = 70,
+				toFov = cameraController.Comfort.get("fov"), -- the FOV the camera settles to after
 				handheld = 0,
 			},
 		}, { skippable = false })
+	end
+end
+
+-- the rig's R15 joints by name (Motor6D or AnimationConstraint), rescanned now and then for stream-in
+local function jointsOf(m: Model, r: Rig): { [string]: Instance }
+	local now = os.clock()
+	if now >= r.scanAt then
+		r.scanAt = now + 2
+		table.clear(r.joints)
+		for _, d in m:GetDescendants() do
+			if d:IsA("Motor6D") or d:IsA("AnimationConstraint") then
+				r.joints[d.Name] = d
+			end
+		end
+	end
+	return r.joints
+end
+
+-- Each joint's Transform turned on top of the Animator's (as WorkerController.applyTurns): a joint the playing track
+-- skips keeps last frame's write, so that one turns from the Animator's last instead (no stacking).
+local function apply(m: Model, r: Rig, want: TalkPose.Turns)
+	local joints = jointsOf(m, r)
+	for name, v in want do
+		local j = joints[name]
+		if j then
+			local tf: CFrame = (j :: any).Transform
+			local h = r.held[j]
+			if h and tf == h[2] then
+				tf = h[1]
+			end
+			local out = tf * CFrame.Angles(math.rad(v.X), math.rad(v.Y), math.rad(v.Z));
+			(j :: any).Transform = out
+			r.held[j] = { tf, out }
+		end
+	end
+	for j, h in r.held do -- joints let go: back to the Animator's own
+		if not (want[j.Name] and joints[j.Name] == j) then
+			(j :: any).Transform = h[1]
+			r.held[j] = nil
+		end
+	end
+end
+
+local NO_TURNS: TalkPose.Turns = {}
+
+local function animate(dt: number)
+	local cam = Workspace.CurrentCamera
+	local head = player.Character and player.Character:FindFirstChild("Head")
+	local target = if head and head:IsA("BasePart") then head.Position else nil
+	local now = os.clock()
+	local k = 1 - math.exp(-6 * dt)
+	for m, r in rigs do
+		if not m.Parent then
+			rigs[m] = nil
+			continue
+		end
+		local root = rootOf(m)
+		if not root or (cam.CFrame.Position - root.Position).Magnitude > ALIVE_RANGE then
+			apply(m, r, NO_TURNS)
+			continue
+		end
+		local t = talking
+		local talk = t ~= nil and t.model == m
+		if talk and target then
+			local to = (target - root.Position) * Vector3.new(1, 0, 1)
+			if to.Magnitude > 0.1 then
+				r.face = CFrame.lookAt(Vector3.zero, to)
+			end
+		end
+		local face = r.face
+		if face then
+			local at = m:GetPivot()
+			local rot = at.Rotation:Lerp(face, 1 - math.exp(-TURN_RATE * dt))
+			if not talk and rot.LookVector:Dot(face.LookVector) > 0.9999 then
+				rot, r.face = face, nil -- home again: the server's pose
+			end
+			m:PivotTo(CFrame.new(at.Position) * rot)
+		end
+		-- a slow glance round; the player's head when near (always while talking)
+		local wy, wp = 35 * math.noise(now * 0.2, r.seed + 0.5), 0
+		if target and (talk or (target - root.Position).Magnitude < LOOK_RANGE) then
+			local y, p = TalkPose.look(
+				root.CFrame:VectorToObjectSpace(target - (root.Position + Vector3.new(0, 1.5, 0)))
+			)
+			if y and p then
+				wy, wp = y, p
+			end
+		end
+		r.yaw += (wy - r.yaw) * k
+		r.pitch += (wp - r.pitch) * k
+		local speaking = talk and lineLabel.MaxVisibleGraphemes ~= -1
+		apply(
+			m,
+			r,
+			TalkPose.turns(r.yaw, r.pitch, now, speaking, if talk then r.gi else nil, now - r.gAt)
+		)
 	end
 end
 
@@ -320,6 +441,18 @@ local function watch(m: Instance)
 	if not tree then
 		return
 	end
+	local model = m :: Model
+	rigs[model] = rigs[model]
+		or {
+			seed = #m.Name * 7 + (string.byte(m.Name) or 0),
+			yaw = 0,
+			pitch = 0,
+			gi = 0,
+			gAt = 0,
+			joints = {},
+			scanAt = 0,
+			held = {},
+		}
 	-- the root streams in late (cold open at sea) and is rebuilt after a stream-out: attach on every arrival
 	local function attach(root: Instance)
 		if
@@ -386,6 +519,7 @@ function TalkController.Start()
 			finish()
 		end
 	end)
+	RunService.PreSimulation:Connect(animate) -- after the Animator, as WorkerController
 	-- Esc opens the Roblox menu (a game cannot bind it): leaving for the menu ends the conversation
 	GuiService.MenuOpened:Connect(function()
 		finish()
