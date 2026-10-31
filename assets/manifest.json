@@ -6506,6 +6506,15 @@
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Render_White_ALB.png",
   "type": "Image"
  },
+ "Image:4c0c7fae61b67da1e46ea1e2f507bade5e6f9fde0b050ec9304336b7f6616318": {
+  "assetId": "81844071193526",
+  "imageId": "81844071193526",
+  "moderation": "Approved",
+  "name": "T_PrizeWheel_Brick_MET",
+  "sha": "4c0c7fae61b67da1e46ea1e2f507bade5e6f9fde0b050ec9304336b7f6616318",
+  "source": "assets/textures/M_Prop_PrizeWheel/T_PrizeWheel_Brick_MET.png",
+  "type": "Image"
+ },
  "Image:4c3c7b9b5491c826c1b073674527b84c4cabe2ab7f605a6e2ac9ec49cc9dbf30": {
   "assetId": "74856134407585",
   "imageId": "74856134407585",
@@ -10367,6 +10376,15 @@
   "source": "assets/textures/M_Rock_NeedlesEye/T_Arch_Granite_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:7b5e41de1ccdcbb9a55399f432eeba12e06b3b1f3478c7c893c277a49b4db8fc": {
+  "assetId": "92159630354324",
+  "imageId": "92159630354324",
+  "moderation": "Approved",
+  "name": "T_PrizeWheel_Brick_RGH",
+  "sha": "7b5e41de1ccdcbb9a55399f432eeba12e06b3b1f3478c7c893c277a49b4db8fc",
+  "source": "assets/textures/M_Prop_PrizeWheel/T_PrizeWheel_Brick_RGH.png",
+  "type": "Image"
+ },
  "Image:7b79bb6f1c99b156c6f65d64096e2cb7ed14201bd79c3debb605c547a0d98986": {
   "assetId": "118487436238093",
   "imageId": "118487436238093",
@@ -12507,6 +12525,15 @@
   "name": "FX_Foam_Swash",
   "sha": "942a210651b3d436ebde6c7ecaa82853752ec25064099791ae3c3cf97ed78449",
   "source": "assets/textures/FX/FX_Foam_Swash.png",
+  "type": "Image"
+ },
+ "Image:942b589987431d74b0086a73b0ddb093dc3ac594381a6e62a6b85f470e2832ef": {
+  "assetId": "87168383960019",
+  "imageId": "87168383960019",
+  "moderation": "Approved",
+  "name": "T_PrizeWheel_Brick_ALB",
+  "sha": "942b589987431d74b0086a73b0ddb093dc3ac594381a6e62a6b85f470e2832ef",
+  "source": "assets/textures/M_Prop_PrizeWheel/T_PrizeWheel_Brick_ALB.png",
   "type": "Image"
  },
  "Image:9431faf83a6151905a1b72cb0c925490ebddf46a6dd8636f5d8f47cbc3203e22": {
@@ -23498,6 +23525,16 @@
   "source": "assets/fbx/M_Rock_IslandProxy_Kit/M_Rock_IslandProxy_Kit_LOD1.fbx",
   "type": "Model"
  },
+ "Model:454699ecc9e95043cf0c75c479077bb75ed0e32dfbf1bfa099e7dd64459d39eb": {
+  "assetId": "140393696134901",
+  "moderation": "Approved",
+  "name": "M_Prop_PrizeWheel_LOD2",
+  "rbxm": "assets/models/M_Prop_PrizeWheel_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "454699ecc9e95043cf0c75c479077bb75ed0e32dfbf1bfa099e7dd64459d39eb",
+  "source": "assets/fbx/M_Prop_PrizeWheel/M_Prop_PrizeWheel_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:455e7230c7a0e7a02e9d4a0074ce313a57ffe97f1b07aed3eeb3fbcce6ef43b4": {
   "assetId": "122301443292304",
   "moderation": "Approved",
@@ -24776,6 +24813,16 @@
   "route": "delivery",
   "sha": "65beab3807e303906c140c199265b1e54b404ffa6fe3bf72b6b50f810cbe35dd",
   "source": "assets/fbx/M_Hbr_Fender_Ball/M_Hbr_Fender_Ball_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:663fc0244964ecca314a459b28ef8147fbaed308b84126784ad1b3c842673507": {
+  "assetId": "108084525137319",
+  "moderation": "Approved",
+  "name": "M_Prop_PrizeWheel_LOD1",
+  "rbxm": "assets/models/M_Prop_PrizeWheel_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "663fc0244964ecca314a459b28ef8147fbaed308b84126784ad1b3c842673507",
+  "source": "assets/fbx/M_Prop_PrizeWheel/M_Prop_PrizeWheel_LOD1.fbx",
   "type": "Model"
  },
  "Model:6661b1deb0ab3c8b49fbab2408f6462785aa69fe4c7889662eeac2eb9d7c6343": {
@@ -30276,6 +30323,16 @@
   "route": "delivery",
   "sha": "fe0a49306eb03c186e5e7b999ad38c06eacd6728d349f525ce58380a1881e822",
   "source": "assets/fbx/M_Sea_Bell/M_Sea_Bell_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:fe42f4b950780432757f4235589f338cac7701458cb74cbcc44e3fe74abf622a": {
+  "assetId": "105640824287180",
+  "moderation": "Approved",
+  "name": "M_Prop_PrizeWheel",
+  "rbxm": "assets/models/M_Prop_PrizeWheel.rbxm",
+  "route": "delivery",
+  "sha": "fe42f4b950780432757f4235589f338cac7701458cb74cbcc44e3fe74abf622a",
+  "source": "assets/fbx/M_Prop_PrizeWheel/M_Prop_PrizeWheel_LOD0.fbx",
   "type": "Model"
  },
  "Model:fe67e31808e48539202ca6a36ad400bc493f43bb9f784a46e5d6592d5b14a708": {
