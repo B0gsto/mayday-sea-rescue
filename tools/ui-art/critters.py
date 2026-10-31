@@ -12,13 +12,13 @@ LIP_DY = 12
 # one square page for every sticker (same rim and outline weight on screen), its corner set so each sits centred
 SIZE = 246
 CORNER = {
-    "bottle": (-20.0, -14.3),
-    "view": (-15.7, -11.5),
-    "sealpup": (-10.5, -5.5),
-    "gull": (-21.0, -9.0),
-    "puffin": (-7.8, -12.0),
-    "otter": (-5.2, -14.6),
-    "turtle": (-21.2, 10.5),
+    "bottle": (-11.1, -20.8),
+    "view": (-17.6, -13.9),
+    "sealpup": (-6.4, -9.1),
+    "gull": (-21.0, -8.0),
+    "puffin": (-5.4, -12.0),
+    "otter": (-5.2, -6.9),
+    "turtle": (-21.9, 11.5),
 }
 
 # name: (light top, saturated bottom, lip)
@@ -27,9 +27,11 @@ PAL = {
     "green": ("#A4F57A", "#33BE4D", "#1F8A33"), "gold": ("#FFE45C", "#FFAE00", "#C27400"),
     "teal": ("#8FF5E2", "#1DB59B", "#13776E"), "pink": ("#FFA6DA", "#F2459C", "#A82468"),
     "orange": ("#FFC266", "#FF7419", "#B84A08"), "white": ("#FFFFFF", "#D3DEEA", "#8796AC"),
-    "slate": ("#B9C9DC", "#7086A6", "#4C5E7C"), "seal": ("#D3DEEC", "#8A9DBA", "#56688A"),
+    "slate": ("#B9C9DC", "#7086A6", "#4C5E7C"), "seal": ("#D4EAFF", "#7C9FD8", "#4A6599"),
     "coal": ("#646A88", "#2A2C3B", "#0E0D14"), "brown": ("#DFA066", "#A55E28", "#6B3A16"),
-    "cream": ("#FFF8E6", "#F5DDAE", "#C9A66B"), "cork": ("#E8B57A", "#B0723A", "#74461F"),
+    "cream": ("#FFF8E6", "#F5DDAE", "#C9A66B"), "roll": ("#F7DDA6", "#E0B166", "#A87A35"),
+    "gullw": ("#E6EEF8", "#B4C6DE", "#7F93B0"), "coral": ("#FFC9B0", "#FF7A5C", "#B8402A"), "cork": ("#F8D49C", "#C27E3C", "#74461F"),
+    "gullb": ("#FFFFFF", "#A8BCD8", "#6E82A3"), "wing": ("#DCE6F2", "#8FA4C4", "#5D7194"),
 }
 
 
@@ -56,8 +58,8 @@ def eye(cx, cy, rx=11, ry=14):
             f'<circle cx="{cx - rx * 0.3:.1f}" cy="{cy - ry * 0.38:.1f}" r="{rx * 0.42:.1f}" fill="#fff"/>')
 
 
-def gloss(d, w=10):
-    return f'<path d="{d}" fill="none" stroke="#fff" stroke-opacity="0.55" stroke-width="{w}" stroke-linecap="round"/>'
+def gloss(d, w=10, o=0.55):
+    return f'<path d="{d}" fill="none" stroke="#fff" stroke-opacity="{o}" stroke-width="{w}" stroke-linecap="round"/>'
 
 
 def line(d, w=7, color=INK):
@@ -73,10 +75,12 @@ def stud(cx, cy, r, color):
             f'stroke="#fff" stroke-opacity="0.75" stroke-width="6" stroke-linecap="round"/>')
 
 
-def critter(name, parts, detail, defs="", note=""):
-    """parts: [(element without fill/stroke, fill, lip colour, inner line?)], bottom of the z-order first"""
+def critter(name, parts, detail, defs="", note="", rim="", ink=""):
+    """parts: [(element without fill/stroke, fill, lip colour, inner line?)], bottom of the z-order first;
+    rim: extra shapes that only widen the white die-cut (fill gaps between thin parts); ink: shapes that join the
+    hard outline (close a gap that would pinch to a white sliver)"""
     def layer(fill, dy, stroke=None, w=0, which=None):
-        els = "".join(p[0] for p in (which or parts))
+        els = "".join(p[0] for p in (which or parts)) + (rim if fill == "#fff" else "") + (ink if fill in ("#fff", INK) else "")
         st = f' stroke="{stroke}" stroke-width="{w}" stroke-linejoin="round" stroke-linecap="round"' if w else ""
         return f'<g transform="translate(0,{dy})" fill="{fill}"{st}>{els}</g>'
 
@@ -100,128 +104,144 @@ def G(*colors, y1=20, y2=195):
     return "".join(grad(c, c, y1, y2) for c in colors)
 
 
-# --- seal pup: lying on its belly, big head to the left, tail flippers up-right
+# --- seal pup: lying on its belly, big head to the left, a forked tail flipper on top of the rear, up-right
 critter("sealpup", [
-    ('<path d="M168,150 C176,124 196,108 204,118 C212,128 202,150 186,166 Z"/>', P("seal"), PAL["seal"][2], True),
     ('<ellipse cx="118" cy="134" rx="80" ry="50"/>', P("seal"), PAL["seal"][2], True),
     ('<circle cx="72" cy="86" r="54"/>', P("seal"), PAL["seal"][2], False),
-    ('<ellipse cx="104" cy="176" rx="26" ry="13" transform="rotate(-18 104 176)"/>', P("slate"), PAL["slate"][2], True),
-], ('<ellipse cx="128" cy="156" rx="52" ry="20" fill="#F2F7FC"/>'
-    + '<circle cx="60" cy="104" r="15" fill="#F7FAFD" stroke="#14121C" stroke-width="7"/>'
-      '<circle cx="84" cy="104" r="15" fill="#F7FAFD" stroke="#14121C" stroke-width="7"/>'
-      '<ellipse cx="72" cy="92" rx="11" ry="8" fill="#14121C"/>'
-      '<circle cx="34" cy="96" r="8" fill="#FF9CC9"/><circle cx="110" cy="96" r="8" fill="#FF9CC9"/>'
-    + eye(48, 72) + eye(96, 72)
-    + gloss("M30,70 C32,52 46,38 62,35") + gloss("M140,98 C154,94 166,98 174,106", 9)),
-    G("seal", "slate"), "a rare seal pup spotted: a chubby grey-blue pup lying on its belly")
+    ('<path d="M168,140 C178,126 188,114 200,104 C210,98 218,108 212,120 C208,128 202,132 196,136 '
+     'C208,136 218,144 214,154 C210,162 192,162 174,156 Z"/>', P("slate"), PAL["slate"][2], True),
+], ('<ellipse cx="122" cy="156" rx="44" ry="20" fill="#F2F7FC"/>'
+    + '<circle cx="59" cy="106" r="16" fill="#F7FAFD" stroke="#14121C" stroke-width="7"/>'
+      '<circle cx="85" cy="106" r="16" fill="#F7FAFD" stroke="#14121C" stroke-width="7"/>'
+      '<ellipse cx="72" cy="91" rx="14" ry="10" fill="#14121C"/>'
+      '<circle cx="32" cy="98" r="8" fill="#FF9CC9"/><circle cx="112" cy="98" r="8" fill="#FF9CC9"/>'
+    + eye(47, 68, 13, 16) + eye(97, 68, 13, 16)
+    + gloss("M28,66 C30,50 42,38 56,34") + gloss("M140,98 C154,94 166,98 174,106", 9)
+    + gloss("M188,118 C194,112 200,108 204,106", 7)),
+    G("seal", "slate"), "a rare seal pup spotted: a chubby blue-grey pup lying on its belly, forked tail flipper")
 
 # --- gull: a chubby standing gull, yellow beak with the red spot, grey wing with a dark tip
 critter("gull", [
-    ('<path d="M54,118 L4,140 L18,156 L60,150 Z"/>', P("coal"), PAL["coal"][2], True),
-    ('<path d="M80,158 L94,158 L94,180 L108,192 L66,192 L80,180 Z"/>', P("orange"), PAL["orange"][2], True),
-    ('<path d="M112,158 L126,158 L126,180 L140,192 L98,192 L112,180 Z"/>', P("orange"), PAL["orange"][2], True),
-    ('<ellipse cx="98" cy="120" rx="66" ry="52"/>', P("white"), PAL["white"][2], True),
-    ('<circle cx="124" cy="66" r="42"/>', P("white"), PAL["white"][2], False),
+    ('<path d="M54,118 L4,140 L18,156 L60,150 Z"/>', P("gullb"), PAL["gullb"][2], True),
+    ('<path d="M73,154 L91,154 L91,176 L106,194 L58,194 L73,176 Z"/>', P("orange"), PAL["orange"][2], True),
+    ('<path d="M111,154 L129,154 L129,176 L144,194 L96,194 L111,176 Z"/>', P("orange"), PAL["orange"][2], True),
+    ('<ellipse cx="98" cy="120" rx="66" ry="52"/>', P("gullb"), PAL["gullb"][2], True),
+    ('<circle cx="124" cy="66" r="42"/>', P("gullb"), PAL["gullb"][2], False),
     ('<path d="M150,52 L194,64 C202,67 202,77 194,80 L150,88 Z"/>', P("gold"), PAL["gold"][2], True),
     ('<path d="M54,100 C86,84 132,98 140,124 C132,154 84,164 20,150 C26,124 36,108 54,100 Z"/>',
-     P("slate"), PAL["slate"][2], True),
-    ('<path d="M20,150 C26,130 34,116 46,106 C54,124 56,142 52,156 C40,156 28,154 20,150 Z"/>',
+     P("wing"), PAL["wing"][2], True),
+    ('<path d="M20,150 C24,136 28,126 34,118 C42,128 46,142 44,155 C36,154 28,152 20,150 Z"/>',
      P("coal"), PAL["coal"][2], True),
 ], ('<circle cx="184" cy="76" r="7" fill="#E2333A"/>' + line("M152,70 L188,70")
-    + eye(134, 56, 10, 13) + gloss("M92,52 C96,38 108,28 122,26") + gloss("M74,104 C90,98 108,100 120,108", 9)),
-    G("white", "slate", "coal", "orange", "gold"), "a rare gull spotted: a chubby standing gull, wings folded")
+    + eye(128, 55, 13, 16) + gloss("M92,52 C96,38 108,28 122,26", 10, 0.8)
+    + gloss("M64,104 C86,94 110,98 124,110", 10, 0.8)),
+    G("gullb", "coal", "orange", "gold") + G("wing", y1=90, y2=165), "a rare gull spotted: a chubby standing gull, wings folded")
 
-# --- puffin: black back and head, white face and chest, big striped orange-red beak, orange feet
+# --- puffin: black back and head, a big white face and chest, striped orange-red beak, orange feet
 critter("puffin", [
-    ('<path d="M74,170 L88,170 L88,182 L104,194 L60,194 L74,182 Z"/>', P("orange"), PAL["orange"][2], True),
-    ('<path d="M108,170 L122,170 L122,182 L138,194 L94,194 L108,182 Z"/>', P("orange"), PAL["orange"][2], True),
-    ('<ellipse cx="96" cy="124" rx="62" ry="58"/>', P("coal"), PAL["coal"][2], True),
+    ('<path d="M74,170 L88,170 L88,182 L104,194 L60,194 L74,182 Z"/>', P("orange"), "#8A3604", True),
+    ('<path d="M108,170 L122,170 L122,182 L138,194 L94,194 L108,182 Z"/>', P("orange"), "#8A3604", True),
+    ('<path d="M84,70 C120,62 160,92 164,134 C166,166 140,184 102,184 C70,184 44,170 40,146 C36,120 52,78 84,70 Z"/>', P("coal"), PAL["coal"][2], True),
     ('<circle cx="98" cy="64" r="48"/>', P("coal"), PAL["coal"][2], False),
-    ('<path d="M136,40 C164,44 190,64 196,86 C184,100 160,104 136,98 Z"/>', P("red"), PAL["red"][2], True),
-    ('<path d="M136,40 C142,41 148,43 152,45 L152,101 C146,101 140,100 136,98 Z"/>', P("gold"), PAL["gold"][2], True),
-], ('<ellipse cx="108" cy="130" rx="38" ry="44" fill="url(#white)"/>'
-    '<path d="M70,62 C70,40 94,30 118,36 C128,40 134,52 132,70 C130,88 120,98 100,98 C80,98 70,82 70,62 Z" '
+    ('<path d="M136,40 C164,44 190,64 196,86 C184,100 160,104 136,98 Z"/>', P("red"), "#7E0E15", True),
+    ('<path d="M136,40 C144,41 152,43 158,47 L158,101 C150,101 142,100 136,98 Z"/>', P("gold"), "#9A5800", True),
+    ('<path d="M177,58 C186,64 194,76 196,86 C192,91 186,94 179,97 C182,84 181,70 177,58 Z"/>', P("orange"), "#8A3604", True),
+], ('<ellipse cx="116" cy="136" rx="40" ry="42" fill="url(#white)"/>'
+    '<path d="M60,64 C58,36 88,20 116,26 C130,30 138,46 136,68 C134,92 122,106 98,106 C74,106 62,88 60,64 Z" '
     'fill="url(#white)" stroke="#14121C" stroke-width="7"/>'
-    '<path d="M44,104 C64,98 84,110 88,134 C90,156 74,170 52,164 C40,146 38,122 44,104 Z" fill="url(#coalw)" '
-    'stroke="#14121C" stroke-width="7"/>'
-    + line("M168,56 C176,64 180,76 178,88")
-    + eye(108, 58, 10, 13) + gloss("M60,52 C62,38 74,24 90,20") + gloss("M60,112 C66,106 74,106 80,112", 8)),
+    '<path d="M52,106 C72,100 92,112 96,136 C98,156 82,170 62,166 C50,148 46,124 52,106 Z" fill="url(#coalw)" '
+    'stroke="#14121C" stroke-width="11" stroke-linejoin="round"/>'
+    + '<path d="M104,50 L116,31 L128,50 Z" fill="#8A93B0" stroke="#8A93B0" stroke-width="6" stroke-linejoin="round"/>'
+    + line("M102,62 L86,68", 7, "#8A93B0")
+    + eye(116, 56, 11, 14) + gloss("M58,44 C64,32 74,22 88,18") + gloss("M58,114 C64,108 72,108 78,114", 8)),
     G("coal", "red", "gold", "orange") + G("white", y1=30, y2=180)
-    + grad("coalw", "slate", 100, 170).replace("#B9C9DC", "#7A809E").replace("#7086A6", "#3D4056"),
-    "a rare puffin spotted: black back, white face and chest, striped orange-red beak, orange feet")
+    + grad("coalw", "slate", 100, 170).replace("#B9C9DC", "#8A92B4").replace("#7086A6", "#4E5372"),
+    "a rare puffin spotted: black back, big white face and chest, striped orange-red beak, orange feet")
 
-# --- otter: sitting up, big head, warm brown with a cream face and belly, holding a pink scallop shell
+# --- otter: sitting up, a wide flat head with small low ears, cream muzzle and whiskers, a long thin tail,
+# holding one big coral scallop shell on its belly
 critter("otter", [
-    ('<path d="M138,168 C172,176 200,160 198,128 C186,146 166,152 142,148 Z"/>', P("brown"), PAL["brown"][2], True),
-    ('<circle cx="54" cy="30" r="17"/>', P("brown"), PAL["brown"][2], True),
-    ('<circle cx="146" cy="30" r="17"/>', P("brown"), PAL["brown"][2], True),
+    ('<path d="M136,180 C176,190 206,168 210,120 C200,150 176,166 140,164 Z"/>', P("brown"), PAL["brown"][2], True),
+    ('<circle cx="39" cy="58" r="13"/>', P("brown"), PAL["brown"][2], True),
+    ('<circle cx="161" cy="58" r="13"/>', P("brown"), PAL["brown"][2], True),
     ('<ellipse cx="100" cy="146" rx="58" ry="46"/>', P("brown"), PAL["brown"][2], True),
-    ('<circle cx="100" cy="74" r="58"/>', P("brown"), PAL["brown"][2], True),
-], ('<circle cx="54" cy="30" r="8" fill="#6B3A16"/><circle cx="146" cy="30" r="8" fill="#6B3A16"/>'
-    '<ellipse cx="100" cy="156" rx="40" ry="34" fill="url(#cream)"/>'
-    '<ellipse cx="100" cy="96" rx="40" ry="28" fill="url(#cream)" stroke="#14121C" stroke-width="7"/>'
-    + line("M62,92 L36,86") + line("M62,104 L38,110") + line("M138,92 L164,86") + line("M138,104 L162,110")
-    + '<path d="M88,82 L112,82 C114,82 115,85 113,88 L102,97 C101,98 99,98 98,97 L87,88 C85,85 86,82 88,82 Z" fill="#14121C"/>'
-    + line("M86,104 Q93,113 100,104 Q107,113 114,104")
-    + '<path d="M100,178 L68,146 C72,124 128,124 132,146 Z" fill="url(#pink)" stroke="#14121C" stroke-width="7" stroke-linejoin="round"/>'
-    + line("M100,174 L88,136") + line("M100,174 L112,136")
-    + '<ellipse cx="68" cy="148" rx="15" ry="13" fill="url(#brown)" stroke="#14121C" stroke-width="7"/>'
-      '<ellipse cx="132" cy="148" rx="15" ry="13" fill="url(#brown)" stroke="#14121C" stroke-width="7"/>'
-    + eye(76, 64) + eye(124, 64) + gloss("M56,58 C58,40 72,26 90,22") + gloss("M80,136 C86,132 94,131 100,131", 7)),
-    G("brown") + G("cream", y1=70, y2=190) + G("pink", y1=126, y2=178),
-    "a rare otter spotted: sitting up, warm brown, cream face and belly, holding a pink shell")
+    ('<ellipse cx="100" cy="78" rx="66" ry="50"/>', P("brown"), PAL["brown"][2], True),
+], ('<ellipse cx="100" cy="158" rx="40" ry="32" fill="url(#cream)"/>'
+    '<ellipse cx="100" cy="102" rx="50" ry="24" fill="url(#cream)" stroke="#14121C" stroke-width="7"/>'
+    + line("M58,98 L72,101", 8) + line("M58,108 L72,107", 8) + line("M142,98 L128,101", 8) + line("M142,108 L128,107", 8)
+    + '<path d="M86,86 L114,86 C117,86 118,90 115,93 L103,101 C101,102 99,102 97,101 L85,93 C82,90 83,86 86,86 Z" fill="#14121C"/>'
+    + line("M88,108 Q94,115 100,108 Q106,115 112,108")
+    + '<path d="M100,186 L62,154 A14,14 0 0,1 86,136 A14,14 0 0,1 114,136 A14,14 0 0,1 138,154 Z" '
+      'fill="url(#coral)" stroke="#14121C" stroke-width="7" stroke-linejoin="round"/>'
+    + line("M100,182 L86,138") + line("M100,182 L114,138")
+    + '<ellipse cx="62" cy="160" rx="15" ry="13" fill="url(#brown)" stroke="#14121C" stroke-width="7"/>'
+      '<ellipse cx="138" cy="160" rx="15" ry="13" fill="url(#brown)" stroke="#14121C" stroke-width="7"/>'
+    + eye(74, 60, 11, 13) + eye(126, 60, 11, 13) + gloss("M54,46 C60,39 67,36 74,35", 9, 0.35)
+    + gloss("M170,136 C180,130 190,122 196,114", 7)),
+    G("brown") + G("cream", y1=70, y2=190) + G("coral", y1=122, y2=190),
+    "a rare otter spotted: sitting up, wide flat head, cream muzzle and whiskers, long tail, holding a shell")
 
-# --- turtle: a sea turtle, a green Lego shell (brick plates, studs) on a gold rim, teal flippers and head
+# --- turtle: a sea turtle, a green Lego shell (brick plates, studs) on one gold band, teal flippers and head
 critter("turtle", [
-    ('<path d="M44,140 C26,150 12,166 10,182 C30,182 52,170 62,154 Z"/>', P("teal"), PAL["teal"][2], True),
-    ('<path d="M120,140 C150,146 178,166 186,190 C158,192 128,180 108,158 Z"/>', P("teal"), PAL["teal"][2], True),
-    ('<path d="M20,136 L4,128 L18,146 Z"/>', P("teal"), PAL["teal"][2], True),
+    ('<path d="M40,142 C22,150 6,162 2,178 C24,180 44,170 54,154 Z"/>', P("teal"), PAL["teal"][2], True),
+    ('<path d="M128,142 C158,148 184,168 192,192 C164,194 134,182 116,160 Z"/>', P("teal"), PAL["teal"][2], True),
     ('<path d="M148,134 C150,110 156,92 170,84 L190,92 C196,110 186,126 166,140 Z"/>', P("teal"), PAL["teal"][2], True),
     ('<circle cx="172" cy="94" r="28"/>', P("teal"), PAL["teal"][2], False),
-    ('<rect x="10" y="124" width="158" height="26" rx="13"/>', P("gold"), PAL["gold"][2], True),
+    ('<rect x="10" y="124" width="158" height="26" rx="13"/>', P("gold"), "#9A5800", True),
     ('<path d="M18,132 C18,42 160,42 160,132 Z"/>', P("green"), PAL["green"][2], True),
 ], (line("M64,68 C72,88 72,110 68,132") + line("M114,68 C106,88 106,110 110,132")
     + stud(42, 110, 11, "green") + stud(89, 104, 15, "green") + stud(136, 110, 11, "green")
-    + line("M44,134 L44,150") + line("M89,134 L89,150") + line("M134,134 L134,150")
-    + eye(178, 86, 9, 12) + line("M164,108 Q176,116 190,106")
-    + gloss("M78,77 C86,72 96,71 102,73", 9) + gloss("M156,86 C158,78 164,72 170,70", 8)),
+    + line("M26,143 L152,143", 6, "#E08E00")
+    + eye(181, 85, 12, 15) + line("M166,112 Q178,120 192,110")
+    + gloss("M78,77 C86,72 96,71 102,73", 9) + gloss("M152,92 C153,84 156,79 160,76", 8)),
     G("green", y1=54, y2=132) + G("teal") + G("gold", y1=124, y2=150),
-    "a rare sea turtle spotted: green Lego brick-plate shell with studs on a gold rim")
+    "a rare sea turtle spotted: green Lego brick-plate shell with studs on a gold band")
 
-# --- bottle: a message in a bottle lying diagonal, cork up-right, a rolled note with a red ribbon inside
+# --- bottle: a fat message in a bottle lying diagonal, a big studded cork up-right, a big scroll with a wax seal
 R = "translate(0,-8) rotate(-40 107 105)"
 critter("bottle", [
-    (f'<rect x="180" y="86" width="26" height="38" rx="8" transform="{R}"/>', P("corkr"), PAL["cork"][2], True),
-    (f'<path d="M126,61 C152,61 152,84 168,84 L182,84 L182,126 L168,126 C152,126 152,149 126,149 L36,149 '
-     f'C20,149 10,139 10,123 L10,87 C10,71 20,61 36,61 Z" transform="{R}"/>', P("glass"), PAL["teal"][2], False),
-    (f'<rect x="172" y="78" width="16" height="54" rx="6" transform="{R}"/>', P("glass"), PAL["teal"][2], True),
+    (f'<rect x="210" y="86" width="16" height="16" rx="4" transform="{R}"/>', P("corkr"), PAL["cork"][2], True),
+    (f'<rect x="210" y="108" width="16" height="16" rx="4" transform="{R}"/>', P("corkr"), PAL["cork"][2], True),
+    (f'<rect x="184" y="78" width="32" height="54" rx="10" transform="{R}"/>', P("corkr"), PAL["cork"][2], True),
+    (f'<path d="M134,52 C156,52 156,78 170,78 L178,78 L178,132 L170,132 C156,132 156,158 134,158 L46,158 '
+     f'C28,158 18,148 18,130 L18,80 C18,62 28,52 46,52 Z" transform="{R}"/>', P("glass"), "#0B4F49", False),
+    (f'<rect x="170" y="66" width="18" height="78" rx="7" transform="{R}"/>', P("glass"), "#0B4F49", True),
 ], (f'<g transform="{R}">'
-    '<rect x="30" y="82" width="92" height="46" rx="12" fill="url(#cream)" stroke="#14121C" stroke-width="7"/>'
-    '<rect x="68" y="82" width="16" height="46" rx="5" fill="url(#redr)" stroke="#14121C" stroke-width="7"/>'
-    + line("M44,96 L58,96", 7, "#C9A66B") + line("M44,114 L58,114", 7, "#C9A66B")
-    + line("M96,96 L110,96", 7, "#C9A66B") + line("M96,114 L110,114", 7, "#C9A66B")
-    + gloss("M30,72 L118,72") + gloss("M150,76 C156,84 162,88 168,90", 8)
+    + '<rect x="40" y="76" width="92" height="58" rx="8" fill="url(#cream)" stroke="#14121C" stroke-width="7"/>'
+    '<rect x="30" y="68" width="22" height="74" rx="9" fill="url(#roll)" stroke="#14121C" stroke-width="7"/>'
+    '<rect x="120" y="68" width="22" height="74" rx="9" fill="url(#roll)" stroke="#14121C" stroke-width="7"/>'
+    '</g><g transform="translate(0,-8) rotate(-40 107 105) rotate(40 86 105)">'
+    '<path d="M76,108 L70,128 L78,125 L83,131 L88,110 Z M96,108 L102,128 L94,125 L89,131 L84,110 Z" fill="url(#redr)" '
+    'stroke="#14121C" stroke-width="6" stroke-linejoin="round"/>'
+    '<circle cx="86" cy="102" r="19" fill="url(#redr)" stroke="#14121C" stroke-width="7"/>'
+    + gloss("M77,96 C79,91 83,88 88,88", 6, 0.8)
+    + f'</g><g transform="{R}">'
+    + gloss("M44,62 L130,62") + gloss("M188,90 L208,90", 8, 0.8)
     + '</g>'),
     grad("glass", "teal", 0, 210, (40, 107, 105)) + grad("corkr", "cork", 0, 210, (40, 107, 105))
-    + grad("cream", "cream", 60, 150) + grad("redr", "red", 60, 150),
-    "a message in a bottle found: sea-glass bottle, cork, a rolled note with a red ribbon")
+    + grad("cream", "cream", 60, 150) + grad("roll", "roll", 60, 150) + grad("redr", "red", 76, 136),
+    "a message in a bottle found: fat sea-glass bottle, studded cork, a big scroll with a red wax seal")
 
-# --- view: a chunky telescope on a thick tripod, pointing up-right at the view
+# --- view: a chunky telescope on a thick tripod (the die-cut fills between the legs), pointing up-right
 T = "rotate(-28 95 95)"
+TUBE_LIP = "#0D5A8C"
 critter("view", [
-    (leg(95, 104, 104, 190, 20, 18), P("orangeD"), "#8E3806", True),
-    (leg(92, 104, 36, 186, 20, 18), P("orange"), PAL["orange"][2], True),
-    (leg(98, 104, 156, 186, 20, 18), P("orange"), PAL["orange"][2], True),
-    (f'<rect x="8" y="82" width="28" height="26" rx="7" transform="{T}"/>', P("coalr"), PAL["coal"][2], True),
-    (f'<rect x="28" y="72" width="124" height="46" rx="12" transform="{T}"/>', P("bluer"), PAL["blue"][2], True),
-    (f'<rect x="140" y="62" width="52" height="66" rx="14" transform="{T}"/>', P("bluer"), PAL["blue"][2], True),
+    (leg(95, 104, 104, 190, 26, 24), P("legD"), "#7A2E04", True),
+    (leg(92, 104, 36, 186, 26, 24), P("leg"), "#963A06", True),
+    (leg(98, 104, 156, 186, 26, 24), P("leg"), "#963A06", True),
+    (f'<rect x="2" y="74" width="38" height="42" rx="10" transform="{T}"/>', P("redr"), PAL["red"][2], True),
+    (f'<rect x="36" y="72" width="116" height="46" rx="12" transform="{T}"/>', P("bluer"), TUBE_LIP, True),
+    (f'<rect x="140" y="62" width="52" height="66" rx="14" transform="{T}"/>', P("bluer"), TUBE_LIP, True),
     (f'<rect x="128" y="66" width="18" height="58" rx="6" transform="{T}"/>', P("goldr"), PAL["gold"][2], True),
-    (f'<ellipse cx="192" cy="95" rx="13" ry="33" transform="{T}"/>', P("goldr"), PAL["gold"][2], True),
+    (f'<ellipse cx="192" cy="95" rx="16" ry="40" transform="{T}"/>', P("goldr"), PAL["gold"][2], True),
     ('<circle cx="95" cy="100" r="17"/>', P("gold"), PAL["gold"][2], True),
-], (f'<g transform="{T}"><ellipse cx="194" cy="95" rx="6" ry="22" fill="#BDF1FF" stroke="#14121C" stroke-width="7"/>'
-    + gloss("M44,84 L118,84") + gloss("M154,74 L178,74", 9) + '</g>'
+], (f'<g transform="{T}"><ellipse cx="195" cy="95" rx="9" ry="29" fill="#DFFAFF" stroke="#14121C" stroke-width="7"/>'
+    + gloss("M44,84 L118,84") + gloss("M154,74 L178,74", 9) + gloss("M195,78 L195,90", 6, 0.9)
+    + gloss("M12,86 L12,102", 7, 0.7) + '</g>'
     + '<circle cx="95" cy="100" r="6" fill="#14121C"/>'),
-    G("orange", "gold", y1=90, y2=195) + grad("orangeD", "orange", 90, 195).replace("#FFC266", "#F09A4A").replace("#FF7419", "#D2580C")
+    G("gold", y1=90, y2=195) + grad("leg", "orange", 90, 195).replace("#FFC266", "#FFDCA0").replace("#FF7419", "#FF9638")
+    + grad("legD", "orange", 90, 195).replace("#FFC266", "#FBB466").replace("#FF7419", "#EC7424")
     + grad("bluer", "blue", 20, 160, (28, 95, 95)) + grad("goldr", "gold", 20, 160, (28, 95, 95))
-    + grad("coalr", "coal", 60, 160, (28, 95, 95)),
-    "a scenic viewpoint found: a chunky blue telescope on a thick orange tripod")
+    + grad("redr", "red", 20, 160, (28, 95, 95)),
+    "a scenic viewpoint found: a chunky blue telescope on a thick orange tripod",
+    rim='<path d="M36,186 L104,190 L156,186 L95,104 Z"/>', ink='<path d="M62,154 L95,112 L130,154 Z"/>')

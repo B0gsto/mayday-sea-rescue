@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Kit menu icons, half 2 (lifebuoy, lock, map, quests, settings, sun, shop, vip, spin, wave, waves), in the stickers.py
+"""Kit menu icons, half 2 (lifebuoy, lock, map, quests, settings, sun, vip; shop/spin/wave live in kit_icons4.py, waves is hand SVG), in the stickers.py
 house style: one die-cut sticker per icon (white rim and hard outline round the UNION of its parts, a darker lip under
 each part, bold top-down gradients, a soft gloss). Drawn in a 200-unit box (rim 30, outline 12, lip 12 like every
 Kit sticker); the square viewBox is fitted so the art fills 88% of it, centred. Writes art/source/ui/kit_<name>.svg and renders each
@@ -72,52 +72,57 @@ def polar(cx, cy, r, a):
 
 # ---- the icons -------------------------------------------------------------------------------------------------------
 def lifebuoy():
-    """rescue / pickup ring: a fat red ring, four white bands, a small dark hole"""
+    """rescue / pickup ring: a fat red ring, four white bands (one with a Lego stud), a sea-blue hole"""
     c, R, r = (100, 98), 88, 34
-    bands = [part(ring_sector(*c, r, R, a - 19, a + 19), WHITE) for a in (45, 135, 225, 315)]
-    seams = "".join(ink(*polar(*c, r, a), *polar(*c, R, a), w=7) for b in (45, 135, 225, 315) for a in (b - 19, b + 19))
-    hole = (f'<circle cx="{c[0]}" cy="{c[1]}" r="{r}" fill="#7A0F16"/>'
-            f'<circle cx="{c[0]}" cy="{c[1] + 7}" r="{r - 3}" fill="{INK}"/>'
+    bands = [part(ring_sector(*c, r, R, a - 19, a + 19), WHITE, dy=16) for a in (0, 90, 180, 270)]
+    seams = "".join(ink(*polar(*c, r, a), *polar(*c, R, a), w=7) for b in (0, 90, 180, 270) for a in (b - 19, b + 19))
+    hole = (f'<circle cx="{c[0]}" cy="{c[1]}" r="{r}" fill="#0E3466"/>'
+            f'<circle cx="{c[0]}" cy="{c[1] + 8}" r="{r - 4}" fill="#1F64B0"/>'
             f'<circle cx="{c[0]}" cy="{c[1]}" r="{r}" fill="none" stroke="{INK}" stroke-width="8"/>')
-    return build([part(circ(*c, R), RED)] + bands, gloss=["M28,82 A72,72 0 0,1 58,36"], extra=seams + hole)
+    g = lambda a0, a1, rr=66: "M%.1f,%.1f A%d,%d 0 0,1 %.1f,%.1f" % (*polar(*c, rr, a0), rr, rr, *polar(*c, rr, a1))
+    # bands on the axes so the gloss lands on red (it vanishes on white)
+    return build([part(circ(*c, R), ("#FF9584", "#C81A26", "#82101A"), dy=16)] + bands, gloss=[g(206, 244)],
+                 extra=seams + hole + stud(100, 37, 14, "#FFFFFF", "#8E9AB2"))
 
 
 def lock():
-    """locked: a gold padlock, front on, silver shackle"""
-    shackle = "M50,98 L50,66 A50,50 0 0,1 150,66 L150,98 L122,98 L122,66 A22,22 0 0,0 78,66 L78,98 Z"
+    """locked: a gold padlock, front on, steel shackle with a dark inner edge"""
+    shackle = "M46,98 L46,68 A54,54 0 0,1 154,68 L154,98 L120,98 L120,68 A20,20 0 0,0 80,68 L80,98 Z"
     body = "M48,88 L152,88 Q172,88 172,108 L172,166 Q172,186 152,186 L48,186 Q28,186 28,166 L28,108 Q28,88 48,88 Z"
-    keyhole = (f'<circle cx="100" cy="126" r="17" fill="{INK}"/>'
-               f'<path d="M90,130 L110,130 L115,162 Q116,168 110,168 L90,168 Q84,168 85,162 Z" fill="{INK}"/>')
-    return build([part(shackle, ("#FFFFFF", "#A9B6CC", "#6B7891")), part(body, GOLD, z=1, sep=True)],
-                 gloss=["M44,118 L44,104 Q44,100 50,100 L70,100", "M62,62 A38,38 0 0,1 86,32"], extra=keyhole)
+    inner = '<path d="M75,96 L75,68 A25,25 0 0,1 125,68 L125,96" fill="none" stroke="#4A5670" stroke-width="10"/>'
+    keyhole = (f'<circle cx="100" cy="124" r="21" fill="{INK}"/>'
+               f'<path d="M88,130 L112,130 L118,166 Q119,172 112,172 L88,172 Q81,172 82,166 Z" fill="{INK}"/>')
+    s = build([part(shackle, ("#B4C0D4", "#6E7D98", "#3E4A62")), part(body, GOLD, z=1, sep=True, dy=16, lip="#A85A00")],
+              gloss=["M44,118 L44,104 Q44,100 50,100 L70,100", "M60,62 A40,40 0 0,1 84,30"], extra=keyhole)
+    i = s.index(f'<path d="{body}" fill="{INK}"')  # the body's own outline: the shackle's inner edge goes under the body
+    return s[:i] + inner + s[i:]
 
 
 def map_():
-    """the full map: a chart folded in three, a bold dashed route to a red X"""
-    pts = [(14, 46), (72, 28), (128, 46), (186, 28)]
-    bot = [(14, 172), (72, 154), (128, 172), (186, 154)]
-    light, dark = ("#FFF6BF", "#FFD54A", "#C27400"), ("#FFD447", "#EE9A00", "#A86400")
-    panels = [part(f"M{pts[i][0]},{pts[i][1]} L{pts[i + 1][0]},{pts[i + 1][1]} L{bot[i + 1][0]},{bot[i + 1][1]} "
-                   f"L{bot[i][0]},{bot[i][1]} Z", dark if i == 1 else light) for i in range(3)]
-    folds = ink(72, 28, 72, 154, 8) + ink(128, 46, 128, 172, 8)
-    route = "M38,146 C58,104 92,150 112,112 S140,72 146,74"
-    dash = 'stroke-dasharray="15 15" stroke-linecap="round" fill="none"'
-    line = (f'<path d="{route}" stroke="{INK}" stroke-width="22" {dash}/>'
-            f'<path d="{route}" stroke="#E2333A" stroke-width="11" {dash}/>')
-    x = lambda w, c: ink(140, 54, 172, 86, w, c) + ink(172, 54, 140, 86, w, c)
-    start = f'<circle cx="38" cy="146" r="11" fill="#2C8EF0" stroke="{INK}" stroke-width="7"/>'
-    return build(panels, gloss=["M26,66 L58,56"], extra=folds + line + x(28, INK) + x(14, "#E2333A") + start)
+    """the full map: a chart folded in two, a fat red route to a big red X"""
+    top, bot = [(14, 44), (100, 26), (186, 44)], [(14, 172), (100, 154), (186, 172)]
+    light, dark = ("#FFF4B0", "#FFC93A", "#C27400"), ("#FFD447", "#E58A00", "#A85A00")
+    panels = [part(f"M{top[i][0]},{top[i][1]} L{top[i + 1][0]},{top[i + 1][1]} L{bot[i + 1][0]},{bot[i + 1][1]} "
+                   f"L{bot[i][0]},{bot[i][1]} Z", dark if i else light) for i in range(2)]
+    route = "M42,138 C62,92 96,158 114,116"
+    line = (f'<path d="{route}" stroke="{INK}" stroke-width="38" stroke-linecap="round" fill="none"/>'
+            f'<path d="{route}" stroke="#E2333A" stroke-width="22" stroke-linecap="round" fill="none"/>')
+    x = lambda w, col: ink(124, 64, 164, 104, w, col) + ink(164, 64, 124, 104, w, col)
+    return build(panels, gloss=["M28,62 L64,54"], extra=ink(100, 26, 100, 154, 8) + line + x(44, INK) + x(26, "#E2333A"))
 
 
 def quests():
-    """quest board / pontoons: a scroll with a big red Lego seal"""
-    body = "M40,40 L160,40 L160,160 L40,160 Z"
+    """quest board / pontoons: a scroll, two bold lines and a big red Lego seal on the bottom roll"""
+    body, seal = "M40,40 L160,40 L160,180 L40,180 Z", circ(100, 160, 42)
     roll = lambda y: f"M40,{y} L160,{y} Q178,{y} 178,{y + 17} Q178,{y + 34} 160,{y + 34} L40,{y + 34} Q22,{y + 34} 22,{y + 17} Q22,{y} 40,{y} Z"
-    seal = circ(134, 132, 34)
-    lines = ink(60, 80, 140, 80, 11, "#D1962A") + ink(60, 106, 112, 106, 11, "#D1962A")
-    return build([part(body, ("#FFF9DC", "#FFE07A", "#C27400")), part(roll(18), GOLD, z=1, sep=True),
-                  part(roll(144), GOLD, z=1, sep=True), part(seal, RED, z=2, sep=True)],
-                 gloss=["M36,28 L74,28"], extra=lines + stud(134, 132, 19, "#FF9A8E", "#A3161E"))
+    curls = ink(42, 41, 158, 41, 8, "#B86A00") + ink(42, 193, 158, 193, 8, "#B86A00")  # the under-curl shade of each roll
+    rollc = ("#FFF08A", "#F39A00", "#A85A00")
+    bars = ink(64, 74, 136, 74, 18, "#F07A10") + ink(64, 100, 112, 100, 18, "#F07A10")
+    s = build([part(body, ("#FFFDF0", "#FFE89A", "#C27400")), part(roll(14), rollc, z=1, sep=True),
+               part(roll(166), rollc, z=1, sep=True, dy=16), part(seal, RED, z=2, sep=True)],
+              gloss=["M36,24 L74,24"], extra=bars + stud(100, 160, 25, "#FF9A8E", "#A3161E"))
+    i = s.index(f'<path d="{seal}" fill="{INK}"')  # the seal's own outline: the roll shades go under the seal
+    return s[:i] + curls + s[i:]
 
 
 def settings():
@@ -135,26 +140,15 @@ def settings():
 
 
 def sun():
-    """golden hour: a gold sun, eight fat orange rays"""
-    c = (100, 96)
+    """golden hour: a gold-to-orange sun, eight pointed rays (long and short) clear of the disc"""
+    c = (100, 98)
     rays = ""
     for i in range(8):
-        a = i * 45 - 90
-        (x0, y0), (x1, y1), (x2, y2) = polar(*c, 50, a - 17), polar(*c, 92, a), polar(*c, 50, a + 17)
+        a, tip, half = i * 45 - 90, (102 if i % 2 == 0 else 90), (13 if i % 2 == 0 else 11)
+        (x0, y0), (x1, y1), (x2, y2) = polar(*c, 66, a - half), polar(*c, tip, a), polar(*c, 66, a + half)
         rays += f"M{x0:.1f},{y0:.1f} L{x1:.1f},{y1:.1f} L{x2:.1f},{y2:.1f} Z "
-    return build([part(rays, ORANGE), part(circ(*c, 54), GOLD, z=1, sep=True)], gloss=["M66,92 A36,36 0 0,1 92,62"])
-
-
-def shop():
-    """the shop: a market stall, four bold awning stripes, a gold coin-stud on the counter"""
-    stripes = []
-    for i in range(4):
-        tl, tr, bl, br = 26 + 37 * i, 63 + 37 * i, 12 + 44 * i, 56 + 44 * i
-        stripes.append(part(f"M{tl},28 L{tr},28 L{br},84 A22,20 0 0,1 {bl},84 Z", RED if i % 2 == 0 else WHITE, z=1))
-    body = "M34,80 L166,80 L166,170 Q166,182 154,182 L46,182 Q34,182 34,170 Z"
-    seams = "".join(ink(26 + 37 * i, 28, 12 + 44 * i, 84, 7) for i in (1, 2, 3)) + ink(26, 28, 174, 28, 7)
-    return build([part(body, BLUE), *stripes, part(circ(100, 138, 30), GOLD, z=2, sep=True)],
-                 gloss=["M40,40 L36,62"], extra=seams + stud(100, 138, 17, "#FFF3A8", "#C27400"))
+    g = "M%.1f,%.1f A32,32 0 0,1 %.1f,%.1f" % (*polar(*c, 32, 192), *polar(*c, 32, 252))
+    return build([part(rays, ORANGE), part(circ(*c, 44), ("#FFE45C", "#FF9A00", "#C25E00"), z=1, sep=True)], gloss=[g])
 
 
 def vip():
@@ -168,39 +162,7 @@ def vip():
                  gloss=["M44,98 L40,130"], extra=gem)
 
 
-def spin():
-    """the prize wheel: a gold rim, six bold wedges, a chunky red pointer, a stud hub"""
-    c, R, r = (100, 110), 84, 64
-    cols = ["#F2333E", "#FFFFFF", "#2C8EF0", "#F2333E", "#FFFFFF", "#2C8EF0"]
-    wedges = "".join(f'<path d="{ring_sector(*c, 0.01, r, -90 + 60 * i, -30 + 60 * i)}" fill="{col}"/>'
-                     for i, col in enumerate(cols))
-    seams = "".join(ink(*c, *polar(*c, r, -90 + 60 * i), 7) for i in range(6))
-    face = (wedges + seams + f'<circle cx="{c[0]}" cy="{c[1]}" r="{r}" fill="none" stroke="{INK}" stroke-width="8"/>'
-            f'<circle cx="{c[0]}" cy="{c[1]}" r="23" fill="{INK}"/>' + stud(c[0], c[1], 15, "#FFF3A8", "#C27400"))
-    pointer = "M72,6 L128,6 Q138,6 132,16 L106,52 Q100,60 94,52 L68,16 Q62,6 72,6 Z"
-    return build([part(circ(*c, R), GOLD), part(pointer, RED, z=1, sep=True, dy=8)],
-                 gloss=["M30,96 A72,72 0 0,1 50,56", "M78,16 L112,16"], extra=face)
-
-
-def wave():
-    """the wake trail prize: a teal curling crest over a blue swell"""
-    crest = ("M14,176 L14,140 C14,84 58,38 112,34 C154,32 188,58 188,92 C188,118 168,130 150,126 "
-             "C134,122 128,106 138,96 C124,84 102,90 96,110 C90,130 106,150 132,152 L188,152 L188,176 Z")
-    swell = "M12,156 Q34,138 56,156 T100,156 T144,156 T188,156 L188,180 Q188,186 182,186 L18,186 Q12,186 12,180 Z"
-    return build([part(crest, TEAL), part(swell, BLUE, z=1, sep=True)],
-                 gloss=["M34,120 C40,86 64,60 96,52"])
-
-
-def waves():
-    """spin-wheel wake prizes: two thick blue swells"""
-    band = lambda y: (f"M14,{y} Q35.5,{y - 20} 57,{y} T100,{y} T143,{y} T186,{y} L186,{y + 40} "
-                      f"Q164.5,{y + 60} 143,{y + 40} T100,{y + 40} T57,{y + 40} T14,{y + 40} Z")
-    return build([part(band(36), BLUE), part(band(112), BLUE)],
-                 gloss=["M26,46 Q36,34 50,38", "M26,122 Q36,110 50,114"])
-
-
-ICONS = {"lifebuoy": lifebuoy, "lock": lock, "map": map_, "quests": quests, "settings": settings, "sun": sun,
-         "shop": shop, "vip": vip, "spin": spin, "wave": wave, "waves": waves}
+ICONS = {"lifebuoy": lifebuoy, "lock": lock, "map": map_, "quests": quests, "settings": settings, "sun": sun, "vip": vip}
 
 
 def write(name, body, x0, y0, box=BOX):

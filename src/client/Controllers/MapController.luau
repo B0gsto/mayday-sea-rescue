@@ -506,7 +506,7 @@ local function buildMinimap()
 	root.Parent = Layout.region(miniGui, "minimap")
 	corner(root)
 	mini.root = root
-	-- the brass bezel (assets/ui/hud/minimap_ring_thin.png, hole 72%): 4% past the square so its
+	-- the bezel (art/source/ui/hud_minimap_ring.svg, hole 72%): 4% past the square so its
 	-- hole (RING * 0.72) just covers the canvas edge
 	local ring = Instance.new("ImageLabel")
 	ring.Name = "Bezel"

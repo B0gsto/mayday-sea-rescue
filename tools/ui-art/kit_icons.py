@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""UI Kit menu/button icons, first half (perfect-ui r1): house sticker style (stickers.py sticker(): white rim 30,
+"""UI Kit menu/button icons, first half (perfect-ui r2; companion/crew/daily/finish_now/gift/hourglass live in kit_icons3.py): house sticker style (stickers.py sticker(): white rim 30,
 ink 12, lip 12 down, top-to-bottom gradient, gloss 10 @ 0.55), multi-part icons die-cut as one sticker (every part's
 rim first, then each part's ink + lip + fill back to front). Writes art/source/ui/kit_<name>.svg with a square viewBox
 fitted so the art fills 88% of it, then renders <out>/Kit.<name>.png (128x128 page, --keep = 256 px).
@@ -24,6 +24,13 @@ C = {  # top, bottom, lip
     "boost": ("#FFE45C", "#FF8A00", "#B84A08"), "cream": ("#FFFFFF", "#E6DCC2", "#B3A27E"),
     "navy": ("#5FA8F0", "#1A55A8", "#123C7A"), "glass": ("#F2FCFF", "#A6E2F7", "#5FA9C9"),
     "slate": ("#6E7890", "#3A4150", "#232836"), "skin": ("#FFE45C", "#FFC21A", "#C27400"),
+    # r2 Lego-bright set: brighter tops, saturated (never brown/maroon) lips
+    "sky": ("#A6EEFF", "#2E9BFF", "#1A66D1"), "red2": ("#FF9A86", "#F2343C", "#C21F2A"),
+    "bolt": ("#FFF27A", "#FFA412", "#E86A00"), "orange2": ("#FFD27A", "#FF7A1A", "#DB560A"),
+    "green2": ("#CBFF8F", "#3CCB52", "#23992F"), "paper": ("#FFFFFF", "#E8F1FF", "#9DB8E0"),
+    # r3: deeper back card, darker hull/head/bolt lips (still saturated, never brown/maroon)
+    "deep": ("#6CC8FF", "#1E74E6", "#1450B8"), "hull": ("#FFD27A", "#FF7A1A", "#B8460A"),
+    "bolt2": ("#FFF27A", "#FFA412", "#C85500"), "red3": ("#FF9A86", "#F2343C", "#B3121C"),
 }
 
 
@@ -90,8 +97,8 @@ class Icon:
                          f'<stop offset="1" stop-color="{bottom}"/></linearGradient>')
         return gid
 
-    def part(self, d, col, lip=12, gloss=None, extra=""):
-        self.parts.append((d, col, lip, gloss, extra))
+    def part(self, d, col, lip=12, gloss=None, extra="", ink=12):
+        self.parts.append((d, col, lip if isinstance(lip, tuple) else (0, lip), gloss, extra, ink))
 
     def inner(self, d, col, ink=8, lip=6):
         """a small shape on top of a part (a star, a coin): its own ink line, lip and gradient, no rim"""
@@ -103,13 +110,13 @@ class Icon:
                 + f'<path d="{d}" fill="url(#{g})"/>')
 
     def layers(self):
-        P = lambda d, fill, dy, stroke=None, w=0: (f'<path d="{d}" transform="translate(0,{dy})" fill="{fill}"'
+        P = lambda d, fill, o, stroke=None, w=0: (f'<path d="{d}" transform="translate({o[0]},{o[1]})" fill="{fill}"'
                                                    + (f' stroke="{stroke}" stroke-width="{w}" stroke-linejoin="round"' if w else "") + "/>")
-        out = "".join(P(d, "#fff", dy, "#fff", 30) for d, _, lip, _, _ in self.parts for dy in {0, lip})
-        for d, col, lip, gloss, extra in self.parts:
+        out = "".join(P(d, "#fff", dy, "#fff", 30) for d, _, lip, _, _, _ in self.parts for dy in dict.fromkeys([(0, 0), lip]))
+        for d, col, lip, gloss, extra, ink in self.parts:
             g = self.grad(col)
-            out += "".join(P(d, INK, dy, INK, 12) for dy in sorted({0, lip}, reverse=True))
-            out += (P(d, C[col][2], lip) if lip else "") + P(d, f"url(#{g})", 0)
+            out += "".join(P(d, INK, dy, INK, ink) for dy in sorted({(0, 0), lip}, reverse=True))
+            out += (P(d, C[col][2], lip) if lip != (0, 0) else "") + P(d, f"url(#{g})", (0, 0))
             if gloss:
                 out += f'<path d="{gloss}" fill="none" stroke="#fff" stroke-opacity="0.55" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>'
             out += extra
@@ -117,8 +124,9 @@ class Icon:
 
     def svg(self, box, note):
         x, y, s = box
+        body = self.layers()  # first: layers() adds the part gradients to defs
         return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x:.1f} {y:.1f} {s:.1f} {s:.1f}" width="128" height="128">'
-                f"<!-- {note} --><defs>{''.join(self.defs)}</defs>{self.layers()}</svg>\n")
+                f"<!-- {note} --><defs>{''.join(self.defs)}</defs>{body}</svg>\n")
 
 
 def line(d, w=7, col=INK, cap="round"):
@@ -135,173 +143,69 @@ def stud(cx, cy, r, light, dark):
 
 
 # --- the icons ---
+def rotd(d, deg, cx=100, cy=100):
+    """rotate an absolute M/L/Q/C path about (cx, cy)"""
+    nums = [float(t) for t in re.findall(r"-?\d+(?:\.\d+)?", d)]
+    pts = rot(list(zip(nums[::2], nums[1::2])), deg, cx, cy)
+    it = iter(f"{x:.1f},{y:.1f}" for x, y in pts)
+    return re.sub(r"-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?", lambda m: next(it), d)
+
+
 def album():
     i = Icon()
-    i.part(rrect(40, 22, 186, 162, 14), "cream", extra=line("M172,40 L172,148", 7, "#C9B98F"))
-    star_d = poly(star(104, 92, 50, 22))
-    i.part(rrect(16, 14, 162, 160, 14), "blue", gloss="M68,32 L120,32",
-           extra=f'<path d="{rrect(16, 14, 50, 160, 14)}" fill="{C["navy"][2]}"/>' + line("M50,20 L50,154", 8)
-           + i.inner(star_d, "gold", ink=10, lip=7) + line("M80,82 L94,64", 8, "#fff"))
-    return i, "the album / sticker book: a blue Lego-bright cover, navy spine, cream page block, big gold star"
+    back = rrect(58, 4, 192, 150, 16) + " " + " ".join(rrect(x, -18, x + 36, 12, 7) for x in (78, 140))  # 2 Lego studs on top
+    i.part(back, "deep", lip=14)
+    i.part(rrect(8, 34, 154, 182, 18), "sky", lip=14, gloss="M32,56 L62,56",
+           extra=i.inner(poly(star(81, 112, 56, 26)), "gold", ink=12, lip=8))
+    return i, "the album / sticker book: a bright blue cover with one huge gold star over a deeper blue back card with 2 Lego studs"
 
 
 def boat_to_me():
     i = Icon()
-    hull = "M12,128 L58,112 L178,112 Q188,112 188,122 L188,148 Q188,162 174,162 L70,162 Q32,162 12,128 Z"
-    seat = "M70,112 L84,86 Q88,80 96,80 L154,80 Q164,80 164,90 L164,112 Z"
-    i.part(seat, "slate", lip=0, gloss="M100,92 L146,92")
-    i.part(hull, "orange", gloss="M44,124 L74,118", extra=line("M66,134 L176,134", 9, "#fff"))
-    arrow = "M14,40 L62,4 L62,24 L170,24 Q182,24 182,36 L182,44 Q182,56 170,56 L62,56 L62,76 Z"
-    i.part(arrow, "blue", gloss="M40,40 L56,28")
-    return i, "boat to me: an orange jet ski (dark seat, white stripe) with a fat blue arrow over it, heading in"
+    i.part(rrect(130, 76, 180, 126, 10), "paper", lip=0)  # cabin block on the deck
+    hull = "M6,112 L190,112 L182,170 Q180,184 166,184 L74,184 Q34,184 6,112 Z"  # pointed bow left
+    i.part(hull, "hull", lip=16, gloss="M40,128 L96,128",
+           extra=line("M58,154 L176,154", w=10, col="#fff"))  # waterline stripe
+    arrow = "M8,48 L60,4 L60,26 L106,26 Q118,26 118,38 L118,58 Q118,70 106,70 L60,70 L60,92 Z"
+    i.part(arrow, "sky", lip=10, gloss="M30,46 L50,30")
+    return i, "boat to me: a short fat blue arrow pointing left over a bright orange boat (pointed bow, white cabin, waterline stripe)"
 
 
 def boost():
     i = Icon()
-    bolt = "M106,8 L154,8 L124,72 L172,72 L72,192 L92,118 L36,118 Z"
-    i.part(bolt, "boost", gloss="M100,28 L70,84")
-    return i, "boost: a fat lightning bolt, saturated yellow to orange"
+    bolt = "M84,4 L170,4 L138,72 L192,72 L58,198 L82,124 L18,124 Z"
+    i.part(bolt, "bolt2", lip=(6, 14), gloss="M94,22 L66,88")
+    return i, "boost: a fat lightning bolt with a wide middle step, bright yellow to orange, dark-orange lip down-right"
 
 
 def build():
     i = Icon()
-    # wrench: handle bottom-right -> open jaw top-left
-    p0, p1, r, hw, depth = (164, 176), (66, 68), 38, 14, 30
-    L = math.hypot(p1[0] - p0[0], p1[1] - p0[1])
-    u = ((p1[0] - p0[0]) / L, (p1[1] - p0[1]) / L)
-    n = (-u[1], u[0])
-    au, ah = math.atan2(u[1], u[0]), math.asin(hw / r)
-    arc = [(p1[0] + r * math.cos(au + ah + t * (2 * math.pi - 2 * ah) / 40), p1[1] + r * math.sin(au + ah + t * (2 * math.pi - 2 * ah) / 40))
-           for t in range(41)]
-    d0 = r - depth
-    slot = [(p1[0] + u[0] * d0 - n[0] * hw, p1[1] + u[1] * d0 - n[1] * hw), (p1[0] + u[0] * d0 + n[0] * hw, p1[1] + u[1] * d0 + n[1] * hw)]
-    head = ccw(arc + slot)
-    i.part(poly(bar(p0, p1, 30)) + " " + poly(head), "blue")
-    # hammer: yellow handle bottom-left -> red head top-right
-    q0, q1 = (40, 174), (130, 66)
-    i.part(poly(bar(q0, q1, 30)), "gold", gloss="M66,136 L88,110")
-    L = math.hypot(q1[0] - q0[0], q1[1] - q0[1])
-    v = ((q1[0] - q0[0]) / L, (q1[1] - q0[1]) / L)
-    m = (-v[1], v[0])
-    c = (q1[0] + v[0] * 4, q1[1] + v[1] * 4)
-    hd = poly(bar((c[0] - m[0] * 56, c[1] - m[1] * 56), (c[0] + m[0] * 50, c[1] + m[1] * 50), 50))
-    g0 = (c[0] + v[0] * 12 + m[0] * 44, c[1] + v[1] * 12 + m[1] * 44)
-    g1 = (c[0] + v[0] * 12 + m[0] * 10, c[1] + v[1] * 12 + m[1] * 10)
-    i.part(hd, "red", gloss=f"M{g0[0]:.1f},{g0[1]:.1f} L{g1[0]:.1f},{g1[1]:.1f}")
-    return i, "build: a red-headed hammer with a Lego-yellow handle crossed over a blue open wrench"
+    R = lambda d: rotd(d, 40, 100, 100)
+    i.part(R(rrect(74, 90, 126, 204, 18)), "bolt")
+    i.part(R(rrect(6, 14, 194, 102, 16)), "red3", lip=16, gloss=R("M26,34 L26,74"),
+           extra="".join(stud(*(round(v, 1) for v in rot([(x, 58)], 40, 100, 100)[0]), 22, "#FFB3A6", "#B3121C") for x in (72, 138)))
+    return i, "build: one bold Lego-brick hammer, a big red 2-stud brick head on a fat yellow handle"
 
 
 def cash():
     i = Icon()
-    back = poly(rot([(22, 40), (178, 40), (178, 124), (22, 124)], -12, 100, 82))
-    i.part(back, "green", extra=line(poly(rot([(40, 56), (160, 56), (160, 108), (40, 108)], -12, 100, 82)), 7, "#C9FFA8"))
-    i.part(rrect(12, 72, 188, 160, 14), "green", lip=20, gloss="M28,90 L60,90",
-           extra=line("M24,170 L176,170", 7) + line(rrect(30, 88, 170, 144, 8), 7, "#C9FFA8") + stud(100, 116, 24, "#C9FFA8", "#1F8A33"))
-    return i, "cash: two bold green bills (one tilted behind), a stack lip with a seam, a Lego stud in place of the emblem"
+    back = poly(rot([(22, 36), (178, 36), (178, 118), (22, 118)], -12, 100, 78))
+    i.part(back, "green2", ink=14)
+    i.part(rrect(10, 72, 190, 168, 16), "green2", lip=14, ink=14, gloss="M30,92 L64,92",
+           extra=stud(100, 120, 30, "#D8FFB0", "#23992F"))
+    return i, "cash: two bold green bills (one tilted behind), a Lego stud in place of the emblem"
 
 
 def close():
     i = Icon()
-    a, L = 25, 82
+    a, L = 30, 86
     plus = [(-a, -L), (a, -L), (a, -a), (L, -a), (L, a), (a, a), (a, L), (-a, L), (-a, a), (-L, a), (-L, -a), (-a, -a)]
     x = rot([(100 + px, 94 + py) for px, py in plus], 45, 100, 94)
-    i.part(poly(x), "red", gloss="M52,50 L80,78")
-    return i, "close: the simulator-kit red X, gradient, lip, rim"
+    i.part(poly(x), "red2", lip=14, gloss="M48,52 L76,80")
+    return i, "close: the simulator-kit red X, bright gradient, lip, gloss, rim"
 
 
-def companion():
-    i = Icon()
-    for cx, cy, deg in ((32, 88, -28), (74, 44, -8), (126, 44, 8), (168, 88, 28)):
-        i.part(poly(ellipse(cx, cy, 21, 27, deg)), "orange", lip=10, gloss=f"M{cx - 10},{cy - 6} Q{cx - 9},{cy - 15} {cx - 2},{cy - 19}")
-    pad = "M100,104 C128,104 154,128 158,150 C162,172 144,182 126,176 C114,172 86,172 74,176 C56,182 38,172 42,150 C46,128 72,104 100,104 Z"
-    i.part(pad, "orange", lip=10, gloss="M64,146 C68,132 80,122 92,120")
-    return i, "companion: an orange paw print, each pad die-cut in the one sticker, a darker lip under every pad"
-
-
-def crew():
-    i = Icon()
-
-    def fig(ox, oy, helmet, vest):
-        i.part(tf("M8,180 L14,140 Q18,126 34,126 L86,126 Q102,126 106,140 L112,180 Z", 1, ox, oy), vest,
-               gloss=tf("M26,146 L30,138", 1, ox, oy))
-        face = (f'<circle cx="{ox + 48}" cy="{oy + 98}" r="7" fill="{INK}"/><circle cx="{ox + 72}" cy="{oy + 98}" r="7" fill="{INK}"/>'
-                + line(tf("M46,112 Q60,122 74,112", 1, ox, oy), 7))
-        i.part(tf(rrect(26, 54, 94, 132, 20), 1, ox, oy), "skin", lip=8, extra=face)
-        i.part(tf(rrect(44, 12, 76, 34, 6), 1, ox, oy), helmet, lip=0)
-        i.part(tf("M16,80 Q16,28 60,28 Q104,28 104,80 Q104,86 98,86 L22,86 Q16,86 16,80 Z", 1, ox, oy), helmet, lip=8,
-               gloss=tf("M34,54 Q40,42 54,38", 1, ox, oy))
-
-    fig(0, -10, "blue", "orange")
-    fig(76, 8, "red", "orange")
-    return i, "crew: two Lego minifig rescuers, simple dot-eye faces, helmets with a stud on top"
-
-
-def daily():
-    i = Icon()
-    i.part("M30,96 L40,22 Q42,12 52,12 L148,12 Q158,12 160,22 L170,96 Z", "orange",
-           extra=f'<path d="M50,88 L56,32 L144,32 L150,88 Z" fill="#C85A12" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>')
-    heap = "M28,112 Q30,74 62,70 Q76,40 100,42 Q124,40 138,70 Q170,74 172,112 Z"
-    coins = "".join(i.inner(poly(ellipse(cx, cy, 15, 15)), "gold", ink=7, lip=4) for cx, cy in ((66, 86), (102, 62), (136, 88)))
-    i.part(heap, "gold", lip=0, gloss="M48,92 Q54,80 66,76", extra=coins)
-    bands = "".join(i.inner(rrect(x, 102, x + 20, 178, 4), "gold", ink=7, lip=0) for x in (36, 144))
-    i.part(rrect(18, 100, 182, 176, 14), "orange", gloss="M30,116 L30,150",
-           extra=line("M24,124 L176,124", 8) + bands + i.inner(rrect(82, 98, 118, 140, 8), "gold", ink=8, lip=0)
-           + f'<circle cx="100" cy="116" r="6" fill="{INK}"/>' + line("M100,118 L100,128", 7))
-    return i, "daily reward: a bright wood treasure chest, lid flung open, a big gold coin heap, gold bands and lock"
-
-
-HOURGLASS = {  # 200-unit hourglass, M/L/Q only so finish_now can scale it
-    "studs": [rrect(52, 2, 80, 18, 5), rrect(120, 2, 148, 18, 5)],
-    "glass": "M52,36 L148,36 Q148,80 112,100 Q148,120 148,166 L52,166 Q52,120 88,100 Q52,80 52,36 Z",
-    "pillars": [rrect(28, 30, 50, 172, 6), rrect(150, 30, 172, 172, 6)],
-    "top": rrect(20, 12, 180, 42, 10), "bottom": rrect(20, 160, 180, 188, 10),
-    "sand_top": "M66,62 L134,62 Q130,82 106,96 L94,96 Q70,82 66,62 Z",
-    "sand_bot": "M60,160 Q64,128 100,120 Q136,128 140,160 Z",
-}
-
-
-def hourglass_parts(i, s=1, ox=0, oy=0):
-    T = lambda d: tf(d, s, ox, oy)
-    H = HOURGLASS
-    for d in H["studs"]:
-        i.part(T(d), "orange", lip=0)
-    sand = i.inner(T(H["sand_top"]), "gold", ink=7, lip=0) + i.inner(T(H["sand_bot"]), "gold", ink=7, lip=0) \
-        + line(T("M100,96 L100,124"), 9, "#FFAE00")
-    i.part(T(H["glass"]), "glass", lip=0, gloss=T("M64,48 Q66,72 82,86"), extra=sand)
-    for d in H["pillars"]:
-        i.part(T(d), "orange", lip=0)
-    i.part(T(H["top"]), "orange", gloss=T("M36,24 L84,24"))
-    i.part(T(H["bottom"]), "orange")
-
-
-def hourglass():
-    i = Icon()
-    hourglass_parts(i)
-    return i, "timer: a chunky hourglass, bright wood brick caps with studs, thick pillars, pale glass, gold sand"
-
-
-def finish_now():
-    i = Icon()
-    hourglass_parts(i, 0.8, 0, 0)
-    disc = poly(ellipse(140, 140, 52, 52, 0, 64))
-    bolt = tf("M106,8 L154,8 L124,72 L172,72 L72,192 L92,118 L36,118 Z", 0.46, 96, 96)
-    i.part(disc, "red", gloss="M104,128 Q108,108 124,98", extra=i.inner(bolt, "gold", ink=9, lip=5))
-    return i, "finish now: the hourglass with a big red lightning badge (gold bolt) over its corner"
-
-
-def gift():
-    i = Icon()
-    loops = ("M100,76 C74,16 12,12 24,56 C30,80 72,82 100,76 Z", "M100,76 C126,16 188,12 176,56 C170,80 128,82 100,76 Z")
-    holes = (f'<path d="M86,68 C70,40 44,34 46,54 C48,66 70,70 86,68 Z" fill="#C27400" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>'
-             f'<path d="M114,68 C130,40 156,34 154,54 C152,66 130,70 114,68 Z" fill="#C27400" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>')
-    i.part(" ".join(loops), "gold", lip=0, extra=holes)
-    i.part(rrect(32, 98, 168, 180, 10), "red", extra=i.inner(rrect(86, 104, 114, 180, 2), "gold", ink=7, lip=0))
-    i.part(rrect(18, 70, 182, 108, 10), "red", gloss="M32,82 L74,82", extra=i.inner(rrect(84, 70, 116, 108, 2), "gold", ink=7, lip=0))
-    i.part(rrect(82, 56, 118, 88, 10), "gold", lip=0)
-    return i, "gift: a red present, gold ribbon, a big gold bow, gloss on the lid"
-
-
-ICONS = [album, boat_to_me, boost, build, cash, close, companion, crew, daily, finish_now, gift, hourglass]
+ICONS = [album, boat_to_me, boost, build, cash, close]
 
 
 def render(svg_path, png):
