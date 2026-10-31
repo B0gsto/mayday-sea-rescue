@@ -205,7 +205,7 @@ local function unstickBoat(model: Model, throttle: number, speed: number, dt: nu
 	if throttle > 0.05 and math.abs(speed) < Unstick.SPEED then
 		local wedged, normal = dockContact(model)
 		if Unstick.step(state, dt, wedged, speed, throttle) and normal then
-			-- nobody aboard and dry land ahead: driving into the shore lands you on it (else push off the wall)
+			-- nobody aboard and a jetty ahead: driving into it lands you on it (a beach or a wall: push off)
 			local empty = (tonumber(model:GetAttribute("SurvivorCount")) or 0) == 0
 			local root = if empty and VehicleExitController.Ashore(-normal)
 				then nil

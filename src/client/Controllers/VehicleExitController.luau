@@ -53,7 +53,8 @@ local function landSpot(
 	vehicle: Model,
 	character: Model,
 	dirs: { Vector3 },
-	skip: Instance?
+	skip: Instance?,
+	decksOnly: boolean?
 ): CFrame?
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
@@ -67,6 +68,15 @@ local function landSpot(
 			local p = seat.Position + dir * out
 			local hit = workspace:Raycast(p + Vector3.new(0, 12, 0), Vector3.new(0, -24, 0), params)
 			if hit and hit.Material ~= Enum.Material.Water then
+				if
+					decksOnly
+					and (
+						hit.Instance:IsA("Terrain")
+						or hit.Instance:FindFirstAncestor("IslandPlates")
+					)
+				then
+					return nil -- a beach or island ground, not a deck
+				end
 				-- 2 studs further onto the deck when it goes on: the first hit can be its very edge
 				local p2 = p + dir * 2
 				local deeper =
@@ -159,9 +169,9 @@ local function onCharacter(character: Model)
 	end
 end
 
--- Driven into a shore with nobody aboard (BoatController's wedge): step off onto it toward `dir`, like Space.
--- False when there is only water that way (the push-off frees the hull instead). Playtest 2026-10-30: after the
--- first delivery new players drove at the build-station beacon on land and the push-off bounced them back, again.
+-- Driven into a jetty or deck with nobody aboard (BoatController's wedge): step off onto it toward `dir`, like Space.
+-- False when there is only water, a beach or island ground that way (the push-off slides the hull back to water
+-- instead; playtest 2026-10-31: touching the sand stepped new riders off onto the beach). Space still lands anywhere.
 function VehicleExitController.Ashore(dir: Vector3): boolean
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -174,7 +184,8 @@ function VehicleExitController.Ashore(dir: Vector3): boolean
 		return false
 	end
 	-- the wedge counts moored hulls too: never step onto one
-	local at = landSpot(seat, vehicle, character, { dir }, workspace:FindFirstChild("Vehicles"))
+	local at =
+		landSpot(seat, vehicle, character, { dir }, workspace:FindFirstChild("Vehicles"), true)
 	if not at then
 		return false
 	end

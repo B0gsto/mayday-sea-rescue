@@ -174,12 +174,13 @@ return function(t)
 		t.expect(Buoyancy.steerTorque(1, 30, 0, 100, spec, 1, 1) < 0).toBeTruthy()
 		t.expect(Buoyancy.steerTorque(-1, 30, 0, 100, spec, 1, 1) > 0).toBeTruthy()
 		t.expect(Buoyancy.steerTorque(0, 30, 2, 100, spec, 1, 1) < 0).toBeTruthy()
-		-- weaker at a standstill than at speed, and a jet barely steers off the throttle
+		-- weaker at a standstill than at speed; off the throttle the jet keeps an assist (PTA 2026-10-31: at 0.2 the
+		-- lifted-off turning circle was 5x wider and new players beached it)
 		local slow = math.abs(Buoyancy.steerTorque(1, 0, 0, 100, spec, 1, 1, 1, G))
 		local fast = math.abs(Buoyancy.steerTorque(1, 30, 0, 100, spec, 1, 1, 1, G))
 		local coasting = math.abs(Buoyancy.steerTorque(1, 30, 0, 100, spec, 1, 1, 0, G))
 		t.expect(slow < fast).toBeTruthy()
-		t.expect(coasting < fast * 0.3).toBeTruthy()
+		t.expect(coasting < fast and coasting >= fast * 0.5).toBeTruthy()
 	end)
 
 	t.test("upright torque rolls a tilted hull back toward level", function()

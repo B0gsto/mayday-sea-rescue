@@ -71,9 +71,10 @@ function DevBoard.build(parent: Instance, tabs: { string }): Board
 	local target = HudTheme.button("Target", "🎯 Me", UDim2.new(0.42, 0, 1, -6), header)
 	target.Position = UDim2.new(0.4, 0, 0, 3)
 	target.BackgroundColor3 = C.panelLight
-	local close = HudTheme.button("Close", "X", UDim2.new(0, ROW - 6, 1, -6), header)
+	-- a full-row tap target (PTA 2026-10-31: the 38 px X missed taps at 844 x 390)
+	local close = HudTheme.button("Close", "X", UDim2.new(0, ROW + 8, 1, 0), header)
 	close.AnchorPoint = Vector2.new(1, 0)
-	close.Position = UDim2.new(1, 0, 0, 3)
+	close.Position = UDim2.fromScale(1, 0)
 	close.BackgroundColor3 = C.panelLight
 
 	-- tabs wrap in rows of 4, all visible at once
@@ -163,6 +164,15 @@ function DevBoard.build(parent: Instance, tabs: { string }): Board
 	}
 	close.Activated:Connect(function()
 		board.setVisible(false)
+	end)
+	-- close on the press too: a tap that drifts off the small corner button never fires Activated
+	close.InputBegan:Connect(function(input)
+		if
+			input.UserInputType == Enum.UserInputType.Touch
+			or input.UserInputType == Enum.UserInputType.MouseButton1
+		then
+			board.setVisible(false)
+		end
 	end)
 	return board
 end
