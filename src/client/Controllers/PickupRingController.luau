@@ -26,7 +26,7 @@ local FAR_WIDTH = 1 / 25 -- band width per stud of camera distance (150 studs: ~
 local FADE = 1 -- s: once they leave the water the ring swells and fades, so the climb aboard reads
 -- far marker: a lifebuoy pip over the swimmer, always on top, out to MARK_FAR; it fades out as you close
 -- (the ring takes over) between MARK_NEAR and MARK_NEAR * 2. Pooled: MARK_MAX nearest get one.
-local MARK_FAR, MARK_NEAR, MARK_MAX = 400, 45, 8
+local MARK_FAR, MARK_NEAR, MARK_MAX = 560, 45, 8 -- 560: the cove-mouth swimmers read from your island
 
 local rings: { [Model]: CylinderHandleAdornment } = {}
 local fading: { [CylinderHandleAdornment]: number } = {} -- band -> os.clock() they left the water
