@@ -72,7 +72,12 @@ AudioConfig.Clips = {
 	),
 
 	-- Lifeboat class (Lifeboat, Tidewalker, Submarine at the surface): a diesel idle under the outboard's high layer.
-	Eng_Lifeboat_Idle = rl(9112780932, 0.6, "Fishing Boat 1 (SFX)", "diesel; also the RIB's fallback"),
+	Eng_Lifeboat_Idle = rl(
+		9112780932,
+		0.6,
+		"Fishing Boat 1 (SFX)",
+		"diesel; also the RIB's fallback"
+	),
 
 	-- Hull and water.
 	-- Helicopter: one hover loop; HeliController sets its pitch and volume from the rotor spool (spin-up / down).

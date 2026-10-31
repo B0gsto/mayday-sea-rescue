@@ -578,13 +578,22 @@ local function updateAmbience(dt: number, now: number, camPos: Vector3)
 	setBed(beds.Amb_Crickets, crickets, dt, 0.4)
 	-- birds on the island plates by day, hushed by a storm
 	local onIsland = math.clamp(1 - (homeDist - RingLayout.IslandRadius) / 80, 0, 1)
-	local birds = if not night and not underwater and above < 120 then onIsland * (1 - intensity) else 0
+	local birds = if not night
+			and not underwater
+			and above < 120
+		then onIsland * (1 - intensity)
+		else 0
 	setBed(beds.Amb_Island, birds, dt, 0.4)
 
 	-- marina bed and jetty creaks (3D at the nearest jetty) and halyards on masts, more with the wind
 	local inHarbour = harbourDist < AudioConfig.HarbourRadius + 150
 	setBed(beds.Amb_Harbour, if inHarbour and not underwater then 1 - 0.6 * intensity else 0, dt, 1)
-	setBed(beds.Amb_DockCreak, if inHarbour and not underwater then 0.6 + 0.4 * intensity else 0, dt, 1)
+	setBed(
+		beds.Amb_DockCreak,
+		if inHarbour and not underwater then 0.6 + 0.4 * intensity else 0,
+		dt,
+		1
+	)
 	if inHarbour and not underwater then
 		riggingCarry += dt * MIX.riggingRate * math.clamp(
 			0.25 + w.light * 0.3 + w.strong * 0.7 + w.gale,
@@ -860,7 +869,8 @@ function AudioController.Start()
 			local root = character.PrimaryPart
 			local at = if root then root.Position else nil
 			if active and vehicle and model then
-				local craft = model:GetAttribute("Sub") == true or CollectionService:HasTag(model, "Heli")
+				local craft = model:GetAttribute("Sub") == true
+					or CollectionService:HasTag(model, "Heli")
 				if craft or not (seat :: Instance):IsA("VehicleSeat") then
 					AudioController.play("FX_Thud", at, 0.6, rng:NextNumber(1.05, 1.2))
 				end
