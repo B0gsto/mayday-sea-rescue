@@ -1,7 +1,8 @@
 --!strict
 -- Board panel: a craft board's list (server/Dock/BoatBoard; opened by its one BoardOpen prompt through
 -- BoatBoardController -> Menu.openBoard). A card per craft on that rack: its 3D portrait, name and state.
---   owned        green Launch button: Net BoardLaunch (the crane beat, then you in its seat); the panel closes
+--   owned        green card, "Owned" (or "Equipped": the craft Launch and Boat to me bring), green Launch
+--                button: Net BoardLaunch (the crane beat, then you in its seat); the panel closes
 --   needs X      grey card, padlock, "Needs: <building>" line, buttons greyed (Robux never skips the order)
 --   buyable      Cash price (grey when short) and the Robux pass price
 -- Tapping a portrait opens that craft's BoatCard (stats, upgrades).
@@ -11,6 +12,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
+local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
@@ -62,6 +64,7 @@ function Board.new(
 	})
 	local rack: Instance? = nil
 	local data: Rules.PlayerData? = nil
+	local last: any = nil -- flags.lastVehicle: the craft the berth's Launch brings (VehicleService bayCraft)
 	local busy = false
 	local refresh: () -> ()
 
@@ -96,10 +99,17 @@ function Board.new(
 		local have = d ~= nil and (Rules.canUseVehicle(d, id, ownsPass(id)))
 		local need = if d and not have then Rules.vehicleLock(d, id) else nil
 		local cashOk = d ~= nil and not have and (Rules.canBuyVehicle(d, id, ownsPass(id)))
+		local equipped = have
+			and d ~= nil
+			and BayLaunch.pick(last, VehicleConfig.Order, function(v)
+					return (Rules.canUseVehicle(d, v, ownsPass(v)))
+				end)
+				== id
 		local c = Card.new(panel.body, {
 			art = "boat_to_me",
 			title = spec.displayName,
-			color = if have then "green" else "blue",
+			line = if equipped then "Equipped" elseif have then "Owned" else nil,
+			color = if equipped then "yellow" elseif have then "green" else "blue",
 			price = if unlock then unlock.price else 0,
 			currency = "Cash",
 			state = if have or cashOk then "buy" elseif need then "locked" else "disabled",
@@ -123,6 +133,9 @@ function Board.new(
 			c.setLine(`Needs: {UnlockTree.needName(need)}`)
 		end
 		c.price.root.Visible = have or not (unlock and unlock.passOnly)
+		if not (have or c.price.root.Visible or passItem(id)) then
+			c.setState("locked") -- a prize-only craft (pass off sale): padlock, never a card with no button
+		end
 
 		-- the portrait over the icon; tap: the craft's own card
 		for _, ch in c.art:GetChildren() do
@@ -211,6 +224,7 @@ function Board.new(
 	local function onData(raw: any)
 		if type(raw) == "table" then
 			data = Rules.fromSnapshot(raw)
+			last = if type(raw.flags) == "table" then raw.flags[BayLaunch.FLAG] else nil
 			if panel.isOpen() then
 				refresh()
 			end
