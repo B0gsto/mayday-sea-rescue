@@ -22,12 +22,16 @@ export type Spec = {
 
 export type Input = { forward: number, strafe: number, yaw: number, lift: number } -- each -1..1
 
-export type State = { velocity: Vector3, heading: number, yawRate: number }
+-- push: the flat velocity change still wanted (target - velocity), so the nose leads into a speed-up and
+-- flares up into a stop
+export type State = { velocity: Vector3, heading: number, yawRate: number, push: Vector3 }
 
 Flight.WATER_CLEARANCE = 8 -- studs from the sea to the skids: a piloted heli never ditches
 Flight.FLOAT_DRAFT = 1 -- studs the skids sit under the sea when an empty heli settles onto it (Craft.idle)
 Flight.ALTITUDE_GAIN = 2 -- 1/s: how hard the floor and ceiling push back
 Flight.WIND = 1.5 -- studs/s of drift in a full storm; under Board.STEADY_SPEED, so a hover still winches
+Flight.BOB = 0.5 -- studs/s of a hover's slow up-and-down sway (HeliController, airborne only)
+Flight.LIFTOFF = 0.4 -- rotor spool (0..1) under which the controls do nothing: it spins up before it lifts
 
 -- Flight specs by VehicleId (VehicleConfig gets the entry in WP-10). 1 m = 3 studs.
 Flight.SPECS = {
@@ -49,7 +53,12 @@ function Flight.spec(vehicleId: any): Spec?
 end
 
 function Flight.new(heading: number, velocity: Vector3?): State
-	return { velocity = velocity or Vector3.zero, heading = heading, yawRate = 0 }
+	return {
+		velocity = velocity or Vector3.zero,
+		heading = heading,
+		yawRate = 0,
+		push = Vector3.zero,
+	}
 end
 
 -- Heading of a look vector (inverse of CFrame.Angles(0, heading, 0).LookVector).
@@ -104,6 +113,7 @@ function Flight.step(
 		(floorY - y) * Flight.ALTITUDE_GAIN
 	)
 	local target = Vector3.new(flat.X, vy, flat.Z)
+	s.push = Vector3.new(target.X - s.velocity.X, 0, target.Z - s.velocity.Z)
 
 	local delta = target - s.velocity
 	local maxStep = spec.accel * dt
@@ -111,15 +121,27 @@ function Flight.step(
 	return s
 end
 
--- The pose for AlignOrientation: heading, nose down with forward speed, banked into strafe and turns.
+-- The pose for AlignOrientation: heading, nose down with forward speed, banked into strafe and turns. The
+-- push leads it: a deeper dip as it speeds up, a nose-up flare as it stops, level again in a still hover.
 function Flight.attitude(s: State, spec: Spec): CFrame
 	local yawOnly = CFrame.Angles(0, s.heading, 0)
-	local fwd = s.velocity:Dot(yawOnly.LookVector) / spec.forwardSpeed
-	local side = s.velocity:Dot(yawOnly.RightVector) / spec.strafeSpeed
+	local look, right = yawOnly.LookVector, yawOnly.RightVector
+	local fwd = (s.velocity:Dot(look) * 0.5 + s.push:Dot(look) * 0.8) / spec.forwardSpeed
+	local side = (s.velocity:Dot(right) * 0.6 + s.push:Dot(right) * 0.6) / spec.strafeSpeed
 	local turn = s.yawRate / spec.yawRate
 	local pitch = -math.clamp(fwd, -1, 1) * spec.maxTilt
-	local roll = -math.clamp(side * 0.6 - turn * 0.4, -1, 1) * spec.maxTilt
+	local roll = -math.clamp(side - turn * 0.4, -1, 1) * spec.maxTilt
 	return yawOnly * CFrame.Angles(pitch, 0, roll)
+end
+
+-- Controls scaled by the rotor spool: nothing under LIFTOFF, full at 1 (a parked heli spins up, then lifts).
+function Flight.power(spool: number): number
+	return math.clamp((spool - Flight.LIFTOFF) / (1 - Flight.LIFTOFF), 0, 1)
+end
+
+-- The hover sway (studs/s up) at time t: slow, under a stud each way.
+function Flight.bob(t: number): number
+	return Flight.BOB * math.sin(t * 1.7)
 end
 
 return Flight

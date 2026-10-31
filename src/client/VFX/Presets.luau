@@ -1213,4 +1213,25 @@ Presets.ALL.ramp_jump = preset({
 	punch = { fov = -4, shake = 0, time = 0.35 },
 })
 
+-- state: a low helicopter's rotor wash on the sea (HeliController, every ~0.25 s while it hovers low over the
+-- water; scale = how low): a foam ring pushed out under it and spray puffs blown flat off the ring. Silent (the
+-- rotor loop and its wash bed carry it)
+Presets.ALL.heli_downwash = preset({
+	job = "state",
+	layers = {
+		with(
+			groundRing("foam_ring", FOAM, curve(6, 16, outCubic), 0.9),
+			{ transparency = { 0.3, 0.45, 1 } }
+		),
+		with(puffs(6, FOAM, 1.6, 3.6, 0.7), {
+			ring = true,
+			speed = { 16, 22 },
+			spread = { 8, 8 },
+			drag = 2.5,
+			transparency = POP,
+		}),
+		with(drops(6, { 10, 16 }, 60, 1.2), { ring = true }),
+	},
+})
+
 return Presets

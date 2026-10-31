@@ -72,6 +72,13 @@ AudioConfig.Clips = {
 	),
 
 	-- Hull and water.
+	-- Helicopter: one hover loop; HeliController sets its pitch and volume from the rotor spool (spin-up / down).
+	Heli_Rotor = rl(
+		9113417360,
+		0.6,
+		"Bell Huey Helicopter Hover Hovering Fly By 1 (SFX)",
+		"rotor loop"
+	),
 	Hull_Lap = rl(9112737677, 0.5, "Active Water Lap 1 (SFX)", "slow or stopped hull"),
 	Hull_BowWash = rl(9112750448, 0.5, "Bow Wash Slow Trolling Speed 1 (SFX)"),
 	Hull_Wake = rl(9120610020, 0.55, "Water Wake Constant 1 (SFX)", "planing hull rush"),
