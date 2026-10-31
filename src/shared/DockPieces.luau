@@ -3841,6 +3841,17 @@ local function seaPlate(m: Model, b: CFrame, key: string)
 	m:SetAttribute("SeaSite", true) -- ConstructionController: a site on the water
 	local deck = brick(m, "Deck", Vector3.new(w, T, d), C * CFrame.new(0, -T / 2, 0), TAN)
 	studTop(deck)
+	-- invisible skirt from the deck's underside into the water: a jet ski's hull slid under the 1-stud deck and its
+	-- rider wedged in it (playtest 2026-10-31); now hulls meet the plate's side (as QuestPontoons)
+	local skirt = part(
+		m,
+		"Skirt",
+		Vector3.new(w, 3 - sea - T, d), -- from 3 under the waterline up to the deck
+		C * CFrame.new(0, (sea - 3 - T) / 2, 0),
+		TAN,
+		M.SmoothPlastic
+	)
+	skirt.Transparency, skirt.CastShadow = 1, false
 	-- pillars: a shaft from the seabed (world -40) to just under the water, then two courses up to the deck
 	local function round(
 		name: string,
