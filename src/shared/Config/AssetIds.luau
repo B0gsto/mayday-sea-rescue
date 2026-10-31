@@ -233,6 +233,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://86006746697409",
 		LOD2 = "rbxassetid://73426253708503",
 	},
+	M_Prop_PrizeWheel = {
+		LOD0 = "rbxassetid://105640824287180",
+		LOD1 = "rbxassetid://108084525137319",
+		LOD2 = "rbxassetid://140393696134901",
+	},
 	M_Prop_SeaChest = { LOD0 = "rbxassetid://84375480737186" },
 	M_Prop_TrophyCup = {
 		LOD0 = "rbxassetid://92823988374506",
@@ -765,6 +770,7 @@ AssetIds.Attachments = {
 	M_Prop_JettyCrane = {
 		ATT_Hook = Vector3.new(0, 13.4, -36.8),
 	},
+	M_Prop_PrizeWheel = {},
 	M_Prop_SeaChest = {
 		ATT_LidHinge = Vector3.new(0, 3.1, -1.8),
 	},
