@@ -26,6 +26,7 @@
 --   BoardLaunch        C->S  launch a craft from your own craft board (board name, vehicleId; server/Dock/BoatBoard)
 --   RequestVehicle     C->S  function: launch a vehicle at a bay (vehicleId, docked?) -> (ok, reasonOrVehicle)
 --   BuyGear            C->S  function: buy a vehicle (vehicleId) -> (ok, reason)
+--   TestRide           C->S  function: ride a locked Robux boat 60 s (board name, vehicleId) -> (ok, reason)
 --   Spin_Flex          S->C  a Legendary / Mythic wheel win: banner + confetti for everyone
 --   Skill_State        S->C  the player's bought skill nodes and Medals (on join and after a buy)
 --   Skill_Buy          C->S  function: buy a skill node (id) -> ok, reason
@@ -47,7 +48,7 @@ export type EventName =
 	| "Skill_State"
 	| "Spin_Wheel"
 
-export type FunctionName = "RequestVehicle" | "BuyGear" | "Skill_Buy" | "Skill_Reset"
+export type FunctionName = "RequestVehicle" | "BuyGear" | "Skill_Buy" | "Skill_Reset" | "TestRide"
 
 local FOLDER_NAME = "Net"
 local WAIT_TIMEOUT = 30
@@ -68,8 +69,9 @@ Net.EVENTS = table.freeze({
 	"Spin_Wheel",
 } :: { EventName })
 
-Net.FUNCTIONS =
-	table.freeze({ "RequestVehicle", "BuyGear", "Skill_Buy", "Skill_Reset" } :: { FunctionName })
+Net.FUNCTIONS = table.freeze(
+	{ "RequestVehicle", "BuyGear", "Skill_Buy", "Skill_Reset", "TestRide" } :: { FunctionName }
+)
 
 local folder: Folder? = nil
 

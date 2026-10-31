@@ -6,11 +6,15 @@
 -- stands: Robux never skips the order). The rack's one BoardOpen prompt opens the board panel
 -- (Menu.openBoard: Launch / Buy per craft); a click / tap on a model opens that craft's BoatCard. Other players'
 -- racks: prompt off.
+-- Test ride (mon REVIEW #7, shared/TestRide): a locked Robux-only model shows a clock "Try" chip; tapping it asks
+-- the server (Net TestRide) to lend it for 60 s. While riding: a clock + seconds chip at the top and a buoy ring
+-- round the bay (TestRideAt); when it ends that craft's card opens with its price.
 local CollectionService = game:GetService("CollectionService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
@@ -19,6 +23,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local ProductShelves = require(Shared:WaitForChild("ProductShelves"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
+local TestRide = require(Shared:WaitForChild("TestRide"))
 local UiImages = require(Config:WaitForChild("UiImages"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 
@@ -51,6 +56,32 @@ local function usable(id: string): boolean?
 	local key = Rules.vehiclePass(id)
 	local pass = key ~= nil and player:GetAttribute("Pass_" .. key) == true
 	return (Rules.canUseVehicle(Rules.fromSnapshot(snap), id, pass))
+end
+
+-- a locked Robux-only boat you may ride now (the server checks again)
+local function tryable(id: string): boolean
+	local snap = snapshot
+	local unlock = ProgressionConfig.Vehicles[id]
+	if not (snap and unlock) then
+		return false
+	end
+	local flags = snap.flags
+	return (
+		TestRide.check({
+			passOnly = unlock.passOnly == true,
+			passReady = passId(id) > 0,
+			owned = usable(id) ~= false,
+			need = Rules.vehicleLock(Rules.fromSnapshot(snap), id),
+			lastDay = TestRide.lastDay(
+				if type(flags) == "table" then flags[TestRide.FLAG] else nil,
+				id
+			),
+			today = TestRide.day(Workspace:GetServerTimeNow()),
+			sinceAsk = math.huge,
+			riding = player:GetAttribute("TestRide") ~= nil,
+			busy = false,
+		})
+	)
 end
 
 local function chip(parent: Instance, name: string, order: number): (Frame, Frame, TextLabel)
@@ -167,7 +198,12 @@ local function paintTag(gui: BillboardGui, id: string)
 	cashIcon:ClearAllChildren()
 	Instance.new("UIAspectRatioConstraint").Parent = cashIcon
 	local need = if snap then Rules.vehicleLock(Rules.fromSnapshot(snap), id) else nil
-	if need then
+	if not need and tryable(id) then
+		-- the test ride: a clock and "Try" (tap the model)
+		cash.Visible = true
+		Glyph.draw("clock", cashIcon, C.gold)
+		cashText.Text = "Try"
+	elseif need then
 		-- the building it needs: its Lego drawing and its name
 		cash.Visible = true
 		BuildGlyph(cashIcon, { kind = "Building", key = need })
@@ -229,7 +265,16 @@ local function paintRack(rack: Instance)
 				click.Name = "Open"
 				click.MaxActivationDistance = 16
 				click.MouseClick:Connect(function()
-					Menu.openBoat(id)
+					if not tryable(id) then
+						Menu.openBoat(id)
+						return
+					end
+					local ok, done = pcall(function()
+						return Net.func("TestRide"):InvokeServer(rack.Name, id)
+					end)
+					if not (ok and done) then
+						Menu.openBoat(id) -- refused: the card and its price
+					end
 				end)
 				click.Parent = model
 			end
@@ -274,6 +319,123 @@ local function onTriggered(prompt: ProximityPrompt)
 	end
 end
 
+-- The ride's HUD: a clock + seconds chip at the top, and a ring of Lego buoys on the water round the bay.
+local rideGui: ScreenGui? = nil
+local buoys: Folder? = nil
+local riddenId: string? = nil
+
+local function buoy(at: Vector3, parent: Instance)
+	local body = Instance.new("Part")
+	body.Shape = Enum.PartType.Cylinder
+	body.Size = Vector3.new(2.4, 2.2, 2.2) -- X is the cylinder's height
+	body.CFrame = CFrame.new(at + Vector3.new(0, 0.9, 0)) * CFrame.Angles(0, 0, math.pi / 2)
+	body.Color = Color3.fromRGB(205, 30, 38)
+	local band = body:Clone()
+	band.Size = Vector3.new(0.8, 2.28, 2.28) -- proud of the body: no shared faces
+	band.Color = Color3.fromRGB(242, 243, 243)
+	band.CFrame = body.CFrame
+	local stud = body:Clone()
+	stud.Size = Vector3.new(0.4, 1.2, 1.2)
+	stud.CFrame = CFrame.new(at + Vector3.new(0, 2.3, 0)) * CFrame.Angles(0, 0, math.pi / 2)
+	for _, p in { body, band, stud } do
+		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow =
+			true, false, false, false, false
+		p.Material = Enum.Material.SmoothPlastic
+		p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+		p.Parent = parent
+	end
+end
+
+local function ringAt(centre: Vector3)
+	local f = Instance.new("Folder")
+	f.Name = "TestRideRing"
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { Workspace.Terrain }
+	local n = 28
+	for i = 1, n do
+		local a = i / n * 2 * math.pi
+		local p = centre + Vector3.new(math.cos(a), 0, math.sin(a)) * TestRide.RADIUS
+		local hit = Workspace:Raycast(p + Vector3.new(0, 60, 0), Vector3.new(0, -120, 0), params)
+		if not hit or hit.Material == Enum.Material.Water then -- on the sea only, never on land
+			buoy(Vector3.new(p.X, if hit then hit.Position.Y else centre.Y, p.Z), f)
+		end
+	end
+	f.Parent = Workspace
+	buoys = f
+end
+
+local function rideHud(): TextLabel
+	local g = Instance.new("ScreenGui")
+	g.Name = "TestRide"
+	g.ResetOnSpawn = false
+	g.DisplayOrder = 5
+	local f = Instance.new("Frame")
+	f.AnchorPoint = Vector2.new(0.5, 0)
+	f.Position = UDim2.new(0.5, 0, 0, 14)
+	f.Size = UDim2.fromOffset(150, 58)
+	f.BackgroundColor3 = C.panel
+	f.BackgroundTransparency = 0.1
+	HudTheme.corner(f, 14)
+	HudTheme.stroke(f, Color3.new(1, 1, 1), 3) -- the sticker rim
+	f.Parent = g
+	local icon = Instance.new("Frame")
+	icon.BackgroundTransparency = 1
+	icon.Position = UDim2.fromOffset(12, 9)
+	icon.Size = UDim2.fromOffset(40, 40)
+	icon.Parent = f
+	Glyph.draw("clock", icon, C.gold)
+	local t = Instance.new("TextLabel")
+	t.BackgroundTransparency = 1
+	t.Position = UDim2.fromOffset(58, 4)
+	t.Size = UDim2.new(1, -66, 1, -8)
+	t.Font = HudTheme.NumberFont
+	t.TextScaled = true
+	t.TextColor3 = Color3.new(1, 1, 1)
+	HudTheme.outline(t)
+	t.Parent = f
+	g.Parent = player:WaitForChild("PlayerGui")
+	rideGui = g
+	return t
+end
+
+local function onRide()
+	local id = player:GetAttribute("TestRide")
+	local ends = player:GetAttribute("TestRideEnds")
+	local at = player:GetAttribute("TestRideAt")
+	if type(id) == "string" then
+		riddenId = id
+		if typeof(at) == "Vector3" and not buoys then
+			ringAt(at)
+		end
+		if type(ends) == "number" and not rideGui then
+			local label = rideHud()
+			task.spawn(function()
+				while rideGui and label.Parent do
+					local left = math.max(0, math.ceil(ends - Workspace:GetServerTimeNow()))
+					label.Text = tostring(left)
+					label.TextColor3 = if left <= 10 then C.gold else Color3.new(1, 1, 1)
+					task.wait(0.2)
+				end
+			end)
+		end
+		paintAll()
+		return
+	end
+	for _, x in { rideGui :: Instance?, buoys :: Instance? } do
+		if x then
+			x:Destroy()
+		end
+	end
+	rideGui, buoys = nil, nil
+	local done = riddenId
+	riddenId = nil
+	paintAll()
+	if done then
+		task.delay(1.2, Menu.openBoat, done) -- sailed home: its card, with the price
+	end
+end
+
 local function onData(d: any)
 	if type(d) == "table" then
 		snapshot = d
@@ -293,6 +455,8 @@ function BoatBoardController.Start()
 	player.AttributeChanged:Connect(function(name: string)
 		if string.sub(name, 1, 5) == "Pass_" then
 			paintAll()
+		elseif string.sub(name, 1, 8) == "TestRide" then
+			onRide()
 		end
 	end)
 	local getData = Net.init():WaitForChild("Progression_GetData", 30)

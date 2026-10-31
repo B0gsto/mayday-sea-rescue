@@ -41,6 +41,7 @@ TelemetryNames.Custom = table.freeze({
 	"SessionStart", -- value = days since the first session: day bucket, gap bucket, New / Returning
 	"SessionEnd", -- value = seconds played: length bucket, device, day bucket
 	"PlateBuilt", -- docs/27: a sea plate stood (value = minutes this session): plate, length bucket, day bucket
+	"TestRide", -- a lent Robux boat (value = seconds ridden): vehicle, Started / Time / SteppedOff
 } :: { string })
 
 -- LogOnboardingFunnelStepEvent step names, in step order. Roblox treats a skipped step as
