@@ -25,6 +25,7 @@ local CameraMath = require(CameraFolder:WaitForChild("CameraMath"))
 local Chase = require(CameraFolder:WaitForChild("Chase"))
 local Cinematic = require(CameraFolder:WaitForChild("Cinematic"))
 local Comfort = require(CameraFolder:WaitForChild("Comfort"))
+local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 
 local CameraController = {}
 CameraController.Priority = 60
@@ -36,6 +37,8 @@ type Mode = "Foot" | "Chase" | "Cinematic" | "None"
 local MIN_ZOOM = 6
 local MAX_ZOOM = 30
 local START_ZOOM = 19 -- Roblox starts at 12.5: the avatar filled a third of the frame (r2 art review)
+local START_ZOOM_TOUCH = 16 -- a phone's small screen: a little closer so the avatar still reads
+local BLEND_TIME = 0.45 -- seconds the view eases between the on-foot and chase cameras
 local LIFT = 1.5 -- studs the view frames above the head
 local freshSpawn = true -- the first Foot entry after a spawn pulls the zoom out to START_ZOOM
 
@@ -43,6 +46,8 @@ local player = Players.LocalPlayer
 local mode: Mode = "None"
 local override: CFrame? = nil
 local overrideFov: number? = nil
+-- boarding / stepping off: the camera eases from where it was (`from`) to the new mode's view
+local blend: { from: CFrame, t: number }? = nil
 local current: {
 	seat: BasePart,
 	model: Model?,
@@ -130,10 +135,11 @@ end
 
 -- The default camera's Popper only stops at visible, colliding parts, but the world's assets collide through
 -- invisible _COL hulls and their visual meshes do not collide: nothing pulled the third-person camera out of a
--- quay wall or a rock. Cast from the focus against what collides and pull the camera in front of it.
+-- quay wall or a rock, and dock roofs collide nowhere. Cast from the focus against what hides the view
+-- (Chase.cast) and pull the camera in front of it.
 local occludeParams = RaycastParams.new()
 occludeParams.FilterType = Enum.RaycastFilterType.Exclude
-occludeParams.RespectCanCollide = true
+occludeParams.IgnoreWater = true
 local function popOccluders(camera: Camera, char: Model)
 	local focus = camera.Focus.Position
 	local offset = camera.CFrame.Position - focus
@@ -142,11 +148,25 @@ local function popOccluders(camera: Camera, char: Model)
 	end
 	occludeParams.FilterDescendantsInstances =
 		{ char, Workspace:FindFirstChild("Vehicles") :: Instance }
-	local hit = Workspace:Spherecast(focus, 0.4, offset, occludeParams)
-	local who = hit and hit.Instance:FindFirstAncestorOfClass("Model")
-	if hit and not (who and who:FindFirstChildOfClass("Humanoid")) then
+	local hit = Chase.cast(focus, 0.4, offset, occludeParams)
+	if hit then
 		camera.CFrame -= offset.Unit * (offset.Magnitude - hit.Distance)
 	end
+end
+
+-- Eases the camera from the last mode's view into this one's; a teleport (far apart) cuts instead.
+local function applyBlend(camera: Camera, dt: number)
+	local b = blend
+	if not b then
+		return
+	end
+	b.t += dt
+	local w = CameraMath.smoothstep(b.t / BLEND_TIME)
+	if w >= 1 or (b.from.Position - camera.CFrame.Position).Magnitude > 120 then
+		blend = nil
+		return
+	end
+	camera.CFrame = b.from:Lerp(camera.CFrame, w)
 end
 
 -- A wall pop or a short chase arm can put the lens inside the avatar's head (the near plane shows
@@ -230,16 +250,21 @@ local function enterMode(new: Mode)
 		if freshSpawn then
 			freshSpawn = false
 			-- holding the min zoom up for a few frames is how Roblox's zoom distance gets moved
-			player.CameraMinZoomDistance = START_ZOOM
+			local start = if Layout.device() == "Touch" then START_ZOOM_TOUCH else START_ZOOM
+			player.CameraMinZoomDistance = start
 			task.delay(0.1, function()
-				if math.abs(player.CameraMinZoomDistance - START_ZOOM) < 0.01 then
+				if math.abs(player.CameraMinZoomDistance - start) < 0.01 then
 					player.CameraMinZoomDistance = MIN_ZOOM
 				end
 			end)
 		end
 	elseif new == "Chase" and current then
 		player.CameraMode = Enum.CameraMode.Classic
-		Chase.enter(current.model or (current.seat.Parent :: any), current.root)
+		Chase.enter(
+			current.model or (current.seat.Parent :: any),
+			current.root,
+			Layout.device() == "Touch"
+		)
 	end
 end
 
@@ -346,6 +371,9 @@ local function update(dt: number)
 	end
 	local want = wantedMode()
 	if want ~= mode then
+		local boarding = (mode == "Foot" and want == "Chase")
+			or (mode == "Chase" and want == "Foot")
+		blend = if boarding then { from = camera.CFrame, t = 0 } else nil
 		exitMode(mode)
 		mode = want :: Mode
 		enterMode(mode)
@@ -370,6 +398,7 @@ local function update(dt: number)
 		end
 		camera.FieldOfView = CameraMath.damp(camera.FieldOfView, Comfort.get("fov"), 0.15, dt)
 		popOccluders(camera, char)
+		applyBlend(camera, dt)
 		fadeNearBody(char, camera.CFrame.Position)
 	elseif mode == "Chase" and current then
 		local c = current
@@ -387,6 +416,7 @@ local function update(dt: number)
 			waveHeight = if craft:GetAttribute("Submerged") == true then nil else waveHeight,
 			telemetry = telemetry(),
 		}, look)
+		applyBlend(camera, dt)
 		if char then
 			fadeNearBody(char, camera.CFrame.Position)
 		end

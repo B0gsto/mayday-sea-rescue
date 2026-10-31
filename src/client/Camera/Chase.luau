@@ -45,13 +45,16 @@ Chase.RIDER_FOCUS = 6.5
 -- pivot rises and the arm looks down a little more, so they drop to the frame's lower edge
 local PASSENGER_LIFT, PASSENGER_PITCH = 2, math.rad(7)
 local rider = false
+local phone = false
 
 -- Sizes the arm from the hull: about 1.6 hull lengths back, focus above the deck. A small craft
 -- (the jet ski and its sled) sits closer and flatter: it fills less of the frame and the casualty / throw
 -- target ahead stays near the horizon. Its rider sits in the line of sight, so the pivot rides over their
 -- head and the arm looks down past them (playtest v46: the call pin and survivor hid behind the head).
 -- The cold open sits flatter still. The sub (small, closed cockpit) keeps the low deck focus.
-function Chase.enter(model: Model, root: BasePart)
+-- On a phone (`touch`) the arm sits a little closer: the craft reads on the small screen.
+function Chase.enter(model: Model, root: BasePart, touch: boolean?)
+	phone = touch == true
 	local _, size = model:GetBoundingBox()
 	local length = math.max(size.X, size.Z)
 	local small = length < 20
@@ -71,6 +74,9 @@ function Chase.enter(model: Model, root: BasePart)
 		elseif rider then math.rad(10)
 		elseif small then math.rad(8)
 		else math.rad(13)
+	if phone then
+		baseDistance *= 0.88
+	end
 	state.heading = CameraMath.heading(root.CFrame)
 	state.yaw, state.pitch, state.zoom, state.idle = 0, restPitch, 1, 10
 	state.arm = baseDistance
@@ -92,7 +98,30 @@ end
 local castParams = RaycastParams.new()
 castParams.FilterType = Enum.RaycastFilterType.Exclude
 castParams.IgnoreWater = true
-castParams.RespectCanCollide = true
+
+-- A sphere cast that skips what cannot hide the view (CameraMath.occludes) and characters, so the arm
+-- pulls in under dock roofs and building meshes that do not collide. `params` gains the skipped parts.
+function Chase.cast(
+	origin: Vector3,
+	radius: number,
+	dir: Vector3,
+	params: RaycastParams
+): RaycastResult?
+	for _ = 1, 6 do
+		local hit = Workspace:Spherecast(origin, radius, dir, params)
+		if not hit then
+			return nil
+		end
+		local part = hit.Instance
+		local who = part:FindFirstAncestorOfClass("Model")
+		local person = who ~= nil and who:FindFirstChildOfClass("Humanoid") ~= nil
+		if not person and CameraMath.occludes(part.CanCollide, part.Transparency, part.Size) then
+			return hit
+		end
+		params:AddToFilter(part)
+	end
+	return nil
+end
 
 -- One frame. `lookDelta` (yaw, pitch) radians of orbit input this frame.
 function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
@@ -147,7 +176,7 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	local hull = Vector3.new(root.Position.X, state.focusY + lift, root.Position.Z)
 	local lead = focus - hull
 	if lead.Magnitude > 0.5 then
-		local block = Workspace:Spherecast(hull, 0.8, lead, castParams)
+		local block = Chase.cast(hull, 0.8, lead, castParams)
 		if block then
 			focus = hull + lead.Unit * math.max(block.Distance - 0.6, 0)
 		end
@@ -158,7 +187,7 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 		* state.zoom
 		* (1 + 0.15 * math.clamp(flatSpeed / math.max(ctx.topSpeed, 1), 0, 1))
 	local dir = CameraMath.chaseOffset(state.heading, state.yaw, state.pitch, 1)
-	local hit = Workspace:Spherecast(focus, 0.8, dir * desired, castParams)
+	local hit = Chase.cast(focus, 0.8, dir * desired, castParams)
 	local length = CameraMath.armDistance(desired, if hit then hit.Distance else nil, 0.6, 3)
 	state.arm = CameraMath.relaxArm(if state.fresh then length else state.arm, length, 0.4, dt)
 	local pos = focus + dir * state.arm
@@ -182,8 +211,9 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	local cf = CFrame.lookAt(pos, focus) * CFrame.Angles(s.X, s.Y, s.Z)
 	camera.CFrame = cf
 	local fov = Comfort.get("fov") - 5
-	if Comfort.get("speedFov") then
-		fov = CameraMath.speedFov(fov, flatSpeed, ctx.topSpeed, 6)
+	if Comfort.get("speedFov") and not Comfort.reducedMotion() then
+		-- a smaller kick on a phone: the same swing reads stronger on a small screen
+		fov = CameraMath.speedFov(fov, flatSpeed, ctx.topSpeed, if phone then 4 else 6)
 	end
 	camera.FieldOfView = CameraMath.damp(camera.FieldOfView, fov, 0.25, dt)
 	state.fresh = false

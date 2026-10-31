@@ -12,6 +12,7 @@
 --   aboveSwell(position, waveHeight, clearance)    keep the camera above the water surface
 --   chaseOffset(heading, yaw, pitch, distance)     spring-arm end point relative to the focus
 --   deadzone(x, dz)                                rescaled stick deadzone
+--   occludes(canCollide, transparency, size)       does a part a camera cast hit hide the view
 local CameraMath = {}
 
 local function clamp01(x: number): number
@@ -134,6 +135,21 @@ function CameraMath.deadzone(x: number, dz: number): number
 		return 0
 	end
 	return math.sign(x) * (m - dz) / (1 - dz)
+end
+
+-- Visual meshes often have CanCollide off (their _COL hull collides, or nothing does: dock roofs), so the
+-- camera casts query everything: a hit hides the view when it collides, or is solid and a surface rather
+-- than a rope, pole or trim strip (its second-largest side at least 2 studs).
+function CameraMath.occludes(canCollide: boolean, transparency: number, size: Vector3): boolean
+	if canCollide then
+		return true
+	end
+	if transparency >= 0.5 then
+		return false
+	end
+	local a, b, c = size.X, size.Y, size.Z
+	local mid = math.max(math.min(a, b), math.min(math.max(a, b), c))
+	return mid >= 2
 end
 
 -- Camera shake from trauma (0..1): rotation offsets (radians) from smooth noise, scaled by
