@@ -21,8 +21,12 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Feel | REVIEW 10,25 wheel + prize audio | sibling thread (M_Prop_PrizeWheel, AD r2 7.5) | 6.5 | theirs |
 | Prog | REVIEW 3,12,16 (+17 proposal) | PERF-F4o (Opus) | 4-5 | building |
 | Feel | REVIEW 2 haptics | after F1-F3 merge | 0 | queued |
-| Anim | workers/NPCs | PERF-ANIM1 (Opus) | 4-5 | building; next ANIM2: rider, pets, NPC talk, leisure |
-| Mon | monetization: idea, products, prices, offer moments, shop UX, icons, purchase feel (owner 2026-10-31) | PERF-MON1 review -> fix waves | - | review running |
+| Anim | workers/NPCs/player sprint | ANIM1 own clips r1-3: 6.6-8.6, none shipped; PERF-ANIM2: TaT + Roblox packs | 8.6 best | building |
+| Mon | monetization review | PERF-MON1 | 5.5 overall | done: build/status/2026-10-31/perfect/mon/REVIEW.md |
+| Mon | plan 1,4,11,12,13,18,19,20 (Shop Finish/spin bug, effect lines, odds, telemetry, texts, docs) | PERF-MON-A | 5 | building |
+| Mon | plan 3,7 purchase payoff + boat test ride | PERF-MON-B | 2.5 | building |
+| Mon | plan 15 store icon family | PERF-MON-C | 6.5 | building |
+| Mon | owner YES: Starter Kit rework, 5 cosmetics on sale, private servers (other ideas declined) | after MON-A merges | - | queued |
 | Anim | player sprint/walk/idle (owner: reuse Tame A Titan clips OK) | PERF-ANIM1 | - | building |
 | Mesh | M_Prop_JettyCrane | Blender PERF-BL1 | 7.6 (r2) | r4 in progress |
 | Code->mesh | build-site fence/scaffold/crane kit (REVIEW 9) | Blender | 6 | queued |
