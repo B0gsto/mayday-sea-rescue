@@ -62,7 +62,16 @@ return function(t)
 		"LookoutTower",
 		"HQ",
 		"AirStation",
+		-- REVIEW feel #3: the HQ4 -> HQ5 stretch was 3.6 h with two changes in the world; the chip's "affordable
+		-- first" (NextGoal) puts these visible add-ons in it: refuel pad, rescue RIB, lookout lamp, boat frame, smokehouse, conveyor, crane
+		"AirStation",
+		"RescueBoathouse",
+		"LookoutTower",
 		"RescueHelicopter",
+		"Workshop",
+		"FishShed",
+		"Depot",
+		"Harbour",
 		"HQ",
 		"SubPen",
 		"Submarine",

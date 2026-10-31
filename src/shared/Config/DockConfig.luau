@@ -113,7 +113,7 @@ local rows: { [string]: any } = {
 				name = "Lifeboat Station",
 			},
 			{ cash = 65000, hq = 3, effect = "HQ", piece = "Base", name = "Coastguard Base" },
-			{ cash = 100000, hq = 4, effect = "HQ", piece = "HQ", name = "Coastguard HQ" },
+			{ cash = 70000, hq = 4, effect = "HQ", piece = "HQ", name = "Coastguard HQ" }, -- was 100k (REVIEW feel #3; not below HQ4)
 		} :: { Level },
 	},
 	Harbour = {
