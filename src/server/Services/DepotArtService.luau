@@ -3,7 +3,8 @@
 -- HQ's Lv1/Lv2 (M_Bld_RescueHQ), Lv4/Lv5 add-ons (M_Bld_HQAddons) and Lv3-5 furniture (M_Prop_HQInterior), the Lv1 Trophy Hall's cup (M_Prop_TrophyCup), the Bunkhouse's Lv1-5 (M_Bld_Bunkhouse) and the Workshop's, Fish Market's, Clinic's,
 -- Lookout's, Boat Yard's, Rescue Boathouse's, Air Station's, Trophy Hall's and Sub Pen's Lv2/Lv3 and the Boathouse's Lv3 add-ons (M_Bld_*Addons) through DockPieces.meshes (the walk-in _COL hulls collide, the visual meshes don't), and the
 -- supply barge M_Veh_SupplyBarge is published as ReplicatedStorage.DepotTemplates.Barge for the clients' barge
--- visuals (DepotController; clients can't load assets).
+-- visuals (DepotController; clients can't load assets), and M_Prop_BuildSiteKit as DepotTemplates.BuildSiteKit
+-- (ConstructionController's site dressing).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -51,6 +52,7 @@ function DepotArtService.Init()
 		"M_Bld_SubPenAddons",
 		"M_Bld_TrophyHallAddons",
 		"M_Bld_WorkshopAddons",
+		"M_Prop_BuildSiteKit",
 		"M_Prop_BuildStation",
 		"M_Prop_HQInterior",
 		"M_Prop_JettyCrane",
@@ -83,6 +85,11 @@ function DepotArtService.Start()
 		end
 		barge.Name = "Barge"
 		barge.Parent = folder
+	end
+	local kit = AssetLoader.clone("M_Prop_BuildSiteKit", "LOD0") -- ConstructionController's site dressing
+	if kit then
+		kit.Name = "BuildSiteKit"
+		kit.Parent = folder
 	end
 	folder.Parent = ReplicatedStorage -- parented once complete
 end

@@ -1,0 +1,326 @@
+{
+ "asset": "M_Prop_BuildSiteKit",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Fence",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -36.29,
+    -12.42,
+    0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Gate",
+   "parent": null,
+   "blender": [
+    -11.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    11.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -25.29,
+    -12.42,
+    0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Post",
+   "parent": null,
+   "blender": [
+    -18.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    18.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -18.29,
+    -12.42,
+    0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Scaffold",
+   "parent": null,
+   "blender": [
+    -25.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    25.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -11.29,
+    -12.42,
+    0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Crane",
+   "parent": null,
+   "blender": [
+    -40.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    40.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    3.71,
+    -12.42,
+    0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Stack",
+   "parent": null,
+   "blender": [
+    -56.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    56.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    19.71,
+    -12.42,
+    0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Sign",
+   "parent": null,
+   "blender": [
+    -63.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    63.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    26.71,
+    -12.42,
+    0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Cone",
+   "parent": null,
+   "blender": [
+    -69.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    69.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    32.71,
+    -12.42,
+    0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Barrier",
+   "parent": null,
+   "blender": [
+    -74.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    74.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    37.71,
+    -12.42,
+    0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_CranePivot",
+   "parent": null,
+   "blender": [
+    -40.0,
+    0.0,
+    20.6
+   ],
+   "roblox_from_origin": [
+    40.0,
+    20.6,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    3.71,
+    8.18,
+    0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_SignUI",
+   "parent": null,
+   "blender": [
+    -63.0,
+    0.0,
+    6.6
+   ],
+   "roblox_from_origin": [
+    63.0,
+    6.6,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    26.71,
+    -5.82,
+    0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

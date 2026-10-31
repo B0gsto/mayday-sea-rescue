@@ -374,7 +374,8 @@
    "T_RescueBoathouse_Brick_RGH",
    "T_SubPen_Brick_RGH",
    "T_TrophyHall_Brick_RGH",
-   "T_WorkshopAddons_Brick_RGH"
+   "T_WorkshopAddons_Brick_RGH",
+   "T_BuildSiteKit_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -13534,7 +13535,8 @@
    "T_SubPen_Brick_NOR",
    "T_TrophyHall_Brick_NOR",
    "T_WorkshopAddons_Brick_NOR",
-   "T_JettyCrane_Brick_NOR"
+   "T_JettyCrane_Brick_NOR",
+   "T_BuildSiteKit_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -17721,7 +17723,8 @@
    "T_SubPen_Brick_MET",
    "T_TrophyHall_Brick_MET",
    "T_WorkshopAddons_Brick_MET",
-   "T_JettyCrane_Brick_MET"
+   "T_JettyCrane_Brick_MET",
+   "T_BuildSiteKit_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -20092,6 +20095,15 @@
   "name": "T_Boulder03_Granite_ALB_Wet",
   "sha": "f4a13c82b415ff19b421a8c8ad88a2975fe8aeecf44af762f81f1bb8a0ced1d7",
   "source": "assets/textures/M_Rock_Boulder_03/T_Boulder03_Granite_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:f4ac5bf14c921641c17b9c0ea9c334444cd3e42a311835ed6177ed2a4ea15cfd": {
+  "assetId": "135401836063414",
+  "imageId": "135401836063414",
+  "moderation": "Reviewing",
+  "name": "T_BuildSiteKit_Brick_ALB",
+  "sha": "f4ac5bf14c921641c17b9c0ea9c334444cd3e42a311835ed6177ed2a4ea15cfd",
+  "source": "assets/textures/M_Prop_BuildSiteKit/T_BuildSiteKit_Brick_ALB.png",
   "type": "Image"
  },
  "Image:f4b05911e7958c46a93deaaacd8cf23a18a2a91670b735a00857578197bad9e4": {
@@ -25771,6 +25783,16 @@
   "source": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD0.fbx",
   "type": "Model"
  },
+ "Model:80d941a3b96bcfb58a2232593157c8cf39e1e7eaf51eabda785e1e8c389083c1": {
+  "assetId": "117455714827399",
+  "moderation": "Approved",
+  "name": "M_Prop_BuildSiteKit_LOD2",
+  "rbxm": "assets/models/M_Prop_BuildSiteKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "80d941a3b96bcfb58a2232593157c8cf39e1e7eaf51eabda785e1e8c389083c1",
+  "source": "assets/fbx/M_Prop_BuildSiteKit/M_Prop_BuildSiteKit_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:80dff971780e3e168eca0d082681050bfb1d21cdced061e941c61fd9f27bfb9b": {
   "assetId": "77271836666194",
   "moderation": "Approved",
@@ -28381,6 +28403,16 @@
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.fbx",
   "type": "Model"
  },
+ "Model:c3e8fe199f4abd41d8e646289bf7bb44e6eea9d4888b3896f990d471881317c0": {
+  "assetId": "92712016149318",
+  "moderation": "Approved",
+  "name": "M_Prop_BuildSiteKit_LOD1",
+  "rbxm": "assets/models/M_Prop_BuildSiteKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c3e8fe199f4abd41d8e646289bf7bb44e6eea9d4888b3896f990d471881317c0",
+  "source": "assets/fbx/M_Prop_BuildSiteKit/M_Prop_BuildSiteKit_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:c474a45157c1084c3a656dc62c193fe1cb5ea8eb71dca8523805e4c041e0ff94": {
   "assetId": "105577070931078",
   "moderation": "Approved",
@@ -30349,6 +30381,16 @@
   "route": "delivery",
   "sha": "fb6833a7a3bf9bae37cb326d4575bfc65798f1958d4e2bb5ff8bbfb3174b2847",
   "source": "assets/fbx/M_Veg_Heather_01/M_Veg_Heather_01_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:fb8b27c7d9a27ae57a301893c9304b2eaf7ef4dbb4349c7496b5521fb77ad46f": {
+  "assetId": "108631160743774",
+  "moderation": "Approved",
+  "name": "M_Prop_BuildSiteKit",
+  "rbxm": "assets/models/M_Prop_BuildSiteKit.rbxm",
+  "route": "delivery",
+  "sha": "fb8b27c7d9a27ae57a301893c9304b2eaf7ef4dbb4349c7496b5521fb77ad46f",
+  "source": "assets/fbx/M_Prop_BuildSiteKit/M_Prop_BuildSiteKit_LOD0.fbx",
   "type": "Model"
  },
  "Model:fbc35c09e09ce9c88be840486b8a55b2d21ba1fb21c72f00db699cc74a935b37": {
