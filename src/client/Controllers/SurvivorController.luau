@@ -10,7 +10,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
-local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages")) :: any
 local UI = script.Parent.Parent:WaitForChild("UI")
 local Style = require(UI:WaitForChild("Kit"):WaitForChild("Style"))
 local SurvivorCard = require(UI:WaitForChild("SurvivorCard"))
@@ -23,7 +22,6 @@ local player = Players.LocalPlayer
 local CLICK = "SurvivorInfoClick"
 local PROMPT = "SurvivorInfoPrompt"
 local CLOSE_DISTANCE = 40 -- studs from the survivor that close their card
-local CURSOR: string = (UiImages.Kit or {}).crew or ""
 
 local card: SurvivorCard.Card? = nil
 local shown: Model? = nil
@@ -78,7 +76,7 @@ local function click(part: BasePart, model: Model)
 	local detector = Instance.new("ClickDetector")
 	detector.Name = CLICK
 	detector.MaxActivationDistance = 20
-	detector.CursorIcon = CURSOR
+	-- default pointing hand: a CursorIcon draws at the image's native size (the 256 px crew button was a huge square)
 	detector.Parent = part
 	detector.MouseClick:Connect(function(who: Player)
 		if who == player then
