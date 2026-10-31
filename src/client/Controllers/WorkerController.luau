@@ -1502,6 +1502,21 @@ local function lamp(p: Instance, on: boolean)
 		light.Enabled = on and near(p.Position)
 	end
 end
+-- The Lv1 Trophy Hall's lights (tag DayDim, AD int4: by day the warm lamps wash its interior into one orange): their
+-- authored warmth at night; by day neutral, the lamps at a third (the trophy spots keep their brightness)
+local DAY_TINT = Color3.fromRGB(255, 246, 236)
+local function dayDim(l: Instance, night: boolean)
+	if not l:IsA("Light") then
+		return
+	end
+	if l:GetAttribute("NightBrightness") == nil then
+		l:SetAttribute("NightBrightness", l.Brightness)
+		l:SetAttribute("NightColor", l.Color)
+	end
+	local k = if night or l:IsA("SpotLight") then 1 else 0.3
+	l.Brightness = (l:GetAttribute("NightBrightness") :: number) * k
+	l.Color = if night then l:GetAttribute("NightColor") :: Color3 else DAY_TINT
+end
 local lampsLit: boolean? = nil
 local function nightPass()
 	local night = WorkLoop.isNight(Lighting.ClockTime)
@@ -1509,6 +1524,9 @@ local function nightPass()
 		lampsLit = night
 		for _, p in CollectionService:GetTagged("NightLamp") do
 			lamp(p, night)
+		end
+		for _, l in CollectionService:GetTagged("DayDim") do
+			dayDim(l, night)
 		end
 	elseif night then -- the camera moved: lamps in and out of LIGHT_RANGE
 		for _, p in CollectionService:GetTagged("NightLamp") do
@@ -1825,6 +1843,9 @@ function WorkerController.Start()
 	Lighting:GetPropertyChangedSignal("ClockTime"):Connect(nightPass)
 	CollectionService:GetInstanceAddedSignal("NightLamp"):Connect(function(p)
 		lamp(p, lampsLit == true) -- streamed in or built later
+	end)
+	CollectionService:GetInstanceAddedSignal("DayDim"):Connect(function(l)
+		dayDim(l, lampsLit == true)
 	end)
 	nightPass()
 	task.spawn(function()

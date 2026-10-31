@@ -1563,6 +1563,7 @@ local function smallHall(m: Model, H: CFrame)
 		bulb.CanCollide = false
 		local light = Instance.new("PointLight")
 		light.Color, light.Range, light.Brightness = WARM, 18, 0.7
+		light:AddTag("DayDim") -- WorkerController: dim and neutral by day, this warmth at dusk/night
 		light.Parent = bulb
 	end
 	-- the niches: a stepped plinth (grey step, gold trim, stud top step), gold sides and a stud cap, a gradient back
@@ -1593,6 +1594,7 @@ local function smallHall(m: Model, H: CFrame)
 		local spot = Instance.new("SpotLight")
 		spot.Face, spot.Color, spot.Angle, spot.Range, spot.Brightness =
 			Enum.NormalId.Bottom, WARM, 40, 7, 2.5
+		spot:AddTag("DayDim")
 		spot.Parent = spotLamp
 	end
 	-- bunting: two sagging strings of red, yellow, blue and white pennants across the hall
