@@ -23,7 +23,6 @@
 --      attribute), then a call offer, then your own waypoint. An offer never takes the pin from a quest.
 --      GetTargets(): { Vector3 }
 local ContextActionService = game:GetService("ContextActionService")
-local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -1046,11 +1045,10 @@ local function screenToWorld(p: Vector2): Vector2
 	return full.center + local_ / scale
 end
 
--- an input's point in the map gui's space: InputObject.Position starts below the top bar inset, the
--- gui ignores the inset except on compact screens (the pin landed 58 px above the cursor)
+-- an input's point in the map gui's space: InputObject.Position and AbsolutePosition both start below the
+-- top bar inset, even in an IgnoreGuiInset gui (adding the inset put the pin 58 px below the cursor, Studio 10-31)
 local function inputPoint(input: InputObject): Vector2
-	local p = Vector2.new(input.Position.X, input.Position.Y)
-	return if gui.IgnoreGuiInset then p + GuiService:GetGuiInset() else p
+	return Vector2.new(input.Position.X, input.Position.Y)
 end
 
 local function placeWaypointAt(screen: Vector2)

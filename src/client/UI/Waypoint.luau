@@ -291,7 +291,12 @@ function Waypoint.start(
 		local glyph, color = style(label :: string)
 		onGoal(label, glyph, color, Waypoint.metres(flat))
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
-		local aboard = hum ~= nil and hum.SeatPart ~= nil
+		-- on a craft, not any seat (the Clinic cot or a bench showed the Mayday pin on your island)
+		local craft = hum and hum.SeatPart and hum.SeatPart:FindFirstAncestorWhichIsA("Model")
+		while craft and craft:GetAttribute("VehicleId") == nil do
+			craft = craft:FindFirstAncestorWhichIsA("Model")
+		end
+		local aboard = craft ~= nil
 		if
 			hidden
 			or map.IsOpen()
