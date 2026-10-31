@@ -286,9 +286,30 @@ local function render(data: { [string]: any })
 	cashShown = cash
 end
 
+-- Prize-wheel Cash is paid when the spin starts (SpinService): hold it off the wallet until the capsule pops
+-- (PrizeWheelController sets SpinRevealed), or a few seconds if the wheel never plays here.
+local spinHeld = 0
+local function releaseSpin()
+	if spinHeld <= 0 then
+		return
+	end
+	local held = math.max(0, (tonumber(player:GetAttribute("CashHeld")) or 0) - spinHeld)
+	spinHeld = 0
+	player:SetAttribute("CashHeld", if held > 0 then held else nil)
+end
+
 local function onDataChanged(data: any)
 	if type(data) ~= "table" then
 		return
+	end
+	local award = data.award
+	local spinCash = if type(award) == "table" and award.reason == "spin"
+		then tonumber(award.cash) or 0
+		else 0
+	if spinCash > 0 then
+		spinHeld += spinCash
+		player:SetAttribute("CashHeld", (tonumber(player:GetAttribute("CashHeld")) or 0) + spinCash)
+		task.delay(7, releaseSpin)
 	end
 	render(data)
 	-- a held payout (CashHeld: the reward prompt's coins) shows as coins landing, not as a "+N Cash" line
@@ -503,6 +524,7 @@ function HudController.Init()
 	Menu.mount() -- button bar, panel registry, Boat to me
 	NextChip.mount(Layout.region(gui, "chips")) -- the permanent next-goal chip (docs/24 E)
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)
+	player:GetAttributeChangedSignal("SpinRevealed"):Connect(releaseSpin)
 	player:GetAttributeChangedSignal("CashHeld"):Connect(function()
 		if snapshot then
 			render(snapshot)

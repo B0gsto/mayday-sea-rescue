@@ -4,7 +4,8 @@
 -- On your own rack, owned models stay lit; locked ones go dark with a padlock, a Cash chip (coin + price, or
 -- the building it still needs: its drawing + name, docs/23 (q)) and an R$ chip (greyed until that building
 -- stands: Robux never skips the order). The rack's one BoardOpen prompt opens the board panel
--- (Menu.openBoard: Launch / Buy per craft). Other players' racks: prompt off.
+-- (Menu.openBoard: Launch / Buy per craft); a click / tap on a model opens that craft's BoatCard. Other players'
+-- racks: prompt off.
 local CollectionService = game:GetService("CollectionService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -217,6 +218,21 @@ local function paintRack(rack: Instance)
 				dim = h
 			end
 			(dim :: Highlight).Enabled = have == false
+			if not model:FindFirstChild("Open") then
+				-- tap / click a model: that craft's own card (the prompt covers gamepad)
+				for _, d in model:GetDescendants() do
+					if d:IsA("BasePart") then
+						d.CanQuery = true -- local only: the server built it unqueryable
+					end
+				end
+				local click = Instance.new("ClickDetector")
+				click.Name = "Open"
+				click.MaxActivationDistance = 16
+				click.MouseClick:Connect(function()
+					Menu.openBoat(id)
+				end)
+				click.Parent = model
+			end
 		end
 		local tag = pad:FindFirstChild("LockTag") :: BillboardGui?
 		if mine and have == false then
@@ -246,7 +262,8 @@ local function watch(rack: Instance)
 end
 
 local function onTriggered(prompt: ProximityPrompt)
-	local rack = prompt.Parent and prompt.Parent.Parent
+	-- the prompt sits on an attachment in the backboard, not on the rack itself
+	local rack = prompt:FindFirstAncestorWhichIsA("Model")
 	if
 		prompt.Name == "BoardOpen"
 		and rack
