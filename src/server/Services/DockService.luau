@@ -477,7 +477,7 @@ local function placeWheel(plot: Plot)
 		buy = function(player: Player, key: string)
 			return wheelBuy(i, player, key)
 		end,
-	})
+	}, DockPieces.meshes and DockPieces.meshes("M_Prop_PrizeWheel"))
 	wheel:SetAttribute("Plot", i)
 	wheel.Parent = plot.model
 	CollectionService:AddTag(wheel, "PrizeWheel")

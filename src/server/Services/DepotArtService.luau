@@ -54,6 +54,7 @@ function DepotArtService.Init()
 		"M_Prop_BuildStation",
 		"M_Prop_HQInterior",
 		"M_Prop_JettyCrane",
+		"M_Prop_PrizeWheel",
 		"M_Prop_TrophyCup",
 		"M_Veh_SupplyBarge",
 	})

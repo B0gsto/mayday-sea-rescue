@@ -119,17 +119,14 @@ local function segmentColor(rarity: string): Color3
 	return RAINBOW
 end
 
-local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> boolean?)
-	local model = Instance.new("Model")
-	model.Name = "Wheel"
-	model.Parent = parent
-	local centre = at * CFrame.new(0, WHEEL_Y, WHEEL_Z)
+-- The old code-built wheel (Parts): the stand-in until M_Prop_PrizeWheel loads. Returns the hub and the flapper.
+local function codeParts(
+	model: Model,
+	rotor: Model,
+	at: CFrame,
+	centre: CFrame
+): (BasePart, BasePart)
 	local segCount = #SpinRules.SEGMENTS
-
-	local rotor = Instance.new("Model")
-	rotor.Name = "Rotor"
-	rotor.ModelStreamingMode = Enum.ModelStreamingMode.Atomic -- streams whole, so it spins whole
-	rotor.Parent = model
 
 	-- the round rim: one cylinder facing -Z, the rotor's PrimaryPart (pivot offset back to `centre`); its
 	-- SurfaceGui (Right face = the front) carries the white pegs outside the segments' saw-tooth tips
@@ -251,6 +248,73 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 	flapper.Anchored = true
 	flapper.CanCollide = false
 	flapper.Parent = model
+
+	return hub, flapper
+end
+
+local function artPart(art: Model, prefix: string): BasePart?
+	for _, d in art:GetChildren() do
+		if d:IsA("BasePart") and string.find(d.Name, `^{prefix}`) then
+			return d
+		end
+	end
+	return nil
+end
+
+-- M_Prop_PrizeWheel (Blender, origin = `at`, hub = WHEEL_Y / WHEEL_Z): the Rotor keeps its PrimaryPart pivoted on the
+-- hub, the Flapper pivots on its hinge (art/source/props/M_Prop_PrizeWheel/build.py HINGE), the base plate is the collider.
+local HINGE = Vector3.new(0, 17.9, -4.82)
+
+local function meshParts(
+	model: Model,
+	rotor: Model,
+	at: CFrame,
+	centre: CFrame,
+	art: Model
+): (BasePart?, BasePart?)
+	local stand, rot, flap =
+		artPart(art, "L01_Stand"), artPart(art, "L02_Rotor"), artPart(art, "L03_Flapper")
+	if not (stand and rot and flap) then
+		return nil, nil
+	end
+	art:PivotTo(at)
+	rot.PivotOffset = rot.CFrame:ToObjectSpace(centre)
+	flap.PivotOffset = flap.CFrame:ToObjectSpace(at * CFrame.new(HINGE))
+	for _, p in { stand, rot, flap } do
+		p.CanCollide, p.CanQuery, p.CanTouch = false, false, false
+	end
+	rot.Parent = rotor
+	rotor.PrimaryPart = rot
+	stand.Name = "Stand"
+	stand.Parent = model
+	flap.Name = "Flapper"
+	flap.Parent = model
+	local hull = artPart(art, "Col01_COL")
+	if hull then
+		hull.Parent = model
+	end
+	art:Destroy()
+	return rot, flap
+end
+
+local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> boolean?, art: Model?)
+	local model = Instance.new("Model")
+	model.Name = "Wheel"
+	model.Parent = parent
+	local centre = at * CFrame.new(0, WHEEL_Y, WHEEL_Z)
+
+	local rotor = Instance.new("Model")
+	rotor.Name = "Rotor"
+	rotor.ModelStreamingMode = Enum.ModelStreamingMode.Atomic -- streams whole, so it spins whole
+	rotor.Parent = model
+
+	local hub: BasePart?, flapper: BasePart?
+	if art then
+		hub, flapper = meshParts(model, rotor, at, centre, art)
+	end
+	if not (hub and flapper) then
+		hub, flapper = codeParts(model, rotor, at, centre)
+	end
 
 	local sign = part(
 		model,
@@ -481,17 +545,18 @@ local function buildMachine(parent: Instance, at: CFrame, onBuy: (Player, string
 end
 
 -- The whole set at `at` (stand foot on the plaza, -Z = the jetty). The caller sets Plot and wires
--- the buttons: `onSpin(player)` and `onBuy(player, productKey)` return false to ignore a press.
+-- the buttons: `onSpin(player)` and `onBuy(player, productKey)` return false to ignore a press. `art` is the
+-- M_Prop_PrizeWheel mesh clone (nil: the code-built Parts).
 export type Handlers = {
 	spin: (Player) -> boolean?,
 	buy: (Player, string) -> boolean?,
 }
 
-function PrizeWheel.build(at: CFrame, handlers: Handlers): Model
+function PrizeWheel.build(at: CFrame, handlers: Handlers, art: Model?): Model
 	local root = Instance.new("Model")
 	root.Name = "PrizeWheel"
 	root.WorldPivot = at
-	local wheel = buildWheel(root, at, handlers.spin)
+	local wheel = buildWheel(root, at, handlers.spin, art)
 	buildOdds(root, at)
 	local machine = buildMachine(root, at, handlers.buy)
 	wheel.model:SetAttribute("Wheel", true)
