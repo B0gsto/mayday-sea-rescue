@@ -17,6 +17,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -245,6 +246,99 @@ local function stepToStation()
 		feet + (feet - face).Unit * 16 + Vector3.new(0, 7, 0),
 		face + Vector3.new(0, 3, 0)
 	)
+end
+
+-- Owner 2026-10-31 (first login on a phone: the tablet filled the screen, no sea, no island): a Hut-less spawn
+-- opens on a short crane down from over the island to behind the player (the tablet ahead, the cove, jetty and
+-- open sea past it); any tap, click or key cuts to the end. It ends on CameraController's Foot framing (START_ZOOM
+-- 19 behind the head), so the Custom camera takes over with no jump. The join reward card waits for it.
+local ESTABLISH = 2.6 -- s
+local SETTLE_ZOOM = 19 -- CameraController START_ZOOM
+local established = false
+local function frameSpawn()
+	local wait0 = os.clock() -- the plot attributes replicate after the first character (the loading screen waits too)
+	while
+		(
+			typeof(player:GetAttribute("BayCFrame")) ~= "CFrame"
+			or player:GetAttribute("DockLevelHQ") == nil
+		) and os.clock() - wait0 < 20
+	do
+		task.wait()
+	end
+	local bay = player:GetAttribute("BayCFrame")
+	if typeof(bay) ~= "CFrame" or player:GetAttribute("DockLevelHQ") ~= 0 then
+		return
+	end
+	local spawn = DockConfig.newSpawn(bay)
+	local first = not established and not CameraController.Comfort.reducedMotion()
+	if first then
+		player:SetAttribute("Establishing", true) -- RewardController holds the join card for the shot
+	end
+	-- the server stands the character there a moment after the spawn (VehicleService): frame it once it has
+	local root: BasePart? = nil
+	local t0 = os.clock()
+	while not root and os.clock() - t0 < 8 do
+		task.wait(0.1)
+		local char = player.Character
+		local r = char and char:FindFirstChild("HumanoidRootPart")
+		if
+			r
+			and r:IsA("BasePart")
+			and ((r.Position - spawn.Position) * Vector3.new(1, 0, 1)).Magnitude < 6
+		then
+			root = r
+		end
+	end
+	while player:GetAttribute("LoadingScreenActive") == true do
+		task.wait()
+	end
+	if not root or Layout.coldOpen() or player:GetAttribute("CinematicPlaying") == true then
+		player:SetAttribute("Establishing", nil)
+		return
+	end
+	local ahead = (spawn.LookVector * Vector3.new(1, 0, 1)).Unit
+	local focus = root.Position + Vector3.new(0, 3, 0) -- the Custom camera's subject: head offset + CameraController LIFT
+	-- turned 14 degrees right of the stand: the stand sits left of the avatar, the jetty and cove mid-frame, and the
+	-- avatar never covers the screen; 13 degrees down shows the quay
+	local look = (CFrame.fromAxisAngle(Vector3.yAxis, math.rad(-14)) * CFrame.fromAxisAngle(
+		ahead:Cross(Vector3.yAxis),
+		math.rad(-13)
+	)).Rotation * ahead
+	local settle = CFrame.lookAt(focus - look * SETTLE_ZOOM, focus)
+	local cam = Workspace.CurrentCamera
+	if not first then
+		cam.CFrame = settle -- a respawn or reduced motion: the framing, no move
+		return
+	end
+	established = true
+	local fov = CameraController.Comfort.get("fov")
+	local handle = CameraController.PlayCinematic({
+		{
+			from = CFrame.lookAt(focus - ahead * 40 + Vector3.new(0, 42, 0), focus + ahead * 80),
+			to = settle,
+			duration = ESTABLISH,
+			fov = fov + 8,
+			toFov = fov,
+			handheld = 0,
+		},
+	}, { id = "establish", skippable = false })
+	local skip = UserInputService.InputBegan:Connect(function(input)
+		local t = input.UserInputType
+		if
+			t == Enum.UserInputType.Touch
+			or t == Enum.UserInputType.MouseButton1
+			or t == Enum.UserInputType.Keyboard
+			or t.Name:sub(1, 7) == "Gamepad"
+		then
+			handle.stop()
+		end
+	end)
+	while not handle.isDone() do
+		task.wait()
+	end
+	skip:Disconnect()
+	cam.CFrame = settle -- skipped mid-move: land on the framing, not where the move was cut
+	player:SetAttribute("Establishing", nil)
 end
 
 local function buildTabletOpen(): boolean
@@ -476,6 +570,11 @@ local function update()
 			else nil
 		setGuide(kind)
 	end
+	-- at the stand the tablet's own cue (green arrow + Build) is the one marker on it
+	local cued = DockController.TabletGoal(guide == "station")
+	if beacon then
+		beacon.mute(guide == "station" and cued)
+	end
 	-- the tablet's HQ / Workshop card pulses while the tutorial points at the station
 	if os.clock() >= tickAt then
 		tickAt = os.clock() + TICK
@@ -550,6 +649,12 @@ function OnboardingController.Start()
 		end
 	end)
 	RunService.Heartbeat:Connect(update)
+	player.CharacterAdded:Connect(function()
+		task.spawn(frameSpawn)
+	end)
+	if player.Character then
+		task.spawn(frameSpawn)
+	end
 end
 
 return OnboardingController

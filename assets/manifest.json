@@ -14868,6 +14868,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_Gravel_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:b1afa6ebbb6c11582e23e2035c093ddf4b11aaedf3cac6bca75939a62e74e913": {
+  "assetId": "133375972498905",
+  "imageId": "133375972498905",
+  "moderation": "Reviewing",
+  "name": "ui_tap_hand",
+  "sha": "b1afa6ebbb6c11582e23e2035c093ddf4b11aaedf3cac6bca75939a62e74e913",
+  "source": "build/ui-art/tap.png",
+  "type": "Image"
+ },
  "Image:b1b789f0f96aa4f639a604e5ff436a71436a28af4c43bc33e78bae876ed32749": {
   "assetId": "134505277608737",
   "imageId": "134505277608737",

@@ -150,6 +150,21 @@ return function(t)
 	)
 
 	t.test(
+		"owner 2026-10-31: a Hut-less spawn faces the tablet from the quay, inside its prompt",
+		function()
+			local spawn = D.newSpawn(frame)
+			local tablet = D.stationSpot(frame) * CFrame.new(0, 6.2, 3.6) -- DockPieces.buildStation's screen
+			local d = tablet.Position - spawn.Position
+			local flat = Vector3.new(d.X, 0, d.Z)
+			t.expect(flat.Magnitude >= 18).toBe(true) -- the camera frames the stand with the sea, not the screen alone
+			t.expect(d.Magnitude <= 24).toBe(true) -- DockController's tablet prompt range
+			t.expect(spawn.LookVector:Dot(flat.Unit) > 0.97).toBe(true)
+			-- on the plate, not over the cove water (island fwd 30+)
+			t.expect(-(frame * M.ISLAND):PointToObjectSpace(spawn.Position).Z < 28).toBe(true)
+		end
+	)
+
+	t.test(
 		"WP-14e: a paper blueprint lies just above its lot, turned to the berth frame",
 		function()
 			for _, item in DB.catalog() do

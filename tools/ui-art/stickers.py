@@ -142,6 +142,20 @@ def transport_pin():
     (SRC / "transport_pin.svg").write_text(src.replace("</svg>", cross + "</svg>"))
 
 
+def tap():
+    """The tablet cue's touch glyph: a Lego-yellow hand, index finger up, three tap ticks over the fingertip."""
+    finger = "M80,58 Q80,40 96,40 Q112,40 112,58 L112,104 L80,104 Z"
+    palm = "M56,100 Q56,86 70,86 L150,86 Q166,86 166,102 L166,150 Q166,184 132,184 L92,184 Q56,184 56,150 Z"
+    thumb = "M64,122 L36,104 Q24,96 31,85 Q39,74 52,82 L80,100 Z"
+    defs, hand = sticker(f"{finger} {palm} {thumb}", "#FFE45C", "#FFB000", "#C27400", lip_dy=10,
+                         gloss="M90,60 L90,92")
+    knuckles = f'<path d="M124,88 L124,112 M146,88 L146,112" fill="none" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+    ticks_d = "M68,44 L52,30 M96,24 L96,4 M124,44 L140,30"
+    ticks = "".join(f'<path d="{ticks_d}" fill="none" stroke="{c}" stroke-width="{w}" stroke-linecap="round"/>'
+                    for c, w in (("#fff", 30), (INK, 18), ("#fff", 7)))
+    return defs, ticks + hand + knuckles
+
+
 def render(name, w, h, keep=False):
     subprocess.run([sys.executable, str(ROOT / "tools/ui-art/render.py"), str(SRC / f"{name}.svg"),
                     str(OUT / f"{name}.png"), "--size", str(w), str(h)] + (["--keep"] if keep else []), check=True)
@@ -156,3 +170,5 @@ render("beacon_mark", 244, 372)
 transport_pin()
 subprocess.run([sys.executable, str(ROOT / "tools/ui-art/render.py"), str(SRC / "transport_pin.svg"),
                 str(OUT / "transport_pin.png"), "--size", "324", "324", "--scale", "3"], check=True)
+svg("tap", tap(), note="the build tablet cue on touch: tap here")
+render("tap", 244, 256)

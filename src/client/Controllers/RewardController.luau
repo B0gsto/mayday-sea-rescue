@@ -45,6 +45,7 @@ local function busy(): boolean
 	return player:GetAttribute("LoadingScreenActive") == true
 		or player:GetAttribute("CinematicPlaying") == true
 		or player:GetAttribute("ColdOpenActive") == true
+		or player:GetAttribute("Establishing") == true -- OnboardingController's first-spawn shot comes first
 		-- Studio: Workspace attribute RewardHold keeps the prompt shut while a test sets up its state
 		or (RunService:IsStudio() and Workspace:GetAttribute("RewardHold") == true)
 end
@@ -107,7 +108,15 @@ end
 function RewardController.Start()
 	-- under the loading screen already: hold the offline pay off the wallet before the HUD shows it
 	onOffline()
-	for _, name in { "WorkerOffline", "LoadingScreenActive", "CinematicPlaying", "ColdOpenActive" } do
+	for _, name in
+		{
+			"WorkerOffline",
+			"LoadingScreenActive",
+			"CinematicPlaying",
+			"ColdOpenActive",
+			"Establishing",
+		}
+	do
 		player
 			:GetAttributeChangedSignal(name)
 			:Connect(if name == "WorkerOffline" then onOffline else maybeShow)

@@ -24,6 +24,7 @@ export type Beacon = {
 	show: (position: Vector3, kind: string) -> (),
 	hide: () -> (),
 	target: () -> Vector3?,
+	mute: (on: boolean) -> (), -- the goal keeps its own cue in view (the build tablet's): no diamond, pointer or trail
 	destroy: () -> (),
 }
 
@@ -111,6 +112,7 @@ function OnboardingBeacon.start(): Beacon
 	local at: Vector3? = nil
 	local baseY = 0
 	local active = false
+	local muted = false
 
 	local self: any = {}
 
@@ -137,12 +139,16 @@ function OnboardingBeacon.start(): Beacon
 		return at
 	end
 
+	function self.mute(on: boolean)
+		muted = on
+	end
+
 	local conn = RunService.Heartbeat:Connect(function()
 		if not active or not at then
 			return
 		end
 		-- not CameraType: the jet ski's chase camera is Scriptable too, so the mark never drew on the water
-		local cutscene = Players.LocalPlayer:GetAttribute("OpsUiHidden") == true
+		local cutscene = Players.LocalPlayer:GetAttribute("OpsUiHidden") == true or muted
 		billboard.Enabled = not cutscene
 		trail.step(Vector3.new(at.X, baseY, at.Z), not cutscene)
 		arrow.Visible = false
