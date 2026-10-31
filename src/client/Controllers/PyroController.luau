@@ -14,6 +14,7 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Fx = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Fx")
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local Flipbooks = require(Fx:WaitForChild("Flipbooks"))
 local PyroMath = require(Fx:WaitForChild("PyroMath"))
 
@@ -138,6 +139,7 @@ end
 -- Fire a red parachute rocket from `origin`: smoke trail on the climb, then the star under its
 -- canopy, glowing red over the sea while it drifts down.
 function PyroController.parachute(origin: Vector3)
+	AudioController.play("FX_Whoosh", origin, 0.9, 0.75) -- the rocket going up (state cue: a call is waiting)
 	seeds += 1
 	local seed = seeds
 	local star = Instance.new("Part")
