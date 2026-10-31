@@ -1046,11 +1046,17 @@ local function screenToWorld(p: Vector2): Vector2
 	return full.center + local_ / scale
 end
 
--- an input's point in the map gui's space: InputObject.Position starts below the top bar inset, the
--- gui ignores the inset except on compact screens (the pin landed 58 px above the cursor)
+-- an input's point in Absolute* space, measured not assumed: a hard-coded top bar inset put the pin 58 px
+-- above the cursor on 10-29 and 58 px below on 10-31 (setups disagree whether Absolute* includes the top bar).
+-- Screen point (0 = window top): the mouse from GetMouseLocation, a touch is Position + GetGuiInset.
+-- Absolute* origin on screen: the MapHud gui's top sits at 0 (IgnoreGuiInset) or the inset, minus its own
+-- AbsolutePosition (so gui.AbsolutePosition.Y of -inset or 0 picks the space).
 local function inputPoint(input: InputObject): Vector2
-	local p = Vector2.new(input.Position.X, input.Position.Y)
-	return if gui.IgnoreGuiInset then p + GuiService:GetGuiInset() else p
+	local inset = GuiService:GetGuiInset()
+	local screen = if input.UserInputType == Enum.UserInputType.Touch
+		then Vector2.new(input.Position.X, input.Position.Y) + inset
+		else UserInputService:GetMouseLocation()
+	return screen - (if gui.IgnoreGuiInset then Vector2.zero else inset) + gui.AbsolutePosition
 end
 
 local function placeWaypointAt(screen: Vector2)

@@ -305,6 +305,7 @@ local RETIRED_FLAGS: { [string]: boolean } = {
 	BeachFlag = true,
 	HarbourLight = true,
 }
+local KEEP_FIRST: { [string]: boolean } = { shop = true, streak = true, spin = true, pets = true }
 
 -- Fills missing fields and upgrades old versions. Accepts anything (corrupt saves included).
 Rules.MAX_FLAGS = MAX_FLAGS
@@ -521,14 +522,16 @@ function Rules.migrate(raw: any): PlayerData
 	data.lastSeen = if seen > 0 then seen else nil
 	if type(raw.flags) == "table" then
 		local n = 0
-		-- live flags first: past the budget, a retired flag gives way instead of a random live one (shop, streak)
-		for pass = 1, 2 do
+		-- paid / progress flags first, then live, then retired: past the budget an unknown old name never wins a
+		-- slot over the shop boosts by table order (Studio 10-31: a 40-flag save lost flags.shop)
+		for pass = 1, 3 do
 			for name, value in raw.flags do
+				local rank = if KEEP_FIRST[name] then 1 elseif RETIRED_FLAGS[name] then 3 else 2
 				-- "station" was the removed Crew Pay idle-income pot: dropped so it frees its flag slot
 				if
 					name ~= "station"
 					and Rules.validFlagName(name)
-					and (RETIRED_FLAGS[name] == true) == (pass == 2)
+					and rank == pass
 					and n < MAX_FLAGS
 				then
 					local clean = Rules.sanitizeFlag(value)
