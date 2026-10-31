@@ -32,6 +32,7 @@ return {
 		MapCross = "rbxassetid://91359051719681",
 		BeaconMark = "rbxassetid://95202461577085",
 		TransportPin = "rbxassetid://82312333876842",
+		TapHand = "rbxassetid://133375972498905", -- art/source/ui/tap.svg (stickers.py): the build tablet cue on touch
 	},
 	-- Small kit stickers (tools/ui-art/stickers.py, uia2): level stars, pet hearts, seat studs
 	Badges = {

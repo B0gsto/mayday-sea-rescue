@@ -1802,11 +1802,11 @@ function DockService.GetBerth(player: Player): BasePart?
 end
 
 -- Where the player spawns and respawns: their island's spawn (VehicleService stands them there), nil without one.
--- No Rescue Hut yet: in front of the build tablet, facing it (launch v21: 17 of 45 new players never opened it).
+-- No Rescue Hut yet: in view of the build tablet, facing it (launch v21: 17 of 45 new players never opened it).
 function DockService.GetSpawn(player: Player): CFrame?
 	local i = byPlayer[player]
 	if i and plots[i] and DockService.Level(player, "HQ") < 1 then
-		return DockConfig.stationSpot(plots[i].frame) * CFrame.new(0, 0, 10) -- the screen faces +Z
+		return DockConfig.newSpawn(plots[i].frame)
 	end
 	return if i then Marina.spawn(i) else nil
 end

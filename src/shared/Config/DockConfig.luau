@@ -612,6 +612,15 @@ function DockConfig.stationSpot(frame: CFrame): CFrame
 	return frame * Marina.LOTS[st.lot].cf * CFrame.new(st.offset.X, 0, st.offset.Y)
 end
 
+-- Where a player with no Rescue Hut yet spawns: back on the quay and off to the jetty's far side, facing the tablet,
+-- so the third-person camera frames the stand with the cove, jetty and open sea behind it (owner 2026-10-31: at 10
+-- studs the tablet filled a phone's screen). Inside the tablet prompt's range (DockController).
+function DockConfig.newSpawn(frame: CFrame): CFrame
+	local station = DockConfig.stationSpot(frame)
+	local at = (station * CFrame.new(-7, 0, 22)).Position
+	return CFrame.lookAt(at, Vector3.new(station.X, at.Y, station.Z))
+end
+
 -- Can a player buy decoration `key` with Cash? -> ok, reason ("Owned" | "Cash"), price.
 function DockConfig.canBuyDecor(
 	key: string,

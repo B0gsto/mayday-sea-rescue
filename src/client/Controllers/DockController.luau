@@ -49,6 +49,7 @@ local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
 local Layout = require(UI:WaitForChild("Layout"))
+local TabletCue = require(UI:WaitForChild("TabletCue"))
 local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
@@ -931,6 +932,18 @@ local function refreshCards()
 	end
 end
 
+-- The tutorial's goal is the tablet: its cue adds the green arrow. -> true while that cue is on screen (the
+-- onboarding beacon steps back so there is one marker on the goal).
+local tabletCue: TabletCue.Cue? = nil
+local tabletGoal = false
+function DockController.TabletGoal(on: boolean): boolean
+	tabletGoal = on
+	if tabletCue then
+		tabletCue.setGoal(on)
+	end
+	return tabletCue ~= nil and tabletCue.shown()
+end
+
 -- docs/24 E, docs/25 J: the tutorial points at the HQ / Workshop card while its beat is up; nil stops the pulse.
 function DockController.Pulse(key: string?)
 	pulseKey = key
@@ -1761,10 +1774,19 @@ function DockController.Start()
 					prompt.ActionText = "Build"
 					prompt.ObjectText = "Tablet"
 					prompt.HoldDuration = 0
-					prompt.MaxActivationDistance = 15 -- 12 missed it from the dock side (13 studs, playtest 2026-10-28)
+					-- 12 missed it from the dock side (13 studs, playtest 2026-10-28); 24 reaches the new-player spawn
+					-- (DockConfig.newSpawn, ~20 studs back so the camera sees the island and sea)
+					prompt.MaxActivationDistance = 24
 					prompt.RequiresLineOfSight = false
 					prompt.Parent = tablet
 					prompt.Triggered:Connect(openBuild)
+					local cue = TabletCue.mount(prompt, function()
+						if ProximityPromptService.Enabled then
+							openBuild()
+						end
+					end)
+					cue.setGoal(tabletGoal)
+					tabletCue = cue
 					-- phones: the 7.4-stud screen fills the view at the stand, tapping it opens too (live v23: touch
 					-- players stood at the tablet and never found the small prompt bubble)
 					local tap = Instance.new("ClickDetector")
