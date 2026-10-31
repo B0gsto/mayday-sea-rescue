@@ -26,7 +26,7 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Mon | monetization review | PERF-MON1 | 5.5 overall | done: build/status/2026-10-31/perfect/mon/REVIEW.md |
 | Mon | plan 1,4,11,12,13,18,19,20 (Shop Finish/spin bug, effect lines, odds, telemetry, texts, docs) | PERF-MON-A | 5 | building |
 | Mon | plan 3,7 purchase payoff + boat test ride | PERF-MON-B | 2.5 | building |
-| Mon | plan 15 store icon family | PERF-MON-C | 6.5 | building |
+| Mon | plan 15 store icon family | PERF-MON-C/C2 | 6.5 -> family 9.2 | 52/56 at 9.1+, live on test + launch (54; DockGarage/SeaplanePass not on launch). Left: StarterKit 8.7 (redo with MON-D bundle), DockCrane 9.0 (after crane r9), DockLevel2 9.0 (declutter) |
 | Mon | owner YES: Starter Kit rework, 5 cosmetics on sale, private servers (other ideas declined) | after MON-A merges | - | queued |
 | Anim | player sprint/walk/idle (owner: reuse Tame A Titan clips OK) | PERF-ANIM1 | - | building |
 | Mesh | M_Prop_JettyCrane | Blender PERF-BL1 | r3 8.3 -> r8 8.8 | r8 shipped on t3/d9e3f4f1 (eeae70a6, unmerged); plateau 8.7-8.8 at 7,926/8,000 tris: next round raises the tri budget + r8 list (continuous hook band, jib studs clear of cab, cleaner slew ring, cab +10-15%) |
