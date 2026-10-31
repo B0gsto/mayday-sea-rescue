@@ -753,29 +753,77 @@ Presets.ALL.fx1_wheel_jackpot = {
 }
 
 -- spectacle (small): a building finished / upgraded, the Lego build snap: the last brick clacks home, a studded
--- ring and the plates race out low, dust settles, confetti and short rays only above the roof
-Presets.ALL.fx1_build_snap = {
-	job = "spectacle",
-	impact = 0,
-	layers = {
+-- ring and the plates race out low, dust settles, confetti and short rays only above the roof. It escalates with the
+-- level (docs/28 feel 6): Lv2 adds a gold ring and a second, higher confetti burst; Lv3 more plates and a gold light
+-- pillar off the roof. Each tier carries its own sting: a chime that climbs one more step per level (the HQ and the
+-- wheel keep Music_CrateFanfare).
+local function snd(clip: string, delay: number, volume: number, pitch: number): Sound
+	return { clip = clip, delay = delay, volume = volume, pitch = pitch }
+end
+local function buildSnap(tier: number): Preset
+	local layers = {
 		studRing(WHITE, 20, 0.8, 0),
 		groundRing("shockwave_ring", WHITE, { 11, 12.5 }, 0.6, 0.1),
-		plates({ RED, WHITE, YELLOW, NAVY }, 16),
+		plates({ RED, WHITE, YELLOW, NAVY }, ({ 16, 16, 24 })[tier]),
 		with(table.clone(BUILD[2]), { transparency = { 0.5 }, count = 8 }), -- the dust never hides you
 		with(
-			confetti(20, { 18, 28 }, 38, { RED, WHITE, YELLOW, SEA, GREEN }),
+			confetti(({ 20, 36, 54 })[tier], { 18, 28 }, 38, { RED, WHITE, YELLOW, SEA, GREEN }),
 			{ lifetime = { 1.9, 2.6 } }
 		),
-		rays(8, { WHITE, YELLOW }, 6, 0, 0.3),
-	},
-	light = { color = WHITE, brightness = 2, range = 30, time = 0.6 },
-	punch = { fov = 2.5, magnitude = 0.5, roughness = 20, time = 0.3 },
-	sounds = sounds({
-		{ "FX_PlasticDrop", 0, 1, 1 },
-		{ "FX_ChimeHit", 0.05, 0.6, 1.2 },
-		{ "FX_PlasticRain", 0.45, 0.7, 1.2 },
-	}),
-}
+		rays(({ 8, 10, 12 })[tier], { WHITE, YELLOW }, 5 + tier, 0, 0.3),
+	}
+	local stings: { Sound } = {
+		snd("FX_PlasticDrop", 0, 1, 1),
+		snd("FX_ChimeHit", 0.05, 0.6, 1.2),
+		snd("FX_PlasticRain", 0.45, 0.7, 1.2),
+	}
+	for step = 1, tier do -- the climbing chime: C, E, G
+		table.insert(
+			stings,
+			snd("FX_Chime", 0.1 + (step - 1) * 0.16, 0.45 + tier * 0.05, ({ 1, 1.26, 1.5 })[step])
+		)
+	end
+	if tier >= 2 then
+		table.insert(layers, studRing(GOLD, 26, 1, 0.15))
+		table.insert(
+			layers,
+			with(
+				confetti(
+					({ 0, 24, 36 })[tier],
+					{ 28, 40 },
+					30,
+					if tier >= 3 then { GOLD } else { GOLD, WHITE, RED }
+				),
+				{ delay = 0.25, lifetime = { 2.1, 2.8 }, drag = 1 }
+			)
+		)
+		table.insert(stings, snd("FX_PowerUp", 0.02, 0.5, 1.1))
+		table.insert(stings, snd("FX_ChimeTail", 0.5, 0.7, 1.1))
+	end
+	if tier >= 3 then
+		table.insert(layers, studRing(WHITE, 32, 1.1, 0.3))
+		table.insert(stings, snd("FX_TonalHit", 0, 0.8, 1.15))
+	end
+	return {
+		job = if tier >= 3 then "showcase" else "spectacle",
+		impact = 0,
+		layers = layers,
+		beams = if tier >= 3
+			then { { color = GOLD, width = 7, height = 60, time = 1.6, emission = 0.3, at = "top" } }
+			else nil,
+		light = {
+			color = if tier >= 2 then GOLD else WHITE,
+			brightness = 1 + tier,
+			range = 30,
+			time = 0.6,
+		},
+		punch = { fov = 2 + tier * 0.5, magnitude = 0.4 + tier * 0.15, roughness = 20, time = 0.3 },
+		sounds = stings,
+	}
+end
+Presets.ALL.fx1_build_snap = buildSnap(1)
+Presets.ALL.fx1_build_snap_lv2 = buildSnap(2)
+Presets.ALL.fx1_build_snap_lv3 = buildSnap(3)
 
 ---------------------------------------------------------------- FX2 core loop
 -- The everyday moments at the owner's "satisfying and nice" bar (docs/26): anticipation -> impact -> settle in 2-4
