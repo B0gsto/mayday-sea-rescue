@@ -28,7 +28,10 @@ local FADE = 1 -- s: once they leave the water the ring swells and fades, so the
 -- (the ring takes over) between MARK_NEAR and MARK_NEAR * 2. Pooled: MARK_MAX nearest get one.
 local MARK_FAR, MARK_NEAR, MARK_MAX = 560, 45, 8 -- 560: the cove-mouth swimmers read from your island
 
+local SLOW_FAR, SLOW_EVERY = 200, 1 / 8 -- past 200 studs a ring's bob/size update runs at 8 Hz (phones) -- tune
+
 local rings: { [Model]: CylinderHandleAdornment } = {}
+local nextAt: { [Model]: number } = {} -- os.clock() of a far ring's next update
 local fading: { [CylinderHandleAdornment]: number } = {} -- band -> os.clock() they left the water
 local folder: Folder? = nil
 local marks: { BillboardGui } = {}
@@ -111,10 +114,18 @@ local function step()
 			local band = rings[v] or newRing()
 			rings[v] = band
 			local at = (v.PrimaryPart :: BasePart).Position
+			local far = if cam then (cam.CFrame.Position - at).Magnitude else 0
+			if far < MARK_FAR and far > MARK_NEAR then
+				table.insert(near, { m = v, d = far })
+			end
+			local clock = os.clock()
+			if far > SLOW_FAR and clock < (nextAt[v] or 0) then
+				continue
+			end
+			nextAt[v] = clock + SLOW_EVERY
 			local ok, h = pcall(Weather.heightAt, at)
 			local anchor = band.Adornee :: BasePart
 			-- wider and taller far off: a flat 1.4-stud band vanished at a grazing angle (playtest 2026-10-26)
-			local far = if cam then (cam.CFrame.Position - at).Magnitude else 0
 			band.Radius = ring
 			band.InnerRadius = ring - math.clamp(far * FAR_WIDTH, BAND, ring / 2)
 			band.Height = math.clamp(far / 150, 0.1, 1.2)
@@ -125,9 +136,6 @@ local function step()
 			)
 			band.Color3 = if full then GREY else ORANGE
 			band.Transparency = if full then 0.7 else 0.15
-			if far < MARK_FAR and far > MARK_NEAR then
-				table.insert(near, { m = v, d = far })
-			end
 		end
 	end
 	table.sort(near, function(a, b)
@@ -150,6 +158,7 @@ local function step()
 	for v, band in rings do
 		if not seen[v] then
 			rings[v] = nil
+			nextAt[v] = nil
 			fading[band] = os.clock()
 		end
 	end
