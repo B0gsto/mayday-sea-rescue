@@ -19,7 +19,8 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Feel | REVIEW 1,13,22,24 buy a boat, ring, passengers, bob | PERF-F2o (Opus) | 3-6 | building |
 | Feel | REVIEW 8,11,15,27 rider, recruit, discovery, neon | PERF-F3o (Opus) | 5-6.5 | building |
 | Feel | REVIEW 10,25 wheel + prize audio | sibling thread (M_Prop_PrizeWheel, AD r2 7.5) | 6.5 | theirs |
-| Prog | REVIEW 3,12,16 (+17 proposal) | PERF-F4o (Opus) | 4-5 | building |
+| Prog | REVIEW 3,12,16 | PERF-F4o | 4-5 | done b8c037c2 (9 unlocks in 5.5-9 h, was 2; skill dots merged); in MERGE1 |
+| Prog | REVIEW 17 endgame: proposal = docs/27 Deep at HQ5+Sub Pen, wreck landmarks, crews automate, Harbour Master prestige, weekly server goals (cosmetic rewards) | F4o reply | 4 | needs owner go (new feature) |
 | Feel | REVIEW 2 haptics | after F1-F3 merge | 0 | queued |
 | Anim | workers/NPCs/player sprint | ANIM1 own clips r1-3: 6.6-8.6, none shipped; PERF-ANIM2: TaT + Roblox packs | 8.6 best | building |
 | Mon | monetization review | PERF-MON1 | 5.5 overall | done: build/status/2026-10-31/perfect/mon/REVIEW.md |
