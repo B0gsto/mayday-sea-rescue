@@ -231,7 +231,9 @@ function TouchDriveController.Init() end
 function TouchDriveController.Start()
 	-- REV2: a notification or home swipe mid-press may never end the touch: drop every hold
 	UserInputService.WindowFocusReleased:Connect(function()
-		table.clear(presses)
+		for _, set in presses do
+			table.clear(set) -- keep the per-button sets: InputBegan indexes them
+		end
 	end)
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "TouchDrive"
