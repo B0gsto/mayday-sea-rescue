@@ -1299,6 +1299,7 @@ end
 -- 80 studs out) they swim to the first footing toward the nearest pad or slipway, then climb out, stand
 -- and wave, and go up the quay (removed). No footing anywhere: handed straight in.
 local CLIMB_OFF_SECONDS = 1.0
+local STEP_OFF_GAP = 0.45 -- s between passengers stepping off at a delivery -- tune
 local SWIM_OFF_SPEED = 16 -- studs/s: a quick swim the camera can follow -- tune
 local SWIM_OFF_MAX = 4 -- s cap on that swim
 local FOOT_SEARCH = 150 -- studs toward the drop-off
@@ -1356,7 +1357,7 @@ local function findFooting(from: Vector3): Vector3?
 	return nil
 end
 
-local function climbOff(v: any, from: Vector3)
+local function climbOff(v: any, from: Vector3, order: number)
 	local model: Model = v.model
 	local vehicles = Workspace:FindFirstChild("Vehicles")
 	footParams.FilterDescendantsInstances = if vehicles then { model, vehicles } else { model }
@@ -1395,6 +1396,9 @@ local function climbOff(v: any, from: Vector3)
 	if v.rig then
 		v.rig:SetAttribute("CasualtyPose", "Wave")
 	end
+	-- the client's step-off beat (CasualtyController): a hop where they land, a ding a step lower per person
+	model:SetAttribute("StepOffTo", foot)
+	model:SetAttribute("StepOff", order)
 	local t0 = os.clock()
 	while model.Parent do
 		local u = math.min((os.clock() - t0) / CLIMB_OFF_SECONDS, 1)
@@ -1443,7 +1447,7 @@ local function unloadVictims(vehicle: Model, victims: { any }, patrol: boolean?)
 	local from = vehicle:GetPivot().Position
 	-- WP-26: landed at your own berth, each person becomes one of your workers
 	local home = driver ~= nil and ColdOpen.atDropOff(from, driver:GetAttribute("BayCFrame"))
-	for _, v in victims do
+	for i, v in victims do
 		local category = v.model:GetAttribute("Category")
 		if home and type(category) == "string" then
 			try(
@@ -1459,7 +1463,7 @@ local function unloadVictims(vehicle: Model, victims: { any }, patrol: boolean?)
 		end
 		v.state = "Delivered"
 		victimsByModel[v.model] = nil
-		task.spawn(climbOff, v, from)
+		task.delay((i - 1) * STEP_OFF_GAP, climbOff, v, from, i) -- one by one, never all in one frame
 	end
 end
 

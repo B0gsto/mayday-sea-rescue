@@ -18,6 +18,7 @@ local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
+local BoatReveal = require(script.Parent:WaitForChild("BoatReveal"))
 local Kit = script.Parent:WaitForChild("Kit")
 local Panel = require(Kit:WaitForChild("Panel"))
 local PriceButton = require(Kit:WaitForChild("PriceButton"))
@@ -164,8 +165,9 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 				return Net.func("BuyGear"):InvokeServer(craft)
 			end)
 			busy = false
-			if called and done then
-				refresh()
+			if called and done == true then
+				panel.close() -- the moment: the craft builds in at its berth
+				BoatReveal.play(craft)
 			end
 		end)
 	end
