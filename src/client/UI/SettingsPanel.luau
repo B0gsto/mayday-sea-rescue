@@ -460,6 +460,8 @@ function SettingsPanel.newPanel(canvas: Frame, onClose: () -> ())
 	toggleRow(panel.body, order, "reduceMotion", "pause", "green", "Reduce motion")
 	order += 1
 	toggleRow(panel.body, order, "holdToTap", "tap", "orange", "Hold to tap")
+	order += 1
+	toggleRow(panel.body, order, "haptics", "shake", "purple", "Vibration")
 
 	order = section(panel.body, order, "Graphics")
 	local q = { { "Auto", "Auto" }, { "High", "High" }, { "Med", "Medium" }, { "Low", "Low" } }

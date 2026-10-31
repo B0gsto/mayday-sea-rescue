@@ -18,6 +18,7 @@ local Workspace = game:GetService("Workspace")
 local AudioController =
 	require(script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("AudioController"))
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
+local Haptics = require(script.Parent:WaitForChild("Haptics"))
 local Presets = require(script.Parent:WaitForChild("Presets"))
 local Shake = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Shake"))
 local VFXTextures = require(
@@ -279,6 +280,7 @@ function VFXKit.play(name: string, target: CFrame | BasePart, opts: Opts?): bool
 		warn(`[VFXKit] unknown preset {name}`)
 		return false
 	end
+	Haptics.fx(name, opts)
 	local cf = if typeof(target) == "CFrame" then target else (target :: BasePart).CFrame
 	local camera = Workspace.CurrentCamera
 	if

@@ -34,6 +34,7 @@ export type Settings = {
 	textSize: number,
 	reduceMotion: boolean,
 	holdToTap: boolean,
+	haptics: boolean,
 }
 
 local DEFAULTS: Settings = SettingsRules.Defaults :: any
