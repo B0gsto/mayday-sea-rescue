@@ -677,10 +677,12 @@ local function scrollToCard(key: string): GuiObject?
 	local content = cardsContent
 	for _, card in cards do
 		if content and card:GetAttribute("ItemKey") == key then
+			-- CanvasPosition is in screen px like AbsolutePosition (not du): dividing by the UI scale threw the
+			-- tutorial's Workshop card off the top of the list on phones (scale 0.7, live v23)
 			local _, scale = Style.metrics(content)
-			local dy = (card.AbsolutePosition.Y - content.AbsolutePosition.Y)
-				/ math.max(scale, 0.05)
-			content.CanvasPosition = Vector2.new(0, math.max(0, content.CanvasPosition.Y + dy - 8))
+			local dy = card.AbsolutePosition.Y - content.AbsolutePosition.Y
+			content.CanvasPosition =
+				Vector2.new(0, math.max(0, content.CanvasPosition.Y + dy - 8 * scale))
 			return card
 		end
 	end
@@ -1762,6 +1764,16 @@ function DockController.Start()
 					prompt.RequiresLineOfSight = false
 					prompt.Parent = tablet
 					prompt.Triggered:Connect(openBuild)
+					-- phones: the 7.4-stud screen fills the view at the stand, tapping it opens too (live v23: touch
+					-- players stood at the tablet and never found the small prompt bubble)
+					local tap = Instance.new("ClickDetector")
+					tap.MaxActivationDistance = prompt.MaxActivationDistance
+					tap.Parent = tablet
+					tap.MouseClick:Connect(function()
+						if ProximityPromptService.Enabled then -- off under the join reward card, like the prompt
+							openBuild()
+						end
+					end)
 				end
 			end
 			refreshArrows() -- buildings stream in and out: the arrows follow their tops
