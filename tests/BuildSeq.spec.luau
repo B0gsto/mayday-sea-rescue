@@ -54,4 +54,52 @@ return function(t)
 			t.expect(s.drop).toBeCloseTo(b[k].drop, 1e-9)
 		end
 	end)
+
+	t.test("course clicks: one per higher course, >= CLICK_GAP apart, pitch rising", function()
+		local ys = {}
+		for i = 1, 60 do
+			table.insert(ys, math.floor(i / 4)) -- 4 bricks a course
+		end
+		local clicks = B.clicks(B.plan(ys, 3), ys)
+		t.expect(#clicks > 1).toBe(true)
+		t.expect(clicks[1].pitch).toBeCloseTo(B.PITCH_LO, 1e-9)
+		for k = 2, #clicks do
+			t.expect(clicks[k].t - clicks[k - 1].t >= B.CLICK_GAP - 1e-9).toBe(true)
+			t.expect(clicks[k].pitch > clicks[k - 1].pitch).toBe(true)
+			t.expect(clicks[k].pitch <= B.PITCH_HI + 1e-9).toBe(true)
+		end
+		t.expect(#B.clicks(B.plan({ 5, 5, 5 }, 1), { 5, 5, 5 })).toBe(1) -- one flat course: one click
+	end)
+
+	t.test("unlock icon targets", function()
+		local vehicles = {
+			RIB = { needs = "Boathouse" },
+			Lifeboat = { needs = "LifeboatSlip" },
+			RescueHelicopter = { needs = "Hangar" },
+			StormRunner = { needs = "Shed", passOnly = true },
+		}
+		local unlocks = { Quests = { key = "HQ", level = 2 } }
+		local function lv(...)
+			local levels = {}
+			for _, e in { ... } do
+				table.insert(levels, { effect = e })
+			end
+			return { levels = levels }
+		end
+		t.expect(B.unlockTarget("Boathouse", 1, lv("RIB", "LifeboatSlip"), vehicles, unlocks))
+			.toBe("Boat")
+		t.expect(B.unlockTarget("Boathouse", 2, lv("RIB", "LifeboatSlip"), vehicles, unlocks))
+			.toBe("Boat")
+		t.expect(B.unlockTarget("AirStation", 1, lv("Helicopter"), vehicles, unlocks)).toBe("Boat")
+		t.expect(B.unlockTarget("Shed", 1, lv("Crane"), vehicles, unlocks)).toBe("Next") -- a Robux-only craft
+		t.expect(B.unlockTarget("HQ", 2, lv("HQ", "HQ"), vehicles, unlocks)).toBe("Quests")
+		t.expect(B.unlockTarget("FishShed", 2, lv("Fishers", "FishSlots4"), vehicles, unlocks))
+			.toBe("Crew")
+		t.expect(B.unlockTarget("Bunkhouse", 1, lv("People10"), vehicles, unlocks)).toBe("Crew")
+		local yard = lv("Mechanics")
+		yard.worker = "Mechanic"
+		t.expect(B.unlockTarget("BoatYard", 1, yard, vehicles, unlocks)).toBe("Crew")
+		t.expect(B.unlockTarget("Depot", 1, lv("Depot"), vehicles, unlocks)).toBe("Next")
+		t.expect(B.unlockTarget("Garden", 1, nil, vehicles, unlocks)).toBe("Next")
+	end)
 end
