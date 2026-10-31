@@ -383,7 +383,7 @@ local function spin(payload: any)
 			AudioController.play("UI_Prompt", pivotPart.Position, 0.45, 1.25 + math.random() * 0.2)
 			-- docs/26: streaks fly off the rim where the flapper clicks, along the rim's travel (-X at the top)
 			local at = if flapRest
-				then (flapRest * CFrame.new(0, -2.3, 0)).Position
+				then (flapRest * CFrame.new(0, -1.6, 0)).Position -- the flapper tip, where the pegs knock it
 				else (base * CFrame.new(0, 6.6, 0)).Position
 			VFXKit.play(
 				"wheel_spin",

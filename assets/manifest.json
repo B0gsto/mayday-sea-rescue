@@ -6022,6 +6022,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:45717a4a0b7af83a79a1b53ea6a7f2a199845afd28f8c209a8d22a9268f2c01a": {
+  "assetId": "132223528155264",
+  "imageId": "132223528155264",
+  "moderation": "Reviewing",
+  "name": "T_PrizeWheel_Brick_MET",
+  "sha": "45717a4a0b7af83a79a1b53ea6a7f2a199845afd28f8c209a8d22a9268f2c01a",
+  "source": "assets/textures/M_Prop_PrizeWheel/T_PrizeWheel_Brick_MET.png",
+  "type": "Image"
+ },
  "Image:459b34145f605be8dead76e33dcb10f3d516f305c4476fb5553a358242dc8dd4": {
   "assetId": "88162766451601",
   "imageId": "88162766451601",
@@ -8427,6 +8436,15 @@
   "name": "T_Kit_Hard_RGH_Wet",
   "sha": "64aa88db10c9d61c7a6c0a36e410a2361307fbf53f4c9e1f332c625e763fa01f",
   "source": "assets/textures/M_Kit_Atlas/T_Kit_Hard_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:64b4fc14b2e72009c87a57d2f484d4f2b7b8356195d134e34ea28da82f187745": {
+  "assetId": "127897426291027",
+  "imageId": "127897426291027",
+  "moderation": "Reviewing",
+  "name": "T_PrizeWheel_Brick_ALB",
+  "sha": "64b4fc14b2e72009c87a57d2f484d4f2b7b8356195d134e34ea28da82f187745",
+  "source": "assets/textures/M_Prop_PrizeWheel/T_PrizeWheel_Brick_ALB.png",
   "type": "Image"
  },
  "Image:64b6914e44e749a73d72b61f575532bdbd6f9027a685d33eeb50af29f1a967ed": {
@@ -17983,6 +18001,15 @@
   "source": "assets/textures/M_Veh_BoatTrailer_RIB/T_BoatTrailer_Galv_ALB.png",
   "type": "Image"
  },
+ "Image:d9aca12d03970a52f3555e983c6fe75c9730425b65e7acc100146877e129ee1a": {
+  "assetId": "84404228511082",
+  "imageId": "84404228511082",
+  "moderation": "Reviewing",
+  "name": "T_PrizeWheel_Brick_RGH",
+  "sha": "d9aca12d03970a52f3555e983c6fe75c9730425b65e7acc100146877e129ee1a",
+  "source": "assets/textures/M_Prop_PrizeWheel/T_PrizeWheel_Brick_RGH.png",
+  "type": "Image"
+ },
  "Image:d9dbf448b76cf0fd99ca2dac5b5e449b6b1dbb44caedf6b85f86ae45388c6a1f": {
   "assetId": "93674397250744",
   "imageId": "93674397250744",
@@ -26135,6 +26162,16 @@
   "source": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil_LOD1.fbx",
   "type": "Model"
  },
+ "Model:8b6ed75244ed71abbd9b7a9f96592879f932ebee9ac4b4539b821e4719ef34b5": {
+  "assetId": "101911048150193",
+  "moderation": "Approved",
+  "name": "M_Prop_PrizeWheel_LOD2",
+  "rbxm": "assets/models/M_Prop_PrizeWheel_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "8b6ed75244ed71abbd9b7a9f96592879f932ebee9ac4b4539b821e4719ef34b5",
+  "source": "assets/fbx/M_Prop_PrizeWheel/M_Prop_PrizeWheel_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:8b86fae1d5937cbbdca9b66fd494256b8a011888d73a34d0b61fabf19b88538a": {
   "assetId": "121670539551659",
   "moderation": "Approved",
@@ -29285,6 +29322,16 @@
   "source": "assets/fbx/M_Veg_SeaThrift_02/M_Veg_SeaThrift_02_LOD2.fbx",
   "type": "Model"
  },
+ "Model:e2a7eaef51f6e0c8b0b9b00f1be10b7ffa342d8b35e76fa21aa6884509f62c2b": {
+  "assetId": "97184488264751",
+  "moderation": "Approved",
+  "name": "M_Prop_PrizeWheel",
+  "rbxm": "assets/models/M_Prop_PrizeWheel.rbxm",
+  "route": "delivery",
+  "sha": "e2a7eaef51f6e0c8b0b9b00f1be10b7ffa342d8b35e76fa21aa6884509f62c2b",
+  "source": "assets/fbx/M_Prop_PrizeWheel/M_Prop_PrizeWheel_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:e2a9a37519600731a437ec804ea3e0f9ccc7fab184893b6ea3eb30e0a045f523": {
   "assetId": "118291679778146",
   "moderation": "Approved",
@@ -29803,6 +29850,16 @@
   "route": "delivery",
   "sha": "ee94c6da761dec2ffa438a294fcc29d27b20bcb33e97b791fd565492f4a72b1f",
   "source": "assets/fbx/M_Bld_HarbourLight/M_Bld_HarbourLight_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:ef029804db886dce7833a676a6e3710d12accfc8783d1e89c1d10fec44888880": {
+  "assetId": "116553799953798",
+  "moderation": "Approved",
+  "name": "M_Prop_PrizeWheel_LOD1",
+  "rbxm": "assets/models/M_Prop_PrizeWheel_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ef029804db886dce7833a676a6e3710d12accfc8783d1e89c1d10fec44888880",
+  "source": "assets/fbx/M_Prop_PrizeWheel/M_Prop_PrizeWheel_LOD1.fbx",
   "type": "Model"
  },
  "Model:ef0d8f1aadd730f5dca298356a109c804992327de2efbb5ced0931eb8a309c34": {

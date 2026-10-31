@@ -5,11 +5,12 @@ All numbers are Roblox studs relative to the wheel's `at` (stand foot centre on 
 is that point, so DockService's PivotTo(at) puts every part where the old Parts stood). The hub is HUB = (0, 10, -3.6).
 
 Layers (PrizeWheel.luau puts them under the same names the controller uses):
-  L01_Stand    blue studded base plate, two white columns + header, spine and axle, pointer arm + yellow housing
-  L02_Rotor    thick red rim with a yellow trim, 12 solid rarity tiles (SpinRules.SEGMENTS order, angle i = (i-1)*30 deg
-               CCW from +X as WheelMath), white bevelled dividers, a rarity gem on each tile, 12 chunky pegs + 12 studs,
+  L01_Stand    blue studded base plate, two studded brick columns + header brick, spine and axle, blue flapper
+               housing (cheeks + chrome hinge pin)
+  L02_Rotor    thick red rim with a white trim, 12 solid rarity tiles (SpinRules.SEGMENTS order, angle i = (i-1)*30 deg
+               CCW from +X as WheelMath), raised shaded dividers, a big rarity gem on a white disc per tile, 12 pegs,
                chrome shoulder + polished gold hub cap (no neon; the glow stays for big wins in code)
-  L03_Flapper  white pointer with a navy tip and a chrome pin; PrizeWheel.luau sets its pivot to the hinge HINGE
+  L03_Flapper  chunky white pointer, navy outline, red tip, hinge boss; PrizeWheel.luau sets its pivot to HINGE
   Col01_COL    the base plate only (the old Base Part was the only collider)
 
     python3 art/source/props/M_Prop_PrizeWheel/maketex.py --out build/prod/M_Prop_PrizeWheel/textures/M_Prop_PrizeWheel
@@ -39,7 +40,8 @@ SEGMENTS = ["Common", "Uncommon", "Common", "Rare", "Common", "Uncommon", "Epic"
 HUB = (0.0, 10.0, -3.6)
 HINGE = (0.0, 17.9, -4.82)          # the flapper's pivot (PrizeWheel.luau sets PivotOffset from this)
 N_SEG = len(SEGMENTS)
-R_RIM_IN, R_RIM_OUT = 5.7, 7.3
+R_RIM_IN, R_RIM_OUT = 6.0, 7.3
+R_TILE = 6.1                         # tiles tuck under the rim's white trim
 STEP = 2 * math.pi / N_SEG
 
 
@@ -181,6 +183,22 @@ def arc(r, a0, a1, k):
     return [(r * math.cos(a0 + (a1 - a0) * i / k), r * math.sin(a0 + (a1 - a0) * i / k)) for i in range(k + 1)]
 
 
+def prism(b, fr, x0, x1, sec, c_end, c_sides):
+    """The convex (y, z) section `sec` run along the frame's x from x0 to x1; c_sides = one cell per section edge."""
+    n = len(sec)
+    verts = [fr.pt(x0, y, z) for y, z in sec] + [fr.pt(x1, y, z) for y, z in sec]
+    faces = [tuple(range(n)), tuple(reversed(range(n, 2 * n)))] + [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
+    b._emit(verts, faces, [c_end, c_end] + list(c_sides))
+
+
+def stud(b, o, w, c, n=12):
+    """A Lego stud standing on the point o, pointing along the unit axis w."""
+    u = (1, 0, 0) if abs(w[0]) < 0.9 else (0, 1, 0)
+    v = (w[1] * u[2] - w[2] * u[1], w[2] * u[0] - w[0] * u[2], w[0] * u[1] - w[1] * u[0])
+    u = (v[1] * w[2] - v[2] * w[1], v[2] * w[0] - v[0] * w[2], v[0] * w[1] - v[1] * w[0])
+    lathe(b, Fr(o, u, v, w), [(0, -0.05), (0.6, -0.05), (0.6, 0.36), (0, 0.36)], n, c)   # round beats a chamfer here
+
+
 # ------------------------------------------------------------------ rotor
 FRONT = -0.45            # tile front, rotor-local z (front is negative)
 BACK = 0.15
@@ -195,21 +213,22 @@ def tile_outline(a, r0, r1, side, d):
 
 
 GEM = [(-0.36, 0.56), (0.36, 0.56), (0.7, 0.14), (0.0, -0.7), (-0.7, 0.14)]
+R_GEM, R_DISC = 4.9, 1.12           # disc edge stays clear of the divider bases (half chord at R_GEM is 1.27)
 
 
 def gem(b, a, rarity, rank):
-    """A navy setting plate and a faceted gem on tile angle a, tip toward the hub (upright at the pointer)."""
+    """A white disc and a big faceted gem on tile angle a, tip toward the hub (upright at the pointer)."""
     cx, cy, cz = HUB
-    rg = 4.15
-    fr = Fr((cx + rg * math.cos(a), cy + rg * math.sin(a), cz + FRONT),
-            (-math.sin(a), math.cos(a), 0), (math.cos(a), math.sin(a), 0), (0, 0, -1))
-    s = 1.02 + 0.045 * rank
+    o = (cx + R_GEM * math.cos(a), cy + R_GEM * math.sin(a), cz)
+    lathe(b, Fr(o), [(0, -0.40), (R_DISC, -0.40), (R_DISC, -0.56), (R_DISC - 0.1, -0.645), (0, -0.645)], 16,
+          [P.WHITE, P.LSIL, P.WHITE, P.WHITE])
+    fr = Fr((o[0], o[1], cz), (-math.sin(a), math.cos(a), 0), (math.cos(a), math.sin(a), 0), (0, 0, -1))
+    s = 1.27 + 0.01 * rank
     pts = [(x * s, y * s) for x, y in GEM]
-    ext(b, fr, [(x * 1.14, y * 1.14) for x, y in pts], -0.05, 0.1, P.INK, inset=0.05)
     base, light, dark = P.RARITY[rank]
-    table = [(x * 0.5, y * 0.5 + 0.05) for x, y in pts]
+    table = [(x * 0.42, y * 0.42 + 0.06) for x, y in pts]
     n = len(pts)
-    verts = [fr.pt(x, y, 0.06) for x, y in pts] + [fr.pt(x, y, 0.52) for x, y in table]
+    verts = [fr.pt(x, y, 0.6) for x, y in pts] + [fr.pt(x, y, 1.45) for x, y in table]
     faces, cols = [tuple(range(n)), tuple(reversed(range(n, 2 * n)))], [dark, light]
     rainbow = [P.C5L, P.CYAN, P.YELLOW, P.LIME, P.C5]
     for i in range(n):
@@ -224,38 +243,38 @@ def gem(b, a, rarity, rank):
 def rotor(b):
     cx, cy, cz = HUB
     fr = Fr(HUB)
-    # rim: thick, chamfered, red with a yellow trim around the tiles
-    rim = [(R_RIM_IN + 0.3, -0.65), (R_RIM_OUT - 0.3, -0.65), (R_RIM_OUT, -0.35), (R_RIM_OUT, 0.35),
-           (R_RIM_OUT - 0.3, 0.65), (R_RIM_IN + 0.3, 0.65), (R_RIM_IN, 0.35), (R_RIM_IN, -0.35)]
-    lathe(b, fr, rim, 56, [P.RED, P.RED, P.RRED, P.RRED, P.RED, P.RRED, P.YELLOW, P.YELLOW])
+    # rim: thick, chamfered, red with a white trim around the tiles (the gold Legendary tile never meets yellow)
+    rim = [(R_RIM_IN + 0.3, -0.65), (R_RIM_OUT - 0.3, -0.65), (R_RIM_OUT, -0.35), (R_RIM_OUT, 0.65),
+           (R_RIM_IN, 0.65), (R_RIM_IN, -0.35)]                        # the back edges are never seen: no chamfer
+    lathe(b, fr, rim, 48, [P.RED, P.RED, P.RRED, P.RRED, P.WHITE, P.WHITE])
     # back plate
-    lathe(b, fr, [(0, 0.1), (5.9, 0.1), (5.9, 0.5), (0, 0.5)], 40, P.INK)
+    lathe(b, fr, [(0, 0.1), (6.2, 0.1), (6.2, 0.5), (0, 0.5)], 32, P.INK)
     lathe(b, fr, [(0, 0.45), (1.3, 0.45), (1.3, 0.62), (1.1, 0.72), (0, 0.72)], 24, P.CHROME)
     # 12 solid tiles + dividers + gems, SpinRules order, angle (i-1)*30 deg CCW from +X
     for i, rarity in enumerate(SEGMENTS):
         a = i * STEP
         rank = P.RARITY_NAMES.index(rarity)
-        bot = tile_outline(a, 1.6, 5.8, 0.1, 0.0)
-        top = tile_outline(a, 1.6, 5.8, 0.1, 0.13)
+        bot = tile_outline(a, 1.6, R_TILE, 0.1, 0.0)
+        top = tile_outline(a, 1.6, R_TILE, 0.1, 0.13)
         n = len(bot)
         verts = [fr.pt(x, y, BACK) for x, y in bot] + [fr.pt(x, y, FRONT) for x, y in top]
         faces = [tuple(range(n)), tuple(reversed(range(n, 2 * n)))] + [(k, (k + 1) % n, n + (k + 1) % n, n + k) for k in range(n)]
         b._emit(verts, faces, P.RARITY[rank][0])
         gem(b, a, rarity, rank)
         ra = radial(cx, cy, cz, a + STEP / 2)
-        cbox(b, (1.7, -0.19, -0.76), (5.85, 0.19, -0.3), P.WHITE, bev=0.1, fr=ra)
-    # pegs (yellow, white tips) at the tile boundaries; small white studs at the tile centres
+        # raised divider: white crest, shaded silver flanks, on a navy contact strip
+        prism(b, ra, 2.2, 6.15, [(-0.17, -0.38), (0.17, -0.38), (0.08, -0.92), (-0.08, -0.92)], P.WHITE,
+              [P.LSIL, P.LSIL, P.WHITE, P.LSIL])
+        cbox(b, (2.2, -0.25, -0.49), (6.05, 0.25, -0.40), P.INK, bev=0.03, fr=ra)
+    # pegs (yellow, white tips) at the tile boundaries, on the rim face
     for i in range(N_SEG):
-        for k, (R, a) in enumerate(((6.5, (i + 0.5) * STEP), (6.5, i * STEP))):
-            f = Fr((cx + R * math.cos(a), cy + R * math.sin(a), cz))
-            if k == 0:
-                lathe(b, f, [(0, -0.55), (0.42, -0.55), (0.42, -1.25), (0.34, -1.45), (0.16, -1.58), (0, -1.6)], 14,
-                      [P.YELLOW, P.YELLOW, P.YELLOW, P.WHITE, P.WHITE, P.WHITE])
-            else:
-                lathe(b, f, [(0, -0.55), (0.3, -0.55), (0.3, -0.84), (0.22, -0.93), (0, -0.93)], 10, P.WHITE)
+        a = (i + 0.5) * STEP
+        f = Fr((cx + 6.65 * math.cos(a), cy + 6.65 * math.sin(a), cz))
+        lathe(b, f, [(0, -0.55), (0.4, -0.55), (0.4, -1.3), (0.28, -1.55), (0, -1.6)], 10,
+              [P.YELLOW, P.YELLOW, P.WHITE, P.WHITE])
     # hub: chrome shoulder, polished gold dome, red enamel centre
-    lathe(b, fr, [(1.5, -0.40), (2.25, -0.40), (2.25, -0.62), (2.05, -0.84), (1.5, -0.84)], 40, P.CHROME)
-    lathe(b, fr, [(0, -0.78), (1.52, -0.78), (1.52, -0.92), (1.3, -1.12), (0.85, -1.28), (0.55, -1.325), (0, -1.34)], 40,
+    lathe(b, fr, [(1.5, -0.40), (2.25, -0.40), (2.25, -0.62), (2.05, -0.84), (1.5, -0.84)], 32, P.CHROME)
+    lathe(b, fr, [(0, -0.78), (1.52, -0.78), (1.52, -0.92), (1.3, -1.12), (0.85, -1.28), (0.55, -1.325), (0, -1.34)], 32,
           [P.GOLD, P.GOLD, P.GOLD, P.GOLD, P.GOLD, P.RED, P.RED])
 
 
@@ -263,19 +282,33 @@ def rotor(b):
 def stand(b):
     cbox(b, (-8, 0, -3), (8, 1.2, 3), P.BLUE, bev=0.16)
     for x in range(-7, 8, 2):
-        for z in (0.0, 2.0):
-            lathe(b, Fr((x, 1.2, z), (1, 0, 0), (0, 0, 1), (0, 1, 0)), [(0, -0.05), (0.62, -0.05), (0.62, 0.3), (0.5, 0.38), (0, 0.38)], 12, P.BLUE)
+        stud(b, (x, 1.2, 0.0), (0, 1, 0), P.BLUE)
+    bricks = [P.WHITE, P.BLUE, P.WHITE, P.WHITE, P.BLUE, P.WHITE]
+    h = (17.6 - 2.7) / len(bricks)
     for s in (-1, 1):
-        x0, x1 = (6.1, 7.9) if s > 0 else (-7.9, -6.1)
+        x0, x1 = (6.0, 7.85) if s > 0 else (-7.85, -6.0)
         cbox(b, (min(s * 5.9, s * 7.95), 1.2, -2.9), (max(s * 5.9, s * 7.95), 2.7, -0.8), P.RED, bev=0.18)   # foot
-        cbox(b, (x0, 1.2, -2.7), (x1, 19.0, -1.0), P.WHITE, bev=0.14)                                       # column
-        for y in (6.0, 11.0, 15.5):
-            cbox(b, (x0 - 0.08, y, -2.78), (x1 + 0.08, y + 0.55, -0.92), P.BLUE, bev=0.1)                    # bands
-        lathe(b, Fr((s * 7.0, 19.0, -1.85), (1, 0, 0), (0, 0, 1), (0, 1, 0)), [(0, -0.05), (0.58, -0.05), (0.58, 0.28), (0.46, 0.36), (0, 0.36)], 14, P.YELLOW)
-    cbox(b, (-7.8, 17.6, -2.6), (7.8, 18.9, -1.1), P.WHITE, bev=0.14)                                          # header
+        cbox(b, (x0 + 0.22, 2.6, -2.58), (x1 - 0.22, 17.7, -1.07), P.DBG, bev=0.05)                          # seam core
+        for k, c in enumerate(bricks):                                                                      # brick column
+            y0, y1 = 2.7 + k * h + 0.03, 2.7 + (k + 1) * h - 0.03
+            cbox(b, (x0, y0, -2.8), (x1, y1, -0.85), c, bev=0.14)
+            stud(b, (s * 7.85, (y0 + y1) / 2, -1.825), (s, 0, 0), c)
+            if k not in (1, 2, 3):                                                                          # clear of the rim's back edge
+                stud(b, ((x0 + x1) / 2, (y0 + y1) / 2, -2.8), (0, 0, -1), c)
+    cbox(b, (-7.85, 17.6, -2.75), (7.85, 19.0, -0.9), P.WHITE, bev=0.14)                                       # header brick
+    for x in (-6.9, -4.9, -2.9, 2.9, 4.9, 6.9):
+        stud(b, (x, 19.0, -1.825), (0, 1, 0), P.WHITE)
     cbox(b, (-0.9, 2.7, -2.5), (0.9, 17.7, -1.3), P.DBG, bev=0.12)                                               # spine
-    cbox(b, (-0.8, 17.65, -5.2), (0.8, 18.85, -2.5), P.WHITE, bev=0.12)                                       # pointer arm
-    cbox(b, (-1.4, 17.5, -5.45), (1.4, 19.2, -4.2), P.YELLOW, bev=0.16)                                         # housing
+    # flapper housing: blue brick off the header, cheeks either side of the flapper, chrome hinge pin
+    cbox(b, (-1.9, 18.6, -5.6), (1.9, 20.4, -2.45), P.BLUE, bev=0.2)
+    for x in (-0.95, 0.95):
+        stud(b, (x, 20.4, -4.0), (0, 1, 0), P.BLUE)
+    cbox(b, (-1.5, 19.05, -5.7), (1.5, 19.95, -5.55), P.YELLOW, bev=0.04)                                      # front tile
+    for s in (-1, 1):
+        cbox(b, (min(s * 1.35, s * 1.8), 17.2, -5.45), (max(s * 1.35, s * 1.8), 18.75, -4.33), P.BLUE, bev=0.15)
+    lathe(b, Fr(HINGE, (0, 1, 0), (0, 0, 1), (1, 0, 0)),
+          [(0, -1.96), (0.36, -1.96), (0.36, -1.76), (0.2, -1.76), (0.2, 1.76), (0.36, 1.76), (0.36, 1.96), (0, 1.96)],
+          10, P.CHROME)
     ax = Fr((HUB[0], HUB[1], 0), (1, 0, 0), (0, 1, 0), (0, 0, 1))
     lathe(b, ax, [(0, -2.95), (0.55, -2.95), (0.55, -2.4), (0, -2.4)], 16, P.CHROME)                          # axle
     lathe(b, ax, [(0, -2.8), (0.95, -2.8), (0.95, -2.45), (0, -2.45)], 16, P.YELLOW)                          # bearing collar
@@ -283,13 +316,16 @@ def stand(b):
 
 # ------------------------------------------------------------------ flapper (local frame at HINGE)
 def flapper(b):
+    """A chunky white arrow with a navy outline and a red tip, hung on a boss round the hinge pin; its tip sits just
+    inside the peg ring so the pegs knock it."""
     fr = Fr(HINGE)
-    body = [(-1.0, 0.4), (-1.0, -1.1), (0.0, -2.5), (1.0, -1.1), (1.0, 0.4)]
-    ext(b, fr, body, 0.225, -0.225, P.WHITE, inset=0.1)
-    tip = [(-0.62, -1.62), (0.62, -1.62), (0.0, -2.5)]
-    ext(b, fr, offset(tip, -0.05), 0.26, -0.26, P.INK, inset=0.04)
-    ext(b, fr, [(-1.04, -0.55), (1.04, -0.55), (1.04, -0.95), (-1.04, -0.95)], 0.26, -0.26, P.RED, inset=0.04)
-    lathe(b, fr, [(0, -0.4), (0.32, -0.4), (0.32, -0.15), (0, -0.15)], 14, P.CHROME)
+    body = [(-1.0, 0.25), (-1.0, -0.75), (0.0, -1.75), (1.0, -0.75), (1.0, 0.25)]
+    ext(b, fr, offset(body, -0.13), 0.37, -0.31, P.INK, inset=0.05)
+    ext(b, fr, body, 0.25, -0.43, P.WHITE, inset=0.1)
+    ext(b, fr, offset([(-1.0, -0.5), (1.0, -0.5), (1.0, -0.75), (0.0, -1.75), (-1.0, -0.75)], 0.13), -0.38, -0.5, P.RED,
+        inset=0.03)                                                                                        # red arrowhead
+    lathe(b, Fr(HINGE, (0, 1, 0), (0, 0, 1), (1, 0, 0)),
+          [(0, -1.08), (0.42, -1.08), (0.52, -0.98), (0.52, 0.98), (0.42, 1.08), (0, 1.08)], 12, P.WHITE)
 
 
 def build():
@@ -330,7 +366,7 @@ def build():
         "meshes": meshes,
         "closeups": [
             {"name": "hub", "target": [0, -3.6, 10], "dist": 16, "az": -10, "el": 6},
-            {"name": "pointer", "target": [0, -4.8, 17], "dist": 12, "az": -25, "el": 12},
+            {"name": "pointer", "target": [0, -4.8, 18], "dist": 12, "az": -25, "el": 12},
             {"name": "base", "target": [0, -1, 2], "dist": 22, "az": -35, "el": 18},
         ],
     }
