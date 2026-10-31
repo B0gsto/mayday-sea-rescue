@@ -25,6 +25,11 @@ local FOG_COLOUR = Color3.fromHex("#1E3A38") -- palette deep water, a touch gree
 local SHAFTS = 7
 local DEEP_TINT = Color3.fromHex("#9DB8AE")
 local DARK_TINT = Color3.fromHex("#4C625A") -- green-grey, not teal (round 3)
+local FADE_IN = 0.4 -- seconds the grade eases in after the camera goes under (a dive, a duck) -- tune
+-- a sub pilot (setClear): the hull's lamps and the seabed must read, so thinner fog and half the darkening
+local CLEAR_FOG_TRANSPARENCY = 0.82 -- tune
+local CLEAR_DARK = 0.5 -- tune
+local WHITE = Color3.new(1, 1, 1)
 
 export type Underwater = {
 	folder: Folder,
@@ -39,7 +44,11 @@ export type Underwater = {
 	bubbles: ParticleEmitter,
 	window: Part,
 	active: boolean,
+	since: number, -- os.clock() the camera went under
+	clear: boolean,
 }
+
+local clear = false
 
 local Underwater = {}
 
@@ -173,6 +182,8 @@ function Underwater.new(parent: Instance): Underwater
 		motes = motes,
 		bubbles = bubbles,
 		active = false,
+		since = 0,
+		clear = false,
 	}
 end
 
@@ -180,12 +191,16 @@ end
 function Underwater.update(u: Underwater, camera: Camera, surfaceY: number)
 	local cf = camera.CFrame
 	local under = cf.Position.Y < surfaceY - 0.15
-	if under ~= u.active then
-		u.active = under
+	if under ~= u.active or (under and clear ~= u.clear) then
+		if under and not u.active then
+			u.since = os.clock()
+		end
+		u.active, u.clear = under, clear
 		u.cc.Enabled = under
 		u.blur.Enabled = under
+		local fog = if clear then CLEAR_FOG_TRANSPARENCY else FOG_TRANSPARENCY
 		for _, s in u.slices do
-			s.Transparency = if under then FOG_TRANSPARENCY else 1
+			s.Transparency = if under then fog else 1
 		end
 		for _, b in u.shafts do
 			b.Enabled = under
@@ -204,9 +219,12 @@ function Underwater.update(u: Underwater, camera: Camera, surfaceY: number)
 	local pos = cf.Position
 	-- Depth darkening: light falls off quickly with depth below the surface. -- tune
 	local depth = math.max(surfaceY - pos.Y, 0)
-	local dark = math.clamp(depth / 40, 0, 1)
-	u.cc.Brightness = -0.04 - 0.22 * dark
-	u.cc.TintColor = DEEP_TINT:Lerp(DARK_TINT, dark)
+	local dark = math.clamp(depth / 40, 0, 1) * (if clear then CLEAR_DARK else 1)
+	local k = math.clamp((os.clock() - u.since) / FADE_IN, 0, 1) -- the grade washes in, no hard cut
+	u.cc.Brightness = (-0.04 - 0.22 * dark) * k
+	u.cc.TintColor = WHITE:Lerp(DEEP_TINT:Lerp(DARK_TINT, dark), k)
+	u.cc.Saturation = -0.15 * k
+	u.blur.Size = 3 * k
 	local light = math.clamp(Lighting.Brightness / 2.5, 0.15, 1)
 	local radius = math.clamp(depth * 1.13 + 3, 4, 90)
 	u.window.Size = Vector3.new(0.05, radius * 2, radius * 2)
@@ -221,6 +239,11 @@ function Underwater.update(u: Underwater, camera: Camera, surfaceY: number)
 		top.Position = Vector3.new(math.cos(angle) * r, 15, math.sin(angle) * r)
 		u.bottoms[i].Position = top.Position + down * (30 + (i % 3) * 10)
 	end
+end
+
+-- A sub pilot's view (SubController): thinner fog, less depth darkening. Module-wide: one camera.
+function Underwater.setClear(on: boolean)
+	clear = on
 end
 
 function Underwater.destroy(u: Underwater)

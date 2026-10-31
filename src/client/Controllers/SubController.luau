@@ -3,9 +3,12 @@
 -- shared/Sub/Builder) from its DriverSeat. Inert until the local player sits in one.
 --   Ahead / astern and turn: the VehicleSeat's ThrottleFloat / SteerFloat (W/S/A/D, arrows, gamepad
 --   triggers and stick, the touch thumbstick), like the boats.
---   Rise / dive: E / Q, gamepad Y / X, two touch buttons with up / down chevrons (no text). On a touch device the
+--   Rise / dive: E / Q, gamepad RB / LB or the D-pad up / down (the triggers drive it; X / Y stay with prompts and
+--   the Next chip), two touch buttons with up / down chevrons (no text). On a touch device the
 --   drive pad (TouchDriveController) drives it instead: GO / BRAKE, LEFT / RIGHT, the teal rise / dive arrows.
 --   Hands-off it holds its depth; at the surface it floats like a slow boat (shared/Sub/Dive).
+--   Going under / breaking the surface plays sub_dive / sub_surface (bubbles, splash, sound); while piloting,
+--   Ocean/Underwater draws the clearer sub view (thinner fog, less darkening).
 -- Every PreSimulation it runs shared/Sub/Rig on the hull it owns, with the drawn ocean height so
 -- the hull sits on the waves the player sees. BoatController skips Sub models.
 local ContextActionService = game:GetService("ContextActionService")
@@ -18,6 +21,8 @@ local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyp
 local Rig =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Sub"):WaitForChild("Rig"))
 local TouchDriveController = require(script.Parent.TouchDriveController)
+local Underwater = require(script.Parent.Parent:WaitForChild("Ocean"):WaitForChild("Underwater"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 local RISE, DIVE = "SubRise", "SubDive"
 
@@ -27,6 +32,7 @@ local localPlayer = Players.LocalPlayer
 local driving: Model? = nil
 local held = { [RISE] = false, [DIVE] = false }
 local ocean: any = nil -- OceanController.GetVisualHeight, if it is there
+local wasSubmerged: boolean? = nil -- last step's Dive state; nil right after taking the helm (no splash then)
 
 local function subOf(seat: Instance): Model?
 	local model = seat.Parent
@@ -59,8 +65,10 @@ end
 local function bind(on: boolean)
 	if on then
 		local touch = not TouchDriveController.on() -- the drive pad has its own rise / dive
-		ContextActionService:BindAction(RISE, onAction, touch, Enum.KeyCode.E, Enum.KeyCode.ButtonY)
-		ContextActionService:BindAction(DIVE, onAction, touch, Enum.KeyCode.Q, Enum.KeyCode.ButtonX)
+		local rise = { Enum.KeyCode.E, Enum.KeyCode.ButtonR1, Enum.KeyCode.DPadUp }
+		local dive = { Enum.KeyCode.Q, Enum.KeyCode.ButtonL1, Enum.KeyCode.DPadDown }
+		ContextActionService:BindAction(RISE, onAction, touch, table.unpack(rise))
+		ContextActionService:BindAction(DIVE, onAction, touch, table.unpack(dive))
 		if touch then
 			ContextActionService:SetPosition(RISE, UDim2.new(1, -170, 1, -215))
 			ContextActionService:SetPosition(DIVE, UDim2.new(1, -170, 1, -150))
@@ -88,7 +96,9 @@ local function step(dt: number)
 			Rig.clear(driving) -- the server floats it from here
 		end
 		driving = model
+		wasSubmerged = nil
 		bind(model ~= nil)
+		Underwater.setClear(model ~= nil)
 	end
 	if not (model and seat and seat:IsA("VehicleSeat")) then
 		return
@@ -102,7 +112,7 @@ local function step(dt: number)
 	BoatController.EngageControls(seat) -- the default vehicle controls drive the seat's throttle
 	local dive = (if held[RISE] then 1 else 0) - (if held[DIVE] then 1 else 0)
 	local pad = TouchDriveController -- the touch drive pad, 0 off touch
-	Rig.step(
+	local state = Rig.step(
 		model,
 		math.clamp(seat.ThrottleFloat + pad.throttle(), -1, 1),
 		math.clamp(seat.SteerFloat + pad.steer(), -1, 1),
@@ -110,6 +120,15 @@ local function step(dt: number)
 		dt,
 		sea
 	)
+	if state and root and wasSubmerged ~= nil and state.submerged ~= wasSubmerged then
+		local at = root.Position
+		VFXKit.play(
+			if state.submerged then "sub_dive" else "sub_surface",
+			CFrame.new(at),
+			{ height = math.max((sea or at.Y + 3) - at.Y, 0) } -- the top layers sit on the surface
+		)
+	end
+	wasSubmerged = if state then state.submerged else nil
 end
 
 function SubController.Init()

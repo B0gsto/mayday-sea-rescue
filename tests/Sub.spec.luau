@@ -56,6 +56,19 @@ return function(t)
 		t.expect(s.submerged).toBe(false)
 	end)
 
+	t.test("submerged has hysteresis: waves round the line do not flicker it", function()
+		local s = Dive.new(0)
+		local ceiling = FLOAT
+		Dive.step(s, 0, 0, -1, ceiling - Dive.SUBMERGED - 0.1, SEA, BED, DT)
+		t.expect(s.submerged).toBe(true)
+		Dive.step(s, 0, 0, -1, ceiling - Dive.SUBMERGED + 0.5, SEA, BED, DT) -- a crest passes
+		t.expect(s.submerged).toBe(true)
+		Dive.step(s, 0, 0, 1, ceiling - Dive.SURFACED + 0.1, SEA, BED, DT)
+		t.expect(s.submerged).toBe(false)
+		Dive.step(s, 0, 0, 1, ceiling - Dive.SUBMERGED + 0.5, SEA, BED, DT) -- a trough passes
+		t.expect(s.submerged).toBe(false)
+	end)
+
 	t.test("too shallow to dive: stays afloat", function()
 		local _, y = run(Dive.new(0), FLOAT, 0, 0, -1, 10, SEA - 3)
 		t.expect(math.abs(y - FLOAT) < 0.1).toBe(true)
