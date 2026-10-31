@@ -15,18 +15,33 @@ STAR = "M100,18 L122,72 L180,76 L135,113 L150,170 L100,138 L50,170 L65,113 L20,7
 HEART = "M100,176 C40,132 18,104 18,72 C18,44 40,26 64,26 C82,26 94,36 100,50 C106,36 118,26 136,26 C160,26 182,44 182,72 C182,104 160,132 100,176 Z"
 ARROW = "M100,14 L170,178 Q172,184 166,181 L100,142 L34,181 Q28,184 30,178 Z"
 STUD = "M100,30 A70,70 0 1,1 99.9,30 Z"
-# four thick arms round an open centre: the map arrow shows through it when they stack
-CROSS = ("M89,8 L111,8 L111,56 L89,56 Z M89,144 L111,144 L111,192 L89,192 Z M8,89 L56,89 L56,111 L8,111 Z "
-         "M144,89 L192,89 L192,111 L144,111 Z")
-GEM = "M100,14 L186,100 L100,186 L14,100 Z"
-# a speech bubble, tail down-left
+# a crosshair: a thick ring and four fat arms round an open centre (the map arrow shows through it when they stack);
+# the two ring circles wind opposite ways so the middle stays hollow
+CROSS = ("M86,8 L114,8 L114,58 L86,58 Z M86,142 L114,142 L114,192 L86,192 Z M8,86 L58,86 L58,114 L8,114 Z "
+         "M142,86 L192,86 L192,114 L142,114 Z M100,26 A74,74 0 1,1 99.9,26 Z M99.9,48 A52,52 0 1,0 100,48 Z")
+CROSS_GLOSS = ('<path d="M40,72 A64,64 0 0,1 72,40 M94,16 L94,40" fill="none" stroke="#fff" stroke-opacity="0.7" '
+               'stroke-width="9" stroke-linecap="round"/>')
+# a speech bubble, tail down-left; three chunky stud dots
+CHAT_DOTS = "".join(f'<circle cx="{x}" cy="87" r="15" fill="#fff" stroke="{INK}" stroke-width="7"/>'
+                    f'<path d="M{x - 8},84 A9,9 0 0,1 {x - 2},78" fill="none" stroke="#9FCBEF" stroke-width="5" stroke-linecap="round"/>'
+                    for x in (56, 100, 144))
 CHAT = "M40,30 L160,30 Q186,30 186,56 L186,118 Q186,144 160,144 L92,144 L56,176 Q50,181 51,173 L58,144 L40,144 Q14,144 14,118 L14,56 Q14,30 40,30 Z"
 
 
-def stud_top(light, dark):
-    """a Lego stud's flat top: a lighter raised disc inside a dark ring, a short gloss arc"""
-    return (f'<circle cx="100" cy="100" r="46" fill="{light}" stroke="{dark}" stroke-width="7"/>'
-            '<path d="M70,88 A32,32 0 0,1 94,66" fill="none" stroke="#fff" stroke-opacity="0.7" stroke-width="9" stroke-linecap="round"/>')
+def stud_top(light, mid, dark):
+    """a Lego stud's flat top: a raised disc (bright top to its own shade) inside a dark ring, a bright gloss arc"""
+    return (f'<linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{light}"/>'
+            f'<stop offset="1" stop-color="{mid}"/></linearGradient>'
+            f'<circle cx="100" cy="100" r="46" fill="url(#s)" stroke="{dark}" stroke-width="8"/>'
+            '<path d="M70,90 A32,32 0 0,1 92,66" fill="none" stroke="#fff" stroke-opacity="0.9" stroke-width="10" stroke-linecap="round"/>')
+
+
+BODY_GLOSS = "M44,82 A58,58 0 0,1 80,44"
+# the empty socket: a sunken hole (dark top, lighter floor) in a pale ring, so it reads hollow on any panel
+SOCKET = ('<linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3F475A"/>'
+          '<stop offset="1" stop-color="#7C879C"/></linearGradient>'
+          f'<circle cx="100" cy="100" r="44" fill="#E4EAF3" stroke="{INK}" stroke-width="8"/>'
+          f'<circle cx="100" cy="100" r="30" fill="url(#s)" stroke="{INK}" stroke-width="7"/>')
 
 
 def sticker(d, top, bottom, lip, lip_dy=12, gloss=None, extra=""):
@@ -53,23 +68,27 @@ def svg(name, defs_layers, box=(-22, -22, 244, 256), note=""):
 STICKERS = {
     "star_on": (sticker(STAR, "#FFE45C", "#FFAE00", "#C27400", gloss="M58,84 L84,82 L95,52"),
                 "a building level earned / the weekly streak day: gold Lego star"),
-    "star_off": (sticker(STAR, "#B4BCCB", "#8A94A8", "#5E677B"), "a level not built yet: the same star in pale slate"),
-    "heart": (sticker(HEART, "#FF8FA0", "#EE3D57", "#AE1F36", gloss="M40,66 C40,52 52,44 64,44"),
+    "star_off": (sticker(STAR, "#D6E0EE", "#8696B4", "#4A5872", lip_dy=14,
+                         extra='<path d="M58,84 L84,82 L95,52" fill="none" stroke="#fff" stroke-opacity="0.95" '
+                               'stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>'),
+                 "a level not built yet: the same star in cool pale slate"),
+    "heart": (sticker(HEART, "#FF9AAA", "#EE3D57", "#8E1428", lip_dy=16, gloss="M40,66 C40,52 52,44 64,44"),
               "the companion's love hearts (a pat, a treat)"),
-    "pip_on": (sticker(STUD, "#5FCF66", "#2FA84A", "#1A6E2E", lip_dy=16, extra=stud_top("#8BEA86", "#1E7A34")),
+    "pip_on": (sticker(STUD, "#8BEA7A", "#2FA84A", "#145C24", lip_dy=16, extra=stud_top("#E4FFD2", "#6FD866", "#1A6E2E")),
                "a filled seat on your craft: a green Lego stud (flat top, raised ring, side lip)"),
-    "pip_full": (sticker(STUD, "#F0544A", "#D9202A", "#8E1219", lip_dy=16, extra=stud_top("#FF9A8E", "#A3161E")),
+    "pip_full": (sticker(STUD, "#FF8A7A", "#E2333A", "#6E0C12", lip_dy=16, extra=stud_top("#FFE2DC", "#FF7D70", "#A3161E")),
                  "every seat filled: the studs turn red"),
-    "pip_off": (sticker(STUD, "#8C95A8", "#6E778B", "#4A5264", lip_dy=16,
-                        extra='<circle cx="100" cy="100" r="44" fill="#3A4150" stroke="#14121C" stroke-width="6"/>'),
-                "an empty seat: a hollow grey socket"),
-    "map_cross": (sticker(CROSS, "#FFE45C", "#FFB000", "#C27400", lip_dy=6), "the full map's gamepad crosshair"),
-    "map_player": (sticker(ARROW, "#6CC4FF", "#1C78E0", None, lip_dy=0,
-                           extra='<path d="M100,30 L100,136 L42,170 Z" fill="#fff" fill-opacity="0.35"/>'),
-                   "you on the map: a blue arrow, tip up, its box centred to spin about"),
-    "chat": (sticker(CHAT, "#8FD3FF", "#3D9BF0", "#1F64B5", gloss="M36,70 C36,56 44,50 56,50",
-                     extra="".join(f'<circle cx="{x}" cy="87" r="13" fill="#fff" stroke="{INK}" stroke-width="6"/>' for x in (64, 100, 136))),
-             "idle crew chatting (WorkerController): a wordless speech bubble, three dots"),
+    "pip_off": (sticker(STUD, "#C9D2E0", "#8D99AF", "#55607A", lip_dy=16, gloss=BODY_GLOSS, extra=SOCKET),
+                "an empty seat: a hollow slate socket"),
+    "map_cross": (sticker(CROSS, "#FFE45C", "#FFAE00", "#C27400", lip_dy=10, extra=CROSS_GLOSS),
+                  "the full map's gamepad crosshair: one ring-and-arms piece, open centre"),
+    "map_player": (sticker(ARROW, "#8EE0FF", "#1450B8", None, lip_dy=0,
+                           extra='<path d="M100,30 L100,136 L42,170 Z" fill="#fff" fill-opacity="0.35"/>'
+                                 '<path d="M100,30 L158,170 L100,136 Z" fill="#0E3A85" fill-opacity="0.45"/>'),
+                   "you on the map: a blue brick wedge, tip up (light left facet, dark right), its box centred to spin about"),
+    "chat": (sticker(CHAT, "#A8E8FF", "#2C7FE8", "#15449A", lip_dy=16,
+                     gloss="M34,104 L34,64 Q34,50 50,48 L70,48", extra=CHAT_DOTS),
+             "idle crew chatting (WorkerController): a wordless speech bubble, three stud dots"),
 }
 
 
@@ -90,70 +109,40 @@ def pad(top, bottom, lip, d, extra=""):
 
 ARROW_LEFT = "M38,100 L94,48 L94,78 L158,78 L158,122 L94,122 L94,152 Z"
 ARROW_RIGHT = "M162,100 L106,48 L106,78 L42,78 L42,122 L106,122 L106,152 Z"
-GROOVES = lambda ys, x0, x1: "".join(f'<path d="M{x0},{y} L{x1},{y}" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>' for y in ys)
-PEDAL_GO = "M82,36 L118,36 Q134,36 134,52 L134,148 Q134,164 118,164 L82,164 Q66,164 66,148 L66,52 Q66,36 82,36 Z"
-PEDAL_BRAKE = "M62,64 L138,64 Q154,64 154,80 L154,120 Q154,136 138,136 L62,136 Q46,136 46,120 L46,80 Q46,64 62,64 Z"
-# a turtle seen side-on, facing right: shell dome, head, two feet, a tail
-TURTLE = ("M40,124 Q44,62 98,58 Q148,62 152,116 L162,116 Q168,96 160,88 Q170,82 180,92 Q186,110 168,124 Z "
-          "M56,124 L80,124 L80,144 Q80,150 74,150 L62,150 Q56,150 56,144 Z M118,124 L142,124 L142,144 Q142,150 136,150 "
-          "L124,150 Q118,150 118,144 Z")
-SHELL = (f'<path d="M58,116 Q66,80 98,74 Q130,80 138,112" fill="none" stroke="{INK}" stroke-width="7" stroke-linecap="round"/>'
-         f'<path d="M98,74 L98,116 M74,90 L80,116 M122,90 L116,116" stroke="{INK}" stroke-width="7" stroke-linecap="round"/>'
-         f'<circle cx="168" cy="100" r="5" fill="{INK}"/>')
+# a turtle seen side-on, facing right: shell dome, a big round head, two feet
+TURTLE = ("M32,124 Q34,54 84,52 Q134,54 136,124 Z M154,74 A22,22 0 1,1 153.9,74 Z M130,104 L150,104 L150,124 L130,124 Z "
+          "M46,120 L72,120 L72,146 Q72,152 66,152 L52,152 Q46,152 46,146 Z "
+          "M96,120 L122,120 L122,146 Q122,152 116,152 L102,152 Q96,152 96,146 Z")
+# three bold shell segments over a rim line, and a big eye
+SHELL = (f'<path d="M40,112 L128,112 M64,112 L68,70 M102,112 L100,64" fill="none" stroke="{INK}" stroke-width="10" '
+         f'stroke-linecap="round"/><circle cx="160" cy="91" r="7.5" fill="{INK}"/>')
 # a door with a fat arrow stepping out of it
 DOOR = "M50,40 L112,40 L112,160 L50,160 Z"
-DOOR_ARROW = "M96,82 L130,82 L130,58 L170,100 L130,142 L130,118 L96,118 Z"
-LIFT_UP = "M100,34 L150,86 L122,86 L122,128 L78,128 L78,86 L50,86 Z M54,144 L146,144 L146,166 L54,166 Z"
+DOOR_ARROW = "M88,80 L126,80 L126,50 L176,100 L126,150 L126,120 L88,120 Z"
+DOORWAY = f'<path d="M58,52 L98,52 L98,150 L58,150 Z" fill="#3B2680" stroke="{INK}" stroke-width="8" stroke-linejoin="round"/>'
+# throttle: two fat forward chevrons stacked (go faster); brake: a stop octagon with a bar
+GO = ("M54,86 L100,40 L146,86 L146,114 L100,68 L54,114 Z M54,132 L100,86 L146,132 L146,160 L100,114 L54,160 Z")
+OCTAGON = "M124.6,40.4 L159.6,75.4 L159.6,124.6 L124.6,159.6 L75.4,159.6 L40.4,124.6 L40.4,75.4 L75.4,40.4 Z"
+STOP_BAR = f'<path d="M62,86 L138,86 L138,114 L62,114 Z" fill="#E0303A" stroke="{INK}" stroke-width="8" stroke-linejoin="round"/>'
+LIFT_UP_BOLD = "M100,26 L162,92 L126,92 L126,170 L74,170 L74,92 L38,92 Z"
+TICK = (f'<path d="M54,104 L86,136 L148,70" fill="none" stroke="{INK}" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/>'
+        '<path d="M54,104 L86,136 L148,70" fill="none" stroke="#fff" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/>')
 LIFT_DOWN = "M100,128 L150,76 L122,76 L122,34 L78,34 L78,76 L50,76 Z M54,144 L146,144 L146,166 L54,166 Z"
 STICKERS.update({
     "pad_left": (pad("#86CEFF", "#2A86E8", "#1A55A8", ARROW_LEFT), "touch drive pad: steer left (held = full lock)"),
     "pad_right": (pad("#86CEFF", "#2A86E8", "#1A55A8", ARROW_RIGHT), "touch drive pad: steer right"),
-    "pad_go": (pad("#7BE27A", "#2FA84A", "#1A6E2E", PEDAL_GO, GROOVES((66, 92, 118, 144), 84, 116)),
-               "touch drive pad: throttle, a tall green pedal"),
-    "pad_brake": (pad("#FF8A7D", "#E0303A", "#A3161E", PEDAL_BRAKE, GROOVES((86, 114), 66, 134)),
-                  "touch drive pad: brake / reverse, a wide red pedal"),
+    "pad_go": (pad("#A4F57A", "#33BE4D", "#1F8A33", GO), "touch drive pad: throttle, two fat forward chevrons"),
+    "pad_brake": (pad("#FF8A7D", "#E0303A", "#A3161E", OCTAGON, STOP_BAR),
+                  "touch drive pad: brake / reverse, a stop octagon with a bar"),
     "pad_slow": (pad("#FFE873", "#FFB000", "#C27400", TURTLE, SHELL), "touch drive pad: approach (slow helm), a turtle"),
     "pad_exit": (sticker(DISC, "#C3B1FF", "#7A5CE0", "#4E36A8", lip_dy=14, gloss=DISC_GLOSS,
-                         extra=icon(DOOR) + icon(DOOR_ARROW)),
-                 "touch drive pad: step off, a door and an arrow out"),
-    "pad_up": (pad("#7FF0E2", "#1FB3A6", "#13776E", LIFT_UP), "touch drive pad: climb / rise (heli, sub)"),
+                         extra=icon(DOOR) + DOORWAY + icon(DOOR_ARROW)),
+                 "touch drive pad: step off, an open doorway and an arrow out"),
+    "pad_up": (pad("#7FF0E2", "#1FB3A6", "#13776E", LIFT_UP_BOLD), "touch drive pad: climb / rise (heli, sub)"),
+    "check": (sticker(DISC, "#A4F57A", "#33BE4D", "#1F8A33", lip_dy=14, gloss=DISC_GLOSS, extra=TICK),
+              "the kit's tick (owned, maxed, preset on): a green round sticker, fat white tick"),
     "pad_down": (pad("#7FF0E2", "#1FB3A6", "#13776E", LIFT_DOWN), "touch drive pad: descend / dive (heli, sub)"),
 })
-
-
-def beacon():
-    """The onboarding beacon's mark: a gem over a short stem that ends in a point (one sprite, 80x120 billboard)."""
-    stem = "M88,190 L112,190 L104,330 Q100,342 96,330 Z"
-    gem_defs, gem = sticker(GEM, "#FFB07F", "#E1601D", "#A94816", gloss="M50,92 L96,46")
-    stem_l = "".join(f'<path d="{stem}" fill="{c}" stroke="{c}" stroke-width="{w}" stroke-linejoin="round"/>'
-                     for c, w in (("#fff", 30), (INK, 12)))
-    stem_l += f'<path d="{stem}" fill="#E1601D"/>'
-    facet = '<path d="M100,62 L138,100 L100,138 L62,100 Z" fill="#fff" stroke="' + INK + '" stroke-width="6" stroke-linejoin="round"/>'
-    return gem_defs, stem_l + gem + facet
-
-
-def transport_pin():
-    """The drop-off pad's marker: the waypoint pin in rescue blue with a white medical cross in its head."""
-    src = (SRC / "waypoint_pin.svg").read_text()
-    assert all(k in src for k in ("#FF7A6B", "#D9202A", "#A3161E")), "the red template colours moved"
-    src = src.replace("#FF7A6B", "#7CC2FF").replace("#D9202A", "#2A7FE6").replace("#A3161E", "#1A55A8")
-    cross = ('<path d="M87,54 L113,54 L113,75 L134,75 L134,101 L113,101 L113,122 L87,122 L87,101 L66,101 L66,75 L87,75 Z"'
-             f' fill="#fff" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>')
-    (SRC / "transport_pin.svg").write_text(src.replace("</svg>", cross + "</svg>"))
-
-
-def tap():
-    """The tablet cue's touch glyph: a Lego-yellow hand, index finger up, three tap ticks over the fingertip."""
-    finger = "M80,58 Q80,40 96,40 Q112,40 112,58 L112,104 L80,104 Z"
-    palm = "M56,100 Q56,86 70,86 L150,86 Q166,86 166,102 L166,150 Q166,184 132,184 L92,184 Q56,184 56,150 Z"
-    thumb = "M64,122 L36,104 Q24,96 31,85 Q39,74 52,82 L80,100 Z"
-    defs, hand = sticker(f"{finger} {palm} {thumb}", "#FFE45C", "#FFB000", "#C27400", lip_dy=10,
-                         gloss="M90,60 L90,92")
-    knuckles = f'<path d="M124,88 L124,112 M146,88 L146,112" fill="none" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
-    ticks_d = "M68,44 L52,30 M96,24 L96,4 M124,44 L140,30"
-    ticks = "".join(f'<path d="{ticks_d}" fill="none" stroke="{c}" stroke-width="{w}" stroke-linecap="round"/>'
-                    for c, w in (("#fff", 30), (INK, 18), ("#fff", 7)))
-    return defs, ticks + hand + knuckles
 
 
 def render(name, w, h, keep=False):
@@ -161,14 +150,11 @@ def render(name, w, h, keep=False):
                     str(OUT / f"{name}.png"), "--size", str(w), str(h)] + (["--keep"] if keep else []), check=True)
 
 
+# square slots: a square box round the art's centre, rendered whole (map_cross: centred on its open middle)
+SQUARE = {"chat": (-22, -9, 244, 244), "map_cross": (-22, -22, 244, 244), "check": (-22, -15, 244, 244)}
 OUT.mkdir(parents=True, exist_ok=True)
 for name, (layers, note) in STICKERS.items():
-    svg(name, layers, note=note)
-    render(name, 244, 256, keep=name == "map_player")
-svg("beacon_mark", beacon(), box=(-22, -10, 244, 372), note="the onboarding beacon over the goal: gem + stem")
-render("beacon_mark", 244, 372)
-transport_pin()
-subprocess.run([sys.executable, str(ROOT / "tools/ui-art/render.py"), str(SRC / "transport_pin.svg"),
-                str(OUT / "transport_pin.png"), "--size", "324", "324", "--scale", "3"], check=True)
-svg("tap", tap(), note="the build tablet cue on touch: tap here")
-render("tap", 244, 256)
+    box = SQUARE.get(name, (-22, -22, 244, 256))
+    svg(name, layers, box=box, note=note)
+    render(name, box[2], box[3], keep=name == "map_player" or name in SQUARE)
+# beacon_mark.svg, tap.svg are hand-authored; transport_pin.svg comes from pin_variants.py
