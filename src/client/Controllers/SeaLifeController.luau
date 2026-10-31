@@ -6,7 +6,10 @@
 --   * Lego dolphin pods porpoising along a loop; near the camera one leaps now and then (VFX dolphin_leap + splash);
 --   * a Lego whale far out showing its back, breaching every BREACH_EVERY s while in range (VFX whale_breach);
 --   * Lego sandbars (no collision: shallows) with isolated-danger buoys; Gull Bank's beached Lego wreck and gulls;
---   * Lego wreck buoys over the Morwenna; drifting flotsam (crates, a barrel, planks).
+--   * Lego wreck buoys over the Morwenna; drifting flotsam (crates, a barrel, planks);
+--   * near the player (life1, Wildlife/NearLife): a Lego fish jumping in open water ahead of the camera now and
+--     then (VFX dolphin_leap, small), and two Lego dolphins that come to bow-ride a boat held fast, leaping beside
+--     the bow, then peel away. Both are pooled (built once, parked under the sea when idle); Low skips the fish.
 -- Each group is built when the camera comes within its draw distance (SeaLife.NEAR x the ocean quality scale)
 -- and destroyed past it; Low quality skips the flotsam. Every part is anchored, CanCollide / CanQuery / CanTouch
 -- off, moved with one BulkMoveTo a frame. Workspace.SeaLifeLocal attribute Parts: parts drawn now (perf runs).
@@ -16,7 +19,9 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local GullPath = require(script.Parent:WaitForChild("Wildlife"):WaitForChild("GullPath"))
+local NearLife = require(script.Parent:WaitForChild("Wildlife"):WaitForChild("NearLife"))
 local OceanQuality =
 	require(script.Parent.Parent:WaitForChild("Ocean"):WaitForChild("OceanQuality"))
 local SeaLife = require(Shared:WaitForChild("SeaLife"))
@@ -34,6 +39,13 @@ local LEAP_NEAR = 300 -- dolphins leap only this close to the camera
 local LEAP_TIME = 1.2
 local BREACH_TIME = 4.2
 local CALL_NEAR = 220 -- gull calls this close
+local HIDE = CFrame.new(0, -500, 0) -- where pooled near life waits
+local FISH_TIME, FISH_RUN, FISH_HIGH = 0.8, 5, 3
+local BOW_CALL = 4 -- s held fast before the dolphins come
+local BOW_STAY = 25 -- s they ride at most
+local BOW_SLACK = 2.5 -- s under speed before they peel away
+local BOW_LEAVE = 2.5 -- s to peel away
+local BOW_REST = 40 -- s before they come again
 
 local SAND = Color3.fromRGB(226, 201, 140)
 local SAND_TOP = Color3.fromRGB(236, 214, 160)
@@ -48,6 +60,7 @@ local DARK_BROWN = Color3.fromRGB(88, 64, 50)
 local DOLPHIN = Color3.fromRGB(110, 140, 170)
 local WHALE = Color3.fromRGB(52, 66, 92)
 local BELLY = Color3.fromRGB(226, 228, 230)
+local FISH = Color3.fromRGB(160, 178, 190)
 
 -- One moving thing: its parts relative to its root, and how the root moves.
 type Thing = {
@@ -65,6 +78,7 @@ type Group = {
 }
 
 local templates: Folder? = nil
+local me = NearLife.me
 local holder: Folder
 local groups: { Group } = {}
 
@@ -314,6 +328,135 @@ local function buildWhale(model: Model): { Thing }
 	}
 end
 
+---------------------------------------------------------------- near the player
+
+local function camFlat(): Vector3
+	local cam = Workspace.CurrentCamera
+	local p = if cam then cam.CFrame.Position else Vector3.zero
+	return Vector3.new(p.X, 0, p.Z)
+end
+
+-- A Lego fish leaping clear of the water a short way ahead of the camera, now and then.
+local function buildFish(model: Model): { Thing }
+	local list: { { any } } = {
+		{ part(model, Vector3.new(0.7, 0.9, 2.2), FISH, nil, true), CFrame.identity },
+		{ part(model, Vector3.new(0.6, 0.3, 1.6), BELLY), CFrame.new(0, -0.4, 0.1) },
+		{ part(model, Vector3.new(0.15, 1.1, 0.7), FISH), CFrame.new(0, 0, 1.4) }, -- tail
+	}
+	local start, nextAt = -math.huge, os.clock() + 3
+	local from, dir = Vector3.zero, Vector3.zAxis
+	return {
+		thing(list, function(_t, clock)
+			local u = (clock - start) / FISH_TIME
+			if u >= 1 and start > -math.huge then
+				start = -math.huge
+				local p = from + dir * FISH_RUN
+				VFXKit.play(
+					"dolphin_leap",
+					CFrame.new(p.X, surface(p), p.Z),
+					{ still = true, scale = 0.4 }
+				)
+			elseif start == -math.huge and clock >= nextAt then
+				nextAt = clock + 2.5 + math.random() * 4
+				local cam = Workspace.CurrentCamera
+				if me.ok and cam then
+					local look = cam.CFrame.LookVector
+					local p = NearLife.around(
+						me.pos,
+						look,
+						(math.random() * 2 - 1) * 0.7,
+						25 + math.random() * 35
+					)
+					if CallLogic.isWater(p, "Open") then
+						start, from, u = clock, p, 0
+						dir = NearLife.around(Vector3.zero, look, math.random() * 2 * math.pi, 1)
+						VFXKit.play(
+							"dolphin_leap",
+							CFrame.new(p.X, surface(p), p.Z),
+							{ still = true, scale = 0.3 }
+						)
+					end
+				end
+			end
+			if start == -math.huge then
+				return HIDE
+			end
+			local h, pitch = SeaLife.leap(u, FISH_HIGH)
+			local p = from + dir * FISH_RUN * u
+			local y = surface(p) + h - 0.3
+			return CFrame.lookAt(Vector3.new(p.X, y, p.Z), Vector3.new(p.X, y, p.Z) + dir)
+				* CFrame.Angles(pitch, 0, 0)
+		end),
+	}
+end
+
+-- Two Lego dolphins that come to ride the bow of a boat held fast in open water (NearLife.bow).
+local function buildBow(model: Model): { Thing }
+	local calledAt, leaveAt, restUntil = -math.huge, -math.huge, 0
+	local fastSince, slowSince = math.huge, math.huge
+	local riding = false
+	local function stepState(clock: number)
+		local fast = me.ok and me.boat and me.speed > NearLife.FAST
+		fastSince = if fast then math.min(fastSince, clock) else math.huge
+		slowSince = if fast then math.huge else math.min(slowSince, clock)
+		local open = me.ok and CallLogic.isWater(me.pos + me.dir * 30, "Open")
+		if not riding then
+			if clock - fastSince > BOW_CALL and clock >= restUntil and open then
+				riding, calledAt, leaveAt = true, clock, -math.huge
+			end
+		elseif leaveAt == -math.huge then
+			if
+				clock - slowSince > BOW_SLACK
+				or clock - calledAt > BOW_STAY
+				or not open
+				or not me.boat
+			then
+				leaveAt = clock
+			end
+		elseif clock - leaveAt > BOW_LEAVE then
+			riding, restUntil = false, clock + BOW_REST
+		end
+	end
+	local out = {}
+	for i = 1, 2 do
+		local leapAt, nextLeap = -math.huge, 0
+		table.insert(
+			out,
+			thing(dolphinParts(model), function(_t, clock)
+				if i == 1 then
+					stepState(clock)
+				end
+				if not riding then
+					return HIDE
+				end
+				local age = clock - calledAt
+				local gone = if leaveAt > -math.huge
+					then math.min(1, (clock - leaveAt) / BOW_LEAVE)
+					else 0
+				local off = NearLife.bow(i, age, gone)
+				local right = me.dir:Cross(Vector3.yAxis)
+				local p = Vector3.new(me.pos.X, 0, me.pos.Z) + right * off.X + me.dir * off.Z
+				local y = surface(p) + off.Y + 0.35 * math.sin(clock * 3 + i * 1.7)
+				local pitch = 0.12 * math.cos(clock * 3 + i * 1.7)
+				local u = (clock - leapAt) / LEAP_TIME
+				if u >= 0 and u < 1 then
+					local h, a = SeaLife.leap(u, 4)
+					y += h + 0.9
+					pitch = a
+				elseif u >= 1 and leapAt > -math.huge then
+					leapAt = -math.huge
+					VFXKit.play("dolphin_leap", CFrame.new(p.X, surface(p), p.Z), { still = true })
+				elseif age > NearLife.ARRIVE and gone == 0 and clock >= nextLeap then
+					leapAt, nextLeap = clock, clock + LEAP_TIME + 1.5 + math.random() * 2.5
+				end
+				return CFrame.lookAt(Vector3.new(p.X, y, p.Z), Vector3.new(p.X, y, p.Z) + me.dir)
+					* CFrame.Angles(pitch, 0, 0)
+			end)
+		)
+	end
+	return out
+end
+
 ---------------------------------------------------------------- marks, sandbars, flotsam
 
 -- A Lego buoy riding the swell at `at`: bands bottom up, then a pole and a top mark.
@@ -483,6 +626,11 @@ end
 
 local function addGroups()
 	local N = SeaLife.NEAR
+	table.insert(
+		groups,
+		{ centre = camFlat, near = math.huge, build = buildFish, things = {}, lowSkip = true }
+	)
+	table.insert(groups, { centre = camFlat, near = math.huge, build = buildBow, things = {} })
 	for _, b in SeaLife.Boats do
 		table.insert(groups, {
 			centre = function(t)
@@ -596,6 +744,7 @@ function SeaLifeController.Start()
 	local cfs: { CFrame } = {}
 	RunService.RenderStepped:Connect(function()
 		local t, clock = now(), os.clock()
+		NearLife.update()
 		table.clear(parts)
 		table.clear(cfs)
 		for _, g in groups do
