@@ -703,6 +703,22 @@ local function slipCrane(m: Model, b: CFrame)
 		src:PivotTo(CFrame.lookAt(base.Position, aim))
 		src.Name = "JettyCraneMesh"
 		src.Parent = m
+		-- amber bulbs on the mesh's lamp housings (jib tip, cab roof): NightLamp lights them at night
+		for _, a in src:GetDescendants() do
+			if a:IsA("Attachment") and string.sub(a.Name, 1, 8) == "ATT_Lamp" then
+				local bulb = part(
+					src,
+					"Lamp",
+					Vector3.new(0.9, 0.9, 0.9),
+					a.WorldCFrame,
+					Color3.fromRGB(255, 170, 40),
+					M.SmoothPlastic,
+					Enum.PartType.Ball
+				)
+				bulb.CanCollide, bulb.CanQuery, bulb.CanTouch = false, false, false
+				bulb:AddTag("NightLamp")
+			end
+		end
 		return
 	end
 	studTop(
