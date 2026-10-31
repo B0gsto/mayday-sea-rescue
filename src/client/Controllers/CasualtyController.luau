@@ -164,6 +164,8 @@ end
 
 local splashed: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
 local landed: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
+local steppedOff: { [Model]: boolean } = setmetatable({}, { __mode = "k" }) :: any
+local STEP_OFF_HOP = 1.0 -- s: RescueService CLIMB_OFF_SECONDS, their hop off the craft onto the quay
 local function climbStep()
 	local folder = Workspace:FindFirstChild("CallProps")
 	if not folder then
@@ -174,6 +176,20 @@ local function climbStep()
 	for _, victim in folder:GetChildren() do
 		if not victim:IsA("Model") then
 			continue
+		end
+		-- delivered (RescueService climbOff): the board hop in reverse where they land, the ding a step lower each
+		local order, foot = victim:GetAttribute("StepOff"), victim:GetAttribute("StepOffTo")
+		if type(order) == "number" and typeof(foot) == "Vector3" and not steppedOff[victim] then
+			steppedOff[victim] = true
+			task.delay(STEP_OFF_HOP, function()
+				VFXKit.play("board_hop", CFrame.new(foot), { scale = 0.6, still = true })
+				AudioController.play(
+					"FX_Ding",
+					foot,
+					0.7,
+					1.72 - 0.12 * math.clamp(order - 1, 0, 6)
+				)
+			end)
 		end
 		local hullName = victim:GetAttribute("ClimbHull")
 		local start = victim:GetAttribute("ClimbStart")

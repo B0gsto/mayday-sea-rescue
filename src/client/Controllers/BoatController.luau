@@ -40,7 +40,8 @@
 --    touch the replicated HullRoot: the visible hull (Body and everything welded to it) hangs off
 --    HullRoot by the Motor6D "VisualJoint", and we set its Transform (local-only, not replicated,
 --    ignored by the owner's simulation) to a small, smoothed vertical offset that puts the hull at
---    its rest draft on the locally drawn wave. Height comes from OceanController.GetVisualHeight
+--    its rest draft on the locally drawn wave (a moored, anchored hull also pitches and rolls on the wave
+--    slope: a bow and a beam sample). Height comes from OceanController.GetVisualHeight
 --    when stream A provides it, else from the shared wave field.
 
 local ContextActionService = game:GetService("ContextActionService")
@@ -82,6 +83,9 @@ local vehicles: Folder? = nil
 local driving: Model? = nil -- the vehicle whose DriverSeat we sit in
 local simulated: { [Model]: boolean } = {} -- models this client applied forces to last frame
 local visualOffset: { [Model]: number } = {}
+local visualTilt: { [Model]: Vector2 } = {} -- moored hulls: smoothed pitch, roll (snapRemote)
+local MOORED_TILT = 0.7 -- share of the wave slope a moored hull follows (its own inertia) -- tune
+local MAX_TILT = Vector2.one * math.rad(6)
 local telemetry: Simulator.Telemetry? = nil
 local lastThrottle = 0 -- the throttle the driven hull got last step (after the cold-open helm)
 local helm = 0 -- the eased steer (Boat/Helm)
@@ -126,12 +130,14 @@ local function isLocalDriver(model: Model): boolean
 	return occupant ~= nil and occupant.Parent == localPlayer.Character
 end
 
-local function setVisualOffset(model: Model, offset: number)
+local function setVisualOffset(model: Model, offset: number, tilt: Vector2?)
 	local root = model.PrimaryPart
 	local joint = root and root:FindFirstChild("VisualJoint")
 	if root and joint and joint:IsA("Motor6D") then
 		-- Transform is in Part0 (HullRoot) space: turn the world-vertical offset into it.
+		local t = tilt or Vector2.zero -- pitch (bow up), roll (starboard up), radians
 		joint.Transform = CFrame.new(root.CFrame:VectorToObjectSpace(Vector3.new(0, offset, 0)))
+			* CFrame.Angles(t.X, 0, t.Y)
 	end
 end
 
@@ -145,10 +151,28 @@ local function snapRemote(model: Model, dt: number, now: number)
 	local p = root.Position
 	local wantY = Buoyancy.restRootY(visualHeight(p.X, p.Z, now), draft, float1.Position.Y)
 	local target = math.clamp(wantY - p.Y, -MAX_VISUAL_OFFSET, MAX_VISUAL_OFFSET)
+	local k = math.min(1, dt * VISUAL_SMOOTHING)
 	local current = visualOffset[model] or 0
-	current += (target - current) * math.min(1, dt * VISUAL_SMOOTHING)
+	current += (target - current) * k
 	visualOffset[model] = current
-	setVisualOffset(model, current)
+	-- a moored (anchored) hull also pitches and rolls on the wave slope; a hull under way already has its owner's pose
+	local tilt = Vector2.zero
+	if root.Anchored then
+		local h0 = visualHeight(p.X, p.Z, now)
+		local half = root.Size * 0.5
+		local bow = root.CFrame:PointToWorldSpace(Vector3.new(0, 0, -half.Z))
+		local side = root.CFrame:PointToWorldSpace(Vector3.new(half.X, 0, 0))
+		local want = Vector2.new(
+			math.atan2(visualHeight(bow.X, bow.Z, now) - h0, math.max(half.Z, 1)),
+			math.atan2(visualHeight(side.X, side.Z, now) - h0, math.max(half.X, 1))
+		) * MOORED_TILT
+		local was = visualTilt[model] or Vector2.zero
+		tilt = was + (want:Max(-MAX_TILT):Min(MAX_TILT) - was) * k
+		visualTilt[model] = tilt
+	else
+		visualTilt[model] = nil
+	end
+	setVisualOffset(model, current, tilt)
 end
 
 -- A hull touching a wall (quay, breakwater, beach, a moored boat): four short horizontal rays from
@@ -554,6 +578,7 @@ local function step(dt: number)
 	for model in nowSimulated do
 		if visualOffset[model] then
 			visualOffset[model] = nil
+			visualTilt[model] = nil
 			setVisualOffset(model, 0) -- our own hull shows its true physics pose
 		end
 	end
@@ -786,6 +811,7 @@ function BoatController.Start()
 		folder.ChildRemoved:Connect(function(child)
 			if child:IsA("Model") then
 				visualOffset[child] = nil
+				visualTilt[child] = nil
 				simulated[child] = nil
 				unstick[child] = nil
 			end

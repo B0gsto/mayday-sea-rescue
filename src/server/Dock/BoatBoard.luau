@@ -512,13 +512,19 @@ local function onBoardLaunch(player: Player, name: any, id: any)
 	local root = char and char:FindFirstChild("HumanoidRootPart")
 	for berth, board in boards[name] do
 		local back = board.back
+		local offset = board.def.targets[id]
+		-- or by the craft's spot: a just-bought craft's Launch prompt there (client UI/BoatReveal)
+		local spot = if offset then frameOf(board.def, berth) * offset else berth.CFrame
 		if
 			berth:GetAttribute("Owner") == player.UserId
 			and table.find(board.def.vehicles, id)
 			and back
 			and root
 			and root:IsA("BasePart")
-			and (root.Position - back.Position).Magnitude <= REACH
+			and (
+				(root.Position - back.Position).Magnitude <= REACH
+				or (root.Position - spot.Position).Magnitude <= REACH + 4
+			)
 		then
 			task.spawn(onLaunch, board, berth, player, id)
 			return

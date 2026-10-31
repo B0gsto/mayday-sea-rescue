@@ -4,7 +4,8 @@
 --   owned        green card, "Owned" (or "Equipped": the craft Launch and Boat to me bring), green Launch
 --                button: Net BoardLaunch (the crane beat, then you in its seat); the panel closes
 --   needs X      grey card, padlock, "Needs: <building>" line, buttons greyed (Robux never skips the order)
---   buyable      Cash price (grey when short) and the Robux pass price
+--   buyable      Cash price (grey when short) and the Robux pass price; a Cash buy closes the panel and the
+--                craft builds in at its berth (UI/BoatReveal)
 -- Tapping a portrait opens that craft's BoatCard (stats, upgrades).
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -22,6 +23,7 @@ local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 
 local UI = script.Parent.Parent
 local BoatCard = require(UI:WaitForChild("BoatCard"))
+local BoatReveal = require(UI:WaitForChild("BoatReveal"))
 local Kit = UI:WaitForChild("Kit")
 local Card = require(Kit:WaitForChild("Card"))
 local Panel = require(Kit:WaitForChild("Panel"))
@@ -81,11 +83,16 @@ function Board.new(
 		busy = true
 		Telemetry.shop("BuyTapped", "Board", id, "Cash")
 		task.spawn(function()
-			pcall(function()
+			local called, ok = pcall(function()
 				return Net.func("BuyGear"):InvokeServer(id)
 			end)
 			busy = false
-			refresh()
+			if called and ok == true then
+				panel.close() -- the moment: the craft builds in at its berth (UI/BoatReveal)
+				BoatReveal.play(id)
+			else
+				refresh()
+			end
 		end)
 	end
 
