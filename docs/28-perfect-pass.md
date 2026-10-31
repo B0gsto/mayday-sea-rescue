@@ -14,7 +14,13 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 |---|---|---|---|---|
 | UI | every sprite in art/source/ui + UiImages | SVG / PNG | - | wave 1 |
 | World | baseline in-game tour (buildings Lv1-3, vehicles, props, code-built pieces) | Studio | - | wave 1 |
-| Feel | game feel + progression review | code read | - | wave 1 |
+| Feel | game feel + progression review | code read | moments 3-8 | done: build/status/2026-10-31/perfect/feel/REVIEW.md (28 items) |
+| Feel | REVIEW 5,6,7,9 build feel | PERF-F1 (DeepSeek) | 6-6.5 | building |
+| Feel | REVIEW 1,13,22,24 buy a boat, ring, passengers, bob | PERF-F2 (DeepSeek) | 3-6 | building |
+| Feel | REVIEW 10,11,25,27 wheel, recruit, audio, neon | PERF-F3 (DeepSeek) | 5.5-6.5 | building |
+| Prog | REVIEW 3,12,16 (+17 proposal) | PERF-F4 (DeepSeek) | 4-5 | building |
+| Feel | REVIEW 2 haptics | after F1-F3 merge | 0 | queued |
+| Anim | workers/NPCs | PERF-ANIM1 (Opus) | 4-5 | building; next ANIM2: rider, pets, NPC talk, leisure |
 | Mesh | M_Prop_JettyCrane | Blender | 7.6 (r2) | queued |
 | Mesh | M_Prop_BuildStation | Blender | 8.3 (r2) | queued |
 | Mesh | vehicles: JetSki, RIB, StormRunner, Tidewalker, RiptideX, GildedGull, SupplyBarge | Blender | unscored | queued |
