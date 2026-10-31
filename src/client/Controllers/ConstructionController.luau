@@ -794,7 +794,9 @@ local function watch(site: Site): number?
 end
 
 local function finish(site: Site)
-	local lead = site.plot.Name == `Plot{player:GetAttribute("DockPlot")}` and watch(site)
+	local lead = if site.plot.Name == `Plot{player:GetAttribute("DockPlot")}`
+		then watch(site)
+		else nil
 	if lead and lead > 0 then
 		task.delay(lead, land, site) -- the bricks wait for the camera
 	else
