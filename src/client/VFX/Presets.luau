@@ -1059,6 +1059,54 @@ Presets.ALL.launch_splash = preset({
 	},
 })
 
+-- the sub's ballast air (sub_dive / sub_surface): glossy bubbles rising off the hull
+local function ballast(count: number, delay: number?): Layer
+	return {
+		tex = "bubbles",
+		count = count,
+		colors = { WHITE },
+		size = curve(0.5, 1.2, outCubic), -- they grow as they rise
+		transparency = { 0.1, 0.15, 1 },
+		lifetime = { 0.8, 1.3 },
+		speed = { 5, 9 },
+		spread = { 35, 35 },
+		drag = 1.5,
+		delay = delay,
+	}
+end
+
+-- feedback: your sub goes under (SubController; origin at the hull, opts.height up to the surface): ballast
+-- bubbles off the hull, a small crown and a foam ring closing over it; a deep splash and a glug
+Presets.ALL.sub_dive = preset({
+	job = "feedback",
+	layers = {
+		ballast(14),
+		with(crown(1, 3, 7), { at = "top" }),
+		with(groundRing("foam_ring", FOAM, curve(6, 14, outCubic), 0.9, 0.05), { at = "top" }),
+	},
+	sounds = {
+		{ clip = "Splash_Entry", volume = 0.45, pitch = 0.8 } :: FxSound,
+		{ clip = "FX_Plop", delay = 0.15, volume = 0.8, pitch = 0.6 } :: FxSound,
+	},
+})
+
+-- feedback: your sub breaks the surface (SubController; same origin): a burst of bubbles, then a crown, drops
+-- and a foam ring where it pops up; a slap and a splash, a small camera kick
+Presets.ALL.sub_surface = preset({
+	job = "feedback",
+	layers = {
+		ballast(10),
+		with(crown(2, 5, 10), { at = "top", delay = 0.05 }),
+		with(drops(14, { 14, 20 }, 35, 1.6), { at = "top", delay = 0.05 }),
+		with(groundRing("foam_ring", FOAM, curve(7, 16, outCubic), 1, 0.1), { at = "top" }),
+	},
+	sounds = {
+		{ clip = "Hull_Slap", volume = 0.8, pitch = 0.9 } :: FxSound,
+		{ clip = "FX_SplashSmall", delay = 0.05, volume = 0.8 } :: FxSound,
+	},
+	punch = { fov = 2, shake = 0.12, time = 0.3 },
+})
+
 -- ambience: a Lego dolphin of a passing pod dives back in (SeaLifeController): a small crown and drops; a plop
 Presets.ALL.dolphin_leap = preset({
 	job = "ambience",
@@ -1322,6 +1370,27 @@ Presets.ALL.ramp_jump = preset({
 		{ clip = "FX_SplashSmall", delay = 0.05, volume = 0.7 } :: FxSound,
 	},
 	punch = { fov = -4, shake = 0, time = 0.35 },
+})
+
+-- state: a low helicopter's rotor wash on the sea (HeliController, every ~0.25 s while it hovers low over the
+-- water; scale = how low): a foam ring pushed out under it and spray puffs blown flat off the ring. Silent (the
+-- rotor loop and its wash bed carry it)
+Presets.ALL.heli_downwash = preset({
+	job = "state",
+	layers = {
+		with(
+			groundRing("foam_ring", FOAM, curve(6, 16, outCubic), 0.9),
+			{ transparency = { 0.3, 0.45, 1 } }
+		),
+		with(puffs(6, FOAM, 1.6, 3.6, 0.7), {
+			ring = true,
+			speed = { 16, 22 },
+			spread = { 8, 8 },
+			drag = 2.5,
+			transparency = POP,
+		}),
+		with(drops(6, { 10, 16 }, 60, 1.2), { ring = true }),
+	},
 })
 
 return Presets

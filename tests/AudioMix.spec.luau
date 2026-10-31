@@ -168,6 +168,18 @@ return function(t)
 		end
 	)
 
+	t.test("duck: dips fast, recovers slowly, every ducking clip exists", function()
+		local down = AudioMix.followDuck(1, 0.5, 0.1)
+		local up = AudioMix.followDuck(0.5, 1, 0.1)
+		t.expect(down < 0.65).toBeTruthy() -- most of the dip inside 0.1 s
+		t.expect(up < 0.6).toBeTruthy() -- the release takes its time
+		t.expect(AudioMix.followDuck(0.7, 0.7, 1)).toBe(0.7)
+		for name, d in AudioConfig.Duck do
+			t.expect(AudioConfig.Clips[name] ~= nil).toBeTruthy()
+			t.expect(d[1] > 0 and d[1] < 1 and d[2] > 0).toBeTruthy()
+		end
+	end)
+
 	t.test("config: every clip has an asset id, a volume and a category", function()
 		local n = 0
 		for name, clip in AudioConfig.Clips do

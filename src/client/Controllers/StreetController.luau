@@ -32,6 +32,7 @@ type Rig = {
 	point: PointLight,
 	lenses: { BasePart },
 	lit: boolean,
+	k: number, -- the last sweep brightness written
 }
 
 local rigs: { [Model]: Rig } = {}
@@ -126,6 +127,7 @@ local function build(model: Model): Rig?
 		point = point,
 		lenses = lenses,
 		lit = true,
+		k = -1,
 	}
 end
 
@@ -141,6 +143,7 @@ end
 
 local function setLit(r: Rig, on: boolean)
 	r.lit = on
+	r.k = -1 -- the lit lenses repaint on the next frame
 	for _, b in r.beams do
 		b.Enabled = on
 	end
@@ -207,17 +210,18 @@ function StreetController.Start()
 			if want ~= r.lit then
 				setLit(r, want)
 			end
-			if want then
-				r.point.Color = WARM
-				r.point.Range = 14
+			if want then -- the point light's Color / Range are set once in build
 				r.part.CFrame = CFrame.new(r.centre)
 					* CFrame.Angles(0, math.rad(LightBeam.angle(now)), 0)
 				local d = camPos - r.centre
 				local k = LightBeam.intensity(now, LightBeam.bearing(d.X, d.Z))
-				for _, l in r.lenses do
-					l.Color = LENS_REST:Lerp(Color3.new(1, 1, 1), k)
+				if math.abs(k - r.k) >= 0.02 then -- the beam is off-camera most of the cycle: no per-frame Color writes
+					r.k = k
+					for _, l in r.lenses do
+						l.Color = LENS_REST:Lerp(Color3.new(1, 1, 1), k)
+					end
+					r.point.Brightness = 1.2 + 2.5 * k
 				end
-				r.point.Brightness = 1.2 + 2.5 * k
 			end
 		end
 	end)

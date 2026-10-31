@@ -11,7 +11,7 @@
 --   mix(values)                   SoundGroup volumes (Master, SFX, Ambience, Radio, Music, Voice)
 --
 -- Everything is saved in the profile's flags.cameraSettings table (ProgressionRules keeps up to
--- 64 fields there, together with the cinematic "seen_<id>" flags; this model uses 18).
+-- 64 fields there, together with the cinematic "seen_<id>" flags; this model uses 19).
 
 local SettingsRules = {}
 
@@ -41,6 +41,7 @@ local DEFAULTS = {
 	textSize = 100, -- % applied through Layout's text scale
 	reduceMotion = false, -- no shake/bob; bursts and flashes become fades/glows
 	holdToTap = false, -- hold actions also toggle on a second press; prompts tap
+	haptics = true, -- gamepad / phone vibration on your key moments (client VFX/Haptics)
 }
 SettingsRules.Defaults = table.freeze(table.clone(DEFAULTS))
 

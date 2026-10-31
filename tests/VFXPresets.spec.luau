@@ -180,6 +180,7 @@ return function(t)
 			chimney_puff = "ambience: silent by design",
 			nitro_ring = "under nitro_burst's FX_Whoosh",
 			nitro_trail = "the engine flare (AudioController RPM)",
+			heli_downwash = "HeliController: Heli_Rotor loop + Hull_Wake bed",
 		}
 		for name, p in Presets.ALL do
 			if not CALLER[name] and #((p :: any).sounds or {}) == 0 then

@@ -11,6 +11,7 @@
 local Snorkel = {}
 
 Snorkel.WADE_DEPTH = 3.8 -- studs of water before the player swims: an R15 eye stands ~4.6 above the floor, so 4.6 left the head and camera under water on the bed (slipway walk-in) -- tune
+Snorkel.WADE_HYSTERESIS = 0.4 -- start swimming only this much deeper than WADE_DEPTH, so waves at the line never flicker swim / wade
 Snorkel.ENTER_MARGIN = 0.4 -- the root must be at least this far below the surface to start swimming
 Snorkel.SWIM_SPEED = 9 -- studs/s -- tune
 Snorkel.SURFACE_EYE = 0.45
@@ -18,6 +19,12 @@ Snorkel.FACE_DOWN_EYE = -0.55
 Snorkel.FACE_DOWN_LOOK = -0.55 -- camera LookVector.Y
 Snorkel.SPRING = 4 -- 1/s, surface float
 Snorkel.MAX_VY = 8
+Snorkel.STROKE_RATE = 0.9 -- strokes/s at SWIM_SPEED -- tune
+Snorkel.TREAD_RATE = 0.45 -- idle treading bob cycles/s
+Snorkel.STROKE_SURGE = 0.25 -- each pull surges the speed +-25% (averages SWIM_SPEED)
+Snorkel.BOB = 0.25 -- studs of head lift on each pull (the float spring softens it to about half)
+Snorkel.SPRINT_SWIM = 1.4 -- sprinting (SprintController) swims and strokes this much faster
+Snorkel.WATER_DRAG = 4 -- 1/s, how fast the swim speed follows the stick
 
 -- Should the character swim here? surfaceY: the sea surface at the root, floorY: the seabed under it.
 function Snorkel.shouldSwim(
@@ -26,7 +33,10 @@ function Snorkel.shouldSwim(
 	floorY: number,
 	swimming: boolean
 ): boolean
-	if surfaceY - floorY < Snorkel.WADE_DEPTH then
+	local wade = if swimming
+		then Snorkel.WADE_DEPTH
+		else Snorkel.WADE_DEPTH + Snorkel.WADE_HYSTERESIS
+	if surfaceY - floorY < wade then
 		return false
 	end
 	local margin = if swimming then -1.5 else Snorkel.ENTER_MARGIN
@@ -42,9 +52,21 @@ function Snorkel.floatEye(lookY: number): number
 	return Snorkel.FACE_DOWN_EYE + (Snorkel.SURFACE_EYE - Snorkel.FACE_DOWN_EYE) * t
 end
 
--- Vertical velocity (studs/s) of the float spring. eyeY: the head; lookY: camera LookVector.Y.
-function Snorkel.verticalVelocity(eyeY: number, surfaceY: number, lookY: number): number
-	local vy = (surfaceY + Snorkel.floatEye(lookY) - eyeY) * Snorkel.SPRING
+-- Speed factor and head lift through one stroke cycle (phase 0..1): a surge on the pull, a glide after.
+function Snorkel.stroke(phase: number): (number, number)
+	local c = math.cos(2 * math.pi * phase)
+	return 1 + Snorkel.STROKE_SURGE * c, Snorkel.BOB * c
+end
+
+-- Vertical velocity (studs/s) of the float spring. eyeY: the head; lookY: camera LookVector.Y;
+-- bob: extra eye height from Snorkel.stroke.
+function Snorkel.verticalVelocity(
+	eyeY: number,
+	surfaceY: number,
+	lookY: number,
+	bob: number?
+): number
+	local vy = (surfaceY + Snorkel.floatEye(lookY) + (bob or 0) - eyeY) * Snorkel.SPRING
 	return math.clamp(vy, -Snorkel.MAX_VY, Snorkel.MAX_VY)
 end
 

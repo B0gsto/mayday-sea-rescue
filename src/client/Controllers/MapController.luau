@@ -39,6 +39,7 @@ local Weather = require(Shared:WaitForChild("Weather"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local Kit = UI:WaitForChild("Kit")
 local DiscoveryController = require(script.Parent:WaitForChild("DiscoveryController"))
+local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local Layout = require(UI:WaitForChild("Layout"))
 local Panel = require(Kit:WaitForChild("Panel"))
@@ -52,7 +53,7 @@ local player = Players.LocalPlayer
 local C = HudTheme.Colors
 local DEEP = Color3.fromRGB(8, 38, 82)
 
-type Style = { label: string, glyph: string, color: Color3 }
+type Style = { label: string, glyph: string, color: Color3, icon: string?, pin: string? }
 type BlipDraw = {
 	id: string,
 	pos: Vector3,
@@ -61,6 +62,7 @@ type BlipDraw = {
 	clamp: boolean?,
 	size: number?,
 	minimap: boolean?,
+	face: number?, -- a player's UserId: their avatar headshot in the badge
 }
 type Pool = { parent: GuiObject, items: { [string]: Frame }, used: { [string]: boolean } }
 
@@ -79,6 +81,7 @@ local objectiveRoute: number? = nil -- by boat: the sea route's length (objectiv
 local targets: { Vector3 } = {} -- the pulsing call blips (survivors, vessels, offers) last frame
 -- extra static blips other systems hand in (SetBlips), keyed by group: the seamarks
 local extraBlips: { [string]: { BlipDraw } } = {}
+local friends: { [number]: boolean } = {} -- UserId -> a friend of yours (IsFriendsWith, cached per join)
 local RING = 1.08 -- bezel size / minimap square
 local MAP_HALF = 0.395 -- map canvas radius / square side (just past the bezel hole, RING * 0.72 / 2)
 local S = Theme.Size
@@ -86,6 +89,17 @@ local S = Theme.Size
 -- the map fog grid (DiscoveryConfig)
 local FOG = DiscoveryConfig.Fog
 local FOG_COLOR = Color3.fromRGB(7, 18, 34)
+
+-- the ring of player islands, drawn live over the bake (its tiles predate WP-27: an old hub island and a wider ring)
+local LAGOON = { -- depth bands, outermost first: they cover the old ring and read as chart contours
+	{ r = 1150, color = Color3.fromRGB(14, 60, 108), t = 0.45 },
+	{ r = 1060, color = Color3.fromRGB(16, 69, 119), t = 0 },
+	{ r = 900, color = Color3.fromRGB(28, 108, 158), t = 0 },
+	{ r = 760, color = Color3.fromRGB(36, 131, 173), t = 0 },
+	{ r = 600, color = Color3.fromRGB(52, 150, 182), t = 0 },
+}
+local LAND_EDGE = Color3.fromRGB(22, 52, 34)
+local LAND = { plate = Color3.fromRGB(92, 178, 70), bridge = Color3.fromRGB(205, 160, 104) }
 
 -- ---------------------------------------------------------------- small UI helpers
 
@@ -180,17 +194,63 @@ local function makeTiles(parent: Instance)
 	end
 end
 
--- A round badge with a glyph; casualty badges carry a soft halo ring.
-local function badge(style: Style, size: number, pulse: boolean?): Frame
+-- The island plates and bridges in the map frame's scale units (parent: the square tile frame), over the tiles.
+local function makeLand(parent: Instance)
+	local e = MapConfig.Extent
+	local c = RingLayout.Center
+	for _, band in LAGOON do
+		local u, v = MapConfig.worldToUV(c.X, c.Z)
+		local d = frame("Lagoon", parent, {
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.fromScale(u, v),
+			Size = UDim2.fromScale(2 * band.r / e, 2 * band.r / e),
+			BackgroundTransparency = band.t,
+			BackgroundColor3 = band.color,
+			ZIndex = 2,
+		})
+		corner(d)
+	end
+	for _, grow in { 8, 0 } do -- a dark rim under every shape, then the fills
+		for _, sh in MapConfig.landShapes() do
+			local u, v = MapConfig.worldToUV(sh.x, sh.z)
+			frame(sh.kind, parent, {
+				AnchorPoint = Vector2.new(0.5, 0.5),
+				Position = UDim2.fromScale(u, v),
+				Size = UDim2.fromScale((sh.w + grow) / e, (sh.h + grow) / e),
+				Rotation = sh.rot,
+				BackgroundTransparency = 0,
+				BackgroundColor3 = if grow > 0 then LAND_EDGE else (LAND :: any)[sh.kind],
+				ZIndex = 3,
+			})
+		end
+	end
+end
+
+-- A round badge: a player's headshot (face), else the style's icon (UI/Glyph); casualty badges carry a soft halo
+-- ring. pin: the style's pin sprite round the badge (the frame is its head; the tip sits 0.875 sizes below).
+local function badge(
+	style: Style,
+	size: number,
+	pulse: boolean?,
+	pin: boolean?,
+	face: number?
+): Frame
 	local f = frame("Blip", gui, {
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Size = UDim2.fromOffset(size, size),
-		BackgroundTransparency = 0,
+		BackgroundTransparency = if pin then 1 else 0,
 		BackgroundColor3 = style.color,
 		ZIndex = 5,
 	})
 	corner(f)
-	stroke(f, Color3.fromRGB(12, 20, 28), 2)
+	if pin and style.pin then
+		-- art/source/ui/waypoint_pin.svg: the head (r 72) centred in its 324 box
+		local p = sprite("Pin", f, (UiImages.Markers.Pin :: any)[style.pin], size * 324 / 144)
+		p.Position = UDim2.fromScale(0.5, 0.5)
+		p.ZIndex = 5
+	else
+		stroke(f, Color3.fromRGB(12, 20, 28), 2)
+	end
 	if pulse then
 		local ring = frame("Pulse", f, {
 			AnchorPoint = Vector2.new(0.5, 0.5),
@@ -201,9 +261,31 @@ local function badge(style: Style, size: number, pulse: boolean?): Frame
 		corner(ring)
 		stroke(ring, style.color, 3)
 	end
-	local g = text("Glyph", f, style.glyph, math.floor(size * 0.62), Color3.fromRGB(12, 20, 28))
-	g.Size = UDim2.fromScale(1, 1)
-	g.ZIndex = 6
+	local ink = Color3.fromRGB(12, 20, 28)
+	if face then
+		local h = sprite("Face", f, `rbxthumb://type=AvatarHeadShot&id={face}&w=48&h=48`, size - 6)
+		h.Position = UDim2.fromScale(0.5, 0.5)
+		h.BackgroundTransparency = 0
+		h.BackgroundColor3 = Color3.fromRGB(226, 232, 240)
+		h.ZIndex = 6
+		corner(h)
+	elseif style.icon then
+		local c = style.color
+		local k = if pin then 0.56 else 0.66
+		local box = frame("Icon", f, {
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.fromScale(0.5, 0.5),
+			Size = UDim2.fromScale(k, k),
+			ZIndex = 6,
+		})
+		-- white on the pin's colour, dark ink on a bright badge
+		local light = not pin and c.R * 0.3 + c.G * 0.59 + c.B * 0.11 > 0.6
+		Glyph.draw(style.icon, box, if light then ink else Color3.new(1, 1, 1))
+	else
+		local g = text("Glyph", f, style.glyph, math.floor(size * 0.62), ink)
+		g.Size = UDim2.fromScale(1, 1)
+		g.ZIndex = 6
+	end
 	return f
 end
 
@@ -211,10 +293,18 @@ local function poolNew(parent: GuiObject): Pool
 	return { parent = parent, items = {}, used = {} }
 end
 
-local function poolGet(pool: Pool, key: string, style: Style, size: number, pulse: boolean?): Frame
+local function poolGet(
+	pool: Pool,
+	key: string,
+	style: Style,
+	size: number,
+	pulse: boolean?,
+	pin: boolean?,
+	face: number?
+): Frame
 	local found: Frame? = pool.items[key]
 	if not found then
-		local nf = badge(style, size, pulse)
+		local nf = badge(style, size, pulse, pin, face)
 		nf.Parent = pool.parent
 		pool.items[key] = nf
 		found = nf
@@ -314,7 +404,7 @@ end
 
 -- Every blip this frame, plus the objective (where the route line goes).
 local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
-	local St = MapConfig.Styles
+	local St: { [string]: Style } = MapConfig.Styles :: any
 	local list: { BlipDraw } = {}
 	for _, b in MapConfig.Blips do
 		if b.position then
@@ -479,10 +569,15 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			and p.Character
 			and p.Character:FindFirstChild("HumanoidRootPart") :: BasePart?
 		if r then
-			table.insert(
-				list,
-				{ id = `Crew{p.UserId}`, pos = r.Position, style = St.Crew, size = 16 }
-			)
+			local friend = friends[p.UserId] == true -- friends stay on the rim when out of view
+			table.insert(list, {
+				id = `{if friend then "Friend" else "Crew"}{p.UserId}`,
+				pos = r.Position,
+				style = if friend then St.Friend else St.Crew,
+				clamp = friend,
+				size = if friend then 26 else 22,
+				face = p.UserId,
+			})
 		end
 	end
 	table.clear(targets)
@@ -537,6 +632,7 @@ local function buildMinimap()
 	mini.rotor = rotor
 	local img = frame("Map", rotor)
 	makeTiles(img)
+	makeLand(img)
 	mini.img = img
 	mini.areas = frame("Areas", rotor)
 	mini.dots = frame("Route", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 3 })
@@ -657,7 +753,7 @@ local function updateMinimap(dt: number, now: number)
 			local r = half - 9
 			local cx, cy, clamped = MapConfig.clampToRim(x, y, r)
 			if not clamped or b.clamp then
-				local f = poolGet(pool, b.id, b.style, b.size or 20, b.pulse)
+				local f = poolGet(pool, b.id, b.style, b.size or 20, b.pulse, false, b.face)
 				f.Position = UDim2.new(0.5, cx, 0.5, cy)
 				f.BackgroundTransparency = if clamped then 0.15 else 0
 			end
@@ -786,6 +882,7 @@ local function buildFullMap()
 	})
 	local img = frame("Map", canvas, { ZIndex = 1 })
 	makeTiles(img)
+	makeLand(img)
 	full.img = img
 
 	full.fog = frame("Fog", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 3 })
@@ -817,7 +914,13 @@ local function buildFullMap()
 	-- place names: live labels under the blips (MapConfig.Places)
 	local names = frame("Places", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 7 })
 	full.places = {}
-	for i, pl in MapConfig.Places do
+	-- the player islands first: each owner's name ("YOU" on yours), set live (updateFullMap), blank when free
+	local places: { any } = table.clone(MapConfig.Places)
+	for i = #RingLayout.Islands, 1, -1 do
+		local c = RingLayout.Islands[i].center
+		table.insert(places, 1, { text = "", x = c.X, z = c.Z, kind = "isle", plot = i })
+	end
+	for i, pl in places do
 		local st = PLACE_STYLE[pl.kind] or PLACE_STYLE.place
 		local str = if pl.kind == "region" then string.gsub(pl.text, "(.)", "%1 ") else pl.text
 		local t = text("Place" .. i, names, string.gsub(str, " $", ""), st.size, st.color)
@@ -845,7 +948,10 @@ local function buildFullMap()
 			pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 4), UDim.new(0, 4)
 			pad.Parent = t
 		end
-		table.insert(full.places, { label = t, x = pl.x, z = pl.z, kind = pl.kind, left = pl.left })
+		table.insert(
+			full.places,
+			{ label = t, x = pl.x, z = pl.z, kind = pl.kind, left = pl.left, plot = pl.plot }
+		)
 	end
 
 	-- controls, inside the map view (the panel already sits in the safe area)
@@ -929,7 +1035,17 @@ local function buildFullMap()
 	layout.Parent = body
 	local order = 1
 	for _, key in
-		{ "Casualty", "Vessel", "DropOff", "Waypoint", "Vehicle", "Home", "Crew", "Storm" }
+		{
+			"Casualty",
+			"Vessel",
+			"DropOff",
+			"Waypoint",
+			"Vehicle",
+			"Home",
+			"Friend",
+			"Crew",
+			"Storm",
+		}
 	do
 		legendRow(body, MapConfig.Styles[key], order)
 		order += 1
@@ -1112,7 +1228,8 @@ local function placeNames(c: Vector2, scale: number, size: Vector2, marks: { { V
 	local r = full.radius :: number
 	for _, pl in full.places do
 		local t = pl.label :: TextLabel
-		local show = (pl.kind ~= "region" or r >= 700)
+		local show = t.Text ~= ""
+			and (pl.kind ~= "region" or r >= 700)
 			and (pl.kind ~= "place" or r <= 1600)
 			and (pl.kind ~= "street" or r <= 700)
 		if show then
@@ -1207,10 +1324,26 @@ local function updateFullMap(now: number)
 		local x, y = at(me)
 		table.insert(marks, { Vector2.new(x - 24, y - 24), Vector2.new(x + 24, y + 24) })
 	end
+	local owners: { [number]: string } = {}
+	for _, p in Players:GetPlayers() do
+		local i = p:GetAttribute("DockPlot")
+		if type(i) == "number" then
+			owners[i] = if p == player then "YOU" else string.upper(p.DisplayName)
+		end
+	end
+	for _, pl in full.places do
+		if pl.plot then
+			pl.label.Text = owners[pl.plot] or ""
+		end
+	end
 	for _, b in collect(me, vehicle) do
 		local x, y = at(b.pos)
 		local px = math.floor((b.size or 20) * 1.15)
-		local f = poolGet(pool, b.id, b.style, px, b.pulse)
+		local pin = b.style.pin ~= nil
+		if pin then
+			y -= px * 0.875 -- the pin's tip on the spot
+		end
+		local f = poolGet(pool, b.id, b.style, px, b.pulse, pin, b.face)
 		-- a blip that would overlap one drawn before it steps out round a ring (8 slots, then wider)
 		local half = Vector2.new(px, px) / 2 + Vector2.new(3, 3)
 		local p = Vector2.new(x, y)
@@ -1526,6 +1659,21 @@ function MapController.Init()
 	miniGui:SetAttribute("CinematicKeep", true)
 	Layout.prepare(miniGui)
 	miniGui.Parent = player:WaitForChild("PlayerGui")
+	local function checkFriend(p: Player)
+		if p ~= player then
+			task.spawn(function()
+				local fine, yes = pcall(player.IsFriendsWith, player, p.UserId)
+				friends[p.UserId] = fine and yes or nil
+			end)
+		end
+	end
+	Players.PlayerAdded:Connect(checkFriend)
+	Players.PlayerRemoving:Connect(function(p: Player)
+		friends[p.UserId] = nil
+	end)
+	for _, p in Players:GetPlayers() do
+		checkFriend(p)
+	end
 	buildMinimap()
 	buildFullMap()
 	refreshFog()

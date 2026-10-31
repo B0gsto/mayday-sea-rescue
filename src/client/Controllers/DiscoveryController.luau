@@ -175,9 +175,11 @@ local function buildMarkers()
 	end
 	RunService.RenderStepped:Connect(function()
 		local y = math.sin(os.clock() * 2) * 0.6
+		local cam = Workspace.CurrentCamera
+		local eye = if cam then cam.CFrame.Position else Vector3.zero
 		for _, p in markers do
 			local gui = p:FindFirstChildOfClass("BillboardGui")
-			if gui and gui.Enabled then
+			if gui and gui.Enabled and (p.Position - eye).Magnitude < gui.MaxDistance then -- unseen past it
 				gui.StudsOffset = Vector3.new(0, y, 0)
 			end
 		end

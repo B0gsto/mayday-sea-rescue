@@ -220,18 +220,22 @@ local function dockContact(model: Model): (boolean, Vector3?)
 	return false, nil
 end
 
-local function unstickBoat(model: Model, throttle: number, speed: number, dt: number)
+local function unstickBoat(model: Model, throttle: number, steer: number, speed: number, dt: number)
 	local state = unstick[model]
 	if not state then
 		state = Unstick.new()
 		unstick[model] = state
 	end
-	if throttle > 0.05 and math.abs(speed) < Unstick.SPEED then
+	-- pinned while driving ahead, backing up or just turning on the helm (owner 2026-10-31: the slip)
+	local effort = math.max(math.abs(throttle), math.abs(steer))
+	if effort > 0.05 and math.abs(speed) < Unstick.SPEED then
 		local wedged, normal = dockContact(model)
-		if Unstick.step(state, dt, wedged, speed, throttle) and normal then
+		if Unstick.step(state, dt, wedged, speed, effort) and normal then
 			-- nobody aboard and a jetty ahead: driving into it lands you on it (a beach or a wall: push off)
 			local empty = (tonumber(model:GetAttribute("SurvivorCount")) or 0) == 0
-			local root = if empty and VehicleExitController.Ashore(-normal)
+			local root = if empty
+					and throttle > 0.05
+					and VehicleExitController.Ashore(-normal)
 				then nil
 				else model.PrimaryPart
 			if root then
@@ -239,9 +243,7 @@ local function unstickBoat(model: Model, throttle: number, speed: number, dt: nu
 				root.AssemblyLinearVelocity += normal * Unstick.NUDGE
 				-- swing the bow off the wall too (head-on: toward the side being steered, else right)
 				local side = normal:Dot(root.CFrame.RightVector)
-				local seat = seatOf(model)
-				if math.abs(side) < 0.2 and seat then
-					local steer = seat.SteerFloat + TouchDriveController.steer()
+				if math.abs(side) < 0.2 then
 					side = if steer ~= 0 then steer else 1 -- no steer: bear right
 				end
 				local turn = if side > 0 then -Unstick.TURN elseif side < 0 then Unstick.TURN else 0
@@ -249,7 +251,7 @@ local function unstickBoat(model: Model, throttle: number, speed: number, dt: nu
 			end
 		end
 	else
-		Unstick.step(state, dt, false, speed, throttle) -- not pinned: reset the timer
+		Unstick.step(state, dt, false, speed, effort) -- not pinned: reset the timer
 	end
 end
 
@@ -441,6 +443,7 @@ local function step(dt: number)
 		driving = nil
 		telemetry = nil
 		helm = 0
+		lastThrottle = 0
 	end
 	if vehicles then
 		for _, child in vehicles:GetChildren() do
@@ -479,6 +482,7 @@ local function step(dt: number)
 							coldOpenThrottle(child, throttleIn, now),
 							steerIn
 						)
+					throttle = Helm.throttle(lastThrottle, throttle, dt) -- a tap creeps, the brake is instant
 					local root = child.PrimaryPart
 					local speed = if root then root.AssemblyLinearVelocity.Magnitude else 0
 					helm = Helm.step(helm, steer, speed / (if spec then spec.topSpeed else 60), dt)
@@ -555,7 +559,7 @@ local function step(dt: number)
 					lastThrottle = throttle
 					nowSimulated[child] = true
 					checkCapsize(child, seat, dt)
-					unstickBoat(child, throttleIn, telemetry and telemetry.speed or 0, dt)
+					unstickBoat(child, throttleIn, steerIn, telemetry and telemetry.speed or 0, dt)
 					Telemetry.stalled( -- analytics H15 (not the cold open's auto-throttle)
 						"Boat",
 						math.abs(throttleIn) > 0.5

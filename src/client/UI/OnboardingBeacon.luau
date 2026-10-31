@@ -24,7 +24,7 @@ export type Beacon = {
 	show: (position: Vector3, kind: string) -> (),
 	hide: () -> (),
 	target: () -> Vector3?,
-	mute: (on: boolean) -> (), -- the goal keeps its own cue in view (the build tablet's): no diamond, pointer or trail
+	mute: (on: boolean) -> (), -- the goal keeps its own cue in view (the build tablet's): no diamond; no pointer or trail near it
 	destroy: () -> (),
 }
 
@@ -34,6 +34,7 @@ local NAVY = Color3.fromHex("0A1830")
 local LIFT = 16 -- studs: the diamond over the goal
 local EDGE = 36 -- px: the screen-edge pointer's head (32 pt+ on a phone, CLAUDE.md "UI art")
 local ARRIVE = 15 -- studs from the goal: arrived, no edge pointer (inside 5 m it would read "0 m")
+local NEAR = 24 -- studs: muted, the goal's cue alone leads inside this (the build tablet prompt's Hut-less reach)
 
 local function surfaceY(p: Vector3): number
 	local ok, h = pcall(Weather.heightAt, p)
@@ -148,9 +149,14 @@ function OnboardingBeacon.start(): Beacon
 			return
 		end
 		-- not CameraType: the jet ski's chase camera is Scriptable too, so the mark never drew on the water
-		local cutscene = Players.LocalPlayer:GetAttribute("OpsUiHidden") == true or muted
-		billboard.Enabled = not cutscene
-		trail.step(Vector3.new(at.X, baseY, at.Z), not cutscene)
+		local cutscene = Players.LocalPlayer:GetAttribute("OpsUiHidden") == true
+		local char = Players.LocalPlayer.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
+		local d = if root and root:IsA("BasePart") then at - root.Position else nil
+		local flat = if d then Vector3.new(d.X, 0, d.Z).Magnitude else math.huge
+		-- muted: the goal's own cue replaces the diamond; far off, the edge pointer and trail still lead back to it
+		billboard.Enabled = not cutscene and not muted
+		trail.step(Vector3.new(at.X, baseY, at.Z), not cutscene and not (muted and flat <= NEAR))
 		arrow.Visible = false
 		range.Visible = false
 		if cutscene then
@@ -164,10 +170,7 @@ function OnboardingBeacon.start(): Beacon
 		if p.Z <= 0 then -- behind the camera: the projection flips
 			x, y, onScreen = vp.X - x, vp.Y - y, false
 		end
-		local char = Players.LocalPlayer.Character
-		local root = char and char:FindFirstChild("HumanoidRootPart")
-		local d = if root and root:IsA("BasePart") then at - root.Position else nil
-		local arrived = d ~= nil and Vector3.new(d.X, 0, d.Z).Magnitude <= ARRIVE -- a "0 m" pointer read as broken
+		local arrived = flat <= (if muted then NEAR else ARRIVE) -- a "0 m" pointer read as broken
 		if
 			not arrived
 			and (not onScreen or x < margin or x > vp.X - margin or y < margin or y > vp.Y - margin)
