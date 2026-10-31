@@ -125,8 +125,11 @@ return function(t)
 		end
 		for _, kind in { "GamePasses", "Products" } do
 			for key, item in Config[kind] do
-				-- Studio lists everything once; dock levels sell only at the dock
-				t.expect(seen[`{kind}/{key}`] == true).toBe(item.dockBuilding == nil)
+				-- Studio lists everything once; buildings, Finish now and spins sell only in the world
+				local inWorld = item.dockBuilding ~= nil
+					or item.spins ~= nil
+					or string.sub(key, 1, 9) == "FinishNow"
+				t.expect(seen[`{kind}/{key}`] == true).toBe(not inWorld)
 			end
 		end
 		for _, ref in Shelves.storeItems(Config, "Passes", false) do
@@ -143,8 +146,10 @@ return function(t)
 		end
 		for _, kind in { "GamePasses", "Products" } do
 			for key, item in Config[kind] do
-				-- dock levels and buildings sell at the dock's ghost, not in the Store (docs/23 c.3)
+				-- buildings sell at the tablet, Finish now at the sign / tablet, spins at the token machine
 				local atDock = item.dockBuilding ~= nil
+					or item.spins ~= nil
+					or string.sub(key, 1, 9) == "FinishNow"
 				if
 					type(item.id) == "number"
 					and item.id > 0
@@ -153,6 +158,44 @@ return function(t)
 				then
 					t.expect(listed[`{kind}/{key}`]).toBe(true)
 				end
+			end
+		end
+	end)
+
+	t.test(
+		"Finish now and spins never list in the Shop (pay-for-nothing bug, odds before a spin)",
+		function()
+			for _, tab in { "Passes", "Packs", "Boosts", "DayPasses", "Items" } do
+				for _, studio in { false, true } do
+					for _, ref in Shelves.storeItems(Config, tab, studio) do
+						t.expect(string.sub(ref.key, 1, 9) == "FinishNow").toBe(false)
+						t.expect(Config[ref.kind][ref.key].spins).toBe(nil)
+					end
+				end
+			end
+		end
+	)
+
+	t.test("every live Shop card has a short effect line and a glyph from config", function()
+		local function line(kind, key, cpm, seats)
+			return Shelves.effectLine(Config, Config[kind][key], cpm, seats)
+		end
+		t.expect(line("GamePasses", "DoubleCash")).toBe("x2 Cash")
+		t.expect(line("GamePasses", "QuickLaunch")).toBe("No wait")
+		t.expect(line("GamePasses", "StarterKit")).toBe("+3,000 Cash")
+		t.expect(line("GamePasses", "RIBPass", nil, 3)).toBe("Room for 3")
+		t.expect(line("Products", "CashBoost")).toBe("x2 Cash · 30 min")
+		t.expect(line("Products", "CrewBoost")).toBe("+50% crew · 20 min")
+		t.expect(line("Products", "DayDoubleCash")).toBe("x2 Cash · 24 h")
+		t.expect(line("Products", "DayQuickLaunch")).toBe("No wait · 24 h")
+		t.expect(line("Products", "SmallBonus", 100)).toBe("+1,500 Cash")
+		t.expect(line("Products", "SmallBonus")).toBe("15 min of Cash")
+		for _, tab in { "Passes", "Packs", "Boosts", "DayPasses" } do
+			for _, ref in Shelves.storeItems(Config, tab, false) do
+				local item = Config[ref.kind][ref.key]
+				local text, glyph = Shelves.effectLine(Config, item, 100, 4)
+				t.expect(type(text) == "string" and #text <= 24).toBe(true)
+				t.expect(type(glyph)).toBe("string")
 			end
 		end
 	end)

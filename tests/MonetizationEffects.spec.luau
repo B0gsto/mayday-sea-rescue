@@ -246,4 +246,12 @@ return function(t)
 			end
 		end
 	end)
+
+	t.test("a Finish now receipt with nothing to finish pays Cash back, never 0", function()
+		-- Small Bonus: 1,500 Cash for 10 R$ at the Calm rate = 150 Cash per Robux
+		t.expect(Effects.finishRefund(9, nil, Config)).toBe(1350)
+		t.expect(Effects.finishRefund(49, 1000, Config)).toBe(7350)
+		t.expect(Effects.finishRefund(9, 200000, Config)).toBe(20000) -- a tenth of a big last build
+		t.expect(Effects.finishRefund(nil, nil, Config)).toBe(0)
+	end)
 end

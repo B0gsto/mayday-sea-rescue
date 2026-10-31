@@ -63,7 +63,8 @@ Events.ColdOpenSteps = {
 -- Values the client may report (Telemetry_Client). Anything else is dropped: a client cannot grow
 -- the dashboard's field cardinality.
 Events.Devices = { Touch = true, Gamepad = true, Keyboard = true, Console = true, VR = true }
-Events.ShopApps = { Store = true, Board = true }
+-- client shop surfaces; Robux taps here also name the RobuxPrompt source
+Events.ShopApps = { Store = true, Board = true, BoatCard = true, Chip = true, Tablet = true }
 Events.InputContexts = { Foot = true, Boat = true, Swim = true }
 
 local GRADE_VALUE: { [string]: number } = { Gold = 3, Silver = 2, Bronze = 1, Fail = 0 }

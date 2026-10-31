@@ -264,6 +264,14 @@ function SpinRules.accrue(state: State, rescued: number, now: number): (State, n
 	return nextState, added
 end
 
+-- A paid spin receipt (Spin1 / Spin5 / Spin15): adds `n` spins to the saved flag, never capped and never
+-- policy-checked. The PolicyService gate sits at the prompt only: a receipt is always granted (docs/04 §7).
+function SpinRules.addPaid(raw: any, n: number): { [string]: any }
+	local state = SpinRules.decode(raw)
+	state.free += math.max(0, math.floor(n))
+	return SpinRules.encode(state)
+end
+
 -- The next spin's odds in percent per rarity (sums to 100), the same table the board shows and
 -- roll draws from: on a guaranteed spin the rarities below the floor are 0 and the rest renormalised.
 function SpinRules.nextOdds(pity: Pity?): { [string]: number }
@@ -366,6 +374,42 @@ function SpinRules.claim(state: State, prize: Prize): State
 		rescued = state.rescued,
 		owned = bit32.bor(state.owned, bit),
 	}
+end
+
+-- The prizes this player already owns, which pay their rarity's Cash instead (the odds board shows them:
+-- Roblox requires updated odds for once-per-user outcomes). `ownsPet(variant)` reads the pets flag; the grand
+-- boat counts once it and the Galaxy finish it falls back to are both owned.
+function SpinRules.ownedIds(
+	state: State,
+	ownsPet: (string) -> boolean,
+	ownsBoat: boolean
+): { string }
+	local ids: { string } = {}
+	local galaxy = byId.GalaxyFinish
+	for _, prize in SpinRules.PRIZES do
+		local owned = if prize.kind == "petVariant"
+			then prize.variant ~= nil and ownsPet(prize.variant)
+			elseif prize.kind == "boat" then ownsBoat and galaxy ~= nil and SpinRules.owns(
+				state,
+				galaxy
+			)
+			else SpinRules.owns(state, prize)
+		if owned then
+			table.insert(ids, prize.id)
+		end
+	end
+	return ids
+end
+
+-- How many of a rarity's prizes are in `owned` (prize ids, as from ownedIds).
+function SpinRules.ownedOf(rarity: string, owned: { string }): number
+	local n = 0
+	for _, prize in SpinRules.prizesOf(rarity :: Rarity) do
+		if table.find(owned, prize.id) then
+			n += 1
+		end
+	end
+	return n
 end
 
 -- Earned cosmetic keys (`earn = "spin:<prize id>"` in the Livery / Wake slot configs).

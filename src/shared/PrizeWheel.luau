@@ -9,6 +9,7 @@
 -- odds board 2, token machine 13.
 local MonetizationConfig =
 	require(script.Parent:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
+local ProductShelves = require(script.Parent:WaitForChild("ProductShelves"))
 local PushButton = require(script.Parent:WaitForChild("PushButton"))
 local SpinRules = require(script.Parent:WaitForChild("SpinRules"))
 
@@ -303,9 +304,10 @@ local function boardText(
 	return label
 end
 
--- Fills the odds board from SpinRules.nextOdds: `pity` = the viewer's own counters (next-spin odds
--- and spins left to each guarantee), nil = the base odds and the guarantee rule.
-function PrizeWheel.showOdds(board: Instance, pity: SpinRules.Pity?)
+-- Fills the odds board and the token machine's screen (any ancestor of them, e.g. the PrizeWheel) from
+-- SpinRules.nextOdds: `pity` = the viewer's own counters (next-spin odds and spins left to each guarantee),
+-- nil = the base odds and the guarantee rule. `owned` = the viewer's owned prize ids: their rows say they pay Cash.
+function PrizeWheel.showOdds(board: Instance, pity: SpinRules.Pity?, owned: { string }?)
 	local odds = SpinRules.nextOdds(pity)
 	for _, rarity in SpinRules.RARITY_ORDER do
 		local row = board:FindFirstChild(`Row{rarity}`, true)
@@ -314,7 +316,17 @@ function PrizeWheel.showOdds(board: Instance, pity: SpinRules.Pity?)
 			local main = row:FindFirstChild("Odds") :: TextLabel
 			local sub = row:FindFirstChild("Each") :: TextLabel
 			main.Text = `{rarity}  {SpinRules.percent(odds[rarity])}%`
-			sub.Text = `each {SpinRules.percent(each)}%`
+			local n = if owned then SpinRules.ownedOf(rarity, owned) else 0
+			sub.Text = if n > 0
+				then `each {SpinRules.percent(each)}% · {n} owned → {ProductShelves.formatNumber(
+					SpinRules.cashFor(rarity)
+				)} Cash`
+				else `each {SpinRules.percent(each)}%`
+		end
+		local chip = board:FindFirstChild(`Chip{rarity}`, true)
+		local text = chip and chip:FindFirstChild("Text") :: TextLabel?
+		if text then
+			text.Text = `{SpinRules.percent(odds[rarity])}%`
 		end
 	end
 	local epic = board:FindFirstChild("PityEpic", true) :: TextLabel?
@@ -403,7 +415,7 @@ local function screenOdds(screen: BasePart)
 	local odds = SpinRules.nextOdds(nil)
 	for i, rarity in SpinRules.RARITY_ORDER do
 		local chip = Instance.new("Frame")
-		chip.Name = rarity
+		chip.Name = `Chip{rarity}`
 		chip.Position = UDim2.new(((i - 1) % 3) / 3, 3, 0, 22 + math.floor((i - 1) / 3) * 27)
 		chip.Size = UDim2.new(1 / 3, -6, 0, 25)
 		chip.BackgroundColor3 = PrizeWheel.rarityColor(rarity)

@@ -61,6 +61,15 @@ function Effects.packCash(item: any, cashPerMinute: number): number
 	return math.floor(cashPerMinute * item.cashMinutes * (1 + (item.valueBonus or 0)) + 0.5)
 end
 
+-- A Finish now receipt that finds no running site (a lost race, or a prompt from a stale client): the Robux
+-- spent back as Cash at the Small Bonus pack's rate, or a tenth of the last build's Cash price if larger.
+function Effects.finishRefund(robux: number?, lastBuildCash: number?, config: any): number
+	local pack = config.Products[config.CashPacks[1]]
+	local perRobux = Effects.packCash(pack, Effects.cashPerMinute(config.CashPackZones))
+		/ math.max(1, pack.price)
+	return math.max(math.floor(num(robux) * perRobux + 0.5), math.floor(num(lastBuildCash) * 0.1))
+end
+
 function Effects.dayOf(unixTime: number): number
 	return math.floor(unixTime / Effects.DAY_SECONDS)
 end

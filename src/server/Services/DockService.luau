@@ -25,7 +25,7 @@
 -- Dock<key> / Decor<key> (owned; the build tablet). Berth attributes: LaunchBay = true, PlotIndex, Owner
 -- (UserId, nil when empty), <key> = true per building standing (BoatBoard reads Boathouse / Hangar / SubPen).
 -- Remote: Dock_Upgrade C->S function (building / decor key) -> ok, reason ("Needs" | "Cash" | "Owned" |
--- "Data" | "Busy" | "Building" | "Unknown"). Dock_Finish C->S (no args) prompts the FinishNow tier for the
+-- "Data" | "Busy" | "Building" | "Unknown"). Dock_Finish C->S ("Tablet" or nil = the sign) prompts the FinishNow tier for the
 -- running site's current time left; its receipt finishes the site. Vehicle boards are server/Dock/BoatBoard's.
 -- Studio: ServerStorage.DockDev:Invoke("building", key) gives the first player a building ("all": every one);
 -- ("decor", key) a decoration ("all": every one); ("trophies") every rescue milestone and island stamp;
@@ -54,6 +54,7 @@ local DockPieces = require(Shared:WaitForChild("DockPieces"))
 local LeaderboardService = require(script.Parent:WaitForChild("LeaderboardService"))
 local Marina = require(Shared:WaitForChild("Marina"))
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
+local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 local Net = require(Shared:WaitForChild("Net"))
 local NpcFactory = require(script.Parent.Parent.Npc.NpcFactory)
@@ -154,6 +155,7 @@ local function wheelBuy(plotIndex: number, player: Player, key: string): boolean
 	if not (policy and policy.ArePaidRandomItemsRestricted == false) then
 		return false
 	end
+	Telemetry.RobuxShown(player, key, "Wheel")
 	MarketplaceService:PromptProductPurchase(player, item.id)
 	return true
 end
@@ -1344,7 +1346,7 @@ local FINISH_MIN_LEFT = 3 -- under this the site finishes on its own
 local FINISH_PROMPT_COOLDOWN = 1
 
 -- The client asks to finish (it never names a tier): prompt the product matching the site's time left now.
-local function promptFinish(player: Player)
+local function promptFinish(player: Player, from: any)
 	local now = os.clock()
 	if now - (lastPrompt[player] or 0) < FINISH_PROMPT_COOLDOWN then
 		return
@@ -1359,10 +1361,12 @@ local function promptFinish(player: Player)
 	if left < FINISH_MIN_LEFT then
 		return
 	end
-	local product = MonetizationConfig.Products[`FinishNow{BuildTimer.finishTier(left)}`]
+	local key = `FinishNow{BuildTimer.finishTier(left)}`
+	local product = MonetizationConfig.Products[key]
 	if not product or product.ready == false or product.id == 0 then
 		return
 	end
+	Telemetry.RobuxShown(player, key, if from == "Tablet" then "Tablet" else "Sign")
 	MarketplaceService:PromptProductPurchase(player, product.id)
 end
 
@@ -1657,10 +1661,10 @@ function DockService.Init()
 			end)
 		end
 	end
-	-- Robux Finish now (docs/24 B): finish through the same path as FinishBuild; a receipt that lands after
-	-- the site stood pays a tenth of its Cash price back, so the Robux is never lost.
+	-- Robux Finish now (docs/24 B): finish through the same path as FinishBuild; a receipt that finds no site
+	-- pays Cash back (MonetizationEffects.finishRefund), so the Robux is never lost.
 	for tier = 1, 3 do
-		MonetizationService.OnProduct(`FinishNow{tier}`, function(player, data: any)
+		MonetizationService.OnProduct(`FinishNow{tier}`, function(player, data: any, receipt)
 			local c = data.construction
 			-- the tier must cover the time left (a client can prompt a cheaper tier's id itself)
 			if c and c.progress < 1 and BuildTimer.finishTier(siteLeft(player, data)) <= tier then
@@ -1668,7 +1672,12 @@ function DockService.Init()
 				return true
 			end
 			local last = lastBuild[player]
-			data.cash = (data.cash or 0) + math.floor((if last then last.cash else 0) * 0.1)
+			data.cash = (data.cash or 0)
+				+ MonetizationEffects.finishRefund(
+					tonumber(receipt.CurrencySpent),
+					if last then last.cash else nil,
+					MonetizationConfig
+				)
 			return true
 		end, function(player)
 			local data: any = DataService.Get(player)

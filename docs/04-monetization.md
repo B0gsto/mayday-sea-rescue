@@ -1,8 +1,9 @@
 # 04 · Monetization
 
-Last rewrite: 2026-10-25. This file owns what is sold, where, and why it is fair. Cash pacing and the unlock tree are
+Last rewrite: 2026-10-31. This file owns what is sold, where, and why it is fair. Cash pacing and the unlock tree are
 in `docs/03-progression.md`; the loop is `docs/02-core-loop-and-mechanics.md`; the canon is `docs/00-design.md`.
-All prices are Robux and **tune** until the live listing says otherwise.
+Prices here are the config list prices (`MonetizationConfig.luau` `price`, in Robux, **tune**). The live listing
+can differ (an item adopted by name keeps the price it was created at); cards always show the live price.
 
 ## 1. Stance
 
@@ -17,9 +18,9 @@ Mayday sells **time, looks and shared fun**, never skill.
   RIB's reach; they need the boathouse.
 - The player opens every prompt. There are no pop-ups, no countdowns, no "buy before you lose it" offers and no
   offers during a call.
-- No paid random at launch. Sea Chests are planned, cosmetics only, with odds shown.
-- Nothing is sold to children through pressure. The shop is a left-column button; in-world counters and the build
-  tablet are the only other places to buy.
+- One paid random item: prize wheel spins (§5.5), odds and pity shown, PolicyService-gated.
+- Nothing is sold to children through pressure. The shop is a left-column button; the build sign, the build
+  tablet, the boat board and boat card, and the wheel's token machine are the only other places to buy (§3).
 
 ## 2. The catalogue at a glance
 
@@ -38,22 +39,26 @@ Mayday sells **time, looks and shared fun**, never skill.
 | **Day 2x Cash / Day Quick Launch** | A pass effect for 24 real hours | 15 / 10 |
 | **Island buildings** (every tree building) | Builds it now, no Cash (prerequisites first) | 15–199 |
 | **Decorations** | Places it now, no Cash | 35–199 |
+| **Finish Now 1 / 2 / 3** | Finishes the running build; the server picks the tier from time left | 9 / 25 / 49 |
+| **One / Five / Fifteen Spins** (paid random) | 1 / 5 / 15 prize wheel spins, odds and pity shown | 49 / 199 / 499 |
 | **Storm Summons** (in progress) | A server-wide storm; weather is currently always sunny | 49 / 149 |
-| **Sea Chests** (planned) | Cosmetic-only random chest, odds shown | — |
 
 ## 3. Where it is sold
 
 | Place | Sells |
 |---|---|
-| **Shop** (left column) | Passes, Cash packs, boosts, day passes, cosmetics. |
-| **Market stall** (hub) | The shop counter; same catalogue, in-world. |
-| **The build station / tablet** (your island) | Island buildings (Robux button once the prerequisites stand). |
-| **The boat board** (boathouse) | Choosing an owned craft; pass-owned craft appear here. |
-| **The harbourmaster's shack** (hub) | Storm Summons, when storms ship. |
-| **The paint booth** (boathouse) | Liveries and vehicle cosmetics. |
+| **Shop** (left column) | Tabs Passes, Packs, Boosts (Cash Boost, Crew Boost), Day. Never spins or Finish Now. |
+| **The build tablet** (your island) | Island buildings and decor (Cash price is the big button, Robux the smaller one, once the prerequisites stand); Finish Now while a site runs. |
+| **The build sign** (a running site) | Finish Now while the site runs (not during the tutorial). |
+| **The boat board / boat card** (boathouse) | Craft passes, premium boats and Quick Launch; owned craft launch here. |
+| **The wheel's token machine** (beside the odds board) | Spins only. |
 
-- A purchase card shows the exact effect, the exact price from `MarketplaceService`, and the owned state. No
-  hard-coded prices in the UI.
+- The paint booth (boathouse) equips owned liveries and decals; it sells nothing while the cosmetic passes are off.
+- A purchase card shows a short effect line from config (x2 Cash, No wait, +3,000 Cash, Room for N, 24 h), the
+  exact price from `MarketplaceService`, and the owned state. No hard-coded prices in the UI.
+- Telemetry: every prompt logs a `RobuxPrompt` custom event (source, item key, Shown / Purchased / Cancelled);
+  source is Shop, Tablet, Sign, Wheel, Board, BoatCard or Chip; a Purchased event's value is the item's list price
+  in R$. `tools/trail.py` prints a Robux summary (prompts, purchases, R$ by source).
 - Buildings skip the Cash, never their prerequisites. Workers' buildings, the crane, the helipad and decor are Cash
   only for now (no product yet).
 - Craft passes own the craft; the Shop and the boat board grey the button with "Needs: X" until its building
@@ -95,15 +100,15 @@ pick-up rule, same reach cap, same grade. The store never claims a handling adva
 
 | Pass | Price | What |
 |---|---:|---|
-| **Bosun's Wardrobe** | 129 | Coat colours, bandanas, life jacket, tiny captain's hat. |
+| **Bosun's Wardrobe** | 129 | Six bandanas and a dog life jacket. |
 | **Water Dog Friends** | 199 | A Labrador and a Portuguese Water Dog for Bosun's slot. |
-| **Storm Chaser Liveries** | 249 | Animated lightning-stripe liveries and a storm-blue uniform. |
+| **Storm Chaser Liveries** | 249 | A static storm-blue livery for every vehicle and a storm-blue uniform. |
 | **Captain's Locker** | 99 | Wetsuit, foul-weather coat, caps, whistle emote. |
-| **Sea Shanty Radio** | 79 | In-vehicle radio playing the game's own music; others can mute. |
-| **Horn Pack** | 79 | Six horns on a tap button; others can mute. |
+| **Sea Shanty Radio** | 79 | In-vehicle radio, two stations of sea music; others can mute. |
+| **Horn Pack** | 79 | Six marine horns; others can mute. |
 | **Siren Pack** | 99 | Four siren tones with light patterns; others can mute. |
-| **Light Bars** | 129 | Six light-bar colour sets. |
-| **Wake Trails** | 149 | Five wake trails. |
+| **Light Bars** | 129 | Six light-bar colour sets for every vehicle. |
+| **Wake Trails** | 149 | Five real-water wake looks (long white water, wide fan, deep churn, spray, night glow). |
 
 Cosmetics never change seats, speed, reach, pay or grade. Every sound can be muted by other players. No cosmetic
 is required to read a call.
@@ -148,6 +153,46 @@ only): the 15 tree buildings at 15–199 R$ and the six decorations at 35–199 
 least 1.3x the Cash packs' price for the same Cash; the full table (Cash, R$, packs) is docs/23 (i) item 10. The
 pontoon, boathouse, lookout tower and station keep the old dock levels' keys and ids (`DockLevel2..5`).
 
+### 5.4 Finish Now
+
+| Product | Price | For a build with |
+|---|---:|---|
+| **Finish Now 1** | 9 | up to 1 minute left |
+| **Finish Now 2** | 25 | up to 5 minutes left |
+| **Finish Now 3** | 49 | more than 5 minutes left |
+
+- Sold only at the build sign and the build tablet while a site runs, never during the tutorial or in the Shop.
+- The server picks the tier from the site's time left (`BuildTimer.finishTier`).
+- A receipt that finds no running site pays Cash back: the larger of 10% of the last build's Cash price or the
+  Robux spent at the Small Bonus pack's Cash per Robux.
+
+### 5.5 Prize wheel spins (paid random)
+
+| Product | Price | Spins |
+|---|---:|---:|
+| **One Spin** | 49 | 1 |
+| **Five Spins** | 199 | 5 |
+| **Fifteen Spins** | 499 | 15 |
+
+| Rarity | Odds | Prizes | Owned duplicate pays |
+|---|---:|---|---:|
+| Common | 50% | Cash | 150 |
+| Uncommon | 25% | Cash | 400 |
+| Rare | 15% | Golden Pet, Gold Chrome finish, Rainbow Wake | 600 |
+| Epic | 7% | Neon Pet, Neon Glow finish, Fire Wake | 1,500 |
+| Legendary | 2.5% | Rainbow Pet, Lava finish, Star Wake | 4,000 |
+| Mythic | 0.5% | Galaxy Pet, Galaxy finish, the Storm Runner boat | 10,000 |
+
+- Sold only at the wheel's token machine, beside the odds board. The odds board and the machine screen show the
+  odds and pity.
+- Pity: an Epic or better at least every 10 spins, a Legendary or better at least every 50 (`SpinRules`).
+- An owned once-only prize (a finish, a trail, a pet colour) pays its rarity's Cash instead; an owned Storm Runner
+  gives the Galaxy finish first. The odds board marks those rows ("2 owned → 600 Cash").
+- Free spins: 1 a UTC day and 1 per 10 people rescued.
+- PolicyService gate at the prompt: the machine hides and refuses spins where `ArePaidRandomItemsRestricted` is not
+  false or the policy check failed. A receipt bought while offered is always granted, even if the policy later
+  reads restricted.
+
 ## 6. Fairness rules
 
 1. **Never sell skill.** Grades, timers, survivor counts and call reach are earned.
@@ -155,8 +200,10 @@ pontoon, boathouse, lookout tower and station keep the old dock levels' keys and
 3. **No ranks.** There is nothing to promote and nothing to skip but Cash (docs/23 (q)).
 4. **Packs are a convenience, not a better hourly rate.** Retune any tier where a pack would out-earn play.
 5. **No pressure.** No countdown, no pop-up, no offer during a call, no offer on the call card.
-6. **Random is cosmetic.** Sea Chests are the only random purchase, and they are planned, odds-shown and
-   cosmetic-only.
+6. **Random is shown and capped.** Wheel spins are the only random purchase: odds and pity are on the board, a
+   duplicate pays Cash, and nothing random has Cash-out value. The prizes are cosmetics and Cash, plus one boat:
+   the Mythic Storm Runner (owner-approved, docs/24 D), the same boat the 199 R$ pass sells, with no edge over the
+   free fleet.
 7. **A free player can be top of the server.** The whole tree, the beacon and the rescuer monument are open to
    everyone; only looks and time are sold.
 8. **State the number.** Every multiplier is written on the card: 2x, +50%, +10%, 24 hours.
@@ -165,8 +212,8 @@ pontoon, boathouse, lookout tower and station keep the old dock levels' keys and
 
 | Rule | How Mayday follows it |
 |---|---|
-| **Paid random items** | Cosmetic only, odds shown, no cash-out. Sea Chests are not live yet. |
-| **Gambling** | No casino, no wagering, no loot box with Cash value. |
+| **Paid random items** | Spins only: odds and pity shown, PolicyService gate at the prompt, no cash-out. |
+| **Gambling** | No casino, no wagering; no spin prize can be traded or cashed out for Robux. |
 | **Purchase pressure** | The player opens the shop or the world counter. No automatic prompt, no countdown, no "last chance". |
 | **Price display** | Live `MarketplaceService` price on every card; no hard-coded Robux. |
 | **Regional pricing** | Roblox handles currency and regional price; the card shows the local price. |
@@ -185,7 +232,7 @@ pontoon, boathouse, lookout tower and station keep the old dock levels' keys and
 
 ## 9. Price ceiling and review
 
-- No item costs more than 399 Robux. The top of the ladder is the helicopter and VIP; each is a
+- No item costs more than 499 Robux (Fifteen Spins); no pass costs more than 399 (the helicopter). Each is a
   clear, visible thing, not a stat.
 - Prices are reviewed with the pacing sim and the live conversion data. A price change updates this file, the
   config and the store card together.
