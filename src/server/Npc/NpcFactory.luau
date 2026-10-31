@@ -37,12 +37,12 @@ export type Options = {
 	parent: Instance?,
 }
 
--- Stock Roblox R15 animations (the default Animate script's ids).
+-- Stock Roblox R15 animations (the default Animate script's ids) + Roblox catalog pack clips.
 local POSES = {
-	Idle = "rbxassetid://507766666",
+	Idle = "rbxassetid://10921071918", -- Cartoony Animation Package idle
 	Wave = "rbxassetid://507770239",
 	Sit = "rbxassetid://2506281703",
-	Tread = "rbxassetid://481825862", -- swim idle
+	Tread = "rbxassetid://10921310341", -- Toy Animation Pack swim idle
 }
 
 local function stormNow(opts: Options): boolean
@@ -151,7 +151,8 @@ local function playPose(model: Model, pose: string?)
 	pcall(function()
 		local track = (animator :: Animator):LoadAnimation(anim)
 		track.Looped = true
-		track:Play(0.2)
+		track:Play(0.2, 1, 0.9 + math.random() * 0.2)
+		track.TimePosition = math.random() * track.Length -- a crowd never moves in step
 	end)
 end
 
