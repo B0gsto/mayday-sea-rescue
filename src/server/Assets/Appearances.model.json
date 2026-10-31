@@ -1486,6 +1486,27 @@
    ]
   },
   {
+   "Name": "M_Prop_PrizeWheel",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://78798076375644",
+        "RoughnessMap": "rbxassetid://115334106151964",
+        "MetalnessMap": "rbxassetid://132954919033257"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Prop_SeaChest",
    "ClassName": "Folder",
    "Children": [
