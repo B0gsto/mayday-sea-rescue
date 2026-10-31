@@ -280,7 +280,7 @@ function Waypoint.start(
 		local want = pos ~= nil
 			and label ~= nil
 			and SHOWN[label] == true
-			and not (CALL[label] and player:GetAttribute("TutorialHoldCall") == true) -- the tutorial's build step leads
+			and not (label == "Mayday" and player:GetAttribute("TutorialHoldCall") == true) -- the tutorial's build step leads; a call you took stays
 		local flat = route
 			or if pos then Vector3.new(pos.X - me.X, 0, pos.Z - me.Z).Magnitude else 0
 		if not (want and root) then

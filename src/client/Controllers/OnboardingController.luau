@@ -24,8 +24,10 @@ local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfi
 local Net = require(Shared:WaitForChild("Net"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 local Client = script.Parent.Parent
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local DockController = require(script.Parent:WaitForChild("DockController"))
 local MapController = require(script.Parent:WaitForChild("MapController"))
@@ -58,12 +60,18 @@ local rewardAt = math.huge
 local REWARD_DELAY = 2 -- s after the cold open ends: the survivor swims in and climbs off, then the burst
 local REWARD_HOLD = 4 -- s the reward burst keeps the debrief tablet back (OnboardingRewardBusy)
 local GLANCE = 1.4 -- s the camera looks at a freshly built site (beat 4 / beat 6)
+-- live v24: players quit seconds after WorkshopBuilt; the 1.4 s glance cut away mid brick drop, the snap played
+-- off screen and out of earshot. Now the camera stays for the drop + build snap, then shows the wheel's free spin.
+local SITE_HOLD = 3.4 -- s on the finished Workshop: the last bricks land and fx1_build_snap plays (Studio 2026-10-31)
+local WHEEL_HOLD = 2.4 -- s on your prize wheel while its free spin pops
+local SPIN_PINK = Color3.fromRGB(255, 80, 170) -- the wheel's pink: gold confetti vanished on its yellow
 local TICK = 0.5 -- s between the site timer and the tablet-open checks
 
 local beat: Onboarding.Beat = "ColdOpen"
 local guide: string? = nil
 local lastTabletPulse: string? = nil
 local glanceSerial = 0
+local siteWatched = false -- the Workshop site ran this session: its finish gets the full beat, a rejoin does not
 local tickAt = 0
 
 local function rootPosition(): Vector3?
@@ -100,11 +108,11 @@ local function stationPoint(): Vector3?
 end
 
 -- Your island's prize wheel (DockService tags it "PrizeWheel" with its Plot): the spin beat's target.
-local function wheelPoint(): Vector3?
+local function wheelModel(): Model?
 	local i = player:GetAttribute("DockPlot")
 	for _, w in CollectionService:GetTagged("PrizeWheel") do
 		if w:IsA("Model") and w:GetAttribute("Plot") == i then
-			return w:GetPivot().Position + Vector3.new(0, 1, 0)
+			return w
 		end
 	end
 	return nil
@@ -140,28 +148,28 @@ local function currentBeat(): Onboarding.Beat
 	})
 end
 
--- A short Scriptable look at a world spot for a beat (never while seated or under a panel).
-local function glance(at: Vector3?)
+-- A short Scriptable look at a world spot for a beat (never while seated or under a panel). True when it plays.
+local function glance(at: Vector3?, hold: number?, eye: Vector3?): boolean
 	if not at or Layout.coldOpen() or player:GetAttribute("MenuOpen") == true then
-		return
+		return false
 	end
 	local char = player.Character
 	local hum = char and char:FindFirstChildOfClass("Humanoid")
 	local root = char and char:FindFirstChild("HumanoidRootPart")
 	if not (hum and root and root:IsA("BasePart")) or hum.SeatPart then
-		return
+		return false
 	end
 	if (root.Position - at).Magnitude > 220 then
-		return -- a build on your own island only: never yank the camera from across the map
+		return false -- a build on your own island only: never yank the camera from across the map
 	end
 	local tablet = playerGui:FindFirstChild("BuildTablet")
 	if tablet and tablet:IsA("ScreenGui") and tablet.Enabled then
-		return
+		return false
 	end
 	glanceSerial += 1
 	local serial = glanceSerial
-	CameraController.SetOverride(CFrame.lookAt(at + Vector3.new(18, 22, 18), at), 50)
-	task.delay(GLANCE, function()
+	CameraController.SetOverride(CFrame.lookAt(eye or at + Vector3.new(18, 22, 18), at), 50)
+	task.delay(hold or GLANCE, function()
 		if serial ~= glanceSerial then
 			return
 		end
@@ -171,6 +179,32 @@ local function glance(at: Vector3?)
 		end
 		CameraController.ClearOverride()
 	end)
+	return true
+end
+
+-- The Workshop just finished in front of you: watch the last bricks land and the build snap, then the camera cuts
+-- to your prize wheel as its free spin pops (confetti + sparkle), then hands back with the beacon on the wheel.
+local function workshopDone(wheel: Model)
+	if not glance(sitePoint(Onboarding.WORKSHOP), SITE_HOLD) then
+		return -- seated (off on a call) or a panel open: the wheel beacon alone leads
+	end
+	task.delay(
+		SITE_HOLD - 0.1,
+		function() -- before the site glance clears: one cut, no frame of the player camera
+			local root = rootPosition()
+			local hub = wheel:GetBoundingBox().Position
+			local side = if root then (root - hub) * Vector3.new(1, 0, 1) else Vector3.zero
+			local eye = hub
+				+ (if side.Magnitude > 1 then side.Unit else Vector3.zAxis) * 18
+				+ Vector3.new(0, 5, 0) -- from your side (the face you walk up to), in front of the tablet
+			if glance(hub, WHEEL_HOLD, eye) then
+				task.delay(0.25, function()
+					VFXKit.play("wheel_win", CFrame.new(hub), { color = SPIN_PINK, scale = 0.85 })
+					AudioController.play("Album_Sparkle", nil, 1, 1)
+				end)
+			end
+		end
+	)
 end
 
 -- The first delivery (OperationService lets the rider off and docks the jet ski): stand on the jetty head in front
@@ -262,13 +296,20 @@ local function setGuide(kind: string?)
 			{ id = "Build", position = at, style = "Waypoint", size = 22 },
 		})
 	elseif kind == "site" then
+		siteWatched = true
 		glance(sitePoint(Onboarding.WORKSHOP))
 	elseif kind == "spin" then
-		local at = wheelPoint()
-		if not at then
+		local wheel = wheelModel()
+		if not wheel then
 			guide = nil -- the wheel has not streamed in yet: retry next frame
 		else
-			glance(sitePoint(Onboarding.WORKSHOP))
+			local at = wheel:GetPivot().Position + Vector3.new(0, 1, 0)
+			if siteWatched then
+				siteWatched = false
+				workshopDone(wheel)
+			else
+				glance(at)
+			end
 			local b = beacon or OnboardingBeacon.start()
 			beacon = b
 			b.show(at, "Place")
