@@ -590,12 +590,13 @@ DockConfig.BOARD_SIZE = 6
 -- (DockService builds it, JETTY_HEAD), its tablet facing the plate, clear of the jetty walk and the moored craft.
 -- Offsets are in the Jetty lot (x = right, y = toward the quay).
 DockConfig.BUILD_STATION =
-	{ lot = "Jetty", offset = Vector2.new(-15, 25), size = Vector2.new(16, 12) }
-DockConfig.JETTY_HEAD = { offset = Vector2.new(-15, 28), size = Vector2.new(20, 20) } -- the deck under it
+	{ lot = "Jetty", offset = Vector2.new(15, 25), size = Vector2.new(16, 12) }
+-- East of the jetty, at the craft bay's inner end: the west side holds the Boathouse Lv3 quick-launch bay.
+DockConfig.JETTY_HEAD = { offset = Vector2.new(15, 28), size = Vector2.new(20, 20) } -- the deck under it
 
 -- The boathouse's paint booth (docs/23 d.3), in the berth frame: the gantry over the berth's inshore half. A craft
 -- seated inside this box opens its owner's paint card (DockController). The docked spot (z <= 0) stays out.
-DockConfig.PAINT_BOOTH = { cf = CFrame.new(1.5, 6, 15), size = Vector3.new(23, 20, 26) }
+DockConfig.PAINT_BOOTH = { cf = CFrame.new(9.6, 6, 15), size = Vector3.new(39, 20, 26) }
 
 -- World spot of a decoration in the berth frame (`frame` = marina berth frame).
 function DockConfig.decorSpot(key: string, frame: CFrame): CFrame?

@@ -334,7 +334,7 @@ local function buildOdds(parent: Instance, at: CFrame)
 	local model = Instance.new("Model")
 	model.Name = "OddsBoard"
 	model.Parent = parent
-	local x = 11.5
+	local x = -11.5 -- the set's outer (west) end, off the plaza walk
 	part(model, "Post", Vector3.new(1, 10, 1), at * CFrame.new(x, 5, 0), LBG)
 	local board =
 		part(model, "Board", Vector3.new(7, 10.5, 0.6), at * CFrame.new(x, 10.75, -0.35), WHITE)
@@ -424,7 +424,7 @@ local function buildMachine(parent: Instance, at: CFrame, onBuy: (Player, string
 	local model = Instance.new("Model")
 	model.Name = "TokenMachine"
 	model.Parent = parent
-	local x = -11.5
+	local x = 11.5
 	local frame = at * CFrame.new(x, 0, 0)
 	local base = part(model, "Base", Vector3.new(6.6, 1, 5), frame * CFrame.new(0, 0.5, 0), DARK)
 	studTop(base)
