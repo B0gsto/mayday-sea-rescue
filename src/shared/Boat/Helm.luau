@@ -8,6 +8,7 @@ local Helm = {}
 Helm.RAMP = 0.4 -- s from centre to full lock -- tune
 Helm.RELEASE = 0.15 -- s from full lock back to centre -- tune
 Helm.AT_SPEED = 0.65 -- share of full lock left at top speed -- tune
+Helm.THROTTLE_RAMP = 0.3 -- s from idle to full ahead: a tapped key or GO creeps (owner 2026-10-31: slip) -- tune
 
 -- The helm after dt: `current` and `input` are -1..1, speedFrac is speed / top speed.
 function Helm.step(current: number, input: number, speedFrac: number, dt: number): number
@@ -17,6 +18,16 @@ function Helm.step(current: number, input: number, speedFrac: number, dt: number
 	local outward = math.abs(target) > math.abs(current) and target * current >= 0
 	local rate = if outward then 1 / Helm.RAMP else 1 / Helm.RELEASE
 	return current + math.clamp(target - current, -rate * dt, rate * dt)
+end
+
+-- The throttle after dt: opening it ahead ramps over THROTTLE_RAMP s; easing off, braking and
+-- reverse follow the input at once (the brake never lags).
+function Helm.throttle(current: number, input: number, dt: number): number
+	input = math.clamp(input, -1, 1)
+	if input <= 0 or input < current then
+		return input
+	end
+	return math.min(input, math.max(current, 0) + dt / Helm.THROTTLE_RAMP)
 end
 
 return Helm

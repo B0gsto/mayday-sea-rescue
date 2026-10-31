@@ -1,4 +1,4 @@
--- Boat/Unstick: a hull pinned on a wall with the throttle open frees itself after a short hold
+-- Boat/Unstick: a hull pinned on a wall with the throttle (or helm) in use frees itself after a short hold
 -- (under 2 s, docs/20 WP-C), once per hold, and only while it is actually stuck.
 return function(t)
 	local Unstick = t.load("src/shared/Boat/Unstick.luau")
@@ -28,6 +28,10 @@ return function(t)
 		t.expect(Unstick.step(moving, 5, true, Unstick.SPEED + 0.5, 1)).toBe(false)
 		local idle = Unstick.new()
 		t.expect(Unstick.step(idle, 5, true, 0, 0)).toBe(false)
-		t.expect(Unstick.step(idle, 5, true, 0, -1)).toBe(false) -- reverse does not nudge
+	end)
+
+	t.test("backing or turning into the wall nudges too (the slip)", function()
+		t.expect(Unstick.step(Unstick.new(), H + 0.01, true, 0, -1)).toBe(true)
+		t.expect(Unstick.step(Unstick.new(), H + 0.01, true, -1, -0.5)).toBe(true)
 	end)
 end
