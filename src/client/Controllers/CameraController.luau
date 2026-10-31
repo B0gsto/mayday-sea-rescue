@@ -383,8 +383,15 @@ local function update(dt: number)
 			root = c.root,
 			topSpeed = if c.spec then c.spec.topSpeed else 60,
 			exclude = exclude,
-			-- a dived sub's camera follows it under the surface (Ocean/Underwater draws the view)
-			waveHeight = if craft:GetAttribute("Submerged") == true then nil else waveHeight,
+			-- a dived sub's camera follows it under the surface (Ocean/Underwater draws the view); surfacing,
+			-- it rises out with the hull instead of snapping up through the water
+			waveHeight = if craft:GetAttribute("Submerged") == true
+					or (
+						craft:GetAttribute("Sub") == true
+						and camera.CFrame.Position.Y < waveHeight(camera.CFrame.Position)
+					)
+				then nil
+				else waveHeight,
 			telemetry = telemetry(),
 		}, look)
 		if char then
