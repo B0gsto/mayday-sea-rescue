@@ -22,6 +22,8 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Prog | REVIEW 3,12,16 (+17 proposal) | PERF-F4o (Opus) | 4-5 | building |
 | Feel | REVIEW 2 haptics | after F1-F3 merge | 0 | queued |
 | Anim | workers/NPCs | PERF-ANIM1 (Opus) | 4-5 | building; next ANIM2: rider, pets, NPC talk, leisure |
+| Mon | monetization: idea, products, prices, offer moments, shop UX, icons, purchase feel (owner 2026-10-31) | PERF-MON1 review -> fix waves | - | review running |
+| Anim | player sprint/walk/idle (owner: reuse Tame A Titan clips OK) | PERF-ANIM1 | - | building |
 | Mesh | M_Prop_JettyCrane | Blender PERF-BL1 | 7.6 (r2) | r4 in progress |
 | Code->mesh | build-site fence/scaffold/crane kit (REVIEW 9) | Blender | 6 | queued |
 | Mesh | M_Prop_BuildStation | Blender | 8.3 (r2) | queued |
