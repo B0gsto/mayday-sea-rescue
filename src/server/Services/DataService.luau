@@ -693,13 +693,22 @@ function DataService.Start()
 		-- through the same path and returns (before, the stored record (memory mode), after)
 		local dev = Instance.new("BindableFunction")
 		dev.Name = "DataDev"
-		dev.OnInvoke = function(cmd: string): ...any
+		-- ("inject", data) rejoins them on that saved data instead (old-save fixtures, memory mode only)
+		dev.OnInvoke = function(cmd: string, data: any?): ...any
 			local player = Players:GetPlayers()[1]
-			if cmd ~= "rejoin" or not player or not loaded[player] then
+			if
+				not (cmd == "rejoin" or (cmd == "inject" and memoryMode))
+				or not player
+				or not loaded[player]
+			then
 				return nil
 			end
 			local before = Rules.migrate(loaded[player])
 			onPlayerRemoving(player)
+			if cmd == "inject" then
+				memoryStore[keyFor(player)] =
+					{ version = RECORD_VERSION, data = data, receipts = {} }
+			end
 			local record = Logic.deepCopy(memoryStore[keyFor(player)])
 			onPlayerAdded(player)
 			return before, record, loaded[player]
