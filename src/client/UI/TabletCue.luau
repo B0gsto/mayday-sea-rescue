@@ -3,9 +3,11 @@
 -- 2026-10-31, first login on a phone: the grey bubble was the only cue). Over the tablet: a green kit pill with the
 -- device's glyph (the tap hand on touch, an E keycap, the gamepad's X) and "Build"; tapping or clicking it opens the
 -- tablet. While the tablet is the tutorial's goal (setGoal) the green build arrow (art/source/ui/build_arrow.svg)
--- bobs over the pill. It pops in once when the prompt shows and goes with it; the prompt keeps E / ButtonX.
+-- bobs over the pill and the pill stays up out of the prompt's range (on foot). It pops in once when it shows; the
+-- prompt keeps E / ButtonX.
 --   TabletCue.mount(prompt, onOpen) -> { setGoal(on), shown() }
 local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -135,13 +137,29 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 			Style.pop(button, true) -- one pop, never a loop
 		end
 	end
+	-- live v30: phone players walked off or fell in the water by the stand, past the prompt's 24 studs, and tapped
+	-- Store instead. While the tablet is the goal the pill stays up from anywhere on the island (on foot) and a tap
+	-- opens it.
+	local inRange = false
+	local function far(): boolean
+		local player = Players.LocalPlayer
+		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+		return goal
+			and ProximityPromptService.Enabled -- off under the open tablet, the join card and panels
+			and hum ~= nil
+			and hum.SeatPart == nil
+			and player:GetAttribute("OpsUiHidden") ~= true
+	end
 	prompt.PromptShown:Connect(function()
+		inRange = true
 		show(true)
 	end)
 	prompt.PromptHidden:Connect(function()
-		show(false)
+		inRange = false
+		show(far())
 	end)
 	local bob = RunService.Heartbeat:Connect(function()
+		show(inRange or far())
 		if up and goal then -- a slow bob like the beacon's, never a flash
 			arrow.Position = UDim2.new(0.5, 0, 0, BOB + math.sin(os.clock() * 1.8) * BOB)
 		end
