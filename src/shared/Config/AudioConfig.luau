@@ -71,6 +71,12 @@ AudioConfig.Clips = {
 		"outboard motor boat onboard high speed (kyles, CC0)"
 	),
 
+	-- Lifeboat class (Lifeboat, Tidewalker, Submarine at the surface): a diesel idle under the outboard's high layer.
+	Eng_Lifeboat_Idle = rl(9112780932, 0.6, "Fishing Boat 1 (SFX)", "diesel; also the RIB's fallback"),
+	-- Rescue helicopter: two takes of a Huey overhead as the rotor layers (stand-ins; they swell a little on the loop).
+	Eng_Heli_Low = rl(9125390086, 0.55, "Bell Huey Helicopter Short Maneuver Overhead (SFX)", "take A"),
+	Eng_Heli_High = rl(9125390124, 0.6, "Bell Huey Helicopter Short Maneuver Overhead (SFX)", "take B"),
+
 	-- Hull and water.
 	Hull_Lap = rl(9112737677, 0.5, "Active Water Lap 1 (SFX)", "slow or stopped hull"),
 	Hull_BowWash = rl(9112750448, 0.5, "Bow Wash Slow Trolling Speed 1 (SFX)"),
@@ -98,7 +104,10 @@ AudioConfig.Clips = {
 	Thunder_Near = rl(9120016241, 1, "Thunder Cracks Big Rumbling Blasts Booming 4 (SFX)"),
 
 	-- Harbour and coast.
-	Amb_Harbour = rl(9112829678, 0.5, "Marina Ambience 5 (SFX)"),
+	Amb_Harbour = rl(9112829678, 0.5, "Marina Ambience 5 (SFX)", "at the nearest island's jetty"),
+	Amb_DockCreak = rl(9117340096, 0.3, "Pier Light Dock Creak 3 (SFX)", "jetty timbers, close in"),
+	-- Day on the islands (the night bed is Amb_Crickets).
+	Amb_Island = rl(9119383479, 0.3, "Sonoma Morning Birds California Chirping 1 (SFX)"),
 	Amb_Belt = rl(
 		9113910422,
 		0.3,
@@ -282,10 +291,21 @@ function AudioConfig.id(clipName: string): string
 	return if c then c.id else ""
 end
 
--- Places (studs). Harbour centre for the marina bed, rigging and gulls.
-AudioConfig.HarbourCentre = Vector3.new(0, 4, 330) -- inside the ring, south of the lagoon centre
-AudioConfig.HarbourRadius = 200 -- the marina bed and rigging fade out past this
-AudioConfig.CoastRadius = 900 -- gulls only within this of the harbour centre
+-- Places (studs), measured from the nearest island's jetty (RingLayout berths.Boat): marina bed, rigging, gulls.
+AudioConfig.HarbourRadius = 150 -- the marina bed and rigging fade out past this
+AudioConfig.CoastRadius = 900 -- gulls only within this
+
+-- Big moments duck the Music and Ambience groups: clip -> { depth 0..1, seconds held }. Attack fast, release slow
+-- (AudioMix.followDuck). An open menu holds MenuDuck.
+AudioConfig.Duck = {
+	FX_Boom = { 0.45, 1.6 },
+	FX_Reveal = { 0.35, 1.5 },
+	FX_PowerUp = { 0.3, 1.2 },
+	UI_Success = { 0.35, 2.5 },
+	UI_Fail = { 0.3, 2 },
+	Music_CrateFanfare = { 0.3, 4 },
+} :: { [string]: { number } }
+AudioConfig.MenuDuck = 0.3
 
 -- Mix constants (tune by ear).
 AudioConfig.Mix = {
