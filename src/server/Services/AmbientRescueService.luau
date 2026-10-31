@@ -9,7 +9,7 @@
 -- server (9 with one player, 24 with six), a lone swimmer, a cluster of 2-3 or a capsized dinghy of two, and
 -- IN_SIGHT scenes kept within SIGHT of every player driving at sea (spawned SIGHT_MIN+ out, ahead of the bow).
 -- Timed spawns go to the Outer ring or, FAR of the time, off an outer island. Nothing spawns in the lagoon or
--- within HOME_CLEAR of a berth (the coves are the missions'). K13 (docs/16): one is always in view off each
+-- within HOME_CLEAR of a berth (the coves are the missions'). K13 (docs/16): MOUTH_WANT are always in view off each
 -- player's cove mouth. At the cap the oldest scene nobody is near makes way. A cold-open player gets no spawns
 -- near them and boards nobody free-roam (their own swimmer comes first). Sight spawns are the added density: they
 -- pay the lower tier (AmbientMix.CASH x the Bronze grade); timed and cove-mouth ones pay CASH.
@@ -36,8 +36,11 @@ AmbientRescueService.RESPAWN = 20 -- s between timed spawns while under the cap 
 AmbientRescueService.MAX_AGE = 360 -- s unrescued before they are swept off (a fresh one spawns elsewhere)
 AmbientRescueService.CLEAR = 120 -- studs from any player when one appears (no pop-in beside you)
 AmbientRescueService.SPACING = 150 -- studs between free-roam scenes
-AmbientRescueService.MOUTH_OUT = 350 -- studs straight out from a player's berth: just past their cove -- tune
-AmbientRescueService.MOUTH_VIEW = 220 -- studs from that point: in view from the cove -- tune
+-- Playtest 2026-10-31 (pta 6): spread 130-570 out, the cove-mouth swimmer sat past the lifebuoy pip's range from
+-- the island and nothing drew a new player out. Now two, in a band just past HOME_CLEAR (320-520 from the berth).
+AmbientRescueService.MOUTH_OUT = 380 -- studs straight out from a player's berth: just past their cove -- tune
+AmbientRescueService.MOUTH_VIEW = 160 -- studs from that point: in view from the island -- tune
+AmbientRescueService.MOUTH_WANT = 2 -- swimming scenes kept there -- tune
 AmbientRescueService.SIGHT_CHECK = 3 -- s
 
 type Scene = { [string]: any }
@@ -184,7 +187,8 @@ local function swimmingScenes(): { Scene }
 	return out
 end
 
-type Eye = { at: Vector3, view: number, want: number, ahead: Vector3?, area: string }
+type Eye =
+	{ at: Vector3, view: number, want: number, ahead: Vector3?, area: string, extra: boolean }
 
 -- Where the server keeps survivors in view: off each cove mouth (K13), and round every player driving at sea.
 local function eyes(): { Eye }
@@ -196,10 +200,13 @@ local function eyes(): { Eye }
 		end
 		local home = CallLogic.homeOf(bay)
 		local out1 = (home - CallTypes.STATION).Unit * AmbientRescueService.MOUTH_OUT
-		table.insert(
-			out,
-			{ at = home + out1, view = AmbientRescueService.MOUTH_VIEW, want = 1, area = "Open" }
-		)
+		table.insert(out, {
+			at = home + out1,
+			view = AmbientRescueService.MOUTH_VIEW,
+			want = AmbientRescueService.MOUTH_WANT,
+			area = "Open",
+			extra = false,
+		})
 		local v = seatedVehicle(player)
 		local at = v and v:GetPivot()
 		if at and CallLogic.isWater(at.Position, "Open") then
@@ -209,6 +216,7 @@ local function eyes(): { Eye }
 				want = AmbientMix.IN_SIGHT,
 				ahead = Vector3.new(at.LookVector.X, 0, at.LookVector.Z),
 				area = "Open",
+				extra = true,
 			})
 		end
 	end
@@ -276,7 +284,7 @@ local function stepSight()
 			remove(oldest)
 			table.remove(swimming, table.find(swimming, oldest) :: number)
 		end
-		table.insert(swimming, spawnAt(pos, e.want > 1))
+		table.insert(swimming, spawnAt(pos, e.extra))
 		return -- one spawn per check: the sea fills over a few seconds, never in one frame
 	end
 end

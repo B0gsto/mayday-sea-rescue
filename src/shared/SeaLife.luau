@@ -36,6 +36,9 @@ SeaLife.Boats = {
 
 SeaLife.Pods = {
 	{ size = 4, loop = { centre = Vector3.zero, r = 1300, speed = 14, dir = -1, phase = 0.5 } },
+	-- pta 6: two pods just off the island ring, each passing every island's front (in view from its plaza)
+	{ size = 3, loop = { centre = Vector3.zero, r = 880, speed = 12, dir = 1, phase = 0 } },
+	{ size = 3, loop = { centre = Vector3.zero, r = 900, speed = 12, dir = -1, phase = math.pi } },
 	{
 		size = 3,
 		loop = { centre = Vector3.new(2400, 0, -200), r = 300, speed = 10, dir = 1, phase = 0 },
@@ -77,7 +80,7 @@ SeaLife.Flotsam = {
 }
 
 -- Draw distances (studs from the camera), x the quality scale (High 1, Medium 0.75, Low 0.5).
-SeaLife.NEAR = { boat = 1400, pod = 450, whale = 900, sandbar = 1200, flotsam = 450 }
+SeaLife.NEAR = { boat = 1400, pod = 600, whale = 900, sandbar = 1200, flotsam = 450 }
 
 -- Where a loop is at time t (flat, Y 0) and its heading (unit, flat). A slow radial wander keeps it lazy.
 function SeaLife.at(l: Loop, t: number): (Vector3, Vector3)

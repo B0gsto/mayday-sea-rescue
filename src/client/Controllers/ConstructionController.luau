@@ -24,6 +24,8 @@ local Net = require(Shared:WaitForChild("Net"))
 
 local UI = script.Parent.Parent:WaitForChild("UI")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local CameraController = require(script.Parent:WaitForChild("CameraController"))
+local OpsController = require(script.Parent:WaitForChild("OpsController"))
 local Kit = UI:WaitForChild("Kit")
 local Layout = require(UI:WaitForChild("Layout"))
 local PriceButtonUI = require(Kit:WaitForChild("PriceButton"))
@@ -62,6 +64,7 @@ type Site = {
 	maxZ: number,
 	hw: number,
 	hd: number,
+	level: number, -- the level being built (1: a first build)
 	sea: boolean, -- docs/27: a sea plate (its model's SeaSite): props float on scaffold barges
 	progress: number,
 	ready: boolean,
@@ -491,6 +494,7 @@ local function startSite(plot: Model, model: Model, key: string, mine: boolean):
 		maxZ = maxZ,
 		hw = (maxX - minX) / 2 + 1,
 		hd = (maxZ - minZ) / 2 + 1,
+		level = level,
 		sea = sea,
 		progress = 0,
 		ready = false,
@@ -668,7 +672,7 @@ local function plateDrop(site: Site, parts: { BasePart }, finals: { CFrame }, mi
 end
 
 -- The last bricks drop with the BuildSeq bounce, a Lego clack and confetti as they land (your HQ: a fanfare too).
-local function finish(site: Site)
+local function land(site: Site)
 	local parts, ys = {}, {}
 	for part in site.kept do
 		hide(part, site, false) -- already standing: no drop
@@ -733,6 +737,69 @@ local function finish(site: Site)
 	site.props:Destroy()
 	Style.pop(site.root, false)
 	task.delay(0.2, site.gui.Destroy, site.gui)
+end
+
+-- Playtest 2026-10-31 (pta 5): the Depot and the Ramp Wharf finished off screen. Your own site's finish gets a
+-- watch beat: the camera eases over (WATCH_EASE), holds through the drop and the snap, eases back to where it was.
+-- Skippable; reduced motion cuts instead of easing. Never seated, on a call, under a panel or from afar. The
+-- tutorial's free Hut and first Workshop keep OnboardingController's own beats.
+local WATCH_EASE, WATCH_HOLD = 0.9, 3.4 -- s; the hold covers the drop + fx1_build_snap (OnboardingController SITE_HOLD)
+local function watch(site: Site): number?
+	if site.level == 1 and (site.key == "HQ" or site.key == "Workshop") then
+		return nil
+	end
+	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+	local tablet = player:FindFirstChild("PlayerGui")
+		and player.PlayerGui:FindFirstChild("BuildTablet")
+	local ops = OpsController.GetState()
+	local cam = Workspace.CurrentCamera
+	if
+		not (hum and root and root:IsA("BasePart") and cam)
+		or hum.SeatPart
+		or (ops and ops.state == "Active")
+		or Layout.coldOpen()
+		or player:GetAttribute("MenuOpen") == true
+		or player:GetAttribute("CinematicPlaying") == true
+		or (tablet and tablet:IsA("ScreenGui") and tablet.Enabled)
+		or (root.Position - site.center).Magnitude > 320
+	then
+		return nil
+	end
+	local height = site.maxY - site.ground
+	local at = Vector3.new(site.center.X, site.ground + height * 0.4, site.center.Z)
+	local side = (cam.CFrame.Position - at) * Vector3.new(1, 0, 1)
+	local dist = math.max(site.hw, site.hd, height) * 1.6 + 16
+	local eye = at
+		+ (if side.Magnitude > 1 then side.Unit else Vector3.zAxis) * dist
+		+ Vector3.new(0, dist * 0.55, 0)
+	local view = CFrame.lookAt(eye, at)
+	local back, fov = cam.CFrame, cam.FieldOfView
+	if CameraController.Comfort.reducedMotion() then
+		CameraController.PlayCinematic(
+			{ { from = view, duration = WATCH_HOLD, fov = fov, handheld = 0 } },
+			{
+				skippable = true,
+			}
+		)
+		return 0
+	end
+	local push = view * CFrame.new(0, 0, -dist * 0.08) -- a slow push-in while the bricks land
+	CameraController.PlayCinematic({
+		{ from = back, to = view, duration = WATCH_EASE, fov = fov, toFov = 50, handheld = 0 },
+		{ from = view, to = push, duration = WATCH_HOLD, fov = 50, handheld = 0.15 },
+		{ from = push, to = back, duration = WATCH_EASE, fov = 50, toFov = fov, handheld = 0 },
+	}, { skippable = true })
+	return WATCH_EASE
+end
+
+local function finish(site: Site)
+	local lead = site.plot.Name == `Plot{player:GetAttribute("DockPlot")}` and watch(site)
+	if lead and lead > 0 then
+		task.delay(lead, land, site) -- the bricks wait for the camera
+	else
+		land(site)
+	end
 end
 
 local function reconcile()
