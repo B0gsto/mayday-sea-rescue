@@ -246,7 +246,7 @@ local function watch(rack: Instance)
 end
 
 local function onTriggered(prompt: ProximityPrompt)
-	local rack = prompt.Parent and prompt.Parent.Parent
+	local rack = prompt:FindFirstAncestorWhichIsA("Model") -- the prompt sits on an attachment in the backboard
 	if
 		prompt.Name == "BoardOpen"
 		and rack
