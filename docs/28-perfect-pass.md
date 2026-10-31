@@ -30,7 +30,7 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Mon | owner YES: Starter Kit rework, 5 cosmetics on sale, private servers (other ideas declined) | after MON-A merges | - | queued |
 | Anim | player sprint/walk/idle (owner: reuse Tame A Titan clips OK) | PERF-ANIM1 | - | building |
 | Mesh | M_Prop_JettyCrane | Blender PERF-BL1 | 7.6 (r2) | r4 in progress |
-| Code->mesh | build-site fence/scaffold/crane kit (REVIEW 9) | Blender | 6 | queued |
+| Code->mesh | build-site fence/scaffold/crane kit (REVIEW 9) | M_Prop_BuildSiteKit (PERF-BL2, branch t3/5d0d9f07) | 8.4 (r4) | uploaded + wired (Parts fallback); below 9.1 after 4 rounds: RESULT.md fixes |
 | Mesh | M_Prop_BuildStation | Blender | 8.3 (r2) | queued |
 | Mesh | vehicles: JetSki, RIB, StormRunner, Tidewalker, RiptideX, GildedGull, SupplyBarge | Blender | unscored | queued |
 | Mesh | buildings: RescueHQ, HQAddons, Bunkhouse, Depot, Workshop/FishMarket/Clinic/BoatYard/Lookout/RescueBoathouse/TrophyHall/SubPen/AirStation/Boathouse add-ons | Blender | 7.5-8.5 | queued |

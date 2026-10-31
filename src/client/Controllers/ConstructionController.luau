@@ -18,6 +18,7 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AssetIds = require(Shared:WaitForChild("Config"):WaitForChild("AssetIds"))
 local BuildSeq = require(Shared:WaitForChild("BuildSeq"))
 local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
@@ -77,7 +78,7 @@ type Site = {
 	bar: Frame,
 	timer: TextLabel,
 	count: TextLabel,
-	post: Part,
+	post: BasePart,
 	dust: ParticleEmitter,
 	prompt: ProximityPrompt?,
 	gui: BillboardGui,
@@ -87,7 +88,7 @@ type Site = {
 	price: number,
 	clickAt: number, -- os.clock() of the last course click (capped ~3 a second)
 	stacks: { BasePart }, -- the brick stacks, top bricks first: they run down as the building rises
-	crane: { pivot: CFrame, parts: { BasePart }, offsets: { CFrame } }, -- the jib, cab and hook slew round the mast
+	crane: { pivot: CFrame, parts: { BasePart }, offsets: { CFrame }, bob: number }, -- slew round the mast; parts[bob..] bob
 	drop: { parts: { BasePart }, finals: { CFrame } }?, -- the bricks the finish dropped (a replay drops them again)
 }
 
@@ -241,7 +242,8 @@ local function makeSign(st: Site, build: boolean)
 	gui.Name = `ConstructionSign_{st.plot.Name}`
 	gui.Size = UDim2.fromOffset(230, 92)
 	gui.Adornee = st.post
-	gui.StudsOffsetWorldSpace = Vector3.new(0, st.maxY - st.ground + 2, st.hd + 1.5) -- post -> over the lot centre
+	gui.StudsOffsetWorldSpace = Vector3.new(st.center.X, st.maxY + 6, st.center.Z - 3)
+		- st.post.Position -- over the lot
 	gui.AlwaysOnTop = true
 	gui.Active = true
 	gui.ResetOnSpawn = false
@@ -304,6 +306,172 @@ local function makeSign(st: Site, build: boolean)
 	st.timer.TextXAlignment = Enum.TextXAlignment.Right
 end
 
+-- M_Prop_BuildSiteKit (Blender, art/source/props/M_Prop_BuildSiteKit/build.py): each module's MeshPart and its
+-- offset from the module's origin (ATT_<slot>). nil until DepotArtService publishes the kit: the Parts stand in.
+local KIT_SLOT = {
+	FencePanel = "Fence",
+	FenceGate = "Gate",
+	FencePost = "Post",
+	ScaffoldBay = "Scaffold",
+	CraneBase = "Crane",
+	CraneSlew = "Crane",
+	CraneHook = "Crane",
+	StackPallet = "Stack",
+	StackLow = "Stack",
+	StackMid = "Stack",
+	StackTop = "Stack",
+	SignBoard = "Sign",
+	Cone = "Cone",
+	Barrier = "Barrier",
+}
+local kitCache: { [string]: { part: BasePart, offset: CFrame } }? = nil
+
+local function siteKit(): { [string]: { part: BasePart, offset: CFrame } }?
+	if kitCache then
+		return kitCache
+	end
+	local folder = ReplicatedStorage:FindFirstChild("DepotTemplates")
+	local kit = folder and folder:FindFirstChild("BuildSiteKit")
+	local att = (AssetIds.Attachments :: any).M_Prop_BuildSiteKit
+	if not (kit and kit:IsA("Model") and att) then
+		return nil
+	end
+	local pivot = kit:GetPivot()
+	local out, count = {}, 0
+	for _, d in kit:GetDescendants() do
+		local key = if d:IsA("BasePart") then string.match(d.Name, "^L%d%d_(%a+)") else nil
+		local origin = key and KIT_SLOT[key] and att[`ATT_{KIT_SLOT[key]}`]
+		if key and origin and not out[key] then
+			out[key] = {
+				part = d :: BasePart,
+				offset = CFrame.new(origin):Inverse() * pivot:ToObjectSpace(d.CFrame),
+			}
+			count += 1
+		end
+	end
+	if count < 14 then -- a partial upload: keep the Parts
+		return nil
+	end
+	kitCache = out
+	return out
+end
+
+-- One kit module with its origin at `cf`, stretched by sx along the module's x (fence and scaffold runs fit the lot).
+local function module(parent: Instance, key: string, cf: CFrame, sx: number?): BasePart
+	local k = (kitCache :: any)[key]
+	local p = k.part:Clone()
+	local offset = k.offset
+	if sx and sx ~= 1 then
+		local along = offset.Rotation:VectorToObjectSpace(Vector3.xAxis) -- the module's x in the part's own axes
+		p.Size *= Vector3.one + (sx - 1) * Vector3.new(
+			math.abs(along.X),
+			math.abs(along.Y),
+			math.abs(along.Z)
+		)
+		offset = CFrame.new(offset.Position * Vector3.new(sx, 1, 1)) * offset.Rotation
+	end
+	p.Anchored = true
+	p.CanCollide, p.CanTouch, p.CanQuery = false, false, false
+	p.CastShadow = false
+	p.CFrame = cf * offset
+	p.Parent = parent
+	return p
+end
+
+-- The kit dressing round the lot; false when the kit has not loaded (the caller builds the Parts).
+local function kitProps(st: Site, props: Model, at: CFrame): boolean
+	if not siteKit() then
+		return false
+	end
+	local fw, fd = st.hw + 4, st.hd + 4 -- one stud wider than the Parts fence: the scaffold fits inside
+	local gate = not st.sea and fw >= 11
+	if not st.sea then
+		-- fence ring, counter-clockwise from the front so every panel's front (-z) faces out; posts at the corners
+		local corners = {
+			Vector3.new(-fw, 0, -fd),
+			Vector3.new(fw, 0, -fd),
+			Vector3.new(fw, 0, fd),
+			Vector3.new(-fw, 0, fd),
+		}
+		local function fill(a: Vector3, b: Vector3)
+			local dir = (b - a).Unit
+			local len = (b - a).Magnitude
+			local n = math.max(1, math.round(len / 8))
+			local sx = len / (n * 8)
+			for i = 0, n - 1 do
+				local pos = a + dir * (i + 0.5) * len / n
+				module(props, "FencePanel", at * CFrame.fromMatrix(pos, dir, Vector3.yAxis), sx)
+			end
+		end
+		for i, c in corners do
+			local nxt = corners[i % 4 + 1]
+			local dir = (nxt - c).Unit
+			module(props, "FencePost", at * CFrame.new(c))
+			if i == 1 and gate then
+				module(props, "FenceGate", at * CFrame.new(0, 0, -fd))
+				fill(c + dir * 0.65, Vector3.new(-4, 0, -fd))
+				fill(Vector3.new(4, 0, -fd), nxt - dir * 0.65)
+			else
+				fill(c + dir * 0.65, nxt - dir * 0.65)
+			end
+		end
+		-- scaffold bays up the front face, tiled to its width, stacked to about half the finished height
+		local n = math.max(1, math.round(st.hw * 2 / 6))
+		local sx = st.hw * 2 / (n * 6)
+		for level = 0, math.clamp(math.round((st.maxY - st.ground) / 10), 1, 3) - 1 do
+			for i = 0, n - 1 do
+				local x = -st.hw + (i + 0.5) * 6 * sx
+				module(props, "ScaffoldBay", at * CFrame.new(x, level * 5, -st.hd - 1.4), sx)
+			end
+		end
+		module(
+			props,
+			"Barrier",
+			at * CFrame.new(fw + 2, 0, -fd + 4) * CFrame.Angles(0, -math.pi / 2, 0)
+		)
+		if gate then -- cones flank the opening
+			module(props, "Cone", at * CFrame.new(-4.9, 0, -fd - 1.3))
+			module(props, "Cone", at * CFrame.new(4.9, 0, -fd - 1.3))
+		end
+	end
+	-- the tower crane: off the back-left corner with its jib over the lot (at sea: on the front-left barge); the
+	-- slew and hook turn round ATT_CranePivot
+	local hw, hd = st.hw + 3, st.hd + 3
+	local base = if st.sea
+		then at * CFrame.new(-hw + 3, 0, -hd - 4)
+		else at
+			* CFrame.new(-fw - 4.5, 0, fd + 4.5)
+			* CFrame.Angles(0, math.pi / 4, 0) -- the brick clears the walls
+	module(props, "CraneBase", base)
+	local att = (AssetIds.Attachments :: any).M_Prop_BuildSiteKit
+	local pivot = base * CFrame.new(att.ATT_CranePivot - att.ATT_Crane)
+	st.crane = { pivot = pivot, parts = {}, offsets = {}, bob = 2 }
+	for _, key in { "CraneSlew", "CraneHook" } do
+		local part = module(props, key, base)
+		table.insert(st.crane.parts, part)
+		table.insert(st.crane.offsets, pivot:ToObjectSpace(part.CFrame))
+	end
+	-- brick pallets along the front right, in view: three courses each, the top courses go first as the building rises
+	local courses: { { BasePart } } = { {}, {}, {} }
+	for n = 0, 2 do
+		local cf = at
+			* if st.sea
+				then CFrame.new(-9 + n * 3.8, 0, hd + 2)
+				else CFrame.new(6.5 + n * 3.8, 0, -fd - 2.4)
+		module(props, "StackPallet", cf)
+		for k, key in { "StackTop", "StackMid", "StackLow" } do
+			table.insert(courses[k], module(props, key, cf))
+		end
+	end
+	st.stacks = table.move(courses[3], 1, 3, 7, table.move(courses[2], 1, 3, 4, courses[1]))
+	st.post = module(props, "SignBoard", at * CFrame.new(
+		if gate then -math.min(8.6, fw - 2.4) else 0, -- left of the gate: the pallets go right
+		0,
+		if st.sea then -hd - 1.5 else -fd - 2
+	))
+	return true
+end
+
 -- The Lego dressing round the lot (about 37 parts a site).
 local function makeProps(st: Site)
 	local props = Instance.new("Model")
@@ -332,108 +500,127 @@ local function makeProps(st: Site)
 			)
 		end
 	end
-	for _, run in runs do
-		local offset, along, flat = run.offset, run.along, run.flat
-		for n = 0, 2 do
-			local shift = (n - 1) * along / 3
-			local size = if flat
-				then Vector3.new(along / 3 - 0.3, 3, 0.4)
-				else Vector3.new(0.4, 3, along / 3 - 0.3)
+	if not kitProps(st, props, at) then
+		for _, run in runs do
+			local offset, along, flat = run.offset, run.along, run.flat
+			for n = 0, 2 do
+				local shift = (n - 1) * along / 3
+				local size = if flat
+					then Vector3.new(along / 3 - 0.3, 3, 0.4)
+					else Vector3.new(0.4, 3, along / 3 - 0.3)
+				brick(
+					props,
+					"Fence",
+					size,
+					at
+						* CFrame.new(
+							offset.X + (if flat then shift else 0),
+							1.5,
+							offset.Z + (if flat then 0 else shift)
+						),
+					if n % 2 == 0 then RED else WHITE
+				)
+			end
+		end
+		for _, corner in
+			(if st.sea
+				then {}
+				else {
+					Vector3.new(-hw, 0, -hd),
+					Vector3.new(hw, 0, -hd),
+					Vector3.new(-hw, 0, hd),
+					Vector3.new(hw, 0, hd),
+				}) :: { Vector3 }
+		do
 			brick(
 				props,
-				"Fence",
-				size,
-				at
-					* CFrame.new(
-						offset.X + (if flat then shift else 0),
-						1.5,
-						offset.Z + (if flat then 0 else shift)
-					),
-				if n % 2 == 0 then RED else WHITE
+				"FencePost",
+				Vector3.new(0.6, 3.4, 0.6),
+				at * CFrame.new(corner.X, 1.7, corner.Z),
+				RED
 			)
 		end
-	end
-	for _, corner in
-		(if st.sea
-			then {}
-			else {
-				Vector3.new(-hw, 0, -hd),
-				Vector3.new(hw, 0, -hd),
-				Vector3.new(-hw, 0, hd),
-				Vector3.new(hw, 0, hd),
-			}) :: { Vector3 }
-	do
-		brick(
+		-- scaffold poles at the corners of the building, with two rails on the front
+		for _, corner in
+			(if st.sea
+				then {} -- the rising pillars are the scaffold
+				else {
+					Vector3.new(-st.hw, 0, -st.hd),
+					Vector3.new(st.hw, 0, -st.hd),
+					Vector3.new(-st.hw, 0, st.hd),
+					Vector3.new(st.hw, 0, st.hd),
+				}) :: { Vector3 }
+		do
+			brick(
+				props,
+				"Scaffold",
+				Vector3.new(0.5, 10, 0.5),
+				at * CFrame.new(corner.X, 5, corner.Z),
+				STEEL
+			)
+		end
+		for _, y in (if st.sea then {} else { 4, 8 }) :: { number } do
+			brick(
+				props,
+				"ScaffoldRail",
+				Vector3.new(st.hw * 2, 0.35, 0.35),
+				at * CFrame.new(0, y, -st.hd - 0.6),
+				STEEL
+			)
+		end
+		-- a small Lego crane by the front-left corner
+		local base = at * CFrame.new(-hw + 3, 0, -hd - 4)
+		brick(props, "CraneBase", Vector3.new(4, 1.2, 4), base * CFrame.new(0, 0.6, 0), GREY)
+		brick(props, "CraneMast", Vector3.new(1.2, 13, 1.2), base * CFrame.new(0, 7, 0), YELLOW)
+		local pivot = base * CFrame.new(0, 13.6, 0)
+		st.crane = { pivot = pivot, parts = {}, offsets = {}, bob = 3 }
+		for _, c in
+			{
+				{ "CraneCab", Vector3.new(2.4, 2.4, 2.4), Vector3.zero, RED },
+				{ "CraneJib", Vector3.new(11, 0.7, 0.7), Vector3.new(4.5, 0.8, 0), YELLOW },
+				{ "CraneHook", Vector3.new(0.3, 4.5, 0.3), Vector3.new(9.4, -1.5, 0), GREY },
+				{ "CraneBlock", Vector3.new(1.1, 1.1, 1.1), Vector3.new(9.4, -3.9, 0), RED },
+			} :: { { any } }
+		do
+			local offset = CFrame.new(c[3])
+			table.insert(st.crane.parts, brick(props, c[1], c[2], pivot * offset, c[4]))
+			table.insert(st.crane.offsets, offset)
+		end
+		-- brick stacks along the front: the top bricks go first as the building rises
+		local tops: { BasePart }, bottoms: { BasePart } = {}, {}
+		for n = 0, 2 do
+			local stack = at * CFrame.new(-8 + n * 3.4, 0, hd + 2)
+			table.insert(
+				bottoms,
+				brick(
+					props,
+					"Bricks",
+					Vector3.new(2.6, 0.8, 1.2),
+					stack * CFrame.new(0, 0.4, 0),
+					WHITE
+				)
+			)
+			table.insert(
+				tops,
+				brick(
+					props,
+					"Bricks",
+					Vector3.new(2.6, 0.8, 1.2),
+					stack * CFrame.new(0, 1.2, 0),
+					RED
+				)
+			)
+		end
+		st.stacks = table.move(bottoms, 1, #bottoms, #tops + 1, tops)
+		-- the sign post
+		st.post = brick(
 			props,
-			"FencePost",
-			Vector3.new(0.6, 3.4, 0.6),
-			at * CFrame.new(corner.X, 1.7, corner.Z),
-			RED
+			"SignPost",
+			Vector3.new(0.5, 8, 0.5),
+			at * CFrame.new(0, 4, -hd - 1.5),
+			GREY
 		)
 	end
-	-- scaffold poles at the corners of the building, with two rails on the front
-	for _, corner in
-		(if st.sea
-			then {} -- the rising pillars are the scaffold
-			else {
-				Vector3.new(-st.hw, 0, -st.hd),
-				Vector3.new(st.hw, 0, -st.hd),
-				Vector3.new(-st.hw, 0, st.hd),
-				Vector3.new(st.hw, 0, st.hd),
-			}) :: { Vector3 }
-	do
-		brick(
-			props,
-			"Scaffold",
-			Vector3.new(0.5, 10, 0.5),
-			at * CFrame.new(corner.X, 5, corner.Z),
-			STEEL
-		)
-	end
-	for _, y in (if st.sea then {} else { 4, 8 }) :: { number } do
-		brick(
-			props,
-			"ScaffoldRail",
-			Vector3.new(st.hw * 2, 0.35, 0.35),
-			at * CFrame.new(0, y, -st.hd - 0.6),
-			STEEL
-		)
-	end
-	-- a small Lego crane by the front-left corner
-	local base = at * CFrame.new(-hw + 3, 0, -hd - 4)
-	brick(props, "CraneBase", Vector3.new(4, 1.2, 4), base * CFrame.new(0, 0.6, 0), GREY)
-	brick(props, "CraneMast", Vector3.new(1.2, 13, 1.2), base * CFrame.new(0, 7, 0), YELLOW)
-	local pivot = base * CFrame.new(0, 13.6, 0)
-	st.crane = { pivot = pivot, parts = {}, offsets = {} }
-	for _, c in
-		{
-			{ "CraneCab", Vector3.new(2.4, 2.4, 2.4), Vector3.zero, RED },
-			{ "CraneJib", Vector3.new(11, 0.7, 0.7), Vector3.new(4.5, 0.8, 0), YELLOW },
-			{ "CraneHook", Vector3.new(0.3, 4.5, 0.3), Vector3.new(9.4, -1.5, 0), GREY },
-			{ "CraneBlock", Vector3.new(1.1, 1.1, 1.1), Vector3.new(9.4, -3.9, 0), RED },
-		} :: { { any } }
-	do
-		local offset = CFrame.new(c[3])
-		table.insert(st.crane.parts, brick(props, c[1], c[2], pivot * offset, c[4]))
-		table.insert(st.crane.offsets, offset)
-	end
-	-- brick stacks along the front: the top bricks go first as the building rises
-	local tops: { BasePart }, bottoms: { BasePart } = {}, {}
-	for n = 0, 2 do
-		local stack = at * CFrame.new(-8 + n * 3.4, 0, hd + 2)
-		table.insert(
-			bottoms,
-			brick(props, "Bricks", Vector3.new(2.6, 0.8, 1.2), stack * CFrame.new(0, 0.4, 0), WHITE)
-		)
-		table.insert(
-			tops,
-			brick(props, "Bricks", Vector3.new(2.6, 0.8, 1.2), stack * CFrame.new(0, 1.2, 0), RED)
-		)
-	end
-	st.stacks = table.move(bottoms, 1, #bottoms, #tops + 1, tops)
-	-- the sign post
-	st.post =
-		brick(props, "SignPost", Vector3.new(0.5, 8, 0.5), at * CFrame.new(0, 4, -hd - 1.5), GREY)
 	local dust = Instance.new("Part")
 	dust.Name = "Dust"
 	dust.Size = Vector3.one
@@ -1082,7 +1269,9 @@ function ConstructionController.Start()
 				local turn = CFrame.Angles(0, math.sin(t * 0.3) * 0.5, 0)
 				local bob = math.sin(t * 0.8) * 0.6
 				for k, part in near.crane.parts do
-					local lift = if k >= 3 then Vector3.new(0, bob, 0) else Vector3.zero
+					local lift = if k >= near.crane.bob
+						then Vector3.new(0, bob, 0)
+						else Vector3.zero
 					TweenService:Create(
 						part,
 						TweenInfo.new(0.7, Enum.EasingStyle.Linear),

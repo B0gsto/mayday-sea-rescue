@@ -218,6 +218,11 @@ AssetIds.Models = {
 		LOD0 = "rbxassetid://116545210869864",
 		LOD1 = "rbxassetid://120420678094169",
 	},
+	M_Prop_BuildSiteKit = {
+		LOD0 = "rbxassetid://108631160743774",
+		LOD1 = "rbxassetid://92712016149318",
+		LOD2 = "rbxassetid://117455714827399",
+	},
 	M_Prop_BuildStation = {
 		LOD0 = "rbxassetid://118176380187881",
 		LOD1 = "rbxassetid://91952663271231",
@@ -762,6 +767,19 @@ AssetIds.Attachments = {
 	},
 	M_Hbr_Rope_Coil = {
 		ATT_End = Vector3.new(-1.5063, 0.0298, -0.5325),
+	},
+	M_Prop_BuildSiteKit = {
+		ATT_Fence = Vector3.new(0, 0, 0),
+		ATT_Gate = Vector3.new(11, 0, 0),
+		ATT_Post = Vector3.new(18, 0, 0),
+		ATT_Scaffold = Vector3.new(25, 0, 0),
+		ATT_Crane = Vector3.new(40, 0, 0),
+		ATT_Stack = Vector3.new(56, 0, 0),
+		ATT_Sign = Vector3.new(63, 0, 0),
+		ATT_Cone = Vector3.new(69, 0, 0),
+		ATT_Barrier = Vector3.new(74, 0, 0),
+		ATT_CranePivot = Vector3.new(40, 20.6, 0),
+		ATT_SignUI = Vector3.new(63, 6.6, 0),
 	},
 	M_Prop_BuildStation = {
 		ATT_Screen = Vector3.new(0, 6.2, 3.6),
