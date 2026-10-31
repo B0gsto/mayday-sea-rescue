@@ -12,11 +12,14 @@
 -- map shows the objective instead (CONTRACT.md "Map and blips").
 
 local A11yPalette = require(script.Parent.Parent:WaitForChild("A11yPalette"))
+local RingLayout = require(script.Parent:WaitForChild("RingLayout"))
 
 export type Blip = {
 	id: string,
 	label: string,
 	glyph: string, -- a short text glyph drawn in the badge
+	icon: string?, -- UI/Glyph kind drawn instead of the text glyph
+	pin: string?, -- UiImages.Markers.Pin key: on the full map the blip is that pin, its tip on the spot
 	color: Color3,
 	position: Vector3?, -- static blips
 	legend: boolean?, -- listed in the full map legend
@@ -90,16 +93,22 @@ local MapConfig = {
 		Casualty = {
 			label = "Casualty (Mayday)",
 			glyph = A11yPalette.symbol("Marker", "Casualty"),
+			icon = "swimmer",
+			pin = "Red",
 			color = Color3.fromHex("FF3B30"),
 		},
 		Vessel = {
 			label = "Vessel in distress",
 			glyph = A11yPalette.symbol("Marker", "Vessel"),
+			icon = "boat",
+			pin = "Amber",
 			color = Color3.fromHex("FF8A00"),
 		},
 		DropOff = {
 			label = "Drop-off",
 			glyph = A11yPalette.symbol("Marker", "DropOff"),
+			icon = "home",
+			pin = "Green",
 			color = Color3.fromHex("3EE07A"),
 		},
 		Waypoint = {
@@ -110,22 +119,33 @@ local MapConfig = {
 		Vehicle = {
 			label = "Your vehicle",
 			glyph = A11yPalette.symbol("Marker", "Vehicle"),
+			icon = "boat",
+			pin = "Craft",
 			color = Color3.fromHex("F4F1EA"),
 		},
 		Quest = {
 			label = "Your quest",
 			glyph = A11yPalette.symbol("Marker", "Quest"),
+			icon = "quest",
+			pin = "Quest",
 			color = Color3.fromHex("FFC428"),
 		},
 		Home = {
 			label = "Your dock",
 			glyph = A11yPalette.symbol("Marker", "Home"),
+			icon = "home",
 			color = Color3.fromHex("FF9F0A"),
 		},
 		Crew = {
 			label = "Crew",
 			glyph = A11yPalette.symbol("Marker", "Crew"),
 			color = Color3.fromHex("5AC8FA"),
+		},
+		-- other players: their avatar headshot in a ring of this colour (MapController)
+		Friend = {
+			label = "Friend",
+			glyph = A11yPalette.symbol("Marker", "Crew"),
+			color = Color3.fromHex("FF6FB5"),
 		},
 		Storm = {
 			label = "Storm area",
@@ -167,6 +187,40 @@ local MapConfig = {
 		{ center = Vector3.new(0, 0, 1650), radius = 1250 },
 	},
 }
+
+export type Shape = { x: number, z: number, w: number, h: number, rot: number, kind: string }
+
+-- The six player islands and their bridges as map boxes (WP-24 plates are Parts, so the terrain bake lacks them):
+-- centre (x, z), w along `rot` (degrees, screen-clockwise from east = toward +Z), h across; kind "plate" | "bridge".
+function MapConfig.landShapes(): { Shape }
+	local out: { Shape } = {}
+	for _, isl in RingLayout.Islands do
+		local f, r = isl.facing, isl.frame.RightVector
+		for _, q in RingLayout.IslandPlate.rects do
+			local p = isl.center + r * (q[1] + q[2]) / 2 + f * (q[3] + q[4]) / 2
+			table.insert(out, {
+				x = p.X,
+				z = p.Z,
+				w = q[4] - q[3],
+				h = q[2] - q[1],
+				rot = isl.bearing,
+				kind = "plate",
+			})
+		end
+	end
+	for _, b in RingLayout.Bridges do
+		local d = b.to - b.from
+		table.insert(out, {
+			x = (b.from.X + b.to.X) / 2,
+			z = (b.from.Z + b.to.Z) / 2,
+			w = math.sqrt(d.X * d.X + d.Z * d.Z),
+			h = b.width,
+			rot = math.deg(math.atan2(d.Z, d.X)),
+			kind = "bridge",
+		})
+	end
+	return out
+end
 
 function MapConfig.worldToUV(x: number, z: number): (number, number)
 	return (x - MapConfig.Origin.X) / MapConfig.Extent, (z - MapConfig.Origin.Y) / MapConfig.Extent
