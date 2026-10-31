@@ -100,7 +100,8 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   `tests/BuildTimer.spec.luau`): `work(cash, decor)`, `builders(workers)`, `units`, `rate`, `rateOf`, `advance`,
   `timeLeft`, `finishTier`, `text`. Saved as `data.construction = { key, progress 0..1, rate, at (os.time) }`,
   advanced offline on join; not owned (`dockBuildings`) until it finishes. Plot model attributes `SiteKey`,
-  `SiteProgress`, `SiteRate`, `SiteBuilders`, the rising model `Site_<key>` under the plot; client
+  `SiteProgress`, `SiteRate`, `SiteBuilders`, `SiteFinish` (true when Robux Finish-now is allowed: `Onboarding.finishNow`,
+  the Spin beat on, never a free build; `Dock_Finish` refuses otherwise), the rising model `Site_<key>` under the plot; client
   `ConstructionController` draws the site and the owner's "Finish" prompt, `DockController`'s tablet the timer and
   its FinishNow price. `Dock_Finish` C->S (no args) prompts `FinishNow1..3` by the site's current time left (the
   server picks; a client tier is ignored); the receipt finishes through the same path, or pays 10% of the build's

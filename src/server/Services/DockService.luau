@@ -865,6 +865,19 @@ local function cashOf(key: string, level: number?): number
 	return d and d.cash or 0
 end
 
+-- Robux Finish-now is for this site (Onboarding.finishNow): the tutorial is at Spin or later, the build is not free.
+local function finishAllowed(data: any): boolean
+	local c = data.construction
+	return c ~= nil
+		and Onboarding.finishNow({
+			coldOpenDone = data.coldOpenDone == true,
+			totalRescues = data.totalRescues or 0,
+			step = data.tutorialStep,
+			owned = data.dockBuildings or {},
+			constructionKey = c.key,
+		}, cashOf(c.key, c.level))
+end
+
 -- Where a site stands (berth frame) and its footprint, for the base crew's walk.
 local function siteSpot(plot: Plot, key: string): (CFrame?, Vector2?)
 	local b = DockConfig.Buildings[key]
@@ -891,6 +904,7 @@ local function clearSite(plot: Plot)
 	plot.model:SetAttribute("SiteBuilders", nil)
 	plot.model:SetAttribute("SiteLevel", nil)
 	plot.model:SetAttribute("SiteWaiting", nil)
+	plot.model:SetAttribute("SiteFinish", nil)
 end
 
 -- The model that rises with the progress; it stays unowned (no effects, unlocks or worker slots) until done.
@@ -922,6 +936,7 @@ local function syncSite(plot: Plot, data: any, player: Player)
 	if c then
 		plot.model:SetAttribute("SiteKey", c.key)
 		plot.model:SetAttribute("SiteLevel", c.level)
+		plot.model:SetAttribute("SiteFinish", if finishAllowed(data) then true else nil) -- clients show Finish only then
 		plot.model:SetAttribute("SiteProgress", c.progress)
 		local left = siteLeft(player, data)
 		local work = workOf(c.key, c.level)
@@ -1337,7 +1352,7 @@ local function promptFinish(player: Player)
 	lastPrompt[player] = now
 	local data: any = DataService.Get(player)
 	local c = data and data.construction
-	if not (c and byPlayer[player]) then
+	if not (c and byPlayer[player] and finishAllowed(data)) then
 		return
 	end
 	local left = siteLeft(player, data)

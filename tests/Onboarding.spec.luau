@@ -150,6 +150,34 @@ return function(t)
 		}))).toBe("Build")
 	end)
 
+	t.test("Robux Finish-now waits for the Spin beat and never sells a free build", function()
+		local hut = beat({ owned = { Harbour = true }, constructionKey = "HQ" })
+		t.expect(O.finishNow(hut, 0)).toBe(false)
+		t.expect(O.finishNow(hut, 3300)).toBe(false)
+		local site = beat({
+			coldOpenDone = true,
+			totalRescues = 1,
+			step = O.STEP_SITE,
+			constructionKey = "Workshop",
+		})
+		t.expect(O.finishNow(site, 1000)).toBe(false)
+		local spin = beat({
+			coldOpenDone = true,
+			step = O.STEP_SPIN,
+			owned = { HQ = true, Workshop = true },
+		})
+		t.expect(O.finishNow(spin, 1000)).toBe(true)
+		t.expect(O.finishNow(beat({ coldOpenDone = true, step = O.STEP_DONE }), 3300)).toBe(true)
+		t.expect(O.finishNow(beat({ coldOpenDone = true, step = O.STEP_DONE }), 0)).toBe(false)
+		-- an established save skips the tutorial
+		t.expect(
+			O.finishNow(
+				beat({ coldOpenDone = true, totalRescues = 9, owned = { Pontoon = true } }),
+				500
+			)
+		).toBe(true)
+	end)
+
 	t.test("the first survivor is a Builder until someone is home", function()
 		t.expect(O.buildersFirst(0, nil, {})).toBe(true)
 		t.expect(O.buildersFirst(0, nil, { Harbour = true, HQ = true })).toBe(true)

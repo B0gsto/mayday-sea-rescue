@@ -25,6 +25,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local Kit = UI:WaitForChild("Kit")
+local Layout = require(UI:WaitForChild("Layout"))
 local PriceButtonUI = require(Kit:WaitForChild("PriceButton"))
 local Style = require(Kit:WaitForChild("Style"))
 local Theme = require(Kit:WaitForChild("Theme"))
@@ -546,10 +547,14 @@ local function update(site: Site, progress: number, rate: number, builders: numb
 	site.count.Text = `x{builders}`
 	if site.prompt and site.finish then
 		local product, price = finishProduct(left)
-		local offered = left >= 3 and finishOffered(product)
+		-- SiteFinish: the server's tutorial / free-build gate (DockService.finishAllowed)
+		local offered = left >= 3
+			and finishOffered(product)
+			and site.plot:GetAttribute("SiteFinish") == true
 		site.prompt.Enabled = offered and padUser()
 		site.prompt.ObjectText = `R$ {price}`
-		site.finish.root.Visible = offered
+		-- touch: the pixel-sized on-top billboard lands under steering thumbs; phones finish from the tablet
+		site.finish.root.Visible = offered and not Layout.current().touch
 		if price ~= site.price then
 			site.price = price
 			site.finish.setPrice(price)

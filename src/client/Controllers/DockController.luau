@@ -270,13 +270,14 @@ type Status = {
 }
 
 -- The island's running construction, published by DockService on the plot (docs/24 B).
-local function siteState(): { key: string?, progress: number, rate: number }
+local function siteState(): { key: string?, progress: number, rate: number, finish: boolean }
 	local i = player:GetAttribute("DockPlot")
 	local marina = Workspace:FindFirstChild("Marina")
 	local plot = if type(i) == "number" and marina then marina:FindFirstChild(`Plot{i}`) else nil
 	local key = plot and plot:GetAttribute("SiteKey")
 	return {
 		key = if type(key) == "string" then key else nil,
+		finish = plot ~= nil and plot:GetAttribute("SiteFinish") == true, -- Robux Finish-now allowed (DockService)
 		progress = (plot and tonumber(plot:GetAttribute("SiteProgress"))) or 0,
 		rate = (plot and tonumber(plot:GetAttribute("SiteRate"))) or 1,
 	}
@@ -499,7 +500,7 @@ local function busyRow(parent: GuiObject, item: DockBlueprints.Item)
 	finish.root.AnchorPoint = Vector2.new(1, 0.5)
 	finish.root.Position = UDim2.fromScale(1, 0.5)
 	finish.root.Size = UDim2.new(0.48, -2, 1, 0)
-	finish.root.Visible = left >= 3 and finishOffered(product)
+	finish.root.Visible = left >= 3 and site.finish and finishOffered(product)
 	local bolt = Instance.new("Frame")
 	bolt.Name = "FinishIcon"
 	bolt.BackgroundTransparency = 1
@@ -540,7 +541,7 @@ local function updateTimers()
 			if row.finish then
 				local product, price = finishProduct(left)
 				row.finish.setPrice(price)
-				row.finish.root.Visible = left >= 3 and finishOffered(product)
+				row.finish.root.Visible = left >= 3 and site.finish and finishOffered(product)
 			end
 			table.insert(live, row)
 		end

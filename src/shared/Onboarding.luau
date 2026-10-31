@@ -150,6 +150,13 @@ function Onboarding.beat(f: BeatFacts): Beat
 	return "Rescue"
 end
 
+-- Robux Finish-now on the running site: only from the Spin beat on, never for a free build (the Hut).
+-- Live trails: new players tapped it by accident while the free Hut rose and in the cold open.
+function Onboarding.finishNow(f: BeatFacts, cash: number): boolean
+	local beat = Onboarding.beat(f)
+	return cash > 0 and (beat == "Spin" or beat == "Done")
+end
+
 -- The tutorial's first survivor is always a Builder, so the island can show one walking to the
 -- build station (docs/24 E beat 2). Only before anyone has been delivered; the random roll returns
 -- for everyone else.
