@@ -30,6 +30,15 @@ return function(t)
 		end
 	)
 
+	t.test("a craft delivers only with its rider in the zone too", function()
+		local bay = RingLayout.Islands[1].berths.Boat
+		local out = bay.Position + bay.LookVector * (R + 20)
+		t.expect(ColdOpen.deliveryHome(bay.Position, bay.Position, bay)).toBe(true)
+		t.expect(ColdOpen.deliveryHome(bay.Position, out, bay)).toBe(false) -- rider still outside
+		t.expect(ColdOpen.deliveryHome(out, bay.Position, bay)).toBe(false) -- craft still outside
+		t.expect(ColdOpen.deliveryHome(bay.Position, nil, bay)).toBe(false) -- nobody aboard
+	end)
+
 	t.test("only your berth: the lagoon is no drop-off (docs/23 (p))", function()
 		t.expect(
 			ColdOpen.atDropOff(

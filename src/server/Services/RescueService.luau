@@ -1490,10 +1490,17 @@ local function checkDeliveries()
 	for carrier, list in byCarrier do
 		-- the drop-off zone round the owner's berth: any craft of theirs, moving or docked
 		local driver = driverOf(carrier)
+		local rider = driver
+			and driver.Character
+			and driver.Character:FindFirstChild("HumanoidRootPart")
 		if
-			ColdOpen.atDropOff(
+			driver
+			and rider
+			and rider:IsA("BasePart")
+			and ColdOpen.deliveryHome(
 				carrier:GetPivot().Position,
-				driver and driver:GetAttribute("BayCFrame")
+				rider.Position,
+				driver:GetAttribute("BayCFrame")
 			)
 		then
 			unloadVictims(carrier, list)
