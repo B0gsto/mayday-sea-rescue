@@ -315,7 +315,12 @@ function WildlifeRig.entangle(model: Model, verb: string): Part?
 end
 
 -- Moves the whole animal: pivot at `cf` on the ground (or the sea surface).
-function WildlifeRig.setCFrame(model: Model, cf: CFrame)
+-- pose (the following pet, PetMotion): a rig-space delta per part, so the rigid parts can move apart.
+function WildlifeRig.setCFrame(
+	model: Model,
+	cf: CFrame,
+	pose: ((part: BasePart, offset: CFrame) -> CFrame)?
+)
 	local rig = rigs[model]
 	if not rig then
 		return
@@ -325,7 +330,12 @@ function WildlifeRig.setCFrame(model: Model, cf: CFrame)
 	for i, part in rig.parts do
 		if part.Parent then
 			table.insert(parts, part)
-			table.insert(cframes, cf * rig.offsets[i])
+			table.insert(
+				cframes,
+				if pose
+					then cf * pose(part, rig.offsets[i]) * rig.offsets[i]
+					else cf * rig.offsets[i]
+			)
 		end
 	end
 	rig.cf = cf
