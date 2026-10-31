@@ -235,10 +235,16 @@ local function stepToStation()
 	local hit = Workspace:Raycast(at + Vector3.new(0, 12, 0), Vector3.new(0, -30, 0), params)
 	local feet = (if hit then hit.Position else at)
 		+ Vector3.new(0, hum.HipHeight + root.Size.Y / 2 + 0.2, 0)
+	-- dip to black for the move (ColdOpenFadeController paints the attribute), never a bare jump cut
+	player:SetAttribute("ColdOpenFade", true)
+	task.wait(0.3)
 	root.AssemblyLinearVelocity = Vector3.zero
 	root.AssemblyAngularVelocity = Vector3.zero
 	local face = Vector3.new(station.X, feet.Y, station.Z)
 	char:PivotTo(CFrame.lookAt(feet, face))
+	task.delay(0.15, function()
+		player:SetAttribute("ColdOpenFade", nil)
+	end)
 	-- the Foot camera keeps the ride's heading: turn it to look over the shoulder at the tablet
 	task.wait()
 	local cam = Workspace.CurrentCamera
