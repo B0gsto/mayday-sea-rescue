@@ -12,20 +12,29 @@
 -- grey silhouette (pad attribute Silhouette). The client lights owned models and dims locked ones; the server
 -- checks owner, reach and ownership again here. Racks: tag "BoatBoard", attributes Owner (UserId), PlotIndex,
 -- Vehicles (the craft ids in order, comma-joined).
+-- Test ride (Net TestRide, mon REVIEW #7): tap a locked Robux-only model; see `ride` below.
 --   BoatBoard.start(launch)  VehicleService.Start passes DockLaunch(player, id, target?) (no require cycle)
 local CollectionService = game:GetService("CollectionService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local DockPieces = require(Shared:WaitForChild("DockPieces"))
 local Marina = require(Shared:WaitForChild("Marina"))
+local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
+local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
+local Rules = require(Shared:WaitForChild("ProgressionRules"))
+local TestRide = require(Shared:WaitForChild("TestRide"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local Services = script.Parent.Parent:WaitForChild("Services")
+local DataService = require(Services:WaitForChild("DataService"))
 local DockService = require(Services:WaitForChild("DockService"))
+local Telemetry = require(Services:WaitForChild("TelemetryService"))
 
 local BoatBoard = {}
 
@@ -503,10 +512,10 @@ local function boats(): { string }
 	return out
 end
 
--- the board panel's Launch: your own board of that name, standing by it, a craft it carries
-local function onBoardLaunch(player: Player, name: any, id: any)
+-- your own board of that name, standing by it, a craft it carries
+local function myBoard(player: Player, name: any, id: any): (Board?, BasePart?)
 	if type(name) ~= "string" or type(id) ~= "string" or not boards[name] then
-		return
+		return nil, nil
 	end
 	local char = player.Character
 	local root = char and char:FindFirstChild("HumanoidRootPart")
@@ -520,15 +529,123 @@ local function onBoardLaunch(player: Player, name: any, id: any)
 			and root:IsA("BasePart")
 			and (root.Position - back.Position).Magnitude <= REACH
 		then
-			task.spawn(onLaunch, board, berth, player, id)
-			return
+			return board, berth
 		end
 	end
+	return nil, nil
+end
+
+-- the board panel's Launch
+local function onBoardLaunch(player: Player, name: any, id: any)
+	local board, berth = myBoard(player, name, id)
+	if board and berth then
+		task.spawn(onLaunch, board, berth, player, id)
+	end
+end
+
+-- Test ride (mon REVIEW #7, shared/TestRide): a locked Robux-only boat is lent for TestRide.SECONDS. The crane
+-- lowers it like a launch, you in its seat; past the bay's ring it is turned back; when time is up (or you step
+-- off) it sails home and your own craft docks again. Once a UTC day per boat (flags.testRides), no calls, no ride Cash.
+local function setRide(player: Player, id: string?, ends: number?, at: Vector3?)
+	player:SetAttribute("TestRide", id)
+	player:SetAttribute("TestRideEnds", ends)
+	player:SetAttribute("TestRideAt", at)
+end
+
+local function ride(player: Player, board: Board, berth: BasePart, id: string, flag: any)
+	local Vehicles = require(Services:WaitForChild("VehicleService")) :: any
+	local progression = require(Services:WaitForChild("ProgressionService")) :: any
+	setRide(player, id, nil, berth.Position) -- lends it (VehicleService canUse) before the crane asks
+	board.busy = true
+	local ok, err = pcall(play :: any, board, berth, player, id)
+	board.busy = false
+	local function craft(): Model?
+		local m = Vehicles.GetVehicle(player)
+		return if m and m:GetAttribute("VehicleId") == id then m else nil
+	end
+	if not (ok and craft()) then
+		warn(`[BoatBoard] test ride {id} for {player.Name} did not launch: {err}`)
+		progression.SetFlag(player, TestRide.FLAG, flag) -- not ridden: today's ride stays
+		progression.Refresh(player)
+		setRide(player, nil, nil, nil)
+		return
+	end
+	local started = os.clock()
+	player:SetAttribute("TestRideEnds", Workspace:GetServerTimeNow() + TestRide.SECONDS)
+	Telemetry.Custom(player, "TestRide", 0, id, "Started")
+	local why = "Time"
+	while os.clock() - started < TestRide.SECONDS do
+		task.wait(0.25)
+		local m = craft()
+		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+		local seat = hum and hum.SeatPart
+		if not (player.Parent and m and seat and seat:IsDescendantOf(m)) then
+			why = "SteppedOff"
+			break
+		end
+		local pos = m:GetPivot().Position
+		if TestRide.outside(pos, berth.Position) then
+			Vehicles.TurnBack(player, TestRide.turnBack(pos, berth.Position), berth.Position)
+		end
+	end
+	if player.Parent then
+		Vehicles.EndTestRide(player, id)
+		setRide(player, nil, nil, nil)
+		Telemetry.Custom(player, "TestRide", math.floor(os.clock() - started), id, why)
+	end
+end
+
+local lastAsk: { [Player]: number } = {}
+
+local function onTestRide(player: Player, name: any, id: any): (boolean, string?)
+	local board, berth = myBoard(player, name, id)
+	if not (board and berth) then
+		return false, "Reach"
+	end
+	local now = os.clock()
+	local since = now - (lastAsk[player] or -math.huge)
+	lastAsk[player] = now
+	local data = DataService.Get(player)
+	local unlock = ProgressionConfig.Vehicles[id]
+	local key = Rules.vehiclePass(id)
+	local item = if key then (MonetizationConfig.GamePasses :: any)[key] else nil
+	if not (data and unlock) then
+		return false, "NotTryable"
+	end
+	local ops = require(Services:WaitForChild("OperationService")) :: any
+	local progression = require(Services:WaitForChild("ProgressionService")) :: any
+	local flag = data.flags[TestRide.FLAG]
+	local today = TestRide.day(os.time())
+	local ok, why = TestRide.check({
+		passOnly = unlock.passOnly == true,
+		passReady = item ~= nil and item.ready == true and item.id > 0,
+		owned = progression.CanUseVehicle(player, id) == true,
+		need = Rules.vehicleLock(data, id),
+		lastDay = TestRide.lastDay(flag, id),
+		today = today,
+		sinceAsk = since,
+		riding = player:GetAttribute("TestRide") ~= nil,
+		busy = board.busy or ops.GetOperationOf(player) ~= nil,
+	})
+	if not ok then
+		return false, why
+	end
+	-- marked before the ride starts: a second tap or a rejoin can't ride it twice today
+	if not progression.SetFlag(player, TestRide.FLAG, TestRide.mark(flag, id, today)) then
+		return false, "Flags"
+	end
+	progression.Refresh(player) -- the client's Try chips read the flag
+	task.spawn(ride, player, board, berth, id, flag)
+	return true, nil
 end
 
 function BoatBoard.start(launch: Launch)
 	launchFn = launch
 	Net.event("BoardLaunch").OnServerEvent:Connect(onBoardLaunch)
+	Net.func("TestRide").OnServerInvoke = onTestRide
+	Players.PlayerRemoving:Connect(function(p)
+		lastAsk[p] = nil
+	end)
 	local B = DockPieces.Buildings
 	defs = {
 		{

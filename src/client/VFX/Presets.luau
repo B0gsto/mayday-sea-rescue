@@ -777,6 +777,40 @@ Presets.ALL.fx1_build_snap = {
 	}),
 }
 
+local BUY_AT = 0.25
+
+-- spectacle: a Robux purchase lands (PurchaseFxController, mon REVIEW #3): a gold charge, a ka-ching on the hit, a
+-- fountain of coins and Lego bricks in the station colours round you, a gold studded ring and a short gold pillar
+Presets.ALL.fx1_purchase = {
+	job = "showcase",
+	big = true,
+	impact = BUY_AT,
+	layers = {
+		with(charge(GOLD, 8, BUY_AT), { emission = 0.5 }),
+		with(core(GOLD, 5, BUY_AT, 0.5), { lifetime = { 0.2, 0.2 } }),
+		rays(8, { GOLD, WHITE }, 7, BUY_AT, 0.35),
+		studRing(GOLD, 12, 0.85, BUY_AT),
+		studRing(WHITE, 8, 0.7, BUY_AT + 0.15),
+		with(coins(16, { 24, 34 }, 40, BUY_AT), { size = { 1.5 } }),
+		with(
+			confetti(30, { 20, 30 }, 50, { RED, WHITE, YELLOW, NAVY }),
+			{ delay = BUY_AT, size = { 1.5, 1.4 }, lifetime = { 1.8, 2.4 } }
+		),
+		with(plates({ RED, WHITE, GOLD }, 12), { delay = BUY_AT + 0.05, size = { 1.7 } }),
+	},
+	beams = { { color = GOLD, width = 5, height = 36, time = 1, emission = 0.45 } },
+	light = { color = GOLD, brightness = 3, range = 26, time = 0.8 },
+	punch = { fov = 3, magnitude = 0.5, roughness = 18, time = 0.35 },
+	frame = { tint = Color3.fromRGB(255, 248, 230), saturation = 0.2, brightness = 0.06 },
+	sounds = sounds({
+		{ "FX_Whoosh", 0, 0.6, 1.2 },
+		{ "Shop_Till", BUY_AT, 1.2, 1 },
+		{ "FX_Coins", BUY_AT + 0.05, 1, 1.05 },
+		{ "FX_ChimeHit", BUY_AT, 0.8, 1.1 },
+		{ "FX_PlasticRain", BUY_AT + 0.9, 0.7, 1.15 },
+	}),
+}
+
 ---------------------------------------------------------------- FX2 core loop
 -- The everyday moments at the owner's "satisfying and nice" bar (docs/26): anticipation -> impact -> settle in 2-4
 -- layers with eased size / fade curves, and a layered sound. Extra preset fields (VFXKit plays them; `sounds` and

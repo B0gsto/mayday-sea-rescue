@@ -1591,8 +1591,8 @@ local function onAccept(player: Player, opId: any)
 	if op.state ~= "Offered" or not table.find(op.offeredTo, player) then
 		return
 	end
-	if stateOf(player).activeOpId then
-		return
+	if stateOf(player).activeOpId or player:GetAttribute("TestRide") ~= nil then
+		return -- a test ride takes no calls (mon REVIEW #7)
 	end
 	activate(op, player)
 end
