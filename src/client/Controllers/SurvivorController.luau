@@ -6,10 +6,8 @@
 -- One tag per survivor. ClickDetector for mouse/touch (person cursor), ProximityPrompt for
 -- keyboard/gamepad on Q / Y, clear of the Pull aboard prompt's E / X. The card is info only.
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
-local Shared = ReplicatedStorage:WaitForChild("Shared")
 local UI = script.Parent.Parent:WaitForChild("UI")
 local Style = require(UI:WaitForChild("Kit"):WaitForChild("Style"))
 local SurvivorCard = require(UI:WaitForChild("SurvivorCard"))
