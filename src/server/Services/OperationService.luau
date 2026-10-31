@@ -350,6 +350,7 @@ local function endColdOpen(player: Player, reason: string)
 	markColdOpenDone(player)
 	if ColdOpenFlow.rescued(reason) then
 		stationHoldUntil[player] = now() + STATION_HOLD
+		player:SetAttribute("CraftHeld", true) -- VehicleService: no boarding or launch until the Workshop (tick)
 	end
 	try("TelemetryService", "ColdOpenEnded", player, reason) -- RP-A1 onboarding funnel
 	local ok, v = try("VehicleService", "GetVehicle", player)
@@ -1878,6 +1879,12 @@ local function tick()
 	end
 	for _, player in Players:GetPlayers() do
 		local st = stateOf(player)
+		if
+			stationHoldUntil[player] and not (t < stationHoldUntil[player] and stationBeat(player))
+		then
+			stationHoldUntil[player] = nil -- Workshop placed or 120 s up: calls and the jet ski are back
+			player:SetAttribute("CraftHeld", nil)
+		end
 		if st.activeOpId or not lastActiveAt[player] then
 			lastActiveAt[player] = t -- first sight: the two idle minutes count from here
 		end
@@ -1912,7 +1919,7 @@ local function tick()
 				and hutUpAt[player] ~= nil -- no calls before the Rescue Hut stands (a save from before it skipped the cold open)
 				and not inWater(player)
 				and not busy(player)
-				and not (t < (stationHoldUntil[player] or 0) and stationBeat(player))
+				and not stationHoldUntil[player]
 			then
 				-- two idle minutes on the quay: the board nudges an easy call, not a random one
 				local onFoot, stationDistance = stationIdle(player)
