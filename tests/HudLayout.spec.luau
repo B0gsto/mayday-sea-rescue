@@ -196,6 +196,40 @@ return function(t)
 		end
 	)
 
+	-- owner 2026-10-31 (phone): steering on the stick was awkward; the drive pad takes the stock controls' corners
+	t.test("touch drive pad: in the bottom corners, clear of the HUD, 44 px+ buttons", function()
+		for _, s in SCREENS do
+			local mt = HudLayout.compute(s.screen, s.insets, "Touch")
+			local u, pad = mt.usable, mt.pad
+			t.expect(pad.small * mt.scale >= 44).toBe(true)
+			t.expect(pad.small <= pad.brake and pad.brake < pad.steer and pad.steer < pad.go)
+				.toBe(true)
+			t.expect(overlaps(mt.rects.steer, mt.rects.drive)).toBe(false)
+			for _, name in { "steer", "drive" } do
+				local x, y, x2, y2 = box(mt.rects[name])
+				t.expect(x >= -1e-6 and x2 <= u.X + 1e-6 and y2 <= u.Y + 1e-6).toBe(true)
+				t.expect(y > 0.55 * u.Y).toBe(true) -- inside the stock controls' bottom band
+				for _, other in
+					{
+						"objective",
+						"notice",
+						"minimap",
+						"wallet",
+						"menu",
+						"quest",
+						"chips",
+						"prompt",
+						"debrief",
+					}
+				do
+					t.expect(overlaps(mt.rects[name], mt.rects[other])).toBe(false)
+				end
+			end
+		end
+		local desk = HudLayout.compute(Vector2.new(1920, 1080), NO_INSETS, "Keyboard")
+		t.expect(desk.rects.drive.size).toEqual(Vector2.zero)
+	end)
+
 	-- the minimap's objective pill ("Mayday 100 m") sits above the square on desktop
 	t.test("desktop: the quest chip clears the minimap pill, no overlaps", function()
 		-- gauges shares the minimap's square on desktop (touch buttons only)

@@ -63,6 +63,17 @@ return {
 		Tough = "rbxassetid://115278891400408",
 		Check = "rbxassetid://101458713833337",
 	},
+	-- the touch drive pad (TouchDriveController): tools/ui-art/stickers.py pad_<key> (art/source/ui/pad_*.svg)
+	Pad = {
+		left = "rbxassetid://101489610533671",
+		right = "rbxassetid://72373386792609",
+		go = "rbxassetid://92523570634591",
+		brake = "rbxassetid://123195928597165",
+		slow = "rbxassetid://130218524793179",
+		exit = "rbxassetid://116887221313402",
+		up = "rbxassetid://78105987863646",
+		down = "rbxassetid://71511456291214",
+	} :: { [string]: string },
 	-- UI Kit (docs/23 (m), UI/Kit): Antigravity icons (assets/ui/kit, from marketing/ui/icons) keyed by
 	-- file stem, plus Studs: the subtle stud tile on title bars and price buttons.
 	Kit = {

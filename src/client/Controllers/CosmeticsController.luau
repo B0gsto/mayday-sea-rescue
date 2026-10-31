@@ -20,7 +20,7 @@
 --   ctx.bindVehicleAction{ name, label, key?, gamepad?, callback(), visible?() -> boolean }
 --       -> unbind()   While the local player is seated in a vehicle and visible() is true: binds
 --       key + gamepad through ContextActionService and, on touch screens, shows a small HudTheme
---       tap button stacked left of the "gauges" region. callback runs on press (Begin).
+--       tap button stacked left of the "gauges" region (touch: of the drive pad). callback runs on press (Begin).
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -97,7 +97,8 @@ local function ensureStack(): Frame
 	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	Layout.prepare(gui)
 	gui.Parent = player:WaitForChild("PlayerGui")
-	local region = Layout.region(gui, "gauges")
+	-- driving on touch the drive pad fills the bottom-right corner: stack left of it instead
+	local region = Layout.region(gui, if Layout.device() == "Touch" then "drive" else "gauges")
 	local f = Instance.new("Frame")
 	f.Name = "Stack"
 	f.AnchorPoint = Vector2.new(1, 1)

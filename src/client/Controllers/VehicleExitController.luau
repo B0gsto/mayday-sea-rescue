@@ -1,11 +1,14 @@
 --!strict
--- VehicleExitController: Space / gamepad A / the on-screen exit button (exit_button.png) gets the
+-- VehicleExitController: Space / gamepad A / the on-screen exit button (exit_button.png; driving on touch: the drive
+-- pad's step-off button, TouchDriveController -> StepOff) gets the
 -- player out of any vehicle seat (boats, jet skis, heli, sub), like a default Roblox seat. Bound only
 -- while seated in a model with a VehicleId. It unseats directly, so OpsController's jump guard (which eats the default
 -- seat jump during operation steps) does not trap the player; the cold open still keeps them aboard.
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 
 local EXIT_IMAGE = require(
 	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
@@ -118,18 +121,20 @@ end
 
 local function onSeated(active: boolean, seat: BasePart?)
 	if active and vehicleOf(seat) then
+		-- a driver on touch steps off from the drive pad (TouchDriveController); passengers keep this button
+		local touch = not (Layout.device() == "Touch" and (seat :: BasePart).Name == "DriverSeat")
 		ContextActionService:BindAction(
 			ACTION,
 			onExit,
-			true,
+			touch,
 			Enum.KeyCode.Space,
 			Enum.KeyCode.ButtonA
 		)
-		ContextActionService:SetPosition(ACTION, UDim2.new(1, -95, 1, -285))
 		-- touch: the exit sprite over the stock round button (the core script swaps the button's
 		-- own Image on press, so the sprite is a child and the stock art goes transparent)
-		local button = ContextActionService:GetButton(ACTION)
+		local button = touch and ContextActionService:GetButton(ACTION)
 		if button then
+			ContextActionService:SetPosition(ACTION, UDim2.new(1, -95, 1, -285))
 			button.ImageTransparency = 1
 			local skin = Instance.new("ImageLabel")
 			skin.Name = "Skin"
@@ -176,6 +181,11 @@ function VehicleExitController.Ashore(dir: Vector3): boolean
 	stepOff(humanoid, seat)
 	character:PivotTo(at * CFrame.lookAlong(Vector3.zero, dir))
 	return true
+end
+
+-- The drive pad's step-off button: Space's path.
+function VehicleExitController.StepOff()
+	onExit(ACTION, Enum.UserInputState.Begin, nil :: any)
 end
 
 function VehicleExitController.Init() end

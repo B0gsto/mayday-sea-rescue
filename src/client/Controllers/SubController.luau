@@ -3,7 +3,8 @@
 -- shared/Sub/Builder) from its DriverSeat. Inert until the local player sits in one.
 --   Ahead / astern and turn: the VehicleSeat's ThrottleFloat / SteerFloat (W/S/A/D, arrows, gamepad
 --   triggers and stick, the touch thumbstick), like the boats.
---   Rise / dive: E / Q, gamepad Y / X, two touch buttons with up / down chevrons (no text).
+--   Rise / dive: E / Q, gamepad Y / X, two touch buttons with up / down chevrons (no text). On a touch device the
+--   drive pad (TouchDriveController) drives it instead: GO / BRAKE, LEFT / RIGHT, the teal rise / dive arrows.
 --   Hands-off it holds its depth; at the surface it floats like a slow boat (shared/Sub/Dive).
 -- Every PreSimulation it runs shared/Sub/Rig on the hull it owns, with the drawn ocean height so
 -- the hull sits on the waves the player sees. BoatController skips Sub models.
@@ -16,6 +17,7 @@ local BoatController = require(script.Parent.BoatController)
 local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
 local Rig =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Sub"):WaitForChild("Rig"))
+local TouchDriveController = require(script.Parent.TouchDriveController)
 
 local RISE, DIVE = "SubRise", "SubDive"
 
@@ -56,12 +58,15 @@ end
 
 local function bind(on: boolean)
 	if on then
-		ContextActionService:BindAction(RISE, onAction, true, Enum.KeyCode.E, Enum.KeyCode.ButtonY)
-		ContextActionService:BindAction(DIVE, onAction, true, Enum.KeyCode.Q, Enum.KeyCode.ButtonX)
-		ContextActionService:SetPosition(RISE, UDim2.new(1, -170, 1, -215))
-		ContextActionService:SetPosition(DIVE, UDim2.new(1, -170, 1, -150))
-		skin(RISE, true)
-		skin(DIVE, false)
+		local touch = not TouchDriveController.on() -- the drive pad has its own rise / dive
+		ContextActionService:BindAction(RISE, onAction, touch, Enum.KeyCode.E, Enum.KeyCode.ButtonY)
+		ContextActionService:BindAction(DIVE, onAction, touch, Enum.KeyCode.Q, Enum.KeyCode.ButtonX)
+		if touch then
+			ContextActionService:SetPosition(RISE, UDim2.new(1, -170, 1, -215))
+			ContextActionService:SetPosition(DIVE, UDim2.new(1, -170, 1, -150))
+			skin(RISE, true)
+			skin(DIVE, false)
+		end
 	else
 		ContextActionService:UnbindAction(RISE)
 		ContextActionService:UnbindAction(DIVE)
@@ -96,7 +101,15 @@ local function step(dt: number)
 	end
 	BoatController.EngageControls(seat) -- the default vehicle controls drive the seat's throttle
 	local dive = (if held[RISE] then 1 else 0) - (if held[DIVE] then 1 else 0)
-	Rig.step(model, seat.ThrottleFloat, seat.SteerFloat, dive, dt, sea)
+	local pad = TouchDriveController -- the touch drive pad, 0 off touch
+	Rig.step(
+		model,
+		math.clamp(seat.ThrottleFloat + pad.throttle(), -1, 1),
+		math.clamp(seat.SteerFloat + pad.steer(), -1, 1),
+		math.clamp(dive + pad.lift(), -1, 1),
+		dt,
+		sea
+	)
 end
 
 function SubController.Init()

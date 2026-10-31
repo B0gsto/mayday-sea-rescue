@@ -5,12 +5,13 @@
 --    network ownership, and every PreSimulation we run Boat/Simulator on it: per float point lift
 --    and damping (VectorForce), drag + thrust (DriveForce) and yaw steering (DriveTorque Torque).
 --    Throttle and steer come from VehicleSeat.ThrottleFloat / SteerFloat, which Roblox fills from
---    keyboard (WASD / arrows), gamepad and the mobile thumbstick alike; steer goes through
+--    keyboard (WASD / arrows) and gamepad, plus the touch drive pad (TouchDriveController, which hides the
+--    thumbstick while you drive); steer goes through
 --    Boat/Helm (ramps to full in 0.4 s, less lock at speed). The boat's SpeedMultiplier
 --    attribute (the server sets it from ProgressionService.GetGearBonus "speed") scales thrust and
 --    top speed inside Simulator.
 --
--- 1b. Helm modes and safety. Z (or the on-screen "Approach" button) toggles approach mode: a
+-- 1b. Helm modes and safety. Z / gamepad Y (touch: the drive pad's turtle) toggles approach mode: a
 --    speed governor under 5 knots with fine throttle (Buoyancy.thrust), for the final run to a
 --    casualty; throttle released = neutral, the hull glides. On a vehicle with ejectOnCapsize (the
 --    jet ski) the rider is thrown off past CAPSIZE_ANGLE; leaving the seat pulls the kill cord and
@@ -61,6 +62,7 @@ local Nitro = require(Shared:WaitForChild("Boat"):WaitForChild("Nitro"))
 local PickupRingController = require(script.Parent.PickupRingController)
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
+local TouchDriveController = require(script.Parent.TouchDriveController)
 local Unstick = require(Shared:WaitForChild("Boat"):WaitForChild("Unstick"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
@@ -215,7 +217,8 @@ local function unstickBoat(model: Model, throttle: number, speed: number, dt: nu
 				local side = normal:Dot(root.CFrame.RightVector)
 				local seat = seatOf(model)
 				if math.abs(side) < 0.2 and seat then
-					side = if seat.SteerFloat ~= 0 then seat.SteerFloat else 1 -- no steer: bear right
+					local steer = seat.SteerFloat + TouchDriveController.steer()
+					side = if steer ~= 0 then steer else 1 -- no steer: bear right
 				end
 				local turn = if side > 0 then -Unstick.TURN elseif side < 0 then Unstick.TURN else 0
 				root.AssemblyAngularVelocity += Vector3.new(0, turn, 0)
@@ -271,24 +274,19 @@ local function toggleApproach(_: string, state: Enum.UserInputState): Enum.Conte
 	end
 	-- Local attribute: this client simulates the hull, so the governor runs here.
 	model:SetAttribute("ApproachMode", not (model:GetAttribute("ApproachMode") == true))
-	ContextActionService:SetTitle(
-		APPROACH_ACTION,
-		if model:GetAttribute("ApproachMode") then "Slow" else "Approach"
-	)
 	return Enum.ContextActionResult.Sink
 end
 
 local function setApproachBinding(on: boolean)
 	if on then
+		-- no touch button: the drive pad has the turtle (owner 2026-10-31: the text button wrapped "Appro / ach")
 		ContextActionService:BindAction(
 			APPROACH_ACTION,
 			toggleApproach,
-			true,
+			false,
 			Enum.KeyCode.Z,
 			Enum.KeyCode.ButtonY
 		)
-		ContextActionService:SetTitle(APPROACH_ACTION, "Approach")
-		ContextActionService:SetPosition(APPROACH_ACTION, UDim2.new(1, -170, 1, -150))
 	else
 		ContextActionService:UnbindAction(APPROACH_ACTION)
 	end
@@ -446,11 +444,16 @@ local function step(dt: number)
 					engageControls(seat)
 					local id = child:GetAttribute("VehicleId")
 					local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
+					-- keys / gamepad on the seat, plus the touch drive pad (0 off touch)
+					local throttleIn =
+						math.clamp(seat.ThrottleFloat + TouchDriveController.throttle(), -1, 1)
+					local steerIn =
+						math.clamp(seat.SteerFloat + TouchDriveController.steer(), -1, 1)
 					local throttle, steer =
 						PickupRingController.Assist( -- the pick-up ring's helm nudge
 							child,
-							coldOpenThrottle(child, seat.ThrottleFloat, now),
-							seat.SteerFloat
+							coldOpenThrottle(child, throttleIn, now),
+							steerIn
 						)
 					local root = child.PrimaryPart
 					local speed = if root then root.AssemblyLinearVelocity.Magnitude else 0
@@ -463,7 +466,7 @@ local function step(dt: number)
 					-- Captain Nitro (SkillNitro): a double-tap of the throttle gives a short burst
 					local mult = Nitro.step(
 						nitro,
-						seat.ThrottleFloat,
+						throttleIn,
 						now,
 						(tonumber(localPlayer:GetAttribute("SkillNitro")) or 0) > 0
 					)
@@ -528,10 +531,10 @@ local function step(dt: number)
 					lastThrottle = throttle
 					nowSimulated[child] = true
 					checkCapsize(child, seat, dt)
-					unstickBoat(child, seat.ThrottleFloat, telemetry and telemetry.speed or 0, dt)
+					unstickBoat(child, throttleIn, telemetry and telemetry.speed or 0, dt)
 					Telemetry.stalled( -- analytics H15 (not the cold open's auto-throttle)
 						"Boat",
-						math.abs(seat.ThrottleFloat) > 0.5
+						math.abs(throttleIn) > 0.5
 							and speed < 1
 							and child:GetAttribute("ColdOpenAutoThrottle") ~= true,
 						dt

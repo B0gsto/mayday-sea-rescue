@@ -10,6 +10,8 @@
 --    gamepad triggers on the throttle and here they climb and descend:
 --      up      E / R2 / touch up chevron          down     Q / L2 / touch down chevron
 --      strafe  Z, C / D-pad left, right           (Space / A gets out: VehicleExitController)
+--    On a touch device the drive pad (TouchDriveController) flies it instead: GO / BRAKE forward and back, LEFT /
+--    RIGHT yaw, the teal arrows climb and descend (the stick and the chevron buttons are gone then).
 --    Hands off = a level hover. The floor is the ground under the skids, or the sea plus
 --    Flight.WATER_CLEARANCE; gentle wind drift comes from Weather.
 -- 2. Rotors. Every heli's RotorJoint / TailRotorJoint Transform spins up while its DriverSeat is
@@ -25,6 +27,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Flight = require(Shared:WaitForChild("Heli"):WaitForChild("Flight"))
 local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
+local TouchDriveController = require(script.Parent.TouchDriveController)
 local Weather = require(Shared:WaitForChild("Weather"))
 
 local TAG = "Heli"
@@ -105,7 +108,7 @@ local function bindControls(on: boolean)
 	for name, keys in AXES do
 		held[name] = 0
 		if on then
-			local touch = name == "HeliUp" or name == "HeliDown"
+			local touch = (name == "HeliUp" or name == "HeliDown") and not TouchDriveController.on()
 			ContextActionService:BindAction(name, onAxis, touch, table.unpack(keys))
 			local button = touch and ContextActionService:GetButton(name)
 			if button then
@@ -181,10 +184,10 @@ local function fly(model: Model, spec: Flight.Spec, dt: number)
 	Flight.step(
 		s,
 		{
-			forward = -move.Z,
+			forward = math.clamp(-move.Z + TouchDriveController.throttle(), -1, 1),
 			strafe = held.HeliRight - held.HeliLeft,
-			yaw = move.X,
-			lift = held.HeliUp - held.HeliDown,
+			yaw = math.clamp(move.X + TouchDriveController.steer(), -1, 1),
+			lift = math.clamp(held.HeliUp - held.HeliDown + TouchDriveController.lift(), -1, 1),
 		},
 		spec,
 		root.Position.Y,

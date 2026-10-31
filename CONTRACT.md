@@ -189,7 +189,9 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   lifeboat 8). Pure, tested: `Boat/Buoyancy`, `Boat/Simulator`, `Boat/Unstick`, `Boat/Helm`, `Boat/RespawnPolicy`,
   `Boat/BayLaunch`, `Boat/Wake`, `Heli/Flight`, `Heli/Winch`, `Sub/Dive`. `Services/Vehicle/Craft` builds and
   idles the heli and sub; clients: `BoatController`, `HeliController`, `SubController`, `VehicleExitController`,
-  `BeaconController`, `Camera/Chase`.
+  `BeaconController`, `Camera/Chase`. Touch (`Layout.device() == "Touch"`): `TouchDriveController` hides the stock
+  thumbstick + jump button while you drive and shows the drive pad (HudLayout `steer` / `drive`); the three craft
+  controllers add its `throttle()` / `steer()` / `lift()` to the seat / key input.
 - `src/shared/Crowding.luau`: player boats ghost through each other (collision group `PlayerBoat`); idle timers
   scale with the player count. `src/shared/VehicleRecovery.luau`: flipped / stuck / sunk craft are put back
   upright; a boat beached past recovery goes with `poof`; a craft nobody drives that is `lost` (far over or under
