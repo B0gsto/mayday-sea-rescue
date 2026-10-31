@@ -1,7 +1,7 @@
 --!strict
 -- Boat/Unstick: when a hull touches a wall (quay, breakwater, beach, another hull) at under 3 km/h
--- with the throttle open, push it gently off (docs/20 WP-C: free in under 2 s). BoatController
--- supplies the contact and the normal.
+-- with the throttle (ahead or astern) or the helm in use, push it gently off (docs/20 WP-C: free in
+-- under 2 s). BoatController supplies the contact and the normal.
 local Unstick = {}
 
 Unstick.HOLD = 0.6 -- s pinned before the nudge -- tune
@@ -15,15 +15,10 @@ function Unstick.new(): State
 	return {}
 end
 
--- True once per wedge, after HOLD s of contact at under SPEED with forward throttle.
-function Unstick.step(
-	s: State,
-	dt: number,
-	wedged: boolean,
-	speed: number,
-	throttle: number
-): boolean
-	if not wedged or math.abs(speed) >= Unstick.SPEED or throttle <= 0.05 then
+-- True once per wedge, after HOLD s of contact at under SPEED; effort is the throttle or helm in
+-- use (either sign).
+function Unstick.step(s: State, dt: number, wedged: boolean, speed: number, effort: number): boolean
+	if not wedged or math.abs(speed) >= Unstick.SPEED or math.abs(effort) <= 0.05 then
 		s.since = nil
 		return false
 	end

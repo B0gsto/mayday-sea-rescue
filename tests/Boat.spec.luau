@@ -160,6 +160,28 @@ return function(t)
 		local back = run(spec, -1, 0, 20, 1)
 		t.expect(back < 0).toBeTruthy()
 		t.expect(-back <= spec.topSpeed * Buoyancy.REVERSE_SPEED_FRACTION + 1).toBeTruthy()
+		-- gentle in a slip: no hull backs up faster than REVERSE_SPEED_MAX (the jet ski would do 16)
+		local ski = run(VehicleConfig.JetSki, -1, 0, 20, 1)
+		t.expect(ski < 0 and -ski <= Buoyancy.REVERSE_SPEED_MAX + 0.5).toBeTruthy()
+	end)
+
+	t.test("slow, the helm alone pivots the hull; it fades out with speed", function()
+		for _, spec in { VehicleConfig.JetSki, VehicleConfig.RIB } do
+			local still = Buoyancy.steerTorque(1, 0, 0, 100, spec, 1, 1, 0, G)
+			t.expect(still < 0).toBeTruthy() -- right helm, throttle closed, at rest: turns right
+			-- at least 15 deg/s on the spot, and no faster than the throttle-on pivot
+			local rate = Buoyancy.pivotYawRate(0, spec)
+			t.expect(rate >= math.rad(15)).toBeTruthy()
+			t.expect(rate <= Buoyancy.maxYawRate(0, 1, spec, G)).toBeTruthy()
+			t.expect(Buoyancy.pivotYawRate(spec.pivotSpeed * 2, spec)).toBe(0)
+			-- coasting at speed is unchanged: the floor never beats the turning circle there
+			local coast = Buoyancy.steerTorque(1, 30, 0, 100, spec, 1, 1, 0, G)
+			local plain = -100
+				* Buoyancy.TURN_GAIN
+				* Buoyancy.maxYawRate(30, 0, spec, G)
+				* spec.offThrottleSteer
+			t.expect(coast).toBeCloseTo(plain, 1e-6)
+		end
 	end)
 
 	t.test("no thrust or steering out of the water", function()
