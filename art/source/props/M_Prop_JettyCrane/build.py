@@ -5,6 +5,20 @@ bricks, a jib that tapers to a red tip cap, stiff rod ties, a chunky hook block 
 Round 3 (AD round 2 7.6/10): a deep zigzag (Warren) truss on the tower instead of X braces ("reads as XXX"), two chunky
 yellow ties instead of three thin dark rods, a yellow operator cab with a big windscreen at the slewing ring, and a
 bigger hook block and a ~2x life ring so both read over the water.
+Round 4 (AD round 3 8.3/10 in game): a 1.4x deeper jib with thicker chords and braces (read as a truss, not a line
+on a phone), tower diagonals standing proud of the frames (were sunk behind them: "printed"), a bigger cab glazed on
+three sides under an overhanging red roof, thick black stepped hoist falls with a trolley sheave, a yellow/black
+hazard band on the ballast, and amber lamp housings at the jib tip and on the cab roof (ATT_Lamp_*: DockPieces hangs a
+Neon bulb + night PointLight there).
+Round 5 (AD round 4 8.3/10): straight chamfered tower diagonals set into each bay, ending on the frames under grey pin
+caps (were kinked ribbons cutting through the frames), chamfered long beams and glossier plastic, a grey slewing deck
+(no orange wedge or dark disc under the cab), the life ring resting in a bigger hook bowl instead of through it, the
+hook-block sheave between two cheek plates with the falls running into it, an even stud row on the jib, pin caps on
+the tie ends, a smoother ring.
+Round 6 (AD round 5 8.7/10): a smooth swept round hook (hex swivel nut, latch, round tip) with the ring seated in its
+throat, sheave discs and axle bosses on the hook block's faces, rounder studs, chamfered tower posts and frames,
+light-grey pins (dark ones read as holes), clevis pins at both tie ends, a grey trim plate seating the cab, and the
+cab lamp on a real stud position.
 
 Same envelope as the Parts crane: origin the mast's ground centre (the base stands on the jetty deck), jib reaching
 39.4 studs toward the berth along -Y (Blender front = Roblox -Z: the game turns the Model with CFrame.lookAt toward
@@ -59,10 +73,39 @@ def stud(b, x, y, z, c, r=0.6, h=0.42, n=12):
     b.cyl(x, y, z - SINK, z + h, r, c, n)
 
 
+def cbeam(b, p0, p1, w, h, c, ch=0.1):
+    """A beam with chamfered long edges (an octagon section lofted p0 -> p1): reads as bevelled plastic."""
+    import mathutils
+    p0, p1 = mathutils.Vector(p0), mathutils.Vector(p1)
+    d = (p1 - p0).normalized()
+    up = mathutils.Vector((0, 0, 1)) if abs(d.z) < 0.95 else mathutils.Vector((0, 1, 0))
+    side = d.cross(up).normalized()
+    up = side.cross(d).normalized()
+    a, e = w / 2, h / 2
+    sec = [(a - ch, -e), (a, -e + ch), (a, e - ch), (a - ch, e), (-a + ch, e), (-a, e - ch), (-a, -e + ch), (-a + ch, -e)]
+    ring = lambda p: [tuple(p + side * u + up * v) for u, v in sec]
+    faces = [(i, (i + 1) % 8, 8 + (i + 1) % 8, 8 + i) for i in range(8)] + [tuple(range(8)), tuple(range(15, 7, -1))]
+    b._emit(ring(p0) + ring(p1), faces, c)
+
+
+def hook_arc(b, cx, cy, cz, R, r, a0, a1, c, seg=16, mnr=10):
+    """torus_arc in the x-z plane (round the Y axis): the swept hook."""
+    t = lego.B()
+    torus_arc(t, cy, cx, cz, R, r, a0, a1, c, seg, mnr)
+    b._emit([(y, x, z) for x, y, z in t.v], [f for f, _ in t.f], c)
+
+
+def cyl_y(b, cx, cy, cz, r, length, c, n=8):
+    """A closed cylinder lying along Y (lego.B.cyl_x with x and y swapped)."""
+    t = lego.B()
+    t.cyl_x(cy, cx, cz, r, length, c, n)
+    b._emit([(y, x, z) for x, y, z in t.v], [f for f, _ in t.f], c)
+
+
 def jib_half(y):
     """(half width of the lower chords, half depth) of the jib at y: tapers from the root (y 0) to the tip."""
     t = min(1.0, max(0.0, -y / JIB_L))
-    return 1.25 - 0.55 * t, 1.0 - 0.45 * t
+    return 1.25 - 0.55 * t, 1.4 - 0.65 * t
 
 
 def torus_arc(b, cx, cy, cz, R, r, a0, a1, c, seg=8, mnr=10):
@@ -87,7 +130,7 @@ def base(b):
     for x in (-2.7, 0.0, 2.7):
         for y in (-2.7, 0.0, 2.7):
             if x or y:
-                stud(b, x, y, B1_H, P.RED, 0.66, 0.45)
+                stud(b, x, y, B1_H, P.RED, 0.66, 0.45, 12)
     for s in (-1, 1):                                    # hazard blocks on the four faces
         for t in (-1, 1):
             b.box((t * 1.6 - 0.7, s * h - 0.06, 0.25), (t * 1.6 + 0.7, s * h + 0.06, 0.95), P.YELLOW, bevel=0.0)
@@ -104,43 +147,60 @@ def tower(b):
     zs = [TOWER_Z0 + (TOWER_Z1 - TOWER_Z0) * i / nb for i in range(nb + 1)]
     for sx in (-1, 1):
         for sy in (-1, 1):
-            b.box((sx * HW - 0.6, sy * HW - 0.6, TOWER_Z0 - SINK), (sx * HW + 0.6, sy * HW + 0.6, TOWER_Z1),
-                  P.WHITE, bevel=0.08)
+            cbeam(b, (sx * HW, sy * HW, TOWER_Z0 - SINK), (sx * HW, sy * HW, TOWER_Z1), 1.2, 1.2, P.WHITE, 0.12)
     for z in zs[1:]:                                     # square frames at each level (inside the posts' faces)
         for sy in (-1, 1):
-            b.box((-HW, sy * HW - 0.45, z - 0.38), (HW, sy * HW + 0.45, z + 0.38), P.WHITE, bevel=0.05)
+            cbeam(b, (-HW, sy * HW, z), (HW, sy * HW, z), 0.9, 0.76, P.WHITE, 0.1)
         for sx in (-1, 1):
-            b.box((sx * HW - 0.42, -HW, z - 0.36), (sx * HW + 0.42, HW, z + 0.36), P.WHITE, bevel=0.05)
-    for i in range(nb):                                  # one deep red diagonal per panel, zigzagging up (Warren truss)
-        a, e = zs[i], zs[i + 1]
+            cbeam(b, (sx * HW, -HW, z), (sx * HW, HW, z), 0.84, 0.72, P.WHITE, 0.1)
+    # one straight red bar per bay, chord to chord between the posts (Warren truss: neighbours share a pin on the frame),
+    # set just inside the frame face (+-0.45) so nothing cuts through; a grey pin cap on every node
+    ix, o = HW - 0.62, HW + 0.12
+    for i in range(nb):
+        a, e = zs[i] + (0.38 if i else 0.1), zs[i + 1] - 0.38
         k = 1 if i % 2 == 0 else -1
         for s in (-1, 1):
-            b.beam((-k * HW, s * HW, a), (k * HW, s * HW, e), 1.0, 0.7, P.RED)
-            b.beam((s * HW, k * HW, a), (s * HW, -k * HW, e), 0.96, 0.66, P.RED)
+            cbeam(b, (-k * ix, s * o, a), (k * ix, s * o, e), 0.8, 0.5, P.RED, 0.09)
+            cbeam(b, (s * o, k * ix, a), (s * o, -k * ix, e), 0.8, 0.5, P.RED, 0.09)
+    for i in range(nb):                                  # pin caps where bay i meets bay i+1, on the frame face
+        k, z = (1 if i % 2 == 0 else -1), zs[i + 1]
+        for s in (-1, 1):
+            cyl_y(b, k * ix, s * (HW + 0.45), z, 0.3, 0.3, P.LBG, 10)
+            b.cyl_x(s * (HW + 0.45), -k * ix, z, 0.3, 0.3, P.LBG, 10)
     # slewing ring, deck, cab, A-frame, beacon
     z = TOWER_Z1
-    b.cyl(0, 0, z - SINK, z + 0.9, 3.0, P.DBG, 20)
-    b.box((-2.8, -2.8, z + 0.9 - SINK), (2.8, 2.8, z + 1.3), P.ORANGE, bevel=0.08)
+    b.cyl(0, 0, z - SINK, z + 0.9 + SINK, 2.3, P.DBG, 20)                                   # slewing ring, under the deck
+    b.box((-2.8, -2.8, z + 0.9), (2.8, 2.8, z + 1.3), P.STONE, bevel=0.08)                   # grey slewing deck
     cz = z + 1.3
     # yellow operator cab on the slewing deck: big glass windscreen toward the jib, side window, red studded roof
-    b.box((-4.4, -2.7, cz - SINK), (-1.1, 1.9, cz + 3.8), P.YELLOW, bevel=0.16)
-    b.box((-4.1, -2.85, cz + 1.2), (-1.4, -2.6, cz + 3.4), P.WHITE, bevel=0.04)               # windscreen frame
-    b.box((-3.85, -2.93, cz + 1.45), (-1.65, -2.62, cz + 3.15), P.GLASS, bevel=0.0)             # windscreen
-    b.box((-4.52, -2.2, cz + 1.2), (-4.3, 1.2, cz + 3.4), P.WHITE, bevel=0.04)                # side window frame
-    b.box((-4.6, -1.95, cz + 1.45), (-4.32, 0.95, cz + 3.15), P.GLASS, bevel=0.0)              # side window
-    b.box((-4.6, -2.95, cz + 3.8 - SINK), (-0.9, 2.15, cz + 4.3), P.RED, bevel=0.12)          # roof
-    for y in (-1.4, 0.6):
-        stud(b, -2.75, y, cz + 4.3, P.RED, 0.55, 0.38)
+    # round 4: bigger, glazed on three sides (a light-blue band that reads at range), roof overhanging all round
+    X0, X1, Y0, Y1 = -4.9, -1.1, -3.1, 2.3
+    b.box((X0, Y0, cz - SINK), (X1, Y1, cz + 4.0), P.YELLOW, bevel=0.16)
+    b.box((X0 - 0.12, Y0 - 0.12, cz - 0.02), (X1 + 0.12, Y1 + 0.12, cz + 0.32), P.STONE, bevel=0.06)  # trim: seats the cab
+    b.box((X0 + 0.25, Y0 - 0.15, cz + 1.1), (X1 - 0.25, Y0 + 0.1, cz + 3.5), P.WHITE, bevel=0.04)   # windscreen frame
+    b.box((X0 + 0.5, Y0 - 0.23, cz + 1.35), (X1 - 0.5, Y0 + 0.08, cz + 3.25), P.GLASS, bevel=0.0)    # windscreen
+    b.box((X0 + 0.25, Y1 - 0.1, cz + 1.1), (X1 - 0.25, Y1 + 0.15, cz + 3.5), P.WHITE, bevel=0.04)   # rear frame
+    b.box((X0 + 0.5, Y1 - 0.08, cz + 1.35), (X1 - 0.5, Y1 + 0.23, cz + 3.25), P.GLASS, bevel=0.0)    # rear window
+    b.box((X0 - 0.15, Y0 + 0.3, cz + 1.1), (X0 + 0.1, Y1 - 0.3, cz + 3.5), P.WHITE, bevel=0.04)     # side frame
+    b.box((X0 - 0.23, Y0 + 0.55, cz + 1.35), (X0 + 0.08, Y1 - 0.55, cz + 3.25), P.GLASS, bevel=0.0)  # side window
+    b.box((X0 - 0.55, Y0 - 0.55, cz + 4.0 - SINK), (X1 + 0.35, Y1 + 0.55, cz + 4.6), P.RED, bevel=0.14)  # roof
+    for x, y in ((-3.9, -1.6), (-3.9, 0.8), (-2.1, 0.8)):
+        stud(b, x, y, cz + 4.6, P.RED, 0.55, 0.38, 16)
+    # amber lamp on the fourth stud position (ATT_Lamp_Cab sits on it: DockPieces adds the Neon bulb)
+    b.cyl(-2.1, -1.6, cz + 4.6 - SINK, cz + 4.85, 0.5, P.DBG, 16)
+    b.cyl(-2.1, -1.6, cz + 4.85 - SINK, cz + 5.2, 0.4, P.ORANGE, 16)                          # amber lens
     apex = (0, 0.4, JIB_Z + 8.5)
     for sx in (-1, 1):
-        b.beam((sx * 1.2, -0.2, cz), apex, 0.55, 0.55, P.WHITE)
-        b.beam((sx * 1.2, 1.4, cz), apex, 0.55, 0.55, P.WHITE)
+        cbeam(b, (sx * 1.2, -0.2, cz), apex, 0.6, 0.6, P.WHITE, 0.08)
+        cbeam(b, (sx * 1.2, 1.4, cz), apex, 0.6, 0.6, P.WHITE, 0.08)
     b.box((-0.55, -0.15, apex[2] - 0.2), (0.55, 0.95, apex[2] + 0.75), P.RED, bevel=0.08)    # beacon
     # two chunky yellow ties (AD r2: thin dark rods read as lines): apex to mid-jib and to the counter-jib end
     _, d1 = jib_half(-21.0)
     tz = apex[2] - 0.3
-    b.beam((0, 0.2, tz), (0, -21.0, JIB_Z + d1 + 0.3), 1.1, 0.8, P.YELLOW)
-    b.beam((0, 0.6, tz), (0, COUNTER - 0.6, JIB_Z + 1.2), 1.1, 0.8, P.YELLOW)
+    for p0, p1 in (((0, 0.2, tz), (0, -21.0, JIB_Z + d1 + 0.3)), ((0, 0.6, tz), (0, COUNTER - 0.6, JIB_Z + 1.2))):
+        cbeam(b, p0, p1, 1.1, 0.8, P.YELLOW, 0.12)
+        for q in (p0, p1):                                                                     # clevis pins, both ends
+            b.cyl_x(0, q[1], q[2], 0.38, 1.5, P.LBG, 12)
 
 
 def jib(b):
@@ -148,9 +208,9 @@ def jib(b):
     w0, d0 = jib_half(0.0)
     w1, d1 = jib_half(-L)
     y0, y1 = 0.6, -L + 0.4
-    b.beam((0, y0, JIB_Z + d0), (0, y1, JIB_Z + d1), 1.3, 0.8, P.YELLOW)                      # top chord
+    cbeam(b, (0, y0, JIB_Z + d0), (0, y1, JIB_Z + d1), 1.5, 1.0, P.YELLOW, 0.14)              # top chord
     for sx in (-1, 1):
-        b.beam((sx * w0, y0, JIB_Z - d0), (sx * w1, y1, JIB_Z - d1), 0.6, 0.6, P.WHITE)      # lower chords
+        cbeam(b, (sx * w0, y0, JIB_Z - d0), (sx * w1, y1, JIB_Z - d1), 0.75, 0.75, P.WHITE, 0.1)      # lower chords
     n = 12
     for i in range(n):
         ya, ye = -0.4 - i * (L - 1.4) / n, -0.4 - (i + 1) * (L - 1.4) / n
@@ -160,17 +220,20 @@ def jib(b):
         for sx in (-1, 1):
             pa = (sx * wa, ya, JIB_Z - da) if up else (0, ya, JIB_Z + da)
             pe = (0, ye, JIB_Z + de) if up else (sx * we, ye, JIB_Z - de)
-            b.beam(pa, pe, 0.4, 0.4, P.RED)
-        b.beam((-wa, ya, JIB_Z - da), (wa, ya, JIB_Z - da), 0.36, 0.36, P.WHITE)               # cross ties
-    for i in range(12):                                                                        # studs on the top chord
-        y = -1.6 - i * 3.0
+            b.beam(pa, pe, 0.52, 0.52, P.RED)
+        b.beam((-wa, ya, JIB_Z - da), (wa, ya, JIB_Z - da), 0.44, 0.44, P.WHITE)               # cross ties
+    for i in range(19):                                                                        # even stud row, top chord
+        y = -1.6 - i * 2.0
+        if abs(y + 21.0) < 0.9:                                                                # the tie's pin lands here
+            continue
         _, d = jib_half(y)
-        stud(b, 0, y, JIB_Z + d + 0.4 - 0.06, P.YELLOW, 0.5, 0.36)
+        stud(b, 0, y, JIB_Z + d + 0.5 - 0.06, P.YELLOW, 0.5, 0.36, 16)
     # tip cap
     b.box((-w1 - 0.35, -L - 0.5, JIB_Z - d1 - 0.45), (w1 + 0.35, -L + 0.7, JIB_Z + d1 + 0.5), P.RED, bevel=0.15)
-    stud(b, 0, -L + 0.1, JIB_Z + d1 + 0.5, P.RED, 0.45, 0.32)
+    b.cyl(0, -L + 0.1, JIB_Z + d1 + 0.5 - SINK, JIB_Z + d1 + 0.75, 0.5, P.DBG, 12)          # lamp housing (ATT_Lamp_JibTip)
+    b.cyl(0, -L + 0.1, JIB_Z + d1 + 0.75 - SINK, JIB_Z + d1 + 1.1, 0.4, P.ORANGE, 12)      # amber lens
     # counter-jib: walkway truss toward +Y, ballast bricks stacked at its end
-    zt, zb = JIB_Z + 0.8, JIB_Z - 0.8
+    zt, zb = JIB_Z + 1.0, JIB_Z - 0.8
     b.box((-0.65, 0.0, zt - 0.4), (0.65, COUNTER, zt + 0.4), P.YELLOW, bevel=0.08)
     for sx in (-1, 1):
         b.box((sx * 1.25 - 0.3, -0.2, zb - 0.3), (sx * 1.25 + 0.3, COUNTER + 0.2, zb + 0.3), P.WHITE, bevel=0.04)
@@ -182,6 +245,17 @@ def jib(b):
     for k, c in enumerate((P.STONE, P.DBG, P.STONE)):
         zk = zb - 1.6 + k * 1.3
         b.box((-2.0, COUNTER - 3.0, zk - (SINK if k else 0)), (2.0, COUNTER + 0.4, zk + 1.3), c, bevel=0.14)
+    zh = zb - 1.6 + 1.3                                  # hazard band round the middle course (yellow/black, a hair proud)
+    for i in range(6):
+        c = P.YELLOW if i % 2 == 0 else P.BLACK
+        xa = -2.0 + i * 4.0 / 6
+        b.box((xa, COUNTER + 0.4 - SINK, zh + 0.3), (xa + 4.0 / 6, COUNTER + 0.47, zh + 1.0), c, bevel=0.0)
+    for sx in (-1, 1):
+        for i in range(5):
+            c = P.YELLOW if i % 2 == 0 else P.BLACK
+            ya = COUNTER - 3.0 + i * 3.4 / 5
+            xo, xi = sx * 2.07, sx * (2.0 - SINK)
+            b.box((min(xo, xi), ya, zh + 0.3), (max(xo, xi), ya + 3.4 / 5, zh + 1.0), c, bevel=0.0)
     for sx in (-1, 1):
         for y in (COUNTER - 2.1, COUNTER - 0.5):
             stud(b, sx * 1.0, y, zb - 1.6 + 3 * 1.3, P.STONE, 0.6, 0.42)
@@ -196,47 +270,56 @@ def hook(b):
     for sx in (-1, 1):
         for dy in (-0.55, 0.55):
             b.cyl_x(sx * w, y + dy, zc - 0.25, 0.32, 0.5, P.DBG, 10)
-    # two stiff falls to the hook block
-    top = HOOK_Z + 1.6
+    # trolley sheave under the trolley, two thick black stepped falls down to the hook block (AD r3: rope too thin)
+    b.cyl_x(0, y, zc - 1.6, 0.75, 2.2, P.DBG, 16)
+    top = HOOK_Z + 1.6 + 1.5                                                                   # into the sheave top
     for sx in (-1, 1):
-        b.box((sx * 0.6 - 0.23, y - 0.23, top - SINK), (sx * 0.6 + 0.23, y + 0.23, zc - 1.3 + SINK), P.DBG,
+        b.box((sx * 0.6 - 0.32, y - 0.32, top - SINK), (sx * 0.6 + 0.32, y + 0.32, zc - 1.3 + SINK), P.BLACK,
               bevel=0.0)
+        zz = top + 0.45
+        while zz < zc - 1.7:                             # lay bands: a stepped 2-strand look
+            b.box((sx * 0.6 - 0.38, y - 0.38, zz), (sx * 0.6 + 0.38, y + 0.38, zz + 0.22), P.BLACK, bevel=0.0)
+            zz += 0.7
     # chunky yellow hook block with a red band and sheave hubs
     HB = 1.6                                                                                   # block half height
     b.box((-2.2, y - 1.5, HOOK_Z - HB), (2.2, y + 1.5, HOOK_Z + HB), P.YELLOW, bevel=0.3)
-    b.box((-2.27, y - 1.57, HOOK_Z - 0.4), (2.27, y + 1.57, HOOK_Z + 0.4), P.RED, bevel=0.0)
-    b.cyl_x(0, y, HOOK_Z + 0.85, 0.85, 4.75, P.DBG, 16)
+    b.box((-2.27, y - 1.57, HOOK_Z - 0.4), (2.27, y + 1.57, HOOK_Z + 0.4), P.RED, bevel=0.06)
+    for s in (-1, 1):                                                                          # sheave + axle boss per face
+        cyl_y(b, 0, y + s * 1.6, HOOK_Z + 0.2, 0.9, 0.2, P.DBG, 16)
+        cyl_y(b, 0, y + s * 1.75, HOOK_Z + 0.2, 0.34, 0.2, P.LBG, 12)
+    sz = HOOK_Z + HB + 0.75                                                                    # sheave between two cheeks
     for sx in (-1, 1):
-        stud(b, sx * 1.0, y, HOOK_Z + HB, P.YELLOW, 0.5, 0.36)
+        b.box((sx * 1.0, y - 0.95, HOOK_Z + HB - SINK), (sx * 1.35, y + 0.95, sz + 0.75), P.YELLOW, bevel=0.1)
+    b.cyl_x(0, y, sz, 0.8, 1.9, P.DBG, 16)
+    b.cyl_x(0, y, sz, 0.3, 2.9, P.STONE, 10)                                                  # axle through the cheeks
     # the hook: a shank and a J curve in the x-z plane
-    R = 1.15
-    hc = HOOK_Z - HB - 1.9                                                                     # bowl centre
-    b.box((-0.36, y - 0.36, hc + 0.5), (0.36, y + 0.36, HOOK_Z - HB + SINK), P.DBG, bevel=0.06)
-    pts = [(R * math.cos(a), hc + R * math.sin(a)) for a in
-           [math.radians(d_) for d_ in (100, 150, 200, 250, 290, 330, 10, 40)]]
-    pts[0] = (0.0, hc + 0.75)
-    for (xa, za), (xe, ze) in zip(pts, pts[1:]):
-        b.beam((xa, y, za), (xe, y, ze), 0.72, 0.72, P.DBG)
-    b.box((pts[-1][0] - 0.32, y - 0.32, pts[-1][1] - 0.1), (pts[-1][0] + 0.32, y + 0.32, pts[-1][1] + 0.6),
-          P.DBG, bevel=0.08)                                                                   # tip
+    R, hr = 1.55, 0.38                                                                         # bowl clears the ring tube
+    hc = HOOK_Z - HB - 2.3                                                                     # bowl centre
+    b.cyl(0, y, HOOK_Z - HB - 0.45, HOOK_Z - HB + SINK, 0.66, P.LBG, 6)                         # hex swivel nut
+    b.cyl(0, y, hc + R - 0.1, HOOK_Z - HB - 0.45 + SINK, hr, P.DBG, 12)                        # shank
+    hook_arc(b, 0, y, hc, R, hr, math.radians(90), math.radians(390), P.DBG, seg=18, mnr=10)  # round swept bowl
+    tx, tz = R * math.cos(math.radians(30)), hc + R * math.sin(math.radians(30))
+    b.cyl(tx, y, tz - 0.1, tz + 0.3, hr + 0.04, P.DBG, 12)                                    # round tip
+    cbeam(b, (0.3, y, hc + R - 0.05), (tx - 0.15, y, tz + 0.25), 0.22, 0.3, P.LBG, 0.06)      # safety latch
     # life ring hung on the hook bowl: one smooth red torus, four white bands (a hair proud of it)
     RR, rr = 3.5, 1.0                                                                          # AD r2: ~2x
-    rc = hc - R - 0.05 + rr - RR
-    torus_arc(b, 0, y, rc, RR, rr, 0, 2 * math.pi, P.RED, seg=36, mnr=12)
+    rc = hc - R + hr + rr - RR + 0.04                                                          # tube seated in the throat
+    torus_arc(b, 0, y, rc, RR, rr, 0, 2 * math.pi, P.RED, seg=32, mnr=14)
     for k in range(4):
         a = math.radians(45 + 90 * k)
-        torus_arc(b, 0, y, rc, RR, rr + 0.07, a - 0.26, a + 0.26, P.WHITE, seg=4, mnr=12)
+        torus_arc(b, 0, y, rc, RR, rr + 0.07, a - 0.26, a + 0.26, P.WHITE, seg=4, mnr=14)
 
 
 # ------------------------------------------------------------------ build
 def build():
     import bpy  # noqa: F401  (Blender only)
     patch_lod_names()
-    mat = lego.material("MI_JettyCrane_Brick", ALB)
+    mat = lego.material("MI_JettyCrane_Brick", ALB, rough=0.32)
     meshes = []
 
     def out(name, b):
         obj = b.to_object(name, mat)
+        obj.data.set_sharp_from_angle(angle=math.radians(40))  # chamfers stay crisp facets (lego.py smooths at 50)
         role = "col" if name.endswith("_COL") else "visual"
         meshes.append({"object": obj, "set": SET, "role": role, "lod": "LOD0"} if role == "visual"
                       else {"object": obj, "role": "col"})
@@ -252,7 +335,11 @@ def build():
         c.box(lo, hi, P.DBG, bevel=0)
         out("Col%02d_COL" % (k + 1), c)
 
-    atts = [lego.attach("ATT_Hook", (0, HOOK_Y, HOOK_Z))]
+    _, d1 = jib_half(-JIB_L)
+    cz = TOWER_Z1 + 1.3
+    atts = [lego.attach("ATT_Hook", (0, HOOK_Y, HOOK_Z)),
+            lego.attach("ATT_Lamp_JibTip", (0, -JIB_L + 0.1, JIB_Z + d1 + 1.35)),
+            lego.attach("ATT_Lamp_Cab", (-2.1, -1.6, cz + 5.45))]
     pts = []
     for e in meshes:
         if e["role"] == "visual":
