@@ -21,12 +21,14 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
 local PetAccessory = require(Shared:WaitForChild("PetAccessory"))
+local PetMotion = require(Shared:WaitForChild("PetMotion"))
 local PetRules = require(Shared:WaitForChild("PetRules"))
 local PetSeat = require(Shared:WaitForChild("PetSeat"))
 local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local Wildlife = require(Shared:WaitForChild("Config"):WaitForChild("Wildlife"))
 local WildlifeRig = require(Shared:WaitForChild("WildlifeRig"))
+local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
 
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
@@ -62,7 +64,11 @@ local activeModel: Model? = nil
 local activeVariant: string? = nil
 local petCF: CFrame? = nil
 local petYaw = 0
-local hopT = 0
+local motion: PetMotion.State? = nil
+local petScale = 1
+local velocity = Vector3.zero
+local followYaw = 0
+local stuck = 0
 local clock = 0
 local adoptingId: number? = nil
 local nextVoice = 0
@@ -90,6 +96,8 @@ local VOICE: { [string]: string } = {
 }
 
 local STATION_RANGE = 70 -- studs from your island's station lot: "at the station"
+local PERSONAL = 2.4 -- studs: the pet never walks into the player
+local STUCK_SECONDS = 2 -- behind a wall while the player walks off: pop back to the slot
 
 -- Spin-wheel variants (docs/24 D). Every variant is Rare+, so the model also gets a small rarity
 -- aura; Galaxy adds its own sparkle ring. Rainbow repaints from the heartbeat.
@@ -288,22 +296,18 @@ local function startTrick(name: string?, seconds: number)
 	trickUntil = clock + seconds
 end
 
-local function trickPose(): (number, number, number)
+-- (cheer, greet): 0..1 through the running trick, for PetMotion
+local function trickProgress(): (number?, number?)
 	local name = trickName
 	if not name then
-		return 0, 0, 0
+		return nil, nil
 	end
 	if clock >= trickUntil then
 		trickName = nil
-		return 0, 0, 0
+		return nil, nil
 	end
 	local p = math.clamp((clock - trickStart) / math.max(0.01, trickUntil - trickStart), 0, 1)
-	if name == "Celebrate" then
-		return math.pi * 4 * p, math.sin(p * math.pi) * 1.3, math.sin(clock * 20) * 0.08
-	elseif name == "Greet" then
-		return 0, math.abs(math.sin(p * math.pi)) * 0.5, math.sin(clock * 16) * 0.08
-	end
-	return 0, 0, 0
+	return if name == "Celebrate" then p else nil, if name == "Greet" then p else nil
 end
 
 local function equip(id: number)
@@ -358,12 +362,15 @@ local function applyView(next: View)
 		clearZz()
 		petCF = nil
 		trickName = nil
+		motion = nil
 		if during then
 			local model = WildlifeRig.build(during.species, during.rare)
 			activeModel = model
+			motion = PetMotion.new(during.species)
+			petScale = PetSeat.scaleFor(during.species)
 			if model then
 				applyVariant(model, variant)
-				WildlifeRig.scale(model, PetSeat.scaleFor(during.species))
+				WildlifeRig.scale(model, petScale)
 				if during.accessory then
 					PetAccessory.wear(model)
 				end
@@ -420,7 +427,7 @@ local function shortest(a: number, b: number): number
 	return math.atan2(math.sin(b - a), math.cos(b - a))
 end
 
-local function groundY(x: number, z: number): number
+local function castParams(): RaycastParams
 	local filter = {}
 	if player.Character then
 		table.insert(filter, player.Character)
@@ -431,11 +438,46 @@ local function groundY(x: number, z: number): number
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	params.FilterDescendantsInstances = filter
-	local hit = Workspace:Raycast(Vector3.new(x, 80, z), Vector3.new(0, -160, 0), params)
-	return if hit then hit.Position.Y else 0
+	params.IgnoreWater = true
+	return params
 end
 
-local function stepBoat()
+-- Moves the pet to cf with this frame's PetMotion pose (gait, look, tricks) on its parts.
+local function place(
+	model: Model,
+	cf: CFrame,
+	dt: number,
+	mode: PetMotion.Mode,
+	speed: number,
+	lookYaw: number?
+)
+	local m = motion
+	if not m then
+		WildlifeRig.setCFrame(model, cf)
+		return
+	end
+	local cheer, greet = trickProgress()
+	local pose = PetMotion.step(m, {
+		dt = dt,
+		speed = speed,
+		mode = mode,
+		lookYaw = lookYaw,
+		cheer = cheer,
+		greet = greet,
+	})
+	local head = model:FindFirstChild("Head")
+	local headAt = WildlifeRig.offsetOf(model, "Head")
+	local neck = if head
+			and head:IsA("BasePart")
+			and headAt
+		then headAt.Position + Vector3.new(0, -0.35 * head.Size.Y, 0.3 * head.Size.Z)
+		else Vector3.zero
+	WildlifeRig.setCFrame(model, cf, function(part: BasePart, offset: CFrame): CFrame
+		return PetMotion.partDelta(pose, part.Name, offset, part.Size, neck, petScale)
+	end)
+end
+
+local function stepBoat(dt: number)
 	local boat = activeModel
 	if not (boat and active) then
 		return
@@ -467,20 +509,18 @@ local function stepBoat()
 		return
 	end
 	local bob = math.sin(clock * 1.4) * Wildlife.Boat.bob
-	local spin, lift, roll = trickPose()
 	local cf = anchor.WorldCFrame
 		* CFrame.new(offset)
 		* CFrame.Angles(0, yaw, 0)
-		* CFrame.new(0, bob + lift, 0)
-		* CFrame.Angles(0, spin, roll)
+		* CFrame.new(0, bob, 0)
 	petCF = cf
 	petYaw = yawOf(cf)
-	WildlifeRig.setCFrame(boat, cf)
+	place(boat, cf, dt, "ride", 0, math.sin(clock * 0.35) * 0.6) -- watches the sea go by
 end
 
 local function stepLand(dt: number)
-	local boat = activeModel
-	if not (boat and active) then
+	local model = activeModel
+	if not (model and active) then
 		return
 	end
 	local character = player.Character
@@ -492,46 +532,84 @@ local function stepLand(dt: number)
 	if vehicleSeat(humanoid) then
 		return -- stepBoat handles it
 	end
-
-	if napping and petCF then
-		local cf = petCF :: CFrame
-		local shown = CFrame.new(cf.Position + Vector3.new(0, math.sin(clock * 1.3) * 0.06, 0))
-			* CFrame.Angles(0, petYaw, math.sin(clock * 1.1) * 0.05)
-		WildlifeRig.setCFrame(boat, shown)
-		return
-	end
-
-	local at = root.CFrame * CFrame.new(-Wildlife.Follow.side, 0, Wildlife.Follow.behind)
-	local target = Vector3.new(at.X, groundY(at.X, at.Z), at.Z)
-	if humanoid:GetState() == Enum.HumanoidStateType.Swimming or root.Position.Y < 1 then
-		target = Vector3.new(target.X, math.max(target.Y, 0), target.Z)
-	end
-
 	local current = petCF
-	if not current or (target - current.Position).Magnitude > Wildlife.Follow.snap then
-		petYaw = yawOf(root.CFrame)
-		local snapped = CFrame.new(target) * CFrame.Angles(0, petYaw, 0)
-		petCF = snapped
-		hopT = 0
-		local spin, lift, roll = trickPose()
-		WildlifeRig.setCFrame(boat, snapped * CFrame.new(0, lift, 0) * CFrame.Angles(0, spin, roll))
+	if napping and current then
+		place(model, current, dt, "nap", 0, nil)
 		return
 	end
-	local delta = target - current.Position
-	local alpha = 1 - math.exp(-dt * Wildlife.Follow.speed)
-	if delta.Magnitude > 0.02 then
-		petYaw += shortest(petYaw, math.atan2(-delta.X, -delta.Z)) * alpha
+
+	-- the slot behind the player turns with a lag, so a turn on the spot doesn't send the pet racing
+	local rootPos = root.Position
+	followYaw += shortest(followYaw, yawOf(root.CFrame)) * (1 - math.exp(-dt * 3))
+	local slot = rootPos
+		+ CFrame.Angles(0, followYaw, 0)
+			:VectorToWorldSpace(Vector3.new(-Wildlife.Follow.side, 0, Wildlife.Follow.behind))
+	local params = castParams()
+	local pos: Vector3
+	if
+		not current
+		or (slot - current.Position).Magnitude > Wildlife.Follow.snap
+		or stuck > STUCK_SECONDS
+	then
+		petYaw = yawOf(root.CFrame)
+		followYaw = petYaw
+		velocity = Vector3.zero
+		stuck = 0
+		pos = Vector3.new(slot.X, rootPos.Y - 3, slot.Z)
+	else
+		pos = current.Position
+		local flat = Vector3.new(slot.X - pos.X, 0, slot.Z - pos.Z)
+		local dist = flat.Magnitude
+		local top = humanoid.WalkSpeed * 1.5 + 4
+		-- a small dead zone: settled at the slot it stands still instead of creeping and jittering
+		local want = if dist > 0.8
+			then flat.Unit * math.min((dist - 0.8) * 2.5, top)
+			else Vector3.zero
+		velocity = velocity:Lerp(want, 1 - math.exp(-dt * 8))
+		local move = velocity * dt
+		if move.Magnitude > 1e-3 then
+			local wall = Workspace:Raycast(
+				pos + Vector3.new(0, 0.8 * petScale, 0),
+				move.Unit * (move.Magnitude + 0.7 * petScale),
+				params
+			)
+			if wall and wall.Normal.Y < 0.6 then -- slide along walls, never through them
+				local n = Vector3.new(wall.Normal.X, 0, wall.Normal.Z).Unit
+				velocity -= n * math.min(0, velocity:Dot(n))
+				move = velocity * dt
+			end
+		end
+		pos += move
+		local away = Vector3.new(pos.X - rootPos.X, 0, pos.Z - rootPos.Z)
+		if away.Magnitude < PERSONAL and away.Magnitude > 1e-3 then
+			pos += away.Unit * (PERSONAL - away.Magnitude) * math.min(1, dt * 10)
+		end
+		stuck = if dist > 10 and velocity.Magnitude < 1 then stuck + dt else 0
 	end
-	local pos = current.Position:Lerp(target, alpha)
-	hopT += dt
-	local hop = if delta.Magnitude > 0.02
-		then math.abs(math.sin(hopT * 7)) * Wildlife.Follow.hop
-		else 0
-	local walked = CFrame.new(pos + Vector3.new(0, hop, 0))
-		* CFrame.Angles(0, petYaw, math.sin(hopT * 9) * 0.06)
-	petCF = walked
-	local spin, lift, roll = trickPose()
-	WildlifeRig.setCFrame(boat, walked * CFrame.new(0, lift, 0) * CFrame.Angles(0, spin, roll))
+
+	-- ground under the pet itself, cast from just above the player so roofs never catch it
+	local sea = WorldConfig.SeaLevel
+	local from = math.max(rootPos.Y, pos.Y) + 3
+	local hit = Workspace:Raycast(Vector3.new(pos.X, from, pos.Z), Vector3.new(0, -60, 0), params)
+	local swimming = not hit or hit.Position.Y < sea - 0.3
+	local floorY = if hit and not swimming
+		then hit.Position.Y
+		else sea - PetMotion.sink(active.species) * WildlifeRig.height(model)
+	local y = if current and math.abs(floorY - pos.Y) < 6
+		then pos.Y + (floorY - pos.Y) * (1 - math.exp(-dt * 14))
+		else floorY
+	pos = Vector3.new(pos.X, y, pos.Z)
+
+	local speed = velocity.Magnitude
+	local toPlayer = math.atan2(-(rootPos.X - pos.X), -(rootPos.Z - pos.Z))
+	if speed > 0.6 then
+		petYaw += shortest(petYaw, math.atan2(-velocity.X, -velocity.Z)) * (1 - math.exp(-dt * 10))
+	else
+		petYaw += shortest(petYaw, toPlayer) * (1 - math.exp(-dt * 1.5))
+	end
+	local cf = CFrame.new(pos) * CFrame.Angles(0, petYaw, 0)
+	petCF = cf
+	place(model, cf, dt, if swimming then "swim" else "walk", speed, shortest(petYaw, toPlayer))
 end
 
 local function rootOf(): BasePart?
@@ -684,7 +762,7 @@ function PetController.Start()
 		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 		if humanoid and vehicleSeat(humanoid) then
 			riding = true
-			stepBoat()
+			stepBoat(dt)
 		else
 			if riding then
 				riding = false
