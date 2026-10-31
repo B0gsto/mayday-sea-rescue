@@ -13,7 +13,7 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Area | Item | Source | Score | Status |
 |---|---|---|---|---|
 | UI | every sprite in art/source/ui + UiImages | SVG / PNG | - | wave 1 |
-| World | baseline in-game tour (buildings Lv1-3, vehicles, props, code-built pieces) | PERF-TOUR2 (Studio) | - | running |
+| World | baseline in-game tour | PERF-TOUR2 | 5.0-8.6 (61 items) | done: tour/SCORES.md; Blender lane order below |
 | Feel | game feel + progression review | code read | moments 3-8 | done: build/status/2026-10-31/perfect/feel/REVIEW.md (28 items) |
 | Feel | REVIEW 5,6,7,9 build feel | PERF-F1o (Opus) | 6-6.5 | building |
 | Feel | REVIEW 1,13,22,24 buy a boat, ring, passengers, bob | PERF-F2o (Opus) | 3-6 | building |
@@ -37,3 +37,22 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Code->mesh | DockPieces base kit (plinths, roofs, pads, commons), Heli, Sub, PrizeWheel + PushButton, Bridges, IslandPlates, QuestPontoons, Leaderboard, SkerryLight, ComingSoon board, BayDecor, MermaidLagoon kit, Conveyors | Luau Parts | - | queued |
 | VFX | 30 VFXKit presets | flipbooks | suite 8.6 | queued |
 | Anim | workers/NPCs (stock R15), Bosun, pets, build sequence, wheel | code / stock | unscored | queued |
+
+## Blender lane order (from the baseline tour, build/status/2026-10-31/perfect/tour/SCORES.md: 61 items, all < 9.1)
+
+One Blender GUI at a time; each step = one Opus agent, rounds to 9.1+, upload, wire, check.sh, commit, close Blender.
+1. M_Prop_JettyCrane r7+ (8.7) - running
+2. Build-site kit: fence, scaffold, site crane, brick stacks (5.0) - new
+3. Rescue board / leaderboard (5.5) + Coming Soon board (6.5) + island name sign (7.0) + Harbour Master beacon (6.5) - new prop kit
+4. Sea plates: Freight Wharf (5.8) + Ramp Wharf (6.4) - new kits
+5. Idle-crew commons / Hangout (6.2) + decorations (flowers, picnic, lamps, flag, statue, fountain) (6.4) - new kit
+6. Rescue helicopter (6.2) - new mesh (code greybox today)
+7. HQ L1-L5 (6.4): distinct silhouette per level, door, plaque, inset windows, roof studs
+8. Bosun (5.8) + grey seal (5.5) + otter/seal pup/gull/turtle/puffin (7.2-8.4)
+9. Hub centre (5.5) + Mermaid Lagoon dressing (5.8) + island plate edge / bridges / conveyors / Skerry light (6.5-7.6)
+10. Fish Market, Boat Yard, Rescue Boathouse, Boathouse, Sub Pen, Workshop, Depot, Bunkhouse, Clinic, Air Station, Lookout, Trophy Hall (6.6-8.2)
+11. Jetty/harbour L1-3 deck + bollards, plaza/streets/lot pads/plinths, bare start plot (7.0-7.5)
+12. Submarine (7.4), Lifeboat (8.3, code-built), boat board, quest pontoons, bay decor (7.0-7.4)
+13. Vehicles: RIB 8.6, Tidewalker 8.4, JetSki 8.3, StormRunner 8.2, GildedGull 7.8, RiptideX 7.6, supply barge 7.6
+14. Penwyn + Gannet Rock dressing (7.4-7.6)
+HUD (7.4-8.1) goes to the UI stream, not Blender.
