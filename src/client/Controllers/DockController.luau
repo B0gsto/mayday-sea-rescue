@@ -232,7 +232,7 @@ local function outlineSpot(world: CFrame, size: Vector2)
 		p.Size = partSize
 		p.CFrame = world * CFrame.new(offset)
 		p.Color = OUTLINE
-		p.Material = Enum.Material.Neon
+		p.Material = Enum.Material.SmoothPlastic -- steady outline, no Neon bloom on phones (feel review 27)
 		p.Transparency = 0.1
 		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow =
 			true, false, false, false, false

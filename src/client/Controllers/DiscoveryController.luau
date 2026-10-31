@@ -2,7 +2,9 @@
 -- DiscoveryController: the client side of the exploration album and map fog (docs/21 §3). It mirrors
 -- DiscoveryService's state, plays the stamp slam / sticker pop (UI/Sticker) when the server grants one,
 -- floats the island's stamp over each unstamped stamp post, and hides the collectibles this player has
--- found (Workspace.Discovery props are shared; hiding is local).
+-- found (Workspace.Discovery props are shared; hiding is local). Your first landfall on an island (its REACHED bit
+-- turning on, feel review 15) is a world moment before any stamp: a sting, a gull flock lifting off its landmark
+-- and a short camera glance at it that widens the view (a cut and hold under Reduce motion).
 -- API for the map fog and the Album app:
 --   DiscoveryController.IsRevealed(cellOrIsland) -> boolean   a fog cell index (DiscoveryRules.cellOf) is
 --                                                            cleared, or an island id has been sighted
@@ -10,14 +12,18 @@
 --   DiscoveryController.CellOf(pos) -> number?                DiscoveryRules.cellOf (grid: DiscoveryConfig.Fog)
 --   DiscoveryController.State() -> DiscoveryRules.State       island id -> bit mask (DiscoveryRules.has)
 --   DiscoveryController.Changed                               RBXScriptSignal, fires after every update
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local Net = require(Shared:WaitForChild("Net"))
 local Rules = require(Shared:WaitForChild("DiscoveryRules"))
 local Sticker = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Sticker"))
+local WildlifeController = require(script.Parent:WaitForChild("WildlifeController"))
 
 local DiscoveryController = {}
 
@@ -87,11 +93,58 @@ local function paint()
 	changed:Fire()
 end
 
+local loaded = false
+
+local function landfall(id: string)
+	local page = Rules.ById[id]
+	local at = page and page.island.landmark
+	local cam = Workspace.CurrentCamera
+	if typeof(at) ~= "Vector3" or not cam then
+		return
+	end
+	AudioController.play("FX_Reveal", nil, 0.55, 1.1)
+	AudioController.play("Horn_Whistle", nil, 0.35, 1.15)
+	AudioController.play("Gull_Flock", at, 1)
+	task.delay(0.35, AudioController.play, "Gull_Call_1", at, 1)
+	WildlifeController.Flock(at)
+	local player = Players.LocalPlayer
+	if
+		player:GetAttribute("MenuOpen") == true
+		or player:GetAttribute("CinematicPlaying") == true
+	then
+		return
+	end
+	-- from just above where you stand, turned to the landmark (and the birds over it)
+	local back, fov = cam.CFrame, cam.FieldOfView
+	local view = CFrame.lookAt(back.Position + Vector3.new(0, 4, 0), at + Vector3.new(0, 12, 0))
+	if CameraController.Comfort.reducedMotion() then
+		CameraController.PlayCinematic(
+			{ { from = view, duration = 1.8, fov = fov, handheld = 0 } },
+			{ skippable = true }
+		)
+		return
+	end
+	CameraController.PlayCinematic({
+		{ from = back, to = view, duration = 0.6, fov = fov, toFov = fov + 14, handheld = 0 },
+		{ from = view, duration = 1.5, fov = fov + 14, handheld = 0.1 },
+		{ from = view, to = back, duration = 0.6, fov = fov + 14, toFov = fov, handheld = 0 },
+	}, { skippable = true })
+end
+
 local function apply(payload: any)
 	if type(payload) ~= "table" then
 		return
 	end
+	local before = state
 	state = Rules.decode(payload.isles)
+	if loaded then
+		for id in Rules.ById do
+			if Rules.has(state, id, Rules.REACHED) and not Rules.has(before, id, Rules.REACHED) then
+				task.spawn(landfall, id)
+			end
+		end
+	end
+	loaded = true
 	fog = Rules.decodeFog(payload.fog)
 	paint()
 end
