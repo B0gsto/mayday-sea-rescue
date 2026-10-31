@@ -73,9 +73,6 @@ AudioConfig.Clips = {
 
 	-- Lifeboat class (Lifeboat, Tidewalker, Submarine at the surface): a diesel idle under the outboard's high layer.
 	Eng_Lifeboat_Idle = rl(9112780932, 0.6, "Fishing Boat 1 (SFX)", "diesel; also the RIB's fallback"),
-	-- Rescue helicopter: two takes of a Huey overhead as the rotor layers (stand-ins; they swell a little on the loop).
-	Eng_Heli_Low = rl(9125390086, 0.55, "Bell Huey Helicopter Short Maneuver Overhead (SFX)", "take A"),
-	Eng_Heli_High = rl(9125390124, 0.6, "Bell Huey Helicopter Short Maneuver Overhead (SFX)", "take B"),
 
 	-- Hull and water.
 	-- Helicopter: one hover loop; HeliController sets its pitch and volume from the rotor spool (spin-up / down).

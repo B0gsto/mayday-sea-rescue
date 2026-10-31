@@ -312,7 +312,6 @@ local ENGINE_CLIPS: { [string]: { low: string, high: string, busy: number? } } =
 	RIB = { low = "Eng_RIB_Idle", high = "Eng_RIB_Plane" },
 	Lifeboat = { low = "Eng_Lifeboat_Idle", high = "Eng_RIB_Plane" },
 	Submarine = { low = "Eng_Lifeboat_Idle", high = "Eng_RIB_Plane" },
-	RescueHelicopter = { low = "Eng_Heli_Low", high = "Eng_Heli_High", busy = 0.6 },
 }
 
 local function engineClips(id: string): { low: string, high: string, busy: number? }?
