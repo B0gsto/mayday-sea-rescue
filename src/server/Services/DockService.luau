@@ -1119,7 +1119,7 @@ local function setMaster(plot: Plot, on: boolean)
 			Vector3.new(2.2, 2.2, 2.2),
 			at * CFrame.new(0, 35.1, 0),
 			GOLD,
-			Enum.Material.Neon
+			Enum.Material.SmoothPlastic -- steady, no phone bloom (feel review 27): the PointLight and beam carry the glow
 		)
 		lens.Shape = Enum.PartType.Ball
 		local glow = Instance.new("PointLight")

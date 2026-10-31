@@ -41,6 +41,9 @@ local SurvivorController = require(script.Parent:WaitForChild("SurvivorControlle
 local WorkerBadge = require(UI:WaitForChild("WorkerBadge"))
 
 local WorkerController = {}
+-- (cfg, rig): a fresh recruit of yours walked in from the jetty and starts work (FeedbackController's arrival beat)
+local arrivedEvent = Instance.new("BindableEvent")
+WorkerController.Arrived = arrivedEvent.Event
 
 local player = Players.LocalPlayer
 
@@ -97,6 +100,7 @@ type Rec = {
 	mood: BillboardGui?, -- the pooled chat bubble / Zzz over the head
 	lonely: boolean?, -- a chatter with nobody near: on the phone instead
 	gesture: AnimationTrack?, -- a chatter's one-shot point
+	recruit: boolean?, -- walking in from the jetty: Arrived fires when the walk ends at a work spot
 }
 
 -- Leisure poses: joint -> C0 turn (rx, ry, rz degrees); "Sit" joins any act with a seat
@@ -995,6 +999,7 @@ local function walkTo(r: Rec, to: CFrame)
 	if not (rig and root and r.lively) then
 		r.walking = nil
 		r.climbing = nil
+		r.recruit = nil
 		r.feet = to
 		place(r)
 		dress(r)
@@ -1083,6 +1088,12 @@ local function walkTo(r: Rec, to: CFrame)
 		pose(r)
 		if ladder and up then
 			fade(rig, 0)
+		end
+		if r.recruit then
+			r.recruit = nil
+			if work(r) and r.cfg.Parent and r.cfg.Parent.Name == tostring(player.UserId) then
+				arrivedEvent:Fire(r.cfg, rig)
+			end
 		end
 	end)
 end
@@ -1349,6 +1360,7 @@ local function cullPass()
 				made += 1
 				local spot = cfg:GetAttribute("Spot")
 				if typeof(spot) == "CFrame" and spot ~= r.feet then
+					r.recruit = typeof(cfg:GetAttribute("From")) == "CFrame"
 					walkTo(r, spot) -- a new recruit: from the jetty to their spot
 				end
 			end

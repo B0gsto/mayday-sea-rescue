@@ -87,7 +87,7 @@ function SinkingScene.Spawn(scene: any)
 			Vector3.new(2.2, 2.2, 2.2),
 			pivot * CFrame.new(size.X / 2 + 0.2, 0.4, 6),
 			Color3.fromRGB(225, 245, 255),
-			Enum.Material.Neon
+			Enum.Material.SmoothPlastic
 		)
 		leak.Shape = Enum.PartType.Ball
 		leak.Transparency = 0.25

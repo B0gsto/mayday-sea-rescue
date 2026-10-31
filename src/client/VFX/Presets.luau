@@ -1088,6 +1088,35 @@ Presets.ALL.crew_arrive = preset({
 	sounds = { { clip = "FX_Pop", volume = 1, pitch = 1.05 } :: FxSound },
 })
 
+-- feedback: that recruit reaches their job spot and clocks on (FeedbackController, feel review 11): a low teal ring
+-- at their feet, a few plates hop, then their first pay coins pop over them; a snap, then coins
+Presets.ALL.crew_start = preset({
+	job = "feedback",
+	layers = {
+		with(
+			groundRing("shockwave_ring", SEA, curve(2, 7, outCubic), 0.45),
+			{ transparency = { 0.15, 0.35, 1 } }
+		),
+		with(plates({ SEA, WHITE, YELLOW }, 8), { size = { 1.6 }, speed = { 8, 11 } }),
+		{
+			tex = "coin",
+			count = 4,
+			colors = { WHITE },
+			size = curve(0.8, 1.6, outBack),
+			transparency = { 0, 0, 0, 1 },
+			lifetime = { 0.6, 0.75 },
+			speed = { 16, 20 },
+			spread = { 18, 18 },
+			accel = GRAVITY,
+			delay = 0.9,
+		},
+	},
+	sounds = {
+		{ clip = "FX_Snap", volume = 0.8, pitch = 1.15 } :: FxSound,
+		{ clip = "Cash_Coins", delay = 0.9, volume = 0.6, pitch = 1.15 } :: FxSound,
+	},
+})
+
 -- spectacle (small): a quest handed in (HudController, award reason Quest:*): bricks rain from over your head, a
 -- white ring and coins hop; a chime over the coins
 Presets.ALL.quest_done = preset({
