@@ -4,7 +4,9 @@
 -- Below the pages, the Specials (docs/25 E): one card per WorkerRules.SPECIALS, a grey silhouette until you
 -- have them, then their name in their rarity colour, type icon and what makes them special; tapping one
 -- opens the survivor card. Owned = in your saved workers (the PlayerDataChanged snapshot, as the Crew panel).
+local GuiService = game:GetService("GuiService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DiscoveryController = require(
@@ -88,16 +90,23 @@ function Album.new(canvas: Frame, onClose: () -> ())
 	cardHost.Parent = panel.root
 	local survivorCard = SurvivorCard.new(cardHost)
 
+	local previewFrom: GuiObject? = nil -- the page card the preview opened from: the pad returns to it
 	local function closePreview()
 		if preview then
 			local old = preview
 			preview = nil
+			local back = GuiService.SelectedObject ~= nil
+				and GuiService.SelectedObject:IsDescendantOf(old)
 			old:Destroy()
+			if back and previewFrom and previewFrom.Parent then
+				GuiService.SelectedObject = previewFrom
+			end
 		end
 	end
 
-	local function showPage(page: Rules.Page)
+	local function showPage(page: Rules.Page, from: GuiObject)
 		closePreview()
+		previewFrom = from
 		local shade = Instance.new("TextButton")
 		shade.Name = "StickerPreview"
 		shade.Text = ""
@@ -105,6 +114,7 @@ function Album.new(canvas: Frame, onClose: () -> ())
 		shade.BackgroundColor3 = Theme.Colors.shadow
 		shade.BackgroundTransparency = 0.35
 		shade.Size = UDim2.fromScale(1, 1)
+		shade.Selectable = false -- the pad lands on the X, not the backdrop
 		shade.ZIndex = 8
 		shade.Parent = panel.root
 		preview = shade
@@ -114,7 +124,10 @@ function Album.new(canvas: Frame, onClose: () -> ())
 		card.BackgroundTransparency = 1
 		card.AnchorPoint = Vector2.new(0.5, 0.5)
 		card.Position = UDim2.fromScale(0.5, 0.5)
-		card.Size = UDim2.fromOffset(620, 400)
+		card.Size = UDim2.new(1, -24, 0, 400) -- portrait panels are narrower than the 620 du design
+		local cap = Instance.new("UISizeConstraint")
+		cap.MaxSize = Vector2.new(620, 400)
+		cap.Parent = card
 		card.ZIndex = 9
 		card.Parent = shade
 		local _, face = Style.block(card, Style.grad("blue"), { shadow = true, lip = 10 })
@@ -135,7 +148,10 @@ function Album.new(canvas: Frame, onClose: () -> ())
 		for _, s in page.stickers do
 			local cell = Instance.new("Frame")
 			cell.BackgroundTransparency = 1
-			cell.Size = UDim2.fromOffset(160, 210)
+			cell.Size = UDim2.new(1 / #page.stickers, -18, 0, 210)
+			local cellCap = Instance.new("UISizeConstraint")
+			cellCap.MaxSize = Vector2.new(160, 210)
+			cellCap.Parent = cell
 			cell.ZIndex = 10
 			cell.Parent = row
 			Sticker.draw(
@@ -154,9 +170,12 @@ function Album.new(canvas: Frame, onClose: () -> ())
 		close.AnchorPoint = Vector2.new(1, 0)
 		close.Position = UDim2.new(1, -12, 0, 12)
 		close.ZIndex = 11
-		local _, xFace = Style.block(close, Style.grad("close"))
+		local _, xFace = Style.block(close, Style.grad("close"), { radius = S.cornerSmall })
 		Style.label(xFace, "X", Theme.Text.title).ZIndex = 12
-		Style.press(close, closePreview)
+		Style.press(close, closePreview, S.cornerSmall)
+		if UserInputService.GamepadEnabled then
+			GuiService.SelectedObject = close
+		end
 	end
 
 	local function rebuild()
@@ -176,7 +195,7 @@ function Album.new(canvas: Frame, onClose: () -> ())
 		host.Parent = panel.body
 		local grid = Instance.new("UIGridLayout")
 		grid.CellSize = UDim2.fromOffset(188, 210)
-		grid.CellPadding = UDim2.fromOffset(14, 14)
+		grid.CellPadding = UDim2.fromOffset(12, 12)
 		grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 		grid.SortOrder = Enum.SortOrder.LayoutOrder
 		grid.Parent = host
@@ -221,7 +240,7 @@ function Album.new(canvas: Frame, onClose: () -> ())
 			pill.Parent = face
 			Style.label(pill, `{found}/{total}`, Theme.Text.body)
 			Style.press(card, function()
-				showPage(page)
+				showPage(page, card)
 			end)
 		end
 
@@ -266,7 +285,7 @@ function Album.new(canvas: Frame, onClose: () -> ())
 		specials.Parent = panel.body
 		local sgrid = Instance.new("UIGridLayout")
 		sgrid.CellSize = UDim2.fromOffset(SPECIAL_W, SPECIAL_H)
-		sgrid.CellPadding = UDim2.fromOffset(14, 14)
+		sgrid.CellPadding = UDim2.fromOffset(12, 12)
 		sgrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 		sgrid.SortOrder = Enum.SortOrder.LayoutOrder
 		sgrid.Parent = specials

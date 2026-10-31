@@ -93,4 +93,11 @@ return function(t)
 			t.expect(Theme.palette("Default").buy).toBe(Theme.Grad.buy)
 		end
 	)
+	t.test("gamepad focus reads top row first, then left to right", function()
+		t.expect(Theme.readsBefore(Vector2.new(500, 100), Vector2.new(0, 300))).toBe(true)
+		t.expect(Theme.readsBefore(Vector2.new(0, 300), Vector2.new(500, 100))).toBe(false)
+		-- a grid row a few du out of line is still one row
+		t.expect(Theme.readsBefore(Vector2.new(10, 110), Vector2.new(200, 100))).toBe(true)
+		t.expect(Theme.readsBefore(Vector2.new(200, 100), Vector2.new(10, 110))).toBe(false)
+	end)
 end
