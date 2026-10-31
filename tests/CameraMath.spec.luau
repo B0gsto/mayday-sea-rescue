@@ -80,4 +80,15 @@ return function(t)
 		local b = M.shake(1, 1, 1, noise).X
 		t.expect(a).toBeCloseTo(b * 0.25, 1e-9)
 	end)
+
+	t.test(
+		"occludes: colliders and solid surfaces hide the view, ropes and glass do not",
+		function()
+			t.expect(M.occludes(true, 1, Vector3.new(0.2, 0.2, 0.2))).toBe(true)
+			t.expect(M.occludes(false, 0, Vector3.new(12, 0.6, 8))).toBe(true) -- a roof slab
+			t.expect(M.occludes(false, 0, Vector3.new(0.2, 0.2, 30))).toBe(false) -- a rope
+			t.expect(M.occludes(false, 0, Vector3.new(0.3, 20, 1))).toBe(false) -- a trim strip
+			t.expect(M.occludes(false, 0.8, Vector3.new(12, 6, 8))).toBe(false) -- a trigger zone
+		end
+	)
 end
