@@ -398,6 +398,21 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			end
 		end
 	end
+	-- free-roam survivors aboard and no call of your own (playtest 2026-10-31: no way home showed): home leads
+	local seated = seatModel()
+	local berth = myBerth()
+	if
+		berth
+		and not objective
+		and seated
+		and (tonumber(seated:GetAttribute("SurvivorCount")) or 0) > 0
+	then
+		table.insert(
+			list,
+			{ id = "DropMyDock", pos = berth, style = St.DropOff, clamp = true, size = 24 }
+		)
+		objective, objectiveLabel = berth, "Drop-off"
+	end
 	local quest = player:GetAttribute("QuestTarget") -- WP-21b: the thing, then the giver
 	if typeof(quest) == "Vector3" then
 		table.insert(list, { id = "Quest", pos = quest, style = St.Quest, clamp = true, size = 24 })
