@@ -33,6 +33,7 @@ local ARROW_H = math.round(ARROW_W * 516 / 392) -- the sprite's 392 x 516 px
 local BOB = 6
 
 function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
+	prompt:SetAttribute("OwnCue", true) -- PromptCueController leaves this one to us
 	prompt.Style = Enum.ProximityPromptStyle.Custom
 	local tablet = prompt.Parent :: BasePart
 
