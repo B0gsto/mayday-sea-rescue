@@ -28,7 +28,7 @@
 -- px (tap it for the full map, MapController): top centre it hid the character and the prize wheel on an
 -- iPhone SE (device pass 2026-10-28). The objective strip sits right of the menu (portrait: under the
 -- minimap) and the wallet under the objective. The notice band sits beside
--- the wallet, or under it in the band between the two zones. The prompt keeps its place. Phone-sized screens use this arrangement on
+-- the wallet, or under it in the band between the two zones. The prompt keeps its place (portrait: full width, above the drive pad). Phone-sized screens use this arrangement on
 -- every device (compute). The debrief toast takes the topmost free gap (debriefRect), shrinking to fit.
 -- Driving on touch (TouchDriveController): the stock thumbstick and jump button hide and the drive pad takes their
 -- zones: "steer" bottom left (LEFT, RIGHT, step off above LEFT), "drive" bottom right (GO in the corner, BRAKE left
@@ -54,7 +54,8 @@ HudLayout.TOUCH_SIDE_MIN = 100 -- final px: the minimap on small phones (30% of 
 HudLayout.OBJECTIVE_MIN_WIDTH = 210 -- the step card is 208 wide
 HudLayout.QUEST_WIDTH = 236 -- the quest tracker chip (UI/Menu): desktop above the minimap pill (bottom right)
 HudLayout.QUEST_HEIGHT = 50
-HudLayout.QUEST_TOUCH_HEIGHT = 34 -- touch: a tag over the minimap's bottom edge, ending where the objective may start
+HudLayout.QUEST_TOUCH_HEIGHT = 46 -- touch: a tag over the minimap's bottom edge, ending where the objective may start;
+-- 46 du = a 32 px tap target (and 14 px+ scaled text) at the 0.7 phone floor
 HudLayout.CHIPS_WIDTH = 420 -- docs/24 E: the tutorial goal chips / the permanent Next chip (UI/NextChip)
 HudLayout.CHIPS_HEIGHT = 48 -- touch: under the 64 du step card, inside OBJECTIVE_HEIGHT (68 + 48 <= 132)
 HudLayout.DEBRIEF_WIDTH = 340 -- the end-of-call toast (UI/OpsDebrief), drawn scaled to its region's width
@@ -241,7 +242,8 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		touch = touch,
 		side = side,
 		objectiveWidth = objectiveWidth,
-		centreWidth = math.min(u.X - 2 * (outer + 2 * m), 640),
+		-- portrait phones: too narrow for the side clearance (it went negative), the full width instead
+		centreWidth = math.min(if u.X < u.Y then u.X - 2 * m else u.X - 2 * (outer + 2 * m), 640),
 		noticeWidth = 0,
 		menu = menu,
 		pad = { steer = steerSize, go = r(1.12), brake = r(0.74), small = small },
@@ -377,7 +379,13 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	-- prompt and gauges keep their place on every device (the prompt clears the speed dock;
 	-- gauges holds the touch action buttons at the bottom right on purpose; on desktop the minimap shares
 	-- its square). Desktop: the prompt centres between the menu and the minimap.
+	local pad = mt.pad
+	local steerH = pad.steer + pg + pad.small
+	local driveH = math.max(pad.go, 2 * pad.small + pg)
 	local b = bottom - HudLayout.SUBTITLE_HEIGHT - g
+	if touch and u.X < u.Y then
+		b = math.min(b, bottom - math.max(steerH, driveH) - g) -- portrait: full width, so above the drive pad
+	end
 	local cx = u.X / 2
 	if not touch then
 		local p0, p1 = left, u.X - m - side - g
@@ -392,17 +400,16 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 			math.min(HudLayout.PROMPT_HEIGHT, b - (m + HudLayout.OBJECTIVE_HEIGHT + g))
 		)
 	)
-	local pad = mt.pad
 	-- the drive pad (touch): steer bottom left, throttle bottom right, in the stock controls' zones
 	mt.rects["steer"] = rect(
 		Vector2.new(0, 1),
 		Vector2.new(m, bottom),
-		if touch then Vector2.new(2 * pad.steer + pg, pad.steer + pg + pad.small) else Vector2.zero
+		if touch then Vector2.new(2 * pad.steer + pg, steerH) else Vector2.zero
 	)
 	mt.rects["drive"] = rect(
 		Vector2.new(1, 1),
 		Vector2.new(u.X - m, bottom),
-		if touch then Vector2.new(driveW, math.max(pad.go, 2 * pad.small + pg)) else Vector2.zero
+		if touch then Vector2.new(driveW, driveH) else Vector2.zero
 	)
 	local gs = if touch then gaugeSide else side
 	mt.rects["gauges"] = rect(Vector2.new(1, 1), Vector2.new(u.X - m, bottom), Vector2.new(gs, gs))

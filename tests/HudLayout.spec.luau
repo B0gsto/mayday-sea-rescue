@@ -21,6 +21,16 @@ return function(t)
 			insets = { top = 58, bottom = 0, left = 0, right = 0 },
 		},
 		{
+			name = "iPhone 15 (Dynamic Island)",
+			screen = Vector2.new(852, 393),
+			insets = { top = 58, bottom = 21, left = 59, right = 59 },
+		},
+		{
+			name = "iPad Air",
+			screen = Vector2.new(1180, 820),
+			insets = { top = 58, bottom = 20, left = 0, right = 0 },
+		},
+		{
 			name = "tablet 4:3",
 			screen = Vector2.new(1023, 768),
 			insets = { top = 58, bottom = 20, left = 0, right = 0 },
@@ -95,6 +105,10 @@ return function(t)
 			t.expect(mt.menu.rows * mt.menu.cols >= HudLayout.MENU_COUNT).toBe(true)
 			t.expect(mt.objectiveWidth >= 208).toBe(true)
 			t.expect(mt.noticeWidth >= HudLayout.NOTICE_MIN_WIDTH).toBe(true)
+			-- the quest tag is a tap target: 32 px+ tall; the prompt (mechanic panels) has a real width inside the screen
+			t.expect(mt.rects.quest.size.Y * mt.scale >= 32).toBe(true)
+			local px, _, px2 = box(mt.rects.prompt)
+			t.expect(px2 - px >= 250 and px >= 0 and px2 <= u.X + 1e-6).toBe(true)
 		end)
 	end
 
