@@ -339,7 +339,12 @@ local function paintOdds(wheel: Instance)
 	local epic, legend =
 		player:GetAttribute("SpinPityEpic"), player:GetAttribute("SpinPityLegendary")
 	local own = mine(wheel) and type(epic) == "number" and type(legend) == "number"
-	PrizeWheel.showOdds(board, if own then { epic = epic, legendary = legend } else nil)
+	local owned = player:GetAttribute("SpinOwned")
+	PrizeWheel.showOdds(
+		wheel, -- the board and the token machine's screen
+		if own then { epic = epic, legendary = legend } else nil,
+		if own and type(owned) == "string" and owned ~= "" then string.split(owned, ",") else nil
+	)
 end
 
 local function spin(payload: any)
@@ -554,6 +559,7 @@ function PrizeWheelController.Init()
 	end
 	player:GetAttributeChangedSignal("SpinPityEpic"):Connect(repaintOdds)
 	player:GetAttributeChangedSignal("SpinPityLegendary"):Connect(repaintOdds)
+	player:GetAttributeChangedSignal("SpinOwned"):Connect(repaintOdds)
 	fetchCatalogue()
 	-- the catalogue hides paid random items until the server has read the player's policy: ask again then
 	player:GetAttributeChangedSignal("PolicyRead"):Connect(fetchCatalogue)

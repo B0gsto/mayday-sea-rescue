@@ -14,6 +14,7 @@ local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
+local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
@@ -180,6 +181,7 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 		if not (item and item.ready and item.id > 0) or not d or Rules.vehicleLock(d, craft) then
 			return
 		end
+		Telemetry.shop("BuyTapped", "BoatCard", key, "Robux")
 		pcall(function()
 			MarketplaceService:PromptGamePassPurchase(player, item.id)
 		end)
@@ -307,6 +309,7 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 			local label = Style.label(chipFace, "Quick Launch", Theme.Text.small, true)
 			label.TextWrapped = false
 			Style.press(chip, function()
+				Telemetry.shop("BuyTapped", "Chip", QUICK, "Robux")
 				pcall(function()
 					MarketplaceService:PromptGamePassPurchase(player, quickItem.id)
 				end)

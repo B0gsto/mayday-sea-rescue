@@ -21,6 +21,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
+local PetRules = require(Shared:WaitForChild("PetRules"))
 local ProgressionRules = require(Shared:WaitForChild("ProgressionRules"))
 local SpinRules = require(Shared:WaitForChild("SpinRules"))
 
@@ -51,6 +52,21 @@ local function stateOf(data: any): SpinRules.State
 end
 
 local function publish(player: Player, state: SpinRules.State)
+	local pets = PetService.GetState(player)
+	local data = DataService.Get(player)
+	local boat = SpinRules.prize("GrandBoat")
+	local vehicle = boat and boat.vehicle
+	local ownsBoat = data ~= nil
+		and vehicle ~= nil
+		and ProgressionRules.ownsVehicle(
+			data,
+			vehicle,
+			ProgressionService.OwnsVehiclePass(player, vehicle)
+		)
+	local owned = SpinRules.ownedIds(state, function(variant: string): boolean
+		return pets ~= nil and PetRules.ownsVariant(pets, variant)
+	end, ownsBoat)
+	player:SetAttribute("SpinOwned", table.concat(owned, ",")) -- the odds board's owned rows
 	player:SetAttribute("FreeSpins", state.free)
 	player:SetAttribute("SpinPityEpic", state.pity.epic)
 	player:SetAttribute("SpinPityLegendary", state.pity.legendary)
@@ -291,17 +307,11 @@ function SpinService.WheelSpin(player: Player): { [string]: any }
 	return result
 end
 
-local function grantProductSpins(player: Player, data: any, n: number): boolean
-	-- paid random items: refused (receipt left unprocessed) unless the policy allows them
-	local policy = MonetizationService.GetPolicy(player)
-	if
-		type(data.flags) ~= "table" or not (policy and policy.ArePaidRandomItemsRestricted == false)
-	then
-		return false
-	end
-	local state = SpinRules.decode(data.flags[FLAG])
-	state.free += n
-	data.flags[FLAG] = SpinRules.encode(state)
+-- Paid spins: always granted. The policy gate is at the prompt (Core.isOffered, DockService wheelBuy); a receipt
+-- refused here would stay unprocessed on every join if the player's policy later read restricted (PERF-MON1).
+local function grantProductSpins(data: any, n: number): boolean
+	data.flags = if type(data.flags) == "table" then data.flags else {}
+	data.flags[FLAG] = SpinRules.addPaid(data.flags[FLAG], n)
 	return true
 end
 
@@ -312,8 +322,8 @@ function SpinService.Init()
 	for key, item in MonetizationConfig.Products do
 		local n = item.spins
 		if type(n) == "number" then
-			MonetizationService.OnProduct(key, function(player: Player, data: any): boolean
-				return grantProductSpins(player, data, n)
+			MonetizationService.OnProduct(key, function(_player: Player, data: any): boolean
+				return grantProductSpins(data, n)
 			end, function(player: Player)
 				SpinService.Refresh(player)
 			end)

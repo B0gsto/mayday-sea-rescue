@@ -169,6 +169,7 @@ function Board.new(
 				onActivate = function()
 					local dd = data
 					if dd and not Rules.vehicleLock(dd, id) then
+						Telemetry.shop("BuyTapped", "Board", Rules.vehiclePass(id), "Robux")
 						pcall(function()
 							MarketplaceService:PromptGamePassPurchase(player, item.id)
 						end)
