@@ -98,10 +98,15 @@ end
 
 function BeaconController.Init()
 	scan()
-	Workspace.DescendantAdded:Connect(function(d)
+	-- children only (where scan looks): a Workspace.DescendantAdded hook ran Lua for every streamed-in instance
+	local function onChild(d: Instance)
 		if d:IsA("Model") then
 			watch(d)
 		end
+	end
+	Workspace.ChildAdded:Connect(onChild)
+	task.spawn(function()
+		Workspace:WaitForChild("Vehicles").ChildAdded:Connect(onChild)
 	end)
 end
 
