@@ -14,6 +14,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 local AudioController = require(script.Parent.AudioController)
 local HudLayout = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("HudLayout"))
@@ -228,6 +229,10 @@ end
 function TouchDriveController.Init() end
 
 function TouchDriveController.Start()
+	-- REV2: a notification or home swipe mid-press may never end the touch: drop every hold
+	UserInputService.WindowFocusReleased:Connect(function()
+		table.clear(presses)
+	end)
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "TouchDrive"
 	gui.ResetOnSpawn = false

@@ -1776,7 +1776,21 @@ function DockController.Start()
 					prompt.HoldDuration = 0
 					-- 12 missed it from the dock side (13 studs, playtest 2026-10-28); 24 reaches the new-player spawn
 					-- (DockConfig.newSpawn, ~20 studs back so the camera sees the island and sea)
-					prompt.MaxActivationDistance = 24
+					-- 24 only while Hut-less (REV2: after it, 15 keeps it from competing with walk-in door/NPC prompts)
+					prompt.MaxActivationDistance = if player:GetAttribute("DockLevelHQ") == 0
+						then 24
+						else 15
+					local rangeConn = player
+						:GetAttributeChangedSignal("DockLevelHQ")
+						:Connect(function()
+							prompt.MaxActivationDistance = if player:GetAttribute("DockLevelHQ")
+									== 0
+								then 24
+								else 15
+						end)
+					prompt.Destroying:Once(function()
+						rangeConn:Disconnect()
+					end)
 					prompt.RequiresLineOfSight = false
 					prompt.Parent = tablet
 					prompt.Triggered:Connect(openBuild)

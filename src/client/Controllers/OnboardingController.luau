@@ -255,7 +255,7 @@ end
 local ESTABLISH = 2.6 -- s
 local SETTLE_ZOOM = 19 -- CameraController START_ZOOM
 local established = false
-local function frameSpawn()
+local function frameSpawnBody()
 	local wait0 = os.clock() -- the plot attributes replicate after the first character (the loading screen waits too)
 	while
 		(
@@ -338,6 +338,14 @@ local function frameSpawn()
 	end
 	skip:Disconnect()
 	cam.CFrame = settle -- skipped mid-move: land on the framing, not where the move was cut
+	player:SetAttribute("Establishing", nil)
+end
+
+-- REV2: an error mid-shot must never leave Establishing set (RewardController would hold the join card all session)
+local function frameSpawn()
+	xpcall(frameSpawnBody, function(err)
+		warn(`[OnboardingController] establishing shot failed: {err}`)
+	end)
 	player:SetAttribute("Establishing", nil)
 end
 

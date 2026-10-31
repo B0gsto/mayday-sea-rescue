@@ -121,8 +121,8 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 			else ""
 	end
 	layout()
-	Layout.onMetrics(layout)
-	InputGlyph.onDevice(layout)
+	local metricsConn = Layout.onMetrics(layout)
+	local deviceConn = InputGlyph.onDevice(layout)
 
 	local function show(on: boolean)
 		if on == up then
@@ -149,6 +149,9 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 	tablet.Destroying:Connect(
 		function() -- the station streams out: the stream-in makes a new prompt and cue
 			bob:Disconnect()
+			metricsConn:Disconnect()
+			deviceConn:Disconnect()
+			up = false -- shown() stops muting the beacon
 			bb:Destroy()
 		end
 	)
