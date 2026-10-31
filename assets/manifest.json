@@ -429,6 +429,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Slate_RGH.png",
   "type": "Image"
  },
+ "Image:0560f9a4dcb7691d7a9589cfdd7487d9e1ded54680bf178ce60bb31186629120": {
+  "assetId": "80754047253104",
+  "imageId": "80754047253104",
+  "moderation": "Reviewing",
+  "name": "Markers.Pin.Quest",
+  "sha": "0560f9a4dcb7691d7a9589cfdd7487d9e1ded54680bf178ce60bb31186629120",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Markers.Pin.Quest.png",
+  "type": "Image"
+ },
  "Image:0573a3bbc8b62d137b72a6620c3077deb06bcb00a8e98815b28dc0b2a2b1a8fd": {
   "assetId": "96694149977931",
   "imageId": "96694149977931",
@@ -607,6 +616,15 @@
   "name": "T_HarbourGT_Cab_ALB",
   "sha": "075b35637c11f295af4c987e5b5b03b270c515f6d334e8b1fe11bbf3f50eee94",
   "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_ALB.png",
+  "type": "Image"
+ },
+ "Image:0776629b9818167e19829496bc6b343cae2d495bfe178c588ba102761b7ae2ba": {
+  "assetId": "105528379718715",
+  "imageId": "105528379718715",
+  "moderation": "Reviewing",
+  "name": "Hud.MinimapRing",
+  "sha": "0776629b9818167e19829496bc6b343cae2d495bfe178c588ba102761b7ae2ba",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Hud.MinimapRing.png",
   "type": "Image"
  },
  "Image:078644f527a510528ac005a4aadb3435b3944e4d2530191a0e21cd48a706c04e": {
@@ -895,6 +913,15 @@
   "name": "T_HbrProps_Metal_RGH_Wet",
   "sha": "0ae296e1685dccd259a9dbf8060d884cfcba9781b4114824ae98c2a27e5c47ad",
   "source": "assets/textures/M_Hbr_PropAtlas/T_HbrProps_Metal_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:0ae99d575ba1710e3506ac86e548b73cc17dbc85b8dde15000bbc43b5d567f2a": {
+  "assetId": "101816213126997",
+  "imageId": "101816213126997",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.no",
+  "sha": "0ae99d575ba1710e3506ac86e548b73cc17dbc85b8dde15000bbc43b5d567f2a",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.no.png",
   "type": "Image"
  },
  "Image:0aeb75d5bfcc58a0f60d92ba65c74611682d14f973484f77972aae1c5c4a2b45": {
@@ -1210,6 +1237,15 @@
   "name": "T_NavMarkStarboard_Buoy_ALB",
   "sha": "0da1f0685e6d92918b806d540b80e034dfba3f1e63dadad0297226ff70a29186",
   "source": "assets/textures/M_Hbr_NavMark_Starboard/T_NavMarkStarboard_Buoy_ALB.png",
+  "type": "Image"
+ },
+ "Image:0daba9d2ebb47cf96544a3bc378e19857a46685d69d589f90c58b28f6d93dd62": {
+  "assetId": "121588421624114",
+  "imageId": "121588421624114",
+  "moderation": "Reviewing",
+  "name": "Kit.waves",
+  "sha": "0daba9d2ebb47cf96544a3bc378e19857a46685d69d589f90c58b28f6d93dd62",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.waves.png",
   "type": "Image"
  },
  "Image:0dae09ebb526fc0c0ddfb043b57040a563474df119dbab2b3dede27aaf850c54": {
@@ -2259,6 +2295,15 @@
   "source": "marketing/ui/icons/settings.png",
   "type": "Image"
  },
+ "Image:19919b957555ddcf7c7fc1dcb5fe3fc203872c14a67680539e7af8aa25bfde85": {
+  "assetId": "78003965913036",
+  "imageId": "78003965913036",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.speed",
+  "sha": "19919b957555ddcf7c7fc1dcb5fe3fc203872c14a67680539e7af8aa25bfde85",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.speed.png",
+  "type": "Image"
+ },
  "Image:19befc6061e0ea4de5a07d8999d09df35f15d27c9454d31d976d66074bcd222c": {
   "assetId": "90688931638855",
   "imageId": "90688931638855",
@@ -3256,6 +3301,15 @@
   "name": "T_Morwenna_Encrust_ALB",
   "sha": "2443729697d5c3a000eb61ced570c87c8d1aec3fd3073e121d18aa772a6c4290",
   "source": "assets/textures/M_Sea_Morwenna/T_Morwenna_Encrust_ALB.png",
+  "type": "Image"
+ },
+ "Image:2444c96ddf23c523d8b07233468eb5c22a8c867f20f49cf379e21f73e55cd1cc": {
+  "assetId": "133965911902055",
+  "imageId": "133965911902055",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.reset",
+  "sha": "2444c96ddf23c523d8b07233468eb5c22a8c867f20f49cf379e21f73e55cd1cc",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.reset.png",
   "type": "Image"
  },
  "Image:2458bc981ad2fa453288e6b2443876d90702462aedb0b7848a68c1acb0eab73f": {
@@ -4341,6 +4395,15 @@
   "source": "assets/textures/FX/FX_Foam_WakeRibbon.png",
   "type": "Image"
  },
+ "Image:30ded8599bf86bdaabd1ea491ebb1c6f4fd6d7efa2dbb0d6631c1988c3d66888": {
+  "assetId": "120316727065138",
+  "imageId": "120316727065138",
+  "moderation": "Reviewing",
+  "name": "Stickers.GannetRock",
+  "sha": "30ded8599bf86bdaabd1ea491ebb1c6f4fd6d7efa2dbb0d6631c1988c3d66888",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Stickers.GannetRock.png",
+  "type": "Image"
+ },
  "Image:3101d22a96a1b09969c6f4c1290fec626c210ccd1d954a229342ef8576979081": {
   "assetId": "111196679015076",
   "imageId": "111196679015076",
@@ -4636,6 +4699,15 @@
   "name": "Mayday_T_Mat_Shingle_RGH",
   "sha": "32fc209a82ede6882ad2a59f1712a2f223e591f478955cff582d37e51f1c1cd9",
   "source": "assets/textures/Materials/T_Mat_Shingle_RGH.png",
+  "type": "Image"
+ },
+ "Image:3306406943605fe4872cd1dfd763357abfc5f59989bff01683b52aa045aaafa2": {
+  "assetId": "119043882472259",
+  "imageId": "119043882472259",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.shake",
+  "sha": "3306406943605fe4872cd1dfd763357abfc5f59989bff01683b52aa045aaafa2",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.shake.png",
   "type": "Image"
  },
  "Image:330e460813123c2e3f4aa28fe1320580f2e80108ce323e743dd89157967c4110": {
@@ -4965,6 +5037,15 @@
   "source": "assets/textures/M_Bld_BoatyardShed/T_Boatyard_Ground_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:36f35007f8ff70166a69dcb5087b58bd393e97caddbefe229f2a7bf207dfcd25": {
+  "assetId": "119121250292276",
+  "imageId": "119121250292276",
+  "moderation": "Reviewing",
+  "name": "Stickers.View",
+  "sha": "36f35007f8ff70166a69dcb5087b58bd393e97caddbefe229f2a7bf207dfcd25",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Stickers.View.png",
+  "type": "Image"
+ },
  "Image:3759f570bd7b04ca5994f4539804fc3186550a3a4cf84e59d574a4a55d8ff3e3": {
   "assetId": "72702946079049",
   "imageId": "72702946079049",
@@ -5035,6 +5116,15 @@
   "name": "Stickers.PuffinIsle",
   "sha": "3833b2dafbae5da7afc3bca85cb2a4b93447ae3134b486ffec89f6a500e7096a",
   "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/final/Stickers.PuffinIsle.png",
+  "type": "Image"
+ },
+ "Image:38415058b31c726d9eebe800f62d969a70fd43f36424b7f0f0a7b5809d2f0bf5": {
+  "assetId": "133931579547429",
+  "imageId": "133931579547429",
+  "moderation": "Reviewing",
+  "name": "Markers.BeaconMark",
+  "sha": "38415058b31c726d9eebe800f62d969a70fd43f36424b7f0f0a7b5809d2f0bf5",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Markers.BeaconMark.png",
   "type": "Image"
  },
  "Image:385967df263a4daff3c2639c0bd5269d902e8efdb5d0b85b94261a68081dbc60": {
@@ -5485,6 +5575,15 @@
   "name": "T_RIB_Rig_NOR",
   "sha": "3c3373a40c1a86a8bfb4da80cb9bd8d82540acc448cce7867552fa57d2bfad16",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Rig_NOR.png",
+  "type": "Image"
+ },
+ "Image:3c49a2c69edd3a7932e20c24c2b4e56714d4bd1f413a92abe37a9cbea13f1c70": {
+  "assetId": "84032838445846",
+  "imageId": "84032838445846",
+  "moderation": "Reviewing",
+  "name": "Markers.BuildArrow",
+  "sha": "3c49a2c69edd3a7932e20c24c2b4e56714d4bd1f413a92abe37a9cbea13f1c70",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Markers.BuildArrow.png",
   "type": "Image"
  },
  "Image:3c5b1aa983000cbbfd79103acc2ce851f285b51b24df9409a69e214129e3773b": {
@@ -6749,6 +6848,15 @@
   "source": "assets/ocean/sky/Calm_Bk.png",
   "type": "Image"
  },
+ "Image:4b8483f66b9dbe7522e458ac8eb8fad97395c81e19196e0d55c025673a665b06": {
+  "assetId": "80095601263749",
+  "imageId": "80095601263749",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.half",
+  "sha": "4b8483f66b9dbe7522e458ac8eb8fad97395c81e19196e0d55c025673a665b06",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.half.png",
+  "type": "Image"
+ },
  "Image:4bc57d4732cddef06ad10bfb00cc7560bbb8a83b523a93f60f19d9be42dd58d6": {
   "assetId": "128351278712268",
   "imageId": "128351278712268",
@@ -7212,6 +7320,15 @@
   "name": "T_GildedGull_Hull_RGH",
   "sha": "51484716b568f754e09ea4cfcbcd101c8ae00dfad39b9defec89adfd4c0f0ca2",
   "source": "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_RGH.png",
+  "type": "Image"
+ },
+ "Image:515e2028e8e617421d2ab0a69411d6cb187b47c6d44224a24a1c57b642bf33dd": {
+  "assetId": "100612325857668",
+  "imageId": "100612325857668",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.note",
+  "sha": "515e2028e8e617421d2ab0a69411d6cb187b47c6d44224a24a1c57b642bf33dd",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.note.png",
   "type": "Image"
  },
  "Image:517cda1ce7f717f2e2f0a37a1eef7a26c94ef82c010c4cf1dfa5029666d4165b": {
@@ -7742,6 +7859,15 @@
   "source": "assets/textures/Spike1/T_Spike1_1024_MET.png",
   "type": "Image"
  },
+ "Image:57886478fe80dad2771676d5b986fbb38e75949b2576e0477d6ec072406d2f7d": {
+  "assetId": "77911552150902",
+  "imageId": "77911552150902",
+  "moderation": "Reviewing",
+  "name": "Badges.StarOff",
+  "sha": "57886478fe80dad2771676d5b986fbb38e75949b2576e0477d6ec072406d2f7d",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Badges.StarOff.png",
+  "type": "Image"
+ },
  "Image:57a899600b159676679b07a7a328f04bcc69c9498529e7582d8a0b24c2614823": {
   "assetId": "126485653448134",
   "imageId": "126485653448134",
@@ -7758,6 +7884,15 @@
   "name": "T_FoliageMarine_Main_ALB",
   "sha": "57f631344ebb63935fdc9a1477789e9697ab81bb85bfcb694ddc8594a15cd833",
   "source": "assets/textures/M_Veg_Kelp_Kit/T_FoliageMarine_Main_ALB.png",
+  "type": "Image"
+ },
+ "Image:57f71e6c442a02aed7494e76047b1b0fab5acbad075c1d1c295b4e7797257ffb": {
+  "assetId": "91967415866068",
+  "imageId": "91967415866068",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.burst",
+  "sha": "57f71e6c442a02aed7494e76047b1b0fab5acbad075c1d1c295b4e7797257ffb",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.burst.png",
   "type": "Image"
  },
  "Image:57f92644ab3f3dee7fc8e52f17913b833a13c99edcff437da8426deabeffcc6e": {
@@ -8402,6 +8537,15 @@
   "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/final/Kit.album.png",
   "type": "Image"
  },
+ "Image:5eff5d80e84ca3b1fa0973693d322065b5870a1713e3b3e952979e213a5e27d1": {
+  "assetId": "117847983777907",
+  "imageId": "117847983777907",
+  "moderation": "Reviewing",
+  "name": "Kit.boat_to_me",
+  "sha": "5eff5d80e84ca3b1fa0973693d322065b5870a1713e3b3e952979e213a5e27d1",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.boat_to_me.png",
+  "type": "Image"
+ },
  "Image:5f077a0bc2a737f52cf8363e25b653cbda187b333d66dc4d673787cfd9d6b5a1": {
   "assetId": "137001216216533",
   "imageId": "137001216216533",
@@ -8427,6 +8571,15 @@
   "name": "Hud.ExitButton",
   "sha": "5f9875c7db73852a976552da9f930a2fe6173636fb26a23fa0c05c3de449c810",
   "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/final/Hud.ExitButton.png",
+  "type": "Image"
+ },
+ "Image:5fbea5d4e836d999764cc8a166ba58bbd60a6f28374c2c0bbff42665e86f1b5e": {
+  "assetId": "139121552665019",
+  "imageId": "139121552665019",
+  "moderation": "Reviewing",
+  "name": "Kit.sun",
+  "sha": "5fbea5d4e836d999764cc8a166ba58bbd60a6f28374c2c0bbff42665e86f1b5e",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.sun.png",
   "type": "Image"
  },
  "Image:6014bfd3110fb3692bca4a60585ad7d52f9f78fe2d6af012c6a23d20a21e1d7f": {
@@ -9060,6 +9213,15 @@
   "name": "T_ATV_Gear_MET",
   "sha": "68480fd32efe93417e10aa75dda4353d7f4384c02f2ea693f20833fed4f9640f",
   "source": "assets/textures/M_Veh_ATV/T_ATV_Gear_MET.png",
+  "type": "Image"
+ },
+ "Image:686c56cb6bb4327e2e96fa3d9b117aef2288c655b44c313f77f3d905fedf5b90": {
+  "assetId": "81013149158773",
+  "imageId": "81013149158773",
+  "moderation": "Reviewing",
+  "name": "Kit.crew",
+  "sha": "686c56cb6bb4327e2e96fa3d9b117aef2288c655b44c313f77f3d905fedf5b90",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.crew.png",
   "type": "Image"
  },
  "Image:688c7c35ffbd9ffcd5874a10d43ff990db7a8aace195075bc59b315c6eb34c76": {
@@ -10430,6 +10592,15 @@
   "source": "assets/textures/M_Bld_RescueBoathouseAddons/T_RescueBoathouse_Brick_ALB.png",
   "type": "Image"
  },
+ "Image:787548e8aa3bf9b944f40f10b09a10d42593838d68a37aaffe3595656ca7fa50": {
+  "assetId": "80438478747835",
+  "imageId": "80438478747835",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.waves",
+  "sha": "787548e8aa3bf9b944f40f10b09a10d42593838d68a37aaffe3595656ca7fa50",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.waves.png",
+  "type": "Image"
+ },
  "Image:7879cd557b43ec166cdd4d4f5ce292888220a1aedae07f6e02aa81f9166997f2": {
   "assetId": "89698836932600",
   "imageId": "89698836932600",
@@ -10925,6 +11096,15 @@
   "source": "assets/textures/M_Hbr_NavMark_Starboard/T_NavMarkStarboard_Buoy_NOR.png",
   "type": "Image"
  },
+ "Image:7d7a361d27550e8ce369aadeb9ac7e71c49d8ed9a76cfbcae8ae9952d075a093": {
+  "assetId": "124267291346707",
+  "imageId": "124267291346707",
+  "moderation": "Reviewing",
+  "name": "Markers.Pin.Beam",
+  "sha": "7d7a361d27550e8ce369aadeb9ac7e71c49d8ed9a76cfbcae8ae9952d075a093",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Markers.Pin.Beam.png",
+  "type": "Image"
+ },
  "Image:7d8746d82c45df283a86751639004d35a19d5b368ec9ed178963771899bd241d": {
   "assetId": "133059993627264",
   "imageId": "133059993627264",
@@ -10950,6 +11130,15 @@
   "name": "Mayday_T_Mat_QuayStone_ALB_Wet",
   "sha": "7da685e58d02e3ba238156d2d702d4ef5c85112fe6377035f8fad712c6004aed",
   "source": "assets/textures/Materials/T_Mat_QuayStone_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:7db64f474423dfcf6fa6fc0745c5290d025b5707d7077bd5ae476a49540d6bdf": {
+  "assetId": "111843367598343",
+  "imageId": "111843367598343",
+  "moderation": "Reviewing",
+  "name": "Stickers.TheArches",
+  "sha": "7db64f474423dfcf6fa6fc0745c5290d025b5707d7077bd5ae476a49540d6bdf",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Stickers.TheArches.png",
   "type": "Image"
  },
  "Image:7db701783742e01760cb691cd1b5196be39b07190ece1fc76b3e30968ee8900e": {
@@ -11040,6 +11229,24 @@
   "name": "Mayday_T_Mat_NonSlipDeck_ALB",
   "sha": "7ebd34334a30f176bf534df8a5d7e1ac3edf2af7f0dc3dbf357933071858728d",
   "source": "assets/textures/Materials/T_Mat_NonSlipDeck_ALB.png",
+  "type": "Image"
+ },
+ "Image:7ec265539728883f793501649d716f9c543bed4ba29b26449e861b42804c21d4": {
+  "assetId": "107455716702456",
+  "imageId": "107455716702456",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.horn",
+  "sha": "7ec265539728883f793501649d716f9c543bed4ba29b26449e861b42804c21d4",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.horn.png",
+  "type": "Image"
+ },
+ "Image:7eefd0d23510a6069fa661d859724dcb42ba769609fd1d690f50fa51d385151e": {
+  "assetId": "119412457973851",
+  "imageId": "119412457973851",
+  "moderation": "Reviewing",
+  "name": "Kit.album",
+  "sha": "7eefd0d23510a6069fa661d859724dcb42ba769609fd1d690f50fa51d385151e",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.album.png",
   "type": "Image"
  },
  "Image:7f3d69790d2c36230131bff312e9fdd89155f9fef598fab800dfe9976acf6f52": {
@@ -11148,6 +11355,15 @@
   "name": "T_VFX_lego_plates",
   "sha": "804e4b0f0eef651818fb7bbd6f62084e487ab7665f2924dfda98ae8f6b610a5c",
   "source": "assets/textures/VFX/T_VFX_lego_plates.png",
+  "type": "Image"
+ },
+ "Image:80827507200406294794e1a4fb04be74a2b19ab2ec594c233714981c7afda2ae": {
+  "assetId": "103992771180637",
+  "imageId": "103992771180637",
+  "moderation": "Reviewing",
+  "name": "Stickers.Otter",
+  "sha": "80827507200406294794e1a4fb04be74a2b19ab2ec594c233714981c7afda2ae",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Stickers.Otter.png",
   "type": "Image"
  },
  "Image:808c6a8297fbdc6a67f3067370b0a2bb94a9f790ee6dd565296d674854cceba8": {
@@ -11756,6 +11972,15 @@
   "source": "assets/textures/M_Road_FieldGate/T_FieldGate_Timber_ALB.png",
   "type": "Image"
  },
+ "Image:869db9c57bdadc862f98f3d3e41d3a3327f223fac64b4e3d46fb109ee6366f26": {
+  "assetId": "112404239102332",
+  "imageId": "112404239102332",
+  "moderation": "Reviewing",
+  "name": "Kit.spin",
+  "sha": "869db9c57bdadc862f98f3d3e41d3a3327f223fac64b4e3d46fb109ee6366f26",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.spin.png",
+  "type": "Image"
+ },
  "Image:86c6fc9bacc92cbf6402fb465e13ccc1190fd1877b386ac6e8a974ae07211963": {
   "assetId": "102126340609881",
   "imageId": "102126340609881",
@@ -11934,6 +12159,15 @@
   "name": "horizon",
   "sha": "88e298daafe8d624a4133245c979005166ca443a612d091604b537822204f5f8",
   "source": "assets/ui/settings/horizon.png",
+  "type": "Image"
+ },
+ "Image:88f254dbf7b88197b98ff22b362357a92fb222af83409674ad219d5142c3a4c8": {
+  "assetId": "117133873210308",
+  "imageId": "117133873210308",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.peak",
+  "sha": "88f254dbf7b88197b98ff22b362357a92fb222af83409674ad219d5142c3a4c8",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.peak.png",
   "type": "Image"
  },
  "Image:896b0205a962431166b6dada8a31c0e82c8afab5d57246fdd0d67b1a111b389f": {
@@ -12224,6 +12458,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Grime_ALB.png",
   "type": "Image"
  },
+ "Image:8c1307ed5e20b8eb7274585c49969ac15aaf7574e265bd09374cd7770d5edfaa": {
+  "assetId": "119755405737241",
+  "imageId": "119755405737241",
+  "moderation": "Reviewing",
+  "name": "Pad.exit",
+  "sha": "8c1307ed5e20b8eb7274585c49969ac15aaf7574e265bd09374cd7770d5edfaa",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Pad.exit.png",
+  "type": "Image"
+ },
  "Image:8c23a1f2131c38a3eb668b9d302962c7a72f59dc4bda6b17484e199ce859ef21": {
   "assetId": "84279095333332",
   "imageId": "84279095333332",
@@ -12357,6 +12600,15 @@
   "name": "T_Tidewalker_Deck_ALB",
   "sha": "8e589d30ddb9abe8e0494bdbb74fdca3e19df38f06f1023dfa1f41dc7ad962e6",
   "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_ALB.png",
+  "type": "Image"
+ },
+ "Image:8e614ba383eb784e52bfd7177d5610fe5790f4490df0dda02af1ae40780bdd03": {
+  "assetId": "138798629306650",
+  "imageId": "138798629306650",
+  "moderation": "Reviewing",
+  "name": "Stickers.Penwyn",
+  "sha": "8e614ba383eb784e52bfd7177d5610fe5790f4490df0dda02af1ae40780bdd03",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Stickers.Penwyn.png",
   "type": "Image"
  },
  "Image:8e61853e4b0019c8e79d0908eac3102621e42411be63b2068f778eba27f2ad98": {
@@ -12798,6 +13050,15 @@
   "name": "Markers.BeaconMark",
   "sha": "92527ecd2a2a2eb47a06167584812638918bc58d825d6e5de394e15862e666ca",
   "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/final/Markers.BeaconMark.png",
+  "type": "Image"
+ },
+ "Image:925b35812a875b6a95e1dead6359900fa4983ba6b7b5049d643d3fa773a9b72e": {
+  "assetId": "71957501104305",
+  "imageId": "71957501104305",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.fov",
+  "sha": "925b35812a875b6a95e1dead6359900fa4983ba6b7b5049d643d3fa773a9b72e",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.fov.png",
   "type": "Image"
  },
  "Image:92624da47fbd0afa3cb477c1edd85df5a1be4bc707d5e8953570b104ec35cffb": {
@@ -13380,6 +13641,15 @@
   "name": "T_BoatTrailer_Galv_NOR",
   "sha": "9864564c84ea568de85d48f1dc139ed1088ffcaf1a9ed3c5ecf009ed52090bbd",
   "source": "assets/textures/M_Veh_BoatTrailer_RIB/T_BoatTrailer_Galv_NOR.png",
+  "type": "Image"
+ },
+ "Image:9886890de2dde8082a6bc7b93ad8d2b331713c20ce175017bc929dd036f9f73e": {
+  "assetId": "118481303660512",
+  "imageId": "118481303660512",
+  "moderation": "Reviewing",
+  "name": "Markers.Pin.Green",
+  "sha": "9886890de2dde8082a6bc7b93ad8d2b331713c20ce175017bc929dd036f9f73e",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Markers.Pin.Green.png",
   "type": "Image"
  },
  "Image:98c94f04ad7d681ef55fa0a2ea10d7dec764c365154e8d5286798ec7893af58a": {
@@ -14292,6 +14562,15 @@
   "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_ALB.png",
   "type": "Image"
  },
+ "Image:a449a8848bf519106c4a6c10be62f08b39ed109a1951e0333f8b2d0ff09ab1ec": {
+  "assetId": "84318610826029",
+  "imageId": "84318610826029",
+  "moderation": "Reviewing",
+  "name": "Stickers.Puffin",
+  "sha": "a449a8848bf519106c4a6c10be62f08b39ed109a1951e0333f8b2d0ff09ab1ec",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Stickers.Puffin.png",
+  "type": "Image"
+ },
  "Image:a457fea60929e059e4f4cba89d9806f0ee93b4b520bce20faaa2e7346f0ab7fd": {
   "assetId": "85457084824511",
   "imageId": "85457084824511",
@@ -14820,6 +15099,15 @@
   "source": "assets/textures/Materials/T_Mat_SandDry_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:aa178476334d19032b7a71b4d691e9f0d846d312cf6af577f218cd5d1adb6e46": {
+  "assetId": "119758686675875",
+  "imageId": "119758686675875",
+  "moderation": "Reviewing",
+  "name": "Kit.build",
+  "sha": "aa178476334d19032b7a71b4d691e9f0d846d312cf6af577f218cd5d1adb6e46",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.build.png",
+  "type": "Image"
+ },
  "Image:aa3f072ab03d59ce586ba50e1b4535f0129851b7187d25f86b49b68359ad1874": {
   "assetId": "83260184938057",
   "imageId": "83260184938057",
@@ -14973,6 +15261,15 @@
   "source": "assets/textures/Materials/T_Mat_TurfOlive_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:ac751c0ee889b95be5404da3f5eeae1ffc0bcd701a8765be7c79656c3ef26319": {
+  "assetId": "90107455192863",
+  "imageId": "90107455192863",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.plus",
+  "sha": "ac751c0ee889b95be5404da3f5eeae1ffc0bcd701a8765be7c79656c3ef26319",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.plus.png",
+  "type": "Image"
+ },
  "Image:ac7b3a5f92b905ccd1db37406f1559f5501d92044177f26de1f9ffb624cf8835": {
   "assetId": "104787622096528",
   "imageId": "104787622096528",
@@ -15007,6 +15304,15 @@
   "name": "T_Road_GravelTile_RGH",
   "sha": "acc49a8111a56f898ad2e03928a13658a5660ad7fe8c319f6c00906e52f8741d",
   "source": "assets/textures/M_Road_Ribbon/T_Road_GravelTile_RGH.png",
+  "type": "Image"
+ },
+ "Image:acdf960c1e1bdc2aa24ca622f39323eeb300ba3b0bbc63b000a992a8fe74da39": {
+  "assetId": "106741220900123",
+  "imageId": "106741220900123",
+  "moderation": "Reviewing",
+  "name": "Stickers.Gull",
+  "sha": "acdf960c1e1bdc2aa24ca622f39323eeb300ba3b0bbc63b000a992a8fe74da39",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Stickers.Gull.png",
   "type": "Image"
  },
  "Image:aced239b518335589023fb96952c3933d327aad7d7d189700ddaecb5e809a01b": {
@@ -15453,6 +15759,15 @@
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Glass_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:b22e986e884dbd6661e237677a8c5fb92a0facaeeba05adbf7014806fdfad053": {
+  "assetId": "80343131219797",
+  "imageId": "80343131219797",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.tap",
+  "sha": "b22e986e884dbd6661e237677a8c5fb92a0facaeeba05adbf7014806fdfad053",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.tap.png",
+  "type": "Image"
+ },
  "Image:b23caa936581e1ff0c4212cdfd73226a9fd9f2ed57b7a323a9c210b52adf1ee0": {
   "assetId": "110145848201480",
   "imageId": "110145848201480",
@@ -15816,6 +16131,15 @@
   "source": "assets/ocean/sky_v2/faces/Clear_Lf.png",
   "type": "Image"
  },
+ "Image:b7519006ecae9591959020555af3714a30ad60ad8b1976cbcf48de3c5b604c80": {
+  "assetId": "129921853511493",
+  "imageId": "129921853511493",
+  "moderation": "Reviewing",
+  "name": "Markers.TrailChevron",
+  "sha": "b7519006ecae9591959020555af3714a30ad60ad8b1976cbcf48de3c5b604c80",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Markers.TrailChevron.png",
+  "type": "Image"
+ },
  "Image:b77404cef7049b4e7e62bd38220e6f1336e0d8417736b603f4cc7bdbfd866dcf": {
   "assetId": "86690278841191",
   "imageId": "86690278841191",
@@ -15850,6 +16174,15 @@
   "name": "T_NavMarkEast_Buoy_NOR",
   "sha": "b7a742e7bf77703007c30f6bac1985771731a78b660f1083de097fed94047f6c",
   "source": "assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_NOR.png",
+  "type": "Image"
+ },
+ "Image:b7bc03a68731ba5c316c430826dd98d252744fcc9a42bb6c8c3b154babf8a103": {
+  "assetId": "122316165984314",
+  "imageId": "122316165984314",
+  "moderation": "Reviewing",
+  "name": "Kit.quests",
+  "sha": "b7bc03a68731ba5c316c430826dd98d252744fcc9a42bb6c8c3b154babf8a103",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.quests.png",
   "type": "Image"
  },
  "Image:b812c42ca5fd14b2ccddad39df7c5221c9a7934c2ccdd4d0be94535dff44b794": {
@@ -15895,6 +16228,15 @@
   "name": "T_Chandlery_Bands_ALB",
   "sha": "b91a504b4f368b23aacc4d356cc78ab7f8d2761f8058f86902cd3f958a574478",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_ALB.png",
+  "type": "Image"
+ },
+ "Image:b94035bfd616fe3a5b4afd0f220efde76e58cbcc0ac8723adb2feb629f9d112f": {
+  "assetId": "80214181870053",
+  "imageId": "80214181870053",
+  "moderation": "Reviewing",
+  "name": "Markers.Pin.Amber",
+  "sha": "b94035bfd616fe3a5b4afd0f220efde76e58cbcc0ac8723adb2feb629f9d112f",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Markers.Pin.Amber.png",
   "type": "Image"
  },
  "Image:b9ac7423439f461403637676287aeb02367456a81f916dec1c82ba10bbff4935": {
@@ -16150,6 +16492,15 @@
   "name": "T_Seal_Coat_ALB",
   "sha": "bcdbdaa78f1f11f0c1ebe479a65eca1552412cd53c5f4c422d51a0cc69197a61",
   "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_ALB.png",
+  "type": "Image"
+ },
+ "Image:bcdc7646c02c517c16ac6a2a8c2db59b07117cc74c20161039027c8f690a9919": {
+  "assetId": "71269328107727",
+  "imageId": "71269328107727",
+  "moderation": "Reviewing",
+  "name": "Stickers.MermaidLagoon",
+  "sha": "bcdc7646c02c517c16ac6a2a8c2db59b07117cc74c20161039027c8f690a9919",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Stickers.MermaidLagoon.png",
   "type": "Image"
  },
  "Image:bcf4364adf666a3b5c3c8de325f3dc52f7b8123faadd5bd636e5048b27d15014": {
@@ -18025,6 +18376,15 @@
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_ALB.png",
   "type": "Image"
  },
+ "Image:d28e8e5e59c040cb0d7ddc7882a064ce02736ecd7912291f790d17e4fdac3c07": {
+  "assetId": "97992496069373",
+  "imageId": "97992496069373",
+  "moderation": "Reviewing",
+  "name": "Kit.daily",
+  "sha": "d28e8e5e59c040cb0d7ddc7882a064ce02736ecd7912291f790d17e4fdac3c07",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.daily.png",
+  "type": "Image"
+ },
  "Image:d2ccc571d1decccdc5538a0688893979c6a7d31af7033051cac28d2de2dea579": {
   "assetId": "134317979634094",
   "imageId": "134317979634094",
@@ -18212,6 +18572,15 @@
   "name": "T_LifeguardTower_Frame_RGH",
   "sha": "d4ff27813363578dd653ec222df6ee2e48d4266c556f2b02d74dba6ce0f12fc8",
   "source": "assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Frame_RGH.png",
+  "type": "Image"
+ },
+ "Image:d51be734aaccc49ac31222db106925659555b0ec5c597236d40ae37e1fa96d24": {
+  "assetId": "118791936904678",
+  "imageId": "118791936904678",
+  "moderation": "Reviewing",
+  "name": "Pad.up",
+  "sha": "d51be734aaccc49ac31222db106925659555b0ec5c597236d40ae37e1fa96d24",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Pad.up.png",
   "type": "Image"
  },
  "Image:d52337f624997d3595e5ade5b986bf05bf4e507bbc95f5c326d4c24026908d52": {
@@ -19192,6 +19561,15 @@
   "source": "build/ui-art/beacon_mark.png",
   "type": "Image"
  },
+ "Image:dff6e44f1e4be8b70eb90cf33030ba0ed0e9a6117f5021f1be785833217d779d": {
+  "assetId": "84346763280580",
+  "imageId": "84346763280580",
+  "moderation": "Reviewing",
+  "name": "Markers.Pin.Craft",
+  "sha": "dff6e44f1e4be8b70eb90cf33030ba0ed0e9a6117f5021f1be785833217d779d",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Markers.Pin.Craft.png",
+  "type": "Image"
+ },
  "Image:e00110ddedf9f9b1739dd3957104abcb6490c9b9700bddb4747aafe29d876d7b": {
   "assetId": "127535253992608",
   "imageId": "127535253992608",
@@ -19582,6 +19960,15 @@
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Grime_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:e46fa639877f9bdca155f1d63839caa46abe844058cc2731b682610c582df96f": {
+  "assetId": "99800512753319",
+  "imageId": "99800512753319",
+  "moderation": "Reviewing",
+  "name": "Kit.lifebuoy",
+  "sha": "e46fa639877f9bdca155f1d63839caa46abe844058cc2731b682610c582df96f",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.lifebuoy.png",
+  "type": "Image"
+ },
  "Image:e4860617773a39526f1e0d38f33e0b3fbe4cc2e17ad49352e465389745295b95": {
   "assetId": "108887836477278",
   "imageId": "108887836477278",
@@ -19625,6 +20012,15 @@
   "name": "T_NavMarkSafeWater_Buoy_RGH_Wet",
   "sha": "e519676d1069c677aa3f91cf2c0e050f2f38edd97af2b75fca1144ea5b110fe4",
   "source": "assets/textures/M_Hbr_NavMark_SafeWater/T_NavMarkSafeWater_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:e52ddf2184b50364283d8eb5c34ca45e411c776316a8ea2b661f4aed1f76cfab": {
+  "assetId": "84525654838982",
+  "imageId": "84525654838982",
+  "moderation": "Reviewing",
+  "name": "Hud.Panel",
+  "sha": "e52ddf2184b50364283d8eb5c34ca45e411c776316a8ea2b661f4aed1f76cfab",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Hud.Panel.png",
   "type": "Image"
  },
  "Image:e536c07f3275c80c57b879fee26542ad2fdaf243039a4103f2f3fa13d90b9b6f": {
@@ -20055,6 +20451,15 @@
   "source": "assets/textures/M_Veh_Optimist/T_Optimist_Hull_NOR.png",
   "type": "Image"
  },
+ "Image:ec09ef3cb5d1481f6330437a586868b8b8746d95912a52b260e91c744509a4fc": {
+  "assetId": "138475817006467",
+  "imageId": "138475817006467",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.wave",
+  "sha": "ec09ef3cb5d1481f6330437a586868b8b8746d95912a52b260e91c744509a4fc",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.wave.png",
+  "type": "Image"
+ },
  "Image:ec2f21d8c7baa5aa3a1158e8063b742713f12e9ef5cf55a5cf06d8cc47f30f5f": {
   "assetId": "100897359653428",
   "imageId": "100897359653428",
@@ -20107,6 +20512,15 @@
   "name": "T_RIB_Decals_NOR",
   "sha": "ec8ba42c2930eca35a2f8b68f4296d7333d1eb6d9bf2982323fd49210a8d6d53",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_NOR.png",
+  "type": "Image"
+ },
+ "Image:ecb1249b2fc8ccdd2267ffba7b02a3cb6cb256b407691c56ec780639522b69ca": {
+  "assetId": "70598441111651",
+  "imageId": "70598441111651",
+  "moderation": "Reviewing",
+  "name": "Stickers.WreckReef",
+  "sha": "ecb1249b2fc8ccdd2267ffba7b02a3cb6cb256b407691c56ec780639522b69ca",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Stickers.WreckReef.png",
   "type": "Image"
  },
  "Image:ecc601d299c3a37349537a5fb6afa1258c9487bd8180187c173bc2f7bb10e228": {
@@ -20523,6 +20937,15 @@
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_ALB.png",
   "type": "Image"
  },
+ "Image:f1ab99331c3e410014287703bf066902f76ca4bafb036ea51025b919d393bb16": {
+  "assetId": "91980718746189",
+  "imageId": "91980718746189",
+  "moderation": "Reviewing",
+  "name": "Pad.slow",
+  "sha": "f1ab99331c3e410014287703bf066902f76ca4bafb036ea51025b919d393bb16",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Pad.slow.png",
+  "type": "Image"
+ },
  "Image:f1c43cbcb32fbcf523280bfa1af6ca93479f20966a06f26811b7409a6fae2b91": {
   "assetId": "75727136536472",
   "imageId": "75727136536472",
@@ -20719,6 +21142,15 @@
   "name": "T_NavMarkIsolatedDanger_Buoy_RGH_Wet",
   "sha": "f332aa100fa0320b4341104626482e90447924f394b5e341d5db89b987d37433",
   "source": "assets/textures/M_Hbr_NavMark_IsolatedDanger/T_NavMarkIsolatedDanger_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:f33370deb89063ee3ea7dd577d04d38fef652f45d50cb3de792e49668bfa140d": {
+  "assetId": "138833625659438",
+  "imageId": "138833625659438",
+  "moderation": "Reviewing",
+  "name": "Kit.finish_now",
+  "sha": "f33370deb89063ee3ea7dd577d04d38fef652f45d50cb3de792e49668bfa140d",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.finish_now.png",
   "type": "Image"
  },
  "Image:f33a543923c48961882d92092110c61b5ad01a86b58cfa9226b358b121c9072c": {
@@ -21198,6 +21630,15 @@
   "source": "assets/textures/Materials/T_Mat_TurfWorn_NOR.png",
   "type": "Image"
  },
+ "Image:fa090b4c6e787a20d3d4e50b992cd7586a7c1c14ff12d7bb6eacf5dafde18c63": {
+  "assetId": "108203298362844",
+  "imageId": "108203298362844",
+  "moderation": "Reviewing",
+  "name": "Kit.companion",
+  "sha": "fa090b4c6e787a20d3d4e50b992cd7586a7c1c14ff12d7bb6eacf5dafde18c63",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.companion.png",
+  "type": "Image"
+ },
  "Image:fa0cf57fadd10511d85895f8c5e8ab3f409e715d62768deb5c44dfd6db7e268d": {
   "aliases": [
    "T_Boulder01_Granite_MET",
@@ -21659,6 +22100,15 @@
   "name": "T_Pontoon_Kit_MET",
   "sha": "ff6def282e43166f07431dc590320c95441be061afcdc635af09af9fda9d49f8",
   "source": "assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_MET.png",
+  "type": "Image"
+ },
+ "Image:ffc7499462f3993289f951aec4e848446ad723161e8d50baad55de0c808ca2eb": {
+  "assetId": "119340306811510",
+  "imageId": "119340306811510",
+  "moderation": "Reviewing",
+  "name": "SettingsArt.pause",
+  "sha": "ffc7499462f3993289f951aec4e848446ad723161e8d50baad55de0c808ca2eb",
+  "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.pause.png",
   "type": "Image"
  },
  "Image:ffca03acd084064614e338a1c06e3b682dd235d2ece2bdf6be3cbefad41bb114": {

@@ -10,35 +10,35 @@ return {
 		AcceptButton = "rbxassetid://105225933033810",
 		MissionPiw = "rbxassetid://93413645418060",
 		ExitButton = "rbxassetid://122735301639954",
-		MinimapRing = "rbxassetid://138912219092687", -- hud_minimap_ring.svg: hole 72%
-		Panel = "rbxassetid://112914890862611", -- hud_panel.svg, 512x256, slice 32 px
+		MinimapRing = "rbxassetid://105528379718715", -- hud_minimap_ring.svg: hole 72%
+		Panel = "rbxassetid://84525654838982", -- hud_panel.svg, 512x256, slice 32 px
 	},
 	-- World markers (CLAUDE.md "UI art", des1 2026-10-28): Claude SVG in art/source/ui, rendered by tools/ui-art.
 	-- Pin: UI/Waypoint's pin per colour (tools/ui-art/pin_variants.py), its box centred on the head.
 	Markers = {
-		BuildArrow = "rbxassetid://84755338456979",
+		BuildArrow = "rbxassetid://84032838445846",
 		EdgePointer = "rbxassetid://89045503623987",
-		TrailChevron = "rbxassetid://91014157624813", -- art/source/ui/trail_chevron.svg (render --keep --size 520 338): the onboarding trail step, 2 frames
+		TrailChevron = "rbxassetid://129921853511493", -- art/source/ui/trail_chevron.svg (render --keep --size 520 338): the onboarding trail step, 2 frames
 		Pin = {
 			Red = "rbxassetid://116803769925060",
-			Amber = "rbxassetid://73360325899740",
-			Green = "rbxassetid://74724550052263",
-			Craft = "rbxassetid://128049279884885",
-			Quest = "rbxassetid://80368490940576",
-			Beam = "rbxassetid://139237094016793",
+			Amber = "rbxassetid://80214181870053",
+			Green = "rbxassetid://118481303660512",
+			Craft = "rbxassetid://84346763280580",
+			Quest = "rbxassetid://80754047253104",
+			Beam = "rbxassetid://124267291346707",
 		},
 		-- the map arrow (stickers.py; tip up, spun about its box centre), the gamepad crosshair (map_cross.svg), the
 		-- onboarding beacon's gem + stem and its ground ring (a Decal), the drop-off pad's pin (transport_pin.svg)
 		MapPlayer = "rbxassetid://119044752411946",
 		MapCross = "rbxassetid://78071341360128",
-		BeaconMark = "rbxassetid://103684513850685",
+		BeaconMark = "rbxassetid://133931579547429",
 		TransportPin = "rbxassetid://82312333876842",
 		TapHand = "rbxassetid://133375972498905", -- art/source/ui/tap.svg: the build tablet cue on touch
 	},
 	-- Small kit stickers (tools/ui-art/stickers.py, uia2): level stars, pet hearts, seat studs
 	Badges = {
 		StarOn = "rbxassetid://101115140051784",
-		StarOff = "rbxassetid://99551585299967",
+		StarOff = "rbxassetid://77911552150902",
 		Heart = "rbxassetid://85482763409121",
 		PipOn = "rbxassetid://73122438395663",
 		PipFull = "rbxassetid://81287110525575",
@@ -71,81 +71,81 @@ return {
 		right = "rbxassetid://72373386792609",
 		go = "rbxassetid://107416729005565",
 		brake = "rbxassetid://117362525559127",
-		slow = "rbxassetid://125100341853297",
-		exit = "rbxassetid://136794635182322",
-		up = "rbxassetid://72000600354794",
+		slow = "rbxassetid://91980718746189",
+		exit = "rbxassetid://119755405737241",
+		up = "rbxassetid://118791936904678",
 		down = "rbxassetid://71511456291214",
 	} :: { [string]: string },
 	-- UI Kit (docs/23 (m), UI/Kit): art/source/ui/kit_<key>.svg (tools/ui-art/kit_icons*.py), plus Studs: the
 	-- subtle stud tile on title bars and price buttons (assets/ui/kit).
 	Kit = {
 		Studs = "rbxassetid://108987158998866",
-		album = "rbxassetid://126053618682674",
-		boat_to_me = "rbxassetid://112615487234585",
+		album = "rbxassetid://119412457973851",
+		boat_to_me = "rbxassetid://117847983777907",
 		boost = "rbxassetid://94178964726027",
-		build = "rbxassetid://87241010378545",
+		build = "rbxassetid://119758686675875",
 		cash = "rbxassetid://73524615050602",
 		close = "rbxassetid://86609631544452",
-		companion = "rbxassetid://84925234540112",
-		crew = "rbxassetid://91582164780212",
-		daily = "rbxassetid://117840867302945",
-		finish_now = "rbxassetid://124319247058644",
+		companion = "rbxassetid://108203298362844",
+		crew = "rbxassetid://81013149158773",
+		daily = "rbxassetid://97992496069373",
+		finish_now = "rbxassetid://138833625659438",
 		hourglass = "rbxassetid://135457151427134", -- a build waits: the tablet's busy buttons
 		gift = "rbxassetid://78166338410041",
-		lifebuoy = "rbxassetid://123972601311067",
+		lifebuoy = "rbxassetid://99800512753319",
 		lock = "rbxassetid://91358795288547",
 		map = "rbxassetid://122362134620905",
-		quests = "rbxassetid://122199720759649",
+		quests = "rbxassetid://122316165984314",
 		settings = "rbxassetid://80938513012348",
-		sun = "rbxassetid://116227771643659", -- Golden hour event
+		sun = "rbxassetid://139121552665019", -- Golden hour event
 		shop = "rbxassetid://106958726223600",
 		vip = "rbxassetid://107689602334055",
-		spin = "rbxassetid://110469175771456", -- the prize wheel
+		spin = "rbxassetid://112404239102332", -- the prize wheel
 		chat = "rbxassetid://135687211740204", -- idle crew chatting (art/source/ui/chat.svg, tools/ui-art/stickers.py)
 		wave = "rbxassetid://117647967499184", -- the wake trail prize icon
-		waves = "rbxassetid://139071525797286", -- spin wheel wake prizes
+		waves = "rbxassetid://121588421624114", -- spin wheel wake prizes
 	} :: { [string]: string },
 	-- SettingsPanel row glyphs, keyed like its SHAPES (art/source/ui/set_<key>.svg; blur/bob/drops/horizon unused: assets/ui/settings)
 	SettingsArt = {
 		blur = "rbxassetid://116677182644896",
 		bob = "rbxassetid://138080772723546",
 		bubble = "rbxassetid://109673734891257",
-		burst = "rbxassetid://112315226986302",
+		burst = "rbxassetid://91967415866068",
 		drops = "rbxassetid://77876262268085",
-		fov = "rbxassetid://137880678387815",
-		half = "rbxassetid://87049366731344",
+		fov = "rbxassetid://71957501104305",
+		half = "rbxassetid://80095601263749",
 		horizon = "rbxassetid://77356769833875",
-		horn = "rbxassetid://83659695592905",
-		no = "rbxassetid://121476609266313",
-		note = "rbxassetid://92792439591939",
+		horn = "rbxassetid://107455716702456",
+		no = "rbxassetid://101816213126997",
+		note = "rbxassetid://100612325857668",
 		notes = "rbxassetid://90588794160573",
-		pause = "rbxassetid://98535081821095",
-		peak = "rbxassetid://98960751308730",
-		plus = "rbxassetid://127649540256951",
-		reset = "rbxassetid://126684807582300",
-		shake = "rbxassetid://103149091272672",
+		pause = "rbxassetid://119340306811510",
+		peak = "rbxassetid://117133873210308",
+		plus = "rbxassetid://90107455192863",
+		reset = "rbxassetid://133965911902055",
+		shake = "rbxassetid://119043882472259",
 		sparkle = "rbxassetid://139978053064355",
-		speed = "rbxassetid://107949437349828",
-		tap = "rbxassetid://93560884791045",
-		wave = "rbxassetid://129876151603660",
-		waves = "rbxassetid://101386583534628",
+		speed = "rbxassetid://78003965913036",
+		tap = "rbxassetid://80343131219797",
+		wave = "rbxassetid://138475817006467",
+		waves = "rbxassetid://80438478747835",
 	} :: { [string]: string },
 	-- album stickers (art/source/ui/stamp_<id>.svg, critter_<name>.svg): island stamps by island id, Bottle / View, rare critters
 	Stickers = {
 		SkerryIsle = "rbxassetid://79147895150372",
 		PuffinIsle = "rbxassetid://103196387838640",
-		Penwyn = "rbxassetid://132874654253278",
-		WreckReef = "rbxassetid://110485685013401",
-		TheArches = "rbxassetid://124445719416194",
-		GannetRock = "rbxassetid://107245522856222",
-		MermaidLagoon = "rbxassetid://84069087535517",
+		Penwyn = "rbxassetid://138798629306650",
+		WreckReef = "rbxassetid://70598441111651",
+		TheArches = "rbxassetid://111843367598343",
+		GannetRock = "rbxassetid://120316727065138",
+		MermaidLagoon = "rbxassetid://71269328107727",
 		Bottle = "rbxassetid://73594574316222",
-		View = "rbxassetid://76100132606085",
+		View = "rbxassetid://119121250292276",
 		SealPup = "rbxassetid://126110196776760",
-		Gull = "rbxassetid://137610897367727",
-		Puffin = "rbxassetid://73610566777086",
-		Otter = "rbxassetid://70851405202756",
+		Gull = "rbxassetid://106741220900123",
+		Puffin = "rbxassetid://84318610826029",
+		Otter = "rbxassetid://103992771180637",
 		Turtle = "rbxassetid://76131311151723",
-		Wreck = "rbxassetid://110485685013401", -- shortcut: the Wreck Reef stamp art until a wreck sticker lands
+		Wreck = "rbxassetid://70598441111651", -- shortcut: the Wreck Reef stamp art until a wreck sticker lands
 	} :: { [string]: string },
 }

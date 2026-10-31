@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""UI Kit icons, round 3 redraws (companion, crew, finish_now, gift, hourglass), same spec as kit_icons.py
+"""UI Kit icons, round 3 redraws (companion, crew, finish_now, gift, hourglass; daily from r4), same spec as kit_icons.py
 (helpers copied, not imported): white rim 30 round the union, ink 12, lip 12 down, top-to-bottom gradient, gloss 10 @ 0.55.
 A part with rim_over=True gets its own white rim drawn over the parts behind it (a badge that must separate).
 Writes art/source/ui/kit_<name>.svg (square viewBox, art fills 88%) and renders <out>/Kit.<name>.png (128x128 --keep = 256 px).
@@ -17,6 +17,7 @@ SRC = ROOT / "art/source/ui"
 RENDER = ROOT / "tools/ui-art/render.py"
 INK = "#14121C"
 FILL = 0.88
+R6 = {"daily": True, "finish_now": True}  # r6 redraws; False regenerates the r5 best pixel-identical
 C = {  # top, bottom, lip
     "red": ("#FF8A7A", "#E2333A", "#A3161E"), "blue": ("#8EE0FF", "#2C8EF0", "#1A55A8"),
     "gold": ("#FFE45C", "#FFAE00", "#C27400"), "orange": ("#FFC266", "#FF7419", "#B84A08"),
@@ -28,6 +29,15 @@ C = {  # top, bottom, lip
     "paw3": ("#FFD49A", "#FF8A33", "#B0420A"), "cap": ("#C4F2FF", "#1C78E0", "#12439A"),
     "lid": ("#FFE39A", "#FFA42E", "#B8520A"), "chest": ("#FFB477", "#EC5E1A", "#A63A0C"),
     "lock": ("#FFD23A", "#E88A00", "#A85A00"), "bow": ("#FFE45C", "#FFAE00", "#B85E00"),
+    # r4: warm caps for finish_now (unlike the blue timer), a blue badge, a deep chest band
+    "warm": ("#FFD27A", "#FF7A1A", "#B8460A"), "sky": ("#A6EEFF", "#2E9BFF", "#1A55B8"),
+    "band": ("#C2560F", "#A63A0C", "#7A2A08"), "coin": ("#FFF27A", "#FFB800", "#C27400"),
+    # r5: a dark red-brown chest body, bright gold trim, a dark open-lid inside so the gold coins pop
+    "chest5": ("#D8643A", "#9C2F14", "#5A170A"), "trim": ("#FFF59A", "#FFCC1A", "#C27400"),
+    "inside": ("#8A3412", "#5A1C08", "#3A1004"),
+    # r6: a brighter lid and body so the chest separates from dark navy; a white bolt
+    "lid6": ("#FFF6CC", "#FFBE4D", "#C2620E"), "chest6": ("#F08452", "#B8401C", "#6A1E0A"),
+    "white6": ("#FFFFFF", "#EAF4FF", "#9DB8E0"),
 }
 
 
@@ -86,8 +96,8 @@ class Icon:
                          f'<stop offset="1" stop-color="{bottom}"/></linearGradient>')
         return gid
 
-    def part(self, d, col, lip=12, gloss=None, extra="", rim_over=False):
-        self.parts.append((d, col, lip, gloss, extra, rim_over))
+    def part(self, d, col, lip=12, gloss=None, extra="", rim_over=False, sep=None):
+        self.parts.append((d, col, lip, gloss, extra, rim_over, sep))
 
     def inner(self, d, col, ink=8, lip=6):
         """a shape on top of a part: its own ink line, lip and gradient, no rim"""
@@ -104,12 +114,12 @@ class Icon:
         rim = lambda d, lip: "".join(P(d, "#fff", dy, "#fff", 30) for dy in sorted({0, lip}))
         ink = lambda d, lip, w: "".join(P(d, INK, dy, INK, w) for dy in sorted({0, lip}, reverse=True))
         out = "".join(rim(d, 0) for d in self.backs)
-        out += "".join(rim(d, lip) for d, _, lip, _, _, _ in self.parts)
-        out += "".join(ink(d, lip, 12) for d, _, lip, _, _, _ in self.parts)  # the union outline
-        for d, col, lip, gloss, extra, rim_over in self.parts:
+        out += "".join(rim(d, lip) for d, _, lip, *_ in self.parts)
+        out += "".join(ink(d, lip, 12) for d, _, lip, *_ in self.parts)  # the union outline
+        for d, col, lip, gloss, extra, rim_over, sep in self.parts:
             g = self.grad(col)
             # inside the union, parts separate with a lighter 8 line (12 everywhere read as dark blobs at 1x)
-            out += (rim(d, lip) + ink(d, lip, 12) if rim_over else ink(d, lip, self.sep))
+            out += (rim(d, lip) + ink(d, lip, 12) if rim_over else ink(d, lip, sep or self.sep))
             out += (P(d, C[col][2], lip) if lip else "") + P(d, f"url(#{g})", 0)
             if gloss:
                 out += f'<path d="{gloss}" fill="none" stroke="#fff" stroke-opacity="0.55" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>'
@@ -126,11 +136,12 @@ class Icon:
 # --- the icons ---
 def companion():
     i = Icon()
-    for cx, cy, deg in ((18, 92, -30), (62, 34, -10), (138, 34, 10), (182, 92, 30)):
-        i.part(poly(ellipse(cx, cy, 22, 28, deg)), "paw3", lip=12, gloss=f"M{cx - 11},{cy - 4} Q{cx - 10},{cy - 15} {cx - 2},{cy - 20}")
-    pad = "M100,102 C130,102 158,128 162,152 C166,176 146,186 126,180 C114,176 86,176 74,180 C54,186 34,176 38,152 C42,128 70,102 100,102 Z"
-    i.part(pad, "paw3", lip=14, gloss="M56,152 C58,138 66,128 76,122", extra=stud(100, 146, 21, "#FFE6C2", "#B0420A"))
-    return i, "companion: a bright caramel-orange paw print, a Lego stud on the big pad, strong dark lips so every toe separates"
+    for cx, cy, deg in ((20, 84, -30), (64, 18, -10), (136, 18, 10), (180, 84, 30)):  # r4: taller toes spread up (spare height) so white shows between
+        i.part(poly(ellipse(cx, cy, 24, 33, deg)), "paw3", lip=12, gloss=f"M{cx - 13},{cy - 4} Q{cx - 12},{cy - 17} {cx - 3},{cy - 23}")
+    i.backs.append(poly([(30, 92), (58, 36), (142, 36), (170, 92), (150, 140), (50, 140)]))  # white between toes and pad: one die-cut sticker
+    pad = "M100,104 C130,104 158,130 162,154 C166,178 146,188 126,182 C114,178 86,178 74,182 C54,188 34,178 38,154 C42,130 70,104 100,104 Z"
+    i.part(pad, "paw3", lip=14, gloss="M56,154 C58,140 66,130 76,124", extra=stud(100, 148, 22, "#FFF4E2", "#A63A0C"))
+    return i, "companion: a bright caramel-orange paw print, big spread toes, a high-contrast Lego stud on the big pad, strong dark lips"
 
 
 def crew():
@@ -138,17 +149,18 @@ def crew():
 
     def fig(ox, helmet):
         T = lambda d: tf(d, 1, ox, 0)
+        H = lambda d: tf(d, 1.12, ox - 7.2, -18)  # r4: head + helmet 12% bigger about (60, 150)
         i.part(T("M4,192 L12,154 Q16,138 34,138 L86,138 Q104,138 108,154 L116,192 Z"), "orange", gloss=T("M26,162 L30,152"))
-        eyes = "".join(f'<circle cx="{ox + x}" cy="110" r="10" fill="{INK}"/>' for x in (44, 76))
-        i.part(T(rrect(20, 64, 100, 150, 20)), "skin", lip=8, extra=eyes + line(T("M44,128 Q60,140 76,128"), 9))
-        i.part(T(rrect(46, 12, 74, 34, 6)), helmet, lip=0)
-        i.part(T("M10,82 Q10,28 60,28 Q110,28 110,82 Q110,88 104,88 L16,88 Q10,88 10,82 Z"), helmet, lip=8,
-               gloss=T("M28,60 Q32,46 48,40"))
+        eyes = "".join(f'<circle cx="{ox + x}" cy="108" r="12.5" fill="{INK}"/>' for x in (42, 78))
+        i.part(H(rrect(20, 64, 100, 150, 20)), "skin", lip=8, extra=eyes + line(T("M40,130 Q60,148 80,130"), 11))
+        i.part(H(rrect(46, 12, 74, 34, 6)), helmet, lip=0)
+        i.part(H("M10,82 Q10,28 60,28 Q110,28 110,82 Q110,88 104,88 L16,88 Q10,88 10,82 Z"), helmet, lip=8,
+               gloss=H("M28,60 Q32,46 48,40"))
 
     i.backs.append(rrect(80, 40, 150, 160, 10))  # fills the rim gap between the heads: one shared sticker
-    fig(106, "red")  # behind
+    fig(112, "red")  # behind, spaced so each 12%-bigger head keeps its own dark outline
     fig(0, "blue")
-    return i, "crew: two wide Lego minifig rescuers shoulder to shoulder under one white rim, big yellow heads, dot eyes and a smile"
+    return i, "crew: two wide Lego minifig rescuers shoulder to shoulder under one white rim, big yellow heads, big dot eyes and a wide smile"
 
 
 HOURGLASS = {  # 200-unit hourglass, M/L/Q only so finish_now can scale it
@@ -160,16 +172,16 @@ HOURGLASS = {  # 200-unit hourglass, M/L/Q only so finish_now can scale it
 }
 
 
-def hourglass_parts(i, s=1, ox=0, oy=0):
+def hourglass_parts(i, s=1, ox=0, oy=0, cap="cap"):
     T = lambda d: tf(d, s, ox, oy)
     H = HOURGLASS
     for d in H["studs"]:
-        i.part(T(d), "cap", lip=0)
+        i.part(T(d), cap, lip=0)
     sand = i.inner(T(H["sand_top"]), "sand", ink=8, lip=0) + i.inner(T(H["sand_bot"]), "sand", ink=8, lip=0) \
         + line(T("M100,92 L100,114"), 16 * s, "#FFB000")
     i.part(T(H["glass"]), "glass", lip=0, gloss=T("M62,112 Q58,130 60,146"), extra=sand)
-    i.part(T(H["top"]), "cap", gloss=T("M36,20 L84,20"))
-    i.part(T(H["bottom"]), "cap", gloss=T("M36,174 L60,174"))
+    i.part(T(H["top"]), cap, gloss=T("M36,20 L84,20"))
+    i.part(T(H["bottom"]), cap, gloss=T("M36,174 L60,174"))
 
 
 def hourglass():
@@ -179,12 +191,63 @@ def hourglass():
 
 
 def finish_now():
+    if not R6["finish_now"]:
+        return finish_now_r5()
     i = Icon(sep=10)
     hourglass_parts(i)
-    disc = poly(ellipse(184, 176, 38, 38, 0, 64))
-    bolt = tf("M106,8 L154,8 L124,72 L172,72 L72,192 L92,118 L36,118 Z", 0.32, 150.7, 144)
-    i.part(disc, "red", lip=8, gloss="M160,170 Q162,156 172,150", extra=i.inner(bolt, "gold", ink=8, lip=4), rim_over=True)
-    return i, "finish now: the big blue hourglass with a small red lightning badge (gold bolt) on its own white rim over the corner"
+    s, cx, cy, r = 0.5, 162, 158, 60  # r6: a bigger gold disc (same outer bbox as r5), a white bolt
+    bolt = tf("M106,8 L154,8 L124,72 L172,72 L72,192 L92,118 L36,118 Z", s, cx - 104 * s, cy - 100 * s)
+    i.part(poly(ellipse(cx, cy, r, r, 0, 64)), "gold", lip=10, gloss=f"M{cx - 38},{cy - 6} Q{cx - 36},{cy - 32} {cx - 16},{cy - 42}",
+           extra=i.inner(bolt, "white6", ink=10, lip=5), rim_over=True)
+    return i, "finish now (r6): a blue-capped hourglass with a big gold lightning badge (white bolt) on its own white rim over the corner"
+
+
+def finish_now_r5():
+    i = Icon(sep=10)
+    hourglass_parts(i)  # r5: the peer hourglass family (blue caps, gold sand); the bolt badge sets it apart
+    s = 0.44  # bolt box centre (104, 100) -> disc centre (172, 168)
+    disc = poly(ellipse(172, 168, 50, 50, 0, 64))
+    bolt = tf("M106,8 L154,8 L124,72 L172,72 L72,192 L92,118 L36,118 Z", s, 172 - 104 * s, 168 - 100 * s)
+    i.part(disc, "sky", lip=10, gloss="M140,160 Q142,140 156,132", extra=i.inner(bolt, "gold", ink=9, lip=5), rim_over=True)
+    return i, "finish now: a blue-capped hourglass with a big blue lightning badge (gold bolt) on its own white rim over the corner"
+
+
+def daily():
+    if not R6["daily"]:
+        return daily_r5()
+    i = Icon()
+    lid = "M16,100 L32,22 Q34,8 48,8 L152,8 Q166,8 168,22 L184,100 Z"
+    for x in (56, 112):
+        i.part(rrect(x, -10, x + 32, 14, 7), "lid6", lip=0)
+    i.part(lid, "lid6", lip=0, gloss="M30,84 L42,30", extra=i.inner("M42,96 L54,34 L146,34 L158,96 Z", "inside", ink=8, lip=0))
+    for cx, cy, r in ((54, 88, 40), (146, 88, 40), (100, 70, 46)):  # r6: three bigger coins, the middle one in front
+        i.part(poly(ellipse(cx, cy, r, r)), "coin", lip=0, sep=12,
+               gloss=f"M{cx - r * 0.55:.0f},{cy - 2} Q{cx - r * 0.5:.0f},{cy - r * 0.5:.0f} {cx - 2},{cy - r * 0.62:.0f}")
+    body = rrect(0, 112, 200, 190, 14)
+    i.part(body, "chest6", lip=14, gloss="M30,150 L30,170",
+           extra=i.inner(rrect(0, 112, 200, 130, 6), "trim", ink=8, lip=0)
+           + "".join(i.inner(rrect(x, 112, x + 22, 190, 4), "trim", ink=7, lip=0) for x in (28, 150)))
+    i.part(rrect(78, 104, 122, 150, 10), "trim", lip=8, gloss="M88,116 L88,128",
+           extra=f'<rect x="95" y="122" width="10" height="16" rx="5" fill="{INK}"/>')
+    return i, "daily reward (r6): a Lego treasure chest flung open, a bright studded lid with a gloss and a dark inside, three big gold coins, a red-brown body with bright gold trim and latch"
+
+
+def daily_r5():
+    i = Icon()
+    lid = "M16,100 L32,22 Q34,8 48,8 L152,8 Q166,8 168,22 L184,100 Z"  # the lid flung open behind, its dark inside showing
+    for x in (56, 112):  # 2 Lego studs on the lid's top edge
+        i.part(rrect(x, -10, x + 32, 14, 7), "lid", lip=0)
+    i.part(lid, "lid", lip=0, extra=i.inner("M42,96 L54,34 L146,34 L158,96 Z", "inside", ink=8, lip=0))
+    for cx, cy, r in ((50, 92, 32), (150, 92, 32), (100, 74, 38)):  # r5: three big plain coins, each a full 12 outline
+        i.part(poly(ellipse(cx, cy, r, r)), "coin", lip=0, sep=12,
+               gloss=f"M{cx - r * 0.55:.0f},{cy - 2} Q{cx - r * 0.5:.0f},{cy - r * 0.5:.0f} {cx - 2},{cy - r * 0.62:.0f}")
+    body = rrect(0, 112, 200, 190, 14)
+    i.part(body, "chest5", lip=14, gloss="M30,150 L30,170",
+           extra=i.inner(rrect(0, 112, 200, 130, 6), "trim", ink=8, lip=0)  # a bright gold rim band: lid and body read as two parts
+           + "".join(i.inner(rrect(x, 112, x + 22, 190, 4), "trim", ink=7, lip=0) for x in (28, 150)))
+    i.part(rrect(78, 104, 122, 150, 10), "trim", lip=8, gloss="M88,116 L88,128",
+           extra=f'<rect x="95" y="122" width="10" height="16" rx="5" fill="{INK}"/>')  # a small keyhole slot, not a mushy dot
+    return i, "daily reward: a Lego treasure chest flung open, studded light lid with a dark inside, three big gold coins, a dark red-brown body with bright gold trim and latch"
 
 
 def gift():
@@ -202,7 +265,7 @@ def gift():
     return i, "gift: a red present with two Lego studs on the lid, a thick gold ribbon cross, a big gold bow with a dark lip"
 
 
-ICONS = [companion, crew, finish_now, gift, hourglass]
+ICONS = [companion, crew, daily, finish_now, gift, hourglass]
 
 
 def render(svg_path, png):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Kit menu icons, half 2 (lifebuoy, lock, map, quests, settings, sun, vip; shop/spin/wave live in kit_icons4.py, waves is hand SVG), in the stickers.py
+"""Kit menu icons, half 2 (lifebuoy, lock, map, quests, settings, sun, vip; plus Badges.Rays; shop/spin/wave live in kit_icons4.py, waves is hand SVG), in the stickers.py
 house style: one die-cut sticker per icon (white rim and hard outline round the UNION of its parts, a darker lip under
 each part, bold top-down gradients, a soft gloss). Drawn in a 200-unit box (rim 30, outline 12, lip 12 like every
 Kit sticker); the square viewBox is fitted so the art fills 88% of it, centred. Writes art/source/ui/kit_<name>.svg and renders each
@@ -11,6 +11,9 @@ import subprocess
 import sys
 
 from PIL import Image
+
+# round 6 redraws; False = the version that shipped as best (lifebuoy/quests/sun r5, map/rays r3)
+R6 = {"lifebuoy": False, "map": False, "quests": True, "sun": True, "rays": False}
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SRC = ROOT / "art/source/ui"
@@ -72,12 +75,13 @@ def polar(cx, cy, r, a):
 
 # ---- the icons -------------------------------------------------------------------------------------------------------
 def lifebuoy():
-    """rescue / pickup ring: a fat red ring, four white bands (one with a Lego stud), a sea-blue hole"""
+    """rescue / pickup ring: a fat red ring, four white bands as wide as the red (one with a Lego stud), a deep navy hole
+    with an inner shadow under its top edge"""
     c, R, r = (100, 98), 88, 34
-    bands = [part(ring_sector(*c, r, R, a - 19, a + 19), WHITE, dy=16) for a in (0, 90, 180, 270)]
-    seams = "".join(ink(*polar(*c, r, a), *polar(*c, R, a), w=7) for b in (0, 90, 180, 270) for a in (b - 19, b + 19))
-    hole = (f'<circle cx="{c[0]}" cy="{c[1]}" r="{r}" fill="#0E3466"/>'
-            f'<circle cx="{c[0]}" cy="{c[1] + 8}" r="{r - 4}" fill="#1F64B0"/>'
+    bands = [part(ring_sector(*c, r, R, a - 22.5, a + 22.5), WHITE, dy=16) for a in (0, 90, 180, 270)]
+    seams = "".join(ink(*polar(*c, r, a), *polar(*c, R, a), w=7) for b in (0, 90, 180, 270) for a in (b - 22.5, b + 22.5))
+    hole = (f'<circle cx="{c[0]}" cy="{c[1]}" r="{r}" fill="#040A1C"/>'  # the shadow crescent under the top edge
+            f'<circle cx="{c[0]}" cy="{c[1] + 10}" r="{r - 6}" fill="#0F2656"/>'
             f'<circle cx="{c[0]}" cy="{c[1]}" r="{r}" fill="none" stroke="{INK}" stroke-width="8"/>')
     g = lambda a0, a1, rr=66: "M%.1f,%.1f A%d,%d 0 0,1 %.1f,%.1f" % (*polar(*c, rr, a0), rr, rr, *polar(*c, rr, a1))
     # bands on the axes so the gloss lands on red (it vanishes on white)
@@ -112,15 +116,18 @@ def map_():
 
 
 def quests():
-    """quest board / pontoons: a scroll, two bold lines and a big red Lego seal on the bottom roll"""
+    """quest board / pontoons: a light cream scroll on gold rolls, two dark brown bars, a big red seal with a white star"""
     body, seal = "M40,40 L160,40 L160,180 L40,180 Z", circ(100, 160, 42)
     roll = lambda y: f"M40,{y} L160,{y} Q178,{y} 178,{y + 17} Q178,{y + 34} 160,{y + 34} L40,{y + 34} Q22,{y + 34} 22,{y + 17} Q22,{y} 40,{y} Z"
     curls = ink(42, 41, 158, 41, 8, "#B86A00") + ink(42, 193, 158, 193, 8, "#B86A00")  # the under-curl shade of each roll
     rollc = ("#FFF08A", "#F39A00", "#A85A00")
-    bars = ink(64, 74, 136, 74, 18, "#F07A10") + ink(64, 100, 112, 100, 18, "#F07A10")
-    s = build([part(body, ("#FFFDF0", "#FFE89A", "#C27400")), part(roll(14), rollc, z=1, sep=True),
+    bars = ink(64, 74, 136, 74, 18, "#6E3812") + ink(64, 100, 112, 100, 18, "#6E3812")
+    pts = " ".join("%.1f,%.1f" % polar(100, 161, 27 if k % 2 == 0 else 12, k * 36 - 90) for k in range(10))
+    star = (f'<polygon points="{pts}" fill="#A3161E" stroke="#A3161E" stroke-width="6" stroke-linejoin="round" transform="translate(0,5)"/>'
+            f'<polygon points="{pts}" fill="#fff" stroke="#fff" stroke-width="6" stroke-linejoin="round"/>')
+    s = build([part(body, ("#FFFFF8", "#FBE6BE", "#C27400")), part(roll(14), rollc, z=1, sep=True),
                part(roll(166), rollc, z=1, sep=True, dy=16), part(seal, RED, z=2, sep=True)],
-              gloss=["M36,24 L74,24"], extra=bars + stud(100, 160, 25, "#FF9A8E", "#A3161E"))
+              gloss=["M36,24 L74,24"], extra=bars + star)
     i = s.index(f'<path d="{seal}" fill="{INK}"')  # the seal's own outline: the roll shades go under the seal
     return s[:i] + curls + s[i:]
 
@@ -140,12 +147,12 @@ def settings():
 
 
 def sun():
-    """golden hour: a gold-to-orange sun, eight pointed rays (long and short) clear of the disc"""
+    """golden hour: a gold-to-orange sun, eight short fat triangular rays (long and short) clear of the disc"""
     c = (100, 98)
     rays = ""
     for i in range(8):
-        a, tip, half = i * 45 - 90, (102 if i % 2 == 0 else 90), (13 if i % 2 == 0 else 11)
-        (x0, y0), (x1, y1), (x2, y2) = polar(*c, 66, a - half), polar(*c, tip, a), polar(*c, 66, a + half)
+        a, tip, half = i * 45 - 90, (98 if i % 2 == 0 else 88), (17 if i % 2 == 0 else 14)
+        (x0, y0), (x1, y1), (x2, y2) = polar(*c, 64, a - half), polar(*c, tip, a), polar(*c, 64, a + half)
         rays += f"M{x0:.1f},{y0:.1f} L{x1:.1f},{y1:.1f} L{x2:.1f},{y2:.1f} Z "
     g = "M%.1f,%.1f A32,32 0 0,1 %.1f,%.1f" % (*polar(*c, 32, 192), *polar(*c, 32, 252))
     return build([part(rays, ORANGE), part(circ(*c, 44), ("#FFE45C", "#FF9A00", "#C25E00"), z=1, sep=True)], gloss=[g])
@@ -162,7 +169,109 @@ def vip():
                  gloss=["M44,98 L40,130"], extra=gem)
 
 
-ICONS = {"lifebuoy": lifebuoy, "lock": lock, "map": map_, "quests": quests, "settings": settings, "sun": sun, "vip": vip}
+def lifebuoy6():
+    """rescue / pickup ring: a fat red ring, four white bands as wide as the red (one with a Lego stud), a white rope
+    loop on the outer rim of each red band, a deep navy hole with an inner shadow under its top edge"""
+    c, R, r = (100, 98), 88, 34
+    bands = [part(ring_sector(*c, r, R, a - 22.5, a + 22.5), WHITE, dy=16) for a in (0, 90, 180, 270)]
+    seams = "".join(ink(*polar(*c, r, a), *polar(*c, R, a), w=7) for b in (0, 90, 180, 270) for a in (b - 22.5, b + 22.5))
+    hole = (f'<circle cx="{c[0]}" cy="{c[1]}" r="{r}" fill="#040A1C"/>'
+            f'<circle cx="{c[0]}" cy="{c[1] + 10}" r="{r - 6}" fill="#0F2656"/>'
+            f'<circle cx="{c[0]}" cy="{c[1]}" r="{r}" fill="none" stroke="{INK}" stroke-width="8"/>')
+    arc = lambda a0, a1, rr: "M%.1f,%.1f A%d,%d 0 0,1 %.1f,%.1f" % (*polar(*c, rr, a0), rr, rr, *polar(*c, rr, a1))
+    # each rope runs band to band along the outer rim of a red band, its ends tucked onto the white bands
+    rope = "".join(f'<path d="{arc(a - 27, a + 27, 75)}" fill="none" stroke="{col}" stroke-width="{w}" stroke-linecap="round"/>'
+                   for a in (45, 135, 225, 315) for col, w in ((INK, 24), ("#FFFFFF", 12)))
+    return build([part(circ(*c, R), ("#FF9584", "#C81A26", "#82101A"), dy=16)] + bands, gloss=[arc(208, 242, 51)],
+                 extra=seams + hole + rope + stud(100, 37, 14, "#FFFFFF", "#8E9AB2"))
+
+
+def map6():
+    """the full map: a wide chart folded in three (the middle panel darker, a shade at each fold), a dotted brown trail
+    to a hand-drawn red X on the paper"""
+    xs, hi, lo = (8, 68, 132, 192), 40, 24
+    top = [(x, hi if i % 2 == 0 else lo) for i, x in enumerate(xs)]
+    light, dark = ("#FFF4B0", "#FFC93A", "#C27400"), ("#FFD447", "#E58A00", "#A85A00")
+    panels = [part(f"M{top[i][0]},{top[i][1]} L{top[i + 1][0]},{top[i + 1][1]} L{top[i + 1][0]},{top[i + 1][1] + 120} "
+                   f"L{top[i][0]},{top[i][1] + 120} Z", dark if i == 1 else light) for i in range(3)]
+    # a darker strip on each panel where it bends into a fold
+    fold = lambda x0, y0, x1, y1, col, op: (f'<path d="M{x0},{y0} L{x1},{y1} L{x1},{y1 + 120} L{x0},{y0 + 120} Z" '
+                                           f'fill="{col}" fill-opacity="{op}"/>')
+    k = (hi - lo) / 60
+    shade = (fold(48, hi - 40 * k, 68, lo, "#C27400", 0.35) + fold(68, lo, 90, lo + 22 * k, "#7A3E00", 0.35)
+             + fold(132, hi, 152, hi - 20 * k, "#7A3E00", 0.3))
+    folds = ink(68, lo, 68, lo + 120, 8) + ink(132, hi, 132, hi + 120, 8)
+    trail = ('<path d="M28,128 C46,90 92,146 126,98" stroke="#6E3812" stroke-width="16" stroke-linecap="round" '
+             'stroke-dasharray="1 26" fill="none"/>')
+    # a brushy X: two slightly bowed strokes, a dark-red edge (no rim of its own) under a red core
+    xd = ["M148,76 Q162,88 176,104", "M176,74 Q160,90 150,106"]
+    x = "".join(f'<path d="{d}" stroke="{col}" stroke-width="{w}" stroke-linecap="round" fill="none"/>'
+                for col, w in (("#7A0E14", 28), ("#E2333A", 16)) for d in xd)
+    return build(panels, gloss=["M22,58 L50,54"], extra=shade + folds + trail + x)
+
+
+def quests6():
+    """quest board / pontoons: a square wooden notice board, a cream paper pinned to it with three dark brown text
+    bars, a big red seal with a white star on its corner"""
+    board = "M30,24 L170,24 Q186,24 186,40 L186,160 Q186,176 170,176 L30,176 Q14,176 14,160 L14,40 Q14,24 30,24 Z"
+    paper = "M40,44 L156,40 L160,156 L44,160 Z"
+    seal = circ(146, 146, 34)
+    bars = ink(62, 76, 136, 74, 18, "#6E3812") + ink(62, 102, 132, 100, 18, "#6E3812") + ink(64, 128, 104, 127, 18, "#6E3812")
+    pts = " ".join("%.1f,%.1f" % polar(146, 147, 22 if k % 2 == 0 else 10, k * 36 - 90) for k in range(10))
+    star = (f'<polygon points="{pts}" fill="#A3161E" stroke="#A3161E" stroke-width="6" stroke-linejoin="round" transform="translate(0,5)"/>'
+            f'<polygon points="{pts}" fill="#fff" stroke="#fff" stroke-width="6" stroke-linejoin="round"/>')
+    s = build([part(board, ("#E9A55A", "#B8682C", "#7A3E14"), dy=16), part(paper, ("#FFFFF8", "#FBE6BE", "#C9A070"), z=1, sep=True, dy=8),
+               part(seal, RED, z=2, sep=True)], gloss=["M26,40 L26,72"], extra=bars + star)
+    i = s.rindex(f'<path d="{seal}" fill="{INK}"')  # the pin goes under the seal's own outline (they never touch)
+    return s[:i] + stud(98, 44, 12, "#8EE0FF", "#1A55A8") + s[i:]
+
+
+def sun6():
+    """a friendly sun: a big light-yellow disc (60% of the width) in eight short rounded teardrop rays with gaps"""
+    c, d0, d1, rr = (100, 100), 68, 88, 11
+    rays = ""
+    t = math.degrees(math.acos(rr / (d1 - d0)))  # tangent from the inner tip to the round end
+    for i in range(8):
+        a = i * 45 - 90
+        tip, cc = polar(*c, d0, a), polar(*c, d1, a)
+        (x0, y0), (x1, y1) = polar(*cc, rr, a + 180 - t), polar(*cc, rr, a + 180 + t)
+        rays += f"M{tip[0]:.1f},{tip[1]:.1f} L{x0:.1f},{y0:.1f} A{rr},{rr} 0 1,0 {x1:.1f},{y1:.1f} Z "
+    g = "M%.1f,%.1f A40,40 0 0,1 %.1f,%.1f" % (*polar(*c, 40, 196), *polar(*c, 40, 250))
+    return build([part(rays, ("#FFD24A", "#FF9A14", "#C25E00")), part(circ(*c, 58), ("#FFF7B0", "#FFD21F", "#D08A00"), z=1, sep=True)],
+                 gloss=[g])
+
+
+ICONS = {"lifebuoy": lifebuoy6 if R6["lifebuoy"] else lifebuoy, "lock": lock, "map": map6 if R6["map"] else map_,
+         "quests": quests6 if R6["quests"] else quests, "settings": settings, "sun": sun6 if R6["sun"] else sun, "vip": vip}
+
+
+def rays():
+    """Badges.Rays, the burst behind a reward (medal flip, skill unlock) that spins slowly: 12 equal hard wedges (gaps between) in two
+    golds (light | deep) on a deep orange edge, a flat warm hub under the prize. R6: a thinner edge and the wedge ends
+    fading out so the burst sits behind the badge. A 400 page centred on 200,200 (rendered whole, kept, so it spins about
+    its centre); writes art/source/ui/rays.svg"""
+    c, r6 = (200, 200), R6["rays"]
+    wedge = lambda a: "M200,200 L%.1f,%.1f A186,186 0 0,1 %.1f,%.1f Z" % (*polar(*c, 186, a - 10.5), *polar(*c, 186, a + 10.5))
+    angles = [i * 30 - 90 for i in range(12)]
+    fade = lambda c1: f'<stop offset="0.62" stop-color="{c1}"/><stop offset="1" stop-color="{c1}" stop-opacity="0"/>' if r6 else ""
+    defs = "".join(f'<radialGradient id="{k}" cx="200" cy="200" r="186" gradientUnits="userSpaceOnUse"><stop offset="0.3" '
+                   f'stop-color="{a}"/>' + (f'<stop offset="0.62" stop-color="{b}"/>' if r6 else f'<stop offset="1" stop-color="{b}"/>')
+                   + (f'<stop offset="1" stop-color="{b}" stop-opacity="0"/>' if r6 else "") + "</radialGradient>"
+                   for k, a, b in (("a", "#FFF09A", "#FFCC1F"), ("c", "#FFC531", "#FF9500")))
+    edge = "#E25F00"
+    if r6:
+        defs += f'<radialGradient id="e" cx="200" cy="200" r="190" gradientUnits="userSpaceOnUse">{fade(edge)}</radialGradient>'
+        edge = "url(#e)"
+    w = 6 if r6 else 12
+    out = [f'<path d="{wedge(a)}" fill="{edge}" stroke="{edge}" stroke-width="{w}" stroke-linejoin="round"/>' for a in angles]
+    out.append('<circle cx="200" cy="200" r="62" fill="#E25F00" stroke="#E25F00" stroke-width="12"/>')
+    out += [f'<path d="{wedge(a)}" fill="url(#{"ac"[i % 2]})"/>' for i, a in enumerate(angles)]
+    out += ['<path d="M%.1f,%.1f L%.1f,%.1f" stroke="#fff" stroke-opacity="0.5" stroke-width="8" stroke-linecap="round"/>'
+            % (*polar(*c, 93, a - 4), *polar(*c, 140 if r6 else 164, a - 4)) for a in angles[::2]]
+    out.append('<circle cx="200" cy="200" r="62" fill="#FFD23F"/><circle cx="200" cy="200" r="62" fill="none" stroke="#F08A00" stroke-width="8"/>')
+    (SRC / "rays.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">'
+                                  f"<!-- {' '.join(rays.__doc__.split())} (tools/ui-art/kit_icons2.py) --><defs>{defs}</defs>"
+                                  + "".join(out) + "</svg>\n")
 
 
 def write(name, body, x0, y0, box=BOX):
@@ -193,5 +302,12 @@ if __name__ == "__main__":
         assert im.size[0] == im.size[1] and l > 0 and t > 0, (name, im.size, (l, t, r, b))  # square, rim not clipped
         print(f"Kit.{name}", im.size, "fill %.2f" % (max(r - l, b - t) / im.size[0]))
         manifest[f"Kit.{name}"] = {"svg": f"art/source/ui/kit_{name}.svg", "cmd": cmd}
+    rays()
+    cmd = ["python3", "tools/ui-art/render.py", "art/source/ui/rays.svg", str(out_dir / "Badges.Rays.png"), "--size", "400", "400", "--keep"]
+    subprocess.run(cmd, cwd=ROOT, check=True, capture_output=True)
+    im = Image.open(out_dir / "Badges.Rays.png")
+    l, t, r, b = im.getbbox()
+    assert im.size == (800, 800) and min(l, t) > 0 and max(r, b) < 800, (l, t, r, b)  # whole burst on the page
+    manifest["Badges.Rays"] = {"svg": "art/source/ui/rays.svg", "cmd": " ".join(cmd)}
     if "--manifest" in sys.argv:
         pathlib.Path(sys.argv[sys.argv.index("--manifest") + 1]).write_text(json.dumps(manifest, indent=1) + "\n")

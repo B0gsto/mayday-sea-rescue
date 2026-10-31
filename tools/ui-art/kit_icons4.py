@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Kit menu icons, part 4 (shop, wave; redraw round 3), in the same house style and spec as
+"""Kit menu icons, part 4 (shop, spin, wave, waves; redraw round 6), in the same house style and spec as
 kit_icons2.py (helpers copied, not imported): one die-cut sticker per icon (white rim 30 and hard outline 12 round the
 UNION of its parts, a lip 12 under each part, bold top-down gradients, a soft gloss), drawn in a 200-unit box; the
 square viewBox is fitted so the art fills 88% of it, centred. Writes art/source/ui/kit_<name>.svg and renders each at a
@@ -25,7 +25,7 @@ def circ(cx, cy, r):
 
 
 def part(d, col, z=0, sep=False, dy=12, lip=None):
-    """col: (top, bottom, lip); sep: its own ink outline over the parts behind it (a front piece)"""
+    """col: (top, bottom, lip); sep: its own ink outline (True = 12 wide, or a width) over the parts behind it"""
     return dict(d=d, top=col[0], bot=col[1], lip=lip or col[2], z=z, sep=sep, dy=dy)
 
 
@@ -53,7 +53,8 @@ def build(parts, gloss=(), extra=""):
         out += [path(p["d"], colour, dy, colour, w) for p in parts for dy in (0, p["dy"])]
     for z in sorted({p["z"] for p in parts}):
         group = [(i, p) for i, p in enumerate(parts) if p["z"] == z]
-        out += [path(p["d"], INK, dy, INK, 12) for _, p in group if p["sep"] for dy in (0, p["dy"])]
+        out += [path(p["d"], INK, dy, INK, 12 if p["sep"] is True else p["sep"])
+                for _, p in group if p["sep"] for dy in (0, p["dy"])]
         out += [path(p["d"], p["lip"], p["dy"]) for _, p in group if p["dy"]]
         out += [path(p["d"], f"url(#g{i})") for i, p in group]
         out += [extra.get(z, "")] if isinstance(extra, dict) else []
@@ -72,6 +73,10 @@ def polar(cx, cy, r, a):
 
 
 # ---- the icons -------------------------------------------------------------------------------------------------------
+DEEP = ("#6FB8FF", "#1F5FD0", "#123F96")
+R6 = {"wave": False, "waves": True}  # round-6 redraws; False = the shipped best (pixel-identical)
+
+
 def shop():
     """the shop: a market stall, three wide red-white awning stripes, a big gold coin-stud on the door"""
     n, top, bot = 3, (26, 174), (12, 188)
@@ -90,32 +95,88 @@ def shop():
                  extra=seams + stud(100, 142, 21, "#FFF3A8", "#C27400"))
 
 
+def spin():
+    """the prize wheel on a stand: a gold rim, six big red-white-blue wedges, a stud hub, a red pointer dipping in"""
+    cx, cy, R, r = 100, 100, 86, 70
+    cols = (WHITE, BLUE, RED)
+    wedges = [part(ring_sector(cx, cy, 0.01, r, -120 + 60 * i, -60 + 60 * i), cols[i % 3], z=2, dy=0) for i in range(6)]
+    divs = "".join(ink(cx, cy, *(round(v, 1) for v in polar(cx, cy, r, -120 + 60 * i)), 8) for i in range(6))
+    hub = (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{INK}" stroke-width="8"/>'
+           f'<circle cx="{cx}" cy="{cy}" r="29" fill="{INK}"/>' + stud(cx, cy, 20, "#FFF3A8", "#C27400"))
+    stand = "M62,166 L138,166 L156,202 Q158,208 150,208 L50,208 Q42,208 44,202 Z"
+    pointer = "M100,58 L83,18 A18,18 0 1,1 117,18 Z"
+    return build([part(stand, DEEP, dy=10), part(circ(cx, cy, R), GOLD, z=1, sep=True), *wedges,
+                  part(pointer, RED, z=3, sep=True, dy=8)],
+                 gloss=["M30,72 A76,76 0 0,1 62,32", "M92,4 A10,10 0 0,1 100,0"], extra={2: divs + hub})  # under the pointer
+
+
+def bez(seg, t):
+    """a point and its unit tangent on a cubic bezier ((x0,y0), (x1,y1), (x2,y2), (x3,y3)) at t"""
+    (ax, ay), (bx, by), (cx, cy), (dx, dy) = seg
+    u = 1 - t
+    pt = (u ** 3 * ax + 3 * u * u * t * bx + 3 * u * t * t * cx + t ** 3 * dx,
+          u ** 3 * ay + 3 * u * u * t * by + 3 * u * t * t * cy + t ** 3 * dy)
+    tx = 3 * u * u * (bx - ax) + 6 * u * t * (cx - bx) + 3 * t * t * (dx - cx)
+    ty = 3 * u * u * (by - ay) + 6 * u * t * (cy - by) + 3 * t * t * (dy - cy)
+    n = math.hypot(tx, ty)
+    return pt, (tx / n, ty / n)
+
+
+def edge_band(segs, s0, s1, w0, w1, proud, steps=48):
+    """a round-ended band riding a clockwise outline (segs) from s0 to s1 (segment index + t), tapering from w0 to w1
+    wide, its outer edge standing proud of the outline by proud"""
+    outer, inner = [], []
+    for k in range(steps + 1):
+        s, w = s0 + (s1 - s0) * k / steps, w0 + (w1 - w0) * k / steps
+        i = min(int(s), len(segs) - 1)
+        (x, y), (tx, ty) = bez(segs[i], s - i)
+        nx, ny = -ty, tx  # inward (right of travel on screen)
+        outer.append((x - nx * proud, y - ny * proud))
+        inner.append((x + nx * (w - proud), y + ny * (w - proud)))
+    pts = lambda q: " L".join("%.1f,%.1f" % v for v in q)
+    return (f"M{pts(outer)} A{w1 / 2},{w1 / 2} 0 0,1 {pts(inner[::-1])} A{w0 / 2},{w0 / 2} 0 0,1 "
+            f"{outer[0][0]:.1f},{outer[0][1]:.1f} Z")
+
+
 def wave():
-    """the wake trail prize: a teal curling crest with a white foam tip (dark inner shadow) over a blue swell"""
+    """the wake trail prize: a teal curling crest, a white foam curl riding its lip to the tip, spray drops, wake streaks"""
     crest = ("M14,176 L14,140 C14,84 58,38 112,34 C154,32 188,58 188,92 C188,118 168,130 150,126 "
              "C134,122 128,106 138,96 C124,84 102,90 96,110 C90,130 106,150 132,152 L188,152 L188,176 Z")
-    foam = circ(156, 116, 19) + " " + circ(178, 100, 15) + " " + circ(140, 104, 13)
     swell = "M12,156 Q34,138 56,156 T100,156 T144,156 T188,156 L188,180 Q188,186 182,186 L18,186 Q12,186 12,180 Z"
-    shadow = (f'<clipPath id="cc"><path d="{crest}"/></clipPath><g clip-path="url(#cc)">'  # the curl's shade under the foam
-              f'<path d="{foam}" fill="#0A5750" stroke="#0A5750" stroke-width="40" transform="translate(-6,9)"/></g>')
-    return build([part(crest, TEAL), part(foam, WHITE, z=1, sep=True, dy=8, lip="#9FB0CC"),
+    gloss = ["M34,120 C40,86 64,60 96,52", "M126,52 C148,50 164,58 172,72", "M148,108 A10,10 0 0,1 158,102"]
+    if not R6["wave"]:  # the round-3 best: a three-ball foam cluster in the lip
+        foam = circ(156, 116, 19) + " " + circ(178, 100, 15) + " " + circ(140, 104, 13)
+        shadow = (f'<clipPath id="cc"><path d="{crest}"/></clipPath><g clip-path="url(#cc)">'  # the curl's shade under the foam
+                  f'<path d="{foam}" fill="#0A5750" stroke="#0A5750" stroke-width="40" transform="translate(-6,9)"/></g>')
+        return build([part(crest, TEAL), part(foam, WHITE, z=1, sep=True, dy=8, lip="#9FB0CC"),
+                      part(swell, BLUE, z=2, sep=True, dy=16, lip="#123F96")], gloss=gloss, extra={0: shadow})
+    lip = (((112, 34), (154, 32), (188, 58), (188, 92)), ((188, 92), (188, 118), (168, 130), (150, 126)),
+           ((150, 126), (134, 122), (128, 106), (138, 96)))  # the crest's front outline, over the top and round the curl
+    foam = edge_band(lip, 0.62, 2.3, 26, 14, 4)  # from the top-front, down the face, round under the lip to its tip
+    drops = [part(circ(*c), WHITE, z=1, sep=True, dy=6, lip="#9FB0CC") for c in ((196, 30, 10), (164, 16, 8))]  # spray off the crest
+    shadow = (f'<clipPath id="cc"><path d="{crest}"/></clipPath><g clip-path="url(#cc)">'  # the curl's shade inside the foam
+              f'<path d="{foam}" fill="#0A5750" stroke="#0A5750" stroke-width="8" transform="translate(-9,6)"/></g>')
+    streaks = "".join(f'<path d="M{a},172 L{b},172" stroke="#fff" stroke-width="14" stroke-linecap="round"/>'
+                      for a, b in ((100, 134), (28, 54)))  # the wake trailing behind the wave
+    barrel = part(circ(118, 118, 20), ("#0A5750", "#16907E", "#0A5750"), dy=0)  # closes the see-through pocket
+    return build([barrel, part(crest, TEAL), part(foam, WHITE, z=1, sep=True, dy=8, lip="#9FB0CC"), *drops,
                   part(swell, BLUE, z=2, sep=True, dy=16, lip="#123F96")],
-                 gloss=["M34,120 C40,86 64,60 96,52", "M126,52 C148,50 164,58 172,72", "M148,108 A10,10 0 0,1 158,102"],
-                 extra={0: shadow})
+                 gloss=gloss[:1] + ["M126,50 C140,46 150,48 158,52"], extra={0: shadow, 2: streaks})
 
 
-def band(x0, x1, y, h, n, yb):
-    """a wave band: n rounded crests (gentle rise, steep front) along the top at baseline y, flat bottom at yb"""
-    w, d = (x1 - x0) / n, f"M{x0},{yb} L{x0},{y}"
-    for i in range(n):
-        xa = x0 + i * w
-        d += (f" C{xa + 0.4 * w:.1f},{y} {xa + 0.5 * w:.1f},{y - h} {xa + 0.74 * w:.1f},{y - h}"
-              f" C{xa + 0.95 * w:.1f},{y - h} {xa + 0.96 * w:.1f},{y - 0.3 * h:.1f} {xa + w:.1f},{y}")
-    return d + f" L{x1},{yb} Z"
+def waves():
+    """spin-wheel wake prizes: two thick blue swells, the front one deep navy (hand SVG first drawn by kit_icons2.py)"""
+    d = lambda y: (f"M14,{y} Q35.5,{y - 20} 57,{y} T100,{y} T143,{y} T186,{y} "
+                   f"L186,{y + 40} Q164.5,{y + 60} 143,{y + 40} T100,{y + 40} T57,{y + 40} T14,{y + 40} Z")
+    g = lambda y: f"M26,{y + 10} Q36,{y - 2} 50,{y + 2}"
+    if not R6["waves"]:  # the round-1 art (best through round 5): two equal swells
+        return build([part(d(36), BLUE), part(d(112), BLUE)], gloss=[g(36), g(112)])
+    navy = ("#58A6F5", "#173F9C", "#0A2360")
+    return build([part(d(33), BLUE), part(d(114), navy, dy=14)], gloss=[g(33), g(114)])  # band gap 24 -> 29
 
 
-# kit_waves.svg is kept as hand SVG: its round-1 art scored best (8.6 vs 7.6 for the round-3 redraw)
-ICONS = {"shop": shop, "wave": wave}
+ICONS = {"shop": shop, "spin": spin, "wave": wave, "waves": waves}
+FIXED = {"waves": (-16.0, -16.0, 231.9)}
 
 
 def write(name, body, x0, y0, box=BOX):
@@ -134,6 +195,11 @@ if __name__ == "__main__":
     out_dir, manifest = pathlib.Path(sys.argv[1]), {}
     for name, fn in ICONS.items():
         body, png = fn(), out_dir / f"Kit.{name}.png"
+        if name in FIXED:  # hand-SVG framing kept from the shipped sprite
+            write(name, body, *FIXED[name])
+            manifest[f"Kit.{name}"] = {"svg": f"art/source/ui/kit_{name}.svg", "cmd": render(name, png)}
+            print(f"Kit.{name}", Image.open(png).size)
+            continue
         write(name, body, -37.5, -37.5)  # measure the art (rim included) in a roomy box,
         render(name, png)
         l, t, r, b = Image.open(png).getbbox()

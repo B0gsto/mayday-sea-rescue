@@ -17,6 +17,7 @@ SRC = ROOT / "art/source/ui"
 RENDER = ROOT / "tools/ui-art/render.py"
 INK = "#14121C"
 FILL = 0.88
+R6 = {"album": True, "boat_to_me": False, "build": True}  # r6 redraws; False regenerates the r5 best pixel-identical
 C = {  # top, bottom, lip
     "red": ("#FF8A7A", "#E2333A", "#A3161E"), "blue": ("#8EE0FF", "#2C8EF0", "#1A55A8"),
     "green": ("#A4F57A", "#33BE4D", "#1F8A33"), "gold": ("#FFE45C", "#FFAE00", "#C27400"),
@@ -31,6 +32,13 @@ C = {  # top, bottom, lip
     # r3: deeper back card, darker hull/head/bolt lips (still saturated, never brown/maroon)
     "deep": ("#6CC8FF", "#1E74E6", "#1450B8"), "hull": ("#FFD27A", "#FF7A1A", "#B8460A"),
     "bolt2": ("#FFF27A", "#FFA412", "#C85500"), "red3": ("#FF9A86", "#F2343C", "#B3121C"),
+    # r4: a darker back card, a deeper head lip, a cabin with a real lip
+    "deep4": ("#4FA8F5", "#1656C8", "#0E3A8A"), "red4": ("#FF9A86", "#F2343C", "#98101A"),
+    "cabin": ("#FFFFFF", "#DDE9FA", "#7F9CC8"),
+    # r5: a light-blue cabin that does not merge with the white rim
+    "cabin5": ("#E2F5FF", "#9AD6F5", "#3F7FB8"),
+    # r6: a dark book spine
+    "spine6": ("#3A7FE0", "#123C9A", "#0B2766"),
 }
 
 
@@ -88,7 +96,7 @@ def tf(d, s=1, ox=0, oy=0):
 # --- sticker builder ---
 class Icon:
     def __init__(self):
-        self.parts, self.defs = [], []
+        self.parts, self.defs, self.backs = [], [], []  # backs: white-only fillers inside the shared rim
 
     def grad(self, col):
         gid = f"g{len(self.defs)}"
@@ -112,7 +120,8 @@ class Icon:
     def layers(self):
         P = lambda d, fill, o, stroke=None, w=0: (f'<path d="{d}" transform="translate({o[0]},{o[1]})" fill="{fill}"'
                                                    + (f' stroke="{stroke}" stroke-width="{w}" stroke-linejoin="round"' if w else "") + "/>")
-        out = "".join(P(d, "#fff", dy, "#fff", 30) for d, _, lip, _, _, _ in self.parts for dy in dict.fromkeys([(0, 0), lip]))
+        out = "".join(P(d, "#fff", (0, 0), "#fff", 30) for d in self.backs)
+        out += "".join(P(d, "#fff", dy, "#fff", 30) for d, _, lip, _, _, _ in self.parts for dy in dict.fromkeys([(0, 0), lip]))
         for d, col, lip, gloss, extra, ink in self.parts:
             g = self.grad(col)
             out += "".join(P(d, INK, dy, INK, ink) for dy in sorted({(0, 0), lip}, reverse=True))
@@ -152,23 +161,65 @@ def rotd(d, deg, cx=100, cy=100):
 
 
 def album():
+    if not R6["album"]:
+        return album_r5()
     i = Icon()
-    back = rrect(58, 4, 192, 150, 16) + " " + " ".join(rrect(x, -18, x + 36, 12, 7) for x in (78, 140))  # 2 Lego studs on top
-    i.part(back, "deep", lip=14)
-    i.part(rrect(8, 34, 154, 182, 18), "sky", lip=14, gloss="M32,56 L62,56",
-           extra=i.inner(poly(star(81, 112, 56, 26)), "gold", ink=12, lip=8))
-    return i, "the album / sticker book: a bright blue cover with one huge gold star over a deeper blue back card with 2 Lego studs"
+    sticker = rot([(80, -6), (136, -6), (136, 50), (80, 50)], -14, 108, 22)
+    i.part(poly(sticker), "red2", lip=8, gloss=poly(rot([(92, 6), (110, 6)], -14, 108, 22))[:-2])
+    i.part(rrect(16, 46, 228, 178, 12), "paper", lip=0)  # r6: two thick white page edges, 30 units each (18 white past the ink)
+    i.part(rrect(10, 39, 198, 185, 12), "paper", lip=0)
+    spine = "M18,32 L30,32 L30,192 L18,192 Q0,192 0,174 L0,50 Q0,32 18,32 Z"
+    i.part(rrect(0, 32, 168, 192, 18), "sky", lip=14, gloss="M48,52 L68,52",  # star clears spine and cover ink by ~3-4 units
+           extra=i.inner(spine, "spine6", ink=10, lip=0) + i.inner(poly(star(99, 114, 56, 27)), "gold", ink=14, lip=8))
+    return i, "the album / sticker book (r6): a bright blue book, a dark navy spine strip on the left, two thick white page edges on the right, a big gold star, a red sticker card peeking out the top"
+
+
+def album_r5():
+    i = Icon()
+    sticker = rot([(80, -6), (136, -6), (136, 50), (80, 50)], -14, 108, 22)  # a sticker card peeking out the top, tilted
+    i.part(poly(sticker), "red2", lip=8, gloss=poly(rot([(92, 6), (110, 6)], -14, 108, 22))[:-2])
+    i.part(rrect(14, 44, 200, 180, 12), "paper", lip=0)  # two white page edges stepping out on the right
+    i.part(rrect(10, 38, 178, 186, 12), "paper", lip=0)
+    spine = "M18,32 L28,32 L28,192 L18,192 Q0,192 0,174 L0,50 Q0,32 18,32 Z"
+    i.part(rrect(0, 32, 156, 192, 18), "sky", lip=14, gloss="M44,52 L66,52",
+           extra=i.inner(spine, "deep4", ink=8, lip=0) + i.inner(poly(star(91, 116, 50, 23)), "gold", ink=14, lip=8))
+    return i, "the album / sticker book: a bright blue book, dark blue spine strip on the left, two white page edges on the right, a big gold star, a red sticker card peeking out the top"
 
 
 def boat_to_me():
+    if not R6["boat_to_me"]:
+        return boat_to_me_r5()
     i = Icon()
-    i.part(rrect(130, 76, 180, 126, 10), "paper", lip=0)  # cabin block on the deck
-    hull = "M6,112 L190,112 L182,170 Q180,184 166,184 L74,184 Q34,184 6,112 Z"  # pointed bow left
-    i.part(hull, "hull", lip=16, gloss="M40,128 L96,128",
-           extra=line("M58,154 L176,154", w=10, col="#fff"))  # waterline stripe
-    arrow = "M8,48 L60,4 L60,26 L106,26 Q118,26 118,38 L118,58 Q118,70 106,70 L60,70 L60,92 Z"
-    i.part(arrow, "sky", lip=10, gloss="M30,46 L50,30")
-    return i, "boat to me: a short fat blue arrow pointing left over a bright orange boat (pointed bow, white cabin, waterline stripe)"
+    i.part(rrect(144, 66, 198, 124, 12), "cabin5", lip=10,  # r6: one big cabin block, one big dark window
+           extra=f'<path d="{rrect(156, 80, 186, 104, 7)}" fill="{C["navy"][1]}" stroke="{INK}" stroke-width="8"/>')
+    hull = "M0,120 L200,120 L190,186 Q188,200 174,200 L72,200 Q30,200 0,120 Z"  # r6: taller plain hull, pointed bow left
+    i.part(hull, "hull", lip=16, gloss="M34,138 L92,138")
+    arrow = "M62,46 L108,0 L108,24 L130,24 Q140,24 140,34 L140,58 Q140,68 130,68 L108,68 L108,92 Z"
+    i.part(arrow, "sky", lip=8, gloss="M88,42 L102,28")
+    # r6: a ~30% pin drawn over the arrow tip, so the arrow points into it (teardrop, tip 1.8 r below the centre)
+    cx, cy, r = 34, 44, 34
+    pin = [(cx + r * math.cos(t), cy + r * math.sin(t)) for t in [math.radians(146.3 + k * 247.4 / 30) for k in range(31)]] + [(cx, cy + 1.8 * r)]
+    i.part(poly(pin), "red2", lip=8, gloss="M13,40 Q15,22 30,17",
+           extra=f'<circle cx="{cx}" cy="{cy}" r="13" fill="#fff" stroke="{INK}" stroke-width="7"/>')
+    i.backs.append(poly([(10, 72), (62, 46), (144, 70), (150, 120), (8, 120)]))
+    return i, "boat to me (r6): a bold blue arrow pointing into a big red player pin, a big plain orange boat behind it (pointed bow, one light-blue cabin with one dark window)"
+
+
+def boat_to_me_r5():
+    i = Icon()
+    i.part(rrect(152, 86, 194, 136, 10), "cabin5", lip=10,  # light-blue cabin block on the deck, a dark window
+           extra=f'<path d="{rrect(162, 98, 184, 118, 6)}" fill="{C["navy"][1]}" stroke="{INK}" stroke-width="7"/>')
+    hull = "M2,132 L198,132 L188,184 Q186,196 172,196 L74,196 Q32,196 2,132 Z"  # pointed bow left
+    i.part(hull, "hull", lip=16, gloss="M36,148 L92,148",
+           extra=line("M64,170 L180,170", w=10, col="#fff"))  # waterline stripe
+    arrow = "M72,46 L114,2 L114,24 L126,24 Q136,24 136,34 L136,58 Q136,68 126,68 L114,68 L114,90 Z"
+    i.part(arrow, "sky", lip=8, gloss="M92,44 L106,30")
+    # the player pin the arrow points at: a teardrop (tangent points at 33.7/146.3 deg for a tip 1.8 r below), a white dot
+    pin = [(24 + 24 * math.cos(t), 40 + 24 * math.sin(t)) for t in [math.radians(146.3 + k * 247.4 / 30) for k in range(31)]] + [(24, 83)]
+    i.part(poly(pin), "red2", lip=8, gloss="M9,36 Q11,23 22,19",
+           extra='<circle cx="24" cy="40" r="10" fill="#fff" stroke="#14121C" stroke-width="6"/>')
+    i.backs.append(poly([(6, 60), (72, 46), (146, 70), (150, 132), (6, 132)]))  # white between pin, arrow and hull: one sticker
+    return i, "boat to me: a bold blue arrow pointing left at a red player pin, a bright orange boat behind it (pointed bow, light-blue cabin with a dark window, waterline stripe)"
 
 
 def boost():
@@ -179,12 +230,32 @@ def boost():
 
 
 def build():
+    if not R6["build"]:
+        return build_r5()
     i = Icon()
     R = lambda d: rotd(d, 40, 100, 100)
-    i.part(R(rrect(74, 90, 126, 204, 18)), "bolt")
+    i.part(R(rrect(70, 90, 130, 189, 20)), "bolt")
+    b = Icon()  # r6: the brick is its own sticker in front (own white rim), so it never merges into the handle
+    b.defs = i.defs  # one gradient id sequence
+    b.part(rrect(126, 148, 230, 212, 10), "sky", lip=10, extra="".join(stud(x, 180, 20, "#D6F4FF", "#1A66D1") for x in (152, 204)))
+    i.part(R(rrect(6, 14, 194, 102, 16)), "red3", lip=16, gloss=R("M26,34 L26,74"),
+           extra="".join(stud(*(round(v, 1) for v in rot([(x, 58)], 40, 100, 100)[0]), 22, "#FFB3A6", "#B3121C") for x in (72, 138))
+           + b.layers())
+    return i, "build (r6): one bold Lego-brick hammer, a big red 2-stud brick head on a short fat yellow handle, a big blue 2-stud brick sticker in front at the bottom right"
+
+
+def build_r5():
+    i = Icon()
+    R = lambda d: rotd(d, 40, 100, 100)
+    i.part(BRICK, "sky", lip=10, extra="".join(stud(x, 182, 13, "#D6F4FF", "#1A66D1") for x in BRICK_STUDS))  # a small 2-stud brick behind the head: build pieces
+    i.part(R(rrect(70, 90, 130, 189, 20)), "bolt")  # r5: handle 15% shorter and thicker so the head dominates
     i.part(R(rrect(6, 14, 194, 102, 16)), "red3", lip=16, gloss=R("M26,34 L26,74"),
            extra="".join(stud(*(round(v, 1) for v in rot([(x, 58)], 40, 100, 100)[0]), 22, "#FFB3A6", "#B3121C") for x in (72, 138)))
-    return i, "build: one bold Lego-brick hammer, a big red 2-stud brick head on a fat yellow handle"
+    return i, "build: one bold Lego-brick hammer, a big red 2-stud brick head on a short fat yellow handle, a small blue 2-stud brick behind the head"
+
+
+BRICK_STUDS = (151, 193)
+BRICK = rrect(130, 152, 214, 202, 8)
 
 
 def cash():
