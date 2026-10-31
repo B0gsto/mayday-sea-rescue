@@ -585,12 +585,18 @@ local function ride(player: Player, board: Board, berth: BasePart, id: string, f
 		local m = craft()
 		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 		local seat = hum and hum.SeatPart
-		if not (player.Parent and m and seat and seat:IsDescendantOf(m)) then
+		-- 1.5 s grace: VehicleService's sitDriver retries a missed first sit every 0.4 s
+		local seated = m and (os.clock() - started < 1.5 or (seat and seat:IsDescendantOf(m)))
+		if not (player.Parent and m and seated) then
 			why = "SteppedOff"
 			break
 		end
 		local pos = m:GetPivot().Position
-		if TestRide.outside(pos, berth.Position) then
+		-- not in the last 2 s: a turn-back's settle would un-anchor the hull mid EndTestRide sail
+		if
+			TestRide.outside(pos, berth.Position)
+			and os.clock() - started < TestRide.SECONDS - 2
+		then
 			Vehicles.TurnBack(player, TestRide.turnBack(pos, berth.Position), berth.Position)
 		end
 	end
