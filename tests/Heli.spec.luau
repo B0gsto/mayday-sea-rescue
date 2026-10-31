@@ -75,4 +75,47 @@ return function(t)
 		t.expect(lift).toBe(true)
 		t.expect((Winch.hold(held, false, 0.1))).toBe(0)
 	end)
+	t.test(
+		"tilt leads: a deeper dip speeding up, a nose-up flare stopping, level in a hover",
+		function()
+			local fwd = { forward = 1, strafe = 0, yaw = 0, lift = 0 }
+			local start = fly(Flight.new(0), fwd, 100, 0, 0.2)
+			local cruise = fly(Flight.new(0), fwd, 100, 0, 6)
+			t.expect(
+				Flight.attitude(start, spec).LookVector.Y
+					< Flight.attitude(cruise, spec).LookVector.Y
+			)
+				.toBe(true)
+			local stopping = fly(cruise, IDLE, 100, 0, 0.2)
+			t.expect(Flight.attitude(stopping, spec).LookVector.Y > 0).toBe(true)
+			local still = fly(stopping, IDLE, 100, 0, 6)
+			t.expect(Flight.attitude(still, spec).UpVector.Y).toBeCloseTo(1, 1e-6)
+			t.expect(Flight.power(0)).toBe(0)
+			t.expect(Flight.power(Flight.LIFTOFF)).toBe(0)
+			t.expect(Flight.power(1)).toBe(1)
+		end
+	)
+
+	t.test("winch assist: hands off near a survivor eases over them and into the band", function()
+		local s, y = Flight.new(0), 100
+		local target = Vector3.new(15, 0, -10) -- survivor at the sea, heli root starts at (0, y, 0)
+		local pos = Vector3.new(0, y, 0)
+		for _ = 1, 15 * 60 do
+			local f, st, l = Winch.assist(target - pos, s.heading, spec)
+			Flight.step(
+				s,
+				{ forward = f, strafe = st, yaw = 0, lift = l },
+				spec,
+				pos.Y,
+				12,
+				Vector3.zero,
+				1 / 60
+			)
+			pos += s.velocity / 60
+		end
+		local d = target - pos
+		t.expect(Winch.ready(Vector2.new(d.X, d.Z).Magnitude, -d.Y, s.velocity.Magnitude, 0, true))
+			.toBe(true)
+		t.expect(select(1, Winch.assist(Vector3.new(Winch.ASSIST + 1, -20, 0), 0, spec))).toBe(0)
+	end)
 end

@@ -12,10 +12,14 @@
 --      strafe  Z, C / D-pad left, right           (Space / A gets out: VehicleExitController)
 --    On a touch device the drive pad (TouchDriveController) flies it instead: GO / BRAKE forward and back, LEFT /
 --    RIGHT yaw, the teal arrows climb and descend (the stick and the chevron buttons are gone then).
---    Hands off = a level hover. The floor is the ground under the skids, or the sea plus
---    Flight.WATER_CLEARANCE; gentle wind drift comes from Weather.
+--    Hands off = a level hover with a slow sway. The floor is the ground under the skids, or the sea plus
+--    Flight.WATER_CLEARANCE; gentle wind drift comes from Weather. A parked heli spins its rotors up before
+--    the controls bite (Flight.power). Winch: hands off near a survivor with room, the idle axes ease it over
+--    them and down into the winch band (Heli/Winch.assist; the boats' helm nudge).
 -- 2. Rotors. Every heli's RotorJoint / TailRotorJoint Transform spins up while its DriverSeat is
 --    taken or its engine runs (EngineRunning: landing itself) and spools down after (visual, per client).
+--    The rotor loop (Heli_Rotor) follows the spool in pitch and volume; low over the sea the rotor wash
+--    plays VFX `heli_downwash` under it with a water bed (Hull_Wake) that swells as it comes down.
 local CollectionService = game:GetService("CollectionService")
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
@@ -24,17 +28,25 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
+local AudioController = require(script.Parent.AudioController)
+local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
 local Flight = require(Shared:WaitForChild("Heli"):WaitForChild("Flight"))
 local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local TouchDriveController = require(script.Parent.TouchDriveController)
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local Weather = require(Shared:WaitForChild("Weather"))
+local Winch = require(Shared:WaitForChild("Heli"):WaitForChild("Winch"))
 
 local TAG = "Heli"
 local ROTOR_SPEED = math.pi * 2 * 5 -- rad/s at full spool (visual; any faster strobes)
 local SPOOL_TIME = 2 -- s from still to full
 local RAY_DEPTH = 600 -- studs
 local AIRBORNE_GAP = 4 -- studs over the floor (ground, or the sea's hover height) that count as mid-air
+local SOUND_RANGE = 320 -- studs: the rotor loop's roll-off
+local WASH_HEIGHT = 40 -- studs from the skids to the sea under which the rotor wash shows -- tune
+local WASH_EVERY = 0.25 -- s between downwash bursts
 
 -- action -> keys; Up and Down also get a touch button
 local AXES: { [string]: { Enum.KeyCode } } = {
@@ -52,6 +64,9 @@ local flying: Model? = nil
 local state: Flight.State? = nil
 local spool: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
 local angle: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
+local rotorSound: { [Model]: Sound } = setmetatable({}, { __mode = "k" }) :: any
+local washSound: { [Model]: Sound } = setmetatable({}, { __mode = "k" }) :: any
+local washAt: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
 
 local controlModule: any = nil
 local function moveVector(): Vector3
@@ -145,20 +160,46 @@ local function stopFlying()
 	bindControls(false)
 end
 
-local function floorY(model: Model, root: BasePart, spec: Flight.Spec, now: number): number
+-- The first solid thing straight down from p (not a heli, not people), else nil.
+local function groundY(model: Model, p: Vector3): number?
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	local ignore: { Instance } = { model }
-	for _, p in Players:GetPlayers() do
-		if p.Character then
-			table.insert(ignore, p.Character)
+	for _, plr in Players:GetPlayers() do
+		if plr.Character then
+			table.insert(ignore, plr.Character)
 		end
 	end
 	params.FilterDescendantsInstances = ignore
 	params.RespectCanCollide = true
-	local p = root.Position
 	local hit = Workspace:Raycast(p, Vector3.new(0, -RAY_DEPTH, 0), params)
-	return Flight.floor(hit and hit.Position.Y, Simulator.waterHeight(p.X, p.Z, now), spec)
+	return hit and hit.Position.Y
+end
+
+local function floorY(model: Model, root: BasePart, spec: Flight.Spec, now: number): number
+	local p = root.Position
+	return Flight.floor(groundY(model, p), Simulator.waterHeight(p.X, p.Z, now), spec)
+end
+
+-- The nearest survivor still in the water (PickupRingController's rule) inside Winch.ASSIST, else nil.
+local function survivorNear(from: Vector3): Vector3?
+	local props = Workspace:FindFirstChild("CallProps")
+	local best, bestD = nil, Winch.ASSIST
+	for _, m in if props then props:GetChildren() else {} do
+		local part = m:IsA("Model") and m.PrimaryPart
+		if
+			part
+			and m.Name == "Victim"
+			and m:GetAttribute("Survivor") == true
+			and m:GetAttribute("OnVehicle") == nil
+		then
+			local d = Vector2.new(part.Position.X - from.X, part.Position.Z - from.Z).Magnitude
+			if d <= bestD then
+				best, bestD = part.Position, d
+			end
+		end
+	end
+	return best
 end
 
 local function fly(model: Model, spec: Flight.Spec, dt: number)
@@ -180,15 +221,32 @@ local function fly(model: Model, spec: Flight.Spec, dt: number)
 	local now = Workspace:GetServerTimeNow()
 	local floor = floorY(model, root, spec, now)
 	-- local only: no stepping out mid-air (VehicleExitController, OpsController)
-	model:SetAttribute("Airborne", root.Position.Y > floor + AIRBORNE_GAP)
+	local airborne = root.Position.Y > floor + AIRBORNE_GAP
+	model:SetAttribute("Airborne", airborne)
+	local input: Flight.Input = {
+		forward = math.clamp(-move.Z + TouchDriveController.throttle(), -1, 1),
+		strafe = held.HeliRight - held.HeliLeft,
+		yaw = math.clamp(move.X + TouchDriveController.steer(), -1, 1),
+		lift = math.clamp(held.HeliUp - held.HeliDown + TouchDriveController.lift(), -1, 1),
+	}
+	local survivor = if airborne and Board.hasRoom(model) then survivorNear(root.Position) else nil
+	if survivor then
+		local f, st, l = Winch.assist(survivor - root.Position, s.heading, spec)
+		local function idle(v: number): boolean
+			return math.abs(v) < 0.05
+		end
+		input.forward = if idle(input.forward) then f else input.forward
+		input.strafe = if idle(input.strafe) then st else input.strafe
+		input.lift = if idle(input.lift) then l else input.lift
+	end
+	local power = Flight.power(spool[model] or 0)
+	input.forward *= power
+	input.strafe *= power
+	input.yaw *= power
+	input.lift *= power
 	Flight.step(
 		s,
-		{
-			forward = math.clamp(-move.Z + TouchDriveController.throttle(), -1, 1),
-			strafe = held.HeliRight - held.HeliLeft,
-			yaw = math.clamp(move.X + TouchDriveController.steer(), -1, 1),
-			lift = math.clamp(held.HeliUp - held.HeliDown + TouchDriveController.lift(), -1, 1),
-		},
+		input,
 		spec,
 		root.Position.Y,
 		floor,
@@ -199,8 +257,70 @@ local function fly(model: Model, spec: Flight.Spec, dt: number)
 	local attitude = root:FindFirstChild("Attitude") :: AlignOrientation?
 	if lift and attitude then
 		lift.MaxForce = root.AssemblyMass * (Workspace.Gravity + spec.accel * 2)
-		lift.VectorVelocity = s.velocity
+		lift.VectorVelocity = s.velocity + Vector3.yAxis * (if airborne then Flight.bob(now) else 0)
 		attitude.CFrame = Flight.attitude(s, spec)
+	end
+end
+
+local function loop(name: string, parent: Instance): Sound
+	local snd = AudioController.newSound(name, parent, true)
+	snd.RollOffMinDistance = 15
+	snd.RollOffMaxDistance = SOUND_RANGE
+	snd:Play()
+	return snd
+end
+
+local function base(name: string): number
+	local clip = AudioConfig.Clips[name]
+	return if clip then clip.volume else 0.5
+end
+
+-- The rotor loop rides the spool (a rising whine on spin-up, a falling one on spool-down); a climb leans on it.
+-- Low over the sea: a downwash burst every WASH_EVERY and a water bed, stronger the lower it hovers.
+local function rotorFx(model: Model, root: BasePart, s: number, now: number)
+	local snd = rotorSound[model]
+	if s <= 0 then
+		for _, t in { rotorSound, washSound } do
+			if t[model] then
+				t[model]:Destroy()
+				t[model] = nil
+			end
+		end
+		return
+	end
+	snd = snd or loop("Heli_Rotor", root)
+	rotorSound[model] = snd
+	local spec = Flight.spec(model:GetAttribute("VehicleId"))
+	local climb = if model == flying
+			and state
+			and spec
+		then math.clamp(state.velocity.Y / spec.climbSpeed, 0, 1)
+		else 0
+	snd.Volume = base("Heli_Rotor") * s ^ 0.6 * (0.85 + 0.25 * climb)
+	snd.PlaybackSpeed = 0.5 + 0.5 * s + 0.06 * climb
+
+	if not spec or now < (washAt[model] or 0) then
+		return
+	end
+	washAt[model] = now + WASH_EVERY
+	local p = root.Position
+	local waterY = Simulator.waterHeight(p.X, p.Z, Workspace:GetServerTimeNow())
+	local ground = groundY(model, p)
+	local h = p.Y - spec.skid - waterY
+	local k = if ground and ground > waterY then 0 else s * math.clamp(1 - h / WASH_HEIGHT, 0, 1)
+	if k > 0.05 then
+		VFXKit.play(
+			"heli_downwash",
+			CFrame.new(p.X, waterY + 0.1, p.Z),
+			{ scale = 0.4 + 0.6 * k, radius = 4 + 5 * k, still = true }
+		)
+	end
+	if k > 0.05 and not washSound[model] then
+		washSound[model] = loop("Hull_Wake", root)
+	end
+	local wash = washSound[model]
+	if wash then
+		wash.Volume = base("Hull_Wake") * k
 	end
 end
 
@@ -213,6 +333,9 @@ local function spinRotors(dt: number)
 		local s = spool[model] or 0
 		s = math.clamp(s + (if on then dt else -dt) / SPOOL_TIME, 0, 1)
 		spool[model] = s
+		if model.PrimaryPart then
+			rotorFx(model, model.PrimaryPart, s, os.clock())
+		end
 		if s > 0 then
 			local a = ((angle[model] or 0) + s * ROTOR_SPEED * dt) % (math.pi * 2)
 			angle[model] = a
