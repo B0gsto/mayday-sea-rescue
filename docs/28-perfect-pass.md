@@ -12,7 +12,8 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 
 | Area | Item | Source | Score | Status |
 |---|---|---|---|---|
-| UI | every sprite in art/source/ui + UiImages | SVG / PNG | - | wave 1 |
+| UI | every sprite in art/source/ui + UiImages | PERF-UI1 -> UI2 | ~6 -> ~8.8 mean | UI1: 91 redrawn as SVG, 37/96 at 9.1+, live ids on t3/perfect-ui-sprite-art (unmerged, needs a Studio look: 9-slice HUD panel, minimap ring); UI2: remaining 59 with anchored pairwise AD |
+| AD method | fresh ADs drift +-0.3 and contradict: use an anchor strip of passing items + fixed rubric + pairwise old-vs-new in every AD prompt | all streams | - | rule |
 | World | baseline in-game tour | PERF-TOUR2 | 5.0-8.6 (61 items) | done: tour/SCORES.md; Blender lane order below |
 | Feel | game feel + progression review | code read | moments 3-8 | done: build/status/2026-10-31/perfect/feel/REVIEW.md (28 items) |
 | Feel | REVIEW 5,6,7,9 build feel | PERF-F1o (Opus) | 6-6.5 | building |
@@ -26,10 +27,10 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Mon | monetization review | PERF-MON1 | 5.5 overall | done: build/status/2026-10-31/perfect/mon/REVIEW.md |
 | Mon | plan 1,4,11,12,13,18,19,20 (Shop Finish/spin bug, effect lines, odds, telemetry, texts, docs) | PERF-MON-A | 5 | building |
 | Mon | plan 3,7 purchase payoff + boat test ride | PERF-MON-B | 2.5 | building |
-| Mon | plan 15 store icon family | PERF-MON-C | 6.5 | building |
+| Mon | plan 15 store icon family | PERF-MON-C/C2 | 6.5 -> family 9.2 | 52/56 at 9.1+, live on test + launch (54; DockGarage/SeaplanePass not on launch). Left: StarterKit 8.7 (redo with MON-D bundle), DockCrane 9.0 (after crane r9), DockLevel2 9.0 (declutter) |
 | Mon | owner YES: Starter Kit rework, 5 cosmetics on sale, private servers (other ideas declined) | after MON-A merges | - | queued |
 | Anim | player sprint/walk/idle (owner: reuse Tame A Titan clips OK) | PERF-ANIM1 | - | building |
-| Mesh | M_Prop_JettyCrane | Blender PERF-BL1 | 7.6 (r2) | r4 in progress |
+| Mesh | M_Prop_JettyCrane | Blender PERF-BL1 | r3 8.3 -> r8 8.8 | r8 shipped on t3/d9e3f4f1 (eeae70a6, unmerged); plateau 8.7-8.8 at 7,926/8,000 tris: next round raises the tri budget + r8 list (continuous hook band, jib studs clear of cab, cleaner slew ring, cab +10-15%) |
 | Code->mesh | build-site fence/scaffold/crane kit (REVIEW 9) | Blender | 6 | queued |
 | Mesh | M_Prop_BuildStation | Blender | 8.3 (r2) | queued |
 | Mesh | vehicles: JetSki, RIB, StormRunner, Tidewalker, RiptideX, GildedGull, SupplyBarge | Blender | unscored | queued |
@@ -42,7 +43,7 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 ## Blender lane order (from the baseline tour, build/status/2026-10-31/perfect/tour/SCORES.md: 61 items, all < 9.1)
 
 One Blender GUI at a time; each step = one Opus agent, rounds to 9.1+, upload, wire, check.sh, commit, close Blender.
-1. M_Prop_JettyCrane r7+ (8.7) - running
+1. M_Prop_JettyCrane: r8 8.8 shipped on branch; r9 after step 2 with a raised tri budget
 2. Build-site kit: fence, scaffold, site crane, brick stacks (5.0) - new
 3. Rescue board / leaderboard (5.5) + Coming Soon board (6.5) + island name sign (7.0) + Harbour Master beacon (6.5) - new prop kit
 4. Sea plates: Freight Wharf (5.8) + Ramp Wharf (6.4) - new kits
@@ -57,3 +58,5 @@ One Blender GUI at a time; each step = one Opus agent, rounds to 9.1+, upload, w
 13. Vehicles: RIB 8.6, Tidewalker 8.4, JetSki 8.3, StormRunner 8.2, GildedGull 7.8, RiptideX 7.6, supply barge 7.6
 14. Penwyn + Gannet Rock dressing (7.4-7.6)
 HUD (7.4-8.1) goes to the UI stream, not Blender.
+
+Gotcha (BL1): `gen_asset_ids.py` run in a worktree rewrites ~30 unrelated asset ids; restore all but your own entries in AssetIds.luau + Appearances.model.json.
