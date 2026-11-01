@@ -49,10 +49,10 @@ local BosunGuide = require(Shared:WaitForChild("Dog"):WaitForChild("BosunGuide")
 local BosunRig = require(Shared:WaitForChild("Dog"):WaitForChild("BosunRig"))
 local BosunWetness = require(Shared:WaitForChild("Dog"):WaitForChild("BosunWetness"))
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
+local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local DogVisual = require(Shared:WaitForChild("Dog"):WaitForChild("DogVisual"))
 local DogWear = require(Shared:WaitForChild("Dog"):WaitForChild("DogWear"))
 local Net = require(Shared:WaitForChild("Net"))
-local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local DogService = {}
@@ -569,7 +569,7 @@ local function leadSpot(dog: Dog, root: BasePart, now: number): Vector3?
 		end
 		dog.leadAt = now + LEAD_DELAY
 	end
-	return if now >= dog.leadAt
+	return if now >= (dog.leadAt or math.huge)
 		then (DockConfig.stationSpot(bay) * CFrame.new(5, 0, 5)).Position
 		else nil
 end

@@ -454,7 +454,9 @@ local function leadTick(leading: boolean)
 	end
 	if leading and not nudged then
 		local at, root = stationPoint(), rootPosition()
-		local far = at ~= nil and root ~= nil and ((root - at) * Vector3.new(1, 0, 1)).Magnitude > LEAD_FAR
+		local far = at ~= nil
+			and root ~= nil
+			and ((root - at) * Vector3.new(1, 0, 1)).Magnitude > LEAD_FAR
 		farSince = if far then farSince or os.clock() else nil
 		if farSince and os.clock() - farSince >= LEAD_WAIT then
 			nudged = true
