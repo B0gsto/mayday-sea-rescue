@@ -580,8 +580,8 @@ local function hero(r: Run, dist: number, h: number, side: number): CFrame
 end
 
 local function orbit(r: Run, center: Vector3, radius: number, h: number, deg: number): CFrame
-	local k = r.room -- a crowded plaza also keeps the orbit inside the clear arc
-	local a = math.rad(deg * k)
+	local k = r.room -- a crowded plaza (the wheel's booth pillars) turns the orbit into a small sway
+	local a = math.rad(deg * (if k >= 0.9 then 1 else 0.2))
 	local dir = r.view * math.cos(a) + r.right * math.sin(a)
 	return CFrame.lookAt(center + dir * radius * k + UP * (h + (1 - k) * 6), center)
 end
@@ -743,8 +743,13 @@ local function payoff(r: Run)
 			}
 			r.vignette = 0.8
 			r.focus = r.hub
-			r.shot = function(_t)
-				return hero(r, 42, 6, -10), 55
+			r.shot = function(_t) -- straight down the clear axis, tilted up to catch the bolt
+				local k = r.room
+				return CFrame.lookAt(
+					r.hub + r.view * 40 * k + UP * (2 + (1 - k) * 6),
+					r.hub + UP * 10
+				),
+					58
 			end
 			sfx("Thunder_Near", 0.5, 0.6)
 		end)
