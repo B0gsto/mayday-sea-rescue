@@ -88,3 +88,5 @@ UI6 (stopped by the Studio stop): 5e0f9153 on t3/perfect-ui-sprite-art: emoji/te
 PERF-BL7 (HQ Lv1-5 refine) queued behind the heli in the Blender lane.
 
 Round cap (2026-11-01): Blender kits plateau 8.4-9.0 at 4 rounds while still improving each round -> cap is now 6 rounds. Finishing sweep after the HQ: commons 9.0, heli 8.8, sea plates 8.8, crane 8.8, build-site 8.4 (each from its RESULT.md fix list, same 3-judge median, anchor board kit 9.2).
+
+ANIM5 hand-keyed actions (stopped by the Studio stop): 674f3a71 on t3/characterful-rescue-animations. R2 medians: celebrate 8.4, hammer 7.8, carry 7.6, point 7.5, saw 7.0, sit 6.0, climb 5.9 (falling). R3 keys done, unjudged: when Studio is back run the k3/ preview scripts, judge (front view added), then round 4 (cap 6). Nothing uploaded/wired.
