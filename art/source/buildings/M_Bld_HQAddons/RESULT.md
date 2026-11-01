@@ -105,3 +105,19 @@ here) predates the stair (not re-rendered).
 Open: wired in game (DockPieces `hq()` via `addonMesh`, the code mast / gold ball only when the mesh is missing), not
 playtested since the stair: walk an R15 up the 1.04 steps, onto the cap and across the bridge into the tower. The
 station's side windows at y 0 and 8 sit behind the wing (accepted). LOD1/LOD2 are 50%/25% of LOD0.
+
+## Round 6 (2026-11-01, Blender MCP): L4 8.8 -> 9.1, set 9.22 PASS
+
+AD (3 fresh Opus judges, r6_ad_prompt.txt, BoardKit r4 anchor): set 9.22 / 9.24 / 9.14 -> **9.22**; levels L1 9.2,
+L2 9.3, L3 9.3, L4 9.1, L5 9.1; all 3 judges r6 > r5.
+- L4 (build.py): front block one storey taller (15 -> 22 courses, top 26.12, second navy band + 3 windows, walk-in
+  ceiling slab kept at 18.0); radio room moved onto the block roof; dish up to z 35.5; mast legs 0.9 -> 1.3, wider
+  taper, thicker rungs/braces, bigger light cap, 5 x 5 pad. Colliders follow. No ATT moved, no code change.
+- Lv3 lifeboat pulled back 1.4 studs on a shorter trolley (front y -24.27 -> -22.85); the full 2 would hit the
+  x -12 pilaster.
+- LOD0 35,373 / LOD1 14,583 / LOD2 8,832; validate PASS; zfight 0 visible on LOD0/1/2 (LODs fixed after decimation).
+- Uploaded HQAddons LOD0 97972408661195, LOD1 125702385795929, LOD2 123214260392926 (texture unchanged); check.sh
+  ALL CHECKS PASSED (828). Not published; not seen in Studio (Studio stopped).
+- Open: L5 lead over L4 shrank (raise the L5 tower / cap the L4 mast below the lantern); L4 dish reads flat;
+  wing plaque small. Note: zfight_check.check() resets Blender to factory settings (kills the MCP add-on): in the
+  MCP use collect()/analyse() on imported objects instead.

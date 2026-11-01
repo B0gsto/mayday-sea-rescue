@@ -75,16 +75,19 @@ CAP_TOP = 15.62
 MAST_X, MAST_Y = 36.0, 4.2
 PAD_TOP = 15.4
 MAST_TOP = 44.0     # PERF-HQ r2: 1.5x taller lattice mast
-RX0, RX1, RY0, RY1 = 28.8, 33.6, 0.4, 8.4   # r3: upper radio room on the wing roof (west of the mast)
-R_C = 1.25
-RZ1 = ROOF_TOP + 4 * R_C
+MAST_HB, MAST_HT, MAST_LEG, PAD_H = 1.7, 0.85, 1.3, 2.5   # r6: thicker mast (half base/top, leg, pad half)
 # r4: walk-in front block in front of the radio wing (its back meets the wing front at y -3, the wing door is the link)
 F_X0, F_XW, F_XI, F_XE, F_X1 = 26.9, 27.6, 28.4, 42.6, 43.2   # west face (low / above the hall roof corner), inner
 F_Y0, F_YI, F_YB, F_YBI = -15.4, -14.8, -3.45, -4.05            # front face, inner; upper back wall
-F_N, F_C = 15, 1.16
-F_TOP = FLOOR + F_N * F_C                                       # 18.0: roof deck, chequer parapet to 19.65
+F_N, F_C = 22, 1.16   # r6: one storey taller (15 -> 22 courses)
+F_TOP = FLOOR + F_N * F_C                                       # 26.12: roof deck, chequer parapet to F_TOP + 1.65
+F_MID = FLOOR + 15 * F_C                                        # 18.0: the old roof deck, now the upper floor
 F_DX0, F_DX1 = 32.2, 38.6
 F_DTOP = FLOOR + 7 * F_C
+# r6: the radio room moved from the wing roof onto the raised block roof (west, set back from the path face)
+R_C = 1.25
+RX0, RX1, RY0, RY1, RZ0 = 28.8, 33.6, -12.4, -4.4, F_TOP + 0.5
+RZ1 = RZ0 + 4 * R_C
 
 # --- Lv5 tower (east of the wing, on the same base; walkway between the two plinths)
 T_FLOOR = 0.6
@@ -298,15 +301,17 @@ def seams(b, along, a0, a1, face, d, zs, keep_out=(), head=3.0, c=P.LBG):
             a += head
 
 
-def lifeboat(b, cx):
+def lifeboat(b, cx, dy=0.65):
     """r5 Lv3 cue: an orange Lego lifeboat (white gunwale band, navy hull stripe, small cabin) on a grey wheeled
-    launch trolley in front of the hall front at x cx, bow to the path (-Y), wheels on the ground."""
+    launch trolley in front of the hall front at x cx, bow to the path (-Y), wheels on the ground. r6: drawn at the
+    r5 spot, then moved dy toward the wall (stern 0.1 off the x -12 pilaster) on a shorter trolley: front y -22.85."""
+    v0 = len(b.v)
     # trolley: two rails, cross beams, axles, black wheels with grey hubs, chocks, a tow bar
     for s in (-1, 1):
-        b.box((cx + s * 0.85 - 0.15, -23.0, 0.65), (cx + s * 0.85 + 0.15, -17.2, 1.05), P.LBG, bevel=0.04)
-    for y in (-17.6, -20.1, -22.6):
+        b.box((cx + s * 0.85 - 0.15, -22.6, 0.65), (cx + s * 0.85 + 0.15, -17.2, 1.05), P.LBG, bevel=0.04)
+    for y in (-17.6, -20.1, -22.35):
         b.box((cx - 0.7, y - 0.15, 0.8), (cx + 0.7, y + 0.15, 1.0), P.LBG, bevel=0.0, skip=("x0", "x1"))
-    for y in (-18.2, -22.0):
+    for y in (-18.7, -21.6):   # r6: back axle clear of the plinth edge once moved
         b.box((cx - 1.1, y - 0.12, 0.43), (cx + 1.1, y + 0.12, 0.67), P.DBG, bevel=0.0)
         for s in (-1, 1):
             b.cyl_x(cx + s * 1.25, y, 0.56, 0.55, 0.45, P.BLACK, n=10)
@@ -315,8 +320,8 @@ def lifeboat(b, cx):
         for s in (-1, 1):
             lo, hi = sorted((cx + s * 0.55, cx + s * 1.05))
             b.box((lo, y0, 1.05), (hi, y0 + 0.5, 1.26), P.LBG, bevel=0.03, skip=("z0",))
-    b.beam((cx, -23.0, 0.85), (cx, -24.0, 0.55), 0.3, 0.3, P.DBG)
-    b.cyl(cx, -24.05, 0.4, 0.75, 0.22, P.DBG, 6)
+    b.beam((cx, -22.6, 0.85), (cx, -23.2, 0.55), 0.3, 0.3, P.DBG)
+    b.cyl(cx, -23.25, 0.4, 0.75, 0.22, P.DBG, 6)
 
     # hull: plan outlines lofted up (transom at the wall end, a raked bow); bands orange / navy / orange / white
     zs = (1.3, 1.65, 1.95, 2.4, 2.75)
@@ -346,6 +351,7 @@ def lifeboat(b, cx):
     b.cyl(cx, -18.85, zd + 1.25, zd + 1.6, 0.18, P.GOLD, 6, bot=False)
     # white bow fender
     b.box((cx - 0.3, -23.5, 2.05), (cx + 0.3, -23.2, 2.4), P.WHITE, bevel=0.03)
+    b.v[v0:] = [(x, y + dy, z) for x, y, z in b.v[v0:]]
 
 
 # ------------------------------------------------------------------ Lv3 lifeboat station shell (PERF-HQ)
@@ -666,7 +672,7 @@ def station_col(c):
                    ((-DOOR_X, BAY_Y0 - 0.45, 9.0), (DOOR_X, BAY_Y1, S_EAVE)),
                    ((-BAY_X, BAY_Y1, 0.5), (-BAY_IN, -S_Y, S_EAVE)), ((BAY_IN, BAY_Y1, 0.5), (BAY_X, -S_Y, S_EAVE)),
                    ((-27.5, -16.5, S_EAVE), (27.5, 16.5, 25.0)), ((-7.8, -20.2, S_EAVE), (7.8, -S_Y, 23.5)),
-                   ((-13.4, -24.1, 0.0), (-10.6, -17.0, 2.75))):   # r5: the lifeboat trolley
+                   ((-13.4, -22.9, 0.0), (-10.6, -16.0, 2.75))):   # r6: the lifeboat trolley, pulled back
         c.box(lo, hi, bevel=0.0)
 
 
@@ -793,29 +799,28 @@ def wing_roof(b):
     b.box((ROOF_X0, ROOF_Y1 - 0.56, PAR_TOP), (ROOF_X1 + 0.06, ROOF_Y1 + 0.06, CAP_TOP), P.RED, bevel=0.02)
     b.box((ROOF_X1 - 0.56, ROOF_Y0 + 0.56, PAR_TOP), (ROOF_X1 + 0.06, ROOF_Y1 - 0.56, CAP_TOP), P.RED, bevel=0.02)
     studs_on(b, ROOF_X0 + 0.9, ROOF_X1 - 0.9, ROOF_Y0 + 0.9, ROOF_Y1 - 0.9, ROOF_TOP, P.INK, step=3.4,
-             skip=((MAST_X - 1.8, MAST_Y - 1.8, MAST_X + 1.8, MAST_Y + 1.8), (RX0 - 0.3, RY0 - 0.3, RX1 + 0.3, RY1 + 0.3)))
+             skip=((MAST_X - PAD_H + 0.2, MAST_Y - PAD_H + 0.2, MAST_X + PAD_H - 0.2, MAST_Y + PAD_H - 0.2),))
     # parapet studs on the red cap
     studs_on(b, ROOF_X0 + 0.6, ROOF_X1 - 0.3, ROOF_Y0 + 0.1, ROOF_Y0 + 0.5, CAP_TOP, P.RED, step=1.9, r=0.3, h=0.22, n=5)
     studs_on(b, ROOF_X0 + 0.6, ROOF_X1 - 0.3, ROOF_Y1 - 0.5, ROOF_Y1 - 0.1, CAP_TOP, P.RED, step=1.9, r=0.3, h=0.22, n=5)
     studs_on(b, ROOF_X1 - 0.5, ROOF_X1 - 0.1, ROOF_Y0 + 0.9, ROOF_Y1 - 0.9, CAP_TOP, P.RED, step=1.9, r=0.3, h=0.22, n=5)
-    b.box((MAST_X - 2.0, MAST_Y - 2.0, ROOF_TOP), (MAST_X + 2.0, MAST_Y + 2.0, PAD_TOP), P.WHITE, bevel=0.04)
-    radio_room(b)
+    b.box((MAST_X - PAD_H, MAST_Y - PAD_H, ROOF_TOP), (MAST_X + PAD_H, MAST_Y + PAD_H, PAD_TOP), P.WHITE, bevel=0.04)
 
 
 def radio_room(b):
-    """r3: a one-storey radio room on the wing roof (the Lv4 level step): red/white brick courses, red corner
+    """r3: a one-storey radio room (r6: on the raised front block's roof, set back from the path face): red/white brick courses, red corner
     pilasters, a framed window band facing the path, a stepped red studded roof with a white red-studded ridge cap.
     Solid (one COL box); the roof stays walkable in front and round it, clear of the Lv5 fences and the mast."""
     for k in range(4):
-        z = ROOF_TOP + k * R_C
+        z = RZ0 + k * R_C
         b.box((RX0, RY0, z), (RX1, RY1, z + R_C), P.RED if k == 0 else P.WHITE, bevel=0.05,
               skip=("z0", "z1") if k == 0 else ("z1",))
     for x0, y0 in ((RX0 - 0.06, RY0 - 0.06), (RX0 - 0.06, RY1 - 0.49), (RX1 - 0.49, RY0 - 0.06), (RX1 - 0.49, RY1 - 0.49)):
-        b.box((x0, y0, ROOF_TOP), (x0 + 0.55, y0 + 0.55, RZ1), P.RED, bevel=0.03, skip=("z0", "z1"))
+        b.box((x0, y0, RZ0), (x0 + 0.55, y0 + 0.55, RZ1), P.RED, bevel=0.03, skip=("z0", "z1"))
     for a0, a1 in ((29.3, 31.15), (31.25, 33.1)):
-        win_inset(b, "x", a0, a1, 16.75, 19.45, RY0, -1)
-    win_inset(b, "y", 3.7, 6.3, 16.75, 19.45, RX0, -1)  # clear of the Lv5 post at y 3
+        win_inset(b, "x", a0, a1, RZ0 + 1.7, RZ0 + 4.4, RY0, -1)
     cy = (RY0 + RY1) / 2
+    win_inset(b, "y", cy - 1.3, cy + 1.3, RZ0 + 1.7, RZ0 + 4.4, RX0, -1)
     b.box((RX0 - 0.4, RY0 - 0.5, RZ1), (RX1 + 0.4, RY1 + 0.5, RZ1 + 0.45), P.RED, bevel=0.06)
     hws, z = (4.5, 3.4, 2.3, 1.2), RZ1 + 0.45
     for k in range(1, 4):
@@ -837,7 +842,7 @@ def wing_mast(b):
     seg = (MAST_TOP - z0) / n
 
     def half(t):
-        return 1.35 + (0.55 - 1.35) * t
+        return MAST_HB + (MAST_HT - MAST_HB) * t
 
     for i in range(n):
         za, zb = z0 + i * seg, z0 + (i + 1) * seg
@@ -845,32 +850,32 @@ def wing_mast(b):
         col = P.RED if i % 2 == 0 else P.WHITE
         rung = P.WHITE if i % 2 == 0 else P.RED
         for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
-            b.beam((cx + sx * wa, cy + sy * wa, za), (cx + sx * wb, cy + sy * wb, zb), 0.9, 0.9, col)   # r5: 1.5x legs
+            b.beam((cx + sx * wa, cy + sy * wa, za), (cx + sx * wb, cy + sy * wb, zb), MAST_LEG, MAST_LEG, col)   # r6: thicker legs
         zr = zb - 0.08
-        b.beam((cx - wb, cy - wb, zr), (cx + wb, cy - wb, zr), 0.16, 0.16, rung)
-        b.beam((cx - wb, cy + wb, zr), (cx + wb, cy + wb, zr), 0.16, 0.16, rung)
-        b.beam((cx - wb, cy - wb, zr), (cx - wb, cy + wb, zr), 0.16, 0.16, rung)
-        b.beam((cx + wb, cy - wb, zr), (cx + wb, cy + wb, zr), 0.16, 0.16, rung)
-        b.beam((cx - wa, cy - wa, za + 0.15), (cx + wb, cy - wb, zb - 0.15), 0.14, 0.14, rung)
-        b.beam((cx + wa, cy + wa, za + 0.15), (cx - wb, cy + wb, zb - 0.15), 0.14, 0.14, rung)
-        b.beam((cx - wa, cy + wa, za + 0.15), (cx - wb, cy - wb, zb - 0.15), 0.14, 0.14, rung)
-        b.beam((cx + wa, cy - wa, za + 0.15), (cx + wb, cy + wb, zb - 0.15), 0.14, 0.14, rung)
+        b.beam((cx - wb, cy - wb, zr), (cx + wb, cy - wb, zr), 0.26, 0.26, rung)
+        b.beam((cx - wb, cy + wb, zr), (cx + wb, cy + wb, zr), 0.26, 0.26, rung)
+        b.beam((cx - wb, cy - wb, zr), (cx - wb, cy + wb, zr), 0.26, 0.26, rung)
+        b.beam((cx + wb, cy - wb, zr), (cx + wb, cy + wb, zr), 0.26, 0.26, rung)
+        b.beam((cx - wa, cy - wa, za + 0.15), (cx + wb, cy - wb, zb - 0.15), 0.22, 0.22, rung)
+        b.beam((cx + wa, cy + wa, za + 0.15), (cx - wb, cy + wb, zb - 0.15), 0.22, 0.22, rung)
+        b.beam((cx - wa, cy + wa, za + 0.15), (cx - wb, cy - wb, zb - 0.15), 0.22, 0.22, rung)
+        b.beam((cx + wa, cy - wa, za + 0.15), (cx + wb, cy + wb, zb - 0.15), 0.22, 0.22, rung)
 
     t = MAST_TOP
-    b.box((cx - 1.1, cy - 1.1, t), (cx + 1.1, cy + 1.1, t + 0.3), P.INK, bevel=0.03)
-    b.box((cx - 0.07, cy - 0.07, t + 0.3), (cx + 0.07, cy + 0.07, t + 2.4), P.WHITE, bevel=0.01)
+    b.box((cx - 1.6, cy - 1.6, t), (cx + 1.6, cy + 1.6, t + 0.3), P.INK, bevel=0.03)
+    b.box((cx - 0.12, cy - 0.12, t + 0.3), (cx + 0.12, cy + 0.12, t + 2.4), P.WHITE, bevel=0.01)
     b.box((cx - 3.6, cy - 0.08, t + 0.47), (cx + 3.6, cy + 0.08, t + 0.63), P.WHITE, bevel=0.01)
     b.box((cx - 0.08, cy - 2.7, t + 0.32), (cx + 0.08, cy + 2.7, t + 0.48), P.WHITE, bevel=0.01)
     for sx in (-1, 1):
         b.box((cx + sx * 3.6 - 0.15, cy - 0.17, t + 0.39), (cx + sx * 3.6 + 0.15, cy + 0.17, t + 0.71), P.RED, bevel=0.0)
     # r2: red/white aircraft warning light cap
-    b.cyl(cx, cy, t + 2.4, t + 2.75, 0.5, P.WHITE, 8)
-    b.cyl(cx, cy, t + 2.75, t + 3.4, 0.42, P.RED, 8, bot=False)
-    b.cyl(cx, cy, t + 3.4, t + 3.55, 0.3, P.INK, 6, bot=False)
+    b.cyl(cx, cy, t + 2.4, t + 2.85, 0.7, P.WHITE, 8)
+    b.cyl(cx, cy, t + 2.85, t + 3.65, 0.6, P.RED, 8, bot=False)
+    b.cyl(cx, cy, t + 3.65, t + 3.8, 0.42, P.INK, 6, bot=False)
 
     # r4: a grey parabolic dish facing the path: dark rim, hub, feed horn on a 3-strut arm (r5: 1.5x, 6.75 across,
     # on a 2x2 grey bracket brick into the mast)
-    zc, R, yf, dep = 27.0, 3.375, 0.4, 1.65
+    zc, R, yf, dep = 35.5, 3.375, 0.4, 1.65   # r6: up 8.5 so it reads over the raised block
     ring = lambda r, y: [(cx + r * math.cos(2 * math.pi * i / 16), y, zc + r * math.sin(2 * math.pi * i / 16))
                          for i in range(16)]
     ys = lambda r: yf + dep * (1 - (r / R) ** 2)
@@ -899,22 +904,22 @@ def wing_col(c):
     c.box((WX1 - WALL, WY0 + WALL, FLOOR), (WX1, WY1 - WALL, WALL_TOP))
     c.box((ROOF_X0, ROOF_Y0, WALL_TOP), (ROOF_X1, ROOF_Y1, CAP_TOP))
     c.box((40.6, 0.2, FLOOR_TOP), (42.5, 7.9, 5.6))
-    c.box((MAST_X - 1.35, MAST_Y - 1.35, PAD_TOP), (MAST_X + 1.35, MAST_Y + 1.35, MAST_TOP))
-    c.box((RX0, RY0, CAP_TOP), (RX1, RY1, RZ1 + 2.25))
+    c.box((MAST_X - MAST_HB, MAST_Y - MAST_HB, PAD_TOP), (MAST_X + MAST_HB, MAST_Y + MAST_HB, MAST_TOP))
+    c.box((RX0, RY0, RZ0), (RX1, RY1, RZ1 + 2.25))
     c.box((30.6, -4.6, 0.0), (36.2, PL_Y0, 0.3))
     # r4 front block: plinth, floor, three front bites round the door, west, east, upper back, roof, step
     for lo, hi in (((F_X0, -16.4, 0.0), (43.3, PL_Y0, FLOOR)), ((F_XI, F_YI, FLOOR), (F_XE, PL_Y0, FLOOR_TOP)),
                    ((F_X0, F_Y0, FLOOR), (F_DX0, F_YI, F_TOP)), ((F_DX1, F_Y0, FLOOR), (F_X1, F_YI, F_TOP)),
                    ((F_DX0, F_Y0, F_DTOP), (F_DX1, F_YI, F_TOP)), ((F_X0, F_YI, FLOOR), (F_XI, WY0, F_TOP)),
                    ((F_XE, F_YI, FLOOR), (F_X1, WY0, F_TOP)), ((F_XI, F_YBI, 14.52), (F_XE, F_YB, F_TOP)),
-                   ((F_XW, F_Y0, F_TOP), (F_X1, F_YB, 19.65)), ((31.4, -17.2, 0.0), (39.4, -16.4, 0.3))):
+                   ((F_XW, F_Y0, F_TOP), (F_X1, F_YB, F_TOP + 1.65)), ((31.4, -17.2, 0.0), (39.4, -16.4, 0.3))):
         c.box(lo, hi)
 
 
 # ------------------------------------------------------------------ Lv4 front block (r4)
 # The AD r3 read "L3 + a stub" from the path: a walk-in block in front of the radio wing, flush with the hall front
-# (x 26.9..43.2, y -15.4..-3), red/white courses to 18.0, a studded navy deck with a red/white chequer parapet and a
-# red cap (19.65), a deep-red portal with red leaves swung open, a framed radio-wave plaque, inset windows. Its back
+# (x 26.9..43.2, y -15.4..-3), red/white courses to 26.12 (r6: +1 storey, 18.0 was the r4 top), a studded navy
+# deck with a red/white chequer parapet and a red cap (27.77), the radio room on top (r6), a deep-red portal with red leaves swung open, a framed radio-wave plaque, inset windows. Its back
 # is the wing's front wall: the wing door links the two. Above the eave line the west wall steps to x 27.6, clear of
 # the hall's gable overhang (27.5); the east side stays 0.5 off the Lv5 stair (43.72).
 def block_base(b):
@@ -944,6 +949,7 @@ def block_walls(b):
     zs = [FLOOR + k * F_C for k in range(F_N + 1)]
     ko = [(31.2, 39.6, 0.0, 13.8), (27.0, 27.7, 15.6, 99.0), (27.6, 42.6, 9.55, 9.95)]
     ko += [(a0, a1, z0, z1) for a0, a1 in ((28.3, 31.2), (39.6, 42.5)) for z0, z1 in ((2.95, 6.85), (10.75, 14.45))]
+    ko += [(a0, a1, 18.85, 22.95) for a0, a1 in ((28.3, 31.2), (33.9, 36.9), (39.6, 42.5))] + [(27.6, 42.6, 17.8, 18.2)]
     seams(b, "x", F_X0 + 0.1, 42.6, F_Y0, -1, zs, ko)
     seams(b, "y", -14.85, WY0 - 0.05, F_X1, 1, zs, [(F_YB - 0.05, 99.0, 14.5, 99.0)])
     # under the hall's gable overhang (bottom 16.05): a filler course so no slot shows at the corner
@@ -974,6 +980,10 @@ def block_trim(b):
     # a navy storey band (like the wing's) between the two window rows
     for a0, a1 in ((F_XW + 0.05, F_DX0 - 1.0), (F_DX1 + 1.0, 42.6)):
         b.box((a0, F_Y0 - 0.05, 9.62), (a1, F_Y0, 9.9), P.INK, bevel=0.01)
+    # r6: the added storey: a second navy band at the old deck line and a row of three windows
+    b.box((F_XW + 0.05, F_Y0 - 0.05, 17.86), (42.6, F_Y0, 18.14), P.INK, bevel=0.01)
+    for a0, a1 in ((28.6, 30.9), (34.25, 36.55), (39.9, 42.2)):
+        win_inset(b, "x", a0, a1, 19.3, 22.5, F_Y0, -1)
 
 
 def block_roof(b):
@@ -1001,7 +1011,11 @@ def block_roof(b):
     studs_on(b, F_XW, F_X1, F_YB - 0.5, F_YB - 0.1, zc + 0.15, P.RED, **kw)
     studs_on(b, F_XW + 0.1, F_XW + 0.5, F_Y0 + 0.7, F_YB - 0.7, zc + 0.15, P.RED, **kw)
     studs_on(b, F_X1 - 0.5, F_X1 - 0.1, F_Y0 + 0.7, F_YB - 0.7, zc + 0.15, P.RED, **kw)
-    studs_on(b, F_XW + 1.0, F_X1 - 1.0, F_Y0 + 1.0, F_YB - 1.0, zp, P.INK, step=2.6)
+    studs_on(b, F_XW + 1.0, F_X1 - 1.0, F_Y0 + 1.0, F_YB - 1.0, zp, P.INK, step=2.6,
+             skip=((RX0 - 0.6, RY0 - 0.6, RX1 + 0.6, RY1 + 0.6),))
+    # r6: the old deck stays inside as the upper floor's slab (walk-in ground floor keeps its ceiling height)
+    b.box((F_XI + 0.05, F_YI + 0.05, F_MID), (F_XE - 0.05, F_YBI - 0.05, F_MID + 0.5), P.INK, bevel=0.03)
+    radio_room(b)
 
 
 def hall_canopy(b):

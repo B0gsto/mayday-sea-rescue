@@ -21202,6 +21202,16 @@
   "source": "assets/fbx/M_Hbr_QuayKit_Corner/M_Hbr_QuayKit_Corner_LOD2.fbx",
   "type": "Model"
  },
+ "Model:0851d9b03f3a589861d44495f0ef25cde140c701cadc315d379de6b6cc064667": {
+  "assetId": "123214260392926",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "0851d9b03f3a589861d44495f0ef25cde140c701cadc315d379de6b6cc064667",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:08af153ff2322def486ce43138834b916edcd40f7ea7173ddb4b25683e56ae33": {
   "assetId": "92503779788373",
   "moderation": "Approved",
@@ -27022,6 +27032,16 @@
   "source": "assets/fbx/Spike1/M_Spike1_ScaleCube.fbx",
   "type": "Model"
  },
+ "Model:9ac7e45f851d46d0643a68d812b7a9392acab049ebd5acee2ab43094d431e69f": {
+  "assetId": "97972408661195",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons",
+  "rbxm": "assets/models/M_Bld_HQAddons.rbxm",
+  "route": "delivery",
+  "sha": "9ac7e45f851d46d0643a68d812b7a9392acab049ebd5acee2ab43094d431e69f",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:9b6fcf5b398f265658ddc87d64c91b5502604eb64c4b6b3d49cabad5b745612d": {
   "assetId": "81178847971132",
   "moderation": "Approved",
@@ -29470,6 +29490,16 @@
   "route": "delivery",
   "sha": "e0c82043cd3b4b759b44995981fb1bdd17a3a64404bcf838a91120fc74a9fdad",
   "source": "assets/fbx/M_Kit_StretcherBasket/M_Kit_StretcherBasket_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:e0fd65f272e3dc56da324497114aa679ecccb43915c02a9c23921a9bd1ca84a2": {
+  "assetId": "125702385795929",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "e0fd65f272e3dc56da324497114aa679ecccb43915c02a9c23921a9bd1ca84a2",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:e214a737c1a1deb3da96e1417fbb7f5efda4806af68390d68794a281d3159516": {

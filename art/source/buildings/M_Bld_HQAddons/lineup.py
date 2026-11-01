@@ -274,7 +274,7 @@ def render_all():
         shot("close_door_L3", "L3", (4, -40, 6), (0, -20, 9), fov=45)
         shot("close_windows_L3", "L3", (-6, -38, 8), (-15, -15, 7), fov=40)
         shot("close_roof_L3", "L3", (-38, -42, 34), (-12, -4, 21), fov=40)
-        shot("close_L4_mast_dish", "L4", (46, -30, 22), (36, 3, 25), fov=50)
+        shot("close_L4_mast_dish", "L4", (48, -30, 34), (36, 3, 33), fov=50)
         shot("close_L5_lantern", "L5", (44, -24, 40), (55, 3, 44), fov=45)
         shot("close_L2_front", "L2", (6, -42, 10), (2, -9, 15), fov=50)
     finally:
