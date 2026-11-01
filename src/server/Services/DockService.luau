@@ -387,7 +387,8 @@ local function buildPlot(folder: Instance, i: number): Plot
 	local isle = b * Marina.ISLAND
 	local arch = isle * CFrame.new(-16, 0, -28.5) -- over the jetty (RingLayout lot Jetty)
 	local board, labels, trim, studs = nameSign(sign, arch, BOARD)
-	local poleAt = isle * CFrame.new(3, 0, -28) -- east of the arch: the west quay holds the rescue board and the cove walk
+	-- east of the arch and off the spawn-to-kiosk line; the west quay holds the rescue board and the cove walk
+	local poleAt = isle * CFrame.new(12, 0, -28)
 	studTop(
 		part(
 			sign,
