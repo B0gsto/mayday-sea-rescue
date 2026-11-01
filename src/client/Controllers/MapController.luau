@@ -958,16 +958,17 @@ local function buildFullMap()
 	local safe = root
 	full.safe = safe
 
-	local zin = kitButton(safe, "ZoomIn", "+", UDim2.fromOffset(52, 52), "blue", function()
+	local BTN = 64 -- 45 pt at the 0.7 phone floor (AD 2026-11-01: 32 pt+ on touch)
+	local zin = kitButton(safe, "ZoomIn", "+", UDim2.fromOffset(BTN, BTN), "blue", function()
 		full.radius = math.max(MapConfig.FullMap.minRadius, full.radius * 0.7)
 	end)
 	zin.AnchorPoint = Vector2.new(0, 1)
-	zin.Position = UDim2.new(0, 12, 1, -200)
-	local zout = kitButton(safe, "ZoomOut", "-", UDim2.fromOffset(52, 52), "blue", function()
+	zin.Position = UDim2.new(0, 12, 1, -(68 + 2 * (BTN + 8)))
+	local zout = kitButton(safe, "ZoomOut", "-", UDim2.fromOffset(BTN, BTN), "blue", function()
 		full.radius = math.min(MapConfig.FullMap.maxRadius, full.radius / 0.7)
 	end)
 	zout.AnchorPoint = Vector2.new(0, 1)
-	zout.Position = UDim2.new(0, 12, 1, -140)
+	zout.Position = UDim2.new(0, 12, 1, -(68 + BTN + 8))
 	local clear = kitButton(
 		safe,
 		"ClearWaypoint",
@@ -981,14 +982,21 @@ local function buildFullMap()
 	clear.AnchorPoint = Vector2.new(0, 1)
 	clear.Position = UDim2.new(0, 12, 1, -12)
 	full.clear = clear
-	local recentre = kitButton(safe, "Recentre", "Me", UDim2.fromOffset(52, 52), "blue", function()
-		local r = rootPart()
-		if r then
-			full.center = Vector2.new(r.Position.X, r.Position.Z)
+	local recentre = kitButton(
+		safe,
+		"Recentre",
+		"Me",
+		UDim2.fromOffset(BTN, BTN),
+		"blue",
+		function()
+			local r = rootPart()
+			if r then
+				full.center = Vector2.new(r.Position.X, r.Position.Z)
+			end
 		end
-	end)
+	)
 	recentre.AnchorPoint = Vector2.new(0, 1)
-	recentre.Position = UDim2.new(0, 12, 1, -80)
+	recentre.Position = UDim2.new(0, 12, 1, -68)
 	full.controls = { zin, zout, recentre }
 
 	-- legend: a small collapsible kit panel, bottom right (collapsed: just its header)
@@ -1076,16 +1084,6 @@ local function buildFullMap()
 		full.legendOpen = not full.legendOpen
 	end)
 
-	-- the controls hint: one dim line, bottom centre
-	local hint = text("Hint", safe, "", 15, C.textDim)
-	hint.Font = HudTheme.BodyFont
-	hint.AnchorPoint = Vector2.new(0.5, 1)
-	hint.Position = UDim2.new(0.5, 0, 1, -16)
-	hint.Size = UDim2.fromOffset(420, 20)
-	hint.TextStrokeTransparency = 0.5
-	hint.ZIndex = 10
-	full.hint = hint
-
 	full.radius = MapConfig.FullMap.startRadius
 	full.center = Vector2.new(0, 200)
 end
@@ -1168,6 +1166,34 @@ local function fullScale(): (number, Vector2)
 	return math.min(size.X, size.Y) / 2 / full.radius, size
 end
 
+-- The map opens on everything explored, filling the view (AD 2026-11-01: the revealed square sat small in a big
+-- navy panel): the revealed fog cells' box, centred, at the radius that fits it.
+local function fitRevealed()
+	local lo: Vector2?, hi: Vector2? = nil, nil
+	for i = 1, FOG.count * FOG.count do
+		if DiscoveryController.IsRevealed(i) then
+			local p = Vector2.new(
+				FOG.origin + ((i - 1) % FOG.count) * FOG.cell,
+				FOG.origin + ((i - 1) // FOG.count) * FOG.cell
+			)
+			lo = if lo then lo:Min(p) else p
+			hi = if hi then hi:Max(p) else p
+		end
+	end
+	local _, size = fullScale()
+	if not (lo and hi) or size.X < 1 or size.Y < 1 then
+		return
+	end
+	local span = hi - lo + Vector2.new(FOG.cell, FOG.cell)
+	local k = math.min(size.X / span.X, size.Y / span.Y) -- du per stud that fits the box
+	full.radius = math.clamp(
+		math.min(size.X, size.Y) / 2 / k, -- fullScale: the short side spans 2 x radius
+		MapConfig.FullMap.minRadius,
+		MapConfig.FullMap.maxRadius
+	)
+	full.center = lo + span / 2
+end
+
 local function screenToWorld(p: Vector2): Vector2
 	local scale, size = fullScale()
 	local origin = full.root.AbsolutePosition
@@ -1210,7 +1236,6 @@ local function layoutLegend(size: Vector2)
 	full.legend.Size = UDim2.fromOffset(LEGEND_WIDTH, h)
 	local chev = full.legendHead:FindFirstChild("Chevron") :: Frame
 	chev.Rotation = if open then 90 else 0
-	full.hint.Visible = size.X - 2 * (LEGEND_WIDTH + 32) >= 300
 end
 
 local MARK_GAP = 6 -- px of clear map kept between a place name and any marker
@@ -1225,7 +1250,7 @@ end
 local function placeNames(c: Vector2, scale: number, size: Vector2, marks: { { Vector2 } })
 	local origin = full.root.AbsolutePosition
 	local blocked: { { Vector2 } } = {}
-	local panels: { GuiObject } = { full.legend, full.clear, full.hint }
+	local panels: { GuiObject } = { full.legend, full.clear }
 	for _, g in full.controls do
 		table.insert(panels, g)
 	end
@@ -1390,12 +1415,6 @@ local function updateFullMap(now: number)
 	placeNames(c, scale, size, marks)
 	local pad = UserInputService.GamepadEnabled and not UserInputService.MouseEnabled
 	full.cross.Visible = pad
-	full.hint.Text = if pad
-		then "LS Pan · RT Zoom · A Point · X Clear · Y Legend · B Close"
-		elseif
-			UserInputService.TouchEnabled and not UserInputService.MouseEnabled
-		then "Drag Pan · Pinch Zoom · Tap Point"
-		else "Drag Pan · Wheel Zoom · Click Point · M Close"
 end
 
 -- ---------------------------------------------------------------- input
@@ -1590,6 +1609,7 @@ function MapController.Open()
 	end
 	refreshFog()
 	full.root.Visible = true
+	fitRevealed()
 	full.panel.open()
 	mini.root.Visible = false
 	gui.DisplayOrder = 40 -- above the Ops cards while the full map is up

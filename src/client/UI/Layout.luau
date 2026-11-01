@@ -366,6 +366,29 @@ function Layout.onEdge(dir: Vector2, inset: Vector2, clear: Vector2, hang: numbe
 	return Layout.clearOfHud(at, clear, hang)
 end
 
+-- A world prompt's BillboardGui slid (SizeOffset, +Y up) clear of the HUD boxes like the pins: "E Build" drew under
+-- the Next chip (in-game AD 2026-11-01). `base` is the gui's own SizeOffset. Call it every frame while it shows.
+function Layout.keepClear(bb: BillboardGui, base: Vector2?)
+	local b = base or Vector2.zero
+	local cam = Workspace.CurrentCamera
+	local a = bb.Adornee
+	local size = Vector2.new(bb.Size.X.Offset, bb.Size.Y.Offset)
+	local at = if a and a:IsA("BasePart")
+		then a.Position
+		elseif a and a:IsA("Attachment") then a.WorldPosition
+		else nil
+	if not (cam and at) or size.X < 1 or size.Y < 1 then
+		return
+	end
+	local p, on = cam:WorldToViewportPoint(at + bb.StudsOffsetWorldSpace)
+	if not on then
+		return
+	end
+	local centre = Vector2.new(p.X + b.X * size.X, p.Y - b.Y * size.Y)
+	local d = Layout.clearOfHud(centre, size / 2) - centre
+	bb.SizeOffset = b + Vector2.new(d.X / size.X, -d.Y / size.Y)
+end
+
 function Layout.promptBusy(): boolean
 	return promptIsBusy
 end

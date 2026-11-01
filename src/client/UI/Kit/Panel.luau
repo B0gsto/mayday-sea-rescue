@@ -198,6 +198,13 @@ function Panel.new(canvas: Instance, props: Props): Panel
 		-- short landscape (phones): the tabs move into the title bar in place of the name (the icon stays),
 		-- tighter padding, so the list gets the height (verify 2026-10-26: the Shop showed 1.3 cards)
 		local compact = Theme.compact(vp, scale)
+		local ic = bar:FindFirstChild("Icon") :: Frame?
+		if ic then -- compact: the icon stays inside the bar's height, no overhang off the screen top
+			ic.Size = UDim2.fromOffset(
+				if compact then S.titleBar else iconSide,
+				if compact then S.titleBar else iconSide
+			)
+		end
 		local px = UDim.new(0, if compact then 8 else S.pad)
 		padding.PaddingTop, padding.PaddingBottom, padding.PaddingLeft, padding.PaddingRight =
 			px, px, px, px

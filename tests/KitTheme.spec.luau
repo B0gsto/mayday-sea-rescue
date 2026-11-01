@@ -23,6 +23,9 @@ return function(t)
 			local px = Theme.panelSize(vp, s, want) * s
 			t.expect(px.X <= vp.X * 0.94 + 0.01).toBe(true)
 			t.expect(px.Y <= vp.Y * (if Theme.compact(vp, s) then 0.98 else 0.9) + 0.01).toBe(true)
+			if Theme.compact(vp, s) then -- 8 du clear above and below (title icon, drop shadow)
+				t.expect(px.Y <= vp.Y - 16 * s + 0.01).toBe(true)
+			end
 		end
 		-- portrait grows to most of the height
 		local tall = Theme.panelSize(Vector2.new(390, 844), 0.7, want)

@@ -118,8 +118,8 @@ local function art(parent: Instance, name: string, color: string)
 end
 
 local function section(parent: Instance, order: number, title: string): number
-	local l = Style.label(parent, string.upper(title), Theme.Text.small, true)
-	l.Size = UDim2.new(1, -8, 0, 34)
+	local l = Style.label(parent, string.upper(title), Theme.Text.body, true)
+	l.Size = UDim2.new(1, -8, 0, 36)
 	l.LayoutOrder = order
 	l.TextXAlignment = Enum.TextXAlignment.Left
 	return order + 1
@@ -152,27 +152,33 @@ local function rowLabel(parent: Instance, text: string, right: number): TextLabe
 	return l
 end
 
+-- `key`: a Comfort flag, or the switch's own state and handler (the Seasick-safe preset)
 local function toggleRow(
 	parent: Instance,
 	order: number,
-	key: string,
+	key: string | { on: boolean, onChange: (boolean) -> () },
 	artName: string,
 	color: string,
 	label: string
-)
+): (Frame, Toggle.Toggle)
 	local row = rowRoot(parent, order, 82)
 	local line = row:FindFirstChild("LabelLine", true) :: Frame
 	art(line, artName, color)
 	rowLabel(line, label, 150)
-	local t = Toggle.new(line, {
-		on = Comfort.get(key) == true,
-		onChange = function(on)
-			Comfort.set(key, on)
-		end,
-	})
+	local t = Toggle.new(
+		line,
+		if type(key) == "table"
+			then key
+			else {
+				on = Comfort.get(key) == true,
+				onChange = function(on)
+					Comfort.set(key, on)
+				end,
+			}
+	)
 	t.root.AnchorPoint = Vector2.new(1, 0.5)
 	t.root.Position = UDim2.new(1, -14, 0.5, 0)
-	return row
+	return row, t
 end
 
 -- a chunky white minus / plus on a slider end button: Glyph bars over an ink drop (text "-" read as a slot)
@@ -208,7 +214,7 @@ local function sliderRow(
 	local line = row:FindFirstChild("LabelLine", true) :: Frame
 	art(line, artName, color)
 	rowLabel(line, label, 110)
-	local value = Style.label(line, "", Theme.Text.body, true)
+	local value = Style.label(line, "", Theme.Text.heading, true)
 	value.AnchorPoint = Vector2.new(1, 0)
 	value.Position = UDim2.new(1, -16, 0, 0)
 	value.Size = UDim2.fromOffset(100, 70)
@@ -371,26 +377,26 @@ local function actionRow(
 	color: string,
 	label: string,
 	onTap: () -> ()
-): (Frame, ImageLabel)
+): Frame
 	local row = rowRoot(parent, order, 82)
 	local line = row:FindFirstChild("LabelLine", true) :: Frame
 	art(line, artName, color)
-	rowLabel(line, label, 70)
-	local hit = Style.button(row, UDim2.fromScale(1, 1))
-	hit.ZIndex = 3
-	Style.press(hit, onTap)
-	-- the kit's green tick (UiImages.VehicleArt.Check), shown while the row's preset is on
-	local mark = Instance.new("ImageLabel")
-	mark.Name = "Tick"
-	mark.AnchorPoint = Vector2.new(1, 0.5)
-	mark.Position = UDim2.new(1, -18, 0.5, 0)
-	mark.Size = UDim2.fromOffset(44, 44)
-	mark.BackgroundTransparency = 1
-	mark.Image = UiImages.VehicleArt.Check
-	mark.ScaleType = Enum.ScaleType.Fit
-	mark.Visible = false
-	mark.Parent = line
-	return row, mark
+	rowLabel(line, label, 150)
+	-- a chunky orange button with the row's glyph, the Toggle's size (AD 2026-11-01: the bare row read as a label)
+	local button = Style.button(line, UDim2.fromOffset(124, 64))
+	button.AnchorPoint = Vector2.new(1, 0.5)
+	button.Position = UDim2.new(1, -14, 0.5, 0)
+	local _, face = Style.block(button, Style.grad("orange"), { lip = 5, radius = S.cornerSmall })
+	local glyph = Instance.new("ImageLabel")
+	glyph.BackgroundTransparency = 1
+	glyph.AnchorPoint = Vector2.new(0.5, 0.5)
+	glyph.Position = UDim2.fromScale(0.5, 0.5)
+	glyph.Size = UDim2.fromOffset(48, 48)
+	glyph.Image = SettingsArt[artName] or ""
+	glyph.ScaleType = Enum.ScaleType.Fit
+	glyph.Parent = face
+	Style.press(button, onTap, S.cornerSmall)
+	return row
 end
 
 local mounted = false
@@ -434,19 +440,33 @@ function SettingsPanel.newPanel(canvas: Frame, onClose: () -> ())
 
 	order = section(panel.body, order, "Comfort")
 	order += 1
-	local _, seasick = actionRow(panel.body, order, "waves", "teal", "Seasick-safe", function()
-		Comfort.setMany(SettingsRules.SEASICK)
-	end)
-	order += 1
-	actionRow(panel.body, order, "reset", "grey", "Reset", function()
+	local function resetComfort()
 		local d: { [string]: any } = {}
 		for _, k in SettingsRules.COMFORT_KEYS do
 			d[k] = (SettingsRules.Defaults :: any)[k]
 		end
 		Comfort.setMany(d)
-	end)
+	end
+	local function seasickOn(): boolean
+		return SettingsRules.isPreset(Comfort.all() :: any, SettingsRules.SEASICK)
+	end
+	-- the preset as a switch: on applies it, off goes back to the defaults
+	local _, seasick = toggleRow(panel.body, order, {
+		on = seasickOn(),
+		onChange = function(on: boolean)
+			if on then
+				Comfort.setMany(SettingsRules.SEASICK)
+			else
+				resetComfort()
+			end
+		end,
+	}, "waves", "teal", "Seasick-safe")
+	order += 1
+	actionRow(panel.body, order, "reset", "grey", "Reset", resetComfort)
 	table.insert(extra, function()
-		seasick.Visible = SettingsRules.isPreset(Comfort.all() :: any, SettingsRules.SEASICK)
+		if seasick.get() ~= seasickOn() then
+			seasick.set(seasickOn())
+		end
 	end)
 	order += 1
 	local _, p0 = sliderRow(

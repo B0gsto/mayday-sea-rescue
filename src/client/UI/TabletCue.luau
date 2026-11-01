@@ -191,6 +191,9 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 		local away = not inRange and far()
 		show(inRange or away)
 		bindKeys(away and others == 0)
+		if up then
+			Layout.keepClear(bb, Vector2.new(0, 0.5)) -- off the top HUD (the Next chip)
+		end
 		if up and goal then -- a slow bob like the beacon's, never a flash
 			arrow.Position = UDim2.new(0.5, 0, 0, BOB + math.sin(os.clock() * 1.8) * BOB)
 		end

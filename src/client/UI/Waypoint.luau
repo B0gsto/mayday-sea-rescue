@@ -176,17 +176,17 @@ function Waypoint.start(
 	local chip = Instance.new("Frame")
 	chip.Name = "Range"
 	chip.AnchorPoint = Vector2.new(0.5, 0)
-	chip.Size = UDim2.fromOffset(0, 20)
+	chip.Size = UDim2.fromOffset(0, 26)
 	chip.AutomaticSize = Enum.AutomaticSize.X
 	chip.BackgroundColor3 = NAVY
 	chip.BackgroundTransparency = 0.3
 	chip.BorderSizePixel = 0
 	chip.Parent = mark
-	HudTheme.corner(chip, 10)
+	HudTheme.corner(chip, 13)
 	local pad = Instance.new("UIPadding")
 	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 7), UDim.new(0, 7)
 	pad.Parent = chip
-	local range = HudTheme.label("Text", "", UDim2.fromScale(0, 1), HudTheme.NumberFont, 15, chip)
+	local range = HudTheme.label("Text", "", UDim2.fromScale(0, 1), HudTheme.NumberFont, 20, chip)
 	range.AutomaticSize = Enum.AutomaticSize.X
 	range.TextTruncate = Enum.TextTruncate.None
 	HudTheme.outline(range)

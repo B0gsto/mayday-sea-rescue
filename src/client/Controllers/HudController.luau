@@ -287,29 +287,36 @@ local function render(data: { [string]: any })
 end
 
 -- Prize-wheel Cash is paid when the spin starts (SpinService): hold it off the wallet until the capsule pops
--- (PrizeWheelController sets SpinRevealed), or a few seconds if the wheel never plays here.
-local spinHeld = 0
-local function releaseSpin()
-	if spinHeld <= 0 then
+-- (PrizeWheelController sets SpinRevealed), or a few seconds if the wheel never plays here. A Robux purchase's Cash
+-- (award reason "Purchase:<key>") waits the same way for PurchaseFxController's card to land (PurchaseLanded).
+local heldBy: { [string]: number } = {} -- "spin" | "buy" -> Cash held off the wallet
+local function release(why: string)
+	local n = heldBy[why] or 0
+	if n <= 0 then
 		return
 	end
-	local held = math.max(0, (tonumber(player:GetAttribute("CashHeld")) or 0) - spinHeld)
-	spinHeld = 0
+	local held = math.max(0, (tonumber(player:GetAttribute("CashHeld")) or 0) - n)
+	heldBy[why] = 0
 	player:SetAttribute("CashHeld", if held > 0 then held else nil)
 end
+local HOLD_SECONDS = { spin = 7, buy = 20 } -- failsafes: the wheel / the card never plays here
 
 local function onDataChanged(data: any)
 	if type(data) ~= "table" then
 		return
 	end
 	local award = data.award
-	local spinCash = if type(award) == "table" and award.reason == "spin"
-		then tonumber(award.cash) or 0
-		else 0
-	if spinCash > 0 then
-		spinHeld += spinCash
-		player:SetAttribute("CashHeld", (tonumber(player:GetAttribute("CashHeld")) or 0) + spinCash)
-		task.delay(7, releaseSpin)
+	local reason = if type(award) == "table" then tostring(award.reason) else ""
+	local why = if reason == "spin"
+		then "spin"
+		elseif string.sub(reason, 1, 9) == "Purchase:" then "buy"
+		else nil
+	local landedAgo = os.clock() - (tonumber(player:GetAttribute("PurchaseLanded")) or -math.huge)
+	local holdCash = if why then tonumber(award.cash) or 0 else 0
+	if why and holdCash > 0 and not (why == "buy" and landedAgo < 3) then -- the card already landed: show it
+		heldBy[why] = (heldBy[why] or 0) + holdCash
+		player:SetAttribute("CashHeld", (tonumber(player:GetAttribute("CashHeld")) or 0) + holdCash)
+		task.delay(HOLD_SECONDS[why], release, why)
 	end
 	render(data)
 	-- a held payout (CashHeld: the reward prompt's coins) shows as coins landing, not as a "+N Cash" line
@@ -524,7 +531,12 @@ function HudController.Init()
 	Menu.mount() -- button bar, panel registry, Boat to me
 	NextChip.mount(Layout.region(gui, "chips")) -- the permanent next-goal chip (docs/24 E)
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)
-	player:GetAttributeChangedSignal("SpinRevealed"):Connect(releaseSpin)
+	player:GetAttributeChangedSignal("SpinRevealed"):Connect(function()
+		release("spin")
+	end)
+	player:GetAttributeChangedSignal("PurchaseLanded"):Connect(function()
+		release("buy")
+	end)
 	player:GetAttributeChangedSignal("CashHeld"):Connect(function()
 		if snapshot then
 			render(snapshot)

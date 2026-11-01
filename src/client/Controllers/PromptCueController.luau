@@ -189,6 +189,12 @@ local function show(prompt: ProximityPrompt, input: Enum.ProximityPromptInputTyp
 
 	bb.Parent = Players.LocalPlayer:FindFirstChildOfClass("PlayerGui")
 	Style.pop(button, true) -- one pop, never a loop
+	table.insert(
+		conns,
+		RunService.Heartbeat:Connect(function()
+			Layout.keepClear(bb) -- off the top HUD (the Next chip)
+		end)
+	)
 
 	return function()
 		release()

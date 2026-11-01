@@ -266,21 +266,25 @@ function Album.new(canvas: Frame, onClose: () -> ())
 			art.Size = UDim2.fromScale(1.1, 1.1)
 			art.Parent = well
 			Sticker.draw(art, page.id, "Stamp", Rules.has(state, page.id, 4))
-			local name = Style.label(face, page.name, Theme.Text.small)
-			name.Position = UDim2.new(0, 8, 1, -72)
-			name.Size = UDim2.new(1, -16, 0, 26)
+			local name = Style.label(face, page.name, Theme.Text.body)
+			name.Position = UDim2.new(0, 8, 1, -74)
+			name.Size = UDim2.new(1, -16, 0, 30)
 			name.TextWrapped = false
 			name.TextScaled = true
+			local nameCap = Instance.new("UITextSizeConstraint")
+			nameCap.MaxTextSize = Theme.Text.body
+			nameCap.MinTextSize = 20 -- 14 pt on a phone
+			nameCap.Parent = name
 			-- the found counter: a bold dark pill
 			local pill = Instance.new("Frame")
 			pill.BackgroundColor3 = Theme.Grad.ink.bottom
 			pill.AnchorPoint = Vector2.new(0.5, 1)
 			pill.Position = UDim2.new(0.5, 0, 1, -8)
-			pill.Size = UDim2.fromOffset(96, 36)
+			pill.Size = UDim2.fromOffset(112, 36)
 			Style.corner(pill, 999)
 			Style.stroke(pill, 2, true)
 			pill.Parent = face
-			Style.label(pill, `{found}/{total}`, Theme.Text.body)
+			Style.label(pill, `{found}/{total}`, Theme.Text.heading)
 			Style.press(card, function()
 				showPage(page, card)
 			end)
@@ -385,7 +389,7 @@ function Album.new(canvas: Frame, onClose: () -> ())
 			name.TextScaled = true
 			local cap = Instance.new("UITextSizeConstraint")
 			cap.MaxTextSize = Theme.Text.body
-			cap.MinTextSize = 12
+			cap.MinTextSize = 20
 			cap.Parent = name
 			local perk = Style.label(face, PERK[sp.id] or tier.name, Theme.Text.small)
 			perk.Position = UDim2.fromOffset(6, 138)
