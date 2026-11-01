@@ -776,122 +776,141 @@ end
 
 -- the station on its lot (door toward the spawn): the island's Lego town hall. A stud plinth, white walls on a
 -- red base course, a window row, a blue stud roof behind a white parapet, a door in the owner's colour under a
--- sign; the lit front (neon stripes, floodlights), a beacon on the roof, light strips down the jetty
-local function station(m: Model, b: CFrame)
+-- sign; the lit front (neon stripes, floodlights), a beacon on the roof, light strips down the jetty. `shell` = the
+-- Lv3 mesh (M_Bld_HQAddons Lv3_*): it is the walls, roof and door, so only the sign (the level's name), lights and
+-- beacon stay code
+local function station(m: Model, b: CFrame, shell: Model?, level: number?)
 	local S = b * DockConfig.Buildings.HQ.spot -- -Z = the front
 	local hw, hd, h = ST.hw, ST.hd, ST.h
 	local door = 5
-	plinth(m, Vector3.new(hw * 2 + 4, 0.5, hd * 2 + 4), S * CFrame.new(0, 0.25, 0))
-	brick(m, "Wall", Vector3.new(hw * 2, h, 0.8), S * CFrame.new(0, h / 2, hd), WHITE)
-	for _, x in { -hw, hw } do
-		brick(m, "Wall", Vector3.new(0.8, h, hd * 2), S * CFrame.new(x, h / 2, 0), WHITE)
-	end
-	for _, side in { -1, 1 } do
+	local plaque = shell and shell:FindFirstChild("ATT_Sign_03", true)
+	if shell then
+		sign(
+			m,
+			Vector3.new(12, 3, 0.4),
+			if plaque and plaque:IsA("Attachment")
+				then CFrame.new(plaque.WorldPosition) * S.Rotation
+				else S * CFrame.new(0, 10.6, -hd - 0.65),
+			BRICK_WHITE,
+			DockConfig.Buildings.HQ.levels[level or 3].name or "Station",
+			UiImages.Kit.lifebuoy
+		)
+	else
+		plinth(m, Vector3.new(hw * 2 + 4, 0.5, hd * 2 + 4), S * CFrame.new(0, 0.25, 0))
+		brick(m, "Wall", Vector3.new(hw * 2, h, 0.8), S * CFrame.new(0, h / 2, hd), WHITE)
+		for _, x in { -hw, hw } do
+			brick(m, "Wall", Vector3.new(0.8, h, hd * 2), S * CFrame.new(x, h / 2, 0), WHITE)
+		end
+		for _, side in { -1, 1 } do
+			brick(
+				m,
+				"StationFront",
+				Vector3.new(hw - door, h, 0.8),
+				S * CFrame.new(side * (hw + door) / 2, h / 2, -hd),
+				WHITE
+			)
+		end
 		brick(
 			m,
 			"StationFront",
-			Vector3.new(hw - door, h, 0.8),
-			S * CFrame.new(side * (hw + door) / 2, h / 2, -hd),
+			Vector3.new(door * 2, h - 9, 0.8),
+			S * CFrame.new(0, 9 + (h - 9) / 2, -hd),
 			WHITE
 		)
-	end
-	brick(
-		m,
-		"StationFront",
-		Vector3.new(door * 2, h - 9, 0.8),
-		S * CFrame.new(0, 9 + (h - 9) / 2, -hd),
-		WHITE
-	)
-	brick(
-		m,
-		"Flag",
-		Vector3.new(door * 2 - 1, 8.5, 0.3),
-		S * CFrame.new(0, 4.75, -hd + 0.3),
-		BRICK_RED
-	).CanCollide =
-		false -- the door: walk-in (docs/25 J), it never blocks the doorway
-	-- the red base course round the walls (a gap for the door)
-	brick(
-		m,
-		"BaseCourse",
-		Vector3.new(hw * 2 + 0.6, 1.6, 0.4),
-		S * CFrame.new(0, 1.3, hd + 0.5),
-		BRICK_RED
-	)
-	for _, x in { -1, 1 } do
+		brick(
+			m,
+			"Flag",
+			Vector3.new(door * 2 - 1, 8.5, 0.3),
+			S * CFrame.new(0, 4.75, -hd + 0.3),
+			BRICK_RED
+		).CanCollide =
+			false -- the door: walk-in (docs/25 J), it never blocks the doorway
+		-- the red base course round the walls (a gap for the door)
 		brick(
 			m,
 			"BaseCourse",
-			Vector3.new(0.4, 1.6, hd * 2 + 0.6),
-			S * CFrame.new(x * (hw + 0.5), 1.3, 0),
+			Vector3.new(hw * 2 + 0.6, 1.6, 0.4),
+			S * CFrame.new(0, 1.3, hd + 0.5),
 			BRICK_RED
 		)
-		brick(
-			m,
-			"BaseCourse",
-			Vector3.new(hw - door - 0.4, 1.6, 0.4),
-			S * CFrame.new(x * (hw + door + 0.6) / 2, 1.3, -hd - 0.5),
-			BRICK_RED
-		)
-	end
-	-- windows: the front right of the door (the trophy hall is on its left), both sides and the back
-	for _, x in { 9, 15, 21 } do
-		window(m, S * CFrame.new(x, 7, -hd - 0.4), 4, 5)
-	end
-	for _, x in { -1, 1 } do
-		for _, z in { -8, 0, 8 } do
-			window(
+		for _, x in { -1, 1 } do
+			brick(
 				m,
-				S * CFrame.new(x * (hw + 0.4), 7, z) * CFrame.Angles(0, -x * math.pi / 2, 0),
-				4,
-				5
+				"BaseCourse",
+				Vector3.new(0.4, 1.6, hd * 2 + 0.6),
+				S * CFrame.new(x * (hw + 0.5), 1.3, 0),
+				BRICK_RED
+			)
+			brick(
+				m,
+				"BaseCourse",
+				Vector3.new(hw - door - 0.4, 1.6, 0.4),
+				S * CFrame.new(x * (hw + door + 0.6) / 2, 1.3, -hd - 0.5),
+				BRICK_RED
 			)
 		end
+		-- windows: the front right of the door (the trophy hall is on its left), both sides and the back
+		for _, x in { 9, 15, 21 } do
+			window(m, S * CFrame.new(x, 7, -hd - 0.4), 4, 5)
+		end
+		for _, x in { -1, 1 } do
+			for _, z in { -8, 0, 8 } do
+				window(
+					m,
+					S * CFrame.new(x * (hw + 0.4), 7, z) * CFrame.Angles(0, -x * math.pi / 2, 0),
+					4,
+					5
+				)
+			end
+		end
+		for _, x in { -18, -9, 0, 9, 18 } do
+			window(m, S * CFrame.new(x, 7, hd + 0.4) * CFrame.Angles(0, math.pi, 0), 4, 5)
+		end
+		-- a white eave course and a blue slope-brick roof, ridge along the long side
+		brick(
+			m,
+			"Course",
+			Vector3.new(hw * 2 + 0.6, 1, hd * 2 + 0.6),
+			S * CFrame.new(0, h - 0.5, 0),
+			BRICK_WHITE
+		)
+		gable(
+			m,
+			S * CFrame.new(0, h, 0) * CFrame.Angles(0, math.pi / 2, 0),
+			hd * 2 + 3,
+			hw * 2 + 3,
+			9,
+			BRICK_BLUE
+		)
+		sign(
+			m,
+			Vector3.new(10, 2.4, 0.4),
+			S * CFrame.new(0, 10.6, -hd - 0.65),
+			BRICK_WHITE,
+			"Station",
+			UiImages.Kit.lifebuoy
+		)
+		part(
+			m,
+			"Stripe",
+			Vector3.new(hw * 2, 0.8, 0.3),
+			S * CFrame.new(0, h - 2.5, -hd - 0.5),
+			ORANGE,
+			M.Neon
+		)
+		part(
+			m,
+			"Stripe",
+			Vector3.new(hw * 2, 0.4, 0.3),
+			S * CFrame.new(0, h - 1.2, -hd - 0.5),
+			Color3.fromRGB(40, 90, 200),
+			M.Neon
+		)
 	end
-	for _, x in { -18, -9, 0, 9, 18 } do
-		window(m, S * CFrame.new(x, 7, hd + 0.4) * CFrame.Angles(0, math.pi, 0), 4, 5)
-	end
-	-- a white eave course and a blue slope-brick roof, ridge along the long side
-	brick(
-		m,
-		"Course",
-		Vector3.new(hw * 2 + 0.6, 1, hd * 2 + 0.6),
-		S * CFrame.new(0, h - 0.5, 0),
-		BRICK_WHITE
-	)
-	gable(
-		m,
-		S * CFrame.new(0, h, 0) * CFrame.Angles(0, math.pi / 2, 0),
-		hd * 2 + 3,
-		hw * 2 + 3,
-		9,
-		BRICK_BLUE
-	)
-	sign(
-		m,
-		Vector3.new(10, 2.4, 0.4),
-		S * CFrame.new(0, 10.6, -hd - 0.65),
-		BRICK_WHITE,
-		"Station",
-		UiImages.Kit.lifebuoy
-	)
-	part(
-		m,
-		"Stripe",
-		Vector3.new(hw * 2, 0.8, 0.3),
-		S * CFrame.new(0, h - 2.5, -hd - 0.5),
-		ORANGE,
-		M.Neon
-	)
-	part(
-		m,
-		"Stripe",
-		Vector3.new(hw * 2, 0.4, 0.3),
-		S * CFrame.new(0, h - 1.2, -hd - 0.5),
-		Color3.fromRGB(40, 90, 200),
-		M.Neon
-	)
-	for _, x in { -hw + 2, -door - 1.5, door + 1.5, hw - 2 } do
+	local floods: { number } = if shell
+		then { -hw + 2, hw - 2 }
+		else { -hw + 2, -door - 1.5, door + 1.5, hw - 2 }
+	for _, x in floods do
 		local flood = part(
 			m,
 			"Floodlight",
@@ -3645,23 +3664,24 @@ local function hqMesh(m: Model, b: CFrame, n: number): boolean
 	return true
 end
 
--- HQ levels: the Rescue Hut / Post mesh at Lv1/2 (a Lego hut until it loads), today's station from Lv3, then the
--- add-ons on the station's -X side (M_Bld_HQAddons, built in the HQ spot's frame at 1x): the Lv4 walk-in radio wing
--- + lattice mast and the Lv5 beacon tower + bridge (Lv5_L05_Beacon: WorkerController's night lamp). Mesh missing: a
+-- HQ levels: the Rescue Hut / Post mesh at Lv1/2 (a Lego hut until it loads), the station from Lv3 (its walls,
+-- roof and door are M_Bld_HQAddons Lv3_*, code Parts until it loads), then the add-ons on the station's -X side
+-- (M_Bld_HQAddons, built in the HQ spot's frame at 1x): the Lv4 walk-in radio wing + lattice mast and the Lv5 beacon tower + bridge (Lv5_L05_Beacon: WorkerController's night lamp). Mesh missing: a
 -- radio mast at Lv4 and the gold beacon at Lv5.
 local function hq(m: Model, b: CFrame, level: number?)
 	local n = level or 1
+	local S = b * DockConfig.Buildings.HQ.spot
+	local mesh = n >= 3 and addonMesh(m, S, n, "M_Bld_HQAddons", "HQMesh")
 	if n >= 3 then
-		station(m, b)
-		stationInterior(m, b * DockConfig.Buildings.HQ.spot, n)
+		station(m, b, if mesh then m:FindFirstChild("HQMesh") :: Model else nil, n)
+		stationInterior(m, S, n)
 	elseif not hqMesh(m, b, n) then
 		hut(m, b, "HQ")
 	end
-	local S = b * DockConfig.Buildings.HQ.spot
 	if n < 4 then
 		return
 	end
-	if addonMesh(m, S, n, "M_Bld_HQAddons", "HQMesh") then
+	if mesh then
 		if n >= 5 then -- the Lv5 beacon tower is the HQ's light now: the station's ridge beacon goes (no two beacons)
 			for _, name in { "BeaconMast", "BeaconBase", "Beacon" } do
 				local p = m:FindFirstChild(name)

@@ -64,11 +64,25 @@ def box_on(g, face, a, d, z, along, deep, tall, bevel=0.0):
         g.box((d, a, z), (deep, along, tall), bevel)
 
 
-def opening(face, outer, a0, a1, z0, z1, frame, glass=None, bar=0.3, mullion=True):
-    """Frame bars inside the wall opening (the opening is exactly a0..a1 x z0..z1, so there are no gaps) and a pane."""
+def opening(face, outer, a0, a1, z0, z1, frame, glass=None, bar=0.3, mullion=True, sill=None, head=True):
+    """Frame bars inside the wall opening (the opening is exactly a0..a1 x z0..z1, so there are no gaps) and a pane.
+    With `sill`: a 0.3-proud surround on the wall face (head bar unless head=False) and a 0.5-proud studded sill brick, both
+    0.05 into the wall and 0.05 over the opening edge (no coplanar faces); the pane then sits 0.9 behind the surround."""
     sgn = 1.0 if face in ("-Y", "-X") else -1.0           # direction into the wall
     d = outer + sgn * 0.6
     a, w, z, h = (a0 + a1) / 2.0, a1 - a0, (z0 + z1) / 2.0, z1 - z0
+    if glass is not None and sill is not None:
+        sb, ds = 0.3, outer - sgn * 0.125                 # surround bar width; depth centre (0.3 proud .. 0.05 in)
+        zt = z1 - 0.05 if head else z1
+        if head:
+            box_on(frame, face, a, ds, z1 + (sb - 0.05) / 2.0, w + 2 * sb, 0.35, sb + 0.05, 0.04)
+        for s in (-1, 1):
+            box_on(frame, face, a + s * (w / 2.0 + (sb - 0.05) / 2.0), ds, (z0 + 0.05 + zt) / 2.0, sb + 0.05, 0.35,
+                   zt - z0 - 0.05, 0.04)
+        box_on(sill, face, a, outer - sgn * 0.225, z0 - 0.175, w + 0.9, 0.55, 0.45, 0.04)
+        for s in (-1, 1):
+            p = (a + s * w / 4.0, outer - sgn * 0.25)
+            sill.stud(*(p if face in ("-Y", "+Y") else p[::-1]), z0 + 0.05, 0.22, 0.25, 6)
     box_on(frame, face, a, d, z1 - bar / 2.0, w, 1.2, bar)
     if glass is not None:
         box_on(frame, face, a, d, z0 + bar / 2.0, w, 1.2, bar)
@@ -107,22 +121,46 @@ def shell(skins, core, x0, x1, y0, y1, zb, n, holes, skip=()):
         H.solid_wall(core, y0 + TS + TC, y1 - TS - TC, zb, zt, x1 - TS - TC / 2, 'y', TC, holes.get('R', ()))
 
 
-def sign_board(frame, face, red, white, cx, face_y, cz, w, h, major):
-    """White-framed navy plaque on a wall plane face_y (front is -Y) with the red lifebuoy icon (OD ~ 2 * major + 0.6)."""
-    frame.box((cx, face_y - 0.15, cz), (w + 0.4, 0.3, h + 0.4), 0.0)
+def sign_board(frame, face, red, white, cx, face_y, cz, w, h, major, bz, minor=0.3):
+    """Framed navy plaque on a wall plane face_y (front is -Y) with the red lifebuoy icon (OD 2 * major + 0.6) at
+    height bz: r3 keeps the buoy above the band where the game lays its white name ribbon (att z -1.65 .. -0.55)."""
+    frame.box((cx, face_y - 0.15, cz), (w + 0.6, 0.3, h + 0.6), 0.0)
     face.box((cx, face_y - 0.35, cz), (w, 0.1, h), 0.0)
-    buoy(red, white, (cx, face_y - 0.62, cz), major, minor=0.3, segs=12, minor_segs=4)
+    buoy(red, white, (cx, face_y - 0.62, bz), major, minor=minor, segs=12, minor_segs=4)
 
 
-def gable(roof, cap, studs, lines, cx, cy, length, half, rise, z0, n_studs, n_lines):
-    """Red pitched roof along X (slopes face -Y / +Y), flat 2-stud white ridge cap with a stud row, darker course lines."""
+def gable(roof, cap, ridge, studs, lines, cx, cy, length, half, rise, z0, n_lines, over=0.0, cap_h=1.0, cap_w=2.4, stud_r=0.5):
+    """Red pitched roof along X (slopes face -Y / +Y), a white ridge cap (`over` past each gable end), darker course
+    lines, and rows of red tile studs between the lines (running bond, 0.05 sunk).
+    r5 cap (matches the L3 hall): stepped 2-stud white segments in `ridge` (a cap_w tier, a 0.7 narrower tier, one red
+    stud each, 0.05 seams) between red end caps; `cap` keeps one inner core box for LOD2.
+    Studs and end caps go to `studs`; `studs` and `ridge` are LOD0/LOD1 only (see add_lods)."""
     slope, top = rise / half, 1.0
     zc = z0 + rise - slope * top
     roof.prism([(cy - half, z0), (cy + half, z0), (cy + top, zc), (cy - top, zc)], length, axis='X', at=cx)
-    cap.box((cx, cy, zc + 0.2), (length, 2 * top, 0.4), 0.0)
-    step = (length - 2.4) / max(1, n_studs - 1)
-    stud_row(studs, [(cx - (length - 2.4) / 2 + i * step, cy) for i in range(n_studs)], zc + 0.4, r=0.5)
+    zb, run, e = zc - 0.05, length + 2 * over, 0.5
+    cap.box((cx, cy, zb - 0.05 + cap_h / 2), (run - 0.1, cap_w - 0.8, cap_h), 0.0)      # core, inside the segments
+    for sx in (-1, 1):
+        studs.box((cx + sx * (run - e) / 2, cy, zb - 0.05 + cap_h / 2 + 0.025), (e, cap_w + 0.2, cap_h + 0.05), 0.04)
+    n = max(1, round((run - 2 * e) / 2.0))
+    sl = (run - 2 * e) / n
+    t1 = cap_h * 0.6
+    for i in range(n):
+        m = cx - run / 2 + e + (i + 0.5) * sl
+        ridge.box((m, cy, zb + t1 / 2), (sl - 0.05, cap_w, t1), 0.03)
+        ridge.box((m, cy, zb + (t1 - 0.05 + cap_h) / 2), (sl - 0.25, cap_w - 0.7, cap_h - t1 + 0.05), 0.03)
+        studs.stud(m, cy, zb + cap_h, stud_r, 0.4, 6)
     a = math.atan(slope)
+    gap = (half - top) / (n_lines + 1)
+    for k in range(n_lines + 1):
+        d = half - (k + 0.5) * gap
+        z = z0 + slope * (half - d)
+        nx = int((length - 1.8) // 2.0) - (k % 2)
+        for s in (-1, 1):
+            n = Vector((0.0, s * math.sin(a), math.cos(a)))
+            for i in range(nx + 1):
+                x = cx - (nx * 2.0) / 2.0 + i * 2.0
+                studs.cyl(Vector((x, cy + s * d, z)) + n * 0.15, 0.42, 0.4, segs=6, rot=Matrix.Rotation(-s * a, 4, 'X'))
     for k in range(1, n_lines + 1):
         d = half - k * (half - top) / (n_lines + 1)          # distance from the ridge axis
         z = z0 + slope * (half - d)
@@ -130,7 +168,7 @@ def gable(roof, cap, studs, lines, cx, cy, length, half, rise, z0, n_studs, n_li
             n = Vector((0.0, s * math.sin(a), math.cos(a)))
             lines.box(Vector((cx, cy + s * d, z)) + n * 0.01, (length + 0.04, 0.14, 0.05), 0.0,
                       rot=Matrix.Rotation(-s * a, 4, 'X'))
-    return zc + 0.4
+    return zc - 0.05 + cap_h
 
 
 def buoy(red, white, centre, major=1.3, minor=0.34, segs=12, minor_segs=5):
@@ -234,6 +272,7 @@ def build_lv1():
     g_core = G(L, "L02", "Core", "Cream")
     g_frames, g_glass = G(L, "L02", "Frames", "Navy"), G(L, "L02", "Glass", "Glass")
     g_door = G(L, "L02", "OwnerColour_Door", "OwnerColour")
+    g_dfr, g_sill = G(L, "L02", "DoorFrame", "Red"), G(L, "L02", "Sills", "Red")   # r5: red studded sills
     g_roof, g_cap, g_lines = G(L, "L04", "Roof", "Red"), G(L, "L04", "Trim", "White"), G(L, "L04", "Lines", "RoofLine")
     g_steel, g_white, g_red = G(L, "L05", "Steel", "Steel"), G(L, "L05", "Trim", "White"), G(L, "L05", "Red", "Red")
     g_gold, g_navy = G(L, "L05", "Bell", "Gold"), G(L, "L05", "Navy", "Navy")
@@ -259,33 +298,46 @@ def build_lv1():
              'R': [(-3.0, 3.0, FLOOR, FLOOR + DOOR_H), (4.8, 7.4, FZ0, FZ1), (-7.4, -4.8, FZ0, FZ1)]}
     shell(skin_groups(L, lambda i: "L02" if i < 4 else "L03", N1), g_core, -12.0, 12.0, -9.0, 9.0, FLOOR, N1, holes)
     for a0, a1 in ((-11.0, -7.0), (4.2, 8.8)):
-        opening("-Y", -9.0, a0, a1, FZ0, FZ1, g_frames, g_glass)
+        opening("-Y", -9.0, a0, a1, FZ0, FZ1, g_frames, g_glass, sill=g_sill)
     for a0, a1 in ((-9.2, -5.6), (3.8, 7.4)):
-        opening("+Y", 9.0, a0, a1, BZ0, FZ1, g_frames, g_glass)
+        opening("+Y", 9.0, a0, a1, BZ0, FZ1, g_frames, g_glass, sill=g_sill)
     for a0, a1 in ((4.6, 7.4), (-7.4, -4.6)):
-        opening("-X", -12.0, a0, a1, FZ0, FZ1, g_frames, g_glass)
+        opening("-X", -12.0, a0, a1, FZ0, FZ1, g_frames, g_glass, sill=g_sill)
     for a0, a1 in ((4.8, 7.4), (-7.4, -4.8)):
-        opening("+X", 12.0, a0, a1, FZ0, FZ1, g_frames, g_glass)
-    opening("-Y", -9.0, -3.0, 3.0, FLOOR, FLOOR + DOOR_H, g_frames)
+        opening("+X", 12.0, a0, a1, FZ0, FZ1, g_frames, g_glass, sill=g_sill)
+    opening("-Y", -9.0, -3.0, 3.0, FLOOR, FLOOR + DOOR_H, g_dfr)
     opening("+X", 12.0, -3.0, 3.0, FLOOR, FLOOR + DOOR_H, g_frames)
-    for s in (-1, 1):                                     # front door leaves swung open 90 degrees against the jambs
-        g_door.box((s * 3.15, -9.95, FLOOR + 3.2), (0.3, 1.9, 6.4), 0.04)
-        g_door.box((s * 3.3, -9.95, FLOOR + 3.4), (0.1, 1.2, 3.6), 0.0)
+    # big red portal round the front doorway: 0.4-proud jambs and lintel (0.05 into the wall and over the opening)
+    for s in (-1, 1):
+        g_dfr.box((s * 3.325, -9.175, FLOOR + 3.725), (0.75, 0.45, 7.45), 0.06)
+    g_dfr.box((0.0, -9.175, FLOOR + DOOR_H + 0.4), (5.9, 0.45, 0.9), 0.06)
+    for s in (-1, 1):                                     # r3: leaves swung open 110 deg outward so their faces show
+        a = math.radians(20.0)                            # past 90: the leaf leans 20 deg away from the opening
+        u, n = Vector((s * math.sin(a), -math.cos(a), 0.0)), Vector((-s * math.cos(a), -math.sin(a), 0.0))
+        rot = Matrix.Rotation(s * a, 4, 'Z')              # leaf length along u, its outer face along n (toward -Y)
+        hinge = Vector((s * 3.75, -9.65, FLOOR + 3.25))   # clear of the portal, sills and plinth top
+        g_door.box(hinge + u * 1.0 - n * 0.15, (0.3, 2.0, 6.4), 0.04, rot=rot)
+        g_door.box(hinge + u * 1.0 + n * 0.04, (0.1, 1.3, 3.6), 0.0, rot=rot)
 
     # one solid red gable: flat white ridge cap with a stud row, faint course lines on both slopes
-    gable(g_roof, g_cap, g_cap, g_lines, 0.0, 0.0, 25.2, 9.6, 3.0, E1, 6, 4)
+    gable(g_roof, g_cap, G(L, "L04", "Ridge", "White"), G(L, "L04", "Studs", "Red"), g_lines, 0.0, 0.0, 25.2, 9.6, 3.0, E1, 4,
+          over=0.04,
+          cap_h=1.35, cap_w=2.8, stud_r=0.6)   # r4: taller, wider cap clears the tile studs from the path; Lv2 storey hides it
 
     # facade fittings: flag pole at the front-left corner, bell right, lifebuoy beside the door, blank sign
     g_steel.box((-12.2, -10.2, FLOOR + 0.3), (1.2, 1.2, 0.6), 0.04)
-    g_steel.cyl((-12.2, -10.2, FLOOR + 8.0), 0.3, 16.0, segs=8)
-    g_red.box((-12.2 + 2.15, -10.2, 15.6), (4.0, 0.16, 2.5), 0.0)
-    g_white.torus((-10.05, -10.3, 15.6), 0.72, 0.17, segs=12, minor_segs=4, axis='Y')
+    FZ = 18.6                                                                        # r5: pole 3 taller (19), flag with it
+    g_steel.cyl((-12.2, -10.2, FLOOR + 9.5), 0.3, 19.0, segs=8)
+    g_red.box((-12.2 + 2.15, -10.2, FZ), (4.0, 0.16, 2.5), 0.0)
+    g_white.torus((-10.05, -10.3, FZ), 0.72, 0.17, segs=12, minor_segs=4, axis='Y')
     for k in range(4):
         a = math.radians(45.0 + 90.0 * k)
-        g_red.box((-10.05 + 0.72 * math.cos(a), -10.34, 15.6 + 0.72 * math.sin(a)), (0.3, 0.1, 0.3), 0.0)
-    buoy(g_red, g_white, (-5.2, -9.55, 5.2), minor_segs=4)
+        g_red.box((-10.05 + 0.72 * math.cos(a), -10.34, FZ + 0.72 * math.sin(a)), (0.3, 0.1, 0.3), 0.0)
+    buoy(g_red, g_white, (-5.35, -9.8, 5.2), major=0.9, minor=0.3, minor_segs=4)    # between window and portal
+    g_steel.box((-5.35, -9.3, 6.2), (0.3, 0.6, 0.3), 0.0)                            # its peg
     g_navy.box((0.0, -9.36, 8.7), (3.0, 0.72, 2.0), 0.0)                             # bracket under the eave
-    sign_board(g_white, g_navy, g_red, g_white, 0.0, -9.72, 9.45, 3.4, 3.2, 1.2)
+    sign_board(g_red, g_navy, g_red, g_white, 0.0, -9.72, 10.2, 6.6, 4.7, 1.3, 10.7, minor=0.39)   # r5: buoy 1.3x
+    # face 7.85..12.55, ribbon 7.8..8.9, buoy 9.01..12.39
     bell(g_steel, g_gold, 11.4, -10.0, FLOOR, 4.4, inward=-1.0)
     interior_lv1(L)
 
@@ -322,10 +374,12 @@ def build_lv2():
     wz1 = FLOOR + 5 * CH
     wholes = {'F': [(13.0, 16.2, FLOOR + 2 * CH, wz1)], 'R': [(-1.8, 1.8, FLOOR + 2 * CH, wz1)]}
     shell(skin_groups(L, lambda i: "L02", 6), g_core, 12.0, 20.0, -4.6, 4.6, FLOOR, 6, wholes, skip=('L',))
-    opening("-Y", -4.6, 13.0, 16.2, FLOOR + 2 * CH, wz1, g_frames, g_glass)
-    opening("+X", 20.0, -1.8, 1.8, FLOOR + 2 * CH, wz1, g_frames, g_glass)
+    g_wsill = G(L, "L02", "Sills", "Plinth")
+    opening("-Y", -4.6, 13.0, 16.2, FLOOR + 2 * CH, wz1, g_frames, g_glass, sill=g_wsill)
+    opening("+X", 20.0, -1.8, 1.8, FLOOR + 2 * CH, wz1, g_frames, g_glass, sill=g_wsill)
     g_wroof.box((16.2, 0.0, FLOOR + 6 * CH + 0.3), (8.8, 9.8, 0.6), 0.06)
-    stud_row(g_wroof, [(x, y) for x in (14.4, 18.0) for y in (-3.0, 0.0, 3.0)], FLOOR + 6 * CH + 0.6)
+    gable(g_wroof, G(L, "L02", "RoofTrim", "White"), G(L, "L02", "Ridge", "White"), G(L, "L02", "RoofStuds", "Red"),
+          G(L, "L02", "RoofLines", "RoofLine"), 16.2, 0.0, 8.8, 4.9, 1.4, FLOOR + 6 * CH + 0.55, 2, over=0.4)   # r3: tile studs + ridge cap; 0.05 into the slab
     interior_wing(L)
     # the link is Lv1's east doorway (5.4 clear between the jambs, floor to wing ceiling); a red runner leads to the counter
     G(L, "L01", "Runner", "Red").box((14.0, 0.0, FLOOR + 0.13), (5.6, 3.2, 0.06), 0.0)
@@ -343,11 +397,11 @@ def build_lv2():
     NS, WB0, WB1 = 6, s0 + 3 * CH, s0 + 6 * CH          # window band = courses 3..5 (14.2 .. 17.5), deck on top
     sh = {'F': [(-10.5, 10.5, WB0, WB1)], 'B': [(-10.5, 10.5, WB0, WB1)],
           'L': [(-7.5, 7.5, WB0, WB1)], 'R': [(-7.5, 7.5, WB0, WB1)]}
-    shell([G(L, "L04", "Walls", "White")] * NS, G(L, "L04", "Core", "Cream"), -X2, X2, -Y2, Y2, s0, NS, sh)
+    shell([G(L, "L04", "Walls", "White")] * NS, G(L, "L04", "Core", "Plinth"), -X2, X2, -Y2, Y2, s0, NS, sh)
     f4, g4 = G(L, "L04", "Frames", "Navy"), G(L, "L04", "Glass", "Glass")
     for face, outer, (a0, a1, _, _) in (("-Y", -Y2, sh['F'][0]), ("+Y", Y2, sh['B'][0]),
                                         ("-X", -X2, sh['L'][0]), ("+X", X2, sh['R'][0])):
-        opening(face, outer, a0, a1, WB0, WB1, f4, g4, mullion=False)
+        opening(face, outer, a0, a1, WB0, WB1, f4, g4, mullion=False, sill=G(L, "L04", "Sills", "Plinth"), head=False)
         n = max(2, round((a1 - a0) / 3.6))
         sgn = 1.0 if face in ("-Y", "-X") else -1.0
         for i in range(1, n):
@@ -364,10 +418,26 @@ def build_lv2():
         g_edge.box((0.0, sy * (DY - EW / 2), ztop + 0.2), (2 * DX, EW, 0.4), 0.04)
     for sx in (-1, 1):
         g_edge.box((sx * (DX - EW / 2), 0.0, ztop + 0.2), (EW, 2 * DY - 2 * EW, 0.4), 0.04)
-    ex, ey = DX - EW / 2, DY - EW / 2
+    ex, ey = DX - 1.5, DY - 1.5                         # inner stud of the rim; the outer stud carries the parapet
     ring = [(x * ex / 4.0, sy * ey) for x in range(-4, 5) for sy in (-1, 1)]
     ring += [(sx * ex, y * ey / 3.0) for y in range(-2, 3) for sx in (-1, 1)]
-    stud_row(g_edge, [(x, y) for x, y in ring if not (y < 0 and abs(x) < 8.6)], ztop + 0.4)
+    stud_row(G(L, "L05", "EdgeStuds", "White"), [(x, y) for x, y in ring if not (y < 0 and abs(x) < 8.6)], ztop + 0.4, r=0.45)
+    g_par = G(L, "L05", "Parapet", "Red")                 # r3: red 1x2 bricks, 0.1 seams, a stud each (front gap: plaque)
+    pz, pts_p = ztop + 0.35, []
+    px, py = 2 * DX / 13, 2 * (DY - 1.0) / 9            # front/back run the full width, the sides fit between them
+    for sy in (-1, 1):
+        for i in range(13):
+            x = -DX + px * (i + 0.5)
+            if sy < 0 and abs(x) < 5.0:
+                continue
+            g_par.box((x, sy * (DY - 0.5), pz + 0.35), (px - 0.1, 1.0, 0.7), 0.05)
+            pts_p.append((x, sy * (DY - 0.5)))
+    for sx in (-1, 1):
+        for i in range(9):
+            y = -(DY - 1.0) + py * (i + 0.5)
+            g_par.box((sx * (DX - 0.5), y, pz + 0.35), (1.0, py - 0.1, 0.7), 0.05)
+            pts_p.append((sx * (DX - 0.5), y))
+    stud_row(G(L, "L05", "ParapetStuds", "Red"), pts_p, pz + 0.7, r=0.4)
     fx = DX - EW                                        # tile field x -10.9 .. 10.9, course lines between stud rows
     for y in (-4.2, -0.6, 3.0, 6.6):
         G(L, "L05", "Lines", "RoofLine").box((0.0, y, ztop + 0.025), (2 * fx, 0.16, 0.05), 0.0)
@@ -393,7 +463,35 @@ def build_lv2():
     g_gl, g_cap = G(L, "L06", "Glass", "Glass"), G(L, "L06", "Roof", "Red")
     g_ctrim, g_lines = G(L, "L06", "Trim", "White"), G(L, "L06", "Lines", "RoofLine")
     g_ped.box(((wx0 + wx1) / 2, (wy0 + wy1) / 2, base + PED / 2), (wx1 - wx0 + 0.4, wy1 - wy0 + 0.4, PED), 0.08)
-    sign_board(g_pw, g_sill, g_pr, g_pw, 0.0, wy0 - 0.2, base + 2.0, 3.2, 2.7, 1.05)
+    # r4: a 1.5x board (navy 11.1 x 4.6, chunky red frame 0.5, 0.35 proud, studded top rail) on two navy brackets,
+    # proud of the pedestal and the sill (back y -9.06). The game ribbon (base+0.35..1.45, y -9.3..-9.6) lies on the
+    # face and the bottom rail (front -9.55; the deck rim hides it below base+0.4); the buoy (OD 3.32) clears the band.
+    fy = -9.2                                                                         # navy face front
+    for s in (-1, 1):
+        g_sill.box((s * 3.6, -8.925, base + 2.2), (0.8, 0.35, 2.4), 0.04)            # brackets into the pedestal
+    g_sill.box((0.0, -9.13, base + 2.9), (11.1, 0.14, 4.6), 0.0)                     # face base+0.6..5.2
+    g_sr = G(L, "L06", "SignFrame", "Red")
+    g_sr.box((0.0, -9.325, base + 5.35), (11.9, 0.45, 0.5), 0.05)                     # top rail 5.1..5.6
+    g_sr.box((0.0, -9.325, base + 0.525), (11.9, 0.45, 0.65), 0.05)                   # bottom rail 0.2..0.85
+    for s in (-1, 1):
+        g_sr.box((s * 5.67, -9.31, base + 2.975), (0.5, 0.42, 4.45), 0.05)            # sides 0.75..5.2, inside the rails
+    stud_row(G(L, "L06", "SignStuds", "Red"), [(-4.4 + i * 2.2, -9.325) for i in range(5)], base + 5.6, r=0.35)
+    buoy(g_pr, g_pw, (0.0, fy - 0.38, base + 3.35), 1.3, minor=0.36, segs=12, minor_segs=4)   # 1.69..5.01
+    # r5: grey course lines (0.04 proud) every 1.2 and staggered head joints every 4 (0.03 proud) on the white pedestal
+    g_seam, PX = G(L, "L06", "Seams", "Plinth"), wx1 + 0.2
+    for face, d, sg, segs in (("-Y", wy0 - 0.2, -1, ((-PX + 0.1, -6.1), (6.1, PX - 0.1))),
+                              ("+Y", wy1 + 0.2, 1, ((-PX + 0.1, PX - 0.1),)),
+                              ("-X", -PX, -1, ((wy0 - 0.1, wy1 + 0.1),)), ("+X", PX, 1, ((wy0 - 0.1, wy1 + 0.1),))):
+        zs = [base + (0.45 if face == "-Y" else 0.05), base + 1.2, base + 2.4, base + PED - 0.05]   # front: deck rim
+        for s0, s1 in segs:
+            for z in zs[1:3]:
+                box_on(g_seam, face, (s0 + s1) / 2, d + sg * 0.01, z, s1 - s0, 0.06, 0.1)
+            for c in range(3):
+                k = math.ceil((s0 + 0.3 - 2.0 * (c % 2)) / 4.0)
+                while 2.0 * (c % 2) + 4.0 * k < s1 - 0.3:
+                    box_on(g_seam, face, 2.0 * (c % 2) + 4.0 * k, d + sg * 0.005, (zs[c] + zs[c + 1]) / 2, 0.1, 0.05,
+                           zs[c + 1] - zs[c])
+                    k += 1
     wz0 = base + PED
     g_sill.box(((wx0 + wx1) / 2, (wy0 + wy1) / 2, wz0 + 0.2), (wx1 - wx0 + 0.8, wy1 - wy0 + 0.8, 0.4), 0.04)
     for cx in (wx0, wx1):
@@ -411,15 +509,18 @@ def build_lv2():
     zr = wz0 + 0.4 + 2.6 + 0.4                          # eave plate on the posts, then the Lv1 gable scaled down
     g_ctrim.box(((wx0 + wx1) / 2, (wy0 + wy1) / 2, zr - 0.2), (wx1 - wx0 + 1.2, wy1 - wy0 + 1.2, 0.4), 0.04)
     half = (wy1 - wy0) / 2 + 1.6                       # 1 stud past the eave plate
-    wtop = gable(g_cap, g_ctrim, g_ctrim, g_lines, (wx0 + wx1) / 2, (wy0 + wy1) / 2, wx1 - wx0 + 3.2,
-                 half, half * 3.0 / 9.6, zr, 6, 3)      # Lv1's slope (3 / 9.6) and 6 ridge studs
+    wtop = gable(g_cap, g_ctrim, G(L, "L06", "Ridge", "White"), G(L, "L06", "Studs", "Red"), g_lines, (wx0 + wx1) / 2,
+                 (wy0 + wy1) / 2, wx1 - wx0 + 3.2, half, half * 3.0 / 9.6, zr, 3, over=0.4,
+                 cap_h=1.3, cap_w=2.6, stud_r=0.5)   # Lv1's slope (3 / 9.6); r5: taller cap, L2's own peak
 
     # --- signal mast: thin white pole, one yardarm, four pennants on a halyard, flat radar bar on top
     g_st, g_mw, g_mn = G(L, "L07", "Steel", "Steel"), G(L, "L07", "Trim", "White"), G(L, "L07", "Navy", "Navy")
     pen = [G(L, "L07", w, m) for w, m in (("Red", "Red"), ("Yellow", "Yellow"), ("Sea", "Sea"), ("Trim", "White"))]
-    MH, YA = 12.0, 10.4
+    MH, YA = 17.0, 15.4                                 # PERF-HQ: tall enough to read over the watch room from the path
     g_mn.box((mx, my, ztop + 0.3), (2.0, 2.0, 0.6), 0.05)
-    g_mw.cyl((mx, my, ztop + 0.6 + MH / 2), 0.24, MH, segs=6)                    # 0.42 across the flats
+    g_mw.cyl((mx, my, ztop + 0.6 + MH / 2), 0.36, MH, segs=8)
+    for zb in (27.0, 29.4, 31.8):                                                    # red bands above the roof line
+        pen[0].cyl((mx, my, zb), 0.46, 1.2, segs=8)
     g_mw.box((mx, my, ztop + YA), (5.6, 0.22, 0.22), 0.0)
     top = Vector((mx - 2.7, my, ztop + YA - 0.1))
     bot = Vector((cl[0], cl[1], ztop + 0.6))
@@ -432,7 +533,8 @@ def build_lv2():
     out = Vector((-u.z, 0.0, u.x))                      # perpendicular in the XZ plane, away from the mast
     if out.x > 0:
         out = -out
-    for i, g in enumerate(pen):
+    for i in range(int((ln - 2.6) // 2.4) + 1):
+        g = pen[i % 4]
         p0 = top - u * (0.5 + i * 2.4)
         p1 = p0 - u * 2.1
         apex = (p0 + p1) / 2 + out * 1.95
@@ -440,6 +542,8 @@ def build_lv2():
     zt = ztop + 0.6 + MH
     g_st.cyl((mx, my, zt + 0.2), 0.3, 0.4, segs=6)
     g_mn.box((mx, my, zt + 0.55), (0.5, 3.0, 0.3), 0.03)                            # radar bar
+    pen[0].box((mx + 2.4, my, zt - 0.95), (3.6, 0.12, 2.0), 0.0)                      # masthead flag, faces the path
+    g_mw.torus((mx + 2.4, my, zt - 0.95), 0.6, 0.16, segs=12, minor_segs=4, axis='Y')   # white lifebuoy on it
 
     att = bpy.data.objects.new("ATT_Sign_02", None)
     att.location = (0.0, wy0 - 0.65, base + 2.0)
@@ -449,6 +553,7 @@ def build_lv2():
 
 # ------------------------------------------------------------------------------------------- collision, LODs
 LOD_FLOOR = {"LOD1": 40, "LOD2": 24}
+NO_LOD2 = ("Studs_", "_Parapet_", "_Sills_", "_Ridge_", "_Seams_")   # r3 detail: LOD0/LOD1 only (disjoint bricks have no decimation form; LOD2 <= 3000)
 
 
 def box_uv(obj, cell):
@@ -473,6 +578,9 @@ def add_lods(spec):
         src = e["object"]
         tris = versions.triangles(src.data)
         for lod, floor in LOD_FLOOR.items():
+            if lod == "LOD2" and (any(k in src.name for k in NO_LOD2)          # + the Lv1 interior (not seen that far)
+                                  or ("_Lv1_L03_" in src.name and "_Walls_" not in src.name)):
+                continue
             target = min(tris, max(floor, budgets.lod_target(spec["budget"], lod, tris, spec.get("tris"))))
             obj = versions.copy_object(src, names.with_suffix(src.name, lod))
             while True:                     # a ring of bricks has a decimation floor: accept the nearest count above
@@ -524,7 +632,7 @@ def col_lv2():
     b += [span(12, 20.4, -4.9, 4.9, 7.6, 8.2), span(16.9, 18.8, -2.9, 2.9, fl, 4.6)]               # wing roof, counter
     b += [span(-12.7, 12.7, -9.7, 9.7, E1, 17.5), span(-12.9, 12.9, -9.9, 9.9, 17.5, 18.5)]       # band + storey, deck
     b += [span(-8.4, 8.4, -9.0, 2.0, 18.1, 25.1), span(-9.7, 9.7, -10.2, 3.2, 24.7, 27.7)]         # watch room, roof
-    b += [span(7.6, 9.6, 5.6, 7.6, 18.1, 18.7), span(8.4, 8.8, 6.4, 6.8, 18.7, 30.7)]             # mast base, pole
+    b += [span(7.6, 9.6, 5.6, 7.6, 18.1, 18.7), span(8.2, 9.0, 6.2, 7.0, 18.7, 35.7)]             # mast base, pole
     return collision("Lv2", b)
 
 

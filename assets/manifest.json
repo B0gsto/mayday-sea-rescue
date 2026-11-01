@@ -10873,6 +10873,15 @@
   "source": "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_NOR.png",
   "type": "Image"
  },
+ "Image:81425b45c93d129e303c4aa1144cfde4bdbf0989dceb3c835b49c8c5281a28d0": {
+  "assetId": "126225986173447",
+  "imageId": "126225986173447",
+  "moderation": "Reviewing",
+  "name": "T_HQAddons_Brick_ALB",
+  "sha": "81425b45c93d129e303c4aa1144cfde4bdbf0989dceb3c835b49c8c5281a28d0",
+  "source": "assets/textures/M_Bld_HQAddons/T_HQAddons_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:817b9e5a269037215fd5d2faf9c1b2df98bbf823470b3388e5597ac655a96c69": {
   "assetId": "116724975070631",
   "imageId": "116724975070631",
@@ -22303,6 +22312,16 @@
   "source": "assets/fbx/M_Road_Bin/M_Road_Bin_LOD2.fbx",
   "type": "Model"
  },
+ "Model:251845d494d0b307625b2b155de787711721aa9daae253adaa46b016f0595abe": {
+  "assetId": "125625940790974",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "251845d494d0b307625b2b155de787711721aa9daae253adaa46b016f0595abe",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:2531c1befd30b82e437782975628c6d35011d482aa113ee20151dbc94919affa": {
   "assetId": "89858809069565",
   "moderation": "Approved",
@@ -22853,6 +22872,16 @@
   "source": "assets/fbx/M_Road_Bin/M_Road_Bin_LOD0.fbx",
   "type": "Model"
  },
+ "Model:30d8f6350f35eaf309a7cb5e1c02d622f168e5b108bff057616d26dad55950fa": {
+  "assetId": "94182805877554",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons",
+  "rbxm": "assets/models/M_Bld_HQAddons.rbxm",
+  "route": "delivery",
+  "sha": "30d8f6350f35eaf309a7cb5e1c02d622f168e5b108bff057616d26dad55950fa",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:30ff185276c6c2e3ea7ff38083437b9da293174df765cf14a16d0bc3c114aa3d": {
   "assetId": "107877096234774",
   "moderation": "Approved",
@@ -23001,6 +23030,16 @@
   "route": "delivery",
   "sha": "356695c942b3c5a6f7b12778005d3d3f73d908b968cf0a76494bc91afd385def",
   "source": "assets/fbx/M_Veh_SupplyBarge/M_Veh_SupplyBarge_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:3593defeb76b65b06cefb0601aebc60b0eaa428d01cc85e995d6ea565b80b163": {
+  "assetId": "139613726884504",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueHQ_LOD2",
+  "rbxm": "assets/models/M_Bld_RescueHQ_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "3593defeb76b65b06cefb0601aebc60b0eaa428d01cc85e995d6ea565b80b163",
+  "source": "assets/fbx/M_Bld_RescueHQ/M_Bld_RescueHQ_LOD2.fbx",
   "type": "Model"
  },
  "Model:35b4348ecc209a6a215ce966834a8d3201ed0a213b43e0b7b4646431a5a71f85": {
@@ -25593,6 +25632,16 @@
   "source": "assets/fbx/M_Road_Bollard/M_Road_Bollard_LOD2.fbx",
   "type": "Model"
  },
+ "Model:7b5e2c8bb3ac98287e82527330189f80c9684c916db5f3ce81cf0da4d645dd84": {
+  "assetId": "102391488538956",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueHQ",
+  "rbxm": "assets/models/M_Bld_RescueHQ.rbxm",
+  "route": "delivery",
+  "sha": "7b5e2c8bb3ac98287e82527330189f80c9684c916db5f3ce81cf0da4d645dd84",
+  "source": "assets/fbx/M_Bld_RescueHQ/M_Bld_RescueHQ_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:7b9cd8f02545c8c5a5f8fe3edb06af11b682546320a4820c1adb43a16182845e": {
   "assetId": "132364874248769",
   "moderation": "Approved",
@@ -26141,6 +26190,16 @@
   "route": "delivery",
   "sha": "881368863450d5831e23857bc6490e4ac7db3189f1a8beea29814e930c84053c",
   "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:8847d11cbb8c060b8daf588c523fd1da350b2359b933d6524a17563c75673d02": {
+  "assetId": "102937700281636",
+  "moderation": "Approved",
+  "name": "M_Bld_HQAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_HQAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "8847d11cbb8c060b8daf588c523fd1da350b2359b933d6524a17563c75673d02",
+  "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD2.fbx",
   "type": "Model"
  },
  "Model:88a62180bcb4af72a987671c1655c82270371205558d1e2af61afae8e9da27d0": {
@@ -27631,6 +27690,16 @@
   "route": "delivery",
   "sha": "adffa741991783385042a0ac77409d120ac37781db7d06f76300e913dcc3029e",
   "source": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:ae07e41212917bca1e5d26fb04aee24b93cbc5afb90f65619b1b6a548dc7f26c": {
+  "assetId": "119666236625870",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueHQ_LOD1",
+  "rbxm": "assets/models/M_Bld_RescueHQ_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ae07e41212917bca1e5d26fb04aee24b93cbc5afb90f65619b1b6a548dc7f26c",
+  "source": "assets/fbx/M_Bld_RescueHQ/M_Bld_RescueHQ_LOD1.fbx",
   "type": "Model"
  },
  "Model:ae0a36103cb5db6213428cf32406e81a8672df0651da5a934ad3ae8158d9f16d": {

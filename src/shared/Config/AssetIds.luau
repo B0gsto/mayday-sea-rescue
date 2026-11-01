@@ -62,9 +62,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://77043246609711",
 	},
 	M_Bld_HQAddons = {
-		LOD0 = "rbxassetid://74871492623416",
-		LOD1 = "rbxassetid://126378926683470",
-		LOD2 = "rbxassetid://90986050920613",
+		LOD0 = "rbxassetid://94182805877554",
+		LOD1 = "rbxassetid://125625940790974",
+		LOD2 = "rbxassetid://102937700281636",
 	},
 	M_Bld_LookoutAddons = {
 		LOD0 = "rbxassetid://123627259593304",
@@ -77,9 +77,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://120376087293959",
 	},
 	M_Bld_RescueHQ = {
-		LOD0 = "rbxassetid://78492011081478",
-		LOD1 = "rbxassetid://121160699877774",
-		LOD2 = "rbxassetid://99029708442772",
+		LOD0 = "rbxassetid://102391488538956",
+		LOD1 = "rbxassetid://119666236625870",
+		LOD2 = "rbxassetid://139613726884504",
 	},
 	M_Bld_SubPenAddons = {
 		LOD0 = "rbxassetid://71794804925050",
@@ -590,6 +590,7 @@ AssetIds.Attachments = {
 		ATT_Work_RackRight = Vector3.new(-4.2, 0.95, 11.5),
 	},
 	M_Bld_HQAddons = {
+		ATT_Sign_03 = Vector3.new(0, 12.5, -20.59),
 		ATT_Work_Radio = Vector3.new(-39.6, 0.72, 4),
 		ATT_RadioMast = Vector3.new(-36, 15.4, 4.2),
 		ATT_Beacon = Vector3.new(-55, 41.1, 3),
