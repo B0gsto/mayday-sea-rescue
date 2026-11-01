@@ -90,4 +90,9 @@ return table.freeze({
 	sea_spray = { id = "rbxassetid://6763809313", layout = "None", mode = "Loop" },
 	-- TheeTatahThailand, a glossy round bubble (in model 5463907036 Bubble effect!)
 	bubbles = { id = "rbxassetid://243953162", layout = "None", mode = "Loop" },
+	-- spin cinematic (owner 2026-11-01): stand-ins until the Lego flipbooks land (swap the id + layout here only)
+	spincine_flare = { id = "rbxassetid://136452411239756", layout = "None", mode = "Loop" }, -- = core_flash
+	spincine_rays = { id = "rbxassetid://102807810048685", layout = "None", mode = "Loop" }, -- = light_ray
+	spincine_bolt = { id = "rbxassetid://102807810048685", layout = "None", mode = "Loop" }, -- = light_ray
+	spincine_halo = { id = "rbxassetid://131845697391608", layout = "Grid4x4", mode = "OneShot" }, -- = stud_ring
 } :: { [string]: Texture })

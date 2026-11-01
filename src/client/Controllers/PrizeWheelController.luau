@@ -18,6 +18,8 @@ local SpinRules = require(Shared:WaitForChild("SpinRules"))
 local WheelMath = require(Shared:WaitForChild("WheelMath"))
 
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local SpinCinematic =
+	require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("SpinCinematic"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local Kit = UI:WaitForChild("Kit")
@@ -236,11 +238,12 @@ local function prizeAt(payload: any, at: Vector3): Model
 	return model
 end
 
-local function reveal(payload: any, rotor: Model)
+-- `to`: the spinner's cinematic stage (the capsule pops out of the hub toward the camera); else above the wheel
+local function reveal(payload: any, rotor: Model, to: Vector3?)
 	local at = rotor:GetPivot().Position
 	local color = rarityColor(payload.rarity)
-	local start = at + Vector3.new(0, 3.5, 0)
-	local finish = at + Vector3.new(0, 8.5, 0)
+	local start = if to then at else at + Vector3.new(0, 3.5, 0)
+	local finish = to or at + Vector3.new(0, 8.5, 0)
 
 	local capsule = Instance.new("Model")
 	capsule.Name = "PrizeCapsule"
@@ -277,6 +280,9 @@ local function reveal(payload: any, rotor: Model)
 				player:SetAttribute("SpinRevealed", os.clock()) -- HudController lands the held Cash now
 			end
 			local jackpot = SpinRules.rank(payload.rarity) >= SpinRules.rank("Legendary") -- FX1 has its own pillar
+			if jackpot and tonumber(payload.userId) ~= player.UserId then -- a sky beam off their island
+				VFXKit.play("spincine_skybeam", CFrame.new(finish), { color = color, still = true })
+			end
 			if SpinRules.rank(payload.rarity) >= SpinRules.rank("Rare") and not jackpot then
 				local beam = part(
 					"PrizeBeam",
@@ -347,6 +353,8 @@ local function paintOdds(wheel: Instance)
 	)
 end
 
+local gate: (wheel: Instance) -> ()
+
 local function spin(payload: any)
 	if type(payload) ~= "table" or type(payload.plot) ~= "number" then
 		return
@@ -376,6 +384,28 @@ local function spin(payload: any)
 	local lastTicks = WheelMath.ticksFor(from, count)
 	AudioController.play("Rigging_Creak", pivotPart.Position, 2.5, 1.3) -- the wheel is shoved round
 	spinning[payload.plot] = true
+	-- your own spin is a cinematic (Camera/SpinCinematic); it reveals the prize on its own beat
+	local cine = tonumber(payload.userId) == player.UserId
+	if cine then
+		for _, d in wheel:GetDescendants() do
+			if d:IsA("ClickDetector") then
+				d.MaxActivationDistance = 0 -- a skip tap must not spend the next token; back at the reveal
+			end
+		end
+		SpinCinematic.start({
+			payload = payload,
+			hub = base,
+			landIn = start + duration - Workspace:GetServerTimeNow(),
+			reveal = function(to: Vector3)
+				reveal(payload, rotor, to)
+				gate(wheel)
+			end,
+			colorOf = rarityColor,
+			onExit = function()
+				gate(wheel)
+			end,
+		})
+	end
 	local conn: RBXScriptConnection? = nil
 	conn = RunService.Heartbeat:Connect(function()
 		local t = (Workspace:GetServerTimeNow() - start) / duration
@@ -409,7 +439,9 @@ local function spin(payload: any)
 			if flapper and flapRest then
 				flapper:PivotTo(flapRest)
 			end
-			reveal(payload, rotor)
+			if not cine then
+				reveal(payload, rotor)
+			end
 		end
 	end)
 end
@@ -450,7 +482,7 @@ end
 
 local promptRange: { [ProximityPrompt]: number } = {}
 
-local function gate(wheel: Instance)
+gate = function(wheel: Instance)
 	local own = mine(wheel)
 	for _, d in wheel:GetDescendants() do
 		if d:IsA("ProximityPrompt") then
@@ -517,26 +549,70 @@ local function fetchCatalogue()
 	end)
 end
 
+-- DEV bench (`spincine <Rarity>`): your wheel spins to a segment of that rarity and plays the cinematic; nothing
+-- is spent or granted (the server never hears of it)
+function PrizeWheelController.DevSpin(rarity: string): boolean
+	local plot = player:GetAttribute("DockPlot")
+	local wheel = if type(plot) == "number" then wheels[plot] else nil
+	if not wheel then
+		for p, w in wheels do
+			plot, wheel = p, w
+			break
+		end
+	end
+	local segment = table.find(SpinRules.SEGMENTS, rarity)
+	local prize: any = nil
+	for _, row in SpinRules.PRIZES do
+		if row.rarity == rarity and (prize == nil or row.kind ~= "cash") then
+			prize = row
+		end
+	end
+	if not (wheel and segment and prize) then
+		return false
+	end
+	spin({
+		userId = player.UserId,
+		plot = plot,
+		segment = segment,
+		startTime = Workspace:GetServerTimeNow(),
+		duration = 4.5, -- SpinService.WHEEL_TIME
+		prize = prize.id,
+		name = prize.name,
+		rarity = rarity,
+		kind = prize.kind,
+		icon = prize.icon,
+		variant = prize.variant,
+		option = prize.option,
+		vehicle = prize.vehicle,
+	})
+	return true
+end
+
 function PrizeWheelController.Init()
 	Net.event("Spin_Wheel").OnClientEvent:Connect(spin)
 	Net.event("Spin_Flex").OnClientEvent:Connect(function(payload: any)
 		if type(payload) ~= "table" or type(payload.name) ~= "string" then
 			return
 		end
-		Toast.show(
-			canvas(),
-			`{payload.name} won a {string.upper(payload.rarity)} {payload.prize}!`,
-			{
-				icon = payload.icon,
-				color = if SpinRules.RARITIES[payload.rarity]
-					then SpinRules.RARITIES[payload.rarity].color
-					else "yellow",
-				duration = 6,
-			}
-		)
-		confetti(payload.userId, payload.rarity)
+		local function banner()
+			Toast.show(
+				canvas(),
+				`{payload.name} won a {string.upper(payload.rarity)} {payload.prize}!`,
+				{
+					icon = payload.icon,
+					color = if SpinRules.RARITIES[payload.rarity]
+						then SpinRules.RARITIES[payload.rarity].color
+						else "yellow",
+					duration = 6,
+				}
+			)
+			confetti(payload.userId, payload.rarity)
+		end
 		if tonumber(payload.userId) ~= player.UserId then -- the winner already hears the jackpot at the wheel
 			AudioController.play("FX_Chime", nil, 0.6)
+			banner()
+		else
+			SpinCinematic.whenDone(banner) -- never over your own cinematic
 		end
 	end)
 

@@ -201,6 +201,21 @@ function DevConfig.vfxName(text: any): string?
 	return if name and #name <= 32 then name else nil
 end
 
+-- Chat "/spincine <Rarity>" (the DEV spin cinematic bench): the rarity, any case, or nil.
+function DevConfig.spincineRarity(text: any): string?
+	if type(text) ~= "string" then
+		return nil
+	end
+	local word = string.match(text, "^/spincine%s+(%a+)%s*$")
+	if not word then
+		return nil
+	end
+	local name = string.upper(string.sub(word, 1, 1)) .. string.lower(string.sub(word, 2))
+	return if table.find({ "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic" }, name)
+		then name
+		else nil
+end
+
 -- Sliding-window rate limit: true (and the stamp is kept) while under RateMax in RateWindow.
 function DevConfig.rateOk(stamps: { number }, now: number): boolean
 	while stamps[1] and now - stamps[1] > DevConfig.RateWindow do

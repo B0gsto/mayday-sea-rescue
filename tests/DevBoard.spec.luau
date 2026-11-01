@@ -77,4 +77,11 @@ return function(t)
 		t.expect(DevConfig.rateOk(stamps, 100.5)).toBe(false)
 		t.expect(DevConfig.rateOk(stamps, 100 + DevConfig.RateWindow + 0.1)).toBe(true)
 	end)
+
+	t.test("/spincine takes one rarity in any case", function()
+		t.expect(DevConfig.spincineRarity("/spincine mythic")).toBe("Mythic")
+		t.expect(DevConfig.spincineRarity("/spincine Rare ")).toBe("Rare")
+		t.expect(DevConfig.spincineRarity("/spincine Shiny")).toBe(nil)
+		t.expect(DevConfig.spincineRarity("/vfx Rare")).toBe(nil)
+	end)
 end

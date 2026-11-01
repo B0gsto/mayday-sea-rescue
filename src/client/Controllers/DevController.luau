@@ -230,6 +230,14 @@ local function bench(name: string)
 	end)
 end
 
+-- the spin cinematic bench: your wheel spins to that rarity and plays its cinematic (PrizeWheelController.DevSpin)
+local function spincine(rarity: string)
+	local wheel = require(script.Parent:WaitForChild("PrizeWheelController")) :: any
+	if not wheel.DevSpin(rarity) and board then
+		board.setStatus(`❌ spincine: no wheel streamed in`)
+	end
+end
+
 local function fill(b: DevBoard.Board)
 	local lists = require(
 		ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("DevConfig")
@@ -441,6 +449,14 @@ local function fill(b: DevBoard.Board)
 		end)
 	end
 
+	g = DevBoard.section(page, "Spin cinematic (no token)")
+	for _, rarity in { "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic" } do
+		DevBoard.button(g, `🎰 {rarity}`, function()
+			b.setVisible(false)
+			spincine(rarity)
+		end)
+	end
+
 	-- Server
 	page = b.tab("🖥 Server")
 	local info = Instance.new("TextLabel")
@@ -482,6 +498,10 @@ end
 local function onGrant(payload: any)
 	if board and type(payload) == "table" and type(payload.vfx) == "string" then
 		bench(payload.vfx)
+		return
+	end
+	if type(payload) == "table" and type(payload.spincine) == "string" then
+		spincine(payload.spincine)
 		return
 	end
 	if board then
