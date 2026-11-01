@@ -48,6 +48,8 @@ try: runpy.run_path("<abs>/tools/blender/run.py", run_name="__main__")
 except SystemExit as e: print("exit", e.code)
 ```
 
+Careful: `zfight_check.check()` resets Blender to factory settings and disables the MCP add-on; inside a session, re-enable the add-on afterwards (or check exported FBXs instead).
+
 Then `python3 tools/blender/sheet.py --asset <Asset> --out-root build/prod/<Asset>` (plain Python, no Blender).
 Close Blender when done. Iterate until `validate` passes. Check your own turntable once or twice (downscale: `sips -Z 768 in.png --out s.png`)
 and fix what looks wrong. Cap yourself at about 8 Blender runs.

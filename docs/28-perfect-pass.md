@@ -36,7 +36,7 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Code->mesh | board kit M_Prop_BoardKit: leaderboard, Coming Soon, island sign, HM beacon | PERF-BL3 | 5.5-7.0 -> **9.2 PASS** (r4) | cec13732 on t3/lego-rescue-board-kit (unmerged, unseen in Studio) |
 | Code->mesh | sea plate kit M_Prop_SeaPlateKit | PERF-BL4 | 5.8/6.4 -> 8.8 (r4) | acdb6d61 on t3/build-sea-plate-kit (unmerged); r5: fill Freight deck middle, ramp at waterline, studs visible at distance; props lack collision |
 | Code->mesh | commons kit M_Prop_CommonsKit: Hangout + 6 decorations | PERF-BL5 | 6.2/6.4 -> 8.3/8.8/8.9/9.0 (r4) | 9632e871+0e0a67bd on t3/build-prop-commons-kit (unmerged); no in-game score yet; r5: hammock 8.5, cart + chat corners 8.8 (minifigs in front) |
-| Code->mesh | rescue helicopter M_Veh_RescueHeli | PERF-BL6 | 6.2 | building |
+| Code->mesh | rescue helicopter M_Veh_RescueHeli | PERF-BL6 | 6.2 -> 7.0/8.0/8.3/8.8 | 0fe6daa5 on t3/rescue-helicopter-asset (unmerged); BEFORE MERGE: livery recolour must apply to the mesh, modelled winch cable doubles the runtime one; r5: rear door face, charcoal skid struts, smaller rotor hub |
 | Mesh | M_Prop_BuildStation | Blender | 8.3 (r2) | queued |
 | Mesh | vehicles: JetSki, RIB, StormRunner, Tidewalker, RiptideX, GildedGull, SupplyBarge | Blender | unscored | queued |
 | Mesh | buildings: RescueHQ, HQAddons, Bunkhouse, Depot, Workshop/FishMarket/Clinic/BoatYard/Lookout/RescueBoathouse/TrophyHall/SubPen/AirStation/Boathouse add-ons | Blender | 7.5-8.5 | queued |
@@ -86,3 +86,17 @@ FEEL2b (stopped by the Studio stop 2026-11-01): t3/ddeb1308; in-game medians fro
 
 UI6 (stopped by the Studio stop): 5e0f9153 on t3/perfect-ui-sprite-art: emoji/text glyph badges -> vector shapes (Boat button, step headers, map markers/legend), waypoint double label, touch pad overlap, settings row fade + chunky -/+, locked stickers grey + lock, album off the cash counter, Build pill over the world sign. Unseen; in-game re-judge set up in ingame/r4/. Open: Shop/Crew panels can cover the cash counter.
 PERF-BL7 (HQ Lv1-5 refine) queued behind the heli in the Blender lane.
+
+Round cap (2026-11-01): Blender kits plateau 8.4-9.0 at 4 rounds while still improving each round -> cap is now 6 rounds. Finishing sweep after the HQ: commons 9.0, heli 8.8, sea plates 8.8, crane 8.8, build-site 8.4 (each from its RESULT.md fix list, same 3-judge median, anchor board kit 9.2).
+
+ANIM5 hand-keyed actions (stopped by the Studio stop): 674f3a71 on t3/characterful-rescue-animations. R2 medians: celebrate 8.4, hammer 7.8, carry 7.6, point 7.5, saw 7.0, sit 6.0, climb 5.9 (falling). R3 keys done, unjudged: when Studio is back run the k3/ preview scripts, judge (front view added), then round 4 (cap 6). Nothing uploaded/wired.
+
+HQ (PERF-BL7): **PASS 9.14** (r1-r5 8.2/8.9/8.86/9.04/9.14; L1 9.3, L2 9.2, L3 9.1 new mesh, L4 8.8, L5 9.2), 628cb520 on t3/refine-rescue-hq-levels (unmerged, unseen in Studio: L4 walk-in, L5 stair). PERF-FIN1 next: commons r5-6, then HQ L4 + lifeboat overhang.
+
+Commons kit: **PASS 9.1** at r6 (FIN1; t3/build-prop-commons-kit). PERF-FIN2 queued: sea plates + heli r5-6 (+ heli livery recolour, drop modelled winch cable).
+
+HQ r6 (FIN1): **PASS 9.22**, every level >= 9.1 (L4 8.8 -> 9.1), bc53adad. Commons r6 00556167 (9.1; ChatEast 8.9). Open: L5 only a little taller than L4 from the path.
+Gotcha (FIN1): tools/blender/zfight_check.check() resets Blender to factory settings, which disables the MCP add-on: inside an MCP session check LODs another way (or re-enable the add-on after).
+Sea plates r5-r6 (FIN2): 8.8 -> 8.9, cap reached; revisit after the sweep with a fresh concept pass (biggest gaps from the r6 judges).
+FIN2: heli r6 9.0 (5a980fae; livery repaint via _Paint mesh, modelled cable dropped), sea plates r6 8.9 (b1626adf; props collide). PERF-FIN4 queued: both rounds 7-8 after FIN3.
+FIN3: crane r10 9.0 (d3d564a3, budget class rock 10k), build-site r6 8.8 (3a33dfbc). PERF-FIN5 queued after FIN4: crane groove/jib/joints, build-site per-pallet meshes + colours.
