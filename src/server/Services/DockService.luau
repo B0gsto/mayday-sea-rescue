@@ -43,6 +43,8 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AssetIds = require(Shared:WaitForChild("Config"):WaitForChild("AssetIds"))
+local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeConfig"))
 local BadgeRules = require(Shared:WaitForChild("BadgeRules"))
 local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
@@ -68,6 +70,7 @@ local SkillService = require(script.Parent:WaitForChild("SkillService"))
 local SpinService = require(script.Parent:WaitForChild("SpinService"))
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
 local TrophyRules = require(Shared:WaitForChild("TrophyRules"))
+local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 
 local DockService = {}
@@ -316,6 +319,21 @@ local function nameSign(
 		stroke.Color = Color3.new(0, 0, 0)
 		stroke.Parent = label
 		table.insert(labels, label)
+	end
+	-- the Lego kit sign (M_Prop_BoardKit L03): the code frame, posts and studs stay as invisible colliders; the
+	-- plate stays this NameBoard (27 x 7 in the kit's rim) so the owner tint and setMaster still colour it
+	local kit = AssetLoader.cloneModule("M_Prop_BoardKit", "ATT_Sign", arch, { "L03_IslandSign" })
+	if kit then
+		for _, p in sign:GetChildren() do
+			if p:IsA("BasePart") and p ~= board then
+				p.Transparency = 1
+			end
+		end
+		local atts = AssetIds.Attachments.M_Prop_BoardKit
+		board.Size = Vector3.new(27, 7, 0.8)
+		board.CFrame = arch * CFrame.new(atts.ATT_NamePlate - atts.ATT_Sign)
+		kit.Name = "Kit"
+		kit.Parent = sign
 	end
 	return board, labels, trim, studs
 end
@@ -1122,16 +1140,57 @@ local function setMaster(plot: Plot, on: boolean)
 			Enum.Material.Neon
 		)
 		lens.Shape = Enum.PartType.Ball
+		local light: BasePart = lens
+		-- the Lego kit beacon (M_Prop_BoardKit L04-L06): the code pole and ball stay as invisible colliders; the
+		-- glow and beam move to the kit's lens (its centre is ATT_BeaconLight), the medal goes on ATT_BeaconIcon
+		local kit = AssetLoader.cloneModule(
+			"M_Prop_BoardKit",
+			"ATT_Beacon",
+			at,
+			{ "L04_HarbourBeacon", "L05_BeaconLens", "L06_BeaconPanes" }
+		)
+		local kitLens = kit and kit:FindFirstChild("L05_BeaconLens")
+		local panes = kit and kit:FindFirstChild("L06_BeaconPanes")
+		if kit and kitLens and kitLens:IsA("BasePart") then
+			pole.Transparency, lens.Transparency = 1, 1
+			local sa = kitLens:FindFirstChildOfClass("SurfaceAppearance")
+			if sa then
+				sa:Destroy()
+			end
+			kitLens.Material = Enum.Material.Neon
+			kitLens.Color = Color3.fromHex("FFC83A")
+			if panes and panes:IsA("BasePart") then
+				panes.Transparency = 0.85
+			end
+			local atts = AssetIds.Attachments.M_Prop_BoardKit
+			local icon = part(
+				kit,
+				"Icon",
+				Vector3.new(2.6, 2.6, 0.02),
+				at * CFrame.new(atts.ATT_BeaconIcon - atts.ATT_Beacon) * CFrame.new(0, 0, 0.01),
+				GOLD,
+				Enum.Material.SmoothPlastic
+			)
+			icon.Transparency = 1
+			icon.CanCollide, icon.CanQuery, icon.CanTouch = false, false, false
+			local medal = Instance.new("Decal")
+			medal.Texture = UiImages.Badges.Medal
+			medal.Face = Enum.NormalId.Front
+			medal.Parent = icon
+			kit.Name = "Kit"
+			kit.Parent = m
+			light = kitLens
+		end
 		local glow = Instance.new("PointLight")
 		glow.Color = GOLD
 		glow.Range = 36 -- WP-25 r6: softer, the bloom washed out the berth
 		glow.Brightness = 1.5
-		glow.Parent = lens
+		glow.Parent = light
 		local a0 = Instance.new("Attachment")
-		a0.Parent = lens
+		a0.Parent = light
 		local a1 = Instance.new("Attachment")
 		a1.Position = Vector3.new(0, 45, 0)
-		a1.Parent = lens
+		a1.Parent = light
 		local beam = Instance.new("Beam")
 		beam.Attachment0, beam.Attachment1 = a0, a1
 		beam.Width0, beam.Width1 = 1.6, 4
@@ -1139,7 +1198,7 @@ local function setMaster(plot: Plot, on: boolean)
 		beam.LightEmission = 0.25
 		beam.Color = ColorSequence.new(GOLD)
 		beam.Transparency = NumberSequence.new(0.88, 1)
-		beam.Parent = lens
+		beam.Parent = light
 		m.Parent = plot.model
 		plot.master = m
 	elseif not on and plot.master then

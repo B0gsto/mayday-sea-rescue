@@ -218,6 +218,11 @@ AssetIds.Models = {
 		LOD0 = "rbxassetid://116545210869864",
 		LOD1 = "rbxassetid://120420678094169",
 	},
+	M_Prop_BoardKit = {
+		LOD0 = "rbxassetid://114404971301410",
+		LOD1 = "rbxassetid://76453127495122",
+		LOD2 = "rbxassetid://134133978588718",
+	},
 	M_Prop_BuildStation = {
 		LOD0 = "rbxassetid://118176380187881",
 		LOD1 = "rbxassetid://91952663271231",
@@ -762,6 +767,18 @@ AssetIds.Attachments = {
 	},
 	M_Hbr_Rope_Coil = {
 		ATT_End = Vector3.new(-1.5063, 0.0298, -0.5325),
+	},
+	M_Prop_BoardKit = {
+		ATT_Board = Vector3.new(0, 0, 0),
+		ATT_Soon = Vector3.new(22, 0, 0),
+		ATT_Sign = Vector3.new(50, 0, 0),
+		ATT_Beacon = Vector3.new(76, 0, 0),
+		ATT_BoardFaceF = Vector3.new(0, 7, -0.46),
+		ATT_BoardFaceB = Vector3.new(0, 7, 0.46),
+		ATT_SoonFace = Vector3.new(22, 7.7, -0.25),
+		ATT_NamePlate = Vector3.new(50, 13.2, 0),
+		ATT_BeaconIcon = Vector3.new(76, 4.7, -2.075),
+		ATT_BeaconLight = Vector3.new(76, 26.7, 0),
 	},
 	M_Prop_BuildStation = {
 		ATT_Screen = Vector3.new(0, 6.2, 3.6),

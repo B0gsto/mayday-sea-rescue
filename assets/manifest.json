@@ -365,7 +365,8 @@
    "T_RescueBoathouse_Brick_RGH",
    "T_SubPen_Brick_RGH",
    "T_TrophyHall_Brick_RGH",
-   "T_WorkshopAddons_Brick_RGH"
+   "T_WorkshopAddons_Brick_RGH",
+   "T_BoardKit_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -13523,7 +13524,8 @@
    "T_RescueHQ_Brick_NOR",
    "T_SubPen_Brick_NOR",
    "T_TrophyHall_Brick_NOR",
-   "T_WorkshopAddons_Brick_NOR"
+   "T_WorkshopAddons_Brick_NOR",
+   "T_BoardKit_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -17709,7 +17711,8 @@
    "T_RescueBoathouse_Brick_MET",
    "T_SubPen_Brick_MET",
    "T_TrophyHall_Brick_MET",
-   "T_WorkshopAddons_Brick_MET"
+   "T_WorkshopAddons_Brick_MET",
+   "T_BoardKit_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -19783,6 +19786,15 @@
   "name": "T_Optimist_Deck_RGH",
   "sha": "f11477fb611717dd25ebe9a168f93fa7f612e1fd5579bc05f3c704b1add3fe40",
   "source": "assets/textures/M_Veh_Optimist/T_Optimist_Deck_RGH.png",
+  "type": "Image"
+ },
+ "Image:f125fd79b7c036223c6a0ca06e7539008565ab6ed55541e40a3eb8b998b75887": {
+  "assetId": "103092706271226",
+  "imageId": "103092706271226",
+  "moderation": "Reviewing",
+  "name": "T_BoardKit_Brick_ALB",
+  "sha": "f125fd79b7c036223c6a0ca06e7539008565ab6ed55541e40a3eb8b998b75887",
+  "source": "assets/textures/M_Prop_BoardKit/T_BoardKit_Brick_ALB.png",
   "type": "Image"
  },
  "Image:f13b58a2bd44812eb51e728acd44ce444cc9ae575cfd26b544c6f71b64abb105": {
@@ -25339,6 +25351,16 @@
   "source": "assets/fbx/M_Hbr_Bollard_03/M_Hbr_Bollard_03_LOD0.fbx",
   "type": "Model"
  },
+ "Model:733b6404e3d02fe33fbfa0a26d5884a25cea912370d72aa5a8e17aca973fe71d": {
+  "assetId": "134133978588718",
+  "moderation": "Approved",
+  "name": "M_Prop_BoardKit_LOD2",
+  "rbxm": "assets/models/M_Prop_BoardKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "733b6404e3d02fe33fbfa0a26d5884a25cea912370d72aa5a8e17aca973fe71d",
+  "source": "assets/fbx/M_Prop_BoardKit/M_Prop_BoardKit_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:739da45f7ff152f451a3446c7ff5fd34e189665d560aaca4db262177c0e62f4f": {
   "assetId": "102020145939883",
   "moderation": "Approved",
@@ -27289,6 +27311,16 @@
   "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD1.fbx",
   "type": "Model"
  },
+ "Model:a6e497739816a788d770dbac4a9f13c814e15673ee089724b369fd5f91004290": {
+  "assetId": "76453127495122",
+  "moderation": "Approved",
+  "name": "M_Prop_BoardKit_LOD1",
+  "rbxm": "assets/models/M_Prop_BoardKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a6e497739816a788d770dbac4a9f13c814e15673ee089724b369fd5f91004290",
+  "source": "assets/fbx/M_Prop_BoardKit/M_Prop_BoardKit_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:a78ca17a213153518c4b7e54d548decbf0f3f87df540c3d93d28f4bd57a7b51b": {
   "assetId": "117966274728142",
   "moderation": "Approved",
@@ -27957,6 +27989,16 @@
   "route": "delivery",
   "sha": "b8096a9aa3d9df42a33d82c9054a1795a1d2676e149fee5c091c417e9417d794",
   "source": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:b8b0964d5f17b7d3a58ca1f83a7cb6b3c1d67129ad92bfd4d967b93a00cb48ae": {
+  "assetId": "114404971301410",
+  "moderation": "Approved",
+  "name": "M_Prop_BoardKit",
+  "rbxm": "assets/models/M_Prop_BoardKit.rbxm",
+  "route": "delivery",
+  "sha": "b8b0964d5f17b7d3a58ca1f83a7cb6b3c1d67129ad92bfd4d967b93a00cb48ae",
+  "source": "assets/fbx/M_Prop_BoardKit/M_Prop_BoardKit_LOD0.fbx",
   "type": "Model"
  },
  "Model:b8efbe04de2079b7a74e7654e324d63ef8cbeb4ed754fad8c59c0130d437ae26": {

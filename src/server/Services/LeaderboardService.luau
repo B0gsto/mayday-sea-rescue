@@ -2,7 +2,8 @@
 -- LeaderboardService: weekly and all-time rescue boards (docs/03 section 9.1: rescues only, never Cash
 -- or Robux; weekly boards reset Monday 00:00 UTC) on OrderedDataStores, shown on a physical service board on
 -- every island's plaza from HQ Lv1 (docs/25 J; docs/23 (p): a varnished, signwritten board on two posts, lit by a brass picture
--- lamp; all six show the same rows; no HUD panel).
+-- lamp; all six show the same rows; no HUD panel). The Lego kit board (M_Prop_BoardKit L01) stands in its place when it
+-- loads: 5 rows per column on both faces; the code board is the fallback.
 --
 -- Credit: every helper of a finished operation gets its saved count (Shared.LeaderboardRules.credit).
 -- Increments are batched per player and written every BadgeConfig.Leaderboard.flushSeconds, on leave and at
@@ -18,6 +19,8 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AssetIds = require(Shared:WaitForChild("Config"):WaitForChild("AssetIds"))
+local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeConfig"))
 local LeaderboardRules = require(Shared:WaitForChild("LeaderboardRules"))
 
@@ -305,6 +308,92 @@ local function buildGui(panel: Part)
 	table.insert(footers, foot)
 end
 
+-- The Lego kit board (M_Prop_BoardKit L01): both faces carry build.py's tile grid (studs from the face's top
+-- left): a red header, yellow column titles and 5 rows per column (a rank tile, then a blue name/value tile).
+local KIT_W, KIT_H = 13.14, 10.06
+local KIT_COLS, KIT_CW = { 0.68, 4.7133, 8.7466 }, 3.7133
+local KIT_ROW0, KIT_ROWP, KIT_ROWH, KIT_ROWS = 3.15, 1.312, 1.18, 5
+local INK = Color3.fromRGB(27, 42, 52) -- dark text on the yellow / gold / silver / bronze tiles
+local WHITE = Color3.new(1, 1, 1)
+
+local function kitGui(panel: Part)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = "ServiceBoard"
+	gui.Face = Enum.NormalId.Front
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = PPS
+	gui.LightInfluence = 1
+	gui.MaxDistance = 70
+	gui.Parent = panel
+	local function at(
+		parent: Instance,
+		text: string,
+		size: number,
+		color: Color3,
+		u: number,
+		v: number,
+		w: number,
+		h: number
+	)
+		local l = label(parent, text, size, color, Enum.FontWeight.Bold)
+		l.FontFace = Font.fromEnum(Enum.Font.FredokaOne)
+		l.Position = UDim2.fromOffset(u * PPS, v * PPS)
+		l.Size = UDim2.fromOffset(w * PPS, h * PPS)
+		return l
+	end
+	at(gui, "GALE ISLES COASTGUARD", 34, WHITE, 0.35, 0.4, KIT_W - 0.7, 0.9)
+	at(gui, "RESCUE BOARD", 20, WHITE, 0.35, 1.3, KIT_W - 0.7, 0.6)
+	for i, board in BadgeConfig.Boards do
+		local u = KIT_COLS[i]
+		local title = at(gui, board.title:upper(), 16, INK, u, 2.2, KIT_CW, 0.7)
+		title.TextScaled = true
+		local fit = Instance.new("UITextSizeConstraint")
+		fit.MaxTextSize = 16
+		fit.Parent = title
+		local cells = {}
+		for r = 1, KIT_ROWS do
+			local v = KIT_ROW0 + (r - 1) * KIT_ROWP
+			at(gui, `{r}`, 30, if r <= 3 then INK else WHITE, u, v, KIT_ROWH, KIT_ROWH)
+			local x, w = u + KIT_ROWH + 0.22, KIT_CW - KIT_ROWH - 0.34 -- inside the blue tile
+			local name = at(gui, "", 20, WHITE, x, v + 0.06, w, 0.52)
+			name.TextXAlignment = Enum.TextXAlignment.Left
+			local value = at(gui, "", 18, WHITE, x, v + 0.58, w, 0.52)
+			value.TextXAlignment = Enum.TextXAlignment.Right
+			table.insert(cells, { name = name, value = value })
+		end
+		valueLabels[board.key] = valueLabels[board.key] or {}
+		table.insert(valueLabels[board.key], cells)
+	end
+	-- the strip under the last row (row 5 ends 9.58 down)
+	local foot = at(gui, "", 14, GOLD, 0.35, 9.62, KIT_W - 0.7, 0.4)
+	foot.FontFace = Font.new(SERIF)
+	foot.TextTransparency = 0.15
+	table.insert(footers, foot)
+end
+
+-- The kit board standing on `ground` (its feet), a GUI panel at each face; nil when the kit didn't load.
+local function kitBoard(ground: CFrame): Model?
+	local m = AssetLoader.cloneModule("M_Prop_BoardKit", "ATT_Board", ground, { "L01_RescueBoard" })
+	if not m then
+		return nil
+	end
+	m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+	local atts = AssetIds.Attachments.M_Prop_BoardKit
+	for turn, att in { [0] = atts.ATT_BoardFaceF, [math.pi] = atts.ATT_BoardFaceB } do
+		-- 0.02 thick, its front face on the attachment (the back panel turned to face +Z)
+		local cf = ground
+			* CFrame.new(att - atts.ATT_Board)
+			* CFrame.Angles(0, turn, 0)
+			* CFrame.new(0, 0, 0.01)
+		local panel =
+			part(m, "Panel", Vector3.new(KIT_W, KIT_H, 0.02), cf, NAVY, Enum.Material.SmoothPlastic)
+		panel.Transparency = 1
+		panel.CastShadow = false
+		kitGui(panel)
+	end
+	return m
+end
+
 -- face: the board centre, LookVector out of its front, up = +Y
 local function buildBoard(face: CFrame): Model
 	local m = Instance.new("Model")
@@ -411,6 +500,16 @@ local function buildBoard(face: CFrame): Model
 	light.Parent = att
 
 	buildGui(panel)
+	for _, side in { -1, 1 } do
+		part(
+			m,
+			"Post",
+			Vector3.new(0.8, H + 1.9, 0.8),
+			face * CFrame.new(side * (W / 2 + 0.4), -0.55, -T / 2),
+			Color3.fromRGB(242, 243, 242),
+			Enum.Material.SmoothPlastic
+		)
+	end
 	return m
 end
 
@@ -431,8 +530,10 @@ local function show(key: string, entries: { Entry })
 	end
 	for i, row in LeaderboardRules.rows(entries, rowNames, CFG.rows) do
 		for _, cells in boards do
-			cells[i].name.Text = row.name
-			cells[i].value.Text = row.value
+			if cells[i] then -- the kit board shows 5 rows, the code board CFG.rows
+				cells[i].name.Text = row.name
+				cells[i].value.Text = row.value
+			end
 		end
 	end
 end
@@ -457,18 +558,9 @@ end
 -- docs/25 J: nothing stands on land at the start, so DockService stands a board on each island's plaza with the
 -- HQ (beside the prize wheel) and destroys it with the streets. face: the board centre, LookVector out of its front.
 function LeaderboardService.Board(face: CFrame): Model
-	local board = buildBoard(face)
+	-- the kit stands where the code posts' feet do
+	local board = kitBoard(face * CFrame.new(0, -0.55 - (H + 1.9) / 2, 0)) or buildBoard(face)
 	board.Name = "RescueBoard"
-	for _, side in { -1, 1 } do
-		part(
-			board,
-			"Post",
-			Vector3.new(0.8, H + 1.9, 0.8),
-			face * CFrame.new(side * (W / 2 + 0.4), -0.55, -T / 2),
-			Color3.fromRGB(242, 243, 242),
-			Enum.Material.SmoothPlastic
-		)
-	end
 	board.Destroying:Connect(function()
 		for _, boards in valueLabels do
 			for i = #boards, 1, -1 do
