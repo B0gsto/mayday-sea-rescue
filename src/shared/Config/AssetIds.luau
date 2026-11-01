@@ -219,9 +219,9 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://120420678094169",
 	},
 	M_Prop_BuildSiteKit = {
-		LOD0 = "rbxassetid://108631160743774",
-		LOD1 = "rbxassetid://92712016149318",
-		LOD2 = "rbxassetid://117455714827399",
+		LOD0 = "rbxassetid://75254069839731",
+		LOD1 = "rbxassetid://124941006039198",
+		LOD2 = "rbxassetid://85634491056108",
 	},
 	M_Prop_BuildStation = {
 		LOD0 = "rbxassetid://118176380187881",

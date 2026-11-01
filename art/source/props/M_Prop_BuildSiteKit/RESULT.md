@@ -1,4 +1,15 @@
-# M_Prop_BuildSiteKit (2026-11-01, PERF-BL2: Opus 5.5, Blender MCP, 4 AD rounds)
+# M_Prop_BuildSiteKit (2026-11-01, PERF-BL2 r1-r4 + FIN9 r5-r6: Opus 5.5, Blender MCP)
+
+**Shipped r6 (AD median 8.8; bar 9.1 not met).** Ids: LOD0 75254069839731, LOD1 124941006039198, LOD2 85634491056108
+(ALB unchanged). LOD0 4,240 tris (large_prop 8000), validate PASS (354 checks), zfight 0 visible pairs, the slung brick
+clears the preview building's footprint (0 verts inside).
+
+| Round | AD (3 fresh Opus, median) | Changes / left |
+|---|---|---|
+| r5 | 8.6 (8.6/8.6/8.7) | mast chords 1.3x, cones 1.5x, one-colour stacks (red), calm lower fence rail, hook at 10.5 on a longer jib, brick hangs higher and turned across the jib (clears the corner). Left: all-red stacks blob with the red/white posts, busy gate/barrier, thin jib |
+| r6 | 8.8 (8.7/8.8/8.8) | stacks blue, gate posts plain yellow (no lamp domes), plain white leaf, yellow/black barrier (no lamp), mast lattice 0.4, jib deck/chord/lattice thicker. Left: blue stacks merge with the blue scaffold (green suggested; the 3 pallets share meshes), jib still thin, red/white boom on the gate, thin hook cable |
+
+r1-r4 notes below (ids there are r4's, replaced).
 
 Validate PASS (354 checks, 0 failed, 71 waived: layer naming, LOD UV layout). LOD0 4,560 tris, LOD1 2,274, LOD2 1,128
 (large_prop 8000). zfight: LOD0 0 visible pairs (run.py), LOD1 / LOD2 0 visible (zfight_check.py on the FBXs).

@@ -6,7 +6,7 @@ each has an ATT_<Module> empty at its own origin (ground centre, Roblox axes: x 
 ConstructionController reads AssetIds.Attachments.M_Prop_BuildSiteKit and re-places every MeshPart relative to it.
 
   L01_FencePanel  8-stud yellow/black brick fence bay, its post at the left end (panels tile; run ends get a post)
-  L02_FenceGate   8-stud gate: red/white posts with amber lamps, red/white boom, white bars, a warning plate
+  L02_FenceGate   8-stud gate: yellow brick posts, red/white boom, white bars, a warning plate
   L03_FencePost   corner post
   L04_ScaffoldBay 6 x 2.4 x 5 bay (silver tubes, plank deck, toe board, yellow brace); bays stack (+5) and tile in x
   L05_CraneBase   red studded footing + yellow Warren-truss mast (static)
@@ -17,7 +17,7 @@ ConstructionController reads AssetIds.Attachments.M_Prop_BuildSiteKit and re-pla
   L09_StackLow / L10_StackMid / L11_StackTop  the three brick courses (fill states: the code hides top first)
   L12_SignBoard   hazard-framed board on two posts (brick + hammer pictogram); ATT_SignUI = top centre
   L13_Cone        studded traffic cone
-  L14_Barrier     red/white A-frame barrier with an amber lamp
+  L14_Barrier     yellow/black A-frame barrier
   Col01_COL       a token box (the code never collides with the dressing)
 
     python3 art/source/props/M_Prop_BuildSiteKit/maketex.py --out build/prod/M_Prop_BuildSiteKit/textures/M_Prop_BuildSiteKit
@@ -43,7 +43,7 @@ ALB = os.path.join(G, "build/prod", NAME, "textures", NAME, "T_BuildSiteKit_Bric
 
 Y0 = -0.06                  # every foot just under the ground: never coplanar with it
 PIVOT_Y = 20.6              # crane slew pivot (ATT_CranePivot; round 3: taller than the finished buildings)
-HOOK_X = 8.8                # hook under the jib, from the mast
+HOOK_X = 10.5               # hook under the jib, from the mast
 SLOTS = {                   # module origins in the kit, Roblox x (studs)
     "Fence": 0, "Gate": 11, "Post": 18, "Scaffold": 25, "Crane": 40, "Stack": 56, "Sign": 63, "Cone": 69, "Barrier": 74,
 }
@@ -96,29 +96,29 @@ def fence_panel(k):
     k.box((-4.0, Y0, -0.85), (-3.1, 0.35, 0.85), P.DBG, bev=0.1)                     # foot plate
     k.box((-3.98, 0.35, -0.43), (-3.12, 3.15, 0.43), P.YELLOW, bev=0.14)           # post
     k.stud(-3.55, 3.15, 0, P.YELLOW, r=0.3)
-    for y0, flip in ((2.1, 0), (0.95, 1)):                                          # flat hazard-stripe rails
-        for i in range(4):
-            x0 = -3.1 + i * 1.7625 + 0.03
-            c = P.YELLOW if (i + flip) % 2 == 0 else P.BLACK
-            k.box((x0, y0, -0.32), (x0 + 1.7025, y0 + 0.8, 0.32), c, bev=0.1)
+    for i in range(4):                                                              # hazard-stripe top rail
+        x0 = -3.1 + i * 1.7625 + 0.03
+        k.box((x0, 2.1, -0.32), (x0 + 1.7025, 2.9, 0.32), P.YELLOW if i % 2 == 0 else P.BLACK, bev=0.1)
+    for i in range(2):                                                              # r5: calm yellow lower rail
+        x0 = -3.1 + i * 3.525 + 0.03
+        k.box((x0, 0.95, -0.32), (x0 + 3.465, 1.75, 0.32), P.YELLOW, bev=0.1)
 
 
 def fence_gate(k):
     for s in (-1, 1):
         lo, hi = (3.15, 3.95) if s > 0 else (-3.95, -3.15)
         k.box((lo - 0.2 if s > 0 else lo, Y0, -0.95), (hi if s > 0 else hi + 0.2, 0.35, 0.95), P.DBG, bev=0.1)
-        for j, c in enumerate((P.RED, P.WHITE, P.RED, P.WHITE, P.RED, P.WHITE)):  # red/white brick post
-            y0 = 0.35 + j * 0.95
-            k.box((lo, y0 + 0.02, -0.45), (hi, y0 + 0.95, 0.45), c, bev=0.12)
-        k.cyl((lo + hi) / 2, 0, 6.05, 6.3, 0.36, P.DBG)                            # lamp: grey collar, amber dome
-        k.frustum((lo + hi) / 2, 0, [(6.3, 0.34), (6.65, 0.34), (6.85, 0.2), (6.92, 0.05)], P.ORANGE)
+        for j in range(3):                                                         # r6: calm yellow brick post
+            y0 = 0.35 + j * 1.9
+            k.box((lo, y0 + 0.02, -0.45), (hi, y0 + 1.9, 0.45), P.YELLOW, bev=0.12)
+        k.stud((lo + hi) / 2, 6.05, 0, P.YELLOW, r=0.3)
     for i in range(5):                                                             # one wide red/white boom
         x0 = -3.15 + i * (6.3 / 5) + 0.02
         k.box((x0, 4.3, -0.4), (x0 + 6.3 / 5 - 0.04, 5.5, 0.4), P.RED if i % 2 == 0 else P.WHITE, bev=0.14)
     k.box((-3.1, 0.55, -0.24), (3.1, 0.98, 0.24), P.DBG, bev=0.08)                 # kick rail
     for i in range(5):                                                             # striped gate leaf
         x0 = -3.15 + i * (6.3 / 5) + 0.02
-        k.box((x0, 1.1, -0.3), (x0 + 6.3 / 5 - 0.04, 2.0, 0.3), P.WHITE if i % 2 == 0 else P.RED, bev=0.12)
+        k.box((x0, 1.1, -0.3), (x0 + 6.3 / 5 - 0.04, 2.0, 0.3), P.WHITE, bev=0.12)
     for x in (-2.55, 2.55):                                                        # leaf stiles up to the boom
         k.box((x - 0.18, 2.0, -0.18), (x + 0.18, 4.3, 0.18), P.WHITE, bev=0.05)
     # warning plate: big yellow diamond on a black square, a black "!"
@@ -179,14 +179,14 @@ def crane_base(k):
     m, top = 0.9, PIVOT_Y - 0.3
     for x in (-m, m):
         for z in (-m, m):
-            k.box((x - 0.26, 1.0, z - 0.26), (x + 0.26, top - 0.4, z + 0.26), P.WHITE, bev=0.08)
+            k.box((x - 0.34, 1.0, z - 0.34), (x + 0.34, top - 0.4, z + 0.34), P.WHITE, bev=0.1)   # r5: chords 1.3x
     y0, y1 = 1.4, top - 0.6
     y = lambda t: y0 + (y1 - y0) * t
     for fx, fz in ((m, None), (-m, None), (None, m), (None, -m)):                  # Warren truss, 4 faces
         if fz is None:
-            warren(k, lambda t: (fx, y(t), -m), lambda t: (fx, y(t), m), 0.28, P.RED, 9)
+            warren(k, lambda t: (fx, y(t), -m), lambda t: (fx, y(t), m), 0.4, P.RED, 9)
         else:
-            warren(k, lambda t: (-m, y(t), fz), lambda t: (m, y(t), fz), 0.28, P.RED, 9)
+            warren(k, lambda t: (-m, y(t), fz), lambda t: (m, y(t), fz), 0.4, P.RED, 9)
     k.box((-1.25, top - 0.4, -1.25), (1.25, top - 0.05, 1.25), P.RED, bev=0.1)      # mast cap
     k.cyl(0, 0, top - 0.05, top, 1.1, P.DBG, n=12)                                  # fixed half of the ring
 
@@ -204,12 +204,12 @@ def crane_slew(k):
         for z in (-2.45, -1.1):
             k.stud(x, py + 3.25, z, P.RED, r=0.32, h=0.24)
     # jib: a solid yellow deck (the trolley runs under it), yellow top chord, red zigzag faces, red tip cap
-    x0, x1, yb, yt = 1.0, 10.6, py + 0.45, py + 1.9
-    k.box((x0, yb - 0.25, -0.6), (x1, yb + 0.25, 0.6), P.YELLOW, bev=0.08)
-    k.beam((x0, yt, 0), (x1, yb + 0.7, 0), 0.48, 0.48, P.YELLOW)
+    x0, x1, yb, yt = 1.0, 12.4, py + 0.45, py + 1.9                                   # r5: reaches the hook at 10.5
+    k.box((x0, yb - 0.3, -0.75), (x1, yb + 0.3, 0.75), P.YELLOW, bev=0.1)
+    k.beam((x0, yt, 0), (x1, yb + 0.7, 0), 0.62, 0.62, P.YELLOW)
     top = lambda t: (x0 + (x1 - x0) * t, yt + (yb + 0.7 - yt) * t, 0)
-    for z in (-0.5, 0.5):
-        warren(k, lambda t, z=z: (x0 + (x1 - x0) * t, yb + 0.25, z), top, 0.28, P.RED, 7)
+    for z in (-0.6, 0.6):
+        warren(k, lambda t, z=z: (x0 + (x1 - x0) * t, yb + 0.3, z), top, 0.36, P.RED, 8)
     k.box((x1 - 0.05, yb - 0.35, -0.8), (x1 + 0.8, yb + 1.0, 0.8), P.RED, bev=0.16)
     # trolley under the deck (the hook's cable runs out of it)
     k.box((HOOK_X - 0.6, yb - 0.75, -0.75), (HOOK_X + 0.6, yb - 0.25, 0.75), P.DBG, bev=0.08)
@@ -233,7 +233,7 @@ def crane_slew(k):
 
 def crane_hook(k):
     py = PIVOT_Y
-    yb = py - 5.6                                                                    # the block hangs ~5.6 under the jib
+    yb = py - 4.0                                                                    # r5: hangs higher, over the lot (clears the walls)
     for z in (-0.3, 0.3):                                                            # twin cable (overlaps the trolley)
         k.beam((HOOK_X, py + 0.2, z), (HOOK_X, yb, z), 0.3, 0.3, P.DBG)
     k.box((HOOK_X - 1.1, yb - 2.1, -0.75), (HOOK_X + 1.1, yb, 0.75), P.YELLOW, bev=0.18)   # yellow block, red band
@@ -243,12 +243,13 @@ def crane_hook(k):
     k.box((HOOK_X - 0.25, hy - 1.35, -0.25), (HOOK_X + 1.15, hy - 0.8, 0.25), P.LBG, bev=0.07)
     k.box((HOOK_X + 0.7, hy - 1.35, -0.25), (HOOK_X + 1.15, hy - 0.55, 0.25), P.LBG, bev=0.07)
     by = hy - 3.6                                                                    # slung red 2x4 brick, 1.4x
+    # r5: long side across the jib, so it hangs clear of the building's corner (the jib points at it)
     for s in (-1, 1):
-        k.beam((HOOK_X, hy - 1.1, 0), (HOOK_X + s * 1.4, by + 1.3, 0), 0.16, 0.16, P.DBG)
-    k.box((HOOK_X - 1.8, by, -0.9), (HOOK_X + 1.8, by + 1.3, 0.9), P.RED, bev=0.16)
+        k.beam((HOOK_X, hy - 1.1, 0), (HOOK_X, by + 1.3, s * 1.4), 0.16, 0.16, P.DBG)
+    k.box((HOOK_X - 0.9, by, -1.8), (HOOK_X + 0.9, by + 1.3, 1.8), P.RED, bev=0.16)
     for i in range(4):
-        for z in (-0.45, 0.45):
-            k.stud(HOOK_X - 1.35 + i * 0.9, by + 1.3, z, P.RED, r=0.3, h=0.24)
+        for x in (-0.45, 0.45):
+            k.stud(HOOK_X + x, by + 1.3, -1.35 + i * 0.9, P.RED, r=0.3, h=0.24)
 
 
 # ------------------------------------------------------------------ brick stacks (pallet + three courses)
@@ -258,9 +259,9 @@ def pallet(k):
     for i in range(3):
         z0 = -1.2 + i * 0.82 + 0.03
         k.box((-1.7, 0.3, z0), (1.7, 0.55, z0 + 0.74), P.TAN, bev=0.05)
-    k.box((0.55, 0.55, 0.15), (1.45, 1.0, 0.95), P.WHITE, bev=0.08)                  # one loose brick on the boards
-    k.stud(1.0, 1.0, 0.35, P.WHITE, r=0.2, h=0.15, n=6)
-    k.stud(1.0, 1.0, 0.75, P.WHITE, r=0.2, h=0.15, n=6)
+    k.box((0.55, 0.55, 0.15), (1.45, 1.0, 0.95), P.BLUE, bev=0.08)                    # one loose brick on the boards
+    k.stud(1.0, 1.0, 0.35, P.BLUE, r=0.2, h=0.15, n=6)
+    k.stud(1.0, 1.0, 0.75, P.BLUE, r=0.2, h=0.15, n=6)
 
 
 def course(k, y0, bricks):
@@ -276,7 +277,7 @@ def course(k, y0, bricks):
 
 # fill states read apart: one course = flat with bare boards, two = a step, three = a stepped tower
 def stack_low(k):
-    course(k, 0.55, [(-1.62, -1.1, 0.25, 1.1, P.RED), (0.31, -1.1, 1.62, -0.05, P.YELLOW)])
+    course(k, 0.55, [(-1.62, -1.1, 0.25, 1.1, P.BLUE), (0.31, -1.1, 1.62, -0.05, P.BLUE)])
 
 
 def stack_mid(k):
@@ -284,7 +285,7 @@ def stack_mid(k):
 
 
 def stack_top(k):
-    course(k, 2.15, [(-1.45, -0.75, -0.05, 0.6, P.YELLOW)])
+    course(k, 2.15, [(-1.45, -0.75, -0.05, 0.6, P.BLUE)])
 
 
 # ------------------------------------------------------------------ sign board (round 2: 1.3x, bigger icons)
@@ -315,11 +316,11 @@ def sign_board(k):
 
 # ------------------------------------------------------------------ cone and barrier
 def cone(k):
-    k.box((-0.6, Y0, -0.6), (0.6, 0.22, 0.6), P.BLACK, bev=0.08)
-    k.frustum(0, 0, [(0.22, 0.48), (0.8, 0.36)], P.ORANGE)
-    k.frustum(0, 0, [(0.8, 0.36), (1.1, 0.29)], P.WHITE)
-    k.frustum(0, 0, [(1.1, 0.29), (1.6, 0.17)], P.ORANGE)
-    k.stud(0, 1.6, 0, P.ORANGE, r=0.15, h=0.14)
+    k.box((-0.9, Y0, -0.9), (0.9, 0.33, 0.9), P.BLACK, bev=0.1)                      # r5: 1.5x
+    k.frustum(0, 0, [(0.33, 0.72), (1.2, 0.54)], P.ORANGE)
+    k.frustum(0, 0, [(1.2, 0.54), (1.65, 0.435)], P.WHITE)
+    k.frustum(0, 0, [(1.65, 0.435), (2.4, 0.255)], P.ORANGE)
+    k.stud(0, 2.4, 0, P.ORANGE, r=0.22, h=0.2)
 
 
 def barrier(k):
@@ -331,10 +332,8 @@ def barrier(k):
     for y0, flip in ((1.75, 0), (0.75, 1)):                                          # two bold striped boards
         for i in range(5):
             x0 = -2.6 + i * 1.04 + 0.02
-            c = P.RED if (i + flip) % 2 == 0 else P.WHITE
+            c = P.YELLOW if (i + flip) % 2 == 0 else P.BLACK
             k.box((x0, y0, -0.36), (x0 + 1.0, y0 + 0.72, -0.1), c, bev=0.07)
-    k.cyl(-2.2, 0, 2.6, 2.82, 0.26, P.DBG)
-    k.frustum(-2.2, 0, [(2.82, 0.24), (3.12, 0.24), (3.3, 0.1)], P.ORANGE)
 
 
 MODULES = [

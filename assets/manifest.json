@@ -22713,6 +22713,16 @@
   "source": "assets/fbx/M_Veh_BoatTrailer_JetSki/M_Veh_BoatTrailer_JetSki_LOD2.fbx",
   "type": "Model"
  },
+ "Model:2d374a896fc713db121b86250fc323282416a9c7b8ac5c8e71ca67718d38a6b1": {
+  "assetId": "75254069839731",
+  "moderation": "Approved",
+  "name": "M_Prop_BuildSiteKit_LOD0",
+  "rbxm": "assets/models/M_Prop_BuildSiteKit_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "2d374a896fc713db121b86250fc323282416a9c7b8ac5c8e71ca67718d38a6b1",
+  "source": "assets/fbx/M_Prop_BuildSiteKit/M_Prop_BuildSiteKit_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:2d78e489ee17129cf79f12955f09e03aed5044c299814f58d2e5278e890e15f2": {
   "assetId": "102432964697943",
   "moderation": "Approved",
@@ -23261,6 +23271,16 @@
   "route": "delivery",
   "sha": "3a75b169c30203ad9c166969b4be09db2868881d8c7c0d97b2effbf3622913f1",
   "source": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:3b2537309adaf68a1a9ee7e5936055583f6d8892a34478252f6c064f2dc49ca9": {
+  "assetId": "124941006039198",
+  "moderation": "Approved",
+  "name": "M_Prop_BuildSiteKit_LOD1",
+  "rbxm": "assets/models/M_Prop_BuildSiteKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "3b2537309adaf68a1a9ee7e5936055583f6d8892a34478252f6c064f2dc49ca9",
+  "source": "assets/fbx/M_Prop_BuildSiteKit/M_Prop_BuildSiteKit_LOD1.fbx",
   "type": "Model"
  },
  "Model:3b68368d084a73d663ec5ba15d93300f33b8830602255207e089f6bd82f8a750": {
@@ -29791,6 +29811,16 @@
   "route": "delivery",
   "sha": "ea5656f7532835c1aaea4087da011ef93fffa2ee44d35b96e279d1e546648005",
   "source": "assets/fbx/M_Sea_MooringBlock/M_Sea_MooringBlock_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:eb3466e38f3d0081736f7a270ed5dbdaaa3d20516d4dee306be5511b4c94dc51": {
+  "assetId": "85634491056108",
+  "moderation": "Approved",
+  "name": "M_Prop_BuildSiteKit_LOD2",
+  "rbxm": "assets/models/M_Prop_BuildSiteKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "eb3466e38f3d0081736f7a270ed5dbdaaa3d20516d4dee306be5511b4c94dc51",
+  "source": "assets/fbx/M_Prop_BuildSiteKit/M_Prop_BuildSiteKit_LOD2.fbx",
   "type": "Model"
  },
  "Model:eb372b5a23ed45149610ca4e4af18301bae7037196188283b082422678b5853c": {
