@@ -170,10 +170,12 @@ def shot(name, target, dist, az, el, out_dir, lens=40, size=(800, 560), clip=0.1
 
 
 # per module: (slot, look-at x, y, z in the module frame, framing extent in studs)
-VIEWS = [("Canteen", 0, 3, 0, 17), ("Campfire", 0, 2, 0, 15), ("Bench", 6, 1.5, -0.4, 21), ("Hammock", 0, 2, 0, 13),
-         ("Cart", 0, 3.5, -1, 12), ("ChatEast", 0, 4.0, 0, 11), ("ChatWest", 0, 2.5, 0, 11), ("FlowerBed", 0, 1, 0, 10),
-         ("PicnicTable", 0, 1.5, 0, 9), ("LampRow", 0, 4.5, 0, 12), ("FlagPole", 0, 10.5, 3.5, 22), ("Statue", 0, 4.5, 0, 11),
+VIEWS = [("Canteen", 0, 3, 0, 17), ("Campfire", 0, 2, 0, 15), ("Bench", 6, 1.5, -0.4, 21), ("Hammock", 0, 3.3, 0, 14),
+         ("Cart", 0, 4.3, -1, 12.5), ("ChatEast", 0, 4.0, 0, 11), ("ChatWest", 0, 2.5, 0, 11), ("FlowerBed", 0, 1, 0, 10),
+         ("PicnicTable", 0, 1.5, 0, 9), ("LampRow", 0, 4.5, 0, 12), ("FlagPole", 0, 10.5, 4.2, 23), ("Statue", 0, 4.5, 0, 11),
          ("Fountain", 0, 2.2, 0, 9)]
+# r5: per-view game-camera (azimuth, elevation); default (30, 32). Hammock side-on; Cart / chats look past the talkers
+AZEL = {"Hammock": (70, 30), "Cart": (65, 44), "ChatEast": (60, 36), "ChatWest": (10, 40)}
 
 
 def render(out_dir):
@@ -184,7 +186,7 @@ def render(out_dir):
     for s, x, y, z, ext in VIEWS:
         solo(s)
         t = rb(s, x, y, z)
-        r["g_" + s] = shot("g_" + s, t, 1.7 * ext, 30, 32, out_dir, size=(600, 420))
+        r["g_" + s] = shot("g_" + s, t, 1.7 * ext, *AZEL.get(s, (30, 32)), out_dir, size=(600, 420))
         # the canteen's top view is a cutaway under the roof (clip at 5.9 up) so the four eaters show
         r["t_" + s] = shot("t_" + s, t, 1.5 * ext, 0, 89, out_dir, size=(420, 420),
                            clip=1.5 * ext + y - 5.9 if s == "Canteen" else 0.1)

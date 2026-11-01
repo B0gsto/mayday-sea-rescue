@@ -25725,6 +25725,16 @@
   "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD0.fbx",
   "type": "Model"
  },
+ "Model:7e80af2223664ffaeee79c4ca79d383cc7cf5d161671424610d8423069c0a99d": {
+  "assetId": "107307409642354",
+  "moderation": "Approved",
+  "name": "M_Prop_CommonsKit",
+  "rbxm": "assets/models/M_Prop_CommonsKit.rbxm",
+  "route": "delivery",
+  "sha": "7e80af2223664ffaeee79c4ca79d383cc7cf5d161671424610d8423069c0a99d",
+  "source": "assets/fbx/M_Prop_CommonsKit/M_Prop_CommonsKit_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:7e956e27066b7bc8a1f3dd10b7076c765cad7a9b8b7bea94a27cdbff47111310": {
   "assetId": "84485808948987",
   "moderation": "Approved",
@@ -26003,6 +26013,16 @@
   "route": "delivery",
   "sha": "832f0580f1f1287dc4a7eb1b69ddd91e96cbbedcdf0fc659694867513ad9f63f",
   "source": "assets/fbx/M_Bld_TrophyHallAddons/M_Bld_TrophyHallAddons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:8389f0b301c5e44f180e2f544f81665cafa2fd176f94231986ea50531f120281": {
+  "assetId": "75517661825334",
+  "moderation": "Approved",
+  "name": "M_Prop_CommonsKit_LOD2",
+  "rbxm": "assets/models/M_Prop_CommonsKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "8389f0b301c5e44f180e2f544f81665cafa2fd176f94231986ea50531f120281",
+  "source": "assets/fbx/M_Prop_CommonsKit/M_Prop_CommonsKit_LOD2.fbx",
   "type": "Model"
  },
  "Model:83fe50cd2dcc2e26b9f3fb31cf87af914e1286189395ec4c8e5cbfc158d298b3": {
@@ -28303,6 +28323,16 @@
   "route": "delivery",
   "sha": "be9e9aeb668f0f8fe94128dd7942ed2a8cb02d90135f8e02faace7a2ab17aa1c",
   "source": "assets/fbx/M_Kit_VHFHandset/M_Kit_VHFHandset_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:bfc5fc23561fccbad5da995a2095f3ae6472eda397aebadfe693c45824b2f306": {
+  "assetId": "135907054176048",
+  "moderation": "Approved",
+  "name": "M_Prop_CommonsKit_LOD1",
+  "rbxm": "assets/models/M_Prop_CommonsKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "bfc5fc23561fccbad5da995a2095f3ae6472eda397aebadfe693c45824b2f306",
+  "source": "assets/fbx/M_Prop_CommonsKit/M_Prop_CommonsKit_LOD1.fbx",
   "type": "Model"
  },
  "Model:bfe7ddf2f12d3785b14b32740f15e0da8a747a32aa33fb3ae7f17294e2311a8f": {

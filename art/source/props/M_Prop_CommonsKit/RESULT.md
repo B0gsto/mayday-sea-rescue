@@ -82,3 +82,19 @@ models (Hangout 12 meshes, FlowerBed 1, PicnicTable 1, LampRow 2, FlagPole 3, St
 No in-game AD score yet: the capture lost its window to another thread's play.py using the shared "mayday-play"
 tag. Retry with `MAYDAY_STUDIO_TAG=mayday-cpk python3 tools/studio/play.py open` (no phone emulation in the
 driver: phone = desktop frames scaled to 390 px tall). Not published.
+
+## Rounds 5-6 (2026-11-01, Blender MCP): PASS 9.1
+
+AD medians (3 fresh Opus judges, same AD_PROMPT.md, anchor BoardKit r4): r5 9.0, r6 **9.1** (judges 9.1 / 9.1 / 9.0).
+r6 module medians: Canteen 9.1, Campfire 9.0, Bench 9.1, Hammock 9.0, Cart 9.0, ChatEast 8.9, ChatWest 9.0,
+FlowerBed 9.1, PicnicTable 9.1, LampRow 9.1, FlagPole 9.0, Statue 9.2, Fountain 9.1.
+- r5: hammock 6-brick posts, steep U to high spreader bars, rope fans; ChatWest taller lean rail; campfire logs and
+  stone ring; bench slats and armrest blocks; flag pole r 0.75 and 1.18x cloth; preview.py AZEL per-view cameras.
+- r6: campfire stacked trans-orange / yellow flame; chunky capped crossed logs; hammock side table removed, sling 80%
+  of the spreader with an even sag; cart wheels on both sides, front serving tray, umbrella +1 plate; ChatEast table
+  top +1 plate and the trio spread to radius 2.35; ChatWest pair at +-1.4 (Hangout.SPOTS + AssetIds attachments
+  match); flag pole r 1.0, cloth 1.38x. LOD0 24847 / LOD1 14821 / LOD2 2950 tris; validate PASS; zfight 0 visible.
+- Left for later: ChatEast table still partly behind the trio at 3/4; cart topper vs umbrella pole.
+Uploaded r6: LOD0 107307409642354, LOD1 135907054176048, LOD2 75517661825334 (texture unchanged). check.sh: ALL CHECKS
+PASSED (828 tests). Sheets: build/status/2026-11-01/perfect/M_Prop_CommonsKit/r5*, r6*. Not published; no in-game check
+(Studio stopped by the owner).

@@ -324,7 +324,8 @@ def flower(k, x, z, y, h, c, round_head=False):
     round_head: a dense-bed bloom instead (icon): stem + a round 1x1 brick head, no leaves."""
     k.cyl(x, z, y - SINK, y + h, 0.1, P.GREEN, n=6, bottom=False)
     if round_head:
-        k.frustum(x, z, [(y + h, 0.3), (y + h + 0.1, 0.4), (y + h + 0.36, 0.4), (y + h + 0.44, 0.3)], c, n=8)
+        rings = [(y + h, 0.3), (y + h + 0.1, 0.4), (y + h + 0.36, 0.4), (y + h + 0.44, 0.3)]
+        k.frustum(x, z, rings if not k.lod else [(y + h, 0.4)] + rings[2:], c, n=8)      # r6: LOD1/2 one ring less (LOD1 15k cap)
         k.stud(x, y + h + 0.44, z, c, r=0.18, h=0.1)
         return
     if k.lod < 2:
@@ -540,27 +541,45 @@ def campfire(k):
     k.cyl(0, 0, Y0, 0.5, 1.45, P.DBG, n=16, bottom=False)
     k.cyl(0, 0, 0.46, 0.9, 1.25, P.DBG, n=16, bottom=False)
     k.cyl(0, 0, 0.86, 1.3, 1.05, P.DBG, n=16, bottom=False)            # r4: +1 plate (hearth top 1.3)
-    for i in range(8):                                # r4: taller 2-course stones (top 1.45) show past the sitters
+    ST = 2.3                                          # r6: stone ring +1 plate again (top 2.3: reads over the logs)
+    for i in range(8):
         a = (i + 0.5) / 8 * math.pi * 2
         x, z = 2.05 * math.sin(a), -2.05 * math.cos(a)
         if k.lod:                                     # LOD1/2: one round brick (LOD1 15k cap)
-            k.cyl(x, z, Y0, 1.45, 0.67, P.STONE, n=12, bottom=False)
+            k.cyl(x, z, Y0, ST, 0.67, P.STONE, n=10, bottom=False)
         else:
-            k.cyl(x, z, Y0, 0.7, 0.68, P.STONE, n=12, bottom=False)
-            k.cyl(x, z, 0.75, 1.45, 0.66, P.STONE, n=12, bottom=False)
-        k.stud(x, 1.45, z, P.STONE)
-    # r4: two chunky round fire logs (2-stud, r 0.42) crossed on the hearth, tan end grain
-    k.log(-1.35, 1.35, 1.66, 0.0, 0.42, P.BROWN, n=10)
-    k.logz(-1.35, 1.35, 0.0, 1.74, 0.42, P.BROWN, n=10)
-    if not k.lod:
-        for s in (-1, 1):
-            k.log(min(s * 1.31, s * 1.41), max(s * 1.31, s * 1.41), 1.66, 0.0, 0.32, P.TAN, n=10)
-            k.logz(min(s * 1.31, s * 1.41), max(s * 1.31, s * 1.41), 0.0, 1.74, 0.32, P.TAN, n=10)
-    # three stacked Lego cones, orange base, yellow middle (the lit core: code NightLamp); r4: the pale tip 1.5x
-    # (5.0..7.85) clears the seated minifigs' heads (4.9)
-    k.frustum(0, 0, [(1.4, 1.2), (2.0, 1.1), (3.8, 0.12)], P.ORANGE, n=8, rot=math.pi / 8)
-    k.frustum(0, 0, [(2.8, 0.85), (3.4, 0.78), (5.5, 0.1)], P.YELLOW + LIT, n=8)
-    k.frustum(0, 0, [(5.0, 0.63), (5.45, 0.57), (7.85, 0.04)], P.WHITE, n=8, rot=math.pi / 8)
+            k.cyl(x, z, Y0, 0.9, 0.68, P.STONE, n=12, bottom=False)
+            k.cyl(x, z, 0.95, ST, 0.66, P.STONE, n=12, bottom=False)
+        k.stud(x, ST, z, P.STONE)
+    # r6: two chunky round fire logs (r 0.68) stacked crosswise on the hearth, big tan end caps with a dark-tan core
+    # (the top log's caps stand clear over the stones)
+    for lx, ly in ((True, 1.94), (False, 3.0)):
+        (k.log if lx else k.logz)(-1.42, 1.42, *((ly, 0.0) if lx else (0.0, ly)), 0.68, P.BROWN, n=10)
+        if not k.lod:
+            for s in (-1, 1):
+                a0, a1 = sorted((s * 1.36, s * 1.52))
+                b0, b1 = sorted((s * 1.48, s * 1.58))
+                if lx:
+                    k.log(a0, a1, ly, 0.0, 0.56, P.TAN, n=10)
+                    k.log(b0, b1, ly, 0.0, 0.26, P.DTAN, n=8)
+                else:
+                    k.logz(a0, a1, 0.0, ly, 0.56, P.TAN, n=10)
+                    k.logz(b0, b1, 0.0, ly, 0.26, P.DTAN, n=8)
+    # r6: three stacked Lego flame pieces (orange bulb, the yellow lit core = H02_CampfireGlow, orange tip), each a
+    # bulb pinched to a point inside the next, with five orange tongues licking out round the base. Tip clears the
+    # seated minifigs' heads (4.9)
+    flame = [(0.0, 0.3), (0.35, 0.95), (0.8, 1.0), (1.35, 0.6), (1.9, 0.08)]       # (rise, radius scale)
+    for y0, sc, c, rot in ((2.5, 1.2, P.ORANGE, 0.0), (3.9, 1.0, P.YELLOW + LIT, math.pi / 8),
+                           (5.15, 0.75, P.ORANGE, 0.0)):
+        k.frustum(0, 0, [(y0 + dy * sc * 1.05, r * sc) for dy, r in flame], c, n=8, rot=rot)
+    if not k.lod:                                     # (LOD1 15k cap)
+        for i in range(5):                            # tongues: tilted 4-sided spikes, base inside the bulb
+            a = 2 * math.pi * (i + 0.25) / 5
+            ca, sa = math.cos(a), math.sin(a)
+            base = [(0.75 * ca + 0.32 * math.cos(b), 3.0, 0.75 * sa + 0.32 * math.sin(b))
+                    for b in (a, a + math.pi / 2, a + math.pi, a + 1.5 * math.pi)]
+            k.prism(base, [(1.45 * ca + 0.04 * math.cos(b), 4.5, 1.45 * sa + 0.04 * math.sin(b))
+                           for b in (a, a + math.pi / 2, a + math.pi, a + 1.5 * math.pi)], P.ORANGE)
     # log benches (code LogBench d 1.3 at z +-4.5): flat-topped reddish-brown logs at Hangout.LOG on tan end rings
     r = (LOG + 0.04) / 2 / math.cos(math.pi / 8)      # flat top facet at LOG, bottom facet 0.04 under the ground
     for z in (-4.5, 4.5):
@@ -585,16 +604,18 @@ def bench(k):
     for i in range(3):                                # r4: tan seat slats (lift off the green hedge), tops at BENCH
         z0 = -0.8 + i * 0.47
         k.box((-L, BENCH - 0.4, z0), (L, BENCH, z0 + 0.42), P.TAN, bev=0.06)
-    for y0 in (1.95, 2.85):                           # r4: two tan back slats with a clear gap, then a top rail
-        k.box((-L, y0, 0.48), (L, y0 + 0.6, 0.66), P.TAN, bev=0.05)
-    k.box((-L, 3.8, 0.45), (L, 4.45, 0.69), P.TAN, bev=0.05)                       # rail over the shoulders (3.6)
+    for y0 in (1.95, 3.0):                            # r6: two thin tan back slats with 1.5-plate open gaps (0.6)
+        k.box((-L, y0, 0.48), (L, y0 + 0.45, 0.66), P.TAN, bev=0.05)
+    k.box((-L, 4.05, 0.45), (L, 4.45, 0.69), P.TAN, bev=0.05)                      # rail over the shoulders (3.6)
     k.box((-L, 4.41, 0.42), (L, 4.65, 1.12), P.TAN, bev=0.05)
     k.studs(-L, L, 0.42, 1.12, 4.65, P.TAN)
     for s in (-1, 1):                                 # r4: armrests: a tan 1 x 2 plate on a dark 1 x 1 brick post
         x = s * (L + 0.42)
         k.box((x - 0.4, Y0, -0.82), (x + 0.4, 2.15, -0.02), P.DBG, bev=0.06, drop=("bottom",))
         k.box((x - 0.42, 2.11, -0.86), (x + 0.42, 2.5, 0.6), P.TAN, bev=0.06)
-        k.studs(x - 0.42, x + 0.42, -0.86, 0.6, 2.5, P.TAN, pitch=0.82)
+        k.studs(x - 0.42, x + 0.42, -0.06, 0.6, 2.5, P.TAN, pitch=0.82)
+        k.box((x - 0.38, 2.46, -0.82), (x + 0.38, 3.66, -0.06), P.DBG, bev=0.08, drop=("bottom",))    # r6: 1 x 1 brick
+        k.stud(x, 3.66, -0.44, P.DBG)                                                # end block, dark on the tan
         k.box((x - 0.3, BENCH - 0.35, 0.05), (x + 0.3, 2.15, 0.5), P.DBG, bev=0.04, drop=("top",))
 
 
@@ -618,42 +639,37 @@ def bench_patio(k):
 # ------------------------------------------------------------------ H06 hammock (3 x 10)
 def hammock(k):
     """r4: two matching 2 x 2 brown brick posts (4 bricks, tan studded caps) at z +-4.5, a long red / white striped
-    sling hung between them in a U (flat middle = the lie rest at Hangout.HAMMOCK, ties 1.25 higher), spreader bars,
-    white ropes up to the post tops, a pillow at +z and a 1 x 1 side table + cup on the camera side (-x).
+    sling hung between them in a U (flat middle = the lie rest at Hangout.HAMMOCK, r6: ties 1.2 higher, posts 7.16), spreader bars,
+    white ropes up to the post tops, a pillow at +z (r6: side table cut).
     shortcut: the pad grows to z +-5.5 (Hangout 3 x 10 is +-5); check the plot clearance if the hammock moves."""
     PZ = 4.5
     patio(k, -1.5, 1.5, -PZ - 1.0, PZ + 1.0)
     for z in (-PZ, PZ):                               # 2 x 2 posts
-        stack(k, 0, z, PATIO - 0.04, 4.6, 1.96, [P.BROWN], unit=1.12, d=1.96)
-        k.box((-1.05, 4.56, z - 1.05), (1.05, 4.96, z + 1.05), P.TAN, bev=0.06, drop=("bottom",))
-        k.studs(-1.05, 1.05, z - 1.05, z + 1.05, 4.96, P.TAN)
+        stack(k, 0, z, PATIO - 0.04, 6.8, 1.96, [P.BROWN], unit=1.12 * (1 + k.lod), d=1.96)   # r5: 6 bricks (LOD1 3, 15k cap)
+        k.box((-1.05, 6.76, z - 1.05), (1.05, 7.16, z + 1.05), P.TAN, bev=0.06, drop=("bottom",))
+        k.studs(-1.05, 1.05, z - 1.05, z + 1.05, 7.16, P.TAN)
     H = HAMMOCK
     # five lengthwise stripes, white / red; the red ones 0.02 lower (no shared faces)
     # r4: 3.0 wide (past the 2 x 2 posts by 0.45 a side) so the stripes show round the front post at game camera
-    stripes = [(x, 0.62, -0.02 if i % 2 else 0.0, P.RED if i % 2 else P.WHITE)
-               for i, x in enumerate((-1.2, -0.6, 0.0, 0.6, 1.2))]
-    prof = [(0.0, 0.0), (0.9, 0.0), (1.8, 0.22), (2.6, 0.62), (3.3, 1.25)]      # (z, rise) U sag, flat middle
+    # r6: the sling 80% of the spreader bar (2.6 of 3.24), five 0.52 stripes
+    stripes = [(x, 0.52, -0.02 if i % 2 else 0.0, P.RED if i % 2 else P.WHITE)
+               for i, x in enumerate((-1.04, -0.52, 0.0, 0.52, 1.04))]
+    # r6: an even sag: flat under the body, then a smooth curve up to ties 1 brick (1.2) above the lie rest
+    prof = [(0.0, 0.0), (0.9, 0.0)] + [(z, 1.2 * ((z - 0.9) / 2.4) ** 2) for z in (1.5, 2.1, 2.7, 3.3)]   # (z, rise)
     for xc, w, dy, c in stripes:
         h = 0.25 if not dy else 0.21
         k.box((xc - w / 2, H + dy - h, -0.9), (xc + w / 2, H + dy, 0.9), c, bev=0.04)
         for s in (-1, 1):
             for (za, ra), (zb, rb) in zip(prof[1:], prof[2:]):
                 k.beam((xc, H + dy + ra - h / 2, s * (za - 0.06)), (xc, H + dy + rb - h / 2, s * (zb + 0.03)), w, h, c)
-    TY = H + 1.3                                      # spreader bar height (tie line)
+    TY = H + 1.2                                      # spreader bar height (tie line)
     for s in (-1, 1):
         k.log(-1.62, 1.62, TY, s * 3.36, 0.14, P.BROWN, n=6)                     # spreader bar
-        if not k.lod:
-            for x in (-1.4, 0.0, 1.4):
-                k.beam((x, TY + 0.05, s * 3.36), (x * 0.5, 4.3, s * (PZ - 0.7)), 0.12, 0.12, P.WHITE)
+        # r6: white ropes from the bar ends + middle straight up to the post top (under the cap; LOD1/2: one)
+        for x in ((-1.45, 0.0, 1.45) if not k.lod else (0.0,)):
+            k.beam((x, TY + 0.05, s * 3.36), (x * 0.4, 6.7, s * 3.62), 0.14, 0.14, P.WHITE)
     if k.lod < 2:
         k.beam((0, H + 0.4, 2.0), (0, H + 0.8, 2.75), 1.4, 0.32, P.YELLOW)        # pillow at the head end (+z)
-    # 1 x 1 side table on the camera side (-x) by the foot end: dark post, tan studded top, a big red cup
-    tz = -1.6
-    k.box((-2.65, Y0, tz - 0.4), (-1.85, 0.2, tz + 0.4), P.DBG, bev=0.04, drop=("bottom",))
-    k.cyl(-2.25, tz, 0.16, 1.9, 0.18, P.DBG, n=8, bottom=False)
-    k.box((-2.75, 1.86, tz - 0.5), (-1.75, 2.1, tz + 0.5), P.TAN, bev=0.05)
-    k.stud(-2.5, 2.1, tz + 0.25, P.TAN)
-    cup(k, -2.15, tz - 0.1, 2.1, P.RED, r=0.28, h=0.6)
 
 
 # ------------------------------------------------------------------ H07 ice-cream cart (5 x 4)
@@ -662,10 +678,10 @@ CART_CONE = {"ConeL": (-1.3, -3.2, 6), "ConeR": (1.3, -3.2, 19)}
 
 def cart(k):
     """r4: the cart body one brick taller again (glass top 5.4) so the counter, cones and topper read over the queue's
-    heads (5.6); a big 2-stud dark grey wheel with a tan hub on each end, a push handle on the camera end (-x), giant
+    heads (5.6); r6: four dark grey wheels with tan hubs on the long sides, a front serving tray, a push handle on the camera end (-x), giant
     cone + scoop topper, pink / white umbrella."""
     U = 1.2                                               # r4 lift of everything above the chassis
-    patio(k, -3.0, 3.0, -4.2, 2.3, curbs=("back",))       # curb 1.26..2.26, clear of the body (1.2)
+    patio(k, -3.0, 3.0, -4.2, 2.75, curbs=("back",))      # r6: curb 1.71..2.71, clear of the back wheels (1.66)
     k.box((-2.0, 0.95, -1.2), (2.0, 3.95 + U, 1.2), P.WHITE, bev=0.08)
     k.box((-2.05, 2.6 + U, -1.25), (2.05, 3.1 + U, 1.25), P.PINK, bev=0.04)
     k.box((-2.05, 1.3, -1.25), (2.05, 1.6, 1.25), P.PINK, bev=0.04)                 # r4: lower trim band
@@ -675,13 +691,22 @@ def cart(k):
             skip=lambda x, z: (abs(z + 0.65) < 0.5 and -1.1 < x < 1.5) or math.hypot(x - BIG[0], z - BIG[1]) < 0.8
             or math.hypot(x - POLE[0], z - POLE[1]) < 0.5)
     k.box((-1.9, 0.7, -1.0), (1.9, 0.99, 1.0), P.DBG, bev=0.03)                    # chassis plate
-    # r4: one big 2-stud wheel per end (dark grey tyre r 1.0, tan hub), on an axle through the chassis
-    k.log(-2.5, 2.5, 1.0, 0.0, 0.1, P.LBG, n=6)                                    # axle
-    for s in (-1, 1):
-        k.log(min(s * 2.04, s * 2.44), max(s * 2.04, s * 2.44), 1.0, 0.0, 1.0, P.DBG, n=16)
-        k.log(min(s * 2.4, s * 2.56), max(s * 2.4, s * 2.56), 1.0, 0.0, 0.48, P.TAN, n=10)
-        if not k.lod:
-            k.log(min(s * 2.52, s * 2.62), max(s * 2.52, s * 2.62), 1.0, 0.0, 0.2, P.TAN, n=8)
+    # r6: four wheels on the long sides (two show on the camera's front side): dark grey tyre r 0.86, tan hub, axles
+    for x in (-1.25, 1.25):
+        k.logz(-1.6, 1.6, x, 0.8, 0.1, P.LBG, n=6)                                  # axle
+        for s in (-1, 1):
+            k.logz(*sorted((s * 1.15, s * 1.5)), x, 0.8, 0.86, P.DBG, n=14)
+            k.logz(*sorted((s * 1.46, s * 1.6)), x, 0.8, 0.42, P.TAN, n=10)
+            if not k.lod:
+                k.logz(*sorted((s * 1.56, s * 1.66)), x, 0.8, 0.18, P.TAN, n=8)
+    # r6: a front serving tray at the counter (grey shelf on two dark brackets) with two cones waiting
+    k.box((-1.7, 3.0 + U, -1.95), (1.7, 3.24 + U, -1.15), P.LBG, bev=0.05)
+    for x in (-1.3, 1.3):
+        k.beam((x, 2.2 + U, -1.25), (x, 3.02 + U, -1.8), 0.2, 0.2, P.DBG)
+    if k.lod < 2:
+        for x, c in ((-0.7, P.PINK), (0.5, P.YELLOW)):
+            k.frustum(x, -1.55, [(3.2 + U, 0.06), (3.75 + U, 0.2)], P.DTAN, n=6)
+            k.frustum(x, -1.55, [(3.7 + U, 0.22), (3.85 + U, 0.27), (4.05 + U, 0.2), (4.12 + U, 0.06)], c, n=6)
     for z in (-0.85, 0.85):                                                        # push handle at -x (camera)
         k.beam((-1.95, 3.0 + U, z), (-2.95, 3.85 + U, z), 0.2, 0.2, P.LBG)
     k.box((-3.1, 3.72 + U, -1.05), (-2.8, 4.02 + U, 1.05), P.DBG, bev=0.08)        # handle grip
@@ -698,19 +723,20 @@ def cart(k):
     k.frustum(bx, bz, [(7.22 + U, 0.12), (7.32 + U, 0.22), (7.5 + U, 0.2), (7.6 + U, 0.06)], P.RED, n=6)  # cherry
     # striped pink / white umbrella on a white pole (raised over the topper)
     cx, cz, n = POLE[0], POLE[1], 8
-    k.cyl(cx, cz, 4.16 + U, 7.6 + U, 0.1, P.WHITE, n=6, bottom=False)
+    U2 = U + 0.4                                          # r6: umbrella 1 plate higher, clear of the topper
+    k.cyl(cx, cz, 4.16 + U, 7.6 + U2, 0.1, P.WHITE, n=6, bottom=False)
     for i in range(n):
         a0, a1 = 2 * math.pi * i / n, 2 * math.pi * (i + 1) / n
         ra = (cx + 2.2 * math.cos(a0), cz + 2.2 * math.sin(a0))
         rb = (cx + 2.2 * math.cos(a1), cz + 2.2 * math.sin(a1))
-        k.prism([(cx, 8.0 + U, cz), (ra[0], 7.4 + U, ra[1]), (rb[0], 7.4 + U, rb[1])],
-                [(cx, 8.15 + U, cz), (ra[0], 7.55 + U, ra[1]), (rb[0], 7.55 + U, rb[1])], P.PINK if i % 2 else P.WHITE)
-    k.cyl(cx, cz, 8.08 + U, 8.35 + U, 0.32, P.WHITE, n=8)
+        k.prism([(cx, 8.0 + U2, cz), (ra[0], 7.4 + U2, ra[1]), (rb[0], 7.4 + U2, rb[1])],
+                [(cx, 8.15 + U2, cz), (ra[0], 7.55 + U2, ra[1]), (rb[0], 7.55 + U2, rb[1])], P.PINK if i % 2 else P.WHITE)
+    k.cyl(cx, cz, 8.08 + U2, 8.35 + U2, 0.32, P.WHITE, n=8)
 
 
 # ------------------------------------------------------------------ H08 / H09 chat circles
-CHAT_E = {"01": (0.0, -1.8, 1), "02": (1.56, 0.9, 2), "03": (-1.56, 0.9, 11)}
-CHAT_W = {"L": (-1.1, 0.0, 13), "R": (1.1, 0.0, 14)}
+CHAT_E = {"01": (0.0, -2.35, 1), "02": (2.035, 1.175, 2), "03": (-2.035, 1.175, 11)}   # r6: radius 2.35 (was 1.8)
+CHAT_W = {"L": (-1.4, 0.0, 13), "R": (1.4, 0.0, 14)}   # r6: was +-1.1
 CHATW_LAMP = (0.0, 0.95, 5.8)
 
 
@@ -721,17 +747,18 @@ def chat_east(k):
     k.cyl(0, 0, PATIO - 0.04, PATIO + 0.3, 0.8, P.DBG, n=12, bottom=False)
     # r4: a wide white 3 x 3 round top (r 1.45, top 4.2 at the talkers' shoulders) on a blue rim, 2 cups in the gaps
     # between the front talker and the back pair, where the 3/4 camera sees them past the front head
-    k.cyl(0, 0, PATIO + 0.26, 3.85, 0.3, P.DBG, n=8, bottom=False)
+    T = 0.4                                                                      # r6: top +1 plate (4.6)
+    k.cyl(0, 0, PATIO + 0.26, 3.85 + T, 0.3, P.DBG, n=8, bottom=False)
     k.cyl(0, 0, 2.2, 2.45, 0.45, P.DBG, n=10)                                    # foot-rest collar
-    k.cyl(0, 0, 3.81, 3.97, 1.55, P.BLUE, n=20)                                  # blue rim plate
-    k.cyl(0, 0, 3.93, 4.2, 1.45, P.WHITE, n=20)
+    k.cyl(0, 0, 3.81 + T, 3.97 + T, 1.55, P.BLUE, n=20)                          # blue rim plate
+    k.cyl(0, 0, 3.93 + T, 4.2 + T, 1.45, P.WHITE, n=20)
     if k.lod < 2:
-        k.studs(-0.5, 0.5, -0.5, 0.5, 4.2, P.WHITE)
+        k.studs(-0.5, 0.5, -0.5, 0.5, 4.2 + T, P.WHITE)
     for x, c in ((1.0, P.RED), (-1.0, P.ORANGE)):
-        cup(k, x, -0.3, 4.2, c, r=0.27, h=0.66)
+        cup(k, x, -0.3, 4.2 + T, c, r=0.27, h=0.66)
     # r4: umbrella raised 1.5 bricks (rim 8.4) so the table shows under it
     n, UY = 8, 1.8
-    k.cyl(0, 0, 4.16, 7.0 + UY, 0.1, P.WHITE, n=6, bottom=False)
+    k.cyl(0, 0, 4.56, 7.0 + UY, 0.1, P.WHITE, n=6, bottom=False)
     for i in range(n):
         a0, a1 = 2 * math.pi * (i + 0.5) / n, 2 * math.pi * (i + 1.5) / n
         ra, rb = (2.7 * math.cos(a0), 2.7 * math.sin(a0)), (2.7 * math.cos(a1), 2.7 * math.sin(a1))
@@ -745,13 +772,14 @@ def chat_west(k):
     two drinks) and a short lean rail behind them; one small lantern on the rail (the lit mesh; ATT_ChatWest_Lamp
     stays the code's light point above)."""
     patio(k, -2.5, 2.5, -1.5, 1.5)
-    for x in (-1.6, 1.6):
-        stack(k, x, 1.05, PATIO - 0.04, 2.6, 0.5, [P.BROWN], unit=0.83)
-    k.box((-2.0, 2.6, 0.75), (2.0, 2.85, 1.35), P.DTAN, bev=0.05)
-    k.studs(-2.0, 2.0, 0.75, 1.35, 2.85, P.DTAN, skip=lambda x, z: abs(x) < 0.5)
-    k.box((-0.3, 2.81, 0.75), (0.3, 3.0, 1.35), P.BLACK, bev=0.04, drop=("bottom",))         # lantern
-    k.frustum(0, 1.05, [(2.96, 0.2), (3.06, 0.26), (3.4, 0.26), (3.5, 0.2)], P.WHITE + LIT, n=8)
-    k.frustum(0, 1.05, [(3.46, 0.34), (3.7, 0.08)], P.BLACK, n=4, rot=math.pi / 4)
+    R = 0.65                                          # r5: lean rail 0.65 taller, posts out past the talkers (x +-1.1)
+    for x in (-2.1, 2.1):
+        stack(k, x, 1.05, PATIO - 0.04, 2.6 + R, 0.5, [P.BROWN], unit=0.83)
+    k.box((-2.45, 2.6 + R, 0.75), (2.45, 2.85 + R, 1.35), P.DTAN, bev=0.05)
+    k.studs(-2.45, 2.45, 0.75, 1.35, 2.85 + R, P.DTAN, skip=lambda x, z: abs(x) < 0.5)
+    k.box((-0.3, 2.81 + R, 0.75), (0.3, 3.0 + R, 1.35), P.BLACK, bev=0.04, drop=("bottom",))         # lantern
+    k.frustum(0, 1.05, [(2.96 + R, 0.2), (3.06 + R, 0.26), (3.4 + R, 0.26), (3.5 + R, 0.2)], P.WHITE + LIT, n=8)
+    k.frustum(0, 1.05, [(3.46 + R, 0.34), (3.7 + R, 0.08)], P.BLACK, n=4, rot=math.pi / 4)
     # r4: a small crate stack on the camera side (-x) so the corner reads as a hang-out
     k.box((-2.45, PATIO - 0.04, -1.05), (-1.6, 0.95, -0.2), P.BROWN, bev=0.06, drop=("bottom",))
     k.box((-2.4, 0.91, -1.0), (-1.65, 1.0, -0.25), P.DTAN, bev=0.02, drop=("bottom",))
@@ -837,8 +865,8 @@ def lamp_row(k):
 
 
 FLAG = (0.0, 17.8, 3.6)       # code Flag centre (0.15 x 4.5 x 7): ATT_FlagPole_Cloth stays here
-CLOTH = (14.0, 20.1, 0.3, 10.3)    # r3 cloth: y0, y1, z0, z1 (1.3x r2's area, hung from the pole under the finial)
-EMBLEM = (17.05, 3.0, 1.4)    # lifebuoy emblem centre y, z, ring radius (on the cloth's flat inner half)
+CLOTH = (11.7, 20.1, 0.8, 14.6)     # r6: 1.38x r4 each way off the 2-stud pole (cloth: y0, y1, z0, z1)
+EMBLEM = (15.9, 4.1, 1.87)   # lifebuoy emblem centre y, z, ring radius (on the cloth's flat inner half; r6 1.17x)
 
 
 def flag_pole(k):
@@ -851,35 +879,36 @@ def flag_pole(k):
     for i in range(12):
         a = 2 * math.pi * (i + 0.5) / 12
         k.stud(2.15 * math.cos(a), 0.76, 2.15 * math.sin(a), P.STONE)
-    k.box((-1.0, 0.72, -1.0), (1.0, 1.16, 1.0), P.WHITE, bev=0.08, drop=("bottom",))
-    for x, z in ((-0.6, -0.6), (0.6, -0.6), (-0.6, 0.6), (0.6, 0.6)):
+    k.box((-1.55, 0.72, -1.55), (1.55, 1.16, 1.55), P.WHITE, bev=0.08, drop=("bottom",))      # r6: wider for the pole
+    for x, z in ((-1.15, -1.15), (1.15, -1.15), (-1.15, 1.15), (1.15, 1.15)):
         k.stud(x, 1.16, z, P.WHITE)
-    k.cyl(0, 0, 1.12, 1.56, 0.7, P.LBG, n=12, bottom=False)
-    k.cyl(0, 0, 1.52, 20.4, 0.5, P.WHITE, n=12, bottom=False)                      # r4: 1-stud round pole
+    k.cyl(0, 0, 1.12, 1.56, 1.2, P.LBG, n=12, bottom=False)
+    k.cyl(0, 0, 1.52, 20.4, 1.0, P.WHITE, n=12, bottom=False)                      # r6: a true 2-stud round pole
     for y in (5.0, 10.0):
-        k.cyl(0, 0, y, y + 0.3, 0.6, P.LBG, n=12)
-    k.cyl(0, 0, 20.3, 20.5, 0.6, P.LBG, n=12)                                       # r4: collar under the finial
-    k.frustum(0, 0, [(20.46, 0.3), (20.55, 0.6), (20.8, 0.84), (21.15, 0.92), (21.5, 0.84), (21.75, 0.6),
-                     (21.9, 0.25)], P.GOLD, n=14)                                     # r4: gold ball 1.5x
-    k.box((0.45, 2.9, -0.15), (0.8, 3.7, 0.15), P.LBG, bev=0.03)                    # halyard cleat
+        k.cyl(0, 0, y, y + 0.3, 1.12, P.LBG, n=12)
+    k.cyl(0, 0, 20.3, 20.5, 1.12, P.LBG, n=12)                                      # r4: collar under the finial
+    k.frustum(0, 0, [(20.46, 0.5), (20.58, 0.95), (20.95, 1.25), (21.4, 1.35), (21.85, 1.25), (22.2, 0.95),
+                     (22.35, 0.4)], P.GOLD, n=14)                                     # r6: gold ball over the 2-stud pole
+    
+    k.box((0.95, 2.9, -0.15), (1.3, 3.7, 0.15), P.LBG, bev=0.03)                    # halyard cleat
     for y in (CLOTH[0] + 0.5, CLOTH[1] - 0.5):                                      # Lego clips holding the flag
-        k.box((-0.16, y - 0.3, 0.4), (0.16, y + 0.3, 0.75), P.LBG, bev=0.04)
+        k.box((-0.16, y - 0.3, 0.9), (0.16, y + 0.3, 1.25), P.LBG, bev=0.04)
 
 
 def flag_cloth(k):
     """The flag as its own mesh (the code tints it the owner colour; coral by default, the icon's salmon red): flat by
     the pole under the emblem, then r3: a full two-bend ripple (one wave, amplitude 0.6) to the fly end."""
     y0, y1, z0, z1 = CLOTH
-    zr = 4.9
-    pts = [(0.0, z0)] + [(0.6 * math.sin(2 * math.pi * (z - zr) / (z1 - zr)), z)
-                         for z in [zr + i * 0.3 for i in range(round((z1 - zr) / 0.3) + 1)]]
+    zr, st = 6.7, 0.4 * (1 + k.lod)                    # r6: ripple from 6.7 (scaled cloth)                  # LOD1/2 coarser ripple (LOD1 15k cap)
+    pts = [(0.0, z0)] + [(0.7 * math.sin(2 * math.pi * (z - zr) / (z1 - zr)), z)
+                         for z in [zr + i * (z1 - zr) / round((z1 - zr) / st) for i in range(round((z1 - zr) / st) + 1)]]
     k.ribbon(pts, y0, y1, 0.075, P.CORAL)
 
 
 def flag_emblem(k):
     """The white lifebuoy emblem through the cloth (own mesh, not named Flag, so the owner tint leaves it white)."""
     y, z, R = EMBLEM
-    k.ring(0.0, y, z, R, 0.5, [P.WHITE, P.RED], seg=8, sub=2, mnr=8, axis="x")     # r4: chunkier (outer 1.9 = 62% of the cloth)
+    k.ring(0.0, y, z, R, 0.66, [P.WHITE, P.RED], seg=8, sub=2, mnr=8, axis="x")    # r6: scaled with the cloth
 
 
 def statue(k):
