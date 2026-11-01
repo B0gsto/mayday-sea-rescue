@@ -856,6 +856,28 @@ function AudioController.Start()
 		adopt(d)
 	end
 	CollectionService:GetInstanceAddedSignal("WorldSound"):Connect(adopt)
+	-- the default character sounds (footsteps, jump, splash) are made on each client, so the server never tags them
+	local function adoptCharacter(character: Model)
+		local function sfx(d: Instance)
+			if d:IsA("Sound") and d.SoundGroup == nil then
+				d.SoundGroup = AudioController.group("SFX")
+			end
+		end
+		for _, d in character:GetDescendants() do
+			sfx(d)
+		end
+		character.DescendantAdded:Connect(sfx)
+	end
+	local function hookCharacters(p: Player)
+		if p.Character then
+			adoptCharacter(p.Character)
+		end
+		p.CharacterAdded:Connect(adoptCharacter)
+	end
+	for _, p in Players:GetPlayers() do
+		hookCharacters(p)
+	end
+	Players.PlayerAdded:Connect(hookCharacters)
 
 	-- a thud as you drop into a seat or step off a vehicle (taking a boat's helm has its own board_hop sound)
 	local function hookSeats(character: Model)

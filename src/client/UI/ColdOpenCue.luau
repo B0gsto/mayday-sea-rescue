@@ -6,7 +6,7 @@
 -- for 10 s (shared/Boat/ColdOpen.nudge) a red flare pops over them. All of it goes once the
 -- casualty holds on (PiwMode "held") or climbs aboard, or the cold open ends.
 -- ColdOpenCue.home (docs/20 change 4, every delivery): with survivors aboard, the drop-off pulses
--- green from 60 m (the slipway in the cold open, else the nearest pad), where the green house pin points.
+-- green from 60 m (your berth, the cold open too), where the green house pin points.
 -- Started by OpsHud.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -222,22 +222,9 @@ end
 local HOME_RANGE = ColdOpen.DROP_RADIUS + 180 -- studs: the drop-off starts to pulse 60 m out from its zone -- tune
 local HOME_MARK = 14 -- studs across the centre ring; the pulse spreads from it to the zone's edge
 
--- Where the craft's survivors land: the nearest cold-open slipway while the cold open runs (the
--- server lands them there, OperationService isHome), else your berth's drop-off zone.
-local function homePoint(from: Vector3): Vector3?
-	local best: Vector3?, bestD = nil, math.huge
-	local function consider(p: Vector3)
-		local d = (Vector3.new(p.X, 0, p.Z) - Vector3.new(from.X, 0, from.Z)).Magnitude
-		if d < bestD then
-			best, bestD = p, d
-		end
-	end
-	if Players.LocalPlayer:GetAttribute("ColdOpenActive") == true then
-		for _, sp in ColdOpen.SHORE do
-			consider(Vector3.new(sp.water.X, waterY(sp.water) + 0.08, sp.water.Z))
-		end
-		return best
-	end
+-- Where the craft's survivors land: your own berth's drop-off zone, the cold open too (the server's rule,
+-- OperationService isHome / RescueService deliveryHome; the nearest island's slipway lit a neighbour's berth).
+local function homePoint(): Vector3?
 	local p = ColdOpen.dropOff(Players.LocalPlayer:GetAttribute("BayCFrame"))
 	return if p then Vector3.new(p.X, waterY(p) + 0.08, p.Z) else nil
 end
@@ -266,7 +253,7 @@ function ColdOpenCue.home(): () -> ()
 	local edge: Ring? = nil
 	local conn = RunService.Heartbeat:Connect(function()
 		local craft = carryingCraft()
-		local at = craft and homePoint(craft:GetPivot().Position)
+		local at = craft and homePoint()
 		local near = at and craft and (at - craft:GetPivot().Position) * Vector3.new(1, 0, 1)
 		if not (at and near and near.Magnitude <= HOME_RANGE) then
 			if folder then

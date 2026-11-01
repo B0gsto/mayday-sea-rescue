@@ -83,6 +83,8 @@ function ProductShelves.storeItems(config: any, tab: string, studio: boolean): {
 		if
 			ProductShelves.listed(item, studio)
 			and item.dockBuilding == nil -- island buildings sell at the build tablet (docs/23 (q))
+			and item.spins == nil -- spins sell only at the wheel's token machine, beside the odds board
+			and string.sub(key, 1, 9) ~= "FinishNow" -- only the build sign / tablet, while a site runs
 			and (kind == "GamePasses" or day == (tab == "DayPasses"))
 			and (tab ~= "Packs" or pack)
 			and (tab ~= "Boosts" or not pack)
@@ -167,6 +169,46 @@ function ProductShelves.cardState(config: any, ref: ItemRef, ctx: CardContext): 
 		return state("loading", "...", note)
 	end
 	return state("buy", `Buy  {ProductShelves.ROBUX} {formatNumber(ctx.price)}`, note)
+end
+
+-- The card's 1-3 word effect line and its kit glyph, from config (docs/04 rule 8: state the number).
+-- `survivors` = the vehicle pass's survivor capacity (VehicleConfig), nil for other items.
+function ProductShelves.effectLine(
+	config: any,
+	item: any,
+	cashPerMinute: number?,
+	survivors: number?
+): (string?, string?)
+	if type(item) ~= "table" then
+		return nil, nil
+	end
+	local function mult(m: number): string
+		return if m >= 2 then `x{m} Cash` else `+{math.floor((m - 1) * 100 + 0.5)}% Cash`
+	end
+	if item.dayPassFor then
+		local pass = config.GamePasses[item.dayPassFor]
+		local what = if pass and pass.cashMultiplier then mult(pass.cashMultiplier) else "No wait"
+		return `{what} · {item.dayPassHours or 24} h`, "daily"
+	elseif item.cashMinutes then
+		local cash = ProductShelves.packCash(item, cashPerMinute)
+		return if cash then `+{formatNumber(cash)} Cash` else `{item.cashMinutes} min of Cash`,
+			"cash"
+	elseif item.cashMultiplier and item.boostMinutes then
+		local what = mult(item.cashMultiplier)
+		if item == config.Products.CrewBoost then
+			what = `+{math.floor((item.cashMultiplier - 1) * 100 + 0.5)}% crew`
+		end
+		return `{what} · {item.boostMinutes} min`, "boost"
+	elseif item.cashMultiplier then
+		return mult(item.cashMultiplier), "cash"
+	elseif item.cashOnce then
+		return `+{formatNumber(item.cashOnce)} Cash`, "cash"
+	elseif item.vehicle and survivors then
+		return `Room for {survivors}`, "crew"
+	elseif item == config.GamePasses.QuickLaunch then
+		return "No wait", "boat_to_me"
+	end
+	return nil, nil
 end
 
 -- The last guard before MarketplaceService: a real id and a "buy" state.

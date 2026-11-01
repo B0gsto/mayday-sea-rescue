@@ -58,4 +58,24 @@ function Board.mayAct(privateTo: any, userId: number): boolean
 	return type(privateTo) ~= "string" or string.find(privateTo, ` {userId} `, 1, true) ~= nil
 end
 
+-- Far pips (owner 2026-11-01: two lifebuoys stacking): screen points nearest first; true = draw a pip there, false =
+-- it overlaps one already drawn (within minPx), so a cluster of swimmers shows one marker, the nearest's.
+function Board.pipShown(points: { Vector2 }, minPx: number): { boolean }
+	local out: { boolean }, kept: { Vector2 } = {}, {}
+	for i, p in points do
+		local free = true
+		for _, q in kept do
+			if (p - q).Magnitude < minPx then
+				free = false
+				break
+			end
+		end
+		out[i] = free
+		if free then
+			table.insert(kept, p)
+		end
+	end
+	return out
+end
+
 return Board

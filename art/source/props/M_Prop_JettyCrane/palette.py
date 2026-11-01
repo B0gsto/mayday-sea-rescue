@@ -42,7 +42,7 @@ def write_maps(out_dir, name, set_name, size=SIZE):
                 px[x, y] = rgb
     flat = {
         "NOR": (128, 128, 255),
-        "RGH": (205, 205, 205),
+        "RGH": (82, 82, 82),          # glossy ABS (AD r4: "matte clay"), roughness ~0.32,
         "MET": (0, 0, 0),
     }
     stem = "T_%s_%s_" % (name, set_name)

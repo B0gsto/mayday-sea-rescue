@@ -431,7 +431,7 @@ function MonetizationService.Start()
 		function(player: Player, passId: number, purchased: boolean)
 			local key = index.passKeyById[passId]
 			if key then
-				Telemetry.RobuxPrompt(player, "GamePasses", key, purchased)
+				Telemetry.RobuxPrompt(player, key, purchased)
 			end
 			if purchased and key and player.Parent then
 				grantPass(player, key, true)
@@ -444,7 +444,7 @@ function MonetizationService.Start()
 			local player = Players:GetPlayerByUserId(userId)
 			local key = index.productKeyById[productId]
 			if player and key then
-				Telemetry.RobuxPrompt(player, "Products", key, purchased)
+				Telemetry.RobuxPrompt(player, key, purchased)
 			end
 		end
 	)

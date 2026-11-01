@@ -145,7 +145,7 @@ local function makeArrow(): Model
 		p.CanQuery = false
 		p.CanTouch = false
 		p.CastShadow = false
-		p.Material = Enum.Material.Neon
+		p.Material = Enum.Material.SmoothPlastic -- no Neon bloom (feel review 27)
 		p.Color = ARROW_COLOR
 		p.Parent = model
 	end

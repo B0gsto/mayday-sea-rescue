@@ -175,6 +175,9 @@ local function getProgression(): any
 end
 
 local function canUse(player: Player, vehicleId: string): boolean
+	if player:GetAttribute("TestRide") == vehicleId then
+		return true -- lent for a test ride (server/Dock/BoatBoard sets it; a client can't)
+	end
 	local p = getProgression()
 	if not p or type(p.CanUseVehicle) ~= "function" then
 		return true
@@ -1020,7 +1023,12 @@ local function spawnLocked(
 	end
 	lastSpawn[player] = now
 	local p = getProgression()
-	if p and type(p.SetFlag) == "function" and lastVehicle(player) ~= vehicleId then
+	if
+		p
+		and type(p.SetFlag) == "function"
+		and lastVehicle(player) ~= vehicleId
+		and player:GetAttribute("TestRide") ~= vehicleId -- a lent craft never becomes the bay's craft
+	then
 		pcall(p.SetFlag, player, BayLaunch.FLAG, vehicleId)
 	end
 
@@ -1859,6 +1867,63 @@ function VehicleService.DockLaunch(
 		sitDriver(player, record.seat)
 	end
 	return ok, model
+end
+
+-- Test ride (server/Dock/BoatBoard): past the bay's ring the lent craft glides back inside it, bow home.
+function VehicleService.TurnBack(player: Player, at: Vector3, home: Vector3)
+	local record = byPlayer[player]
+	if record and not record.resetting and record.mode == "Driven" then
+		local look = Vector3.new(home.X - at.X, 0, home.Z - at.Z)
+		resetVehicle(
+			record,
+			"TestRideEdge",
+			CFrame.lookAt(at, at + (if look.Magnitude > 0 then look else Vector3.zAxis))
+		)
+	end
+end
+
+-- Test ride over: the lent craft sails home to the berth (rider aboard), the rider steps onto the pier, the craft
+-- goes and the player's own bay craft docks in its place.
+function VehicleService.EndTestRide(player: Player, vehicleId: string)
+	local classes = owned[player]
+	local record = classes and classes[vehicleId]
+	local bay = bayFor(player)
+	if record and bay and records[record.model] == record then
+		local root = record.root
+		Craft.clear(record.model)
+		Simulator.clear(record.model)
+		record.resetting = true -- the sanity checks leave it alone while it sails
+		setOwner(root, nil)
+		root.Anchored = true
+		local from = record.model:GetPivot()
+		local to = restAt(record.model, record.spec, record.home)
+		local time = math.clamp((from.Position - to.Position).Magnitude / 40, 1.2, 3.5)
+		local t = 0
+		while t < time and records[record.model] == record do
+			t += RunService.Heartbeat:Wait()
+			local a = math.min(t / time, 1)
+			record.model:PivotTo(from:Lerp(to, 1 - (1 - a) ^ 2))
+		end
+		local character = player.Character
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		local seat = humanoid and humanoid.SeatPart
+		if character and humanoid and seat and seat:IsDescendantOf(record.model) then
+			humanoid.Sit = false
+			local weld = seat:FindFirstChild("SeatWeld")
+			if weld then
+				weld:Destroy()
+			end
+			character:PivotTo(
+				CFrame.new(standOnGround(character, (bay.CFrame * BayLaunch.STAND).Position))
+			)
+		end
+		VehicleRecovery.poof(root.Position, true)
+		despawnModel(record.model, "TestRide")
+	end
+	local id = bayCraft(player)
+	if bay and id and not byPlayer[player] and player.Parent then
+		spawnVehicle(player, id, bay, true, true, "Bay")
+	end
 end
 
 -- The boat board's crane (WP-11a): where `vehicleId` will dock at the player's berth (the berth or the

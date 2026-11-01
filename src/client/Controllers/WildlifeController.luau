@@ -504,6 +504,68 @@ local function check()
 	end
 end
 
+-- Feel review 15: a small flock lifts off `at` (an island's landmark on your first landfall), climbing steeply,
+-- fanning out and curving away, then gone in ~4 s. Client only, never replicated.
+function WildlifeController.Flock(at: Vector3)
+	local t = templates and holder and templates:FindFirstChild(GULL)
+	if not (t and t:IsA("Model")) then
+		return
+	end
+	local n = 6
+	local birds = {}
+	for i = 1, n do
+		local m = t:Clone()
+		local parts = {}
+		for _, d in m:GetDescendants() do
+			if d:IsA("BasePart") then
+				d.Anchored, d.CanCollide, d.CanQuery, d.CanTouch = true, false, false, false
+				table.insert(parts, d)
+			end
+		end
+		local a = i / n * math.pi * 2 + math.random() * 0.5
+		local dir = Vector3.new(math.cos(a), 0, math.sin(a))
+		local start = at + dir * (2 + math.random() * 4) + Vector3.new(0, 1 + math.random() * 2, 0)
+		m:PivotTo(CFrame.lookAt(start, start + dir + Vector3.yAxis))
+		m.Parent = holder
+		table.insert(birds, {
+			m = m,
+			parts = parts,
+			start = start,
+			dir = dir,
+			rise = 18 + math.random() * 10,
+			out = 30 + math.random() * 20,
+			delay = math.random() * 0.4,
+			curve = (math.random() * 2 - 1) * 0.7,
+		})
+	end
+	local t0 = os.clock()
+	local conn: RBXScriptConnection
+	conn = RunService.RenderStepped:Connect(function()
+		local e = os.clock() - t0
+		if e > 4 then
+			conn:Disconnect()
+			for _, b in birds do
+				b.m:Destroy()
+			end
+			return
+		end
+		for _, b in birds do
+			local k = math.clamp((e - b.delay) / 3.6, 0, 1)
+			-- climbs steeply first (rise eases out), then speeds away (out eases in) on a curve
+			local dir = CFrame.Angles(0, b.curve * k, 0):VectorToWorldSpace(b.dir)
+			local pos = b.start
+				+ dir * (b.out * k * k)
+				+ Vector3.new(0, b.rise * (1 - (1 - k) ^ 2), 0)
+			local vel = dir * (2 * b.out * k + 0.5) + Vector3.new(0, 2 * b.rise * (1 - k), 0)
+			b.m:PivotTo(CFrame.lookAt(pos, pos + vel) * CFrame.Angles(0, 0, -b.curve * 0.6))
+			local fade = math.clamp((e - 3.5) / 0.5, 0, 1)
+			for _, p in b.parts do
+				p.LocalTransparencyModifier = fade
+			end
+		end
+	end)
+end
+
 function WildlifeController.Start()
 	local f = ReplicatedStorage:WaitForChild("WildlifeTemplates", 120)
 	if not (f and f:IsA("Folder")) then

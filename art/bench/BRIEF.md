@@ -37,14 +37,10 @@ Spec values: `"name": "M_Kit_StretcherBasket"`, `"budget": "small_prop"`, `"tris
 attachments `ATT_Lift_FL/FR/RL/RR` (lifting rings) and `ATT_Casualty` (centre of the bed, top surface).
 Textures: procedural or derived from CC0 scans already in the repo; PBR ALB / NOR (OpenGL) / RGH / MET + `_Wet`.
 
-Run every Blender job through the shared lock (max 2 Blenders on this machine; you will sometimes wait in a queue, that
-is normal, do not work around it):
-
-```sh
-~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- --build art/bench/<slug>/M_Kit_StretcherBasket/build.py \
-  --out-root build/bench/<slug> --no-template --steps build,lod,validate,export,turntable
-python3 tools/blender/sheet.py --asset M_Kit_StretcherBasket --out-root build/bench/<slug>
-```
+Run every Blender job in the live Blender GUI through the Blender MCP (owner 2026-11-01: never headless `blender-run.sh`):
+hold a heavy slot for the GUI's life and run the pipeline inside it exactly as in art/bench/PROD_BRIEF.md "Commands", with
+`--build art/bench/<slug>/M_Kit_StretcherBasket/build.py --out-root build/bench/<slug> --no-template --steps build,lod,validate,export,turntable`;
+then `python3 tools/blender/sheet.py --asset M_Kit_StretcherBasket --out-root build/bench/<slug>`.
 
 `build()` returns LOD0 (+ `_COL`) only: the `lod` step makes `_LOD1` / `_LOD2` itself and crashes if you already made them.
 Pipe long output through `tail -40`. Iterate: build, look at the validate report, fix, rebuild. You may look at

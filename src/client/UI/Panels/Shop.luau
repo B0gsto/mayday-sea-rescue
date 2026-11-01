@@ -18,6 +18,7 @@ local ProductShelves = require(Shared:WaitForChild("ProductShelves"))
 local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
 local Telemetry = require(script.Parent.Parent.Parent:WaitForChild("Telemetry"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
+local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local Kit = script.Parent.Parent:WaitForChild("Kit")
 local Card = require(Kit:WaitForChild("Card"))
@@ -255,14 +256,20 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 				price.setState("disabled")
 				price.setText(state.buyText)
 			end
-			local cash = ProductShelves.packCash(item, numberAttr("CashPerMinute"))
-			row.card.setLine(
-				if left > 0
-					then `Active · {clock(left)}`
-					elseif cash then `+{ProductShelves.formatNumber(cash)} Cash`
-					elseif ctx.pending then "Opening Roblox…"
-					else nil
+			local vehicle = item.vehicle and (VehicleConfig :: any)[item.vehicle]
+			local effect, glyph = ProductShelves.effectLine(
+				config,
+				item,
+				numberAttr("CashPerMinute"),
+				if type(vehicle) == "table" then vehicle.survivorCapacity else nil
 			)
+			if left > 0 then
+				row.card.setLine(`Active · {clock(left)}`, "daily")
+			elseif ctx.pending then
+				row.card.setLine("Opening Roblox…", nil)
+			else
+				row.card.setLine(effect, glyph)
+			end
 		end
 	end
 

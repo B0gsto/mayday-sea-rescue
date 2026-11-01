@@ -4,11 +4,15 @@
 --   owned        green card, "Owned" (or "Equipped": the craft Launch and Boat to me bring), green Launch
 --                button: Net BoardLaunch (the crane beat, then you in its seat); the panel closes
 --   needs X      grey card, padlock, "Needs: <building>" line, buttons greyed (Robux never skips the order)
---   buyable      Cash price (grey when short) and the Robux pass price
+--   buyable      Cash price (grey when short) and the Robux pass price; a Cash buy closes the panel and the
+--                craft builds in at its berth (UI/BoatReveal)
+--   try          a locked Robux-only craft not ridden today: a Try button (Net TestRide, shared/TestRide) over its
+--                Robux price; the panel closes and the crane lowers it for a 60 s ride
 -- Tapping a portrait opens that craft's BoatCard (stats, upgrades).
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
@@ -17,11 +21,13 @@ local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
+local TestRide = require(Shared:WaitForChild("TestRide"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 
 local UI = script.Parent.Parent
 local BoatCard = require(UI:WaitForChild("BoatCard"))
+local BoatReveal = require(UI:WaitForChild("BoatReveal"))
 local Kit = UI:WaitForChild("Kit")
 local Card = require(Kit:WaitForChild("Card"))
 local Panel = require(Kit:WaitForChild("Panel"))
@@ -65,6 +71,7 @@ function Board.new(
 	local rack: Instance? = nil
 	local data: Rules.PlayerData? = nil
 	local last: any = nil -- flags.lastVehicle: the craft the berth's Launch brings (VehicleService bayCraft)
+	local rides: any = nil -- flags.testRides: the day each boat was last test ridden
 	local busy = false
 	local refresh: () -> ()
 
@@ -81,11 +88,34 @@ function Board.new(
 		busy = true
 		Telemetry.shop("BuyTapped", "Board", id, "Cash")
 		task.spawn(function()
-			pcall(function()
+			local called, ok = pcall(function()
 				return Net.func("BuyGear"):InvokeServer(id)
 			end)
 			busy = false
-			refresh()
+			if called and ok == true then
+				panel.close() -- the moment: the craft builds in at its berth (UI/BoatReveal)
+				BoatReveal.play(id)
+			else
+				refresh()
+			end
+		end)
+	end
+
+	local function testRide(id: string)
+		if busy then
+			return
+		end
+		busy = true
+		task.spawn(function()
+			local ok, done = pcall(function()
+				return Net.func("TestRide"):InvokeServer(boardName, id)
+			end)
+			busy = false
+			if ok and done then
+				panel.close()
+			else
+				refresh()
+			end
 		end)
 	end
 
@@ -99,6 +129,21 @@ function Board.new(
 		local have = d ~= nil and (Rules.canUseVehicle(d, id, ownsPass(id)))
 		local need = if d and not have then Rules.vehicleLock(d, id) else nil
 		local cashOk = d ~= nil and not have and (Rules.canBuyVehicle(d, id, ownsPass(id)))
+		local try = d ~= nil
+			and unlock ~= nil
+			and (
+				TestRide.check({
+					passOnly = unlock.passOnly == true,
+					passReady = passItem(id) ~= nil,
+					owned = have,
+					need = need,
+					lastDay = TestRide.lastDay(rides, id),
+					today = TestRide.day(Workspace:GetServerTimeNow()),
+					sinceAsk = math.huge,
+					riding = player:GetAttribute("TestRide") ~= nil,
+					busy = false,
+				})
+			)
 		local equipped = have
 			and d ~= nil
 			and BayLaunch.pick(last, VehicleConfig.Order, function(v)
@@ -112,10 +157,12 @@ function Board.new(
 			color = if equipped then "yellow" elseif have then "green" else "blue",
 			price = if unlock then unlock.price else 0,
 			currency = "Cash",
-			state = if have or cashOk then "buy" elseif need then "locked" else "disabled",
+			state = if have or cashOk or try then "buy" elseif need then "locked" else "disabled",
 			onBuy = function()
 				if have then
 					launch(id)
+				elseif try then
+					testRide(id)
 				else
 					buyCash(id)
 				end
@@ -123,16 +170,16 @@ function Board.new(
 		})
 		c.root.Name = "Board_" .. id
 		c.root.LayoutOrder = order
-		if have then
-			c.price.setText("Launch")
+		if have or try then
+			c.price.setText(if have then "Launch" else "Try")
 			local coin = c.price.root:FindFirstChild("Glyph", true) :: GuiObject?
 			if coin then
-				coin.Visible = false -- Launch costs nothing
+				coin.Visible = false -- Launch and a test ride cost nothing
 			end
 		elseif need then
 			c.setLine(`Needs: {UnlockTree.needName(need)}`)
 		end
-		c.price.root.Visible = have or not (unlock and unlock.passOnly)
+		c.price.root.Visible = have or try or not (unlock and unlock.passOnly)
 		if not (have or c.price.root.Visible or passItem(id)) then
 			c.setState("locked") -- a prize-only craft (pass off sale): padlock, never a card with no button
 		end
@@ -162,6 +209,7 @@ function Board.new(
 				onActivate = function()
 					local dd = data
 					if dd and not Rules.vehicleLock(dd, id) then
+						Telemetry.shop("BuyTapped", "Board", Rules.vehiclePass(id), "Robux")
 						pcall(function()
 							MarketplaceService:PromptGamePassPurchase(player, item.id)
 						end)
@@ -225,6 +273,7 @@ function Board.new(
 		if type(raw) == "table" then
 			data = Rules.fromSnapshot(raw)
 			last = if type(raw.flags) == "table" then raw.flags[BayLaunch.FLAG] else nil
+			rides = if type(raw.flags) == "table" then raw.flags[TestRide.FLAG] else nil
 			if panel.isOpen() then
 				refresh()
 			end

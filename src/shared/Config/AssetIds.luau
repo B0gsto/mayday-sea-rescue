@@ -218,6 +218,11 @@ AssetIds.Models = {
 		LOD0 = "rbxassetid://116545210869864",
 		LOD1 = "rbxassetid://120420678094169",
 	},
+	M_Prop_BuildSiteKit = {
+		LOD0 = "rbxassetid://108631160743774",
+		LOD1 = "rbxassetid://92712016149318",
+		LOD2 = "rbxassetid://117455714827399",
+	},
 	M_Prop_BuildStation = {
 		LOD0 = "rbxassetid://118176380187881",
 		LOD1 = "rbxassetid://91952663271231",
@@ -229,9 +234,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://72639338712780",
 	},
 	M_Prop_JettyCrane = {
-		LOD0 = "rbxassetid://131828506127675",
-		LOD1 = "rbxassetid://86006746697409",
-		LOD2 = "rbxassetid://73426253708503",
+		LOD0 = "rbxassetid://105813117125800",
+		LOD1 = "rbxassetid://73207410742283",
+		LOD2 = "rbxassetid://135397079542887",
 	},
 	M_Prop_PrizeWheel = {
 		LOD0 = "rbxassetid://129217762017798",
@@ -768,12 +773,27 @@ AssetIds.Attachments = {
 	M_Hbr_Rope_Coil = {
 		ATT_End = Vector3.new(-1.5063, 0.0298, -0.5325),
 	},
+	M_Prop_BuildSiteKit = {
+		ATT_Fence = Vector3.new(0, 0, 0),
+		ATT_Gate = Vector3.new(11, 0, 0),
+		ATT_Post = Vector3.new(18, 0, 0),
+		ATT_Scaffold = Vector3.new(25, 0, 0),
+		ATT_Crane = Vector3.new(40, 0, 0),
+		ATT_Stack = Vector3.new(56, 0, 0),
+		ATT_Sign = Vector3.new(63, 0, 0),
+		ATT_Cone = Vector3.new(69, 0, 0),
+		ATT_Barrier = Vector3.new(74, 0, 0),
+		ATT_CranePivot = Vector3.new(40, 20.6, 0),
+		ATT_SignUI = Vector3.new(63, 6.6, 0),
+	},
 	M_Prop_BuildStation = {
 		ATT_Screen = Vector3.new(0, 6.2, 3.6),
 	},
 	M_Prop_HQInterior = {},
 	M_Prop_JettyCrane = {
 		ATT_Hook = Vector3.new(0, 13.4, -36.8),
+		ATT_Lamp_JibTip = Vector3.new(0, 22.1, -39.3),
+		ATT_Lamp_Cab = Vector3.new(2.1, 24.65, -2.4),
 	},
 	M_Prop_PrizeWheel = {},
 	M_Prop_SeaChest = {

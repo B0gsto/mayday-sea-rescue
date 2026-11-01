@@ -30,7 +30,7 @@ TelemetryNames.Custom = table.freeze({
 	"LiveEvent", -- a LiveOps event was live while the player was in the server
 	"FriendBonus", -- friends in the server and the Cash percent they add
 	"PromptShown", -- notify / favorite / invite prompt was shown
-	"RobuxPrompt", -- a Robux prompt: Products / GamePasses, key, Shown / Purchased / Cancelled
+	"RobuxPrompt", -- a Robux prompt: source, key, Shown / Purchased / Cancelled (value = R$ on Purchased)
 	"BadgeAwarded", -- a Roblox badge was awarded: badge key
 	"StickerFound", -- an album sticker: island, slot (Stamp, Critter, View, Bottle, Secret), sticker
 	"AlbumPage", -- an island's album page completed: island
@@ -41,6 +41,7 @@ TelemetryNames.Custom = table.freeze({
 	"SessionStart", -- value = days since the first session: day bucket, gap bucket, New / Returning
 	"SessionEnd", -- value = seconds played: length bucket, device, day bucket
 	"PlateBuilt", -- docs/27: a sea plate stood (value = minutes this session): plate, length bucket, day bucket
+	"TestRide", -- a lent Robux boat (value = seconds ridden): vehicle, Started / Time / SteppedOff
 } :: { string })
 
 -- LogOnboardingFunnelStepEvent step names, in step order. Roblox treats a skipped step as

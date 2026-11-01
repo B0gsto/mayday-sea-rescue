@@ -6,6 +6,9 @@
 --     burst, holds, then arcs into the Skills button and lands with a ding. Skipped under an open panel (the Skills counter shows it there).
 --   - FX2 core loop: a Lego burst round a fresh recruit as their tag pops (crew_arrive), and a splash where your
 --     own boat is put in the water (launch_splash).
+--   - The recruit reaches their job spot (WorkerController.Arrived, feel review 11): their category icon and "+1"
+--     pop over them, a teal ring and their first pay coins (crew_start); the first recruit of each category this
+--     session also gets a 2 s camera glance.
 -- Sounds go through AudioController (SFX group), so the settings panel's volume and mute apply.
 
 local Players = game:GetService("Players")
@@ -14,12 +17,15 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local RewardPop = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("RewardPop"))
 local UiImages = require(
 	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
 )
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
+local WorkerBadge = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("WorkerBadge"))
+local WorkerController = require(script.Parent:WaitForChild("WorkerController"))
 
 local FeedbackController = {}
 
@@ -78,6 +84,111 @@ local function joined(cfg: Instance)
 			task.wait(0.25)
 		end
 	end)
+end
+
+-- shortcut: "first of each category" is per session, not saved; save a flag if repeats on rejoin annoy
+local glanced: { [string]: boolean } = {}
+
+-- A 2 s look at the new worker from over your shoulder side, then back (a cut and hold under Reduce motion).
+local function glance(rig: Model)
+	local cam = Workspace.CurrentCamera
+	local character = player.Character
+	local hum = character and character:FindFirstChildOfClass("Humanoid")
+	if
+		not (cam and hum)
+		or hum.SeatPart
+		or player:GetAttribute("MenuOpen") == true
+		or player:GetAttribute("CinematicPlaying") == true
+	then
+		return
+	end
+	local at = rig:GetPivot().Position + Vector3.new(0, 1, 0)
+	local side = (cam.CFrame.Position - at) * Vector3.new(1, 0, 1)
+	local view = CFrame.lookAt(
+		at + (if side.Magnitude > 1 then side.Unit else Vector3.zAxis) * 13 + Vector3.new(0, 5, 0),
+		at
+	)
+	local back, fov = cam.CFrame, cam.FieldOfView
+	if Comfort.reducedMotion() then
+		CameraController.PlayCinematic(
+			{ { from = view, duration = 2, fov = fov, handheld = 0 } },
+			{ skippable = true }
+		)
+		return
+	end
+	CameraController.PlayCinematic({
+		{ from = back, to = view, duration = 0.5, fov = fov, toFov = 55, handheld = 0 },
+		{
+			from = view,
+			to = view * CFrame.new(0, 0, -1.5),
+			duration = 1.2,
+			fov = 55,
+			handheld = 0.1,
+		},
+		{
+			from = view * CFrame.new(0, 0, -1.5),
+			to = back,
+			duration = 0.5,
+			fov = 55,
+			toFov = fov,
+			handheld = 0,
+		},
+	}, { skippable = true })
+end
+
+local function arrived(cfg: Configuration, rig: Model)
+	local root = rig.PrimaryPart
+	local category = cfg:GetAttribute("Category") or cfg:GetAttribute("WorkerCategory")
+	if not (root and type(category) == "string") then
+		return
+	end
+	local _, size = rig:GetBoundingBox()
+	VFXKit.play("crew_start", rig:GetPivot() - Vector3.new(0, size.Y * 0.5, 0), { radius = 2 })
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "StartPop"
+	gui.Adornee = root
+	gui.Size = UDim2.fromOffset(84, 40)
+	gui.StudsOffset = Vector3.new(0, 6.2, 0)
+	gui.MaxDistance = 120
+	gui.LightInfluence = 0
+	gui.AlwaysOnTop = true
+	local scale = Instance.new("UIScale")
+	scale.Scale = 0.3
+	scale.Parent = gui
+	local icon = Instance.new("Frame")
+	icon.BackgroundTransparency = 1
+	icon.Size = UDim2.fromOffset(38, 38)
+	icon.Position = UDim2.fromOffset(2, 1)
+	icon.Parent = gui
+	WorkerBadge.icon(icon, category)
+	local label = Instance.new("TextLabel")
+	label.BackgroundTransparency = 1
+	label.Position = UDim2.fromOffset(42, 0)
+	label.Size = UDim2.fromOffset(42, 40)
+	label.Font = Enum.Font.FredokaOne
+	label.TextScaled = true
+	label.Text = "+1"
+	label.TextColor3 = Color3.new(1, 1, 1)
+	label.TextStrokeTransparency = 0
+	label.Parent = gui
+	gui.Parent = rig
+	-- one pop in, a hold, then it drifts up and fades (no pulse)
+	TweenService:Create(
+		scale,
+		TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+		{ Scale = 1 }
+	):Play()
+	task.delay(1.4, function()
+		local out = TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+		TweenService:Create(gui, out, { StudsOffset = Vector3.new(0, 8.4, 0) }):Play()
+		TweenService:Create(label, out, { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+		TweenService:Create(scale, out, { Scale = 0 }):Play() -- the icon disc has no fade: it shrinks away
+		task.delay(0.85, gui.Destroy, gui)
+	end)
+	if not glanced[category] then
+		glanced[category] = true
+		glance(rig)
+	end
 end
 
 local function flip()
@@ -201,6 +312,7 @@ function FeedbackController.Init() end
 
 function FeedbackController.Start()
 	local medals = player:GetAttribute("Medals")
+	WorkerController.Arrived:Connect(arrived)
 	player:GetAttributeChangedSignal("Medals"):Connect(function()
 		local now = player:GetAttribute("Medals")
 		if

@@ -3,9 +3,10 @@
 -- 2026-10-31, first login on a phone: the grey bubble was the only cue). Over the tablet: a green kit pill with the
 -- device's glyph (the tap hand on touch, an E keycap, the gamepad's X) and "Build"; tapping or clicking it opens the
 -- tablet. While the tablet is the tutorial's goal (setGoal) the green build arrow (art/source/ui/build_arrow.svg)
--- bobs over the pill and the pill stays up out of the prompt's range (on foot). It pops in once when it shows; the
--- prompt keeps E / ButtonX.
+-- bobs over the pill and the pill stays up out of the prompt's range (on foot), where E / ButtonX open it too. It
+-- pops in once when it shows; in range the prompt keeps E / ButtonX.
 --   TabletCue.mount(prompt, onOpen) -> { setGoal(on), shown() }
+local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -151,6 +152,32 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 			and hum.SeatPart == nil
 			and player:GetAttribute("OpsUiHidden") ~= true
 	end
+	-- out of range the pill still shows the E / X glyph: bind those keys there, unless another prompt is up and
+	-- owns them (live v33: a console player saw "X Build" all over the island and X did nothing)
+	local others = 0
+	local shownConn = ProximityPromptService.PromptShown:Connect(function(p: ProximityPrompt)
+		others += if p ~= prompt then 1 else 0
+	end)
+	local hiddenConn = ProximityPromptService.PromptHidden:Connect(function(p: ProximityPrompt)
+		others = math.max(0, others - if p ~= prompt then 1 else 0) -- one shown before the mount
+	end)
+	local bound = false
+	local function bindKeys(on: boolean)
+		if on == bound then
+			return
+		end
+		bound = on
+		if on then
+			ContextActionService:BindAction("TabletCueFar", function(_, state)
+				if state == Enum.UserInputState.Begin then
+					onOpen()
+				end
+				return Enum.ContextActionResult.Sink
+			end, false, prompt.KeyboardKeyCode, prompt.GamepadKeyCode)
+		else
+			ContextActionService:UnbindAction("TabletCueFar")
+		end
+	end
 	prompt.PromptShown:Connect(function()
 		inRange = true
 		show(true)
@@ -160,7 +187,9 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 		show(far())
 	end)
 	local bob = RunService.Heartbeat:Connect(function()
-		show(inRange or far())
+		local away = not inRange and far()
+		show(inRange or away)
+		bindKeys(away and others == 0)
 		if up and goal then -- a slow bob like the beacon's, never a flash
 			arrow.Position = UDim2.new(0.5, 0, 0, BOB + math.sin(os.clock() * 1.8) * BOB)
 		end
@@ -168,6 +197,9 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 	tablet.Destroying:Connect(
 		function() -- the station streams out: the stream-in makes a new prompt and cue
 			bob:Disconnect()
+			shownConn:Disconnect()
+			hiddenConn:Disconnect()
+			bindKeys(false)
 			metricsConn:Disconnect()
 			deviceConn:Disconnect()
 			up = false -- shown() stops muting the beacon

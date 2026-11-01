@@ -44,12 +44,12 @@ close-ups 4, silhouette) and `levels/levels_sheet.png` (copy: `sheet_levels.png`
 in `.../turntable/`, level views in `.../levels/`.
 
 Regenerate:
-    ~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- \
+    MCP: run.py (see tools/blender/README.md) -- \
         --build art/source/buildings/M_Bld_TrophyHallAddons/build.py \
         --out-root build/prod/M_Bld_TrophyHallAddons --steps build,lod,validate,export,turntable
-    ~/RobloxProjects/tools/blender-run.sh art/source/buildings/M_Bld_TrophyHallAddons/views.py
+    MCP: art/source/buildings/M_Bld_TrophyHallAddons/views.py
     python3 art/source/buildings/M_Bld_TrophyHallAddons/views_sheet.py
-    ~/RobloxProjects/tools/blender-run.sh art/source/buildings/M_Bld_TrophyHallAddons/fit_check.py
+    MCP: art/source/buildings/M_Bld_TrophyHallAddons/fit_check.py
     python3 tools/blender/sheet.py --asset M_Bld_TrophyHallAddons --out-root build/prod/M_Bld_TrophyHallAddons
 
 Open: not playtested, not wired into `src`, docs/12 or `art/reference/M_Bld_TrophyHallAddons/dims.md`; Lv1 is the

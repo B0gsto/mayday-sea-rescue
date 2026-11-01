@@ -85,7 +85,7 @@ reward) is the only currency; it pays for buildings, craft, decor and cosmetics.
 
 Robux can skip the Cash for anything whose prerequisites you already have, never the order of the tree (and never skill). Passes:
 2x Cash, VIP, Quick Launch, Starter Kit, Robux boats and craft, cosmetics; products: Cash packs, boosts, Storm
-Summons, island buildings (once their prerequisites stand), day passes. Paid random Sea Chests come after the first public launch (cosmetics only, odds shown, pity, one Cash chest).
+Summons, island buildings (once their prerequisites stand), day passes, Finish Now (build sign and tablet only). Paid random: prize wheel spins, sold only at the wheel's token machine (odds and pity shown, PolicyService-gated; prizes are cosmetics, Cash and the Mythic Storm Runner).
 No pressure, no timers on offers, the player opens every prompt. Details: docs/04.
 
 ## 8. UI and feel

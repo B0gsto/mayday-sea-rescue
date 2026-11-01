@@ -17,9 +17,67 @@
     -36.8
    ],
    "roblox_from_bbox_centre": [
-    -0.37,
+    -0.795,
     -1.195,
-    -20.35
+    -20.61
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_JibTip",
+   "parent": null,
+   "blender": [
+    0.0,
+    -39.3,
+    22.1
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    22.1,
+    -39.3
+   ],
+   "roblox_from_bbox_centre": [
+    -0.795,
+    7.505,
+    -23.11
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Cab",
+   "parent": null,
+   "blender": [
+    -2.1,
+    -2.4,
+    24.65
+   ],
+   "roblox_from_origin": [
+    2.1,
+    24.65,
+    -2.4
+   ],
+   "roblox_from_bbox_centre": [
+    1.305,
+    10.055,
+    13.79
    ],
    "look": [
     0.0,
