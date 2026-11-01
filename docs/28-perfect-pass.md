@@ -104,3 +104,4 @@ FIN3: crane r10 9.0 (d3d564a3, budget class rock 10k), build-site r6 8.8 (3a33df
 Parallel Blender (owner 2026-11-01 "you may do multiple instances of applications"): heavy pool 4; instances 1-3 via ~/RobloxProjects/tools/blender-mcp-open.sh N on ports 9876-9878, MCP servers blender/blender2/blender3. One asset lane per instance.
 Rescue heli: **PASS 9.15** at r8 (FIN4, ab83f70e on t3/rescue-helicopter-asset; tinted glass + pilot, framed rear doors, white tail, smooth ring, gear mesh). Sea plates r7-8 running.
 Sea plates r7-8 (FIN4): 9.0, 9.05 (f976a767; 0.05 short) -> r9-10 added to FIN5 after crane + build-site.
+FLASH1 (owner flash report): fixed on main 1b9356c8: SwimController keepCameraDry had a 10-stud head-height cutoff and a 0.8-stud wave gap -> camera sank under the sea near the island edge (underwater grade toggled = pumping; wave surface filled the screen = solid cyan). No cutoff, 2-stud gap. 517/521 underwater frames -> 0.
