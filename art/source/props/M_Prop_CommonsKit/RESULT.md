@@ -77,4 +77,8 @@ the hidden code bulbs keep their NightLamp lights.
 Fallback: no asset id, a failed load or a missing mesh (and Lune tests) build the code Parts exactly as before.
 check.sh: ALL CHECKS PASSED (825 tests).
 
-In-game: not yet seen (no Studio run, not published).
+In-game (Studio play, 2026-11-01 12:27, `building all` + `decor all`, daylight): the kit LOADS: 7 "CommonsKit"
+models (Hangout 12 meshes, FlowerBed 1, PicnicTable 1, LampRow 2, FlagPole 3, Statue 1, Fountain 2), none missing.
+No in-game AD score yet: the capture lost its window to another thread's play.py using the shared "mayday-play"
+tag. Retry with `MAYDAY_STUDIO_TAG=mayday-cpk python3 tools/studio/play.py open` (no phone emulation in the
+driver: phone = desktop frames scaled to 390 px tall). Not published.
