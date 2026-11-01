@@ -20,6 +20,7 @@ FILL = 0.88
 R6 = {"daily": True, "finish_now": True}  # r6 redraws; False regenerates the r5 best pixel-identical
 R7 = {"daily": True, "finish_now": True}  # r7 redraws; False regenerates the r6 best pixel-identical
 R8 = {"daily": True}  # r8 redraw (from the r7 best); False regenerates the r7 best pixel-identical
+R10 = {"daily": True}  # r9 concept c3 (day-pass ticket, won 9.1) as the source; False regenerates the r8 best pixel-identical
 C = {  # top, bottom, lip
     "red": ("#FF8A7A", "#E2333A", "#A3161E"), "blue": ("#8EE0FF", "#2C8EF0", "#1A55A8"),
     "gold": ("#FFE45C", "#FFAE00", "#C27400"), "orange": ("#FFC266", "#FF7419", "#B84A08"),
@@ -46,6 +47,9 @@ C = {  # top, bottom, lip
     "lid8": ("#E8804E", "#A8381A", "#4A1206"), "inside8": ("#5A1E0A", "#2E0E04", "#1E0802"),
     "coin8": ("#FFF27A", "#FFB800", "#B05A00"), "cal8": ("#FFFFFF", "#E8F1FF", "#7F9CC8"),
     "calred8": ("#FF9A86", "#F2343C", "#B3121C"),
+    # r10: the day-pass ticket (a deep blue lip), the gold sun stamp, its pale centre disc
+    "tkt10": ("#A6EEFF", "#2E9BFF", "#1440A0"), "sun10": ("#FFF27A", "#FFB000", "#C26A00"),
+    "disc10": ("#FFFBC2", "#FFD21F", "#C79400"),
 }
 
 
@@ -296,7 +300,26 @@ def daily_r8():
     return i, "daily reward (r8): a Lego treasure chest flung open, a chest-brown lid with a gold band and gold studs over a dark inside, three thick gold coins with darker edge rings and one sparkle, a red-brown body with gold trim and latch, a small calendar badge bottom-right"
 
 
+def daily_r10():
+    i = Icon()
+    R = lambda pts: rot(pts, -12, 100, 100)  # the whole ticket tilts 12 deg about its centre
+    notch = lambda cx, side: [(cx - side * 20 * math.sin(math.pi * k / 16), 100 - side * 20 * math.cos(math.pi * k / 16)) for k in range(17)]
+    ticket = poly(R([(12, 46), (188, 46), (200, 58)] + notch(200, 1) + [(200, 142), (188, 154), (12, 154), (0, 142)] + notch(0, -1) + [(0, 58)]))
+    (cx, cy), = R([(72, 100)])
+    perf = "".join(f'<path d="{poly(R([(142, y), (150, y), (150, y + 14), (142, y + 14)]))}" fill="#1440A0" stroke="#1440A0" stroke-width="6" stroke-linejoin="round"/>'
+                   for y in (60, 93, 126))
+    sun = poly([(cx + (44 if k % 2 == 0 else 32) * math.sin(math.pi * k / 8), cy - (44 if k % 2 == 0 else 32) * math.cos(math.pi * k / 8)) for k in range(16)])
+    r = 24
+    glint = (f'<path d="M{cx - r * 0.55:.0f},{cy - 2} Q{cx - r * 0.5:.0f},{cy - r * 0.5:.0f} {cx - 2},{cy - r * 0.62:.0f}" fill="none" '
+             'stroke="#fff" stroke-opacity="0.8" stroke-width="8" stroke-linecap="round"/>')
+    i.part(ticket, "tkt10", lip=14, gloss=poly(R([(22, 62), (54, 62)]))[:-2],
+           extra=perf + i.inner(sun, "sun10", ink=10, lip=8) + i.inner(poly(ellipse(cx, cy, r, r)), "disc10", ink=8, lip=0) + glint)
+    return i, "daily (r10, from r9 c3): a tilted blue day-pass ticket with notched sides, a big gold sun stamp, a bold perforation"
+
+
 def daily():
+    if R10["daily"]:
+        return daily_r10()
     if R8["daily"]:
         return daily_r8()
     if R7["daily"]:

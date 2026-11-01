@@ -20,6 +20,8 @@ FILL = 0.88
 R6 = {"album": True, "boat_to_me": False, "build": True}  # r6 redraws; False regenerates the r5 best pixel-identical
 R7 = {"album": False, "boat_to_me": False}  # r7 redraws; False regenerates the r6 best (album) / r5 best (boat) pixel-identical
 R8 = {"album": False, "boat_to_me": True}  # r8 redraws (from the r6 album / r5 boat); False regenerates the best pixel-identical
+R10 = {"album": True}  # the r9 winner (album c1, concept SVG kept in build/status/2026-10-31/perfect/ui/anch/r9/src); False regenerates the r8 best pixel-identical
+R10P = {"album": True, "boat_to_me": True}  # r10 polish of the winner / of the r8 boat; False regenerates the r9 winner pixel-identical
 C = {  # top, bottom, lip
     "red": ("#FF8A7A", "#E2333A", "#A3161E"), "blue": ("#8EE0FF", "#2C8EF0", "#1A55A8"),
     "green": ("#A4F57A", "#33BE4D", "#1F8A33"), "gold": ("#FFE45C", "#FFAE00", "#C27400"),
@@ -47,6 +49,8 @@ C = {  # top, bottom, lip
     "page8": ("#FFFDF4", "#F0E2BC", "#A8915E"), "cover8": ("#A6EEFF", "#2E9BFF", "#0E3A8A"),
     "sunset8": ("#FFD27A", "#FF6A3D", "#C21F2A"), "hill8": ("#CBFF8F", "#3CCB52", "#1F8A33"),
     "hull8": ("#FFD27A", "#FF7A1A", "#9A3404"),
+    # r10: a saturated album cover, slightly deeper cream pages
+    "cover10": ("#4FA8F5", "#1656C8", "#0E3A8A"), "page10": ("#FFF8E1", "#E9D5A3", "#A8915E"),
 }
 
 
@@ -196,7 +200,40 @@ def album_r8():
     return i, "the album / photo book (r8): a bright blue book with a deep navy lip and spine, one thick cream page block with two page lines, a big gold star, a white-bordered sunset photo tilted out of the top"
 
 
+def album_r9c1():
+    i = Icon()
+    star_ = i.inner(poly(star(70, 115, 42, 20)), "gold", ink=12, lip=6)
+    red = i.inner(rotd(rrect(146, 82, 200, 136, 6), 10, 173, 109), "red2", ink=12, lip=6)
+    i.part("M0,40 Q70,24 120,48 Q170,24 240,40 L240,196 Q180,184 120,206 Q60,184 0,196 Z", "sky", lip=14)
+    i.part("M18,50 Q70,36 120,62 L120,188 Q70,170 18,182 Z", "page8", lip=0, extra=star_)
+    i.part("M222,50 Q170,36 120,62 L120,188 Q170,170 222,182 Z", "page8", lip=0, extra=red)
+    i.box = (-33.4, -26.4, 306.8)  # the r9 render's viewBox (0.8 lower than the fit), kept so the winner stays pixel-identical
+    return i, "album r9 c1: an open sticker book, two cream pages on a blue cover, a gold star sticker and a red sticker"
+
+
+def album_r10():
+    i = Icon()
+    # r10 (judges 2+3): a saturated blue cover framing the pages wider, deeper cream pages, star + red sticker ~20% bigger,
+    # the red sticker's top-right corner peeled back (a white fold) so it reads sticker album
+    star_ = i.inner(poly(star(67, 117, 52, 25)), "gold", ink=12, lip=6)
+    x0, y0, x1, y1, r, f = 140, 78, 208, 146, 7, 24
+    peel = (f"M{x0+r},{y0} L{x1-f},{y0} L{x1},{y0+f} L{x1},{y1-r} Q{x1},{y1} {x1-r},{y1} "
+            f"L{x0+r},{y1} Q{x0},{y1} {x0},{y1-r} L{x0},{y0+r} Q{x0},{y0} {x0+r},{y0} Z")
+    fold = f"M{x1-f},{y0} L{x1},{y0+f} L{x1-f},{y0+f} Z"
+    red = (i.inner(rotd(peel, 10, 174, 112), "red2", ink=12, lip=6)
+           + i.inner(rotd(fold, 10, 174, 112), "paper", ink=8, lip=0))
+    i.part("M-8,30 Q66,12 120,40 Q174,12 248,30 L248,204 Q182,192 120,216 Q58,192 -8,204 Z", "cover10", lip=14)
+    i.part("M14,50 Q68,36 120,62 L120,188 Q68,170 14,182 Z", "page10", lip=0, extra=star_)
+    i.part("M226,50 Q172,36 120,62 L120,188 Q172,170 226,182 Z", "page10", lip=0, extra=red)
+    i.probe = (-80, -60, 360)  # r10: the wider cover overflows the default probe
+    return i, "the album / sticker book (r10): an open sticker book on a saturated blue cover, two cream pages, a big gold star sticker, a big red sticker with a peeled corner"
+
+
 def album():
+    if R10P["album"]:
+        return album_r10()
+    if R10["album"]:
+        return album_r9c1()
     if R8["album"]:
         return album_r8()
     if R7["album"]:
@@ -259,7 +296,31 @@ def boat_to_me_r8():
     return i, "boat to me (r8): a big red player pin top-left, one bold blue curved arrow rising out of the boat and pointing into it, a big plain orange hull (raised pointed bow, white waterline stripe), no cabin"
 
 
+def boat_to_me_r10():
+    i = Icon()
+    # r10 (all 3 judges): pin ~20% bigger with a clear white gap to a thicker arrow; a deeper bigger hull with a raked pointed
+    # bow and a small cabin block (judges 2+3); the arrow now rises from behind the boat (drawn before the hull)
+    cx, cy, r = 22, 22, 40
+    pin = [(cx + r * math.cos(t), cy + r * math.sin(t)) for t in [math.radians(146.3 + k * 247.4 / 30) for k in range(31)]] + [(cx, cy + 1.8 * r)]
+    ox, oy, ro, ri, hh = 124, 79, 84, 30, 44  # band 54 thick (was 44), its centre line at the pin's centre height
+    arc = lambda R, a0, a1: [(ox + R * math.cos(math.radians(a)), oy + R * math.sin(math.radians(a))) for a in
+                             [a0 + (a1 - a0) * k / 16 for k in range(17)]]
+    mid = oy - (ro + ri) / 2
+    arrow = [(ox - 42, mid), (ox, mid - hh)] + arc(ro, -90, 0) + [(ox + ro, 124), (ox + ri, 124)] + arc(ri, 0, -90) + [(ox, mid + hh)]
+    g = arc(ro - 13, -78, -24)
+    i.part(poly(arrow), "sky", lip=8, gloss="M" + " L".join(f"{x:.1f},{y:.1f}" for x, y in g[::4]))
+    i.part(rrect(54, 74, 106, 120, 8), "cabin7", lip=8)
+    hull = "M-14,114 L150,106 L218,80 Q190,176 170,200 L22,200 Q0,200 -6,180 Z"
+    i.part(hull, "hull8", lip=16, gloss="M10,126 L92,123", extra=line("M8,166 L176,166", w=10, col="#fff"))
+    i.part(poly(pin), "red2", lip=8, gloss=tf("M-6,36 Q-4,18 12,13", 40 / 32, cx - 14 * 40 / 32, cy - 40 * 40 / 32),
+           extra=f'<circle cx="{cx}" cy="{cy}" r="16" fill="#fff" stroke="{INK}" stroke-width="7"/>')
+    i.backs.append(poly([(20, 60), (80, mid), (122, 56), (150, 96), (150, 106), (-14, 114), (-14, 70)]))  # one sticker
+    return i, "boat to me (r10): a big red player pin top-left, one thick blue curved arrow rising from behind the boat into it with a clear gap, a deep orange hull with a raked pointed bow, a small grey cabin block, a white waterline stripe"
+
+
 def boat_to_me():
+    if R10P["boat_to_me"]:
+        return boat_to_me_r10()
     if R8["boat_to_me"]:
         return boat_to_me_r8()
     if R7["boat_to_me"]:
@@ -368,7 +429,7 @@ if __name__ == "__main__":
         name = fn.__name__
         icon, note = fn()
         path, png = SRC / f"kit_{name}.svg", out / f"Kit.{name}.png"
-        probe = (-60, -60, 320)  # pass 1: wide box, measure the drawn art
+        probe = getattr(icon, "probe", (-60, -60, 320))  # pass 1: wide box, measure the drawn art
         path.write_text(icon.svg(probe, note))
         render(path, png)
         x0, y0, x1, y1 = Image.open(png).getbbox()
@@ -378,7 +439,7 @@ if __name__ == "__main__":
         side = max(bx1 - bx0, by1 - by0) / FILL
         cx, cy = (bx0 + bx1) / 2, (by0 + by1) / 2
         icon2, _ = fn()  # fresh gradient ids
-        path.write_text(icon2.svg((cx - side / 2, cy - side / 2, side), note))
+        path.write_text(icon2.svg(getattr(icon2, "box", (cx - side / 2, cy - side / 2, side)), note))
         render(path, png)
         im = Image.open(png)
         bb = im.getbbox()

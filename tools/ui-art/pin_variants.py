@@ -23,6 +23,26 @@ PINS = {
     "Quest": ("#FFF59A", "#FFD000", "#A87800", "#E6A200", "#C88200"),  # deep-gold disc under the white call icon
     "Beam": ("#FFB8A0", "#FF6A3D", "#A8341A", "#FF7048", "#D4441C"),  # the game's BEAM coral FF6A3D
 }
+# r10: c2 = round 9's winning concept (wildlife: true orange with three paw toes over the head; Beam: violet),
+# polish = the judges' fixes on c2 (bigger, thicker-outlined toes off the rim; Beam warmer/lighter; orange a hair redder)
+# c2 False = the old Amber/Beam; polish False = c2 exactly
+R10 = {"c2": True, "polish": False}
+if R10["c2"]:
+    PINS["Amber"] = ("#FFBB7A", "#FF7200", "#A04000", "#EC6200", "#BC4500") if R10["polish"] else \
+        ("#FFC27A", "#FF7F00", "#A04800", "#EC6E00", "#BC4E00")  # polish: c2 hue -3 deg
+    PINS["Beam"] = ("#E3C5FF", "#B058F3", "#6522A9", "#A450EE", "#7A2AC8") if R10["polish"] else \
+        ("#D6B8FF", "#9A4CF2", "#52209E", "#9450EE", "#6A2AC8")  # polish: c2 hue +6 deg, body lightness +0.025
+
+
+def toes(r, d):
+    """three paw toes of radius r on a ring of radius d about the head centre (100,88): top and 40 deg either side"""
+    pts = ((100 + d * s, 88 - d * c) for s, c in ((0, 1), (-0.6428, 0.766), (0.6428, 0.766)))
+    return " ".join(f"M{x - r:.1f},{y:g} A{r:g},{r:g} 0 1,1 {x + r:.1f},{y:g} A{r:g},{r:g} 0 1,1 {x - r:.1f},{y:g} Z"
+                    for x, y in ((round(x, 1), round(y, 1)) for x, y in pts))
+
+
+# per pin: an extra silhouette drawn in every pin layer (path d, its lip drop, its dark outline width)
+EXTRA = {"Amber": (toes(18.4, 120), 4, 22) if R10["polish"] else (toes(16, 100), 4, 18)} if R10["c2"] else {}
 RING = {"Quest": '<circle cx="100" cy="88" r="39.5" fill="none" stroke="#9C5E00" stroke-width="5"/>'}
 # Beam's r4 render scored 9.1 on the older template (narrower tip, thinner outline, gloss stroke): keep it pixel-identical
 OLD_TEMPLATE = {
@@ -62,6 +82,19 @@ def recolour(src, colours, mark=""):
     return re.sub(r"<!--MARK-->.*<!--/MARK-->", mark, src, flags=re.S)
 
 
+def add_extra(svg, d, dy, outline):
+    """draw silhouette d right after each of the body's layers: white rim, dark outline, lip, gradient body"""
+    body = re.escape(re.search(r'<path d="([^"]+)"', svg)[1])
+    for fill, w in (("#fff", outline + 18), ("#14121C", outline)):  # the rim stays 9 wide around the outline
+        m = re.search(f'<path d="{body}" transform="translate\\(0,14\\)" fill="{fill}" [^>]*/>', svg)
+        attrs = f'fill="{fill}" stroke="{fill}" stroke-width="{w}" stroke-linejoin="round"'
+        svg = svg[:m.end()] + f'<path d="{d}" {attrs}/><path d="{d}" transform="translate(0,{dy})" {attrs}/>' + svg[m.end():]
+    m = re.search(f'<path d="{body}" transform="translate\\(0,14\\)" fill="(#[0-9A-F]{{6}})"/>', svg)
+    svg = svg[:m.end()] + f'<path d="{d}" transform="translate(0,{dy})" fill="{m[1]}"/>' + svg[m.end():]
+    m = re.search(f'<path d="{body}" fill="url\\(#gP\\)"/>', svg)
+    return svg[:m.end()] + f'<path d="{d}" fill="url(#gP)"/>' + svg[m.end():]
+
+
 def render(svg, png, *extra):
     subprocess.run([sys.executable, str(ROOT / "tools/ui-art/render.py"), str(svg), str(png),
                     "--size", "324", "324", *extra], check=True)
@@ -81,5 +114,6 @@ for name, colours in PINS.items():
             assert new in pin, new
             pin = pin.replace(new, old)
     svg = OUT / f"pin_{name}.svg"
-    svg.write_text(recolour(pin, colours).replace("<!--RING-->", RING.get(name, "")))
+    pin = recolour(pin, colours).replace("<!--RING-->", RING.get(name, ""))
+    svg.write_text(add_extra(pin, *EXTRA[name]) if name in EXTRA else pin)
     render(svg, OUT / f"pin_{name}.png", "--keep")

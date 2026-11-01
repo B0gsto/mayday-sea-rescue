@@ -15,6 +15,8 @@ INK = "#14121C"
 R6 = {"pad_slow": True}
 R7 = {"pad_slow": True}
 R8 = {"pad_slow": False}
+# r10: "c1" = the r9 snail concept (won r9; concept SVG in build/status/2026-10-31/perfect/ui/anch/r9/src); "polish" = the 3 ADs' shared fixes on it
+R10 = {"c1": True, "polish": True}
 
 STAR = "M100,18 L122,72 L180,76 L135,113 L150,170 L100,138 L50,170 L65,113 L20,76 L78,72 Z"
 HEART = "M100,176 C40,132 18,104 18,72 C18,44 40,26 64,26 C82,26 94,36 100,50 C106,36 118,26 136,26 C160,26 182,44 182,72 C182,104 160,132 100,176 Z"
@@ -154,6 +156,20 @@ if R8["pad_slow"]:
     SHELL = (f'<path d="{hexp(70, 72)} {hexp(70 - HR * 0.866, 72 + HR * 1.5)} {hexp(70 + HR * 0.866, 72 + HR * 1.5)}" '
              f'fill="#FFA41C" stroke="{INK}" stroke-width="10" stroke-linejoin="round"/>'
              f'<circle cx="151" cy="88" r="7" fill="{INK}"/>')
+# r9 c1: a snail facing right: a low foot rising into a neck, a big round white shell, a dark spiral, one eye
+SNAIL_FOOT = "M44,122 L136,122 L136,92 A16,16 0 0,1 168,92 L168,138 Q168,152 154,152 L50,152 Q36,152 36,138 Q36,122 44,122 Z"
+SNAIL = ('<g transform="translate(100,100) scale(0.92) translate(-100.5,-98.5)">' + icon(SNAIL_FOOT) + icon("M84,46 A44,44 0 1,1 83.9,46 Z")
+         + f'<path d="M84,92 A9,9 0 1,1 102,92 A18,18 0 1,1 66,92 A27,27 0 1,1 120,92" fill="none" stroke="{INK}" '
+         'stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>' f'<circle cx="153" cy="96" r="7" fill="{INK}"/></g>')
+if R10["polish"]:
+    # r10 (3 ADs on c1): unscaled and bigger (shell r44), centred; a 1-turn spiral 1.5x thicker that runs into the
+    # shell's outline; two long dark eye stalks with round ball tips on a lower head (all inside the disc's even gap)
+    SNAIL = ('<g transform="translate(2,0)">' + icon("M60,126 L128,126 L128,100 A15,15 0 0,1 158,100 L158,132 Q158,154 136,154 L60,154 A14,14 0 0,1 60,126 Z")
+             + icon("M80,44 A44,44 0 1,1 79.9,44 Z")
+             + f'<path d="M76,84 A15,15 0 1,1 106,84 A31.5,31.5 0 1,1 43,84" fill="none" stroke="{INK}" stroke-width="18" '
+             'stroke-linecap="round"/>'
+             + f'<path d="M146,86 L147,48 M155,92 L164,71" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>'
+             + "".join(f'<circle cx="{x}" cy="{y}" r="10" fill="{INK}"/>' for x, y in ((147, 48), (164, 71))) + "</g>")
 # one door slab with a knob, a fat arrow stepping out of it over its edge
 DOOR = "M44,54 L100,54 L100,146 L44,146 Z"
 DOOR_ARROW = "M82,82 L120,82 L120,54 L166,100 L120,146 L120,118 L82,118 Z"
@@ -174,7 +190,9 @@ STICKERS.update({
     "pad_go": (pad("#A4F57A", "#33BE4D", "#1F8A33", GO, gloss=GO_GLOSS), "touch drive pad: throttle, two fat forward chevrons"),
     "pad_brake": (pad("#FF8A7D", "#E0303A", "#A3161E", OCTAGON, gloss=OCT_GLOSS),
                   "touch drive pad: brake / reverse, one big white stop octagon"),
-    "pad_slow": (pad("#FFD84A", "#FF8C00", "#BF5A00", TURTLE, SHELL), "touch drive pad: approach (slow helm), a turtle"),
+    "pad_slow": ((sticker(DISC, "#FFD84A", "#FF8C00", "#BF5A00", lip_dy=14, gloss=DISC_GLOSS, extra=SNAIL),
+                  "touch drive pad: approach (slow helm), a snail: the slow animal, one fat spiral") if R10["c1"] else
+                 (pad("#FFD84A", "#FF8C00", "#BF5A00", TURTLE, SHELL), "touch drive pad: approach (slow helm), a turtle")),
     "pad_exit": (sticker(DISC, "#DCD0FF", "#8A66F0", "#4E36A8", lip_dy=14, gloss=DISC_GLOSS,
                          extra=icon(DOOR, KNOB) + icon(DOOR_ARROW)),
                  "touch drive pad: step off, a door and a big arrow out"),

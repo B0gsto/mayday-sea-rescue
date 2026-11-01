@@ -38,7 +38,7 @@ local Waypoint = {}
 
 local NAVY = Color3.fromHex("0A1830")
 local GREEN = Color3.fromHex("2FA866") -- the strip's "Home" disc
-local BEAM = Color3.fromHex("FF6A3D")
+local BEAM = Color3.fromHex("9A4CF2") -- violet: apart from the wildlife orange (r9 pins)
 local CRAFT = Color3.fromHex("2C8EF0") -- your boat: blue, the boat glyph (orange is the onboarding beacon's)
 
 local STUDS_PER_M = 3
@@ -48,7 +48,7 @@ local BOB = 4 -- px: how far it bobs
 local DISC = 36 -- du: the pin's head (x0.8 on a phone, ~35 pt with its rim; was 50)
 
 local RED = Color3.fromHex("E8332A")
-local AMBER = Color3.fromHex("FFB020")
+local AMBER = Color3.fromHex("FF7F00") -- wildlife: true orange, its pin wears paw toes
 -- call kind -> Glyph icon and alert colour
 local KIND: { [string]: { icon: string, color: Color3 } } = {
 	PersonInWater = { icon = "swimmer", color = RED },
