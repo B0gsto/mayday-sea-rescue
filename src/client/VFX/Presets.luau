@@ -1199,6 +1199,19 @@ Presets.ALL.crew_start = preset({
 	},
 })
 
+-- feedback: the recruit's category icon lands over their building's sign (FeedbackController): a hop of teal plates
+-- off the icon, above the building (never on it), with a ding
+Presets.ALL.crew_clockon = preset({
+	job = "feedback",
+	layers = {
+		with(plates({ SEA, WHITE, YELLOW }, 10), { size = { 1.4 }, speed = { 9, 12 } }),
+	},
+	sounds = {
+		{ clip = "FX_Ding", volume = 0.8, pitch = 1.2 } :: FxSound,
+		{ clip = "FX_ChimeHit", volume = 0.5, pitch = 1.1 } :: FxSound,
+	},
+})
+
 -- spectacle (small): a quest handed in (HudController, award reason Quest:*): bricks rain from over your head, a
 -- white ring and coins hop; a chime over the coins
 Presets.ALL.quest_done = preset({

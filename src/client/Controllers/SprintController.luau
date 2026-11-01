@@ -13,15 +13,20 @@ local UserInputService = game:GetService("UserInputService")
 local WALK = 12 -- StarterPlayer.CharacterWalkSpeed (WorldService)
 local SPRINT = 20
 local RUN_ANIM = "rbxassetid://18537384940" -- adidas Sports Animation Pack run (Roblox catalog)
--- Animate folder -> clip (Cartoony Animation Package, Roblox catalog); walk and run share the walk clip: at WalkSpeed 12 the Animate script blends mostly
--- into "run", and running is the sprint track's job
+-- Animate folder -> clip (Cartoony Animation Package, Roblox catalog). Natural ground speeds at HipHeight 2, by FK
+-- on the clips (the stock walk/run measure the Animate script's 6.4/12.8 the same way): walk ~8, run ~12.5 studs/s.
+-- At WalkSpeed 12 Animate plays ~88% run at speed 1 (it assumes 12.8), so the feet hold the ground; the walk clip
+-- there (it was both) covered ~8 studs/s and slid.
 local LOCO: { [string]: string } = {
 	walk = "rbxassetid://10921082452",
-	run = "rbxassetid://10921082452",
+	run = "rbxassetid://10921076136",
 	idle = "rbxassetid://10921071918",
 	idle2 = "rbxassetid://10921072875", -- Animate's idle Animation2 (the rarer look-around)
 }
-local RUN_PACE = 12.8 -- studs/s a run clip covers at speed 1 (the default Animate script's figure: 2x its walk)
+local RUN_PACE = 23.5 -- studs/s the adidas run covers at speed 1 (FK, as above; it was taken as 12.8: feet at 1.8x the ground)
+local RUN_PHASE = 0.04 -- its left-foot plant comes this much of a cycle after the Cartoony run's (both clips' FK)
+local FADE = 0.2 -- s, walk <-> sprint
+local STEP_PITCH = 1.85 / 3.08 -- RbxCharacterSounds' Running loop: PlaybackSpeed 1.85 = 3.08 steps/s (the Cartoony run's 3.0)
 
 local SprintController = {}
 
@@ -32,6 +37,22 @@ function SprintController.Start()
 	runAnim.AnimationId = RUN_ANIM
 	local track: AnimationTrack? = nil
 	local trackHum: Humanoid? = nil
+	local animator: Animator? = nil
+
+	-- Animate's walk + run tracks (both 0.667 s, kept in step by Animate): the sprint starts and ends on their phase
+	local function locoTracks(): { AnimationTrack }
+		local out = {}
+		if not animator then
+			return out
+		end
+		for _, tr in animator:GetPlayingAnimationTracks() do
+			local id = tr.Animation and tr.Animation.AnimationId
+			if id == LOCO.walk or id == LOCO.run then
+				table.insert(out, tr)
+			end
+		end
+		return out
+	end
 
 	ContextActionService:BindAction(
 		"Sprint",
@@ -85,11 +106,11 @@ function SprintController.Start()
 			hum.WalkSpeed = want
 		end
 		if trackHum ~= hum then
-			local animator = hum:FindFirstChildOfClass("Animator")
+			animator = hum:FindFirstChildOfClass("Animator")
 			if not animator then
 				return
 			end
-			track = animator:LoadAnimation(runAnim)
+			track = (animator :: Animator):LoadAnimation(runAnim)
 			trackHum = hum
 			local t = track :: AnimationTrack
 			t.Priority = Enum.AnimationPriority.Movement
@@ -105,10 +126,35 @@ function SprintController.Start()
 				or state == Enum.HumanoidStateType.RunningNoPhysics
 			)
 		if running and not t.IsPlaying then
-			t:Play(0.25)
-			t:AdjustSpeed(SPRINT / RUN_PACE)
+			local base = locoTracks()[1]
+			t:Play(FADE)
+			if base and base.Length > 0 and t.Length > 0 then
+				t.TimePosition = ((base.TimePosition / base.Length + RUN_PHASE) % 1) * t.Length
+			end
 		elseif not running and t.IsPlaying then
-			t:Stop(0.25)
+			if t.Length > 0 then
+				local phase = (t.TimePosition / t.Length - RUN_PHASE) % 1
+				for _, tr in locoTracks() do
+					tr.TimePosition = phase * tr.Length
+				end
+			end
+			t:Stop(FADE)
+		end
+		local root = hum.RootPart
+		if running and root then
+			-- stride matched to ground speed (and leg length, as Animate scales by HipHeight)
+			local flat = math.clamp(
+				(root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)).Magnitude,
+				WALK,
+				SPRINT
+			)
+			t:AdjustSpeed(flat / (RUN_PACE * math.max(hum.HipHeight, 0.5) / 2))
+		end
+		local step: any = root and root:FindFirstChild("Running")
+		if step and (step:IsA("Sound") or step:IsA("AudioPlayer")) then
+			-- footsteps on the sprint's stride (2 plants per cycle); else the stock rate, which fits the jog
+			local rate = if running and t.Length > 0 then 2 * t.Speed / t.Length else 3.08
+			step.PlaybackSpeed = rate * STEP_PITCH
 		end
 	end)
 end

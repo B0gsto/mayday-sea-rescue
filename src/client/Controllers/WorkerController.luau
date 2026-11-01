@@ -51,12 +51,12 @@ local NEAR, FAR = 200, 240 -- studs from you: a rig is made within NEAR, dropped
 local LIVELY = 90 -- animated within this (the yard crew badge shows within 60)
 local WALK_SPEED = 9 -- studs/s
 local STROLL = 2.5 -- studs/s for a work loop's 1 to 3 stud steps: at a walk they were a 0.15 s hop
-local ANIM_PACE = 6.4 -- studs/s the stock R15 walk covers at speed 1 (the default Animate script's figure)
+local ANIM_PACE = 8 -- studs/s the Cartoony walk covers at speed 1 (FK on the clip; it was taken as the stock 6.4: feet slid)
 local MAKE_PER_TICK = 8 -- rigs cloned per 0.25 s pass (no hitch when you land on a full island)
 local ANIM_IDS: { [string]: string } =
 	{ -- stock R15 animations (the default Animate script's) + catalog packs
 		Idle = "rbxassetid://10921071918", -- Cartoony Animation Package idle
-		Walk = "rbxassetid://10921082452", -- Cartoony walk (same 6.4 studs/s pace as the stock walk)
+		Walk = "rbxassetid://10921082452", -- Cartoony walk (ANIM_PACE)
 		Swing = "rbxassetid://522635514", -- toolslash, looped slow: hammering / sawing / wrenching
 		Point = "rbxassetid://507770453", -- point: binoculars / clipboard read
 		Climb = "rbxassetid://507765644", -- stock: no catalog climb reached the 9.1 bar (r4/cand)

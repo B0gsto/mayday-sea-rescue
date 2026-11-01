@@ -36,8 +36,8 @@ type Mode = "Foot" | "Chase" | "Cinematic" | "None"
 -- On foot: Roblox's third-person camera, never zoomed into the head.
 local MIN_ZOOM = 6
 local MAX_ZOOM = 30
-local START_ZOOM = 19 -- Roblox starts at 12.5: the avatar filled a third of the frame (r2 art review)
-local START_ZOOM_TOUCH = 16 -- a phone's small screen: a little closer so the avatar still reads
+local START_ZOOM = 16 -- Roblox starts at 12.5: the avatar filled a third of the frame (r2 art review); 19 lost the stride
+local START_ZOOM_TOUCH = 14 -- a phone's small screen: a little closer so the avatar still reads
 local BLEND_TIME = 0.45 -- seconds the view eases between the on-foot and chase cameras
 local LIFT = 1.5 -- studs the view frames above the head
 local freshSpawn = true -- the first Foot entry after a spawn pulls the zoom out to START_ZOOM
@@ -396,7 +396,13 @@ local function update(dt: number)
 		if (hum.CameraOffset - lift).Magnitude > 0.01 then
 			hum.CameraOffset = lift
 		end
-		camera.FieldOfView = CameraMath.damp(camera.FieldOfView, Comfort.get("fov"), 0.15, dt)
+		local fov = Comfort.get("fov")
+		if Comfort.get("speedFov") and not Comfort.reducedMotion() then
+			-- a small push while sprinting (SprintController: 12 -> 20 studs/s), none at a walk
+			local flat = (root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)).Magnitude
+			fov = CameraMath.speedFov(fov, flat - 12, 8, 3)
+		end
+		camera.FieldOfView = CameraMath.damp(camera.FieldOfView, fov, 0.15, dt)
 		popOccluders(camera, char)
 		applyBlend(camera, dt)
 		fadeNearBody(char, camera.CFrame.Position)
