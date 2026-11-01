@@ -26,6 +26,9 @@ slewing ring, 8-sided tower pins, life ring at 90% with its bands on the ring's 
 Round 8 (AD round 7 8.7): cheek domes inset from the plate faces (were coplanar: a crease), no latch stub, roof studs
 on an even 2-stud grid and the roof clear of the A-frame legs, flat-ended frame bars (no corner nubs), thinner
 glints, a heel pin at the jib root, a rounder life ring (hex tower pins pay for it).
+Round 11 (AD round 10 9.0): a slewing ring whose groove reads (two light mast-wide races, a 0.6-deep 0.4-tall black
+groove with a dark floor, deck +0.2), thicker yellow lower jib chords and chunkier braces (thin jib at 64 px), white
+gusset plates under the mast pins and white node collars where the jib braces land on the lower chords.
 
 Same envelope as the Parts crane: origin the mast's ground centre (the base stands on the jetty deck), jib reaching
 39.4 studs toward the berth along -Y (Blender front = Roblox -Z: the game turns the Model with CFrame.lookAt toward
@@ -70,6 +73,7 @@ HOOK_Y = -JIB_L + 2.6        # trolley + hook line
 HOOK_Z = 13.4                # hook block centre
 CAB_STUDS = [(-3.475, -2.9)] + [(x, y) for x in (-4.375, -2.575) for y in (-1.2, 0.6, 2.4)]   # lamp front-centre, regular 2x3 grid (AD r9)
 CH = 4.4                     # cab body height (r9: +10%, AD r8: cab small at phone size)
+SLEW_H = 1.5                 # tower top to slewing-deck top (r11: +0.2 so the ring's groove reads)
 
 
 def patch_lod_names():
@@ -185,18 +189,24 @@ def tower(b):
         for s in (-1, 1):
             cbeam(b, (-k * ix, s * o, a), (k * ix, s * o, e), 0.92, 0.58, P.RED, 0.1)
             cbeam(b, (s * o, k * ix, a), (s * o, -k * ix, e), 0.92, 0.58, P.RED, 0.1)
-    for i in range(nb):                                  # pin caps where bay i meets bay i+1, on the frame face
+    for i in range(nb):                                  # gusset plate + pin cap where bay i meets bay i+1 (AD r10: nodes)
         k, z = (1 if i % 2 == 0 else -1), zs[i + 1]
         for s in (-1, 1):
-            cyl_y(b, k * ix, s * (HW + 0.45), z, 0.3, 0.3, P.LBG, 6)
-            b.cyl_x(s * (HW + 0.45), -k * ix, z, 0.3, 0.3, P.LBG, 6)
+            g0, g1 = sorted((s * (HW + 0.53), s * (HW + 0.67)))       # plate 0.09 proud of the brace face
+            zt = min(z + 0.55, TOWER_Z1 + 0.3)                       # top row stays under the slew ring's groove
+            b.box((k * ix - 0.6, g0, z - 0.55), (k * ix + 0.6, g1, zt), P.WHITE, bevel=0.0)
+            b.box((g0, -k * ix - 0.6, z - 0.55), (g1, -k * ix + 0.6, zt), P.WHITE, bevel=0.0)
+            cyl_y(b, k * ix, s * (HW + 0.7), z, 0.3, 0.3, P.LBG, 6)
+            b.cyl_x(s * (HW + 0.7), -k * ix, z, 0.3, 0.3, P.LBG, 6)
     # slewing ring, deck, cab, A-frame, beacon
     z = TOWER_Z1
-    b.cyl(0, 0, z - SINK, z + 0.9 + SINK, 2.2, P.DBG, 24)                                   # slewing ring core
-    b.cyl(0, 0, z + 0.1, z + 0.4, 2.55, P.LBG, 24)                                           # lower race
-    b.cyl(0, 0, z + 0.55, z + 0.85, 2.55, P.LBG, 24)                                         # upper race (the gap reads as the slew)
-    b.box((-2.8, -2.8, z + 0.9), (2.8, 2.8, z + 1.3), P.STONE, bevel=0.14)                   # grey slewing deck
-    cz = z + 1.3
+    # r11 (AD r10: groove did not read): base race and turntable race as wide as the mast, a deep black groove between
+    b.cyl(0, 0, z - SINK, z + 0.4, 2.6, P.LBG, 24)                                           # base race (on the mast)
+    b.cyl(0, 0, z + 0.36, z + 0.84, 2.0, P.BLACK, 24)                                         # groove core, 0.6 recess
+    b.cyl(0, 0, z + 0.36, z + 0.44, 2.45, P.BLACK, 24)                                        # dark groove floor (reads from above)
+    b.cyl(0, 0, z + 0.8, z + 1.1 + SINK, 2.6, P.LBG, 24)                                      # turntable race
+    b.box((-2.8, -2.8, z + 1.1), (2.8, 2.8, z + SLEW_H), P.STONE, bevel=0.14)                # grey slewing deck
+    cz = z + SLEW_H
     # yellow operator cab on the slewing deck: big glass windscreen toward the jib, side window, red studded roof
     # round 4: bigger, glazed on three sides (a light-blue band that reads at range), roof overhanging all round
     X0, X1, Y0, Y1 = -5.4, -1.1, -3.4, 2.6
@@ -239,10 +249,14 @@ def jib(b):
     w1, d1 = jib_half(-L)
     y0, y1 = 0.6, -L + 0.4
     cbeam(b, (0, y0, JIB_Z + d0), (0, y1, JIB_Z + d1), 1.8, 1.2, P.YELLOW, 0.16)              # top chord (AD r9: +20%)
-    for sx in (-1, 1):
-        cbeam(b, (sx * w0, y0, JIB_Z - d0), (sx * w1, y1, JIB_Z - d1), 0.75, 0.75, P.WHITE, 0.1)      # lower chords
+    import mathutils
+    chords = []
+    for sx in (-1, 1):                                   # lower chords (r11: yellow and thicker, AD r10: thin jib at 64 px)
+        q0, q1 = mathutils.Vector((sx * w0, y0, JIB_Z - d0)), mathutils.Vector((sx * w1, y1, JIB_Z - d1))
+        cbeam(b, q0, q1, 1.0, 0.8, P.YELLOW, 0.12)
+        chords.append((q0, q1))
     wh, dh = jib_half(-3.2)
-    b.cyl_x(0, -3.2, JIB_Z - dh, 0.45, 2 * wh + 1.1, P.LBG, 12)                               # heel pin, round caps
+    b.cyl_x(0, -3.2, JIB_Z - dh, 0.45, 2 * wh + 1.5, P.LBG, 12)                               # heel pin, round caps
     n = 12
     for i in range(n):
         ya, ye = -0.4 - i * (L - 1.4) / n, -0.4 - (i + 1) * (L - 1.4) / n
@@ -252,8 +266,14 @@ def jib(b):
         for sx in (-1, 1):
             pa = (sx * wa, ya, JIB_Z - da) if up else (0, ya, JIB_Z + da)
             pe = (0, ye, JIB_Z + de) if up else (sx * we, ye, JIB_Z - de)
-            b.beam(pa, pe, 0.52, 0.52, P.RED)
+            b.beam(pa, pe, 0.6, 0.6, P.RED)
         b.beam((-wa, ya, JIB_Z - da), (wa, ya, JIB_Z - da), 0.44, 0.44, P.WHITE)               # cross ties
+    for i in range(2, n, 2):                             # white node collars where the braces land on the lower chords
+        y = -0.4 - i * (L - 1.4) / n
+        for q0, q1 in chords:
+            d = (q1 - q0).normalized()
+            p = q0 + (q1 - q0) * ((y - y0) / (y1 - y0))
+            cbeam(b, p - d * 0.35, p + d * 0.35, 1.12, 0.92, P.WHITE, 0.16)
     Y_CAB = -3.4                                                                               # cab front (X0..Y0 in tower)
     for i in range(19):                                                                        # even stud row, top chord
         y = -1.6 - i * 2.0
@@ -262,7 +282,7 @@ def jib(b):
         _, d = jib_half(y)
         stud(b, 0, y, JIB_Z + d + 0.6 - 0.06, P.YELLOW, 0.5, 0.36, 14)
     # tip cap
-    b.box((-w1 - 0.35, -L - 0.5, JIB_Z - d1 - 0.45), (w1 + 0.35, -L + 0.7, JIB_Z + d1 + 0.65), P.RED, bevel=0.15)
+    b.box((-w1 - 0.6, -L - 0.5, JIB_Z - d1 - 0.5), (w1 + 0.6, -L + 0.7, JIB_Z + d1 + 0.65), P.RED, bevel=0.15)
     b.cyl(0, -L + 0.1, JIB_Z + d1 + 0.65 - SINK, JIB_Z + d1 + 0.9, 0.5, P.DBG, 12)          # lamp housing (ATT_Lamp_JibTip)
     b.cyl(0, -L + 0.1, JIB_Z + d1 + 0.9 - SINK, JIB_Z + d1 + 1.25, 0.4, P.ORANGE, 12)      # amber lens
     # counter-jib: walkway truss toward +Y, ballast bricks stacked at its end
@@ -360,7 +380,7 @@ def build():
         out("Col%02d_COL" % (k + 1), c)
 
     _, d1 = jib_half(-JIB_L)
-    cz = TOWER_Z1 + 1.3
+    cz = TOWER_Z1 + SLEW_H
     atts = [lego.attach("ATT_Hook", (0, HOOK_Y, HOOK_Z)),
             lego.attach("ATT_Lamp_JibTip", (0, -JIB_L + 0.1, JIB_Z + d1 + 1.5)),
             lego.attach("ATT_Lamp_Cab", (CAB_STUDS[0][0], CAB_STUDS[0][1], cz + CH + 1.6))]
@@ -392,5 +412,6 @@ def build():
             {"name": "jibroot", "target": [0, -5, 20], "dist": 20, "az": -125, "el": 18},
             {"name": "hook", "target": [0, HOOK_Y, 9], "dist": 20, "az": -60, "el": 10},
             {"name": "base", "target": [0, 4, 6], "dist": 26, "az": -40, "el": 18},
+            {"name": "slewring", "target": [0, 0, TOWER_Z1 + 0.6], "dist": 13, "az": 100, "el": 15},
         ],
     }

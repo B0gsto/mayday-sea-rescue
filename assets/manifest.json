@@ -25513,6 +25513,16 @@
   "source": "assets/fbx/M_Road_ParkedCar_01/M_Road_ParkedCar_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:774792122b319420beee46c32c8ce9ed873f16e411593f1106f48e11f2079f4f": {
+  "assetId": "135932892587615",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD2",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "774792122b319420beee46c32c8ce9ed873f16e411593f1106f48e11f2079f4f",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:7765f99561a51373ce8deba6d11a6d5e5a20edaac139f33942575be25a91a16c": {
   "assetId": "123511490345251",
   "moderation": "Approved",
@@ -29433,6 +29443,16 @@
   "source": "assets/fbx/M_Kit_StretcherBasket/M_Kit_StretcherBasket_LOD1.fbx",
   "type": "Model"
  },
+ "Model:e1fe59e6555b4394c87de371fa1ad36d0cb52f70f0c9e1116884264b5c490176": {
+  "assetId": "71490822192410",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD0",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "e1fe59e6555b4394c87de371fa1ad36d0cb52f70f0c9e1116884264b5c490176",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:e214a737c1a1deb3da96e1417fbb7f5efda4806af68390d68794a281d3159516": {
   "assetId": "82925411815698",
   "moderation": "Approved",
@@ -29921,6 +29941,16 @@
   "route": "delivery",
   "sha": "ecdc125e14e6e1180532c2c0faf629e5e03f66bab0df62abbc42259828d00073",
   "source": "assets/fbx/M_Rock_Cliff_02/M_Rock_Cliff_02_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:ece0cd646d8cf6e66d9ef188a4b04835aec204f013035b5ae38f519d21c0202a": {
+  "assetId": "134456974048052",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD1",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ece0cd646d8cf6e66d9ef188a4b04835aec204f013035b5ae38f519d21c0202a",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD1.fbx",
   "type": "Model"
  },
  "Model:ed4be27ecc980ab1005852b20ce906a30b20dec9d91a9ac89a190b59a7181764": {
