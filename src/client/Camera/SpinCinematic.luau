@@ -585,7 +585,8 @@ local function orbit(r: Run, center: Vector3, radius: number, h: number, deg: nu
 	local dir = r.view * math.cos(a) + r.right * math.sin(a)
 	-- from the hub along the clear line the start-up rays checked, aimed at the centre (the stage sits off that line)
 	local back = (center - r.hub).Magnitude
-	return CFrame.lookAt(r.hub + dir * (radius * k + back) + UP * (h + (1 - k) * 6), center)
+	local dist = math.min(radius * k + back, k * 31) -- never past the clear distance (room = (clear - 3) / 31)
+	return CFrame.lookAt(r.hub + dir * dist + UP * (h + (1 - k) * 6), center)
 end
 
 -- the spin push-in (t < 0) and the ladder's slow creep (t >= 0)
