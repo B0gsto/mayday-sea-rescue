@@ -394,7 +394,8 @@
    "T_TrophyHall_Brick_RGH",
    "T_WorkshopAddons_Brick_RGH",
    "T_BuildSiteKit_Brick_RGH",
-   "T_BoardKit_Brick_RGH"
+   "T_BoardKit_Brick_RGH",
+   "T_CommonsKit_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -14645,7 +14646,8 @@
    "T_WorkshopAddons_Brick_NOR",
    "T_JettyCrane_Brick_NOR",
    "T_BuildSiteKit_Brick_NOR",
-   "T_BoardKit_Brick_NOR"
+   "T_BoardKit_Brick_NOR",
+   "T_CommonsKit_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -19266,7 +19268,8 @@
    "T_WorkshopAddons_Brick_MET",
    "T_JettyCrane_Brick_MET",
    "T_BuildSiteKit_Brick_MET",
-   "T_BoardKit_Brick_MET"
+   "T_BoardKit_Brick_MET",
+   "T_CommonsKit_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -32529,6 +32532,75 @@
   "route": "delivery",
   "sha": "b8b0964d5f17b7d3a58ca1f83a7cb6b3c1d67129ad92bfd4d967b93a00cb48ae",
   "source": "assets/fbx/M_Prop_BoardKit/M_Prop_BoardKit_LOD0.fbx",
+  "type": "Model"
+ },
+ "Image:b50a24e99634aa221a9bf7b50fed2b00b4d9aa77b1dd75feb6fdeed304716d5c": {
+  "assetId": "98917262750062",
+  "imageId": "98917262750062",
+  "moderation": "Reviewing",
+  "name": "T_CommonsKit_Brick_ALB",
+  "sha": "b50a24e99634aa221a9bf7b50fed2b00b4d9aa77b1dd75feb6fdeed304716d5c",
+  "source": "assets/textures/M_Prop_CommonsKit/T_CommonsKit_Brick_ALB.png",
+  "type": "Image"
+ },
+ "Model:25f4bca9d97233dfb09ceb1051202c99b48ce243f1f63efcf1a0112cf0b9a2e0": {
+  "assetId": "75671637336264",
+  "moderation": "Approved",
+  "name": "M_Prop_CommonsKit",
+  "rbxm": "assets/models/M_Prop_CommonsKit.rbxm",
+  "route": "delivery",
+  "sha": "25f4bca9d97233dfb09ceb1051202c99b48ce243f1f63efcf1a0112cf0b9a2e0",
+  "source": "assets/fbx/M_Prop_CommonsKit/M_Prop_CommonsKit_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:2fcdf2c9edcc0629b0f0daace0e3798c2b04878a9b75d88576d07104aa222223": {
+  "assetId": "90912448153218",
+  "moderation": "Approved",
+  "name": "M_Prop_CommonsKit_LOD1",
+  "rbxm": "assets/models/M_Prop_CommonsKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "2fcdf2c9edcc0629b0f0daace0e3798c2b04878a9b75d88576d07104aa222223",
+  "source": "assets/fbx/M_Prop_CommonsKit/M_Prop_CommonsKit_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:65303263a29d706e361a166a62e3caedb7bd1e12dbe9ddf5590aa5131ed882e4": {
+  "assetId": "118958986993115",
+  "moderation": "Approved",
+  "name": "M_Prop_CommonsKit_LOD2",
+  "rbxm": "assets/models/M_Prop_CommonsKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "65303263a29d706e361a166a62e3caedb7bd1e12dbe9ddf5590aa5131ed882e4",
+  "source": "assets/fbx/M_Prop_CommonsKit/M_Prop_CommonsKit_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:7e80af2223664ffaeee79c4ca79d383cc7cf5d161671424610d8423069c0a99d": {
+  "assetId": "107307409642354",
+  "moderation": "Approved",
+  "name": "M_Prop_CommonsKit",
+  "rbxm": "assets/models/M_Prop_CommonsKit.rbxm",
+  "route": "delivery",
+  "sha": "7e80af2223664ffaeee79c4ca79d383cc7cf5d161671424610d8423069c0a99d",
+  "source": "assets/fbx/M_Prop_CommonsKit/M_Prop_CommonsKit_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:8389f0b301c5e44f180e2f544f81665cafa2fd176f94231986ea50531f120281": {
+  "assetId": "75517661825334",
+  "moderation": "Approved",
+  "name": "M_Prop_CommonsKit_LOD2",
+  "rbxm": "assets/models/M_Prop_CommonsKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "8389f0b301c5e44f180e2f544f81665cafa2fd176f94231986ea50531f120281",
+  "source": "assets/fbx/M_Prop_CommonsKit/M_Prop_CommonsKit_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:bfc5fc23561fccbad5da995a2095f3ae6472eda397aebadfe693c45824b2f306": {
+  "assetId": "135907054176048",
+  "moderation": "Approved",
+  "name": "M_Prop_CommonsKit_LOD1",
+  "rbxm": "assets/models/M_Prop_CommonsKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "bfc5fc23561fccbad5da995a2095f3ae6472eda397aebadfe693c45824b2f306",
+  "source": "assets/fbx/M_Prop_CommonsKit/M_Prop_CommonsKit_LOD1.fbx",
   "type": "Model"
  }
 }

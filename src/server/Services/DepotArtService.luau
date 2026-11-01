@@ -55,6 +55,7 @@ function DepotArtService.Init()
 		"M_Prop_BoardKit", -- rescue board, coming-soon board, name sign, Harbour Master beacon
 		"M_Prop_BuildSiteKit",
 		"M_Prop_BuildStation",
+		"M_Prop_CommonsKit", -- the commons + decorations Lego kit (DockPieces commonsKit)
 		"M_Prop_HQInterior",
 		"M_Prop_JettyCrane",
 		"M_Prop_PrizeWheel",

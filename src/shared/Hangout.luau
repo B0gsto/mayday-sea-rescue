@@ -64,8 +64,8 @@ end
 
 -- in fill order: the first few idle workers already show every kind of rest
 Hangout.SPOTS = {
-	{ prop = "ChatEast", x = 0, z = -1.8, fx = 0, fz = 0, act = "Chat" },
-	{ prop = "ChatEast", x = 1.56, z = 0.9, fx = 0, fz = 0, act = "Chat" },
+	{ prop = "ChatEast", x = 0, z = -2.35, fx = 0, fz = 0, act = "Chat" },
+	{ prop = "ChatEast", x = 2.035, z = 1.175, fx = 0, fz = 0, act = "Chat" },
 	{ prop = "BenchA", x = -1.2, z = 0, fx = -1.2, fz = -3, act = "Phone", rest = V3(-1.2, B, 0) },
 	{
 		prop = "Canteen",
@@ -107,10 +107,10 @@ Hangout.SPOTS = {
 		rest = V3(-1.3, L, -4.5),
 	},
 	{ prop = "Campfire", x = 1.3, z = 4.5, fx = 1.3, fz = 0, act = "Chat", rest = V3(1.3, L, 4.5) },
-	{ prop = "ChatEast", x = -1.56, z = 0.9, fx = 0, fz = 0, act = "Chat" },
+	{ prop = "ChatEast", x = -2.035, z = 1.175, fx = 0, fz = 0, act = "Chat" },
 	{ prop = "BenchA", x = 1.2, z = 0, fx = 1.2, fz = -3, act = "Phone", rest = V3(1.2, B, 0) },
-	{ prop = "ChatWest", x = -1.1, z = 0, fx = 0, fz = 0, act = "Chat" },
-	{ prop = "ChatWest", x = 1.1, z = 0, fx = 0, fz = 0, act = "Chat" },
+	{ prop = "ChatWest", x = -1.4, z = 0, fx = 0, fz = 0, act = "Chat" },
+	{ prop = "ChatWest", x = 1.4, z = 0, fx = 0, fz = 0, act = "Chat" },
 	{
 		prop = "Canteen",
 		x = 1.6,
