@@ -1,22 +1,25 @@
 # tools/blender: the photoreal asset pipeline
 
-Rules: docs/12-asset-list.md section 1 (ported from Gulp), budgets from docs/05 section 5.6. **Every Blender run goes through
-`~/RobloxProjects/tools/blender-run.sh`** (one of the 2 machine-wide heavy slots). Keep each run short: build + lod + validate + export
-is one run, each bake is its own run.
+Rules: docs/12-asset-list.md section 1 (ported from Gulp), budgets from docs/05 section 5.6. **Every Blender run goes through the
+Blender MCP** (live GUI, owner 2026-11-01: "do MCP BLENDER not headless"; never `blender-run.sh` / `--background`). The open GUI
+holds one of the 2 machine-wide heavy slots (see art/bench/PROD_BRIEF.md "Commands"). `MCP: <script> -- <args>` below means: in
+`execute_blender_code`, set `sys.argv = ["blender", "--", <args>...]` and `runpy.run_path("<abs>/tools/blender/<script>", run_name="__main__")`
+(catch SystemExit; save your .blend first, run.py loads the template). Keep each run short: build + lod + validate + export is one
+run, each bake is its own run.
 
 ## Commands
 
 ```sh
 # one asset (art/source/<kind>/<Asset>/build.py), all steps
-~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- --asset <Asset>
-~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- --asset <Asset> --steps build,lod,validate,export
+MCP: run.py -- --asset <Asset>
+MCP: run.py -- --asset <Asset> --steps build,lod,validate,export
 # any build file, outputs somewhere else (fbx/, textures/, review/ under --out-root instead of assets/)
-~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- --build path/to/build.py --out-root build/x --no-template
+MCP: run.py -- --build path/to/build.py --out-root build/x --no-template
 
 # the template scene (art/blender/_template.blend; run once, and after editing template.py or the HDRIs)
-~/RobloxProjects/tools/blender-run.sh tools/blender/template.py
+MCP: template.py
 # turntable (8 EEVEE views + silhouette, about 5 s for a prop) -> <review>/<Asset>/turntable/
-~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- --asset <Asset> --steps build,lod,validate,export,turntable
+MCP: run.py -- --asset <Asset> --steps build,lod,validate,export,turntable
 
 # no heavy slot (system python3 + Pillow + numpy)
 python3 tools/blender/sheet.py --asset <Asset> [--out-root build/x] [--studio <dir>] [--reference <photo>]   # 1536 px sheet
@@ -24,7 +27,7 @@ python3 tools/blender/check_textures.py assets/textures/<Asset>/ [--cap 4096] [-
 python3 -m unittest discover -b -s tools/blender -p 'test_*.py'
 tools/blender/selftest/run_selftest.sh        # tests + the bollard end to end (2 short Blender runs) -> build/blender-selftest/
 # bake one set fast (B01): masters at 512 instead of 4096
-MAYDAY_BAKE_SIZE=512 MAYDAY_BAKE_SET=<Set> ~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- --asset <Asset> --steps build,lod,bake,validate
+MAYDAY_BAKE_SIZE=512 MAYDAY_BAKE_SET=<Set> MCP: run.py -- --asset <Asset> --steps build,lod,bake,validate
 python3 tools/blender/scan_ingest.py --src <maps dir> --asset <Asset> --name <Name> --set <Set> --url <page> --author <a> --batch <Batch> [--wet] [--max-saturation 0.44]
 ```
 
@@ -105,11 +108,11 @@ the silhouette (outputs in `build/b01-turntable/`).
 ```sh
 python3 tools/blender/cubemap.py [Preset ...] [--out DIR] [--size N]
 python3 tools/blender/cubemap.py --hdri sky_1k.hdr --name Kloofendal --sun-clamp auto [--exposure EV] [--yaw DEG] [--out DIR]
-~/RobloxProjects/tools/blender-run.sh tools/blender/cubemap.py -- --exr-to-hdr in.exr in.hdr
-~/RobloxProjects/tools/blender-run.sh tools/blender/rope.py -- --demo --out build/b01-rope [--max-tris 2000]
+MCP: cubemap.py -- --exr-to-hdr in.exr in.hdr
+MCP: rope.py -- --demo --out build/b01-rope [--max-tris 2000]
 python3 tools/blender/rope.py --trim-only --set Manila --profile three_strand --out <dir>
-~/RobloxProjects/tools/blender-run.sh tools/blender/flipbook.py -- --demo smoke|spray [--grid 4|8] --out build/b01-flipbook
-~/RobloxProjects/tools/blender-run.sh tools/blender/flipbook.py -- --blend X.blend --name FX_<Group>_<Name> --grid 8 [--frames A B]
+MCP: flipbook.py -- --demo smoke|spray [--grid 4|8] --out build/b01-flipbook
+MCP: flipbook.py -- --blend X.blend --name FX_<Group>_<Name> --grid 8 [--frames A B]
 ```
 
 ### Import orientation (2026-10-17)

@@ -232,7 +232,7 @@ local function outlineSpot(world: CFrame, size: Vector2)
 		p.Size = partSize
 		p.CFrame = world * CFrame.new(offset)
 		p.Color = OUTLINE
-		p.Material = Enum.Material.Neon
+		p.Material = Enum.Material.SmoothPlastic -- steady outline, no Neon bloom on phones (feel review 27)
 		p.Transparency = 0.1
 		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow =
 			true, false, false, false, false
@@ -387,6 +387,11 @@ local function robuxBuy(id: number)
 		shake(if focused then focusStrip else listPanel and listPanel.root)
 		return
 	end
+	for key, item in MonetizationConfig.Products do
+		if item.id == id then
+			Telemetry.shop("BuyTapped", "Tablet", key, "Robux") -- the RobuxPrompt source
+		end
+	end
 	MarketplaceService:PromptProductPurchase(player, id)
 end
 
@@ -494,7 +499,7 @@ local function busyRow(parent: GuiObject, item: DockBlueprints.Item)
 		price = price,
 		currency = "Robux",
 		onActivate = function()
-			Net.event("Dock_Finish"):FireServer()
+			Net.event("Dock_Finish"):FireServer("Tablet")
 		end,
 	})
 	finish.root.Name = "Finish"
@@ -580,11 +585,14 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 	row.BackgroundTransparency = 1
 	row.Size = UDim2.fromScale(1, 1)
 	row.Parent = parent
-	Style.list(row, true, 10)
+	Style.list(row, true, 10).VerticalAlignment = Enum.VerticalAlignment.Center
 	local both = st.productId ~= 0
 	local wait = st.busy == "wait"
 	local glass = if wait then 44 else 0 -- another build runs: an hourglass leads the greyed prices
-	local width = if both then UDim2.new(0.5, -5 - glass / 2, 1, 0) else UDim2.new(1, -glass, 1, 0)
+	-- Cash is the big primary button, Robux a smaller secondary one (kids tap Cash when Cash will do)
+	local width = if both
+		then UDim2.new(0.6, -6 - glass * 0.6, 1, 0)
+		else UDim2.new(1, -glass, 1, 0)
 	if wait then
 		local box = Instance.new("Frame")
 		box.Name = "Wait"
@@ -628,7 +636,10 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 		end,
 	})
 	rb.root.Name = "Robux"
-	rb.root.Size = width
+	local small = Instance.new("UIScale")
+	small.Scale = 0.8
+	small.Parent = rb.root
+	rb.root.Size = UDim2.new(0.4 / 0.8, (-4 - glass * 0.4) / 0.8, 1, 0)
 	rb.root.LayoutOrder = 1
 	if not livePrice[id] then
 		task.spawn(function()
@@ -848,6 +859,13 @@ local function pulseRing(face: GuiObject)
 	):Play()
 end
 
+-- Gamepad: the tutorial card's own Cash ("Free") button, so A builds; the card root only focuses (live v33: a
+-- console player opened the tablet at the Hut and never found the buy button inside the selected card).
+local function padTarget(card: GuiObject): GuiObject
+	local buy = card:FindFirstChild("Cash", true)
+	return if buy and buy:IsA("GuiButton") and buy.Active then buy else card
+end
+
 -- The cards of the open tab: Build (one per building, then the quest blueprints) or Decor.
 local function refreshCards()
 	local content = cardsContent
@@ -928,7 +946,7 @@ local function refreshCards()
 		and cards[1]
 		and not (sel and ui and sel:IsDescendantOf(ui))
 	then
-		GuiService.SelectedObject = pulsed or cards[1]
+		GuiService.SelectedObject = if pulsed then padTarget(pulsed) else cards[1]
 	end
 end
 
@@ -1285,10 +1303,10 @@ local function openBuild()
 	Style.pop(p.root, true)
 	modal.open(p.closeButton)
 	if InputGlyph.device() == "Gamepad" and cards[1] then
-		local want = cards[1]
+		local want: GuiObject = cards[1]
 		for _, card in cards do
 			if card:GetAttribute("ItemKey") == pulseKey then
-				want = card
+				want = padTarget(card)
 			end
 		end
 		GuiService.SelectedObject = want

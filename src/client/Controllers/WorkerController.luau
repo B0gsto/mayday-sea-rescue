@@ -41,6 +41,9 @@ local SurvivorController = require(script.Parent:WaitForChild("SurvivorControlle
 local WorkerBadge = require(UI:WaitForChild("WorkerBadge"))
 
 local WorkerController = {}
+-- (cfg, rig): a fresh recruit of yours walked in from the jetty and starts work (FeedbackController's arrival beat)
+local arrivedEvent = Instance.new("BindableEvent")
+WorkerController.Arrived = arrivedEvent.Event
 
 local player = Players.LocalPlayer
 
@@ -50,13 +53,14 @@ local WALK_SPEED = 9 -- studs/s
 local STROLL = 2.5 -- studs/s for a work loop's 1 to 3 stud steps: at a walk they were a 0.15 s hop
 local ANIM_PACE = 6.4 -- studs/s the stock R15 walk covers at speed 1 (the default Animate script's figure)
 local MAKE_PER_TICK = 8 -- rigs cloned per 0.25 s pass (no hitch when you land on a full island)
-local ANIM_IDS: { [string]: string } = { -- stock R15 animations (the default Animate script's)
-	Idle = "rbxassetid://507766666",
-	Walk = "rbxassetid://507777826",
-	Swing = "rbxassetid://522635514", -- toolslash, looped slow: hammering / sawing / wrenching
-	Point = "rbxassetid://507770453", -- point: binoculars / clipboard read
-	Climb = "rbxassetid://507765644",
-}
+local ANIM_IDS: { [string]: string } =
+	{ -- stock R15 animations (the default Animate script's) + catalog packs
+		Idle = "rbxassetid://10921071918", -- Cartoony Animation Package idle
+		Walk = "rbxassetid://10921082452", -- Cartoony walk (same 6.4 studs/s pace as the stock walk)
+		Swing = "rbxassetid://522635514", -- toolslash, looped slow: hammering / sawing / wrenching
+		Point = "rbxassetid://507770453", -- point: binoculars / clipboard read
+		Climb = "rbxassetid://507765644", -- stock: no catalog climb reached the 9.1 bar (r4/cand)
+	}
 -- Jobs (docs/24 C) and their held prop. A worker with no Job attribute falls back to its category.
 local JOBS: { [string]: { anim: string?, prop: string? } } = {
 	Build = { anim = "Swing", prop = "Hammer" },
@@ -97,6 +101,7 @@ type Rec = {
 	mood: BillboardGui?, -- the pooled chat bubble / Zzz over the head
 	lonely: boolean?, -- a chatter with nobody near: on the phone instead
 	gesture: AnimationTrack?, -- a chatter's one-shot point
+	recruit: boolean?, -- walking in from the jetty: Arrived fires when the walk ends at a work spot
 }
 
 -- Leisure poses: joint -> C0 turn (rx, ry, rz degrees); "Sit" joins any act with a seat
@@ -292,6 +297,7 @@ local function pose(r: Rec)
 		end
 		if not track.IsPlaying then
 			track:Play(0.2)
+			track.TimePosition = math.random() * track.Length -- a crew never idles in step
 		end
 		track:AdjustSpeed(
 			if name == "Walk"
@@ -995,6 +1001,7 @@ local function walkTo(r: Rec, to: CFrame)
 	if not (rig and root and r.lively) then
 		r.walking = nil
 		r.climbing = nil
+		r.recruit = nil
 		r.feet = to
 		place(r)
 		dress(r)
@@ -1083,6 +1090,12 @@ local function walkTo(r: Rec, to: CFrame)
 		pose(r)
 		if ladder and up then
 			fade(rig, 0)
+		end
+		if r.recruit then
+			r.recruit = nil
+			if work(r) and r.cfg.Parent and r.cfg.Parent.Name == tostring(player.UserId) then
+				arrivedEvent:Fire(r.cfg, rig)
+			end
 		end
 	end)
 end
@@ -1349,6 +1362,7 @@ local function cullPass()
 				made += 1
 				local spot = cfg:GetAttribute("Spot")
 				if typeof(spot) == "CFrame" and spot ~= r.feet then
+					r.recruit = typeof(cfg:GetAttribute("From")) == "CFrame"
 					walkTo(r, spot) -- a new recruit: from the jetty to their spot
 				end
 			end

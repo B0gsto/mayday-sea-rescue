@@ -27,7 +27,7 @@ export type Card = {
 	art: Frame, -- the art well (overlay a product image on it)
 	price: PriceButton.PriceButton,
 	setState: (State) -> (),
-	setLine: (string?) -> (),
+	setLine: (string?, string?) -> (), -- text, optional kit glyph
 }
 
 local Card = {}
@@ -106,6 +106,18 @@ function Card.new(parent: Instance?, props: Props): Card
 	line.TextTruncate = Enum.TextTruncate.AtEnd
 	line.LayoutOrder = 1
 	line.Visible = props.line ~= nil
+	-- an optional small kit glyph before the line (setLine's second argument)
+	local linePad = Instance.new("UIPadding")
+	linePad.Parent = line
+	local glyphBox = Instance.new("Frame")
+	glyphBox.Name = "LineGlyph"
+	glyphBox.BackgroundTransparency = 1
+	glyphBox.AnchorPoint = Vector2.new(0, 0.5)
+	glyphBox.Position = UDim2.new(0, -30, 0.5, 0)
+	glyphBox.Size = UDim2.fromOffset(26, 26)
+	glyphBox.Visible = false
+	glyphBox.Parent = line
+	local lineGlyph: string? = nil
 	local ls = line:FindFirstChildOfClass("UIStroke")
 	if ls then
 		ls.Thickness = Theme.Size.textStroke
@@ -133,9 +145,18 @@ function Card.new(parent: Instance?, props: Props): Card
 		art = well,
 		price = pb,
 		setState = setState,
-		setLine = function(text: string?)
+		setLine = function(text: string?, glyph: string?)
 			line.Text = text or ""
 			line.Visible = text ~= nil and text ~= ""
+			if glyph ~= lineGlyph then
+				lineGlyph = glyph
+				glyphBox:ClearAllChildren()
+				if glyph then
+					Style.icon(glyphBox, glyph)
+				end
+				glyphBox.Visible = glyph ~= nil
+				linePad.PaddingLeft = UDim.new(0, if glyph then 30 else 0)
+			end
 		end,
 	}
 end

@@ -8,6 +8,9 @@
 -- them still at the slot). Quests open later (QuestService gate): on QuestReveal, once per player, a calm wordless
 -- intro: the Quests button appears with one pop of its steady gold ring and a chime, and when the first giver has tied
 -- up, the camera eases over to them and back (skippable).
+-- The objective reads from the world: your own quest thing (Workspace.Quests, Owner = you: the waiting item or the
+-- drop flag) wears a steady gold outline (the map pin and the menu chip point at it from afar), and picking it up /
+-- dropping it off (QuestStage go -> back) pops crew_arrive (plates, dust ring, a pop) round you.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -20,6 +23,7 @@ local Menu = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Menu"
 local QuestData =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Quests"):WaitForChild("Data"))
 local QuestTablet = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("QuestTablet"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local Weather = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Weather"))
 
 local QuestController = {}
@@ -190,6 +194,22 @@ local function tabletPrompt()
 	end
 end
 
+-- a steady gold outline on my own quest thing (re-added when it streams back in)
+local function outline()
+	local folder = Workspace:FindFirstChild("Quests")
+	for _, m in if folder then folder:GetChildren() else {} do
+		if m:GetAttribute("Owner") == player.UserId and not m:FindFirstChild("QuestOutline") then
+			local h = Instance.new("Highlight")
+			h.Name = "QuestOutline"
+			h.FillColor = GOLD
+			h.FillTransparency = 0.8
+			h.OutlineColor = GOLD
+			h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop -- a salvage wreck sits under the sea
+			h.Parent = m
+		end
+	end
+end
+
 -- on foot, no cutscene, panel or build view: the reveal never cuts into play
 local function free(): boolean
 	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
@@ -255,7 +275,32 @@ local function reveal(npcs: Instance)
 end
 
 function QuestController.Start()
+	-- the go -> back step of the same quest (not a join or a new quest): got it
+	local lastId, lastStage = player:GetAttribute("QuestId"), player:GetAttribute("QuestStage")
 	player.AttributeChanged:Connect(function(name)
+		if name == "QuestStage" then
+			local id, st = player:GetAttribute("QuestId"), player:GetAttribute("QuestStage")
+			local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			local quest = id and QuestData.byId[id :: string]
+			if
+				quest
+				and quest.kind ~= "rescue" -- the call's debrief is that payoff
+				and id == lastId
+				and lastStage == "go"
+				and st == "back"
+				and root
+				and root:IsA("BasePart")
+			then
+				VFXKit.play(
+					"crew_arrive",
+					CFrame.new(root.Position - Vector3.new(0, 3, 0)),
+					{ radius = 3 }
+				)
+			end
+			lastStage = st
+		elseif name == "QuestId" then
+			lastId = player:GetAttribute("QuestId")
+		end
 		if
 			string.sub(name, 1, 5) == "Quest"
 			or name == "CinematicPlaying"
@@ -276,6 +321,7 @@ function QuestController.Start()
 			end
 			refresh()
 			tabletPrompt()
+			outline()
 			sweepBoats(npcs)
 			task.wait(1)
 		end

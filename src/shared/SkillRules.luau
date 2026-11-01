@@ -2,7 +2,7 @@
 -- SkillRules (docs/25 F, K3): the radial player + survivor skill tree's data and pure rules.
 -- Four sectors spread from the centre (Captain 315, Rescue 45, Crew 135, Industry 225; 0 = up,
 -- clockwise) plus four grey bridges at 0/90/180/270 on ring 2.75. Each keystone carries its minor
--- path (`minor = { kind, amount, count }`); nodes() expands the dots as `<keystone>_m<i>`, chained
+-- path (`minor = { kind, amount, count, medals }`); nodes() expands the dots as `<keystone>_m<i>`, chained
 -- from the keystone's first need out to the keystone. Medals only (docs/25 I.1); the old Cash tree
 -- is kept in LEGACY so ProgressionRules can refund it once.
 -- Effects are summed as deltas (owned -> effects): multipliers read `1 + delta` (speedMult, swimMult,
@@ -11,7 +11,7 @@
 local SkillRules = {}
 
 export type Effect = { kind: string, amount: number }
-export type Minor = { kind: string, amount: number, count: number }
+export type Minor = { kind: string, amount: number, count: number, medals: number } -- per dot
 export type Node = {
 	id: string,
 	sector: string,
@@ -673,9 +673,23 @@ local function medalsFor(ring: number, keystone: boolean, bridge: boolean): numb
 	return SkillRules.KEYSTONE_MEDALS[math.clamp(math.ceil(ring), 1, 4)]
 end
 
--- The dots in a keystone's path: 2 near the centre, 4 on the outer rings.
-local function minorCount(ring: number): number
+-- The one-Medal steps a keystone's path once had: 2 near the centre, 4 on the outer rings.
+local function minorSteps(ring: number): number
 	return math.clamp(math.ceil(ring), 2, 4)
+end
+
+-- REVIEW feel #16: ~100 flat +1-3% dots nobody felt merged into 1 dot (rings 1-3) or 2 (ring 4+), each carrying
+-- its share of the old steps' Medals and effect. Saves: old _m<i> past the count drop on load (ProgressionRules
+-- keeps known ids only); the kept dots are never worth less than what was paid for them.
+local function minorOf(ring: number, kind: string, amount: number): Minor
+	local count = if ring > 3 then 2 else 1
+	local per = minorSteps(ring) / count
+	return {
+		kind = kind,
+		amount = amount * per,
+		count = count,
+		medals = SkillRules.MINOR_MEDALS * per,
+	}
 end
 
 -- Shortest way round the compass from a to b.
@@ -709,11 +723,7 @@ local function expand(): { Node }
 				focus = r.focus,
 				keystone = true,
 				soon = r.soon == true,
-				minor = {
-					kind = r.minorKind,
-					amount = r.minorAmount,
-					count = minorCount(r.ring),
-				},
+				minor = minorOf(r.ring, r.minorKind, r.minorAmount),
 			})
 		end
 	end
@@ -731,11 +741,7 @@ local function expand(): { Node }
 			focus = r.focus,
 			keystone = true,
 			soon = false,
-			minor = {
-				kind = r.minorKind,
-				amount = r.minorAmount,
-				count = minorCount(r.ring),
-			},
+			minor = minorOf(r.ring, r.minorKind, r.minorAmount),
 		})
 	end
 
@@ -756,7 +762,7 @@ local function expand(): { Node }
 				angle = angleToward(fromAngle, k.angle, t),
 				name = k.name,
 				icon = k.icon,
-				medals = SkillRules.MINOR_MEDALS,
+				medals = minor.medals,
 				needs = if previous then { previous } else {},
 				effect = { kind = minor.kind, amount = minor.amount },
 				focus = k.focus,

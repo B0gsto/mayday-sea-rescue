@@ -1,7 +1,7 @@
 --!strict
 -- PickupRingController (docs/23 e.1, WP-2): "slow down here" reads from the water. Every survivor still in the
 -- water (Workspace.CallProps "Victim" with Survivor and no OnVehicle; PrivateCasualtyController already unparents
--- other crews' casualties) gets an orange ring of Board.ringFor(your hull) on the water: missions, free-roam and big calls alike.
+-- other crews' casualties) gets a red-and-white Lego lifebuoy ring (studded tiles, steady) of Board.ringFor(your hull) on the water: missions, free-roam and big calls alike.
 -- It dims grey while the craft you sit in is full (the seat pips say why) and swells and fades as they climb aboard. They
 -- wave on their own (RescueService "Wave" pose with a boat in sight, CasualtyController).
 -- Assist(craft, throttle, steer): BoatController runs the driven hull's helm through it, so with room a hands-off
@@ -19,8 +19,10 @@ local Weather = require(Shared:WaitForChild("Weather"))
 
 local PickupRingController = {}
 
-local ORANGE = Color3.fromRGB(255, 140, 30)
-local GREY = Color3.fromRGB(150, 150, 150)
+local RED, WHITE = Color3.fromRGB(205, 36, 36), Color3.fromRGB(245, 245, 240) -- lifebuoy quarters
+local GREY, PALE = Color3.fromRGB(150, 150, 150), Color3.fromRGB(196, 196, 196) -- full: the same ring, greyed
+local TILES, PER_QUARTER = 24, 3 -- round of 1xN tiles, 8 colour quarters of 3
+local LIFT = 0.05 -- red quarters sit this much higher: no shared top plane where they overlap white (no z-fight)
 local BAND = 1.4 -- studs wide up close; it widens with distance so it reads from ~150 studs out -- tune
 local FAR_WIDTH = 1 / 25 -- band width per stud of camera distance (150 studs: ~6 wide) -- tune
 local FADE = 1 -- s: once they leave the water the ring swells and fades, so the climb aboard reads
@@ -28,8 +30,21 @@ local FADE = 1 -- s: once they leave the water the ring swells and fades, so the
 -- (the ring takes over) between MARK_NEAR and MARK_NEAR * 2. Pooled: MARK_MAX nearest get one.
 local MARK_FAR, MARK_NEAR, MARK_MAX = 560, 45, 8 -- 560: the cove-mouth swimmers read from your island
 
-local rings: { [Model]: CylinderHandleAdornment } = {}
-local fading: { [CylinderHandleAdornment]: number } = {} -- band -> os.clock() they left the water
+local SLOW_FAR, SLOW_EVERY = 200, 1 / 8 -- past 200 studs a ring's bob/size update runs at 8 Hz (phones) -- tune
+
+type Ring = {
+	anchor: Part,
+	tiles: { BoxHandleAdornment },
+	studs: { CylinderHandleAdornment },
+	r: number,
+	w: number,
+	h: number,
+	full: boolean?,
+	fade: number,
+}
+local rings: { [Model]: Ring } = {}
+local nextAt: { [Model]: number } = {} -- os.clock() of a far ring's next update
+local fading: { [Ring]: number } = {} -- ring -> os.clock() they left the water
 local folder: Folder? = nil
 local marks: { BillboardGui } = {}
 
@@ -75,7 +90,7 @@ local function waiting(m: Instance): boolean
 		and m.PrimaryPart ~= nil
 end
 
-local function newRing(): CylinderHandleAdornment
+local function newRing(): Ring
 	local p = Instance.new("Part")
 	p.Name = "PickupRing"
 	p.Transparency = 1
@@ -83,14 +98,57 @@ local function newRing(): CylinderHandleAdornment
 	p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch = true, false, false, false
 	p.CastShadow = false
 	p.Parent = folder
-	local band = Instance.new("CylinderHandleAdornment")
-	band.Adornee = p
-	band.Height = 0.1
-	band.Radius = Board.RING
-	band.InnerRadius = Board.RING - BAND
-	band.CFrame = CFrame.Angles(math.pi / 2, 0, 0) -- the cylinder's axis (Z) up
-	band.Parent = p
-	return band
+	local ring: Ring = { anchor = p, tiles = {}, studs = {}, r = 0, w = 0, h = 0, fade = 0 }
+	for k = 1, TILES do
+		local tile = Instance.new("BoxHandleAdornment")
+		tile.Adornee = p
+		tile.Parent = p
+		ring.tiles[k] = tile
+		local stud = Instance.new("CylinderHandleAdornment")
+		stud.Adornee = p
+		stud.Parent = p
+		ring.studs[k] = stud
+	end
+	return ring
+end
+
+-- lay the tiles round the circle (outer chords meet; the inner corners overlap) with a stud on each
+local function layout(ring: Ring, r: number, w: number, h: number)
+	if
+		math.abs(r - ring.r) < 0.05
+		and math.abs(w - ring.w) < w * 0.03
+		and math.abs(h - ring.h) < 0.03
+	then
+		return
+	end
+	ring.r, ring.w, ring.h = r, w, h
+	local chord = 2 * r * math.sin(math.pi / TILES)
+	local sh = math.max(h * 0.5, 0.12)
+	for k, tile in ring.tiles do
+		local lift = if (k - 1) // PER_QUARTER % 2 == 0 then LIFT else 0
+		local at = CFrame.Angles(0, (k - 0.5) * 2 * math.pi / TILES, 0)
+			* CFrame.new(0, lift, -(r - w / 2))
+		tile.Size = Vector3.new(chord, h, w)
+		tile.CFrame = at
+		local stud = ring.studs[k]
+		stud.Radius = w * 0.3
+		stud.Height = sh
+		stud.CFrame = at * CFrame.new(0, (h + sh) / 2, 0) * CFrame.Angles(math.pi / 2, 0, 0) -- the axis (Z) up
+	end
+end
+
+local function paint(ring: Ring, full: boolean, fade: number)
+	if ring.full == full and math.abs(ring.fade - fade) < 0.01 then
+		return
+	end
+	ring.full, ring.fade = full, fade
+	for k, tile in ring.tiles do
+		local red = (k - 1) // PER_QUARTER % 2 == 0
+		local c = if full then (if red then GREY else PALE) elseif red then RED else WHITE
+		local t = (if full then 0.6 else 0.05) + (1 - (if full then 0.6 else 0.05)) * fade
+		tile.Color3, tile.Transparency = c, t
+		ring.studs[k].Color3, ring.studs[k].Transparency = c, t
+	end
 end
 
 local function step()
@@ -111,23 +169,25 @@ local function step()
 			local band = rings[v] or newRing()
 			rings[v] = band
 			local at = (v.PrimaryPart :: BasePart).Position
-			local ok, h = pcall(Weather.heightAt, at)
-			local anchor = band.Adornee :: BasePart
-			-- wider and taller far off: a flat 1.4-stud band vanished at a grazing angle (playtest 2026-10-26)
 			local far = if cam then (cam.CFrame.Position - at).Magnitude else 0
-			band.Radius = ring
-			band.InnerRadius = ring - math.clamp(far * FAR_WIDTH, BAND, ring / 2)
-			band.Height = math.clamp(far / 150, 0.1, 1.2)
-			anchor.CFrame = CFrame.new(
-				at.X,
-				(if ok and type(h) == "number" then h else at.Y) + 0.15 + band.Height / 2,
-				at.Z
-			)
-			band.Color3 = if full then GREY else ORANGE
-			band.Transparency = if full then 0.7 else 0.15
 			if far < MARK_FAR and far > MARK_NEAR then
 				table.insert(near, { m = v, d = far })
 			end
+			local clock = os.clock()
+			if far > SLOW_FAR and clock < (nextAt[v] or 0) then
+				continue
+			end
+			nextAt[v] = clock + SLOW_EVERY
+			local ok, h = pcall(Weather.heightAt, at)
+			-- wider and taller far off: a flat 1.4-stud band vanished at a grazing angle (playtest 2026-10-26)
+			local tall = math.clamp(far / 150, 0.2, 1.2)
+			layout(band, ring, math.clamp(far * FAR_WIDTH, BAND, ring / 2), tall)
+			band.anchor.CFrame = CFrame.new(
+				at.X,
+				(if ok and type(h) == "number" then h else at.Y) + 0.15 + tall / 2,
+				at.Z
+			)
+			paint(band, full, 0)
 		end
 	end
 	table.sort(near, function(a, b)
@@ -150,20 +210,18 @@ local function step()
 	for v, band in rings do
 		if not seen[v] then
 			rings[v] = nil
+			nextAt[v] = nil
 			fading[band] = os.clock()
 		end
 	end
 	for band, t0 in fading do
 		local u = (os.clock() - t0) / FADE
 		if u >= 1 then
-			(band.Adornee :: Instance):Destroy()
+			band.anchor:Destroy()
 			fading[band] = nil
 		else
-			local w = band.Radius - band.InnerRadius
-			band.Radius = ring * (1 + 0.5 * u)
-			band.InnerRadius = band.Radius - w
-			band.Color3 = ORANGE
-			band.Transparency = 0.15 + 0.85 * u
+			layout(band, ring * (1 + 0.5 * u), band.w, band.h)
+			paint(band, false, u)
 		end
 	end
 end

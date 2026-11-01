@@ -348,8 +348,6 @@ W.RareEvery = 8 -- one rescue in eight brings the rare colour variant -- tune
 W.Follow = {
 	behind = 3.6,
 	side = 3.2,
-	hop = 0.32,
-	speed = 8,
 	snap = 70, -- studs: closer than this it always walks, farther it catches up at once
 }
 

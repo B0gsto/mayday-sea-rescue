@@ -31,4 +31,20 @@ return function(t)
 		-- slowing down while the key is held lets the helm out again
 		t.expect(math.abs(run(Helm.AT_SPEED, 1, 0, 2) - 1) < 1e-6).toBe(true)
 	end)
+
+	t.test("throttle: ahead ramps (a tap creeps), easing off and the brake are instant", function()
+		local th, dt = 0, 1 / 60
+		for _ = 1, 6 do -- a 0.1 s tap
+			th = Helm.throttle(th, 1, dt)
+		end
+		t.expect(math.abs(th - 0.1 / Helm.THROTTLE_RAMP) < 1e-6).toBe(true)
+		for _ = 1, 60 do
+			th = Helm.throttle(th, 1, dt)
+		end
+		t.expect(th).toBe(1)
+		t.expect(Helm.throttle(1, 0.4, dt)).toBe(0.4)
+		t.expect(Helm.throttle(1, -1, dt)).toBe(-1)
+		t.expect(Helm.throttle(-1, 1, dt)).toBe(dt / Helm.THROTTLE_RAMP) -- from astern it ramps from idle
+		t.expect(Helm.throttle(0, 2, 10)).toBe(1)
+	end)
 end

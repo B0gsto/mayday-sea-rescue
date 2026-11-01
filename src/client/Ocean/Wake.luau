@@ -241,7 +241,10 @@ local function applyStyle(rig: Rig, night: number)
 end
 
 local function scan()
-	for _, d in Workspace:GetDescendants() do
+	-- every VehicleSeat in the world lives in a VehicleService boat under Workspace.Vehicles (dock display boats
+	-- have theirs stripped): a whole-Workspace GetDescendants every second was a phone hotspot
+	local vehicles = Workspace:FindFirstChild("Vehicles")
+	for _, d in if vehicles then vehicles:GetDescendants() else {} do
 		if d:IsA("VehicleSeat") then
 			local model = d:FindFirstAncestorOfClass("Model")
 			if

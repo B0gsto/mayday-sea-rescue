@@ -66,6 +66,8 @@ Buoyancy.LATERAL_DRAG_RATE = 6 -- 1/s at lateralGrip 1 (keel effect) -- tune
 Buoyancy.AIR_DRAG_FRACTION = 0.05 -- drag left when the hull is out of the water -- tune
 Buoyancy.REVERSE_ACCEL_FRACTION = 0.4 -- of accel -- tune
 Buoyancy.REVERSE_SPEED_FRACTION = 0.2 -- of topSpeed -- tune
+Buoyancy.REVERSE_SPEED_MAX = 10 -- studs/s (6.5 knots): a gentle reverse out of a slip, whatever the hull -- tune
+Buoyancy.PIVOT_IDLE = 0.6 -- of pivotSpeed: the helm alone turns a slow hull, throttle closed (owner 2026-10-31: slip turns) -- tune
 Buoyancy.TURN_GAIN = 4 -- 1/s, how fast the yaw rate reaches the steering target -- tune
 Buoyancy.UPRIGHT_FREQUENCY = 1.2 -- rad/s, gentle self-righting on top of buoyancy -- tune
 Buoyancy.UPRIGHT_DAMPING = 0.5 -- 1/s, pitch/roll angular drag in the air -- tune
@@ -327,7 +329,13 @@ function Buoyancy.thrust(
 	elseif throttle < 0 then
 		if forwardSpeed > 0.5 then
 			force = mass * handling.brakeDecel * throttle
-		elseif forwardSpeed > -handling.topSpeed * Buoyancy.REVERSE_SPEED_FRACTION then
+		elseif
+			forwardSpeed
+			> -math.min(
+				handling.topSpeed * Buoyancy.REVERSE_SPEED_FRACTION,
+				Buoyancy.REVERSE_SPEED_MAX
+			)
+		then
 			force = mass * handling.accel * Buoyancy.REVERSE_ACCEL_FRACTION * throttle
 		end
 	end
@@ -360,10 +368,21 @@ function Buoyancy.maxYawRate(speed: number, throttle: number, h: Handling, gravi
 	return math.min(math.rad(h.turnRate), vEff / radius)
 end
 
+-- Yaw rate (rad/s) the helm alone gets at low speed: PIVOT_IDLE of the pivot flow at a standstill,
+-- fading out by 2 x pivotSpeed, so a hull in a pontoon slip turns on the spot without the throttle.
+function Buoyancy.pivotYawRate(speed: number, h: Handling): number
+	if h.pivotSpeed <= 0 then
+		return 0
+	end
+	local fade = math.clamp(1 - math.abs(speed) / (2 * h.pivotSpeed), 0, 1)
+	return math.min(math.rad(h.turnRate), h.pivotSpeed * Buoyancy.PIVOT_IDLE / h.turnRadiusSlow)
+		* fade
+end
+
 -- Yaw torque about world +Y. steer -1 (left) .. 1 (right); right is a negative yaw rate.
 -- It drives the yaw rate toward a steering target, so with steer 0 it acts as yaw drag.
 -- Steering needs water flow: jets lose most of it with the throttle closed (offThrottleSteer),
--- it flips in reverse, and vanishes out of the water.
+-- it flips in reverse, and vanishes out of the water. Slow, the helm alone still pivots (pivotYawRate).
 function Buoyancy.steerTorque(
 	steer: number,
 	forwardSpeed: number,
@@ -379,10 +398,11 @@ function Buoyancy.steerTorque(
 	local th = math.clamp(math.abs(throttle or 1), 0, 1)
 	local authority = handling.offThrottleSteer + (1 - handling.offThrottleSteer) * th
 	local direction = if forwardSpeed < -1 then -1 else 1
-	local target = -steer
-		* Buoyancy.maxYawRate(forwardSpeed, th, handling, gravity)
-		* authority
-		* direction
+	local rate = math.max(
+		Buoyancy.maxYawRate(forwardSpeed, th, handling, gravity) * authority,
+		Buoyancy.pivotYawRate(forwardSpeed, handling)
+	)
+	local target = -steer * rate * direction
 	return inertiaYaw * Buoyancy.TURN_GAIN * (target - yawRate) * math.clamp(contact, 0, 1)
 end
 

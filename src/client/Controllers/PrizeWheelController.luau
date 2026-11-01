@@ -339,7 +339,12 @@ local function paintOdds(wheel: Instance)
 	local epic, legend =
 		player:GetAttribute("SpinPityEpic"), player:GetAttribute("SpinPityLegendary")
 	local own = mine(wheel) and type(epic) == "number" and type(legend) == "number"
-	PrizeWheel.showOdds(board, if own then { epic = epic, legendary = legend } else nil)
+	local owned = player:GetAttribute("SpinOwned")
+	PrizeWheel.showOdds(
+		wheel, -- the board and the token machine's screen
+		if own then { epic = epic, legendary = legend } else nil,
+		if own and type(owned) == "string" and owned ~= "" then string.split(owned, ",") else nil
+	)
 end
 
 local function spin(payload: any)
@@ -366,7 +371,7 @@ local function spin(payload: any)
 	local start = tonumber(payload.startTime) or Workspace:GetServerTimeNow()
 	local duration = math.max(1, tonumber(payload.duration) or 4.5)
 	local flapper = wheel:FindFirstChild("Flapper", true) :: BasePart?
-	local flapRest = flapper and flapper.CFrame
+	local flapRest = flapper and flapper:GetPivot() -- the art flapper's pivot is its hinge
 	local flapAt = -1
 	local lastTicks = WheelMath.ticksFor(from, count)
 	AudioController.play("Rigging_Creak", pivotPart.Position, 2.5, 1.3) -- the wheel is shoved round
@@ -382,7 +387,9 @@ local function spin(payload: any)
 			flapAt = os.clock()
 			AudioController.play("UI_Prompt", pivotPart.Position, 0.45, 1.25 + math.random() * 0.2)
 			-- docs/26: streaks fly off the rim where the flapper clicks, along the rim's travel (-X at the top)
-			local at = if flapper then flapper.Position else (base * CFrame.new(0, 6.6, 0)).Position
+			local at = if flapRest
+				then (flapRest * CFrame.new(0, -1.6, 0)).Position -- the flapper tip, where the pegs knock it
+				else (base * CFrame.new(0, 6.6, 0)).Position
 			VFXKit.play(
 				"wheel_spin",
 				CFrame.fromMatrix(base.Position, -base.RightVector, base.UpVector)
@@ -391,7 +398,7 @@ local function spin(payload: any)
 		end
 		if flapper and flapRest then
 			local swing = math.max(0, 1 - (os.clock() - flapAt) / 0.14)
-			flapper.CFrame = flapRest * CFrame.Angles(0, 0, math.rad(-16 * swing))
+			flapper:PivotTo(flapRest * CFrame.Angles(0, 0, math.rad(-16 * swing)))
 		end
 		if t >= 1 and conn then
 			conn:Disconnect()
@@ -400,7 +407,7 @@ local function spin(payload: any)
 			paintOdds(wheel)
 			rotor:PivotTo(base * CFrame.Angles(0, 0, math.rad(target)))
 			if flapper and flapRest then
-				flapper.CFrame = flapRest
+				flapper:PivotTo(flapRest)
 			end
 			reveal(payload, rotor)
 		end
@@ -552,6 +559,7 @@ function PrizeWheelController.Init()
 	end
 	player:GetAttributeChangedSignal("SpinPityEpic"):Connect(repaintOdds)
 	player:GetAttributeChangedSignal("SpinPityLegendary"):Connect(repaintOdds)
+	player:GetAttributeChangedSignal("SpinOwned"):Connect(repaintOdds)
 	fetchCatalogue()
 	-- the catalogue hides paid random items until the server has read the player's policy: ask again then
 	player:GetAttributeChangedSignal("PolicyRead"):Connect(fetchCatalogue)

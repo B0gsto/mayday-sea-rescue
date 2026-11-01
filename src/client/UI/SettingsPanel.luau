@@ -9,6 +9,7 @@ local A11yPalette =
 	require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("A11yPalette"))
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
@@ -460,6 +461,8 @@ function SettingsPanel.newPanel(canvas: Frame, onClose: () -> ())
 	toggleRow(panel.body, order, "reduceMotion", "pause", "green", "Reduce motion")
 	order += 1
 	toggleRow(panel.body, order, "holdToTap", "tap", "orange", "Hold to tap")
+	order += 1
+	toggleRow(panel.body, order, "haptics", "shake", "purple", "Vibration")
 
 	order = section(panel.body, order, "Graphics")
 	local q = { { "Auto", "Auto" }, { "High", "High" }, { "Med", "Medium" }, { "Low", "Low" } }
@@ -587,8 +590,9 @@ function SettingsPanel.mount()
 	applyAudio()
 	A11yPalette.setMode(Comfort.get("colourAssist") :: string)
 	applyHoldToTap()
-	Workspace.DescendantAdded:Connect(function(d: Instance)
-		if d:IsA("ProximityPrompt") and Comfort.get("holdToTap") == true then
+	-- a prompt is tapped only after it shows, so this beats a whole-world DescendantAdded hook on phones
+	ProximityPromptService.PromptShown:Connect(function(d: ProximityPrompt)
+		if Comfort.get("holdToTap") == true then
 			local base = d:GetAttribute("A11yHold")
 			if type(base) ~= "number" then
 				base = d.HoldDuration

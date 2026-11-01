@@ -18,7 +18,8 @@
 --   TelemetryService.Explore(player, islandId, step, stamps?)          Explore funnel (session = island)
 --   TelemetryService.VehicleRecovered(player, rawReason, vehicleId)   VehicleRecovered (reason mapped)
 --   TelemetryService.Companion(player, species, step)                  Companion funnel (session = species)
---   TelemetryService.RobuxPrompt(player, kind, key, purchased)         a Robux prompt closed
+--   TelemetryService.RobuxShown(player, key, source)                  a server-opened Robux prompt (Sign, Wheel)
+--   TelemetryService.RobuxPrompt(player, key, purchased)              a Robux prompt closed
 --   TelemetryService.Custom(player, name, value?, field1?, field2?, field3?)   one line at a site
 --   TelemetryService.CashFlow(player, extra?, balance)                 push() hook: logs extra.award Cash
 --   TelemetryService.CashSpent(player, price, balance, kind, itemId)
@@ -60,6 +61,7 @@ local JOB = if game.JobId ~= "" then string.sub(game.JobId, 1, 8) else "studio" 
 local trackers: { [Player]: Events.Tracker } = {}
 local buckets: { [Player]: Events.Bucket } = {}
 local shops: { [Player]: Shop } = {}
+local promptSources: { [Player]: { [string]: string } } = {}
 local vehicles: { [Player]: string } = {}
 local sessions: { [Player]: Session } = {}
 local clientRemote: RemoteEvent? = nil
@@ -351,14 +353,33 @@ function TelemetryService.Expand(player: Player, plate: string, step: string)
 	end
 end
 
--- A Robux prompt closed (MonetizationService, from MarketplaceService's Prompt*PurchaseFinished).
-function TelemetryService.RobuxPrompt(player: Player, kind: string, key: string, purchased: boolean)
+-- A Robux prompt opened at `source` (Store, Board, BoatCard, Chip, Tablet, Sign, Wheel): logged as Shown and
+-- remembered, so its close reports where it sold. Fields: source, item key, Shown / Purchased / Cancelled.
+function TelemetryService.RobuxShown(player: Player, key: string, source: string)
+	local sources = promptSources[player] or {}
+	promptSources[player] = sources
+	sources[key] = source
+	custom(player, Events.custom("RobuxPrompt", 1, source, key, "Shown"))
+end
+
+-- A Robux prompt closed (MonetizationService, from MarketplaceService's Prompt*PurchaseFinished). A purchase's
+-- value is the item's list price in R$ (shortcut: config price, not the regional price paid).
+function TelemetryService.RobuxPrompt(player: Player, key: string, purchased: boolean)
 	if not (player and player.Parent) then
 		return
 	end
+	local source = (promptSources[player] or {})[key] or "Unknown"
+	local item = MonetizationConfig.GamePasses[key] or MonetizationConfig.Products[key]
+	local robux = if purchased and item then item.price else 1
 	custom(
 		player,
-		Events.custom("RobuxPrompt", 1, kind, key, if purchased then "Purchased" else "Cancelled")
+		Events.custom(
+			"RobuxPrompt",
+			robux,
+			source,
+			key,
+			if purchased then "Purchased" else "Cancelled"
+		)
 	)
 	if purchased then
 		TelemetryService.Shop(player, "Bought", nil, key, "Robux")
@@ -596,8 +617,7 @@ local function clientStep(player: Player, name: string, a: any, b: any, c: any, 
 		end
 		TelemetryService.Shop(player, step, app, item, currency)
 		if step == "BuyTapped" and currency == "Robux" and item then
-			local kind = if MonetizationConfig.GamePasses[item] then "GamePasses" else "Products"
-			custom(player, Events.custom("RobuxPrompt", 1, kind, item, "Shown"))
+			TelemetryService.RobuxShown(player, item, app or "Unknown")
 		end
 	end
 end
@@ -692,6 +712,7 @@ function TelemetryService.Init()
 		trackers[player] = nil
 		buckets[player] = nil
 		shops[player] = nil
+		promptSources[player] = nil
 		vehicles[player] = nil
 		sessions[player] = nil
 		dayChecked[player] = nil

@@ -14,8 +14,8 @@
 -- 1b. Helm modes and safety. Z / gamepad Y (touch: the drive pad's turtle) toggles approach mode: a
 --    speed governor under 5 knots with fine throttle (Buoyancy.thrust), for the final run to a
 --    casualty; throttle released = neutral, the hull glides. On a vehicle with ejectOnCapsize (the
---    jet ski) the rider is thrown off past CAPSIZE_ANGLE; leaving the seat pulls the kill cord and
---    the server stops the engine (EngineRunning = false, see VehicleService).
+--    jet ski) the rider is thrown off past CAPSIZE_ANGLE (not in the cold open); leaving the seat
+--    pulls the kill cord and the server stops the engine (EngineRunning = false, see VehicleService).
 --    Telemetry from Simulator.step is kept for the HUD and test scripts (GetTelemetry).
 --
 -- 1b2. Cold open (docs 09 9.1, shared/Boat/ColdOpen). OperationService marks the cold-open jet
@@ -40,7 +40,8 @@
 --    touch the replicated HullRoot: the visible hull (Body and everything welded to it) hangs off
 --    HullRoot by the Motor6D "VisualJoint", and we set its Transform (local-only, not replicated,
 --    ignored by the owner's simulation) to a small, smoothed vertical offset that puts the hull at
---    its rest draft on the locally drawn wave. Height comes from OceanController.GetVisualHeight
+--    its rest draft on the locally drawn wave (a moored, anchored hull also pitches and rolls on the wave
+--    slope: a bow and a beam sample). Height comes from OceanController.GetVisualHeight
 --    when stream A provides it, else from the shared wave field.
 
 local ContextActionService = game:GetService("ContextActionService")
@@ -82,6 +83,9 @@ local vehicles: Folder? = nil
 local driving: Model? = nil -- the vehicle whose DriverSeat we sit in
 local simulated: { [Model]: boolean } = {} -- models this client applied forces to last frame
 local visualOffset: { [Model]: number } = {}
+local visualTilt: { [Model]: Vector2 } = {} -- moored hulls: smoothed pitch, roll (snapRemote)
+local MOORED_TILT = 0.7 -- share of the wave slope a moored hull follows (its own inertia) -- tune
+local MAX_TILT = Vector2.one * math.rad(6)
 local telemetry: Simulator.Telemetry? = nil
 local lastThrottle = 0 -- the throttle the driven hull got last step (after the cold-open helm)
 local helm = 0 -- the eased steer (Boat/Helm)
@@ -126,12 +130,14 @@ local function isLocalDriver(model: Model): boolean
 	return occupant ~= nil and occupant.Parent == localPlayer.Character
 end
 
-local function setVisualOffset(model: Model, offset: number)
+local function setVisualOffset(model: Model, offset: number, tilt: Vector2?)
 	local root = model.PrimaryPart
 	local joint = root and root:FindFirstChild("VisualJoint")
 	if root and joint and joint:IsA("Motor6D") then
 		-- Transform is in Part0 (HullRoot) space: turn the world-vertical offset into it.
+		local t = tilt or Vector2.zero -- pitch (bow up), roll (starboard up), radians
 		joint.Transform = CFrame.new(root.CFrame:VectorToObjectSpace(Vector3.new(0, offset, 0)))
+			* CFrame.Angles(t.X, 0, t.Y)
 	end
 end
 
@@ -145,10 +151,28 @@ local function snapRemote(model: Model, dt: number, now: number)
 	local p = root.Position
 	local wantY = Buoyancy.restRootY(visualHeight(p.X, p.Z, now), draft, float1.Position.Y)
 	local target = math.clamp(wantY - p.Y, -MAX_VISUAL_OFFSET, MAX_VISUAL_OFFSET)
+	local k = math.min(1, dt * VISUAL_SMOOTHING)
 	local current = visualOffset[model] or 0
-	current += (target - current) * math.min(1, dt * VISUAL_SMOOTHING)
+	current += (target - current) * k
 	visualOffset[model] = current
-	setVisualOffset(model, current)
+	-- a moored (anchored) hull also pitches and rolls on the wave slope; a hull under way already has its owner's pose
+	local tilt = Vector2.zero
+	if root.Anchored then
+		local h0 = visualHeight(p.X, p.Z, now)
+		local half = root.Size * 0.5
+		local bow = root.CFrame:PointToWorldSpace(Vector3.new(0, 0, -half.Z))
+		local side = root.CFrame:PointToWorldSpace(Vector3.new(half.X, 0, 0))
+		local want = Vector2.new(
+			math.atan2(visualHeight(bow.X, bow.Z, now) - h0, math.max(half.Z, 1)),
+			math.atan2(visualHeight(side.X, side.Z, now) - h0, math.max(half.X, 1))
+		) * MOORED_TILT
+		local was = visualTilt[model] or Vector2.zero
+		tilt = was + (want:Max(-MAX_TILT):Min(MAX_TILT) - was) * k
+		visualTilt[model] = tilt
+	else
+		visualTilt[model] = nil
+	end
+	setVisualOffset(model, current, tilt)
 end
 
 -- A hull touching a wall (quay, breakwater, beach, a moored boat): four short horizontal rays from
@@ -196,18 +220,22 @@ local function dockContact(model: Model): (boolean, Vector3?)
 	return false, nil
 end
 
-local function unstickBoat(model: Model, throttle: number, speed: number, dt: number)
+local function unstickBoat(model: Model, throttle: number, steer: number, speed: number, dt: number)
 	local state = unstick[model]
 	if not state then
 		state = Unstick.new()
 		unstick[model] = state
 	end
-	if throttle > 0.05 and math.abs(speed) < Unstick.SPEED then
+	-- pinned while driving ahead, backing up or just turning on the helm (owner 2026-10-31: the slip)
+	local effort = math.max(math.abs(throttle), math.abs(steer))
+	if effort > 0.05 and math.abs(speed) < Unstick.SPEED then
 		local wedged, normal = dockContact(model)
-		if Unstick.step(state, dt, wedged, speed, throttle) and normal then
+		if Unstick.step(state, dt, wedged, speed, effort) and normal then
 			-- nobody aboard and a jetty ahead: driving into it lands you on it (a beach or a wall: push off)
 			local empty = (tonumber(model:GetAttribute("SurvivorCount")) or 0) == 0
-			local root = if empty and VehicleExitController.Ashore(-normal)
+			local root = if empty
+					and throttle > 0.05
+					and VehicleExitController.Ashore(-normal)
 				then nil
 				else model.PrimaryPart
 			if root then
@@ -215,9 +243,7 @@ local function unstickBoat(model: Model, throttle: number, speed: number, dt: nu
 				root.AssemblyLinearVelocity += normal * Unstick.NUDGE
 				-- swing the bow off the wall too (head-on: toward the side being steered, else right)
 				local side = normal:Dot(root.CFrame.RightVector)
-				local seat = seatOf(model)
-				if math.abs(side) < 0.2 and seat then
-					local steer = seat.SteerFloat + TouchDriveController.steer()
+				if math.abs(side) < 0.2 then
 					side = if steer ~= 0 then steer else 1 -- no steer: bear right
 				end
 				local turn = if side > 0 then -Unstick.TURN elseif side < 0 then Unstick.TURN else 0
@@ -225,7 +251,7 @@ local function unstickBoat(model: Model, throttle: number, speed: number, dt: nu
 			end
 		end
 	else
-		Unstick.step(state, dt, false, speed, throttle) -- not pinned: reset the timer
+		Unstick.step(state, dt, false, speed, effort) -- not pinned: reset the timer
 	end
 end
 
@@ -243,7 +269,13 @@ local function checkCapsize(model: Model, seat: VehicleSeat, dt: number)
 		tiltTime = 0
 	end
 	local humanoid = seat.Occupant
-	if tiltTime > CAPSIZE_HOLD and humanoid then
+	-- never in the cold open: the auto-throttle plus a full-lock touch steer rolled new riders off into open sea
+	-- (live 2026-10-31, 5 of 39 LeftCraft); they stay seated and VehicleService rights the hull (Flipped)
+	if
+		tiltTime > CAPSIZE_HOLD
+		and humanoid
+		and localPlayer:GetAttribute("ColdOpenDone") == true
+	then
 		tiltTime = 0
 		humanoid.Sit = false
 		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
@@ -417,6 +449,7 @@ local function step(dt: number)
 		driving = nil
 		telemetry = nil
 		helm = 0
+		lastThrottle = 0
 	end
 	if vehicles then
 		for _, child in vehicles:GetChildren() do
@@ -455,6 +488,7 @@ local function step(dt: number)
 							coldOpenThrottle(child, throttleIn, now),
 							steerIn
 						)
+					throttle = Helm.throttle(lastThrottle, throttle, dt) -- a tap creeps, the brake is instant
 					local root = child.PrimaryPart
 					local speed = if root then root.AssemblyLinearVelocity.Magnitude else 0
 					helm = Helm.step(helm, steer, speed / (if spec then spec.topSpeed else 60), dt)
@@ -531,7 +565,7 @@ local function step(dt: number)
 					lastThrottle = throttle
 					nowSimulated[child] = true
 					checkCapsize(child, seat, dt)
-					unstickBoat(child, throttleIn, telemetry and telemetry.speed or 0, dt)
+					unstickBoat(child, throttleIn, steerIn, telemetry and telemetry.speed or 0, dt)
 					Telemetry.stalled( -- analytics H15 (not the cold open's auto-throttle)
 						"Boat",
 						math.abs(throttleIn) > 0.5
@@ -554,6 +588,7 @@ local function step(dt: number)
 	for model in nowSimulated do
 		if visualOffset[model] then
 			visualOffset[model] = nil
+			visualTilt[model] = nil
 			setVisualOffset(model, 0) -- our own hull shows its true physics pose
 		end
 	end
@@ -786,6 +821,7 @@ function BoatController.Start()
 		folder.ChildRemoved:Connect(function(child)
 			if child:IsA("Model") then
 				visualOffset[child] = nil
+				visualTilt[child] = nil
 				simulated[child] = nil
 				unstick[child] = nil
 			end

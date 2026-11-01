@@ -1420,6 +1420,28 @@
    ]
   },
   {
+   "Name": "M_Prop_BuildSiteKit",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://135401836063414",
+        "NormalMap": "rbxassetid://134063939343985",
+        "RoughnessMap": "rbxassetid://77394710200809",
+        "MetalnessMap": "rbxassetid://82741558542658"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Prop_BuildStation",
    "ClassName": "Folder",
    "Children": [
@@ -1477,8 +1499,29 @@
        "Properties": {
         "ColorMap": "rbxassetid://83844922369104",
         "NormalMap": "rbxassetid://134063939343985",
-        "RoughnessMap": "rbxassetid://77394710200809",
+        "RoughnessMap": "rbxassetid://122766112812919",
         "MetalnessMap": "rbxassetid://82741558542658"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Prop_PrizeWheel",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://78798076375644",
+        "RoughnessMap": "rbxassetid://115334106151964",
+        "MetalnessMap": "rbxassetid://132954919033257"
        }
       }
      ]

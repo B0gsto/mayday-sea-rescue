@@ -18,11 +18,14 @@
 -- gulls (quiet in a storm), underwater bed with a muffle on SFX and Ambience, boat engines (jet ski
 -- and RIB, two layers crossfaded by RPM; RPM follows the throttle), hull lap / bow wash / wake and
 -- hull slams for the driven boat, ticks for world prompts, awards, completed steps and the debrief,
--- a soft click on every HUD button, crickets by the islands at night, and one music cue at a time (AudioMix.musicCue:
+-- a soft click on every HUD button, the marina bed and jetty creaks at the nearest jetty, birds on the islands by day
+-- and crickets at night, a thud on taking a seat or stepping off a vehicle, Music and Ambience ducked under big
+-- moments (AudioConfig.Duck) and an open menu, and one music cue at a time (AudioMix.musicCue:
 -- loading, debrief, operation, then night / island / sea, held so zone edges don't flip it; off while the driven boat's
 -- radio plays; ducked in a storm). Rain loop and thunder in WeatherController; the swim splash and strokes in
 -- SwimController; Bosun's bark in DogController.
 
+local CollectionService = game:GetService("CollectionService")
 local ContentProvider = game:GetService("ContentProvider")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
@@ -55,6 +58,8 @@ local rng = Random.new()
 ---------------------------------------------------------------- groups and volumes
 
 local groups: { [string]: SoundGroup } = {}
+local DUCKED: { [string]: boolean } = { Music = true, Ambience = true }
+local duckGain, duckDepth, duckUntil = 1, 0, 0
 local volumes: { [string]: number } = {}
 local muffles: { EqualizerSoundEffect } = {}
 
@@ -121,7 +126,19 @@ function AudioController.setVolume(category: string, value: number)
 	end
 	local v = math.clamp(value, 0, 1)
 	volumes[category] = v
-	g.Volume = v
+	g.Volume = if DUCKED[category] then v * duckGain else v
+end
+
+-- Each bed tick: big moments (AudioConfig.Duck, armed by play) and an open menu dip Music and Ambience.
+local function updateDuck(dt: number, now: number)
+	local target = if now < duckUntil then 1 - duckDepth else 1
+	if player:GetAttribute("MenuOpen") == true then
+		target = math.min(target, 1 - AudioConfig.MenuDuck)
+	end
+	duckGain = AudioMix.followDuck(duckGain, target, dt)
+	for cat in DUCKED do
+		groups[cat].Volume = volumes[cat] * duckGain
+	end
 end
 
 ---------------------------------------------------------------- clips
@@ -210,6 +227,11 @@ function AudioController.play(name: string, at: Vector3?, volume: number?, pitch
 		return nil
 	end
 	lastPlayed[name] = t
+	local duck = AudioConfig.Duck[name]
+	if duck then
+		duckDepth = if t < duckUntil then math.max(duckDepth, duck[1]) else duck[1]
+		duckUntil = math.max(duckUntil, t + duck[2])
+	end
 	if AudioConfig.categoryOf(name) == "Music" then
 		stingUntil = t + 4 -- shortcut: a fixed 4 s for the crate fanfare sting; read TimeLength if longer stings land
 	end
@@ -272,6 +294,7 @@ type BoatRig = {
 	highBase: number,
 	rpm: number,
 	topSpeed: number,
+	busy: number,
 	-- driven boat only
 	lap: Bed?,
 	wash: Bed?,
@@ -282,10 +305,19 @@ type BoatRig = {
 local rigs: { [Model]: BoatRig } = {}
 local BoatController: any = nil
 
-local ENGINE_CLIPS: { [string]: { low: string, high: string } } = {
+-- by VehicleId, else its variant's base (StormRunner -> RIB); busy = the throttle floor while someone is at the
+-- controls (a hovering heli's rotors still spin at flight revs)
+local ENGINE_CLIPS: { [string]: { low: string, high: string, busy: number? } } = {
 	JetSki = { low = "Eng_JetSki_Low", high = "Eng_JetSki_High" },
 	RIB = { low = "Eng_RIB_Idle", high = "Eng_RIB_Plane" },
+	Lifeboat = { low = "Eng_Lifeboat_Idle", high = "Eng_RIB_Plane" },
+	Submarine = { low = "Eng_Lifeboat_Idle", high = "Eng_RIB_Plane" },
 }
+
+local function engineClips(id: string): { low: string, high: string, busy: number? }?
+	local spec: any = VehicleConfig.get(id)
+	return ENGINE_CLIPS[id] or (spec and spec.base and ENGINE_CLIPS[spec.base])
+end
 
 local function destroyRig(model: Model)
 	local r = rigs[model]
@@ -304,7 +336,7 @@ end
 
 local function makeRig(model: Model, id: string): BoatRig?
 	local root = model.PrimaryPart
-	local clips = ENGINE_CLIPS[id]
+	local clips = engineClips(id)
 	local spec = VehicleConfig.get(id)
 	if not (root and clips and spec) then
 		return nil
@@ -323,6 +355,7 @@ local function makeRig(model: Model, id: string): BoatRig?
 		highBase = baseVolume(clips.high),
 		rpm = AudioMix.IDLE_RPM,
 		topSpeed = spec.topSpeed,
+		busy = clips.busy or 0,
 		lastSlam = 0,
 	}
 	rigs[model] = r
@@ -346,7 +379,7 @@ local function scanBoats(camPos: Vector3)
 			if m:IsA("Model") and m.PrimaryPart then
 				local id = m:GetAttribute("VehicleId")
 				local near = (m.PrimaryPart.Position - camPos).Magnitude < MIX.engineRange + 40
-				if type(id) == "string" and ENGINE_CLIPS[id] and near then
+				if type(id) == "string" and near and engineClips(id) then
 					seen[m] = true
 					if not rigs[m] then
 						makeRig(m, id)
@@ -399,6 +432,8 @@ local function updateBoats(dt: number, now: number)
 			local seat = model:FindFirstChildWhichIsA("VehicleSeat", true)
 			if seat and not (seat :: VehicleSeat).Occupant then
 				throttle = 0 -- nobody at the helm: idling or drifting
+			elseif seat then
+				throttle = math.max(throttle, r.busy)
 			end
 		end
 		local target = AudioMix.boatTargetRpm(throttle, speedFrac, contact)
@@ -459,13 +494,21 @@ local nextGull = 0
 local riggingCarry = 0
 local storm = 0 -- this tick's storm intensity, for the music duck
 local homeDist = math.huge -- studs (flat) to the nearest ring island centre
+local dockEmitter: Attachment? = nil -- the marina bed and jetty creaks, moved to the nearest island's jetty
 
-local function islandDistance(p: Vector3): number
-	local best = math.huge
+local function flat(a: Vector3, b: Vector3): number
+	return Vector3.new(a.X - b.X, 0, a.Z - b.Z).Magnitude
+end
+
+local function nearestIsland(p: Vector3): (number, RingLayout.Island?)
+	local best, near = math.huge, nil
 	for _, isl in RingLayout.Islands do
-		best = math.min(best, Vector3.new(p.X - isl.center.X, 0, p.Z - isl.center.Z).Magnitude)
+		local d = flat(p, isl.center)
+		if d < best then
+			best, near = d, isl
+		end
 	end
-	return best
+	return best, near
 end
 
 local function setUnderwater(on: boolean)
@@ -492,7 +535,12 @@ local function updateAmbience(dt: number, now: number, camPos: Vector3)
 	local above = camPos.Y - surface
 	setUnderwater(above < -0.3)
 	storm = intensity
-	homeDist = islandDistance(camPos)
+	local home
+	homeDist, home = nearestIsland(camPos)
+	local dock = if home then home.berths.Boat.Position + Vector3.new(0, 4, 0) else camPos
+	if dockEmitter then
+		dockEmitter.Position = dock
+	end
 	local night = WorkLoop.isNight(Lighting.ClockTime)
 
 	if lastCam and dt > 0 then
@@ -513,11 +561,7 @@ local function updateAmbience(dt: number, now: number, camPos: Vector3)
 	-- sea
 	local zone: any = Weather.getZoneAt(camPos)
 	local shelter = if zone and type(zone.shelter) == "number" then zone.shelter else 0
-	local harbourDist = (Vector3.new(camPos.X, 0, camPos.Z) - Vector3.new(
-		AudioConfig.HarbourCentre.X,
-		0,
-		AudioConfig.HarbourCentre.Z
-	)).Magnitude
+	local harbourDist = flat(camPos, dock)
 	if harbourDist < AudioConfig.HarbourRadius then
 		shelter = math.max(shelter, 0.8)
 	end
@@ -532,10 +576,24 @@ local function updateAmbience(dt: number, now: number, camPos: Vector3)
 	local shore = math.clamp(1 - (homeDist - RingLayout.IslandRadius) / 150, 0, 1)
 	local crickets = if night and not underwater and above < 120 then shore * (1 - intensity) else 0
 	setBed(beds.Amb_Crickets, crickets, dt, 0.4)
+	-- birds on the island plates by day, hushed by a storm
+	local onIsland = math.clamp(1 - (homeDist - RingLayout.IslandRadius) / 80, 0, 1)
+	local birds = if not night
+			and not underwater
+			and above < 120
+		then onIsland * (1 - intensity)
+		else 0
+	setBed(beds.Amb_Island, birds, dt, 0.4)
 
-	-- marina bed (3D at the harbour centre) and halyards on masts, more with the wind
+	-- marina bed and jetty creaks (3D at the nearest jetty) and halyards on masts, more with the wind
 	local inHarbour = harbourDist < AudioConfig.HarbourRadius + 150
 	setBed(beds.Amb_Harbour, if inHarbour and not underwater then 1 - 0.6 * intensity else 0, dt, 1)
+	setBed(
+		beds.Amb_DockCreak,
+		if inHarbour and not underwater then 0.6 + 0.4 * intensity else 0,
+		dt,
+		1
+	)
 	if inHarbour and not underwater then
 		riggingCarry += dt * MIX.riggingRate * math.clamp(
 			0.25 + w.light * 0.3 + w.strong * 0.7 + w.gale,
@@ -544,7 +602,7 @@ local function updateAmbience(dt: number, now: number, camPos: Vector3)
 		)
 		while riggingCarry >= 1 do
 			riggingCarry -= 1
-			local at = randomAround(AudioConfig.HarbourCentre, 15, 140, 8)
+			local at = randomAround(dock, 10, 70, 8)
 			local pick = rng:NextInteger(1, 4)
 			local clip = if pick == 4 then "Rigging_Creak" else `Rigging_Clink_{pick}`
 			AudioController.play(clip, at, rng:NextNumber(0.6, 1), rng:NextNumber(0.85, 1.15))
@@ -700,15 +758,20 @@ function AudioController.Init()
 			"Rain_OnWater",
 			"Under_Ambience",
 			"Amb_Crickets",
+			"Amb_Island",
 		}
 	do
 		bed(name)
 	end
-	local harbour = emitterAt(AudioConfig.HarbourCentre)
+	local harbour = emitterAt(RingLayout.Center)
 	harbour.Name = "HarbourBed"
+	dockEmitter = harbour
 	local hb = bed("Amb_Harbour", harbour)
 	hb.sound.RollOffMinDistance = 60
 	hb.sound.RollOffMaxDistance = AudioConfig.HarbourRadius + 150
+	local creak = bed("Amb_DockCreak", harbour)
+	creak.sound.RollOffMinDistance = 12
+	creak.sound.RollOffMaxDistance = 90
 	for _, name in
 		{
 			"Music_Loading",
@@ -782,16 +845,68 @@ function AudioController.Start()
 	end
 
 	-- world Sounds made outside this controller (server flares, island beds, buttons, Creator Store models) join
-	-- a group so the Settings sliders reach them: loops are ambience, the rest SFX
+	-- a group so the Settings sliders reach them: loops are ambience, the rest SFX. WorldSoundService tags them
+	-- server-side, so phones don't run a whole-world DescendantAdded hook
 	local function adopt(d: Instance)
-		if d:IsA("Sound") and d.SoundGroup == nil then
+		if d:IsA("Sound") and d.SoundGroup == nil and d:IsDescendantOf(Workspace) then
 			d.SoundGroup = AudioController.group(if d.Looped then "Ambience" else "SFX")
 		end
 	end
-	for _, d in Workspace:GetDescendants() do
+	for _, d in CollectionService:GetTagged("WorldSound") do
 		adopt(d)
 	end
-	Workspace.DescendantAdded:Connect(adopt)
+	CollectionService:GetInstanceAddedSignal("WorldSound"):Connect(adopt)
+	-- the default character sounds (footsteps, jump, splash) are made on each client, so the server never tags them
+	local function adoptCharacter(character: Model)
+		local function sfx(d: Instance)
+			if d:IsA("Sound") and d.SoundGroup == nil then
+				d.SoundGroup = AudioController.group("SFX")
+			end
+		end
+		for _, d in character:GetDescendants() do
+			sfx(d)
+		end
+		character.DescendantAdded:Connect(sfx)
+	end
+	local function hookCharacters(p: Player)
+		if p.Character then
+			adoptCharacter(p.Character)
+		end
+		p.CharacterAdded:Connect(adoptCharacter)
+	end
+	for _, p in Players:GetPlayers() do
+		hookCharacters(p)
+	end
+	Players.PlayerAdded:Connect(hookCharacters)
+
+	-- a thud as you drop into a seat or step off a vehicle (taking a boat's helm has its own board_hop sound)
+	local function hookSeats(character: Model)
+		local hum = character:WaitForChild("Humanoid", 10)
+		if not (hum and hum:IsA("Humanoid")) then
+			return
+		end
+		local wasVehicle = false
+		hum.Seated:Connect(function(active, seat)
+			local model = seat and seat:FindFirstAncestorWhichIsA("Model")
+			local vehicle = model ~= nil and model:GetAttribute("VehicleId") ~= nil
+			local root = character.PrimaryPart
+			local at = if root then root.Position else nil
+			if active and vehicle and model then
+				local craft = model:GetAttribute("Sub") == true
+					or CollectionService:HasTag(model, "Heli")
+				if craft or not (seat :: Instance):IsA("VehicleSeat") then
+					AudioController.play("FX_Thud", at, 0.6, rng:NextNumber(1.05, 1.2))
+				end
+			elseif not active and wasVehicle then
+				AudioController.play("FX_Thud", at, 0.45, rng:NextNumber(1.25, 1.4))
+			end
+			wasVehicle = active and vehicle
+		end)
+	end
+	if player.Character then
+		task.spawn(hookSeats, player.Character)
+	end
+	player.CharacterAdded:Connect(hookSeats)
 
 	local gui = player:WaitForChild("PlayerGui")
 	for _, d in gui:GetDescendants() do
@@ -820,6 +935,7 @@ function AudioController.Start()
 			acc = 0
 			updateAmbience(step, now, camPos)
 			updateMusic(step, now)
+			updateDuck(step, now)
 		end
 	end)
 end

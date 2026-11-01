@@ -272,6 +272,7 @@ function Waypoint.start(
 		gold.Visible = golden
 	end
 
+	local side = 1 -- the rim side a goal behind you pins to (-1 left, 1 right)
 	RunService.RenderStepped:Connect(function()
 		local cam = Workspace.CurrentCamera
 		local char = player.Character
@@ -326,7 +327,11 @@ function Waypoint.start(
 			-- pin it to the side to turn toward: pinned bottom-centre it sat right under the craft and
 			-- read as "here", so players drove on away from it (playtest 2026-10-24: 650 m and growing)
 			local rel = c.CFrame:PointToObjectSpace(pos :: Vector3)
-			x, y = if rel.X < 0 then -vp.X else 2 * vp.X, vp.Y / 2
+			-- dead astern it keeps its side: the hull's wobble flipped it rim to rim (live 2026-11-01, home behind)
+			if math.abs(rel.X) > 0.2 * math.abs(rel.Z) then
+				side = if rel.X < 0 then -1 else 1
+			end
+			x, y = if side < 0 then -vp.X else 2 * vp.X, vp.Y / 2
 		end
 		-- the marker stays inside a central ellipse, clear of the HUD in the corners and the
 		-- speed dock: past it (or behind you) it pins to the rim, its tip pointing the way

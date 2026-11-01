@@ -50,7 +50,7 @@ return function(t)
 				keystones += 1
 				t.expect(n.minor ~= nil).toBe(true)
 				local minor = n.minor :: any
-				t.expect(minor.count >= 2 and minor.count <= 4).toBe(true)
+				t.expect(minor.count >= 1 and minor.count <= 2).toBe(true)
 				t.expect(type(minor.kind)).toBe("string")
 				t.expect(minor.amount ~= 0).toBe(true)
 			else
@@ -131,10 +131,11 @@ return function(t)
 		t.expect(bridges).toBe(4)
 	end)
 
-	t.test("prices: minors 1, keystones 3 (rings 1-2) / 5 (rings 3-4), bridges 4", function()
+	t.test("prices: minors 2-3, keystones 3 (rings 1-2) / 5 (rings 3-4), bridges 4", function()
 		for _, n in S.nodes() do
 			if not n.keystone then
-				t.expect(n.medals).toBe(S.MINOR_MEDALS)
+				t.expect(n.medals >= 2 * S.MINOR_MEDALS and n.medals <= 3 * S.MINOR_MEDALS)
+					.toBe(true)
 			elseif n.sector == "Bridge" then
 				t.expect(n.medals).toBe(S.BRIDGE_MEDALS)
 			elseif n.ring <= 2 then
@@ -163,8 +164,10 @@ return function(t)
 				local fromRing = if from then from.ring else 0
 				local fromAngle = if from then from.angle else k.angle
 				local previous = if from then from.id else nil
-				local expectedCount = math.clamp(math.ceil(k.ring), 2, 4)
-				t.expect(minor.count).toBe(expectedCount)
+				-- feel #16: the old 2-4 one-Medal steps merged into 1 dot (2 past ring 3), same Medals and effect
+				local steps = math.clamp(math.ceil(k.ring), 2, 4)
+				t.expect(minor.count).toBe(if k.ring > 3 then 2 else 1)
+				t.expect(minor.medals * minor.count).toBe(steps * S.MINOR_MEDALS)
 				for i = 1, minor.count do
 					local id = `{k.id}_m{i}`
 					local m = S.byId[id]
@@ -175,7 +178,7 @@ return function(t)
 						t.expect(m.soon).toBe(k.soon)
 						t.expect(m.focus).toBe(k.focus)
 						t.expect(m.sector).toBe(k.sector)
-						t.expect(m.medals).toBe(1)
+						t.expect(m.medals).toBe(minor.medals)
 						t.expect(m.effect.kind).toBe(minor.kind)
 						t.expect(m.effect.amount).toBe(minor.amount)
 						local f = i / (minor.count + 1)
@@ -249,7 +252,7 @@ return function(t)
 
 	t.test("canBuy: any one need, Medals, rim nodes refuse", function()
 		t.expect({ S.canBuy({}, "Nope", 1e9) }).toEqual({ false, "Unknown" })
-		-- a keystone is reached through its own dots (1 Medal each)
+		-- a keystone is reached through its own dot (Throttle's: 2 Medals)
 		local function withDots(id: string, extra: { string }?): { [string]: boolean }
 			local ids = table.clone(extra or {})
 			for i = 1, S.byId[id].minor.count do
@@ -259,7 +262,8 @@ return function(t)
 		end
 		t.expect({ S.canBuy({}, "Throttle", 1e9) }).toEqual({ false, "Needs" })
 		t.expect({ S.canBuy({}, "Throttle_m1", 0) }).toEqual({ false, "Medals" })
-		t.expect({ S.canBuy({}, "Throttle_m1", 1) }).toEqual({ true, nil })
+		t.expect({ S.canBuy({}, "Throttle_m1", 1) }).toEqual({ false, "Medals" })
+		t.expect({ S.canBuy({}, "Throttle_m1", 2) }).toEqual({ true, nil })
 		t.expect({ S.canBuy(withDots("Throttle"), "Throttle", 2) }).toEqual({ false, "Medals" })
 		t.expect({ S.canBuy(withDots("Throttle"), "Throttle", 3) }).toEqual({ true, nil })
 		t.expect({ S.canBuy(owned({ "Throttle" }), "Throttle", 1e9) }).toEqual({ false, "Owned" })
@@ -301,7 +305,7 @@ return function(t)
 				"MarketDay",
 				"FreshCatch_m1",
 			}))
-			t.expect(mixed.gatherMult).toBeCloseTo(0.15 + 0.02, 1e-9)
+			t.expect(mixed.gatherMult).toBeCloseTo(0.15 + S.byId.FreshCatch_m1.effect.amount, 1e-9)
 			t.expect(mixed.extraSlots).toEqual({ Gatherer = 1 })
 			t.expect(S.effects(owned({ "Bunks", "BigFamily" })).workerCapAdd).toBe(15)
 		end

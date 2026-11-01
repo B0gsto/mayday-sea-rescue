@@ -182,12 +182,12 @@ the same for everyone.
 
 Full screen, opened from the left-menu Skills button. A dark sea-chart background, a compass rose at the centre
 ("You"), four coloured sectors spreading out to the corners like Valhalla's Melee / Ranged / Stealth. Paths wind
-outward through small dots (minor nodes, +1–3%) to octagon badges (keystones: a new ability or a big jump).
+outward through small dots (minor nodes, one per path, two past ring 3: +4–6%) to octagon badges (keystones: a new ability or a big jump).
 Neighbouring sectors are joined by grey bridge nodes. **Updates add new outer rings and new branches at the rim**,
 never by changing what is already there.
 
 Currency: **Medals**, earned by rescuing (1 per 2 people, +1 for a gold grade), quests (+3), HQ levels (+5), the daily
-chest. Minor nodes cost 1, keystones 3 (rings 1–2) or 5 (rings 3–4), bridges 4. Rings 1–4 ≈ 250 Medals ≈ the 17 h
+chest. Minor nodes cost 2–3 (the old 2–4 one-Medal dots merged, 2026-10-31 feel #16), keystones 3 (rings 1–2) or 5 (rings 3–4), bridges 4. Rings 1–4 ≈ 250 Medals ≈ the 17 h
 track (tune). Cash goes to buildings and levels; Medals only to the tree. Robux never buys Medals or nodes. Reset is
 free in the panel.
 

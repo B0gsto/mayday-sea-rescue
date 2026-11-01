@@ -6,6 +6,10 @@
 -- sphere cast from the hull (own craft and characters excluded) that snaps in on a hit and eases
 -- back out. The player can orbit (right-drag, right stick, touch drag) and zoom; the arm swings
 -- back behind the craft within about a second of steering, or a few seconds without input.
+-- Cold open: when the casualty climbs aboard, the arm swings round once to frame home (your berth) past the
+-- rider, holds, then swings back (live 2026-11-01: phone riders boarded at speed bow-out, home dead astern,
+-- and drove on away from it). A cut under Reduce motion.
+local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
 local CameraMath = require(script.Parent.CameraMath)
@@ -34,6 +38,8 @@ local state = {
 	trauma = 0,
 	clock = 0,
 	fresh = true,
+	aboard = false,
+	lookUntil = 0, -- state.clock until which the arm frames home
 }
 
 local baseDistance = 24
@@ -44,14 +50,18 @@ Chase.RIDER_FOCUS = 6.5
 -- a passenger sits behind the rider, between them and the camera (verify 2026-10-26): with one aboard the
 -- pivot rises and the arm looks down a little more, so they drop to the frame's lower edge
 local PASSENGER_LIFT, PASSENGER_PITCH = 2, math.rad(7)
+local LOOK_HOME = 2.2 -- s the arm frames home after the cold-open pickup (swing ~0.7 s, then hold) -- tune
 local rider = false
+local phone = false
 
 -- Sizes the arm from the hull: about 1.6 hull lengths back, focus above the deck. A small craft
 -- (the jet ski and its sled) sits closer and flatter: it fills less of the frame and the casualty / throw
 -- target ahead stays near the horizon. Its rider sits in the line of sight, so the pivot rides over their
 -- head and the arm looks down past them (playtest v46: the call pin and survivor hid behind the head).
 -- The cold open sits flatter still. The sub (small, closed cockpit) keeps the low deck focus.
-function Chase.enter(model: Model, root: BasePart)
+-- On a phone (`touch`) the arm sits a little closer: the craft reads on the small screen.
+function Chase.enter(model: Model, root: BasePart, touch: boolean?)
+	phone = touch == true
 	local _, size = model:GetBoundingBox()
 	local length = math.max(size.X, size.Z)
 	local small = length < 20
@@ -71,6 +81,9 @@ function Chase.enter(model: Model, root: BasePart)
 		elseif rider then math.rad(10)
 		elseif small then math.rad(8)
 		else math.rad(13)
+	if phone then
+		baseDistance *= 0.88
+	end
 	state.heading = CameraMath.heading(root.CFrame)
 	state.yaw, state.pitch, state.zoom, state.idle = 0, restPitch, 1, 10
 	state.arm = baseDistance
@@ -78,6 +91,7 @@ function Chase.enter(model: Model, root: BasePart)
 	state.focus = root.Position
 	state.trauma = 0
 	state.fresh = true
+	state.aboard, state.lookUntil = false, 0
 	Workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
 end
 
@@ -92,7 +106,30 @@ end
 local castParams = RaycastParams.new()
 castParams.FilterType = Enum.RaycastFilterType.Exclude
 castParams.IgnoreWater = true
-castParams.RespectCanCollide = true
+
+-- A sphere cast that skips what cannot hide the view (CameraMath.occludes) and characters, so the arm
+-- pulls in under dock roofs and building meshes that do not collide. `params` gains the skipped parts.
+function Chase.cast(
+	origin: Vector3,
+	radius: number,
+	dir: Vector3,
+	params: RaycastParams
+): RaycastResult?
+	for _ = 1, 6 do
+		local hit = Workspace:Spherecast(origin, radius, dir, params)
+		if not hit then
+			return nil
+		end
+		local part = hit.Instance
+		local who = part:FindFirstAncestorOfClass("Model")
+		local person = who ~= nil and who:FindFirstChildOfClass("Humanoid") ~= nil
+		if not person and CameraMath.occludes(part.CanCollide, part.Transparency, part.Size) then
+			return hit
+		end
+		params:AddToFilter(part)
+	end
+	return nil
+end
 
 -- One frame. `lookDelta` (yaw, pitch) radians of orbit input this frame.
 function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
@@ -104,6 +141,10 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	local flatSpeed = Vector3.new(vel.X, 0, vel.Z).Magnitude
 	local aboard = rider and (tonumber(ctx.model:GetAttribute("SurvivorCount")) or 0) > 0
 	local rest = restPitch + (if aboard then PASSENGER_PITCH else 0)
+	if aboard and not state.aboard and ctx.model:GetAttribute("ColdOpen") == true then
+		state.lookUntil = state.clock + LOOK_HOME
+	end
+	state.aboard = aboard
 
 	-- heading: the hull's, with a short lag so a turn reads but the nose never leaves the frame
 	-- (0.35 s lost the view in hard A/D turns, real-client playtest)
@@ -113,7 +154,7 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 
 	-- orbit input, then the swing back behind the boat
 	if lookDelta.Magnitude > 1e-5 then
-		state.idle = 0
+		state.idle, state.lookUntil = 0, 0 -- the player's own look ends the home shot
 	else
 		state.idle += dt
 	end
@@ -121,7 +162,13 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	state.pitch = math.clamp(state.pitch - lookDelta.Y, math.rad(-5), math.rad(70))
 	-- steering swings the arm back behind the craft within about a second; idle under way, slower
 	local steering = math.abs(root.AssemblyAngularVelocity.Y) > 0.25
-	if state.idle > 0.3 and steering then
+	local bay = Players.LocalPlayer:GetAttribute("BayCFrame")
+	if state.clock < state.lookUntil and typeof(bay) == "CFrame" then
+		local want = CameraMath.yawToward(state.heading, root.Position, bay.Position)
+		state.yaw = if Comfort.reducedMotion()
+			then want
+			else CameraMath.dampAngle(state.yaw, want, 0.18, dt)
+	elseif state.idle > 0.3 and steering then
 		state.yaw = CameraMath.dampAngle(state.yaw, 0, 0.22, dt)
 		state.pitch = CameraMath.damp(state.pitch, rest, 0.3, dt)
 	elseif state.idle > 2.5 and flatSpeed > 5 then
@@ -147,7 +194,7 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	local hull = Vector3.new(root.Position.X, state.focusY + lift, root.Position.Z)
 	local lead = focus - hull
 	if lead.Magnitude > 0.5 then
-		local block = Workspace:Spherecast(hull, 0.8, lead, castParams)
+		local block = Chase.cast(hull, 0.8, lead, castParams)
 		if block then
 			focus = hull + lead.Unit * math.max(block.Distance - 0.6, 0)
 		end
@@ -158,7 +205,7 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 		* state.zoom
 		* (1 + 0.15 * math.clamp(flatSpeed / math.max(ctx.topSpeed, 1), 0, 1))
 	local dir = CameraMath.chaseOffset(state.heading, state.yaw, state.pitch, 1)
-	local hit = Workspace:Spherecast(focus, 0.8, dir * desired, castParams)
+	local hit = Chase.cast(focus, 0.8, dir * desired, castParams)
 	local length = CameraMath.armDistance(desired, if hit then hit.Distance else nil, 0.6, 3)
 	state.arm = CameraMath.relaxArm(if state.fresh then length else state.arm, length, 0.4, dt)
 	local pos = focus + dir * state.arm
@@ -182,8 +229,9 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	local cf = CFrame.lookAt(pos, focus) * CFrame.Angles(s.X, s.Y, s.Z)
 	camera.CFrame = cf
 	local fov = Comfort.get("fov") - 5
-	if Comfort.get("speedFov") then
-		fov = CameraMath.speedFov(fov, flatSpeed, ctx.topSpeed, 6)
+	if Comfort.get("speedFov") and not Comfort.reducedMotion() then
+		-- a smaller kick on a phone: the same swing reads stronger on a small screen
+		fov = CameraMath.speedFov(fov, flatSpeed, ctx.topSpeed, if phone then 4 else 6)
 	end
 	camera.FieldOfView = CameraMath.damp(camera.FieldOfView, fov, 0.25, dt)
 	state.fresh = false

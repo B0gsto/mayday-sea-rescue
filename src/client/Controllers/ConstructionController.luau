@@ -5,7 +5,9 @@
 -- a Robux Finish button) pops in only near the site and draws on top of the walls. The building is the
 -- server's model, its parts above the progress height hidden locally in BuildSeq's bottom-to-top order. On
 -- finish the remaining bricks drop with the BuildSeq bounce, VFXKit's build_done / hq_levelup plays and the
--- fence/scaffold go away.
+-- fence/scaffold go away. Each brick lands a hair low and settles with one plastic click per course; the snap grows
+-- with the level and the unlock flies to its button (docs/28 feel 5-6). Your builds that land off screen replay as a
+-- watch beat the next time you step off at home (feel 7).
 -- Late joiners reconcile to the same attributes, so they see the same state.
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -16,11 +18,14 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AssetIds = require(Shared:WaitForChild("Config"):WaitForChild("AssetIds"))
 local BuildSeq = require(Shared:WaitForChild("BuildSeq"))
 local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
+local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
+local VFXTextures = require(Shared:WaitForChild("Config"):WaitForChild("VFXTextures"))
 
 local UI = script.Parent.Parent:WaitForChild("UI")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
@@ -31,7 +36,9 @@ local Layout = require(UI:WaitForChild("Layout"))
 local PriceButtonUI = require(Kit:WaitForChild("PriceButton"))
 local Style = require(Kit:WaitForChild("Style"))
 local Theme = require(Kit:WaitForChild("Theme"))
+local UnlockFly = require(UI:WaitForChild("UnlockFly"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
+local VFXPresets = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("Presets"))
 
 local ConstructionController = {}
 local player = Players.LocalPlayer
@@ -71,7 +78,7 @@ type Site = {
 	bar: Frame,
 	timer: TextLabel,
 	count: TextLabel,
-	post: Part,
+	post: BasePart,
 	dust: ParticleEmitter,
 	prompt: ProximityPrompt?,
 	gui: BillboardGui,
@@ -79,6 +86,10 @@ type Site = {
 	near: boolean,
 	finish: PriceButtonUI.PriceButton?,
 	price: number,
+	clickAt: number, -- os.clock() of the last course click (capped ~3 a second)
+	stacks: { BasePart }, -- the brick stacks, top bricks first: they run down as the building rises
+	crane: { pivot: CFrame, parts: { BasePart }, offsets: { CFrame }, bob: number }, -- slew round the mast; parts[bob..] bob
+	drop: { parts: { BasePart }, finals: { CFrame } }?, -- the bricks the finish dropped (a replay drops them again)
 }
 
 local sites: { [number]: Site } = {}
@@ -204,6 +215,25 @@ local function hide(part: BasePart, st: Site, on: boolean)
 	end
 end
 
+-- A brick falls `fall` s to BuildSeq.SINK under its rest, then Back-Outs up into it: the Lego squash.
+local function settle(part: BasePart, final: CFrame, fall: number, delay: number)
+	local drop = TweenService:Create(
+		part,
+		TweenInfo.new(fall, Enum.EasingStyle.Quad, Enum.EasingDirection.In, 0, false, delay),
+		{ CFrame = final - Vector3.new(0, BuildSeq.SINK, 0) }
+	)
+	drop.Completed:Connect(function(state)
+		if state == Enum.PlaybackState.Completed then
+			TweenService:Create(
+				part,
+				TweenInfo.new(BuildSeq.SETTLE, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+				{ CFrame = final }
+			):Play()
+		end
+	end)
+	drop:Play()
+end
+
 -- The site's billboard over the roof: progress bar, time left and the hammer count. Under PlayerGui (adorned to
 -- the sign post) so its Finish button takes clicks and taps; on top so the walls never hide it.
 local function makeSign(st: Site, build: boolean)
@@ -212,7 +242,8 @@ local function makeSign(st: Site, build: boolean)
 	gui.Name = `ConstructionSign_{st.plot.Name}`
 	gui.Size = UDim2.fromOffset(230, 92)
 	gui.Adornee = st.post
-	gui.StudsOffsetWorldSpace = Vector3.new(0, st.maxY - st.ground + 2, st.hd + 1.5) -- post -> over the lot centre
+	gui.StudsOffsetWorldSpace = Vector3.new(st.center.X, st.maxY + 6, st.center.Z - 3)
+		- st.post.Position -- over the lot
 	gui.AlwaysOnTop = true
 	gui.Active = true
 	gui.ResetOnSpawn = false
@@ -275,6 +306,172 @@ local function makeSign(st: Site, build: boolean)
 	st.timer.TextXAlignment = Enum.TextXAlignment.Right
 end
 
+-- M_Prop_BuildSiteKit (Blender, art/source/props/M_Prop_BuildSiteKit/build.py): each module's MeshPart and its
+-- offset from the module's origin (ATT_<slot>). nil until DepotArtService publishes the kit: the Parts stand in.
+local KIT_SLOT = {
+	FencePanel = "Fence",
+	FenceGate = "Gate",
+	FencePost = "Post",
+	ScaffoldBay = "Scaffold",
+	CraneBase = "Crane",
+	CraneSlew = "Crane",
+	CraneHook = "Crane",
+	StackPallet = "Stack",
+	StackLow = "Stack",
+	StackMid = "Stack",
+	StackTop = "Stack",
+	SignBoard = "Sign",
+	Cone = "Cone",
+	Barrier = "Barrier",
+}
+local kitCache: { [string]: { part: BasePart, offset: CFrame } }? = nil
+
+local function siteKit(): { [string]: { part: BasePart, offset: CFrame } }?
+	if kitCache then
+		return kitCache
+	end
+	local folder = ReplicatedStorage:FindFirstChild("DepotTemplates")
+	local kit = folder and folder:FindFirstChild("BuildSiteKit")
+	local att = (AssetIds.Attachments :: any).M_Prop_BuildSiteKit
+	if not (kit and kit:IsA("Model") and att) then
+		return nil
+	end
+	local pivot = kit:GetPivot()
+	local out, count = {}, 0
+	for _, d in kit:GetDescendants() do
+		local key = if d:IsA("BasePart") then string.match(d.Name, "^L%d%d_(%a+)") else nil
+		local origin = key and KIT_SLOT[key] and att[`ATT_{KIT_SLOT[key]}`]
+		if key and origin and not out[key] then
+			out[key] = {
+				part = d :: BasePart,
+				offset = CFrame.new(origin):Inverse() * pivot:ToObjectSpace(d.CFrame),
+			}
+			count += 1
+		end
+	end
+	if count < 14 then -- a partial upload: keep the Parts
+		return nil
+	end
+	kitCache = out
+	return out
+end
+
+-- One kit module with its origin at `cf`, stretched by sx along the module's x (fence and scaffold runs fit the lot).
+local function module(parent: Instance, key: string, cf: CFrame, sx: number?): BasePart
+	local k = (kitCache :: any)[key]
+	local p = k.part:Clone()
+	local offset = k.offset
+	if sx and sx ~= 1 then
+		local along = offset.Rotation:VectorToObjectSpace(Vector3.xAxis) -- the module's x in the part's own axes
+		p.Size *= Vector3.one + (sx - 1) * Vector3.new(
+			math.abs(along.X),
+			math.abs(along.Y),
+			math.abs(along.Z)
+		)
+		offset = CFrame.new(offset.Position * Vector3.new(sx, 1, 1)) * offset.Rotation
+	end
+	p.Anchored = true
+	p.CanCollide, p.CanTouch, p.CanQuery = false, false, false
+	p.CastShadow = false
+	p.CFrame = cf * offset
+	p.Parent = parent
+	return p
+end
+
+-- The kit dressing round the lot; false when the kit has not loaded (the caller builds the Parts).
+local function kitProps(st: Site, props: Model, at: CFrame): boolean
+	if not siteKit() then
+		return false
+	end
+	local fw, fd = st.hw + 4, st.hd + 4 -- one stud wider than the Parts fence: the scaffold fits inside
+	local gate = not st.sea and fw >= 11
+	if not st.sea then
+		-- fence ring, counter-clockwise from the front so every panel's front (-z) faces out; posts at the corners
+		local corners = {
+			Vector3.new(-fw, 0, -fd),
+			Vector3.new(fw, 0, -fd),
+			Vector3.new(fw, 0, fd),
+			Vector3.new(-fw, 0, fd),
+		}
+		local function fill(a: Vector3, b: Vector3)
+			local dir = (b - a).Unit
+			local len = (b - a).Magnitude
+			local n = math.max(1, math.round(len / 8))
+			local sx = len / (n * 8)
+			for i = 0, n - 1 do
+				local pos = a + dir * (i + 0.5) * len / n
+				module(props, "FencePanel", at * CFrame.fromMatrix(pos, dir, Vector3.yAxis), sx)
+			end
+		end
+		for i, c in corners do
+			local nxt = corners[i % 4 + 1]
+			local dir = (nxt - c).Unit
+			module(props, "FencePost", at * CFrame.new(c))
+			if i == 1 and gate then
+				module(props, "FenceGate", at * CFrame.new(0, 0, -fd))
+				fill(c + dir * 0.65, Vector3.new(-4, 0, -fd))
+				fill(Vector3.new(4, 0, -fd), nxt - dir * 0.65)
+			else
+				fill(c + dir * 0.65, nxt - dir * 0.65)
+			end
+		end
+		-- scaffold bays up the front face, tiled to its width, stacked to about half the finished height
+		local n = math.max(1, math.round(st.hw * 2 / 6))
+		local sx = st.hw * 2 / (n * 6)
+		for level = 0, math.clamp(math.round((st.maxY - st.ground) / 10), 1, 3) - 1 do
+			for i = 0, n - 1 do
+				local x = -st.hw + (i + 0.5) * 6 * sx
+				module(props, "ScaffoldBay", at * CFrame.new(x, level * 5, -st.hd - 1.4), sx)
+			end
+		end
+		module(
+			props,
+			"Barrier",
+			at * CFrame.new(fw + 2, 0, -fd + 4) * CFrame.Angles(0, -math.pi / 2, 0)
+		)
+		if gate then -- cones flank the opening
+			module(props, "Cone", at * CFrame.new(-4.9, 0, -fd - 1.3))
+			module(props, "Cone", at * CFrame.new(4.9, 0, -fd - 1.3))
+		end
+	end
+	-- the tower crane: off the back-left corner with its jib over the lot (at sea: on the front-left barge); the
+	-- slew and hook turn round ATT_CranePivot
+	local hw, hd = st.hw + 3, st.hd + 3
+	local base = if st.sea
+		then at * CFrame.new(-hw + 3, 0, -hd - 4)
+		else at
+			* CFrame.new(-fw - 4.5, 0, fd + 4.5)
+			* CFrame.Angles(0, math.pi / 4, 0) -- the brick clears the walls
+	module(props, "CraneBase", base)
+	local att = (AssetIds.Attachments :: any).M_Prop_BuildSiteKit
+	local pivot = base * CFrame.new(att.ATT_CranePivot - att.ATT_Crane)
+	st.crane = { pivot = pivot, parts = {}, offsets = {}, bob = 2 }
+	for _, key in { "CraneSlew", "CraneHook" } do
+		local part = module(props, key, base)
+		table.insert(st.crane.parts, part)
+		table.insert(st.crane.offsets, pivot:ToObjectSpace(part.CFrame))
+	end
+	-- brick pallets along the front right, in view: three courses each, the top courses go first as the building rises
+	local courses: { { BasePart } } = { {}, {}, {} }
+	for n = 0, 2 do
+		local cf = at
+			* if st.sea
+				then CFrame.new(-9 + n * 3.8, 0, hd + 2)
+				else CFrame.new(6.5 + n * 3.8, 0, -fd - 2.4)
+		module(props, "StackPallet", cf)
+		for k, key in { "StackTop", "StackMid", "StackLow" } do
+			table.insert(courses[k], module(props, key, cf))
+		end
+	end
+	st.stacks = table.move(courses[3], 1, 3, 7, table.move(courses[2], 1, 3, 4, courses[1]))
+	st.post = module(props, "SignBoard", at * CFrame.new(
+		if gate then -math.min(8.6, fw - 2.4) else 0, -- left of the gate: the pallets go right
+		0,
+		if st.sea then -hd - 1.5 else -fd - 2
+	))
+	return true
+end
+
 -- The Lego dressing round the lot (about 37 parts a site).
 local function makeProps(st: Site)
 	local props = Instance.new("Model")
@@ -303,90 +500,127 @@ local function makeProps(st: Site)
 			)
 		end
 	end
-	for _, run in runs do
-		local offset, along, flat = run.offset, run.along, run.flat
-		for n = 0, 2 do
-			local shift = (n - 1) * along / 3
-			local size = if flat
-				then Vector3.new(along / 3 - 0.3, 3, 0.4)
-				else Vector3.new(0.4, 3, along / 3 - 0.3)
+	if not kitProps(st, props, at) then
+		for _, run in runs do
+			local offset, along, flat = run.offset, run.along, run.flat
+			for n = 0, 2 do
+				local shift = (n - 1) * along / 3
+				local size = if flat
+					then Vector3.new(along / 3 - 0.3, 3, 0.4)
+					else Vector3.new(0.4, 3, along / 3 - 0.3)
+				brick(
+					props,
+					"Fence",
+					size,
+					at
+						* CFrame.new(
+							offset.X + (if flat then shift else 0),
+							1.5,
+							offset.Z + (if flat then 0 else shift)
+						),
+					if n % 2 == 0 then RED else WHITE
+				)
+			end
+		end
+		for _, corner in
+			(if st.sea
+				then {}
+				else {
+					Vector3.new(-hw, 0, -hd),
+					Vector3.new(hw, 0, -hd),
+					Vector3.new(-hw, 0, hd),
+					Vector3.new(hw, 0, hd),
+				}) :: { Vector3 }
+		do
 			brick(
 				props,
-				"Fence",
-				size,
-				at
-					* CFrame.new(
-						offset.X + (if flat then shift else 0),
-						1.5,
-						offset.Z + (if flat then 0 else shift)
-					),
-				if n % 2 == 0 then RED else WHITE
+				"FencePost",
+				Vector3.new(0.6, 3.4, 0.6),
+				at * CFrame.new(corner.X, 1.7, corner.Z),
+				RED
 			)
 		end
-	end
-	for _, corner in
-		(if st.sea
-			then {}
-			else {
-				Vector3.new(-hw, 0, -hd),
-				Vector3.new(hw, 0, -hd),
-				Vector3.new(-hw, 0, hd),
-				Vector3.new(hw, 0, hd),
-			}) :: { Vector3 }
-	do
-		brick(
+		-- scaffold poles at the corners of the building, with two rails on the front
+		for _, corner in
+			(if st.sea
+				then {} -- the rising pillars are the scaffold
+				else {
+					Vector3.new(-st.hw, 0, -st.hd),
+					Vector3.new(st.hw, 0, -st.hd),
+					Vector3.new(-st.hw, 0, st.hd),
+					Vector3.new(st.hw, 0, st.hd),
+				}) :: { Vector3 }
+		do
+			brick(
+				props,
+				"Scaffold",
+				Vector3.new(0.5, 10, 0.5),
+				at * CFrame.new(corner.X, 5, corner.Z),
+				STEEL
+			)
+		end
+		for _, y in (if st.sea then {} else { 4, 8 }) :: { number } do
+			brick(
+				props,
+				"ScaffoldRail",
+				Vector3.new(st.hw * 2, 0.35, 0.35),
+				at * CFrame.new(0, y, -st.hd - 0.6),
+				STEEL
+			)
+		end
+		-- a small Lego crane by the front-left corner
+		local base = at * CFrame.new(-hw + 3, 0, -hd - 4)
+		brick(props, "CraneBase", Vector3.new(4, 1.2, 4), base * CFrame.new(0, 0.6, 0), GREY)
+		brick(props, "CraneMast", Vector3.new(1.2, 13, 1.2), base * CFrame.new(0, 7, 0), YELLOW)
+		local pivot = base * CFrame.new(0, 13.6, 0)
+		st.crane = { pivot = pivot, parts = {}, offsets = {}, bob = 3 }
+		for _, c in
+			{
+				{ "CraneCab", Vector3.new(2.4, 2.4, 2.4), Vector3.zero, RED },
+				{ "CraneJib", Vector3.new(11, 0.7, 0.7), Vector3.new(4.5, 0.8, 0), YELLOW },
+				{ "CraneHook", Vector3.new(0.3, 4.5, 0.3), Vector3.new(9.4, -1.5, 0), GREY },
+				{ "CraneBlock", Vector3.new(1.1, 1.1, 1.1), Vector3.new(9.4, -3.9, 0), RED },
+			} :: { { any } }
+		do
+			local offset = CFrame.new(c[3])
+			table.insert(st.crane.parts, brick(props, c[1], c[2], pivot * offset, c[4]))
+			table.insert(st.crane.offsets, offset)
+		end
+		-- brick stacks along the front: the top bricks go first as the building rises
+		local tops: { BasePart }, bottoms: { BasePart } = {}, {}
+		for n = 0, 2 do
+			local stack = at * CFrame.new(-8 + n * 3.4, 0, hd + 2)
+			table.insert(
+				bottoms,
+				brick(
+					props,
+					"Bricks",
+					Vector3.new(2.6, 0.8, 1.2),
+					stack * CFrame.new(0, 0.4, 0),
+					WHITE
+				)
+			)
+			table.insert(
+				tops,
+				brick(
+					props,
+					"Bricks",
+					Vector3.new(2.6, 0.8, 1.2),
+					stack * CFrame.new(0, 1.2, 0),
+					RED
+				)
+			)
+		end
+		st.stacks = table.move(bottoms, 1, #bottoms, #tops + 1, tops)
+		-- the sign post
+		st.post = brick(
 			props,
-			"FencePost",
-			Vector3.new(0.6, 3.4, 0.6),
-			at * CFrame.new(corner.X, 1.7, corner.Z),
-			RED
+			"SignPost",
+			Vector3.new(0.5, 8, 0.5),
+			at * CFrame.new(0, 4, -hd - 1.5),
+			GREY
 		)
 	end
-	-- scaffold poles at the corners of the building, with two rails on the front
-	for _, corner in
-		(if st.sea
-			then {} -- the rising pillars are the scaffold
-			else {
-				Vector3.new(-st.hw, 0, -st.hd),
-				Vector3.new(st.hw, 0, -st.hd),
-				Vector3.new(-st.hw, 0, st.hd),
-				Vector3.new(st.hw, 0, st.hd),
-			}) :: { Vector3 }
-	do
-		brick(
-			props,
-			"Scaffold",
-			Vector3.new(0.5, 10, 0.5),
-			at * CFrame.new(corner.X, 5, corner.Z),
-			STEEL
-		)
-	end
-	for _, y in (if st.sea then {} else { 4, 8 }) :: { number } do
-		brick(
-			props,
-			"ScaffoldRail",
-			Vector3.new(st.hw * 2, 0.35, 0.35),
-			at * CFrame.new(0, y, -st.hd - 0.6),
-			STEEL
-		)
-	end
-	-- a small Lego crane by the front-left corner
-	local base = at * CFrame.new(-hw + 3, 0, -hd - 4)
-	brick(props, "CraneBase", Vector3.new(4, 1.2, 4), base * CFrame.new(0, 0.6, 0), GREY)
-	brick(props, "CraneMast", Vector3.new(1.2, 13, 1.2), base * CFrame.new(0, 7, 0), YELLOW)
-	brick(props, "CraneCab", Vector3.new(2.4, 2.4, 2.4), base * CFrame.new(0, 13.6, 0), RED)
-	brick(props, "CraneJib", Vector3.new(11, 0.7, 0.7), base * CFrame.new(4.5, 14.4, 0), YELLOW)
-	brick(props, "CraneHook", Vector3.new(0.3, 4.5, 0.3), base * CFrame.new(9.4, 12.1, 0), GREY)
-	brick(props, "CraneBlock", Vector3.new(1.1, 1.1, 1.1), base * CFrame.new(9.4, 9.7, 0), RED)
-	-- brick stacks along the front
-	for n = 0, 2 do
-		local stack = at * CFrame.new(-8 + n * 3.4, 0, hd + 2)
-		brick(props, "Bricks", Vector3.new(2.6, 0.8, 1.2), stack * CFrame.new(0, 0.4, 0), WHITE)
-		brick(props, "Bricks", Vector3.new(2.6, 0.8, 1.2), stack * CFrame.new(0, 1.2, 0), RED)
-	end
-	-- the sign post
-	st.post =
-		brick(props, "SignPost", Vector3.new(0.5, 8, 0.5), at * CFrame.new(0, 4, -hd - 1.5), GREY)
 	local dust = Instance.new("Part")
 	dust.Name = "Dust"
 	dust.Size = Vector3.one
@@ -395,7 +629,10 @@ local function makeProps(st: Site)
 	dust.Position = at.Position + Vector3.new(0, 2, -st.hd)
 	dust.Parent = props
 	st.dust = Instance.new("ParticleEmitter")
-	st.dust.Texture = "rbxasset://textures/particles/smoke_main.dds"
+	local puff = VFXTextures.puff_smoke -- the game's studded puffs, not the stock smoke
+	st.dust.Texture = puff.id
+	st.dust.FlipbookLayout = (Enum.ParticleFlipbookLayout :: any)[puff.layout]
+	st.dust.FlipbookMode = (Enum.ParticleFlipbookMode :: any)[puff.mode]
 	st.dust.Color = ColorSequence.new(Color3.fromRGB(230, 222, 205))
 	st.dust.Size = NumberSequence.new(2, 5)
 	st.dust.Transparency = NumberSequence.new({
@@ -509,6 +746,10 @@ local function startSite(plot: Model, model: Model, key: string, mine: boolean):
 		near = false,
 		finish = nil,
 		price = -1,
+		clickAt = 0,
+		stacks = {},
+		crane = nil :: any,
+		drop = nil,
 	}
 	for part in kept do
 		hide(part, site, true)
@@ -524,6 +765,7 @@ end
 local function update(site: Site, progress: number, rate: number, builders: number)
 	local p = math.clamp(progress, 0, 1)
 	local cutoff = site.lo + (site.hi - site.lo) * p
+	local popped = false
 	for n, part in site.parts do
 		local hid = site.ys[n] > cutoff + 1e-3 -- the resting height: a part mid-drop must not hide again
 		if not hid and site.hidden[part] and site.ready then
@@ -531,14 +773,27 @@ local function update(site: Site, progress: number, rate: number, builders: numb
 			local final = part.CFrame
 			hide(part, site, false)
 			part.CFrame = final + Vector3.new(0, 2, 0)
-			TweenService:Create(
-				part,
-				TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
-				{ CFrame = final }
-			):Play()
+			settle(part, final, 0.25, 0)
+			popped = true
 		else
 			hide(part, site, hid)
 		end
+	end
+	local now = os.clock()
+	if popped and now - site.clickAt >= BuildSeq.CLICK_GAP then
+		site.clickAt = now
+		task.delay(0.25, function() -- the course clicks home, higher as the building rises
+			local at = Vector3.new(
+				site.center.X,
+				site.ground + (site.maxY - site.ground) * p,
+				site.center.Z
+			)
+			local pitch = BuildSeq.PITCH_LO + p * (BuildSeq.PITCH_HI - BuildSeq.PITCH_LO)
+			AudioController.play("FX_Snap", at, 0.45, pitch)
+		end)
+	end
+	for k, stack in site.stacks do
+		stack.Transparency = if k <= math.floor(p * #site.stacks) then 1 else 0
 	end
 	site.progress = p
 	site.ready = true
@@ -671,26 +926,56 @@ local function plateDrop(site: Site, parts: { BasePart }, finals: { CFrame }, mi
 	site.props:Destroy()
 end
 
--- The last bricks drop with the BuildSeq bounce, a Lego clack and confetti as they land (your HQ: a fanfare too).
+local function isMine(site: Site): boolean
+	return site.plot.Name == `Plot{player:GetAttribute("DockPlot")}`
+end
+
+-- The tutorial's free Hut and first Workshop keep OnboardingController's own beats.
+local function tutorialBeat(site: Site): boolean
+	return site.level == 1 and (site.key == "HQ" or site.key == "Workshop")
+end
+
+-- docs/28 feel 6: what the level unlocked flies off the roof to its button (your own buildings only, not decor)
+local function flyUnlock(site: Site, roof: Vector3)
+	local def = DockConfig.Buildings[site.key]
+	if def and isMine(site) and not tutorialBeat(site) then
+		local target = BuildSeq.unlockTarget(
+			site.key,
+			site.level,
+			def,
+			ProgressionConfig.Vehicles,
+			DockConfig.Unlocks
+		)
+		task.spawn(UnlockFly.play, roof, target)
+	end
+end
+
+-- The last bricks drop with the BuildSeq bounce, a plastic click per course, a Lego clack and confetti as they
+-- land (your HQ: a fanfare too). A replay (feel 7) drops the same bricks again from `site.drop`.
 local function land(site: Site)
-	local parts, ys = {}, {}
 	for part in site.kept do
 		hide(part, site, false) -- already standing: no drop
 	end
-	for part in site.hidden do
-		table.insert(parts, part)
-		table.insert(ys, part.CFrame.Y)
+	if not site.drop then
+		local drop = { parts = {}, finals = {} }
+		for part in site.hidden do
+			table.insert(drop.parts, part)
+			table.insert(drop.finals, part.CFrame)
+		end
+		site.drop = drop
 	end
-	local finals = {}
-	for i, part in parts do
-		finals[i] = part.CFrame
-	end
+	local drop = site.drop :: { parts: { BasePart }, finals: { CFrame } }
+	local parts, finals = drop.parts, drop.finals
+	local roof = Vector3.new(site.center.X, site.maxY + 2, site.center.Z)
 	if site.sea then
-		plateDrop(site, parts, finals, site.plot.Name == `Plot{player:GetAttribute("DockPlot")}`)
+		plateDrop(site, parts, finals, isMine(site))
+		task.delay(DROP_T + 0.9, flyUnlock, site, roof)
 		return
 	end
-	for _, part in parts do
+	local ys = {}
+	for i, part in parts do
 		hide(part, site, false)
+		ys[i] = finals[i].Y
 	end
 	local plan = BuildSeq.plan(ys, math.random(0, 1_000_000))
 	local last = 0
@@ -698,54 +983,71 @@ local function land(site: Site)
 		last = math.max(last, step.delay)
 		local part = parts[step.i]
 		part.CFrame = finals[step.i] + Vector3.new(0, step.drop, 0)
-		TweenService:Create(
-			part,
-			TweenInfo.new(
-				0.45,
-				Enum.EasingStyle.Quad,
-				Enum.EasingDirection.In,
-				0,
-				false,
-				step.delay
-			),
-			{ CFrame = finals[step.i] }
-		):Play()
+		settle(part, finals[step.i], BuildSeq.FALL, step.delay)
+	end
+	local mid =
+		Vector3.new(site.center.X, site.ground + (site.maxY - site.ground) * 0.5, site.center.Z)
+	for _, click in BuildSeq.clicks(plan, ys) do
+		task.delay(click.t, AudioController.play, "FX_Snap", mid, 0.45, click.pitch)
 	end
 	local top =
 		Vector3.new(site.center.X, site.ground + (site.maxY - site.minY) * 0.6, site.center.Z)
-	local mine = site.plot.Name == `Plot{player:GetAttribute("DockPlot")}`
+	local mine = isMine(site)
 	local hq = site.key == "HQ" and mine
 	-- the last brick clacks home (a plastic snap, two quick hits), then the confetti; your HQ gets the big beat
-	task.delay(last + 0.45, function()
+	task.delay(last + BuildSeq.FALL, function()
 		AudioController.play("Album_Sticker", top, 1, 1.5)
 		task.delay(0.07, function()
 			AudioController.play("UI_Click", top, 3, 0.75)
 		end)
 		-- docs/26 FX1: a studded ring and plates race out low, rays and confetti only above the roof (never on the
-		-- building); your HQ gets the charge, the white-hot core and the light pillar
+		-- building); it grows with the level (feel 6); your HQ gets the charge, the white-hot core and the pillar
 		local base = CFrame.new(site.center.X, site.ground, site.center.Z)
 		local fx = {
 			radius = math.max(site.hw, site.hd) + 1,
-			height = site.maxY - site.ground + 4,
+			height = site.maxY - site.ground + 8, -- confetti well clear of the ridge (F1 AD r2)
 			still = not mine,
 		}
-		VFXKit.play(if hq then "fx1_hq_levelup" else "fx1_build_snap", base, fx)
+		local snap = if site.level >= 3
+			then "fx1_build_snap_lv3"
+			elseif site.level == 2 then "fx1_build_snap_lv2"
+			else "fx1_build_snap"
+		VFXKit.play(if hq then "fx1_hq_levelup" else snap, base, fx)
 		if hq then
 			task.delay(0.5, AudioController.play, "Music_CrateFanfare", nil, 1, 1) -- on the impact (HQ_AT)
 		end
+		task.delay(if hq then 1.1 else 0.6, flyUnlock, site, roof)
 	end)
 	site.props:Destroy()
-	Style.pop(site.root, false)
-	task.delay(0.2, site.gui.Destroy, site.gui)
+	if site.gui.Parent then
+		Style.pop(site.root, false)
+		task.delay(0.2, site.gui.Destroy, site.gui)
+	end
 end
 
 -- Playtest 2026-10-31 (pta 5): the Depot and the Ramp Wharf finished off screen. Your own site's finish gets a
 -- watch beat: the camera eases over (WATCH_EASE), holds through the drop and the snap, eases back to where it was.
--- Skippable; reduced motion cuts instead of easing. Never seated, on a call, under a panel or from afar. The
--- tutorial's free Hut and first Workshop keep OnboardingController's own beats.
-local WATCH_EASE, WATCH_HOLD = 0.9, 3.4 -- s; the hold covers the drop + fx1_build_snap (OnboardingController SITE_HOLD)
+-- Skippable; reduced motion cuts instead of easing. Never seated, on a call, under a panel or from afar, nor for
+-- the tutorial beats.
+local WATCH_EASE, WATCH_HOLD = 0.9, 3.4 -- s; the shortest hold: a small drop + fx1_build_snap (OnboardingController SITE_HOLD)
+local BURST = 1.2 -- s the snap's rings and confetti play before the camera eases back
+
+-- How long the camera holds: the whole drop (a big building's span is ~4.2 s) and the snap's burst.
+local function holdFor(site: Site): number
+	local n = if site.drop then #site.drop.parts else 0
+	if not site.drop then
+		for _ in site.hidden do
+			n += 1
+		end
+	end
+	if site.sea then
+		return WATCH_HOLD
+	end
+	return math.max(WATCH_HOLD, BuildSeq.span(n) + BuildSeq.FALL + BuildSeq.SETTLE + BURST)
+end
+
 local function watch(site: Site): number?
-	if site.level == 1 and (site.key == "HQ" or site.key == "Workshop") then
+	if tutorialBeat(site) then
 		return nil
 	end
 	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
@@ -769,15 +1071,15 @@ local function watch(site: Site): number?
 	local height = site.maxY - site.ground
 	local at = Vector3.new(site.center.X, site.ground + height * 0.4, site.center.Z)
 	local side = (cam.CFrame.Position - at) * Vector3.new(1, 0, 1)
-	local dist = math.max(site.hw, site.hd, height) * 1.6 + 16
+	local dist = math.max(site.hw, site.hd, height) * 2 + 18 -- the whole lot and the burst in shot (F1 AD r2)
 	local eye = at
 		+ (if side.Magnitude > 1 then side.Unit else Vector3.zAxis) * dist
-		+ Vector3.new(0, dist * 0.55, 0)
+		+ Vector3.new(0, dist * 0.42, 0)
 	local view = CFrame.lookAt(eye, at)
 	local back, fov = cam.CFrame, cam.FieldOfView
 	if CameraController.Comfort.reducedMotion() then
 		CameraController.PlayCinematic(
-			{ { from = view, duration = WATCH_HOLD, fov = fov, handheld = 0 } },
+			{ { from = view, duration = holdFor(site), fov = fov, handheld = 0 } },
 			{
 				skippable = true,
 			}
@@ -787,21 +1089,81 @@ local function watch(site: Site): number?
 	local push = view * CFrame.new(0, 0, -dist * 0.08) -- a slow push-in while the bricks land
 	CameraController.PlayCinematic({
 		{ from = back, to = view, duration = WATCH_EASE, fov = fov, toFov = 50, handheld = 0 },
-		{ from = view, to = push, duration = WATCH_HOLD, fov = 50, handheld = 0.15 },
+		{ from = view, to = push, duration = holdFor(site), fov = 50, handheld = 0.15 },
 		{ from = push, to = back, duration = WATCH_EASE, fov = 50, toFov = fov, handheld = 0 },
 	}, { skippable = true })
 	return WATCH_EASE
 end
 
+-- docs/28 feel 7: your builds that land where you can't see them (at sea, off screen, past the VFX cull) wait here,
+-- newest last, and replay as a watch beat the next time you step off a craft near them (your jetty).
+local missed: { Site } = {}
+local MISSED_MAX = 3
+
+local function unseen(site: Site): boolean
+	local cam = Workspace.CurrentCamera
+	if not cam then
+		return true
+	end
+	local _, onScreen = cam:WorldToViewportPoint(site.center)
+	return not onScreen or (cam.CFrame.Position - site.center).Magnitude > VFXPresets.CULL
+end
+
 local function finish(site: Site)
-	local lead = if site.plot.Name == `Plot{player:GetAttribute("DockPlot")}`
-		then watch(site)
-		else nil
+	local mine = isMine(site)
+	local lead = if mine then watch(site) else nil
+	if mine and not lead and not tutorialBeat(site) and unseen(site) then
+		table.insert(missed, site)
+		if #missed > MISSED_MAX then
+			table.remove(missed, 1)
+		end
+	end
 	if lead and lead > 0 then
 		task.delay(lead, land, site) -- the bricks wait for the camera
 	else
 		land(site)
 	end
+end
+
+-- Still standing as it landed, and no new construction on the same model.
+local function replayable(site: Site): boolean
+	local drop = site.drop
+	if not (drop and site.model.Parent) then
+		return false
+	end
+	for _, other in sites do
+		if other.model == site.model then
+			return false
+		end
+	end
+	for i, part in drop.parts do
+		if not part.Parent or (part.Position - drop.finals[i].Position).Magnitude > 0.05 then
+			return false
+		end
+	end
+	return true
+end
+
+local replaying = false
+local function replayMissed()
+	if replaying then
+		return
+	end
+	replaying = true
+	while #missed > 0 do
+		local site = table.remove(missed) :: Site
+		if replayable(site) then
+			local lead = watch(site)
+			if not lead then
+				table.insert(missed, site) -- not now (a menu, a call): the next step-off
+				break
+			end
+			task.wait(lead)
+			land(site)
+			task.wait(holdFor(site) + WATCH_EASE + 0.3) -- the camera is home again before the next one
+		end
+	end
+	replaying = false
 end
 
 local function reconcile()
@@ -874,12 +1236,19 @@ function ConstructionController.Start()
 		end
 	end)
 	task.spawn(function()
+		local seated = false
 		while true do
 			reconcile()
 			local at = eye()
 			for _, site in sites do
 				showNear(site, at)
 			end
+			local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+			local now = hum ~= nil and hum.SeatPart ~= nil
+			if seated and not now and #missed > 0 then
+				task.delay(0.8, replayMissed) -- off the craft and on your feet first
+			end
+			seated = now
 			task.wait(0.25)
 		end
 	end)
@@ -895,6 +1264,20 @@ function ConstructionController.Start()
 			end
 			local near: Site? = best
 			if near and dist < 180 then
+				-- the crane slews slowly round its mast and the hook bobs: the site is at work
+				local t = os.clock()
+				local turn = CFrame.Angles(0, math.sin(t * 0.3) * 0.5, 0)
+				local bob = math.sin(t * 0.8) * 0.6
+				for k, part in near.crane.parts do
+					local lift = if k >= near.crane.bob
+						then Vector3.new(0, bob, 0)
+						else Vector3.zero
+					TweenService:Create(
+						part,
+						TweenInfo.new(0.7, Enum.EasingStyle.Linear),
+						{ CFrame = near.crane.pivot * turn * near.crane.offsets[k] + lift }
+					):Play()
+				end
 				near.dust:Emit(8)
 				AudioController.play(
 					"Rigging_Clink_1",

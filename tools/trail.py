@@ -7,7 +7,8 @@ usage:
   tools/trail.py --test          # the test universe instead of launch
 
 Each line in a block: "<seconds since join> <event>". "pos x,y,z" every 30 s, "ERR ..." server errors.
-Also prints current players/visits. Read-only; needs the universe's API key (datastores read).
+Also prints current players/visits and a Robux summary (prompts shown, purchases, R$ by source).
+Read-only; needs the universe's API key (datastores read).
 """
 import argparse
 import json
@@ -33,6 +34,28 @@ def get(url, key):
     req = urllib.request.Request(url, headers={"x-api-key": key} if key else {})
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.load(r)
+
+
+def robux_summary(lines):
+    """RobuxPrompt trail lines: "<s> custom RobuxPrompt <value> <source> <key> <Shown|Purchased|Cancelled>".
+    A Purchased line's value is the item's list price in R$ (older lines carry kind as the source and value 1)."""
+    shown, bought, robux, by = 0, 0, 0, {}
+    for line in lines:
+        p = line.split()
+        if len(p) < 7 or p[1:3] != ["custom", "RobuxPrompt"]:
+            continue
+        value, source, key, outcome = p[3], p[4], p[5], p[6]
+        if outcome == "Shown":
+            shown += 1
+        elif outcome == "Purchased":
+            bought += 1
+            r = int(float(value)) if source not in ("Products", "GamePasses") else 0
+            robux += r
+            by[source] = by.get(source, 0) + r
+            by.setdefault("items", []).append(key)
+    items = by.pop("items", [])
+    where = ", ".join(f"{s} {r}" for s, r in sorted(by.items())) or "none"
+    return f"Robux: {shown} prompts shown, {bought} purchases, {robux} R$ list (by source: {where}){': ' + ' '.join(items) if items else ''}"
 
 
 def main():
@@ -61,19 +84,22 @@ def main():
             break
     recent = sorted((k for k in keys if int(k.rsplit("_", 1)[1]) >= since), key=lambda k: int(k.rsplit("_", 1)[1]))
     out.append(f"{len(recent)} sessions in the last {a.hours:g} h ({len(keys)} total)")
+    allLines = []
     for k in recent:
         q = urllib.parse.urlencode({"datastoreName": STORE, "entryKey": k})
         v = get(f"{base}/entry?{q}", key)
+        allLines += v.get("lines", [])
         user, joined = k.rsplit("_", 1)
         when = time.strftime("%Y-%m-%d %H:%M", time.localtime(int(joined)))
         out.append(f"\n== user {user} joined {when} place v{v.get('place')} job {v.get('job')} ({len(v.get('lines', []))} lines)")
         out += v.get("lines", [])
+    out.insert(2, robux_summary(allLines))
     text = "\n".join(out)
     if a.out:
         os.makedirs(os.path.dirname(a.out), exist_ok=True)
         with open(a.out, "w") as f:
             f.write(text + "\n")
-        print(f"{out[0]}\n{out[1]}\nwrote {a.out}")
+        print(f"{out[0]}\n{out[1]}\n{out[2]}\nwrote {a.out}")
     else:
         print(text)
 

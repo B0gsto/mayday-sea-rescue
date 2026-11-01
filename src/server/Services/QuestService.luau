@@ -244,6 +244,9 @@ local function stage(player: Player)
 	else
 		carry(player, nil)
 	end
+	if l.item then
+		l.item:SetAttribute("Owner", player.UserId) -- QuestController outlines only your own
+	end
 end
 
 local function save(player: Player)

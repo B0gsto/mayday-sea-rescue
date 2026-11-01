@@ -22,6 +22,7 @@ Dive.CLEARANCE = 4 -- root centre above the seabed, at least
 Dive.SURFACE_SNAP = 1.5 -- hands-off this close under the float line: pop up and float
 Dive.SPRING = 3 -- 1/s, pull back into the band and onto the waves
 Dive.SUBMERGED = 2 -- studs under the float line counts as submerged (camera, lights)
+Dive.SURFACED = 1 -- and back above this counts as surfaced again: no dive / surface splash flicker on the waves
 Dive.MAX_PITCH = math.rad(12)
 Dive.MAX_ROLL = math.rad(6)
 -- pick-up of a diver on the seabed: hover steady inside the ring (Board's speed and hold)
@@ -91,11 +92,8 @@ function Dive.step(
 
 	-- auto-level: only a small bow-down on a dive and a lean into turns
 	s.pitch = math.clamp(s.vy / Dive.DIVE_SPEED, -1, 1) * Dive.MAX_PITCH
-	s.roll = s.yawRate
-		/ Dive.TURN_RATE
-		* Dive.MAX_ROLL
-		* math.clamp(math.abs(s.speed) / Dive.TOP_SPEED, 0, 1)
-	s.submerged = y < ceiling - Dive.SUBMERGED
+	s.roll = s.yawRate / Dive.TURN_RATE * Dive.MAX_ROLL * math.clamp(math.abs(s.speed) / top, 0, 1) -- the lean reads at the slower submerged top speed too
+	s.submerged = y < ceiling - (if s.submerged then Dive.SURFACED else Dive.SUBMERGED)
 	return s
 end
 

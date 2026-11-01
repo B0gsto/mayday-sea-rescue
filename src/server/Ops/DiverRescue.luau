@@ -111,7 +111,7 @@ local function ring(parent: Instance, at: Vector3)
 			Vector3.new(0.7, 0.3, len),
 			CFrame.lookAt(mid, mid + Vector3.new(-math.sin(a), 0, math.cos(a))),
 			ORANGE,
-			Enum.Material.Neon
+			Enum.Material.SmoothPlastic
 		)
 	end
 	local glow = Instance.new("Highlight") -- through the underwater fog slices (Ocean/Underwater)
@@ -132,7 +132,7 @@ local function shotLine(parent: Instance, at: Vector3)
 		Vector3.new(0.25, depth, 0.25),
 		CFrame.new(top - Vector3.new(0, depth / 2, 0)),
 		ORANGE,
-		Enum.Material.Neon
+		Enum.Material.SmoothPlastic
 	)
 	local buoy = part(
 		parent,

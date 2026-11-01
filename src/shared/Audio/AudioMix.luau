@@ -125,6 +125,12 @@ function AudioMix.hullWater(speedFrac: number, planing: number): (number, number
 	return lap, wash, wake
 end
 
+-- Duck gain toward `target`: dips fast (a hit lands) and recovers slowly (no pumping).
+function AudioMix.followDuck(current: number, target: number, dt: number): number
+	local rate = if target < current then 14 else 1.8
+	return current + (target - current) * (1 - math.exp(-rate * math.max(dt, 0)))
+end
+
 -- Seconds until the next random event, given a uniform draw u in [0, 1).
 function AudioMix.gap(minGap: number, maxGap: number, u: number): number
 	return minGap + (maxGap - minGap) * clamp01(u)

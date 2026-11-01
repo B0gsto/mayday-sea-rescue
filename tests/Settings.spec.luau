@@ -28,6 +28,7 @@ return function(t)
 			t.expect(S.clean("textSize", 400)).toBe(150)
 			t.expect(S.clean("reduceMotion", true)).toBe(true)
 			t.expect(S.clean("holdToTap", true)).toBe(true)
+			t.expect(S.clean("haptics", false)).toBe(false)
 		end
 	)
 

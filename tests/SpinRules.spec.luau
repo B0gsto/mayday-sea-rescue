@@ -203,4 +203,34 @@ return function(t)
 		t.expect(back.rescued).toBe(40)
 		t.expect(back.owned).toBe(5)
 	end)
+
+	t.test("a paid spin receipt always adds its spins (no policy check, no cap)", function()
+		local raw = SpinRules.encode({
+			day = 5,
+			free = 98,
+			pity = { epic = 2, legendary = 7 },
+			rescued = 30,
+			owned = 1,
+		})
+		local back = SpinRules.decode(SpinRules.addPaid(raw, 15))
+		t.expect(back.free).toBe(113) -- past MAX_FREE: paid spins are never capped
+		t.expect(back.pity).toEqual({ epic = 2, legendary = 7 })
+		t.expect(back.owned).toBe(1)
+		t.expect(SpinRules.decode(SpinRules.addPaid(nil, 1)).free).toBe(1) -- a fresh profile
+	end)
+
+	t.test("owned once-only prizes are listed for the odds board (they pay Cash)", function()
+		local state = SpinRules.claim(SpinRules.newState(), SpinRules.prize("GoldFinish"))
+		local function pets(v)
+			return v == "Neon"
+		end
+		local ids = SpinRules.ownedIds(state, pets, true)
+		t.expect(ids).toEqual({ "GoldFinish", "NeonPet" }) -- the boat needs the Galaxy finish owned too
+		t.expect(SpinRules.ownedOf("Rare", ids)).toBe(1)
+		t.expect(SpinRules.ownedOf("Epic", ids)).toBe(1)
+		t.expect(SpinRules.ownedOf("Common", ids)).toBe(0) -- Cash prizes are never owned
+		local galaxy = SpinRules.claim(state, SpinRules.prize("GalaxyFinish"))
+		t.expect(SpinRules.ownedOf("Mythic", SpinRules.ownedIds(galaxy, pets, true))).toBe(2)
+		t.expect(SpinRules.ownedOf("Mythic", SpinRules.ownedIds(galaxy, pets, false))).toBe(1)
+	end)
 end

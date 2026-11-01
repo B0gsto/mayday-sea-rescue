@@ -4,7 +4,8 @@
 --   Heli   lands itself: hands-off Heli/Flight sinking at AUTO_LAND to its landing floor (on its skids on
 --          land, a pad or a plate; afloat on the open sea), then the engine stops (EngineRunning false: the
 --          rotors spin down). VehicleService flies a long-empty far one home (sendHome).
---   Sub    holds on Sub/Rig with no input (the sea has no Terrain water: without it, it sinks).
+--   Sub    rises on Sub/Rig and floats at the surface (the sea has no Terrain water: without it, it sinks), so
+--          a sub left on the seabed is found again, afloat.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -82,7 +83,7 @@ end
 function Craft.idle(model: Model, spec: VehicleConfig.VehicleSpec, dt: number): boolean
 	local root = model.PrimaryPart
 	if spec.craft == "Sub" then
-		SubRig.step(model, 0, 0, 0, dt)
+		SubRig.step(model, 0, 0, 1, dt) -- hands-off rise: at the surface Sub/Dive floats it
 		return true
 	elseif spec.craft ~= "Heli" then
 		return false

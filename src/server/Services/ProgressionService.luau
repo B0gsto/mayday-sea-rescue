@@ -26,6 +26,7 @@ local FriendBonus = require(Shared:WaitForChild("FriendBonus"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
+local TestRide = require(Shared:WaitForChild("TestRide"))
 
 local BadgeService = require(script.Parent:WaitForChild("BadgeService"))
 local CashEffects = require(script.Parent:WaitForChild("Monetization"):WaitForChild("CashEffects"))
@@ -135,6 +136,9 @@ function ProgressionService.Award(
 	if not data then
 		warn(`[ProgressionService] Award to {player.Name} before data loaded ({reason}); dropped`)
 		return nil
+	end
+	if player:GetAttribute("TestRide") ~= nil and TestRide.blocksCash(reason) then
+		return nil -- a test ride earns nothing (mon REVIEW #7)
 	end
 	local state, isGreat, paid = nil, false, 1
 	if not flat then

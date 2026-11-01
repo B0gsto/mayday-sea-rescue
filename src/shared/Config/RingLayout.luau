@@ -317,8 +317,8 @@ local function islandLots(frame: CFrame): { [string]: Lot }
 		Boathouse = lot(frame, 85, 62, 90, 34, 40), -- doors onto the cove
 		Helipad = lot(frame, -85, -40, 0, 40, 40),
 		Hangar = lot(frame, -88, 35, 180, 40, 34), -- doors toward the helipad
-		SubPen = lot(frame, -22, 80, 0, 30, 56, 0), -- over the cove water
-		Jetty = lot(frame, 0, 68, 0, 10, 70, Y), -- along the cove centre from the quay
+		SubPen = lot(frame, -27, 132, 0, 16, 40, 0), -- the sub berth's water, past the jetty's end
+		Jetty = lot(frame, -16, 68, 0, 10, 70, Y), -- from the quay, west of the cove centre: the craft bay east of it is 48 wide (owner 2026-10-31)
 		LifeguardTower = lot(frame, 125, -45, -90, 10, 10), -- on the beach
 		Spare1 = lot(frame, -45, -95, 180, 32, 32),
 		Spare2 = lot(frame, 45, -95, 180, 32, 32),
@@ -342,8 +342,8 @@ for i, row in Ring.islands do
 		frame = frame,
 		spawn = at(frame, 0, -70), -- behind the station, facing it
 		berths = {
-			Boat = at(frame, 22, 95, 0, 0), -- starboard of the jetty, bow out of the cove
-			Sub = at(frame, -22, 80, 0, 0), -- in the sub pen
+			Boat = at(frame, 6, 95, 0, 0), -- starboard of the jetty, bow out of the cove
+			Sub = at(frame, -27, 125, 0, 0), -- west of the jetty's end, clear of the Boathouse Lv3 quick-launch bay
 		},
 		lots = islandLots(frame),
 		quest = {

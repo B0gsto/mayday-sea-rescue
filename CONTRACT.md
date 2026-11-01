@@ -36,6 +36,7 @@ history, not here.
 | `DogPoint` | S->C | DogService: Bosun points at a survivor or flare |
 | `RequestVehicle` | C->S fn | VehicleService: `(vehicleId, docked?, near?) -> (ok, reasonOrVehicle)`; `near` = Boat to me (id ignored) |
 | `BuyGear` | C->S fn | ProgressionService: buys a craft (`vehicleId`); the name is historical |
+| `TestRide` | C->S fn | server/Dock/BoatBoard: `(boardName, vehicleId) -> (ok, reason)`; lends a locked Robux-only boat for 60 s (shared/TestRide; attributes `TestRide`, `TestRideEnds`, `TestRideAt`) |
 | `Spin_Wheel` | S->C | SpinService: one spin `{ userId, plot, segment, startTime, duration, prize, name, rarity, kind, icon, variant, option, vehicle, duplicateCash? }`; the island's wheel animates on every client |
 | `Spin_Flex` | S->C | SpinService: a Legendary / Mythic win `{ userId, name, prize, rarity, icon }` (banner + confetti) |
 | `Skill_Buy` | C->S fn | SkillService: buys a skill node with Medals `(id) -> (ok, reason)` |
@@ -45,7 +46,7 @@ history, not here.
 Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService), `Upgrade_Buy` (UpgradeService),
 `PIW_Rescue` (Ops/PiwRescue), `Dock_Upgrade` / `Dock_Build` / `Dock_Finish` (DockService), `Quest_Talk` (QuestService),
 `Streak_State` / `Streak_Get` / `Streak_Collect`, `Pet_State` / `Pet_Get` / `Pet_Equip` / `Pet_Variant`, `Cosmetics_Equip` /
-`Cosmetics_Action` / `Cosmetics_Event`, `Monetization_GetCatalogue` / `Monetization_Purchased`,
+`Cosmetics_Action` / `Cosmetics_Event`, `Monetization_GetCatalogue` / `Monetization_Purchased` (Shop repaint + PurchaseFxController payoff),
 `Discovery_State` / `Discovery_Found` / `Discovery_Get`, `PlatformPrompt_Ask` / `_Offer` / `_OptIn`,
 `Telemetry_Client`, `Dev_Grant` / `Dev_Action`, and the `Ops_*` table below.
 
@@ -65,6 +66,8 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   six Lego neighbour bridges), `IslandPlates` (one Persistent `Plate<n>` per island), plus the scattered rocks'
   collision hulls (`ScatterController` draws the meshes). Outer-island kits: `TownBuildings` (Penwyn's terraces),
   `CottageRig` / `CottageLights` (cottage glass, night lights, smoke), `StreetFurniture`, `SharedSetsRig`.
+- `WorldSoundService` tags every Workspace Sound `WorldSound`; `AudioController` adopts tagged ones into the
+  Ambience/SFX groups (no client whole-world DescendantAdded hooks).
 - `map/Build.luau` builds the greybox and `Map.Spawns` (one SpawnLocation per island spawn); the bake is open water
   with a sand seabed. Also `WorldService`, `TerrainOnly` (+ `TerrainOnlyService` / `TerrainOnlyController`),
   `StreetController` (lighthouse beams, beach flag), `SeamarkController`, `WildlifeController`,
@@ -164,7 +167,7 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   every level buildable right now. `DockBlueprints` (`needs`, `glyph`, drawn by `UI/BuildGlyph`); `DockBuild`
   (camera and spot maths); `shared/NextGoal` (the Next chip: next affordable level, else the HQ needs). `server/Dock/BoatBoard` builds
   every craft board (boat, hangar, sub) with scale models from `ReplicatedStorage.VehiclePreviews`; client
-  `BoatBoardController` (one `BoardOpen` prompt per board -> `Menu.openBoard` -> `UI/Panels/Board` cards; Launch = Net `BoardLaunch` -> crane beat + `DockLaunch`). The boathouse paint
+  `BoatBoardController` (one `BoardOpen` prompt per board -> `Menu.openBoard` -> `UI/Panels/Board` cards; Launch = Net `BoardLaunch` -> crane beat + `DockLaunch`; tap a locked Robux-only model or its Try button = Net `TestRide`: 60 s in your bay, once a day per boat, no calls or ride Cash, turned back at the buoy ring, then its card). The boathouse paint
   booth (`DockConfig.PAINT_BOOTH`) opens `DockController`'s paint card (`UI/CosmeticPicker`). Harbour Master:
   most people rescued among islands with a Station gets a gold name board and beacon.
 - Studio: `DockDev:Invoke("building", key | "all")`, DevBoard "Build (target)".

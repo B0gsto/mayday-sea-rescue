@@ -645,3 +645,10 @@ calls at the same stage, so farming it never beats calls. Pay and density stay a
 Free-roam is 4.5% of all Cash to the end (369 people); the whole tree is 16.4 h with it, 17.3 h calls only (the
 same sim before the free-roam step; Lifeboat 2:42, Helicopter 7:09). `Pacing.spec` asserts free-roam stays at most
 10% of earned Cash.
+
+Dead-zone pass (2026-10-31, feel review #3): the HQ4 -> HQ5 stretch had two world changes in 3.6 h (Air Station 5:34,
+Helicopter 7:09, HQ5 9:10). Helicopter 85,000 -> 40,000, Coastguard HQ (Lv5) 100,000 -> 70,000, and the sim's walk
+takes the visible HQ3/HQ4 add-ons the Next chip already offers (refuel pad, rescue RIB, lookout lamp, boat frame,
+smokehouse, conveyor, crane) between them. 5.5-9 h now has 9 unlocks; the longest waits are the Helicopter (~50 min)
+and the HQ5 save (~79 min, was 121). The skill tree's minor dots merged (2-4 one-Medal dots -> 1-2 bigger ones, same
+totals). Tree 16.2 h.
