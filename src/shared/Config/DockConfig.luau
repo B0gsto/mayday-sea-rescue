@@ -98,7 +98,7 @@ local rows: { [string]: any } = {
 		desc = "The island's heart: every district grows from it.",
 		unlockAt = 1,
 		needs = {},
-		spot = isle(0, -12, 0), -- the plaza at the head of the cove, facing the jetty
+		spot = isle(0, -24, 0), -- the plaza's head, facing down it to the cove and the jetty
 		size = Vector2.new(54, 32),
 		levels = {
 			{ cash = 0, hq = 0, effect = "HQ", piece = "Hut", name = "Rescue Hut" }, -- the free first build (tutorial)
@@ -121,7 +121,7 @@ local rows: { [string]: any } = {
 		desc = "Jetty, pontoon and crane on the cove.",
 		unlockAt = 1,
 		needs = {},
-		spot = isle(-28, 100, 0), -- the pontoon on the west side of the cove (on the water)
+		spot = isle(-28, 260, 0), -- the pontoon on the west side of the cove (on the water)
 		size = Vector2.new(8, 80),
 		levels = {
 			{ cash = 0, hq = 0, effect = "Jetty", piece = "Jetty" }, -- the start: the jetty is already there
@@ -148,7 +148,7 @@ local rows: { [string]: any } = {
 		desc = "Brick pile and freight quay: builds start here.",
 		unlockAt = 1,
 		needs = {},
-		spot = isle(-90, -2, -90), -- work yard, open front onto the plaza
+		spot = isle(-180, -4, -90), -- work yard, open front toward the plaza
 		size = Vector2.new(36, 30),
 		scale = 1.15,
 		worker = "Hauler",
@@ -164,7 +164,7 @@ local rows: { [string]: any } = {
 		desc = "Builders work here.",
 		unlockAt = 1,
 		needs = {},
-		spot = isle(-135, -35, -90), -- the work yard's open front onto the plaza lane
+		spot = isle(-270, -70, -90), -- the work yard's open front toward the plaza lane
 		size = Vector2.new(36, 26),
 		scale = 1.2,
 		worker = "Builder",
@@ -223,7 +223,7 @@ local rows: { [string]: any } = {
 		desc = "Homes for the people you rescue.",
 		unlockAt = 1,
 		needs = {},
-		spot = isle(130, -18, 90), -- village, open front onto the plaza
+		spot = isle(260, -36, 90), -- village, open front toward the plaza
 		size = Vector2.new(40, 46),
 		scale = 1.2,
 		color = Color3.fromRGB(80, 190, 90),
@@ -240,7 +240,7 @@ local rows: { [string]: any } = {
 		desc = "Fishers work the stalls and the pier.",
 		unlockAt = 1,
 		needs = {},
-		spot = isle(133, 68, 90), -- harbour east, open front onto the cove walk
+		spot = isle(266, 136, 90), -- harbour east, open front toward the cove walk
 		size = Vector2.new(40, 34),
 		scale = 1.15,
 		worker = "Gatherer",
@@ -263,7 +263,7 @@ local rows: { [string]: any } = {
 		desc = "Pick and paint boats. Unlocks the RIB.",
 		unlockAt = 2,
 		needs = {},
-		spot = isle(-80, 58, -90), -- harbour west, the doors open onto the cove
+		spot = isle(-80, 218, -90), -- harbour west, the doors open onto the cove
 		size = Vector2.new(44, 36),
 		scale = 1.2,
 		levels = {
@@ -291,7 +291,7 @@ local rows: { [string]: any } = {
 		desc = "Mechanics work here.",
 		unlockAt = 2,
 		needs = {},
-		spot = isle(-132, 72, -90), -- harbour west, open front onto the cove walk
+		spot = isle(-264, 144, -90), -- harbour west, open front toward the cove walk
 		size = Vector2.new(36, 40),
 		scale = 1.15,
 		worker = "Mechanic",
@@ -314,7 +314,7 @@ local rows: { [string]: any } = {
 		desc = "Medics meet every arrival.",
 		unlockAt = 2,
 		needs = {},
-		spot = isle(75, -20, 90), -- village, open front onto the plaza; back from the east promenade (fwd 18-26): the Lv3 hospital wing reaches 37 studs fwd of the lot centre
+		spot = isle(150, -40, 90), -- village, open front toward the plaza; back from the east promenade (fwd 40-48): the Lv3 hospital wing reaches 37 studs fwd of the lot centre
 		size = Vector2.new(36, 28),
 		scale = 1.15,
 		worker = "Medic",
@@ -337,7 +337,7 @@ local rows: { [string]: any } = {
 		desc = "Rescuers run their own boats from here.",
 		unlockAt = 3,
 		needs = {},
-		spot = isle(80, 58, 90), -- harbour east, the doors open onto the cove
+		spot = isle(80, 218, 90), -- harbour east, the doors open onto the cove
 		size = Vector2.new(44, 36),
 		scale = 1.15,
 		worker = "Rescuer",
@@ -360,7 +360,7 @@ local rows: { [string]: any } = {
 		desc = "Spot calls from farther out.",
 		unlockAt = 3,
 		needs = {},
-		spot = isle(-88, -98, 0), -- behind the plaza, west of the Lighthouse (Spare1) and its Trophy Hall path
+		spot = isle(-176, -196, 0), -- behind the bridge road, west of the Lighthouse (Spare1) and its Trophy Hall path
 		size = Vector2.new(16, 16),
 		scale = 1.5,
 		levels = {
@@ -381,7 +381,7 @@ local rows: { [string]: any } = {
 		desc = "Helipad and hangar for the helicopter.",
 		unlockAt = 4,
 		needs = {},
-		spot = isle(54, -136, 0), -- the hangar; the pad sits 38 right, 27 fwd (DockPieces), clear of the bridge foot and the plate's cut corner
+		spot = isle(108, -272, 0), -- the hangar; the pad sits 38 right, 27 fwd (DockPieces), clear of the bridge foot and the plate's cut corner
 		size = Vector2.new(42, 28),
 		vehicles = { "RescueHelicopter" },
 		levels = {
@@ -402,7 +402,7 @@ local rows: { [string]: any } = {
 		desc = "A domed pen for the submarine.",
 		unlockAt = 5,
 		needs = {},
-		spot = isle(90, 128, 0), -- harbour east, down the quay
+		spot = isle(90, 288, 0), -- harbour east, down the quay
 		size = Vector2.new(40, 40),
 		vehicles = { "Submarine" },
 		levels = {
@@ -423,7 +423,7 @@ local rows: { [string]: any } = {
 		desc = "Cups, stamps and quest trophies on display.",
 		unlockAt = 5,
 		needs = {},
-		spot = isle(-62, -127, 0), -- landmarks, behind the Lighthouse (Spare1); west of the Air Station's Lv2 apron
+		spot = isle(-124, -254, 0), -- landmarks, behind the Lighthouse (Spare1); west of the Air Station's Lv2 apron
 		size = Vector2.new(50, 28),
 		levels = {
 			{
@@ -450,7 +450,7 @@ end
 DockConfig.Buildings = rows :: { [string]: Building }
 
 -- The lifeboat slip add-on (Boathouse Lv2) on its own map lot, facing the sea.
-DockConfig.BOATHOUSE_SLIP = isle(-80, 112, 0)
+DockConfig.BOATHOUSE_SLIP = isle(-80, 272, 0)
 
 -- Old saves (the dock-level ladder before WP-28): what each old level owns in the tree (UnlockTree.migrateLegacy).
 DockConfig.LEVEL_ITEMS = {
@@ -583,7 +583,8 @@ end
 -- Where the boat board (WP-5) stands, in the berth frame (Marina.berth): on the boathouse floor (its lot)
 -- by the back wall, facing the roll-up door and the cove. The boathouse keeps a clear
 -- BOARD_SIZE x BOARD_SIZE floor area centred here.
-DockConfig.BOARD_SLOT = isle(-80, 58, -90) * CFrame.new(0, 0, 14)
+DockConfig.BOARD_SLOT = isle(-80, 218, -90) * CFrame.new(0, 0, 14)
+
 DockConfig.BOARD_SIZE = 6
 
 -- The build station (WP-14d, docs/25 J) stands at the jetty head: on the head deck west of the jetty's quay end

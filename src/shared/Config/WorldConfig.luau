@@ -52,43 +52,43 @@ local WorldConfig = {
 	Ring = {
 		center = Vector3.new(0, 4, 0),
 		plateauY = 4,
-		radius = 470,
-		islandRadius = 160,
+		radius = 860,
+		islandRadius = 320,
 		islandNotch = {
 			halfWidth = 45,
-			head = 30,
+			head = 190,
 			floorY = -30,
 		},
 		islands = {
 			{
 				id = "Plot1",
 				bearing = 0,
-				center = Vector3.new(470, 4, 0),
+				center = Vector3.new(860, 4, 0),
 			},
 			{
 				id = "Plot2",
 				bearing = 60,
-				center = Vector3.new(235, 4, 407),
+				center = Vector3.new(430, 4, 744.8),
 			},
 			{
 				id = "Plot3",
 				bearing = 120,
-				center = Vector3.new(-235, 4, 407),
+				center = Vector3.new(-430, 4, 744.8),
 			},
 			{
 				id = "Plot4",
 				bearing = 180,
-				center = Vector3.new(-470, 4, 0),
+				center = Vector3.new(-860, 4, 0),
 			},
 			{
 				id = "Plot5",
 				bearing = 240,
-				center = Vector3.new(-235, 4, -407),
+				center = Vector3.new(-430, 4, -744.8),
 			},
 			{
 				id = "Plot6",
 				bearing = 300,
-				center = Vector3.new(235, 4, -407),
+				center = Vector3.new(430, 4, -744.8),
 			},
 		},
 	},

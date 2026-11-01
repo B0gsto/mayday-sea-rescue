@@ -45,9 +45,10 @@ PLATEAU_Y = 4  # the plate top, the quays and every lot
 # Terrain renders its surface about half a voxel over the baked height (Studio raycasts: +1.9 +-0.25 studs)
 RENDER_BIAS = 2
 CENTER = (0, 0)  # the lagoon's centre (no island)
-# radius 470: the 320-stud plates' nearest corners are 80 studs apart (at 380 they would overlap)
-RING = {"radius": 470, "bearings": (0, 60, 120, 180, 240, 300), "islandRadius": 160,
-        "notch": {"halfWidth": 45, "head": 30, "floorY": -30}}
+# owner 2026-11-01 ("space the buildings further, x2"): 640-stud plates (were 320); radius 860 keeps their nearest
+# (chamfered back) corners 80 studs apart, as at 470 before. The berth notch keeps its size: head 130 in from the edge
+RING = {"radius": 860, "bearings": (0, 60, 120, 180, 240, 300), "islandRadius": 320,
+        "notch": {"halfWidth": 45, "head": 190, "floorY": -30}}
 WINDOW_HALF_X, WINDOW_HALF_Z = 1536, 1280  # the main window: the ring, the lagoon and the sea round them
 
 
@@ -61,7 +62,7 @@ PLAYER_ISLANDS = [{"id": f"Plot{k + 1}", "bearing": b, "center": local(*CENTER, 
 
 # The main window is open water: a sand seabed (one wide lagoon-sand shoal, about Y -36 to -44, ramping to the deep
 # floor by the window edge) with a basin round each plate deep enough for boats and the submarine.
-PLATE_BASIN = {"radius": 420, "floorY": -34}  # full depth inside 210 (past the 160-stud plate), blending out by 420
+PLATE_BASIN = {"radius": 840, "floorY": -34}  # full depth inside 420 (past the 320-stud plate), blending out by 840
 HUB_WINDOW = {  # the main window (historical name)
     "id": "Hub", "window": (-WINDOW_HALF_X, -WINDOW_HALF_Z, WINDOW_HALF_X, WINDOW_HALF_Z), "biome": "hub",
     "edgeRamp": 120, "polys": [], "peaks": [], "pads": [],

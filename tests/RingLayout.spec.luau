@@ -284,7 +284,7 @@ return function(t)
 				end
 				t.expect(steep <= 12).toBe(true) -- a gentle walk
 				local span = water / 200 * (br.to - br.from).Magnitude
-				if span < 70 or span > 110 then
+				if span < 70 or span > 130 then -- 2x plates (owner 2026-11-01): the gap at the road is wider, the span 182 as before
 					error(`{br.id} spans {span} studs of water`)
 				end
 			end
@@ -310,10 +310,10 @@ return function(t)
 				local right = isl.frame.RightVector
 				local nxt = L.Islands[k % #L.Islands + 1]
 				local starts = {
-					isl.center - isl.facing * 230, -- the lagoon, behind the island
-					isl.center + right * 260, -- beside it
-					isl.center - right * 260,
-					isl.center + isl.facing * 420 + right * 320, -- out at sea, off the mouth's line
+					isl.center - isl.facing * 390, -- the lagoon, behind the island
+					isl.center + right * 420, -- beside it
+					isl.center - right * 420,
+					isl.center + isl.facing * 580 + right * 480, -- out at sea, off the mouth's line
 					nxt.berths.Boat.Position, -- a neighbour's berth
 				}
 				for _, s0 in starts do
@@ -339,7 +339,7 @@ return function(t)
 					t.expect(leg0 ~= berth or (s0 - isl.center):Dot(isl.facing) > 0).toBe(true)
 				end
 				-- straight in through the mouth: the pin is the berth itself
-				local front = isl.center + isl.facing * 400
+				local front = isl.center + isl.facing * 560
 				t.expect(L.seaRoute(Vector3.new(front.X, 0, front.Z), berth)).toBe(berth)
 			end
 		end

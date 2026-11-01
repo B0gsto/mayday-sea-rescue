@@ -83,7 +83,7 @@ return function(t)
 	local b = Marina.berth(1)
 	local here = {}
 	for _, p in belts do
-		if (p.CFrame.Position - R.Islands[1].center).Magnitude < 260 then
+		if (p.CFrame.Position - R.Islands[1].center).Magnitude < 520 then
 			table.insert(here, p)
 		end
 	end

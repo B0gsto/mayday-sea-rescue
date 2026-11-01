@@ -135,7 +135,7 @@ return function(t)
 			-- beside the jetty (clear of its walk), on the quay half
 			t.expect(math.abs(localCf.X) - st.size.X / 2 >= lot.size.X / 2 - 1e-3).toBe(true)
 			t.expect(localCf.Z > 0).toBe(true)
-			-- inside the head deck, which meets the quay edge (notch head, island f 30) and the jetty's side
+			-- inside the head deck, which meets the quay edge (notch head, island f 190) and the jetty's side
 			t.expect(math.abs(st.offset.X - head.offset.X) + st.size.X / 2 <= head.size.X / 2)
 				.toBe(true)
 			t.expect(math.abs(st.offset.Y - head.offset.Y) + st.size.Y / 2 <= head.size.Y / 2)
@@ -144,7 +144,7 @@ return function(t)
 				* lot.cf
 				* CFrame.new(head.offset.X, 0, head.offset.Y + head.size.Y / 2)
 			local fwd = -(frame * M.ISLAND):PointToObjectSpace(deck.Position).Z
-			t.expect(math.abs(fwd - 30) < 1).toBe(true)
+			t.expect(math.abs(fwd - 190) < 1).toBe(true)
 			t.expect(math.abs(head.offset.X) - head.size.X / 2).toBeCloseTo(lot.size.X / 2, 3)
 		end
 	)
@@ -159,8 +159,8 @@ return function(t)
 			t.expect(flat.Magnitude >= 18).toBe(true) -- the camera frames the stand with the sea, not the screen alone
 			t.expect(d.Magnitude <= 24).toBe(true) -- DockController's tablet prompt range
 			t.expect(spawn.LookVector:Dot(flat.Unit) > 0.97).toBe(true)
-			-- on the plate, not over the cove water (island fwd 30+)
-			t.expect(-(frame * M.ISLAND):PointToObjectSpace(spawn.Position).Z < 28).toBe(true)
+			-- on the plate, not over the cove water (island fwd 190+)
+			t.expect(-(frame * M.ISLAND):PointToObjectSpace(spawn.Position).Z < 188).toBe(true)
 		end
 	)
 

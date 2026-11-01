@@ -18,27 +18,29 @@ export type Loop = { centre: Vector3, r: number, speed: number, dir: number, pha
 SeaLife.Boats = {
 	{
 		asset = "M_Veh_MooredBoat_02",
-		loop = { centre = Vector3.zero, r = 1450, speed = 9, dir = 1, phase = 0 },
+		loop = { centre = Vector3.zero, r = 1850, speed = 9, dir = 1, phase = 0 },
 	},
 	{
 		asset = "M_Veh_MooredBoat_03",
-		loop = { centre = Vector3.zero, r = 1450, speed = 8, dir = 1, phase = 2.1 },
+		loop = { centre = Vector3.zero, r = 1850, speed = 8, dir = 1, phase = 2.1 },
 	},
 	{
 		asset = "M_Veh_MooredBoat_02",
-		loop = { centre = Vector3.zero, r = 1450, speed = 9, dir = 1, phase = 4.2 },
+		loop = { centre = Vector3.zero, r = 1850, speed = 9, dir = 1, phase = 4.2 },
 	},
 	{
 		asset = "M_Veh_MooredBoat_03",
-		loop = { centre = Vector3.zero, r = 1150, speed = 7, dir = -1, phase = 1 },
+		loop = { centre = Vector3.zero, r = 1480, speed = 7, dir = -1, phase = 1 },
 	},
 } :: { { asset: string, loop: Loop } }
 
 SeaLife.Pods = {
-	{ size = 4, loop = { centre = Vector3.zero, r = 1300, speed = 14, dir = -1, phase = 0.5 } },
-	-- pta 6: two pods just off the island ring, each passing every island's front (in view from its plaza)
-	{ size = 3, loop = { centre = Vector3.zero, r = 880, speed = 12, dir = 1, phase = 0 } },
-	{ size = 3, loop = { centre = Vector3.zero, r = 900, speed = 12, dir = -1, phase = math.pi } },
+	{ size = 4, loop = { centre = Vector3.zero, r = 1950, speed = 14, dir = -1, phase = 0.5 } },
+	-- pta 6: two pods just off the island ring, each passing every island's front (in view from its plaza); the ring
+	-- loops grew with the 2x plates on the 860 ring (owner 2026-11-01)
+	{ size = 3, loop = { centre = Vector3.zero, r = 1500, speed = 12, dir = 1, phase = 0 } },
+	{ size = 3, loop = { centre = Vector3.zero, r = 1520, speed = 12, dir = -1, phase = math.pi } },
+
 	{
 		size = 3,
 		loop = { centre = Vector3.new(2400, 0, -200), r = 300, speed = 10, dir = 1, phase = 0 },

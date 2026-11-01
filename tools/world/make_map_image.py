@@ -246,15 +246,15 @@ def main():
         d.ellipse([px - r, pz - r, px + r, pz + r], fill=colour, outline=(20, 20, 20, 255), width=2)
 
     # docs/23 (p): the ring of six Lego-plate islands (RingLayout.IslandPlate rects) and the bridges between neighbours
-    # (RingLayout.BRIDGE: crossing each bisector 400 out, 91 studs either side)
-    e, ch, hw, head = L.RING["islandRadius"], 47, L.RING["notch"]["halfWidth"], L.RING["notch"]["head"]
+    # (RingLayout.BRIDGE: crossing each bisector 720 out, 91 studs either side)
+    e, ch, hw, head = L.RING["islandRadius"], 94, L.RING["notch"]["halfWidth"], L.RING["notch"]["head"]
     rects = [(-e + ch, -hw, -e + ch, e - ch), (hw, e - ch, -e + ch, e - ch), (-hw, hw, -e + ch, head),
              (-e + ch, e - ch, -e, -e + ch), (-e, -e + ch, -e + ch, e - ch), (e - ch, e, -e + ch, e - ch),
              (-e + ch, -hw, e - ch, e), (hw, e - ch, e - ch, e)]
     isl = L.PLAYER_ISLANDS
     for k, a in enumerate(isl):
         b = isl[(k + 1) % len(isl)]
-        mx, mz = L.local(*L.CENTER, a["bearing"] + 30, 0, 400)
+        mx, mz = L.local(*L.CENTER, a["bearing"] + 30, 0, 720)
         dx, dz = a["center"][0] - b["center"][0], a["center"][1] - b["center"][1]
         n = math.hypot(dx, dz)
         d.line([to_px(mx + dx / n * 91, mz + dz / n * 91), to_px(mx - dx / n * 91, mz - dz / n * 91)],

@@ -25,7 +25,7 @@ local GameConfig = {
 			id = "Lagoon", -- docs/23 (p): the open water inside the ring of six islands
 			displayName = "The Lagoon",
 			center = Vector3.new(0, 0, 0),
-			radius = 420, -- tune
+			radius = 770, -- tune (the 860 ring of 640-stud plates, owner 2026-11-01)
 			shelter = 0.9, -- tune
 			priority = 2,
 		},

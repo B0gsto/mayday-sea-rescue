@@ -4,7 +4,7 @@
 -- section 3, tutorial chain, fail-safe 10%, big-call shares). Numbers without a doc source: -- tune.
 --
 -- World frame (WorldConfig, docs/23 (p)): sea level Y = 0, an open lagoon at the origin ringed by the six player
--- islands 470 out (RingLayout, coves facing out), the outer islands beyond. Calls count from the player's berth.
+-- islands 860 out (RingLayout, coves facing out), the outer islands beyond. Calls count from the player's berth.
 
 export type Interaction = {
 	kind: "Pull",
@@ -61,7 +61,7 @@ CallTypes.STATION = Vector3.new(RingLayout.Center.X, 0, RingLayout.Center.Z)
 
 -- the fixed scenes (docs/23 (p)): the ferry in open sea south of the ring (between Plot2 and Plot3, 1,000 studs out
 -- from the centre), the rip off Puffin Isle's beach (shared/RipCurrent.Beach)
-local FERRY_AT = Vector3.new(0, 0, 1000)
+local FERRY_AT = Vector3.new(0, 0, 1550) -- past the 2x plates on the 860 ring (owner 2026-11-01)
 local RIP_AT = RipCurrent.point(RipCurrent.Beach, 120, 0)
 
 -- Travel budget (docs 02 section 4.1): about 45 s out with the zone's intended vehicle (jet ski).

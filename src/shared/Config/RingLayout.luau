@@ -54,8 +54,8 @@ RingLayout.Notch = { island = Ring.islandNotch }
 -- berths are. `rects` are island-frame { r0, r1, f0, f1 } along right / fwd (frame:PointToObjectSpace's (X, -Z));
 -- the plate top is at Y, the green slab `thick` studs below it. The rects are disjoint, inside |right|, |fwd| <=
 -- edge, and leave the notch open (|right| < halfWidth, fwd > head). tests/RingLayout.spec.luau checks lots and bridges.
-local CHAMFER = 47
-local EDGE = Ring.islandRadius -- 160
+local CHAMFER = 94
+local EDGE = Ring.islandRadius -- 320 (owner 2026-11-01: 2x the old 160, buildings 2x apart)
 local NOTCH = Ring.islandNotch
 RingLayout.IslandPlate = {
 	topY = Y,
@@ -75,22 +75,22 @@ RingLayout.IslandPlate = {
 	},
 }
 
--- docs/27 sea plates: Lego decks on pillars off the island's front edge (fwd 168 = past the trim and beach step),
+-- docs/27 sea plates: Lego decks on pillars off the island's front edge (fwd 328 = past the trim and beach step),
 -- either side of the berth channel (|right| < 40, 80 wide, straight out to sea). Island-frame rects { r0, r1, f0,
 -- f1 }, deck top at Y. P1 carries the jump ramp (a wedge in the water off its outer end, angled 30 deg away from the
 -- channel so a craft leaving the cove bears left onto it); P2 moors a second supply barge along its outer face.
 -- Built or not, the keep-out (plates + ramp) holds no calls and the sea routes go round it. Only plates in this
 -- table exist (P3+ are docs/27 later updates). tests/SeaPlates.spec.luau checks the docs/27 limits.
 RingLayout.SeaPlates = {
-	SeaPlate1 = { rect = { -163, -40, 168, 264 } },
-	SeaPlate2 = { rect = { 40, 163, 168, 264 } },
+	SeaPlate1 = { rect = { -163, -40, 328, 424 } },
+	SeaPlate2 = { rect = { 40, 163, 328, 424 } },
 } :: { [string]: { rect: { number } } }
 RingLayout.SEA_PLATE_DECK = 1 -- deck thickness (top at Y); the pillars show 2 courses above the water
-RingLayout.RAMP = { at = Vector2.new(-50, 300), yaw = 30, length = 32, width = 14, lip = 6 } -- island frame
+RingLayout.RAMP = { at = Vector2.new(-50, 460), yaw = 30, length = 32, width = 14, lip = 6 } -- island frame
 RingLayout.SEA_KEEP_OUT = {
 	RingLayout.SeaPlates.SeaPlate1.rect,
 	RingLayout.SeaPlates.SeaPlate2.rect,
-	{ -70, -30, 276, 324 }, -- the ramp's footprint (RAMP, turned)
+	{ -70, -30, 436, 484 }, -- the ramp's footprint (RAMP, turned)
 }
 -- With SeaPlate1 built the quest pontoon, its boats and tablet move out with the island (docs/27: P1's outer-left
 -- corner), clear of the ramp and the channel: island-frame shift (right, fwd).
@@ -156,9 +156,9 @@ local OCTAGON = {
 	{ -ROUTE_R, 0 },
 	{ -ROUTE_D, ROUTE_D },
 	-- docs/27: past the sea plates and the ramp, so a route from the cove mouth goes out the channel first
-	{ 0, 350 },
-	{ ROUTE_D, 350 },
-	{ -ROUTE_D, 350 },
+	{ 0, 510 },
+	{ ROUTE_D, 510 },
+	{ -ROUTE_D, 510 },
 }
 
 local OBSTACLES = table.clone(RingLayout.IslandPlate.rects) -- the plate and the sea plates' keep-out
@@ -265,11 +265,12 @@ function RingLayout.seaRoute(from: Vector3, to: Vector3, depth: number?): (Vecto
 end
 
 -- Neighbour bridges (docs/23 (p)): straight across the gap between two plates, crossing the bisector axisR studs out
--- from the centre, where each deck enters its plate's side face just clear of the cut-out back corner (~93 studs of
+-- from the centre, where each deck enters its plate's side face just clear of the cut-out back corner (~92 studs of
 -- water between the plates there). The deck climbs at `grade` (11.3 deg) from both ends to a rounded crest over
 -- mid-span, so boats pass under.
 local BRIDGE = {
-	axisR = 400,
+	axisR = 750, -- owner 2026-11-01 (2x plates on an 860 ring): the feet land on the bridge road at fwd -165
+
 	half = 91, -- deck centre to each end: ~46 over the water + ~45 on the plate
 	grade = 0.2,
 	crest = 16, -- studs either side of mid-span the crest rounds over
@@ -310,20 +311,22 @@ local function lot(
 end
 
 -- a player island, in its local frame (right, fwd; fwd = out to sea, the cove's mouth). The cove is the plate's U
--- cut-out (|right| < 45, fwd > 30). Buildings stand on the plate.
+-- cut-out (|right| < 45, fwd > 190). Buildings stand on the plate. Owner 2026-11-01: the land lots sit 2x as far apart
+-- as on the old 320-stud plate; the harbour lots (cove, jetty, berths, quest pontoon) keep their shape and moved out
+-- 160 with the front edge.
 local function islandLots(frame: CFrame): { [string]: Lot }
 	local lots: { [string]: Lot } = {
-		Station = lot(frame, 0, -35, 180, 60, 44), -- front toward the spawn
-		Boathouse = lot(frame, 85, 62, 90, 34, 40), -- doors onto the cove
-		Helipad = lot(frame, -85, -40, 0, 40, 40),
-		Hangar = lot(frame, -88, 35, 180, 40, 34), -- doors toward the helipad
-		SubPen = lot(frame, -27, 132, 0, 16, 40, 0), -- the sub berth's water, past the jetty's end
-		Jetty = lot(frame, -16, 68, 0, 10, 70, Y), -- from the quay, west of the cove centre: the craft bay east of it is 48 wide (owner 2026-10-31)
-		LifeguardTower = lot(frame, 125, -45, -90, 10, 10), -- on the beach
-		Spare1 = lot(frame, -45, -95, 180, 32, 32),
-		Spare2 = lot(frame, 45, -95, 180, 32, 32),
-		Spare3 = lot(frame, 0, 8, 0, 40, 24), -- between the station and the cove
-		QuestTablet = lot(frame, -100, 150, 180, 4, 3), -- on the wing by the quest pontoon, screen to the plate
+		Station = lot(frame, 0, -70, 180, 60, 44), -- front toward the spawn
+		Boathouse = lot(frame, 85, 222, 90, 34, 40), -- doors onto the cove
+		Helipad = lot(frame, -170, -80, 0, 40, 40),
+		Hangar = lot(frame, -176, 70, 180, 40, 34), -- doors toward the helipad
+		SubPen = lot(frame, -27, 292, 0, 16, 40, 0), -- the sub berth's water, past the jetty's end
+		Jetty = lot(frame, -16, 228, 0, 10, 70, Y), -- from the quay, west of the cove centre: the craft bay east of it is 48 wide (owner 2026-10-31)
+		LifeguardTower = lot(frame, 250, -90, -90, 10, 10), -- on the beach
+		Spare1 = lot(frame, -90, -190, 180, 32, 32),
+		Spare2 = lot(frame, 90, -190, 180, 32, 32),
+		Spare3 = lot(frame, 0, -4, 0, 40, 24), -- between the station and the cove
+		QuestTablet = lot(frame, -100, 310, 180, 4, 3), -- on the wing by the quest pontoon, screen to the plate
 	}
 	lots.Helipad.clearRadius = 45 -- rotor clearance round the pad centre
 	return lots
@@ -340,24 +343,24 @@ for i, row in Ring.islands do
 		center = Vector3.new(row.center.X, Y, row.center.Z),
 		facing = facingOf(row.bearing),
 		frame = frame,
-		spawn = at(frame, 0, -70), -- behind the station, facing it
+		spawn = at(frame, 0, -140), -- behind the station, facing it
 		berths = {
-			Boat = at(frame, 6, 95, 0, 0), -- starboard of the jetty, bow out of the cove
-			Sub = at(frame, -27, 125, 0, 0), -- west of the jetty's end, clear of the Boathouse Lv3 quick-launch bay
+			Boat = at(frame, 6, 255, 0, 0), -- starboard of the jetty, bow out of the cove
+			Sub = at(frame, -27, 285, 0, 0), -- west of the jetty's end, clear of the Boathouse Lv3 quick-launch bay
 		},
 		lots = islandLots(frame),
 		quest = {
 			pontoon = at(
 				frame,
 				-85,
-				160 + RingLayout.QUEST_PONTOON.Y / 2,
+				320 + RingLayout.QUEST_PONTOON.Y / 2,
 				0,
 				RingLayout.QUEST_DECK_Y
 			),
 			slots = { -- either side of the pontoon, bow in
-				at(frame, -93, 171, 180, 0),
-				at(frame, -77, 179, 180, 0),
-				at(frame, -93, 189, 180, 0),
+				at(frame, -93, 331, 180, 0),
+				at(frame, -77, 339, 180, 0),
+				at(frame, -93, 349, 180, 0),
 			},
 		},
 	}

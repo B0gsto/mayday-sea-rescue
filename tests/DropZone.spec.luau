@@ -16,9 +16,9 @@ return function(t)
 				t.expect(ColdOpen.atDropOff(bay.Position, bay)).toBe(true) -- docked in the berth
 				t.expect(ColdOpen.atDropOff((bay * CFrame.new(10.5, 0, 0)).Position, bay))
 					.toBe(true) -- second craft, pontoon
-				t.expect(ColdOpen.atDropOff(cove(0, 68), bay)).toBe(true) -- alongside the jetty
-				t.expect(ColdOpen.atDropOff(cove(0, 32), bay)).toBe(true) -- at the quay
-				t.expect(ColdOpen.atDropOff(cove(0, 150), bay)).toBe(true) -- coming in at the cove mouth
+				t.expect(ColdOpen.atDropOff(cove(0, 228), bay)).toBe(true) -- alongside the jetty
+				t.expect(ColdOpen.atDropOff(cove(0, 192), bay)).toBe(true) -- at the quay
+				t.expect(ColdOpen.atDropOff(cove(0, 310), bay)).toBe(true) -- coming in at the cove mouth
 				t.expect(ColdOpen.atDropOff(bay.Position, bay.Position)).toBe(true) -- a Vector3 bay works too
 				-- outside: past the zone's edge, with no berth, or at someone else's berth
 				t.expect(ColdOpen.atDropOff(bay.Position + bay.LookVector * (R + 1), bay))

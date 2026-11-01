@@ -8,7 +8,11 @@ local Marina = require(script.Parent:WaitForChild("Marina"))
 
 local DockBuild = {}
 
-DockBuild.ISLAND_RADIUS = 172 -- the plateau (160) plus a little beach, from RingLayout.IslandRadius
+-- shortcut: the framed radius, not the whole 320 plate (owner 2026-11-01, 2x plate): 185 is the most a phone's free
+-- share fits inside SAFE_DISTANCE at MAX_FOV, so the plate's outer lots sit past the frame edge; widen it if the build
+-- view gets a pan or per-device framing
+DockBuild.ISLAND_RADIUS = 185
+
 DockBuild.PITCH = math.rad(58) -- down from horizontal: high enough to read the lots, low enough to see fronts
 DockBuild.FOV = 45 -- camera FieldOfView
 DockBuild.MARGIN = 1.12 -- breathing room round the island
