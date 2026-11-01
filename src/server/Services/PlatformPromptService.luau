@@ -17,6 +17,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
+local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local PlatformPrompts = require(Shared:WaitForChild("PlatformPrompts"))
 
 local DataService = require(script.Parent.DataService)
@@ -50,20 +51,16 @@ local function triggered(player: Player, kind: PlatformPrompts.Kind): boolean
 	if forceOn() then
 		return true
 	end
-	if kind == "notify" then -- after a rescue debrief (owner 2026-10-28): someone delivered home at least once
-		local data: any = DataService.Get(player)
-		return data ~= nil and (tonumber(data.totalRescues) or 0) >= 1
-	elseif kind == "favorite" then
-		local data: any = DataService.Get(player) -- after the first island building (the start's jetty doesn't count)
-		if data == nil or type(data.dockBuildings) ~= "table" then
-			return false
-		end
-		for key in data.dockBuildings do
-			if key ~= "Harbour" then
-				return true
-			end
-		end
-		return false
+	-- live v33: both OS prompts queued on the first delivery / the free Hut and popped at the 3-minute gate, over
+	-- the Workshop step; touch players quit there. Neither asks before the Workshop (Onboarding.established).
+	local data: any = DataService.Get(player)
+	local built = data ~= nil
+		and type(data.dockBuildings) == "table"
+		and Onboarding.established(data.dockBuildings)
+	if kind == "notify" then -- after a rescue debrief (owner 2026-10-28) once the Workshop stands
+		return built and (tonumber(data.totalRescues) or 0) >= 1
+	elseif kind == "favorite" then -- after the first island building past the jetty and the Hut
+		return built
 	elseif kind == "invite" then
 		return player:GetAttribute("CrewOpDone") == true
 	end
