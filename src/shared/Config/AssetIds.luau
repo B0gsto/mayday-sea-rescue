@@ -7,9 +7,9 @@ local AssetIds = {}
 
 AssetIds.Models = {
 	M_Ani_GreySeal = {
-		LOD0 = "rbxassetid://105259659778722",
-		LOD1 = "rbxassetid://93470598821132",
-		LOD2 = "rbxassetid://109194335034947",
+		LOD0 = "rbxassetid://120274774240154",
+		LOD1 = "rbxassetid://103323047571227",
+		LOD2 = "rbxassetid://125179422883507",
 	},
 	M_Ani_Gull = { LOD0 = "rbxassetid://80543137024473" },
 	M_Ani_HerringGull = {

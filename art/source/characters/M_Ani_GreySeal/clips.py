@@ -92,6 +92,18 @@ def wave(p, amps):
 
 
 # ---------------------------------------------------------------- the clips
+# r2: the rest pose carries the haul-out arch (head and chest up, fore-flippers splayed and planted), since the game
+# shows the static rest mesh. STREAMLINE flattens it back into a swimming seal: the neck and head down to level and
+# the fore-flippers tucked back along the flanks (+Z on the left turns the tip in, X stays small so no tip can swing up
+# through the back).
+STREAMLINE = {                              # r6: a dynamic glide: chest up ~10 deg, neck ~22, head ~17 over level
+    "Chest": [("X", 6.0)], "Neck": [("X", 13.0)], "Head": [("X", -8.0)],     # (world pitch); fore-flippers swept
+    "FlipperF_L_1": [("Z", 12.0), ("X", 2.0)], "FlipperF_R_1": [("Z", -12.0), ("X", 2.0)],   # back ~14 deg off the
+}                                                                                          # flanks, tips level
+SPREAD = {"FlipperH_L_1": [("Z", -20.0)], "FlipperH_R_1": [("Z", 20.0)]}       # r5: the hind flippers in a V
+LIFT = {"Tail": [("X", 20.0)], "FlipperH_L_1": [("X", 26.0)], "FlipperH_R_1": [("X", 26.0)]}   # r6: tail + hind up
+
+
 def swim(rig):
     """Cruising: the lateral wave grows toward the tail, the hind flippers scull with the wave, the head holds."""
     keys = []
@@ -99,18 +111,21 @@ def swim(rig):
         f = 1 + 9 * i
         p = 2.0 * math.pi * i / 8.0
         pose = wave(p, [
-            ("Spine_1", "Z", 3.2, 0.00), ("Spine_1", "Y", 2.0, 0.30),
-            ("Spine_2", "Z", 4.4, -0.55), ("Spine_2", "Y", 2.2, -0.25),
-            ("Chest", "Z", 3.0, -1.10), ("Chest", "X", 1.4, -1.30),
-            ("Neck", "Z", -4.2, -1.45), ("Neck", "X", 1.6, -1.60),
-            ("Head", "Z", -2.2, -1.75),
-            ("Tail", "Z", 7.5, -1.90),
+            ("Root", "Y", 15.0, -0.5 * math.pi),                          # r6: a banking roll (peak at f37)
+            ("Spine_1", "Z", 6.0, 0.00), ("Spine_1", "Y", 2.0, 0.30),     # r6: a bigger S, the head turning back
+            ("Spine_2", "Z", 8.0, -0.55), ("Spine_2", "Y", 2.2, -0.25),   # against the chest
+            ("Chest", "Z", 5.0, -1.10), ("Chest", "X", 1.4, -1.30),
+            ("Neck", "Z", -10.0, -1.45), ("Neck", "X", 1.6, -1.60),
+            ("Head", "Z", -5.0, -1.75),
+            ("Tail", "Z", 16.0, -1.90),
             ("FlipperH_L_1", "Z", -14.0, -1.15), ("FlipperH_L_1", "X", 5.0, -0.65),
             ("FlipperH_R_1", "Z", -14.0, -1.15), ("FlipperH_R_1", "X", 5.0, -0.65),
             ("FlipperH_L_2", "Z", -16.0, -1.70), ("FlipperH_R_2", "Z", -16.0, -1.70),
             ("FlipperF_L_1", "Z", 5.0, -0.90), ("FlipperF_R_1", "Z", 5.0, -0.90),
             ("FlipperF_L_2", "Z", 6.0, -1.30), ("FlipperF_R_2", "Z", 6.0, -1.30),
         ])
+        for bone, turns in list(STREAMLINE.items()) + list(SPREAD.items()) + list(LIFT.items()):   # r2: rest = arch
+            pose[bone] = turns + pose.get(bone, [])
         keys.append((f, pose, [0.0, 0.010 * math.cos(p), 0.0]))
     return make_action(rig, "A_Seal_Swim", keys)
 
@@ -127,11 +142,11 @@ def surface(rig):
             "Spine_1": [("X", -1.0 + 1.2 * s)],
             "Spine_2": [("X", -1.5 + 1.0 * s)],
             "Chest": [("X", -2.5 + 1.5 * s)],
-            "Neck": [("X", -10.0 - 2.5 * s)],
-            "Head": [("X", -5.0 - 2.0 * s), ("Z", 1.5 * math.cos(p))],
+            "Neck": [("X", -4.0 - 2.5 * s)],
+            "Head": [("X", -3.0 - 2.0 * s), ("Z", 1.5 * math.cos(p))],
             "Jaw": [("X", 8.0 * breath)],
             "Tail": [("X", 5.0 + 2.0 * s)],
-            "FlipperF_L_1": [("Z", 3.0 * s), ("X", -6.0)], "FlipperF_R_1": [("Z", 3.0 * s), ("X", -6.0)],
+            "FlipperF_L_1": [("Z", 6.0 + 3.0 * s), ("X", 4.0)], "FlipperF_R_1": [("Z", -6.0 + 3.0 * s), ("X", 4.0)],
             "FlipperF_L_2": [("Z", -5.0 * s)], "FlipperF_R_2": [("Z", -5.0 * s)],
             "FlipperH_L_1": [("X", -4.0 + 3.0 * s), ("Z", -3.0 * s)],
             "FlipperH_R_1": [("X", -4.0 + 3.0 * s), ("Z", -3.0 * s)],
@@ -152,10 +167,10 @@ def look(rig):
             "Spine_1": [("Z", -turn * 0.10)],
             "Spine_2": [("Z", -turn * 0.10)],
             "Chest": [("Z", turn * 0.12), ("Y", turn * 0.05)],
-            "Neck": [("Z", turn * 0.55), ("X", -6.0 + 2.0 * math.sin(2 * p))],
+            "Neck": [("Z", turn * 0.55), ("X", -2.0 + 2.0 * math.sin(2 * p))],
             "Head": [("Z", turn * 0.45), ("X", -3.0 + 2.5 * math.sin(2 * p)), ("Y", -turn * 0.06)],
             "Tail": [("Z", 4.0 * math.sin(p + 0.8))],
-            "FlipperF_L_1": [("Z", 8.0 + 4.0 * math.sin(p))], "FlipperF_R_1": [("Z", -8.0 - 4.0 * math.sin(p))],
+            "FlipperF_L_1": [("Z", 4.0 + 3.0 * math.sin(p))], "FlipperF_R_1": [("Z", -4.0 - 3.0 * math.sin(p))],
             "FlipperF_L_2": [("Z", -6.0 - 3.0 * math.sin(p))], "FlipperF_R_2": [("Z", 6.0 + 3.0 * math.sin(p))],
             "FlipperH_L_1": [("X", 3.0 * math.sin(p + 1.6))], "FlipperH_R_1": [("X", 3.0 * math.sin(p + 1.6))],
             "FlipperH_L_2": [("X", -4.0 * math.sin(p + 1.9))], "FlipperH_R_2": [("X", -4.0 * math.sin(p + 1.9))],
@@ -165,40 +180,30 @@ def look(rig):
 
 
 def haulout(rig):
-    """On to the rocks: head up, the fore-flippers swing forward and plant, the chest is pulled up over them, the
-    body follows, then it settles flat on the belly with the head up and the hind flippers trailing."""
+    """On to the rocks, ending in the rest pose: streamlined in the water, the head lifts, the fore-flippers swing out
+    and plant (tips down and forward, never up through the back), the chest is pulled up over them, the body follows
+    and settles on the belly with the head up."""
+    def fore(z, x):
+        return {"FlipperF_L_1": [("Z", z), ("X", x)], "FlipperF_R_1": [("Z", -z), ("X", x)]}
+
+    def hind(x):
+        return {"FlipperH_L_1": [("X", x)], "FlipperH_R_1": [("X", x)],
+                "FlipperH_L_2": [("X", 0.7 * x)], "FlipperH_R_2": [("X", 0.7 * x)]}
+    # r4: the peak (f22) is a clear banana: head and neck ~25 deg above the rest arch, fore-flippers planted, the
+    # tail and hind flippers up ~20 deg (+X lifts anything behind its bone head)
     st = [
-        (1, {"Neck": [("X", 6.0)], "Head": [("X", 4.0)], "Spine_1": [("X", 2.0)], "Spine_2": [("X", 2.0)]}, None),
-        (10, {"Neck": [("X", -14.0)], "Head": [("X", -8.0)], "Chest": [("X", 6.0)], "Spine_2": [("X", 4.0)],
-              "Spine_1": [("X", 3.0)],
-              "FlipperF_L_1": [("Z", 34.0), ("X", 26.0)], "FlipperF_R_1": [("Z", -34.0), ("X", 26.0)],
-              "FlipperF_L_2": [("Z", 10.0), ("X", 10.0)], "FlipperF_R_2": [("Z", -10.0), ("X", 10.0)],
-              "FlipperH_L_1": [("X", -14.0)], "FlipperH_R_1": [("X", -14.0)],
-              "FlipperH_L_2": [("X", -10.0)], "FlipperH_R_2": [("X", -10.0)]}, [0.0, 0.0, 0.03]),
-        (22, {"Neck": [("X", -20.0)], "Head": [("X", -10.0)], "Chest": [("X", 10.0)], "Spine_2": [("X", 8.0)],
-              "Spine_1": [("X", 6.0)], "Tail": [("X", 10.0)],
-              "FlipperF_L_1": [("Z", 40.0), ("X", 44.0)], "FlipperF_R_1": [("Z", -40.0), ("X", 44.0)],
-              "FlipperF_L_2": [("Z", 6.0), ("X", 20.0)], "FlipperF_R_2": [("Z", -6.0), ("X", 20.0)],
-              "FlipperH_L_1": [("X", -20.0)], "FlipperH_R_1": [("X", -20.0)],
-              "FlipperH_L_2": [("X", -14.0)], "FlipperH_R_2": [("X", -14.0)]}, [0.0, 0.0, 0.10]),
-        (34, {"Neck": [("X", -16.0)], "Head": [("X", -6.0)], "Chest": [("X", 8.0)], "Spine_2": [("X", 6.0)],
-              "Spine_1": [("X", 4.0)], "Tail": [("X", 8.0)],
-              "FlipperF_L_1": [("Z", 30.0), ("X", 52.0)], "FlipperF_R_1": [("Z", -30.0), ("X", 52.0)],
-              "FlipperF_L_2": [("Z", -6.0), ("X", 16.0)], "FlipperF_R_2": [("Z", 6.0), ("X", 16.0)],
-              "FlipperH_L_1": [("X", -12.0)], "FlipperH_R_1": [("X", -12.0)],
-              "FlipperH_L_2": [("X", -8.0)], "FlipperH_R_2": [("X", -8.0)]}, [0.0, -0.04, 0.12]),
-        (48, {"Neck": [("X", -10.0)], "Head": [("X", -4.0)], "Chest": [("X", 4.0)], "Spine_2": [("X", 3.0)],
-              "Spine_1": [("X", 2.0)], "Tail": [("X", 6.0)],
-              "FlipperF_L_1": [("Z", 26.0), ("X", 48.0)], "FlipperF_R_1": [("Z", -26.0), ("X", 48.0)],
-              "FlipperF_L_2": [("Z", -4.0), ("X", 10.0)], "FlipperF_R_2": [("Z", 4.0), ("X", 10.0)],
-              "FlipperH_L_1": [("X", -6.0)], "FlipperH_R_1": [("X", -6.0)],
-              "FlipperH_L_2": [("X", -4.0)], "FlipperH_R_2": [("X", -4.0)]}, [0.0, -0.06, 0.10]),
-        (60, {"Neck": [("X", -8.0)], "Head": [("X", -3.0)], "Chest": [("X", 3.0)], "Spine_2": [("X", 2.0)],
-              "Spine_1": [("X", 1.0)], "Tail": [("X", 5.0)],
-              "FlipperF_L_1": [("Z", 24.0), ("X", 46.0)], "FlipperF_R_1": [("Z", -24.0), ("X", 46.0)],
-              "FlipperF_L_2": [("Z", -2.0), ("X", 8.0)], "FlipperF_R_2": [("Z", 2.0), ("X", 8.0)],
-              "FlipperH_L_1": [("X", -4.0)], "FlipperH_R_1": [("X", -4.0)],
-              "FlipperH_L_2": [("X", -3.0)], "FlipperH_R_2": [("X", -3.0)]}, [0.0, -0.06, 0.09]),
+        (1, {**STREAMLINE, **SPREAD, "Spine_1": [("X", 2.0)]}, [0.0, 0.0, -0.06]),  # the Swim pose
+        (10, {"Chest": [("X", 6.0)], "Neck": [("X", 4.0)], "Head": [("X", -6.0)], "Spine_2": [("X", 3.0)],
+              "Spine_1": [("X", 2.0)], **fore(-8.0, -6.0), **hind(-6.0)}, [0.0, 0.0, -0.03]),
+        (22, {"Chest": [("X", -6.0)], "Neck": [("X", -13.0)], "Head": [("X", -6.0)], "Spine_2": [("X", -2.0)],
+              "Spine_1": [("X", 6.0)], "Tail": [("X", 14.0)], **fore(-14.0, -12.0), **hind(18.0)},
+         [0.0, 0.0, 0.06]),
+        (34, {"Chest": [("X", -5.0)], "Neck": [("X", -10.0)], "Head": [("X", -4.0)], "Spine_2": [("X", -1.0)],
+              "Spine_1": [("X", 5.0)], "Tail": [("X", 12.0)], **fore(-10.0, -8.0), **hind(14.0)},
+         [0.0, -0.04, 0.05]),
+        (48, {"Chest": [("X", -2.0)], "Neck": [("X", -4.0)], "Head": [("X", -1.0)], "Spine_1": [("X", 2.0)],
+              "Tail": [("X", 5.0)], **fore(-4.0, -3.0), **hind(5.0)}, [0.0, -0.06, 0.01]),
+        (60, {"Neck": [("X", 0.0)], "Tail": [("X", 0.0)], **fore(0.0, 0.0), **hind(0.0)}, [0.0, -0.06, 0.0]),
     ]
     return make_action(rig, "A_Seal_HaulOut", [(f, p, loc) for f, p, loc in st])
 
@@ -207,34 +212,34 @@ def flee(rig):
     """Startled: head up and back, a coil, then the stampede into the water: a hard hind-flipper push, the body
     lunging forward, the nose dropping as it dives."""
     st = [
-        (1, {"Neck": [("X", -14.0)], "Head": [("X", -6.0)], "Chest": [("X", 4.0)],
-             "FlipperF_L_1": [("Z", 22.0), ("X", 40.0)], "FlipperF_R_1": [("Z", -22.0), ("X", 40.0)]}, None),
-        (8, {"Neck": [("X", -22.0)], "Head": [("X", -8.0)], "Spine_1": [("X", 4.0)], "Spine_2": [("X", 6.0)],
-             "Chest": [("X", 10.0)], "Tail": [("X", 14.0)],
-             "FlipperF_L_1": [("Z", 20.0), ("X", 36.0)], "FlipperF_R_1": [("Z", -20.0), ("X", 36.0)],
-             "FlipperF_L_2": [("X", 12.0)], "FlipperF_R_2": [("X", 12.0)],
+        (1, {"Neck": [("X", -6.0)], "Head": [("X", -3.0)], "Chest": [("X", 2.0)],
+             "FlipperF_L_1": [("Z", -4.0), ("X", -4.0)], "FlipperF_R_1": [("Z", 4.0), ("X", -4.0)]}, None),
+        (8, {"Neck": [("X", -10.0)], "Head": [("X", -4.0)], "Spine_1": [("X", 4.0)], "Spine_2": [("X", 6.0)],
+             "Chest": [("X", 6.0)], "Tail": [("X", 14.0)],
+             "FlipperF_L_1": [("Z", -6.0), ("X", -6.0)], "FlipperF_R_1": [("Z", 6.0), ("X", -6.0)],
+             "FlipperF_L_2": [("X", -4.0)], "FlipperF_R_2": [("X", -4.0)],
              "FlipperH_L_1": [("X", -22.0)], "FlipperH_R_1": [("X", -22.0)]}, [0.0, 0.02, 0.02]),
         (16, {"Neck": [("X", -6.0)], "Head": [("X", 2.0)], "Spine_1": [("X", -6.0)], "Spine_2": [("X", -4.0)],
               "Chest": [("X", -4.0)], "Tail": [("X", -12.0)],
-              "FlipperF_L_1": [("Z", 30.0), ("X", 10.0)], "FlipperF_R_1": [("Z", -30.0), ("X", 10.0)],
+              "FlipperF_L_1": [("Z", 8.0), ("X", 4.0)], "FlipperF_R_1": [("Z", -8.0), ("X", 4.0)],
               "FlipperH_L_1": [("X", 16.0), ("Z", -10.0)], "FlipperH_R_1": [("X", 16.0), ("Z", -10.0)],
               "FlipperH_L_2": [("X", 18.0), ("Z", -14.0)], "FlipperH_R_2": [("X", 18.0), ("Z", -14.0)]},
          [0.0, -0.09, 0.04]),
         (26, {"Neck": [("X", 4.0)], "Head": [("X", 6.0)], "Spine_1": [("X", -8.0)], "Spine_2": [("X", -6.0)],
               "Chest": [("X", -6.0)], "Tail": [("X", -14.0)],
-              "FlipperF_L_1": [("Z", 44.0), ("X", -6.0)], "FlipperF_R_1": [("Z", -44.0), ("X", -6.0)],
+              "FlipperF_L_1": [("Z", 12.0), ("X", 2.0)], "FlipperF_R_1": [("Z", -12.0), ("X", 2.0)],
               "FlipperH_L_1": [("X", -12.0), ("Z", 8.0)], "FlipperH_R_1": [("X", -12.0), ("Z", 8.0)],
               "FlipperH_L_2": [("X", -16.0), ("Z", 12.0)], "FlipperH_R_2": [("X", -16.0), ("Z", 12.0)]},
          [0.0, -0.18, 0.02]),
         (38, {"Neck": [("X", 10.0)], "Head": [("X", 8.0)], "Spine_1": [("X", -10.0)], "Spine_2": [("X", -8.0)],
               "Chest": [("X", -8.0)], "Tail": [("X", -16.0)],
-              "FlipperF_L_1": [("Z", 30.0), ("X", -14.0)], "FlipperF_R_1": [("Z", -30.0), ("X", -14.0)],
+              "FlipperF_L_1": [("Z", 10.0), ("X", 4.0)], "FlipperF_R_1": [("Z", -10.0), ("X", 4.0)],
               "FlipperH_L_1": [("X", 12.0), ("Z", -6.0)], "FlipperH_R_1": [("X", 12.0), ("Z", -6.0)],
               "FlipperH_L_2": [("X", 16.0), ("Z", -8.0)], "FlipperH_R_2": [("X", 16.0), ("Z", -8.0)]},
          [0.0, -0.26, -0.02]),
         (48, {"Neck": [("X", 6.0)], "Head": [("X", 4.0)], "Spine_1": [("X", -6.0)], "Spine_2": [("X", -5.0)],
               "Chest": [("X", -4.0)], "Tail": [("X", -10.0)],
-              "FlipperF_L_1": [("Z", 16.0), ("X", -10.0)], "FlipperF_R_1": [("Z", -16.0), ("X", -10.0)],
+              "FlipperF_L_1": [("Z", 10.0), ("X", 6.0)], "FlipperF_R_1": [("Z", -10.0), ("X", 6.0)],
               "FlipperH_L_1": [("X", 6.0)], "FlipperH_R_1": [("X", 6.0)],
               "FlipperH_L_2": [("X", 8.0)], "FlipperH_R_2": [("X", 8.0)]}, [0.0, -0.30, -0.04]),
     ]

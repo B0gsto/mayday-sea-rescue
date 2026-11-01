@@ -13,6 +13,5 @@
   "A_Seal_Surface",
   "A_Seal_Swim"
  ],
- "settings": "rbxkit axis/scale (roblox = (-bx, bz, by), 1 BU = 1 stud), skinning on, one animation per action",
- "next": "Roblox upload: FBX with skinning + animations (docs/12 2.10 AN1); clips also authored in-clips.py"
+ "settings": "rbxkit axis/scale (roblox = (-bx, bz, by), 1 BU = 1 stud), skinning on, one animation per action"
 }

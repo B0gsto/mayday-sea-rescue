@@ -2,7 +2,9 @@
 Blender session (MCP), never headless; objects are in studs, Z up, facing -Y.
 
     sys.path.insert(0, W + "/art/source/characters/_Pets"); import adsheet
-    adsheet.render(objs, "H/<Asset>/rN_sheet.png", poses=[("sit", fn), ...])   # fn() poses objs in place
+    adsheet.render(objs, "H/<Asset>/rN_sheet.png", poses=[("sit", fn), ("Swim", fn, 19), ...])
+    # fn() poses objs in place; an optional frame is set on EVERY scene (the render evaluates actions at the window
+    # scene's frame, so setting it on one scene drew frame 1 for every pose in r3)
     adsheet.lineup([("Otter", objs), ...], "H/Pets/rN_sheet.png")
 
 Rows: GAME (sea, grass; 5-stud figure, camera 18 back 7 up, 70 deg FOV), PHONE (25 % then back up), CLOSE (ortho
@@ -84,7 +86,7 @@ def _bounds(sc, objs):
             continue
         ev = o.evaluated_get(dg)
         me = ev.to_mesh()
-        pts += [o.matrix_world @ v.co for v in me.vertices]
+        pts += [ev.matrix_world @ v.co for v in me.vertices]   # evaluated: the originals lag in a non-active scene
         ev.to_mesh_clear()
     lo = Vector([min(p[i] for p in pts) for i in range(3)])
     hi = Vector([max(p[i] for p in pts) for i in range(3)])
@@ -127,6 +129,7 @@ def _game(sc, lo, hi, ground, w, h):
             o.location.x = o["x0"] + fx
     cam = sc.camera
     cam.data.type, cam.data.angle_y = "PERSP", math.radians(70)
+    cam.data.clip_start = 0.1                         # the default; _close shortens it
     target = Vector(((fx + hi.x) / 2, 0, 2.0))
     _aim(cam, target + Vector((0.5, -1, 0)).normalized() * 18 + Vector((0, 0, 7)), target)
     return _shot(sc, w, h)
@@ -141,10 +144,12 @@ def _close(sc, lo, hi, view, size):
     cam = sc.camera
     d = Vector(CLOSE[view]).normalized()
     c = (lo + hi) / 2
-    _aim(cam, c + d * ((hi - lo).length * 3 + 10), c)
+    r = (hi - lo).length / 2
+    eye = c + d * (r * 3 + 10)                        # fitted to the bounds: the whole object is in front of the camera
+    _aim(cam, eye, c)
     cam.data.type = "ORTHO"
-    sc.view_layers[0].update()                        # matrix_world is stale until the scene re-evaluates
-    m = cam.matrix_world.to_3x3()
+    cam.data.clip_start = 0.01
+    m = (c - eye).to_track_quat("-Z", "Y").to_matrix()    # the aim itself, not cam.matrix_world (stale until a redraw)
     corners = [Vector((x, y, z)) - c for x in (lo.x, hi.x) for y in (lo.y, hi.y) for z in (lo.z, hi.z)]
     cam.data.ortho_scale = 1.15 * max(max(abs(m.col[i].dot(p)) for p in corners) * 2 for i in (0, 1))
     return _shot(sc, size, size)
@@ -189,8 +194,11 @@ def render(objs, out_png, poses=None):
     rows = [np.concatenate(game, 1), np.concatenate([_phone(g) for g in game], 1),
             np.concatenate([_close(sc, lo, hi, v, 768) for v in CLOSE], 1)]
     shots = []
-    for _name, fn in poses or []:
+    for _name, fn, *frame in poses or []:
         fn()
+        for s in bpy.data.scenes if frame else ():
+            s.frame_set(frame[0] - 1)
+            s.frame_set(frame[0])
         plo, phi = _settle(sc, objs)
         shots.append(_close(sc, plo, phi, "3q", 768))
     if shots:
