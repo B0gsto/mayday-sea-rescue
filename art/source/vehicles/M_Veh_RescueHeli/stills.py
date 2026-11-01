@@ -14,7 +14,7 @@ from mathutils import Vector
 ARGS = sys.argv[sys.argv.index("--") + 1:]
 OUT = ARGS[0]
 FBX = ARGS[1] if len(ARGS) > 1 else None
-KEEP = ("M_Veh_RescueHeli_Body_LOD0", "M_Veh_RescueHeli_MainRotor_LOD0", "M_Veh_RescueHeli_TailRotor_LOD0")
+KEEP = ("M_Veh_RescueHeli_Body_LOD0", "M_Veh_RescueHeli_Paint_LOD0", "M_Veh_RescueHeli_MainRotor_LOD0", "M_Veh_RescueHeli_TailRotor_LOD0")
 SKID_Y = -4.5
 
 

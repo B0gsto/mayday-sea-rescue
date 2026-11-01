@@ -2,7 +2,8 @@
 
 Frame = Heli/Builder.luau, authored in Roblox axes (x right, y up, nose -z; Blender = (-x, z, y)), 1 unit = 1 stud,
 origin = HullRoot centre. One FBX per LOD holds three meshes plus the collider, all with identity transforms:
-  M_Veh_RescueHeli_Body       cabin, nose, canopy, boom, fin, skids, winch (welded to HullRoot)
+  M_Veh_RescueHeli_Body       cabin, nose, canopy, boom, fin, skids, winch (welded to HullRoot), minus the orange
+  M_Veh_RescueHeli_Paint      the body's orange shell (livery primary, LiveryPaint.MESH_RULES)
   M_Veh_RescueHeli_MainRotor  4 blades; built symmetric about the hub, so its bbox centre = ATT_MainRotor (spins on Y)
   M_Veh_RescueHeli_TailRotor  2 blades; bbox centre = ATT_TailRotor (spins on X)
   M_Veh_RescueHeli_COL        the 7 x 6 x 13 HullRoot box
@@ -35,8 +36,8 @@ TAIL_HUB, TAIL_R = (1.8, 3.4, 21.0), 4.2
 DOOR_Z0, DOOR_Z1 = 0.4, 4.4                 # right-side sliding door; the winch hangs over its middle (z 2.4)
 ROOF, DECK = 3.0, 4.1                       # cabin roof and engine deck tops
 WINCH = (7.9, 1.55, 2.4)                    # cable top (under the drum), well outboard so it shows from behind
-RING_R, RING_T = 1.55, 0.42                 # rescue ring: its bottom sits at skid level (-4.45), never in the ground
-HOOK = (6.4, -4.45 + RING_R + RING_T, 2.4)  # centre of the yellow rescue ring
+RING_R, RING_T = 0.95, 0.28                 # r5: the stowed rescue ring right under the hook block (no cable)
+HOOK = (WINCH[0], WINCH[1] - 0.85 - RING_R, WINCH[2])   # hook block 0.1..0.75 under the cable top, ring under it
 PITCH, STUD_R, STUD_H = 1.0, 0.3, 0.25      # real Lego stud: 0.6 of the pitch, ~0.2 tall
 # tail boom stations (z, half-width, bottom, top, chamfer); the stripe lofts follow the same stations
 BOOM = [(5.0, 1.5, 0.3, 2.8, 0.4), (9.0, 1.0, 0.9, 2.7, 0.3), (22.4, 0.6, 1.6, 2.6, 0.2)]   # 3 -> 2 -> 1 studs
@@ -230,14 +231,19 @@ def body(h):
     h.vcyl(0, 3.95, DECK - 0.04, 4.3, 0.45, P.DARK, n=12)                 # red beacon dome on the deck
     h.sphere(0, 4.28, 3.95, 0.42, P.RED, zmin=0.0)
     # --- rear bulkhead: white panel, charcoal frame, orange cross, tail lights (the chase cam's view of the cabin)
+    # r5: white clamshell doors (2x the boom), charcoal split under the boom, an orange cross on each leaf,
+    # red / green tail-light studs, yellow handles either side of the split
     h.box((-3.2, -2.3, 5.45), (3.2, 2.75, 5.8), P.WHITE, bev=0.1)
     for s in (-1, 1):
         h.box((s * 2.92, -2.3, 5.72), (s * 3.25, 2.8, 5.9), P.DARK, bev=0.06)
-        h.box((s * 2.2, 1.6, 5.74), (s * 2.7, 2.2, 5.94), P.RED, bev=0.06)
+        for lo, hi, zf, c in (((0.9, -1.25), (2.5, -0.65), 5.94, P.ORANGE), ((1.4, -2.0), (2.0, 0.15), 5.99, P.ORANGE),
+                              ((0.25, -1.1), (0.6, -0.5), 5.96, P.YELLOW)):           # r6: crosses 2x
+            x0, x1 = sorted((s * lo[0], s * hi[0]))
+            h.box((x0, lo[1], 5.76), (x1, hi[1], zf), c, bev=0.04)
+        h.tube((s * 2.35, 1.75, 5.8), (s * 2.35, 1.75, 6.1), 0.45, P.RED if s < 0 else P.GREEN, n=12)
+    h.box((-0.08, -2.05, 5.72), (0.08, 0.3, 5.92), P.DARK, bev=0.02)     # the clamshell split (below the boom)
     h.box((-3.25, -2.4, 5.72), (3.25, -2.05, 5.9), P.DARK, bev=0.06)
     h.box((-3.25, 2.45, 5.72), (3.25, 2.8, 5.9), P.DARK, bev=0.06)
-    h.box((-0.18, -1.85, 5.76), (0.18, -0.15, 5.92), P.ORANGE, bev=0.04)
-    h.box((-0.85, -1.18, 5.76), (0.85, -0.82, 5.94), P.ORANGE, bev=0.04)
     # --- windows: cockpit side windows, left cabin window, right sliding door (window, rail, handle, badge)
     for s in (-1, 1):
         window(h, s, 0.6, 2.45, -3.0, -0.6, 3.35)
@@ -270,9 +276,11 @@ def body(h):
     # stabiliser: 4-stud white plate, tall orange studded end caps (an H from behind, ahead of the tail disc)
     h.box((-3.8, 1.6, 11.4), (3.8, 2.2, 15.4), P.WHITE, bev=0.12)       # inboard of the hoist ring in the chase view
     for s in (-1, 1):
-        h.box((s * 3.4, 0.6, 11.2), (s * 4.2, 3.6, 15.6), P.ORANGE, bev=0.12)
+        x0, x1 = sorted((s * 3.4, s * 4.2))                # r6: white endplates 40% lower, orange caps (no orange legs)
+        h.box((x0, 1.2, 11.2), (x1, 3.0, 15.6), P.WHITE, bev=0.12)
+        h.box((x0 - 0.05, 2.96, 11.15), (x1 + 0.05, 3.4, 15.65), P.ORANGE, bev=0.1)
         for z in (12.0, 13.0, 14.0, 15.0):
-            h.stud(s * 3.8, 3.6, z, P.WHITE)
+            h.stud(s * 3.8, 3.4, z, P.WHITE)
         for x in (2.0, 3.0):
             for z in (12.4, 14.4):
                 h.stud(s * x, 2.2, z, P.WHITE)
@@ -282,12 +290,12 @@ def body(h):
         h.tube((x, -4.02, 5.3), (x, -4.02, -4.75), 0.48, P.DARK, n=14)
         h.tube((x, -4.02, -4.75), (x, -3.24, -6.2), 0.48, P.DARK, n=14)
         h.sphere(x, -4.02, -4.75, 0.48, P.DARK)
-        h.tube((x, -3.94, 5.1), (x, -3.94, 5.55), 0.56, P.ORANGE, n=10)
+        h.tube((x, -3.94, 5.1), (x, -3.94, 5.55), 0.56, P.DARK, n=10)              # r6: charcoal rear cap
         h.stud(x, -3.48, 5.33, P.WHITE)
         h.tube((x, -3.287, -6.112), (x, -3.098, -6.464), 0.56, P.ORANGE, n=10)
         for z in (-2.5, 2.8):
             h.tube((x, -3.9, z), (s * 2.6, -2.5, z), 0.36, P.DARK, n=10)
-            h.tube((x, -3.94, z - 0.3), (x, -3.94, z + 0.3), 0.56, P.ORANGE, n=10)   # studded strut-foot collar
+            h.tube((x, -3.94, z - 0.3), (x, -3.94, z + 0.3), 0.56, P.DARK, n=10)   # r5: charcoal strut-foot collar
             h.stud(x, -3.48, z, P.WHITE)
         x0, x1 = sorted((s * 2.6, s * 4.6))
         h.box((x0, -3.62, -1.6), (x1, -3.32, 1.4), P.WHITE, bev=0.06)
@@ -307,15 +315,10 @@ def body(h):
     h.tube((WINCH[0], 2.3, 1.65), (WINCH[0], 2.3, 3.15), 0.62, P.DARK, n=14)
     for za, zb in ((1.62, 1.76), (3.04, 3.18)):
         h.tube((WINCH[0], 2.3, za), (WINCH[0], 2.3, zb), 0.8, P.WHITE, n=14)
-    h.tube((WINCH[0], 1.9, WINCH[2]), (WINCH[0], HOOK[1] + RING_R + 0.55, WINCH[2]), 0.28, P.DARK, n=8)
+    # r5: no modelled cable (VehicleService draws it from ATT_WinchPoint); the hook block and ring hang stowed
     h.box((WINCH[0] - 0.55, HOOK[1] + RING_R + 0.1, 1.9), (WINCH[0] + 0.55, HOOK[1] + RING_R + 0.75, 2.9), P.DARK,
-          bev=0.12)                                                        # hook block
+          bev=0.12)                                                        # hook block, right under the drum
     h.torus_z(HOOK[0], HOOK[1], HOOK[2], RING_R, RING_T, P.YELLOW)
-    for a in (0, 90, 180, 270):                                            # charcoal grip bands on the ring
-        u = math.radians(a + 45)
-        cx, cy = HOOK[0] + RING_R * math.cos(u), HOOK[1] + RING_R * math.sin(u)
-        tx, ty = -math.sin(u) * 0.25, math.cos(u) * 0.25
-        h.tube((cx - tx, cy - ty, HOOK[2]), (cx + tx, cy + ty, HOOK[2]), RING_T + 0.05, P.DARK, n=10)
 
 
 def main_rotor(h):
@@ -323,13 +326,12 @@ def main_rotor(h):
     the collar reaches down into the engine deck as far as the studded 2x2 hub tower reaches up)."""
     Y, H = ROTOR_Y, 1.85
     h.vcyl(0, 0, Y - H, Y - 0.5, 0.95, P.DARK, n=16)                      # mast collar
-    h.box((-1.5, Y - 0.7, -1.5), (1.5, Y + 0.35, 1.5), P.METAL, bev=0.14)  # chunky 3x3 hub block
-    h.box((-1.52, Y + 0.3, -1.52), (1.52, Y + 0.65, 1.52), P.ORANGE, bev=0.08)
-    h.studs(-1.5, 1.5, -1.5, 1.5, Y + 0.65, P.WHITE, skip=lambda x, z: abs(x) < 1 and abs(z) < 1)
-    h.box((-1.0, Y + 0.6, -1.0), (1.0, Y + 1.3, 1.0), P.WHITE, bev=0.1)   # 2x2 hub tower, red studded cap
+    h.box((-1.0, Y - 0.7, -1.0), (1.0, Y + 0.35, 1.0), P.METAL, bev=0.12)  # r5: 2x2 hub block (was 3x3)
+    h.box((-1.02, Y + 0.3, -1.02), (1.02, Y + 0.65, 1.02), P.ORANGE, bev=0.08)
+    h.box((-0.5, Y + 0.6, -0.5), (0.5, Y + 1.3, 0.5), P.WHITE, bev=0.08)   # 1x1 hub tower, red studded cap
     top = H - STUD_H if h.lod < 2 else H                                  # LOD2 has no studs: keep the bbox centred
-    h.box((-1.02, Y + 1.25, -1.02), (1.02, Y + top, 1.02), P.RED, bev=0.08)
-    h.studs(-1.0, 1.0, -1.0, 1.0, Y + top, P.RED)
+    h.box((-0.52, Y + 1.25, -0.52), (0.52, Y + top, 0.52), P.RED, bev=0.06)
+    h.studs(-0.5, 0.5, -0.5, 0.5, Y + top, P.RED)
     for ax in ((1, 0), (-1, 0), (0, 1), (0, -1)):
         def span(r0, r1, c0, c1, y0, y1, c, bev):
             """Box from radius r0..r1, chord c0..c1 (across the blade), height Y+y0..Y+y1."""
@@ -339,7 +341,7 @@ def main_rotor(h):
                 lo, hi = (c0, Y + y0, ax[1] * r0), (c1, Y + y1, ax[1] * r1)
             h.box(tuple(map(min, lo, hi)), tuple(map(max, lo, hi)), c, bev=bev)
             return tuple(map(min, lo, hi)), tuple(map(max, lo, hi))
-        span(1.4, 3.3, -0.9, 0.9, -0.55, 0.5, P.METAL, 0.12)              # root grip
+        span(0.95, 3.3, -0.9, 0.9, -0.55, 0.5, P.METAL, 0.12)             # root grip (from the 2x2 hub)
         # full-brick blade: white plate on a charcoal under-plate, charcoal edge strips both sides
         span(3.0, ROTOR_R - 1.9, -2.4, 2.4, -0.1, 0.6, P.WHITE, 0.12)
         span(3.05, ROTOR_R - 1.95, -2.38, 2.38, -0.6, -0.07, P.DARK, 0.1)
@@ -401,11 +403,15 @@ def build():
     import bpy  # noqa: F401  (Blender only)
     mat = lego.material("MI_RescueHeli_Lego", ALB)
     meshes, lods = [], {}
-    for part, fn in (("Body", body), ("MainRotor", main_rotor), ("TailRotor", tail_rotor)):
+    # Paint = the orange shell on its own MeshPart: LiveryPaint repaints it (primary), the rest keeps its colours
+    parts = (("Body", body, False), ("Paint", body, True), ("MainRotor", main_rotor, None), ("TailRotor", tail_rotor, None))
+    for part, fn, paint in parts:
         tris = []
         for lod in (0, 1, 2):
             b = lego.B()
             fn(R(b, lod))
+            if paint is not None:
+                b = b.pick({P.ORANGE}, keep=paint)
             tris.append(b.tris())
             nm = "%s_%s_LOD%d" % (NAME, part, lod)
             if lod:

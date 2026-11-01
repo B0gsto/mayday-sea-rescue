@@ -12,10 +12,11 @@ PALETTE = [
     (215, 28, 30),     # 6  red (fin cap, beacon)
     (88, 92, 100),     # 7  mid grey (struts, root grips)
     (178, 184, 192),   # 8  light bluish grey (rotor blades: lighter than charcoal so they read as paddles)
-    (246, 246, 242), (246, 246, 242), (246, 246, 242),
+    (40, 170, 72),     # 9  green (starboard tail light)
+    (246, 246, 242), (246, 246, 242),
     (246, 246, 242), (246, 246, 242), (246, 246, 242), (246, 246, 242),
 ]
-WHITE, ORANGE, DARK, GLASS, YELLOW, METAL, RED, GREY, BLADE = range(9)
+WHITE, ORANGE, DARK, GLASS, YELLOW, METAL, RED, GREY, BLADE, GREEN = range(10)
 
 CELL, GRID, SIZE = 256, 4, 1024
 

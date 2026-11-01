@@ -262,6 +262,22 @@ class B:
         mesh.materials.append(material)
         return mesh
 
+    def pick(self, cells, keep=True):
+        """A new B with only the faces whose palette cell is (keep) / is not (not keep) in cells; shells stay whole."""
+        out, remap = B(), {}
+        for fi, ((idx, c), sm) in enumerate(zip(self.f, self.smooth)):
+            if (c in cells) != keep:
+                continue
+            for i in idx:
+                if i not in remap:
+                    remap[i] = len(out.v)
+                    out.v.append(self.v[i])
+            if fi in self.want:
+                out.want[len(out.f)] = self.want[fi]
+            out.f.append((tuple(remap[i] for i in idx), c))
+            out.smooth.append(sm)
+        return out
+
     def tris(self):
         return sum(len(f) - 2 for f, _ in self.f)
 

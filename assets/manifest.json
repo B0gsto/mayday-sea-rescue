@@ -12962,6 +12962,15 @@
   "source": "assets/textures/M_Veh_BoatTrailer_RIB/T_BoatTrailer_Galv_NOR.png",
   "type": "Image"
  },
+ "Image:98ab71ba8ad7fefbbdfab410d35c08398eec87c30004d553fcb2837f3a81326b": {
+  "assetId": "81237289705982",
+  "imageId": "81237289705982",
+  "moderation": "Reviewing",
+  "name": "T_RescueHeli_Lego_ALB",
+  "sha": "98ab71ba8ad7fefbbdfab410d35c08398eec87c30004d553fcb2837f3a81326b",
+  "source": "assets/textures/M_Veh_RescueHeli/T_RescueHeli_Lego_ALB.png",
+  "type": "Image"
+ },
  "Image:98c94f04ad7d681ef55fa0a2ea10d7dec764c365154e8d5286798ec7893af58a": {
   "assetId": "98223935884982",
   "imageId": "98223935884982",
@@ -23795,6 +23804,16 @@
   "source": "assets/fbx/M_Hbr_Pontoon_Straight12/M_Hbr_Pontoon_Straight12_LOD2.fbx",
   "type": "Model"
  },
+ "Model:48176af0118007e4c617200ac8fca9b96af31961b225c3f32197f9b5dc66321f": {
+  "assetId": "128057877179940",
+  "moderation": "Approved",
+  "name": "M_Veh_RescueHeli_LOD2",
+  "rbxm": "assets/models/M_Veh_RescueHeli_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "48176af0118007e4c617200ac8fca9b96af31961b225c3f32197f9b5dc66321f",
+  "source": "assets/fbx/M_Veh_RescueHeli/M_Veh_RescueHeli_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:482c724ae063b0ca7f3b8e389873fedd573bcd644df158a1f6254a4abc8646b8": {
   "assetId": "113163488855775",
   "moderation": "Approved",
@@ -24443,6 +24462,16 @@
   "route": "delivery",
   "sha": "58019bd0e66375683b8846210572a912db56fab4548efab98cb178c48231ce0f",
   "source": "assets/fbx/M_Bld_SubPenAddons/M_Bld_SubPenAddons_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:5839fb31e9d6872ba8844b9ff99cd5e80c9621df7f1ba0b092c922e4e81ec41c": {
+  "assetId": "134104686361988",
+  "moderation": "Approved",
+  "name": "M_Veh_RescueHeli",
+  "rbxm": "assets/models/M_Veh_RescueHeli.rbxm",
+  "route": "delivery",
+  "sha": "5839fb31e9d6872ba8844b9ff99cd5e80c9621df7f1ba0b092c922e4e81ec41c",
+  "source": "assets/fbx/M_Veh_RescueHeli/M_Veh_RescueHeli_LOD0.fbx",
   "type": "Model"
  },
  "Model:585546e8d2934e0711a20d74bb215a951c77ece5d09a061ed6d74e8e0f3c0c53": {
@@ -28453,6 +28482,16 @@
   "route": "delivery",
   "sha": "c3e8fe199f4abd41d8e646289bf7bb44e6eea9d4888b3896f990d471881317c0",
   "source": "assets/fbx/M_Prop_BuildSiteKit/M_Prop_BuildSiteKit_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:c45571a8e10219dfec135ebe294942fe419489e66fd865973d087a42340a6a18": {
+  "assetId": "140703481744638",
+  "moderation": "Approved",
+  "name": "M_Veh_RescueHeli_LOD1",
+  "rbxm": "assets/models/M_Veh_RescueHeli_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c45571a8e10219dfec135ebe294942fe419489e66fd865973d087a42340a6a18",
+  "source": "assets/fbx/M_Veh_RescueHeli/M_Veh_RescueHeli_LOD1.fbx",
   "type": "Model"
  },
  "Model:c474a45157c1084c3a656dc62c193fe1cb5ea8eb71dca8523805e4c041e0ff94": {

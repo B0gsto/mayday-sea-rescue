@@ -181,18 +181,18 @@
    "name": "ATT_WinchHook",
    "parent": null,
    "blender": [
-    -6.4,
+    -7.9,
     2.4,
-    -2.48
+    -0.25
    ],
    "roblox_from_origin": [
-    6.4,
-    -2.48,
+    7.9,
+    -0.25,
     2.4
    ],
    "roblox_from_bbox_centre": [
-    6.4,
-    -3.911,
+    7.9,
+    -1.681,
     -3.928
    ],
    "look": [

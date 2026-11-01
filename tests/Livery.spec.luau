@@ -61,6 +61,8 @@ return function(t)
 		t.expect(P.setKey("M_Veh_JetSki_Decals_LOD0")).toBe("M_Veh_JetSki/Hull")
 		t.expect(P.meshRule("M_Veh_JetSki_Seat_LOD0")).toBeNil()
 		t.expect(P.meshRule("Bonnet")).toBeNil()
+		t.expect(P.meshRule("M_Veh_RescueHeli_Paint_LOD1").role).toBe("primary") -- the heli's orange shell
+		t.expect(P.meshRule("M_Veh_RescueHeli_Body_LOD0")).toBeNil()
 		t.expect(P.meshRule("M_Veh_RIB_AFrame_LOD0").role).toBe("trim")
 		t.expect(P.setKey("M_Veh_RIB_Helm_Console_LOD0")).toBe("M_Veh_RIB_Helm/Console")
 		t.expect(P.meshRule("M_Veh_RIB_Helm_Seats_LOD0")).toBeNil()
