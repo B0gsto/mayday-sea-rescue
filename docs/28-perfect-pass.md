@@ -63,3 +63,10 @@ One Blender GUI at a time; each step = one Opus agent, rounds to 9.1+, upload, w
 HUD (7.4-8.1) goes to the UI stream, not Blender.
 
 Gotcha (BL1): `gen_asset_ids.py` run in a worktree rewrites ~30 unrelated asset ids; restore all but your own entries in AssetIds.luau + Appearances.model.json.
+
+## In-game bar (2026-11-01, after MERGE2: test v97 / launch v32)
+Sheet scores overstate: in-game AD (merge2) gave crane 8.3, Shop 8.1, jet ski ride 7.5, test ride 7.3, build site 6.8,
+first build 6.7, buy-a-craft 6.7, walk/run/idle 6.7 (sheets 9.5), recruit arrival 4.7. From now on an item passes only
+on the IN-GAME median of 3 judges (daylight, game camera, desktop + phone). Running: PERF-FEEL2a (recruit, first build +
+site, locomotion in context, workers), PERF-FEEL2b (buy-a-craft, test ride + timer bug, jet ski ride, shop payoff,
+passengers, Finish sign), PERF-ANIM6 (hand-keyed action clips in Blender; mocap R1/R2 3.0-7.4, owner: no Mixamo).
