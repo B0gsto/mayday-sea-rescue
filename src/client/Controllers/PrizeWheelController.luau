@@ -395,6 +395,7 @@ local function spin(payload: any)
 		SpinCinematic.start({
 			payload = payload,
 			hub = base,
+			wheel = wheel,
 			landIn = start + duration - Workspace:GetServerTimeNow(),
 			reveal = function(to: Vector3)
 				reveal(payload, rotor, to)

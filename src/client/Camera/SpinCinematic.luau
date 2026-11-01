@@ -54,7 +54,10 @@ type Run = {
 	spinTime: number,
 	hub: Vector3,
 	n: Vector3, -- out of the wheel's face, toward the player
-	right: Vector3,
+	view: Vector3, -- the shots' axis: n, swung aside when buildings crowd the wheel's front
+	room: number, -- 0.4..1: how much of the 34-stud hero distance is clear (shots and the halo shrink to fit)
+	right: Vector3, -- the view's right
+	ignore: RaycastParams, -- the camera's collision clamp
 	stage: Vector3,
 	reveal: (Vector3) -> (),
 	colorOf: (string) -> Color3,
@@ -153,6 +156,7 @@ local function text(name: string, pos: UDim2, size: UDim2, z: number, parent: In
 	local stroke = Instance.new("UIStroke")
 	stroke.Thickness = 4
 	stroke.Color = Color3.fromRGB(20, 18, 30)
+	stroke.Transparency = 1
 	stroke.Parent = l
 	local scale = Instance.new("UIScale")
 	scale.Parent = l
@@ -245,13 +249,32 @@ local function ensureGui(): ScreenGui
 	return g
 end
 
+-- text and its outline together (a UIStroke ignores TextTransparency)
+local function fadeText(l: TextLabel?, to: number, time: number)
+	if not l then
+		return
+	end
+	local stroke = l:FindFirstChildOfClass("UIStroke")
+	if time <= 0 then
+		l.TextTransparency = to
+		if stroke then
+			stroke.Transparency = to
+		end
+		return
+	end
+	TweenService:Create(l, TweenInfo.new(time), { TextTransparency = to }):Play()
+	if stroke then
+		TweenService:Create(stroke, TweenInfo.new(time), { Transparency = to }):Play()
+	end
+end
+
 local function pop(l: TextLabel?, txt: string, color: Color3, from: number)
 	if not l then
 		return
 	end
 	l.Text = txt
 	l.TextColor3 = color
-	l.TextTransparency = 0
+	fadeText(l, 0, 0)
 	local scale = l:FindFirstChildOfClass("UIScale")
 	if scale then
 		scale.Scale = if reduced() then 1 else from
@@ -260,12 +283,6 @@ local function pop(l: TextLabel?, txt: string, color: Color3, from: number)
 			TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
 			{ Scale = 1 }
 		):Play()
-	end
-end
-
-local function fadeText(l: TextLabel?, to: number, time: number)
-	if l then
-		TweenService:Create(l, TweenInfo.new(time), { TextTransparency = to }):Play()
 	end
 end
 
@@ -496,7 +513,9 @@ local function halo(r: Run, t0: number)
 		table.insert(bricks, {
 			model = m,
 			start = t0 + (i - 1) * 0.085,
-			from = r.stage + (r.right * math.cos(outward) + UP * math.sin(outward)) * 34 + r.n * 8,
+			from = r.stage
+				+ (r.right * math.cos(outward) + UP * math.sin(outward)) * 34
+				+ r.view * 8,
 			angle = angle,
 		})
 		m:PivotTo(CFrame.new(0, -500, 0))
@@ -507,7 +526,7 @@ local function halo(r: Run, t0: number)
 	light.Range = 26
 	light.Brightness = 2.5
 	light.Shadows = false
-	local holder = part(r, Vector3.one * 0.2, CFrame.new(r.stage + r.n * 2), GOLD)
+	local holder = part(r, Vector3.one * 0.2, CFrame.new(r.stage + r.view * 2), GOLD)
 	holder.Transparency = 1
 	light.Parent = holder
 end
@@ -526,7 +545,7 @@ local function stepHalo(r: Run, t: number, dt: number)
 		local a = b.angle + r.haloSpin
 		local radial = r.right * math.cos(a) + UP * math.sin(a)
 		local tangent = r.right * -math.sin(a) + UP * math.cos(a)
-		local slot = r.stage + radial * HALO_RADIUS
+		local slot = r.stage + radial * HALO_RADIUS * math.max(r.room, 0.6)
 		local at = b.from:Lerp(slot, outBack(p))
 		b.model:PivotTo(CFrame.fromMatrix(at, tangent, radial))
 		if p >= 1 and not b.model:GetAttribute("Locked") then
@@ -540,14 +559,31 @@ end
 
 ---------------------------------------------------------------- shots
 
+-- a ray that sees what the camera sees: invisible parts (triggers, colliders) are skipped and remembered
+local function cast(from: Vector3, dir: Vector3, params: RaycastParams): RaycastResult?
+	for _ = 1, 6 do
+		local hit = Workspace:Raycast(from, dir, params)
+		if not hit or not hit.Instance:IsA("BasePart") or hit.Instance.Transparency < 0.95 then
+			return hit
+		end
+		params:AddToFilter(hit.Instance)
+	end
+	return nil
+end
+
 local function hero(r: Run, dist: number, h: number, side: number): CFrame
-	return CFrame.lookAt(r.hub + r.n * dist + UP * h + r.right * side, r.hub + UP * 0.5)
+	local k = r.room -- a crowded plaza: closer and a little higher
+	return CFrame.lookAt(
+		r.hub + r.view * dist * k + UP * (h + (1 - k) * 6) + r.right * side * k,
+		r.hub + UP * 0.5
+	)
 end
 
 local function orbit(r: Run, center: Vector3, radius: number, h: number, deg: number): CFrame
 	local a = math.rad(deg)
-	local dir = r.n * math.cos(a) + r.right * math.sin(a)
-	return CFrame.lookAt(center + dir * radius + UP * h, center)
+	local dir = r.view * math.cos(a) + r.right * math.sin(a)
+	local k = r.room
+	return CFrame.lookAt(center + dir * radius * k + UP * (h + (1 - k) * 6), center)
 end
 
 -- the spin push-in (t < 0) and the ladder's slow creep (t >= 0)
@@ -586,7 +622,7 @@ local function ladder(r: Run)
 			sfx("FX_ChimeHit", 0.75, 0.75 * 2 ^ ((rank - 1) * 2 / 12))
 			VFXKit.play(
 				"spincine_flare",
-				CFrame.fromMatrix(r.hub + r.n * 2, r.right, r.n),
+				CFrame.fromMatrix(r.hub + r.n * 2, r.right, r.view),
 				{ color = c, scale = 0.45 + 0.11 * rank, still = true }
 			)
 			kick(1.5 + 0.6 * rank, 0.1 + 0.06 * rank)
@@ -633,7 +669,8 @@ local function payoff(r: Run)
 		add(r, P, function()
 			VFXKit.play("spincine_beam", up, { color = color, still = true })
 			r.shot = function(_t)
-				return CFrame.lookAt(r.hub + r.n * 26 + UP * -3 + r.right * 4, r.hub + UP * 9), 52
+				return CFrame.lookAt(r.hub + r.view * 26 + UP * -3 + r.right * 4, r.hub + UP * 9),
+					52
 			end
 			r.focus = r.hub
 		end)
@@ -739,7 +776,11 @@ local function payoff(r: Run)
 			halo(r, P + 1.5)
 		end)
 		add(r, P + 4, function()
-			VFXKit.play("spincine_halo", CFrame.fromMatrix(r.stage, r.right, r.n), { still = true })
+			VFXKit.play(
+				"spincine_halo",
+				CFrame.fromMatrix(r.stage, r.right, r.view),
+				{ still = true }
+			)
 			r.grade =
 				{ tint = Color3.fromRGB(255, 225, 170), bright = -0.15, sat = 0.1, contrast = 0.12 }
 			kick(3, 0.5)
@@ -748,7 +789,7 @@ local function payoff(r: Run)
 			add(r, P + 4.4 + i * 0.4, function()
 				VFXKit.play(
 					"spincine_tunnel",
-					CFrame.fromMatrix(r.stage, r.right, r.n),
+					CFrame.fromMatrix(r.stage, r.right, r.view),
 					{ radius = 6, still = true }
 				)
 			end)
@@ -800,6 +841,18 @@ end
 
 ---------------------------------------------------------------- takeover
 
+local function showSelf(on: boolean)
+	local char = player.Character
+	if not char then
+		return
+	end
+	for _, x in char:GetDescendants() do
+		if x:IsA("BasePart") or x:IsA("Decal") then
+			(x :: any).LocalTransparencyModifier = if on then 0 else 1
+		end
+	end
+end
+
 local function exit()
 	if not active then
 		return
@@ -811,6 +864,7 @@ local function exit()
 		inputConn = nil
 	end
 	CameraController.ClearOverride()
+	showSelf(true)
 	local cam = Workspace.CurrentCamera
 	if cam then
 		cam.FieldOfView = restoreFov
@@ -840,9 +894,7 @@ local function exit()
 	if gui then
 		gui.Enabled = false
 		for _, l in { label, sub, caption } do
-			if l then
-				l.TextTransparency = 1
-			end
+			fadeText(l, 1, 0)
 		end
 		if wash then
 			wash.BackgroundTransparency = 1
@@ -917,6 +969,12 @@ local function update(dt: number)
 
 	-- camera: damped toward the beat's shot, plus kicks and shake
 	local cf, fov = r.shot(t)
+	-- never through a wall: the plaza is crowded round the wheel (Boathouse 16 studs off its face)
+	local want = cf.Position - r.focus
+	local hit = cast(r.focus, want, r.ignore)
+	if hit then
+		cf = CFrame.new(hit.Position - want.Unit * 1.5) * cf.Rotation
+	end
 	camCf = camCf:Lerp(cf, damp(3.2, dt))
 	camFov = lerp(camFov, fov, damp(3.2, dt))
 	fovKick = lerp(fovKick, 0, damp(7, dt))
@@ -932,6 +990,7 @@ local function update(dt: number)
 		)
 	end
 	CameraController.SetOverride(camCf * jolt, camFov - fovKick)
+	showSelf(false) -- the spinner stands between the camera and the hub
 
 	-- grade, vignette, letterbox, depth of field
 	local g = r.grade
@@ -1050,6 +1109,7 @@ end
 function SpinCinematic.start(ctx: {
 	payload: any,
 	hub: CFrame,
+	wheel: Instance,
 	landIn: number,
 	reveal: (Vector3) -> (),
 	colorOf: (string) -> Color3,
@@ -1081,6 +1141,26 @@ function SpinCinematic.start(ctx: {
 	local folder = Instance.new("Folder")
 	folder.Name = "SpinCinematic"
 	folder.Parent = Workspace
+	local ignore = RaycastParams.new()
+	ignore.FilterType = Enum.RaycastFilterType.Exclude
+
+	local excluded: { Instance } = { ctx.wheel, folder }
+	if char then
+		table.insert(excluded, char)
+	end
+	ignore.FilterDescendantsInstances = excluded
+	-- the stage sits in front of the face, short of anything solid; the shots swing to the clearest side
+	local front = cast(hub + n * 2, n * STAGE, ignore)
+	local stage = if front then math.max(4, front.Distance - 1) else STAGE
+	local view, best = n, -1
+	for _, deg in { 0, 25, -25, 45, -45, 65, -65 } do
+		local dir = CFrame.Angles(0, math.rad(deg), 0):VectorToWorldSpace(n)
+		local h = cast(hub + UP * 2, dir * 34, ignore)
+		local d = if h then h.Distance else 34
+		if d > best + 4 then -- a wider angle has to buy real room
+			view, best = dir, d
+		end
+	end
 	local plan = SpinCinePlan.plan(tostring(ctx.payload.rarity), quick)
 	local landIn = math.max(ctx.landIn, 0)
 	local r: Run = {
@@ -1090,8 +1170,11 @@ function SpinCinematic.start(ctx: {
 		spinTime = math.max(landIn, 1),
 		hub = hub,
 		n = n,
-		right = n:Cross(UP).Unit,
-		stage = hub + n * STAGE,
+		view = view,
+		right = view:Cross(UP).Unit,
+		ignore = ignore,
+		room = math.clamp((best - 3) / 31, 0.4, 1),
+		stage = hub + n * stage,
 		reveal = ctx.reveal,
 		colorOf = ctx.colorOf,
 		revealed = false,
@@ -1129,11 +1212,8 @@ function SpinCinematic.start(ctx: {
 	if quick then
 		ProximityPromptService.Enabled = false -- the last reveal handed them back
 	end
-	if label then
-		label.TextTransparency = 1
-	end
-	if sub then
-		sub.TextTransparency = 1
+	for _, l in { label, sub, caption } do
+		fadeText(l, 1, 0)
 	end
 	if not quick then
 		startedAt = os.clock()
