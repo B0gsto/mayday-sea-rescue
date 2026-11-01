@@ -3824,8 +3824,8 @@ end
 
 -- docs/27 sea plates (RingLayout.SeaPlates): a studded tan Lego deck on 2 x 3 round-brick pillars off the island's
 -- front edge, red/white rim bricks on its three sea sides, bollards and two lamps along the outer edge and a gangway
--- plank over the beach step to the island wing. Placeholder Parts until the Blender kit lands. Every part carries
--- BuildY (ConstructionController's layered rise): the submerged shafts (1) and the two pillar courses above the
+-- plank over the beach step to the island wing. The Lego kit (M_Prop_SeaPlateKit) dresses it when loaded; these
+-- Parts are the fallback. Every part carries BuildY (ConstructionController's layered rise): the submerged shafts (1) and the two pillar courses above the
 -- water (2, 3) rise with the build's progress; the deck and the rest (PLATE_TOP) wait for the finish, where the
 -- plate_drop beat lowers the deck. The Ramp Wharf adds the jump ramp (RingLayout.RAMP: a low-friction wedge, its
 -- invisible RampLip at the top edge) and the teal brick (docs/27 seed 1; DockService binds its prompt); the Freight
@@ -3983,6 +3983,48 @@ local function seaPlate(m: Model, b: CFrame, key: string)
 		a.Name = "ATT_BargeMoor"
 		a.CFrame = CFrame.new(10, sea, -d / 2 - 9.5) * CFrame.Angles(0, -math.pi / 2, 0) -- the barge is 15.8 wide
 		a.Parent = marks
+	end
+	-- the Lego kit (M_Prop_SeaPlateKit: this plate's L01-L07 / L08-L14 round ATT_RampWharf / ATT_FreightWharf, the
+	-- plate frame C): the code Parts above stay as invisible colliders and physics (the teal brick stays visible,
+	-- DockService binds its prompt); no kit keeps them as they are
+	local kit = DockPieces.meshes and DockPieces.meshes("M_Prop_SeaPlateKit")
+	if kit then
+		for _, p in m:GetDescendants() do
+			if p:IsA("BasePart") and p.Name ~= "TealBrick" then
+				p.Transparency, p.CastShadow = 1, false
+				local studs = p:FindFirstChild("Studs")
+				if studs then
+					studs:Destroy()
+				end
+			end
+		end
+		local ramp = key == "SeaPlate1"
+		local first = if ramp then 1 else 8
+		local atts = AssetIds.Attachments.M_Prop_SeaPlateKit
+		kit:PivotTo(C * CFrame.new(-(if ramp then atts.ATT_RampWharf else atts.ATT_FreightWharf)))
+		for _, p in kit:GetDescendants() do
+			if not p:IsA("BasePart") then
+				continue
+			end
+			local k = (tonumber(string.match(p.Name, "^L(%d%d)_")) or 0) - first + 1 -- 1-7 within this plate
+			if k < 1 or k > 7 then
+				p:Destroy() -- the other plate's modules and the Col01_COL token
+				continue
+			end
+			p.Anchored = true
+			p.CanCollide, p.CanQuery, p.CanTouch = false, false, false
+			if k <= 3 then
+				p:SetAttribute("BuildY", k) -- shafts, low course, high course
+			elseif k == 6 then -- lamp heads glow (the hidden code bulbs keep their NightLamp lights)
+				local sa = p:FindFirstChildWhichIsA("SurfaceAppearance")
+				if sa then
+					sa:Destroy()
+				end
+				p.Material, p.Color = M.Neon, WARM
+			end
+		end
+		kit.Name = "SeaPlateKit"
+		kit.Parent = m
 	end
 	for _, p in m:GetDescendants() do
 		if p:IsA("BasePart") and p:GetAttribute("BuildY") == nil then

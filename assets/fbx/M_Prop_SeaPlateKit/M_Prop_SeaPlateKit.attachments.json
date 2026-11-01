@@ -1,0 +1,471 @@
+{
+ "asset": "M_Prop_SeaPlateKit",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_RampWharf",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -80.15,
+    11.4484,
+    22.6898
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_FreightWharf",
+   "parent": null,
+   "blender": [
+    -160.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    160.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    79.85,
+    11.4484,
+    22.6898
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Ramp",
+   "parent": null,
+   "blender": [
+    -51.5,
+    -84.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    51.5,
+    0.0,
+    -84.0
+   ],
+   "roblox_from_bbox_centre": [
+    -28.65,
+    11.4484,
+    -61.3102
+   ],
+   "look": [
+    -0.5,
+    -0.0,
+    -0.866
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_TealBrick",
+   "parent": null,
+   "blender": [
+    37.5,
+    -43.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -37.5,
+    0.0,
+    -43.0
+   ],
+   "roblox_from_bbox_centre": [
+    -117.65,
+    11.4484,
+    -20.3102
+   ],
+   "look": [
+    -0.4794,
+    -0.0,
+    -0.8776
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Gangway_Ramp",
+   "parent": null,
+   "blender": [
+    -31.5,
+    51.0,
+    0.06
+   ],
+   "roblox_from_origin": [
+    31.5,
+    0.06,
+    51.0
+   ],
+   "roblox_from_bbox_centre": [
+    -48.65,
+    11.5084,
+    73.6898
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Ramp_L",
+   "parent": null,
+   "blender": [
+    57.5,
+    -44.0,
+    10.4
+   ],
+   "roblox_from_origin": [
+    -57.5,
+    10.4,
+    -44.0
+   ],
+   "roblox_from_bbox_centre": [
+    -137.65,
+    21.8484,
+    -21.3102
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Ramp_R",
+   "parent": null,
+   "blender": [
+    -57.5,
+    -44.0,
+    10.4
+   ],
+   "roblox_from_origin": [
+    57.5,
+    10.4,
+    -44.0
+   ],
+   "roblox_from_bbox_centre": [
+    -22.65,
+    21.8484,
+    -21.3102
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Dock_Ramp_01",
+   "parent": null,
+   "blender": [
+    12.3,
+    -52.0,
+    -4.0
+   ],
+   "roblox_from_origin": [
+    -12.3,
+    -4.0,
+    -52.0
+   ],
+   "roblox_from_bbox_centre": [
+    -92.45,
+    7.4484,
+    -29.3102
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Dock_Ramp_02",
+   "parent": null,
+   "blender": [
+    46.0,
+    -52.0,
+    -4.0
+   ],
+   "roblox_from_origin": [
+    -46.0,
+    -4.0,
+    -52.0
+   ],
+   "roblox_from_bbox_centre": [
+    -126.15,
+    7.4484,
+    -29.3102
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_BargeMoor",
+   "parent": null,
+   "blender": [
+    -170.0,
+    -57.5,
+    -4.0
+   ],
+   "roblox_from_origin": [
+    170.0,
+    -4.0,
+    -57.5
+   ],
+   "roblox_from_bbox_centre": [
+    89.85,
+    7.4484,
+    -34.8102
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Gangway_Freight",
+   "parent": null,
+   "blender": [
+    -128.5,
+    51.0,
+    0.06
+   ],
+   "roblox_from_origin": [
+    128.5,
+    0.06,
+    51.0
+   ],
+   "roblox_from_bbox_centre": [
+    48.35,
+    11.5084,
+    73.6898
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Freight_L",
+   "parent": null,
+   "blender": [
+    -102.5,
+    -44.0,
+    10.4
+   ],
+   "roblox_from_origin": [
+    102.5,
+    10.4,
+    -44.0
+   ],
+   "roblox_from_bbox_centre": [
+    22.35,
+    21.8484,
+    -21.3102
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Freight_R",
+   "parent": null,
+   "blender": [
+    -217.5,
+    -44.0,
+    10.4
+   ],
+   "roblox_from_origin": [
+    217.5,
+    10.4,
+    -44.0
+   ],
+   "roblox_from_bbox_centre": [
+    137.35,
+    21.8484,
+    -21.3102
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_CranePivot",
+   "parent": null,
+   "blender": [
+    -172.0,
+    -40.0,
+    12.75
+   ],
+   "roblox_from_origin": [
+    172.0,
+    12.75,
+    -40.0
+   ],
+   "roblox_from_bbox_centre": [
+    91.85,
+    24.1984,
+    -17.3102
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_CraneHook",
+   "parent": null,
+   "blender": [
+    -172.0,
+    -57.0,
+    10.0
+   ],
+   "roblox_from_origin": [
+    172.0,
+    10.0,
+    -57.0
+   ],
+   "roblox_from_bbox_centre": [
+    91.85,
+    21.4484,
+    -34.3102
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Dock_Freight_01",
+   "parent": null,
+   "blender": [
+    -94.5,
+    0.0,
+    -4.0
+   ],
+   "roblox_from_origin": [
+    94.5,
+    -4.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    14.35,
+    7.4484,
+    22.6898
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

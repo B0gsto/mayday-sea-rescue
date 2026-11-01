@@ -365,7 +365,8 @@
    "T_RescueBoathouse_Brick_RGH",
    "T_SubPen_Brick_RGH",
    "T_TrophyHall_Brick_RGH",
-   "T_WorkshopAddons_Brick_RGH"
+   "T_WorkshopAddons_Brick_RGH",
+   "T_SeaPlateKit_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -6678,6 +6679,15 @@
   "name": "T_Cliff02_Granite_ALB",
   "sha": "4d97592e0b423114a77ee3d008849c143e1675f2990b9be0271b77f5afcd65b9",
   "source": "assets/textures/M_Rock_Cliff_02/T_Cliff02_Granite_ALB.png",
+  "type": "Image"
+ },
+ "Image:4d979c018e922189053df340fe58d735c75742c69e465dce59aa2d7e845f26c5": {
+  "assetId": "74281249048177",
+  "imageId": "74281249048177",
+  "moderation": "Reviewing",
+  "name": "T_SeaPlateKit_Brick_ALB",
+  "sha": "4d979c018e922189053df340fe58d735c75742c69e465dce59aa2d7e845f26c5",
+  "source": "assets/textures/M_Prop_SeaPlateKit/T_SeaPlateKit_Brick_ALB.png",
   "type": "Image"
  },
  "Image:4da8b555c8378a2fb5c8495234d3b7f435eb12462cddb59dce9f9d65e71ced6f": {
@@ -13523,7 +13533,8 @@
    "T_RescueHQ_Brick_NOR",
    "T_SubPen_Brick_NOR",
    "T_TrophyHall_Brick_NOR",
-   "T_WorkshopAddons_Brick_NOR"
+   "T_WorkshopAddons_Brick_NOR",
+   "T_SeaPlateKit_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -17709,7 +17720,8 @@
    "T_RescueBoathouse_Brick_MET",
    "T_SubPen_Brick_MET",
    "T_TrophyHall_Brick_MET",
-   "T_WorkshopAddons_Brick_MET"
+   "T_WorkshopAddons_Brick_MET",
+   "T_SeaPlateKit_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -23569,6 +23581,16 @@
   "source": "assets/fbx/M_Kit_VHFHandset/M_Kit_VHFHandset_LOD2.fbx",
   "type": "Model"
  },
+ "Model:4331ac4acbe2499fd543711e13d6b00ecc4c6b28cdd29fd23f62418eed1bc905": {
+  "assetId": "129685240928000",
+  "moderation": "Approved",
+  "name": "M_Prop_SeaPlateKit_LOD1",
+  "rbxm": "assets/models/M_Prop_SeaPlateKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "4331ac4acbe2499fd543711e13d6b00ecc4c6b28cdd29fd23f62418eed1bc905",
+  "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:4528904d04ae7a77ce0215082cc260768667d1502b752e4c5b78a93752963aef": {
   "assetId": "93943886469666",
   "moderation": "Approved",
@@ -25519,6 +25541,16 @@
   "source": "assets/fbx/M_Hbr_Fender_Cyl_03/M_Hbr_Fender_Cyl_03_LOD1.fbx",
   "type": "Model"
  },
+ "Model:7927cd1f84aca47a0dc90174f0e7129f98a7e65d866b1dae493a344b866d5adb": {
+  "assetId": "79572915290245",
+  "moderation": "Approved",
+  "name": "M_Prop_SeaPlateKit",
+  "rbxm": "assets/models/M_Prop_SeaPlateKit.rbxm",
+  "route": "delivery",
+  "sha": "7927cd1f84aca47a0dc90174f0e7129f98a7e65d866b1dae493a344b866d5adb",
+  "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:79c221c1b9ffa58d2940257039eb1729500b7acc1846924bff1c38090d87b466": {
   "assetId": "112899448179067",
   "moderation": "Approved",
@@ -26957,6 +26989,16 @@
   "route": "delivery",
   "sha": "9c8a5448d4c5d62684eeb9d8bb6a91bda19e6ea20afd537d1ab73700724dd16d",
   "source": "assets/fbx/M_Veg_Strand_Driftwood_01/M_Veg_Strand_Driftwood_01_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:9cac72d0c5266013b8247654fbaa8623dab38da8a8d4c93c8df658a7d528abd7": {
+  "assetId": "95540036297985",
+  "moderation": "Approved",
+  "name": "M_Prop_SeaPlateKit_LOD2",
+  "rbxm": "assets/models/M_Prop_SeaPlateKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "9cac72d0c5266013b8247654fbaa8623dab38da8a8d4c93c8df658a7d528abd7",
+  "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD2.fbx",
   "type": "Model"
  },
  "Model:9cdc1b5562ebbc96331a3df676ebd9523ae7155309bca24f960483fa8de0dc16": {
