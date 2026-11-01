@@ -13,6 +13,7 @@
 -- Also here: the cold-open reward burst (B1, still seated on the jet ski), the seat pips and the
 -- green home cue (docs/20 4, 8). No sea-blue cover any more: a new player starts on their island.
 local CollectionService = game:GetService("CollectionService")
+local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -240,6 +241,24 @@ local function stepToStation()
 	task.wait(0.3)
 	root.AssemblyLinearVelocity = Vector3.zero
 	root.AssemblyAngularVelocity = Vector3.zero
+	-- drive keys still held from the ride walked the rider off the jetty head into the water: binding over them
+	-- cancels the held walk (a fresh press walks again)
+	ContextActionService:BindActionAtPriority(
+		"StationArrive",
+		function()
+			return Enum.ContextActionResult.Sink
+		end,
+		false,
+		Enum.ContextActionPriority.High.Value,
+		Enum.PlayerActions.CharacterForward,
+		Enum.PlayerActions.CharacterBackward,
+		Enum.PlayerActions.CharacterLeft,
+		Enum.PlayerActions.CharacterRight,
+		Enum.KeyCode.Thumbstick1
+	)
+	task.delay(0.6, function()
+		ContextActionService:UnbindAction("StationArrive")
+	end)
 	local face = Vector3.new(station.X, feet.Y, station.Z)
 	char:PivotTo(CFrame.lookAt(feet, face))
 	task.delay(0.15, function()
