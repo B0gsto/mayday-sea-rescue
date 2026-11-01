@@ -3,7 +3,7 @@
 -- 2026-10-31, first login on a phone: the grey bubble was the only cue). Over the tablet: a green kit pill with the
 -- device's glyph (the tap hand on touch, an E keycap, the gamepad's X) and "Build"; tapping or clicking it opens the
 -- tablet. While the tablet is the tutorial's goal (setGoal) the green build arrow (art/source/ui/build_arrow.svg)
--- bobs over the pill and the pill stays up out of the prompt's range (on foot), where E / ButtonX open it too. It
+-- stands steady over the pill (one pop and a soft UI_Prompt as it appears; FTUE lead 2026-11-01) and the pill stays up out of the prompt's range (on foot), where E / ButtonX open it too. It
 -- pops in once when it shows; in range the prompt keeps E / ButtonX.
 --   TabletCue.mount(prompt, onOpen) -> { setGoal(on), shown() }
 local ContextActionService = game:GetService("ContextActionService")
@@ -18,6 +18,8 @@ local UiImages = require(
 ) :: any
 
 local UI = script.Parent
+local AudioController =
+	require(UI.Parent:WaitForChild("Controllers"):WaitForChild("AudioController"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
 local Layout = require(UI:WaitForChild("Layout"))
 local Style = require(UI:WaitForChild("Kit"):WaitForChild("Style"))
@@ -31,7 +33,7 @@ local TabletCue = {}
 local PILL = Vector2.new(168, 64)
 local ARROW_W = 64
 local ARROW_H = math.round(ARROW_W * 516 / 392) -- the sprite's 392 x 516 px
-local BOB = 6
+local GAP = 6
 
 function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 	prompt:SetAttribute("OwnCue", true) -- PromptCueController leaves this one to us
@@ -104,12 +106,13 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 
 	local function layout()
 		local s = Layout.current().scale
-		local h = PILL.Y + (if goal then ARROW_H + BOB * 2 else 0)
+		local h = PILL.Y + (if goal then ARROW_H + GAP * 2 else 0)
 		scale.Scale = s
 		box.Size = UDim2.fromOffset(PILL.X, h)
 		bb.Size = UDim2.fromOffset(math.round(PILL.X * s), math.round(h * s))
 		bb.SizeOffset = Vector2.new(0, 0.5) -- the gui's bottom (the pill) sits on the spot
 		arrow.Size = UDim2.fromOffset(ARROW_W, ARROW_H)
+		arrow.Position = UDim2.fromOffset(0, GAP) + UDim2.fromScale(0.5, 0)
 		arrow.Visible = goal
 		local d = device()
 		key.Visible = d == "Keyboard"
@@ -128,6 +131,16 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 	local metricsConn = Layout.onMetrics(layout)
 	local deviceConn = InputGlyph.onDevice(layout)
 
+	-- the arrow's appearance: one pop and a soft chime, once each time the tablet becomes the goal
+	local chimed = false
+	local function chime()
+		if up and goal and not chimed then
+			chimed = true
+			Style.pop(arrow, true)
+			AudioController.play("UI_Prompt", nil, 0.8, 1.1)
+		end
+	end
+
 	local function show(on: boolean)
 		if on == up then
 			return
@@ -137,6 +150,7 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 		bb.Parent = if on then Players.LocalPlayer:FindFirstChildOfClass("PlayerGui") else nil
 		if on then
 			Style.pop(button, true) -- one pop, never a loop
+			chime()
 		end
 	end
 	-- live v30: phone players walked off or fell in the water by the stand, past the prompt's 24 studs, and tapped
@@ -186,17 +200,14 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 		inRange = false
 		show(far())
 	end)
-	local bob = RunService.Heartbeat:Connect(function()
+	local watch = RunService.Heartbeat:Connect(function()
 		local away = not inRange and far()
 		show(inRange or away)
 		bindKeys(away and others == 0)
-		if up and goal then -- a slow bob like the beacon's, never a flash
-			arrow.Position = UDim2.new(0.5, 0, 0, BOB + math.sin(os.clock() * 1.8) * BOB)
-		end
 	end)
 	tablet.Destroying:Connect(
 		function() -- the station streams out: the stream-in makes a new prompt and cue
-			bob:Disconnect()
+			watch:Disconnect()
 			shownConn:Disconnect()
 			hiddenConn:Disconnect()
 			bindKeys(false)
@@ -211,7 +222,9 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 		setGoal = function(on: boolean)
 			if on ~= goal then
 				goal = on
+				chimed = chimed and on
 				layout()
+				chime()
 			end
 		end,
 		shown = function(): boolean

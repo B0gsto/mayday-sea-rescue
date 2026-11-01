@@ -26,7 +26,8 @@
 --   TelemetryService.ColdOpenStarted(player) / ColdOpenStep(player, stepId) / ColdOpenEnded(player, reason)
 --   TelemetryService.OpFinished(player, op, reason)                    op: OperationService's live op table
 --   TelemetryService.Recent -> { string }                              last events (Studio: ServerStorage.TelemetryDev)
--- Client (Telemetry_Client, rate limited, every value checked against a fixed set): TabletOpened,
+-- Client (Telemetry_Client, rate limited, every value checked against a fixed set): TabletOpened (also sets the
+-- player attribute TabletOpened: DogService stops leading to the stand),
 -- Device(type), Shop(step, app, item?, currency?), InputDead(context),
 -- StuckReset(context).
 local AnalyticsService = game:GetService("AnalyticsService")
@@ -575,6 +576,7 @@ end
 -- dashboard's field cardinality) and the remote is rate limited (Events.allow).
 local function clientStep(player: Player, name: string, a: any, b: any, c: any, d: any)
 	if name == "TabletOpened" then
+		player:SetAttribute("TabletOpened", true)
 		TelemetryService.Funnel(player, "TabletOpened")
 	elseif name == "Expand" then
 		-- the build card focused (any plate), or the first ramp jump (an owned Ramp Wharf only)

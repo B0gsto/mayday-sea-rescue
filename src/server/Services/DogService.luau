@@ -30,6 +30,9 @@
 -- Shared.Dog.DogWear): a tint on the harness parts, and plain Parts in a "Wear" model welded to the Torso
 -- / Head (darkened while he is wet). A life jacket hides the harness. Model attributes DogId, DogName, Breed.
 --
+-- FTUE lead (live 2026-11-01: 28 of 121 new players never opened the build tablet): before a Hut-less player opens it
+-- (DockLevelHQ 0, no TabletOpened attribute) he runs from them to the stand and sits beside it, facing them.
+--
 -- One companion (owner, 2026-10-24): while a rescued pet is out (player attribute CompanionPet,
 -- PetService) Bosun is home: hidden and still. The pet then does his job: on foot the sniff comes
 -- from the player and DogController draws it at the pet; the craft guide point is unchanged.
@@ -49,6 +52,7 @@ local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
 local DogVisual = require(Shared:WaitForChild("Dog"):WaitForChild("DogVisual"))
 local DogWear = require(Shared:WaitForChild("Dog"):WaitForChild("DogWear"))
 local Net = require(Shared:WaitForChild("Net"))
+local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local DogService = {}
@@ -64,6 +68,8 @@ local TELEPORT_DISTANCE = 70
 local WET_TICK = 0.5 -- seconds between wetness updates
 local SWIM_DEPTH = LEG_HEIGHT - 0.4 -- water this deep under him: he swims
 local WADE_DEPTH = 0.4 -- water this deep: his coat gets wet
+local LEAD_DELAY = 2 -- s after the player first stands at the new spawn: the establishing shot settles on him running
+local LEAD_SPEED = 22 -- studs/s to the stand: a run the camera can follow (his follow cap is 45)
 
 type Anchors = { [string]: { part: BasePart, rest: CFrame } }
 
@@ -88,6 +94,7 @@ type Dog = {
 	lastSwim: boolean,
 	variant: string, -- Cos_Dog option id this model was built for
 	anchors: Anchors, -- Fore (Torso) / Head, rest pose in the authored frame
+	leadAt: number?, -- os.clock() the FTUE lead to the build stand starts
 }
 
 local WEAR_SLOTS = { "DogHarness", "DogBandana", "DogJacket", "DogHat" }
@@ -543,6 +550,30 @@ local function setMode(dog: Dog, mode: string)
 	end
 end
 
+-- FTUE lead: his spot beside the build stand (DockPieces.buildStation: 16 x 12 pad, tablet at +3.6 facing +Z) while
+-- his Hut-less player has not opened the tablet, else nil.
+local function leadSpot(dog: Dog, root: BasePart, now: number): Vector3?
+	local player = dog.player
+	local bay = player:GetAttribute("BayCFrame")
+	if
+		player:GetAttribute("DockLevelHQ") ~= 0
+		or player:GetAttribute("TabletOpened") == true
+		or typeof(bay) ~= "CFrame"
+	then
+		return nil
+	end
+	if not dog.leadAt then
+		local spawn = DockConfig.newSpawn(bay).Position
+		if ((root.Position - spawn) * Vector3.new(1, 0, 1)).Magnitude > 8 then
+			return nil -- not stood at the spawn yet (the server moves the character there after it loads)
+		end
+		dog.leadAt = now + LEAD_DELAY
+	end
+	return if now >= dog.leadAt
+		then (DockConfig.stationSpot(bay) * CFrame.new(5, 0, 5)).Position
+		else nil
+end
+
 local function step(dog: Dog, now: number)
 	local character = dog.player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -586,7 +617,8 @@ local function step(dog: Dog, now: number)
 	end
 	flatLook = flatLook.Unit
 	local right = Vector3.new(-flatLook.Z, 0, flatLook.X)
-	local desired = root.Position + right * 3.2 - flatLook * 1.5
+	local lead = leadSpot(dog, root, now)
+	local desired = lead or root.Position + right * 3.2 - flatLook * 1.5
 	local y, depth = groundY(desired, character)
 	desired = Vector3.new(desired.X, y, desired.Z)
 	dog.depth = depth
@@ -598,14 +630,18 @@ local function step(dog: Dog, now: number)
 		dog.body.AssemblyLinearVelocity = Vector3.zero
 	end
 	dog.alignPos.Position = desired
+	dog.alignPos.MaxVelocity = if lead then LEAD_SPEED else 45
 
 	local face = flatLook
 	if now < dog.pointUntil and dog.pointDir then
 		face = dog.pointDir
 	else
 		local toTarget = Vector3.new(desired.X - pos.X, 0, desired.Z - pos.Z)
+		local toPlayer = Vector3.new(root.Position.X - pos.X, 0, root.Position.Z - pos.Z)
 		if toTarget.Magnitude > 2 then
 			face = toTarget.Unit
+		elseif lead and toPlayer.Magnitude > 1 then
+			face = toPlayer.Unit -- waiting at the stand: looking back at his player
 		end
 	end
 	dog.alignRot.CFrame = CFrame.lookAt(Vector3.zero, face)

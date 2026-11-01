@@ -25,6 +25,7 @@ export type Beacon = {
 	hide: () -> (),
 	target: () -> Vector3?,
 	mute: (on: boolean) -> (), -- the goal keeps its own cue in view (the build tablet's): no diamond; no pointer or trail near it
+	edge: (on: boolean) -> (), -- false: no screen-edge pointer (the FTUE lead holds it back for its first 20 s)
 	destroy: () -> (),
 }
 
@@ -114,6 +115,7 @@ function OnboardingBeacon.start(): Beacon
 	local baseY = 0
 	local active = false
 	local muted = false
+	local edgeOn = true
 
 	local self: any = {}
 
@@ -144,6 +146,10 @@ function OnboardingBeacon.start(): Beacon
 		muted = on
 	end
 
+	function self.edge(on: boolean)
+		edgeOn = on
+	end
+
 	local conn = RunService.Heartbeat:Connect(function()
 		if not active or not at then
 			return
@@ -159,7 +165,7 @@ function OnboardingBeacon.start(): Beacon
 		trail.step(Vector3.new(at.X, baseY, at.Z), not cutscene and not (muted and flat <= NEAR))
 		arrow.Visible = false
 		range.Visible = false
-		if cutscene then
+		if cutscene or not edgeOn then
 			return
 		end
 		local cam = Workspace.CurrentCamera :: Camera
