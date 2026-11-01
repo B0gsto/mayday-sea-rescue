@@ -32,8 +32,8 @@ Onboarding.WORKSHOP = "Workshop"
 Onboarding.HQ = "HQ" -- the free first build (docs/25 J)
 local START = { Harbour = true, HQ = true } -- every new island has the jetty and builds the Hut first
 
--- Any building beyond the start set: an established save.
-local function established(owned: { [string]: boolean }?): boolean
+-- Any building beyond the start set (the Workshop on): an established save. PlatformPromptService waits for it too.
+function Onboarding.established(owned: { [string]: boolean }?): boolean
 	local map: { [string]: boolean } = owned or {}
 	for key, has in map do
 		if has == true and not START[key] then
@@ -119,7 +119,7 @@ function Onboarding.skip(f: BeatFacts): boolean
 	if f.step and f.step >= Onboarding.STEP_RESCUE then
 		return false
 	end
-	return (f.totalRescues or 0) >= Onboarding.SKIP_RESCUES or established(f.owned)
+	return (f.totalRescues or 0) >= Onboarding.SKIP_RESCUES or Onboarding.established(f.owned)
 end
 
 -- The one beat to show now (docs/24 E, docs/25 J): the build stand -> the Hut site -> jet ski -> first
@@ -168,7 +168,7 @@ function Onboarding.buildersFirst(
 	if (step or 0) >= Onboarding.STEP_SITE then
 		return false
 	end
-	return (totalRescues or 0) <= 0 and not established(owned)
+	return (totalRescues or 0) <= 0 and not Onboarding.established(owned)
 end
 
 -- Cash the tutorial adds so the Workshop is affordable (0 when it already is): exactly the gap.
