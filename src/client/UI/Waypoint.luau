@@ -60,8 +60,6 @@ local KIND: { [string]: { icon: string, color: Color3 } } = {
 	WildlifeRescue = { icon = "paw", color = AMBER },
 }
 local LIFT = 38 -- px: the pin floats over the target, its tip on it
-local RIM = Vector2.new(0.36, 0.28) -- the pin ellipse's radii, share of the screen (down)
-local RIM_UP = 0.24 -- its upward radius: the top band holds the strip
 local QUEST = Color3.fromHex("FFC428") -- the quest givers' gold
 -- each colour's pin sprite (tools/ui-art/pin_variants.py renders the same six)
 local PIN = UiImages.Markers.Pin
@@ -333,23 +331,24 @@ function Waypoint.start(
 			end
 			x, y = if side < 0 then -vp.X else 2 * vp.X, vp.Y / 2
 		end
-		-- the marker stays inside a central ellipse, clear of the HUD in the corners and the
-		-- speed dock: past it (or behind you) it pins to the rim, its tip pointing the way
+		-- on screen it sits on the goal, slid clear of the HUD (menu, minimap, wallet, cards, the objective strip);
+		-- off screen (or behind you) it pins to the screen edge inside the safe area, its tip pointing the way
+		-- (AD phone pass 2026-11-01: the old ellipse-rim pin sat mid-screen beside its own on-screen goal)
 		local cx, cy = vp.X / 2, vp.Y / 2
 		local dx, dy = x - cx, y - cy
-		local ry = vp.Y * (if dy < 0 then RIM_UP else RIM.Y)
-		local e = (dx / (vp.X * RIM.X)) ^ 2 + (dy / ry) ^ 2
+		local clear = Vector2.new(DISC, DISC) * fit.Scale * 0.5 + Vector2.new(14, 14) -- strokes and labels hang past the frames
+		local hang = 44 * fit.Scale -- the tip and range chip hang under
+		local edge = math.max(48, DISC * 1.2 * fit.Scale) -- px: the pinned tip's reach, clear of notches
 		local at: Vector2
-		if not behind and e <= 1 then
-			at = Vector2.new(x, y)
+		if not behind and x >= edge and x <= vp.X - edge and y >= edge and y <= vp.Y - edge then
+			at = Layout.clearOfHud(Vector2.new(x, y), clear, hang)
 			turn.Rotation = 0
 			chip.AnchorPoint, chip.Position = Vector2.new(0.5, 0), UDim2.new(0.5, 0, 1, 25) -- under the tip
 		else
-			if e < 1e-6 then -- dead centre behind you: straight down
-				dy, e = 1, (1 / (vp.Y * RIM.Y)) ^ 2
+			if math.abs(dx) + math.abs(dy) < 1e-3 then -- dead centre behind you: straight down
+				dy = 1
 			end
-			local k = 1 / math.sqrt(e)
-			at = Vector2.new(cx + dx * k, cy + dy * k)
+			at = Layout.onEdge(Vector2.new(dx, dy), Vector2.new(edge, edge), clear, hang)
 			turn.Rotation = math.deg(math.atan2(dx, -dy)) + 180 -- the sprite's tip points down
 			-- pinned: the chip hugs the head on the side away from the edge, so it stays with its pin (des1 AD)
 			local u = Vector2.new(dx, dy).Unit
@@ -360,9 +359,6 @@ function Waypoint.start(
 			chip.AnchorPoint = Vector2.new(0.5, 0.5)
 			chip.Position = UDim2.new(0.5, -u.X * back, 0.5, -u.Y * back)
 		end
-		-- out of the HUD (menu, minimap, wallet, cards): slid in toward the centre, the tip still points the way
-		local clear = Vector2.new(DISC, DISC) * fit.Scale * 0.5 + Vector2.new(14, 14) -- strokes and labels hang past the frames
-		at = Layout.clearOfHud(at, clear, 44 * fit.Scale) -- the tip and range chip hang under
 		mark.Position = UDim2.fromOffset(at.X, at.Y)
 		range.Text = Waypoint.metres(flat)
 		mark.Visible = true

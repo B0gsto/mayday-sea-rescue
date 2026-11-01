@@ -315,25 +315,55 @@ end
 -- A screen pin at `at` (viewport px) slid toward the screen centre until it clears every HUD box, kept `clear` px
 -- off each side and `hang` px more above (a label hanging under the pin). Pushing out of one box at a time parked
 -- pins in the gap between the menu column and the quest chip (playtest 2 2026-10-26: on the Settings button).
+local function blocked(p: Vector2, clear: Vector2, up: Vector2): boolean
+	for _, b in hudBoxes do
+		local lo, hi = b.min - clear - up, b.max + clear
+		if p.X > lo.X and p.X < hi.X and p.Y > lo.Y and p.Y < hi.Y then
+			return true
+		end
+	end
+	return false
+end
+
 function Layout.clearOfHud(at: Vector2, clear: Vector2, hang: number?): Vector2
 	local cam = Workspace.CurrentCamera
 	local centre = if cam then cam.ViewportSize / 2 else at
 	local up = Vector2.new(0, hang or 0)
 	for i = 0, 24 do
 		local p = at:Lerp(centre, i / 24)
-		local blocked = false
-		for _, b in hudBoxes do
-			local lo, hi = b.min - clear - up, b.max + clear
-			if p.X > lo.X and p.X < hi.X and p.Y > lo.Y and p.Y < hi.Y then
-				blocked = true
-				break
-			end
-		end
-		if not blocked then
+		if not blocked(p, clear, up) then
 			return p
 		end
 	end
 	return centre -- boxed in all the way: over the play view, never under the HUD
+end
+
+-- An off-screen goal's edge pin (viewport px): where `dir` (from the screen centre) meets the screen edge, `inset` px
+-- in (below the top bar), slid ALONG that edge until clear of the HUD. Slid toward the centre it sat mid-screen
+-- beside on-screen pins (AD phone pass 2026-11-01); only a fully blocked edge falls back to clearOfHud.
+function Layout.onEdge(dir: Vector2, inset: Vector2, clear: Vector2, hang: number?): Vector2
+	local cam = Workspace.CurrentCamera
+	local vp = if cam then cam.ViewportSize else Vector2.new(1366, 768)
+	local lo = inset + Vector2.new(0, GuiService:GetGuiInset().Y)
+	local hi = vp - inset
+	local c, half = (lo + hi) / 2, ((hi - lo) / 2):Max(Vector2.one)
+	if dir.Magnitude < 1e-3 then
+		dir = Vector2.yAxis
+	end
+	local kx = half.X / math.max(math.abs(dir.X), 1e-6)
+	local ky = half.Y / math.max(math.abs(dir.Y), 1e-6)
+	local at = c + dir * math.min(kx, ky)
+	local along = if kx < ky then Vector2.yAxis else Vector2.xAxis -- a side edge slides up / down, top or bottom across
+	local up = Vector2.new(0, hang or 0)
+	for s = 0, 2 * math.max(half.X, half.Y), 8 do
+		for _, sign in { 1, -1 } do
+			local p = (at + along * s * sign):Max(lo):Min(hi)
+			if not blocked(p, clear, up) then
+				return p
+			end
+		end
+	end
+	return Layout.clearOfHud(at, clear, hang)
 end
 
 function Layout.promptBusy(): boolean

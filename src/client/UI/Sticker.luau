@@ -28,7 +28,7 @@ local Sticker = {}
 local WHITE = Color3.new(1, 1, 1)
 local GREY = Color3.fromHex("3A444C")
 local DARK = Color3.fromHex("262E35")
-local LOCKED = Color3.fromHex("A3ACB6")
+local TILE = Color3.fromHex("C9D0D8") -- the light grey backing under a locked sticker
 local GOLD = Color3.fromHex("FFD06A")
 local KIND_COLOUR = {
 	Bottle = Color3.fromHex("3FAE7A"),
@@ -119,6 +119,20 @@ local function icon(parent: Instance, name: string, colour: Color3)
 	end
 end
 
+-- the kit padlock in the corner of a sticker not found yet, ~40% of its size
+local function lockBadge(parent: Instance)
+	local lock = Instance.new("ImageLabel")
+	lock.Name = "Lock"
+	lock.AnchorPoint = Vector2.new(1, 1)
+	lock.Position = UDim2.fromScale(1.04, 1.04)
+	lock.Size = UDim2.fromScale(0.4, 0.4)
+	lock.BackgroundTransparency = 1
+	lock.Image = UiImages.Kit.lock
+	lock.ScaleType = Enum.ScaleType.Fit
+	lock.ZIndex = 2
+	lock.Parent = parent
+end
+
 local function find(islandId: string, stickerId: string): (Rules.Page?, Rules.Sticker?)
 	local page = Rules.ById[islandId]
 	if not page then
@@ -154,12 +168,31 @@ function Sticker.draw(parent: Instance, islandId: string, stickerId: string, fou
 		img.BackgroundTransparency = 1
 		img.Image = picture
 		img.ScaleType = Enum.ScaleType.Fit
-		if not found then -- greyed out until found: a light grey, see-through tint keeps the art legible (the near-black
-			-- multiply turned locked stamps into muddy blobs: r1 in-game judges)
-			img.ImageColor3 = LOCKED
-			img.ImageTransparency = 0.35
-		end
 		img.Parent = f
+		if not found then
+			-- ImageColor3 only multiplies (a grey tint stayed coloured: in-game ADs 2026-11-01): a black silhouette at
+			-- half transparency over a light grey tile is a true flat grey wherever it sits, plus the kit padlock
+			local tile = Instance.new("Frame")
+			tile.Name = "Locked"
+			tile.AnchorPoint = Vector2.new(0.5, 0.5)
+			tile.Position = UDim2.fromScale(0.5, 0.5)
+			tile.Size = UDim2.fromScale(1, 1)
+			tile.BackgroundColor3 = TILE
+			tile.Parent = f
+			Instance.new("UIAspectRatioConstraint").Parent = tile
+			local corner = Instance.new("UICorner")
+			corner.CornerRadius = UDim.new(if stamp then 0.5 else 0.22, 0)
+			corner.Parent = tile
+			local edge = Instance.new("UIStroke")
+			edge.Thickness = 3
+			edge.Color = DARK
+			edge.Parent = tile
+			img.Size = UDim2.fromScale(0.86, 0.86)
+			img.ImageColor3 = Color3.new(0, 0, 0)
+			img.ImageTransparency = 0.5
+			img.Parent = tile
+			lockBadge(tile)
+		end
 		return f
 	end
 	local face = Instance.new("Frame")
@@ -206,6 +239,9 @@ function Sticker.draw(parent: Instance, islandId: string, stickerId: string, fou
 		elseif stamp then WHITE
 		else KIND_COLOUR[s.kind] or page.colour
 	icon(art, if stamp then page.icon else s.kind, colour)
+	if not found then
+		lockBadge(face)
+	end
 	return f
 end
 

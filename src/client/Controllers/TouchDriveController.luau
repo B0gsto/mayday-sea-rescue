@@ -27,8 +27,10 @@ local UiImages = require(
 local VehicleExitController = require(script.Parent.VehicleExitController)
 
 local ART = UiImages.Pad
--- the sprites' box is 244 x 256 with the disc's centre at (122, 122): the disc fills the hit square, its rim overhangs
-local ART_SCALE = 1.25
+-- the sprites' box is 244 x 256 with the disc's centre at (122, 122): the rim fits the hit square, so the PAD_GAP
+-- (10 du, 7 pt at the 0.7 floor) shows between rims (at 1.25 the rims overlapped, AD phone pass 2026-11-01); the
+-- smallest (64 du) is still 45 pt
+local ART_SCALE = 1
 local ART_ANCHOR = Vector2.new(0.5, 122 / 256)
 
 local TouchDriveController = {}

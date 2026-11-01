@@ -114,6 +114,7 @@ local MapConfig = {
 		Waypoint = {
 			label = "Your waypoint",
 			glyph = A11yPalette.symbol("Marker", "Waypoint"),
+			icon = "ring",
 			color = Color3.fromHex("FFD60A"),
 		},
 		Vehicle = {
@@ -139,43 +140,51 @@ local MapConfig = {
 		Crew = {
 			label = "Crew",
 			glyph = A11yPalette.symbol("Marker", "Crew"),
+			icon = "person",
 			color = Color3.fromHex("5AC8FA"),
 		},
 		-- other players: their avatar headshot in a ring of this colour (MapController)
 		Friend = {
 			label = "Friend",
 			glyph = A11yPalette.symbol("Marker", "Crew"),
+			icon = "person",
 			color = Color3.fromHex("FF6FB5"),
 		},
 		Storm = {
 			label = "Storm area",
 			glyph = A11yPalette.symbol("Marker", "Storm"),
+			icon = "bolt",
 			color = Color3.fromHex("8E5BD8"),
 		},
 		-- seamarks (SeamarkController -> SetBlips("Seamarks", ...), small dots in the IALA colours)
 		SeamarkPort = {
 			label = "Port-hand mark",
 			glyph = A11yPalette.symbol("Marker", "SeamarkPort"),
+			icon = "can",
 			color = Color3.fromHex("E0352B"),
 		},
 		SeamarkStarboard = {
 			label = "Starboard-hand mark",
 			glyph = A11yPalette.symbol("Marker", "SeamarkStarboard"),
+			icon = "cone",
 			color = Color3.fromHex("2FB45A"),
 		},
 		SeamarkCardinal = {
 			label = "Cardinal mark",
 			glyph = A11yPalette.symbol("Marker", "SeamarkCardinal"),
+			icon = "diamond",
 			color = Color3.fromHex("F2C230"),
 		},
 		SeamarkSafe = {
 			label = "Safe water mark",
 			glyph = A11yPalette.symbol("Marker", "SeamarkSafe"),
+			icon = "dot",
 			color = Color3.fromHex("F4F1EA"),
 		},
 		SeamarkDanger = {
 			label = "Isolated danger mark",
 			glyph = A11yPalette.symbol("Marker", "SeamarkDanger"),
+			icon = "x",
 			color = Color3.fromHex("1C1C1C"),
 		},
 	},
