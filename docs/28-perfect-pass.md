@@ -98,3 +98,4 @@ Commons kit: **PASS 9.1** at r6 (FIN1; t3/build-prop-commons-kit). PERF-FIN2 que
 HQ r6 (FIN1): **PASS 9.22**, every level >= 9.1 (L4 8.8 -> 9.1), bc53adad. Commons r6 00556167 (9.1; ChatEast 8.9). Open: L5 only a little taller than L4 from the path.
 Gotcha (FIN1): tools/blender/zfight_check.check() resets Blender to factory settings, which disables the MCP add-on: inside an MCP session check LODs another way (or re-enable the add-on after).
 Sea plates r5-r6 (FIN2): 8.8 -> 8.9, cap reached; revisit after the sweep with a fresh concept pass (biggest gaps from the r6 judges).
+FIN2: heli r6 9.0 (5a980fae; livery repaint via _Paint mesh, modelled cable dropped), sea plates r6 8.9 (b1626adf; props collide). PERF-FIN4 queued: both rounds 7-8 after FIN3.
