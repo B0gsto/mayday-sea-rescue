@@ -1,6 +1,6 @@
 --!strict
 -- SprintController: run on foot. Hold Shift (keyboard) or click the left stick (gamepad, toggles); on touch
--- the thumbstick pushed all the way runs. Only swaps the base walk speed (WorldService 12) for SPRINT, so
+-- the thumbstick pushed all the way runs. Only swaps the base walk speed (WorldService 18) for SPRINT, so
 -- freezes (WalkSpeed 0: tablet, build mode) and the DEV walk override are left alone. While running on the
 -- ground a run track fades in over the Animate script's walk/run (jumps and falls keep their own poses).
 -- Also keeps the Animate script's walk/run/idle on Roblox catalog pack clips (LOCO); re-set every frame since
@@ -10,8 +10,8 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
-local WALK = 12 -- StarterPlayer.CharacterWalkSpeed (WorldService)
-local SPRINT = 20
+local WALK = 18 -- StarterPlayer.CharacterWalkSpeed (WorldService)
+local SPRINT = 30 -- owner 2026-11-01: 1.5x (was 20)
 local RUN_ANIM = "rbxassetid://18537384940" -- adidas Sports Animation Pack run (Roblox catalog)
 -- Animate folder -> clip (Cartoony Animation Package, Roblox catalog); walk and run share the walk clip: at WalkSpeed 12 the Animate script blends mostly
 -- into "run", and running is the sprint track's job
