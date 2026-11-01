@@ -12,7 +12,7 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 
 | Area | Item | Source | Score | Status |
 |---|---|---|---|---|
-| UI | every sprite in art/source/ui + UiImages | PERF-UI1 -> UI2 | ~6 -> ~8.8 mean | UI1: 91 redrawn as SVG, UI2 (anchored): 73/96 at 9.1+ (bbaaa5cd on t3/perfect-ui-sprite-art, unmerged; needs a Studio look: Hud.Panel 9-slice, minimap ring, new settings pictures); UI3: last 23 (8.8-9.0) with median-of-3 judges + Beam pin colour fix |
+| UI | every sprite in art/source/ui + UiImages | PERF-UI1 -> UI2 | ~6 -> ~8.8 mean | UI1: 91 redrawn as SVG, UI3 (median of 3): 81/96 at 9.1+ (efb6370a on t3/perfect-ui-sprite-art, unmerged; needs a Studio look: Hud.Panel 9-slice, minimap ring, new settings pictures); UI4: last 15 (8.7-9.0) as new concepts + Amber/Beam pin contrast |
 | AD method | fresh ADs drift +-0.3 and contradict: use an anchor strip of passing items + fixed rubric + pairwise old-vs-new in every AD prompt | all streams | - | rule |
 | World | baseline in-game tour | PERF-TOUR2 | 5.0-8.6 (61 items) | done: tour/SCORES.md; Blender lane order below |
 | Feel | game feel + progression review | code read | moments 3-8 | done: build/status/2026-10-31/perfect/feel/REVIEW.md (28 items) |
