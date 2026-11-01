@@ -1406,4 +1406,35 @@ Presets.ALL.heli_downwash = preset({
 	},
 })
 
+-- feedback: you push off into a sprint (SprintController; its up axis points back and up from the push-off foot):
+-- a small kick of studded dust and two plates off the heel; a swoosh over a soft scuff
+Presets.ALL.sprint_kick = preset({
+	job = "feedback",
+	layers = {
+		with(puffs(4, DUST, 0.9, 2.2, 0.45), { speed = { 6, 10 }, spread = { 25, 25 }, drag = 5 }),
+		with(
+			plates({ WHITE, YELLOW }, 2),
+			{ size = { 1.1 }, speed = { 9, 12 }, spread = { 20, 20 } }
+		),
+	},
+	sounds = {
+		{ clip = "FX_Swoosh", volume = 0.8, pitch = 1.15 } :: FxSound,
+		{ clip = "FX_Thud", volume = 0.25, pitch = 1.6 } :: FxSound,
+	},
+})
+
+-- feedback: a sprint brakes to a stop (SprintController; up axis forward and up from the planted front foot): a
+-- low skid of studded dust ahead of the foot; a scuff thud under a short low swoosh
+Presets.ALL.sprint_brake = preset({
+	job = "feedback",
+	layers = {
+		with(puffs(5, DUST, 0.8, 2, 0.5), { speed = { 5, 8 }, spread = { 35, 35 }, drag = 6 }),
+		with(plates({ WHITE }, 1), { size = { 1 }, speed = { 6, 8 }, spread = { 25, 25 } }),
+	},
+	sounds = {
+		{ clip = "FX_Thud", volume = 0.35, pitch = 1.4 } :: FxSound,
+		{ clip = "FX_Swoosh", volume = 0.5, pitch = 0.8 } :: FxSound,
+	},
+})
+
 return Presets

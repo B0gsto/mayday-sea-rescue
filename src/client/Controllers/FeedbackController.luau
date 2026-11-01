@@ -129,7 +129,7 @@ local function beat(rig: Model, focus: Vector3, face: Vector3?)
 		or player:GetAttribute("MenuOpen") == true
 		or player:GetAttribute("CinematicPlaying") == true
 		or os.clock() - lastBeat < BEAT_GAP
-		or (cam.CFrame.Position - focus).Magnitude > 150 -- too far off to be your moment
+		or (cam.CFrame.Position - focus).Magnitude > 200 -- past rig range (WorkerController NEAR): not your moment
 	then
 		return
 	end

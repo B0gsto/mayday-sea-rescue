@@ -1357,17 +1357,25 @@ local function cullPass()
 			local spot = cfg:GetAttribute("Spot")
 			r.feet = if typeof(spot) == "CFrame" then spot else r.feet
 		elseif not r.rig and not r.sleep and d < NEAR and made < MAKE_PER_TICK then
-			r.lively = d < LIVELY
+			local spot, from = cfg:GetAttribute("Spot"), cfg:GetAttribute("From")
+			-- a new recruit still on the jetty (not a dawn walk out of the door: From stays on the cfg) walks in
+			-- animated from anywhere in range: past LIVELY walkTo would snap them and Arrived never fired
+			r.recruit = if typeof(spot) == "CFrame"
+					and spot ~= r.feet
+					and typeof(from) == "CFrame"
+					and r.feet == from
+				then true
+				else nil
+			r.lively = d < LIVELY or r.recruit == true
 			if makeRig(r) then
 				made += 1
-				local spot = cfg:GetAttribute("Spot")
 				if typeof(spot) == "CFrame" and spot ~= r.feet then
-					r.recruit = typeof(cfg:GetAttribute("From")) == "CFrame"
 					walkTo(r, spot) -- a new recruit: from the jetty to their spot
 				end
 			end
 		end
-		local lively = r.rig ~= nil and d < (if r.lively then LIVELY + 15 else LIVELY)
+		local lively = r.rig ~= nil
+			and (r.recruit == true or d < (if r.lively then LIVELY + 15 else LIVELY))
 		if lively ~= r.lively then
 			r.lively = lively
 			pose(r)

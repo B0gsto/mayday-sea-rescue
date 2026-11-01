@@ -1799,6 +1799,51 @@ function DockService.FinishBuild(player: Player): boolean
 	return true
 end
 
+-- DEV capture hook (DevService buildbeat): `key` stands at level-1 (none for 1), its HQ / prerequisites and the Cash
+-- are there, any running site finishes; `place` gets a spot 32 studs off the lot's front facing it (it moves the
+-- player and waits), then the site starts through the Cash buy.
+function DockService.DevBuildBeat(
+	player: Player,
+	key: string,
+	level: number,
+	place: (CFrame) -> ()
+): (boolean, string)
+	local data: any = DataService.Get(player)
+	local i = byPlayer[player]
+	local def = DockConfig.Buildings[key]
+	if not (data and i and def and def.levels[level]) then
+		return false, "No plot / level"
+	end
+	DockService.FinishBuild(player)
+	deriveDock(data)
+	local levels = data.dock.levels
+	levels[key] = if level > 1 then level - 1 else nil
+	data.dock.prepaid[key] = nil
+	for _ = 1, 12 do
+		local ok, reason, price, need = UnlockTree.canBuild(key, level, levels, data.cash)
+		if ok then
+			break
+		elseif reason == "HQ" then
+			levels.HQ = def.levels[level].hq
+		elseif reason == "Needs" and need then
+			levels[need] = UnlockTree.levelOf(levels, need) + 1
+		elseif reason == "Cash" and price then
+			data.cash = price
+		else
+			return false, reason or "Refused"
+		end
+	end
+	deriveDock(data)
+	DataService.MarkDirty(player)
+	ProgressionService.Refresh(player)
+	show(player, false)
+	local lot = plots[i].frame * def.spot
+	local at = lot.Position + lot.LookVector * 32
+	place(CFrame.lookAt(at, Vector3.new(lot.X, at.Y, lot.Z)))
+	busy[player] = nil
+	return buy(player, key)
+end
+
 function DockService.GetPlot(player: Player): number?
 	return byPlayer[player]
 end
