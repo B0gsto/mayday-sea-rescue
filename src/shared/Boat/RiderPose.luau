@@ -5,11 +5,20 @@
 --   lean    the body banks into the turn (Root roll), the head stays nearer level (Neck);
 --   crouch  the rider tucks forward on the throttle and when planing (Waist pitch, Root dip);
 --   bounce  a slam on a wave crest compresses the legs and springs back (Root dip, Waist nod).
+-- Plus the hull bank (RiderPose.bank: BoatController rolls the visual hull on its VisualJoint, never the physics
+-- root, so it can't trip the capsize eject) and the spray strengths (RiderPose.spray: RiderController's
+-- rooster tail and carve spray). The rider leans a further MAX_LEAN on top of the bank.
 -- Transforms are in the R15 joints' C0 axes (+Z roll leans left, -X pitch leans forward).
 local RiderPose = {}
 
-RiderPose.MAX_LEAN = math.rad(22)
-RiderPose.LEAN_GAIN = 0.55 -- lean (rad) per rad/s of yaw at speed -- tune
+RiderPose.MAX_LEAN = math.rad(9) -- the rider's own lean, on top of the hull bank
+RiderPose.LEAN_GAIN = 0.25 -- lean (rad) per rad/s of yaw at speed -- tune
+RiderPose.MAX_BANK = math.rad(16) -- the visual hull's bank (docs/24 carve: reads on a phone)
+RiderPose.BANK_GAIN = 0.4 -- bank (rad) per rad/s of yaw: full at ~0.7 rad/s, a planing carve -- tune
+RiderPose.BANK_RATE = 1 / 0.15 -- eases in ~0.15 s
+RiderPose.SPRAY_MIN = 8 -- studs/s: no rooster tail below this
+RiderPose.SPRAY_FULL = 0.6 -- share of top speed for the full rooster tail -- tune
+RiderPose.CARVE_MIN, RiderPose.CARVE_FULL = 10, 40 -- studs/s^2 of lateral accel (speed x yaw) for side spray -- tune
 RiderPose.LEAN_SPEED = 14 -- studs/s for the full lean (no lean while idling round)
 RiderPose.MAX_CROUCH = math.rad(24) -- forward tuck at full crouch
 RiderPose.CROUCH_ACCEL = 14 -- studs/s^2 of forward acceleration for a full crouch -- tune
@@ -28,6 +37,7 @@ export type State = {
 	lastVert: number?,
 	y: number,
 	vy: number,
+	slam: boolean, -- this step's input was a wave slam (RiderController's splash)
 }
 export type Input = {
 	dt: number,
@@ -36,11 +46,12 @@ export type Input = {
 	topSpeed: number,
 	vertical: number, -- studs/s, + up
 	scale: number, -- 1 normal; Reduce motion passes less (and no bounce at 0.5 or under)
+	bank: number?, -- the hull's visual bank (rad, + left): the head counters it too
 }
 export type Pose = { Root: CFrame, Waist: CFrame, Neck: CFrame }
 
 function RiderPose.new(): State
-	return { lean = 0, crouch = 0, accel = 0, y = 0, vy = 0 }
+	return { lean = 0, crouch = 0, accel = 0, y = 0, vy = 0, slam = false }
 end
 
 local function ease(from: number, to: number, rate: number, dt: number): number
@@ -70,7 +81,8 @@ function RiderPose.step(s: State, i: Input): Pose
 	-- a bump: the hull's vertical velocity jumps up in one step (it hit a crest or landed a jump)
 	local dv = if s.lastVert then i.vertical - s.lastVert else 0
 	s.lastVert = i.vertical
-	if dv / dt > RiderPose.SLAM_ACCEL and i.scale > 0.5 then
+	s.slam = dv / dt > RiderPose.SLAM_ACCEL
+	if s.slam and i.scale > 0.5 then
 		s.vy -= math.min(dv, 30) * 0.25
 	end
 	s.vy += (-RiderPose.SPRING_K * s.y - RiderPose.SPRING_C * s.vy) * dt
@@ -83,8 +95,37 @@ function RiderPose.step(s: State, i: Input): Pose
 	return {
 		Root = CFrame.new(0, (s.y - s.crouch * RiderPose.DIP) * k, 0) * CFrame.Angles(0, 0, leanK),
 		Waist = CFrame.Angles(-tuck + nod, 0, 0),
-		Neck = CFrame.Angles(tuck * 0.7, 0, -leanK * 0.6),
+		Neck = CFrame.Angles(tuck * 0.7, 0, -(leanK + (i.bank or 0)) * 0.6),
 	}
+end
+
+-- The visual hull's bank (rad, + = left side down, the VisualJoint's +Z roll) eased from `current` toward the
+-- turn: none while idling round, MAX_BANK * scale at most (Reduce motion passes less).
+function RiderPose.bank(
+	current: number,
+	yawRate: number,
+	speed: number,
+	scale: number,
+	dt: number
+): number
+	local speedK = math.clamp(math.abs(speed) / RiderPose.LEAN_SPEED, 0, 1)
+	local cap = RiderPose.MAX_BANK * math.clamp(scale, 0, 1)
+	local target = math.clamp(yawRate * RiderPose.BANK_GAIN * speedK, -cap, cap)
+	return ease(current, target, RiderPose.BANK_RATE, math.clamp(dt, 0, 0.1))
+end
+
+-- Spray strengths 0..1: the stern rooster tail (forward speed) and the side spray thrown off the outside of a
+-- carve (lateral accel = speed x yaw rate). Moving astern throws neither.
+function RiderPose.spray(speed: number, topSpeed: number, yawRate: number): (number, number)
+	if speed < RiderPose.SPRAY_MIN then
+		return 0, 0
+	end
+	local full = math.max(RiderPose.SPRAY_MIN + 1, topSpeed * RiderPose.SPRAY_FULL)
+	local tail = math.clamp((speed - RiderPose.SPRAY_MIN) / (full - RiderPose.SPRAY_MIN), 0, 1)
+	local lat = math.abs(speed * yawRate)
+	local side =
+		math.clamp((lat - RiderPose.CARVE_MIN) / (RiderPose.CARVE_FULL - RiderPose.CARVE_MIN), 0, 1)
+	return tail, side
 end
 
 return RiderPose

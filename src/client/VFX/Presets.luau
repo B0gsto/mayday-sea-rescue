@@ -1020,6 +1020,65 @@ Presets.ALL.nitro_trail = preset({
 	},
 })
 
+-- state: the jet ski's rooster tail (RiderController, every 0.1 s at the stern, up axis back over the wake;
+-- opts.scale = speed): a fan of white / sea-teal streaks, chunky drops and studded foam puffs. Silent: the
+-- driver's Hull_Wake bed swells with speed (AudioController), ski_splash carries the hits
+Presets.ALL.ski_rooster = preset({
+	job = "state",
+	layers = {
+		drops(5, { 20, 30 }, 14, 2.2),
+		{
+			tex = "sea_spray",
+			count = 4,
+			colors = { WHITE, SEA },
+			streak = true,
+			size = curve(4.5, 1.5, outCubic),
+			transparency = POP,
+			lifetime = { 0.45, 0.6 },
+			speed = { 26, 36 },
+			spread = { 10, 10 },
+			accel = Vector3.new(0, -40, 0),
+		},
+		with(puffs(2, FOAM, 1.6, 3.8, 0.7), { speed = { 8, 12 }, spread = { 16, 16 } }),
+	},
+})
+
+-- state: side spray off the outside of a hard carve (RiderController, every 0.1 s; opts.scale = lateral g):
+-- a white bow-wave sheet, drops and studded puffs thrown out and up. Silent like ski_rooster
+Presets.ALL.ski_carve = preset({
+	job = "state",
+	layers = {
+		drops(5, { 16, 24 }, 25, 2), -- a Layer first: the literal below then types as one
+		{
+			tex = "bow_wave",
+			count = 1,
+			colors = { FOAM },
+			size = curve(2, 6, outBack),
+			transparency = { 0.15, 0.25, 1 },
+			lifetime = { 0.45, 0.55 },
+			speed = { 3, 5 },
+			spread = { 25, 25 },
+		},
+		with(puffs(2, FOAM, 1.8, 4, 0.6), { speed = { 6, 10 }, spread = { 30, 30 } }),
+	},
+})
+
+-- feedback: a hard carve bites or the jet ski slams a crest (RiderController): a crown, drops, studded puffs and
+-- a foam ring on the water; a splash under a spray hiss
+Presets.ALL.ski_splash = preset({
+	job = "feedback",
+	layers = {
+		crown(1, 3, 8),
+		drops(12, { 16, 24 }, 40, 2.2),
+		puffs(5, FOAM, 2, 4.5, 0.65),
+		groundRing("foam_ring", FOAM, curve(3, 9, outCubic), 0.8),
+	},
+	sounds = {
+		{ clip = "FX_SplashSmall", volume = 0.8 } :: FxSound,
+		{ clip = "Hull_SprayHiss", delay = 0.03, volume = 0.5, pitch = 1.1 } :: FxSound,
+	},
+})
+
 -- feedback: the hull bumps a rock / quay / boat (BoatController); at the bow: a small crown, drops, spray puffs;
 -- a wooden thud under a splash and a short shake
 Presets.ALL.bump_splash = preset({

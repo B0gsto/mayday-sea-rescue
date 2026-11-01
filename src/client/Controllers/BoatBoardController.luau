@@ -7,13 +7,15 @@
 -- (Menu.openBoard: Launch / Buy per craft); a click / tap on a model opens that craft's BoatCard. Other players'
 -- racks: prompt off.
 -- Test ride (mon REVIEW #7, shared/TestRide): a locked Robux-only model shows a clock "Try" chip; tapping it asks
--- the server (Net TestRide) to lend it for 60 s. While riding: a clock + seconds chip at the top and a buoy ring
--- round the bay (TestRideAt); when it ends that craft's card opens with its price.
+-- the server (Net TestRide) to lend it for 60 s. While riding: a clock + seconds pill at the top and a ring of Lego
+-- buoys round the bay (TestRideAt), both popping in on a horn; when it ends that craft's card opens with its price.
 local CollectionService = game:GetService("CollectionService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -26,6 +28,10 @@ local Rules = require(Shared:WaitForChild("ProgressionRules"))
 local TestRide = require(Shared:WaitForChild("TestRide"))
 local UiImages = require(Config:WaitForChild("UiImages"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
+
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
+local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 local UI = script.Parent.Parent:WaitForChild("UI")
 local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
@@ -319,32 +325,60 @@ local function onTriggered(prompt: ProximityPrompt)
 	end
 end
 
--- The ride's HUD: a clock + seconds chip at the top, and a ring of Lego buoys on the water round the bay.
+-- The ride's HUD: a clock + seconds pill at the top, and a ring of chunky Lego buoys on the water round the bay.
+-- Start: the pill pops in under a horn while the buoys rise from the sea one by one (a splash every few). Last
+-- RUSH s: the pill turns steady red, one eased pop + a soft tick per second (1 Hz). At 0: a whistle and a puff at
+-- the boat, then its card. Reduce motion: no pops, no rise, no bob.
+local BUOYS = 40 -- round the ring: ~17 studs apart, several in a third-person frame
+local RISE = 0.6 -- s for the whole ring to come up
+local POP = 0.35 -- s one buoy takes to rise (Back ease)
+local SINK = 8 -- studs a buoy starts under the water (taller than it stands)
+local BOB = 0.3 -- studs up / down, ~4 s a bob
+local RUSH = 10 -- the last seconds tick
+local RED = Color3.fromRGB(205, 30, 38)
+local WHITE = Color3.fromRGB(242, 243, 243)
+local UP = CFrame.Angles(0, 0, math.pi / 2) -- a cylinder's axis is X
+
+-- one Lego buoy round its foot on the water: a red drum, a white band 0.05 proud, a white stud sunk 0.05 into the
+-- top, a pole and a yellow flag (no two faces share a plane)
+local PIECES = {
+	{
+		shape = Enum.PartType.Cylinder,
+		size = Vector3.new(4, 5, 5),
+		off = CFrame.new(0, 1.2, 0) * UP,
+		color = RED,
+	},
+	{
+		shape = Enum.PartType.Cylinder,
+		size = Vector3.new(1.2, 5.1, 5.1),
+		off = CFrame.new(0, 1.6, 0) * UP,
+		color = WHITE,
+	},
+	{
+		shape = Enum.PartType.Cylinder,
+		size = Vector3.new(0.7, 2.4, 2.4),
+		off = CFrame.new(0, 3.5, 0) * UP,
+		color = WHITE,
+	},
+	{
+		shape = Enum.PartType.Block,
+		size = Vector3.new(0.3, 3.4, 0.3),
+		off = CFrame.new(0, 5.2, 0),
+		color = WHITE,
+	},
+	{
+		shape = Enum.PartType.Block,
+		size = Vector3.new(0.12, 1.3, 2),
+		off = CFrame.new(0, 6.15, 1.1),
+		color = Color3.fromRGB(245, 205, 48),
+	},
+}
+
 local rideGui: ScreenGui? = nil
 local buoys: Folder? = nil
 local riddenId: string? = nil
-
-local function buoy(at: Vector3, parent: Instance)
-	local body = Instance.new("Part")
-	body.Shape = Enum.PartType.Cylinder
-	body.Size = Vector3.new(2.4, 2.2, 2.2) -- X is the cylinder's height
-	body.CFrame = CFrame.new(at + Vector3.new(0, 0.9, 0)) * CFrame.Angles(0, 0, math.pi / 2)
-	body.Color = Color3.fromRGB(205, 30, 38)
-	local band = body:Clone()
-	band.Size = Vector3.new(0.8, 2.28, 2.28) -- proud of the body: no shared faces
-	band.Color = Color3.fromRGB(242, 243, 243)
-	band.CFrame = body.CFrame
-	local stud = body:Clone()
-	stud.Size = Vector3.new(0.4, 1.2, 1.2)
-	stud.CFrame = CFrame.new(at + Vector3.new(0, 2.3, 0)) * CFrame.Angles(0, 0, math.pi / 2)
-	for _, p in { body, band, stud } do
-		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow =
-			true, false, false, false, false
-		p.Material = Enum.Material.SmoothPlastic
-		p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
-		p.Parent = parent
-	end
-end
+local rideToken = 0 -- bumped per ride HUD and at the end: an older timer loop stops
+local waterY: number? = nil
 
 local function ringAt(centre: Vector3)
 	local f = Instance.new("Folder")
@@ -352,20 +386,78 @@ local function ringAt(centre: Vector3)
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Include
 	params.FilterDescendantsInstances = { Workspace.Terrain }
-	local n = 28
-	for i = 1, n do
-		local a = i / n * 2 * math.pi
+	local still = Comfort.reducedMotion()
+	local parts: { BasePart } = {}
+	local rest: { CFrame } = {}
+	local born: { number } = {}
+	local phase: { number } = {}
+	local t0 = os.clock()
+	waterY = nil
+	for i = 1, BUOYS do
+		local a = i / BUOYS * 2 * math.pi
 		local p = centre + Vector3.new(math.cos(a), 0, math.sin(a)) * TestRide.RADIUS
 		local hit = Workspace:Raycast(p + Vector3.new(0, 60, 0), Vector3.new(0, -120, 0), params)
 		if not hit or hit.Material == Enum.Material.Water then -- on the sea only, never on land
-			buoy(Vector3.new(p.X, if hit then hit.Position.Y else centre.Y, p.Z), f)
+			local foot = CFrame.new(p.X, if hit then hit.Position.Y else centre.Y, p.Z)
+				* CFrame.Angles(0, -a, 0)
+			waterY = waterY or foot.Y
+			local at = t0 + (i - 1) / BUOYS * RISE
+			for _, s in PIECES do
+				local part = Instance.new("Part")
+				part.Shape = s.shape
+				part.Size = s.size
+				part.Color = s.color
+				part.Anchored, part.CanCollide, part.CanQuery, part.CanTouch, part.CastShadow =
+					true, false, false, false, false
+				part.Material = Enum.Material.SmoothPlastic
+				part.TopSurface, part.BottomSurface =
+					Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+				part.CFrame = foot * s.off
+				part.Parent = f
+				table.insert(parts, part)
+				table.insert(rest, part.CFrame)
+				table.insert(born, at)
+				table.insert(phase, a * 3)
+			end
+			if not still and i % 5 == 1 then
+				task.delay(at - t0 + POP * 0.4, VFXKit.play, "dolphin_leap", foot) -- a crown, drops, a plop
+			end
 		end
 	end
-	f.Parent = Workspace
 	buoys = f
+	if still then
+		f.Parent = Workspace -- steady: at rest, no loop
+		return
+	end
+	local function place(now: number)
+		local cfs = table.create(#parts)
+		for k, cf in rest do
+			local t = (now - born[k]) / POP
+			local y = math.sin(now * 1.6 + phase[k]) * BOB
+			if t < 1 then
+				y -= SINK * (1 - TweenService:GetValue(
+					math.max(t, 0),
+					Enum.EasingStyle.Back,
+					Enum.EasingDirection.Out
+				))
+			end
+			cfs[k] = cf + Vector3.new(0, y, 0)
+		end
+		Workspace:BulkMoveTo(parts, cfs, Enum.BulkMoveMode.FireCFrameChanged)
+	end
+	place(t0) -- all under water before the first frame
+	f.Parent = Workspace
+	local conn: RBXScriptConnection
+	conn = RunService.Heartbeat:Connect(function()
+		if f.Parent then
+			place(os.clock())
+		else
+			conn:Disconnect()
+		end
+	end)
 end
 
-local function rideHud(): TextLabel
+local function rideHud(): (TextLabel, Frame, UIScale)
 	local g = Instance.new("ScreenGui")
 	g.Name = "TestRide"
 	g.ResetOnSpawn = false
@@ -378,6 +470,8 @@ local function rideHud(): TextLabel
 	f.BackgroundTransparency = 0.1
 	HudTheme.corner(f, 14)
 	HudTheme.stroke(f, Color3.new(1, 1, 1), 3) -- the sticker rim
+	local pop = Instance.new("UIScale")
+	pop.Parent = f
 	f.Parent = g
 	local icon = Instance.new("Frame")
 	icon.BackgroundTransparency = 1
@@ -396,41 +490,107 @@ local function rideHud(): TextLabel
 	t.Parent = f
 	g.Parent = player:WaitForChild("PlayerGui")
 	rideGui = g
-	return t
+	return t, f, pop
+end
+
+local function ease(
+	obj: Instance,
+	time: number,
+	style: Enum.EasingStyle,
+	dir: Enum.EasingDirection,
+	goal: any
+)
+	TweenService:Create(obj, TweenInfo.new(time, style, dir), goal):Play()
+end
+
+-- one tick of the timer loop: the seconds, steady red + a pop and a tick per second in the last RUSH s
+local function paintTimer(label: TextLabel, pill: Frame, pop: UIScale, left: number, shown: number)
+	label.Text = tostring(left)
+	local rush = left <= RUSH
+	pill.BackgroundColor3 = if rush then RED else C.panel
+	if rush and left > 0 and left < shown then
+		AudioController.play("UI_Step", nil, 0.8, 1 + (RUSH - left) * 0.03)
+		if not Comfort.reducedMotion() then
+			pop.Scale = 1.15
+			ease(pop, 0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, { Scale = 1 })
+		end
+	end
+end
+
+local function startRide(at: any)
+	rideToken += 1
+	local token = rideToken
+	if typeof(at) == "Vector3" and not buoys then
+		ringAt(at)
+	end
+	local label, pill, pop = rideHud()
+	AudioController.play("Horn_Tug", nil, 0.7)
+	AudioController.play("FX_Pop")
+	if not Comfort.reducedMotion() then
+		pop.Scale = 0
+		ease(pop, 0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out, { Scale = 1 })
+	end
+	task.spawn(function()
+		local shown = math.huge
+		while token == rideToken and label.Parent do
+			-- read each tick: a changed or restarted end never leaves a stale count on screen
+			local ends = player:GetAttribute("TestRideEnds")
+			if type(ends) == "number" then
+				local left = math.max(0, math.ceil(ends - Workspace:GetServerTimeNow()))
+				if left ~= shown then
+					paintTimer(label, pill, pop, left, shown)
+					shown = left
+				end
+			end
+			task.wait(0.1)
+		end
+	end)
+end
+
+-- time up: a whistle and a puff of water at the boat as it heads home; the pill shrinks away
+local function endRide(g: ScreenGui)
+	AudioController.play("Horn_Whistle", nil, 0.8)
+	local char = player.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	local part = (hum and hum.SeatPart) or (char and char:FindFirstChild("HumanoidRootPart"))
+	if part and part:IsA("BasePart") then
+		local p = part.Position
+		VFXKit.play("launch_splash", CFrame.new(p.X, waterY or p.Y - 2, p.Z))
+	end
+	local pill = g:FindFirstChildWhichIsA("Frame")
+	local pop = pill and pill:FindFirstChildWhichIsA("UIScale")
+	if pop and not Comfort.reducedMotion() then
+		ease(pop, 0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In, { Scale = 0 })
+		task.delay(0.3, g.Destroy, g)
+	else
+		g:Destroy()
+	end
 end
 
 local function onRide()
 	local id = player:GetAttribute("TestRide")
 	local ends = player:GetAttribute("TestRideEnds")
-	local at = player:GetAttribute("TestRideAt")
 	if type(id) == "string" then
 		riddenId = id
-		if typeof(at) == "Vector3" and not buoys then
-			ringAt(at)
-		end
+		-- the HUD and the ring come up together once the crane has lowered it (TestRideEnds set)
 		if type(ends) == "number" and not rideGui then
-			local label = rideHud()
-			task.spawn(function()
-				while rideGui and label.Parent do
-					local left = math.max(0, math.ceil(ends - Workspace:GetServerTimeNow()))
-					label.Text = tostring(left)
-					label.TextColor3 = if left <= 10 then C.gold else Color3.new(1, 1, 1)
-					task.wait(0.2)
-				end
-			end)
+			startRide(player:GetAttribute("TestRideAt"))
 		end
 		paintAll()
 		return
 	end
-	for _, x in { rideGui :: Instance?, buoys :: Instance? } do
-		if x then
-			x:Destroy()
-		end
+	rideToken += 1
+	local g = rideGui
+	if buoys then
+		buoys:Destroy()
 	end
 	rideGui, buoys = nil, nil
 	local done = riddenId
 	riddenId = nil
 	paintAll()
+	if g then
+		endRide(g)
+	end
 	if done then
 		task.delay(1.2, Menu.openBoat, done) -- sailed home: its card, with the price
 	end
