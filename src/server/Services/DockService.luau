@@ -1125,6 +1125,7 @@ local function setMaster(plot: Plot, on: boolean)
 	if on and not plot.master then
 		local m = Instance.new("Model")
 		m.Name = "HarbourMaster"
+		plot.master = m -- claimed before the kit load yields, so a repeat or an off call in that window sees it
 		local at = plot.frame * Marina.ISLAND * CFrame.new(21, 0, -28)
 		local pole = part(
 			m,
@@ -1153,6 +1154,12 @@ local function setMaster(plot: Plot, on: boolean)
 			at,
 			{ "L04_HarbourBeacon", "L05_BeaconLens", "L06_BeaconPanes" }
 		)
+		if plot.master ~= m then -- switched off while the kit loaded (m is already destroyed)
+			if kit then
+				kit:Destroy()
+			end
+			return
+		end
 		local kitLens = kit and kit:FindFirstChild("L05_BeaconLens")
 		local panes = kit and kit:FindFirstChild("L06_BeaconPanes")
 		if kit and kitLens and kitLens:IsA("BasePart") then
@@ -1204,7 +1211,6 @@ local function setMaster(plot: Plot, on: boolean)
 		beam.Transparency = NumberSequence.new(0.88, 1)
 		beam.Parent = light
 		m.Parent = plot.model
-		plot.master = m
 	elseif not on and plot.master then
 		plot.master:Destroy()
 		plot.master = nil
