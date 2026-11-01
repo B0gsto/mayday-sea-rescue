@@ -30,9 +30,26 @@ local function angle(a, b) -- radians between two rotations
 	return math.abs(ang)
 end
 
-local count = 0
+-- hand-keyed clips (keyed.py -> out/keyed/<Name>.json) replace the mocap slot of the same name
+local jobs, keyed = {}, {}
+if fs.isDir(dir .. "/out/keyed") then
+	for _, f in fs.readDir(dir .. "/out/keyed") do
+		local name = string.match(f, "^(.+)%.json$")
+		if name then
+			keyed[name] = true
+			table.insert(jobs, { name = name, path = `{dir}/out/keyed/{f}` })
+		end
+	end
+end
 for _, clip in serde.decode("json", fs.readFile(dir .. "/clips.json")).clips do
-	local path = `{dir}/out/{clip.name}.json`
+	if not keyed[clip.name] then
+		table.insert(jobs, { name = clip.name, path = `{dir}/out/{clip.name}.json` })
+	end
+end
+
+local count = 0
+for _, clip in jobs do
+	local path = clip.path
 	if (filter and not string.find(clip.name, filter, 1, true)) or not fs.isFile(path) then
 		if not filter then
 			print(`{clip.name}: no {path} yet (run retarget.py)`)
