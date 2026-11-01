@@ -571,6 +571,9 @@ local function onRide()
 	local id = player:GetAttribute("TestRide")
 	local ends = player:GetAttribute("TestRideEnds")
 	if type(id) == "string" then
+		if not riddenId then
+			Menu.close() -- the last ride's card stayed up over this one (feel2b capture)
+		end
 		riddenId = id
 		-- the HUD and the ring come up together once the crane has lowered it (TestRideEnds set)
 		if type(ends) == "number" and not rideGui then
