@@ -55,7 +55,7 @@ local WorldConfig = {
 		radius = 860,
 		islandRadius = 320,
 		islandNotch = {
-			halfWidth = 45,
+			halfWidth = 70,
 			head = 190,
 			floorY = -30,
 		},

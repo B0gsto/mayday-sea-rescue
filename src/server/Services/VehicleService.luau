@@ -48,6 +48,7 @@ local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
 local Nitro = require(Shared:WaitForChild("Boat"):WaitForChild("Nitro"))
 local RespawnPolicy = require(Shared:WaitForChild("Boat"):WaitForChild("RespawnPolicy"))
+local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local VehicleRecovery = require(Shared:WaitForChild("VehicleRecovery"))
@@ -1179,7 +1180,8 @@ end
 
 -- The nearest open water from `pos` that a `hull` (beam, depth, length) fits in and can drive out of:
 -- rings from BOAT_BACKOFF out, bearings nearest `away` first, and the heading (nearest `away`, back
--- out the way it came rather than along the shore) with a clear SEA_VIEW stud run. Nil when none.
+-- out the way it came rather than along the shore) with a clear SEA_VIEW stud run; in a home berth notch or exit lane
+-- (RingLayout.laneFacing) straight down the lane first (live v33: craft wedged leaving the berth). Nil when none.
 -- `fromRing` 0 tries `pos` itself first; `free(at)` rejects spots another vehicle holds.
 local function nearestOpenWater(
 	pos: Vector3,
@@ -1199,7 +1201,9 @@ local function nearestOpenWater(
 			end
 			local at = Vector3.new(pos.X + d.X * ring, 0, pos.Z + d.Z * ring)
 			if openAt(at.X, at.Z, r, depth, params) and (not free or free(at)) then
-				for _, f in dirs do
+				local lane = RingLayout.laneFacing(at.X, at.Z)
+				local heads: { Vector3 } = if lane then { lane, table.unpack(dirs) } else dirs
+				for _, f in heads do
 					-- the stern clears the quay too (a RIB at Bay1 sat with its transom on the rail)
 					local stern = at - f * (hull.Z / 2 + 4)
 					local clear = openAt(stern.X, stern.Z, beam, depth, params)

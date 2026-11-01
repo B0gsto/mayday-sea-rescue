@@ -380,15 +380,15 @@ local function buildPlot(folder: Instance, i: number): Plot
 
 	DockPieces.base(b).Parent = model -- docs/25 J: only the plate's quay edge (every island, owned or not)
 
-	-- the owner's sign (only while the island has an owner): a Lego name sign over the jetty's quay end,
-	-- facing the cove, and a flag beside it
+	-- the owner's sign (only while the island has an owner): a Lego name sign over the jetty's quay end, where the
+	-- cove street runs onto it (the 2x spacing left it on the plaza at fwd 28.5), facing the cove, and a flag beside it
 	local sign = Instance.new("Model")
 	sign.Name = "Sign"
 	local isle = b * Marina.ISLAND
-	local arch = isle * CFrame.new(-16, 0, -28.5) -- over the jetty (RingLayout lot Jetty)
+	local arch = isle * CFrame.new(-16, 0, -188.5) -- over the jetty (RingLayout lot Jetty), 1.5 behind the notch head
 	local board, labels, trim, studs = nameSign(sign, arch, BOARD)
 	-- east of the arch and off the spawn-to-kiosk line; the west quay holds the rescue board and the cove walk
-	local poleAt = isle * CFrame.new(12, 0, -28)
+	local poleAt = isle * CFrame.new(12, 0, -188)
 	studTop(
 		part(
 			sign,

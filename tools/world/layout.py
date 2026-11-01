@@ -46,9 +46,10 @@ PLATEAU_Y = 4  # the plate top, the quays and every lot
 RENDER_BIAS = 2
 CENTER = (0, 0)  # the lagoon's centre (no island)
 # owner 2026-11-01 ("space the buildings further, x2"): 640-stud plates (were 320); radius 860 keeps their nearest
-# (chamfered back) corners 80 studs apart, as at 470 before. The berth notch keeps its size: head 130 in from the edge
+# (chamfered back) corners 80 studs apart, as at 470 before. The berth notch: head 130 in from the edge; 140 wide
+# (2026-11-01, was 90: boats wedged leaving and entering the berth, RingLayout.EXIT_LANE)
 RING = {"radius": 860, "bearings": (0, 60, 120, 180, 240, 300), "islandRadius": 320,
-        "notch": {"halfWidth": 45, "head": 190, "floorY": -30}}
+        "notch": {"halfWidth": 70, "head": 190, "floorY": -30}}
 WINDOW_HALF_X, WINDOW_HALF_Z = 1536, 1280  # the main window: the ring, the lagoon and the sea round them
 
 

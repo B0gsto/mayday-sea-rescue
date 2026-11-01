@@ -263,7 +263,7 @@ local rows: { [string]: any } = {
 		desc = "Pick and paint boats. Unlocks the RIB.",
 		unlockAt = 2,
 		needs = {},
-		spot = isle(-80, 218, -90), -- harbour west, the doors open onto the cove
+		spot = isle(-105, 218, -90), -- harbour west, the doors open onto the cove
 		size = Vector2.new(44, 36),
 		scale = 1.2,
 		levels = {
@@ -337,7 +337,7 @@ local rows: { [string]: any } = {
 		desc = "Rescuers run their own boats from here.",
 		unlockAt = 3,
 		needs = {},
-		spot = isle(80, 218, 90), -- harbour east, the doors open onto the cove
+		spot = isle(105, 218, 90), -- harbour east, the doors open onto the cove
 		size = Vector2.new(44, 36),
 		scale = 1.15,
 		worker = "Rescuer",
@@ -402,7 +402,7 @@ local rows: { [string]: any } = {
 		desc = "A domed pen for the submarine.",
 		unlockAt = 5,
 		needs = {},
-		spot = isle(90, 288, 0), -- harbour east, down the quay
+		spot = isle(115, 288, 0), -- harbour east, down the quay
 		size = Vector2.new(40, 40),
 		vehicles = { "Submarine" },
 		levels = {
@@ -450,7 +450,7 @@ end
 DockConfig.Buildings = rows :: { [string]: Building }
 
 -- The lifeboat slip add-on (Boathouse Lv2) on its own map lot, facing the sea.
-DockConfig.BOATHOUSE_SLIP = isle(-80, 272, 0)
+DockConfig.BOATHOUSE_SLIP = isle(-105, 272, 0)
 
 -- Old saves (the dock-level ladder before WP-28): what each old level owns in the tree (UnlockTree.migrateLegacy).
 DockConfig.LEVEL_ITEMS = {
@@ -583,7 +583,7 @@ end
 -- Where the boat board (WP-5) stands, in the berth frame (Marina.berth): on the boathouse floor (its lot)
 -- by the back wall, facing the roll-up door and the cove. The boathouse keeps a clear
 -- BOARD_SIZE x BOARD_SIZE floor area centred here.
-DockConfig.BOARD_SLOT = isle(-80, 218, -90) * CFrame.new(0, 0, 14)
+DockConfig.BOARD_SLOT = isle(-105, 218, -90) * CFrame.new(0, 0, 14)
 
 DockConfig.BOARD_SIZE = 6
 
