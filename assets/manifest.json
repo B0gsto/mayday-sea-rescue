@@ -23673,6 +23673,16 @@
   "source": "assets/fbx/M_Veh_BoatTrailer_JetSki/M_Veh_BoatTrailer_JetSki_LOD0.fbx",
   "type": "Model"
  },
+ "Model:45cd9859ddb97ca4467ef139dfe56626bdd5cb67a79498f0d98f383f29d0ad1f": {
+  "assetId": "84626608435007",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD0",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "45cd9859ddb97ca4467ef139dfe56626bdd5cb67a79498f0d98f383f29d0ad1f",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:45e8a76b78f6afe217919f20f1ff06e7a8e3f3d365d322946f4ded5faf41e014": {
   "assetId": "128775327799535",
   "moderation": "Approved",
@@ -27833,6 +27843,16 @@
   "source": "assets/fbx/Spike1/M_Spike1_Tris19990.fbx",
   "type": "Model"
  },
+ "Model:b3d1dc09dfb7bced11b9842eec4431ad699456f8c3579b0be599520185722cd1": {
+  "assetId": "110631269589818",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD2",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "b3d1dc09dfb7bced11b9842eec4431ad699456f8c3579b0be599520185722cd1",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:b41370915d30472fcd41cd841fee575dfca9354a288b2a183573085b45a6517e": {
   "assetId": "83792259781281",
   "moderation": "Approved",
@@ -27861,6 +27881,16 @@
   "route": "delivery",
   "sha": "b51cf696758e2ab441340bd59c0ce28d44a5ab5854c5feabbe6f3f6a445904dc",
   "source": "assets/fbx/M_Sea_MailSeaplane/M_Sea_MailSeaplane_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:b55567f40a69b35afeea28af706aad82b2c05fdc414d38de0a4db0325738275f": {
+  "assetId": "119405138772748",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD1",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b55567f40a69b35afeea28af706aad82b2c05fdc414d38de0a4db0325738275f",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD1.fbx",
   "type": "Model"
  },
  "Model:b5650ec589f6e2a5c0637b3cecc8be487ad8b249c304d4617817e1b74e307547": {
