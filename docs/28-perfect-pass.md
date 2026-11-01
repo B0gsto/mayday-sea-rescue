@@ -74,5 +74,5 @@ passengers, Finish sign), PERF-ANIM5 (hand-keyed action clips in Blender; mocap 
 
 Publish rule (2026-11-01, after launch v33 rolled back v32): a publish agent runs `git pull` on main and publishes only from that fresh main, holding the studio lock; one publish at a time across threads.
 
-Blender (owner 2026-11-01 "You may try to do a blender run"): headless blender-run.sh builds are allowed alongside the one MCP GUI; kit agents need not wait for the GUI.
+Blender (owner 2026-11-01): "do MCP BLENDER not headless": all asset work in the live MCP GUI, never headless blender-run.sh.
 
