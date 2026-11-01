@@ -16,7 +16,7 @@ local RingLayout = require(
 
 local Conveyors = {}
 
-Conveyors.SPEED = 12 -- studs/s: StarterPlayer.CharacterWalkSpeed, so riding while walking is 2x a walk
+Conveyors.SPEED = 18 -- studs/s: StarterPlayer.CharacterWalkSpeed, so riding while walking is 2x a walk
 Conveyors.TAG = "BeltLane"
 local LANE_W, GAP = 4.4, 0.6 -- each lane, and the bed's divider strip between the two
 local BED_W, BED_H, LANE_H = 10, 0.5, 0.2 -- fits inside the bridge deck's 11 (its rails stand at +-5.6)
