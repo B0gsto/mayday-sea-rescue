@@ -107,7 +107,7 @@ local function art(parent: Instance, name: string, color: string)
 		img.Image = id
 		img.AnchorPoint = Vector2.new(0.5, 0.5)
 		img.Position = UDim2.fromScale(0.5, 0.5)
-		img.Size = UDim2.fromScale(0.68, 0.68)
+		img.Size = UDim2.fromScale(0.88, 0.88) -- the glyphs sit in a padded canvas: ~75% of the tile (in-game ADs, 2026-11-01)
 		img.Parent = tile
 	else
 		local letter = Style.label(tile, string.upper(string.sub(name, 1, 1)), 30)

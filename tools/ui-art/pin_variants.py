@@ -3,6 +3,7 @@
 three colours in art/source/ui/waypoint_pin.svg and renders build/ui-art/pin_<Name>.png (2x, untrimmed: the game
 spins the pin about the box centre). The pins carry no mark (the game draws the call icon live on the disc).
 (The drop-off pad's art/source/ui/transport_pin.svg stays hand SVG: its pre-pass art scored best.)   usage: python3 tools/ui-art/pin_variants.py"""
+import math
 import pathlib
 import re
 import subprocess
@@ -34,15 +35,31 @@ if R10["c2"]:
         ("#D6B8FF", "#9A4CF2", "#52209E", "#9450EE", "#6A2AC8")  # polish: c2 hue +6 deg, body lightness +0.025
 
 
-def toes(r, d):
-    """three paw toes of radius r on a ring of radius d about the head centre (100,88): top and 40 deg either side"""
-    pts = ((100 + d * s, 88 - d * c) for s, c in ((0, 1), (-0.6428, 0.766), (0.6428, 0.766)))
+def toes(r, d, deg=40):
+    """three paw toes of radius r on a ring of radius d about the head centre (100,88): top and deg either side"""
+    sn, cs = round(math.sin(math.radians(deg)), 4), round(math.cos(math.radians(deg)), 4)
+    pts = ((100 + d * s, 88 - d * c) for s, c in ((0, 1), (-sn, cs), (sn, cs)))
     return " ".join(f"M{x - r:.1f},{y:g} A{r:g},{r:g} 0 1,1 {x + r:.1f},{y:g} A{r:g},{r:g} 0 1,1 {x - r:.1f},{y:g} Z"
                     for x, y in ((round(x, 1), round(y, 1)) for x, y in pts))
 
 
 # per pin: an extra silhouette drawn in every pin layer (path d, its lip drop, its dark outline width)
 EXTRA = {"Amber": (toes(18.4, 120), 4, 22) if R10["polish"] else (toes(16, 100), 4, 18)} if R10["c2"] else {}
+# r11 in-game judges (Pin.Amber 8.5): the toes read as ears and the live white paw is small. paw: bigger toes with a
+# thicker outline and ~5 units of white between them and the head (lip 3), the orange inner disc r 42 -> 46 so the
+# bigger paw glyph (Waypoint icon 0.64) clears the white ring. False = r10 pixel-identical
+R11 = {"paw": True}
+if R11["paw"] and R10["c2"]:
+    EXTRA["Amber"] = (toes(19, 120, 38), 3, 24)
+DISC = {"Amber": 46} if R11["paw"] else {}
+# in-game r3 (judges: toes float like an ellipsis, the dark disc doubles the paw): toes: the 3 toes pulled in so their
+# outlines touch the head (one silhouette, one shared white rim, a dark seam between); disc: a plain flat bright
+# orange inner disc (no dark gradient; the game's white paw needs some contrast, so not cream). False = r2 pixel-identical
+R12 = {"toes": True, "disc": True}
+if R12["toes"] and R10["c2"]:
+    EXTRA["Amber"] = (toes(20, 98, 40), 3, 24)
+if R12["disc"] and R10["c2"]:
+    PINS["Amber"] = (*PINS["Amber"][:3], "#FF8C1A", "#FF8C1A")
 RING = {"Quest": '<circle cx="100" cy="88" r="39.5" fill="none" stroke="#9C5E00" stroke-width="5"/>'}
 # Beam's r4 render scored 9.1 on the older template (narrower tip, thinner outline, gloss stroke): keep it pixel-identical
 OLD_TEMPLATE = {
@@ -113,6 +130,8 @@ for name, colours in PINS.items():
         for new, old in R3_TEMPLATE.items():
             assert new in pin, new
             pin = pin.replace(new, old)
+    if name in DISC:
+        pin = pin.replace('r="42" fill="url(#gI)"', f'r="{DISC[name]}" fill="url(#gI)"')
     svg = OUT / f"pin_{name}.svg"
     pin = recolour(pin, colours).replace("<!--RING-->", RING.get(name, ""))
     svg.write_text(add_extra(pin, *EXTRA[name]) if name in EXTRA else pin)

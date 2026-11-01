@@ -28,6 +28,7 @@ local Sticker = {}
 local WHITE = Color3.new(1, 1, 1)
 local GREY = Color3.fromHex("3A444C")
 local DARK = Color3.fromHex("262E35")
+local LOCKED = Color3.fromHex("A3ACB6")
 local GOLD = Color3.fromHex("FFD06A")
 local KIND_COLOUR = {
 	Bottle = Color3.fromHex("3FAE7A"),
@@ -153,8 +154,10 @@ function Sticker.draw(parent: Instance, islandId: string, stickerId: string, fou
 		img.BackgroundTransparency = 1
 		img.Image = picture
 		img.ScaleType = Enum.ScaleType.Fit
-		if not found then -- a dark silhouette until found
-			img.ImageColor3 = DARK
+		if not found then -- greyed out until found: a light grey, see-through tint keeps the art legible (the near-black
+			-- multiply turned locked stamps into muddy blobs: r1 in-game judges)
+			img.ImageColor3 = LOCKED
+			img.ImageTransparency = 0.35
 		end
 		img.Parent = f
 		return f

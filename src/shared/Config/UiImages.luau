@@ -11,7 +11,7 @@ return {
 		MissionPiw = "rbxassetid://93413645418060",
 		ExitButton = "rbxassetid://122735301639954",
 		MinimapRing = "rbxassetid://105528379718715", -- hud_minimap_ring.svg: hole 72%
-		Panel = "rbxassetid://112621254236756", -- hud_panel.svg, 512x256, slice 32 px
+		Panel = "rbxassetid://73068937715458", -- hud_panel.svg, 512x256, slice 32 px
 	},
 	-- World markers (CLAUDE.md "UI art", des1 2026-10-28): Claude SVG in art/source/ui, rendered by tools/ui-art.
 	-- Pin: UI/Waypoint's pin per colour (tools/ui-art/pin_variants.py), its box centred on the head.
@@ -21,7 +21,7 @@ return {
 		TrailChevron = "rbxassetid://129921853511493", -- art/source/ui/trail_chevron.svg (render --keep --size 520 338): the onboarding trail step, 2 frames
 		Pin = {
 			Red = "rbxassetid://116803769925060",
-			Amber = "rbxassetid://115180136628714",
+			Amber = "rbxassetid://111910390183585",
 			Green = "rbxassetid://118481303660512",
 			Craft = "rbxassetid://84346763280580",
 			Quest = "rbxassetid://80754047253104",
@@ -33,7 +33,7 @@ return {
 		MapCross = "rbxassetid://138096397232236",
 		BeaconMark = "rbxassetid://133931579547429",
 		TransportPin = "rbxassetid://82312333876842",
-		TapHand = "rbxassetid://133375972498905", -- art/source/ui/tap.svg: the build tablet cue on touch
+		TapHand = "rbxassetid://125808320516491", -- art/source/ui/tap.svg: the build tablet cue on touch
 	},
 	-- Small kit stickers (tools/ui-art/stickers.py, uia2): level stars, pet hearts, seat studs
 	Badges = {
@@ -71,7 +71,7 @@ return {
 		right = "rbxassetid://72373386792609",
 		go = "rbxassetid://107416729005565",
 		brake = "rbxassetid://117362525559127",
-		slow = "rbxassetid://87253500326064",
+		slow = "rbxassetid://126936824739827",
 		exit = "rbxassetid://119755405737241",
 		up = "rbxassetid://118791936904678",
 		down = "rbxassetid://71511456291214",
@@ -80,8 +80,8 @@ return {
 	-- subtle stud tile on title bars and price buttons (assets/ui/kit).
 	Kit = {
 		Studs = "rbxassetid://108987158998866",
-		album = "rbxassetid://123089055926318",
-		boat_to_me = "rbxassetid://134263560658704",
+		album = "rbxassetid://136020752731579",
+		boat_to_me = "rbxassetid://109082931565496",
 		boost = "rbxassetid://94178964726027",
 		build = "rbxassetid://119758686675875",
 		cash = "rbxassetid://73524615050602",
@@ -110,23 +110,23 @@ return {
 		blur = "rbxassetid://116677182644896",
 		bob = "rbxassetid://138080772723546",
 		bubble = "rbxassetid://109673734891257",
-		burst = "rbxassetid://86980016680748",
+		burst = "rbxassetid://107463706608842",
 		drops = "rbxassetid://77876262268085",
 		fov = "rbxassetid://127480842742781",
 		half = "rbxassetid://83097288340425",
 		horizon = "rbxassetid://77356769833875",
-		horn = "rbxassetid://111360440681726",
+		horn = "rbxassetid://76206705780092",
 		no = "rbxassetid://101816213126997",
 		note = "rbxassetid://100612325857668",
 		notes = "rbxassetid://90588794160573",
-		pause = "rbxassetid://140111956753006",
+		pause = "rbxassetid://82537353626927",
 		peak = "rbxassetid://92091090282779",
-		plus = "rbxassetid://90107455192863",
+		plus = "rbxassetid://117911840254691",
 		reset = "rbxassetid://133965911902055",
-		shake = "rbxassetid://85810078098206",
+		shake = "rbxassetid://77131744585964",
 		sparkle = "rbxassetid://139978053064355",
 		speed = "rbxassetid://78003965913036",
-		tap = "rbxassetid://126217604149319",
+		tap = "rbxassetid://132412910376755",
 		wave = "rbxassetid://138475817006467",
 		waves = "rbxassetid://116306600159583",
 	} :: { [string]: string },
@@ -136,8 +136,8 @@ return {
 		PuffinIsle = "rbxassetid://103196387838640",
 		Penwyn = "rbxassetid://138798629306650",
 		WreckReef = "rbxassetid://70598441111651",
-		TheArches = "rbxassetid://91631842160709",
-		GannetRock = "rbxassetid://131209297149274",
+		TheArches = "rbxassetid://115248572711576",
+		GannetRock = "rbxassetid://116585859296644",
 		MermaidLagoon = "rbxassetid://71269328107727",
 		Bottle = "rbxassetid://73594574316222",
 		View = "rbxassetid://72045876466065",

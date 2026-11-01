@@ -3,7 +3,7 @@
 ink 12, lip 12 down, top-to-bottom gradient, gloss 10 @ 0.55), multi-part icons die-cut as one sticker (every part's
 rim first, then each part's ink + lip + fill back to front). Writes art/source/ui/kit_<name>.svg with a square viewBox
 fitted so the art fills 88% of it, then renders <out>/Kit.<name>.png (128x128 page, --keep = 256 px).
-usage: python3 tools/ui-art/kit_icons.py <out_dir>"""
+usage: python3 tools/ui-art/kit_icons.py <out_dir> [name ...]"""
 import math
 import pathlib
 import re
@@ -22,6 +22,8 @@ R7 = {"album": False, "boat_to_me": False}  # r7 redraws; False regenerates the 
 R8 = {"album": False, "boat_to_me": True}  # r8 redraws (from the r6 album / r5 boat); False regenerates the best pixel-identical
 R10 = {"album": True}  # the r9 winner (album c1, concept SVG kept in build/status/2026-10-31/perfect/ui/anch/r9/src); False regenerates the r8 best pixel-identical
 R10P = {"album": True, "boat_to_me": True}  # r10 polish of the winner / of the r8 boat; False regenerates the r9 winner pixel-identical
+R11 = {"album": True, "boat_to_me": True}  # in-game r2 (build/status/2026-10-31/perfect/ui/ingame); False regenerates the r10 best pixel-identical
+R12 = {"album": False, "boat_to_me": False}  # in-game r3: False regenerates the r2 (R11) render pixel-identical
 C = {  # top, bottom, lip
     "red": ("#FF8A7A", "#E2333A", "#A3161E"), "blue": ("#8EE0FF", "#2C8EF0", "#1A55A8"),
     "green": ("#A4F57A", "#33BE4D", "#1F8A33"), "gold": ("#FFE45C", "#FFAE00", "#C27400"),
@@ -51,6 +53,10 @@ C = {  # top, bottom, lip
     "hull8": ("#FFD27A", "#FF7A1A", "#9A3404"),
     # r10: a saturated album cover, slightly deeper cream pages
     "cover10": ("#4FA8F5", "#1656C8", "#0E3A8A"), "page10": ("#FFF8E1", "#E9D5A3", "#A8915E"),
+    # r11: a darker, warmer indigo-navy cover (the panel header bar is sky blue)
+    "cover11": ("#6470EC", "#2A2FA0", "#161960"),
+    # r12: a step darker navy cover, apart from the sky-blue header bar
+    "cover12": ("#3F5AD0", "#1B2580", "#0B1150"),
 }
 
 
@@ -229,7 +235,46 @@ def album_r10():
     return i, "the album / sticker book (r10): an open sticker book on a saturated blue cover, two cream pages, a big gold star sticker, a big red sticker with a peeled corner"
 
 
+def album_r11():
+    i = Icon()
+    # in-game r2 (judges on the phone HUD): a taller book so it fills its tile ~12% more, an indigo cover apart from the
+    # blue header, no red sticker: one big bold gold star sticker across the spread
+    star_ = i.inner(poly(star(120, 124, 74, 34)), "gold", ink=12, lip=8)
+    i.part("M-8,14 Q66,-4 120,24 Q174,-4 248,14 L248,216 Q182,204 120,228 Q58,204 -8,216 Z", "cover11", lip=14)
+    i.part("M14,34 Q68,20 120,46 L120,198 Q68,180 14,192 Z", "page10", lip=0)
+    i.part("M226,34 Q172,20 120,46 L120,198 Q172,180 226,192 Z", "page10", lip=0, extra=star_)
+    i.probe = (-80, -60, 360)
+    i.fill = 0.92
+    return i, "the album / sticker book (r11): a tall open book on an indigo cover, two cream pages, one big gold star sticker across the spread"
+
+
+def album_r12():
+    i = Icon()
+    # in-game r3: a darker navy cover; the star becomes 2 overlapping round stickers, the front one peeling at a corner
+    gloss = lambda cx, cy, r: f'<path d="M{cx - r * 0.62:.1f},{cy - r * 0.1:.1f} Q{cx - r * 0.6:.1f},{cy - r * 0.6:.1f} {cx - r * 0.1:.1f},{cy - r * 0.62:.1f}" fill="none" stroke="#fff" stroke-opacity="0.6" stroke-width="9" stroke-linecap="round"/>'
+    red = i.inner(poly(ellipse(92, 100, 42, 42)), "red2", ink=12, lip=6) + gloss(92, 100, 42)
+    cx, cy, r, a0, a1 = 150, 134, 40, -80, 0  # the gold sticker; its corner between a0 and a1 (deg) is folded back
+    P = lambda a: (cx + r * math.cos(math.radians(a)), cy + r * math.sin(math.radians(a)))
+    A, B = P(a0), P(a1)
+    disc = [P(a1 + (360 - (a1 - a0)) * k / 40) for k in range(41)]  # the long way round, then the chord
+    seg = [P(a0 + (a1 - a0) * k / 12) for k in range(13)]
+    ux, uy = (B[0] - A[0]) / math.dist(A, B), (B[1] - A[1]) / math.dist(A, B)
+    fold = lambda q: (2 * (A[0] + ((q[0] - A[0]) * ux + (q[1] - A[1]) * uy) * ux) - q[0],
+                      2 * (A[1] + ((q[0] - A[0]) * ux + (q[1] - A[1]) * uy) * uy) - q[1])
+    gold = i.inner(poly(disc), "gold", ink=12, lip=6) + gloss(cx, cy, r) + i.inner(poly([fold(q) for q in seg]), "paper", ink=10, lip=0)
+    i.part("M-8,14 Q66,-4 120,24 Q174,-4 248,14 L248,216 Q182,204 120,228 Q58,204 -8,216 Z", "cover12", lip=14)
+    i.part("M14,34 Q68,20 120,46 L120,198 Q68,180 14,192 Z", "page10", lip=0)
+    i.part("M226,34 Q172,20 120,46 L120,198 Q172,180 226,192 Z", "page10", lip=0, extra=red + gold)
+    i.probe = (-80, -60, 360)
+    i.fill = 0.92
+    return i, "the album / sticker book (r12): a tall open book on a dark navy cover, two cream pages, a red round sticker under a gold round sticker whose corner peels back white"
+
+
 def album():
+    if R12["album"]:
+        return album_r12()
+    if R11["album"]:
+        return album_r11()
     if R10P["album"]:
         return album_r10()
     if R10["album"]:
@@ -318,7 +363,55 @@ def boat_to_me_r10():
     return i, "boat to me (r10): a big red player pin top-left, one thick blue curved arrow rising from behind the boat into it with a clear gap, a deep orange hull with a raked pointed bow, a small grey cabin block, a white waterline stripe"
 
 
+def boat_to_me_r11():
+    i = Icon()
+    # in-game r2 (judges on the phone HUD): one big sea-blue boat (bow left, toward you) and one bold gold arrow curling
+    # up from its stern into a small red pin; saturated so the button never reads disabled
+    cx, cy, r = 28, 28, 28
+    pin = [(cx + r * math.cos(t), cy + r * math.sin(t)) for t in [math.radians(146.3 + k * 247.4 / 30) for k in range(31)]] + [(cx, cy + 1.8 * r)]
+    ox, oy, ro, ri, hh = 128, 88, 80, 36, 42
+    arc = lambda R, a0, a1: [(ox + R * math.cos(math.radians(a)), oy + R * math.sin(math.radians(a))) for a in
+                             [a0 + (a1 - a0) * k / 16 for k in range(17)]]
+    mid = oy - (ro + ri) / 2
+    arrow = [(ox - 46, mid), (ox, mid - hh)] + arc(ro, -90, 0) + [(ox + ro, 128), (ox + ri, 128)] + arc(ri, 0, -90) + [(ox, mid + hh)]
+    g = arc(ro - 14, -80, -24)
+    i.part(poly(arrow), "bolt2", lip=8, gloss="M" + " L".join(f"{x:.1f},{y:.1f}" for x, y in g[::4]))
+    i.part(rrect(84, 86, 140, 128, 8), "paper", lip=8,
+           extra=f'<path d="{rrect(98, 96, 126, 114, 6)}" fill="{C["navy"][1]}" stroke="{INK}" stroke-width="7"/>')
+    hull = "M-26,104 L52,124 L238,124 L232,184 Q228,206 206,206 L60,206 Q18,184 -26,104 Z"
+    i.part(hull, "sky", lip=16, gloss="M20,132 L120,132", extra=line("M34,172 L222,172", w=10, col="#fff"))
+    i.part(poly(pin), "red2", lip=8, gloss=tf("M-6,36 Q-4,18 12,13", 28 / 32, cx - 14 * 28 / 32, cy - 40 * 28 / 32),
+           extra=f'<circle cx="{cx}" cy="{cy}" r="11" fill="#fff" stroke="{INK}" stroke-width="7"/>')
+    i.backs.append(poly([(28, 70), (82, mid), (128, 40), (166, 88), (166, 124), (-26, 104), (0, 60)]))  # one sticker
+    return i, "boat to me (r11): a big sea-blue boat (raked bow left, white cabin, white waterline), one bold gold arrow curling up from the stern into a small red player pin"
+
+
+def boat_to_me_r12():
+    i = Icon()
+    # in-game r3: no pin; one big sea-blue boat (bow left) and one bold gold arrow curling from its stern down and round
+    # under it, pointing back toward you
+    ox, oy, ro, ri, t0, t1 = 196, 176, 86, 44, -62, 86
+    pt = lambda R, t: (ox + R * math.cos(math.radians(t)), oy + R * math.sin(math.radians(t)))
+    arc = lambda R, a, b: [pt(R, a + (b - a) * k / 24) for k in range(25)]
+    rm, hh, hl = (ro + ri) / 2, 48, 58
+    m, tg = pt(rm, t1), (-math.sin(math.radians(t1)), math.cos(math.radians(t1)))  # the head's base centre, its heading
+    tip = (m[0] + tg[0] * hl, m[1] + tg[1] * hl)
+    arrow = arc(ro, t0, t1) + [pt(rm + hh, t1), tip, pt(rm - hh, t1)] + arc(ri, t1, t0)
+    g = arc(ro - 14, -40, 30)
+    i.part(rrect(76, 78, 140, 128, 8), "paper", lip=8,
+           extra=f'<path d="{rrect(92, 90, 124, 112, 6)}" fill="{C["navy"][1]}" stroke="{INK}" stroke-width="7"/>')
+    hull = "M-26,104 L52,124 L238,124 L232,184 Q228,206 206,206 L60,206 Q18,184 -26,104 Z"
+    i.part(hull, "sky", lip=16, gloss="M20,134 L120,134", extra=line("M34,172 L214,172", w=10, col="#fff"))
+    i.part(poly(arrow), "bolt2", lip=8, gloss="M" + " L".join(f"{x:.1f},{y:.1f}" for x, y in g[::4]))
+    i.probe = (-80, -40, 400)
+    return i, "boat to me (r12): one big sea-blue boat (raked bow left, white cabin with a navy window, white waterline), one bold gold arrow curling from its stern down and under it, pointing back toward you; no pin"
+
+
 def boat_to_me():
+    if R12["boat_to_me"]:
+        return boat_to_me_r12()
+    if R11["boat_to_me"]:
+        return boat_to_me_r11()
     if R10P["boat_to_me"]:
         return boat_to_me_r10()
     if R8["boat_to_me"]:
@@ -425,7 +518,7 @@ def render(svg_path, png):
 if __name__ == "__main__":
     out = pathlib.Path(sys.argv[1])
     out.mkdir(parents=True, exist_ok=True)
-    for fn in ICONS:
+    for fn in [f for f in ICONS if not sys.argv[2:] or f.__name__ in sys.argv[2:]]:  # optional names: render only those
         name = fn.__name__
         icon, note = fn()
         path, png = SRC / f"kit_{name}.svg", out / f"Kit.{name}.png"
@@ -436,7 +529,7 @@ if __name__ == "__main__":
         k = probe[2] / 256
         bx0, by0, bx1, by1 = probe[0] + x0 * k, probe[1] + y0 * k, probe[0] + x1 * k, probe[1] + y1 * k
         assert x0 > 0 and y0 > 0 and x1 < 256 and y1 < 256, f"{name} clipped in the probe box"
-        side = max(bx1 - bx0, by1 - by0) / FILL
+        side = max(bx1 - bx0, by1 - by0) / getattr(icon, "fill", FILL)
         cx, cy = (bx0 + bx1) / 2, (by0 + by1) / 2
         icon2, _ = fn()  # fresh gradient ids
         path.write_text(icon2.svg(getattr(icon2, "box", (cx - side / 2, cy - side / 2, side)), note))

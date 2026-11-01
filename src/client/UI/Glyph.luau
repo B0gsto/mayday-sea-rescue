@@ -3,7 +3,7 @@
 -- SurfaceGui tags and billboards. Every glyph fills a square parent in scale units.
 --   Glyph.draw(kind, parent, colour)  kind: "swimmer" | "boat" | "cross" | "ring" | "check"
 --                                     | "speed" | "seat" | "coin" | "home" | "flare" | "clock" | "quest"
---                                     | "medal"
+--                                     | "medal" | "paw"
 --   Glyph.bar(parent, size, pos, rotation, colour)  one pill (scale units), the building block
 local Glyph = {}
 
@@ -126,6 +126,16 @@ local function quest(p: Instance, c: Color3)
 	bar(p, Vector2.new(0.18, 0.18), Vector2.new(0.5, 0.84), 0, c)
 end
 
+-- an animal paw: one pad and four toes (wildlife rescue; the old ring read as a target). Fat toes with clear
+-- gaps (>= 0.05) that stay inside r 0.43 of the box, so Waypoint can draw it big on the pin head (r2 judges)
+local function paw(p: Instance, c: Color3)
+	bar(p, Vector2.new(0.46, 0.37), Vector2.new(0.5, 0.69), 0, c, 0.45) -- pad
+	bar(p, Vector2.new(0.19, 0.24), Vector2.new(0.19, 0.45), -30, c) -- toes
+	bar(p, Vector2.new(0.19, 0.24), Vector2.new(0.37, 0.25), -10, c)
+	bar(p, Vector2.new(0.19, 0.24), Vector2.new(0.63, 0.25), 10, c)
+	bar(p, Vector2.new(0.19, 0.24), Vector2.new(0.81, 0.45), 30, c)
+end
+
 local DRAW: { [string]: (Instance, Color3) -> () } = {
 	swimmer = swimmer,
 	boat = boat,
@@ -140,6 +150,7 @@ local DRAW: { [string]: (Instance, Color3) -> () } = {
 	clock = clock,
 	medal = medal,
 	quest = quest,
+	paw = paw,
 }
 
 function Glyph.draw(kind: string, parent: Instance, colour: Color3)

@@ -57,7 +57,7 @@ local KIND: { [string]: { icon: string, color: Color3 } } = {
 	SinkingVessel = { icon = "boat", color = RED },
 	VesselFire = { icon = "flare", color = RED },
 	Diver = { icon = "cross", color = RED },
-	WildlifeRescue = { icon = "ring", color = AMBER },
+	WildlifeRescue = { icon = "paw", color = AMBER },
 }
 local LIFT = 38 -- px: the pin floats over the target, its tip on it
 local RIM = Vector2.new(0.36, 0.28) -- the pin ellipse's radii, share of the screen (down)
@@ -261,6 +261,10 @@ function Waypoint.start(
 	local function look(glyph: string, color: Color3, golden: boolean)
 		if glyph ~= shownGlyph then
 			shownGlyph = glyph
+			-- the paw stays inside r 0.43 and Amber's inner disc is wider (pin_variants R11), so it can fill the head
+			icon.Size = if glyph == "paw"
+				then UDim2.fromScale(0.64, 0.64)
+				else UDim2.fromScale(0.5, 0.5)
 			Glyph.draw(glyph, icon, Color3.new(1, 1, 1))
 		end
 		pin.Image = PIN_FOR[color] or PIN.Beam

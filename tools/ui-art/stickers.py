@@ -17,6 +17,9 @@ R7 = {"pad_slow": True}
 R8 = {"pad_slow": False}
 # r10: "c1" = the r9 snail concept (won r9; concept SVG in build/status/2026-10-31/perfect/ui/anch/r9/src); "polish" = the 3 ADs' shared fixes on it
 R10 = {"c1": True, "polish": True}
+# in-game r2 (build/status/2026-10-31/perfect/ui/ingame): False regenerates the r10 best pixel-identical
+R11 = {"pad_slow": True}
+R12 = {"pad_slow": False}  # in-game r3: False regenerates the r2 (R11) render pixel-identical
 
 STAR = "M100,18 L122,72 L180,76 L135,113 L150,170 L100,138 L50,170 L65,113 L20,76 L78,72 Z"
 HEART = "M100,176 C40,132 18,104 18,72 C18,44 40,26 64,26 C82,26 94,36 100,50 C106,36 118,26 136,26 C160,26 182,44 182,72 C182,104 160,132 100,176 Z"
@@ -170,6 +173,30 @@ if R10["polish"]:
              'stroke-linecap="round"/>'
              + f'<path d="M146,86 L147,48 M155,92 L164,71" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>'
              + "".join(f'<circle cx="{x}" cy="{y}" r="10" fill="{INK}"/>' for x, y in ((147, 48), (164, 71))) + "</g>")
+SLOW_DISC = ("#FFD84A", "#FF8C00", "#BF5A00")
+if R11["pad_slow"]:
+    # in-game r2 (judges on the phone HUD): a deeper amber disc so the white snail pops; a bigger shell, a simpler
+    # 1.5-turn spiral as thick as the outline, short ball horns, all inside an even gap (max reach = Pad.brake's)
+    SLOW_DISC = ("#FFC93A", "#FF7A00", "#B34A00")
+    sx, sy, sr, a = 86, 90, 46, 8.5  # the shell circle; a = the spiral's step
+    SNAIL = (icon("M68,128 L134,128 L134,106 A13,13 0 0,1 160,106 L160,118 Q152,145 120,152 L68,152 A12,12 0 0,1 68,128 Z")
+             + icon(f"M{sx},{sy - sr} A{sr},{sr} 0 1,1 {sx - 0.1},{sy - sr} Z")
+             + f'<path d="M{sx},{sy} A{a},{a} 0 0,1 {sx + 2 * a},{sy} A{2 * a},{2 * a} 0 0,1 {sx - 2 * a},{sy} '
+             f'A{3 * a},{3 * a} 0 0,1 {sx + 4 * a},{sy}" fill="none" stroke="{INK}" stroke-width="13" stroke-linecap="round"/>'
+             + f'<path d="M146,98 L150,62 M157,100 L163,82" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>'
+             + "".join(f'<circle cx="{x}" cy="{y}" r="8" fill="{INK}"/>' for x, y in ((150, 62), (163, 82))))
+if R12["pad_slow"]:
+    # in-game r3: a yellow-amber disc (apart from the orange wildlife pin); the snail ~75% of the disc and centred, a
+    # bigger head on a taller neck, longer thicker eye stalks with big ball tips, a thicker 1.5-turn spiral that runs
+    # into the shell's outline (every point inside Pad.brake's reach)
+    SLOW_DISC = ("#FFDC4A", "#FFA000", "#B86400")
+    sx, sy, sr, a = 82, 98, 42, 12  # the shell circle; a = the spiral's step
+    SNAIL = (icon("M48,126 L122,126 L122,100 A21,21 0 0,1 164,100 L164,118 Q158,150 128,154 L48,154 A14,14 0 0,1 48,126 Z")
+             + icon(f"M{sx},{sy - sr} A{sr},{sr} 0 1,1 {sx - 0.1},{sy - sr} Z")
+             + f'<path d="M{sx - a},{sy} A{a},{a} 0 0,1 {sx + a},{sy} A{2 * a},{2 * a} 0 0,1 {sx - 3 * a},{sy} '
+             f'A{3 * a},{3 * a} 0 0,1 {sx + 3 * a},{sy}" fill="none" stroke="{INK}" stroke-width="16" stroke-linecap="round"/>'
+             + f'<path d="M132,84 L118,50 M150,82 L148,58" stroke="{INK}" stroke-width="13" stroke-linecap="round"/>'
+             + "".join(f'<circle cx="{x}" cy="{y}" r="12" fill="{INK}"/>' for x, y in ((118, 50), (148, 58))))
 # one door slab with a knob, a fat arrow stepping out of it over its edge
 DOOR = "M44,54 L100,54 L100,146 L44,146 Z"
 DOOR_ARROW = "M82,82 L120,82 L120,54 L166,100 L120,146 L120,118 L82,118 Z"
@@ -190,7 +217,7 @@ STICKERS.update({
     "pad_go": (pad("#A4F57A", "#33BE4D", "#1F8A33", GO, gloss=GO_GLOSS), "touch drive pad: throttle, two fat forward chevrons"),
     "pad_brake": (pad("#FF8A7D", "#E0303A", "#A3161E", OCTAGON, gloss=OCT_GLOSS),
                   "touch drive pad: brake / reverse, one big white stop octagon"),
-    "pad_slow": ((sticker(DISC, "#FFD84A", "#FF8C00", "#BF5A00", lip_dy=14, gloss=DISC_GLOSS, extra=SNAIL),
+    "pad_slow": ((sticker(DISC, *SLOW_DISC, lip_dy=14, gloss=DISC_GLOSS, extra=SNAIL),
                   "touch drive pad: approach (slow helm), a snail: the slow animal, one fat spiral") if R10["c1"] else
                  (pad("#FFD84A", "#FF8C00", "#BF5A00", TURTLE, SHELL), "touch drive pad: approach (slow helm), a turtle")),
     "pad_exit": (sticker(DISC, "#DCD0FF", "#8A66F0", "#4E36A8", lip_dy=14, gloss=DISC_GLOSS,
