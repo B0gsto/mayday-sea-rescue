@@ -2,8 +2,8 @@
 -- Conveyors (convey1, owner 2026-10-29: "conveyor belts to go around to other people faster and inside your island"):
 -- Lego moving walkways that carry a walking player. One ring of two-lane belts (keep right) runs the whole ring:
 -- along every bridge deck and across every island on the bridge road, bridge foot to bridge foot; each island also
--- gets a spur from that road up the clear strip west of the HQ to the plaza (beside the prize wheel, near the jetty
--- head and the build tablet). A classic Roblox conveyor: anchored lanes with AssemblyLinearVelocity along the lane
+-- gets a spur from that road up the clear strip east of the HQ to the plaza (beside the rescue leaderboard; the west
+-- strip holds the HQ's Lv4-5 add-ons and their outside stair). A classic Roblox conveyor: anchored lanes with AssemblyLinearVelocity along the lane
 -- (ConveyorController re-applies it on each client and scrolls the chevrons, plays the hum). Each straight is one
 -- blue bed (the skirts and the divider show round the lanes) and two dark rubber lanes; flat legs reach past a bend
 -- so the outer corner has no gap. Only humanoids walk here: workers, survivors and the dog are client-posed.
@@ -21,7 +21,8 @@ Conveyors.TAG = "BeltLane"
 local LANE_W, GAP = 4.4, 0.6 -- each lane, and the bed's divider strip between the two
 local BED_W, BED_H, LANE_H = 10, 0.5, 0.2 -- fits inside the bridge deck's 11 (its rails stand at +-5.6)
 local OFF = (GAP + LANE_W) / 2 -- lane centre from the bed centre
-local SPUR_R, SPUR_END = -48, 12 -- island frame: west of the HQ (|r| <= 27), east of the Depot stub (r -73..-65)
+local SPUR_R, SPUR_END = 48, 12 -- island frame: east of the HQ (|r| <= 27; its add-on meshes reach r -61 on the west) and
+-- the leaderboard (r 28), west of the Clinic (r 61+)
 
 local BED = Color3.fromRGB(40, 96, 208) -- Lego blue (the bridge beam)
 local RUBBER = Color3.fromRGB(39, 42, 49)
