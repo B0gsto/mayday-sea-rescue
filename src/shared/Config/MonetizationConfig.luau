@@ -504,6 +504,7 @@ local MonetizationConfig = {
 			order = 4,
 			ready = true,
 			cashOnce = 3000,
+			saleEndsUtc = 1793664000, -- 2026-11-03T00:00:00Z: the HUD "SALE" button (UI/Menu) counts down to it, then hides
 		},
 		BosunsWardrobe = {
 			id = 0,

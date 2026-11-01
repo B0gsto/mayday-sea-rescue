@@ -350,6 +350,22 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 			Telemetry.shop("PanelOpened", "Store")
 			setTab(tab)
 		end,
+		-- after open(): the tab holding item `key` (the HUD sale button); gamepad selects its buy button
+		focus = function(key: string)
+			for i, t in TABS do
+				for _, ref in ProductShelves.storeItems(config, t.id, studio) do
+					if ref.key == key then
+						tabs.select(i)
+						for _, row in cards do
+							if row.ref.key == key and UserInputService.GamepadEnabled then
+								GuiService.SelectedObject = row.card.price.root
+							end
+						end
+						return
+					end
+				end
+			end
+		end,
 		close = panel.close,
 		isOpen = panel.isOpen,
 		root = panel.root,

@@ -8,7 +8,8 @@
 --   +------------------------------------------------------------------+
 --   | menu  objective       notice (toasts, call-outs)                 |
 --   | menu  (step card)                                                |
---   | menu                  prompt (mechanic panels,         [quest]  |
+--   | menu                  prompt (mechanic panels,          [sale]  |
+--   | menu                                                     [quest]  |
 --   | menu                  interaction cards)               [pill]   |
 --   | wallet (Cash)                                          minimap  |
 --   +------------------------------------------------------------------+
@@ -281,6 +282,7 @@ local EDGE_REGIONS = {
 	minimap = true,
 	gauges = true,
 	quest = true,
+	sale = true, -- the timed-sale button (UI/Menu)
 	chips = true, -- the Next / tutorial chips (SE device pass 2026-10-28: "40 m" slid under them)
 	steer = true, -- the touch drive pad (TouchDriveController)
 	drive = true,
