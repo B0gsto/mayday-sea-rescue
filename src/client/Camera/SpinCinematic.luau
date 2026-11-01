@@ -583,7 +583,9 @@ local function orbit(r: Run, center: Vector3, radius: number, h: number, deg: nu
 	local k = r.room -- a crowded plaza (the wheel's booth pillars) turns the orbit into a small sway
 	local a = math.rad(deg * (if k >= 0.9 then 1 else 0.2))
 	local dir = r.view * math.cos(a) + r.right * math.sin(a)
-	return CFrame.lookAt(center + dir * radius * k + UP * (h + (1 - k) * 6), center)
+	-- from the hub along the clear line the start-up rays checked, aimed at the centre (the stage sits off that line)
+	local back = (center - r.hub).Magnitude
+	return CFrame.lookAt(r.hub + dir * (radius * k + back) + UP * (h + (1 - k) * 6), center)
 end
 
 -- the spin push-in (t < 0) and the ladder's slow creep (t >= 0)
