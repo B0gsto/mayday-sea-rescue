@@ -34,7 +34,8 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Mesh | M_Prop_JettyCrane | Blender PERF-BL1 | r3 8.3 -> r8 8.8 | r8 in-game 8.3 (night); merged MERGE2 (main 1e9ea153), test v97 + launch v32; plateau 8.7-8.8 at 7,926/8,000 tris: next round raises the tri budget + r8 list (continuous hook band, jib studs clear of cab, cleaner slew ring, cab +10-15%) |
 | Code->mesh | build-site kit M_Prop_BuildSiteKit (REVIEW 9) | PERF-BL2 | 5.0 -> 8.4 (r4) | renders in-game (14 module types, no Parts fallback), site 6.8 in-game; merged MERGE2 (main 1e9ea153), test v97 + launch v32; r5 later: mast 1.3x, one colour per pallet, cones 1.5x, calmer front edge |
 | Code->mesh | board kit M_Prop_BoardKit: leaderboard, Coming Soon, island sign, HM beacon | PERF-BL3 | 5.5-7.0 -> **9.2 PASS** (r4) | cec13732 on t3/lego-rescue-board-kit (unmerged, unseen in Studio) |
-| Code->mesh | sea plate kit: Freight Wharf + Ramp Wharf | PERF-BL4 | 5.8 / 6.4 | building |
+| Code->mesh | sea plate kit M_Prop_SeaPlateKit | PERF-BL4 | 5.8/6.4 -> 8.8 (r4) | acdb6d61 on t3/build-sea-plate-kit (unmerged); r5: fill Freight deck middle, ramp at waterline, studs visible at distance; props lack collision |
+| Code->mesh | commons kit: Hangout + decorations | PERF-BL5 | 6.2 / 6.4 | building |
 | Mesh | M_Prop_BuildStation | Blender | 8.3 (r2) | queued |
 | Mesh | vehicles: JetSki, RIB, StormRunner, Tidewalker, RiptideX, GildedGull, SupplyBarge | Blender | unscored | queued |
 | Mesh | buildings: RescueHQ, HQAddons, Bunkhouse, Depot, Workshop/FishMarket/Clinic/BoatYard/Lookout/RescueBoathouse/TrophyHall/SubPen/AirStation/Boathouse add-ons | Blender | 7.5-8.5 | queued |
@@ -49,7 +50,7 @@ One Blender GUI at a time; each step = one Opus agent, rounds to 9.1+, upload, w
 1. M_Prop_JettyCrane: r8 8.8 shipped on branch; r9 after step 2 with a raised tri budget
 2. Build-site kit (5.0 -> 8.4, r5 later)
 3. Rescue board / leaderboard (5.5) + Coming Soon board (6.5) + island name sign (7.0) + Harbour Master beacon (6.5) - PASS 9.2
-4. Sea plates: Freight Wharf (5.8) + Ramp Wharf (6.4) - PERF-BL4 running
+4. Sea plates (5.8/6.4 -> 8.8, r5 later)
 5. Idle-crew commons / Hangout (6.2) + decorations (flowers, picnic, lamps, flag, statue, fountain) (6.4) - new kit
 6. Rescue helicopter (6.2) - new mesh (code greybox today)
 7. HQ L1-L5 (6.4): distinct silhouette per level, door, plaque, inset windows, roof studs
