@@ -12,7 +12,7 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 
 | Area | Item | Source | Score | Status |
 |---|---|---|---|---|
-| UI | every sprite in art/source/ui + UiImages | PERF-UI1 -> UI2 | ~6 -> ~8.8 mean | UI1: 91 redrawn as SVG, UI4 (concepts): 85/96 at 9.1+ (d11b3ec2 on t3/perfect-ui-sprite-art, unmerged; needs a Studio look: Hud.Panel 9-slice, minimap ring, new settings pictures); UI5: last 11 judged in-game on a phone + snail/paw fixes |
+| UI | every sprite in art/source/ui + UiImages | PERF-UI1 -> UI2 | ~6 -> ~8.8 mean | UI1: 91 redrawn as SVG, UI4 (concepts): 85/96 at 9.1+ (d11b3ec2 on t3/perfect-ui-sprite-art, unmerged; needs a Studio look: Hud.Panel 9-slice, minimap ring, new settings pictures); UI5 in-game (phone): minimap ring 9.1; rest 8.6-9.0 in game (tap hand 4.0 -> 8.6; snail + paw fixed; 3e79e570); UI6: layout bugs (emoji badge) + in-game re-judge of every screen |
 | AD method | fresh ADs drift +-0.3 and contradict: use an anchor strip of passing items + fixed rubric + pairwise old-vs-new in every AD prompt | all streams | - | rule |
 | World | baseline in-game tour | PERF-TOUR2 | 5.0-8.6 (61 items) | done: tour/SCORES.md; Blender lane order below |
 | Feel | game feel + progression review | code read | moments 3-8 | done: build/status/2026-10-31/perfect/feel/REVIEW.md (28 items) |
@@ -35,7 +35,8 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Code->mesh | build-site kit M_Prop_BuildSiteKit (REVIEW 9) | PERF-BL2 | 5.0 -> 8.4 (r4) | renders in-game (14 module types, no Parts fallback), site 6.8 in-game; merged MERGE2 (main 1e9ea153), test v97 + launch v32; r5 later: mast 1.3x, one colour per pallet, cones 1.5x, calmer front edge |
 | Code->mesh | board kit M_Prop_BoardKit: leaderboard, Coming Soon, island sign, HM beacon | PERF-BL3 | 5.5-7.0 -> **9.2 PASS** (r4) | cec13732 on t3/lego-rescue-board-kit (unmerged, unseen in Studio) |
 | Code->mesh | sea plate kit M_Prop_SeaPlateKit | PERF-BL4 | 5.8/6.4 -> 8.8 (r4) | acdb6d61 on t3/build-sea-plate-kit (unmerged); r5: fill Freight deck middle, ramp at waterline, studs visible at distance; props lack collision |
-| Code->mesh | commons kit: Hangout + decorations | PERF-BL5 | 6.2 / 6.4 | building |
+| Code->mesh | commons kit M_Prop_CommonsKit: Hangout + 6 decorations | PERF-BL5 | 6.2/6.4 -> r1 8.3, r2 8.8, r3 8.9 (r4 pending) | committed on t3/build-prop-commons-kit; in-game check queued |
+| Code->mesh | rescue helicopter M_Veh_RescueHeli | PERF-BL6 | 6.2 | building |
 | Mesh | M_Prop_BuildStation | Blender | 8.3 (r2) | queued |
 | Mesh | vehicles: JetSki, RIB, StormRunner, Tidewalker, RiptideX, GildedGull, SupplyBarge | Blender | unscored | queued |
 | Mesh | buildings: RescueHQ, HQAddons, Bunkhouse, Depot, Workshop/FishMarket/Clinic/BoatYard/Lookout/RescueBoathouse/TrophyHall/SubPen/AirStation/Boathouse add-ons | Blender | 7.5-8.5 | queued |
