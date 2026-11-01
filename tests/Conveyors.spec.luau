@@ -69,6 +69,17 @@ return function(t)
 		return true
 	end
 
+	-- the HQ's Lv4-5 add-ons are a mesh (Lune builds placeholders): the wing, tower and outside stair stand at island
+	-- right -26..-61, fwd -21..+7 (art/source/buildings/M_Bld_HQAddons/RESULT.md); the spur keeps clear of them
+	t.test("spur clear of the HQ add-on meshes and their stair foot", function()
+		for _, isl in R.Islands do
+			for _, pt in { C.spurPoints(isl) } do
+				local r = isl.frame:PointToObjectSpace(pt).X
+				t.expect(r - 5 > -26 or r + 5 < -61).toBe(true)
+			end
+		end
+	end)
+
 	local b = Marina.berth(1)
 	local here = {}
 	for _, p in belts do

@@ -28,15 +28,28 @@ Your asset name `<Asset>` and kind folder `<kind>` are in your task. Stop as soo
   The MCP code namespace resets every call (re-import). Keep the asset rebuildable: save the .blend in art/source and
   mirror the final geometry in the asset's `build.py`, then run the normal validate / lod / zfight / export / upload.
 
-## Commands (every Blender run through the shared 2-slot lock; queueing is normal)
+## Commands (Blender MCP only, never headless `blender-run.sh` / `--background`: owner 2026-11-01)
+
+Hold a heavy slot for the GUI's life, then open it (one Blender GUI on the machine; wait for `pgrep -x Blender` to be
+empty before taking the slot):
 
 ```sh
-~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- --build art/source/<kind>/<Asset>/build.py \
-  --out-root build/prod/<Asset> --steps build,lod,validate,export,turntable 2>&1 | tail -40
-python3 tools/blender/sheet.py --asset <Asset> --out-root build/prod/<Asset>
+python3 ~/RobloxProjects/tools/locks.py run --owner <you> --cap 7200 --timeout 7200 heavy -- \
+  python3 tools/studio/hold_window.py Blender.app /tmp/<you>.ready &   # then: open -a Blender once /tmp/<you>.ready exists
 ```
 
-Iterate until `validate` passes. Check your own turntable once or twice (downscale: `sips -Z 768 in.png --out s.png`)
+Run the pipeline inside the live session with `execute_blender_code` (save your .blend first; run.py loads the template):
+
+```python
+import sys, runpy
+sys.argv = ["blender", "--", "--build", "<abs>/art/source/<kind>/<Asset>/build.py",
+            "--out-root", "<abs>/build/prod/<Asset>", "--steps", "build,lod,validate,export,turntable"]
+try: runpy.run_path("<abs>/tools/blender/run.py", run_name="__main__")
+except SystemExit as e: print("exit", e.code)
+```
+
+Then `python3 tools/blender/sheet.py --asset <Asset> --out-root build/prod/<Asset>` (plain Python, no Blender).
+Close Blender when done. Iterate until `validate` passes. Check your own turntable once or twice (downscale: `sips -Z 768 in.png --out s.png`)
 and fix what looks wrong. Cap yourself at about 8 Blender runs.
 
 ## Deliverables (then stop)

@@ -664,7 +664,7 @@ function BoatBoard.start(launch: Launch)
 			name = "BoatBoard",
 			vehicles = boats(),
 			-- on the quay at the cove's head, its back to the berth: you use it from the plate, not the curb
-			rack = CFrame.new(4, Marina.DECK_TOP, 69) * CFrame.Angles(0, math.pi, 0),
+			rack = CFrame.new(20, Marina.DECK_TOP, 69) * CFrame.Angles(0, math.pi, 0),
 			targets = {},
 			from = Vector3.new(0, 14.5, 0),
 			hook = JIB_Y,

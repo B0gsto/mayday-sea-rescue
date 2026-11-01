@@ -29,6 +29,7 @@ local FADE = 1 -- s: once they leave the water the ring swells and fades, so the
 -- far marker: a lifebuoy pip over the swimmer, always on top, out to MARK_FAR; it fades out as you close
 -- (the ring takes over) between MARK_NEAR and MARK_NEAR * 2. Pooled: MARK_MAX nearest get one.
 local MARK_FAR, MARK_NEAR, MARK_MAX = 560, 45, 8 -- 560: the cove-mouth swimmers read from your island
+local MARK_PX = 48 -- px: a pip this close on screen to a nearer swimmer's is dropped (the pip is 44 wide)
 
 local SLOW_FAR, SLOW_EVERY = 200, 1 / 8 -- past 200 studs a ring's bob/size update runs at 8 Hz (phones) -- tune
 
@@ -193,7 +194,23 @@ local function step()
 	table.sort(near, function(a, b)
 		return a.d < b.d
 	end)
-	for i = 1, math.max(#marks, math.min(#near, MARK_MAX)) do
+	-- one pip per on-screen cluster (owner 2026-11-01: two swimmers' pips stacked over the cove mouth)
+	local points: { Vector2 } = {}
+	for i, n in near do
+		local sp = if cam
+			then cam:WorldToViewportPoint((n.m.PrimaryPart :: BasePart).Position)
+			else Vector3.new(i * MARK_PX, 0, 0)
+		points[i] = Vector2.new(sp.X, sp.Y)
+	end
+	local free = Board.pipShown(points, MARK_PX)
+	local kept: { { m: Model, d: number } } = {}
+	for i, n in near do
+		if free[i] and #kept < MARK_MAX then
+			table.insert(kept, n)
+		end
+	end
+	near = kept
+	for i = 1, math.max(#marks, #near) do
 		local n = near[i]
 		if n then
 			local gui = mark(i)

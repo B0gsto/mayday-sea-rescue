@@ -139,7 +139,7 @@ local function edges(parent: Instance, isl: RingLayout.Island)
 				}
 			do
 				local size = Vector3.new(rock[3] * 1.3, rock[3], rock[3])
-				part(
+				local p = part(
 					parent,
 					if k == 3 then "Bush" else "Rock",
 					size,
@@ -152,6 +152,10 @@ local function edges(parent: Instance, isl: RingLayout.Island)
 						* CFrame.Angles(0, k * 0.7, 0),
 					if k == 3 then BUSH elseif k % 2 == 1 then ROCK else ROCK_DARK
 				)
+				if k ~= 3 then -- a round boulder half in the sand, as the lawn rocks (bare cubes read as stray posts)
+					p.Shape = Enum.PartType.Ball
+					p.CFrame *= CFrame.new(0, -rock[3] * 0.35, 0)
+				end
 			end
 		end
 	end
