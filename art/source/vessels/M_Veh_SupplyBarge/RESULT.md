@@ -27,5 +27,5 @@ discs removed.
 Open issues: Studio preset cells are pending (12 1.4 item 7) and show as placeholders on the sheet. Moored at the
 Depot quay the barge sits at ATT_BargeMoor x 32.8 (pad faces 1 stud off the quay edge).
 
-Rebuild: maketex.py then `blender-run.sh tools/blender/run.py -- --build .../build.py --out-root
+Rebuild: maketex.py then `MCP: run.py (tools/blender/README.md) -- --build .../build.py --out-root
 build/prod/M_Veh_SupplyBarge --steps build,lod,validate,export,turntable`.
