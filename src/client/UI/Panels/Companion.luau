@@ -1,5 +1,6 @@
 --!strict
--- Companion panel: Bosun first, then every rescued pet. A live portrait, a recovery meter while a
+-- Companion panel: Bosun first, then every rescued pet, then a dark locked silhouette per species
+-- not rescued yet. A live portrait, a recovery meter while a
 -- pet is still at the sanctuary, and one tap to choose the companion (PetController.choose).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -7,6 +8,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local PetRules = require(Shared:WaitForChild("PetRules"))
+local Wildlife = require(Shared:WaitForChild("Config"):WaitForChild("Wildlife"))
 local WildlifeRig = require(Shared:WaitForChild("WildlifeRig"))
 
 local Client = script.Parent.Parent.Parent
@@ -196,14 +198,15 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 		grid.SortOrder = Enum.SortOrder.LayoutOrder
 		grid.Parent = host
 
-		local entries = {
+		local entries: { { id: number, label: string, rare: boolean, locked: boolean?, model: Model? } } =
 			{
-				id = PetRules.BOSUN,
-				label = "Bosun",
-				rare = true,
-				model = bosunCopy(),
-			},
-		}
+				{
+					id = PetRules.BOSUN,
+					label = "Bosun",
+					rare = true,
+					model = bosunCopy(),
+				},
+			}
 		for _, r in rows do
 			table.insert(entries, {
 				id = r.id,
@@ -211,6 +214,22 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 				rare = r.rare,
 				model = WildlifeRig.build(r.species, r.rare),
 			})
+		end
+		local found = {}
+		for _, r in rows do
+			found[r.species] = true
+		end
+		for i, species in Wildlife.SpeciesOrder do
+			if not found[species] then
+				-- negative ids never match a pet row or the CompanionPet attribute
+				table.insert(entries, {
+					id = -i,
+					label = "???",
+					rare = false,
+					locked = true,
+					model = WildlifeRig.build(species, false),
+				})
+			end
 		end
 		for order, e in entries do
 			local card = Style.button(host, UDim2.new())
@@ -220,7 +239,11 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 			local _, face = Style.block(
 				card,
 				Style.grad(
-					if e.id == PetRules.BOSUN then "orange" elseif rare then "purple" else "teal"
+					if e.locked
+						then "disabled"
+						elseif e.id == PetRules.BOSUN then "orange"
+						elseif rare then "purple"
+						else "teal"
 				)
 			)
 			-- the portrait well: a gold rim for rare pets (and Bosun), white for the rest
@@ -235,13 +258,28 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 			rim.Color = if rare then Color3.fromHex("FFC928") else Color3.new(1, 1, 1)
 			rim.Parent = art
 			art.Parent = face
-			portrait(art, e.model)
+			local well = portrait(art, e.model)
+			if e.locked then
+				well.ImageColor3 = Color3.fromRGB(28, 34, 48) -- undiscovered: a dark silhouette
+			end
 			local name = Style.label(face, e.label, Theme.Text.heading)
 			name.AnchorPoint = Vector2.new(0.5, 1)
 			name.Position = UDim2.new(0.5, 0, 1, -82)
 			name.Size = UDim2.new(1, -24, 0, 38)
 			name.TextWrapped = false
 			name.TextTruncate = Enum.TextTruncate.AtEnd
+			if e.locked then
+				-- no button: a lock where "Use" would be
+				local lock = Instance.new("Frame")
+				lock.BackgroundTransparency = 1
+				lock.AnchorPoint = Vector2.new(0.5, 1)
+				lock.Position = UDim2.new(0.5, 0, 1, -14)
+				lock.Size = UDim2.fromOffset(56, 56)
+				lock.Parent = face
+				Style.icon(lock, "lock")
+				card.Active = false
+				continue
+			end
 			local function choose()
 				local row = nil
 				for _, r in rows do
