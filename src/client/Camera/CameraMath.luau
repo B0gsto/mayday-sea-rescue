@@ -123,6 +123,15 @@ function CameraMath.chaseOffset(
 	return back * (math.cos(pitch) * distance) + Vector3.new(0, math.sin(pitch) * distance, 0)
 end
 
+-- The chase yaw that frames `goal` past the craft at `from` (the camera behind the craft, looking at it).
+function CameraMath.yawToward(heading: number, from: Vector3, goal: Vector3): number
+	local back = Vector3.new(from.X - goal.X, 0, from.Z - goal.Z)
+	if back.Magnitude < 1e-3 then
+		return 0
+	end
+	return CameraMath.wrap(math.atan2(back.X, back.Z) - heading)
+end
+
 -- Heading (radians) of a CFrame's look vector, in the convention chaseOffset uses.
 function CameraMath.heading(cf: CFrame): number
 	local look = cf.LookVector

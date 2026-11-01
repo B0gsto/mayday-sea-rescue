@@ -18,6 +18,18 @@ return function(t)
 		t.expect(M.damp(10, 0, 0.2, 0.2)).toBeCloseTo(5, 1e-9)
 	end)
 
+	t.test("yawToward puts the goal straight ahead of the camera", function()
+		local boat = CFrame.lookAt(Vector3.new(700, 0, 22), Vector3.new(800, 0, 22)) -- bow out, east
+		local heading = M.heading(boat)
+		local home = Vector3.new(565, 0, 22) -- dead astern
+		local yaw = M.yawToward(heading, boat.Position, home)
+		t.expect(math.abs(math.abs(yaw) - math.pi) < 1e-6).toBeTruthy()
+		local cam = boat.Position + M.chaseOffset(heading, yaw, 0, 10)
+		local look = (boat.Position - cam).Unit
+		t.expect(look:Dot((home - boat.Position).Unit)).toBeCloseTo(1, 1e-6)
+		t.expect(M.yawToward(heading, boat.Position, Vector3.new(900, 0, 22))).toBeCloseTo(0, 1e-6)
+	end)
+
 	t.test("dampAngle takes the short way round", function()
 		local a = M.dampAngle(math.rad(170), math.rad(-170), 0.1, 0.05)
 		t.expect(math.abs(M.wrap(a - math.rad(180))) < math.rad(10)).toBeTruthy()
