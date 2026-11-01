@@ -18,8 +18,8 @@ SpinCinePlan.PAYOFF = table.freeze({
 	Common = 0.25,
 	Uncommon = 0.3,
 	Rare = 1.2,
-	Epic = 2.4,
-	Legendary = 5,
+	Epic = 3.2, -- Epic+ cut to the private payoff stage under a whiteout and back
+	Legendary = 5.5,
 	Mythic = 8,
 })
 SpinCinePlan.HOLD = table.freeze({

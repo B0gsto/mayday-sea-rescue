@@ -1511,6 +1511,31 @@ Presets.ALL.spincine_stars = preset({
 	sounds = sounds({ { "FX_Magic", 0, 0.5, 0.8 } }),
 })
 
+-- spectacle: Epic's nebula on the payoff stage: big soft studded clouds in the rarity colour drifting round the box
+-- (opts.radius; play it at a few heights)
+Presets.ALL.spincine_nebula = preset({
+	job = "showcase",
+	big = true,
+	layers = {
+		{
+			tex = "puff_smoke",
+			count = 24,
+			colors = { WHITE },
+			tint = true,
+			ring = true,
+			size = { 14, 26 },
+			transparency = { 1, 0.55, 0.6, 1 },
+			lifetime = { 3.5, 4.5 },
+			speed = { 1, 3 },
+			spread = { 40, 40 },
+			rotation = { 0, 360 },
+			spin = { -10, 10 },
+			emission = 0.4,
+		},
+	},
+	sounds = sounds({ { "FX_Magic", 0, 0.6, 0.75 } }),
+})
+
 -- spectacle: the gold Lego halo locks shut round the prize: a glow ring, a stud ring, gold confetti and rays
 Presets.ALL.spincine_halo = preset({
 	job = "showcase",

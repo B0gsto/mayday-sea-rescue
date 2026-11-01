@@ -5,14 +5,18 @@
 --             and desaturates, the HUD and prompts hide, a drone rises under a heartbeat
 --   ladder    a stud-star flare charges at the hub while a rarity label climbs Common -> the won rarity (one pop,
 --             colour shift, pitch-up sting and camera kick a step; Epic+ fakes out once: SpinCinePlan)
---   payoff    Rare a beam; Epic a purple sky + orbit; Legendary a golden sea (shafts, a gold plinth rises, coin
---             rain); Mythic lightning, a starfield, a gold Lego halo built brick by brick, a ray tunnel, whiteout
+--   payoff    Rare a beam at the wheel. Epic and up cut under a whiteout to a private payoff stage built high above
+--             the island (client-side, nothing can block the shot): the prize on a gold Lego plinth in its own sky
+--             box. Epic a purple nebula; Legendary a golden sea, a sun, shafts, the plinth rising, coin rain; Mythic
+--             lightning at the wheel first, then a starfield, a gold Lego halo built brick by brick, a ray tunnel.
+--             A whiteout cuts back to the wheel for the reveal
 --   reveal    the prize pops out of the hub in front of the wheel (the caller's reveal sets SpinRevealed), a hold,
 --             then everything is restored
 -- Any tap / click / key / button after SKIP_AFTER jumps to the reveal (or ends the hold). Reduce motion: no shake,
 -- no kicks, soft washes only. Every beat has a sound.
---   SpinCinematic.start(ctx) -> true      ctx: { payload, hub: CFrame (the rotor's rest pivot), landIn: number,
---                                          reveal: (Vector3) -> (), colorOf: (string) -> Color3, onExit: () -> () }
+--   SpinCinematic.start(ctx) -> true      ctx: { payload, hub: CFrame (the rotor's rest pivot), wheel, landIn,
+--                                          reveal: (Vector3) -> (), colorOf: (string) -> Color3,
+--                                          prizeModel: (Vector3) -> Model (the stage's prize), onExit: () -> () }
 --   SpinCinematic.active(): boolean
 --   SpinCinematic.whenDone(fn)            runs fn now, or when the takeover ends (the spinner's flex banner)
 -- Player attribute SpinCinematic (true while on).
@@ -43,6 +47,32 @@ local WARM_WHITE = Color3.fromRGB(255, 250, 235)
 local STAGE = 10 -- studs in front of the hub where the prize is shown
 local HALO_BRICKS = 24
 local HALO_RADIUS = 9
+local SET_RISE = 600 -- the private payoff stage, this far above the hub (client-side parts: no streaming)
+local SET_R = 140 -- its sky box's half size
+local SEA = 14 -- the box's floor (the sea) under the prize
+
+-- the payoff stage's sky box per tier: walls, ceiling, sea
+type Look = { wall: Color3, top: Color3, sea: Color3, seaMat: Enum.Material }
+local LOOKS: { [string]: Look } = {
+	Epic = {
+		wall = Color3.fromRGB(44, 20, 86),
+		top = Color3.fromRGB(78, 34, 130),
+		sea = Color3.fromRGB(26, 12, 56),
+		seaMat = Enum.Material.Neon,
+	},
+	Legendary = {
+		wall = Color3.fromRGB(255, 188, 100),
+		top = Color3.fromRGB(255, 230, 170),
+		sea = Color3.fromRGB(232, 160, 40),
+		seaMat = Enum.Material.SmoothPlastic,
+	},
+	Mythic = {
+		wall = Color3.fromRGB(8, 10, 32),
+		top = Color3.fromRGB(14, 16, 48),
+		sea = Color3.fromRGB(6, 8, 26),
+		seaMat = Enum.Material.Neon,
+	},
+}
 
 type Grade = { tint: Color3, bright: number, sat: number, contrast: number }
 type Beat = { at: number, seq: number, fn: () -> () }
@@ -61,7 +91,14 @@ type Run = {
 	stage: Vector3,
 	reveal: (Vector3) -> (),
 	colorOf: (string) -> Color3,
+	prizeModel: (Vector3) -> Model,
 	revealed: boolean,
+	pivot: Vector3, -- the shots' pivot: the hub, or the payoff stage's centre
+	wheelRoom: number,
+	set: Folder?, -- the private payoff stage while we are there
+	showcase: Model?, -- the prize spinning on the stage's plinth
+	haloAt: Vector3,
+	snap: boolean, -- cut: the camera jumps to the next shot instead of easing
 	beats: { Beat },
 	nextBeat: number,
 	revealBeat: Beat,
@@ -292,7 +329,9 @@ local function whiteout(color: Color3, peak: number, inTime: number, hold: numbe
 	if not w then
 		return
 	end
-	if reduced() then
+	if reduced() and peak >= 1 then -- a cut still needs cover: a slower fade through black, never a flash
+		color, inTime, outTime = Color3.new(0, 0, 0), math.max(inTime, 0.28), math.max(outTime, 0.6)
+	elseif reduced() then
 		peak, inTime, outTime = math.min(peak, 0.35), math.max(inTime, 0.3), math.max(outTime, 0.6)
 	end
 	w.BackgroundColor3 = color
@@ -343,7 +382,7 @@ local function part(
 	if shape then
 		p.Shape = shape
 	end
-	p.Parent = r.folder
+	p.Parent = r.set or r.folder
 	return p
 end
 
@@ -381,35 +420,21 @@ local function buildFlare(r: Run)
 	flare = { part = p, gui = bb, core = core, rays = rays, light = light }
 end
 
-local function ground(at: Vector3): number
-	local params = RaycastParams.new()
-	params.FilterType = Enum.RaycastFilterType.Exclude
-	local skip: { Instance } = {}
-	local vfx = Workspace:FindFirstChild("VFX")
-	if vfx then
-		table.insert(skip, vfx)
-	end
-	if player.Character then
-		table.insert(skip, player.Character)
-	end
-	if run then
-		table.insert(skip, run.folder)
-	end
-	params.FilterDescendantsInstances = skip
-	local hit = Workspace:Raycast(at, Vector3.new(0, -60, 0), params)
-	return if hit then hit.Position.Y else at.Y - 12
-end
-
--- Legendary: a gold Lego plinth (round brick column, cap plate, studs) rises under the stage
-local function plinth(r: Run)
-	local floor = ground(r.stage)
-	local top = r.stage.Y - 2.6
-	local h = math.max(top - floor, 2)
-	local base = Vector3.new(r.stage.X, floor, r.stage.Z)
+-- a gold Lego plinth (round brick column, cap plate, studs) under `top`, from `floor`; `rise`: it climbs out of the sea
+local function plinth(r: Run, top: Vector3, floor: number, rise: boolean)
+	local h = math.max(top.Y - 2.6 - floor, 2)
+	local base = Vector3.new(top.X, floor, top.Z)
 	local pieces: { { part: Part, cf: CFrame } } = {}
 	local function piece(size: Vector3, at: Vector3, shape: Enum.PartType?, color: Color3?)
 		local cf = CFrame.new(at) * CFrame.Angles(0, 0, math.pi / 2)
-		local p = part(r, size, cf - Vector3.new(0, h + 1, 0), color or GOLD, nil, shape)
+		local p = part(
+			r,
+			size,
+			if rise then cf - Vector3.new(0, h + 1, 0) else cf,
+			color or GOLD,
+			nil,
+			shape
+		)
 		table.insert(pieces, { part = p, cf = cf })
 	end
 	piece(Vector3.new(h, 4.4, 4.4), base + UP * (h / 2), Enum.PartType.Cylinder)
@@ -429,15 +454,64 @@ local function plinth(r: Run)
 	do
 		piece(Vector3.new(0.5, 1.2, 1.2), base + UP * (h + 1) + o, Enum.PartType.Cylinder)
 	end
-	for _, pc in pieces do
-		TweenService:Create(
-			pc.part,
-			TweenInfo.new(1.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-			{ CFrame = pc.cf }
-		):Play()
+	if rise then
+		for _, pc in pieces do
+			TweenService:Create(
+				pc.part,
+				TweenInfo.new(1.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+				{ CFrame = pc.cf }
+			):Play()
+		end
+		sfx("Rigging_Creak", 1, 0.7)
 	end
-	VFXKit.play("spincine_shafts", CFrame.new(base + UP * 0.3), { radius = 4, still = true })
-	sfx("Rigging_Creak", 1, 0.7)
+end
+
+-- the private payoff stage: a sky box high above the island, a sea, the plinth; the camera cuts here under a whiteout
+local function goAway(r: Run, rarity: string, rise: boolean): Vector3
+	local o = r.hub + UP * SET_RISE
+	local set = Instance.new("Folder")
+	set.Name = "PayoffStage"
+	set.Parent = r.folder
+	r.set = set
+	local look = LOOKS[rarity] or LOOKS.Epic
+	local R = SET_R
+	-- casts no shadows, so the sun still lights the stage inside the box
+	for _, w in
+		{
+			{ Vector3.new(4, 2 * R, 2 * R), Vector3.new(R, 0, 0) },
+			{ Vector3.new(4, 2 * R, 2 * R), Vector3.new(-R, 0, 0) },
+			{ Vector3.new(2 * R, 2 * R, 4), Vector3.new(0, 0, R) },
+			{ Vector3.new(2 * R, 2 * R, 4), Vector3.new(0, 0, -R) },
+		} :: { { Vector3 } }
+	do
+		part(r, w[1], CFrame.new(o + w[2]), look.wall, Enum.Material.Neon)
+	end
+	part(r, Vector3.new(2 * R, 4, 2 * R), CFrame.new(o + UP * R), look.top, Enum.Material.Neon)
+	local sea =
+		part(r, Vector3.new(2 * R, 4, 2 * R), CFrame.new(o - UP * (SEA + 2)), look.sea, look.seaMat)
+	sea.Reflectance = if look.seaMat == Enum.Material.Neon then 0 else 0.3
+	plinth(r, o, o.Y - SEA, rise)
+	if not rise then
+		local m = r.prizeModel(o)
+		m.Parent = set
+		r.showcase = m
+	end
+	r.pivot, r.haloAt, r.focus = o, o, o
+	r.room = 1
+	r.energy = 0
+	r.snap = true
+	return o
+end
+
+-- back to the wheel (the reveal): the stage goes, the camera cuts to the wheel
+local function comeBack(r: Run)
+	if r.set then
+		r.set:Destroy()
+	end
+	r.set, r.showcase, r.halo = nil, nil, nil
+	r.pivot, r.haloAt, r.focus = r.hub, r.stage, r.stage
+	r.room = r.wheelRoom
+	r.snap = true
 end
 
 -- Mythic: a jagged neon bolt from the sky onto the wheel; one strike, then it fades (no flicker)
@@ -508,12 +582,12 @@ local function halo(r: Run, t0: number)
 			stud.Parent = m
 		end
 		m.PrimaryPart = b -- built at the origin: PivotTo keeps the studs' offsets
-		m.Parent = r.folder
+		m.Parent = r.set or r.folder
 		local outward = math.random() * math.pi * 2
 		table.insert(bricks, {
 			model = m,
 			start = t0 + (i - 1) * 0.085,
-			from = r.stage
+			from = r.haloAt
 				+ (r.right * math.cos(outward) + UP * math.sin(outward)) * 34
 				+ r.view * 8,
 			angle = angle,
@@ -526,7 +600,7 @@ local function halo(r: Run, t0: number)
 	light.Range = 26
 	light.Brightness = 2.5
 	light.Shadows = false
-	local holder = part(r, Vector3.one * 0.2, CFrame.new(r.stage + r.view * 2), GOLD)
+	local holder = part(r, Vector3.one * 0.2, CFrame.new(r.haloAt + r.view * 2), GOLD)
 	holder.Transparency = 1
 	light.Parent = holder
 end
@@ -545,7 +619,7 @@ local function stepHalo(r: Run, t: number, dt: number)
 		local a = b.angle + r.haloSpin
 		local radial = r.right * math.cos(a) + UP * math.sin(a)
 		local tangent = r.right * -math.sin(a) + UP * math.cos(a)
-		local slot = r.stage + radial * HALO_RADIUS * math.max(r.room, 0.6)
+		local slot = r.haloAt + radial * HALO_RADIUS * math.max(r.room, 0.6)
 		local at = b.from:Lerp(slot, outBack(p))
 		b.model:PivotTo(CFrame.fromMatrix(at, tangent, radial))
 		if p >= 1 and not b.model:GetAttribute("Locked") then
@@ -583,10 +657,10 @@ local function orbit(r: Run, center: Vector3, radius: number, h: number, deg: nu
 	local k = r.room -- a crowded plaza (the wheel's booth pillars) turns the orbit into a small sway
 	local a = math.rad(deg * (if k >= 0.9 then 1 else 0.2))
 	local dir = r.view * math.cos(a) + r.right * math.sin(a)
-	-- from the hub along the clear line the start-up rays checked, aimed at the centre (the stage sits off that line)
-	local back = (center - r.hub).Magnitude
+	-- from the pivot (the hub: along the clear line the start-up rays checked) aimed at the centre
+	local back = (center - r.pivot).Magnitude
 	local dist = math.min(radius * k + back, k * 31) -- never past the clear distance (room = (clear - 3) / 31)
-	return CFrame.lookAt(r.hub + dir * dist + UP * (h + (1 - k) * 6), center)
+	return CFrame.lookAt(r.pivot + dir * dist + UP * (h + (1 - k) * 6), center)
 end
 
 -- the spin push-in (t < 0) and the ladder's slow creep (t >= 0)
@@ -654,88 +728,20 @@ local function ladder(r: Run)
 	end
 end
 
-local function payoff(r: Run)
-	local P = r.plan.payoff
-	local rank = r.plan.rank
-	local color = r.colorOf(r.plan.rarity)
-	local up = CFrame.new(r.hub)
-	if rank < 6 then
-		add(
-			r,
-			P + 0.45,
-			function() -- the last pop's surge reads, then the flare hands over to the payoff
-				r.energy = 0
-			end
-		)
-	end
-	if rank == 3 then -- Rare: a beam off the wheel, the camera tilts up after it
-		add(r, P, function()
-			VFXKit.play("spincine_beam", up, { color = color, still = true })
-			r.shot = function(_t)
-				return CFrame.lookAt(r.hub + r.view * 26 + UP * -3 + r.right * 4, r.hub + UP * 9),
-					52
-			end
-			r.focus = r.hub
-		end)
-	elseif rank == 4 then -- Epic: a purple sky, rays and stars, an orbit
-		add(r, P, function()
-			r.drone = 0.6
-			r.grade =
-				{ tint = Color3.fromRGB(205, 170, 255), bright = -0.15, sat = 0.15, contrast = 0.1 }
-			r.vignette = 0.55
-			VFXKit.play("spincine_rays", CFrame.new(r.stage), { color = color, still = true })
-			for _, h in { -6, 14 } do
-				VFXKit.play(
-					"spincine_stars",
-					CFrame.new(r.stage + UP * h),
-					{ radius = 50, still = true }
-				)
-			end
-			r.focus = r.stage
-			r.shot = function(t)
-				local k = ease((t - P) / 2.4)
-				return orbit(r, r.stage, lerp(22, 18, k), 2, lerp(0, 70, k)), 48
-			end
-		end)
-		add(r, P + 2, function()
-			whiteout(Color3.fromRGB(240, 225, 255), 0.55, 0.3, 0.05, 0.6)
-			sfx("FX_TonalHit", 0.9, 1)
-		end)
-	elseif rank == 5 then -- Legendary: the golden sea
-		add(r, P, function()
-			r.drone = 0.5
-			r.grade =
-				{ tint = Color3.fromRGB(255, 214, 130), bright = 0.02, sat = 0.3, contrast = 0.08 }
-			r.vignette = 0.35
-			r.focus = r.stage
-			r.shot = function(t)
-				local k = ease((t - P) / 5)
-				return orbit(r, r.stage, lerp(26, 20, k), lerp(-3, 2, k), lerp(-25, 85, k)), 50
-			end
-		end)
-		add(r, P + 0.4, function()
-			plinth(r)
-		end)
-		add(r, P + 2, function()
-			VFXKit.play(
-				"spincine_coins",
-				CFrame.new(r.stage + UP * 24),
-				{ radius = 12, still = true }
-			)
-		end)
-		add(r, P + 2.6, function()
-			VFXKit.play("spincine_rays", CFrame.new(r.stage), { color = GOLD, still = true })
-		end)
-		add(r, P + 3, function()
-			pop(caption, "GOLDEN TIDE", GOLD, 1.3)
-			sfx("FX_ChimeTail", 0.9, 1)
-		end)
-		add(r, P + 4.6, function()
-			fadeText(caption, 1, 0.3)
-			whiteout(Color3.fromRGB(255, 240, 200), 0.85, 0.35, 0.05, 0.7)
-			sfx("FX_Boom", 0.9, 1)
-		end)
-	elseif rank >= 6 then -- Mythic: the full show
+-- a whiteout that peaks at `at` (the cut happens under it)
+local function wipe(r: Run, at: number, fn: () -> ())
+	add(r, at - 0.3, function()
+		whiteout(WARM_WHITE, 1, 0.28, 0.14, 0.5)
+		sfx("FX_Whoosh", 0.8, 1.3)
+	end)
+	add(r, at, fn)
+end
+
+-- Epic / Legendary / Mythic: the payoff on the private stage (goAway), then a whiteout back for the reveal
+local function awayPayoff(r: Run, P: number, rank: number, color: Color3)
+	local R = r.plan.reveal
+	local cutAt = if rank >= 6 then P + 1.2 else P + 0.45
+	if rank >= 6 then -- Mythic: the lightning strikes the wheel first
 		add(r, P, function()
 			r.drone = 0
 			r.grade = {
@@ -760,66 +766,172 @@ local function payoff(r: Run)
 			r.energy = 0
 			bolt(r)
 		end)
-		add(r, P + 1.2, function()
-			r.grade = {
-				tint = Color3.fromRGB(120, 130, 230),
-				bright = -0.25,
-				sat = -0.4,
-				contrast = 0.15,
-			}
-			for _, h in { -12, 4, 20, 36 } do
+	end
+	local rarity = r.plan.rarity
+	wipe(r, cutAt, function()
+		local o = goAway(r, rarity, rank == 5)
+		local t0 = cutAt
+		if rank == 4 then
+			r.drone = 0.5
+			r.grade =
+				{ tint = Color3.fromRGB(230, 212, 255), bright = 0, sat = 0.1, contrast = 0.08 }
+			r.vignette = 0.45
+			for _, h in { -8, 10, 28 } do
 				VFXKit.play(
-					"spincine_stars",
-					CFrame.new(r.stage + UP * h),
-					{ radius = 55, still = true }
+					"spincine_nebula",
+					CFrame.new(o + UP * h),
+					{ radius = 60, color = color, still = true }
 				)
 			end
-			r.focus = r.stage
+			VFXKit.play("spincine_stars", CFrame.new(o + UP * 6), { radius = 50, still = true })
+			VFXKit.play("spincine_rays", CFrame.new(o), { color = color, still = true })
 			r.shot = function(t)
-				local k = ease((t - P - 1.2) / 3.2)
-				return orbit(r, r.stage, lerp(30, 24, k), 3, lerp(0, 35, k)), 52
+				local k = ease((t - t0) / (R - t0))
+				return orbit(r, o, lerp(17, 13, k), lerp(1, 2.5, k), lerp(-30, 35, k)), 50
 			end
+		elseif rank == 5 then
+			r.drone = 0.5
+			r.grade =
+				{ tint = Color3.fromRGB(255, 236, 200), bright = 0.02, sat = 0.2, contrast = 0.08 }
+			r.vignette = 0.3
+			-- a sun behind the prize as the camera sees it
+			local sun = part(
+				r,
+				Vector3.one * 56,
+				CFrame.new(o - r.view * 115 + UP * 22),
+				Color3.fromRGB(255, 238, 180),
+				Enum.Material.Neon,
+				Enum.PartType.Ball
+			)
+			sun.CastShadow = false
+			VFXKit.play(
+				"spincine_shafts",
+				CFrame.new(o - UP * (SEA - 0.3)),
+				{ radius = 4, still = true }
+			)
+			r.shot = function(t)
+				local k = ease((t - t0) / (R - t0))
+				return orbit(r, o, lerp(22, 15, k), lerp(-5, 1.5, k), lerp(-35, 30, k)), 50
+			end
+		else
+			r.grade = {
+				tint = Color3.fromRGB(190, 200, 255),
+				bright = -0.05,
+				sat = -0.1,
+				contrast = 0.12,
+			}
+			r.vignette = 0.6
+			for _, h in { -12, 4, 20, 36 } do
+				VFXKit.play("spincine_stars", CFrame.new(o + UP * h), { radius = 60, still = true })
+			end
+			sfx("FX_Magic", 0.8, 0.8)
+			r.shot = function(t)
+				local k = ease((t - t0) / 3.2)
+				return orbit(r, o, lerp(28, 24, k), 3, lerp(0, 35, k)), 52
+			end
+		end
+	end)
+	if rank == 5 then
+		add(r, cutAt + 1.6, function() -- the plinth is up out of the sea: the prize lands on it
+			if not r.set then
+				return
+			end
+			local o = r.pivot
+			local m = r.prizeModel(o)
+			m.Parent = r.set
+			r.showcase = m
+			VFXKit.play(
+				"spincine_flare",
+				CFrame.fromMatrix(o, r.right, r.view),
+				{ color = GOLD, scale = 0.8, still = true }
+			)
+			kick(2, 0.3)
 		end)
-		add(r, P + 1.5, function()
-			halo(r, P + 1.5)
+		add(r, cutAt + 2, function()
+			VFXKit.play(
+				"spincine_coins",
+				CFrame.new(r.pivot + UP * 24),
+				{ radius = 12, still = true }
+			)
 		end)
-		add(r, P + 4, function()
+		add(r, cutAt + 2.4, function()
+			VFXKit.play("spincine_rays", CFrame.new(r.pivot), { color = GOLD, still = true })
+		end)
+		add(r, cutAt + 2.8, function()
+			pop(caption, "GOLDEN TIDE", GOLD, 1.3)
+			sfx("FX_ChimeTail", 0.9, 1)
+		end)
+	elseif rank >= 6 then
+		add(r, cutAt + 0.3, function()
+			halo(r, cutAt + 0.3)
+		end)
+		add(r, cutAt + 2.8, function()
 			VFXKit.play(
 				"spincine_halo",
-				CFrame.fromMatrix(r.stage, r.right, r.view),
+				CFrame.fromMatrix(r.pivot, r.right, r.view),
 				{ still = true }
 			)
 			r.grade =
-				{ tint = Color3.fromRGB(255, 225, 170), bright = -0.15, sat = 0.1, contrast = 0.12 }
+				{ tint = Color3.fromRGB(255, 228, 180), bright = -0.05, sat = 0.1, contrast = 0.12 }
 			kick(3, 0.5)
 		end)
 		for i = 0, 2 do
-			add(r, P + 4.4 + i * 0.4, function()
+			add(r, cutAt + 3.2 + i * 0.4, function()
 				VFXKit.play(
 					"spincine_tunnel",
-					CFrame.fromMatrix(r.stage, r.right, r.view),
+					CFrame.fromMatrix(r.pivot, r.right, r.view),
 					{ radius = 6, still = true }
 				)
 			end)
 		end
-		add(r, P + 4.4, function()
+		add(r, cutAt + 3.2, function()
 			sfx("FX_PowerUp", 1, 0.9)
+			local o = r.pivot
+			local t0 = cutAt + 3.2
 			r.shot = function(t)
-				local k = ease((t - P - 4.4) / 3)
-				return orbit(r, r.stage, lerp(24, 11, k), lerp(3, 1, k), lerp(35, 20, k)),
-					lerp(62, 40, k)
+				local k = ease((t - t0) / (R - 0.3 - t0))
+				return orbit(r, o, lerp(24, 12, k), lerp(3, 1, k), lerp(35, 15, k)), lerp(62, 42, k)
 			end
 		end)
-		add(r, P + 5.6, function()
+		add(r, cutAt + 4.4, function()
 			pop(caption, "OCEAN BLESSED", GOLD, 1.3)
 			sfx("FX_ChimeTail", 1, 0.9)
 		end)
-		add(r, P + 7.4, function()
-			fadeText(caption, 1, 0.3)
-			whiteout(WARM_WHITE, 1, 0.5, 0.2, 0.9)
-			sfx("FX_Boom", 1, 0.85)
+	end
+	wipe(r, R, function()
+		fadeText(caption, 1, 0.2)
+		sfx("FX_Boom", 0.9, 0.9)
+		if rank >= 5 then
 			sfx("FX_TonalHit", 1, 1)
+		end
+	end)
+end
+
+local function payoff(r: Run)
+	local P = r.plan.payoff
+	local rank = r.plan.rank
+	local color = r.colorOf(r.plan.rarity)
+	local up = CFrame.new(r.hub)
+	if rank < 6 then
+		add(
+			r,
+			P + 0.45,
+			function() -- the last pop's surge reads, then the flare hands over to the payoff
+				r.energy = 0
+			end
+		)
+	end
+	if rank == 3 then -- Rare: a beam off the wheel, the camera tilts up after it
+		add(r, P, function()
+			VFXKit.play("spincine_beam", up, { color = color, still = true })
+			r.shot = function(_t)
+				return CFrame.lookAt(r.hub + r.view * 26 + UP * -3 + r.right * 4, r.hub + UP * 9),
+					52
+			end
+			r.focus = r.hub
 		end)
+	elseif rank >= 4 then
+		awayPayoff(r, P, rank, color)
 	end
 end
 
@@ -831,6 +943,9 @@ local function revealBeat(r: Run): Beat
 			r.revealed = true
 			r.energy = 0
 			r.drone = 0
+			if r.set then
+				comeBack(r)
+			end
 			local c = r.colorOf(r.plan.rarity)
 			pop(label, string.upper(r.plan.rarity), c, 1.25)
 			pop(sub, tostring(r.payload.name or "Prize"), WHITE, 1.4)
@@ -849,16 +964,20 @@ end
 
 ---------------------------------------------------------------- takeover
 
--- you and Bosun (DogService's Bosun_<UserId>) stand between the camera and the hub
+-- you, the Bosuns and the pets stand between the camera and the hub
 local function showSelf(on: boolean)
 	local dogs = Workspace:FindFirstChild("Bosun")
 	local models: { Instance } = {}
 	if player.Character then
 		table.insert(models, player.Character)
 	end
-	local dog = dogs and dogs:FindFirstChild(`Bosun_{player.UserId}`)
-	if dog then
+	for _, dog in if dogs then dogs:GetChildren() else {} do
 		table.insert(models, dog)
+	end
+	for _, m in Workspace:GetChildren() do -- pets (PetController's WildlifeRig models) stand round the wheel too
+		if m:IsA("Model") and string.sub(m.Name, 1, 9) == "Wildlife_" then
+			table.insert(models, m)
+		end
 	end
 	for _, model in models do
 		for _, x in model:GetDescendants() do
@@ -1001,8 +1120,18 @@ local function update(dt: number)
 	if hit then
 		cf = CFrame.new(hit.Position - want.Unit * 1.5) * cf.Rotation
 	end
+	if r.snap then -- a cut under the whiteout
+		r.snap = false
+		camCf, camFov, fovKick = cf, fov, 0
+	end
 	camCf = camCf:Lerp(cf, damp(3.2, dt))
 	camFov = lerp(camFov, fov, damp(3.2, dt))
+	local show = r.showcase
+	if show and show.Parent then
+		show:PivotTo(
+			CFrame.new(r.pivot + UP * math.sin(now * 2) * 0.3) * CFrame.Angles(0, now * 1.2, 0)
+		)
+	end
 	fovKick = lerp(fovKick, 0, damp(7, dt))
 	shake = lerp(shake, 0, damp(5, dt))
 	local jolt = CFrame.identity
@@ -1134,6 +1263,7 @@ function SpinCinematic.start(ctx: {
 	landIn: number,
 	reveal: (Vector3) -> (),
 	colorOf: (string) -> Color3,
+	prizeModel: (Vector3) -> Model,
 	onExit: (() -> ())?,
 }): boolean
 	local quick = active
@@ -1198,7 +1328,14 @@ function SpinCinematic.start(ctx: {
 		stage = hub + n * stage,
 		reveal = ctx.reveal,
 		colorOf = ctx.colorOf,
+		prizeModel = ctx.prizeModel,
 		revealed = false,
+		pivot = hub,
+		wheelRoom = math.clamp((best - 3) / 31, 0.4, 1),
+		set = nil,
+		showcase = nil,
+		haloAt = hub + n * stage,
+		snap = false,
 		beats = {},
 		nextBeat = 1,
 		revealBeat = (nil :: any) :: Beat,

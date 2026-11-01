@@ -235,6 +235,7 @@ local function prizeAt(payload: any, at: Vector3): Model
 	label.TextStrokeColor3 = Color3.new(0, 0, 0)
 	label.Text = payload.name or "Prize"
 	label.Parent = gui
+	model.Parent = Workspace -- its parts moved in from Workspace: unparented, the prize never showed
 	return model
 end
 
@@ -264,6 +265,7 @@ local function reveal(payload: any, rotor: Model, to: Vector3?)
 		cap.Parent = capsule
 	end
 	capsule.PrimaryPart = body
+	capsule.Parent = Workspace
 
 	local started = os.clock()
 	local conn: RBXScriptConnection? = nil
@@ -402,6 +404,16 @@ local function spin(payload: any)
 				gate(wheel)
 			end,
 			colorOf = rarityColor,
+			prizeModel = function(
+				at: Vector3
+			): Model -- the payoff stage's prize, its name kept for the reveal
+				local m = prizeAt(payload, at)
+				local name = m:FindFirstChild("PrizeName", true)
+				if name then
+					name:Destroy()
+				end
+				return m
+			end,
 			onExit = function()
 				gate(wheel)
 			end,
