@@ -570,10 +570,20 @@ end
 -- / Lv3 salvage dock (M_Bld_SubPenAddons) and the Boathouse's Lv3 quick-launch bay (M_Bld_BoathouseAddons): meshes Lv<l>_L<nn>_*
 -- and Lv<l>_COL authored in the yard's final (scaled) frame round its ground centre, so they stay 1x (KEEP_1X
 -- `name`). False when the level is 1 or the mesh is not loaded (the Lv1 yard stands alone, everything included).
-local function addonMesh(m: Model, at: CFrame, n: number, asset: string, name: string): boolean
-	local src = if n >= 2 and DockPieces.meshes then DockPieces.meshes(asset) else nil
+-- `lv1`: the asset also carries Lv1_* meshes, so it loads at level 1 too (the caller checks for them and keeps its
+-- code Parts as the fallback).
+local function addonMesh(
+	m: Model,
+	at: CFrame,
+	n: number,
+	asset: string,
+	name: string,
+	lv1: boolean?
+): boolean
+	local want = n >= 2 or lv1 == true
+	local src = if want and DockPieces.meshes then DockPieces.meshes(asset) else nil
 	if not src then
-		if n >= 2 and DockPieces.meshes then
+		if want and DockPieces.meshes then
 			m:SetAttribute("MissingMesh", asset) -- DockService rebuilds it once the mesh loads
 		end
 		return false
@@ -2515,9 +2525,23 @@ end
 local function fishMarket(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.FishShed
 	local at = b * def.spot
-	-- Lv2 flank stalls, Lv3 smokehouse at the back (M_Bld_FishMarketAddons); the smokehouse stands on the drying rack
-	local smokehouse = addonMesh(m, at, level or 1, "M_Bld_FishMarketAddons", "FishMarketMesh")
-		and (level or 1) >= 3
+	-- Lv1 booths/walls/props, Lv2 front-corner stalls + gate arch, Lv3 smokehouse at the back (M_Bld_FishMarketAddons); the
+	-- smokehouse (back centre) replaces the drying rack, flag mast and island canopy (Lv1_L06_*). With the Lv1 mesh (it carries the walkway) the code keeps only the plinth, rock, the
+	-- name sign (on the right booth's roof board) and each Counter (the shop act) hidden inside the mesh counter.
+	local loaded = addonMesh(m, at, level or 1, "M_Bld_FishMarketAddons", "FishMarketMesh", true)
+	local smokehouse = loaded and (level or 1) >= 3
+	local mesh = if loaded then m:FindFirstChild("FishMarketMesh") else nil
+	local lv1 = mesh ~= nil and mesh:FindFirstChild("Lv1_L02_Counters", true) ~= nil -- an older upload has no Lv1
+	if mesh and smokehouse then -- the Lv1 drying rack gives way to the smokehouse
+		for _, p in mesh:GetDescendants() do
+			if
+				p:IsA("BasePart")
+				and (string.match(p.Name, "^Lv1_L06_") or string.match(p.Name, "^Lv1_RackCol"))
+			then
+				p:Destroy()
+			end
+		end
+	end
 	local w, d = yardSize(def)
 	local spec = HUTS.FishShed
 	local front = -d / 2
@@ -2525,6 +2549,17 @@ local function fishMarket(m: Model, b: CFrame, level: number?)
 	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
 	for k, x in { -w / 4 - 1, w / 4 + 1 } do
 		local s = at * CFrame.new(x, 0, front + 5)
+		if lv1 then -- inside the mesh counter (its faces all hidden): keeps the shop act and the collision
+			local c = brick(
+				m,
+				"Counter",
+				Vector3.new(6.26, 2.35, 2.52),
+				s * CFrame.new(0, 1.175, 0),
+				BRICK_WHITE
+			)
+			c.CastShadow = false
+			continue
+		end
 		studTop(
 			brick(m, "Counter", Vector3.new(6.4, 2.4, 2.6), s * CFrame.new(0, 1.2, 0), BRICK_WHITE)
 		)
@@ -2541,6 +2576,21 @@ local function fishMarket(m: Model, b: CFrame, level: number?)
 			)
 		end
 		crate(m, s * CFrame.new(-1.4, 0, 2.6), BRICK_WHITE)
+	end
+	if lv1 then
+		local k = def.scale or 1 -- the mesh's ATT_Sign_01, in the market's 1x frame
+		sign(
+			m,
+			Vector3.new(12.08, 4.49, 0.4) / k,
+			at * CFrame.new(Vector3.new(-11.15, 13.0, -8.0) / k),
+			BRICK_WHITE,
+			def.name,
+			spec.icon
+		)
+		-- the mesh carries the tiled walkway and plaza (no code yardPath) and its own yard stock; the Lv2 stalls stand
+		-- in the front corners, where yardClutter's crates went
+		rock(m, at * CFrame.new(w / 2 + 5, 0, d / 2 + 4))
+		return
 	end
 	-- crates of fish and a barrel between the stalls
 	crate(m, at * CFrame.new(0, 0, front + 6), BRICK_ORANGE)
