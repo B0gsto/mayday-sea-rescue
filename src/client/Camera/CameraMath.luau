@@ -10,6 +10,7 @@
 --   relaxArm(current, target, halfLife, dt)        snap in on a hit, ease back out
 --   lookAhead(velocity, seconds, maxAhead)         flat look-ahead offset for the chase focus
 --   aboveSwell(position, waveHeight, clearance)    keep the camera above the water surface
+--   underwater(cameraY, surfaceY, wasUnder)        is the camera under the sea (with hysteresis)
 --   chaseOffset(heading, yaw, pitch, distance)     spring-arm end point relative to the focus
 --   deadzone(x, dz)                                rescaled stick deadzone
 --   occludes(canCollide, transparency, size)       does a part a camera cast hit hide the view
@@ -108,6 +109,12 @@ function CameraMath.aboveSwell(position: Vector3, waveHeight: number, clearance:
 		return position
 	end
 	return Vector3.new(position.X, floor, position.Z)
+end
+
+-- Under the sea: in once 0.6 below the waves, out once 0.4 above, so a lens riding the surface
+-- as the swell passes cannot flip the underwater grade on and off frame by frame.
+function CameraMath.underwater(cameraY: number, surfaceY: number, wasUnder: boolean): boolean
+	return if wasUnder then cameraY < surfaceY + 0.4 else cameraY < surfaceY - 0.6
 end
 
 -- Arm end point relative to the focus: behind the heading (radians, 0 = looking along -Z),

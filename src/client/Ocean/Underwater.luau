@@ -11,6 +11,7 @@
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local CameraMath = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("CameraMath"))
 local Flipbooks =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Fx"):WaitForChild("Flipbooks"))
 local OceanQuality = require(script.Parent:WaitForChild("OceanQuality"))
@@ -190,7 +191,7 @@ end
 -- Call every frame. surfaceY: the water height above the camera.
 function Underwater.update(u: Underwater, camera: Camera, surfaceY: number)
 	local cf = camera.CFrame
-	local under = cf.Position.Y < surfaceY - 0.15
+	local under = CameraMath.underwater(cf.Position.Y, surfaceY, u.active)
 	if under ~= u.active or (under and clear ~= u.clear) then
 		if under and not u.active then
 			u.since = os.clock()
