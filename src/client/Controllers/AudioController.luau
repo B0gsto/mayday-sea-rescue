@@ -845,16 +845,17 @@ function AudioController.Start()
 	end
 
 	-- world Sounds made outside this controller (server flares, island beds, buttons, Creator Store models) join
-	-- a group so the Settings sliders reach them: loops are ambience, the rest SFX
+	-- a group so the Settings sliders reach them: loops are ambience, the rest SFX. WorldSoundService tags them
+	-- server-side, so phones don't run a whole-world DescendantAdded hook
 	local function adopt(d: Instance)
-		if d:IsA("Sound") and d.SoundGroup == nil then
+		if d:IsA("Sound") and d.SoundGroup == nil and d:IsDescendantOf(Workspace) then
 			d.SoundGroup = AudioController.group(if d.Looped then "Ambience" else "SFX")
 		end
 	end
-	for _, d in Workspace:GetDescendants() do
+	for _, d in CollectionService:GetTagged("WorldSound") do
 		adopt(d)
 	end
-	Workspace.DescendantAdded:Connect(adopt)
+	CollectionService:GetInstanceAddedSignal("WorldSound"):Connect(adopt)
 
 	-- a thud as you drop into a seat or step off a vehicle (taking a boat's helm has its own board_hop sound)
 	local function hookSeats(character: Model)
