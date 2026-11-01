@@ -30,9 +30,10 @@ local heliStates: { [Model]: HeliFlight.State } = setmetatable({}, { __mode = "k
 local resting: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
 
 -- The new model, its root anchored like Boat/Builder's (docked until a driver sits).
-function Craft.build(spec: VehicleConfig.VehicleSpec): Model
+-- visuals: the heli's real model clones (VehicleService.visualsFor), nil for the greybox.
+function Craft.build(spec: VehicleConfig.VehicleSpec, visuals: { Model }?): Model
 	local model = if spec.craft == "Heli"
-		then HeliBuilder.build(spec.id)
+		then HeliBuilder.build(spec.id, visuals)
 		else SubBuilder.build(spec.id)
 	model.Name = spec.id;
 	(model.PrimaryPart :: BasePart).Anchored = true

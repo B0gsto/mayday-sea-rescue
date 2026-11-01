@@ -11,6 +11,14 @@
 --              "TailRotorJoint". HeliController spins both by Transform.
 -- Model tag "Heli"; attributes VehicleId, CameraMode, Capacity, SurvivorCount.
 -- Size: AW139-ish, cabin ~4.4 m long (1 m = 3 studs), rotor 13.8 m.
+--
+-- Real model: Builder.build(id, visuals) with M_Veh_RescueHeli (cloned by the server's AssetLoader,
+-- authored in HullRoot space) keeps the same HullRoot and an invisible Body, skips the greybox
+-- dressing, welds the body mesh to Body and the rotor meshes to RotorHub / TailHub (placed at
+-- ATT_MainRotor / ATT_TailRotor, so the spin code is unchanged), and puts the seats, EyePoint,
+-- WinchPoint, SurvivorSlots and PetSeat at the ATT_* points (AssetIds.Attachments). Without visuals
+-- (asset failed to load) the greybox is built as before. Attribute Visual = asset name or "Greybox".
+local AssetIds = require(script.Parent.Parent.Config.AssetIds)
 local Winch = require(script.Parent.Winch)
 
 local ORANGE = Color3.fromRGB(255, 102, 0)
@@ -129,21 +137,8 @@ local function seat(
 	return s
 end
 
-function Builder.build(id: string): Model
-	local model = Instance.new("Model")
-	model.Name = id
-
-	local root = part(model, nil, "HullRoot", ROOT_SIZE, CFrame.identity, DARK)
-	root.Massless = false
-	root.Transparency = 1
-	root.CastShadow = false
-	root.CanCollide = true
-	root.CanQuery = true
-	root.CustomPhysicalProperties =
-		PhysicalProperties.new(MASS / (ROOT_SIZE.X * ROOT_SIZE.Y * ROOT_SIZE.Z), 0.3, 0, 1, 1)
-	model.PrimaryPart = root
-
-	local body = part(model, root, "Body", Vector3.new(6.6, 5.2, 10), CFrame.new(0, 0, 0.5), ORANGE)
+-- The greybox cabin, boom, winch arm and skids (not built over the real model).
+local function dressing(model: Model, body: BasePart)
 	part(model, body, "Nose", Vector3.new(5.6, 3.6, 3), CFrame.new(0, -0.6, -5.9), ORANGE)
 	part(
 		model,
@@ -169,21 +164,54 @@ function Builder.build(id: string): Model
 		part(model, body, "Strut", Vector3.new(0.3, 1.6, 0.3), CFrame.new(x, -3.4, -2.5), DARK)
 		part(model, body, "Strut", Vector3.new(0.3, 1.6, 0.3), CFrame.new(x, -3.4, 2.5), DARK)
 	end
+end
 
-	rotor(model, body, "RotorHub", "RotorJoint", CFrame.new(0, ROTOR_Y, 0), 41, 4)
-	rotor(
+-- visuals: the real model (see the header); nil or empty builds the greybox.
+function Builder.build(id: string, visuals: { Model }?): Model
+	local real = if visuals and #visuals > 0 then visuals else nil
+	local atts: { [string]: Vector3 } = if real
+		then AssetIds.Attachments.M_Veh_RescueHeli or {}
+		else {}
+	local function at(name: string, fallback: Vector3): Vector3
+		return atts[name] or fallback
+	end
+	local model = Instance.new("Model")
+	model.Name = id
+
+	local root = part(model, nil, "HullRoot", ROOT_SIZE, CFrame.identity, DARK)
+	root.Massless = false
+	root.Transparency = 1
+	root.CastShadow = false
+	root.CanCollide = true
+	root.CanQuery = true
+	root.CustomPhysicalProperties =
+		PhysicalProperties.new(MASS / (ROOT_SIZE.X * ROOT_SIZE.Y * ROOT_SIZE.Z), 0.3, 0, 1, 1)
+	model.PrimaryPart = root
+
+	local body = part(model, root, "Body", Vector3.new(6.6, 5.2, 10), CFrame.new(0, 0, 0.5), ORANGE)
+	if real then
+		body.Transparency = 1
+		body.CastShadow = false
+	else
+		dressing(model, body)
+	end
+
+	local mainAt = CFrame.new(at("ATT_MainRotor", Vector3.new(0, ROTOR_Y, 0)))
+	local main = rotor(model, body, "RotorHub", "RotorJoint", mainAt, 41, if real then 0 else 4)
+	local tailAt = CFrame.new(at("ATT_TailRotor", Vector3.new(0.5, 3.4, 19.6)))
+		* CFrame.Angles(0, 0, math.pi / 2)
+	local tail = rotor(model, body, "TailHub", "TailRotorJoint", tailAt, 7, if real then 0 else 2)
+
+	local driverAt = at("ATT_DriverSeat", Vector3.new(1.4, -1.4, -2.6))
+	local driver = seat(model, body, true, "DriverSeat", driverAt)
+	attach(driver, "EyePoint", at("ATT_EyePoint", driverAt + Vector3.new(0, 2.6, 0)) - driverAt)
+	local passenger = seat(
 		model,
 		body,
-		"TailHub",
-		"TailRotorJoint",
-		CFrame.new(0.5, 3.4, 19.6) * CFrame.Angles(0, 0, math.pi / 2),
-		7,
-		2
+		false,
+		"PassengerSeat1",
+		at("ATT_PassengerSeat1", Vector3.new(-1.4, -1.4, -2.6))
 	)
-
-	local driver = seat(model, body, true, "DriverSeat", Vector3.new(1.4, -1.4, -2.6))
-	attach(driver, "EyePoint", Vector3.new(0, 2.6, 0))
-	seat(model, body, false, "PassengerSeat1", Vector3.new(-1.4, -1.4, -2.6))
 
 	local fly = attach(root, "FlyAttachment", Vector3.zero)
 	local lift = Instance.new("LinearVelocity")
@@ -202,9 +230,42 @@ function Builder.build(id: string): Model
 	attitude.MaxTorque = math.huge
 	attitude.Enabled = false
 	attitude.Parent = root
-	attach(root, "WinchPoint", Vector3.new(5, 1.6, 2.4)) -- under WinchHook: VehicleService.Climb hangs the cable here
+	-- under the hook: VehicleService.Climb hangs the cable here
+	attach(root, "WinchPoint", at("ATT_WinchPoint", Vector3.new(5, 1.6, 2.4)))
 	for i = 1, Winch.SEATS do
-		attach(root, `SurvivorSlot{i}`, Vector3.new(-1.4 + (i - 1) * 2.8, -1.4, 2.4))
+		local fallback = Vector3.new(-1.4 + (i - 1) * 2.8, -1.4, 2.4)
+		attach(root, `SurvivorSlot{i}`, at(`ATT_SurvivorSlot{i}`, fallback))
+	end
+	local petSeat = atts.ATT_PetSeat
+	if petSeat then
+		attach(root, "PetSeat", petSeat) -- PetSeat.choose prefers it
+	end
+
+	if real then
+		for _, p: BasePart in { main :: BasePart, tail, driver, passenger } do
+			p.Transparency = 1
+			p.CastShadow = false
+		end
+		for _, visual in real do
+			visual:PivotTo(CFrame.identity) -- authored in HullRoot space
+			for _, d in visual:GetDescendants() do
+				if d:IsA("BasePart") then
+					d.Anchored = false
+					d.Massless = true
+					d.CanCollide = false
+					d.CanTouch = false
+					d.CanQuery = false
+					local weld = Instance.new("WeldConstraint")
+					weld.Part0 = if string.find(d.Name, "MainRotor", 1, true)
+						then main
+						elseif string.find(d.Name, "TailRotor", 1, true) then tail
+						else body
+					weld.Part1 = d
+					weld.Parent = d
+				end
+			end
+			visual.Parent = model
+		end
 	end
 
 	model:AddTag("Heli")
@@ -212,6 +273,7 @@ function Builder.build(id: string): Model
 	model:SetAttribute("CameraMode", "Chase")
 	model:SetAttribute("Capacity", Winch.SEATS)
 	model:SetAttribute("SurvivorCount", 0)
+	model:SetAttribute("Visual", if real then real[1].Name else "Greybox")
 	return model
 end
 
