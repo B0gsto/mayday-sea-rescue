@@ -436,6 +436,31 @@ function AssetLoader.clone(asset: string, lod: string?): Model?
 	return if template then template:Clone() else nil
 end
 
+-- Prop kits lay their modules side by side, each round its own ATT_<slot> ground origin (M_Prop_BoardKit): the
+-- named parts, anchored and inert (the code keeps its own Parts for collision), with that origin on `at`; nil when
+-- the kit can't be loaded (see getTemplate). Text and lights go at the kit's other ATT_* (AssetIds.Attachments).
+function AssetLoader.cloneModule(asset: string, slot: string, at: CFrame, names: { string }): Model?
+	local atts = AssetIds.Attachments[asset]
+	local origin = atts and atts[slot]
+	local kit = origin and AssetLoader.clone(asset, "LOD0")
+	if not kit then
+		return nil
+	end
+	kit:PivotTo(at * CFrame.new(-origin))
+	local m = Instance.new("Model")
+	for _, name in names do
+		local p = kit:FindFirstChild(name, true)
+		if p and p:IsA("BasePart") then
+			p.Anchored = true
+			p.CanCollide, p.CanQuery, p.CanTouch = false, false, false
+			p.Parent = m
+		end
+	end
+	kit:Destroy()
+	m.WorldPivot = at
+	return m
+end
+
 -- A copy for static world placement (buildings, rocks, plants): every part Anchored; the _COL hull (when
 -- the upload has one) collides and is queryable; when `collide` is false (plants) nothing collides.
 -- With no _COL hull and collide true, the visual parts collide instead (Automatic fidelity).

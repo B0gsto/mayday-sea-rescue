@@ -223,6 +223,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://92712016149318",
 		LOD2 = "rbxassetid://117455714827399",
 	},
+	M_Prop_BoardKit = {
+		LOD0 = "rbxassetid://114404971301410",
+		LOD1 = "rbxassetid://76453127495122",
+		LOD2 = "rbxassetid://134133978588718",
+	},
 	M_Prop_BuildStation = {
 		LOD0 = "rbxassetid://118176380187881",
 		LOD1 = "rbxassetid://91952663271231",
@@ -780,6 +785,18 @@ AssetIds.Attachments = {
 		ATT_Barrier = Vector3.new(74, 0, 0),
 		ATT_CranePivot = Vector3.new(40, 20.6, 0),
 		ATT_SignUI = Vector3.new(63, 6.6, 0),
+	},
+	M_Prop_BoardKit = {
+		ATT_Board = Vector3.new(0, 0, 0),
+		ATT_Soon = Vector3.new(22, 0, 0),
+		ATT_Sign = Vector3.new(50, 0, 0),
+		ATT_Beacon = Vector3.new(76, 0, 0),
+		ATT_BoardFaceF = Vector3.new(0, 7, -0.46),
+		ATT_BoardFaceB = Vector3.new(0, 7, 0.46),
+		ATT_SoonFace = Vector3.new(22, 7.7, -0.25),
+		ATT_NamePlate = Vector3.new(50, 13.2, 0),
+		ATT_BeaconIcon = Vector3.new(76, 4.7, -2.075),
+		ATT_BeaconLight = Vector3.new(76, 26.7, 0),
 	},
 	M_Prop_BuildStation = {
 		ATT_Screen = Vector3.new(0, 6.2, 3.6),

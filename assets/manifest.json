@@ -393,7 +393,8 @@
    "T_SubPen_Brick_RGH",
    "T_TrophyHall_Brick_RGH",
    "T_WorkshopAddons_Brick_RGH",
-   "T_BuildSiteKit_Brick_RGH"
+   "T_BuildSiteKit_Brick_RGH",
+   "T_BoardKit_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -14643,7 +14644,8 @@
    "T_TrophyHall_Brick_NOR",
    "T_WorkshopAddons_Brick_NOR",
    "T_JettyCrane_Brick_NOR",
-   "T_BuildSiteKit_Brick_NOR"
+   "T_BuildSiteKit_Brick_NOR",
+   "T_BoardKit_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -19263,7 +19265,8 @@
    "T_TrophyHall_Brick_MET",
    "T_WorkshopAddons_Brick_MET",
    "T_JettyCrane_Brick_MET",
-   "T_BuildSiteKit_Brick_MET"
+   "T_BuildSiteKit_Brick_MET",
+   "T_BoardKit_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -32487,6 +32490,45 @@
   "route": "delivery",
   "sha": "ff72bda161daf5bf94ea42f1027a85be643fed957d38d0e06369be10ae3eb700",
   "source": "assets/fbx/M_Prop_SeaChest/M_Prop_SeaChest_LOD0.fbx",
+  "type": "Model"
+ },
+ "Image:f125fd79b7c036223c6a0ca06e7539008565ab6ed55541e40a3eb8b998b75887": {
+  "assetId": "103092706271226",
+  "imageId": "103092706271226",
+  "moderation": "Reviewing",
+  "name": "T_BoardKit_Brick_ALB",
+  "sha": "f125fd79b7c036223c6a0ca06e7539008565ab6ed55541e40a3eb8b998b75887",
+  "source": "assets/textures/M_Prop_BoardKit/T_BoardKit_Brick_ALB.png",
+  "type": "Image"
+ },
+ "Model:733b6404e3d02fe33fbfa0a26d5884a25cea912370d72aa5a8e17aca973fe71d": {
+  "assetId": "134133978588718",
+  "moderation": "Approved",
+  "name": "M_Prop_BoardKit_LOD2",
+  "rbxm": "assets/models/M_Prop_BoardKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "733b6404e3d02fe33fbfa0a26d5884a25cea912370d72aa5a8e17aca973fe71d",
+  "source": "assets/fbx/M_Prop_BoardKit/M_Prop_BoardKit_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:a6e497739816a788d770dbac4a9f13c814e15673ee089724b369fd5f91004290": {
+  "assetId": "76453127495122",
+  "moderation": "Approved",
+  "name": "M_Prop_BoardKit_LOD1",
+  "rbxm": "assets/models/M_Prop_BoardKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a6e497739816a788d770dbac4a9f13c814e15673ee089724b369fd5f91004290",
+  "source": "assets/fbx/M_Prop_BoardKit/M_Prop_BoardKit_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:b8b0964d5f17b7d3a58ca1f83a7cb6b3c1d67129ad92bfd4d967b93a00cb48ae": {
+  "assetId": "114404971301410",
+  "moderation": "Approved",
+  "name": "M_Prop_BoardKit",
+  "rbxm": "assets/models/M_Prop_BoardKit.rbxm",
+  "route": "delivery",
+  "sha": "b8b0964d5f17b7d3a58ca1f83a7cb6b3c1d67129ad92bfd4d967b93a00cb48ae",
+  "source": "assets/fbx/M_Prop_BoardKit/M_Prop_BoardKit_LOD0.fbx",
   "type": "Model"
  }
 }
