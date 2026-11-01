@@ -79,3 +79,5 @@ Blender (owner 2026-11-01): "do MCP BLENDER not headless": all asset work in the
 
 
 Studio rule (2026-11-01): capture/play agents use a uniquely named TestBench place/window (e.g. TestBench-perf-<task>), never the default name, so they never drive another thread's play session.
+
+FEEL2a (stopped by the Studio stop 2026-11-01): t3/f6656ade 6465eaff+3cae9ff4; locomotion in context 7.2 (was 6.7); recruit beat fixed (90-stud gate), first build + site polish, sprint beats, foot sliding: all unjudged. CAUTION at merge: it moves the follow camera closer for every moment; review + re-judge framing everywhere. DEV commands recruitbeat/buildbeat/buildfinish for captures.
