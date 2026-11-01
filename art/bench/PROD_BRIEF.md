@@ -30,13 +30,14 @@ Your asset name `<Asset>` and kind folder `<kind>` are in your task. Stop as soo
 
 ## Commands (Blender MCP only, never headless `blender-run.sh` / `--background`: owner 2026-11-01)
 
-Hold a heavy slot for the GUI's life, then open it (one Blender GUI on the machine; wait for `pgrep -x Blender` to be
-empty before taking the slot):
+Open YOUR Blender instance (owner 2026-11-01: multiple instances allowed). Your brief names an instance N (1, 2 or 3):
 
 ```sh
-python3 ~/RobloxProjects/tools/locks.py run --owner <you> --cap 7200 --timeout 7200 heavy -- \
-  python3 tools/studio/hold_window.py Blender.app /tmp/<you>.ready &   # then: open -a Blender once /tmp/<you>.ready exists
+~/RobloxProjects/tools/blender-mcp-open.sh <N> <you>   # holds lock blenderportN + a heavy slot; returns when the add-on listens
 ```
+
+Then drive it only through the matching MCP server: N=1 `blender`, N=2 `blender2`, N=3 `blender3` (ToolSearch "blender2" etc.).
+Never touch another instance. Quit your Blender when done (frees the lock and the slot).
 
 Run the pipeline inside the live session with `execute_blender_code` (save your .blend first; run.py loads the template):
 
