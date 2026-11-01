@@ -525,6 +525,10 @@ local function boathouse(m: Model, b: CFrame)
 			)
 		end
 	end
+	-- owner 2026-11-01 ("too cluttered"): the back wall faces the boat yard's path; two windows break its bare blue
+	for _, x in { -7.5, 7.5 } do
+		window(m, L * CFrame.new(x, h * 0.55, hd + 0.4) * CFrame.Angles(0, math.pi, 0), 4.4, 3.6)
+	end
 	-- the slope-brick roof, ridge along the depth: the gable over the doors
 	gable(m, L * CFrame.new(0, h, 0), hw * 2 + 2.4, hd * 2 + 2.4, 7, BRICK_RED)
 	sign(
@@ -2699,7 +2703,8 @@ local function boatYard(m: Model, b: CFrame, level: number?)
 		def.name,
 		spec.icon
 	)
-	-- tool chests and a tyre stack beside the hull
+	-- a tool chest and a tyre stack beside the hull: the yard's one prop cluster (owner 2026-11-01: "too cluttered",
+	-- so no stacked chest and no corner crates/barrels; Lv2+ the mesh's tool bench tells the story)
 	if lv < 2 then
 		local tools = at * CFrame.new(w / 2 - 4, 0, -d / 2 + 8)
 		studTop(
@@ -2709,15 +2714,6 @@ local function boatYard(m: Model, b: CFrame, level: number?)
 				Vector3.new(3.6, 2.2, 2),
 				tools * CFrame.new(0, 1.1, 0),
 				BRICK_RED
-			)
-		)
-		studTop(
-			brick(
-				m,
-				"ToolChest",
-				Vector3.new(2.6, 1.6, 1.8),
-				tools * CFrame.new(-0.4, 2.8, 0.6) * CFrame.Angles(0, 0.4, 0),
-				BRICK_BLUE
 			)
 		)
 		for i = 0, 1 do
@@ -2746,7 +2742,6 @@ local function boatYard(m: Model, b: CFrame, level: number?)
 		end
 	end
 	yardPath(m, at, d)
-	yardClutter(m, at, w, d)
 	rock(m, at * CFrame.new(-w / 2 - 5, 0, d / 2 + 4))
 end
 

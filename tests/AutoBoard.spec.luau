@@ -71,4 +71,14 @@ return function(t)
 		t.expect(AutoBoard.mayTake({ delivered = true }, "T1")).toBe(false)
 		t.expect(AutoBoard.mayTake({ takenOver = true }, "T1")).toBe(false) -- the helicopter has them
 	end)
+
+	t.test("far pips: swimmers overlapping on screen share the nearest's pip", function()
+		local shown = AutoBoard.pipShown(
+			{ Vector2.new(100, 50), Vector2.new(120, 55), Vector2.new(300, 50) },
+			48
+		)
+		t.expect(shown[1]).toBe(true)
+		t.expect(shown[2]).toBe(false) -- 21 px off the first: one marker
+		t.expect(shown[3]).toBe(true)
+	end)
 end
