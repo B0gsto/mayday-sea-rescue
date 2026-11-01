@@ -859,6 +859,13 @@ local function pulseRing(face: GuiObject)
 	):Play()
 end
 
+-- Gamepad: the tutorial card's own Cash ("Free") button, so A builds; the card root only focuses (live v33: a
+-- console player opened the tablet at the Hut and never found the buy button inside the selected card).
+local function padTarget(card: GuiObject): GuiObject
+	local buy = card:FindFirstChild("Cash", true)
+	return if buy and buy:IsA("GuiButton") and buy.Active then buy else card
+end
+
 -- The cards of the open tab: Build (one per building, then the quest blueprints) or Decor.
 local function refreshCards()
 	local content = cardsContent
@@ -939,7 +946,7 @@ local function refreshCards()
 		and cards[1]
 		and not (sel and ui and sel:IsDescendantOf(ui))
 	then
-		GuiService.SelectedObject = pulsed or cards[1]
+		GuiService.SelectedObject = if pulsed then padTarget(pulsed) else cards[1]
 	end
 end
 
@@ -1296,10 +1303,10 @@ local function openBuild()
 	Style.pop(p.root, true)
 	modal.open(p.closeButton)
 	if InputGlyph.device() == "Gamepad" and cards[1] then
-		local want = cards[1]
+		local want: GuiObject = cards[1]
 		for _, card in cards do
 			if card:GetAttribute("ItemKey") == pulseKey then
-				want = card
+				want = padTarget(card)
 			end
 		end
 		GuiService.SelectedObject = want
