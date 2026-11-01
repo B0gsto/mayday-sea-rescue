@@ -21964,6 +21964,16 @@
   "source": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag_LOD0.fbx",
   "type": "Model"
  },
+ "Model:1d51b9295c47970874f173cd47c7387462b08cea3d9632592c408d89be56a6d5": {
+  "assetId": "105818248709873",
+  "moderation": "Approved",
+  "name": "M_Prop_SeaPlateKit",
+  "rbxm": "assets/models/M_Prop_SeaPlateKit.rbxm",
+  "route": "delivery",
+  "sha": "1d51b9295c47970874f173cd47c7387462b08cea3d9632592c408d89be56a6d5",
+  "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:1d960f70645dd32a7d90f908c9b730f9119f45e845ca8296e634586a90c2ff15": {
   "assetId": "74871492623416",
   "moderation": "Approved",
@@ -29364,6 +29374,16 @@
   "source": "assets/fbx/M_Veh_JetSki_RiptideX/M_Veh_JetSki_RiptideX_LOD1.fbx",
   "type": "Model"
  },
+ "Model:ddf845bcea9bd3fca64cfc805d807aedd588ab9ece00fb8399dd2dd800afb86f": {
+  "assetId": "104675938832464",
+  "moderation": "Approved",
+  "name": "M_Prop_SeaPlateKit_LOD1",
+  "rbxm": "assets/models/M_Prop_SeaPlateKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ddf845bcea9bd3fca64cfc805d807aedd588ab9ece00fb8399dd2dd800afb86f",
+  "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:de07989147b37fb284d1ee447d44b260e71d770a1e5c212f7a7427a936d43c8a": {
   "assetId": "71060030921213",
   "moderation": "Approved",
@@ -30352,6 +30372,16 @@
   "route": "delivery",
   "sha": "f72d4baee01a19b882a680fe60b2dbb5557b564e76cae7f9abefd3f6a975286c",
   "source": "assets/fbx/M_Veh_RIB_Helm/M_Veh_RIB_Helm_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:f77ebeb4266535d358e9bc9575238aef9d9c424aa8ab99b60d73f18f28fe493a": {
+  "assetId": "95366638889333",
+  "moderation": "Approved",
+  "name": "M_Prop_SeaPlateKit_LOD2",
+  "rbxm": "assets/models/M_Prop_SeaPlateKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "f77ebeb4266535d358e9bc9575238aef9d9c424aa8ab99b60d73f18f28fe493a",
+  "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD2.fbx",
   "type": "Model"
  },
  "Model:f797e961bceef426e5fc40ef1f8301ffecf0fa7c58602bc7c03abebef030869b": {

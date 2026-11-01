@@ -136,3 +136,16 @@ black; cheeks = 4 stepped bevelled bricks + white post tiles (the hidden wedges 
 in 1.2 courses, 0.08 grooves, joints every 4 staggered (one face per brick, cheaper than r7); Ramp kerb studs halved for
 2x Ramp plaza stud patches; red crane mast bands; palette LBG +8% / stone -8% (Freight deck contrast; maketex rerun).
 LOD0 38,404 (L12 8,718), LOD1 12,555, LOD2 2,090. Validate PASS. zfight 0 visible pairs on LOD0-2. Sheet r8/r8_sheet.png.
+
+## r9 (2026-11-01)
+r8 AD list: ramp cheeks = lip post (one plate over the kicker) + 2 slope steps, each two red courses under a white cap
+plate, 0.1 bevels; float waterline course mid stone grey, sunk 0.2 under a yellow 1-plate lip along the full float;
+Ramp plaza: more 4 x 4 quarter tiles in dark tan, promenade + gangway path as seamed 2 x 8 planks; Freight right third:
+dark grey / light grey checker past the walkway, a yellow / black hatch strip along it, a pallet pair moved there;
+walkway lines 0.6 -> 0.9; tyres 8-sided (budget). Not done: the "stray brown bench slabs" (not pinned down).
+LOD0 39,268, LOD1 12,699, LOD2 2,092. Validate PASS. zfight 0 visible pairs on LOD0-2. Sheet r9/r9_sheet.png.
+
+**Shipped r9.** AD 9.15 / 9.05 / 9.1, median 9.1 PASS (bar 9.1; r8 9.05; build/status/2026-11-01/perfect/M_Prop_SeaPlateKit/r9_AD.md).
+Ids LOD0 105818248709873 / LOD1 104675938832464 / LOD2 95366638889333 (textures and pivot-relative attachments unchanged).
+Tris LOD0 39,268 / LOD1 12,699 / LOD2 2,092 (cap 40,000). Open: flat cheek, float and Freight deck faces (seams);
+tyres read octagonal (8 sides); brown bench on brown deck; turntable not re-rendered.

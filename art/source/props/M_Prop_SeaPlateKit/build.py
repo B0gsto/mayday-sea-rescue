@@ -389,7 +389,12 @@ def deck_grid(k, slot, ix, iz, tile):
                      "x": [(a0, am - g, b0, b1, c), (am + g, a1, b0, b1, c2)],
                      "z": [(a0, a1, b0, bm - g, c), (a0, a1, bm + g, b1, c2)],
                      "q": [(a0, am - g, b0, bm - g, c), (am + g, a1, b0, bm - g, c2), (a0, am - g, bm + g, b1, c2),
-                           (am + g, a1, bm + g, b1, c)]}[split]
+                           (am + g, a1, bm + g, b1, c)],
+                     # r9: 2 x 8 boardwalk planks, long along x ("px") or z ("pz"), every third one c2
+                     "px": [(a0, a1, b0 + n * (b1 - b0) / 4 + (g if n else 0), b0 + (n + 1) * (b1 - b0) / 4 - (g if n < 3 else 0),
+                             c2 if (n + i + j) % 3 == 0 else c) for n in range(4)],
+                     "pz": [(a0 + n * (a1 - a0) / 4 + (g if n else 0), a0 + (n + 1) * (a1 - a0) / 4 - (g if n < 3 else 0), b0, b1,
+                             c2 if (n + i + j) % 3 == 0 else c) for n in range(4)]}[split]
             for p0, p1, q0, q1, cc in rects:
                 if k.lod == 1:                           # mid distance: tops only, the core shows in the grout
                     k.poly([(p0, 0.0, q0), (p1, 0.0, q0), (p1, 0.0, q1), (p0, 0.0, q1)], cc, (0.0, 1.0, 0.0))
@@ -399,13 +404,13 @@ def deck_grid(k, slot, ix, iz, tile):
                 k.studs(a0, a1, b0, b1, 0.0, c, pitch=(a1 - a0) / 2, r=1.0, h=0.55, bev=studded is True)
 
 
-def vary(i, j, c, c2, salt, patches=(0,)):
+def vary(i, j, c, c2, salt, patches=(0,), quarters=(5, 14), qc=None):
     """r7: a hash scatter over a flat deck field: a few 2 x 2 stud patches, 4 x 4 quarter tiles, 4 x 8 half tiles."""
     h = (i * 7 + j * 13 + salt) % 23
     if h in patches:
         return c, "patch"
-    if h in (5, 14):
-        return c, False, "q", c2
+    if h in quarters:
+        return c, False, "q", qc if qc is not None else c2
     if h in (3, 9, 17, 20):
         return c, False, "x" if (i + j) % 2 else "z", c2
     return c, False
@@ -455,14 +460,15 @@ def ramp_deck(k):
         if PAD[0] <= i <= PAD[1] and PAD[2] <= j <= PAD[3]:
             return (P.BLUE if (i + j) % 2 else P.GLASS), False
         if j == 0:
-            return (P.WHITE, True) if i % 3 == 1 else (P.BROWN, False)
+            return (P.WHITE, True) if i % 3 == 1 else (P.BROWN, False, "px", P.DTAN)   # r9: seamed 2 x 8 planks
         if i == nx - 2:
             return P.BLUE, False                         # slipway lane, chevrons on it
         if abs(cx - GANG_X["RampWharf"]) < 4.5:
-            return P.BROWN, False                        # r3: reddish-brown boardwalk promenade + path
+            return P.BROWN, False, "pz", P.DTAN          # r3: reddish-brown boardwalk promenade + path
         if i in (0, nx - 1) and j % 4 == 1:
             return P.WHITE, "patch"                      # r7: side plates' studs drop the bevel ring (budget)
-        return vary(i, j, P.TAN if j % 2 else P.RIB, P.RIB if j % 2 else P.TAN, 2, (0, 11))   # r8: 2x patches   # r3: alternating plank tones
+        return vary(i, j, P.TAN if j % 2 else P.RIB, P.RIB if j % 2 else P.TAN, 2, (0, 11),   # r8: 2x patches
+                    quarters=(5, 14, 3, 17), qc=P.DTAN)   # r9: more 4 x 4 quarters, dark tan (the plaza read one tone)   # r3: alternating plank tones
     deck_grid(k, "RampWharf", ix, iz, tile)
     nx, nz = round(2 * ix / 8), round((HD - iz) / 8)
     dx, dz = 2 * ix / nx, (HD - iz) / nz
@@ -525,6 +531,9 @@ def freight_deck(k):
             return None, False
         if i in (0, nx - 1) or j in (0, nz - 1):
             return P.DBG, False
+        if cx < gx - 4.5:                              # r9: dark grey checker past the walkway (was one flat tone)
+            c = P.DBG if (i + j) % 2 else P.LBG
+            return vary(i, j, c, P.LBG if c == P.DBG else P.DBG, 11)
         c = P.STONE if (i // 2 + j // 2) % 2 else P.LBG
         return vary(i, j, c, P.LBG if c == P.STONE else P.STONE, 11)
     deck_grid(k, "FreightWharf", ix, iz, lambda *a: (lambda c: (P.YELLOW, False) if c[0] is None else c)(tile(*a)))
@@ -541,11 +550,18 @@ def freight_deck(k):
         k.box((gx - 4, -0.2, iz), (gx + 4, 0.08, HD), P.TAN, bev=0, drop=("bottom",))
         k.box((gx + 4, -0.2, cz0 + 0.5), (ix, 0.08, cz1 - 0.5), P.TAN, bev=0, drop=("bottom",))
     else:
-        for s in (-1, 1):
-            k.box((gx + s * 4.6 - 0.3, -0.2, iz + 0.5), (gx + s * 4.6 + 0.3, 0.08, HD - 0.5), P.YELLOW, bev=0.03,
+        for s in (1,):
+            k.box((gx + s * 4.6 - 0.45, -0.2, iz + 0.5), (gx + s * 4.6 + 0.45, 0.08, HD - 0.5), P.YELLOW, bev=0.03,
                   drop=("bottom",))
+        x0h, x1h = gx - 6.4, gx - 4.6 + 0.45            # r9: a yellow / black hatch strip along the walkway's -x side
+        k.box((x0h, -0.2, iz + 0.5), (x1h, 0.08, HD - 0.5), P.YELLOW, bev=0.03, drop=("bottom",))
+        if k.lod == 0:
+            zq = iz + 2.0
+            while zq < HD - 2.0:
+                k.rbox((x0h + x1h) / 2, zq, 2.2, 0.7, -0.2, 0.12, 45.0, P.BLACK, bev=0.03)
+                zq += 3.0
         for zz in (cz0 + 0.6, cz1 - 0.6):              # r3: the second walkway's yellow lines
-            k.box((gx + 5.2, -0.2, zz - 0.3), (ix - 0.5, 0.08, zz + 0.3), P.YELLOW, bev=0.03, drop=("bottom",))
+            k.box((gx + 5.2, -0.2, zz - 0.45), (ix - 0.5, 0.08, zz + 0.45), P.YELLOW, bev=0.03, drop=("bottom",))
     # yellow hazard frame round the crane / loading bay along the barge face
     bx0, bx1, bz0, bz1 = -4.0, 36.0, iz + 1.0, -26.0
     t = 0.9
@@ -626,7 +642,7 @@ def tyre(k, x, kb, y=-1.6):
     if k.lod == 2:
         return
     oz = -(HD + kb["ov"])
-    k.vring(x, y, oz - 0.55, 1.15, 0.5, [P.BLACK], seg=12 if k.lod == 0 else 8, sub=1, mnr=6)   # r7: 12-sided tyre
+    k.vring(x, y, oz - 0.55, 1.15, 0.5, [P.BLACK], seg=8, sub=1, mnr=6)   # r9: 8-sided tyre (budget)
 
 
 def ladder(k, x, kb):
@@ -989,7 +1005,7 @@ def crane(k):
         container(k, x, -12.5, 0.0, c0, studs=False)
         container(k, x, -12.5, 4.25, c1)
     forklift(k, 21.0, -14.0, 180.0)
-    for i, (x, z) in enumerate(((-6.0, -16.0), (-6.0, -9.0), (24.0, 24.0), (30.0, 24.0))):
+    for i, (x, z) in enumerate(((-6.0, -16.0), (-6.0, -9.0), (-41.0, -10.0), (-41.0, -3.0))):   # r9: pair moved -x
         stack(k, x, z, c=(P.BROWN, P.RIB)[i % 2])
     container(k, 10.0, 30.0, 0.0, P.ORANGE, along_z=False, studs=False)
     container(k, 10.0, 30.0, 4.25, P.WHITE, along_z=False)
@@ -1063,23 +1079,31 @@ def jump_ramp(k):
                -0.1, 0.46, P.WHITE, ramp_y)
     # r8: one red cheek per side as four stepped bricks (flat bevelled tops, 0.06 seams) from the lip post down to where
     # the cheek sinks into the float; a white tile caps the lip post (the red stud read brown)
+    # r9: the lip post only one plate over the kicker; 3 stepped segments, each two red courses (a seam one brick over
+    # the float) under a white cap plate, 0.1 bevels (the r8 cheeks read as tall boxes)
     cb = SEA - 1.5
-    H, bv = 0.8, (0.12, 0.08, 0.0)[lod]
-    zs = [-hl - 0.2, -hl + 1.8, -10.2, -6.2, -2.2, 2.0]
+    H, bv = 0.8, (0.1, 0.08, 0.0)[lod]
+    ytf, cap = SEA + 2.3 + 1.2, 0.3                      # course seam (one brick over the float top), cap plate
+    zs = [-hl - 0.2, -hl + 1.8, -8.6, -3.0]               # lip post + 2 slope steps (the float takes over past -3)
     for s in (-1, 1):
         x0, x1 = sorted((s * (hw + 0.06), s * (hw + 1.7)))
-        r.box((x0, cb, zs[0]), (x1, R_TOP + 1.2, zs[1] - 0.03), P.RED, bev=bv, drop=("bottom",))   # the lip post
-        if lod < 2:
-            r.box((x0 + 0.2, R_TOP + 1.1, zs[0] + 0.2), (x1 - 0.2, R_TOP + 1.42, zs[1] - 0.23), P.WHITE, bev=0.06,
-                  drop=("bottom",))
-        for j in range(1, len(zs) - 1):
-            z0, z1 = zs[j] + 0.03, zs[j + 1] - 0.03
-            r.box((x0, cb, z0), (x1, ramp_y(z1) + 0.9, z1), P.RED, bev=bv, drop=("bottom",))   # tops trace the slope
+        for j in range(len(zs) - 1):
+            z0, z1 = zs[j] + (0.03 if j else 0.0), zs[j + 1] - 0.03
+            top = R_TOP + 0.86 if j == 0 else ramp_y(z1) + 0.86     # tops trace the slope
+            if lod == 2:
+                r.box((x0, cb, z0), (x1, top, z1), P.RED, bev=0, drop=("bottom",))
+                continue
+            seam = ytf if top - cap - ytf > 0.5 else None
+            r.box((x0, cb, z0), (x1, seam or top - cap, z1), P.RED, bev=bv, drop=("bottom",))
+            if seam:
+                r.box((x0, seam + 0.06, z0), (x1, top - cap, z1), P.RED, bev=bv, drop=("bottom",))
+            r.box((x0, top - cap + 0.03, z0), (x1, top, z1), P.WHITE, bev=0.06, drop=("bottom",))
     # r7: two light grey brick floats run the full length under the cheeks (lip post to past the toe): a stone
     # course through the waterline and two light grey courses in running bond (2.5 bricks over the water), studs
     # along the strip left of the cheek, a black bumper at the water round the outside and the toe end. The lane
     # between stays open water for the jet ski.
-    ya, yb_, yc, ytop = SEA - 1.2, SEA + 0.5, SEA + 1.4, SEA + 2.3     # r8: a taller dark waterline course
+    ya, yb_, yc, ytop = SEA - 1.2, SEA + 0.5, SEA + 1.4, SEA + 2.3     # r8: a taller waterline course
+    yl = SEA + 0.14                                      # r9: the yellow lip sits yl .. yb_ over the stone course
     za, zb = -hl - 0.5, hl                               # r8: flush with the ramp toe
     zm = R_L / 2 - 4.0 * (ytop - H - R_LOW)              # where the cheek top sinks under the float top
     for s in (-1, 1):
@@ -1088,18 +1112,18 @@ def jump_ramp(k):
         if lod == 2:
             r.box((lo, ya, za), (hi, ytop, zb), P.LBG, bev=0, drop=("bottom",))
             continue
-        for q, (y0, y1, c, n, off) in enumerate(((ya, yb_, P.DBG, 3, 0.0), (yb_ + 0.06, yc, P.LBG, 5, 0.5),
+        for q, (y0, y1, c, n, off) in enumerate(((ya, yl, P.STONE, 3, 0.0), (yb_ + 0.06, yc, P.LBG, 5, 0.5),
                                                   (yc + 0.06, ytop, P.LBG, 5, 0.0))):
             cuts = sorted({za, zb} | {za + (i + off) * (zb - za) / n for i in range(n) if 0 < i + off < n})
-            ins = 0.05 if q == 0 else 0.0                # r8: the dark course sits 0.05 inside the float faces
+            ins = 0.2 if q == 0 else 0.0                 # r9: the stone course sinks 0.2 under the yellow lip
             for z0, z1 in zip(cuts, cuts[1:]):
                 r.box((lo + ins, y0, z0 + (0.04 if z0 > za else ins)), (hi - ins, y1, z1 - (0.04 if z1 < zb else ins)),
-                      c, bev=bv, drop=("bottom",))
+                      c, bev=bv, drop=("bottom", "top") if q == 0 else ("bottom",))
         xs = s * (hw + 2.38)                             # one stud row on the strip beside the cheek, two past it
         r.studs(xs - 0.5, xs + 0.5, za + 0.4, zb - 0.4, ytop, P.LBG, pitch=3.3, r=0.6)
         r.studs(s * (hw + 0.95) - 0.5, s * (hw + 0.95) + 0.5, zm + 0.8, zb - 0.4, ytop, P.LBG, pitch=3.3, r=0.6)
-        r.box((lo - 0.06, SEA - 0.1, zb - 0.3), (hi + 0.06, SEA + 0.34, zb + 0.4), P.YELLOW, bev=0.08,
-              drop=("bottom",))                          # r8: a yellow 1-plate lip at the waterline on the toe end
+        r.box((lo - 0.06, yl, za - 0.06), (hi + 0.06, yb_, zb + 0.06), P.YELLOW, bev=0.08,
+              drop=("bottom",))                          # r9: a yellow 1-plate lip along the full float
     # r4: the r3 underwater brick base is gone (it read as a pale slab under the water); the cheeks reach SEA-1.5
     # lip face: four brick courses, each stepped 2 back under the one above (the treads read from the sea)
     yb = [0.3, -1.3, -2.9, SEA - 1.5]
