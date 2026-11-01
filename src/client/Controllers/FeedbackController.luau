@@ -117,8 +117,8 @@ local function workplace(cfg: Configuration): (Model?, Vector3, Vector3?)
 	return b :: Model, cf.Position + Vector3.new(0, size.Y * 0.25, 0), nil
 end
 
--- A 2.45 s two-shot: the camera eases out to frame the new worker in front of their building's sign, holds with a
--- slow push, and eases back (a cut and a 2 s hold under Reduce motion). Skippable.
+-- A 2.45 s beat: the camera eases out to frame the new worker's head from an open side (their building behind),
+-- holds with a slow push, and eases back (a cut and a 2 s hold under Reduce motion). Skippable.
 local function beat(rig: Model, focus: Vector3, face: Vector3?)
 	local cam = Workspace.CurrentCamera
 	local character = player.Character
@@ -135,19 +135,36 @@ local function beat(rig: Model, focus: Vector3, face: Vector3?)
 	end
 	lastBeat = os.clock()
 	local at = rig:GetPivot().Position + Vector3.new(0, 1, 0)
-	local mid = at:Lerp(focus, 0.5)
+	local headPart = rig:FindFirstChild("Head")
+	local head = if headPart and headPart:IsA("BasePart")
+		then headPart.Position
+		else at + Vector3.new(0, 1.5, 0)
 	local flat = Vector3.new(1, 0, 1)
 	-- in front of the sign and on the worker's side of the building, so the worker stands before it
 	local toWorker = (at - focus) * flat
 	local dir = (if face then face * flat else Vector3.zero)
 		+ (if toWorker.Magnitude > 0.5 then toWorker.Unit * 0.8 else Vector3.zero)
 	if dir.Magnitude < 0.1 then
-		dir = (cam.CFrame.Position - mid) * flat
+		dir = (cam.CFrame.Position - head) * flat
 	end
 	dir = if dir.Magnitude > 0.1 then dir.Unit else Vector3.zAxis
-	-- shortcut: no occlusion test, the sign side is open by construction; raycast and swing if a wall hides the worker
-	local dist = math.clamp((focus - at).Magnitude * 1.1 + 10, 14, 45)
-	local view = CFrame.lookAt(mid + dir * dist + Vector3.new(0, dist * 0.35, 0), mid)
+	-- MERGE3 W4 ADs: the shot framed the gantry and a hull hid the recruit. It looks at the recruit's head now, from
+	-- the first side (swinging round from the sign side) with a clear line to the head.
+	local dist = math.clamp((focus - at).Magnitude * 0.6 + 8, 12, 28)
+	local ray = RaycastParams.new()
+	ray.FilterType = Enum.RaycastFilterType.Exclude
+	ray.FilterDescendantsInstances = { rig, character :: Model }
+	ray.IgnoreWater = true
+	local eye = head + dir * dist + Vector3.new(0, dist * 0.3, 0)
+	for _, deg in { 0, 35, -35, 70, -70, 110, -110, 150, -150, 180 } do
+		local d = CFrame.Angles(0, math.rad(deg), 0):VectorToWorldSpace(dir)
+		local e = head + d * dist + Vector3.new(0, dist * 0.3, 0)
+		if not Workspace:Raycast(head, e - head, ray) then
+			eye = e
+			break
+		end
+	end
+	local view = CFrame.lookAt(eye, head)
 	local back, fov = cam.CFrame, cam.FieldOfView
 	local opts = { id = "recruit_arrive", repeatable = true, skippable = true }
 	if Comfort.reducedMotion() then
@@ -186,8 +203,8 @@ local function outline(building: Model)
 end
 
 -- The recruit reaches their spot and clocks on. t=0: teal ring + their category icon and "+1" pop over them, the
--- camera eases to the two-shot; t=0.55: the icon flies to their building's sign (whoosh); t=1.15: it lands with a
--- pop, plates and a ding, the building takes a white outline; t=2.0 it shrinks away; camera back by t=2.45.
+-- camera eases to the recruit; t=1.15: the icon pops again over them, the sign takes the clock-on ring (plates and a
+-- ding), the building a white outline; t=2.0 it shrinks away; camera back by t=2.45.
 local function arrived(cfg: Configuration, rig: Model)
 	local root = rig.PrimaryPart
 	local category = cfg:GetAttribute("Category") or cfg:GetAttribute("WorkerCategory")
@@ -247,27 +264,17 @@ local function arrived(cfg: Configuration, rig: Model)
 		return
 	end
 	beat(rig, focus, face)
-	-- the flight: the icon leaves the worker and lands above the sign (an offset in the root's frame)
-	task.delay(0.55, function()
+	-- the clock-on: the icon stays over the worker (MERGE3 W4: flown to the sign it drifted off the frame) and pops
+	-- again as the sign takes the ring and the building its outline
+	task.delay(1.15, function()
 		if not (gui.Parent and root.Parent) then
 			return
 		end
-		AudioController.play("FX_Whoosh", root.Position, 0.6, 1.2)
-		local over = focus + Vector3.new(0, 2.5, 0)
-		TweenService
-			:Create(gui, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
-				StudsOffset = Vector3.zero,
-				StudsOffsetWorldSpace = root.CFrame:VectorToObjectSpace(over - root.Position),
-			})
-			:Play()
-		task.delay(0.6, function()
-			scale.Scale = 1.35
-			TweenService:Create(scale, TweenInfo.new(0.3, Enum.EasingStyle.Back), { Scale = 1 })
-				:Play()
-			VFXKit.play("crew_clockon", CFrame.new(over), { radius = 1.5 })
-			outline(building)
-			leave(0.85, Vector3.new(0, 1.5, 0))
-		end)
+		scale.Scale = 1.35
+		TweenService:Create(scale, TweenInfo.new(0.3, Enum.EasingStyle.Back), { Scale = 1 }):Play()
+		VFXKit.play("crew_clockon", CFrame.new(focus + Vector3.new(0, 2.5, 0)), { radius = 1.5 })
+		outline(building)
+		leave(0.85, Vector3.new(0, 0.6, 0))
 	end)
 end
 
@@ -401,7 +408,24 @@ function FeedbackController.Start()
 			and now > medals
 			and player:GetAttribute("MenuOpen") ~= true
 		then
-			flip()
+			-- a build's medal waits for its reveal (MERGE3 W5: the burst covered the finished building): a beat, then
+			-- until the reveal camera (watch cinematic / onboarding glance) hands back, at most 8 s
+			task.spawn(function()
+				local t0 = os.clock()
+				task.wait(1.5)
+				while
+					(
+						CameraController.GetMode() == "Cinematic"
+						or CameraController.GetMode() == "None"
+					) and os.clock() - t0 < 8
+				do
+					task.wait(0.2)
+				end
+				task.wait(0.4)
+				if player:GetAttribute("MenuOpen") ~= true then
+					flip()
+				end
+			end)
 		end
 		medals = now
 	end)

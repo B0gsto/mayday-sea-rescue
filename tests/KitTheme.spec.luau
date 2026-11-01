@@ -55,6 +55,28 @@ return function(t)
 		end
 	end)
 
+	-- MERGE3 fix2: the phone frames that showed headers above the top were a cropped 1920x1080 window (HudDevice
+	-- proxy, desktop sizes); on the phone's real safe area (top bar off) every panel, the Build list and the map fit
+	t.test(
+		"the Build list, the map and the menu panels fit a landscape phone's safe area",
+		function()
+			for _, vp in { Vector2.new(844, 332), Vector2.new(756, 311), Vector2.new(667, 317) } do
+				local s = Theme.scaleFor(vp)
+				for _, c in
+					{
+						{ Vector2.new(440, 2000), false },
+						{ Vector2.new(1160, 640), true },
+						{ Vector2.new(780, 600), false },
+					}
+				do
+					local px = Theme.panelSize(vp, s, c[1], c[2]) * s
+					t.expect(px.Y + 2 * Theme.Size.shadow * s <= vp.Y + 0.01).toBe(true)
+					t.expect(px.X <= vp.X).toBe(true)
+				end
+			end
+		end
+	)
+
 	t.test("kit touch targets are >= 44 px at the phone floor", function()
 		local S = Theme.Size
 		for _, du in { S.touch, S.tabOff, S.tab, S.close, S.price.Y, S.reply, S.icon } do

@@ -27,6 +27,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
+local Layout = require(UI:WaitForChild("Layout"))
 local RewardPop = require(UI:WaitForChild("RewardPop"))
 local Style = require(UI:WaitForChild("Kit"):WaitForChild("Style"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
@@ -223,7 +224,11 @@ local function play(kind: string, key: string, item: any)
 	AudioController.play("FX_Pop", nil, 1, 1.05)
 	AudioController.play("Music_CrateFanfare", nil, 0.9)
 	if not reduced then
-		RewardPop.rays(gui, start, size * 3, 1.3)
+		local vp = camera.ViewportSize -- phone: the burst stays inside 60% of the short side (MERGE3 V4 ADs)
+		local burst = if Layout.current().touch
+			then math.min(size * 3, 0.6 * math.min(vp.X, vp.Y))
+			else size * 3
+		RewardPop.rays(gui, start, burst, 1.3)
 		grow.Scale = 0.2
 		holder.Rotation = -20
 		TweenService:Create(grow, TweenInfo.new(0.34, Enum.EasingStyle.Back), { Scale = 1.2 })
@@ -294,7 +299,7 @@ local function play(kind: string, key: string, item: any)
 					:Play()
 			end
 			local w = if target then target.AbsoluteSize.X else size * 0.3
-			RewardPop.rays(gui, to, w * 3.2, 0.6)
+			RewardPop.rays(gui, to, w * 3.2, 0.6).ImageColor3 = GOLD -- a gold core, not white-hot
 			RewardPop.stars(gui, to, w * 1.4, 8)
 			task.delay(0.9, gui.Destroy, gui)
 		end)

@@ -88,7 +88,7 @@ local S = Theme.Size
 
 -- the map fog grid (DiscoveryConfig)
 local FOG = DiscoveryConfig.Fog
-local FOG_COLOR = Color3.fromRGB(7, 18, 34)
+local FOG_COLOR = DEEP -- the unexplored sea in the panel's deep blue, no black notches at the edge (MERGE3 U7 ADs)
 
 -- the ring of player islands, drawn live over the bake (its tiles predate WP-27: an old hub island and a wider ring)
 local LAGOON = { -- depth bands, outermost first: they cover the old ring and read as chart contours
@@ -902,10 +902,10 @@ local function buildFullMap()
 	full.pool = poolNew(full.blips)
 
 	-- you: the map arrow sticker, bigger, turned to your heading
-	local me = sprite("Player", canvas, UiImages.Markers.MapPlayer, 48)
+	local me = sprite("Player", canvas, UiImages.Markers.MapPlayer, 60) -- 42 pt on a phone (MERGE3 U7 ADs)
 	me.ZIndex = 9 -- over the gamepad crosshair when they stack
 	full.me = me
-	local cross = sprite("Cross", canvas, UiImages.Markers.MapCross, 72) -- its open centre frames the arrow
+	local cross = sprite("Cross", canvas, UiImages.Markers.MapCross, 90) -- its open centre frames the arrow
 	cross.Position = UDim2.fromScale(0.5, 0.5)
 	cross.Visible = false
 	cross.ZIndex = 8
@@ -958,7 +958,7 @@ local function buildFullMap()
 	local safe = root
 	full.safe = safe
 
-	local BTN = 64 -- 45 pt at the 0.7 phone floor (AD 2026-11-01: 32 pt+ on touch)
+	local BTN = 72 -- 50 pt at the 0.7 phone floor; its glyph 46 du = 32 pt (MERGE3 U7 ADs: 32 pt+ on touch)
 	local zin = kitButton(safe, "ZoomIn", "+", UDim2.fromOffset(BTN, BTN), "blue", function()
 		full.radius = math.max(MapConfig.FullMap.minRadius, full.radius * 0.7)
 	end)
@@ -998,6 +998,12 @@ local function buildFullMap()
 	recentre.AnchorPoint = Vector2.new(0, 1)
 	recentre.Position = UDim2.new(0, 12, 1, -68)
 	full.controls = { zin, zout, recentre }
+	for _, c in full.controls do
+		local l = c:FindFirstChildWhichIsA("TextLabel", true)
+		if l then
+			l.TextSize = 46
+		end
+	end
 
 	-- legend: a small collapsible kit panel, bottom right (collapsed: just its header)
 	local legend = Style.button(safe, UDim2.fromOffset(LEGEND_WIDTH, LEGEND_HEAD)) :: any

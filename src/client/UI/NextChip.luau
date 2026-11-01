@@ -220,7 +220,11 @@ local function refresh()
 		levels = levels,
 		construction = site,
 	})
-	if not g then
+	-- your site's own billboard is up (near it): it shows the timer, so the chip steps aside (MERGE3 W5: two "0:20")
+	local pg = player:FindFirstChildOfClass("PlayerGui")
+	local sign = pg and pg:FindFirstChild(`ConstructionSign_Plot{player:GetAttribute("DockPlot")}`)
+	local board = sign and sign:FindFirstChild("Root")
+	if not g or (g.kind == "Site" and board and board:IsA("GuiObject") and board.Visible) then
 		r.Visible = false
 		setReady(false)
 		clearPointing()
