@@ -317,9 +317,15 @@ local KIT_SLOT = {
 	CraneSlew = "Crane",
 	CraneHook = "Crane",
 	StackPallet = "Stack",
-	StackLow = "Stack",
-	StackMid = "Stack",
-	StackTop = "Stack",
+	StackLowA = "Stack", -- each pallet's courses are their own meshes (own colour), B / C at their own origins
+	StackMidA = "Stack",
+	StackTopA = "Stack",
+	StackLowB = "StackB",
+	StackMidB = "StackB",
+	StackTopB = "StackB",
+	StackLowC = "StackC",
+	StackMidC = "StackC",
+	StackTopC = "StackC",
 	SignBoard = "Sign",
 	Cone = "Cone",
 	Barrier = "Barrier",
@@ -349,7 +355,7 @@ local function siteKit(): { [string]: { part: BasePart, offset: CFrame } }?
 			count += 1
 		end
 	end
-	if count < 14 then -- a partial upload: keep the Parts
+	if count < 20 then -- a partial upload: keep the Parts
 		return nil
 	end
 	kitCache = out
@@ -460,7 +466,7 @@ local function kitProps(st: Site, props: Model, at: CFrame): boolean
 				else CFrame.new(6.5 + n * 3.8, 0, -fd - 2.4)
 		module(props, "StackPallet", cf)
 		for k, key in { "StackTop", "StackMid", "StackLow" } do
-			table.insert(courses[k], module(props, key, cf))
+			table.insert(courses[k], module(props, key .. string.sub("ABC", n + 1, n + 1), cf))
 		end
 	end
 	st.stacks = table.move(courses[3], 1, 3, 7, table.move(courses[2], 1, 3, 4, courses[1]))

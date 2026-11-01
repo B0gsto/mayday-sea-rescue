@@ -219,9 +219,9 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://120420678094169",
 	},
 	M_Prop_BuildSiteKit = {
-		LOD0 = "rbxassetid://75254069839731",
-		LOD1 = "rbxassetid://124941006039198",
-		LOD2 = "rbxassetid://85634491056108",
+		LOD0 = "rbxassetid://83598223677081",
+		LOD1 = "rbxassetid://132983174625303",
+		LOD2 = "rbxassetid://97455737881261",
 	},
 	M_Prop_BuildStation = {
 		LOD0 = "rbxassetid://118176380187881",
@@ -778,6 +778,8 @@ AssetIds.Attachments = {
 		ATT_Sign = Vector3.new(63, 0, 0),
 		ATT_Cone = Vector3.new(69, 0, 0),
 		ATT_Barrier = Vector3.new(74, 0, 0),
+		ATT_StackB = Vector3.new(81, 0, 0),
+		ATT_StackC = Vector3.new(86, 0, 0),
 		ATT_CranePivot = Vector3.new(40, 20.6, 0),
 		ATT_SignUI = Vector3.new(63, 6.6, 0),
 	},

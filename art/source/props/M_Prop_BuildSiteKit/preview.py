@@ -117,18 +117,19 @@ def scene():
     for level in range(max(1, min(3, round(TOP / 10)))):
         for i in range(n):
             place(coll, "L04_ScaffoldBay", rcf(-HW + (i + 0.5) * 6 * sx, level * 5, -HD - 1.4, sx=sx))
-    place(coll, "L14_Barrier", rcf(fw + 2, 0, -fd + 4, yaw=-math.pi / 2))
-    place(coll, "L13_Cone", rcf(-4.9, 0, -fd - 1.3))
-    place(coll, "L13_Cone", rcf(4.9, 0, -fd - 1.3))
+    place(coll, "L20_Barrier", rcf(fw + 2, 0, -fd + 4, yaw=-math.pi / 2))
+    place(coll, "L19_Cone", rcf(-4.9, 0, -fd - 1.3))
+    place(coll, "L19_Cone", rcf(4.9, 0, -fd - 1.3))
     base = rcf(-fw - 4.5, 0, fd + 4.5, yaw=math.pi / 4)
     for key in ("L05_CraneBase", "L06_CraneSlew", "L07_CraneHook"):
         place(coll, key, base)
     for n in range(3):
         T = rcf(6.5 + n * 3.8, 0, -fd - 2.4)
-        keys = ("L08_StackPallet", "L09_StackLow", "L10_StackMid", "L11_StackTop")
-        for key in keys[:4 - n]:                    # three fill states: full, two courses, one course
+        place(coll, "L08_StackPallet", T)
+        courses = [m[0] for m in build.MODULES if m[0][4:9] == "Stack" and m[0][-1] == "ABC"[n]]
+        for key in courses[:3 - n]:                 # three fill states: full, two courses, one course (Low, Mid, Top)
             place(coll, key, T)
-    place(coll, "L12_SignBoard", rcf(-min(8.6, fw - 2.4), 0, -fd - 2))
+    place(coll, "L18_SignBoard", rcf(-min(8.6, fw - 2.4), 0, -fd - 2))
     building(coll, mat)
     minifig(coll, mat, -3.2, -fd - 3.6, yaw=0.5)
     minifig(coll, mat, -HW + 2, -HD - 1.4 + 5.0, yaw=-0.4)   # on the scaffold deck
@@ -169,8 +170,10 @@ def setup_render():
         bpy.context.scene.collection.objects.link(sun)
     sun.data.energy = 3.5
     sun.rotation_euler = (math.radians(50), math.radians(15), math.radians(-35))
-    try:
-        sc.view_settings.view_transform = "AgX"
+    try:      # r8: AgX washed the yellow to sand; Standard (as the BoardKit anchor) is closer to Roblox's tonemap
+        sc.view_settings.view_transform = "Standard"
+        sc.view_settings.look = "None"
+        sc.view_settings.exposure = -1.0
     except TypeError:
         pass
 
