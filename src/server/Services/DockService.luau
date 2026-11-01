@@ -385,9 +385,9 @@ local function buildPlot(folder: Instance, i: number): Plot
 	local sign = Instance.new("Model")
 	sign.Name = "Sign"
 	local isle = b * Marina.ISLAND
-	local arch = isle * CFrame.new(0, 0, -28.5)
+	local arch = isle * CFrame.new(-16, 0, -28.5) -- over the jetty (RingLayout lot Jetty)
 	local board, labels, trim, studs = nameSign(sign, arch, BOARD)
-	local poleAt = isle * CFrame.new(-34, 0, -28)
+	local poleAt = isle * CFrame.new(3, 0, -28) -- east of the arch: the west quay holds the rescue board and the cove walk
 	studTop(
 		part(
 			sign,
@@ -467,11 +467,11 @@ for key in DockConfig.Blueprints do
 	table.insert(BUILT, key)
 end
 
--- docs/25 J: the prize wheel set (odds board, tokens) arrives with the HQ, on the plaza west of the avenue (docs/25
--- map: island r -30), facing the cove; the set runs along the plaza, clear of the HQ and the sign's flag pole
+-- docs/25 J: the prize wheel set (odds board, tokens) arrives with the HQ, at the plaza's west end facing the cove,
+-- back against the HQ line and west of the jetty's line so the plaza walk stays open (owner 2026-10-31)
 local function placeWheel(plot: Plot)
 	local i = plot.index
-	local at = plot.frame * Marina.ISLAND * CFrame.new(-28, 0, -14)
+	local at = plot.frame * Marina.ISLAND * CFrame.new(-40, 0, -10.5)
 	local wheel = PrizeWheel.build(at, {
 		spin = function(player: Player)
 			return wheelSpin(i, player)
@@ -490,7 +490,7 @@ local function placeWheel(plot: Plot)
 	plot.wheelCount = if count and count:IsA("TextLabel") then count else nil
 	paintWheel(plot)
 	-- the rescue board mirrors the wheel east of the avenue, facing the cove
-	local board = LeaderboardService.Board(plot.frame * Marina.ISLAND * CFrame.new(28, 5.7, -14))
+	local board = LeaderboardService.Board(plot.frame * Marina.ISLAND * CFrame.new(28, 5.7, -10.5))
 	board.Parent = plot.model
 	plot.rescueBoard = board
 end

@@ -590,12 +590,13 @@ DockConfig.BOARD_SIZE = 6
 -- (DockService builds it, JETTY_HEAD), its tablet facing the plate, clear of the jetty walk and the moored craft.
 -- Offsets are in the Jetty lot (x = right, y = toward the quay).
 DockConfig.BUILD_STATION =
-	{ lot = "Jetty", offset = Vector2.new(-15, 25), size = Vector2.new(16, 12) }
-DockConfig.JETTY_HEAD = { offset = Vector2.new(-15, 28), size = Vector2.new(20, 20) } -- the deck under it
+	{ lot = "Jetty", offset = Vector2.new(15, 25), size = Vector2.new(16, 12) }
+-- East of the jetty, at the craft bay's inner end: the west side holds the Boathouse Lv3 quick-launch bay.
+DockConfig.JETTY_HEAD = { offset = Vector2.new(15, 28), size = Vector2.new(20, 20) } -- the deck under it
 
 -- The boathouse's paint booth (docs/23 d.3), in the berth frame: the gantry over the berth's inshore half. A craft
 -- seated inside this box opens its owner's paint card (DockController). The docked spot (z <= 0) stays out.
-DockConfig.PAINT_BOOTH = { cf = CFrame.new(1.5, 6, 15), size = Vector3.new(23, 20, 26) }
+DockConfig.PAINT_BOOTH = { cf = CFrame.new(9.6, 6, 15), size = Vector3.new(39, 20, 26) }
 
 -- World spot of a decoration in the berth frame (`frame` = marina berth frame).
 function DockConfig.decorSpot(key: string, frame: CFrame): CFrame?
@@ -612,12 +613,12 @@ function DockConfig.stationSpot(frame: CFrame): CFrame
 	return frame * Marina.LOTS[st.lot].cf * CFrame.new(st.offset.X, 0, st.offset.Y)
 end
 
--- Where a player with no Rescue Hut yet spawns: back on the quay and off to the jetty's far side, facing the tablet,
--- so the third-person camera frames the stand with the cove, jetty and open sea behind it (owner 2026-10-31: at 10
--- studs the tablet filled a phone's screen). Inside the tablet prompt's range (DockController).
+-- Where a player with no Rescue Hut yet spawns: back on the quay east of the stand (the jetty and name arch are west of
+-- it), facing the tablet, so the third-person camera frames the stand and the arch with the cove and open sea behind
+-- (owner 2026-10-31: at 10 studs the tablet filled a phone's screen). Inside the tablet prompt's range (DockController).
 function DockConfig.newSpawn(frame: CFrame): CFrame
 	local station = DockConfig.stationSpot(frame)
-	local at = (station * CFrame.new(-7, 0, 22)).Position
+	local at = (station * CFrame.new(7, 0, 22)).Position
 	return CFrame.lookAt(at, Vector3.new(station.X, at.Y, station.Z))
 end
 

@@ -334,22 +334,22 @@ end
 -- jetty and the pontoon, a tall flag; the rescue-count board on the quay (a Lego frame, the lifebuoy icon and one
 -- big number, on both faces: read from the cove and from the promenade)
 local function pontoon(m: Model, b: CFrame)
-	studTop(brick(m, "Pontoon", Vector3.new(6, 0.8, 50), b * CFrame.new(16, 1.6, 2), BRICK_WHITE))
+	studTop(brick(m, "Pontoon", Vector3.new(6, 0.8, 50), b * CFrame.new(32, 1.6, 2), BRICK_WHITE))
 	for z = -18, 22, 10 do
-		brick(m, "Float", Vector3.new(5, 1.4, 4), b * CFrame.new(16, 0.6, z), DBG)
-		brick(m, "Cleat", Vector3.new(0.5, 0.4, 1.3), b * CFrame.new(13.4, 2.2, z), BRICK_YELLOW)
+		brick(m, "Float", Vector3.new(5, 1.4, 4), b * CFrame.new(32, 0.6, z), DBG)
+		brick(m, "Cleat", Vector3.new(0.5, 0.4, 1.3), b * CFrame.new(29.4, 2.2, z), BRICK_YELLOW)
 	end
-	brick(m, "Edge", Vector3.new(0.4, 0.5, 49.9), b * CFrame.new(19.1, 1.6, 2), BRICK_BLUE) -- ends inside the pontoon's
-	lamp(m, b, 18.5, -18, 2)
-	lamp(m, b, 18.5, 4, 2)
+	brick(m, "Edge", Vector3.new(0.4, 0.5, 49.9), b * CFrame.new(35.1, 1.6, 2), BRICK_BLUE) -- ends inside the pontoon's
+	lamp(m, b, 34.5, -18, 2)
+	lamp(m, b, 34.5, 4, 2)
 	for _, z in { -4, 20, 45 } do
 		lamp(m, b, -26.4, z, TOP)
 		lamp(m, b, -17.6, z, TOP)
 	end
-	flag(m, b, 16, -22, 2, 24)
+	flag(m, b, 32, -22, 2, 24)
 
 	local W, H = 10, 5
-	local at = isle(b, -24, 27.5) * CFrame.new(0, 6, 0)
+	local at = isle(b, -40, 27.5) * CFrame.new(0, 6, 0)
 	for _, dx in { -W / 2 - 0.5, W / 2 + 0.5 } do
 		studTop(
 			brick(m, "BoardPost", Vector3.new(1, 8.6, 1), at * CFrame.new(dx, -1.7, 0), BRICK_RED)
@@ -416,7 +416,7 @@ local function paintBooth(m: Model, b: CFrame)
 	local booth = Instance.new("Model")
 	booth.Name = "PaintBooth"
 	booth.Parent = m
-	local xw, xe, y0, y1 = -10.4, 13.6, 2, TOP + 13
+	local xw, xe, y0, y1 = -10.4, 29.6, 2, TOP + 13
 	for _, z in { 8, 22 } do
 		for _, x in { xw, xe } do
 			part(
@@ -695,11 +695,11 @@ end
 -- the slipway crane: mast on the quay starboard of the berth, the boom out over the berth's inshore end
 local function slipCrane(m: Model, b: CFrame)
 	local mastH = 24
-	local base = b * CFrame.new(16, TOP, 66)
+	local base = b * CFrame.new(32, TOP, 66)
 	-- the Lego crane (M_Prop_JettyCrane: base at its origin, jib along its front toward the berth); Parts until it loads
 	local src = DockPieces.meshes and DockPieces.meshes("M_Prop_JettyCrane")
 	if src then
-		local aim = (b * CFrame.new(0, TOP, 30)).Position
+		local aim = (b * CFrame.new(0, TOP, 30)).Position -- over the berth line, out of the turning bay
 		src:PivotTo(CFrame.lookAt(base.Position, aim))
 		src.Name = "JettyCraneMesh"
 		src.Parent = m
@@ -3718,7 +3718,7 @@ end
 
 -- Boathouse Lv2 adds the lifeboat slip on its own harbour lot (kept 1x while the boathouse scales); Lv3 the
 -- quick-launch bay on the cove side (M_Bld_BoathouseAddons, authored at the 1.2 scale round the spot, so kept 1x:
--- island right -47..-32.5, fwd 30..110, between the cove walk and the jetty head; clear of the boathouse, the slip and
+-- island right -47..-32.5, fwd 30..110, between the cove walk and the jetty; clear of the boathouse, the slip and
 -- every lot, so no Lv1/Lv2 piece gives way). Its static Lv3_L07_Lifeboat leaves while yours is out (WorkerController).
 -- Mesh missing: today's look.
 local function boathouseLevel(m: Model, b: CFrame, level: number?)

@@ -323,9 +323,9 @@ local function frameSpawnBody()
 	end
 	local ahead = (spawn.LookVector * Vector3.new(1, 0, 1)).Unit
 	local focus = root.Position + Vector3.new(0, 3, 0) -- the Custom camera's subject: head offset + CameraController LIFT
-	-- turned 14 degrees right of the stand: the stand sits left of the avatar, the jetty and cove mid-frame, and the
+	-- turned 14 degrees left of the stand: the name arch and the stand share the frame (the arch's board in full), the
 	-- avatar never covers the screen; 13 degrees down shows the quay
-	local look = (CFrame.fromAxisAngle(Vector3.yAxis, math.rad(-14)) * CFrame.fromAxisAngle(
+	local look = (CFrame.fromAxisAngle(Vector3.yAxis, math.rad(14)) * CFrame.fromAxisAngle(
 		ahead:Cross(Vector3.yAxis),
 		math.rad(-13)
 	)).Rotation * ahead
