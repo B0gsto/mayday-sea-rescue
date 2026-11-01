@@ -20,6 +20,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
 local Flipbooks = require(Shared:WaitForChild("Fx"):WaitForChild("Flipbooks"))
 local OceanQuality = require(script.Parent:WaitForChild("OceanQuality"))
+local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local WakeMath = require(Shared:WaitForChild("Boat"):WaitForChild("Wake"))
 
 -- FX1: the wake ribbon foam map (U along the wake) and the bow-sheet spray flipbook; the stock
@@ -32,6 +33,9 @@ local BOW_SIZE = if Flipbooks.uploaded("FX_Spray_BowSheet") then 1.7 else 1
 local tierScale = 1 -- docs/06 3.5 spray budget for the current ocean tier, refreshed on the scan
 local SCAN_PERIOD = 1.0
 local MIN_SPEED, FULL_SPEED = 3, 40 -- studs/s -- tune
+-- AD 2026-11-01 (jet ski ride: "almost no wake"): the ski's 3-stud foam lay flush in the wave troughs; wider and
+-- a little higher off the water it reads behind the chase camera
+local SKI_WIDTH, SKI_LIFT = 1.7, 0.3 -- x the default width, studs above the default waterline -- tune
 
 type Rig = {
 	model: Model,
@@ -59,16 +63,19 @@ local seaY = 0
 local function build(model: Model, seat: BasePart): Rig?
 	local cf, size = model:GetBoundingBox()
 	local width = model:GetAttribute("OceanWakeWidth")
+	local ski = VehicleConfig.isJetSki(model:GetAttribute("VehicleId"))
 	local w = if type(width) == "number"
 		then width
-		else math.clamp(math.min(size.X, size.Z) * 0.8, 2, 16)
+		else math.clamp(math.min(size.X, size.Z) * 0.8 * (if ski then SKI_WIDTH else 1), 2, 16)
 	local len = math.max(size.X, size.Z)
 	local part = model.PrimaryPart or seat
 	local folder = Instance.new("Folder")
 	folder.Name = "OceanWakeRig"
 	-- Attachments in the part's space at the stern waterline (stern = the part's +Z, Roblox's back).
 	local back = part.CFrame:PointToObjectSpace(cf.Position + part.CFrame.LookVector * (-len * 0.5))
-	local waterLocal = part.CFrame:PointToObjectSpace(Vector3.new(0, seaY + 0.15, 0)).Y
+	local waterLocal = part.CFrame:PointToObjectSpace(
+		Vector3.new(0, seaY + 0.15 + (if ski then SKI_LIFT else 0), 0)
+	).Y
 	local a0 = Instance.new("Attachment")
 	a0.Name = "OceanWakeL"
 	a0.Position = Vector3.new(back.X - w * 0.5, waterLocal, back.Z)
