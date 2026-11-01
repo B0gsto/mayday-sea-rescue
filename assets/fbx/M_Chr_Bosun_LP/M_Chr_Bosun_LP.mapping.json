@@ -1,0 +1,1571 @@
+{
+ "asset": "M_Chr_Bosun_LP",
+ "source": "src/shared/Dog/BosunRig.luau",
+ "axes": "authored studs: origin on the ground between the feet, front -Z, up +Y, his right +X; FBX exported with rbxkit (roblox = (-bx, bz, by), 1 BU = 1 stud)",
+ "names": "the exported FBX nodes are named exactly like BosunRig.PARTS (Torso, Head, ...); pipeline_name is the validated Blender object name with the M_Chr_ asset prefix",
+ "pivot_note": "Each mesh is authored around its PartSpec rest frame and exported with the node origin at that part centre; cframe is the Part's rest CFrame (position + rotation matrix), offset is zero. MeshParts already carry their mesh bounds: set CFrame only, do not force Size to size (the grab handle deliberately rises above its flat placeholder box). If an importer collapses node pivots, set the MeshPart CFrame to cframe.",
+ "textures": {
+  "set": "T_Bosun_Coat_<ALB|NOR|RGH|MET>.png",
+  "size": 1024,
+  "dir": "textures/M_Chr_Bosun_LP"
+ },
+ "parts": {
+  "Torso": {
+   "part": "Torso",
+   "mesh": "Torso",
+   "pipeline_name": "M_Chr_Bosun_LP_Torso",
+   "size": [
+    0.95,
+    0.9,
+    2.3
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     1.68,
+     0.05
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Body",
+   "joint": "Root",
+   "pivot": [
+    0.0,
+    0.0,
+    -0.85
+   ],
+   "harness": false
+  },
+  "Chest": {
+   "part": "Chest",
+   "mesh": "Chest",
+   "pipeline_name": "M_Chr_Bosun_LP_Chest",
+   "size": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     1.66,
+     -1.0
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "Rump": {
+   "part": "Rump",
+   "mesh": "Rump",
+   "pipeline_name": "M_Chr_Bosun_LP_Rump",
+   "size": [
+    0.92,
+    0.88,
+    0.88
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     1.74,
+     1.05
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "Head": {
+   "part": "Head",
+   "mesh": "Head",
+   "pipeline_name": "M_Chr_Bosun_LP_Head",
+   "size": [
+    0.78,
+    0.72,
+    0.8
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     2.62,
+     -1.55
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": "Neck",
+   "pivot": [
+    0.0,
+    2.0,
+    -1.05
+   ],
+   "harness": false
+  },
+  "Neck": {
+   "part": "Neck",
+   "mesh": "Neck",
+   "pipeline_name": "M_Chr_Bosun_LP_Neck",
+   "size": [
+    0.56,
+    0.95,
+    0.56
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     2.2,
+     -1.28
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.88295,
+      0.46947
+     ],
+     [
+      0.0,
+      -0.46947,
+      0.88295
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Head",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "Muzzle": {
+   "part": "Muzzle",
+   "mesh": "Muzzle",
+   "pipeline_name": "M_Chr_Bosun_LP_Muzzle",
+   "size": [
+    0.48,
+    0.36,
+    0.55
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     2.48,
+     -2.16
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Head",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "Nose": {
+   "part": "Nose",
+   "mesh": "Nose",
+   "pipeline_name": "M_Chr_Bosun_LP_Nose",
+   "size": [
+    0.24,
+    0.15,
+    0.08
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     2.6,
+     -2.45
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Head",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "Jaw": {
+   "part": "Jaw",
+   "mesh": "Jaw",
+   "pipeline_name": "M_Chr_Bosun_LP_Jaw",
+   "size": [
+    0.42,
+    0.12,
+    0.5
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     2.25,
+     -2.12
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Head",
+   "joint": "Jaw",
+   "pivot": [
+    0.0,
+    2.3,
+    -1.86
+   ],
+   "harness": false
+  },
+  "Tongue": {
+   "part": "Tongue",
+   "mesh": "Tongue",
+   "pipeline_name": "M_Chr_Bosun_LP_Tongue",
+   "size": [
+    0.22,
+    0.04,
+    0.3
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     2.32,
+     -2.12
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Jaw",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "EyeLeft": {
+   "part": "EyeLeft",
+   "mesh": "EyeLeft",
+   "pipeline_name": "M_Chr_Bosun_LP_EyeLeft",
+   "size": [
+    0.12,
+    0.12,
+    0.12
+   ],
+   "cframe": {
+    "position": [
+     -0.22,
+     2.76,
+     -1.94
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Head",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "EarLeft": {
+   "part": "EarLeft",
+   "mesh": "EarLeft",
+   "pipeline_name": "M_Chr_Bosun_LP_EarLeft",
+   "size": [
+    0.1,
+    0.5,
+    0.34
+   ],
+   "cframe": {
+    "position": [
+     -0.42,
+     2.58,
+     -1.42
+    ],
+    "matrix": [
+     [
+      0.99027,
+      0.13917,
+      0.0
+     ],
+     [
+      -0.13917,
+      0.99027,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Head",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "EyeRight": {
+   "part": "EyeRight",
+   "mesh": "EyeRight",
+   "pipeline_name": "M_Chr_Bosun_LP_EyeRight",
+   "size": [
+    0.12,
+    0.12,
+    0.12
+   ],
+   "cframe": {
+    "position": [
+     0.22,
+     2.76,
+     -1.94
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Head",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "EarRight": {
+   "part": "EarRight",
+   "mesh": "EarRight",
+   "pipeline_name": "M_Chr_Bosun_LP_EarRight",
+   "size": [
+    0.1,
+    0.5,
+    0.34
+   ],
+   "cframe": {
+    "position": [
+     0.42,
+     2.58,
+     -1.42
+    ],
+    "matrix": [
+     [
+      0.99027,
+      -0.13917,
+      0.0
+     ],
+     [
+      0.13917,
+      0.99027,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Head",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "Tail1": {
+   "part": "Tail1",
+   "mesh": "Tail1",
+   "pipeline_name": "M_Chr_Bosun_LP_Tail1",
+   "size": [
+    0.22,
+    0.22,
+    0.62
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     1.7507,
+     1.6375
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.76604,
+      -0.64279
+     ],
+     [
+      0.0,
+      0.64279,
+      0.76604
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": "Tail1",
+   "pivot": [
+    0.0,
+    1.95,
+    1.4
+   ],
+   "harness": false
+  },
+  "Tail2": {
+   "part": "Tail2",
+   "mesh": "Tail2",
+   "pipeline_name": "M_Chr_Bosun_LP_Tail2",
+   "size": [
+    0.16,
+    0.16,
+    0.55
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     1.3432,
+     2.0145
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.57358,
+      -0.81915
+     ],
+     [
+      0.0,
+      0.81915,
+      0.57358
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Tail1",
+   "joint": "Tail2",
+   "pivot": [
+    0.0,
+    1.5643,
+    1.8596
+   ],
+   "harness": false
+  },
+  "FrontLeftUpper": {
+   "part": "FrontLeftUpper",
+   "mesh": "FrontLeftUpper",
+   "pipeline_name": "M_Chr_Bosun_LP_FrontLeftUpper",
+   "size": [
+    0.27,
+    0.9,
+    0.33
+   ],
+   "cframe": {
+    "position": [
+     -0.28,
+     1.15,
+     -0.82
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": "FrontLeftUpper",
+   "pivot": [
+    -0.28,
+    1.5,
+    -0.82
+   ],
+   "harness": false
+  },
+  "FrontLeftLower": {
+   "part": "FrontLeftLower",
+   "mesh": "FrontLeftLower",
+   "pipeline_name": "M_Chr_Bosun_LP_FrontLeftLower",
+   "size": [
+    0.22,
+    0.66,
+    0.24
+   ],
+   "cframe": {
+    "position": [
+     -0.28,
+     0.43,
+     -0.82
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "FrontLeftUpper",
+   "joint": "FrontLeftLower",
+   "pivot": [
+    -0.28,
+    0.72,
+    -0.82
+   ],
+   "harness": false
+  },
+  "FrontLeftPaw": {
+   "part": "FrontLeftPaw",
+   "mesh": "FrontLeftPaw",
+   "pipeline_name": "M_Chr_Bosun_LP_FrontLeftPaw",
+   "size": [
+    0.28,
+    0.14,
+    0.38
+   ],
+   "cframe": {
+    "position": [
+     -0.28,
+     0.07,
+     -0.88
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "FrontLeftLower",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "FrontRightUpper": {
+   "part": "FrontRightUpper",
+   "mesh": "FrontRightUpper",
+   "pipeline_name": "M_Chr_Bosun_LP_FrontRightUpper",
+   "size": [
+    0.27,
+    0.9,
+    0.33
+   ],
+   "cframe": {
+    "position": [
+     0.28,
+     1.15,
+     -0.82
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": "FrontRightUpper",
+   "pivot": [
+    0.28,
+    1.5,
+    -0.82
+   ],
+   "harness": false
+  },
+  "FrontRightLower": {
+   "part": "FrontRightLower",
+   "mesh": "FrontRightLower",
+   "pipeline_name": "M_Chr_Bosun_LP_FrontRightLower",
+   "size": [
+    0.22,
+    0.66,
+    0.24
+   ],
+   "cframe": {
+    "position": [
+     0.28,
+     0.43,
+     -0.82
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "FrontRightUpper",
+   "joint": "FrontRightLower",
+   "pivot": [
+    0.28,
+    0.72,
+    -0.82
+   ],
+   "harness": false
+  },
+  "FrontRightPaw": {
+   "part": "FrontRightPaw",
+   "mesh": "FrontRightPaw",
+   "pipeline_name": "M_Chr_Bosun_LP_FrontRightPaw",
+   "size": [
+    0.28,
+    0.14,
+    0.38
+   ],
+   "cframe": {
+    "position": [
+     0.28,
+     0.07,
+     -0.88
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "FrontRightLower",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "BackLeftUpper": {
+   "part": "BackLeftUpper",
+   "mesh": "BackLeftUpper",
+   "pipeline_name": "M_Chr_Bosun_LP_BackLeftUpper",
+   "size": [
+    0.32,
+    0.9,
+    0.38
+   ],
+   "cframe": {
+    "position": [
+     -0.28,
+     1.15,
+     0.92
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": "BackLeftUpper",
+   "pivot": [
+    -0.28,
+    1.5,
+    0.92
+   ],
+   "harness": false
+  },
+  "BackLeftLower": {
+   "part": "BackLeftLower",
+   "mesh": "BackLeftLower",
+   "pipeline_name": "M_Chr_Bosun_LP_BackLeftLower",
+   "size": [
+    0.22,
+    0.66,
+    0.24
+   ],
+   "cframe": {
+    "position": [
+     -0.28,
+     0.43,
+     0.92
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "BackLeftUpper",
+   "joint": "BackLeftLower",
+   "pivot": [
+    -0.28,
+    0.72,
+    0.92
+   ],
+   "harness": false
+  },
+  "BackLeftPaw": {
+   "part": "BackLeftPaw",
+   "mesh": "BackLeftPaw",
+   "pipeline_name": "M_Chr_Bosun_LP_BackLeftPaw",
+   "size": [
+    0.28,
+    0.14,
+    0.38
+   ],
+   "cframe": {
+    "position": [
+     -0.28,
+     0.07,
+     0.86
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "BackLeftLower",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "BackRightUpper": {
+   "part": "BackRightUpper",
+   "mesh": "BackRightUpper",
+   "pipeline_name": "M_Chr_Bosun_LP_BackRightUpper",
+   "size": [
+    0.32,
+    0.9,
+    0.38
+   ],
+   "cframe": {
+    "position": [
+     0.28,
+     1.15,
+     0.92
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": "BackRightUpper",
+   "pivot": [
+    0.28,
+    1.5,
+    0.92
+   ],
+   "harness": false
+  },
+  "BackRightLower": {
+   "part": "BackRightLower",
+   "mesh": "BackRightLower",
+   "pipeline_name": "M_Chr_Bosun_LP_BackRightLower",
+   "size": [
+    0.22,
+    0.66,
+    0.24
+   ],
+   "cframe": {
+    "position": [
+     0.28,
+     0.43,
+     0.92
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "BackRightUpper",
+   "joint": "BackRightLower",
+   "pivot": [
+    0.28,
+    0.72,
+    0.92
+   ],
+   "harness": false
+  },
+  "BackRightPaw": {
+   "part": "BackRightPaw",
+   "mesh": "BackRightPaw",
+   "pipeline_name": "M_Chr_Bosun_LP_BackRightPaw",
+   "size": [
+    0.28,
+    0.14,
+    0.38
+   ],
+   "cframe": {
+    "position": [
+     0.28,
+     0.07,
+     0.86
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "BackRightLower",
+   "joint": null,
+   "pivot": null,
+   "harness": false
+  },
+  "HarnessBack": {
+   "part": "HarnessBack",
+   "mesh": "HarnessBack",
+   "pipeline_name": "M_Chr_Bosun_LP_HarnessBack",
+   "size": [
+    0.99,
+    0.08,
+    0.95
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     2.15,
+     -0.4
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": null,
+   "pivot": null,
+   "harness": true
+  },
+  "HarnessSideLeft": {
+   "part": "HarnessSideLeft",
+   "mesh": "HarnessSideLeft",
+   "pipeline_name": "M_Chr_Bosun_LP_HarnessSideLeft",
+   "size": [
+    0.06,
+    0.78,
+    0.95
+   ],
+   "cframe": {
+    "position": [
+     -0.5,
+     1.78,
+     -0.4
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": null,
+   "pivot": null,
+   "harness": true
+  },
+  "HarnessSideRight": {
+   "part": "HarnessSideRight",
+   "mesh": "HarnessSideRight",
+   "pipeline_name": "M_Chr_Bosun_LP_HarnessSideRight",
+   "size": [
+    0.06,
+    0.78,
+    0.95
+   ],
+   "cframe": {
+    "position": [
+     0.5,
+     1.78,
+     -0.4
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": null,
+   "pivot": null,
+   "harness": true
+  },
+  "HarnessTapeLeft": {
+   "part": "HarnessTapeLeft",
+   "mesh": "HarnessTapeLeft",
+   "pipeline_name": "M_Chr_Bosun_LP_HarnessTapeLeft",
+   "size": [
+    0.02,
+    0.08,
+    0.9
+   ],
+   "cframe": {
+    "position": [
+     -0.535,
+     1.86,
+     -0.4
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": null,
+   "pivot": null,
+   "harness": true
+  },
+  "HarnessTapeRight": {
+   "part": "HarnessTapeRight",
+   "mesh": "HarnessTapeRight",
+   "pipeline_name": "M_Chr_Bosun_LP_HarnessTapeRight",
+   "size": [
+    0.02,
+    0.08,
+    0.9
+   ],
+   "cframe": {
+    "position": [
+     0.535,
+     1.86,
+     -0.4
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": null,
+   "pivot": null,
+   "harness": true
+  },
+  "HarnessBelly": {
+   "part": "HarnessBelly",
+   "mesh": "HarnessBelly",
+   "pipeline_name": "M_Chr_Bosun_LP_HarnessBelly",
+   "size": [
+    1.0,
+    0.07,
+    0.3
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     1.24,
+     -0.4
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": null,
+   "pivot": null,
+   "harness": true
+  },
+  "HarnessChest": {
+   "part": "HarnessChest",
+   "mesh": "HarnessChest",
+   "pipeline_name": "M_Chr_Bosun_LP_HarnessChest",
+   "size": [
+    0.86,
+    0.14,
+    0.08
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     1.82,
+     -1.5
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": null,
+   "pivot": null,
+   "harness": true
+  },
+  "HarnessHandle": {
+   "part": "HarnessHandle",
+   "mesh": "HarnessHandle",
+   "pipeline_name": "M_Chr_Bosun_LP_HarnessHandle",
+   "size": [
+    0.12,
+    0.08,
+    0.5
+   ],
+   "cframe": {
+    "position": [
+     -0.0,
+     2.27,
+     -0.4
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "parent": "Torso",
+   "joint": null,
+   "pivot": null,
+   "harness": true
+  }
+ }
+}
