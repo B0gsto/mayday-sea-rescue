@@ -70,4 +70,4 @@ Sheet scores overstate: in-game AD (merge2) gave crane 8.3, Shop 8.1, jet ski ri
 first build 6.7, buy-a-craft 6.7, walk/run/idle 6.7 (sheets 9.5), recruit arrival 4.7. From now on an item passes only
 on the IN-GAME median of 3 judges (daylight, game camera, desktop + phone). Running: PERF-FEEL2a (recruit, first build +
 site, locomotion in context, workers), PERF-FEEL2b (buy-a-craft, test ride + timer bug, jet ski ride, shop payoff,
-passengers, Finish sign), PERF-ANIM6 (hand-keyed action clips in Blender; mocap R1/R2 3.0-7.4, owner: no Mixamo).
+passengers, Finish sign), PERF-ANIM5 (hand-keyed action clips in Blender; mocap R1/R2 3.0-7.4, owner: no Mixamo; ANIM6 cancelled as a duplicate).
