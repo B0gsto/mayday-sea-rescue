@@ -102,3 +102,4 @@ FIN2: heli r6 9.0 (5a980fae; livery repaint via _Paint mesh, modelled cable drop
 FIN3: crane r10 9.0 (d3d564a3, budget class rock 10k), build-site r6 8.8 (3a33dfbc). PERF-FIN5 queued after FIN4: crane groove/jib/joints, build-site per-pallet meshes + colours.
 
 Parallel Blender (owner 2026-11-01 "you may do multiple instances of applications"): heavy pool 4; instances 1-3 via ~/RobloxProjects/tools/blender-mcp-open.sh N on ports 9876-9878, MCP servers blender/blender2/blender3. One asset lane per instance.
+Rescue heli: **PASS 9.15** at r8 (FIN4, ab83f70e on t3/rescue-helicopter-asset; tinted glass + pilot, framed rear doors, white tail, smooth ring, gear mesh). Sea plates r7-8 running.
