@@ -14,8 +14,8 @@
 -- 1b. Helm modes and safety. Z / gamepad Y (touch: the drive pad's turtle) toggles approach mode: a
 --    speed governor under 5 knots with fine throttle (Buoyancy.thrust), for the final run to a
 --    casualty; throttle released = neutral, the hull glides. On a vehicle with ejectOnCapsize (the
---    jet ski) the rider is thrown off past CAPSIZE_ANGLE; leaving the seat pulls the kill cord and
---    the server stops the engine (EngineRunning = false, see VehicleService).
+--    jet ski) the rider is thrown off past CAPSIZE_ANGLE (not in the cold open); leaving the seat
+--    pulls the kill cord and the server stops the engine (EngineRunning = false, see VehicleService).
 --    Telemetry from Simulator.step is kept for the HUD and test scripts (GetTelemetry).
 --
 -- 1b2. Cold open (docs 09 9.1, shared/Boat/ColdOpen). OperationService marks the cold-open jet
@@ -245,7 +245,13 @@ local function checkCapsize(model: Model, seat: VehicleSeat, dt: number)
 		tiltTime = 0
 	end
 	local humanoid = seat.Occupant
-	if tiltTime > CAPSIZE_HOLD and humanoid then
+	-- never in the cold open: the auto-throttle plus a full-lock touch steer rolled new riders off into open sea
+	-- (live 2026-10-31, 5 of 39 LeftCraft); they stay seated and VehicleService rights the hull (Flipped)
+	if
+		tiltTime > CAPSIZE_HOLD
+		and humanoid
+		and localPlayer:GetAttribute("ColdOpenDone") == true
+	then
 		tiltTime = 0
 		humanoid.Sit = false
 		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)

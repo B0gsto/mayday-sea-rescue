@@ -13,6 +13,7 @@
 -- Also here: the cold-open reward burst (B1, still seated on the jet ski), the seat pips and the
 -- green home cue (docs/20 4, 8). No sea-blue cover any more: a new player starts on their island.
 local CollectionService = game:GetService("CollectionService")
+local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -240,6 +241,24 @@ local function stepToStation()
 	task.wait(0.3)
 	root.AssemblyLinearVelocity = Vector3.zero
 	root.AssemblyAngularVelocity = Vector3.zero
+	-- drive keys still held from the ride walked the rider off the jetty head into the water: binding over them
+	-- cancels the held walk (a fresh press walks again)
+	ContextActionService:BindActionAtPriority(
+		"StationArrive",
+		function()
+			return Enum.ContextActionResult.Sink
+		end,
+		false,
+		Enum.ContextActionPriority.High.Value,
+		Enum.PlayerActions.CharacterForward,
+		Enum.PlayerActions.CharacterBackward,
+		Enum.PlayerActions.CharacterLeft,
+		Enum.PlayerActions.CharacterRight,
+		Enum.KeyCode.Thumbstick1
+	)
+	task.delay(0.6, function()
+		ContextActionService:UnbindAction("StationArrive")
+	end)
 	local face = Vector3.new(station.X, feet.Y, station.Z)
 	char:PivotTo(CFrame.lookAt(feet, face))
 	task.delay(0.15, function()
@@ -570,14 +589,42 @@ local function seatPips(): () -> ()
 	end
 end
 
+-- The cold-open jet ski while it runs and we are off it (thrown or swam away), else nil.
+local function strandedFrom(): Model?
+	local vehicles = Workspace:FindFirstChild("Vehicles")
+	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	if player:GetAttribute("ColdOpenActive") ~= true or not (vehicles and hum) then
+		return nil
+	end
+	for _, m in vehicles:GetChildren() do
+		if
+			m:IsA("Model")
+			and m:GetAttribute("ColdOpen") == true
+			and m:GetAttribute("Owner") == player.UserId
+		then
+			local seat = hum.SeatPart
+			return if seat and seat:IsDescendantOf(m) then nil else m
+		end
+	end
+	return nil
+end
+
 local function update()
 	if rewardPending and os.clock() >= rewardAt then
 		showReward()
 	end
 	beat = currentBeat()
-	if dataReady then
-		local kind = if beat == "BuildStation" or beat == "BuildHQ"
-			then "station"
+	-- off the jet ski mid cold open: the edge pointer leads back to it (its craft pin marks it in view)
+	local craft = strandedFrom()
+	if craft then
+		setGuide("craft")
+		if beacon then
+			beacon.show(craft:GetPivot().Position, "Call")
+		end
+	elseif dataReady or guide == "craft" then
+		local kind = if not dataReady
+			then nil
+			elseif beat == "BuildStation" or beat == "BuildHQ" then "station"
 			elseif beat == "HQSite" then "hqsite"
 			elseif beat == "Build" then "site"
 			elseif beat == "Spin" then "spin"
@@ -587,7 +634,7 @@ local function update()
 	-- at the stand the tablet's own cue (green arrow + Build) is the one marker on it
 	local cued = DockController.TabletGoal(guide == "station")
 	if beacon then
-		beacon.mute(guide == "station" and cued)
+		beacon.mute(guide == "station" and cued or guide == "craft")
 	end
 	-- the tablet's HQ / Workshop card pulses while the tutorial points at the station
 	if os.clock() >= tickAt then
