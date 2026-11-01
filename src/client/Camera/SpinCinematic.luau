@@ -45,7 +45,7 @@ local HALO_BRICKS = 24
 local HALO_RADIUS = 9
 
 type Grade = { tint: Color3, bright: number, sat: number, contrast: number }
-type Beat = { at: number, fn: () -> () }
+type Beat = { at: number, seq: number, fn: () -> () }
 type Brick = { model: Model, start: number, from: Vector3, angle: number }
 type Run = {
 	payload: any,
@@ -565,7 +565,7 @@ end
 ---------------------------------------------------------------- beats
 
 local function add(r: Run, at: number, fn: () -> ())
-	table.insert(r.beats, { at = at, fn = fn })
+	table.insert(r.beats, { at = at, seq = #r.beats, fn = fn })
 end
 
 local function ladder(r: Run)
@@ -620,9 +620,17 @@ local function payoff(r: Run)
 	local rank = r.plan.rank
 	local color = r.colorOf(r.plan.rarity)
 	local up = CFrame.new(r.hub)
+	if rank < 6 then
+		add(
+			r,
+			P + 0.45,
+			function() -- the last pop's surge reads, then the flare hands over to the payoff
+				r.energy = 0
+			end
+		)
+	end
 	if rank == 3 then -- Rare: a beam off the wheel, the camera tilts up after it
 		add(r, P, function()
-			r.energy = 0
 			VFXKit.play("spincine_beam", up, { color = color, still = true })
 			r.shot = function(_t)
 				return CFrame.lookAt(r.hub + r.n * 26 + UP * -3 + r.right * 4, r.hub + UP * 9), 52
@@ -631,7 +639,6 @@ local function payoff(r: Run)
 		end)
 	elseif rank == 4 then -- Epic: a purple sky, rays and stars, an orbit
 		add(r, P, function()
-			r.energy = 0
 			r.drone = 0.6
 			r.grade =
 				{ tint = Color3.fromRGB(205, 170, 255), bright = -0.15, sat = 0.15, contrast = 0.1 }
@@ -656,7 +663,6 @@ local function payoff(r: Run)
 		end)
 	elseif rank == 5 then -- Legendary: the golden sea
 		add(r, P, function()
-			r.energy = 0
 			r.drone = 0.5
 			r.grade =
 				{ tint = Color3.fromRGB(255, 214, 130), bright = 0.02, sat = 0.3, contrast = 0.08 }
@@ -691,7 +697,6 @@ local function payoff(r: Run)
 		end)
 	elseif rank >= 6 then -- Mythic: the full show
 		add(r, P, function()
-			r.energy = 0.3
 			r.drone = 0
 			r.grade = {
 				tint = Color3.fromRGB(160, 170, 255),
@@ -772,6 +777,7 @@ end
 local function revealBeat(r: Run): Beat
 	return {
 		at = r.plan.reveal,
+		seq = math.huge, -- after anything else at the same time
 		fn = function()
 			r.revealed = true
 			r.energy = 0
@@ -1114,14 +1120,14 @@ function SpinCinematic.start(ctx: {
 	ladder(r)
 	payoff(r)
 	table.insert(r.beats, r.revealBeat)
-	table.sort(r.beats, function(a, b)
-		return a.at < b.at
-	end)
-	-- ties: the reveal beat runs after everything else at the same time
-	local i = table.find(r.beats, r.revealBeat) :: number
-	while r.beats[i + 1] and r.beats[i + 1].at <= r.revealBeat.at do
-		r.beats[i], r.beats[i + 1] = r.beats[i + 1], r.beats[i]
-		i += 1
+	table.sort(
+		r.beats,
+		function(a, b) -- stable: same-time beats keep their order (the last pop before the payoff)
+			return a.at < b.at or (a.at == b.at and a.seq < b.seq)
+		end
+	)
+	if quick then
+		ProximityPromptService.Enabled = false -- the last reveal handed them back
 	end
 	if label then
 		label.TextTransparency = 1
