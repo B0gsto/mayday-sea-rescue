@@ -24,7 +24,7 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Prog | REVIEW 17 endgame: proposal = docs/27 Deep at HQ5+Sub Pen, wreck landmarks, crews automate, Harbour Master prestige, weekly server goals (cosmetic rewards) | F4o reply | 4 | needs owner go (new feature) |
 | Feel | REVIEW 2 haptics | after F1-F3 merge | 0 | queued |
 | Anim | locomotion (player sprint/walk/idle, worker walk/idle, NPC idle/tread) | PERF-ANIM3: Roblox packs (adidas run, Cartoony walk/idle, Toy tread) | 9.5 x7 | PASS on t3/0a4fde7a c634f70e (unmerged, unplaytested); worker climb 9.0 max -> ANIM4 |
-| Anim | worker job actions, NPC wave/sit, worker climb | PERF-ANIM4: TaT adapted | 6.6-8.6 old | building |
+| Anim | worker job actions, NPC wave/sit, worker climb | ANIM4: TaT/own 6.5-8.0, emotes Stadium/Jumping Cheer 9.0, climb packs 8.5 (none shipped) -> PERF-ANIM5: CC0 mocap retarget in Blender + emote re-score (median of 3) | 9.0 best | building |
 | Mon | monetization review | PERF-MON1 | 5.5 overall | done: build/status/2026-10-31/perfect/mon/REVIEW.md |
 | Mon | plan 1,4,11,12,13,18,19,20 (Shop Finish/spin bug, effect lines, odds, telemetry, texts, docs) | PERF-MON-A | 5 | building |
 | Mon | plan 3,7 purchase payoff + boat test ride | PERF-MON-B | 2.5 | building |
