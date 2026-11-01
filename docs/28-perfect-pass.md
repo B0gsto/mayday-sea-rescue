@@ -73,3 +73,6 @@ site, locomotion in context, workers), PERF-FEEL2b (buy-a-craft, test ride + tim
 passengers, Finish sign), PERF-ANIM5 (hand-keyed action clips in Blender; mocap R1/R2 3.0-7.4, owner: no Mixamo; ANIM6 cancelled as a duplicate).
 
 Publish rule (2026-11-01, after launch v33 rolled back v32): a publish agent runs `git pull` on main and publishes only from that fresh main, holding the studio lock; one publish at a time across threads.
+
+Blender (owner 2026-11-01 "You may try to do a blender run"): headless blender-run.sh builds are allowed alongside the one MCP GUI; kit agents need not wait for the GUI.
+
