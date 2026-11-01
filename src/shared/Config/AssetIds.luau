@@ -245,9 +245,9 @@ AssetIds.Models = {
 	},
 	M_Prop_SeaChest = { LOD0 = "rbxassetid://84375480737186" },
 	M_Prop_SeaPlateKit = {
-		LOD0 = "rbxassetid://71060030921213",
-		LOD1 = "rbxassetid://87543814711311",
-		LOD2 = "rbxassetid://84446441261378",
+		LOD0 = "rbxassetid://124017354266775",
+		LOD1 = "rbxassetid://126250635097226",
+		LOD2 = "rbxassetid://136267929230470",
 	},
 	M_Prop_TrophyCup = {
 		LOD0 = "rbxassetid://92823988374506",

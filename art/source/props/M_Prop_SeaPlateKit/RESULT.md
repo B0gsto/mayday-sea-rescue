@@ -1,4 +1,26 @@
-# M_Prop_SeaPlateKit (2026-11-01, FIN rounds 5-6: Opus 5.5, Blender MCP)
+# M_Prop_SeaPlateKit (2026-11-01, FIN rounds 5-8: Opus 5.5, Blender MCP)
+
+Status after round 8: AD medians r7 9.0, r8 9.05 (3 Opus ADs, anchors BoardKit r4 9.2 + HQ r6 9.22; each round won
+pairwise). Trend r1-r8 6.6, 7.9, 8.2, 8.8, 8.8, 8.9, 9.0, 9.05: 0.05 BELOW the 9.1 bar; ships r8 as the best round
+(owner allowed rounds 7-8 only). r9 list: build/status/2026-11-01/perfect/M_Prop_SeaPlateKit/r8_AD.md (main checkout).
+Uploaded r8: LOD0 124017354266775, LOD1 126250635097226, LOD2 136267929230470; T_SeaPlateKit_Brick_ALB 71417157896758
+(r8 palette: +-8% grey tile contrast; NOR / RGH / MET unchanged). ATT_* unchanged.
+
+## Round 7 (FIN, Opus 5.5, Blender MCP; r6 AD median 8.9)
+
+Jump ramp: two light grey brick floats run the full length under the red cheeks (lip post to past the toe): a stone
+waterline course + two light grey running-bond courses (2.5 bricks over the water), studs on the strip beside the
+cheek, a black bumper round the outside and the toe. Deck fields: a hash scatter of 4 x 8 half tiles, 4 x 4 quarter
+tiles (two tones) and 2 x 2 stud patches on the Ramp tan field and the Freight grey field (deck_grid split tiles).
+Round ropes (coils 6-sided section, 8 / 10 segments; lines 8-sided), 12-sided tyres. Crate stacks two high at most
+(big crates 2.6 tall, was 3 x 3.0).
+Tris cut (hidden): pylon brick tops inside stacks / under cap plates, collar + base bottoms, pylon cores 12 -> 8 sides,
+under-water shafts 12 -> 10 sides no tops, ramp lip pylons' two under-water bricks merged, every closed ring's arc
+caps (lifebuoys, tyres, wheels), bollard / bush / canopy caps inside other parts, kayak end caps, the low kerb
+course's top + deck-side face, lower crates' tops; side-column deck stud plates and field patches drop the stud bevel
+ring. ATT_* and collision layout unchanged.
+Validate PASS: LOD0 39,700 / 40k, LOD1 12,946, LOD2 2,186 (L12 9,118 / 10k). zfight 0 visible pairs LOD0-2.
+Sheet (main checkout): build/status/2026-11-01/perfect/M_Prop_SeaPlateKit/r7/r7_sheet.png. Not uploaded.
 
 Rounds 5-6 (FIN, Opus 5.5, Blender MCP). AD medians r5 8.8, r6 8.9 (three Opus ADs each, same rubric, BoardKit r4
 anchor 9.2; r6 won pairwise vs r5, r5 vs r4). Still BELOW the 9.1 bar after round 6; ships r6 as the best round.
@@ -105,3 +127,12 @@ shadow, stud textures removed): Deck, Skirt, Ramp wedge physics, RampLip, Gangwa
 lamp poles (the hidden bulbs keep their NightLamp lights), rim, rails. The TealBrick stays visible.
 Fallback: no kit (Lune tests, a failed load) builds the code plates exactly as before. Kit props (crates, crane,
 kiosk) have no collision. Not seen in Studio yet.
+
+## r8 (2026-11-01)
+r7 AD list items 1-7: one 3.8-tall crate per pallet everywhere (top 4.5), chunkier bevelled slats; Freight bollards
+s 0.65 / sy 0.5 (1.5 across, 1 brick, 12-sided); ramp floats trimmed flush with the toe, a yellow plate lip at the waterline,
+black bumpers replaced by an inset dark grey bevelled waterline course; red/white launch kicker, 0.22 deck seams over
+black; cheeks = 4 stepped bevelled bricks + white post tiles (the hidden wedges past the float top are gone); quay walls
+in 1.2 courses, 0.08 grooves, joints every 4 staggered (one face per brick, cheaper than r7); Ramp kerb studs halved for
+2x Ramp plaza stud patches; red crane mast bands; palette LBG +8% / stone -8% (Freight deck contrast; maketex rerun).
+LOD0 38,404 (L12 8,718), LOD1 12,555, LOD2 2,090. Validate PASS. zfight 0 visible pairs on LOD0-2. Sheet r8/r8_sheet.png.

@@ -8830,6 +8830,15 @@
   "source": "assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_RGH.png",
   "type": "Image"
  },
+ "Image:695329129454d1a82eef4bf6eeab788bf40922419a9691c4d4b04b24da713b8a": {
+  "assetId": "71417157896758",
+  "imageId": "71417157896758",
+  "moderation": "Reviewing",
+  "name": "T_SeaPlateKit_Brick_ALB",
+  "sha": "695329129454d1a82eef4bf6eeab788bf40922419a9691c4d4b04b24da713b8a",
+  "source": "assets/textures/M_Prop_SeaPlateKit/T_SeaPlateKit_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:6960c7ec25590582849538bd05241369ba0e24cd6a72acb23bd305fced1caf04": {
   "assetId": "101843130801445",
   "imageId": "101843130801445",
@@ -22365,6 +22374,16 @@
   "source": "assets/fbx/Spike1/M_Spike1_Tris21500.fbx",
   "type": "Model"
  },
+ "Model:25a7e4e4c47ccc5c0f95a3036ae0a244fedbcb3e55674748895ba3986f14890d": {
+  "assetId": "126250635097226",
+  "moderation": "Approved",
+  "name": "M_Prop_SeaPlateKit_LOD1",
+  "rbxm": "assets/models/M_Prop_SeaPlateKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "25a7e4e4c47ccc5c0f95a3036ae0a244fedbcb3e55674748895ba3986f14890d",
+  "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:25ea89c2b2c7f11b58511003a2102ebbac6ca5a9911da9c7a622d6187d975088": {
   "assetId": "110077669856393",
   "moderation": "Approved",
@@ -23625,6 +23644,16 @@
   "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD1.fbx",
   "type": "Model"
  },
+ "Model:44fada7c2e8ee87fd62951da9cecd086353f4cd392ac5c5e1a2c2bfb5feea6ad": {
+  "assetId": "136267929230470",
+  "moderation": "Approved",
+  "name": "M_Prop_SeaPlateKit_LOD2",
+  "rbxm": "assets/models/M_Prop_SeaPlateKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "44fada7c2e8ee87fd62951da9cecd086353f4cd392ac5c5e1a2c2bfb5feea6ad",
+  "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:4528904d04ae7a77ce0215082cc260768667d1502b752e4c5b78a93752963aef": {
   "assetId": "93943886469666",
   "moderation": "Approved",
@@ -24503,6 +24532,16 @@
   "route": "delivery",
   "sha": "59c6cb0857cfad0a3efbfde3b67439b4d6a480d9b8ffdf763972d6405ec1b98a",
   "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:59d64c4f5feacecd7f9100a8134324cf8eef56ec7fcf6b3c05425ef0ccf63145": {
+  "assetId": "124017354266775",
+  "moderation": "Approved",
+  "name": "M_Prop_SeaPlateKit",
+  "rbxm": "assets/models/M_Prop_SeaPlateKit.rbxm",
+  "route": "delivery",
+  "sha": "59d64c4f5feacecd7f9100a8134324cf8eef56ec7fcf6b3c05425ef0ccf63145",
+  "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD0.fbx",
   "type": "Model"
  },
  "Model:5a5f2364c268203425ac15d6fa5ac288467c78bcc8d42fc74bf9bf26720411d1": {

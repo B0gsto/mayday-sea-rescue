@@ -119,8 +119,8 @@ class B:
         faces += [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
         self._emit(verts, faces, c)
 
-    def loft(self, sections, c):
-        """A closed solid through equal-length rings of points (hull stations; caps at both ends)."""
+    def loft(self, sections, c, caps=(True, True)):
+        """A solid through equal-length rings of points (hull stations); caps = (first, last) end caps (hidden ones off)."""
         n = len(sections[0])
         verts = [p for sec in sections for p in sec]
         faces = []
@@ -130,8 +130,10 @@ class B:
                 a = s * n
                 b = (s + 1) * n
                 faces.append((a + i, a + j, b + j, b + i))
-        faces.append(tuple(range(n)))
-        faces.append(tuple(reversed(range((len(sections) - 1) * n, len(sections) * n))))
+        if caps[0]:
+            faces.append(tuple(range(n)))
+        if caps[1]:
+            faces.append(tuple(reversed(range((len(sections) - 1) * n, len(sections) * n))))
         self._emit(verts, faces, c, smooth=True)
 
     def beam(self, p0, p1, w, h, c):

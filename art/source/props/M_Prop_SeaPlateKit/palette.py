@@ -5,13 +5,13 @@ is one draw call. Cell index = the order below; row 0 of the image is the bottom
 """
 PALETTE = [
     (250, 249, 245),   # 0  white
-    (184, 187, 189),   # 1  light bluish grey (SeaPlateKit r4: one step warmer/lighter, r3 168,173,179 read cold)
+    (199, 202, 204),   # 1  light bluish grey (r8: +8% for Freight deck tile contrast; r4 184,187,189)
     (99, 95, 98),      # 2  dark bluish grey
     (30, 44, 66),      # 3  ink / navy (windows, waterline)
     (235, 30, 30),     # 4  red (brighter, round 2)
     (250, 140, 30),    # 5  orange
     (255, 216, 0),     # 6  bright Lego yellow (BoardKit r2: 255,200,12 still read ochre under AgX)
-    (152, 155, 158),   # 7  medium stone grey (SeaPlateKit r4: was 142,146,152) (rims, pillars, gables, steps)
+    (140, 143, 146),   # 7  medium stone grey (r8: -8%, was 152,155,158) (rims, pillars, gables, steps)
     (40, 96, 208),     # 8  blue
     (40, 168, 64),     # 9  bright green (SeaPlateKit r2: planters, a container; dark red was unused)
     (168, 104, 64),    # 10 dark tan -> reddish plank seams (SeaPlateKit r3, was 176,146,100)
