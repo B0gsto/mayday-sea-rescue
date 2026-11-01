@@ -44,6 +44,7 @@ local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
 local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local CashBurst = require(UI:WaitForChild("CashBurst"))
+local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local CosmeticPicker = require(UI:WaitForChild("CosmeticPicker"))
 local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
@@ -92,6 +93,8 @@ local stripContent: Frame? = nil
 local decorTabs: TabsUI.Tabs? = nil
 local cards: { ImageButton } = {}
 local pulseKey: string? = nil -- docs/24 E, docs/25 J: the HQ / Workshop card pulses while the tutorial points at it
+local hutCue: { Instance } = {} -- the Hut's Free-button glow + shine (gone on close or a refresh)
+local hutPopped = false -- the Hut's Free button pops once per tablet open
 local pickTab: (number) -> () = function() end
 local closeBuild: () -> ()
 
@@ -859,6 +862,67 @@ local function pulseRing(face: GuiObject)
 	):Play()
 end
 
+-- Live 2026-11-01: 10 of 121 new players opened the tablet and never found the Hut's Free button. It pops once
+-- per open (FX_Pop), then keeps a steady white rim and a soft shine band crossing it every 1.8 s (well under
+-- 3 Hz, no flash). Reduce motion: the steady rim only. Gone on close / a refresh (the card is rebuilt).
+local function cueHut(card: GuiObject)
+	local buy = card:FindFirstChild("Cash", true)
+	local face = buy and buy:FindFirstChild("Face", true)
+	local holder = face and face.Parent
+	if not (buy and face and holder and buy:IsA("GuiObject") and holder:IsA("GuiObject")) then
+		return
+	end
+	local glow = Instance.new("Frame")
+	glow.Name = "HutGlow"
+	glow.BackgroundTransparency = 1
+	glow.Position = UDim2.fromOffset(-2, -2)
+	glow.Size = UDim2.new(1, 4, 1, 4)
+	Style.corner(glow, S.corner + 2)
+	local rim = Style.stroke(glow, 3, true)
+	rim.Color = Color3.new(1, 1, 1)
+	rim.Transparency = 0.15
+	glow.Parent = buy
+	table.insert(hutCue, glow)
+	local still = Comfort.reducedMotion()
+	if not still then
+		local shine = Instance.new("Frame")
+		shine.Name = "Shine"
+		shine.BackgroundColor3 = Color3.new(1, 1, 1)
+		shine.Size = UDim2.fromScale(1, 1)
+		shine.ZIndex = 3
+		Style.corner(shine, S.corner)
+		local band = Instance.new("UIGradient")
+		band.Rotation = 20
+		band.Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1),
+			NumberSequenceKeypoint.new(0.38, 1),
+			NumberSequenceKeypoint.new(0.5, 0.45),
+			NumberSequenceKeypoint.new(0.62, 1),
+			NumberSequenceKeypoint.new(1, 1),
+		})
+		band.Offset = Vector2.new(-1, 0)
+		band.Parent = shine
+		shine.Parent = face
+		table.insert(hutCue, shine)
+		TweenService:Create(
+			band,
+			TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false, 1.1),
+			{ Offset = Vector2.new(1, 0) }
+		):Play()
+	end
+	if not hutPopped then
+		hutPopped = true
+		task.delay(0.3, function() -- after the panel's own pop
+			if holder.Parent then
+				if not still then
+					Style.pop(holder, true)
+				end
+				AudioController.play("FX_Pop", nil, 0.5, 1.25)
+			end
+		end)
+	end
+end
+
 -- Gamepad: the tutorial card's own Cash ("Free") button, so A builds; the card root only focuses (live v33: a
 -- console player opened the tablet at the Hut and never found the buy button inside the selected card).
 local function padTarget(card: GuiObject): GuiObject
@@ -933,6 +997,9 @@ local function refreshCards()
 			if pulseKey == item.key then
 				pulseRing(face)
 				pulsed = root
+				if item.key == Onboarding.HQ and st.forSale then
+					cueHut(root)
+				end
 			end
 			Style.press(root, function()
 				focusItem(item)
@@ -1116,6 +1183,11 @@ closeBuild = function()
 	end
 	displayed = false
 	focused = nil
+	for _, inst in hutCue do
+		inst:Destroy()
+	end
+	hutCue = {}
+	hutPopped = false
 	clearOutline()
 	refreshStrip()
 	hideHud(false)
