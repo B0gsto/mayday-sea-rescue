@@ -66,6 +66,8 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   six Lego neighbour bridges), `IslandPlates` (one Persistent `Plate<n>` per island), plus the scattered rocks'
   collision hulls (`ScatterController` draws the meshes). Outer-island kits: `TownBuildings` (Penwyn's terraces),
   `CottageRig` / `CottageLights` (cottage glass, night lights, smoke), `StreetFurniture`, `SharedSetsRig`.
+- `WorldSoundService` tags every Workspace Sound `WorldSound`; `AudioController` adopts tagged ones into the
+  Ambience/SFX groups (no client whole-world DescendantAdded hooks).
 - `map/Build.luau` builds the greybox and `Map.Spawns` (one SpawnLocation per island spawn); the bake is open water
   with a sand seabed. Also `WorldService`, `TerrainOnly` (+ `TerrainOnlyService` / `TerrainOnlyController`),
   `StreetController` (lighthouse beams, beach flag), `SeamarkController`, `WildlifeController`,

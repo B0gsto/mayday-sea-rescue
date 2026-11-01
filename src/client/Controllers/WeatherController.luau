@@ -233,15 +233,24 @@ end
 -- washed out the low sun; the land holds about its sunset brightness once the sun is down. Zero by 18:30 (sun
 -- y -0.13), so the approved navy 18:30 and the moonlit night are unchanged. -- tune
 local TWILIGHT_BAND = Color3.fromHex("#F2A27A")
-local TWILIGHT_TINT = Color3.fromHex("#E2D6F2")
-local TWILIGHT_DECAY = Color3.fromHex("#3C3F7A")
+local TWILIGHT_TINT = Color3.fromHex("#F6E8EE") -- atmos 2026-11-01: #E2D6F2 washed the land pink
+local TWILIGHT_DECAY = Color3.fromHex("#3E3A70") -- atmos 2026-11-01: #3C3F7A left a muddy maroon sky
+-- a thicker haze carries the peach band and violet decay up over the engine's maroon sky faces -- tune
+local TWILIGHT_HAZE = 1.8
+local TWILIGHT_CLOUDS = Color3.fromHex("#D88C80") -- warm cloud undersides: a sunset, not a dusty mauve deck
 -- wx3: (75, 80, 115) took the land near black at 18:15 on a phone; this holds it near the 18:00 brightness
-local TWILIGHT_OUTDOOR = Color3.fromRGB(140, 135, 165)
+local TWILIGHT_OUTDOOR = Color3.fromRGB(150, 142, 178)
 -- A storm at night: a teal-slate sea, renders near (40, 64, 70) (wx3; #2E5A60 rendered navy). The night light is
 -- blue, so the albedo leans warm. -- tune
 local STORM_NIGHT_WATER = Color3.fromRGB(108, 122, 97)
 -- Under the night storm deck the glossy wave facets mirrored the sky in hard-edged pale patches (wx2). -- tune
 local STORM_NIGHT_SPECULAR = 0.25
+-- A night storm reads darker than a day storm (atmos 2026-11-01: the blue Night haze made it brighter): a dark slate
+-- haze and a little less exposure. -- tune
+local STORM_NIGHT_HAZE = Color3.fromHex("#2C3C5C")
+local STORM_NIGHT_DECAY = Color3.fromHex("#1A2440")
+local STORM_NIGHT_DENSITY = 0.36 -- the far islands still silhouette
+local STORM_NIGHT_EXPOSURE = -0.35
 
 local function grade(p: Preset, y: number)
 	local below = smoothstep(-0.13, -0.07, y)
@@ -250,6 +259,8 @@ local function grade(p: Preset, y: number)
 		p.AtmosphereColor = p.AtmosphereColor:Lerp(TWILIGHT_BAND, twilight)
 		p.AtmosphereDecay = p.AtmosphereDecay:Lerp(TWILIGHT_DECAY, twilight)
 		p.AtmosphereGlare *= 1 - twilight
+		p.AtmosphereHaze += (TWILIGHT_HAZE - p.AtmosphereHaze) * twilight
+		p.CloudsColor = p.CloudsColor:Lerp(TWILIGHT_CLOUDS, twilight)
 		p.TintColor = p.TintColor:Lerp(TWILIGHT_TINT, twilight)
 		p.OutdoorAmbient =
 			p.OutdoorAmbient:Lerp(TWILIGHT_OUTDOOR, below * (1 - smoothstep(-0.07, 0, y)))
@@ -326,6 +337,11 @@ local function computeBlend(intensity: number): Preset
 		stormMix.CloudsDensity = LightingPresets.Storm.CloudsDensity
 		stormMix.WaterColor = LightingPresets.Storm.WaterColor:Lerp(STORM_NIGHT_WATER, n)
 		stormMix.EnvironmentSpecularScale += (STORM_NIGHT_SPECULAR - stormMix.EnvironmentSpecularScale) * n
+		stormMix.AtmosphereColor = stormMix.AtmosphereColor:Lerp(STORM_NIGHT_HAZE, n)
+		stormMix.AtmosphereDecay = stormMix.AtmosphereDecay:Lerp(STORM_NIGHT_DECAY, n)
+		stormMix.AtmosphereDensity += (STORM_NIGHT_DENSITY - stormMix.AtmosphereDensity) * n
+		stormMix.AtmosphereHaze = 1.4 -- the dark haze veils the moonlit sky faces without a black horizon band
+		stormMix.ExposureCompensation += STORM_NIGHT_EXPOSURE * n
 	end
 	-- At night the day faces stay up: the engine dims them to a moonlit navy with clouds (dark faces render black).
 	-- The Calm (sunset-painted) faces until the sun is just below the horizon (n 0.25, about 18:05): on the horizon the
@@ -457,7 +473,7 @@ local function updateRain(camera: Camera, intensity: number)
 		* (WIND_PUSH * intensity)
 	local tierName = OceanQuality.current().name
 	local quality = if RAIN_STREAKS then Flipbooks.scale("rain", tierName) else qualityFactor()
-	local heavy = if Weather.isGreatStorm() then 1 else 0.5 -- a plain Storm rains lighter
+	local heavy = if Weather.isGreatStorm() then 1 else 0.7 -- a plain Storm rains lighter (0.5 read thin on a phone)
 	local rate = if underRoof then 0 else RAIN_MAX_RATE * quality * heavy * intensity * intensity
 	rainEmitter.Rate = if rate < 1 then 0 else rate
 	local seaY = WorldConfig.SeaLevel
