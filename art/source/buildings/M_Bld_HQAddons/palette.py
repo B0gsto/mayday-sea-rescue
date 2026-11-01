@@ -10,11 +10,11 @@ PALETTE = [
     (99, 95, 98),      # 2  dark bluish grey
     (30, 44, 66),      # 3  ink / navy (windows, roof, chart sea)
     (224, 56, 40),     # 4  red
-    (250, 140, 30),    # 5  orange
+    (150, 26, 30),     # 5  deep red (the Lv3 door portal and leaves)
     (250, 208, 40),    # 6  yellow
     (80, 190, 90),     # 7  green
     (40, 96, 208),     # 8  blue
-    (60, 220, 255),    # 9  cyan
+    (250, 128, 24),    # 9  orange (r5: the Lv3 lifeboat; was cyan, its one chart use moved to glass blue)
     (255, 190, 10),    # 10 gold (lantern frame, crest anchor): saturated, not tan
     (212, 184, 132),   # 11 tan
     (105, 64, 40),     # 12 reddish brown
@@ -22,7 +22,7 @@ PALETTE = [
     (150, 205, 240),   # 14 light glass blue
     (42, 44, 48),      # 15 black (radio faces)
 ]
-WHITE, LBG, DBG, INK, RED, ORANGE, YELLOW, GREEN, BLUE, CYAN, GOLD, TAN, BROWN, WARM, GLASS, BLACK = range(16)
+WHITE, LBG, DBG, INK, RED, DEEPRED, YELLOW, GREEN, BLUE, ORANGE, GOLD, TAN, BROWN, WARM, GLASS, BLACK = range(16)
 
 CELL, GRID, SIZE = 256, 4, 1024
 

@@ -1,5 +1,25 @@
 # M_Bld_RescueHQ result (round 4, 2026-10-27, docs/25 J walk-in)
 
+## Round PERF-HQ r5 (2026-11-01, MCP live): stepped 2-stud ridge segments (0.05 seams, red studs, red end caps; core box kept for LOD2) on Lv1, watch room (taller cap 1.3 x 2.6) and wing; Lv2 upper storey core grey so its brick grooves read; grey course lines + staggered head joints on the watch-room pedestal; Lv1 flagpole +3, red studded sills, plaque buoy 1.3x (plaque 4.7 tall, ribbon band clear). ATT_*, COL unchanged.
+Tris LOD0 23,460 (Lv1 10,404 / Lv2 13,056), LOD1 10,302, LOD2 2,972; validate PASS (1867, 0 failed); zfight 0 visible pairs left (17 nudged).
+
+## Round PERF-HQ r4 (2026-11-01, MCP live): Lv2 plaque 1.5x (navy 11.1 x 4.6 board on 2 navy brackets, proud of pedestal + sill; chunky 0.5 red frame with studded top rail; buoy OD 3.3 above the ribbon band, ribbon lies on face + bottom rail); Lv1 ridge cap 1.35 x 2.8 with r0.6 red studs so it clears the tile studs from the path. ATT_*, COL unchanged.
+Tris LOD0 20,392 (Lv1 9,212 / Lv2 11,180), LOD1 10,550, LOD2 2,996; validate PASS (1807, 0 failed); zfight 0 visible pairs left.
+
+## Round PERF-HQ r3 (2026-11-01, MCP live): plaque buoys sit above the code ribbon band (Lv2 plaque 1.3x, 7.3 x 3.4); door leaves swung 110 deg (faces show from the path); 1-stud white ridge caps with red studs; Lv2 deck red 1x2 studded parapet (gap at the plaque); medic-wing roof is a low studded gable with a ridge cap.
+All studs + parapet are LOD0/LOD1-only meshes (`NO_LOD2`, plus window sills and the Lv1 interior) to keep LOD2 <= 3000. ATT_*, COL, footprints unchanged.
+Tris LOD0 20,040 (Lv1 9,212 / Lv2 10,828), LOD1 10,386, LOD2 2,942; validate PASS (1769, 0 failed); zfight 0 left (15 nudged).
+
+## Round PERF-HQ r1 (2026-11-01, Blender MCP live; look, footprints, ATT_*, COL unchanged)
+1. Door: red doorway frame + a 0.4-proud red portal (jambs, lintel); OwnerColour leaves stand open against it.
+2. Plaques: red-framed, widened so the code ribbon fits (Lv1 6.6 on its bracket, Lv2 5.6 on the pedestal); ATT_Sign_01/02 unmoved.
+3. Every window: 0.3-proud navy surround (Lv2 band: no head, the deck is the head) + grey studded sill, 0.5 proud.
+4. Gables (Lv1, watch room): red tile studs in running-bond rows between the course lines; chunky white ridge cap
+   (watch room overhangs 0.4 past each end; Lv1 0.04, hidden inside the Lv2 storey).
+5. Lv2 front read: mast 17 tall (was 12), 0.72 thick, 3 red bands, red lifebuoy flag at the masthead, 6 pennants.
+Lv1 buoy shrunk to fit between window and portal. Tris LOD0 Lv1 9,172 / Lv2 7,888 (17,060), LOD1 6,826, LOD2 2,710.
+Validate PASS (1729, 0 failed); zfight 0 left (run.py nudged 11 faces).
+
 Validate PASS (1637 checks, 0 failed, 59 waived: texture sets (1 flat set on a hero_building) and LOD UV layout
 for the palette cells). LOD0 10,108 visual tris (+300 in the 25 `_COL` boxes, all in the LOD0 FBX) (Lv1 4,948 incl. interior, unchanged / Lv2 additions 5,160), LOD1 4,264, LOD2 2,148 (exported, incl. COL).
 Wall triangles (skin + cream core + red base course): Lv1 1,944, Lv2 1,908 (budgets 5k / 9k / 2k). Hand-made LODs

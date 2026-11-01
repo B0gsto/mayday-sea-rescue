@@ -54,7 +54,7 @@ One Blender GUI at a time; each step = one Opus agent, rounds to 9.1+, upload, w
 4. Sea plates (5.8/6.4 -> 8.8, r5 later)
 5. Idle-crew commons / Hangout (6.2) + decorations (flowers, picnic, lamps, flag, statue, fountain) (6.4) - new kit
 6. Rescue helicopter (6.2) - new mesh (code greybox today)
-7. HQ L1-L5 (6.4): distinct silhouette per level, door, plaque, inset windows, roof studs
+7. HQ L1-L5 (6.4 -> r5 9.14 PASS, L4 8.8; PERF-HQ, Lv3 station now a mesh, unseen in Studio): distinct silhouette per level, door, plaque, inset windows, roof studs
 8. Bosun (5.8) + grey seal (5.5) + otter/seal pup/gull/turtle/puffin (7.2-8.4)
 9. Hub centre (5.5) + Mermaid Lagoon dressing (5.8) + island plate edge / bridges / conveyors / Skerry light (6.5-7.6)
 10. Fish Market, Boat Yard, Rescue Boathouse, Boathouse, Sub Pen, Workshop, Depot, Bunkhouse, Clinic, Air Station, Lookout, Trophy Hall (6.6-8.2)
