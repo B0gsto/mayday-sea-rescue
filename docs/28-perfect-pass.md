@@ -90,3 +90,5 @@ PERF-BL7 (HQ Lv1-5 refine) queued behind the heli in the Blender lane.
 Round cap (2026-11-01): Blender kits plateau 8.4-9.0 at 4 rounds while still improving each round -> cap is now 6 rounds. Finishing sweep after the HQ: commons 9.0, heli 8.8, sea plates 8.8, crane 8.8, build-site 8.4 (each from its RESULT.md fix list, same 3-judge median, anchor board kit 9.2).
 
 ANIM5 hand-keyed actions (stopped by the Studio stop): 674f3a71 on t3/characterful-rescue-animations. R2 medians: celebrate 8.4, hammer 7.8, carry 7.6, point 7.5, saw 7.0, sit 6.0, climb 5.9 (falling). R3 keys done, unjudged: when Studio is back run the k3/ preview scripts, judge (front view added), then round 4 (cap 6). Nothing uploaded/wired.
+
+HQ (PERF-BL7): **PASS 9.14** (r1-r5 8.2/8.9/8.86/9.04/9.14; L1 9.3, L2 9.2, L3 9.1 new mesh, L4 8.8, L5 9.2), 628cb520 on t3/refine-rescue-hq-levels (unmerged, unseen in Studio: L4 walk-in, L5 stair). PERF-FIN1 next: commons r5-6, then HQ L4 + lifeboat overhang.
