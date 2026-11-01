@@ -601,7 +601,7 @@ local function buildMinimap()
 	root.Parent = Layout.region(miniGui, "minimap")
 	corner(root)
 	mini.root = root
-	-- the brass bezel (assets/ui/hud/minimap_ring_thin.png, hole 72%): 4% past the square so its
+	-- the bezel (art/source/ui/hud_minimap_ring.svg, hole 72%): 4% past the square so its
 	-- hole (RING * 0.72) just covers the canvas edge
 	local ring = Instance.new("ImageLabel")
 	ring.Name = "Bezel"
@@ -1007,7 +1007,7 @@ local function buildFullMap()
 	head.AutoButtonColor = false
 	head.Size = UDim2.new(1, 0, 0, LEGEND_HEAD)
 	head.FontFace = Font.new(Theme.FONT, Enum.FontWeight.Regular)
-	head.Text = "LEGEND  ▸"
+	head.Text = "LEGEND"
 	head.TextSize = 20
 	head.TextColor3 = Color3.fromRGB(255, 248, 232)
 	head.TextXAlignment = Enum.TextXAlignment.Left
@@ -1016,6 +1016,19 @@ local function buildFullMap()
 	local headPad = Instance.new("UIPadding")
 	headPad.PaddingLeft = UDim.new(0, 12)
 	headPad.Parent = head
+	local chev = Instance.new("Frame") -- open/closed: points right, turns down when open
+	chev.Name = "Chevron"
+	chev.BackgroundTransparency = 1
+	chev.AnchorPoint = Vector2.new(1, 0.5)
+	chev.Position = UDim2.new(1, -10, 0.5, 0)
+	chev.Size = UDim2.fromOffset(18, 18)
+	chev.ZIndex = 3
+	chev.Parent = head
+	Glyph.draw("chevron", chev, head.TextColor3)
+	for _, f in chev:GetChildren() do
+		local bar = f :: GuiObject
+		bar.ZIndex = 3
+	end
 	local body = Instance.new("ScrollingFrame")
 	body.Name = "Body"
 	body.BackgroundTransparency = 1
@@ -1195,7 +1208,8 @@ local function layoutLegend(size: Vector2)
 	local room = math.max(size.Y - 24 - LEGEND_HEAD, LEGEND_ROW * 3)
 	local h = if open then LEGEND_HEAD + math.min(rowsH, room) else LEGEND_HEAD
 	full.legend.Size = UDim2.fromOffset(LEGEND_WIDTH, h)
-	full.legendHead.Text = if open then "LEGEND  ▾" else "LEGEND  ▸"
+	local chev = full.legendHead:FindFirstChild("Chevron") :: Frame
+	chev.Rotation = if open then 90 else 0
 	full.hint.Visible = size.X - 2 * (LEGEND_WIDTH + 32) >= 300
 end
 

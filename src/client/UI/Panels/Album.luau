@@ -17,6 +17,7 @@ local Rarity = require(Shared:WaitForChild("Rarity"))
 local Rules = require(Shared:WaitForChild("DiscoveryRules"))
 local WorkerRules = require(Shared:WaitForChild("WorkerRules"))
 local UI = script.Parent.Parent
+local Layout = require(UI:WaitForChild("Layout"))
 local Portrait = require(UI:WaitForChild("Portrait"))
 local Sticker = require(UI:WaitForChild("Sticker"))
 local SurvivorCard = require(UI:WaitForChild("SurvivorCard"))
@@ -43,6 +44,7 @@ local PERK = {
 	OldBones = "Night salvage",
 }
 local SPECIAL_W, SPECIAL_H = 160, 196
+local WALLET_GAP = 12 -- du between the panel and the wallet
 local GREY = Color3.fromHex("8A8F99")
 
 -- a grey person shape (head + shoulders) with a "?" for a special not found yet
@@ -70,13 +72,53 @@ local function fullPage(state: Rules.State, id: string): boolean
 	return Rules.complete(state, id)
 end
 
+local SIZE = Vector2.new(800, 600)
+
 function Album.new(canvas: Frame, onClose: () -> ())
-	local panel = Panel.new(canvas, {
+	-- the panel fits a canvas beside the wallet: centred it hid the Cash counter (touch landscape: the wallet sits
+	-- under the minimap, top right; in-game ADs 2026-11-01)
+	local sheet = Instance.new("Frame")
+	sheet.Name = "AlbumCanvas"
+	sheet.BackgroundTransparency = 1
+	sheet.ZIndex = 5 -- over the dim, which stays full screen
+	sheet.Parent = canvas
+	local function fitHost()
+		local vp, scale = Style.metrics(canvas)
+		local lo, hi = 0, vp.X
+		local mt = Layout.current()
+		local r = mt.rects.wallet
+		-- shortcut: landscape only, the portrait panel shrinks to its content and the wallet sits clear of it
+		if r and vp.X > vp.Y then
+			local wl = (r.pos.X - r.anchor.X * r.size.X) * mt.scale
+			local wr = wl + r.size.X * mt.scale
+			local half = Theme.panelSize(vp, scale, SIZE).X * scale / 2
+			if wr > vp.X / 2 - half and wl < vp.X / 2 + half then -- the centred panel would cover it
+				local gap = WALLET_GAP * scale
+				if wl > vp.X - wr then
+					hi = wl - gap
+				else
+					lo = wr + gap
+				end
+			end
+		end
+		sheet.Position = UDim2.fromOffset(lo / scale, 0)
+		sheet.Size = UDim2.fromOffset((hi - lo) / scale, vp.Y / scale)
+		sheet:SetAttribute("KitScale", scale)
+		sheet:SetAttribute("KitViewport", Vector2.new(hi - lo, vp.Y))
+	end
+	fitHost()
+	canvas:GetAttributeChangedSignal("KitViewport"):Connect(fitHost)
+	Layout.onMetrics(fitHost)
+	local panel = Panel.new(sheet, {
 		title = "Album",
 		icon = "album",
-		size = Vector2.new(800, 600),
+		size = SIZE,
 		onClose = onClose,
 	})
+	local dim = sheet:FindFirstChild("PanelDim_Album")
+	if dim then
+		dim.Parent = canvas
+	end
 	local preview: GuiObject? = nil
 	local stopPortraits = function() end
 	local workers: { WorkerRules.Worker } = {}

@@ -2,7 +2,7 @@
 -- Menu (docs/23 (m), WP-23c): the left button column and its kit panels. Mounted once by HudController.
 --   Grid (HudLayout "menu" region: 2 icon columns above the thumbstick): Shop, Quests,
 --   Album, Pet, Crew, Settings, Map and Boat (Boat to me: the server's cooldown rule with the Mechanics' shorter wait, drawn as
---   a ring of ticks; Quick Launch shows the bolt and skips it). Each opens a centred kit Panel; Map
+--   a ring of ticks; Quick Launch skips it). Each opens a centred kit Panel; Map
 --   opens the full map (MapController, also M).
 --   Keys: P Shop, gamepad Start Settings, D-pad Left focuses the column (D-pad moves, A presses),
 --   B closes the open panel or leaves the column.
@@ -281,7 +281,7 @@ local function resting(): boolean
 end
 
 -- The Boat button's extras: a ring of ticks round the tile that fills back up over the cooldown
--- (the tile greys while it waits), a gold bolt with Quick Launch. Press: your craft comes to you.
+-- (the tile greys while it waits; Quick Launch skips the wait, so no ring). Press: your craft comes to you.
 local function dressBoat(b: IconButton.IconButton)
 	local tile = b.root:FindFirstChild("Tile") :: Frame
 	local face = tile:FindFirstChild("Face", true) :: Frame
@@ -301,18 +301,6 @@ local function dressBoat(b: IconButton.IconButton)
 		t.Parent = face
 		ticks[i] = t
 	end
-	local bolt = Instance.new("TextLabel")
-	bolt.Name = "Bolt"
-	bolt.BackgroundTransparency = 1
-	bolt.Text = "⚡"
-	bolt.TextScaled = true
-	bolt.TextColor3 = GOLD
-	bolt.AnchorPoint = Vector2.new(1, 0)
-	bolt.Position = UDim2.new(1, 6, 0, -8)
-	bolt.Size = UDim2.fromScale(0.42, 0.42)
-	bolt.ZIndex = 4
-	Style.stroke(bolt, 2.5)
-	bolt.Parent = tile
 	local label = b.root:FindFirstChild("Label") :: TextLabel
 	local waiting: boolean? = nil
 	local sending = false
@@ -329,13 +317,8 @@ local function dressBoat(b: IconButton.IconButton)
 		for i, t in ticks do
 			t.Visible = wait and i <= lit
 		end
-		bolt.Visible = quick()
 		if os.clock() > flash then
-			label.Text = if sending
-				then "…"
-				elseif wait then `{math.ceil(left)}s`
-				elseif seated then ""
-				else "Boat"
+			label.Text = if sending then "…" elseif wait then `{math.ceil(left)}s` else "Boat"
 		end
 	end
 	RunService.Heartbeat:Connect(function()

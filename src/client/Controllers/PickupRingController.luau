@@ -14,6 +14,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
+local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
@@ -220,6 +221,19 @@ local function step()
 			local shown = math.clamp(n.d / MARK_NEAR - 1, 0, 1) * (if full then 0.4 else 1)
 			img.ImageColor3 = if full then GREY else Color3.new(1, 1, 1)
 			img.ImageTransparency = 1 - shown
+			-- clear of the HUD: screen UI always draws over billboards, the objective strip hid far pips (AD 2026-11-01)
+			local c = cam :: Camera
+			local sp, vis = c:WorldToViewportPoint(
+				(n.m.PrimaryPart :: BasePart).Position + gui.StudsOffsetWorldSpace
+			)
+			local off = Vector3.zero
+			if vis then
+				local px = Vector2.new(sp.X, sp.Y - gui.SizeOffset.Y * gui.Size.Y.Offset) -- the pip's centre
+				local to = Layout.clearOfHud(px, Vector2.new(26, 26))
+				local per = 2 * sp.Z * math.tan(math.rad(c.FieldOfView) / 2) / c.ViewportSize.Y -- studs per px there
+				off = Vector3.new((to.X - px.X) * per, (px.Y - to.Y) * per, 0)
+			end
+			gui.StudsOffset = off -- camera space: x right, y up
 		else
 			marks[i].Enabled = false
 		end

@@ -159,7 +159,11 @@ function OnboardingBeacon.start(): Beacon
 		trail.step(Vector3.new(at.X, baseY, at.Z), not cutscene and not (muted and flat <= NEAR))
 		arrow.Visible = false
 		range.Visible = false
-		if cutscene then
+		-- UI/Waypoint's pin already leads (a taken call, your craft): one goal on screen, no second pointer and
+		-- chip over its own (AD phone pass 2026-11-01: "20 70 m"; the cold-open craft wore both)
+		local wp = Players.LocalPlayer.PlayerGui:FindFirstChild("Waypoint")
+		local wpMark = wp and wp:FindFirstChild("Mark")
+		if cutscene or (wpMark and wpMark:IsA("GuiObject") and wpMark.Visible) then
 			return
 		end
 		local cam = Workspace.CurrentCamera :: Camera
@@ -171,44 +175,34 @@ function OnboardingBeacon.start(): Beacon
 			x, y, onScreen = vp.X - x, vp.Y - y, false
 		end
 		local arrived = flat <= (if muted then NEAR else ARRIVE) -- a "0 m" pointer read as broken
-		if
-			not arrived
-			and (not onScreen or x < margin or x > vp.X - margin or y < margin or y > vp.Y - margin)
-		then
+		-- only for a goal off screen (the diamond leads in view), and then on the screen edge
+		if not arrived and not onScreen then
 			local dx, dy = x - vp.X / 2, y - vp.Y / 2
 			if math.abs(dx) + math.abs(dy) < 0.01 then
 				dy = 1
 			end
-			local k = math.min(
-				(vp.X / 2 - margin) / math.max(math.abs(dx), 0.01),
-				(vp.Y / 2 - margin) / math.max(math.abs(dy), 0.01)
-			)
 			arrow.Rotation = math.deg(math.atan2(dx, -dy)) + 180 -- the sprite's tip points down
 			-- clear of the HUD like UI/Waypoint: pinned left it hid under the menu column (playtest 2026-10-26).
 			-- The clearance is the tip's reach (half the sprite box), not the head's: spun toward the menu, the tip
 			-- lay on the Map / Pet buttons (pt5 2026-10-28)
 			local reach = EDGE * 324 / 288 + 4
-			local pin = Layout.clearOfHud(
-				Vector2.new(vp.X / 2 + dx * k, vp.Y / 2 + dy * k),
+			local pin = Layout.onEdge(
+				Vector2.new(dx, dy),
+				Vector2.new(margin, margin),
 				Vector2.new(reach, reach),
 				40
 			)
-			dx, dy, k = pin.X - vp.X / 2, pin.Y - vp.Y / 2, 1
+			dx, dy = pin.X - vp.X / 2, pin.Y - vp.Y / 2
 			arrow.Position = UDim2.fromOffset(pin.X, pin.Y)
 			arrow.Visible = true
 			if d then
 				local metres = Vector3.new(d.X, 0, d.Z).Magnitude / 3 -- 3 studs per metre
 				-- the chip sits just behind the head, on the side away from the edge
-				local len = math.max(math.sqrt(dx * dx + dy * dy) * k, 1)
-				local back = EDGE / 2
-					+ 8
-					+ math.abs(dx * k / len) * 39
-					+ math.abs(dy * k / len) * 15
+				local len = math.max(math.sqrt(dx * dx + dy * dy), 1)
+				local back = EDGE / 2 + 8 + math.abs(dx / len) * 39 + math.abs(dy / len) * 15
 				local inward = back / len
-				range.Position = UDim2.fromOffset(
-					vp.X / 2 + dx * k * (1 - inward),
-					vp.Y / 2 + dy * k * (1 - inward)
-				)
+				range.Position =
+					UDim2.fromOffset(vp.X / 2 + dx * (1 - inward), vp.Y / 2 + dy * (1 - inward))
 				range.Text = if metres >= 1000
 					then string.format("%.1f km", metres / 1000)
 					else `{math.floor(metres / 10 + 0.5) * 10} m`

@@ -5,6 +5,7 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
+local Glyph = require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
 local OpsStepCard =
 	require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("OpsStepCard"))
 local Ui = require(script.Parent.Ui)
@@ -41,7 +42,16 @@ function Step.new(
 	if not compact then
 		-- icon + 1-3 words, like the objective chip (docs/14 section 2): no sentence, no jargon
 		local id = ctx.step.id
-		Ui.header(panel, `{OpsStepCard.iconFor(id)}  {OpsStepCard.shortFor(id, ctx.step.label)}`)
+		local title = Ui.header(panel, OpsStepCard.shortFor(id, ctx.step.label))
+		title.Position += UDim2.fromOffset(32, 0)
+		title.Size -= UDim2.fromOffset(32, 0)
+		local icon = Instance.new("Frame")
+		icon.Name = "StepIcon"
+		icon.BackgroundTransparency = 1
+		icon.Position = UDim2.fromOffset(12, 7)
+		icon.Size = UDim2.fromOffset(26, 26)
+		icon.Parent = panel
+		Glyph.draw(OpsStepCard.iconFor(id), icon, title.TextColor3)
 	end
 	local s: S = {
 		ctx = ctx,
