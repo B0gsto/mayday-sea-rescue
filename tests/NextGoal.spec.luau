@@ -22,7 +22,7 @@ return function(t)
 	end)
 
 	t.test("an affordable level wins, in card order", function()
-		local levels = { Harbour = 1, HQ = 1 }
+		local levels = { Harbour = 1, HQ = 1, Workshop = 1 } -- the step after the tutorial's Workshop
 		local depot = DockConfig.Buildings.Depot.levels[1].cash
 		local g = N.next(facts({ cash = depot, levels = levels }))
 		t.expect(g.key).toBe("Depot")

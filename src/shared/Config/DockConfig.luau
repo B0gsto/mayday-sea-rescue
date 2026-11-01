@@ -147,14 +147,14 @@ local rows: { [string]: any } = {
 		name = "Depot",
 		desc = "Brick pile and freight quay: builds start here.",
 		unlockAt = 1,
-		needs = {},
+		needs = { "Workshop" }, -- the 400 Lv1 must not jump the tutorial's Workshop beat
 		spot = isle(-90, -2, -90), -- work yard, open front onto the plaza
 		size = Vector2.new(36, 30),
 		scale = 1.15,
 		worker = "Hauler",
 		color = Color3.fromRGB(250, 208, 40),
 		levels = {
-			{ cash = 1200, hq = 1, effect = "Depot", piece = "Yard" },
+			{ cash = 400, hq = 1, effect = "Depot", piece = "Yard" }, -- ~3 rescues after the Workshop (live 2026-11-01: 1200 lost 3 of 4)
 			{ cash = 4000, hq = 2, effect = "Depot", piece = "Pile" },
 			{ cash = 15000, hq = 3, effect = "Depot", piece = "Conveyor" },
 		} :: { Level },
