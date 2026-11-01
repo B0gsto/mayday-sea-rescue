@@ -3021,6 +3021,25 @@
    "ClassName": "Folder",
    "Children": [
     {
+     "Name": "Glass",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://93793360278467",
+        "NormalMap": "rbxassetid://134063939343985",
+        "RoughnessMap": "rbxassetid://77394710200809",
+        "MetalnessMap": "rbxassetid://82741558542658",
+        "AlphaMode": {
+         "Enum": 1
+        }
+       }
+      }
+     ]
+    },
+    {
      "Name": "Lego",
      "ClassName": "Folder",
      "Children": [
@@ -3028,7 +3047,7 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://81237289705982",
+        "ColorMap": "rbxassetid://78317319857460",
         "NormalMap": "rbxassetid://134063939343985",
         "RoughnessMap": "rbxassetid://77394710200809",
         "MetalnessMap": "rbxassetid://82741558542658"

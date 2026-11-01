@@ -169,7 +169,7 @@ class B:
                 a, b = i * mnr, ((i + 1) % maj) * mnr
                 k = (j + 1) % mnr
                 faces.append((a + j, b + j, b + k, a + k))
-        self._emit(verts, faces, c)
+        self._emit(verts, faces, c, smooth=True)     # r8: was flat, so the ring read faceted at any segment count
 
     def wheel(self, cx, cy, cz, R, r, c):
         self.torus(cx, cy, cz, R, r, c)

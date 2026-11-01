@@ -376,7 +376,8 @@
    "T_TrophyHall_Brick_RGH",
    "T_WorkshopAddons_Brick_RGH",
    "T_BuildSiteKit_Brick_RGH",
-   "T_RescueHeli_Lego_RGH"
+   "T_RescueHeli_Lego_RGH",
+   "T_RescueHeli_Glass_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -3114,6 +3115,15 @@
   "name": "T_GaleQueen_Deck_ALB_Wet",
   "sha": "242a3f060eac8879b9ffb7390539737e7d92ad76d67b93ebdb07d26777d9293d",
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:243dd7d8627f5ac5dc89c2a838d684d9bf385162dc8e07bfa1162885f92e0520": {
+  "assetId": "78317319857460",
+  "imageId": "78317319857460",
+  "moderation": "Reviewing",
+  "name": "T_RescueHeli_Lego_ALB",
+  "sha": "243dd7d8627f5ac5dc89c2a838d684d9bf385162dc8e07bfa1162885f92e0520",
+  "source": "assets/textures/M_Veh_RescueHeli/T_RescueHeli_Lego_ALB.png",
   "type": "Image"
  },
  "Image:2443729697d5c3a000eb61ced570c87c8d1aec3fd3073e121d18aa772a6c4290": {
@@ -13547,7 +13557,8 @@
    "T_WorkshopAddons_Brick_NOR",
    "T_JettyCrane_Brick_NOR",
    "T_BuildSiteKit_Brick_NOR",
-   "T_RescueHeli_Lego_NOR"
+   "T_RescueHeli_Lego_NOR",
+   "T_RescueHeli_Glass_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -15858,6 +15869,15 @@
   "source": "assets/textures/M_Kit_StretcherBasket/T_StretcherBasket_Kit_NOR.png",
   "type": "Image"
  },
+ "Image:bf01377e9acdfe80f1d92c41e27a8361467777820fe7aa428be8eeb420e05adc": {
+  "assetId": "93793360278467",
+  "imageId": "93793360278467",
+  "moderation": "Reviewing",
+  "name": "T_RescueHeli_Glass_ALB",
+  "sha": "bf01377e9acdfe80f1d92c41e27a8361467777820fe7aa428be8eeb420e05adc",
+  "source": "assets/textures/M_Veh_RescueHeli/T_RescueHeli_Glass_ALB.png",
+  "type": "Image"
+ },
  "Image:bf41473b1b920b8c13af112015a6b5a49ddaca024183b734e1c25123172ccd28": {
   "assetId": "82267971777808",
   "imageId": "82267971777808",
@@ -17736,7 +17756,8 @@
    "T_WorkshopAddons_Brick_MET",
    "T_JettyCrane_Brick_MET",
    "T_BuildSiteKit_Brick_MET",
-   "T_RescueHeli_Lego_MET"
+   "T_RescueHeli_Lego_MET",
+   "T_RescueHeli_Glass_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -21494,6 +21515,16 @@
   "source": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD2.fbx",
   "type": "Model"
  },
+ "Model:10f0859f7ea123b9f69529731c9a957aba5009dd372b010c7f10af32ff764332": {
+  "assetId": "134981220202490",
+  "moderation": "Approved",
+  "name": "M_Veh_RescueHeli",
+  "rbxm": "assets/models/M_Veh_RescueHeli.rbxm",
+  "route": "delivery",
+  "sha": "10f0859f7ea123b9f69529731c9a957aba5009dd372b010c7f10af32ff764332",
+  "source": "assets/fbx/M_Veh_RescueHeli/M_Veh_RescueHeli_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:112d3c45e7dd44084d77a2ee9fa9c13180a8ab68de355e70b1f3b44288252ec3": {
   "assetId": "77059128229875",
   "moderation": "Approved",
@@ -24022,6 +24053,16 @@
   "route": "delivery",
   "sha": "4c4c26c530542f0869f63d2fd5032d9bb84fd49392f164ceb0d46149d27bb2f3",
   "source": "assets/fbx/M_Veg_Grass_Turf_01/M_Veg_Grass_Turf_01_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:4c9adcafc4eaadf726b139428878b98125db3a7fa02f3ac735bd4032cde80bb6": {
+  "assetId": "119938875844656",
+  "moderation": "Approved",
+  "name": "M_Veh_RescueHeli_LOD1",
+  "rbxm": "assets/models/M_Veh_RescueHeli_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "4c9adcafc4eaadf726b139428878b98125db3a7fa02f3ac735bd4032cde80bb6",
+  "source": "assets/fbx/M_Veh_RescueHeli/M_Veh_RescueHeli_LOD1.fbx",
   "type": "Model"
  },
  "Model:4d01fbed82c01b20694286e8a75013ae70a0b84f310168cf82544fa99d7b7efc": {
@@ -30362,6 +30403,16 @@
   "route": "delivery",
   "sha": "f80295d8a901aca6895b0456d227ba449080be89d0fda753313d2265436453ed",
   "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:f8432b3b3bffc174b3a7d371f181b68ae0697029075b2684c39c35f6ce7cff7d": {
+  "assetId": "73201580130072",
+  "moderation": "Approved",
+  "name": "M_Veh_RescueHeli_LOD2",
+  "rbxm": "assets/models/M_Veh_RescueHeli_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "f8432b3b3bffc174b3a7d371f181b68ae0697029075b2684c39c35f6ce7cff7d",
+  "source": "assets/fbx/M_Veh_RescueHeli/M_Veh_RescueHeli_LOD2.fbx",
   "type": "Model"
  },
  "Model:f8f5dcc8944f4d478cb0c66fa79604c515f8267abf77c8b86f92a6beb2fcfd80": {

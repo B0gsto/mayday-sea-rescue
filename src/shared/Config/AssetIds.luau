@@ -498,9 +498,9 @@ AssetIds.Models = {
 	},
 	M_Veh_RIB_Helm = { LOD0 = "rbxassetid://139752697951923" },
 	M_Veh_RescueHeli = {
-		LOD0 = "rbxassetid://134104686361988",
-		LOD1 = "rbxassetid://140703481744638",
-		LOD2 = "rbxassetid://128057877179940",
+		LOD0 = "rbxassetid://134981220202490",
+		LOD1 = "rbxassetid://119938875844656",
+		LOD2 = "rbxassetid://73201580130072",
 	},
 	M_Veh_StormRunner = {
 		LOD0 = "rbxassetid://71253168042520",
@@ -1052,7 +1052,7 @@ AssetIds.Attachments = {
 		ATT_PassengerSeat1 = Vector3.new(-1.4, -1.4, -2.6),
 		ATT_EyePoint = Vector3.new(1.4, 1.2, -2.6),
 		ATT_WinchPoint = Vector3.new(7.9, 1.55, 2.4),
-		ATT_WinchHook = Vector3.new(7.9, -0.25, 2.4),
+		ATT_WinchHook = Vector3.new(7.9, -0.25, 2.8),
 		ATT_SurvivorSlot1 = Vector3.new(-1.4, -1.4, 2.4),
 		ATT_SurvivorSlot2 = Vector3.new(1.4, -1.4, 2.4),
 		ATT_PetSeat = Vector3.new(0, -1.9, 4.5),

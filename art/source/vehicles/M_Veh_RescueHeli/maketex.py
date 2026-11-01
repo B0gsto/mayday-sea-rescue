@@ -15,3 +15,4 @@ p.add_argument("--name", default="RescueHeli")
 p.add_argument("--set", dest="set_name", default="Lego")
 a = p.parse_args()
 print(palette.write_maps(a.out, a.name, a.set_name))
+print(palette.write_maps(a.out, a.name, "Glass", glass=True))   # r7: see-through cockpit glass set

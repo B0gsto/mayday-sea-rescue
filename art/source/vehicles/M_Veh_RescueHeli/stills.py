@@ -2,7 +2,7 @@
 
     MCP: stills.py -- <out_dir> [<fbx_dir_with_JetSki_and_RIB>]
 Flat sunny daylight, light sea-blue ground, Roblox-like; shots placed in Roblox axes (x right, y up, nose -z).
-Writes overview, g_chase, g_phone (320 px wide; upscale 2x nearest outside Blender), side, c_winch, c_cabin, scale.
+Writes overview, g_chase, g_phone (320 px wide; upscale 2x nearest outside Blender), side, c_winch, c_cabin, c_rear, scale.
 """
 import math
 import os
@@ -14,8 +14,9 @@ from mathutils import Vector
 ARGS = sys.argv[sys.argv.index("--") + 1:]
 OUT = ARGS[0]
 FBX = ARGS[1] if len(ARGS) > 1 else None
-KEEP = ("M_Veh_RescueHeli_Body_LOD0", "M_Veh_RescueHeli_Paint_LOD0", "M_Veh_RescueHeli_MainRotor_LOD0", "M_Veh_RescueHeli_TailRotor_LOD0")
+KEEP = ("M_Veh_RescueHeli_Body_LOD0", "M_Veh_RescueHeli_Paint_LOD0", "M_Veh_RescueHeli_Glass_LOD0", "M_Veh_RescueHeli_Gear_LOD0", "M_Veh_RescueHeli_MainRotor_LOD0", "M_Veh_RescueHeli_TailRotor_LOD0")
 SKID_Y = -4.5
+REAR_EYE = (3.0, -1.0, 24.0)     # r7: rear doors close-up, low behind the tail (under boom + stabiliser)
 
 
 def p(x, y, z):
@@ -128,6 +129,7 @@ def main():
         shot(sc, cam, "side", (75, 1.0, 5), (0, 0.5, 5), lens=55),
         shot(sc, cam, "c_winch", (17, 3.0, -6.0), (6.0, -0.6, 2.4), lens=38),
         shot(sc, cam, "c_cabin", (-9, 4.0, -14), (0, 0.3, -3.2), lens=45),
+        shot(sc, cam, "c_rear", REAR_EYE, (0, -0.3, 5.8), lens=65),
     ]
     scale_refs()
     out.append(shot(sc, cam, "scale", (4, 24, -52), (3, -2, 2), lens=35))

@@ -1,9 +1,12 @@
 """M_Veh_RescueHeli: chunky Lego coastguard rescue helicopter (replaces the Heli/Builder.luau greybox look).
 
 Frame = Heli/Builder.luau, authored in Roblox axes (x right, y up, nose -z; Blender = (-x, z, y)), 1 unit = 1 stud,
-origin = HullRoot centre. One FBX per LOD holds three meshes plus the collider, all with identity transforms:
+origin = HullRoot centre. One FBX per LOD holds six meshes plus the collider, all with identity transforms:
   M_Veh_RescueHeli_Body       cabin, nose, canopy, boom, fin, skids, winch (welded to HullRoot), minus the orange
   M_Veh_RescueHeli_Paint      the body's orange shell (livery primary, LiveryPaint.MESH_RULES)
+  M_Veh_RescueHeli_Glass      r7: the tinted windscreen (set Glass: RGBA ALB, AlphaMode Transparency) over the cockpit;
+                              r8: the side and door windows too
+  M_Veh_RescueHeli_Gear       r8: skids + winch (welded to HullRoot), minus the orange (Paint holds it)
   M_Veh_RescueHeli_MainRotor  4 blades; built symmetric about the hub, so its bbox centre = ATT_MainRotor (spins on Y)
   M_Veh_RescueHeli_TailRotor  2 blades; bbox centre = ATT_TailRotor (spins on X)
   M_Veh_RescueHeli_COL        the 7 x 6 x 13 HullRoot box
@@ -37,7 +40,8 @@ DOOR_Z0, DOOR_Z1 = 0.4, 4.4                 # right-side sliding door; the winch
 ROOF, DECK = 3.0, 4.1                       # cabin roof and engine deck tops
 WINCH = (7.9, 1.55, 2.4)                    # cable top (under the drum), well outboard so it shows from behind
 RING_R, RING_T = 0.95, 0.28                 # r5: the stowed rescue ring right under the hook block (no cable)
-HOOK = (WINCH[0], WINCH[1] - 0.85 - RING_R, WINCH[2])   # hook block 0.1..0.75 under the cable top, ring under it
+HOOK = (WINCH[0], WINCH[1] - 0.85 - RING_R, WINCH[2] + 0.4)   # hook block under the cable top, ring under it;
+# r8: 0.4 aft of the cable so the ring clears the door badge in the winch close-up
 PITCH, STUD_R, STUD_H = 1.0, 0.3, 0.25      # real Lego stud: 0.6 of the pitch, ~0.2 tall
 # tail boom stations (z, half-width, bottom, top, chamfer); the stripe lofts follow the same stations
 BOOM = [(5.0, 1.5, 0.3, 2.8, 0.4), (9.0, 1.0, 0.9, 2.7, 0.3), (22.4, 0.6, 1.6, 2.6, 0.2)]   # 3 -> 2 -> 1 studs
@@ -102,8 +106,8 @@ class R:
                 if not skip(x, z):
                     self.stud(x, y, z, c)
 
-    def sphere(self, x, y, z, r, c, zmin=-0.9):
-        self.b.sphere(-x, z, y, r, c, n=self.n(12), m=(5, 4, 3)[self.lod], zmin=zmin)
+    def sphere(self, x, y, z, r, c, zmin=-0.9, n=12):
+        self.b.sphere(-x, z, y, r, c, n=self.n(n), m=(5, 4, 3)[self.lod], zmin=zmin)
 
     def ring(self, z, hx, y0, y1, ch, cx=0.0, cb=None, ct=None):
         cb = ch if cb is None else cb
@@ -122,9 +126,8 @@ class R:
         """A (z, y) side profile extruded across x0..x1."""
         self.b.prof_x(-x1, -x0, list(zy), c)
 
-    def tube(self, a, b, r, c, n=12):
-        """A round bar from a to b (Roblox points)."""
-        n = self.n(n)
+    def _axis(self, a, b):
+        """Blender start point, unit direction, length and two unit normals of the a -> b axis (Roblox points)."""
         A, B = self.p(*a), self.p(*b)
         d = [B[i] - A[i] for i in range(3)]
         L = math.sqrt(sum(v * v for v in d))
@@ -134,15 +137,37 @@ class R:
         lu = math.sqrt(sum(v * v for v in u))
         u = [v / lu for v in u]
         w = [d[1] * u[2] - d[2] * u[1], d[2] * u[0] - d[0] * u[2], d[0] * u[1] - d[1] * u[0]]
+        return A, d, L, u, w
+
+    def tube(self, a, b, r, c, n=12):
+        """A round bar from a to b (Roblox points)."""
+        n = self.n(n)
+        A, d, L, u, w = self._axis(a, b)
+        B = [A[k] + L * d[k] for k in range(3)]
         ring = lambda P0: [tuple(P0[k] + r * (math.cos(2 * math.pi * i / n) * u[k] + math.sin(2 * math.pi * i / n) * w[k])
                                  for k in range(3)) for i in range(n)]
         faces = [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
         faces += [tuple(reversed(range(n))), tuple(range(n, 2 * n))]
         self.b._emit(ring(A) + ring(B), faces, c, smooth=True)
 
+    def dome(self, a, b, r, hd, c, n=24):
+        """r8: a round domed plate: a disc from a to b, then a dome hd tall on b's face (lamps, skid end caps)."""
+        n, m = self.n(n), (6, 4, 2)[self.lod]
+        A, d, L, u, w = self._axis(a, b)
+        rings = [(r, 0.0)] + [(r * math.cos(math.pi / 2 * j / m), L + hd * math.sin(math.pi / 2 * j / m))
+                              for j in range(m)]
+        verts = [tuple(A[k] + t * d[k] + rr * (math.cos(2 * math.pi * i / n) * u[k] + math.sin(2 * math.pi * i / n) * w[k])
+                       for k in range(3)) for rr, t in rings for i in range(n)]
+        verts.append(tuple(A[k] + (L + hd) * d[k] for k in range(3)))
+        top = len(verts) - 1
+        faces = [(j * n + i, j * n + (i + 1) % n, (j + 1) * n + (i + 1) % n, (j + 1) * n + i)
+                 for j in range(len(rings) - 1) for i in range(n)]
+        faces += [(m * n + i, m * n + (i + 1) % n, top) for i in range(n)] + [tuple(reversed(range(n)))]
+        self.b._emit(verts, faces, c, smooth=True)     # the 90 deg rim edge stays sharp (set_sharp_from_angle 50)
+
     def torus_z(self, x, y, z, R_, r, c):
-        """A ring standing in the x-y plane (faces the chase cam)."""
-        self.b.torus(-x, z, y, R_, r, c, maj=(14, 10, 8)[self.lod], mnr=(8, 6, 4)[self.lod], axis=1)
+        """A ring standing in the x-y plane (faces the chase cam); r8: 48 x 12 at LOD0."""
+        self.b.torus(-x, z, y, R_, r, c, maj=(48, 24, 12)[self.lod], mnr=(12, 8, 4)[self.lod], axis=1)
 
 
 def window(h, side, y0, y1, z0, z1, x_face, frame=P.WHITE):
@@ -152,8 +177,12 @@ def window(h, side, y0, y1, z0, z1, x_face, frame=P.WHITE):
         h.box((s * (x_face - 0.1), y0 - 0.2, z0 - 0.2), (s * (x_face + 0.05), y1 + 0.2, z1 + 0.2), frame, bev=0)
         h.box((s * (x_face - 0.08), y0, z0), (s * (x_face + 0.12), y1, z1), P.GLASS, bev=0)
         return
-    g0, g1 = x_face - 0.1, x_face + 0.1
-    h.box((s * g0, y0, z0), (s * g1, y1, z1), P.GLASS, bev=0.04)
+    # r8: the canopy's tinted glass over a grey back wall and a charcoal seat back (each face 0.04 apart)
+    h.box((s * (x_face - 0.1), y0, z0), (s * (x_face + 0.12), y1, z1), P.CGLASS, bev=0.04)
+    h.box((s * (x_face - 0.05), y0 + 0.03, z0 + 0.03), (s * (x_face + 0.04), y1 - 0.03, z1 - 0.03), P.GREY, bev=0.02)
+    zc, zw = (z0 + z1) / 2, (z1 - z0) * 0.28
+    h.box((s * (x_face - 0.05), y0 + 0.03, zc - zw), (s * (x_face + 0.08), y0 + (y1 - y0) * 0.62, zc + zw), P.DARK,
+          bev=0.04)
     f0, f1, t = x_face - 0.1, x_face + 0.16, 0.22
     h.box((s * f0, y1 - 0.02, z0 - t), (s * f1, y1 + t, z1 + t), frame, bev=0.06)       # top
     h.box((s * f0, y0 - t, z0 - t), (s * f1, y0 + 0.02, z1 + t), frame, bev=0.06)       # sill
@@ -183,10 +212,31 @@ def frame_bar(h, a, b, c=P.DARK, r=0.17):
     h.tube(a, b, r, c, n=6)
 
 
+def cockpit(h):
+    """r7: what the tinted windscreen shows: a charcoal dash with instrument tiles, two seats, a minifig pilot on the
+    driver side (the player's character sits buried in the hull at ATT_DriverSeat, so it never doubles up)."""
+    h.box((-2.3, 0.3, -5.4), (2.3, 1.0, -4.7), P.DARK, bev=0.08)
+    for x, c in ((-1.55, P.GREEN), (-0.6, P.YELLOW), (0.35, P.RED), (1.3, P.METAL)):
+        h.box((x - 0.3, 0.95, -5.25), (x + 0.3, 1.08, -4.85), c, bev=0.03)
+    for cx in (-1.3, 1.3):
+        h.box((cx - 0.7, 0.3, -4.35), (cx + 0.7, 0.75, -3.2), P.DARK, bev=0.08)    # seat base
+        h.box((cx - 0.7, 0.7, -3.55), (cx + 0.7, 2.1, -3.2), P.DARK, bev=0.08)     # seat back
+    c, zh = 1.3, -3.7
+    h.box((c - 0.45, 0.72, -4.4), (c + 0.45, 1.1, -3.5), P.GREY, bev=0.06)          # hips + thighs
+    h.box((c - 0.5, 1.05, -3.9), (c + 0.5, 1.8, -3.48), P.WHITE, bev=0.06)          # torso
+    h.box((c - 0.55, 1.3, -3.95), (c + 0.55, 1.46, -3.48), P.RED, bev=0.03)         # red chest band
+    for s in (-1, 1):
+        h.tube((c + s * 0.58, 1.68, -3.7), (c + s * 0.5, 1.22, -4.42), 0.15, P.WHITE, n=8)
+        h.sphere(c + s * 0.5, 1.2, -4.5, 0.15, P.YELLOW)
+    h.vcyl(c, zh, 1.76, 2.2, 0.28, P.YELLOW, n=12)                                 # head
+    h.sphere(c, 2.2, zh, 0.35, P.WHITE, zmin=-0.25)                                # helmet
+    h.box((c - 0.27, 1.98, zh - 0.33), (c + 0.27, 2.14, zh - 0.22), P.GLASS, bev=0.03)   # dark visor
+
+
 def body(h):
     # --- cabin: charcoal belly + belly stripe, orange brick-course hull, charcoal pinline under a white brick stripe
     h.box((-3.1, -2.85, -4.2), (3.1, -2.4, 5.2), P.DARK, bev=0.1)
-    h.courses(-3.45, 3.45, -2.6, -1.51, -4.6, 5.5, P.DARK, 1)              # charcoal lower-hull course
+    h.courses(-3.45, 3.45, -2.6, -1.53, -4.6, 5.5, P.DARK, 1)              # charcoal lower-hull course (abuts)
     h.courses(-3.45, 3.45, -1.53, -0.45, -4.6, 5.5, P.ORANGE, 1, k0=1)
     h.box((-3.52, -0.8, -4.68), (3.52, -0.4, 5.58), P.DARK, bev=0.05)
     h.courses(-3.58, 3.58, -0.5, 0.36, -4.74, 5.64, P.WHITE, 1, brick=2.0, top_bev=0.1)
@@ -196,9 +246,11 @@ def body(h):
             (-7.6, 2.0, -2.0, -0.55, 0.45, -1.3)]
     h.loft([h.ring(z, hx, y0, ys + 0.015, ch, ct=0.08) for z, hx, y0, y1, ch, ys in nose], P.ORANGE)
     h.loft([h.ring(z, hx - 0.01, ys - 0.015, y1, ch, cb=0.08) for z, hx, y0, y1, ch, ys in nose], P.ORANGE)
-    h.loft([h.ring(z, hx + 0.07, y1 - 0.2, y1 + 0.1, 0.12) for z, hx, y0, y1, ch, ys in nose], P.WHITE)
+    h.loft([h.ring(z - (0.05 if z < -7 else 0), hx + 0.07, y1 - 0.2, y1 + 0.1, 0.12) for z, hx, y0, y1, ch, ys in nose],
+           P.WHITE)                                                       # lip cap 0.05 ahead of the nose caps
     glass = [(-3.15, 3.2, -0.3, 3.12, 0.5), (-5.3, 2.9, -0.35, 1.55, 0.45), (-6.85, 2.12, -0.4, 0.12, 0.3)]
-    h.loft([h.ring(*g) for g in glass], P.GLASS)
+    h.loft([h.ring(*g) for g in glass], P.CGLASS)                         # r7: see-through tinted glass mesh
+    cockpit(h)
     # charcoal windscreen frame: header, centre post, A-pillars on the top and side corners, a cross seam at mid-screen
     h.box((-3.0, 2.85, -3.5), (3.0, 3.35, -2.95), P.DARK, bev=0.1)
     top = [(0, g[3] + 0.02, g[0]) for g in glass]
@@ -233,15 +285,27 @@ def body(h):
     # --- rear bulkhead: white panel, charcoal frame, orange cross, tail lights (the chase cam's view of the cabin)
     # r5: white clamshell doors (2x the boom), charcoal split under the boom, an orange cross on each leaf,
     # red / green tail-light studs, yellow handles either side of the split
+    # r8: each leaf a panel (face z 5.8) recessed 0.15 inside white bevelled rims (stiles + rails, face 5.95), charcoal
+    # hinge plates over the outer stiles, domed 1x1 red / green lamps, yellow handles outside the cross arms
     h.box((-3.2, -2.3, 5.45), (3.2, 2.75, 5.8), P.WHITE, bev=0.1)
     for s in (-1, 1):
         h.box((s * 2.92, -2.3, 5.72), (s * 3.25, 2.8, 5.9), P.DARK, bev=0.06)
-        for lo, hi, zf, c in (((0.9, -1.25), (2.5, -0.65), 5.94, P.ORANGE), ((1.4, -2.0), (2.0, 0.15), 5.99, P.ORANGE),
-                              ((0.25, -1.1), (0.6, -0.5), 5.96, P.YELLOW)):           # r6: crosses 2x
-            x0, x1 = sorted((s * lo[0], s * hi[0]))
-            h.box((x0, lo[1], 5.76), (x1, hi[1], zf), c, bev=0.04)
-        h.tube((s * 2.35, 1.75, 5.8), (s * 2.35, 1.75, 6.1), 0.45, P.RED if s < 0 else P.GREEN, n=12)
-    h.box((-0.08, -2.05, 5.72), (0.08, 0.3, 5.92), P.DARK, bev=0.02)     # the clamshell split (below the boom)
+        for xa, xb in ((0.06, 0.32), (2.66, 2.92)):                         # inner / outer stile
+            x0, x1 = sorted((s * xa, s * xb))
+            h.box((x0, -2.05, 5.72), (x1, 2.45, 5.95), P.WHITE, bev=0.06)
+        x0, x1 = sorted((s * 0.32, s * 2.66))
+        for ya, yb in ((-2.05, -1.79), (2.19, 2.45)):                       # bottom / top rail between the stiles
+            h.box((x0, ya, 5.72), (x1, yb, 5.95), P.WHITE, bev=0.06)
+        x0, x1 = sorted((s * 2.55, s * 3.15))
+        for y in (-1.2, 0.9):
+            h.box((x0, y - 0.22, 5.85), (x1, y + 0.22, 6.03), P.DARK, bev=0.04)
+        x0, x1 = sorted((s * 1.5, s * 1.75))
+        h.box((x0, -1.2, 5.76), (x1, -0.45, 6.0), P.YELLOW, bev=0.05)
+        h.dome((s * 2.2, 1.6, 5.76), (s * 2.2, 1.6, 6.0), 0.45, 0.2, P.RED if s < 0 else P.GREEN)
+    # one raised bevelled cross plate on the doors' centre over the split, its top arm 0.3 under the boom collar
+    h.box((-0.06, -2.05, 5.72), (0.06, 0.45, 5.91), P.DARK, bev=0.02)    # the clamshell split, under the rims' face
+    h.box((-1.25, -1.15, 5.76), (1.25, -0.5, 6.06), P.ORANGE, bev=0.08)
+    h.box((-0.33, -1.7, 5.76), (0.33, 0.05, 6.1), P.ORANGE, bev=0.08)
     h.box((-3.25, -2.4, 5.72), (3.25, -2.05, 5.9), P.DARK, bev=0.06)
     h.box((-3.25, 2.45, 5.72), (3.25, 2.8, 5.9), P.DARK, bev=0.06)
     # --- windows: cockpit side windows, left cabin window, right sliding door (window, rail, handle, badge)
@@ -249,53 +313,67 @@ def body(h):
         window(h, s, 0.6, 2.45, -3.0, -0.6, 3.35)
     window(h, -1, 0.6, 2.45, 0.6, 4.5, 3.35)
     h.box((3.35, -2.35, DOOR_Z0), (3.66, 2.75, DOOR_Z1), P.WHITE, bev=0.1)
-    h.box((3.56, 0.6, DOOR_Z0 + 0.45), (3.76, 2.35, DOOR_Z1 - 0.45), P.GLASS, bev=0.04)
+    h.box((3.56, 0.6, DOOR_Z0 + 0.45), (3.79, 2.35, DOOR_Z1 - 0.45), P.CGLASS, bev=0.04)   # r8: tinted, see-through
+    h.box((3.6, 0.63, DOOR_Z0 + 0.48), (3.71, 2.32, DOOR_Z1 - 0.48), P.GREY, bev=0.02)
+    h.box((3.6, 0.63, 1.85), (3.75, 1.7, 2.95), P.DARK, bev=0.04)                         # seat back behind it
     h.box((3.5, 2.82, -0.2), (3.72, 3.05, 5.4), P.DARK, bev=0.05)         # door rail
     h.box((3.62, 0.0, DOOR_Z0 + 0.3), (3.84, 0.45, DOOR_Z0 + 0.55), P.YELLOW, bev=0.05)   # handle
     badge(h, 1, 3.66, -1.1, 2.4, k=2.1)
     badge(h, -1, 3.62, -1.1, 2.4, k=2.1)
     # --- tail: wider tapered boom, white stripe + charcoal pinline from the cabin waist, white top band with studs
-    h.loft([h.ring(z, hx, y0, y1, ch) for z, hx, y0, y1, ch in BOOM], P.ORANGE)
+    # r8: a white boom (the orange lower chamfer read as an orange bar from the side) with the charcoal pinline as its
+    # seam; orange only on the flat underside (low rear view), which ends in a charcoal collar at the doors
+    h.loft([h.ring(z, hx, y0, y1, ch) for z, hx, y0, y1, ch in BOOM], P.WHITE)
     stripe = [(5.0, 0.9), (9.0, 1.35), (22.0, 1.85)]       # (z, stripe bottom); keeps to the boom's flat side
-    for d, lo, hi, c in ((0.03, -0.16, 0.04, P.DARK), (0.06, 0.0, 0.36, P.WHITE)):
-        h.loft([h.rect(z, boom_at(z)[0] + d, y + lo, y + hi) for z, y in stripe], c)
-    band = [(z, boom_at(z)) for z in (7.6, 9.0, 22.0)]
-    h.loft([h.rect(z, hx - ch - 0.05, y1 - 0.1, y1 + 0.06) for z, (hx, y0, y1, ch) in band], P.WHITE)
+    h.loft([h.rect(z, boom_at(z)[0] + 0.03, y - 0.16, y + 0.04) for z, y in stripe], P.DARK)   # charcoal pinline
+    h.loft([h.rect(z, boom_at(z)[0] - boom_at(z)[3] - 0.02, boom_at(z)[1] - 0.05, boom_at(z)[1] + 0.02)
+            for z in (5.0, 9.0, 22.3)], P.ORANGE)
     for z in (8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5):              # stud row along the boom
-        h.stud(0, boom_at(z)[2] + 0.06, z, P.WHITE)
-    for za, zb in ((15.9, 16.5), (17.0, 17.6)):                            # white bands -> orange/white tail stripes
-        h.loft([h.ring(z, boom_at(z)[0] + 0.09, boom_at(z)[1] - 0.09, boom_at(z)[2] + 0.12, boom_at(z)[3])
-                for z in (za, zb)], P.WHITE)
-    # fin 1.5x: orange with a white cross each side and a red cap; gearbox stub out to the tail rotor hub
+        h.stud(0, boom_at(z)[2], z, P.WHITE)
+    for za, zb in ((5.84, 6.24), (9.6, 9.9), (16.3, 16.6)):               # root collar + two 0.3 charcoal bands
+        h.loft([h.ring(z, boom_at(z)[0] + 0.11, boom_at(z)[1] - 0.09, boom_at(z)[2] + 0.13, boom_at(z)[3])
+                for z in (za, zb)], P.DARK)
+    # fin 1.5x: orange root, r7 white upper half with an orange cross each side over a charcoal pinline, red cap;
+    # gearbox stub out to the tail rotor hub
     h.prof(-0.66, 0.66, [(18.0, 2.0), (22.0, 2.0), (22.6, 6.0), (20.0, 6.0)], P.ORANGE)   # low fin: roof shows over it
+    h.prof(-0.7, 0.7, [(18.86, 3.78), (22.31, 3.78), (22.36, 4.08), (19.01, 4.08)], P.DARK)
+    h.prof(-0.75, 0.75, [(18.95, 3.95), (22.33, 3.95), (22.62, 5.85), (19.88, 5.85)], P.WHITE)
     h.box((-0.76, 5.8, 19.85), (0.76, 6.45, 22.85), P.RED, bev=0.14)
     for s in (-1, 1):
-        h.box((s * 0.6, 4.15, 20.1), (s * 0.73, 5.65, 20.7), P.WHITE, bev=0.03)
-        h.box((s * 0.6, 4.6, 19.65), (s * 0.73, 5.2, 21.15), P.WHITE, bev=0.03)
+        h.box((s * 0.7, 4.2, 20.6), (s * 0.82, 5.6, 21.2), P.ORANGE, bev=0.03)
+        h.box((s * 0.7, 4.6, 20.15), (s * 0.82, 5.2, 21.65), P.ORANGE, bev=0.03)
     h.xcyl(0.95, TAIL_HUB[1], TAIL_HUB[2], 0.36, 0.8, P.METAL, n=10)      # tail gearbox stub (ends inside the hub)
-    # stabiliser: 4-stud white plate, tall orange studded end caps (an H from behind, ahead of the tail disc)
+    # stabiliser: 4-stud white plate, white studded end caps on a charcoal seam, r8: orange only on their tip caps
     h.box((-3.8, 1.6, 11.4), (3.8, 2.2, 15.4), P.WHITE, bev=0.12)       # inboard of the hoist ring in the chase view
     for s in (-1, 1):
         x0, x1 = sorted((s * 3.4, s * 4.2))                # r6: white endplates 40% lower, orange caps (no orange legs)
         h.box((x0, 1.2, 11.2), (x1, 3.0, 15.6), P.WHITE, bev=0.12)
-        h.box((x0 - 0.05, 2.96, 11.15), (x1 + 0.05, 3.4, 15.65), P.ORANGE, bev=0.1)
-        for z in (12.0, 13.0, 14.0, 15.0):
+        h.box((x0 - 0.05, 2.96, 11.15), (x1 + 0.05, 3.4, 15.65), P.WHITE, bev=0.1)
+        h.box((x0 - 0.08, 2.9, 11.12), (x1 + 0.08, 3.02, 15.68), P.DARK, bev=0.03)
+        for za, zb in ((11.1, 11.6), (15.2, 15.7)):
+            h.box((x0 - 0.09, 2.88, za), (x1 + 0.09, 3.44, zb), P.ORANGE, bev=0.08)
+        for z in (12.4, 13.4, 14.4):
             h.stud(s * 3.8, 3.4, z, P.WHITE)
         for x in (2.0, 3.0):
             for z in (12.4, 14.4):
                 h.stud(s * x, 2.2, z, P.WHITE)
-    # --- round charcoal skid tubes 1.4x wider (bottom at y -4.5 = Flight spec.skid), orange caps, studded steps
+
+
+def gear(h):
+    """r8: skids + winch on their own MeshPart (Gear), so the Body stays under the 10k per-MeshPart limit."""
+    # --- round charcoal skid tubes 1.4x wider (bottom at y -4.5 = Flight spec.skid), orange caps, studded steps;
+    # r8: 24-sided, the end caps round domed plates
     for s in (-1, 1):
         x = s * 3.6
-        h.tube((x, -4.02, 5.3), (x, -4.02, -4.75), 0.48, P.DARK, n=14)
-        h.tube((x, -4.02, -4.75), (x, -3.24, -6.2), 0.48, P.DARK, n=14)
-        h.sphere(x, -4.02, -4.75, 0.48, P.DARK)
-        h.tube((x, -3.94, 5.1), (x, -3.94, 5.55), 0.56, P.DARK, n=10)              # r6: charcoal rear cap
-        h.stud(x, -3.48, 5.33, P.WHITE)
-        h.tube((x, -3.287, -6.112), (x, -3.098, -6.464), 0.56, P.ORANGE, n=10)
+        h.tube((x, -4.02, 5.3), (x, -4.02, -4.75), 0.48, P.DARK, n=24)
+        h.tube((x, -4.02, -4.75), (x, -3.24, -6.2), 0.48, P.DARK, n=24)
+        h.sphere(x, -4.02, -4.75, 0.48, P.DARK, n=24)
+        h.dome((x, -3.94, 5.0), (x, -3.94, 5.4), 0.56, 0.22, P.DARK)              # charcoal rear cap
+        h.stud(x, -3.48, 5.22, P.WHITE)
+        h.dome((x, -3.287, -6.112), (x, -3.098, -6.464), 0.56, 0.22, P.ORANGE)
         for z in (-2.5, 2.8):
-            h.tube((x, -3.9, z), (s * 2.6, -2.5, z), 0.36, P.DARK, n=10)
-            h.tube((x, -3.94, z - 0.3), (x, -3.94, z + 0.3), 0.56, P.DARK, n=10)   # r5: charcoal strut-foot collar
+            h.tube((x, -3.9, z), (s * 2.6, -2.5, z), 0.36, P.DARK, n=16)
+            h.tube((x, -3.94, z - 0.3), (x, -3.94, z + 0.3), 0.56, P.DARK, n=24)   # r5: charcoal strut-foot collar
             h.stud(x, -3.48, z, P.WHITE)
         x0, x1 = sorted((s * 2.6, s * 4.6))
         h.box((x0, -3.62, -1.6), (x1, -3.32, 1.4), P.WHITE, bev=0.06)
@@ -316,9 +394,14 @@ def body(h):
     for za, zb in ((1.62, 1.76), (3.04, 3.18)):
         h.tube((WINCH[0], 2.3, za), (WINCH[0], 2.3, zb), 0.8, P.WHITE, n=14)
     # r5: no modelled cable (VehicleService draws it from ATT_WinchPoint); the hook block and ring hang stowed
-    h.box((WINCH[0] - 0.55, HOOK[1] + RING_R + 0.1, 1.9), (WINCH[0] + 0.55, HOOK[1] + RING_R + 0.75, 2.9), P.DARK,
+    h.box((WINCH[0] - 0.55, HOOK[1] + RING_R + 0.1, HOOK[2] - 0.5), (WINCH[0] + 0.55, HOOK[1] + RING_R + 0.75, HOOK[2] + 0.5), P.DARK,
           bev=0.12)                                                        # hook block, right under the drum
     h.torus_z(HOOK[0], HOOK[1], HOOK[2], RING_R, RING_T, P.YELLOW)
+
+
+def body_gear(h):
+    body(h)
+    gear(h)
 
 
 def main_rotor(h):
@@ -342,16 +425,22 @@ def main_rotor(h):
             h.box(tuple(map(min, lo, hi)), tuple(map(max, lo, hi)), c, bev=bev)
             return tuple(map(min, lo, hi)), tuple(map(max, lo, hi))
         span(0.95, 3.3, -0.9, 0.9, -0.55, 0.5, P.METAL, 0.12)             # root grip (from the 2x2 hub)
-        # full-brick blade: white plate on a charcoal under-plate, charcoal edge strips both sides
-        span(3.0, ROTOR_R - 1.9, -2.4, 2.4, -0.1, 0.6, P.WHITE, 0.12)
-        span(3.05, ROTOR_R - 1.95, -2.38, 2.38, -0.6, -0.07, P.DARK, 0.1)
+        # full-brick blade: white plate on a charcoal under-plate, charcoal edge strips both sides (r7: 25% narrower);
+        # r8: the plate laid as 2-stud tiles (chamfered, overlapping 0.02: a V seam every 2 studs), tips 25% shorter
+        # and lower; plates and strips end 0.05 inside the tip
+        tip = ROTOR_R - 1.5
+        end = tip + 0.05
+        cuts = [3.0] + [end - 2.0 * i for i in (4, 3, 2, 1)] + [end] if h.lod < 2 else [3.0, end]
+        for i, (r0, r1) in enumerate(zip(cuts, cuts[1:])):
+            span(r0 - (0.01 if i else 0), r1 + (0.01 if r1 < end else 0), -1.8, 1.8, -0.1, 0.6, P.WHITE, 0.12)
+        span(3.05, end, -1.78, 1.78, -0.6, -0.07, P.DARK, 0.1)
         for e in (-1, 1):
-            span(3.0, ROTOR_R - 1.9, *sorted((e * 2.32, e * 2.7)), -0.64, 0.64, P.DARK, 0.1)
-        lo, hi = span(ROTOR_R - 2.0, ROTOR_R, -2.9, 2.9, -0.75, 0.75, P.ORANGE, 0.16)   # 2x6 orange tip brick
-        if ax[0]:
-            h.studs(lo[0], hi[0], -2.5, 2.5, Y + 0.75, P.WHITE)
+            span(3.1, end, *sorted((e * 1.74, e * 2.03)), -0.64, 0.64, P.DARK, 0.1)   # 3.1: off the plate's end
+        lo, hi = span(tip, ROTOR_R, -2.2, 2.2, -0.52, 0.66, P.ORANGE, 0.14)   # 1.5 x 4 orange tip brick
+        if ax[0]:      # one row of 4 studs across the tip's middle
+            h.studs(lo[0] + 0.25, hi[0] - 0.25, -2.0, 2.0, Y + 0.66, P.WHITE)
         else:
-            h.studs(-2.5, 2.5, lo[2], hi[2], Y + 0.75, P.WHITE)
+            h.studs(-2.0, 2.0, lo[2] + 0.25, hi[2] - 0.25, Y + 0.66, P.WHITE)
     # rest pose at 45 deg (an X): no blade lies along the boom over the cabin in the chase view; 4-fold symmetric, so
     # the bbox centre stays on the hub
     k = math.sqrt(0.5)
@@ -399,31 +488,54 @@ ATTS = {
 }
 
 
+def glass_material():
+    """The windscreen's own material: the Glass set's RGBA ALB, alpha into the BSDF (stills match the in-game tint)."""
+    import bpy
+    mat = lego.material("MI_RescueHeli_Glass", ALB.replace("_Lego_", "_Glass_"))
+    nt = mat.node_tree
+    tex = next(n for n in nt.nodes if n.type == "TEX_IMAGE")
+    bsdf = next(n for n in nt.nodes if n.type == "BSDF_PRINCIPLED")
+    bsdf.inputs["Roughness"].default_value = 0.5     # r8: no sun hotspot on the flat screen (in-game RGH is 0.8);
+    # set every build: lego.material reuses a saved material
+    nt.links.new(tex.outputs["Alpha"], bsdf.inputs["Alpha"])
+    for attr, val in (("surface_render_method", "BLENDED"), ("blend_method", "BLEND")):
+        try:
+            setattr(mat, attr, val)
+        except (AttributeError, TypeError):
+            pass
+    return mat
+
+
 def build():
     import bpy  # noqa: F401  (Blender only)
-    mat = lego.material("MI_RescueHeli_Lego", ALB)
+    mats = {SET: lego.material("MI_RescueHeli_Lego", ALB), "Glass": glass_material()}
     meshes, lods = [], {}
-    # Paint = the orange shell on its own MeshPart: LiveryPaint repaints it (primary), the rest keeps its colours
-    parts = (("Body", body, False), ("Paint", body, True), ("MainRotor", main_rotor, None), ("TailRotor", tail_rotor, None))
-    for part, fn, paint in parts:
+    # Paint = the orange shell on its own MeshPart: LiveryPaint repaints it (primary), the rest keeps its colours;
+    # r7: Glass = the windscreen on its own MeshPart and set (RGBA ALB, AlphaMode Transparency) so the cockpit shows
+    # r8: Gear = skids + winch on their own MeshPart (Body was at 9,776 of the 10k per-MeshPart limit)
+    parts = (("Body", body, {P.ORANGE, P.CGLASS}, False, SET), ("Paint", body_gear, {P.ORANGE}, True, SET),
+             ("Glass", body, {P.CGLASS}, True, "Glass"), ("Gear", gear, {P.ORANGE}, False, SET),
+             ("MainRotor", main_rotor, None, None, SET), ("TailRotor", tail_rotor, None, None, SET))
+    for part, fn, cells, keep, st in parts:
+        mat = mats[st]
         tris = []
         for lod in (0, 1, 2):
             b = lego.B()
             fn(R(b, lod))
-            if paint is not None:
-                b = b.pick({P.ORANGE}, keep=paint)
+            if cells is not None:
+                b = b.pick(cells, keep=keep)
             tris.append(b.tris())
             nm = "%s_%s_LOD%d" % (NAME, part, lod)
             if lod:
                 lods[nm] = b.to_mesh(nm + "_src", mat)
             else:
                 obj = b.to_object(nm, mat)
-        meshes.append({"object": obj, "set": SET, "role": "visual", "lod": "LOD0"})
+        meshes.append({"object": obj, "set": st, "role": "visual", "lod": "LOD0"})
         print("[heli] %-10s %5d / %5d / %5d tris" % (part, *tris))
     patch_lod(lods)
     c = lego.B()
     R(c).box((-3.5, -3.0, -6.5), (3.5, 3.0, 6.5), P.DARK, bev=0)
-    meshes.append({"object": c.to_object(NAME + "_COL", mat), "role": "col"})
+    meshes.append({"object": c.to_object(NAME + "_COL", mats[SET]), "role": "col"})
     atts = [lego.attach(n, R.p(*p)) for n, p in ATTS.items()]
 
     pts = [e["object"].matrix_world @ v.co for e in meshes if e["role"] == "visual" for v in e["object"].data.vertices]
@@ -432,7 +544,8 @@ def build():
         "name": NAME, "budget": "helicopter", "tier": "standard",
         "dims_m": dims, "origin": "free", "tiling": True,
         "size_note": "Lego toy proportions on the Heli/Builder frame (HullRoot centre origin)",
-        "sets": [{"name": SET_NAME, "set": SET, "size": 1024, "wet": False}],
+        "sets": [{"name": SET_NAME, "set": SET, "size": 1024, "wet": False},
+                 {"name": SET_NAME, "set": "Glass", "size": 1024, "wet": False}],
         "waivers": {
             "texture sets": "Lego style: one flat palette atlas for every mesh (as M_Prop_BoardKit), not 5 PBR sets",
             "LOD UV layout": "flat palette cells: decimation merges cells by design (tiling=True skips density)",
