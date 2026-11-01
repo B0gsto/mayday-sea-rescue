@@ -406,7 +406,8 @@ local function keepCameraDry()
 	end
 	local hp = head.Position
 	local headSea = surfaceAt(hp.X, hp.Z)
-	if hp.Y < headSea - 0.5 then
+	-- a surface swimmer's head dips under each passing crest: keep the lens dry anyway (no dive to show)
+	if hp.Y < headSea - 0.5 and not swimming then
 		return
 	end
 	local pos = camera.CFrame.Position
