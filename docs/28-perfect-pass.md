@@ -99,3 +99,4 @@ HQ r6 (FIN1): **PASS 9.22**, every level >= 9.1 (L4 8.8 -> 9.1), bc53adad. Commo
 Gotcha (FIN1): tools/blender/zfight_check.check() resets Blender to factory settings, which disables the MCP add-on: inside an MCP session check LODs another way (or re-enable the add-on after).
 Sea plates r5-r6 (FIN2): 8.8 -> 8.9, cap reached; revisit after the sweep with a fresh concept pass (biggest gaps from the r6 judges).
 FIN2: heli r6 9.0 (5a980fae; livery repaint via _Paint mesh, modelled cable dropped), sea plates r6 8.9 (b1626adf; props collide). PERF-FIN4 queued: both rounds 7-8 after FIN3.
+FIN3: crane r10 9.0 (d3d564a3, budget class rock 10k), build-site r6 8.8 (3a33dfbc). PERF-FIN5 queued after FIN4: crane groove/jib/joints, build-site per-pallet meshes + colours.
