@@ -325,6 +325,9 @@ local KIT_SLOT = {
 	Barrier = "Barrier",
 }
 local kitCache: { [string]: { part: BasePart, offset: CFrame } }? = nil
+local CRANE_S, CONE_S = 1.3, 1.5 -- r5 AD: the mast reads thin and the cones vanish on a phone
+local PALLET = { RED, YELLOW, Color3.fromRGB(30, 96, 186) } -- one Lego colour per pallet
+local STUD_TEXTURE = "rbxassetid://18878365966" -- IslandPlates' white 4 x 4 stud tile, tinted per brick
 
 local function siteKit(): { [string]: { part: BasePart, offset: CFrame } }?
 	if kitCache then
@@ -356,11 +359,16 @@ local function siteKit(): { [string]: { part: BasePart, offset: CFrame } }?
 	return out
 end
 
--- One kit module with its origin at `cf`, stretched by sx along the module's x (fence and scaffold runs fit the lot).
-local function module(parent: Instance, key: string, cf: CFrame, sx: number?): BasePart
+-- One kit module with its origin at `cf`, stretched by sx along the module's x (fence and scaffold runs fit the lot),
+-- or scaled by s all round (r5 AD: the crane and cones read too small from the game camera).
+local function module(parent: Instance, key: string, cf: CFrame, sx: number?, s: number?): BasePart
 	local k = (kitCache :: any)[key]
 	local p = k.part:Clone()
 	local offset = k.offset
+	if s then
+		p.Size *= s
+		offset = CFrame.new(offset.Position * s) * offset.Rotation
+	end
 	if sx and sx ~= 1 then
 		local along = offset.Rotation:VectorToObjectSpace(Vector3.xAxis) -- the module's x in the part's own axes
 		p.Size *= Vector3.one + (sx - 1) * Vector3.new(
@@ -424,14 +432,9 @@ local function kitProps(st: Site, props: Model, at: CFrame): boolean
 				module(props, "ScaffoldBay", at * CFrame.new(x, level * 5, -st.hd - 1.4), sx)
 			end
 		end
-		module(
-			props,
-			"Barrier",
-			at * CFrame.new(fw + 2, 0, -fd + 4) * CFrame.Angles(0, -math.pi / 2, 0)
-		)
-		if gate then -- cones flank the opening
-			module(props, "Cone", at * CFrame.new(-4.9, 0, -fd - 1.3))
-			module(props, "Cone", at * CFrame.new(4.9, 0, -fd - 1.3))
+		if gate then -- cones flank the opening (r5 AD: no barrier, a calm front edge)
+			module(props, "Cone", at * CFrame.new(-5.2, 0, -fd - 1.6), nil, CONE_S)
+			module(props, "Cone", at * CFrame.new(5.2, 0, -fd - 1.6), nil, CONE_S)
 		end
 	end
 	-- the tower crane: off the back-left corner with its jib over the lot (at sea: on the front-left barge); the
@@ -442,25 +445,42 @@ local function kitProps(st: Site, props: Model, at: CFrame): boolean
 		else at
 			* CFrame.new(-fw - 4.5, 0, fd + 4.5)
 			* CFrame.Angles(0, math.pi / 4, 0) -- the brick clears the walls
-	module(props, "CraneBase", base)
+	module(props, "CraneBase", base, nil, CRANE_S)
 	local att = (AssetIds.Attachments :: any).M_Prop_BuildSiteKit
-	local pivot = base * CFrame.new(att.ATT_CranePivot - att.ATT_Crane)
+	local pivot = base * CFrame.new((att.ATT_CranePivot - att.ATT_Crane) * CRANE_S)
 	st.crane = { pivot = pivot, parts = {}, offsets = {}, bob = 2 }
 	for _, key in { "CraneSlew", "CraneHook" } do
-		local part = module(props, key, base)
+		local part = module(props, key, base, nil, CRANE_S)
 		table.insert(st.crane.parts, part)
 		table.insert(st.crane.offsets, pivot:ToObjectSpace(part.CFrame))
 	end
-	-- brick pallets along the front right, in view: three courses each, the top courses go first as the building rises
+	-- brick pallets down the right side (at sea: the back barge), three courses each in ONE colour per pallet (r5 AD:
+	-- the kit's mixed courses read as noise); code bricks with the plates' stud tile, the top courses go first.
+	-- Each course sinks 0.05 into the one under it: no shared faces.
 	local courses: { { BasePart } } = { {}, {}, {} }
 	for n = 0, 2 do
 		local cf = at
 			* if st.sea
 				then CFrame.new(-9 + n * 3.8, 0, hd + 2)
-				else CFrame.new(6.5 + n * 3.8, 0, -fd - 2.4)
+				else CFrame.new(fw + 2.4, 0, -fd + 2 + n * 3.8) * CFrame.Angles(
+					0,
+					math.pi / 2,
+					0
+				)
 		module(props, "StackPallet", cf)
-		for k, key in { "StackTop", "StackMid", "StackLow" } do
-			table.insert(courses[k], module(props, key, cf))
+		local colour = PALLET[n + 1]
+		for k = 1, 3 do -- k = 1: the top course
+			local level = 3 - k -- 0 low .. 2 top
+			local size = Vector3.new(3.1 - level * 0.5, 0.8, 2.15 - level * 0.35)
+			local b =
+				brick(props, "Bricks", size, cf * CFrame.new(0, 0.9 + level * 0.75, 0), colour)
+			local tex = Instance.new("Texture")
+			tex.Face = Enum.NormalId.Top
+			tex.Texture = STUD_TEXTURE
+			tex.StudsPerTileU, tex.StudsPerTileV = 3.2, 3.2 -- 4 x 4 studs a tile: the kit's 0.8 grid
+			tex.Color3 = colour:Lerp(Color3.new(0, 0, 0), 0.12)
+			tex.Parent = b
+			table.insert(courses[k], b)
 		end
 	end
 	st.stacks = table.move(courses[3], 1, 3, 7, table.move(courses[2], 1, 3, 4, courses[1]))
@@ -683,13 +703,13 @@ local function startSite(plot: Model, model: Model, key: string, mine: boolean):
 			continue
 		end
 		local rise = if layered then layerOf(d, level) else d.CFrame.Y
-		if not rise then
-			kept[d] = true
-			continue
+		if rise then
+			table.insert(parts, d)
+			table.insert(ys, rise)
+			lo, hi = math.min(lo, rise), math.max(hi, rise)
+		else
+			kept[d] = true -- still in the bounds: an upgrade's kit wraps the whole building, not its middle (A2 AD)
 		end
-		table.insert(parts, d)
-		table.insert(ys, rise)
-		lo, hi = math.min(lo, rise), math.max(hi, rise)
 		local holder = d:FindFirstAncestorWhichIsA("Model")
 		if holder and holder ~= model and holder:GetAttribute("SiteApart") then
 			continue -- the fence and sign go round the lot, not round a far quay
@@ -790,10 +810,20 @@ local function update(site: Site, progress: number, rate: number, builders: numb
 			)
 			local pitch = BuildSeq.PITCH_LO + p * (BuildSeq.PITCH_HI - BuildSeq.PITCH_LO)
 			AudioController.play("FX_Snap", at, 0.45, pitch)
+			-- the dust puffs off the new course's front edge, so the progress reads from the game camera
+			local dust = site.dust.Parent :: BasePart
+			if dust.Parent then
+				dust.Position = Vector3.new(at.X, at.Y, site.center.Z - site.hd + 1)
+				site.dust:Emit(6)
+			end
 		end)
 	end
 	for k, stack in site.stacks do
 		stack.Transparency = if k <= math.floor(p * #site.stacks) then 1 else 0
+		local tex = stack:FindFirstChildOfClass("Texture")
+		if tex then
+			tex.Transparency = stack.Transparency -- a decal outlives its part's Transparency
+		end
 	end
 	site.progress = p
 	site.ready = true
@@ -928,6 +958,55 @@ end
 
 local function isMine(site: Site): boolean
 	return site.plot.Name == `Plot{player:GetAttribute("DockPlot")}`
+end
+
+-- The start beat (a fresh site in view): a brick rattle, then the kit drops in round the lot in one clockwise sweep
+-- from the gate, each piece with the BuildSeq squash; mid-sweep the lot thuds down with place_dust (white ring, dust
+-- ring, plates, thud + snap). Reduce motion: the kit is just there, the ring and sound still play.
+local POP_SWEEP, POP_LIFT = 0.6, 5
+local function popIn(site: Site)
+	local cam = Workspace.CurrentCamera
+	if not cam or (cam.CFrame.Position - site.center).Magnitude > VFXPresets.CULL then
+		return
+	end
+	local centre = Vector3.new(site.center.X, site.ground, site.center.Z)
+	AudioController.play("FX_PlasticRain", centre, 0.5, 0.9)
+	task.delay(POP_SWEEP * 0.6, function()
+		if site.props.Parent then
+			VFXKit.play("place_dust", CFrame.new(centre), {
+				radius = math.max(site.hw, site.hd) + 2,
+				still = not isMine(site),
+			})
+		end
+	end)
+	if CameraController.Comfort.reducedMotion() then
+		return
+	end
+	local function show(part: BasePart, on: boolean)
+		part.LocalTransparencyModifier = if on then 0 else 1
+		for _, c in part:GetChildren() do
+			if c:IsA("Texture") then
+				c.Transparency = if on then 0 else 1
+			end
+		end
+	end
+	local crane: { [BasePart]: boolean } = {}
+	for _, part in site.crane.parts do
+		crane[part] = true
+		show(part, false) -- the jib swings in once the mast has landed (the slew loop owns its CFrame)
+		task.delay(POP_SWEEP + 0.2, show, part, true)
+	end
+	for _, d in site.props:GetDescendants() do
+		if d:IsA("BasePart") and d.Transparency < 1 and not crane[d] then
+			local off = d.Position - centre
+			local delay = POP_SWEEP * ((math.atan2(off.X, -off.Z) / (2 * math.pi)) % 1)
+			local final = d.CFrame
+			show(d, false)
+			d.CFrame = final + Vector3.new(0, POP_LIFT, 0)
+			task.delay(delay, show, d, true)
+			settle(d, final, 0.22, delay)
+		end
+	end
 end
 
 -- The tutorial's free Hut and first Workshop keep OnboardingController's own beats.
@@ -1191,6 +1270,9 @@ local function reconcile()
 						end
 						current = startSite(plot, model, key, player:GetAttribute("DockPlot") == i)
 						sites[i] = current :: Site
+						if (tonumber(plot:GetAttribute("SiteProgress")) or 0) < 0.05 then
+							task.defer(popIn, current :: Site) -- after the first update has hidden the walls
+						end
 					end
 					if current then
 						if current.prompt == nil and player:GetAttribute("DockPlot") == i then
@@ -1237,7 +1319,24 @@ function ConstructionController.Start()
 	end)
 	task.spawn(function()
 		local seated = false
+		local hooked = false
 		while true do
+			local marina = not hooked and Workspace:FindFirstChild("Marina")
+			if marina then
+				hooked = true
+				-- a new site's model arrives fully built: hide it the moment it lands, not up to 0.25 s later (the
+				-- start flash); its SiteKey may come a beat after it
+				marina.DescendantAdded:Connect(function(d)
+					local plot = d.Parent
+					if d:IsA("Model") and string.sub(d.Name, 1, 5) == "Site_" and plot then
+						if plot:GetAttribute("SiteKey") == nil then
+							plot:GetAttributeChangedSignal("SiteKey"):Once(reconcile)
+						else
+							task.defer(reconcile)
+						end
+					end
+				end)
+			end
 			reconcile()
 			local at = eye()
 			for _, site in sites do

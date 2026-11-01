@@ -1199,6 +1199,19 @@ Presets.ALL.crew_start = preset({
 	},
 })
 
+-- feedback: the recruit's category icon lands over their building's sign (FeedbackController): a hop of teal plates
+-- off the icon, above the building (never on it), with a ding
+Presets.ALL.crew_clockon = preset({
+	job = "feedback",
+	layers = {
+		with(plates({ SEA, WHITE, YELLOW }, 10), { size = { 1.4 }, speed = { 9, 12 } }),
+	},
+	sounds = {
+		{ clip = "FX_Ding", volume = 0.8, pitch = 1.2 } :: FxSound,
+		{ clip = "FX_ChimeHit", volume = 0.5, pitch = 1.1 } :: FxSound,
+	},
+})
+
 -- spectacle (small): a quest handed in (HudController, award reason Quest:*): bricks rain from over your head, a
 -- white ring and coins hop; a chime over the coins
 Presets.ALL.quest_done = preset({
@@ -1390,6 +1403,37 @@ Presets.ALL.heli_downwash = preset({
 			transparency = POP,
 		}),
 		with(drops(6, { 10, 16 }, 60, 1.2), { ring = true }),
+	},
+})
+
+-- feedback: you push off into a sprint (SprintController; its up axis points back and up from the push-off foot):
+-- a small kick of studded dust and two plates off the heel; a swoosh over a soft scuff
+Presets.ALL.sprint_kick = preset({
+	job = "feedback",
+	layers = {
+		with(puffs(4, DUST, 0.9, 2.2, 0.45), { speed = { 6, 10 }, spread = { 25, 25 }, drag = 5 }),
+		with(
+			plates({ WHITE, YELLOW }, 2),
+			{ size = { 1.1 }, speed = { 9, 12 }, spread = { 20, 20 } }
+		),
+	},
+	sounds = {
+		{ clip = "FX_Swoosh", volume = 0.8, pitch = 1.15 } :: FxSound,
+		{ clip = "FX_Thud", volume = 0.25, pitch = 1.6 } :: FxSound,
+	},
+})
+
+-- feedback: a sprint brakes to a stop (SprintController; up axis forward and up from the planted front foot): a
+-- low skid of studded dust ahead of the foot; a scuff thud under a short low swoosh
+Presets.ALL.sprint_brake = preset({
+	job = "feedback",
+	layers = {
+		with(puffs(5, DUST, 0.8, 2, 0.5), { speed = { 5, 8 }, spread = { 35, 35 }, drag = 6 }),
+		with(plates({ WHITE }, 1), { size = { 1 }, speed = { 6, 8 }, spread = { 25, 25 } }),
+	},
+	sounds = {
+		{ clip = "FX_Thud", volume = 0.35, pitch = 1.4 } :: FxSound,
+		{ clip = "FX_Swoosh", volume = 0.5, pitch = 0.8 } :: FxSound,
 	},
 })
 

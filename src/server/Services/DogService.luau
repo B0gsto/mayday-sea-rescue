@@ -584,7 +584,8 @@ local function step(dog: Dog, now: number)
 	end
 	flatLook = flatLook.Unit
 	local right = Vector3.new(-flatLook.Z, 0, flatLook.X)
-	local desired = root.Position + right * 3.2 - flatLook * 1.5
+	-- beside and a little ahead: behind him he filled the foreground of the on-foot camera (locomotion AD r1)
+	local desired = root.Position + right * 3.4 + flatLook * 1.2
 	local y, depth = groundY(desired, character)
 	desired = Vector3.new(desired.X, y, desired.Z)
 	dog.depth = depth

@@ -36,10 +36,12 @@ type Mode = "Foot" | "Chase" | "Cinematic" | "None"
 -- On foot: Roblox's third-person camera, never zoomed into the head.
 local MIN_ZOOM = 6
 local MAX_ZOOM = 30
-local START_ZOOM = 19 -- Roblox starts at 12.5: the avatar filled a third of the frame (r2 art review)
-local START_ZOOM_TOUCH = 16 -- a phone's small screen: a little closer so the avatar still reads
+local START_ZOOM = 12 -- Roblox's 12.5; locomotion AD r1: at 16-19 the avatar was ~6% of a phone's height
+local START_ZOOM_TOUCH = 10 -- a phone's small screen: closer so the avatar (and its stride) reads
 local BLEND_TIME = 0.45 -- seconds the view eases between the on-foot and chase cameras
 local LIFT = 1.5 -- studs the view frames above the head
+local SPRINT_PUSH = { 6, 0.25, 0.4 } -- FOV degrees out at a sprint's push-off, seconds out, seconds back
+local lastPush = 0 -- the push added to the FOV last frame
 local freshSpawn = true -- the first Foot entry after a spawn pulls the zoom out to START_ZOOM
 
 local player = Players.LocalPlayer
@@ -232,6 +234,7 @@ local function enterFoot(hum: Humanoid)
 end
 
 local function exitMode(old: Mode)
+	lastPush = 0 -- the next mode owns the FOV
 	local char, hum = character()
 	if old == "Foot" and hum then
 		hum.CameraOffset = Vector3.zero
@@ -249,12 +252,16 @@ local function enterMode(new: Mode)
 		enterFoot(hum)
 		if freshSpawn then
 			freshSpawn = false
-			-- holding the min zoom up for a few frames is how Roblox's zoom distance gets moved
+			-- holding the min and max zoom on it for a few frames is how Roblox's zoom distance gets moved (in or out)
 			local start = if Layout.device() == "Touch" then START_ZOOM_TOUCH else START_ZOOM
 			player.CameraMinZoomDistance = start
+			player.CameraMaxZoomDistance = start
 			task.delay(0.1, function()
 				if math.abs(player.CameraMinZoomDistance - start) < 0.01 then
 					player.CameraMinZoomDistance = MIN_ZOOM
+				end
+				if math.abs(player.CameraMaxZoomDistance - start) < 0.01 then
+					player.CameraMaxZoomDistance = MAX_ZOOM
 				end
 			end)
 		end
@@ -396,7 +403,25 @@ local function update(dt: number)
 		if (hum.CameraOffset - lift).Magnitude > 0.01 then
 			hum.CameraOffset = lift
 		end
-		camera.FieldOfView = CameraMath.damp(camera.FieldOfView, Comfort.get("fov"), 0.15, dt)
+		-- a short FOV push at a sprint's push-off (SprintController sets SprintKick), out fast and eased back
+		local push = 0
+		local kick = tonumber(player:GetAttribute("SprintKick"))
+		if kick and Comfort.get("speedFov") and not Comfort.reducedMotion() then
+			local amp, out, back = SPRINT_PUSH[1], SPRINT_PUSH[2], SPRINT_PUSH[3]
+			local k = os.clock() - kick
+			if k < out then
+				push = amp * CameraMath.smoothstep(k / out)
+			elseif k < out + back then
+				push = amp * (1 - CameraMath.smoothstep((k - out) / back))
+			end
+		end
+		camera.FieldOfView = CameraMath.damp(
+			camera.FieldOfView - lastPush,
+			Comfort.get("fov"),
+			0.15,
+			dt
+		) + push
+		lastPush = push
 		popOccluders(camera, char)
 		applyBlend(camera, dt)
 		fadeNearBody(char, camera.CFrame.Position)
