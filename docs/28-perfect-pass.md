@@ -16,23 +16,23 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | AD method | fresh ADs drift +-0.3 and contradict: use an anchor strip of passing items + fixed rubric + pairwise old-vs-new in every AD prompt | all streams | - | rule |
 | World | baseline in-game tour | PERF-TOUR2 | 5.0-8.6 (61 items) | done: tour/SCORES.md; Blender lane order below |
 | Feel | game feel + progression review | code read | moments 3-8 | done: build/status/2026-10-31/perfect/feel/REVIEW.md (28 items) |
-| Feel | REVIEW 5,6,7,9 build feel | PERF-F1o (Opus) | 6-6.5 | building |
-| Feel | REVIEW 1,13,22,24 buy a boat, ring, passengers, bob | PERF-F2o (Opus) | 3-6 | building |
-| Feel | REVIEW 8,11,15,27 rider, recruit, discovery, neon | PERF-F3o (Opus) | 5-6.5 | building |
+| Feel | REVIEW 5,6,7,9 build feel | PERF-F1o (Opus) | 6-6.5 -> in-game 6.7 (first build) | merged MERGE2 (main 1e9ea153), test v97 + launch v32 |
+| Feel | REVIEW 1,13,22,24 buy a boat, ring, passengers, bob | PERF-F2o (Opus) | 3-6 -> in-game 6.7 (buy build-in) | merged MERGE2 (main 1e9ea153), test v97 + launch v32; passengers not captured |
+| Feel | REVIEW 8,11,15,27 rider, recruit, discovery, neon | PERF-F3o (Opus) | 5-6.5 -> in-game recruit 4.7, ride 7.5 | merged MERGE2 (main 1e9ea153), test v97 + launch v32; lean not caught on frames |
 | Feel | REVIEW 10,25 wheel + prize audio | sibling thread (M_Prop_PrizeWheel, AD r2 7.5) | 6.5 | theirs |
 | Prog | REVIEW 3,12,16 | PERF-F4o | 4-5 | done b8c037c2 (9 unlocks in 5.5-9 h, was 2; skill dots merged); in MERGE1 |
 | Prog | REVIEW 17 endgame: proposal = docs/27 Deep at HQ5+Sub Pen, wreck landmarks, crews automate, Harbour Master prestige, weekly server goals (cosmetic rewards) | F4o reply | 4 | needs owner go (new feature) |
 | Feel | REVIEW 2 haptics | after F1-F3 merge | 0 | queued |
-| Anim | locomotion (player sprint/walk/idle, worker walk/idle, NPC idle/tread) | PERF-ANIM3: Roblox packs (adidas run, Cartoony walk/idle, Toy tread) | 9.5 x7 | PASS on t3/0a4fde7a c634f70e (unmerged, unplaytested); worker climb 9.0 max -> ANIM4 |
+| Anim | locomotion (player sprint/walk/idle, worker walk/idle, NPC idle/tread) | PERF-ANIM3: Roblox packs (adidas run, Cartoony walk/idle, Toy tread) | 9.5 x7 | in-game 6.7 (dusk, small avatar; worker 6.3 capture-limited); merged MERGE2 (main 1e9ea153), test v97 + launch v32; worker climb 9.0 max -> ANIM4 |
 | Anim | worker job actions, NPC wave/sit, worker climb | ANIM4: TaT/own 6.5-8.0, emotes Stadium/Jumping Cheer 9.0, climb packs 8.5 (none shipped) -> PERF-ANIM5: CC0 mocap retarget in Blender + emote re-score (median of 3) | 9.0 best | building |
 | Mon | monetization review | PERF-MON1 | 5.5 overall | done: build/status/2026-10-31/perfect/mon/REVIEW.md |
-| Mon | plan 1,4,11,12,13,18,19,20 (Shop Finish/spin bug, effect lines, odds, telemetry, texts, docs) | PERF-MON-A | 5 | building |
-| Mon | plan 3,7 purchase payoff + boat test ride | PERF-MON-B | 2.5 | building |
+| Mon | plan 1,4,11,12,13,18,19,20 (Shop Finish/spin bug, effect lines, odds, telemetry, texts, docs) | PERF-MON-A | 5 -> Shop 8.1 (provisional) | merged MERGE2 (main 1e9ea153), test v97 + launch v32 |
+| Mon | plan 3,7 purchase payoff + boat test ride | PERF-MON-B | 2.5 -> test ride 7.3 | merged MERGE2 (main 1e9ea153), test v97 + launch v32 (+1.5 s sit grace, no turn-back in the last 2 s); payoff card not captured |
 | Mon | plan 15 store icon family | PERF-MON-C/C2 | 6.5 -> family 9.2 | 52/56 at 9.1+, live on test + launch (54; DockGarage/SeaplanePass not on launch). Left: StarterKit 8.7 (redo with MON-D bundle), DockCrane 9.0 (after crane r9), DockLevel2 9.0 (declutter) |
 | Mon | owner YES: Starter Kit rework, 5 cosmetics on sale, private servers (other ideas declined) | after MON-A merges | - | queued |
 | Anim | player sprint/walk/idle (owner: reuse Tame A Titan clips OK) | PERF-ANIM1 | - | building |
-| Mesh | M_Prop_JettyCrane | Blender PERF-BL1 | r3 8.3 -> r8 8.8 | r8 shipped on t3/d9e3f4f1 (eeae70a6, unmerged); plateau 8.7-8.8 at 7,926/8,000 tris: next round raises the tri budget + r8 list (continuous hook band, jib studs clear of cab, cleaner slew ring, cab +10-15%) |
-| Code->mesh | build-site kit M_Prop_BuildSiteKit (REVIEW 9) | PERF-BL2 | 5.0 -> 8.4 (r4) | uploaded + wired on t3/5d0d9f07 (unmerged; includes construction-vfx-polish); r5 later: mast 1.3x, one colour per pallet, cones 1.5x, calmer front edge |
+| Mesh | M_Prop_JettyCrane | Blender PERF-BL1 | r3 8.3 -> r8 8.8 | r8 in-game 8.3 (night); merged MERGE2 (main 1e9ea153), test v97 + launch v32; plateau 8.7-8.8 at 7,926/8,000 tris: next round raises the tri budget + r8 list (continuous hook band, jib studs clear of cab, cleaner slew ring, cab +10-15%) |
+| Code->mesh | build-site kit M_Prop_BuildSiteKit (REVIEW 9) | PERF-BL2 | 5.0 -> 8.4 (r4) | renders in-game (14 module types, no Parts fallback), site 6.8 in-game; merged MERGE2 (main 1e9ea153), test v97 + launch v32; r5 later: mast 1.3x, one colour per pallet, cones 1.5x, calmer front edge |
 | Code->mesh | board kit M_Prop_BoardKit: leaderboard, Coming Soon, island sign, HM beacon | PERF-BL3 | 5.5-7.0 -> **9.2 PASS** (r4) | cec13732 on t3/lego-rescue-board-kit (unmerged, unseen in Studio) |
 | Code->mesh | sea plate kit: Freight Wharf + Ramp Wharf | PERF-BL4 | 5.8 / 6.4 | building |
 | Mesh | M_Prop_BuildStation | Blender | 8.3 (r2) | queued |
