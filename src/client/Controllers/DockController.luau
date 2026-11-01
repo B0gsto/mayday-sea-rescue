@@ -93,7 +93,7 @@ local stripContent: Frame? = nil
 local decorTabs: TabsUI.Tabs? = nil
 local cards: { ImageButton } = {}
 local pulseKey: string? = nil -- docs/24 E, docs/25 J: the HQ / Workshop card pulses while the tutorial points at it
-local hutCue: { Instance } = {} -- the Hut's Free-button glow + shine (gone on close or a refresh)
+local hutCue: { Instance } = {} -- the Hut's Free-button shine (gone on close or a refresh)
 local hutPopped = false -- the Hut's Free button pops once per tablet open
 local pickTab: (number) -> () = function() end
 local closeBuild: () -> ()
@@ -863,47 +863,36 @@ local function pulseRing(face: GuiObject)
 end
 
 -- Live 2026-11-01: 10 of 121 new players opened the tablet and never found the Hut's Free button. It pops once
--- per open (FX_Pop), then keeps a steady white rim and a soft shine band crossing it every 1.8 s (well under
--- 3 Hz, no flash). Reduce motion: the steady rim only. Gone on close / a refresh (the card is rebuilt).
+-- per open (FX_Pop), then a soft white shine band crosses it every 1.8 s (well under 3 Hz, no flash, no ring:
+-- the owner dislikes outlines). Reduce motion: the band rests still on it. Gone on close / a refresh.
 local function cueHut(card: GuiObject)
 	local buy = card:FindFirstChild("Cash", true)
 	local face = buy and buy:FindFirstChild("Face", true)
 	local holder = face and face.Parent
-	if not (buy and face and holder and buy:IsA("GuiObject") and holder:IsA("GuiObject")) then
+	if not (face and holder and holder:IsA("GuiObject")) then
 		return
 	end
-	local glow = Instance.new("Frame")
-	glow.Name = "HutGlow"
-	glow.BackgroundTransparency = 1
-	glow.Position = UDim2.fromOffset(-2, -2)
-	glow.Size = UDim2.new(1, 4, 1, 4)
-	Style.corner(glow, S.corner + 2)
-	local rim = Style.stroke(glow, 3, true)
-	rim.Color = Color3.new(1, 1, 1)
-	rim.Transparency = 0.15
-	glow.Parent = buy
-	table.insert(hutCue, glow)
 	local still = Comfort.reducedMotion()
+	local shine = Instance.new("Frame")
+	shine.Name = "Shine"
+	shine.BackgroundColor3 = Color3.new(1, 1, 1)
+	shine.Size = UDim2.fromScale(1, 1)
+	shine.ZIndex = 3
+	Style.corner(shine, S.corner)
+	local band = Instance.new("UIGradient")
+	band.Rotation = 20
+	band.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 1),
+		NumberSequenceKeypoint.new(0.38, 1),
+		NumberSequenceKeypoint.new(0.5, 0.45),
+		NumberSequenceKeypoint.new(0.62, 1),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	band.Offset = Vector2.new(if still then 0 else -1, 0)
+	band.Parent = shine
+	shine.Parent = face
+	table.insert(hutCue, shine)
 	if not still then
-		local shine = Instance.new("Frame")
-		shine.Name = "Shine"
-		shine.BackgroundColor3 = Color3.new(1, 1, 1)
-		shine.Size = UDim2.fromScale(1, 1)
-		shine.ZIndex = 3
-		Style.corner(shine, S.corner)
-		local band = Instance.new("UIGradient")
-		band.Rotation = 20
-		band.Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1),
-			NumberSequenceKeypoint.new(0.38, 1),
-			NumberSequenceKeypoint.new(0.5, 0.45),
-			NumberSequenceKeypoint.new(0.62, 1),
-			NumberSequenceKeypoint.new(1, 1),
-		})
-		band.Offset = Vector2.new(-1, 0)
-		band.Parent = shine
-		shine.Parent = face
-		table.insert(hutCue, shine)
 		TweenService:Create(
 			band,
 			TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false, 1.1),
