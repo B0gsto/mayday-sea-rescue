@@ -18,6 +18,8 @@ RENDER = ROOT / "tools/ui-art/render.py"
 INK = "#14121C"
 FILL = 0.88
 R6 = {"album": True, "boat_to_me": False, "build": True}  # r6 redraws; False regenerates the r5 best pixel-identical
+R7 = {"album": False, "boat_to_me": False}  # r7 redraws; False regenerates the r6 best (album) / r5 best (boat) pixel-identical
+R8 = {"album": False, "boat_to_me": True}  # r8 redraws (from the r6 album / r5 boat); False regenerates the best pixel-identical
 C = {  # top, bottom, lip
     "red": ("#FF8A7A", "#E2333A", "#A3161E"), "blue": ("#8EE0FF", "#2C8EF0", "#1A55A8"),
     "green": ("#A4F57A", "#33BE4D", "#1F8A33"), "gold": ("#FFE45C", "#FFAE00", "#C27400"),
@@ -39,6 +41,12 @@ C = {  # top, bottom, lip
     "cabin5": ("#E2F5FF", "#9AD6F5", "#3F7FB8"),
     # r6: a dark book spine
     "spine6": ("#3A7FE0", "#123C9A", "#0B2766"),
+    # r7: a light-grey cabin with a dark slate lip (never merges with the white rim); a pure white page block
+    "cabin7": ("#F2F6FB", "#AEBBCC", "#4E5C72"), "page7": ("#FFFFFF", "#F2F7FF", "#9DB8E0"),
+    # r8: a cream page block, a deeper navy cover lip, a sunset photo, a darker hull lip
+    "page8": ("#FFFDF4", "#F0E2BC", "#A8915E"), "cover8": ("#A6EEFF", "#2E9BFF", "#0E3A8A"),
+    "sunset8": ("#FFD27A", "#FF6A3D", "#C21F2A"), "hill8": ("#CBFF8F", "#3CCB52", "#1F8A33"),
+    "hull8": ("#FFD27A", "#FF7A1A", "#9A3404"),
 }
 
 
@@ -160,7 +168,39 @@ def rotd(d, deg, cx=100, cy=100):
     return re.sub(r"-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?", lambda m: next(it), d)
 
 
+def album_r7():
+    i = Icon()
+    sticker = rot([(72, -26), (150, -26), (150, 52), (72, 52)], -10, 111, 13)  # r7: a big square red sticker, most of it out of the top
+    i.part(poly(sticker), "red2", lip=8, gloss=poly(rot([(86, -12), (110, -12)], -10, 111, 13))[:-2])
+    i.part(rrect(20, 46, 226, 178, 14), "page7", lip=0, ink=14)  # r7: ONE thick white page block, the cover's ink is the dark gap
+    spine = "M18,32 L32,32 L32,192 L18,192 Q0,192 0,174 L0,50 Q0,32 18,32 Z"
+    i.part(rrect(0, 32, 168, 192, 18), "sky", lip=14, gloss="M50,52 L70,52",
+           extra=i.inner(spine, "spine6", ink=10, lip=0) + i.inner(poly(star(100, 114, 58, 28)), "gold", ink=14, lip=8))
+    return i, "the album / sticker book (r7): a bright blue book, a dark navy spine strip, ONE thick white page block on the right, a big gold star, a big square red sticker peeking out the top"
+
+
+def album_r8():
+    i = Icon()
+    P = lambda pts: poly(rot(pts, 10, 116, 14))  # r8: a white-bordered photo tilted 10 deg, poking well out of the top
+    pic = P([(88, -12), (144, -12), (144, 40), (88, 40)])
+    hill = P([(88, 22), (104, 8), (120, 16), (136, 4), (144, 10), (144, 40), (88, 40)])
+    i.part(P([(76, -24), (156, -24), (156, 52), (76, 52)]), "page7", lip=8,
+           extra=i.inner(pic, "sunset8", ink=8, lip=0) + i.inner(hill, "hill8", ink=7, lip=0)
+           + f'<circle cx="{rot([(104, 2)], 10, 116, 14)[0][0]:.1f}" cy="{rot([(104, 2)], 10, 116, 14)[0][1]:.1f}" r="8" fill="#FFF27A" stroke="{INK}" stroke-width="6"/>')
+    # r8: ONE thick cream page block (the r6 two cards read as noise), two dark page lines on its edge
+    i.part(rrect(12, 42, 226, 182, 12), "page8", lip=8,
+           extra=line("M190,62 L190,162", w=7, col="#8A7448") + line("M208,62 L208,162", w=7, col="#8A7448"))
+    spine = "M18,32 L30,32 L30,192 L18,192 Q0,192 0,174 L0,50 Q0,32 18,32 Z"
+    i.part(rrect(0, 32, 170, 194, 18), "cover8", lip=16, gloss="M46,52 L92,52",  # a deeper navy lip, a longer top gloss band
+           extra=i.inner(spine, "spine6", ink=10, lip=0) + i.inner(poly(star(100, 116, 58, 28)), "gold", ink=14, lip=8))
+    return i, "the album / photo book (r8): a bright blue book with a deep navy lip and spine, one thick cream page block with two page lines, a big gold star, a white-bordered sunset photo tilted out of the top"
+
+
 def album():
+    if R8["album"]:
+        return album_r8()
+    if R7["album"]:
+        return album_r7()
     if not R6["album"]:
         return album_r5()
     i = Icon()
@@ -186,7 +226,44 @@ def album_r5():
     return i, "the album / sticker book: a bright blue book, dark blue spine strip on the left, two white page edges on the right, a big gold star, a red sticker card peeking out the top"
 
 
+def boat_to_me_r7():
+    i = Icon()
+    i.part(rrect(140, 78, 194, 132, 12), "cabin7", lip=12)  # r7: one plain light-grey cabin block, no window
+    hull = "M0,128 L200,128 L190,190 Q188,204 174,204 L72,204 Q30,204 0,128 Z"  # r7: taller plain hull, no stripe
+    i.part(hull, "hull", lip=16, gloss="M36,146 L96,146")
+    arrow = "M60,44 L110,-8 L110,18 L142,18 Q152,18 152,28 L152,60 Q152,70 142,70 L110,70 L110,96 Z"  # r7: 52 shaft, tip into the pin
+    i.part(arrow, "sky", lip=8, gloss="M88,40 L102,26")
+    cx, cy, r = 28, 40, 30  # r7: pin 25% bigger than r5, its edge on the arrow tip: one bold unit
+    pin = [(cx + r * math.cos(t), cy + r * math.sin(t)) for t in [math.radians(146.3 + k * 247.4 / 30) for k in range(31)]] + [(cx, cy + 1.8 * r)]
+    i.part(poly(pin), "red2", lip=8, gloss="M9,38 Q11,20 26,15",
+           extra=f'<circle cx="{cx}" cy="{cy}" r="12" fill="#fff" stroke="{INK}" stroke-width="7"/>')
+    i.backs.append(poly([(8, 70), (60, 44), (152, 70), (150, 128), (8, 128)]))  # white between pin, arrow and hull: one sticker
+    return i, "boat to me (r7): a thick blue arrow pointing straight into a big red player pin, a big plain orange boat below (pointed bow, one light-grey cabin block)"
+
+
+def boat_to_me_r8():
+    i = Icon()
+    # r8: three parts only (no cabin): a big pin, one bold curved arrow rising out of the boat into it, a big hull
+    cx, cy, r = 14, 40, 32
+    pin = [(cx + r * math.cos(t), cy + r * math.sin(t)) for t in [math.radians(146.3 + k * 247.4 / 30) for k in range(31)]] + [(cx, cy + 1.8 * r)]
+    hull = "M0,130 L162,130 L208,114 Q194,176 166,200 L34,200 Q12,200 6,180 Z"  # pointed bow raised on the right
+    i.part(hull, "hull8", lip=16, gloss="M26,146 L96,146", extra=line("M24,174 L172,174", w=10, col="#fff"))  # the waterline stripe
+    ox, oy, ro, ri = 104, 96, 84, 40  # a quarter ring from the deck (right) up to the head (top), pointing left at the pin
+    arc = lambda R, a0, a1: [(ox + R * math.cos(math.radians(a)), oy + R * math.sin(math.radians(a))) for a in
+                             [a0 + (a1 - a0) * k / 16 for k in range(17)]]
+    arrow = [(66, 34), (104, -14)] + arc(ro, -90, 0) + arc(ri, 0, -90) + [(104, 82)]
+    i.part(poly(arrow), "sky", lip=8, gloss="M122,24 Q156,32 172,62")
+    i.part(poly(pin), "red2", lip=8, gloss="M-6,36 Q-4,18 12,13",
+           extra=f'<circle cx="{cx}" cy="{cy}" r="13" fill="#fff" stroke="{INK}" stroke-width="7"/>')
+    i.backs.append(poly([(14, 60), (66, 34), (104, 60), (146, 96), (188, 96), (200, 130), (0, 130), (0, 90)]))  # one sticker
+    return i, "boat to me (r8): a big red player pin top-left, one bold blue curved arrow rising out of the boat and pointing into it, a big plain orange hull (raised pointed bow, white waterline stripe), no cabin"
+
+
 def boat_to_me():
+    if R8["boat_to_me"]:
+        return boat_to_me_r8()
+    if R7["boat_to_me"]:
+        return boat_to_me_r7()
     if not R6["boat_to_me"]:
         return boat_to_me_r5()
     i = Icon()

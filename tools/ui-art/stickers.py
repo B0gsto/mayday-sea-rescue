@@ -13,6 +13,8 @@ SRC, OUT = ROOT / "art/source/ui", ROOT / "build/ui-art"
 INK = "#14121C"
 # round 6 redraws (anchored AD rounds): False regenerates the shipped best PNG pixel-identical
 R6 = {"pad_slow": True}
+R7 = {"pad_slow": True}
+R8 = {"pad_slow": False}
 
 STAR = "M100,18 L122,72 L180,76 L135,113 L150,170 L100,138 L50,170 L65,113 L20,76 L78,72 Z"
 HEART = "M100,176 C40,132 18,104 18,72 C18,44 40,26 64,26 C82,26 94,36 100,50 C106,36 118,26 136,26 C160,26 182,44 182,72 C182,104 160,132 100,176 Z"
@@ -125,6 +127,33 @@ if R6["pad_slow"]:
                                           f"{cy + HR * math.sin(math.radians(30 + 60 * i)):.1f}" for i in range(6)) + " Z"
     SHELL = (f'<path d="{hexp(78, 65)} {hexp(78 - HR * 0.866, 65 + HR * 1.5)} {hexp(78 + HR * 0.866, 65 + HR * 1.5)}" fill="#FFA41C" stroke="{INK}" stroke-width="9" '
              f'stroke-linejoin="round"/><circle cx="157" cy="86" r="7" fill="{INK}"/>')
+if R7["pad_slow"]:
+    # r7 (3 ADs: bigger, simpler, chunkier): the turtle spans the disc's width on its centre line: a tall dome, a
+    # fat head clear of the shell on a short thick neck, two stubby feet with a wide gap, three big hex plates
+    # (pointy-top honeycomb, r20) on thick dark seams with an even white margin
+    TURTLE = ("M36,126 Q28,126 28,116 C28,64 46,36 75,36 C104,36 122,64 122,116 Q122,126 114,126 Z "
+              "M153,81 A21,21 0 1,1 152.9,81 Z M112,106 L136,96 L144,118 L116,124 Z "
+              "M44,116 L70,116 L70,142 Q70,152 60,152 L54,152 Q44,152 44,142 Z "
+              "M88,116 L114,116 L114,142 Q114,152 104,152 L98,152 Q88,152 88,142 Z")
+    HR = 20
+    hexp = lambda cx, cy: "M" + " L".join(f"{cx + HR * math.cos(math.radians(30 + 60 * i)):.1f},"
+                                          f"{cy + HR * math.sin(math.radians(30 + 60 * i)):.1f}" for i in range(6)) + " Z"
+    SHELL = (f'<path d="{hexp(75, 66)} {hexp(75 - HR * 0.866, 66 + HR * 1.5)} {hexp(75 + HR * 0.866, 66 + HR * 1.5)}" '
+             f'fill="#FFA41C" stroke="{INK}" stroke-width="12" stroke-linejoin="round"/>'
+             f'<circle cx="160" cy="96" r="8" fill="{INK}"/>')
+if R8["pad_slow"]:
+    # r8 (3 ADs on r7): the whole turtle sits inside the disc with an even orange gap (r7 crowded the rim upper-left),
+    # a bigger head (r24) clear of a rounder shell by a wider dark notch, a wider gap between the feet, the eye inside the head
+    TURTLE = ("M42,120 Q34,120 34,110 C34,78 44,46 70,46 C96,46 106,78 106,110 Q106,120 98,120 Z "
+              "M144,70 A24,24 0 1,1 143.9,70 Z M98,100 L130,98 L132,114 L100,118 Z "
+              "M44,112 L62,112 L62,134 Q62,142 55,142 L51,142 Q44,142 44,134 Z "
+              "M88,112 L106,112 L106,134 Q106,142 99,142 L95,142 Q88,142 88,134 Z")
+    HR = 15
+    hexp = lambda cx, cy: "M" + " L".join(f"{cx + HR * math.cos(math.radians(30 + 60 * i)):.1f},"
+                                          f"{cy + HR * math.sin(math.radians(30 + 60 * i)):.1f}" for i in range(6)) + " Z"
+    SHELL = (f'<path d="{hexp(70, 72)} {hexp(70 - HR * 0.866, 72 + HR * 1.5)} {hexp(70 + HR * 0.866, 72 + HR * 1.5)}" '
+             f'fill="#FFA41C" stroke="{INK}" stroke-width="10" stroke-linejoin="round"/>'
+             f'<circle cx="151" cy="88" r="7" fill="{INK}"/>')
 # one door slab with a knob, a fat arrow stepping out of it over its edge
 DOOR = "M44,54 L100,54 L100,146 L44,146 Z"
 DOOR_ARROW = "M82,82 L120,82 L120,54 L166,100 L120,146 L120,118 L82,118 Z"

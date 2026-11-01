@@ -18,6 +18,8 @@ RENDER = ROOT / "tools/ui-art/render.py"
 INK = "#14121C"
 FILL = 0.88
 R6 = {"daily": True, "finish_now": True}  # r6 redraws; False regenerates the r5 best pixel-identical
+R7 = {"daily": True, "finish_now": True}  # r7 redraws; False regenerates the r6 best pixel-identical
+R8 = {"daily": True}  # r8 redraw (from the r7 best); False regenerates the r7 best pixel-identical
 C = {  # top, bottom, lip
     "red": ("#FF8A7A", "#E2333A", "#A3161E"), "blue": ("#8EE0FF", "#2C8EF0", "#1A55A8"),
     "gold": ("#FFE45C", "#FFAE00", "#C27400"), "orange": ("#FFC266", "#FF7419", "#B84A08"),
@@ -38,6 +40,12 @@ C = {  # top, bottom, lip
     # r6: a brighter lid and body so the chest separates from dark navy; a white bolt
     "lid6": ("#FFF6CC", "#FFBE4D", "#C2620E"), "chest6": ("#F08452", "#B8401C", "#6A1E0A"),
     "white6": ("#FFFFFF", "#EAF4FF", "#9DB8E0"),
+    # r7: a deeper brown chest lip; a deeper gold badge that holds on a sand tile
+    "chest7": ("#F08452", "#B8401C", "#4A1206"), "badge7": ("#FFE84D", "#FF9F0A", "#B85000"),
+    # r8: a chest-brown lid (never cream), a darker inside, thick coins with a darker gold edge, a calendar badge
+    "lid8": ("#E8804E", "#A8381A", "#4A1206"), "inside8": ("#5A1E0A", "#2E0E04", "#1E0802"),
+    "coin8": ("#FFF27A", "#FFB800", "#B05A00"), "cal8": ("#FFFFFF", "#E8F1FF", "#7F9CC8"),
+    "calred8": ("#FF9A86", "#F2343C", "#B3121C"),
 }
 
 
@@ -190,7 +198,34 @@ def hourglass():
     return i, "timer: a chunky hourglass, two strong-gradient Lego-blue studded caps, pale glass with a wide waist, big gold sand"
 
 
+HOURGLASS7 = {  # r7: glass bulbs ~20% wider, a wider waist and much more gold sand (finish_now only; Kit.hourglass keeps HOURGLASS)
+    "studs": [rrect(50, -6, 80, 12, 5), rrect(120, -6, 150, 12, 5)],
+    "glass": "M40,36 L160,36 Q160,80 128,100 Q160,120 160,164 L40,164 Q40,120 72,100 Q40,80 40,36 Z",
+    "top": rrect(12, 6, 188, 40, 12), "bottom": rrect(12, 160, 188, 192, 12),
+    "sand_top": "M50,50 L150,50 Q148,80 122,96 L78,96 Q52,80 50,50 Z",
+    "sand_bot": "M44,164 Q46,108 100,100 Q154,108 156,164 Z",
+}
+
+
+def finish_now_r7():
+    i = Icon(sep=10)
+    H = HOURGLASS7
+    for d in H["studs"]:
+        i.part(d, "cap", lip=0)
+    sand = i.inner(H["sand_top"], "sand", ink=8, lip=0) + i.inner(H["sand_bot"], "sand", ink=8, lip=0) + line("M100,92 L100,108", 22, "#FFB000")
+    i.part(H["glass"], "glass", lip=0, gloss="M52,112 Q48,130 50,146", extra=sand)
+    i.part(H["top"], "cap", gloss="M28,20 L80,20")
+    i.part(H["bottom"], "cap", gloss="M28,174 L52,174")
+    s, cx, cy, r = 0.56, 168, 160, 68  # r7: a bigger deep-gold disc, a fat white bolt with a thick dark outline
+    bolt = tf("M106,8 L154,8 L124,72 L172,72 L72,192 L92,118 L36,118 Z", s, cx - 104 * s, cy - 100 * s)
+    i.part(poly(ellipse(cx, cy, r, r, 0, 64)), "badge7", lip=12, gloss=f"M{cx - 44},{cy - 6} Q{cx - 42},{cy - 36} {cx - 18},{cy - 48}",
+           extra=i.inner(bolt, "white6", ink=12, lip=6), rim_over=True)
+    return i, "finish now (r7): a wide blue-capped hourglass full of gold sand, a big deep-gold lightning badge (fat white bolt) on its own white rim over the corner"
+
+
 def finish_now():
+    if R7["finish_now"]:
+        return finish_now_r7()
     if not R6["finish_now"]:
         return finish_now_r5()
     i = Icon(sep=10)
@@ -212,7 +247,60 @@ def finish_now_r5():
     return i, "finish now: a blue-capped hourglass with a big blue lightning badge (gold bolt) on its own white rim over the corner"
 
 
+def daily_r7():
+    i = Icon()
+    lid = "M16,100 L32,22 Q34,8 48,8 L152,8 Q166,8 168,22 L184,100 Z"
+    for x in (56, 112):
+        i.part(rrect(x, -10, x + 32, 14, 7), "lid6", lip=0)
+    sparkle = poly([(146 + (17 if k % 2 == 0 else 5) * math.sin(math.pi * k / 4), 42 - (17 if k % 2 == 0 else 5) * math.cos(math.pi * k / 4)) for k in range(8)])
+    i.part(lid, "lid6", lip=0, gloss="M30,84 L42,30", extra=i.inner("M42,96 L54,34 L146,34 L158,96 Z", "inside", ink=8, lip=0))
+    for cx, cy, r in ((42, 88, 34), (158, 88, 34), (100, 70, 40)):  # r7: three distinct coins that barely overlap, each fully outlined
+        i.part(poly(ellipse(cx, cy, r, r)), "coin", lip=0, sep=12,
+               gloss=f"M{cx - r * 0.55:.0f},{cy - 2} Q{cx - r * 0.5:.0f},{cy - r * 0.5:.0f} {cx - 2},{cy - r * 0.62:.0f}",
+               extra=i.inner(sparkle, "white6", ink=7, lip=0) if cx == 100 else "")  # one small sparkle on the dark inside
+    body = rrect(-10, 112, 210, 192, 14)  # r7: body 10% wider, a deeper brown lip
+    i.part(body, "chest7", lip=16, gloss="M20,150 L20,170",
+           extra=i.inner(rrect(-10, 112, 210, 130, 6), "trim", ink=8, lip=0)
+           + "".join(i.inner(rrect(x, 112, x + 22, 192, 4), "trim", ink=7, lip=0) for x in (20, 158)))
+    i.part(rrect(78, 104, 122, 150, 10), "trim", lip=8, gloss="M88,116 L88,128",
+           extra=f'<rect x="95" y="122" width="10" height="16" rx="5" fill="{INK}"/>')
+    return i, "daily reward (r7): a Lego treasure chest flung open, a bright studded lid with a dark inside, three distinct big gold coins and one sparkle, a wider red-brown body with a deep lip and bright gold trim and latch"
+
+
+def daily_r8():
+    i = Icon()
+    lid = "M16,100 L32,22 Q34,8 48,8 L152,8 Q166,8 168,22 L184,100 Z"
+    for x in (56, 112):
+        i.part(rrect(x, -10, x + 32, 14, 7), "trim", lip=0)  # r8: gold studs
+    sparkle = poly([(146 + (17 if k % 2 == 0 else 5) * math.sin(math.pi * k / 4), 42 - (17 if k % 2 == 0 else 5) * math.cos(math.pi * k / 4)) for k in range(8)])
+    i.part(lid, "lid8", lip=0, gloss="M30,84 L40,40",  # r8: the open lid is chest brown with a gold top band (the cream lid read as a yellow blob)
+           extra=i.inner("M33,20 Q35,10 48,10 L152,10 Q165,10 167,20 L168,24 L32,24 Z", "trim", ink=7, lip=0)
+           + i.inner("M42,96 L54,40 L146,40 L158,96 Z", "inside8", ink=8, lip=0))
+    for cx, cy, r in ((42, 86, 34), (158, 86, 34), (100, 68, 40)):  # r8: three thick coin discs, a darker gold edge ring on each
+        i.part(poly(ellipse(cx, cy, r, r)), "coin8", lip=8, sep=12,
+               gloss=f"M{cx - r * 0.55:.0f},{cy - 2} Q{cx - r * 0.5:.0f},{cy - r * 0.5:.0f} {cx - 2},{cy - r * 0.62:.0f}",
+               extra=f'<circle cx="{cx}" cy="{cy}" r="{r * 0.64:.1f}" fill="none" stroke="#C26A00" stroke-width="7"/>'
+               + (i.inner(sparkle, "white6", ink=7, lip=0) if cx == 100 else ""))
+    body = rrect(-10, 112, 210, 192, 14)
+    i.part(body, "chest7", lip=16, gloss="M20,150 L20,170",
+           extra=i.inner(rrect(-10, 112, 210, 130, 6), "trim", ink=8, lip=0)
+           + "".join(i.inner(rrect(x, 112, x + 22, 192, 4), "trim", ink=7, lip=0) for x in (20,)))  # the right strip sits under the badge
+    i.part(rrect(78, 104, 122, 150, 10), "trim", lip=8, gloss="M88,116 L88,128",
+           extra=f'<rect x="95" y="122" width="10" height="16" rx="5" fill="{INK}"/>')
+    # r8: a small calendar badge on its own white rim, bottom-right (like the finish_now bolt badge): says 'daily'
+    dots = "".join(f'<rect x="{x}" y="{y}" width="14" height="12" rx="3" fill="#1A55A8"/>' for x in (148, 167, 186) for y in (170, 188))
+    pegs = "".join(f'<rect x="{x}" y="126" width="11" height="22" rx="5" fill="{INK}"/>' for x in (155, 185))
+    i.part(rrect(138, 136, 210, 206, 10), "cal8", lip=8, rim_over=True,
+           extra=i.inner("M148,136 L200,136 Q210,136 210,146 L210,160 L138,160 L138,146 Q138,136 148,136 Z", "calred8", ink=8, lip=0)
+           + dots + pegs)
+    return i, "daily reward (r8): a Lego treasure chest flung open, a chest-brown lid with a gold band and gold studs over a dark inside, three thick gold coins with darker edge rings and one sparkle, a red-brown body with gold trim and latch, a small calendar badge bottom-right"
+
+
 def daily():
+    if R8["daily"]:
+        return daily_r8()
+    if R7["daily"]:
+        return daily_r7()
     if not R6["daily"]:
         return daily_r5()
     i = Icon()

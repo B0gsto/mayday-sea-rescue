@@ -14,6 +14,10 @@ from PIL import Image
 
 # round 6 redraws; False = the version that shipped as best (lifebuoy/quests/sun r5, map/rays r3)
 R6 = {"lifebuoy": False, "map": False, "quests": True, "sun": True, "rays": False}
+# round 7 redraws; False = the best version (rays r3)
+R7 = {"rays": True}
+# round 8 redraws; False = the best version (rays r7)
+R8 = {"rays": True}
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SRC = ROOT / "art/source/ui"
@@ -247,12 +251,19 @@ ICONS = {"lifebuoy": lifebuoy6 if R6["lifebuoy"] else lifebuoy, "lock": lock, "m
 
 def rays():
     """Badges.Rays, the burst behind a reward (medal flip, skill unlock) that spins slowly: 12 equal hard wedges (gaps between) in two
-    golds (light | deep) on a deep orange edge, a flat warm hub under the prize. R6: a thinner edge and the wedge ends
+    golds (light | deep) on a deep orange edge, a flat warm hub under the prize. R7: long light | short deep rays, a thinner
+    edge, a pale glowing hub. R6: a thinner edge and the wedge ends
     fading out so the burst sits behind the badge. A 400 page centred on 200,200 (rendered whole, kept, so it spins about
     its centre); writes art/source/ui/rays.svg"""
-    c, r6 = (200, 200), R6["rays"]
-    wedge = lambda a: "M200,200 L%.1f,%.1f A186,186 0 0,1 %.1f,%.1f Z" % (*polar(*c, 186, a - 10.5), *polar(*c, 186, a + 10.5))
+    if R8["rays"]:
+        return rays8()
+    c, r6, r7 = (200, 200), R6["rays"], R7["rays"]
+    # R7: long | short rays (1.0 / 0.75) so the edge is a jagged star that shows the spin, a 30% thinner edge, a pale hub
+    R = lambda i: 186 if not r7 or i % 2 == 0 else 140
+    h = lambda i: 10.5 if not r7 else (12 if i % 2 == 0 else 9.5)
     angles = [i * 30 - 90 for i in range(12)]
+    wedge = lambda i: "M200,200 L%.1f,%.1f A%d,%d 0 0,1 %.1f,%.1f Z" % (
+        *polar(*c, R(i), angles[i] - h(i)), R(i), R(i), *polar(*c, R(i), angles[i] + h(i)))
     fade = lambda c1: f'<stop offset="0.62" stop-color="{c1}"/><stop offset="1" stop-color="{c1}" stop-opacity="0"/>' if r6 else ""
     defs = "".join(f'<radialGradient id="{k}" cx="200" cy="200" r="186" gradientUnits="userSpaceOnUse"><stop offset="0.3" '
                    f'stop-color="{a}"/>' + (f'<stop offset="0.62" stop-color="{b}"/>' if r6 else f'<stop offset="1" stop-color="{b}"/>')
@@ -262,16 +273,51 @@ def rays():
     if r6:
         defs += f'<radialGradient id="e" cx="200" cy="200" r="190" gradientUnits="userSpaceOnUse">{fade(edge)}</radialGradient>'
         edge = "url(#e)"
-    w = 6 if r6 else 12
-    out = [f'<path d="{wedge(a)}" fill="{edge}" stroke="{edge}" stroke-width="{w}" stroke-linejoin="round"/>' for a in angles]
-    out.append('<circle cx="200" cy="200" r="62" fill="#E25F00" stroke="#E25F00" stroke-width="12"/>')
-    out += [f'<path d="{wedge(a)}" fill="url(#{"ac"[i % 2]})"/>' for i, a in enumerate(angles)]
+    w = 6 if r6 else 8 if r7 else 12
+    out = [f'<path d="{wedge(i)}" fill="{edge}" stroke="{edge}" stroke-width="{w}" stroke-linejoin="round"/>' for i in range(12)]
+    out.append(f'<circle cx="200" cy="200" r="62" fill="#E25F00" stroke="#E25F00" stroke-width="{w}"/>')
+    out += [f'<path d="{wedge(i)}" fill="url(#{"ac"[i % 2]})"/>' for i in range(12)]
     out += ['<path d="M%.1f,%.1f L%.1f,%.1f" stroke="#fff" stroke-opacity="0.5" stroke-width="8" stroke-linecap="round"/>'
             % (*polar(*c, 93, a - 4), *polar(*c, 140 if r6 else 164, a - 4)) for a in angles[::2]]
-    out.append('<circle cx="200" cy="200" r="62" fill="#FFD23F"/><circle cx="200" cy="200" r="62" fill="none" stroke="#F08A00" stroke-width="8"/>')
+    if r7:  # a pale glowing hub (the prize sits on it), a light gold ring
+        defs += ('<radialGradient id="hub" cx="200" cy="200" r="62" gradientUnits="userSpaceOnUse"><stop offset="0" '
+                 'stop-color="#FFFDEA"/><stop offset="0.7" stop-color="#FFF4B0"/><stop offset="1" stop-color="#FFE47A"/></radialGradient>')
+        out.append('<circle cx="200" cy="200" r="62" fill="url(#hub)"/><circle cx="200" cy="200" r="62" fill="none" stroke="#F5AE10" stroke-width="6"/>')
+    else:
+        out.append('<circle cx="200" cy="200" r="62" fill="#FFD23F"/><circle cx="200" cy="200" r="62" fill="none" stroke="#F08A00" stroke-width="8"/>')
     (SRC / "rays.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">'
                                   f"<!-- {' '.join(rays.__doc__.split())} (tools/ui-art/kit_icons2.py) --><defs>{defs}</defs>"
                                   + "".join(out) + "</svg>\n")
+
+
+def rays8():
+    """Badges.Rays R8: the R7 burst (12 long | short rays, a pale glowing hub) as a die-cut sticker: a white rim and a deep
+    amber outline round the whole star, each ray pale gold to rich orange with a darker lip at its tip (radial, so it holds
+    while spinning); rays a touch narrower so the notches stay open (not a gear)"""
+    c, ink, rim, out = (200, 200), "#A8460A", 6, 6  # rim / outline: units outside the fill (1 unit = 0.3 pt at 120 pt)
+    R = lambda i: 182 if i % 2 == 0 else 140
+    h = lambda i: 10.5 if i % 2 == 0 else 8
+    angles = [i * 30 - 90 for i in range(12)]
+    wedge = lambda i, r: "M200,200 L%.1f,%.1f A%d,%d 0 0,1 %.1f,%.1f Z" % (
+        *polar(*c, r, angles[i] - h(i)), r, r, *polar(*c, r, angles[i] + h(i)))
+    grad = lambda k, r, stops: (f'<radialGradient id="{k}" cx="200" cy="200" r="{r}" gradientUnits="userSpaceOnUse">'
+                                + "".join(f'<stop offset="{o}" stop-color="{col}"/>' for o, col in stops) + "</radialGradient>")
+    defs = (grad("a", 173, ((0.35, "#FFF4A8"), (0.7, "#FFC21A"), (1, "#F59200")))
+            + grad("c", 131, ((0.45, "#FFC531"), (1, "#FF8400")))
+            + grad("hub", 62, ((0, "#FFFDEA"), (0.7, "#FFF4B0"), (1, "#FFE47A"))))
+    lip = lambda i: "#D86A00" if i % 2 == 0 else "#C25200"
+    out_ = []
+    for col, w in (("#FFFFFF", 2 * (rim + out)), (ink, 2 * out)):  # white rim, then the hard outline, round the union
+        out_ += [f'<path d="{wedge(i, R(i))}" fill="{col}" stroke="{col}" stroke-width="{w}" stroke-linejoin="round"/>' for i in range(12)]
+        out_.append(f'<circle cx="200" cy="200" r="62" fill="{col}" stroke="{col}" stroke-width="{w}"/>')
+    out_ += [f'<path d="{wedge(i, R(i))}" fill="{lip(i)}"/>' for i in range(12)]  # the lip: a darker band at each tip
+    out_ += [f'<path d="{wedge(i, R(i) - 9)}" fill="url(#{"ac"[i % 2]})"/>' for i in range(12)]
+    out_ += ['<path d="M%.1f,%.1f L%.1f,%.1f" stroke="#fff" stroke-opacity="0.5" stroke-width="8" stroke-linecap="round"/>'
+             % (*polar(*c, 93, a - 3), *polar(*c, 150, a - 3)) for a in angles[::2]]
+    out_.append('<circle cx="200" cy="200" r="62" fill="url(#hub)"/><circle cx="200" cy="200" r="62" fill="none" stroke="#F5AE10" stroke-width="6"/>')
+    (SRC / "rays.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">'
+                                  f"<!-- {' '.join(rays8.__doc__.split())} (tools/ui-art/kit_icons2.py) --><defs>{defs}</defs>"
+                                  + "".join(out_) + "</svg>\n")
 
 
 def write(name, body, x0, y0, box=BOX):

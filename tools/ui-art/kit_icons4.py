@@ -75,6 +75,8 @@ def polar(cx, cy, r, a):
 # ---- the icons -------------------------------------------------------------------------------------------------------
 DEEP = ("#6FB8FF", "#1F5FD0", "#123F96")
 R6 = {"wave": False, "waves": True}  # round-6 redraws; False = the shipped best (pixel-identical)
+R7 = {"waves": True}  # round-7 redraws; False = the shipped best (pixel-identical)
+R8 = {"waves": True}  # round-8 redraws; False = the shipped best (pixel-identical)
 
 
 def shop():
@@ -172,7 +174,40 @@ def waves():
     if not R6["waves"]:  # the round-1 art (best through round 5): two equal swells
         return build([part(d(36), BLUE), part(d(112), BLUE)], gloss=[g(36), g(112)])
     navy = ("#58A6F5", "#173F9C", "#0A2360")
-    return build([part(d(33), BLUE), part(d(114), navy, dy=14)], gloss=[g(33), g(114)])  # band gap 24 -> 29
+    if R8["waves"]:
+        return waves_r8()
+    if not R7["waves"]:
+        return build([part(d(33), BLUE), part(d(114), navy, dy=14)], gloss=[g(33), g(114)])  # band gap 24 -> 29
+    # round 7: a white foam crest curling over the back swell's peak and spilling down its front; band gap 29 -> 44
+    y0, y1 = 26, 122
+    top = (((100, y0), (114.3, y0 - 13.3), (128.7, y0 - 13.3), (143, y0)),  # the back swell's top edge, peak to trough
+           ((143, y0), (157.3, y0 + 13.3), (171.7, y0 + 13.3), (186, y0)))
+    foam = edge_band(top, 0.12, 1.42, 16, 28, 8)
+    body = build([part(d(y0), BLUE), part(foam, WHITE, z=1, sep=True, dy=8, lip="#9FB0CC"),
+                  part(d(y1), navy, dy=14)], gloss=[g(y0), g(y1)])
+    bridge = f'<path d="M-1,{y0 + 40} L201,{y0 + 40} L201,{y1} L-1,{y1} Z" fill="#fff"/>'  # the gap > rim: keep it one sticker
+    return body.replace("</defs>", "</defs>" + bridge, 1)
+
+
+def waves_r8():
+    """round 8: two chunky bands. The back one rears into one big curling crest (~45% of the height) with a bold white
+    foam curl (its own outline, a deep-blue shadow under it) over a dark barrel; the front one is a deep navy swell
+    with a heavy lip, overlapping it"""
+    sea = ("#A6EEFF", "#1F6FE0", "#123F96")
+    navy = ("#62B2FF", "#0F2F86", "#06164A")
+    crest = ("M12,150 L12,98 C12,76 30,66 52,70 C72,74 80,58 92,42 C106,22 128,10 152,10 C176,10 192,28 190,54 "
+             "C188,78 172,90 158,82 C148,77 146,66 154,60 C138,62 128,80 132,100 C136,118 160,126 188,124 L188,150 Z")
+    lip = (((92, 42), (106, 22), (128, 10), (152, 10)), ((152, 10), (176, 10), (192, 28), (190, 54)),
+           ((190, 54), (188, 78), (172, 90), (158, 82)))  # the crest's front outline: over the peak, down, under the lip
+    foam = edge_band(lip, 0.4, 2.85, 30, 18, 6)
+    shadow = (f'<clipPath id="cc"><path d="{crest}"/></clipPath><g clip-path="url(#cc)">'  # the deep blue under the foam
+              f'<path d="{foam}" fill="#123F96" stroke="#123F96" stroke-width="10" transform="translate(-6,20)"/></g>')
+    barrel = part(circ(164, 100, 24), ("#0A2A70", "#1A55C8", "#0A2A70"), dy=0)  # the dark tube under the curl
+    swell = ("M12,138 Q34,118 56,138 T100,138 T144,138 T188,138 L188,174 Q188,184 178,184 L22,184 Q12,184 12,174 Z")
+    return build([barrel, part(crest, sea, dy=10), part(foam, WHITE, z=1, sep=True, dy=8, lip="#9FB0CC"),
+                  part(swell, navy, z=2, sep=True, dy=14)],
+                 gloss=["M24,96 C28,84 38,78 52,80", "M70,72 C80,56 92,42 106,34", "M26,140 Q36,130 48,132"],
+                 extra={0: shadow})
 
 
 ICONS = {"shop": shop, "spin": spin, "wave": wave, "waves": waves}

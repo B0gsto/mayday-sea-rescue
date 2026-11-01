@@ -8,8 +8,8 @@ import pathlib
 
 SRC = pathlib.Path(__file__).resolve().parents[2] / "art/source/ui"
 INK = "#14121C"
-# round 6 redraws (anchored AD rounds): False regenerates the shipped best PNG pixel-identical
-R6 = {"view": False}
+# round 7 redraws (anchored AD rounds): False regenerates the shipped best PNG pixel-identical
+R7 = {"view": True}
 LIP_DY = 12
 # one square page for every sticker (same rim and outline weight on screen), its corner set so each sits centred
 SIZE = 246
@@ -226,32 +226,38 @@ critter("bottle", [
 # --- view: a chunky telescope on a thick tripod (the die-cut fills between the legs), pointing up-right
 T = "rotate(-28 95 95)"
 TUBE_LIP = "#0D5A8C"
-VIEW_CORNER = (-17.6, -10.8)
-if R6["view"]:
-    # r6: three distinct splayed legs (the back one a shade darker, behind), a gold hinge knob under the tube, and a
-    # bright cyan lens with a big white glint; white die-cut between the legs instead of a dark wedge
+VIEW_CORNER = (-22.4, -11.0)
+if R7["view"]:
+    # r7 (AD r4-r6): a true tripod: three legs meet at a big hinge knob under the tube and splay out to dark foot pads,
+    # the back leg shorter and darker, white die-cut between them; deep wood brown (not orange) so the stand does not
+    # melt into sand; objective end ~15% bigger with a bright cyan lens and a big white glint
     CORNER["view"] = VIEW_CORNER
     critter("view", [
-        (leg(95, 134, 95, 184, 22, 20), P("legD"), "#5E2203", True),
-        (leg(86, 134, 26, 192, 24, 20), P("leg"), "#963A06", True),
-        (leg(104, 134, 164, 192, 24, 20), P("leg"), "#963A06", True),
-        (f'<rect x="2" y="74" width="38" height="42" rx="10" transform="{T}"/>', P("redr"), PAL["red"][2], True),
-        (f'<rect x="36" y="72" width="116" height="46" rx="12" transform="{T}"/>', P("bluer"), TUBE_LIP, True),
-        (f'<rect x="140" y="62" width="52" height="66" rx="14" transform="{T}"/>', P("bluer"), TUBE_LIP, True),
-        (f'<rect x="124" y="64" width="26" height="62" rx="8" transform="{T}"/>', P("goldr"), PAL["gold"][2], True),
-        (f'<ellipse cx="192" cy="95" rx="16" ry="40" transform="{T}"/>', P("goldr"), PAL["gold"][2], True),
-        ('<circle cx="95" cy="130" r="17"/>', P("gold"), PAL["gold"][2], True),
-    ], (f'<g transform="{T}"><ellipse cx="195" cy="95" rx="12" ry="32" fill="url(#lens)" stroke="#14121C" stroke-width="7"/>'
-        + gloss("M44,84 L112,84") + '<ellipse cx="193" cy="82" rx="5.5" ry="11" fill="#fff"/>'
-        + gloss("M12,86 L12,102", 7, 0.7) + '</g>'
-        + '<circle cx="95" cy="130" r="6.5" fill="#14121C"/>' + gloss("M84,124 C86,119 90,116 95,115", 6, 0.8)),
-        G("gold", y1=110, y2=150) + grad("leg", "orange", 120, 200).replace("#FFC266", "#FFDCA0").replace("#FF7419", "#FF9638")
-        + grad("legD", "orange", 120, 200).replace("#FFC266", "#E8954A").replace("#FF7419", "#B9520E")
+        (leg(95, 124, 95, 178, 28, 26), P("legD"), "#2E1404", True),
+        (leg(95, 124, 18, 190, 30, 26), P("leg"), "#3E1E08", True),
+        (leg(95, 124, 172, 190, 30, 26), P("leg"), "#3E1E08", True),
+        ('<rect x="80" y="172" width="30" height="14" rx="7"/>', P("coal"), PAL["coal"][2], True),
+        ('<rect x="-1" y="186" width="38" height="15" rx="7.5"/>', P("coal"), PAL["coal"][2], True),
+        ('<rect x="153" y="186" width="38" height="15" rx="7.5"/>', P("coal"), PAL["coal"][2], True),
+        (f'<rect x="4" y="74" width="38" height="42" rx="10" transform="{T}"/>', P("redr"), PAL["red"][2], True),
+        (f'<rect x="38" y="72" width="104" height="46" rx="12" transform="{T}"/>', P("bluer"), TUBE_LIP, True),
+        (f'<rect x="130" y="58" width="56" height="74" rx="15" transform="{T}"/>', P("bluer"), TUBE_LIP, True),
+        (f'<rect x="114" y="64" width="24" height="62" rx="8" transform="{T}"/>', P("goldr"), PAL["gold"][2], True),
+        (f'<ellipse cx="186" cy="95" rx="18" ry="46" transform="{T}"/>', P("goldr"), PAL["gold"][2], True),
+        ('<circle cx="95" cy="122" r="20"/>', P("gold"), PAL["gold"][2], True),
+    ], (f'<g transform="{T}"><ellipse cx="189" cy="95" rx="13" ry="36" fill="url(#lens)" stroke="#14121C" stroke-width="7"/>'
+        + gloss("M46,84 L104,84") + '<ellipse cx="187" cy="80" rx="6.5" ry="13" fill="#fff"/>'
+        + gloss("M14,86 L14,102", 7, 0.7) + '</g>'
+        + '<circle cx="95" cy="122" r="7" fill="#14121C"/>' + gloss("M82,116 C84,110 89,106 95,105", 6, 0.8)
+        + gloss("M78,140 L44,172", 7, 0.45) + gloss("M112,140 L146,172", 7, 0.45)),
+        G("gold", y1=100, y2=145) + G("coal", y1=170, y2=202)
+        + grad("leg", "brown", 110, 195).replace("#DFA066", "#D08A4A").replace("#A55E28", "#7A3E14")
+        + grad("legD", "brown", 110, 195).replace("#DFA066", "#8E5226").replace("#A55E28", "#4E260A")
         + grad("bluer", "blue", 20, 160, (28, 95, 95)) + grad("goldr", "gold", 20, 160, (28, 95, 95))
         + grad("redr", "red", 20, 160, (28, 95, 95))
-        + grad("lens", "blue", 20, 78, (28, 95, 95)).replace("#8EE0FF", "#C8FFFF").replace("#2C8EF0", "#12D6FF"),
-        "a scenic viewpoint found: a chunky blue telescope on a three-leg orange tripod, hinge knob, bright cyan lens",
-        rim='<path d="M26,192 L95,184 L164,192 L95,132 Z"/>')
+        + grad("lens", "blue", 12, 82, (28, 95, 95)).replace("#8EE0FF", "#E0FFFF").replace("#2C8EF0", "#14DCFF"),
+        "a scenic viewpoint found: a chunky blue telescope on a brown three-leg tripod with foot pads, big cyan lens",
+        rim='<path d="M18,190 L95,178 L172,190 L95,124 Z"/>')
 else:
     critter("view", [
         (leg(95, 104, 98, 192, 39, 36), P("legD"), "#7A2E04", True),

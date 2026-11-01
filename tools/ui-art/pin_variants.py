@@ -13,7 +13,7 @@ OUT = ROOT / "build" / "ui-art"
 TEMPLATE = ("#FF8A7A", "#E2333A", "#A8121A", "#EA3A40", "#B8121C", "#C5222A")  # body top, bottom, lip, disc top,
 # bottom, tail tip (red); the tail tip is computed: halfway from body bottom to lip, so the point reads darker at 1x
 # UI/Waypoint's colours (RED, AMBER, GREEN home, CRAFT, QUEST, BEAM), Lego-bright and six clear hues at 1x: red,
-# true orange, green, blue, lemon yellow, magenta; each disc is a clean tone of its body's hue, deep at the bottom
+# true orange, green, blue, lemon yellow, coral; each disc is a clean tone of its body's hue, deep at the bottom
 # so the game's white call icon keeps contrast (Quest's disc goes gold-to-amber under its lemon body).
 PINS = {
     "Red": (*TEMPLATE[:4], "#C4161E"),  # r3's disc bottom
@@ -21,7 +21,7 @@ PINS = {
     "Green": ("#B4F78A", "#2FB94A", "#16752A", "#30B84C", "#15842C"),
     "Craft": ("#9AB0FF", "#2A52E6", "#18309E", "#4468F0", "#1C3AC0"),  # cobalt, apart from the sea and MapPlayer
     "Quest": ("#FFF59A", "#FFD000", "#A87800", "#E6A200", "#C88200"),  # deep-gold disc under the white call icon
-    "Beam": ("#FFA8EE", "#E032C8", "#860C7C", "#E040CC", "#A8189A"),
+    "Beam": ("#FFB8A0", "#FF6A3D", "#A8341A", "#FF7048", "#D4441C"),  # the game's BEAM coral FF6A3D
 }
 RING = {"Quest": '<circle cx="100" cy="88" r="39.5" fill="none" stroke="#9C5E00" stroke-width="5"/>'}
 # Beam's r4 render scored 9.1 on the older template (narrower tip, thinner outline, gloss stroke): keep it pixel-identical
