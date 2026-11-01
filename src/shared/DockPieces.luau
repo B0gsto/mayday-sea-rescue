@@ -3248,9 +3248,72 @@ function DockPieces.streets(b: CFrame): Model
 	return m
 end
 
+-- The Lego commons kit (M_Prop_CommonsKit, art/source/props/M_Prop_CommonsKit/SPEC.md): each { mesh, slot, frame }
+-- puts a copy of that kit mesh at frame * ATT_<slot>:Inverse(), into a "CommonsKit" model in m, and hides m's code
+-- Parts (they stay as the colliders, seats and anchors). False, and nothing changes, while the kit has no asset id,
+-- didn't load or lacks one of the meshes.
+local function commonsKit(m: Model, place: { { any } }): boolean
+	local kit = AssetIds.Models.M_Prop_CommonsKit
+		and DockPieces.meshes
+		and DockPieces.meshes("M_Prop_CommonsKit")
+	if not kit then
+		return false
+	end
+	for _, e in place do -- all or nothing: a missing mesh keeps the whole prop on its code Parts
+		local src = kit:FindFirstChild(e[1], true)
+		if not (src and src:IsA("BasePart")) then
+			kit:Destroy()
+			return false
+		end
+	end
+	for _, p in m:GetDescendants() do
+		if p:IsA("BasePart") then
+			p.Transparency, p.CastShadow = 1, false
+			local studs = p:FindFirstChild("Studs")
+			if studs then
+				studs:Destroy()
+			end
+		end
+	end
+	local pivot, atts = kit:GetPivot(), AssetIds.Attachments.M_Prop_CommonsKit
+	local out = Instance.new("Model")
+	out.Name = "CommonsKit"
+	for _, e in place do
+		local src = kit:FindFirstChild(e[1], true) :: BasePart
+		local p = src:Clone()
+		p.CFrame = e[3] * CFrame.new(-atts["ATT_" .. e[2]]) * pivot:ToObjectSpace(src.CFrame)
+		p.Anchored = true
+		p.CanCollide, p.CanQuery, p.CanTouch = false, false, false
+		local glow, water, cloth =
+			string.find(p.Name, "Glow$"), p.Name == "D06_FountainWater", p.Name == "D04_FlagCloth"
+		if glow or water or cloth then -- untextured, so Material / Color show (the hidden code bulbs keep NightLamp)
+			for _, c in p:GetChildren() do
+				if c:IsA("SurfaceAppearance") or c.Name == "SurfaceVariants" then
+					c:Destroy()
+				end
+			end
+			if p:IsA("MeshPart") then
+				p.TextureID = ""
+			end
+		end
+		if glow then
+			p.Material, p.Color = M.Neon, WARM
+		elseif water then -- as the code Water
+			p.Material, p.Color, p.Transparency = M.Glass, Color3.fromRGB(80, 190, 255), 0.3
+		elseif cloth then
+			p.Name, p.Material = "Flag", M.Fabric -- DockService paints "Flag"s the owner's colour; the emblem stays white
+		end
+		p.Parent = out
+	end
+	kit:Destroy()
+	out.Parent = m
+	return true
+end
+
 -- The idle crew's commons behind the HQ (shared/Hangout, owner 2026-10-29), placeholder Lego props that arrive with the
 -- streets: a walk-in canteen hut (table, four stools, a soup counter), a campfire between two log benches, two park
--- benches, a hammock and an ice-cream cart. Front = each prop's -Z; heights match Hangout's seats.
+-- benches, a hammock and an ice-cream cart. Front = each prop's -Z; heights match Hangout's seats. The Lego commons
+-- kit dresses them when loaded (commonsKit).
 function DockPieces.hangout(b: CFrame): Model
 	local m = Instance.new("Model")
 	m.Name = "Hangout"
@@ -3516,6 +3579,23 @@ function DockPieces.hangout(b: CFrame): Model
 			Enum.PartType.Ball
 		)
 	end
+	local function fr(key: string): CFrame
+		return Hangout.frame(b, key)
+	end
+	commonsKit(m, {
+		{ "H01_Canteen", "Canteen", c },
+		{ "H02_Campfire", "Campfire", f },
+		{ "H02_CampfireGlow", "Campfire", f },
+		{ "H04_ParkBench", "Bench", fr("BenchA") },
+		{ "H04_ParkBench", "Bench", fr("BenchB") },
+		{ "H05_BenchPatio", "Bench", fr("BenchA") }, -- one patio under both benches
+		{ "H05_BenchPatioGlow", "Bench", fr("BenchA") },
+		{ "H06_Hammock", "Hammock", h },
+		{ "H07_IceCart", "Cart", k },
+		{ "H08_ChatEast", "ChatEast", fr("ChatEast") },
+		{ "H09_ChatWest", "ChatWest", fr("ChatWest") },
+		{ "H09_ChatWestGlow", "ChatWest", fr("ChatWest") },
+	})
 	for _, d in m:GetDescendants() do
 		if d:IsA("BasePart") then
 			d.CanTouch = false
@@ -4813,6 +4893,16 @@ DECOR_BUILDERS.Fountain = function(m: Model, at: CFrame, d: DockConfig.Decor)
 	jet.Transparency = 0.2
 end
 
+-- each decoration's M_Prop_CommonsKit meshes (round ATT_<key>; the kit's D04_FlagCloth becomes the "Flag")
+local DECOR_KIT: { [string]: { string } } = {
+	FlowerBed = { "D01_FlowerBed" },
+	PicnicTable = { "D02_PicnicTable" },
+	LampRow = { "D03_LampRow", "D03_LampRowGlow" },
+	FlagPole = { "D04_FlagPole", "D04_FlagCloth", "D04_FlagEmblem" },
+	Statue = { "D05_Statue" },
+	Fountain = { "D06_Fountain", "D06_FountainWater" },
+}
+
 -- The Model for decoration `key` (DockConfig.Decorations) on its spare-lot spot in the berth frame `b`.
 function DockPieces.decoration(key: string, b: CFrame): Model
 	local m = Instance.new("Model")
@@ -4822,6 +4912,11 @@ function DockPieces.decoration(key: string, b: CFrame): Model
 	local fn = DECOR_BUILDERS[key]
 	if d and at and fn then
 		fn(m, at, d)
+		local place: { { any } } = {}
+		for _, mesh in (DECOR_KIT[key] or {}) :: { string } do
+			table.insert(place, { mesh :: any, key, at })
+		end
+		commonsKit(m, place)
 	end
 	return m
 end

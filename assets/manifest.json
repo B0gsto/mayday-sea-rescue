@@ -375,7 +375,8 @@
    "T_SubPen_Brick_RGH",
    "T_TrophyHall_Brick_RGH",
    "T_WorkshopAddons_Brick_RGH",
-   "T_BuildSiteKit_Brick_RGH"
+   "T_BuildSiteKit_Brick_RGH",
+   "T_CommonsKit_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -13536,7 +13537,8 @@
    "T_TrophyHall_Brick_NOR",
    "T_WorkshopAddons_Brick_NOR",
    "T_JettyCrane_Brick_NOR",
-   "T_BuildSiteKit_Brick_NOR"
+   "T_BuildSiteKit_Brick_NOR",
+   "T_CommonsKit_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -15152,6 +15154,15 @@
   "name": "T_GaleQueen_Decals_RGH",
   "sha": "b4f6e39815debb72a92172fd8726eb3473f19b711000bbd435e4bd46f9b383bf",
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Decals_RGH.png",
+  "type": "Image"
+ },
+ "Image:b50a24e99634aa221a9bf7b50fed2b00b4d9aa77b1dd75feb6fdeed304716d5c": {
+  "assetId": "98917262750062",
+  "imageId": "98917262750062",
+  "moderation": "Reviewing",
+  "name": "T_CommonsKit_Brick_ALB",
+  "sha": "b50a24e99634aa221a9bf7b50fed2b00b4d9aa77b1dd75feb6fdeed304716d5c",
+  "source": "assets/textures/M_Prop_CommonsKit/T_CommonsKit_Brick_ALB.png",
   "type": "Image"
  },
  "Image:b5554d688ba0248a78d8befbf37d4b89eddb143aff8d561f8eba669007a048a0": {
@@ -17724,7 +17735,8 @@
    "T_TrophyHall_Brick_MET",
    "T_WorkshopAddons_Brick_MET",
    "T_JettyCrane_Brick_MET",
-   "T_BuildSiteKit_Brick_MET"
+   "T_BuildSiteKit_Brick_MET",
+   "T_CommonsKit_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -22363,6 +22375,16 @@
   "source": "assets/fbx/M_Veh_ATV/M_Veh_ATV_LOD1.fbx",
   "type": "Model"
  },
+ "Model:25f4bca9d97233dfb09ceb1051202c99b48ce243f1f63efcf1a0112cf0b9a2e0": {
+  "assetId": "75671637336264",
+  "moderation": "Approved",
+  "name": "M_Prop_CommonsKit",
+  "rbxm": "assets/models/M_Prop_CommonsKit.rbxm",
+  "route": "delivery",
+  "sha": "25f4bca9d97233dfb09ceb1051202c99b48ce243f1f63efcf1a0112cf0b9a2e0",
+  "source": "assets/fbx/M_Prop_CommonsKit/M_Prop_CommonsKit_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:26126bfd7e5ef170c2dd0222e2d5abb7dfa52dd900641918745b56f7baa03d76": {
   "assetId": "109001584524324",
   "moderation": "Approved",
@@ -22801,6 +22823,16 @@
   "route": "delivery",
   "sha": "2fb09a31dcf8f06eadbebee4284e01336b84b4a197fd9c7180e8cb1c1fbb9aae",
   "source": "assets/fbx/M_Bld_Cottage_02/M_Bld_Cottage_02_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:2fcdf2c9edcc0629b0f0daace0e3798c2b04878a9b75d88576d07104aa222223": {
+  "assetId": "90912448153218",
+  "moderation": "Approved",
+  "name": "M_Prop_CommonsKit_LOD1",
+  "rbxm": "assets/models/M_Prop_CommonsKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "2fcdf2c9edcc0629b0f0daace0e3798c2b04878a9b75d88576d07104aa222223",
+  "source": "assets/fbx/M_Prop_CommonsKit/M_Prop_CommonsKit_LOD1.fbx",
   "type": "Model"
  },
  "Model:2fcf68afef8e156dfed0d035baad7f978f75ca0f5029457c5df67dcdb4acfbe0": {
@@ -24861,6 +24893,16 @@
   "route": "delivery",
   "sha": "6523c1792ba011e434447aaba5b484be51faeede954c56b8cd4a101169c57b90",
   "source": "assets/fbx/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:65303263a29d706e361a166a62e3caedb7bd1e12dbe9ddf5590aa5131ed882e4": {
+  "assetId": "118958986993115",
+  "moderation": "Approved",
+  "name": "M_Prop_CommonsKit_LOD2",
+  "rbxm": "assets/models/M_Prop_CommonsKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "65303263a29d706e361a166a62e3caedb7bd1e12dbe9ddf5590aa5131ed882e4",
+  "source": "assets/fbx/M_Prop_CommonsKit/M_Prop_CommonsKit_LOD2.fbx",
   "type": "Model"
  },
  "Model:654294722ea5e3b8481ebd83d9d75b51924d9aaa9c4fe2bf7fd90979250ea5e0": {
