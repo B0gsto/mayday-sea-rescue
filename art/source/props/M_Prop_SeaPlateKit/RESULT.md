@@ -1,6 +1,23 @@
-# M_Prop_SeaPlateKit (2026-11-01, PERF-BL4 round 4: Opus 5.5, Blender MCP)
+# M_Prop_SeaPlateKit (2026-11-01, FIN rounds 5-6: Opus 5.5, Blender MCP)
 
-Round 4 (AD r3 median 8.2): jump ramp side profile is one wedge: the stepped red/white cheek bricks are replaced by one
+Rounds 5-6 (FIN, Opus 5.5, Blender MCP). AD medians r5 8.8, r6 8.9 (three Opus ADs each, same rubric, BoardKit r4
+anchor 9.2; r6 won pairwise vs r5, r5 vs r4). Still BELOW the 9.1 bar after round 6; ships r6 as the best round.
+r5: Freight middle filled (three two-high container stacks, forklift lane, pallets; a container pair + crates by the
++x bay; these live in L14_CargoCrane for L12's 10k per-MeshPart budget); taller studs (h 0.45 -> 0.6); every kerb cap
+studded; 6-sided studs drop the bevel ring (tri budget). r6: the jump ramp sits on two light grey studded floats under
+its red cheeks with a black bumper course (the jet-ski lane between stays open water); kerb studs 1.3x in the other
+cap colour (red on white, white on red, black on yellow, yellow on black); benches, planters, parasols round the
+splash pad. preview.py: the template world's HDRI is unlinked (its sun hotspot was the r5 "glare blob").
+Collision: DockPieces makes the props (L05 / L12) and the crane yard (L14) CanCollide + CanQuery (Automatic fidelity).
+Validate PASS: LOD0 39,804 / 40k, LOD1 13,165, LOD2 2,323. zfight 0 visible pairs. ATT_* unchanged.
+Uploaded: LOD0 71060030921213, LOD1 87543814711311, LOD2 84446441261378 (ALB unchanged, same bytes).
+Sheets (main checkout): build/status/2026-11-01/perfect/M_Prop_SeaPlateKit/r5/, r6/.
+r7 list (AD consensus): floats 2-3 bricks tall, full length under the cheeks; flat Freight / Ramp deck fields need tile
+variation or stud patches; round ropes and 12-side tyres; crate stacks lower (read 2x minifig).
+
+## Round 4
+
+Round 4 (PERF-BL4; AD r3 median 8.2): jump ramp side profile is one wedge: the stepped red/white cheek bricks are replaced by one
 solid red sloped cheek per side (bevelled top 0.8 over the running surface, seams every 4 studs, ending where it meets
 the water) with a short one-stud post at the lip; the yellow lip band is gone; the lip face bricks are solid red; the
 r3 underwater brick base (the "pale slab") is deleted, the two ramp piers now rise to just under the lip face; the lip

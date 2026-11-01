@@ -154,6 +154,8 @@ def setup_render(w=1024, h=640):
     sc.world = wd
     wd.use_nodes = True
     bg = next(n for n in wd.node_tree.nodes if n.type == "BACKGROUND")
+    for ln in list(bg.inputs["Color"].links):            # the template world's HDRI (a sun hotspot) -> flat sky
+        wd.node_tree.links.remove(ln)
     bg.inputs["Color"].default_value = (0.55, 0.72, 0.92, 1)
     bg.inputs["Strength"].default_value = 0.9
     sun = bpy.data.objects.get("PV_Sun")

@@ -28305,6 +28305,16 @@
   "source": "assets/fbx/M_Kit_VHFHandset/M_Kit_VHFHandset_LOD2.fbx",
   "type": "Model"
  },
+ "Model:bf3c25f01e4513936790a9ecd423f8bb6bc3be81a6b63af2d50499f2137ee402": {
+  "assetId": "84446441261378",
+  "moderation": "Approved",
+  "name": "M_Prop_SeaPlateKit_LOD2",
+  "rbxm": "assets/models/M_Prop_SeaPlateKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "bf3c25f01e4513936790a9ecd423f8bb6bc3be81a6b63af2d50499f2137ee402",
+  "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:bfe7ddf2f12d3785b14b32740f15e0da8a747a32aa33fb3ae7f17294e2311a8f": {
   "assetId": "89970631563421",
   "moderation": "Approved",
@@ -28573,6 +28583,16 @@
   "route": "delivery",
   "sha": "c687e07fd0b80bfc9729fba6c7a729a97f76a3f030c8620d2aedaf90b3f2c5b0",
   "source": "assets/fbx/M_Veg_Hawthorn_01/M_Veg_Hawthorn_01_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:c6a9af90bd46c03f199c035db633ebf1d004de994d8ddc466c559e5ed1370404": {
+  "assetId": "87543814711311",
+  "moderation": "Approved",
+  "name": "M_Prop_SeaPlateKit_LOD1",
+  "rbxm": "assets/models/M_Prop_SeaPlateKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c6a9af90bd46c03f199c035db633ebf1d004de994d8ddc466c559e5ed1370404",
+  "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD1.fbx",
   "type": "Model"
  },
  "Model:c7937d9fe5a696532a03b0aee38423c34a4b31bad124efdbd255517520841494": {
@@ -29303,6 +29323,16 @@
   "route": "delivery",
   "sha": "ddd16c5e21642ec7dc64b58ea97e8944c93ecd40847d234c0e7552e23b76f8ef",
   "source": "assets/fbx/M_Veh_JetSki_RiptideX/M_Veh_JetSki_RiptideX_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:de07989147b37fb284d1ee447d44b260e71d770a1e5c212f7a7427a936d43c8a": {
+  "assetId": "71060030921213",
+  "moderation": "Approved",
+  "name": "M_Prop_SeaPlateKit",
+  "rbxm": "assets/models/M_Prop_SeaPlateKit.rbxm",
+  "route": "delivery",
+  "sha": "de07989147b37fb284d1ee447d44b260e71d770a1e5c212f7a7427a936d43c8a",
+  "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD0.fbx",
   "type": "Model"
  },
  "Model:de3cefd68625c01679f2991b9f6e3e43ae0f3c0aa04f194355907216b8f0fba0": {

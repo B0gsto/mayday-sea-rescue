@@ -4038,7 +4038,10 @@ local function seaPlate(m: Model, b: CFrame, key: string)
 				continue
 			end
 			p.Anchored = true
-			p.CanCollide, p.CanQuery, p.CanTouch = false, false, false
+			-- the props (crates, kiosk, tower, containers) and the cargo crane are solid; the deck, courses and the
+			-- jump ramp leave it to the invisible code Parts
+			local solid = k == 5 or (k == 7 and not ramp)
+			p.CanCollide, p.CanQuery, p.CanTouch = solid, solid, false
 			if k <= 3 then
 				p:SetAttribute("BuildY", k) -- shafts, low course, high course
 			elseif k == 6 then -- lamp heads glow (the hidden code bulbs keep their NightLamp lights)

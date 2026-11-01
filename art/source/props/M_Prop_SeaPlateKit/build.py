@@ -153,19 +153,21 @@ class K:
         bx, by, _ = self.p(x, 0, z)
         self.b.cyl(bx, by, y0, y1, r, c, self.sides(n), top=top, bottom=bottom)
 
-    def stud(self, x, y, z, c, r=0.7, h=0.45, n=8):
+    def stud(self, x, y, z, c, r=0.7, h=0.6, n=8):
         """A tall stud with a bevelled top edge (r2: the anchor kits' studs read taller and catch a rim light)."""
         if self.lod:
             return
         n = n if r >= 0.65 else min(n, 6)                # small studs: 6 sides (budget), big deck studs keep 8
         bv = min(0.12, 0.3 * h, 0.25 * r)
         rings = [(y - SINK, r), (y + h - bv, r), (y + h, r - bv)]
+        if n <= 6:                                       # r5: 6-sided studs drop the bevel ring (unseen at game distance)
+            rings = [(y - SINK, r), (y + h, r)]
         verts = [self.p(x + rr * math.cos(2 * math.pi * i / n), yy, z + rr * math.sin(2 * math.pi * i / n))
                  for yy, rr in rings for i in range(n)]
         faces = [(a * n + i, a * n + (i + 1) % n, (a + 1) * n + (i + 1) % n, (a + 1) * n + i)
-                 for a in range(2) for i in range(n)]
+                 for a in range(len(rings) - 1) for i in range(n)]
         self.b._emit(verts, faces, STUD_SIDE.get(c, c))   # r3: a darker stud wall rings each stud (reads at distance)
-        self.b._emit(verts[2 * n:], [tuple(range(n))], c)
+        self.b._emit(verts[(len(rings) - 1) * n:], [tuple(range(n))], c)
 
     def slab(self, poly, t0, t1, c, yf):
         """A tile on a sloped surface: polygon (x, z), bottom yf(z) + t0, top yf(z) + t1, sides, no bottom."""
@@ -174,7 +176,7 @@ class K:
         faces = [tuple(range(m, 2 * m))] + [(i, (i + 1) % m, m + (i + 1) % m, m + i) for i in range(m)]
         self.b._emit(verts, faces, c)
 
-    def studs(self, x0, x1, z0, z1, y, c, pitch=2.0, r=0.7, h=0.45, n=8):
+    def studs(self, x0, x1, z0, z1, y, c, pitch=2.0, r=0.7, h=0.6, n=8):
         nx, nz = max(1, round((x1 - x0) / pitch)), max(1, round((z1 - z0) / pitch))
         for i in range(nx):
             for j in range(nz):
@@ -327,16 +329,14 @@ def kerb_run(k, a0, a1, along_x, fixed, kb):
     for i in range(n):
         u0, u1 = a0 + i * s + 0.05, a0 + (i + 1) * s - 0.05
         B((u0, CAP0, f0), (u1, CAP1, f1), caps[i % 2], 0.25, ("bottom",))
-        if i % 2:
-            continue                                     # smooth bevel tiles between studded caps
-        mid = (f0 + f1) / 2
+        mid = (f0 + f1) / 2                              # r5: every cap studded (a stud strip along the edge trim)
         m = max(1, round((u1 - u0) / 4.0))
         for j in range(m):
             u = u0 + (j + 0.5) * (u1 - u0) / m
             if along_x:
-                k.stud(u, CAP1, mid, caps[0], r=0.55)
+                k.stud(u, CAP1, mid, caps[(i + 1) % 2], r=0.78, n=6)   # r6: the other cap colour, 1.3x
             else:
-                k.stud(mid, CAP1, u, caps[0], r=0.55)
+                k.stud(mid, CAP1, u, caps[(i + 1) % 2], r=0.78, n=6)
 
 
 def kerbs(k, slot):
@@ -782,6 +782,13 @@ def ramp_props(k):
     for x, z, c in ((-46.0, 12.0, P.RED), (-30.0, 30.0, P.RED), (-46.0, 34.0, P.RED), (2.0, 26.0, P.BLUE),
                     (-34.0, -2.0, P.BLUE)):
         parasol(k, x, z, c)
+    # r6: dress the open middle round the splash pad
+    for x, z in ((-12.0, -3.5), (-12.0, 20.5)):
+        bench(k, x, z)
+    for x in (-24.5, 0.5):
+        planter(k, x, 8.6, along_x=False)
+    for x, z, c in ((12.0, 4.0, P.RED), (16.0, -18.0, P.BLUE)):
+        parasol(k, x, z, c)
     lifeguard_tower(k, -50.0, -33.0)
     kiosk(k, -14.0, 40.5)
     for x, z in ((-18.0, -41.0), (18.0, -41.0), (4.0, 42.0), (16.0, 42.0)):
@@ -934,6 +941,18 @@ def crane(k):
     for s in (-1, 1):                                 # sling lines to the crate
         k.beam((x, hy - 0.8, tip[2]), (x + s * 2.8, hy - 2.95, tip[2]), 0.1, 0.1, P.INK)
     container(k, x, tip[2], hy - 5.9, P.GREEN, length=7.0, w=3.2, h=3.0, along_z=False)   # r2: a hanging container
+    # r5: the Freight deck's empty middle (here, not in L12: its per-MeshPart budget): a two-high container block,
+    # a forklift lane beside it, pallets at its end
+    for x, c0, c1 in ((4.0, P.BLUE, P.ORANGE), (8.4, P.RED, P.GREEN), (12.8, P.GREEN, P.BLUE)):
+        container(k, x, -12.5, 0.0, c0, studs=False)
+        container(k, x, -12.5, 4.25, c1)
+    forklift(k, 21.0, -14.0, 180.0)
+    for x, z, n in ((-6.0, -16.0, 2), (-6.0, -9.0, 1), (24.0, 24.0, 2), (30.0, 24.0, 3)):
+        pallet(k, x, z)
+        for j in range(n):
+            crate(k, x, z, 0.7 + j * 2.66, c=(P.BROWN, P.RIB)[j % 2], top=j == n - 1)
+    container(k, 10.0, 30.0, 0.0, P.ORANGE, along_z=False, studs=False)
+    container(k, 10.0, 30.0, 4.25, P.WHITE, along_z=False)
 
 
 def lamps_of(slot):
@@ -1021,6 +1040,15 @@ def jump_ramp(k):
         r.stud((x0 + x1) / 2, R_TOP + 1.2, (zs[0] + zs[1]) / 2, P.RED, r=0.6)
         for j in range(1, len(zs) - 1):
             wedge(x0, x1, zs[j] + 0.03, zs[j + 1] - (0.03 if j < len(zs) - 2 else 0.0))
+    # r6: two light grey studded floats under the cheeks seat the ramp at the waterline (the lane between stays
+    # open water for the jet ski), a black bumper course round each at the water
+    zf = R_WET - 0.8                                     # the cheek top meets the float top here
+    for s in (-1, 1):
+        x0, x1 = sorted((s * (hw + 0.06), s * (hw + 2.9)))
+        r.box((x0, SEA - 0.9, zf), (x1, SEA + 1.0, hl + 1.2), P.LBG, bev=bv)
+        r.studs(x0 + 0.2, x1 - 0.2, zf + 0.4, hl + 0.8, SEA + 1.0, P.LBG, pitch=1.9, r=0.6)
+        bx0, bx1 = sorted((s * (hw + 2.8), s * (hw + 3.15)))
+        r.box((bx0, SEA - 0.3, zf + 0.3), (bx1, SEA + 0.35, hl + 1.0), P.BLACK, bev=0)
     # r4: the r3 underwater brick base is gone (it read as a pale slab under the water); the cheeks reach SEA-1.5
     # lip face: four brick courses, each stepped 2 back under the one above (the treads read from the sea)
     yb = [0.3, -1.3, -2.9, SEA - 1.5]
