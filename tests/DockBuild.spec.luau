@@ -90,6 +90,22 @@ return function(t)
 		end
 	end)
 
+	-- the 2x plate's outer lots sit past the island view; pressing a card is how each lot is reached, so every
+	-- card's focus view must stay within what a low-quality phone draws
+	t.test("every card's focus view stays within the phone draw distance", function()
+		for _, item in DB.catalog() do
+			local at, size = B.paper(item, frame)
+			-- card press: room 1; a building or decor going up while the tablet is open: room 2.2
+			local room = if item.kind == "Blueprint" then 1 else 2.2
+			-- desktop; landscape phone (no ScreenOrientation set) with the list at its widest
+			for _, view in { { 16 / 9, 0.6 }, { 19.5 / 9, 0.4 } } do
+				local cam = B.focus(frame, at.Position, size * room, view[1], view[2])
+				local reach = (cam.Position - at.Position).Magnitude
+				t.expect(reach < B.SAFE_DISTANCE).toBe(true)
+			end
+		end
+	end)
+
 	t.test("decor is a Cash-only ladder from 2k to 40k on the spare lots", function()
 		t.expect(#D.DECOR).toBe(6)
 		local last = 0
