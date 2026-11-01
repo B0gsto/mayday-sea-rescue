@@ -580,9 +580,9 @@ local function hero(r: Run, dist: number, h: number, side: number): CFrame
 end
 
 local function orbit(r: Run, center: Vector3, radius: number, h: number, deg: number): CFrame
-	local a = math.rad(deg)
+	local k = r.room -- a crowded plaza also keeps the orbit inside the clear arc
+	local a = math.rad(deg * k)
 	local dir = r.view * math.cos(a) + r.right * math.sin(a)
-	local k = r.room
 	return CFrame.lookAt(center + dir * radius * k + UP * (h + (1 - k) * 6), center)
 end
 
@@ -841,14 +841,32 @@ end
 
 ---------------------------------------------------------------- takeover
 
+-- you and Bosun (DogService's Bosun_<UserId>) stand between the camera and the hub
 local function showSelf(on: boolean)
-	local char = player.Character
-	if not char then
-		return
+	local dogs = Workspace:FindFirstChild("Bosun")
+	local models: { Instance } = {}
+	if player.Character then
+		table.insert(models, player.Character)
 	end
-	for _, x in char:GetDescendants() do
-		if x:IsA("BasePart") or x:IsA("Decal") then
-			(x :: any).LocalTransparencyModifier = if on then 0 else 1
+	local dog = dogs and dogs:FindFirstChild(`Bosun_{player.UserId}`)
+	if dog then
+		table.insert(models, dog)
+	end
+	for _, model in models do
+		for _, x in model:GetDescendants() do
+			if x:IsA("BasePart") or x:IsA("Decal") then
+				(x :: any).LocalTransparencyModifier = if on then 0 else 1
+			end
+		end
+	end
+end
+
+-- the HUD stays down even if something (a join prompt, a toast) switches its ScreenGui on mid-show
+local function hideGuis()
+	for _, sg in player:WaitForChild("PlayerGui"):GetChildren() do
+		if sg:IsA("ScreenGui") and sg.Enabled and sg ~= gui then
+			sg.Enabled = false
+			table.insert(hidden, sg)
 		end
 	end
 end
@@ -990,7 +1008,8 @@ local function update(dt: number)
 		)
 	end
 	CameraController.SetOverride(camCf * jolt, camFov - fovKick)
-	showSelf(false) -- the spinner stands between the camera and the hub
+	showSelf(false)
+	hideGuis()
 
 	-- grade, vignette, letterbox, depth of field
 	local g = r.grade
@@ -1076,14 +1095,8 @@ local function enter()
 	fovKick, shake = 0, 0
 	cur = { bars = 0, vignette = 0, energy = 0, drone = 0 }
 	curGrade = { tint = WHITE, bright = 0, sat = 0, contrast = 0 }
-	local g = ensureGui()
-	g.Enabled = true
-	for _, sg in player:WaitForChild("PlayerGui"):GetChildren() do
-		if sg:IsA("ScreenGui") and sg.Enabled and sg ~= g then
-			sg.Enabled = false
-			table.insert(hidden, sg)
-		end
-	end
+	ensureGui().Enabled = true
+	hideGuis()
 	promptsWere = ProximityPromptService.Enabled
 	ProximityPromptService.Enabled = false
 	local c = Instance.new("ColorCorrectionEffect")
