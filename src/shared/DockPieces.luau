@@ -525,6 +525,10 @@ local function boathouse(m: Model, b: CFrame)
 			)
 		end
 	end
+	-- owner 2026-11-01 ("too cluttered"): the back wall faces the boat yard's path; two windows break its bare blue
+	for _, x in { -7.5, 7.5 } do
+		window(m, L * CFrame.new(x, h * 0.55, hd + 0.4) * CFrame.Angles(0, math.pi, 0), 4.4, 3.6)
+	end
 	-- the slope-brick roof, ridge along the depth: the gable over the doors
 	gable(m, L * CFrame.new(0, h, 0), hw * 2 + 2.4, hd * 2 + 2.4, 7, BRICK_RED)
 	sign(
@@ -2699,7 +2703,8 @@ local function boatYard(m: Model, b: CFrame, level: number?)
 		def.name,
 		spec.icon
 	)
-	-- tool chests and a tyre stack beside the hull
+	-- a tool chest and a tyre stack beside the hull: the yard's one prop cluster (owner 2026-11-01: "too cluttered",
+	-- so no stacked chest and no corner crates/barrels; Lv2+ the mesh's tool bench tells the story)
 	if lv < 2 then
 		local tools = at * CFrame.new(w / 2 - 4, 0, -d / 2 + 8)
 		studTop(
@@ -2709,15 +2714,6 @@ local function boatYard(m: Model, b: CFrame, level: number?)
 				Vector3.new(3.6, 2.2, 2),
 				tools * CFrame.new(0, 1.1, 0),
 				BRICK_RED
-			)
-		)
-		studTop(
-			brick(
-				m,
-				"ToolChest",
-				Vector3.new(2.6, 1.6, 1.8),
-				tools * CFrame.new(-0.4, 2.8, 0.6) * CFrame.Angles(0, 0.4, 0),
-				BRICK_BLUE
 			)
 		)
 		for i = 0, 1 do
@@ -2746,7 +2742,6 @@ local function boatYard(m: Model, b: CFrame, level: number?)
 		end
 	end
 	yardPath(m, at, d)
-	yardClutter(m, at, w, d)
 	rock(m, at * CFrame.new(-w / 2 - 5, 0, d / 2 + 4))
 end
 
@@ -3855,19 +3850,30 @@ local function seaPlate(m: Model, b: CFrame, key: string)
 	local T = RingLayout.SEA_PLATE_DECK
 	local sea = -RingLayout.PlateauY -- local y of the waterline
 	m:SetAttribute("SeaSite", true) -- ConstructionController: a site on the water
-	local deck = brick(m, "Deck", Vector3.new(w, T, d), C * CFrame.new(0, -T / 2, 0), TAN)
-	studTop(deck)
-	-- invisible skirt from the deck's underside into the water: a jet ski's hull slid under the 1-stud deck and its
-	-- rider wedged in it (playtest 2026-10-31); now hulls meet the plate's side (as QuestPontoons)
-	local skirt = part(
-		m,
-		"Skirt",
-		Vector3.new(w, 3 - sea - T, d), -- from 3 under the waterline up to the deck
-		C * CFrame.new(0, (sea - 3 - T) / 2, 0),
-		TAN,
-		M.SmoothPlastic
-	)
-	skirt.Transparency, skirt.CastShadow = 1, false
+	-- island-frame boxes { r0, r1, f0, f1 } of deck: the whole rect, or three round a slot where the Boathouse Lv2
+	-- lifeboat slipway runs down into the sea (it ran under the deck, owner 2026-11-01)
+	local slipR = Marina.ISLAND:PointToObjectSpace(DockConfig.BOATHOUSE_SLIP.Position).X
+	local boxes = { r }
+	if slipR > r[1] and slipR < r[2] then
+		local s0, s1, f = slipR - 5, slipR + 5, r[3] + 20 -- the slipway is 7 wide and meets the water by fwd 181
+		boxes = { { r[1], s0, r[3], r[4] }, { s1, r[2], r[3], r[4] }, { s0, s1, f, r[4] } }
+	end
+	for _, x in boxes do
+		local bw, bd = x[2] - x[1], x[4] - x[3]
+		local at = isle(b, (x[1] + x[2]) / 2, (x[3] + x[4]) / 2)
+		studTop(brick(m, "Deck", Vector3.new(bw, T, bd), at * CFrame.new(0, -T / 2, 0), TAN))
+		-- invisible skirt from the deck's underside into the water: a jet ski's hull slid under the 1-stud deck and
+		-- its rider wedged in it (playtest 2026-10-31); now hulls meet the plate's side (as QuestPontoons)
+		local skirt = part(
+			m,
+			"Skirt",
+			Vector3.new(bw, 3 - sea - T, bd), -- from 3 under the waterline up to the deck
+			at * CFrame.new(0, (sea - 3 - T) / 2, 0),
+			TAN,
+			M.SmoothPlastic
+		)
+		skirt.Transparency, skirt.CastShadow = 1, false
+	end
 	-- pillars: a shaft from the seabed (world -40) to just under the water, then two courses up to the deck
 	local function round(
 		name: string,
@@ -3936,15 +3942,19 @@ local function seaPlate(m: Model, b: CFrame, key: string)
 	for _, sx in { -1, 1 } do
 		lamp(m, C, sx * (w / 2 - 4), -d / 2 + 4, 0)
 	end
-	-- the gangway over the trim and beach step (fwd 160-168) to the island wing, 0.06 proud of both tops
-	local gx = if (r[1] + r[2]) < 0 then r[2] - 30 else r[1] + 30 -- 30 in from the channel side
-	brick(
-		m,
-		"Gangway",
-		Vector3.new(14, 0.5, 12),
-		isle(b, gx, r[3] - 3) * CFrame.new(0, -0.19, 0),
-		RBROWN
+	-- the gangway over the trim and beach step (fwd 160-168) to the island wing, 0.06 proud of both tops: a tan
+	-- plank under the cove walk's end (STREETS), a path stub joining them, clear of the lifeboat slipway's slot
+	local gx = if (r[1] + r[2]) < 0 then -56 else 56
+	studTop(
+		brick(
+			m,
+			"Gangway",
+			Vector3.new(8, 0.5, 12),
+			isle(b, gx, r[3] - 3) * CFrame.new(0, -0.19, 0),
+			TAN
+		)
 	)
+	path(m, b, { Vector2.new(gx, 148), Vector2.new(gx, 158) }, 0.1)
 	if key == "SeaPlate1" then
 		local R = RingLayout.RAMP
 		local at = isle(b, R.at.X, R.at.Y) * CFrame.Angles(0, math.rad(R.yaw), 0) -- -Z: the jump's way

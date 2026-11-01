@@ -12,7 +12,7 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 
 | Area | Item | Source | Score | Status |
 |---|---|---|---|---|
-| UI | every sprite in art/source/ui + UiImages | PERF-UI1 -> UI2 | ~6 -> ~8.8 mean | UI1: 91 redrawn as SVG, UI4 (concepts): 85/96 at 9.1+ (d11b3ec2 on t3/perfect-ui-sprite-art, unmerged; needs a Studio look: Hud.Panel 9-slice, minimap ring, new settings pictures); UI5: last 11 judged in-game on a phone + snail/paw fixes |
+| UI | every sprite in art/source/ui + UiImages | PERF-UI1 -> UI2 | ~6 -> ~8.8 mean | UI1: 91 redrawn as SVG, UI4 (concepts): 85/96 at 9.1+ (d11b3ec2 on t3/perfect-ui-sprite-art, unmerged; needs a Studio look: Hud.Panel 9-slice, minimap ring, new settings pictures); UI5 in-game (phone): minimap ring 9.1; rest 8.6-9.0 in game (tap hand 4.0 -> 8.6; snail + paw fixed; 3e79e570); UI6: layout bugs (emoji badge) + in-game re-judge of every screen |
 | AD method | fresh ADs drift +-0.3 and contradict: use an anchor strip of passing items + fixed rubric + pairwise old-vs-new in every AD prompt | all streams | - | rule |
 | World | baseline in-game tour | PERF-TOUR2 | 5.0-8.6 (61 items) | done: tour/SCORES.md; Blender lane order below |
 | Feel | game feel + progression review | code read | moments 3-8 | done: build/status/2026-10-31/perfect/feel/REVIEW.md (28 items) |
@@ -35,7 +35,8 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Code->mesh | build-site kit M_Prop_BuildSiteKit (REVIEW 9) | PERF-BL2 | 5.0 -> 8.4 (r4) | renders in-game (14 module types, no Parts fallback), site 6.8 in-game; merged MERGE2 (main 1e9ea153), test v97 + launch v32; r5 later: mast 1.3x, one colour per pallet, cones 1.5x, calmer front edge |
 | Code->mesh | board kit M_Prop_BoardKit: leaderboard, Coming Soon, island sign, HM beacon | PERF-BL3 | 5.5-7.0 -> **9.2 PASS** (r4) | cec13732 on t3/lego-rescue-board-kit (unmerged, unseen in Studio) |
 | Code->mesh | sea plate kit M_Prop_SeaPlateKit | PERF-BL4 | 5.8/6.4 -> 8.8 (r4) | acdb6d61 on t3/build-sea-plate-kit (unmerged); r5: fill Freight deck middle, ramp at waterline, studs visible at distance; props lack collision |
-| Code->mesh | commons kit: Hangout + decorations | PERF-BL5 | 6.2 / 6.4 | building |
+| Code->mesh | commons kit M_Prop_CommonsKit: Hangout + 6 decorations | PERF-BL5 | 6.2/6.4 -> 8.3/8.8/8.9/9.0 (r4) | 9632e871+0e0a67bd on t3/build-prop-commons-kit (unmerged); no in-game score yet; r5: hammock 8.5, cart + chat corners 8.8 (minifigs in front) |
+| Code->mesh | rescue helicopter M_Veh_RescueHeli | PERF-BL6 | 6.2 | building |
 | Mesh | M_Prop_BuildStation | Blender | 8.3 (r2) | queued |
 | Mesh | vehicles: JetSki, RIB, StormRunner, Tidewalker, RiptideX, GildedGull, SupplyBarge | Blender | unscored | queued |
 | Mesh | buildings: RescueHQ, HQAddons, Bunkhouse, Depot, Workshop/FishMarket/Clinic/BoatYard/Lookout/RescueBoathouse/TrophyHall/SubPen/AirStation/Boathouse add-ons | Blender | 7.5-8.5 | queued |
@@ -76,3 +77,12 @@ Publish rule (2026-11-01, after launch v33 rolled back v32): a publish agent run
 
 Blender (owner 2026-11-01): "do MCP BLENDER not headless": all asset work in the live MCP GUI, never headless blender-run.sh.
 
+
+Studio rule (2026-11-01): capture/play agents use a uniquely named TestBench place/window (e.g. TestBench-perf-<task>), never the default name, so they never drive another thread's play session.
+
+FEEL2a (stopped by the Studio stop 2026-11-01): t3/f6656ade 6465eaff+3cae9ff4; locomotion in context 7.2 (was 6.7); recruit beat fixed (90-stud gate), first build + site polish, sprint beats, foot sliding: all unjudged. CAUTION at merge: it moves the follow camera closer for every moment; review + re-judge framing everywhere. DEV commands recruitbeat/buildbeat/buildfinish for captures.
+
+FEEL2b (stopped by the Studio stop 2026-11-01): t3/ddeb1308; in-game medians from old frames: buy-a-craft 5.0, test ride 5.0, jet ski ride 5.0, shop payoff 3.5 (payoff + build-in never captured). Timer bug not real; real bug fixed: last ride's boat card stayed open. Jet ski bank/lean/rooster tail/carve spray/wide wake + test-ride buoys/ticks/end beat unseen. Owner decision pending: Space step-off with no walkable surface drops you in the sea (barge); proposal: step off only onto a walkable surface in reach, else stay seated (affects every craft).
+
+UI6 (stopped by the Studio stop): 5e0f9153 on t3/perfect-ui-sprite-art: emoji/text glyph badges -> vector shapes (Boat button, step headers, map markers/legend), waypoint double label, touch pad overlap, settings row fade + chunky -/+, locked stickers grey + lock, album off the cash counter, Build pill over the world sign. Unseen; in-game re-judge set up in ingame/r4/. Open: Shop/Crew panels can cover the cash counter.
+PERF-BL7 (HQ Lv1-5 refine) queued behind the heli in the Blender lane.
