@@ -35,7 +35,7 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Code->mesh | build-site kit M_Prop_BuildSiteKit (REVIEW 9) | PERF-BL2 | 5.0 -> 8.4 (r4) | renders in-game (14 module types, no Parts fallback), site 6.8 in-game; merged MERGE2 (main 1e9ea153), test v97 + launch v32; r5 later: mast 1.3x, one colour per pallet, cones 1.5x, calmer front edge |
 | Code->mesh | board kit M_Prop_BoardKit: leaderboard, Coming Soon, island sign, HM beacon | PERF-BL3 | 5.5-7.0 -> **9.2 PASS** (r4) | cec13732 on t3/lego-rescue-board-kit (unmerged, unseen in Studio) |
 | Code->mesh | sea plate kit M_Prop_SeaPlateKit | PERF-BL4 | 5.8/6.4 -> 8.8 (r4) | acdb6d61 on t3/build-sea-plate-kit (unmerged); r5: fill Freight deck middle, ramp at waterline, studs visible at distance; props lack collision |
-| Code->mesh | commons kit M_Prop_CommonsKit: Hangout + 6 decorations | PERF-BL5 | 6.2/6.4 -> r1 8.3, r2 8.8, r3 8.9 (r4 pending) | committed on t3/build-prop-commons-kit; in-game check queued |
+| Code->mesh | commons kit M_Prop_CommonsKit: Hangout + 6 decorations | PERF-BL5 | 6.2/6.4 -> 8.3/8.8/8.9/9.0 (r4) | 9632e871+0e0a67bd on t3/build-prop-commons-kit (unmerged); no in-game score yet; r5: hammock 8.5, cart + chat corners 8.8 (minifigs in front) |
 | Code->mesh | rescue helicopter M_Veh_RescueHeli | PERF-BL6 | 6.2 | building |
 | Mesh | M_Prop_BuildStation | Blender | 8.3 (r2) | queued |
 | Mesh | vehicles: JetSki, RIB, StormRunner, Tidewalker, RiptideX, GildedGull, SupplyBarge | Blender | unscored | queued |
@@ -77,3 +77,5 @@ Publish rule (2026-11-01, after launch v33 rolled back v32): a publish agent run
 
 Blender (owner 2026-11-01): "do MCP BLENDER not headless": all asset work in the live MCP GUI, never headless blender-run.sh.
 
+
+Studio rule (2026-11-01): capture/play agents use a uniquely named TestBench place/window (e.g. TestBench-perf-<task>), never the default name, so they never drive another thread's play session.
