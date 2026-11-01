@@ -1639,7 +1639,6 @@ function VehicleService.Init()
 	f.Parent = Workspace
 	folder = f
 
-	-- docked = true (the launch step): leave it at the bay for the player to walk to and board
 	-- Menu Home (far from your island): off any helm (the craft stays; sendHome fetches it once empty), onto the spawn.
 	Net.func("GoHome").OnServerInvoke = function(player: Player)
 		local character = player.Character
@@ -1666,6 +1665,7 @@ function VehicleService.Init()
 		character:PivotTo(CFrame.lookAt(pos, pos + home.LookVector * Vector3.new(1, 0, 1)))
 		return true
 	end
+	-- docked = true (the launch step): leave it at the bay for the player to walk to and board
 	Net.func("RequestVehicle").OnServerInvoke = function(
 		player: Player,
 		vehicleId: unknown,
