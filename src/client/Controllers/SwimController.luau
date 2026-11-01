@@ -51,7 +51,8 @@ local swimVel = Vector3.zero -- horizontal, follows the stick with water drag
 local jumpAt = -10 -- last Jump eaten while swimming: climbs out at once
 local climb: { a: CFrame, b: CFrame, c: CFrame, t0: number }? = nil
 local CLIMB_UP, CLIMB_OVER = 0.24, 0.16 -- s
-local CAM_CLEAR = 0.8 -- studs the foot camera keeps above the waves
+-- studs the foot camera keeps above the waves (0.8 put the lens in the wave facets: near-solid water frames)
+local CAM_CLEAR = 2
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Exclude
 rayParams.RespectCanCollide = true
@@ -387,6 +388,8 @@ end
 
 -- After the default camera (and Shake): while the head is above the water, the foot camera never dips
 -- under the waves (looking up from a swimmer flicked the Underwater grade on and off with each wave).
+-- No height cutoff: a head more than 10 studs up (a deck, the HQ steps at the island edge) let a camera
+-- looking up sink under the sea, and the Underwater grade and fog flashed on and off as it orbited.
 local function keepCameraDry()
 	local camera = Workspace.CurrentCamera
 	local character = player.Character
@@ -403,7 +406,7 @@ local function keepCameraDry()
 	end
 	local hp = head.Position
 	local headSea = surfaceAt(hp.X, hp.Z)
-	if hp.Y < headSea - 0.5 or hp.Y > headSea + 10 then
+	if hp.Y < headSea - 0.5 then
 		return
 	end
 	local pos = camera.CFrame.Position
