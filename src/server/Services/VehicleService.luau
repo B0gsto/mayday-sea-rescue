@@ -1639,7 +1639,7 @@ function VehicleService.Init()
 	f.Parent = Workspace
 	folder = f
 
-	-- Menu Home (far from your island): off any helm (the craft stays; sendHome fetches it once empty), onto the spawn.
+	-- Menu Home (far from your island): off any helm, onto the spawn. The craft stays out until Boat to me, the next launch or the idle sweep.
 	Net.func("GoHome").OnServerInvoke = function(player: Player)
 		local character = player.Character
 		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -1659,6 +1659,9 @@ function VehicleService.Init()
 			if weld then
 				weld:Destroy()
 			end
+			-- the owning client must drop the weld before the pivot, else it keeps the rider pinned and the pivot
+			-- snaps back (Studio check 2026-11-01); the client's dip to black covers the wait
+			task.wait(0.25)
 		end
 		local pos = standOnGround(character, home.Position)
 		root.AssemblyLinearVelocity = Vector3.zero
