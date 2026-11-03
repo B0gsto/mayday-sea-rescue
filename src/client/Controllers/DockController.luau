@@ -92,7 +92,7 @@ local focusStrip: Frame? = nil
 local stripContent: Frame? = nil
 local decorTabs: TabsUI.Tabs? = nil
 local cards: { ImageButton } = {}
-local pulseKey: string? = nil -- docs/24 E, docs/25 J: the HQ / Workshop card pulses while the tutorial points at it
+local pulseKey: string? = nil -- docs/24 E, docs/25 J: the HQ / Workshop card the tutorial points at (its buy button shines)
 local hutCue: { Instance } = {} -- the Hut's Free-button shine (gone on close or a refresh)
 local hutPopped = false -- the Hut's Free button pops once per tablet open
 local pickTab: (number) -> () = function() end
@@ -837,31 +837,8 @@ local function hqNeeds(parent: GuiObject): Frame?
 	return row
 end
 
--- docs/24 E, docs/25 J: the card the tutorial points at wears a steady gold outline that pops in once
--- (never a blinking pulse: owner 2026-10-28).
--- The ring sits on an inset frame, so it stays inside the card's bounds (never wider than the list's column).
-local function pulseRing(face: GuiObject)
-	local inset = Instance.new("Frame")
-	inset.Name = "Pulse"
-	inset.BackgroundTransparency = 1
-	inset.Position = UDim2.fromOffset(6, 6)
-	inset.Size = UDim2.new(1, -12, 1, -12)
-	inset.ZIndex = 5
-	Style.corner(inset, S.corner - 6)
-	inset.Parent = face
-	local stroke = Instance.new("UIStroke")
-	stroke.Color = OUTLINE
-	stroke.Thickness = 0
-	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	stroke.Parent = inset
-	TweenService:Create(
-		stroke,
-		TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-		{ Thickness = 5 }
-	):Play()
-end
-
--- Live 2026-11-01: 10 of 121 new players opened the tablet and never found the Hut's Free button. It pops once
+-- Live 2026-11-01: 10 of 121 new players opened the tablet and never found the Hut's Free button. The card the
+-- tutorial points at (Hut, Workshop) wears no ring (owner 2026-11-01); its buy button pops once
 -- per open (FX_Pop), then a soft white shine band crosses it every 1.9 s (well under 3 Hz, no flash, no ring:
 -- the owner dislikes outlines). Reduce motion: the band rests still on it. Gone on close / a refresh.
 local function cueHut(card: GuiObject)
@@ -987,9 +964,8 @@ local function refreshCards()
 				buyButtons(slot, item, st)
 			end
 			if pulseKey == item.key then
-				pulseRing(face)
 				pulsed = root
-				if item.key == Onboarding.HQ and st.forSale then
+				if st.forSale then
 					cueHut(root)
 				end
 			end
