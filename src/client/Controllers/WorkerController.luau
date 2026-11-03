@@ -54,13 +54,14 @@ local ANIM_IDS: { [string]: string } =
 	{ -- stock R15 animations (the default Animate script's) + catalog packs
 		Idle = "rbxassetid://10921071918", -- Cartoony Animation Package idle
 		Walk = "rbxassetid://10921082452", -- Cartoony walk (same 6.4 studs/s pace as the stock walk)
-		Swing = "rbxassetid://522635514", -- toolslash, looped slow: hammering / sawing / wrenching
+		Swing = "rbxassetid://522635514", -- toolslash, looped slow: sawing / wrenching
+		Hammer = "rbxassetid://113014050241702", -- hand-keyed (art/source/anim/mocap/keyed.py), AD 7.9, bar 9.1 still open
 		Point = "rbxassetid://507770453", -- point: binoculars / clipboard read
 		Climb = "rbxassetid://507765644", -- stock: no catalog climb reached the 9.1 bar (r4/cand)
 	}
 -- Jobs (docs/24 C) and their held prop. A worker with no Job attribute falls back to its category.
 local JOBS: { [string]: { anim: string?, prop: string? } } = {
-	Build = { anim = "Swing", prop = "Hammer" },
+	Build = { anim = "Hammer", prop = "Hammer" },
 	Fish = { prop = "Crate" },
 	Repair = { anim = "Swing", prop = "Wrench" },
 	Rescue = { anim = "Point", prop = "Binoculars" },

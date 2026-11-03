@@ -10,7 +10,7 @@ local WorkLoop = {}
 export type Beat = {
 	side: number?,
 	back: number?,
-	anim: string?, -- "Swing" | "Point" | "Idle"
+	anim: string?, -- "Hammer" | "Swing" | "Point" | "Idle"
 	speed: number?, -- the anim's speed (Swing defaults to 0.45)
 	prop: string?,
 	hold: number,
@@ -20,8 +20,8 @@ WorkLoop.PIVOT = 4
 
 WorkLoop.BEATS = {
 	Build = { -- the workshop bench (and a site with no Depot yet): hammer, the next plank, step back and check
-		{ anim = "Swing", hold = 4 },
-		{ side = 1.5, anim = "Swing", hold = 3 },
+		{ anim = "Hammer", hold = 4 },
+		{ side = 1.5, anim = "Hammer", hold = 3 },
 		{ back = 1.2, anim = "Point", prop = "", hold = 1.6 },
 	},
 	Fish = { -- serve at the counter tile, haul the net in behind the stall, carry the crate back to the counter

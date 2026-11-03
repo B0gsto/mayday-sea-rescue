@@ -12,7 +12,7 @@
 -- The rig is inert scenery: HumanoidRootPart anchored (opts.anchored ~= false), every part
 -- non-colliding, massless and untouchable, no state machine, no name or health bar, tagged
 -- NpcFactory.TAG with attribute NpcRole. opts.pose plays a stock Roblox R15 animation on the
--- server Animator (replicates to clients): "Idle", "Wave", "Sit", "Tread" or nil for none.
+-- server Animator (replicates to clients): "Idle", "Wave", "Sit", "ShoreSit", "Tread" or nil for none.
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -41,7 +41,8 @@ export type Options = {
 local POSES = {
 	Idle = "rbxassetid://10921071918", -- Cartoony Animation Package idle
 	Wave = "rbxassetid://507770239",
-	Sit = "rbxassetid://2506281703",
+	Sit = "rbxassetid://2506281703", -- hips at the root: vehicle seats (RescueService)
+	ShoreSit = "rbxassetid://76836983321485", -- hand-keyed, seated on the ground (keyed.py), AD 8.0, bar 9.1 still open
 	Tread = "rbxassetid://10921310341", -- Toy Animation Pack swim idle
 }
 
