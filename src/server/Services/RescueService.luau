@@ -24,6 +24,7 @@ local GoldenCalls = require(Shared:WaitForChild("Calls"):WaitForChild("GoldenCal
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local PiwRescue = require(script.Parent.Parent.Ops.PiwRescue)
 local RipCurrent = require(Shared:WaitForChild("RipCurrent"))
+local SeaZones = require(Shared:WaitForChild("Calls"):WaitForChild("SeaZones"))
 local SkillRules = require(Shared:WaitForChild("SkillRules"))
 local CasualtyAsset: any = (function()
 	local ok, m = pcall(require, script.Parent.Parent.Assets.CasualtyAsset)
@@ -396,7 +397,11 @@ local function spawnVictim(
 			then call.source
 			elseif CallLogic.zoneIdAt(pos) == "MermaidLagoon" then "MermaidLagoon"
 			else "any"
+		-- docs/29 B: rarity from the sea they spawn in; the first-session calls keep the plain table
+		local tutorial = owner ~= nil
+			and Onboarding.failsafeCall(tonumber(owner:GetAttribute("OpsCompletedTotal")) or 0)
 		local opts: WorkerRules.RollOpts = {
+			weights = if tutorial then nil else SeaZones.weightsAt(pos),
 			rareAdd = if owner then tonumber(owner:GetAttribute("SkillRareChanceAdd")) or 0 else 0,
 			traitReroll = owner ~= nil
 				and (tonumber(owner:GetAttribute("SkillTraitReroll")) or 0) > 0,

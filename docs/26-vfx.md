@@ -35,6 +35,9 @@ The game's effects follow the global VFX rules (user CLAUDE.md "VFX (all games)"
 | Prize wheel | spectacle | spin streaks on the rim, a win burst sized by rarity |
 | Chimneys (smokehouse, cottages) | ambience | a slow puff every few seconds, round studded smoke, near the player only |
 | Dolphin leap (sea1) | ambience | `dolphin_leap`: a small crown + drops where a Lego dolphin of a passing pod dives back in, a soft splash; near the camera only |
+| Sea zone line (docs/29 B) | state | `SeaZoneController`: pooled buoys + a soft steady glow curtain in the colour of the water beyond, near the player only, silent |
+| Sea zone crossing (docs/29 B) | feedback | one Toast pop: zone name + best rarity gem, `FX_Chime`; still under Reduce motion |
+| Legendary+ survivor (docs/29 B) | state | `SurvivorTag`: a steady 800-stud rarity-coloured column while in the water, silent |
 | Whale breach (sea1) | spectacle | `whale_breach`: wide crown, tall drop column, foam puffs and ring, a deep splash under a slap; reads out to 700 studs (preset `cull`) |
 
 ## Satisfaction bar (owner, 2026-10-28)

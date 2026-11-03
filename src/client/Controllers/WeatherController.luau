@@ -10,6 +10,8 @@
 --     above intensity 0.5, Calm at dusk / dawn, else the base, also at night) - Roblox can't blend skies.
 --   * Publishes the blended water and haze colours to the ocean as Lighting attributes
 --     OceanWaterColor / OceanHazeColor.
+--   * docs/29 B: the player attribute SeaZone (SeaZoneController) eases the water, haze, fog and an Overcast share
+--     to that sea zone (SeaZones.Zones), less at night and in a storm. The cold open stays untinted.
 --   * Dev override (Studio shots, separate module cache): the Lighting attribute WeatherBase
 --     ("Clear" | "Calm" | "Overcast") replaces the base preset while it is set.
 --   * Rain: a camera-following ParticleEmitter, rate scaled by intensity and graphics quality,
@@ -41,6 +43,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local OceanQuality =
 	require(script.Parent.Parent:WaitForChild("Ocean"):WaitForChild("OceanQuality"))
 local OnboardingWeather = require(Shared:WaitForChild("OnboardingWeather"))
+local SeaZones = require(Shared:WaitForChild("Calls"):WaitForChild("SeaZones"))
 local Weather = require(Shared:WaitForChild("Weather"))
 local WeatherMath = require(Shared:WaitForChild("WeatherMath"))
 local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
@@ -64,6 +67,8 @@ local BLEND_HZ = 10
 local BUILD_HAZE = 0.25 -- share of the Atmosphere density kept in build mode
 local BUILD_EASE = 0.8 -- seconds, the build camera's flight
 local buildMix = 0
+local ZONE_NIGHT_STORM = 0.7 -- how much of the zone tint night and a storm each take away -- tune
+local zoneLook: SeaZones.Look = table.clone(SeaZones.NEUTRAL)
 local ROOF_CHECK_SECONDS = 0.25
 local ROOF_RAY_LENGTH = 150 -- studs -- tune
 local RAIN_MAX_RATE = 1300 -- particles/s at full storm, top quality -- tune
@@ -327,6 +332,9 @@ local function computeBlend(intensity: number): Preset
 	local day = if warm > 0.001
 		then LightingPresets.blend(DAY_PRESETS[name], LightingPresets.Calm, warm)
 		else DAY_PRESETS[name]
+	if zoneLook.overcast > 0.001 then
+		day = LightingPresets.blend(day, LightingPresets.Overcast, zoneLook.overcast)
+	end
 	local n = nightFactor()
 	local dayMix = if n > 0.001 then LightingPresets.blend(day, LightingPresets.Night, n) else day
 	local stormMix = LightingPresets.Storm
@@ -347,9 +355,19 @@ local function computeBlend(intensity: number): Preset
 	-- The Calm (sunset-painted) faces until the sun is just below the horizon (n 0.25, about 18:05): on the horizon the
 	-- engine turns the day faces' white clouds a dull brown, the painted ones a sunset orange. After it the day faces
 	-- dim to violet / navy (the approved 18:30); the Calm faces would go maroon.
-	applySky(if intensity >= 0.5 then "Storm" elseif n < 0.25 and warm >= 0.5 then "Calm" else name)
+	applySky(
+		if intensity >= 0.5
+			then "Storm"
+			elseif n < 0.25 and warm >= 0.5 then "Calm"
+			elseif zoneLook.overcast >= 0.5 then "Overcast"
+			else name
+	)
 	local p = LightingPresets.blend(dayMix, stormMix, intensity) -- a fresh table: grade() writes to it
 	grade(p, Lighting:GetSunDirection().Y)
+	local tinted = (1 - ZONE_NIGHT_STORM * n) * (1 - ZONE_NIGHT_STORM * intensity)
+	p.WaterColor = p.WaterColor:Lerp(zoneLook.water, zoneLook.waterMix * tinted)
+	p.AtmosphereColor = p.AtmosphereColor:Lerp(zoneLook.haze, zoneLook.hazeMix * tinted)
+	p.AtmosphereDensity += zoneLook.density * tinted
 	if buildMix > 0 then
 		p.AtmosphereDensity *= 1 - (1 - BUILD_HAZE) * buildMix
 		p.AtmosphereGlare *= 1 - buildMix
@@ -763,6 +781,14 @@ function WeatherController.Start()
 			local step = sinceBlend / BUILD_EASE
 			local view = if Players.LocalPlayer:GetAttribute("BuildView") then 1 else 0
 			buildMix += math.clamp(view - buildMix, -step, step)
+			local zone = SeaZones.Zones[Players.LocalPlayer:GetAttribute("SeaZone") :: number]
+			SeaZones.ease(
+				zoneLook,
+				if zone and Players.LocalPlayer:GetAttribute("ColdOpenActive") ~= true
+					then zone
+					else SeaZones.NEUTRAL,
+				sinceBlend
+			)
 			sinceBlend = 0
 			intensity = OnboardingWeather.localIntensity(Weather.getIntensity(now), calmLevel)
 			current = computeBlend(intensity)

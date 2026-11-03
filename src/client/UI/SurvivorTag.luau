@@ -1,6 +1,7 @@
 --!strict
 -- SurvivorTag (docs/25 J + K1): the one name tag over every survivor, coloured by rarity (Mythic
--- cycles a rainbow) and, from Epic up in the water, a tall light beam readable from far. Reads the
+-- cycles a rainbow) and, from Epic up in the water, a tall light beam; Legendary and Mythic get a far taller,
+-- wider column that reads across the sea (docs/29 B: steady, nothing flashes). Reads the
 -- K1 attributes (SurvivorName, Rarity 1-6, Category, Trait, Special, Workplace, Job) and falls back
 -- to the WP-26 ones and the model's Name / Common, so a half-migrated server never errors.
 --   SurvivorTag.info(model) -> properties for the card (fromWorker(w, workplace): the same from a saved worker)
@@ -24,7 +25,9 @@ local HOME_DISTANCE = 60 -- studs: up to ~180 home workers per server; far tags 
 local NAME_W, NAME_H = 6, 1.5 -- studs (BillboardGui size is in studs: it shrinks with distance)
 local LIFT = 4.2 -- studs over the root, clear of the head
 local BEAM_H = 150
+local COLUMN_H, COLUMN_W0, COLUMN_W1 = 800, 14, 5 -- Legendary+: reads from far (docs/29 B) -- tune
 local EPIC = 4
+local LEGENDARY = 5
 local GOLD = Color3.fromHex("FFC428")
 local WORK = { 1, 1.25, 1.6, 2.2, 3, 5 } -- docs/25 E work value by tier
 
@@ -258,6 +261,11 @@ function SurvivorTag.attach(model: Model, inWater: boolean?): BillboardGui?
 		if beam then
 			beam.Color = if mythic then RAINBOW else ColorSequence.new(info.color)
 			beam.Enabled = info.rarity >= EPIC and model:GetAttribute("OnVehicle") == nil
+			if info.rarity >= LEGENDARY then
+				beam.Width0, beam.Width1 = COLUMN_W0, COLUMN_W1
+				local top = beam.Attachment1 :: Attachment
+				top.Position = Vector3.new(0, COLUMN_H, 0)
+			end
 		end
 		-- Golden Eye (SkillGoldenEye): Epic+ survivors in the water read from any distance
 		if inWater == true then

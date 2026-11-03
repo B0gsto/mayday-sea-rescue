@@ -26,6 +26,7 @@ return function(t)
 	local DockConfig = t.load("src/shared/Config/DockConfig.luau")
 	local RingLayout = t.load("src/shared/Config/RingLayout.luau")
 	local AmbientMix = t.load("src/shared/Calls/AmbientMix.luau")
+	local SeaZones = t.load("src/shared/Calls/SeaZones.luau")
 	-- docs/23 (k): calls count from the player's island berth; the sim plays every island in turn (the east
 	-- island has Skerry Isle on its doorstep, the west one sails farther), so the averages are the server's
 	local HOMES = {}
@@ -104,7 +105,6 @@ return function(t)
 	-- a DETOUR_S swing. The jet ski's one seat is always the call's. No workers or Medals (onDelivered pays only). -- tune
 	local FREE_GAP, FREE_PATH, DETOUR_S = 1, 2, 10
 	local FREE_MOUTH = AmbientMix.CASH
-	local FREE_SIGHT = math.floor(AmbientMix.CASH * CallTypes.Payout.Grade.Bronze)
 	local START_UTC = 1792800000 -- 2026-10-24 00:00:00 UTC
 
 	-- `flatDepot`: the Depot never upgrades past Lv1 and no Hauler works there (docs/25 K4's slow case)
@@ -184,14 +184,17 @@ return function(t)
 		local function workerCap(): number
 			return UnlockTree.bunkCap(levels) + skills().workerCapAdd
 		end
-		local function recruit(people: number)
+		local function recruit(people: number, weights: { number }?)
 			for _ = 1, if legacy then 0 else people do
 				local cap = workerCap()
 				if cap <= 0 then
 					continue
 				end
 				rolls += 1
-				local w = WorkerRules.roll(rolls * 7919, { rareAdd = skills().rareChanceAdd })
+				local w = WorkerRules.roll(
+					rolls * 7919,
+					{ rareAdd = skills().rareChanceAdd, weights = weights }
+				)
 				WorkerRules.admit(data.workers, w, cap)
 				if #data.workers >= cap then
 					mark("Workers full")
@@ -480,7 +483,7 @@ return function(t)
 
 		-- the next real call (docs/23 e.2): its pay weight x distancePay and minutes
 		local perCraft = {}
-		local function nextCall(storm: boolean): (number, number, number, number)
+		local function nextCall(storm: boolean): (number, number, number, number, { number })
 			local ids = { "JetSki" }
 			for id in owned do
 				table.insert(ids, id)
@@ -522,7 +525,10 @@ return function(t)
 			local path = if callsOnly
 				then 0
 				else math.min(FREE_PATH, seats * math.ceil(victims / seats) - victims)
-			local freeCash = if callsOnly then 0 else FREE_GAP * FREE_MOUTH + path * FREE_SIGHT
+			local freeCash = if callsOnly
+				then 0
+				else FREE_GAP * FREE_MOUTH
+					+ path * AmbientMix.payAt(at, true) -- docs/29 B: the sight spawns round the call pay its zone
 			freePeople += if callsOnly then 0 else FREE_GAP + path
 			seconds += path * DETOUR_S
 			local row = perCraft[best] or { calls = 0, minutes = 0, pay = 0 }
@@ -533,7 +539,8 @@ return function(t)
 			return Operations.Defs[Operations.FromCallKind[choice.kind]].weight * pay,
 				seconds / 60,
 				victims,
-				freeCash
+				freeCash,
+				SeaZones.weightsAt(at)
 		end
 
 		local function runOperation(
@@ -542,7 +549,8 @@ return function(t)
 			now: number,
 			weight: number?,
 			people: number,
-			freeCash: number
+			freeCash: number,
+			weights: { number }?
 		)
 			local completeAt = now + minutes * 60
 			playMin += minutes
@@ -577,7 +585,7 @@ return function(t)
 			earned.freeRoam += freeCash * scale * friendMult
 			award(freeCash * scale, storm, great)
 			if scale == 1 then
-				recruit(people)
+				recruit(people, weights)
 				local before = rescued
 				rescued += people
 				medals += SkillRules.rescueMedals(before, rescued)
@@ -641,12 +649,13 @@ return function(t)
 				end
 				local cashAtStart = data.cash
 				while remaining > 0.01 do
-					local planned, weight, people, freeCash = TUTORIAL_MIN[totalOps + 1], nil, 1, 0
+					local planned, weight, people, freeCash, weights =
+						TUTORIAL_MIN[totalOps + 1], nil, 1, 0, nil
 					if not planned then
-						weight, planned, people, freeCash = nextCall(opIndex % 5 == 4)
+						weight, planned, people, freeCash, weights = nextCall(opIndex % 5 == 4)
 					end
 					local minutes = math.min(planned, remaining)
-					runOperation(minutes, planned, now, weight, people, freeCash)
+					runOperation(minutes, planned, now, weight, people, freeCash, weights)
 					now += minutes * 60
 					remaining -= minutes
 					if trackDone() then
@@ -1042,6 +1051,56 @@ return function(t)
 			t.expect(late >= 1.7 and late <= 4.2).toBe(true)
 		end
 	)
+
+	-- docs/29 B: a free-roam run to a far zone and home, full seats, flat out: Cash a minute (no pirates yet). -- tune
+	local function farTrip(craftId: any, zone: number): number
+		local craft = VehicleConfig[craftId]
+		local inner = if zone > 1 then SeaZones.Zones[zone - 1].outer else 1200
+		local at = inner + 300 -- just over the line: the nearest water of that zone
+		local out = at - 1000 -- from a berth on the ring
+		local seats = craft.survivorCapacity
+		local seconds = TRIP_S + seats * DETOUR_S + 2 * out / (craft.topSpeed * 0.9)
+		local pay = AmbientMix.payAt(Vector3.new(at, 0, 0))
+		return seats * pay / seconds * 60
+	end
+	print(
+		"\nFar free-roam, Cash/min (zones 1..5) vs the solo stage's Cash/min when the craft comes:"
+	)
+	local function stageRate(minute: number): number
+		for _, row in stages(solo) do
+			if minute < row.to then
+				return row.perMin
+			end
+		end
+		return 0
+	end
+	local FAR_CRAFTS = {
+		{ "JetSki", 0 },
+		{ "RIB", minutes(solo, "RIB bought") },
+		{ "Lifeboat", minutes(solo, "Lifeboat bought") },
+	}
+	for _, row in FAR_CRAFTS do
+		local cells = {}
+		for zone = 1, #SeaZones.Zones do
+			table.insert(cells, string.format("%5.0f", farTrip(row[1], zone)))
+		end
+		print(
+			string.format(
+				"  %-9s %s | stage %4.0f",
+				row[1],
+				table.concat(cells, " "),
+				stageRate(row[2])
+			)
+		)
+	end
+
+	t.test("far free-roam never beats the calls by a wide margin (docs/29 B)", function()
+		for _, row in FAR_CRAFTS do
+			for zone = 1, #SeaZones.Zones do
+				t.expect(farTrip(row[1], zone) <= 1.3 * stageRate(row[2])).toBe(true)
+			end
+		end
+	end)
 
 	t.test("free-roam tops up calls, never carries the economy (docs/23 (s))", function()
 		local e = solo.earned

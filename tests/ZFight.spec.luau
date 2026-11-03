@@ -127,6 +127,13 @@ return function(t)
 		t.expect(n).toBe(0)
 	end)
 
+	t.test("the sea zone buoy (SeaZoneController's pool)", function()
+		local SeaBuoy = t.load("src/client/Ocean/SeaBuoy.luau")
+		local f = Instance.new("Folder")
+		SeaBuoy.new(f, "rbxassetid://0")
+		t.expect(expectNone("sea buoy", { f })).toBe(0)
+	end)
+
 	t.test("decorations, the build station and trophies", function()
 		local roots = table.clone(ground)
 		for key in DockConfig.Decorations do

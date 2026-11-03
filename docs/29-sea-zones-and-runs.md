@@ -18,10 +18,13 @@ Measured from `RingLayout.Center` (origin/main: islands at 860 + 320 radius, so 
 | # | Zone | Radius | Water | Rarity % Common..Mythic | Free-roam pay |
 |---|---|---|---|---|---|
 | 1 | Shallows | 0-1600 | bright teal | 78/18/4/0/0/0 | x1 |
-| 2 | Kelp Banks | 1600-2800 | green teal | 55/28/13/4/0/0 | x1.5 |
-| 3 | Coral Drift | 2800-4000 | violet blue | 32/33/22/10/3/0 | x2.5 |
-| 4 | Storm Reach | 4000-5200 | steel blue, overcast | 15/28/30/19/7/1 | x4 |
-| 5 | Wreck Abyss | 5200+ | near-black indigo | 5/15/30/30/16/4 | x6 |
+| 2 | Kelp Banks | 1600-2800 | green teal | 55/28/13/4/0/0 | x1.25 |
+| 3 | Coral Drift | 2800-4000 | violet blue | 32/33/22/10/3/0 | x2 |
+| 4 | Storm Reach | 4000-5200 | steel blue, overcast | 15/28/30/19/7/1 | x3 |
+| 5 | Wreck Abyss | 5200+ | near-black indigo | 5/15/30/30/16/4 | x4 |
+
+Pay tuned down from x1.5 / 2.5 / 4 / 6 (tests/Pacing: a full RIB or lifeboat made 1.8-1.9x the calls, now at most
+1.3x). Better crews also rushed the tree, so Gatherer 3 -> 2.5 and Rescuer 40 -> 34 Cash per unit.
 
 A survivor's rarity rolls from the zone they spawn in (`WorkerRules` `opts.weights`; pity, specials and Crew luck
 unchanged). Call pay keeps its own distance rule. Free-roam spawns must cover every zone, so far water is worth the

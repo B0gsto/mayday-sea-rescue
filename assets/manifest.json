@@ -34067,5 +34067,41 @@
   "sha": "e5eaaa6cee733e539dcbb46fc0b4405364f5150415c3c1d5301fb71e97a766de",
   "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD2.fbx",
   "type": "Model"
+ },
+ "Image:1f8d5cef5b7c824e58c75ecf73937b6ec0c1c96d380ddc65a3edfda0d8926fed": {
+  "assetId": "82687207346877",
+  "imageId": "82687207346877",
+  "moderation": "Reviewing",
+  "name": "gem_mythic",
+  "sha": "1f8d5cef5b7c824e58c75ecf73937b6ec0c1c96d380ddc65a3edfda0d8926fed",
+  "source": "build/ui-art/gem_mythic.png",
+  "type": "Image"
+ },
+ "Image:86cc8c69d4d76aa76a6f2414a783b34ae9f66274e198bd80eb3c8a3448144150": {
+  "assetId": "95504055903225",
+  "imageId": "95504055903225",
+  "moderation": "Reviewing",
+  "name": "gem_rare",
+  "sha": "86cc8c69d4d76aa76a6f2414a783b34ae9f66274e198bd80eb3c8a3448144150",
+  "source": "build/ui-art/gem_rare.png",
+  "type": "Image"
+ },
+ "Image:efcc0b86462c210f579c7d704fecea98fbc7e794feeada5a8f3405a320bfeccc": {
+  "assetId": "108922180696474",
+  "imageId": "108922180696474",
+  "moderation": "Reviewing",
+  "name": "gem_epic",
+  "sha": "efcc0b86462c210f579c7d704fecea98fbc7e794feeada5a8f3405a320bfeccc",
+  "source": "build/ui-art/gem_epic.png",
+  "type": "Image"
+ },
+ "Image:f728ed9e2761bb1b686f95b8f817d9b116b1b9e3d55296aa1ae54d46d560f358": {
+  "assetId": "89137333634023",
+  "imageId": "89137333634023",
+  "moderation": "Reviewing",
+  "name": "gem_legendary",
+  "sha": "f728ed9e2761bb1b686f95b8f817d9b116b1b9e3d55296aa1ae54d46d560f358",
+  "source": "build/ui-art/gem_legendary.png",
+  "type": "Image"
  }
 }

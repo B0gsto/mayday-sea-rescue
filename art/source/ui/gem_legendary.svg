@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 240 240" width="128" height="128"><!-- legendary gem -->
+<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE98A"/><stop offset="1" stop-color="#FFAE0F"/></linearGradient></defs>
+<path d="M60,34 L140,34 L180,82 L100,178 L20,82 Z" transform="translate(0,8)" fill="#fff" stroke="#fff" stroke-width="34" stroke-linejoin="round"/>
+<path d="M60,34 L140,34 L180,82 L100,178 L20,82 Z" transform="translate(0,8)" fill="#14121C" stroke="#14121C" stroke-width="16" stroke-linejoin="round"/>
+<path d="M60,34 L140,34 L180,82 L100,178 L20,82 Z" transform="translate(0,8)" fill="#B56A00"/>
+<path d="M60,34 L140,34 L180,82 L100,178 L20,82 Z" fill="url(#g)"/>
+<path d="M20,82 L180,82 L140,34 L60,34 Z" fill="#FFF7CC" opacity="0.55"/>
+<path d="M66,82 L100,34 L134,82 L100,178 Z" fill="#fff" opacity="0.28"/>
+<path d="M60,34 L66,82 M140,34 L134,82 M100,34 L66,82 M100,34 L134,82 M20,82 L180,82 M66,82 L100,178 M134,82 L100,178" fill="none" stroke="#14121C" stroke-opacity="0.35" stroke-width="4" stroke-linejoin="round"/>
+<path d="M70,46 L104,46" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity="0.9"/>
+<path d="M60,34 L140,34 L180,82 L100,178 L20,82 Z" fill="none" stroke="#14121C" stroke-width="7" stroke-linejoin="round"/>
+</svg>

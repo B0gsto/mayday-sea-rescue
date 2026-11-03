@@ -63,6 +63,7 @@ export type Skill = {
 export type Pity = { epic: number, legendary: number }
 export type RollOpts = {
 	rareAdd: number?,
+	weights: { number }?, -- % Common..Mythic instead of RARITY_WEIGHTS (SeaZones: the sea they spawn in)
 	source: string?, -- the call's source; "any" (default) also gives the any-source specials
 	category: string?, -- forced category (the tutorial's first Builder)
 	owned: { [string]: boolean }?, -- special ids this player already has
@@ -91,9 +92,9 @@ W.SLOTS = 3 -- per worker building -- tune
 W.RIGS = 12 -- WorkerRigs outfit templates the clients clone (more = more variety, more memory)
 W.STATION_SLOTS = 2 -- more per building once the Station stands (the island's top tier) -- tune
 
-W.GATHER_PER = 3 -- Gatherer: Cash a minute per unit -- tune
+W.GATHER_PER = 2.5 -- Gatherer: Cash a minute per unit (3 before docs/29 B: zone rarities doubled crew pay and rushed the tree) -- tune
 W.RESCUE_PERIOD = 300 -- s between NPC rescue boat trips -- tune
-W.RESCUE_PER = 40 -- Rescuer: Cash per trip per unit -- tune
+W.RESCUE_PER = 34 -- Rescuer: Cash per trip per unit (40 before docs/29 B, see GATHER_PER) -- tune
 W.RESCUE_RECRUIT = 0.1 -- a trip brings home a new worker this often -- tune
 W.BOAT_PER, W.BOAT_CAP = 0.1, 0.5 -- Mechanic: Boat to me cooldown -10% per unit, cap -50%
 W.SPEED_PER, W.SPEED_CAP = 0.03, 0.15 -- Mechanic: craft top speed +3% per unit, cap +15%
@@ -248,9 +249,10 @@ function W.roll(seed: number, opts: RollOpts?): Worker
 	s, f = step(s)
 	local _, g = step(s)
 	local category = o.category or W.CATEGORIES[1 + math.floor(a * #W.CATEGORIES) % #W.CATEGORIES]
-	local bonus = math.clamp(o.rareAdd or 0, 0, 0.5) * 100
+	local weights: { number } = o.weights or W.RARITY_WEIGHTS
+	local bonus = math.min(math.clamp(o.rareAdd or 0, 0, 0.5) * 100, weights[1]) -- never below no Commons
 	local pick, rarity = b * 100, 1
-	for r, weight in W.RARITY_WEIGHTS do
+	for r, weight in weights do
 		if r == 1 then
 			weight -= bonus
 		elseif r == 3 then
