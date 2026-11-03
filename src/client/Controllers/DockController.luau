@@ -36,7 +36,6 @@ local DockBuild = require(Shared:WaitForChild("DockBuild"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
-local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 
 local UI = script.Parent.Parent:WaitForChild("UI")
@@ -560,24 +559,6 @@ end
 
 -- The Cash button (greyed when the Cash is short) and the Robux button (skips the Cash), side by side in
 -- `parent`; only shown once the prerequisites stand. Items without a Robux product get the Cash button alone.
--- docs/24 E: the tutorial's Workshop is always buyable: the server tops the wallet up to its price
--- on the buy (the same coin burst as any purchase), so the greyed short-Cash button never blocks it.
-local function tutorialBuild(item: DockBlueprints.Item): boolean
-	if item.kind ~= "Building" or item.key ~= Onboarding.WORKSHOP then
-		return false
-	end
-	local site = siteState()
-	return Onboarding.beat({
-		coldOpenDone = snapshot.coldOpenDone == true or player:GetAttribute("ColdOpenDone") == true,
-		totalRescues = tonumber(snapshot.totalRescues)
-			or tonumber(player:GetAttribute("Rescued"))
-			or 0,
-		step = tonumber(snapshot.tutorialStep),
-		owned = if type(snapshot.dockBuildings) == "table" then snapshot.dockBuildings else {},
-		constructionKey = site.key,
-	}) == "BuildStation"
-end
-
 local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Status)
 	if st.busy == "site" then
 		busyRow(parent, item)
@@ -608,17 +589,9 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 	local cashButton = PriceButtonUI.new(row, {
 		price = st.cash,
 		currency = "Cash",
-		state = if wait or (st.cash > (snapshot.cash or 0) and not tutorialBuild(item))
-			then "disabled"
-			else "buy",
+		state = if wait or st.cash > (snapshot.cash or 0) then "disabled" else "buy",
 		still = true,
 		onActivate = function()
-			-- the tutorial top-up is the existing coin burst; the server turns it into the buy
-			if st.cash > (snapshot.cash or 0) and tutorialBuild(item) then
-				local view = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize
-					or Vector2.new(800, 600)
-				CashBurst.playAt(playerGui, view / 2, 0, false)
-			end
 			cashBuy(item)
 		end,
 	})

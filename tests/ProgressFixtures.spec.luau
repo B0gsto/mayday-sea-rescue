@@ -26,6 +26,7 @@ return function(t)
 	local SettingsRules = t.load("src/shared/SettingsRules.luau")
 	local VehicleUpgrades = t.load("src/shared/VehicleUpgrades.luau")
 	local NotifyDue = t.load("src/shared/NotifyDue.luau")
+	local BoatLevels = t.load("src/shared/BoatLevels.luau")
 
 	local NOW = 1790000000
 	local DAY = 86400
@@ -50,7 +51,8 @@ return function(t)
 	F.defaults = function()
 		return Rules.defaultData()
 	end
-	-- the tutorial beats (Onboarding.beat): stand, Hut site, cold open, first rescue, Workshop buy, site, spin
+	-- the tutorial beats (Onboarding.beat): stand, Hut site, cold open, first rescue, L2, out again, spin; plus the two
+	-- old saves left on the Workshop beat (live before docs/30)
 	F.beatBuildHQ = function()
 		return { version = 2, cash = 0, dock = { levels = { Harbour = 1 } } }
 	end
@@ -87,6 +89,54 @@ return function(t)
 			dock = { levels = { Harbour = 1, HQ = 1 } },
 			construction = { key = "Workshop", level = 1, progress = 0.2, rate = 1, at = NOW - 20 },
 			depot = { stock = 3, at = NOW - 20 },
+			workers = { worker("Builder", 1, "Nell") },
+		}
+	end
+	F.beatUpgrade = function()
+		return {
+			version = 2,
+			boatLevel = 1,
+			coldOpenDone = true,
+			totalRescues = 1,
+			cash = 500,
+			dock = { levels = { Harbour = 1, HQ = 1 } },
+			workers = { worker("Builder", 1, "Nell") },
+		}
+	end
+	-- the wallet went on the Workshop: no arrow yet and calls run (OperationService), so the jet ski earns the level
+	F.beatUpgradeBroke = function()
+		return {
+			version = 2,
+			boatLevel = 1,
+			coldOpenDone = true,
+			tutorialStep = 2,
+			totalRescues = 1,
+			cash = 0,
+			dock = { levels = { Harbour = 1, HQ = 1 } },
+			construction = { key = "Workshop", level = 1, progress = 0.2, rate = 1, at = NOW - 20 },
+			depot = { stock = 3, at = NOW - 20 },
+			workers = { worker("Builder", 1, "Nell") },
+		}
+	end
+	F.beatOutAgain = function()
+		return {
+			version = 2,
+			coldOpenDone = true,
+			totalRescues = 1,
+			boatLevel = 2,
+			dock = { levels = { Harbour = 1, HQ = 1 } },
+			workers = { worker("Builder", 1, "Nell") },
+		}
+	end
+	-- an old save whose Workshop finished before the pivot, its spin still unearned
+	F.beatWorkshopOutAgain = function()
+		return {
+			version = 2,
+			coldOpenDone = true,
+			tutorialStep = 2,
+			totalRescues = 1,
+			boatLevel = 2,
+			dock = { levels = { Harbour = 1, HQ = 1, Workshop = 1 } },
 			workers = { worker("Builder", 1, "Nell") },
 		}
 	end
@@ -420,18 +470,17 @@ return function(t)
 			step = d.tutorialStep,
 			owned = d.dockBuildings,
 			constructionKey = site and site.key,
+			boatLevel = d.boatLevel,
 		})
 		if beat == "BuildHQ" then
 			check((UnlockTree.canBuild("HQ", 1, d.dock.levels, 0)), "the free Hut")
-		elseif beat == "HQSite" or beat == "Build" then
+		elseif beat == "HQSite" then
 			check(site ~= nil, "site")
-		elseif beat == "BuildStation" then
-			local b = DockConfig.Buildings.Workshop.levels[1]
-			local cash = d.cash + Onboarding.topUp(d.cash, b.cash)
-			check(
-				site ~= nil or (UnlockTree.canBuild("Workshop", 1, d.dock.levels, cash)),
-				"Workshop"
-			)
+		elseif beat == "OutAgain" then
+			check(d.boatLevel >= Onboarding.UPGRADE_LEVEL, "the boat is past the upgrade beat")
+		elseif beat == "Upgrade" then
+			-- the button's there, or the jet ski (checked above) earns what is short; nothing is held
+			check(BoatLevels.nextRow(d.boatLevel) ~= nil, "a level to buy")
 		elseif beat == "Spin" then
 			local spin = SpinRules.accrue(SpinRules.decode(d.flags.spin), d.totalRescues, NOW + DAY)
 			check(spin.free >= 1, "a spin within a day")
@@ -518,8 +567,13 @@ return function(t)
 			beatHQSite = "HQSite",
 			beatColdOpen = "ColdOpen",
 			beatRescue = "Rescue",
-			beatBuildStation = "BuildStation",
-			beatBuildSite = "Build",
+			-- pre-ladder saves on the old Workshop beat: migrate's jet ski floor is L2 (80.2 studs/s), so they sail on
+			beatBuildStation = "OutAgain",
+			beatBuildSite = "OutAgain",
+			beatUpgrade = "Upgrade",
+			beatUpgradeBroke = "Upgrade",
+			beatOutAgain = "OutAgain",
+			beatWorkshopOutAgain = "OutAgain",
 			beatSpin = "Spin",
 			beatDone = "Done",
 			brokeEarly = "Done",
@@ -534,6 +588,7 @@ return function(t)
 				step = d.tutorialStep,
 				owned = d.dockBuildings,
 				constructionKey = d.construction and d.construction.key,
+				boatLevel = d.boatLevel,
 			})
 			t.expect({ name, got }).toEqual({ name, beat })
 		end

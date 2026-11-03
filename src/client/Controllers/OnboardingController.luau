@@ -1,19 +1,18 @@
 --!strict
--- OnboardingController: the first session's world-shown tutorial (docs/16 section 4, docs/24 E) on
+-- OnboardingController: the first session's world-shown tutorial (docs/16 section 4, docs/30 section 4) on
 -- the client. No tutorial text and no choice UI: the world leads (the beacon and its ground trail).
 --   docs/25 J: the guide arrow and pin go to the build stand -> the HQ card pulses -> the free Rescue Hut
 --   site (the beacon over it, the camera stays free) ->
---   cold open (jet ski, first survivor, home) -> the Builder walks off the jetty -> the guide arrow
---   and minimap pin go to the build station -> the Workshop card pulses in the tablet (the server
---   tops the wallet up to its price) -> the next call is the goal while the site runs -> the finished Workshop
---   grants one spin and the arrow points at your island's prize wheel -> the permanent Next chip (UI/NextChip).
+--   cold open (jet ski, first survivor; GoBackController's one arrow on Go back, then home, still seated) -> the green
+--   arrow on the Upgrade Station's button (the first delivery paid exactly L2) -> the level-up -> out again, nothing
+--   leads: the bow faces the sea and the cold open's other swimmers -> a trip home hands over the free spin and the
+--   beacon points at your island's prize wheel while you are home -> the permanent Next chip (UI/NextChip).
 --   No chip row of beats at the top (owner 2026-10-29: "it does not make sense to have it there").
 -- It reads only replicated facts: the Ops signals, the PlayerDataChanged snapshot, player and plot
 -- attributes (SiteKey / SiteProgress / SiteRate) and the Progression_GetData pull.
 -- Also here: the cold-open reward burst (B1, still seated on the jet ski), the seat pips and the
 -- green home cue (docs/20 4, 8). No sea-blue cover any more: a new player starts on their island.
 local CollectionService = game:GetService("CollectionService")
-local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -23,11 +22,13 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
+local GoBack = require(Shared:WaitForChild("Boat"):WaitForChild("GoBack"))
 local Net = require(Shared:WaitForChild("Net"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
-local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
+local UpgradeStation = require(Shared:WaitForChild("UpgradeStation"))
 
 local Client = script.Parent.Parent
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
@@ -41,6 +42,7 @@ local Layout = require(UI:WaitForChild("Layout"))
 local Menu = require(UI:WaitForChild("Menu"))
 local OnboardingBeacon = require(UI:WaitForChild("OnboardingBeacon"))
 local OnboardingReward = require(UI:WaitForChild("OnboardingReward"))
+local Style = require(UI:WaitForChild("Kit"):WaitForChild("Style"))
 
 local OnboardingController = {}
 OnboardingController.Priority = 85 -- after OpsController (80), before DockController (100)
@@ -53,6 +55,7 @@ local active = false
 local cash = 0
 local totalRescues = 0
 local savedColdOpen = false
+local boatLevel = 1
 local tutorialStep: number? = nil
 local owned: { [string]: boolean } = {}
 local dataReady = false
@@ -63,19 +66,14 @@ local rewardAt = math.huge
 
 local REWARD_DELAY = 2 -- s after the cold open ends: the survivor swims in and climbs off, then the burst
 local REWARD_HOLD = 4 -- s the reward burst keeps the debrief tablet back (OnboardingRewardBusy)
-local GLANCE = 1.4 -- s the camera looks at a freshly built site (beat 4 / beat 6)
--- live v24: players quit seconds after WorkshopBuilt; the 1.4 s glance cut away mid brick drop, the snap played
--- off screen and out of earshot. Now the camera stays for the drop + build snap, then shows the wheel's free spin.
-local SITE_HOLD = 3.4 -- s on the finished Workshop: the last bricks land and fx1_build_snap plays (Studio 2026-10-31)
-local WHEEL_HOLD = 2.4 -- s on your prize wheel while its free spin pops
-local SPIN_PINK = Color3.fromRGB(255, 80, 170) -- the wheel's pink: gold confetti vanished on its yellow
+local GLANCE = 1.4 -- s the camera looks at the wheel when its free spin waits
 local TICK = 0.5 -- s between the site timer and the tablet-open checks
 
 local beat: Onboarding.Beat = "ColdOpen"
 local guide: string? = nil
 local lastTabletPulse: string? = nil
 local glanceSerial = 0
-local siteWatched = false -- the Workshop site ran this session: its finish gets the full beat, a rejoin does not
+local upgradeArrow: BillboardGui? = nil
 local tickAt = 0
 
 local function rootPosition(): Vector3?
@@ -149,6 +147,7 @@ local function currentBeat(): Onboarding.Beat
 		step = tutorialStep,
 		owned = owned,
 		constructionKey = site.key,
+		boatLevel = boatLevel,
 	})
 end
 
@@ -186,94 +185,40 @@ local function glance(at: Vector3?, hold: number?, eye: Vector3?): boolean
 	return true
 end
 
--- The Workshop just finished in front of you: watch the last bricks land and the build snap, then the camera cuts
--- to your prize wheel as its free spin pops (confetti + sparkle), then hands back with the beacon on the wheel.
-local function workshopDone(wheel: Model)
-	if not glance(sitePoint(Onboarding.WORKSHOP), SITE_HOLD) then
-		return -- seated (off on a call) or a panel open: the wheel beacon alone leads
-	end
-	task.delay(
-		SITE_HOLD - 0.1,
-		function() -- before the site glance clears: one cut, no frame of the player camera
-			local root = rootPosition()
-			local hub = wheel:GetBoundingBox().Position
-			local side = if root then (root - hub) * Vector3.new(1, 0, 1) else Vector3.zero
-			local eye = hub
-				+ (if side.Magnitude > 1 then side.Unit else Vector3.zAxis) * 18
-				+ Vector3.new(0, 5, 0) -- from your side (the face you walk up to), in front of the tablet
-			if glance(hub, WHEEL_HOLD, eye) then
-				task.delay(0.25, function()
-					VFXKit.play("wheel_win", CFrame.new(hub), { color = SPIN_PINK, scale = 0.85 })
-					AudioController.play("Album_Sparkle", nil, 1, 1)
-				end)
-			end
+-- The steady green build arrow over the station's Upgrade button (the art of UI/TabletCue): one pop and a sound, never a
+-- pulse. The button may not have streamed in yet: update() asks again.
+local function setUpgradeArrow(on: boolean)
+	if not on then
+		if upgradeArrow then
+			upgradeArrow:Destroy()
+			upgradeArrow = nil
 		end
-	)
-end
-
--- The first delivery (OperationService lets the rider off and docks the jet ski): stand on the jetty head in front
--- of the build tablet, facing it, so the reward burst and the station beacon play there. Live v21: 11 of 19 new
--- players quit still seated at sea after it, the station on land behind them.
-local function stepToStation()
-	local bay = player:GetAttribute("BayCFrame")
-	local char = player.Character
-	local hum = char and char:FindFirstChildOfClass("Humanoid")
-	local root = char and char:FindFirstChild("HumanoidRootPart")
-	if typeof(bay) ~= "CFrame" or not (char and hum and root and root:IsA("BasePart")) then
 		return
 	end
-	local t0 = os.clock()
-	while hum.SeatPart and os.clock() - t0 < 2 do
-		hum.Sit = false
-		task.wait()
+	local stations = Workspace:FindFirstChild("UpgradeStations")
+	local station = stations and stations:FindFirstChild(`Station{player:GetAttribute("DockPlot")}`)
+	local button = station and station:FindFirstChild("Button")
+	if upgradeArrow or not button then
+		return
 	end
-	if hum.SeatPart then
-		return -- still welded: never drag the hull along
-	end
-	local station = DockConfig.stationSpot(bay)
-	-- back where a new player first spawned: at 8 studs the sign filled the screen (owner 2026-11-03)
-	local at = DockConfig.newSpawn(bay).Position
-	local params = RaycastParams.new()
-	params.FilterType = Enum.RaycastFilterType.Exclude
-	params.FilterDescendantsInstances = { char }
-	local hit = Workspace:Raycast(at + Vector3.new(0, 12, 0), Vector3.new(0, -30, 0), params)
-	local feet = (if hit then hit.Position else at)
-		+ Vector3.new(0, hum.HipHeight + root.Size.Y / 2 + 0.2, 0)
-	-- dip to black for the move (ColdOpenFadeController paints the attribute), never a bare jump cut
-	player:SetAttribute("ColdOpenFade", true)
-	task.wait(0.3)
-	root.AssemblyLinearVelocity = Vector3.zero
-	root.AssemblyAngularVelocity = Vector3.zero
-	-- drive keys still held from the ride walked the rider off the jetty head into the water: binding over them
-	-- cancels the held walk (a fresh press walks again)
-	ContextActionService:BindActionAtPriority(
-		"StationArrive",
-		function()
-			return Enum.ContextActionResult.Sink
-		end,
-		false,
-		Enum.ContextActionPriority.High.Value,
-		Enum.PlayerActions.CharacterForward,
-		Enum.PlayerActions.CharacterBackward,
-		Enum.PlayerActions.CharacterLeft,
-		Enum.PlayerActions.CharacterRight,
-		Enum.KeyCode.Thumbstick1
-	)
-	task.delay(0.6, function()
-		ContextActionService:UnbindAction("StationArrive")
-	end)
-	local face = Vector3.new(station.X, feet.Y, station.Z)
-	char:PivotTo(CFrame.lookAt(feet, face))
-	task.delay(0.15, function()
-		player:SetAttribute("ColdOpenFade", nil)
-	end)
-	-- the Foot camera keeps the ride's heading: turn it to look over the shoulder at the tablet
-	task.wait()
-	local cam = Workspace.CurrentCamera
-	cam.CFrame = CFrame.lookAt(
-		feet + (feet - face).Unit * 16 + Vector3.new(0, 7, 0),
-		face + Vector3.new(0, 3, 0)
-	)
+	local bb = Instance.new("BillboardGui")
+	bb.Name = "UpgradeArrow"
+	bb.Adornee = button
+	bb.StudsOffsetWorldSpace = Vector3.new(0, 7, 0)
+	bb.Size = UDim2.fromOffset(84, 84)
+	bb.LightInfluence = 0
+	bb.AlwaysOnTop = true
+	bb.ResetOnSpawn = false
+	local art = Instance.new("ImageLabel")
+	art.BackgroundTransparency = 1
+	art.Image = UiImages.Markers.BuildArrow
+	art.ScaleType = Enum.ScaleType.Fit
+	art.Size = UDim2.fromScale(1, 1)
+	art.Parent = bb
+	bb.Parent = playerGui
+	upgradeArrow = bb
+	Style.pop(art, true)
+	AudioController.play("UI_Prompt")
 end
 
 -- Owner 2026-10-31 (first login on a phone: the tablet filled the screen, no sea, no island): a Hut-less spawn
@@ -481,8 +426,8 @@ local function leadTick(leading: boolean)
 	end
 end
 
--- docs/24 E: the one world guide for the beat. The call marker stays UI/Waypoint's job; this handles
--- the build station arrow + minimap pin, and the arrow + pin to your island's prize wheel.
+-- The one world guide for the beat. The call marker stays UI/Waypoint's job; this handles the build station arrow +
+-- minimap pin, the Upgrade button's arrow + pin, and the arrow + pin to your island's prize wheel.
 local function setGuide(kind: string?)
 	if kind == guide then
 		return
@@ -497,10 +442,10 @@ local function setGuide(kind: string?)
 		lastTabletPulse = nil
 	end
 	guide = kind
-	-- one goal at a time: UI/Waypoint holds the call marker back on the station and spin beats (docs/24 E)
+	-- one goal at a time: UI/Waypoint holds the call marker back while these lead (docs/24 E)
 	player:SetAttribute(
 		"TutorialHoldCall",
-		if kind == "station" or kind == "spin" then true else nil
+		if kind == "station" or kind == "upgrade" or kind == "spin" then true else nil
 	)
 	if kind == "hqsite" then
 		-- the Hut rises: a beacon over the site, the camera stays the player's (docs/25 J)
@@ -524,21 +469,26 @@ local function setGuide(kind: string?)
 		MapController.SetBlips("Tutorial", {
 			{ id = "Build", position = at, style = "Waypoint", size = 22 },
 		})
-	elseif kind == "site" then
-		siteWatched = true
-		glance(sitePoint(Onboarding.WORKSHOP))
+	elseif kind == "upgrade" then
+		local i = player:GetAttribute("DockPlot")
+		if type(i) ~= "number" then
+			guide = nil -- the plot has not replicated yet: retry next frame
+			return
+		end
+		local at = UpgradeStation.buttonAt(i)
+		local b = beacon or OnboardingBeacon.start()
+		beacon = b
+		b.show(at, "Place")
+		MapController.SetBlips("Tutorial", {
+			{ id = "Upgrade", position = at, style = "Waypoint", size = 22 },
+		})
 	elseif kind == "spin" then
 		local wheel = wheelModel()
 		if not wheel then
 			guide = nil -- the wheel has not streamed in yet: retry next frame
 		else
 			local at = wheel:GetPivot().Position + Vector3.new(0, 1, 0)
-			if siteWatched then
-				siteWatched = false
-				workshopDone(wheel)
-			else
-				glance(at)
-			end
+			glance(at)
 			local b = beacon or OnboardingBeacon.start()
 			beacon = b
 			b.show(at, "Place")
@@ -567,6 +517,7 @@ local function applyData(data: any)
 		owned = data.dockBuildings
 	end
 	tutorialStep = if type(data.tutorialStep) == "number" then data.tutorialStep else nil
+	boatLevel = tonumber(data.boatLevel) or boatLevel
 	dataReady = true
 end
 
@@ -711,13 +662,27 @@ local function strandedFrom(): Model?
 	return nil
 end
 
+-- The spin's beacon stays home: out on a trip it must not pull you back (UpgradeService ends the beat on the next return).
+local function wheelNear(): boolean
+	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	local root = rootPosition()
+	return root ~= nil
+		and (
+			(hum ~= nil and hum.SeatPart == nil)
+			or GoBack.isHome(root, player:GetAttribute("BayCFrame"))
+		)
+end
+
 local function update()
 	if rewardPending and os.clock() >= rewardAt then
 		showReward()
 	end
 	beat = currentBeat()
-	-- the Day 1 card waits for the first spin: a new player's first screen is the game (owner 2026-11-03)
-	player:SetAttribute("TutorialHoldReward", if beat == "Done" then nil else true)
+	-- the Day 1 card waits for the first trip home: a new player's first screen is the game (owner 2026-11-03)
+	player:SetAttribute(
+		"TutorialHoldReward",
+		if beat == "Done" or beat == "Spin" then nil else true
+	)
 	-- off the jet ski mid cold open: the edge pointer leads back to it (its craft pin marks it in view)
 	local craft = strandedFrom()
 	if craft then
@@ -728,10 +693,16 @@ local function update()
 	elseif dataReady or guide == "craft" then
 		local kind = if not dataReady
 			then nil
-			elseif beat == "BuildStation" or beat == "BuildHQ" then "station"
-			elseif beat == "HQSite" then "hqsite"
-			elseif beat == "Build" then "site"
-			elseif beat == "Spin" then "spin"
+			elseif beat == "BuildHQ" then "station"
+			elseif
+				beat == "HQSite"
+			then "hqsite" -- after the reward burst; with the Cash short (an old save spent it) nothing to press yet
+
+			elseif beat == "Upgrade" and player:GetAttribute("OnboardingRewardBusy") ~= true and BoatLevels.canBuy(
+				boatLevel,
+				cash
+			) then "upgrade"
+			elseif beat == "Spin" and wheelNear() then "spin"
 			else nil
 		setGuide(kind)
 	end
@@ -740,16 +711,19 @@ local function update()
 	local cleared = hutBeat and tabletOpened -- opened once: the arrow, pointer and diamond stay off until the Hut is placed
 	-- at the stand the tablet's own cue (green arrow + Build) is the one marker on it
 	local cued = DockController.TabletGoal(guide == "station" and not cleared)
+	setUpgradeArrow(guide == "upgrade")
 	if beacon then
-		beacon.mute(guide == "station" and (cued or cleared) or guide == "craft")
+		-- the Upgrade button's own arrow is the marker on it; the pointer and trail still lead from the jetty
+		beacon.mute(
+			guide == "station" and (cued or cleared) or guide == "craft" or guide == "upgrade"
+		)
 		beacon.edge(not hutBeat or (nudged and not tabletOpened))
 	end
-	-- the tablet's HQ / Workshop card pulses while the tutorial points at the station
+	-- the tablet's HQ card pulses while the tutorial points at the station
 	if os.clock() >= tickAt then
 		tickAt = os.clock() + TICK
 		if guide == "station" then
-			local want = if beat == "BuildHQ" then Onboarding.HQ else Onboarding.WORKSHOP
-			local key = if buildTabletOpen() then want else nil
+			local key = if buildTabletOpen() then Onboarding.HQ else nil
 			if key ~= lastTabletPulse then
 				DockController.Pulse(key)
 				lastTabletPulse = key
@@ -782,9 +756,6 @@ function OnboardingController.Init()
 			player:SetAttribute("OnboardingRewardBusy", true) -- OpsHud holds the debrief
 		end
 		rewardAt = os.clock() + REWARD_DELAY
-		if rewardPending and player:GetAttribute("ColdOpenHandover") == "Ride" then
-			task.spawn(stepToStation)
-		end
 	end)
 	player:GetAttributeChangedSignal("ColdOpenDone"):Connect(function()
 		if player:GetAttribute("ColdOpenDone") == true and not active then

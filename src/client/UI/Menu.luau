@@ -295,10 +295,10 @@ local function boatWait(): (number, number)
 	return left, cooldown
 end
 
--- Seated in a craft (the server answers "Occupied"), or no Rescue Hut / the Workshop beat (the server answers "NoHut"): the Boat
+-- Seated in a craft (the server answers "Occupied"), or no Rescue Hut (the server answers "NoHut"): the Boat
 -- tile rests grey and wordless, no error.
 local function resting(): boolean
-	if player:GetAttribute("DockLevelHQ") == 0 or player:GetAttribute("CraftHeld") == true then
+	if player:GetAttribute("DockLevelHQ") == 0 then
 		return true
 	end
 	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
@@ -385,7 +385,6 @@ local function dressHome(b: IconButton.IconButton)
 		return typeof(bay) == "CFrame"
 			and root ~= nil
 			and (root.Position - bay.Position).Magnitude > DockConfig.HOME_FAR
-			and player:GetAttribute("CraftHeld") ~= true
 	end
 	task.spawn(function()
 		while b.root.Parent do -- until a rebuild destroys it

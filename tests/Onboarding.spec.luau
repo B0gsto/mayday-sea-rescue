@@ -12,12 +12,6 @@ return function(t)
 		return f
 	end
 
-	t.test("Roblox prompts wait for the first spin", function()
-		t.expect(O.tutorialOver(O.STEP_SPIN)).toBe(false)
-		t.expect(O.tutorialOver(O.STEP_DONE)).toBe(true)
-		t.expect(O.tutorialOver(nil)).toBe(true) -- skipped the tutorial
-	end)
-
 	t.test("nothing to show before the cold open ends", function()
 		t.expect(O.goal(facts({ coldOpenDone = false, offerReady = true }))).toBe(nil)
 	end)
@@ -89,6 +83,7 @@ return function(t)
 			step = nil,
 			owned = { Harbour = true, HQ = true }, -- the start set: the jetty and the free Hut
 			constructionKey = nil,
+			boatLevel = 1,
 		}
 		for k, v in over or {} do
 			f[k] = v
@@ -96,32 +91,104 @@ return function(t)
 		return f
 	end
 
-	t.test(
-		"tutorial beats: cold open, rescue, build station, site, spin, done (docs/24 E)",
-		function()
-			t.expect(O.beat(beat())).toBe("ColdOpen")
-			t.expect(O.beat(beat({ coldOpenDone = true }))).toBe("Rescue")
-			t.expect(O.beat(beat({ coldOpenDone = true, totalRescues = 1 }))).toBe("BuildStation")
-			t.expect(O.beat(beat({
-				coldOpenDone = true,
-				totalRescues = 1,
-				step = O.STEP_RESCUE,
-				constructionKey = "Workshop",
-			}))).toBe("Build")
-			t.expect(O.beat(beat({
-				coldOpenDone = true,
-				totalRescues = 1,
-				step = O.STEP_SITE,
-				owned = { HQ = true, Workshop = true },
-			}))).toBe("Spin")
-			t.expect(O.beat(beat({
-				coldOpenDone = true,
-				totalRescues = 1,
-				step = O.STEP_DONE,
-				owned = { HQ = true, Workshop = true },
-			}))).toBe("Done")
+	t.test("tutorial beats: cold open, rescue, upgrade, out again, spin, done (docs/30)", function()
+		t.expect(O.beat(beat())).toBe("ColdOpen")
+		t.expect(O.beat(beat({ coldOpenDone = true }))).toBe("Rescue")
+		t.expect(O.beat(beat({ coldOpenDone = true, totalRescues = 1 }))).toBe("Upgrade")
+		t.expect(O.beat(beat({ coldOpenDone = true, totalRescues = 1, boatLevel = 2 })))
+			.toBe("OutAgain")
+		t.expect(O.beat(beat({
+			coldOpenDone = true,
+			totalRescues = 2,
+			boatLevel = 2,
+			step = O.STEP_SPIN,
+		}))).toBe("Spin")
+		t.expect(O.beat(beat({ coldOpenDone = true, boatLevel = 2, step = O.STEP_DONE })))
+			.toBe("Done")
+	end)
+
+	t.test("a trip counts from the helm away from home until any way home", function()
+		local function trip(out, driving, home)
+			return { O.trip(out, driving, home) }
 		end
-	)
+		t.expect(trip(false, false, true)).toEqual({ false, false }) -- in the bay
+		t.expect(trip(false, false, false)).toEqual({ false, false }) -- swimming off: no trip
+		t.expect(trip(false, true, false)).toEqual({ true, false })
+		t.expect(trip(true, false, false)).toEqual({ true, false }) -- stepped off at sea: still out
+		t.expect(trip(true, true, true)).toEqual({ false, true })
+		t.expect(trip(true, false, true)).toEqual({ false, true }) -- swam home
+	end)
+
+	-- every old tutorial state walks on with no Workshop beat: nothing here waits for a building or a held craft
+	t.test("old saves on the Workshop beat continue, and the step never goes back", function()
+		local order = { ColdOpen = 1, Rescue = 2, Upgrade = 3, OutAgain = 4, Spin = 5, Done = 6 }
+		local shapes = {
+			{ owned = { Harbour = true, HQ = true } },
+			{ owned = { Harbour = true, HQ = true }, constructionKey = "Workshop" },
+			{ owned = { Harbour = true, HQ = true, Workshop = true } },
+			{ owned = { Harbour = true, HQ = true, Workshop = true }, constructionKey = "Depot" },
+		}
+		for _, shape in shapes do
+			for _, step in { O.STEP_RESCUE, O.STEP_SITE } do
+				local function at(level)
+					return O.beat(beat({
+						coldOpenDone = true,
+						totalRescues = 1,
+						step = step,
+						owned = shape.owned,
+						constructionKey = shape.constructionKey,
+						boatLevel = level,
+					}))
+				end
+				t.expect(at(1)).toBe("Upgrade")
+				t.expect(at(2)).toBe("OutAgain")
+				t.expect(at(11)).toBe("OutAgain") -- a pass floor already past L2
+			end
+			local last = 0
+			for _, step in { O.STEP_RESCUE, O.STEP_SITE, O.STEP_SPIN, O.STEP_DONE } do
+				local b = O.beat(beat({
+					coldOpenDone = true,
+					totalRescues = 1,
+					step = step,
+					owned = shape.owned,
+					constructionKey = shape.constructionKey,
+					boatLevel = 2,
+				}))
+				t.expect(order[b] >= last).toBe(true)
+				last = order[b]
+			end
+			t.expect(last).toBe(order.Done)
+		end
+		-- no step, but a Workshop or 5 rescues: an established save, straight to the chip
+		t.expect(O.beat(beat({ coldOpenDone = true, owned = { HQ = true, Workshop = true } })))
+			.toBe("Done")
+		-- a step wins: a new player's first building does not skip the rest
+		t.expect(O.beat(beat({
+			coldOpenDone = true,
+			totalRescues = 1,
+			step = O.STEP_RESCUE,
+			owned = { HQ = true, Workshop = true },
+		}))).toBe("Upgrade")
+	end)
+
+	t.test("factsOf reads a save or a snapshot", function()
+		local f = O.factsOf({
+			coldOpenDone = true,
+			totalRescues = 3,
+			tutorialStep = 2,
+			dockBuildings = { HQ = true },
+			construction = { key = "Depot" },
+			boatLevel = 4,
+		})
+		t.expect(f.coldOpenDone).toBe(true)
+		t.expect(f.totalRescues).toBe(3)
+		t.expect(f.step).toBe(2)
+		t.expect(f.owned.HQ).toBe(true)
+		t.expect(f.constructionKey).toBe("Depot")
+		t.expect(f.boatLevel).toBe(4)
+		t.expect(O.factsOf({}, "HQ").constructionKey).toBe("HQ")
+		t.expect(O.factsOf({}).totalRescues).toBe(0)
+	end)
 
 	t.test("the free Hut comes first: stand, site, then the cold open (docs/25 J)", function()
 		t.expect(O.beat(beat({ owned = { Harbour = true } }))).toBe("BuildHQ")
@@ -132,7 +199,7 @@ return function(t)
 	end)
 
 	t.test("a saved step never repeats an earlier beat", function()
-		t.expect(O.beat(beat({ coldOpenDone = true, step = O.STEP_RESCUE }))).toBe("BuildStation")
+		t.expect(O.beat(beat({ coldOpenDone = true, step = O.STEP_RESCUE }))).toBe("Upgrade")
 		t.expect(O.beat(beat({
 			coldOpenDone = true,
 			step = O.STEP_SPIN,
@@ -140,7 +207,6 @@ return function(t)
 		}))).toBe("Spin")
 	end)
 
-	-- PlatformPromptService holds the notify / favourite OS prompts until this (live v33: they hit the Workshop step)
 	t.test("established starts at the Workshop: the jetty and the free Hut do not count", function()
 		t.expect(O.established(nil)).toBe(false)
 		t.expect(O.established({ Harbour = true, HQ = true })).toBe(false)
@@ -161,7 +227,7 @@ return function(t)
 			step = O.STEP_SITE,
 			owned = { HQ = true, Pontoon = true },
 			constructionKey = "Workshop",
-		}))).toBe("Build")
+		}))).toBe("Upgrade")
 	end)
 
 	t.test("Robux Finish-now waits for the Spin beat and never sells a free build", function()
@@ -198,12 +264,5 @@ return function(t)
 		t.expect(O.buildersFirst(0, nil, { Pontoon = true })).toBe(false)
 		t.expect(O.buildersFirst(1, nil, {})).toBe(false)
 		t.expect(O.buildersFirst(0, O.STEP_SITE, {})).toBe(false)
-	end)
-
-	t.test("the Workshop top-up is exactly the gap", function()
-		t.expect(O.topUp(250, 1000)).toBe(750)
-		t.expect(O.topUp(0, 1000)).toBe(1000)
-		t.expect(O.topUp(1000, 1000)).toBe(0)
-		t.expect(O.topUp(4000, 1000)).toBe(0)
 	end)
 end

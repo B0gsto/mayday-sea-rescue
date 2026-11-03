@@ -65,6 +65,8 @@ Unchanged for now, owner to review: Cash packs and 2x Cash (they speed up levels
   later owner review. Helicopter and submarine stay as they are for now.
 - Tutorial: free Hut -> first rescue (docs/29 A) -> Go back -> station: Upgrade to L2 -> out again, feeling the speed. The Workshop
   beat and the jet ski hold (CraftHeld) leave the tutorial.
+  Built 2026-11-03: the free spin comes after L2 and a first trip home (its beacon only while home; one more trip ends the
+  beat, the spin stays banked), then the Next chip leads with the boat level. Funnel steps 8 and 9 are FirstUpgrade and BackOut.
 
 ## 5. Changes to docs/29
 Pirates (D) no longer chase you home, since Go back removes that trip. They hunt you while you have survivors aboard;

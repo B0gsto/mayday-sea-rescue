@@ -299,8 +299,18 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   fanned off their cove (`Boat/ColdOpen.fan`; the flanks are `AmbientRescueService.SpawnColdOpenFlank` scenes, and
   `OperationService.ColdOpenFlank` swaps the first one reached into the op); `Boat/ColdOpen` (ease, drop-off), `Boat/ColdOpenFlow`, `UI/ColdOpenCue`, `UI/OnboardingReward`.
   Profile `coldOpenDone`.
-- Tutorial (docs/25 J): the first beat is the free Rescue Hut (`Onboarding.beat` `BuildHQ` -> `HQSite`); the cold
-  open waits for it (`OperationService`: no start while `DockLevelHQ` is 0), then jet ski, survivor, Workshop, spin.
+- Tutorial (docs/25 J, docs/30 section 4): `Onboarding.beat` (`factsOf(data)`) runs `BuildHQ` -> `HQSite` -> `ColdOpen` ->
+  `Rescue` -> `Upgrade` -> `OutAgain` -> `Spin` -> `Done`; the player stays seated throughout. `GoBackController`: one arrow on
+  Go back for the first survivor ever aboard. Upgrade: `OnboardingController` puts a green arrow on the station's button
+  (`UpgradeStation.buttonAt`) when L2 is affordable, and OperationService offers no call then. `UpgradeService` polls the trip
+  (`Onboarding.trip`, `GoBack.isHome`): the first trip home after L2 calls `SpinService.Tutorial(player, true)` (step 3, one
+  free spin); the next trip home ends the tutorial unspun (step 4), so the island stays optional. `tutorialStep` only moves
+  forward. Old saves: step 2 keeps its meaning only as a receipt (a finished Workshop still grants the spin, `SpinService`),
+  otherwise it walks Upgrade / OutAgain. A new player's first building writes step 1 (`DockService`), so it does not read as
+  established. Cold-open flanks: `AmbientRescueService.ReleaseFlanks` keeps them as free roam (no pop in view).
+  Boat reach: `GoBack.reachAt` zeroes `BoatReach` within `AmbientMix.HOME_CLEAR` of the berth, server and client.
+  Funnel steps 8 and 9 are `FirstUpgrade` and `BackOut` (were `WorkshopPlaced`, `WorkshopBuilt`; numbers keep their place;
+  `tools/trail.py` lists each name on its own row).
 - `src/shared/Onboarding.luau` (pure): `goal()` (the tutorial chain, `CallTypes.TutorialChain`), `failsafeCall`,
   `newPlayerHud`; `OnboardingController` + `UI/OnboardingBeacon`; `OnboardingWeather` keeps the cold open calm.
   `tests/NewPlayerPace.spec.luau` and `tests/Pacing.spec.luau` check the pace.

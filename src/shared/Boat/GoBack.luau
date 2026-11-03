@@ -21,6 +21,20 @@ local function inBay(at: Vector3, bay: any): boolean
 	return Vector3.new(at.X - p.X, 0, at.Z - p.Z).Magnitude <= GoBack.BAY_RADIUS
 end
 
+-- Home for the button, the first trip and the long pick-up reach: the drop-off zone or the bay.
+function GoBack.isHome(at: Vector3, bay: any): boolean
+	return ColdOpen.atDropOff(at, bay) or inBay(at, bay)
+end
+
+-- The boat level's extra pick-up studs (up to 198). Near home they don't count: from the bay they would board the
+-- cove-mouth swimmers (AmbientMix.HOME_CLEAR out), and Go back would pay for them with no trip at all.
+GoBack.REACH_HOME = 320 -- studs from the berth: AmbientMix.HOME_CLEAR (tests/GoBack.spec)
+function GoBack.reachAt(at: Vector3, bay: any, reach: number): number
+	local p = ColdOpen.dropOff(bay)
+	local home = p ~= nil and Vector3.new(at.X - p.X, 0, at.Z - p.Z).Magnitude < GoBack.REACH_HOME
+	return if home then 0 else reach
+end
+
 export type State = {
 	driving: boolean, -- in the craft's DriverSeat
 	coldOpenDone: boolean,
@@ -40,7 +54,7 @@ function GoBack.refusal(s: State): string?
 		return "ColdOpen" -- the first rescue comes first
 	elseif not ColdOpen.dropOff(s.bay) then
 		return "NoHome"
-	elseif ColdOpen.atDropOff(s.at, s.bay) or inBay(s.at, s.bay) then
+	elseif GoBack.isHome(s.at, s.bay) then
 		return "Home"
 	end
 	return nil

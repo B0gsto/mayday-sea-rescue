@@ -30,7 +30,7 @@ return function(t)
 			seen[s.name] = true
 			t.expect(Events.funnelStep(s.name).step).toBe(i)
 		end
-		-- the real first session (docs/24 E, docs/25 J; PT5 2026-10-28), in this exact order
+		-- the real first session (docs/25 J, docs/30; PT5 2026-10-28), in this exact order
 		local order = {
 			"Joined",
 			"TabletOpened",
@@ -39,8 +39,8 @@ return function(t)
 			"AtSea",
 			"FirstBoard",
 			"FirstDelivery",
-			"WorkshopPlaced",
-			"WorkshopBuilt",
+			"FirstUpgrade",
+			"BackOut",
 			"FirstSpin",
 			"NextBuild",
 			"HQ2Placed",
@@ -129,9 +129,9 @@ return function(t)
 		end
 		t.expect(steps("HQ", 1, false, false)).toBe("HutPlaced")
 		t.expect(steps("HQ", 1, true, false)).toBe("HutBuilt")
-		t.expect(steps("Workshop", 1, false, false)).toBe("WorkshopPlaced")
-		t.expect(steps("Workshop", 1, true, false)).toBe("WorkshopBuilt")
-		-- before the tutorial spin no other build counts (a Depot first must not skip the Workshop)
+		-- the island is optional: no build counts before the tutorial is done, the Workshop included
+		t.expect(steps("Workshop", 1, false, false)).toBe("")
+		t.expect(steps("Workshop", 1, false, true)).toBe("NextBuild")
 		t.expect(steps("Depot", 1, false, false)).toBe("")
 		t.expect(steps("HQ", 2, false, false)).toBe("")
 		t.expect(steps("Depot", 1, false, true)).toBe("NextBuild")
