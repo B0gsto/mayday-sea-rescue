@@ -299,7 +299,7 @@ local function fill(b: DevBoard.Board)
 		walkSpeed = nil
 		local humanoid = humanoidRoot()
 		if humanoid then
-			humanoid.WalkSpeed = 16
+			humanoid.WalkSpeed = 18
 		end
 	end)
 

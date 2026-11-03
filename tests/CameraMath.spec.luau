@@ -103,4 +103,20 @@ return function(t)
 			t.expect(M.occludes(false, 0.8, Vector3.new(12, 6, 8))).toBe(false) -- a trigger zone
 		end
 	)
+
+	t.test("underwater has hysteresis: a lens on the waves cannot flicker", function()
+		t.expect(M.underwater(-0.5, 0, false)).toBe(false) -- just under: stays dry
+		t.expect(M.underwater(-0.7, 0, false)).toBe(true) -- really under
+		t.expect(M.underwater(0.3, 0, true)).toBe(true) -- just above: stays under
+		t.expect(M.underwater(0.5, 0, true)).toBe(false) -- really out
+		local under, flips = false, 0
+		for i = 0, 476 do -- the swim case: the lens straddles the passing swell
+			local now = M.underwater(0.35 * math.sin(i * 0.2), 0, under)
+			if now ~= under then
+				flips += 1
+			end
+			under = now
+		end
+		t.expect(flips).toBe(0)
+	end)
 end
