@@ -77,7 +77,7 @@ local pulseName: string? = nil
 -- docs/24 E: the button the tutorial asks for grows from its centre once with a small bounce and stays raised
 -- until pressed. No outline ring (owner 2026-11-01), no looping pulse, no orange (owner 2026-10-28). Growing, not
 -- moving up: the phone's 6 du row gap would put a lifted tile over the label above.
-local RAISED = 1.12 -- 64 du tile: under 4 du per side, clear of the labels
+local RAISED = 1.08 -- 64 du tile: under 3 du per side (1.12 touched the label above on a phone)
 local function startPulse(root: GuiObject, name: string)
 	local tile = root:FindFirstChild("Tile") :: GuiObject?
 	if not tile or root:GetAttribute("TutorialLift") then
@@ -86,7 +86,8 @@ local function startPulse(root: GuiObject, name: string)
 	root:SetAttribute("TutorialLift", true)
 	local scale = Instance.new("UIScale")
 	scale.Parent = tile
-	local inset = -tile.Size.X.Offset * (RAISED - 1) / 2 -- UIScale grows from the top-left: keep it centred
+	-- UIScale grows from the top-left: keep it centred (offsets are whole numbers, so round rather than truncate)
+	local inset = math.round(-tile.Size.X.Offset * (RAISED - 1) / 2)
 	local info = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 	TweenService:Create(scale, info, { Scale = RAISED }):Play()
 	TweenService:Create(tile, info, { Position = UDim2.fromOffset(inset, inset) }):Play()
