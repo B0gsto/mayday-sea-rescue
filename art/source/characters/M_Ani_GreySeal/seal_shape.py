@@ -21,36 +21,33 @@ import numpy as np
 # (y, zc, rx, rz, flat): y along the body, zc the spine height, rx / rz the half width / half height of a section,
 # flat how much shorter the belly half is than the back half (0 round, .22 noticeably flatter).
 PROFILE = [
-    (+1.105, 0.217, 0.014, 0.013, 0.00),    # 0  tail tip
-    (+1.060, 0.213, 0.040, 0.035, 0.00),    #    tail stub
-    (+1.000, 0.204, 0.072, 0.076, 0.02),    # 2  tail root, hind flipper root
-    (+0.930, 0.192, 0.104, 0.123, 0.05),    #    hips
-    (+0.850, 0.183, 0.145, 0.169, 0.10),
-    (+0.750, 0.180, 0.188, 0.210, 0.16),
-    (+0.640, 0.187, 0.222, 0.233, 0.20),
-    (+0.510, 0.195, 0.249, 0.251, 0.22),
-    (+0.360, 0.200, 0.270, 0.264, 0.24),
-    (+0.190, 0.205, 0.283, 0.269, 0.24),
-    (+0.020, 0.206, 0.290, 0.272, 0.24),    # 10 heaviest girth: chest and shoulders
+    (+1.105, 0.226, 0.045, 0.040, 0.00),    # 0  tail tip (r6: a blunt end, no pinched point between the flippers)
+    (+1.080, 0.224, 0.075, 0.068, 0.00),    #    tail stub
+    (+1.035, 0.218, 0.118, 0.115, 0.04),    # 2  tail root, hind flipper root
+    (+0.975, 0.210, 0.172, 0.168, 0.10),    #    hips (r6: boxy to the hips, then a short taper)
+    (+0.905, 0.206, 0.230, 0.220, 0.17),
+    (+0.830, 0.205, 0.268, 0.254, 0.22),
+    (+0.740, 0.205, 0.286, 0.268, 0.235),
+    (+0.600, 0.206, 0.291, 0.272, 0.24),
+    (+0.420, 0.206, 0.292, 0.272, 0.24),
+    (+0.240, 0.206, 0.292, 0.272, 0.24),
+    (+0.060, 0.206, 0.292, 0.272, 0.24),    # 10 heaviest girth: chest and shoulders (r6: a flat back to the hips)
     (-0.140, 0.206, 0.291, 0.272, 0.24),    #    fore-flipper root
-    (-0.290, 0.206, 0.284, 0.267, 0.23),
-    (-0.420, 0.207, 0.271, 0.258, 0.21),    #    neck base
-    (-0.520, 0.214, 0.256, 0.242, 0.18),
-    (-0.610, 0.223, 0.240, 0.224, 0.15),
-    (-0.680, 0.245, 0.225, 0.195, 0.12),    # 16 SPLIT: body mesh | head mesh
-    (-0.740, 0.248, 0.216, 0.192, 0.10),    #    occiput (thick: no waist at the neck)
-    (-0.800, 0.252, 0.211, 0.187, 0.08),
-    (-0.860, 0.256, 0.206, 0.181, 0.06),    # 19 skull widest
-    (-0.915, 0.258, 0.200, 0.173, 0.05),    #    brow, eye level
-    (-0.965, 0.258, 0.193, 0.163, 0.04),
-    (-1.010, 0.258, 0.185, 0.153, 0.03),    # 22 muzzle base, no stop
-    (-1.050, 0.258, 0.176, 0.143, 0.02),    #    Roman nose bridge (long, broad, convex)
-    (-1.090, 0.258, 0.166, 0.133, 0.01),
-    (-1.125, 0.257, 0.155, 0.122, 0.00),    #    nose pads
-    (-1.155, 0.256, 0.143, 0.111, 0.00),    #    nostril slits
-    (-1.180, 0.255, 0.130, 0.100, 0.00),    #    blunt nose front
-    (-1.198, 0.263, 0.113, 0.085, 0.00),    #    rounded lip, still wide
-    (-1.209, 0.276, 0.080, 0.060, 0.00),    # 29 nose tip (a small rounded cap)
+    (-0.290, 0.206, 0.286, 0.267, 0.23),
+    (-0.420, 0.207, 0.294, 0.260, 0.21),    #    neck base (r4: the neck ~15 % wider, so the head flows out of it)
+    (-0.520, 0.216, 0.294, 0.242, 0.17),    #    r5: the neck ~10 % wider at the torso
+    (-0.610, 0.228, 0.272, 0.214, 0.14),
+    (-0.680, 0.245, 0.246, 0.192, 0.11),    # 16 SPLIT: body mesh | head mesh
+    (-0.740, 0.262, 0.258, 0.226, 0.08),    #    occiput (r4: the skull 8 % narrower, a rounded back edge)
+    (-0.800, 0.272, 0.269, 0.246, 0.06),
+    (-0.860, 0.276, 0.278, 0.252, 0.05),    # 19 skull widest
+    (-0.920, 0.276, 0.278, 0.252, 0.04),
+    (-0.975, 0.274, 0.274, 0.248, 0.03),
+    (-1.015, 0.272, 0.263, 0.236, 0.02),    # 22 the front bevel (~0.035 m, 0.1 stud)
+    (-1.040, 0.271, 0.232, 0.204, 0.01),
+    (-1.052, 0.270, 0.175, 0.150, 0.00),
+    (-1.058, 0.270, 0.101, 0.088, 0.00),    #    the flat face plane: the eyes sit on it, the muzzle box sticks out
+    (-1.060, 0.270, 0.028, 0.025, 0.00),    # 26 face centre (a small closing cap)
 ]
 N_CTRL = len(PROFILE)
 SPLIT = 16.0                                  # control index where the body mesh ends and the head mesh begins
@@ -58,7 +55,7 @@ SPLIT = 16.0                                  # control index where the body mes
 # loft station fractions (control index space): even along the body, a little denser through the neck and muzzle
 BODY_FRACS = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0,
               8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0, 12.5, 13.0, 13.5, 14.0, 14.5, 15.0, 15.5, 16.0]
-HEAD_FRACS = [16.0 + 0.4 * i for i in range(int(round((N_CTRL - 1 - 16.0) / 0.4)) + 1)]
+HEAD_FRACS = [16.0 + 0.4 * i for i in range(20)] + [24.0, 25.0, 26.0]     # r3: the flat face needs few rings
 
 
 def _cr(p0, p1, p2, p3, t):
@@ -109,27 +106,68 @@ def ss(e0, e1, x):
 
 
 def folds(y):
-    """No ripple: bands across the neck read as stripes and a bull's neck is a smooth, thick mass.
-    Kept as a hook (returns a flat 1.0 and no taper) so the paint and rig code that calls it stay valid."""
-    return 1.0, np.zeros_like(np.asarray(y, dtype=float))
-
-
-def section(a, rx, rz, flat):
-    """Section factors (sin-like, cos-like) for angle a (0 top, pi belly). The belly half is a superellipse: fuller
-    sides and a squared-off bottom, so the hauled-out animal sits flat. Scalars or arrays."""
-    s = np.sin(a)
-    c = np.cos(a)
-    p = 1.0 - 0.18 * ss(0.05, 0.60, -np.asarray(c, dtype=float))       # 1 on the back, 0.76 at the belly
-    sx = np.sign(s) * np.abs(s) ** p
-    cz = np.sign(c) * np.abs(c) ** p
-    kz = np.where(c >= 0.0, 1.0, 1.0 - flat)
-    return sx, cz * kz
-
-
-def _muzzle(y):
-    """(top flatten, pad widen) for the Roman nose: a broad flat bridge and swollen whisker pads, no beak."""
+    """r5: one shallow crease round the neck (a ~4 % dip on the y -0.645 ring, between the torso and the skull);
+    r6: a small collar ledge (the y -0.61 ring 3.5 % proud) just behind it. Returns (scale, taper)."""
     y = np.asarray(y, dtype=float)
-    return 1.0 - 0.04 * ss(-0.965, -1.160, y), 1.0 + 0.075 * ss(-0.965, -1.160, y)
+    return (1.0 - 0.04 * ss(0.03, 0.0, np.abs(y + 0.645)) + 0.035 * ss(0.02, 0.0, np.abs(y + 0.61)),
+            np.zeros_like(y))
+
+
+def se(x, p):
+    """Superellipse factor: sign(x) |x|^p (p < 1 squares a round section off into a bevelled block)."""
+    x = np.asarray(x, dtype=float)
+    return np.sign(x) * np.abs(x) ** p
+
+
+BEVEL = 0.036                                 # r6: the torso's crisp corner radius (0.11 stud), hips to the neck
+CORNER_K = 3.5                                # r6: ring points crowd the corners (weighted arc length) so they stay crisp
+CROWN = 0.004                                 # a hair of crown on the flat panels: collinear rings break the LOD decimate
+
+
+def corner(rx, rz, y):
+    """r6: the section's corner radius: a crisp BEVEL on the torso, rounder toward the tail tip, the head's r5 30 %."""
+    m = np.minimum(rx, rz)
+    y = np.asarray(y, dtype=float)
+    return BEVEL + (0.45 * m - BEVEL) * ss(0.75, 1.0, y) + (0.30 * m - BEVEL) * ss(-0.55, -0.68, y)
+
+
+def _belly(c, oz, flat):
+    """The belly half shorter (`flat`, the hauled-out animal sits flat) and the belly cell stepped in (r3 seam)."""
+    kz = np.where(oz >= 0.0, 1.0, 1.0 - flat)
+    k = 1.0 - SEAM_STEP * ss(SEAM_UP[0], SEAM_UP[1], c)
+    return k, kz * k
+
+
+def section(a, rx, rz, flat, y=None):
+    """Section factors (sin-like, cos-like) at ray angle a (0 top, pi belly) through the rounded-rectangle section;
+    used for single surface points (dapple centres, the ear). The loft samples it by `rr_arc` instead."""
+    a = np.asarray(a, dtype=float)
+    b = 0.30 * np.minimum(rx, rz) if y is None else corner(rx, rz, y)
+    ox, oz = rr(a, rx, rz, b)
+    k, kz = _belly(np.cos(a), oz, flat)
+    return ox / np.maximum(rx, 1e-9) * k, oz / np.maximum(rz, 1e-9) * kz
+
+
+def rr_arc(v, w, h, b):
+    """r6: the rounded rectangle (half size w x h, corner radius b) sampled by weighted arc length: v 0 top centre,
+    .25 the right flank's middle, .5 belly, .75 left; the corners get CORNER_K x their share of points."""
+    w, h = np.asarray(w, float), np.asarray(h, float)
+    b = np.minimum(b, 0.9 * np.minimum(w, h))
+    v4 = (np.asarray(v, float) % 1.0) * 4.0
+    k = np.floor(v4)
+    q = np.where(k % 2 == 1, 1.0 - (v4 - k), v4 - k)
+    L1, L2, L3 = w - b, 0.5 * np.pi * b * CORNER_K, h - b
+    s = q * (L1 + L2 + L3)
+    phi = np.clip((s - L1) / np.maximum(L2, 1e-12), 0.0, 1.0) * 0.5 * np.pi
+    t = np.clip((s - L1 - L2) / np.maximum(L3, 1e-12), 0.0, 1.0)
+    x = np.where(s < L1, s, np.where(s < L1 + L2, L1 + b * np.sin(phi), w + CROWN * (1.0 - (1.0 - t) ** 2)))
+    z = np.where(s < L1, h + CROWN * (1.0 - (s / np.maximum(L1, 1e-12)) ** 2),
+                 np.where(s < L1 + L2, L3 + b * np.cos(phi), L3 - (s - L1 - L2)))
+    return np.where(k >= 2, -x, x), np.where((k == 1) | (k == 2), -z, z)
+
+
+SEAM_UP = (-0.17, -0.24)                      # cos(angle) band of the grey / cream step (one loft face at N 48)
+SEAM_STEP = 0.06                              # the belly inset, relative (~0.017 m = 0.05 stud on the body)
 
 
 # ------------------------------------------------------------------ stations (the loft: the one source of truth)
@@ -138,6 +176,7 @@ def _stations(fracs):
     for f in fracs:
         y, zc, rx, rz, flat = _profile_frac(f)
         fold, taper = folds(y)
+        fold = float(fold)
         rows.append({"frac": f, "y": y, "zc": zc, "rx": rx * fold, "rz": rz * fold,
                      "flat": flat, "fold": fold, "taper": float(taper)})
     acc, last, dist = 0.0, None, []
@@ -199,54 +238,38 @@ def point(rows, u, v):
     rz = _chan(rows, u, "rz")
     flat = _chan(rows, u, "flat")
     y = _chan(rows, u, "y")
-    a = 2.0 * np.pi * v
-    sx, cz = section(a, rx, rz, flat)
-    tf, wide = _muzzle(y)
-    x = rx * sx * wide
-    z = zc + rz * cz * np.where(np.cos(a) > 0.0, tf, 1.0)
-    return x, y, z
+    ox, oz = rr_arc(v, rx, rz, corner(rx, rz, y))          # r6: crisp corners, flat panels
+    k, kz = _belly(np.cos(2.0 * np.pi * v), oz, flat)
+    return ox * k, y, zc + oz * kz
 
 
 def surface(which, u, v):
     return point(stations(which), u, v)
 
 
-# ------------------------------------------------------------------ head landmarks (all on the undented surface)
-# mouth line: (y, angle from the top in degrees) - short, along the low side of the muzzle only, ending under the eye
-MOUTH_LINE = [(-1.200, 108.0), (-1.175, 106.0), (-1.145, 104.0), (-1.110, 101.5), (-1.070, 99.0),
-              (-1.030, 96.5), (-0.998, 94.0)]
-EYE_Y, EYE_A, EYE_R = -0.972, 55.0, 0.0265        # large and dark, high on the head, 45% back from the nose
-NOSTRIL_Y, NOSTRIL_A = -1.168, 27.0               # angle from the top: the slits face up and forward
-WHISKER_ROWS = [(-1.045, 97.0), (-1.070, 101.0), (-1.095, 105.0), (-1.120, 109.0),
-                (-1.145, 113.0), (-1.166, 116.5), (-1.183, 119.5), (-1.196, 122.0)]
-BROW_ROWS = [(-0.960, 48.0), (-0.982, 52.0), (-1.004, 56.0)]
+# ------------------------------------------------------------------ head landmarks
+# r3: the skull ends in a flat face plane (y ~ -1.05); the eyes sit on it above a separate cream muzzle box with a
+# black nose block (MUZZLE / NOSE below, lofted like the flippers). The mouth is a painted line round the muzzle box
+# at MOUTH_Z; under it the box is the jaw.
+EYE_R = 0.081                                     # r4: 90 % of r3 (0.49 stud across)
+EYE_C = (0.142, -1.028, 0.388)                    # on the face plane, 2/3 of the ball proud, 0.1 stud clear of the nose
+MOUTH_Z = 0.120                                   # the jaw line on the muzzle box (straight build space)
 EAR_Y, EAR_A, EAR_R = -0.855, 64.0, 0.011         # no external ear: a small hole behind the eye
 
 
 def _pt_at(y, a_deg, side=1.0, which="head"):
     zc, rx, rz, flat, u = rows_at_y(which, y)
     a = math.radians(a_deg)
-    sx, cz = section(a, rx, rz, flat)
-    tf, wide = _muzzle(y)
-    return (side * rx * float(sx) * wide, y, zc + rz * float(cz) * (float(tf) if math.cos(a) > 0 else 1.0))
+    sx, cz = section(a, rx, rz, flat, y)
+    return (side * rx * float(sx), y, zc + rz * float(cz))
 
 
-def mouth_point(y, side=1.0):
-    ys = [p[0] for p in MOUTH_LINE]
-    angs = [p[1] for p in MOUTH_LINE]
-    a = float(np.interp(y, ys[::-1], angs[::-1]))
-    return _pt_at(y, a, side)
+MOUTH_HALF = 0.135                                # r5: the painted "w" 1.5x (r4 spanned the nose block only)
 
 
-def mouth_z(y):
-    return np.asarray(mouth_point(y)).reshape(3)[2]
-
-
-def _u_of_y(which, y):
-    rows = stations(which)
-    ys = np.array([r["y"] for r in rows])
-    us = np.array([r["u"] for r in rows])
-    return np.interp(np.asarray(y, dtype=float), ys[::-1], us[::-1])
+def mouth_z(x):
+    """The painted "w" smile: a small cusp under the nose, two arcs rising to the corners (r5: r4's 1.5x)."""
+    return MOUTH_Z + 2.0 * (np.abs(np.asarray(x, float)) - 0.0675) ** 2
 
 
 def chan_at_y(which, y):
@@ -258,53 +281,12 @@ def chan_at_y(which, y):
     return tuple(out)
 
 
-def mouth_distance(p):
-    """Approximate distance of points p (..., 3) from the mouth line, in the section plane."""
-    p = np.asarray(p, dtype=float)
-    y = p[..., 1]
-    ys = np.array([q[0] for q in MOUTH_LINE])
-    angs = np.array([q[1] for q in MOUTH_LINE])
-    a_deg = np.interp(np.clip(y, ys[-1], ys[0]), ys[::-1], angs[::-1])
-    zc, rx, rz, flat, _ = [_chan(stations("head"), _u_of_y("head", y), k)
-                           for k in ("zc", "rx", "rz", "flat", "u")]
-    a = np.radians(a_deg)
-    sx, cz = section(a, rx, rz, flat)
-    mx = rx * sx
-    mz = zc + rz * cz
-    return np.hypot(np.abs(p[..., 0]) - mx, p[..., 2] - mz)
-
-
 def eye_centre(side=1.0):
-    """Eyeball centre: on the surface point pushed 16 mm radially in, so the ball sits in the socket."""
-    p = _pt_at(EYE_Y, EYE_A, side)
-    a = math.radians(EYE_A)
-    n = np.array([math.sin(a), 0.0, math.cos(a)])
-    return (p[0] - 0.016 * n[0], p[1], p[2] - 0.016 * n[2])
-
-
-def eye_surface_point(side=1.0):
-    return _pt_at(EYE_Y, EYE_A, side)
-
-
-def nostril_point(side=1.0):
-    return _pt_at(NOSTRIL_Y, NOSTRIL_A, side)
+    return (side * EYE_C[0], EYE_C[1], EYE_C[2])
 
 
 def ear_point(side=1.0):
     return _pt_at(EAR_Y, EAR_A, side)
-
-
-def nostril_slits(side=1.0):
-    """The three points of one V-shaped nostril slit (apex behind, two arms forward), on the muzzle's top."""
-    y0, a0 = NOSTRIL_Y, NOSTRIL_A
-    apex = np.array(_pt_at(y0 + 0.006, a0 - 3.0, side))
-    outer = np.array(_pt_at(y0 - 0.020, a0 + 7.0, side))
-    inner = np.array(_pt_at(y0 - 0.020, a0 - 11.0, side))
-    return apex, outer, inner
-
-
-def whisker_root(y, a_deg, side=1.0):
-    return _pt_at(y, a_deg, side)
 
 
 # ------------------------------------------------------------------ flippers (the loft and the paint share these)
@@ -314,19 +296,61 @@ def _n(v):
 
 
 FLIPPERS = [
-    dict(part="foreL", side=+1.0, root=(0.190, -0.140, 0.132), axis=(0.220, 0.900, -0.200), length=0.400,
-         chord="Z", droop=0.010, claws=5, claw_len=0.024, claw_r=0.0080, scallop=0.0, region="FORE",
-         secs=[(0.00, 0.080, 0.045), (0.15, 0.092, 0.042), (0.35, 0.098, 0.036), (0.55, 0.094, 0.028),
-               (0.75, 0.080, 0.020), (0.90, 0.058, 0.013), (1.00, 0.028, 0.007)]),
-    dict(part="hindL", side=+1.0, root=(0.060, 0.850, 0.185), axis=(0.100, 0.985, -0.120), length=0.470,
-         chord="X", droop=0.012, claws=5, claw_len=0.032, claw_r=0.0080, scallop=0.030, region="HIND",
-         secs=[(0.00, 0.055, 0.030), (0.18, 0.080, 0.026), (0.38, 0.108, 0.021), (0.58, 0.132, 0.016),
-               (0.78, 0.150, 0.012), (0.92, 0.158, 0.008), (1.00, 0.150, 0.005)]),
+    # r3: fore 1.22x longer / 1.25x wider paddles splayed out and down to prop the chest; hind a wider (~2 stud) fan
+    # of thick wedges in a V. Hard bevels (FLIP_SQ).
+    # r4: fore 1.3x thicker; every blade a rounded-rectangle section with a crisp ~0.07 stud bevel (`bevel`, m).
+    dict(part="foreL", side=+1.0, root=(0.170, -0.120, 0.118), axis=(0.440, 0.880, -0.190), length=0.500,
+         chord="H", droop=0.008, claws=0, scallop=0.0, region="FORE", bevel=0.030,      # r6: 1.12x, squared tips
+         secs=[(0.00, 0.098, 0.078), (0.20, 0.122, 0.078), (0.45, 0.134, 0.074), (0.70, 0.136, 0.068),
+               (0.90, 0.134, 0.060), (1.00, 0.124, 0.052)]),
+    dict(part="hindL", side=+1.0, root=(0.055, 0.860, 0.190), axis=(0.340, 0.940, -0.080), length=0.480,
+         chord="X", droop=0.010, claws=0, scallop=0.014, region="HIND", bevel=0.028,     # r6: 1.15x chord
+         secs=[(0.00, 0.068, 0.058), (0.20, 0.098, 0.056), (0.40, 0.126, 0.053), (0.60, 0.150, 0.050),
+               (0.80, 0.166, 0.047), (0.92, 0.172, 0.045), (1.00, 0.164, 0.042)]),
 ]
+
+# r3: the muzzle box and the black nose block on its front top edge, lofted with the flipper code (a straight axis,
+# flat front faces lofted down to a small cap so they carry paint). r4: the box 1.15x (1.04 x 0.69 studs, top edge
+# kept, grown down), a crisp ~0.075 stud front and edge bevel.
+MUZZLE = dict(part="head", side=+1.0, root=(0.0, -0.980, 0.145), axis=(0.0, -1.0, 0.0), length=0.280,
+              chord="X", droop=0.0, claws=0, scallop=0.0, region="MUZZLE", bevel=0.030, front="MUZZLE_F",
+              secs=[(0.00, 0.1725, 0.115), (0.911, 0.1725, 0.115), (0.945, 0.1665, 0.109), (0.975, 0.1575, 0.100),
+                    (1.00, 0.1475, 0.090)])           # r4: the flat front is a planar-mapped cap (`front` region)
+NOSE = dict(part="head", side=+1.0, root=(0.0, -1.214, 0.231), axis=(0.0, -1.0, 0.0), length=0.063,
+            chord="X", droop=0.0, claws=0, scallop=0.0, region="NOSE", bevel=0.020,     # r5: 20 % smaller, top kept,
+            secs=[(0.00, 0.072, 0.0425), (0.70, 0.072, 0.0425), (0.85, 0.067, 0.0375), (0.95, 0.059, 0.030),
+                  (1.00, 0.020, 0.012)])                                                # rounder corners
+
+
+def rr(ang, w, h, b):
+    """r4 blade section: where the ray at angle ang (0 = +u2 face, a quarter turn = +u1 edge) meets a rounded
+    rectangle of half size w x h with corner radius b. Returns (along u1, along u2); scalars or arrays."""
+    ang, w, h = np.asarray(ang, float), np.asarray(w, float), np.asarray(h, float)
+    s, c = np.sin(ang), np.cos(ang)
+    dx, dz = np.abs(s) + 1e-12, np.abs(c) + 1e-12
+    b = np.minimum(b, 0.9 * np.minimum(w, h))
+    cx, cz = w - b, h - b
+    t1, t2 = w / dx, h / dz
+    dc = dx * cx + dz * cz
+    tc = dc + np.sqrt(np.maximum(dc * dc - (cx * cx + cz * cz) + b * b, 0.0))
+    t = np.where(t1 * dz <= cz, t1, np.where(t2 * dx <= cx, t2, tc))
+    return np.sign(s) * t * dx, np.sign(c) * t * dz
+
+
+def ring_tus(spec):
+    """r4: UV u of each lofted ring of a flipper / box (the -0.2 root ring + secs), by arc length along the
+    (axis, half chord) profile, so tiny bevel rings get little texture and the flat front face gets its share."""
+    ts = [-0.20] + [q[0] for q in spec["secs"]]
+    ws = [spec["secs"][0][1] * 0.72] + [q[1] for q in spec["secs"]]
+    d = np.concatenate([[0.0], np.cumsum(np.hypot(np.diff(ts) * spec["length"], np.diff(ws)))])
+    return d / d[-1]
 
 
 def flipper_frame(spec):
     a = _n(spec["axis"])
+    if spec["chord"] == "H":                             # a flat paddle: the chord horizontal, square to the axis
+        u1 = _n(np.cross([0.0, 0.0, spec.get("side", 1.0)], a))
+        return a, u1, _n(np.cross(a, u1))
     ref = np.array([0.0, 0.0, 1.0]) if spec["chord"] == "Z" else np.array([1.0, 0.0, 0.0])
     u1 = _n(ref - a * float(ref @ a))                    # the chord (the blade's width)
     u2 = _n(np.cross(a, u1))                             # the thickness
@@ -362,58 +386,64 @@ def flipper_point(spec, tu, tv):
     bow = spec["droop"] * np.sin(np.pi * np.clip(tu, 0.0, 1.0))
     c = (np.asarray(spec["root"], float)[None, None, :] + a[None, None, :] * (spec["length"] * tu)[..., None]
          - u1[None, None, :] * bow[..., None])
-    ang = 2.0 * np.pi * tv
-    return c + u1[None, None, :] * (w[..., None] * np.sin(ang)[..., None]) + \
-        u2[None, None, :] * (h[..., None] * np.cos(ang)[..., None])
-
-
-def claw_points(spec, k):
-    """(base, direction) of claw k (0..claws-1) at the blade's trailing tip, spread across the chord."""
-    a, u1, u2 = flipper_frame(spec)
-    n = spec["claws"]
-    q = (k - (n - 1) / 2.0) / max(1.0, (n - 1) / 2.0)
-    w, _ = flipper_section(spec, 1.0)
-    centre = flipper_centre(spec, 1.0, a, u1)
-    base = centre + u1 * (q * 0.86 * w) - a * 0.014
-    direction = _n(a + u1 * (q * 0.24) - u2 * 0.16)
-    return base, direction
+    ox, oz = rr(2.0 * np.pi * tv, w, h, spec["bevel"])
+    return c + u1[None, None, :] * ox[..., None] + u2[None, None, :] * oz[..., None]
 
 
 # ------------------------------------------------------------------ warps (the face features a loft cannot give)
-EYE_SOCKET, EYE_DENT = 0.058, 0.0130
-BROW_OUT = 0.0090
-NOSTRIL_DENT = 0.0045
-MOUTH_DENT = 0.0090
 EAR_DENT = 0.0070
 
 
-def _seg_dist(P, a, b):
-    """Distance of points P (N,3) to segment a-b."""
-    ab = b - a
-    t = np.clip(((P - a[None, :]) @ ab) / max(float(ab @ ab), 1e-9), 0.0, 1.0)
-    return np.linalg.norm(P - (a[None, :] + t[:, None] * ab[None, :]), axis=1)
-
-
 def warp_points(V):
-    """Eye sockets, the brow ridge, the V nostril slits, the ear holes and the mouth line. Applied to the head
-    loft's vertices (and to the whisker roots, so the hairs stay planted in the crease)."""
+    """The ear holes (r3: the eyes, nose and mouth moved onto the face plane and the muzzle box)."""
     V = np.asarray(V, float).copy()
-    y = V[:, 1]
-    zc, rx, rz, flat, _ = chan_at_y("head", y)
-    n = np.stack([V[:, 0] / np.maximum(rx, 1e-6), np.zeros_like(y), (V[:, 2] - zc) / np.maximum(rz, 1e-6)], axis=1)
+    zc, rx, rz, flat, _ = chan_at_y("head", V[:, 1])
+    n = np.stack([V[:, 0] / np.maximum(rx, 1e-6), np.zeros(len(V)), (V[:, 2] - zc) / np.maximum(rz, 1e-6)], axis=1)
     n /= np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-9)
     for side in (+1.0, -1.0):
-        c = np.array(eye_centre(side))
-        d = np.linalg.norm(V - c, axis=1)
-        V -= n * (EYE_DENT * ss(EYE_SOCKET, 0.018, d))[:, None]
-        up = V[:, 2] > c[2] + 0.004
-        V += n * (BROW_OUT * ss(0.078, 0.034, d) * up)[:, None]
-        apex, outer, inner = [np.asarray(q, float) for q in nostril_slits(side)]
-        ds = np.minimum(_seg_dist(V, apex, outer), _seg_dist(V, apex, inner))
-        V -= n * (NOSTRIL_DENT * ss(0.013, 0.0025, ds))[:, None]
-        e = np.array(ear_point(side))
-        de = np.linalg.norm(V - e, axis=1)
+        de = np.linalg.norm(V - np.array(ear_point(side)), axis=1)
         V -= n * (EAR_DENT * ss(0.016, 0.004, de))[:, None]
-    k = ss(0.016, 0.003, mouth_distance(V))
-    V -= n * (MOUTH_DENT * k)[:, None]
     return V
+
+
+# ------------------------------------------------------------------ r2 rest pose: the raised head and chest
+# In game the seal is the static rest mesh, so the rest pose carries the haul-out arch: the spine bends nose-up from
+# the chest through the neck, then eases back over the head (a banana arch with the face near level). Applied to the
+# finished vertices and the bones; weights and paint stay in the straight build space (UVs are unchanged).
+BEND_ZREF = 0.20                                  # the spine line the bend rolls along
+BEND_UP = (42.0, 0.05, -0.68)                     # degrees nose-up, ramped over this y range (chest -> neck)
+BEND_BACK = (24.0, -0.68, -0.98)                  # eased back over the head (r3: a taller S-curve)
+
+
+def bend_angle(y):
+    y = np.asarray(y, float)
+    return np.radians(BEND_UP[0] * ss(BEND_UP[1], BEND_UP[2], y) - BEND_BACK[0] * ss(BEND_BACK[1], BEND_BACK[2], y))
+
+
+_BG = None
+
+
+def _bend_grid():
+    global _BG
+    if _BG is None:
+        y = np.arange(BEND_UP[1], -1.6, -0.001)
+        f = bend_angle(y)
+        dt = np.abs(np.diff(y))
+        fm = 0.5 * (f[1:] + f[:-1])
+        Y = np.concatenate([[y[0]], y[0] - np.cumsum(np.cos(fm) * dt)])
+        Z = np.concatenate([[BEND_ZREF], BEND_ZREF + np.cumsum(np.sin(fm) * dt)])
+        _BG = (y[::-1], f[::-1], Y[::-1], Z[::-1])
+    return _BG
+
+
+def bend(P):
+    """Points (N,3) in the straight build space -> the arched rest pose (identity behind BEND_UP[1])."""
+    P = np.asarray(P, float).reshape(-1, 3).copy()
+    yg, fg, Yg, Zg = _bend_grid()
+    m = P[:, 1] < BEND_UP[1]
+    y = P[m, 1]
+    f, Y, Z = np.interp(y, yg, fg), np.interp(y, yg, Yg), np.interp(y, yg, Zg)
+    h = P[m, 2] - BEND_ZREF
+    P[m, 1] = Y + h * np.sin(f)
+    P[m, 2] = Z + h * np.cos(f)
+    return P

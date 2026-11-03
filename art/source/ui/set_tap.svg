@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 212 212" width="64" height="64"><!-- r12 (in-game fix r2): hold to tap = pointing hand (tall index finger, three knuckle bumps, separate tucked thumb) with a blue partial press ring hugging the fingertip and one thick white tap arc above; white parts get a blue-grey lip; revert: build/status/2026-10-31/perfect/ui/ingame/r2/old/set_tap.svg --><defs><linearGradient id="w" gradientUnits="userSpaceOnUse" x1="0" y1="60" x2="0" y2="184"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DFE7F1"/></linearGradient><linearGradient id="wa" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="50"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E6EDF5"/></linearGradient><linearGradient id="bl" gradientUnits="userSpaceOnUse" x1="0" y1="40" x2="0" y2="96"><stop offset="0" stop-color="#8FD6FF"/><stop offset="1" stop-color="#2F7BE6"/></linearGradient>
+<path id="f" d="M73,84 A19,19 0 0,1 111,84 L111,150 L73,150 Z"/>
+<path id="k" d="M62,146 Q62,124 84,124 L111,124 C112,106 132,104 133,120 C134,104 154,104 155,122 C156,108 176,110 176,132 L176,158 Q176,182 152,182 L86,182 Q62,182 62,158 Z"/>
+<path id="t" d="M50,148 L102,154" fill="none"/>
+<path id="r" d="M52,85.4 A40,40 0 1,1 132,85.4" fill="none"/>
+<path id="o" d="M40,37.2 A70,70 0 0,1 144,37.2" fill="none"/>
+<mask id="mh" maskUnits="userSpaceOnUse" x="-20" y="-20" width="240" height="240"><use href="#f" fill="#fff"/><use href="#k" fill="#fff"/></mask>
+<mask id="mt" maskUnits="userSpaceOnUse" x="-20" y="-20" width="240" height="240"><use href="#t" stroke="#fff" stroke-width="30" stroke-linecap="round"/></mask>
+<mask id="mr" maskUnits="userSpaceOnUse" x="-20" y="-20" width="240" height="240"><use href="#r" stroke="#fff" stroke-width="16" stroke-linecap="round"/></mask>
+<mask id="mo" maskUnits="userSpaceOnUse" x="-20" y="-20" width="240" height="240"><use href="#o" stroke="#fff" stroke-width="18" stroke-linecap="round"/></mask>
+<g id="ink"><use href="#f" fill="#14121C" stroke="#14121C" stroke-width="24"/><use href="#k" fill="#14121C" stroke="#14121C" stroke-width="24"/><use href="#t" stroke="#14121C" stroke-width="54"/><use href="#r" stroke="#14121C" stroke-width="38"/><use href="#o" stroke="#14121C" stroke-width="40"/></g></defs>
+<g transform="translate(100,100) scale(0.96) translate(-105,-99.5)" stroke-linecap="round" stroke-linejoin="round">
+<use href="#ink" transform="translate(0,9)"/><use href="#ink"/>
+<g mask="url(#mo)"><rect x="-20" y="-20" width="240" height="240" fill="#A4B3C9"/><use href="#o" transform="translate(0,-6)" stroke="url(#wa)" stroke-width="18"/></g>
+<g mask="url(#mr)"><rect x="-20" y="-20" width="240" height="240" fill="#1C4FA6"/><use href="#r" transform="translate(0,-6)" stroke="url(#bl)" stroke-width="16"/></g>
+<g mask="url(#mh)"><rect x="-20" y="-20" width="240" height="240" fill="#A4B3C9"/><g transform="translate(0,-8)" fill="url(#w)"><use href="#f"/><use href="#k"/></g></g>
+<path d="M111,128 L111,146 M133,124 L133,140 M155,126 L155,140" stroke="#14121C" stroke-width="9"/>
+<use href="#t" stroke="#14121C" stroke-width="50"/>
+<g mask="url(#mt)"><rect x="-20" y="-20" width="240" height="240" fill="#A4B3C9"/><use href="#t" transform="translate(0,-6)" stroke="url(#w)" stroke-width="30"/></g>
+</g></svg>

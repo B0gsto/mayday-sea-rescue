@@ -14,14 +14,14 @@ PALETTE = [
     (80, 190, 90),     # 7  green
     (40, 96, 208),     # 8  blue
     (60, 220, 255),    # 9  cyan
-    (250, 120, 190),   # 10 pink
+    (226, 228, 232),   # 10 pale grey (r4: soft plaza checker; was an unused pink)
     (212, 184, 132),   # 11 tan
     (105, 64, 40),     # 12 reddish brown
     (255, 214, 150),   # 13 warm lamp light
     (150, 205, 240),   # 14 light glass blue
     (42, 44, 48),      # 15 black (tyres)
 ]
-WHITE, LBG, DBG, INK, RED, ORANGE, YELLOW, GREEN, BLUE, CYAN, PINK, TAN, BROWN, WARM, GLASS, BLACK = range(16)
+WHITE, LBG, DBG, INK, RED, ORANGE, YELLOW, GREEN, BLUE, CYAN, PALE, TAN, BROWN, WARM, GLASS, BLACK = range(16)
 
 CELL, GRID, SIZE = 256, 4, 1024
 

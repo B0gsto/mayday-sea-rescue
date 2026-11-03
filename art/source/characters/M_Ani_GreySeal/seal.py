@@ -5,12 +5,12 @@ and centred on its bounding box by build.py. Front is -Y, up is +Z.
 
 Two meshes, one texture set each (the pipeline allows one material per mesh):
   M_Ani_GreySeal_Body_LOD0   set Coat: the body from the tail tip through the chest and the fore-flippers to the
-                             fold valley at the neck, plus the four flippers and their claws
+                             fold valley at the neck, plus the four flippers and the back stud
   M_Ani_GreySeal_Head_LOD0   set Face: the neck folds, skull, the long convex Roman nose muzzle, the eyes, the
-                             nostrils' pads and the rows of whiskers
+                             nostrils' pads (r1: whiskers are painted dots)
 The two tubes share the station at y -0.575 and the neck ripple at that station is a valley, so the seam sits inside a
 fold and both meshes carry the same weights there: the neck bends without a gap. The nose and tail tips are capped;
-the muzzle, the whiskers, the claws and the flipper tips carry the species detail that all the character is in.
+r1 (2026-11-01) made it a toy: rounded-box sections, a blocky muzzle, slab flippers, big bead eyes, a stud.
 
 Skinning is analytic (RIG_Seal): a smooth partition over the spine bones, a jaw weight under the mouth line, and
 flipper chains that blend into the body weights at the root so the joints cannot crack.
@@ -27,7 +27,6 @@ M = 1.0                                     # metres here; build.py multiplies b
 N_BODY = 48                                 # points around the body
 N_HEAD = 48
 N_FLIP = 24                                 # points around a flipper
-N_WHISK = 3                                 # a whisker is a thin three-sided prism
 
 
 class Builder:
@@ -56,23 +55,25 @@ def uv_of(regions, region, tu, tv):
     return (u0 + tu * (u1 - u0), v0 + tv * (v1 - v0))
 
 
-def surface(B, stations, regions, region, part, flip=False, s_of=None):
+def surface(B, stations, regions, region, part, flip=False, s_of=None, tus=None):
     """stations[i][j] = (co, tv): an (nu x nv) closed-in-j tube. Returns the row lists (index, uv)."""
     nu, nv = len(stations), len(stations[0])
     rows = []
     for i, st in enumerate(stations):
-        tu = i / float(nu - 1)
+        tu = float(tus[i]) if tus is not None else i / float(nu - 1)
         row = []
         for j, (co, tv) in enumerate(st):
             s = s_of(i, j) if s_of else tu
             row.append((B.v(co, part, s), uv_of(regions, region, tu, tv)))
         rows.append(row)
+    v_end = regions[region][3]
     for i in range(nu - 1):
         for j in range(nv):
             j2 = (j + 1) % nv
             a, b = rows[i][j], rows[i][j2]
             c, d = rows[i + 1][j2], rows[i + 1][j]
-            B.face([a[0], b[0], c[0], d[0]], [a[1], b[1], c[1], d[1]], flip)
+            buv, cuv = (b[1], c[1]) if j2 else ((b[1][0], v_end), (c[1][0], v_end))   # the wrap face ends at v = 1
+            B.face([a[0], b[0], c[0], d[0]], [a[1], buv, cuv, d[1]], flip)
     return rows
 
 
@@ -100,15 +101,16 @@ def ring(which, row, n):
     return [((float(x[j]), float(y[j]), float(z[j])), j / float(n)) for j in range(n)]
 
 
-def sph(B, centre, r, rings, sides, regions, region, part, s=0.0, anchor=None):
-    """Small UV sphere (an eye): latitude rings between two fans."""
+def sph(B, centre, r, rings, sides, regions, region, part, s=0.0, anchor=None, mx=1.0):
+    """Small UV sphere (an eye): latitude rings between two fans. mx -1 mirrors it in x (the right eye), so both
+    eyes share one painted catch-light that sits up front and outward."""
     rows = []
     for i in range(1, rings):
         lat = math.pi * i / rings
         st = []
         for j in range(sides):
             lon = 2.0 * math.pi * j / sides
-            st.append(((centre[0] + r * math.sin(lat) * math.cos(lon),
+            st.append(((centre[0] + mx * r * math.sin(lat) * math.cos(lon),
                         centre[1] + r * math.sin(lat) * math.sin(lon),
                         centre[2] + r * math.cos(lat)), j / float(sides)))
         rows.append(st)
@@ -118,12 +120,14 @@ def sph(B, centre, r, rings, sides, regions, region, part, s=0.0, anchor=None):
     for i, st in enumerate(uvl):
         tu = i / float(nu - 1)
         grid.append([(B.v(co, part, s, anchor=anchor), uv_of(regions, region, tu, tv)) for co, tv in st])
+    v_end = regions[region][3]
     for i in range(nu - 1):
         for j in range(nv):
             j2 = (j + 1) % nv
             a, b = grid[i][j], grid[i][j2]
             c, d = grid[i + 1][j2], grid[i + 1][j]
-            B.face([a[0], b[0], c[0], d[0]], [a[1], b[1], c[1], d[1]])
+            buv, cuv = (b[1], c[1]) if j2 else ((b[1][0], v_end), (c[1][0], v_end))
+            B.face([a[0], b[0], c[0], d[0]], [a[1], buv, cuv, d[1]])
     cap_fan(B, grid[0], (centre[0], centre[1], centre[2] + r), regions, region, (0.5, 0.93), 0.02, anchor=anchor)
     cap_fan(B, grid[-1], (centre[0], centre[1], centre[2] - r), regions, region, (0.5, 0.07), 0.02, flip=True,
             anchor=anchor)
@@ -164,93 +168,82 @@ def flipper(B, spec, regions, n=N_FLIP):
             ang = 2.0 * math.pi * j / n
             # the hind blade's five digit lobes: the trailing edge grows them over the last fifth of the span
             ext = sc * max(0.0, (t - 0.78) / 0.22) * (0.5 + 0.5 * math.cos(5.0 * math.pi * math.sin(ang)))
-            p = c + u1 * (w * math.sin(ang)) + u2 * (h * math.cos(ang)) + a * ext
+            ox, oz = S.rr(ang, w, h, spec["bevel"])
+            p = c + u1 * float(ox) + u2 * float(oz) + a * ext
             st.append((tuple(p), j / float(n)))
         sts.append(st)
     grid = surface(B, sts, regions, spec["region"], part,
-                   s_of=lambda i, j: max(0.0, secs[i][0]), flip=(spec["side"] < 0))
+                   s_of=lambda i, j: max(0.0, secs[i][0]), flip=(spec["side"] < 0), tus=S.ring_tus(spec))
     cap_fan(B, grid[0], tuple(S.flipper_centre(spec, -0.20, a, u1)), regions, spec["region"], (0.02, 0.5), 0.03,
             flip=True)
+    if spec.get("front"):                   # r4: a flat front face, UVs projected straight on (LODs keep its area)
+        c = S.flipper_centre(spec, 1.0, a, u1)
+        w, h = secs[-1][1], secs[-1][2]
+        uv = lambda p: uv_of(regions, spec["front"], 0.5 + float((np.asarray(p) - c) @ u1) / (2 * w),
+                             0.5 + float((np.asarray(p) - c) @ u2) / (2 * h))
+        ci = B.v(tuple(c), part, 1.0)
+        for k in range(n):
+            i0, i1 = grid[-1][k][0], grid[-1][(k + 1) % n][0]
+            B.face([ci, i0, i1], [uv(c), uv(B.verts[i0]), uv(B.verts[i1])])
+        return
     cap_fan(B, grid[-1], tuple(S.flipper_centre(spec, 1.0, a, u1) + a * (sc * 0.5)), regions, spec["region"],
             (0.97, 0.5), 0.03)
-    anchor = tuple(spec["root"])
-    for k in range(spec["claws"]):
-        base, direction = S.claw_points(spec, k)
-        q = (k - (spec["claws"] - 1) / 2.0) / max(1.0, (spec["claws"] - 1) / 2.0)
-        base = base + a * (sc * (0.5 + 0.5 * math.cos(5.0 * math.pi * q * 0.8)))
-        claw(B, base, direction, spec["claw_len"], spec["claw_r"], regions, part, 1.0, anchor)
-
-
-def claw(B, base, direction, length, r, regions, part, s, anchor, n=5):
-    """A small pointed claw: a five-sided cone with a base cap."""
-    a = _norm(direction)
-    ref = np.array([0.0, 0.0, 1.0]) if abs(a[2]) < 0.9 else np.array([1.0, 0.0, 0.0])
-    u1 = _norm(ref - a * float(ref @ a))
-    u2 = _norm(np.cross(a, u1))
-    base = np.asarray(base, float)
-    sts = [(0.0, r, 0.0), (0.45, r * 0.66, length * 0.45), (0.80, r * 0.34, length * 0.80), (1.0, r * 0.10, length)]
-    rows = []
-    for t, rr, d in sts:
-        c = base + a * d
-        st = [(tuple(c + u1 * (rr * math.cos(2 * math.pi * j / n)) + u2 * (rr * math.sin(2 * math.pi * j / n))),
-               j / float(n)) for j in range(n)]
-        rows.append(st)
-    grid = surface(B, rows, regions, "CLAW", part, s_of=lambda i, j: s)
-    cap_fan(B, grid[0], tuple(base), regions, "CLAW", (0.5, 0.06), 0.04, flip=True, anchor=anchor)
-    cap_fan(B, grid[-1], tuple(base + a * (length * 1.06)), regions, "CLAW", (0.5, 0.94), 0.04, anchor=anchor)
-
-
-# ---------------------------------------------------------------- whiskers
-def whisker(B, root, direction, length, r0, regions, part, s=0.0, bow=(0.0, 0.30, -0.40), n=N_WHISK,
-            root_sink=0.0):
-    """One vibrissa: a thin three-sided tapered prism that arcs out, back and down from its root.
-    Modelled rather than alpha-carded (the row allows both): at this size the prism holds up in every view."""
-    a = _norm(direction)
-    ref = np.array([0.0, 0.0, 1.0]) if abs(a[2]) < 0.9 else np.array([1.0, 0.0, 0.0])
-    u1 = _norm(ref - a * float(ref @ a))
-    u2 = _norm(np.cross(a, u1))
-    root = np.asarray(root, float)
-    bv = np.asarray(bow, float)
-    bv = bv / max(float(np.linalg.norm(bv)), 1e-9)
-    if root_sink:                                   # plant the base under the skin so no seam shows at the pore
-        zc = S.rows_at_y("head", float(root[1]))[0]
-        inward = np.array([-root[0], 0.0, zc - root[2]])
-        root = root + inward / max(float(np.linalg.norm(inward)), 1e-9) * root_sink
-    prof = [(0.0, 1.00, 0.0), (0.35, 0.70, 0.16), (0.70, 0.38, 0.50), (1.0, 0.07, 0.92)]
-    rows = []
-    for t, rr, bend in prof:
-        c = root + a * (length * t) + bv * (length * 0.55 * bend)
-        st = [(tuple(c + u1 * (r0 * rr * math.cos(2 * math.pi * j / n)) + u2 * (r0 * rr * math.sin(2 * math.pi * j / n))),
-               j / float(n)) for j in range(n)]
-        rows.append(st)
-    grid = surface(B, rows, regions, "WHISK", part, s_of=lambda i, j: s)
-    cap_fan(B, grid[0], tuple(root), regions, "WHISK", (0.5, 0.08), 0.04, flip=True, anchor=tuple(root))
-    cap_fan(B, grid[-1], tuple(root + a * (length * 1.02) + bv * (length * 0.55 * 0.92)), regions, "WHISK",
-            (0.5, 0.92), 0.04, anchor=tuple(root))
-
-
-def whiskers(B, regions):
-    """Eight short, fine whiskers a side in rows over the muzzle pads (80 to 120 mm, swept back and down, gently
-    curved), plus three short brow hairs above each eye. Modelled, not alpha-carded (the row allows both)."""
-    for side in (+1.0, -1.0):
-        part = "whiskL" if side > 0 else "whiskR"
-        for y, a_deg in S.WHISKER_ROWS:
-            root = S.whisker_root(y, a_deg, side)
-            fwd = float(S.ss(-1.035, -1.275, y))                # the nose-most are the longest
-            length = 0.080 + 0.034 * fwd
-            direction = (side * 0.66, 0.26 + 0.12 * (1.0 - fwd), -0.30)
-            whisker(B, root, direction, length, 0.00082, regions, part, s=y, bow=(0.0, 0.42, -0.86),
-                    root_sink=0.004)
-        for y, a_deg in S.BROW_ROWS:
-            root = S.whisker_root(y, a_deg, side)
-            whisker(B, root, (side * 0.56, 0.54, 0.44), 0.026, 0.00070, regions, part, s=y,
-                    bow=(0.0, 0.18, -0.34), root_sink=0.004)
 
 
 def eyes(B, regions):
     for side in (+1.0, -1.0):
         c = S.eye_centre(side)
-        sph(B, c, S.EYE_R, 5, 12, regions, "EYE", "eye", s=0.0, anchor=c)
+        sph(B, c, S.EYE_R, 8, 16, regions, "EYE", "eye", s=0.0, anchor=c, mx=side)
+
+
+# r5: studs 0.72 stud across, 0.32 tall, on a wider 1x3 plate centred on the spine; the plate's top sits flat on the
+# flat back panel with a 0.05 stud lip. r6: moved back onto the flat (unbent) back, so the three studs stand level
+STUD_YS, STUD_R, STUD_H, STUD_SINK = (0.600, 0.320, 0.040), 0.120, 0.107, 0.030
+STUD_LIP = 0.018                                                 # a crisp bevel lip
+PLATE_Y, PLATE_W, PLATE_T, PLATE_D, PLATE_B = (0.740, -0.100), 0.158, 0.050, 0.050, 0.017
+
+
+def _crest(y):
+    zc, rx, rz, flat, u = S.rows_at_y("body", y)
+    return zc + rz                                            # the back's crest at this y
+
+
+def plate(B, regions, n=24):
+    """r4: a bevelled 1x3 plate following the back's crest, PLATE_T proud, its underside sunk PLATE_D into the body."""
+    y0, y1 = PLATE_Y
+    ends = [(0.0, PLATE_B), (0.005, 0.004), (0.015, 0.0)]            # (distance in from the end, inset): the end bevel
+    rows = [(y0 - d, k) for d, k in ends] + [(y, 0.0) for y in np.linspace(y0 - 0.06, y1 + 0.06, 5)] + \
+        [(y1 + d, k) for d, k in ends[::-1]]
+    hh = 0.5 * (PLATE_T + PLATE_D)
+    sts = []
+    for y, k in rows:
+        zc = _crest(y) + 0.5 * (PLATE_T - PLATE_D)
+        st = []
+        for j in range(n):
+            ox, oz = S.rr(2.0 * math.pi * j / n, PLATE_W - k, hh - k, PLATE_B)
+            st.append(((float(ox), y, zc + float(oz)), j / float(n)))
+        sts.append(st)
+    grid = surface(B, sts, regions, "STUD", "body", s_of=lambda i, j: 0.0)
+    cap_fan(B, grid[0], (0.0, rows[0][0], _crest(rows[0][0]) + 0.5 * (PLATE_T - PLATE_D)), regions, "STUD",
+            (0.5, 0.5), 0.3, flip=True)
+    cap_fan(B, grid[-1], (0.0, rows[-1][0], _crest(rows[-1][0]) + 0.5 * (PLATE_T - PLATE_D)), regions, "STUD",
+            (0.5, 0.5), 0.3)
+
+
+def stud(B, regions, n=24):
+    """Bevelled Lego studs on the plate: cylinders sunk into it with a chamfered top edge and a flat cap."""
+    plate(B, regions)
+    for sy in STUD_YS:
+        top = _crest(sy) + PLATE_T                            # the plate's top at this y
+        c = (0.0, sy, top)
+        prof = [(STUD_R, -STUD_SINK), (STUD_R, STUD_H - STUD_LIP), (STUD_R - STUD_LIP, STUD_H)]
+        sts = [[((c[0] + r * math.cos(2 * math.pi * j / n), c[1] + r * math.sin(2 * math.pi * j / n), top + dz),
+                 j / float(n)) for j in range(n)] for r, dz in prof]
+        grid = surface(B, sts, regions, "STUD", "body", s_of=lambda i, j: 0.0)
+        for row in grid:                                      # weights read at the stud's centre: it rides the spine
+            for vi, _ in row:
+                B.anchor[vi] = c
+        cap_fan(B, grid[-1], (c[0], c[1], top + STUD_H), regions, "STUD", (0.5, 0.5), 0.3, anchor=c)
 
 
 # ---------------------------------------------------------------- mesh assembly
@@ -301,17 +294,20 @@ def build_meshes(name_body, name_head, regions_coat, regions_face):
     for spec in S.FLIPPERS:
         flipper(Bb, spec, regions_coat)
         flipper(Bb, mirror_spec(spec), regions_coat)
-    ob_body = mesh_object(name_body, Bb, np.asarray(Bb.verts, float))
+    stud(Bb, regions_coat)
+    ob_body = mesh_object(name_body, Bb, S.bend(Bb.verts))
 
     Bh = Builder()
-    tube(Bh, "head", N_HEAD, regions_face, "HEAD", "head", cap_last=(0.0, -1.216, 0.309))
+    tip = S.stations("head")[-1]
+    tube(Bh, "head", N_HEAD, regions_face, "HEAD", "head", cap_last=(0.0, tip["y"] - 0.0015, tip["zc"]))
     n_tube = len(Bh.verts)
     Vh = np.asarray(Bh.verts, float)
     Vh[:n_tube] = S.warp_points(Vh[:n_tube])
     Bh.verts = [tuple(v) for v in Vh]
-    whiskers(Bh, regions_face)
-    eyes(Bh, regions_face)
-    ob_head = mesh_object(name_head, Bh, np.asarray(Bh.verts, float))
+    eyes(Bh, regions_face)                  # r1: whisker prisms dropped (unreadable); painted whisker-pad dots instead
+    for spec in (S.MUZZLE, S.NOSE):         # r3: the cream muzzle box and the black nose block on the face plane
+        flipper(Bh, spec, regions_face)
+    ob_head = mesh_object(name_head, Bh, S.bend(Bh.verts))     # r2: the arched rest pose
     return ob_body, ob_head, Bb, Bh
 
 
@@ -323,17 +319,24 @@ BONES = {                                   # name: (head, tail, parent); metres
     "Chest": ((0.0, -0.060, 0.292), (0.0, -0.440, 0.294), "Spine_2"),
     "Neck": ((0.0, -0.440, 0.294), (0.0, -0.760, 0.306), "Chest"),
     "Head": ((0.0, -0.760, 0.306), (0.0, -1.000, 0.316), "Neck"),
-    "Jaw": ((0.0, -0.920, 0.300), (0.0, -1.170, 0.290), "Head"),
+    "Jaw": ((0.0, -1.050, 0.120), (0.0, -1.250, 0.110), "Head"),     # r3: hinged at the muzzle box's mouth line
     "Tail": ((0.0, 0.960, 0.260), (0.0, 1.100, 0.250), "Spine_1"),
-    "FlipperF_L_1": ((0.190, -0.140, 0.135), (0.235, 0.040, 0.092), "Chest"),
-    "FlipperF_L_2": ((0.235, 0.040, 0.092), (0.279, 0.220, 0.050), "FlipperF_L_1"),
-    "FlipperF_R_1": ((-0.190, -0.140, 0.135), (-0.235, 0.040, 0.092), "Chest"),
-    "FlipperF_R_2": ((-0.235, 0.040, 0.092), (-0.279, 0.220, 0.050), "FlipperF_R_1"),
-    "FlipperH_L_1": ((0.060, 0.850, 0.185), (0.081, 1.070, 0.158), "Spine_1"),
-    "FlipperH_L_2": ((0.081, 1.070, 0.158), (0.103, 1.290, 0.131), "FlipperH_L_1"),
-    "FlipperH_R_1": ((-0.060, 0.850, 0.185), (-0.081, 1.070, 0.158), "Spine_1"),
-    "FlipperH_R_2": ((-0.081, 1.070, 0.158), (-0.103, 1.290, 0.131), "FlipperH_R_1"),
 }
+
+
+def _flipper_bones():
+    """r2: each flipper chain runs down its blade's axis (root, 45 %, tip), so the bones follow the new paddles."""
+    for spec, chain in ((S.FLIPPERS[0], "FlipperF"), (S.FLIPPERS[1], "FlipperH")):
+        for side, sx in (("L", 1.0), ("R", -1.0)):
+            a = S._n(spec["axis"]) * np.array([sx, 1.0, 1.0])
+            r = np.asarray(spec["root"], float) * np.array([sx, 1.0, 1.0])
+            p0, p1, p2 = (tuple(r + a * spec["length"] * t) for t in (0.0, 0.45, 1.0))
+            parent = "Chest" if chain == "FlipperF" else "Spine_1"
+            BONES["%s_%s_1" % (chain, side)] = (p0, p1, parent)
+            BONES["%s_%s_2" % (chain, side)] = (p1, p2, "%s_%s_1" % (chain, side))
+
+
+_flipper_bones()
 
 
 def build_rig(scale, off=(0.0, 0.0, 0.0)):
@@ -345,6 +348,7 @@ def build_rig(scale, off=(0.0, 0.0, 0.0)):
     bpy.ops.object.mode_set(mode='EDIT')
     for bname, (head, tail, parent) in BONES.items():
         eb = arm.edit_bones.new(bname)
+        head, tail = S.bend([head, tail])                    # r2: the bones follow the arched rest pose
         eb.head = [(c + o) * scale for c, o in zip(head, off)]
         eb.tail = [(c + o) * scale for c, o in zip(tail, off)]
         eb.roll = 0.0
@@ -364,7 +368,7 @@ SPINE_BONES = [                             # (bone, the y where it rules, how f
     ("Spine_1", 0.570, 0.420),
     ("Tail", 0.965, 0.160),
 ]
-JAW_GATE = (-0.800, -0.940)
+JAW_GATE = (-1.030, -1.090)                 # r3: only the muzzle box out in front of the face plane
 
 
 def spine_weights(y):
@@ -379,10 +383,9 @@ def spine_weights(y):
     return {k: v / tot for k, v in w.items()}
 
 
-def jaw_weight(y, z):
-    """How much of the lower jaw (the chin and the lower muzzle under the mouth line) this vertex is."""
-    mz = float(S.mouth_z(y))
-    return float(S.ss(JAW_GATE[0], JAW_GATE[1], y)) * float(S.ss(0.002, 0.045, mz - z))
+def jaw_weight(x, y, z):
+    """How much of the lower jaw (the muzzle box under the painted mouth line) this vertex is."""
+    return float(S.ss(JAW_GATE[0], JAW_GATE[1], y)) * float(S.ss(0.002, 0.030, S.MOUTH_Z - z))
 
 
 def weights_for(tag, co, anchor):
@@ -392,7 +395,7 @@ def weights_for(tag, co, anchor):
     if part in ("body", "head") or part.startswith("whisk") or part == "eye":
         w = spine_weights(y)
         if part != "body":
-            jw = 0.0 if part == "eye" else jaw_weight(y, z)
+            jw = 0.0 if part == "eye" else jaw_weight(x, y, z)
             if jw > 1e-4:
                 w = {k: v * (1.0 - jw) for k, v in w.items()}
                 w["Jaw"] = jw

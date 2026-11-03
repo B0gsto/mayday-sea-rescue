@@ -22,6 +22,7 @@ local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local SettingsArt = UiImages.SettingsArt
 
 local CosmeticPicker = require(script.Parent:WaitForChild("CosmeticPicker"))
+local Glyph = require(script.Parent:WaitForChild("Glyph"))
 local Kit = script.Parent:WaitForChild("Kit")
 local Panel = require(Kit:WaitForChild("Panel"))
 local Style = require(Kit:WaitForChild("Style"))
@@ -108,7 +109,7 @@ local function art(parent: Instance, name: string, color: string)
 		img.Image = id
 		img.AnchorPoint = Vector2.new(0.5, 0.5)
 		img.Position = UDim2.fromScale(0.5, 0.5)
-		img.Size = UDim2.fromScale(0.68, 0.68)
+		img.Size = UDim2.fromScale(0.88, 0.88) -- the glyphs sit in a padded canvas: ~75% of the tile (in-game ADs, 2026-11-01)
 		img.Parent = tile
 	else
 		local letter = Style.label(tile, string.upper(string.sub(name, 1, 1)), 30)
@@ -117,8 +118,8 @@ local function art(parent: Instance, name: string, color: string)
 end
 
 local function section(parent: Instance, order: number, title: string): number
-	local l = Style.label(parent, string.upper(title), Theme.Text.small, true)
-	l.Size = UDim2.new(1, -8, 0, 34)
+	local l = Style.label(parent, string.upper(title), Theme.Text.body, true)
+	l.Size = UDim2.new(1, -8, 0, 36)
 	l.LayoutOrder = order
 	l.TextXAlignment = Enum.TextXAlignment.Left
 	return order + 1
@@ -151,27 +152,50 @@ local function rowLabel(parent: Instance, text: string, right: number): TextLabe
 	return l
 end
 
+-- `key`: a Comfort flag, or the switch's own state and handler (the Seasick-safe preset)
 local function toggleRow(
 	parent: Instance,
 	order: number,
-	key: string,
+	key: string | { on: boolean, onChange: (boolean) -> () },
 	artName: string,
 	color: string,
 	label: string
-)
+): (Frame, Toggle.Toggle)
 	local row = rowRoot(parent, order, 82)
 	local line = row:FindFirstChild("LabelLine", true) :: Frame
 	art(line, artName, color)
 	rowLabel(line, label, 150)
-	local t = Toggle.new(line, {
-		on = Comfort.get(key) == true,
-		onChange = function(on)
-			Comfort.set(key, on)
-		end,
-	})
+	local t = Toggle.new(
+		line,
+		if type(key) == "table"
+			then key
+			else {
+				on = Comfort.get(key) == true,
+				onChange = function(on)
+					Comfort.set(key, on)
+				end,
+			}
+	)
 	t.root.AnchorPoint = Vector2.new(1, 0.5)
 	t.root.Position = UDim2.new(1, -14, 0.5, 0)
-	return row
+	return row, t
+end
+
+-- a chunky white minus / plus on a slider end button: Glyph bars over an ink drop (text "-" read as a slot)
+local function sign(face: Frame, plus: boolean)
+	for i, colour in { Theme.Colors.ink, Color3.new(1, 1, 1) } do
+		local box = Instance.new("Frame")
+		box.BackgroundTransparency = 1
+		box.AnchorPoint = Vector2.new(0.5, 0.5)
+		box.Position = UDim2.new(0.5, 0, 0.5, if i == 1 then 3 else 0)
+		box.Size = UDim2.fromScale(0.78, 0.78)
+		box.Parent = face
+		Instance.new("UIAspectRatioConstraint").Parent = box
+		Glyph.bar(box, Vector2.new(0.84, 0.26), Vector2.new(0.5, 0.5), 0, colour, 0.3)
+		if plus then
+			Glyph.bar(box, Vector2.new(0.26, 0.84), Vector2.new(0.5, 0.5), 0, colour, 0.3)
+		end
+	end
 end
 
 local function sliderRow(
@@ -190,7 +214,7 @@ local function sliderRow(
 	local line = row:FindFirstChild("LabelLine", true) :: Frame
 	art(line, artName, color)
 	rowLabel(line, label, 110)
-	local value = Style.label(line, "", Theme.Text.body, true)
+	local value = Style.label(line, "", Theme.Text.heading, true)
 	value.AnchorPoint = Vector2.new(1, 0)
 	value.Position = UDim2.new(1, -16, 0, 0)
 	value.Size = UDim2.fromOffset(100, 70)
@@ -203,14 +227,15 @@ local function sliderRow(
 	strip.Size = UDim2.new(1, -92, 0, 56)
 	strip.Parent = (row:FindFirstChild("Row") :: Frame):FindFirstChild("Face")
 
-	local minus = Style.button(strip, UDim2.fromOffset(52, 52))
+	-- 56 du: a 39 pt tap target at the 0.7 phone floor
+	local minus = Style.button(strip, UDim2.fromOffset(56, 56))
 	local _, mFace = Style.block(minus, Style.grad("blue"), { lip = 4, radius = S.cornerSmall })
-	Style.label(mFace, "-", Theme.Text.heading)
-	local plus = Style.button(strip, UDim2.fromOffset(52, 52))
+	sign(mFace, false)
+	local plus = Style.button(strip, UDim2.fromOffset(56, 56))
 	plus.AnchorPoint = Vector2.new(1, 0)
 	plus.Position = UDim2.fromScale(1, 0)
 	local _, pFace = Style.block(plus, Style.grad("blue"), { lip = 4, radius = S.cornerSmall })
-	Style.label(pFace, "+", Theme.Text.heading)
+	sign(pFace, true)
 
 	local track = Instance.new("TextButton")
 	track.Name = "Track"
@@ -218,8 +243,8 @@ local function sliderRow(
 	track.AutoButtonColor = false
 	track.Selectable = false
 	track.BackgroundTransparency = 1
-	track.Position = UDim2.fromOffset(64, 0)
-	track.Size = UDim2.new(1, -128, 1, 0)
+	track.Position = UDim2.fromOffset(68, 0)
+	track.Size = UDim2.new(1, -136, 1, 0)
 	track.Parent = strip
 	local rail = Instance.new("Frame")
 	rail.AnchorPoint = Vector2.new(0, 0.5)
@@ -352,26 +377,26 @@ local function actionRow(
 	color: string,
 	label: string,
 	onTap: () -> ()
-): (Frame, ImageLabel)
+): Frame
 	local row = rowRoot(parent, order, 82)
 	local line = row:FindFirstChild("LabelLine", true) :: Frame
 	art(line, artName, color)
-	rowLabel(line, label, 70)
-	local hit = Style.button(row, UDim2.fromScale(1, 1))
-	hit.ZIndex = 3
-	Style.press(hit, onTap)
-	-- the kit's green tick (UiImages.VehicleArt.Check), shown while the row's preset is on
-	local mark = Instance.new("ImageLabel")
-	mark.Name = "Tick"
-	mark.AnchorPoint = Vector2.new(1, 0.5)
-	mark.Position = UDim2.new(1, -18, 0.5, 0)
-	mark.Size = UDim2.fromOffset(44, 44)
-	mark.BackgroundTransparency = 1
-	mark.Image = UiImages.VehicleArt.Check
-	mark.ScaleType = Enum.ScaleType.Fit
-	mark.Visible = false
-	mark.Parent = line
-	return row, mark
+	rowLabel(line, label, 150)
+	-- a chunky orange button with the row's glyph, the Toggle's size (AD 2026-11-01: the bare row read as a label)
+	local button = Style.button(line, UDim2.fromOffset(124, 64))
+	button.AnchorPoint = Vector2.new(1, 0.5)
+	button.Position = UDim2.new(1, -14, 0.5, 0)
+	local _, face = Style.block(button, Style.grad("orange"), { lip = 5, radius = S.cornerSmall })
+	local glyph = Instance.new("ImageLabel")
+	glyph.BackgroundTransparency = 1
+	glyph.AnchorPoint = Vector2.new(0.5, 0.5)
+	glyph.Position = UDim2.fromScale(0.5, 0.5)
+	glyph.Size = UDim2.fromOffset(48, 48)
+	glyph.Image = SettingsArt[artName] or ""
+	glyph.ScaleType = Enum.ScaleType.Fit
+	glyph.Parent = face
+	Style.press(button, onTap, S.cornerSmall)
+	return row
 end
 
 local mounted = false
@@ -385,6 +410,28 @@ function SettingsPanel.newPanel(canvas: Frame, onClose: () -> ())
 		onClose = onClose,
 	})
 	currentPanel = panel
+	-- the rows clear the title bar and the bottom edge and fade under both (in-game ADs 2026-11-01: hard cuts).
+	-- The fades follow the list's edges: Panel's padding changes on compact (phone) screens.
+	local listPad = panel.body:FindFirstChildOfClass("UIPadding") :: UIPadding
+	listPad.PaddingTop, listPad.PaddingBottom = UDim.new(0, 24), UDim.new(0, 40)
+	local inner = panel.body.Parent :: Frame
+	local innerPad = inner:FindFirstChildOfClass("UIPadding") :: UIPadding
+	local bottomFade = (inner.Parent :: Frame):FindFirstChild("Fade") :: Frame
+	local topFade = bottomFade:Clone()
+	topFade.Name = "FadeTop"
+	topFade.AnchorPoint = Vector2.zero
+	topFade.Size = UDim2.new(1, -S.border * 2 - 18, 0, 24)
+	topFade.BackgroundColor3 = Theme.Grad.body.top
+	local topGrad = topFade:FindFirstChildOfClass("UIGradient") :: UIGradient
+	topGrad.Transparency = NumberSequence.new(0, 1)
+	topFade.Parent = bottomFade.Parent
+	local function placeFades()
+		topFade.Position =
+			UDim2.fromOffset(S.border, inner.Position.Y.Offset + innerPad.PaddingTop.Offset)
+		bottomFade.Position = UDim2.new(0, S.border, 1, -innerPad.PaddingBottom.Offset)
+	end
+	placeFades()
+	innerPad:GetPropertyChangedSignal("PaddingBottom"):Connect(placeFades)
 	local order = 0
 	local paints: { () -> () } = {}
 	local extra: { () -> () } = {}
@@ -393,19 +440,33 @@ function SettingsPanel.newPanel(canvas: Frame, onClose: () -> ())
 
 	order = section(panel.body, order, "Comfort")
 	order += 1
-	local _, seasick = actionRow(panel.body, order, "waves", "teal", "Seasick-safe", function()
-		Comfort.setMany(SettingsRules.SEASICK)
-	end)
-	order += 1
-	actionRow(panel.body, order, "reset", "grey", "Reset", function()
+	local function resetComfort()
 		local d: { [string]: any } = {}
 		for _, k in SettingsRules.COMFORT_KEYS do
 			d[k] = (SettingsRules.Defaults :: any)[k]
 		end
 		Comfort.setMany(d)
-	end)
+	end
+	local function seasickOn(): boolean
+		return SettingsRules.isPreset(Comfort.all() :: any, SettingsRules.SEASICK)
+	end
+	-- the preset as a switch: on applies it, off goes back to the defaults
+	local _, seasick = toggleRow(panel.body, order, {
+		on = seasickOn(),
+		onChange = function(on: boolean)
+			if on then
+				Comfort.setMany(SettingsRules.SEASICK)
+			else
+				resetComfort()
+			end
+		end,
+	}, "waves", "teal", "Seasick-safe")
+	order += 1
+	actionRow(panel.body, order, "reset", "grey", "Reset", resetComfort)
 	table.insert(extra, function()
-		seasick.Visible = SettingsRules.isPreset(Comfort.all() :: any, SettingsRules.SEASICK)
+		if seasick.get() ~= seasickOn() then
+			seasick.set(seasickOn())
+		end
 	end)
 	order += 1
 	local _, p0 = sliderRow(

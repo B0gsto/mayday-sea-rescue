@@ -55,12 +55,14 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Buoyancy = require(Shared:WaitForChild("Boat"):WaitForChild("Buoyancy"))
 local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
+local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local Crowding = require(Shared:WaitForChild("Crowding"))
 local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
 local Helm = require(Shared:WaitForChild("Boat"):WaitForChild("Helm"))
 local NavLights = require(Shared:WaitForChild("Boat"):WaitForChild("NavLights"))
 local Nitro = require(Shared:WaitForChild("Boat"):WaitForChild("Nitro"))
 local PickupRingController = require(script.Parent.PickupRingController)
+local RiderPose = require(Shared:WaitForChild("Boat"):WaitForChild("RiderPose"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local TouchDriveController = require(script.Parent.TouchDriveController)
@@ -105,6 +107,7 @@ local launched: { [Model]: boolean } = setmetatable({}, { __mode = "k" }) :: any
 type ColdOpenState = { auto: boolean }
 local coldOpens: { [Model]: ColdOpenState } = setmetatable({}, { __mode = "k" }) :: any
 local unstick: { [Model]: Unstick.State } = setmetatable({}, { __mode = "k" }) :: any
+local hullBank: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any -- jet skis' eased visual bank
 
 -- CONTRACT: OceanController.GetVisualHeight(x, z) from stream A, if it exists.
 local ocean: any = nil
@@ -141,6 +144,25 @@ local function setVisualOffset(model: Model, offset: number, tilt: Vector2?)
 	end
 end
 
+-- A jet ski's visual bank into the turn (RiderPose.bank, rad, + = left side down), 0 for other craft. Only the
+-- VisualJoint rolls (Body, seat and rider are massless), so the Simulator's stabiliser and the capsize check on
+-- the physics root never see it.
+local function bankOf(model: Model, dt: number): number
+	local root = model.PrimaryPart
+	if not (root and VehicleConfig.isJetSki(model:GetAttribute("VehicleId"))) then
+		return 0
+	end
+	local b = RiderPose.bank(
+		hullBank[model] or 0,
+		root.AssemblyAngularVelocity:Dot(root.CFrame.UpVector),
+		root.AssemblyLinearVelocity:Dot(root.CFrame.LookVector),
+		if Comfort.reducedMotion() then 0.4 else 1,
+		dt
+	)
+	hullBank[model] = b
+	return b
+end
+
 local function snapRemote(model: Model, dt: number, now: number)
 	local root = model.PrimaryPart
 	local float1 = root and root:FindFirstChild("Float1")
@@ -172,7 +194,7 @@ local function snapRemote(model: Model, dt: number, now: number)
 	else
 		visualTilt[model] = nil
 	end
-	setVisualOffset(model, current, tilt)
+	setVisualOffset(model, current, tilt + Vector2.new(0, bankOf(model, dt)))
 end
 
 -- A hull touching a wall (quay, breakwater, beach, a moored boat): four short horizontal rays from
@@ -586,10 +608,11 @@ local function step(dt: number)
 		end
 	end
 	for model in nowSimulated do
-		if visualOffset[model] then
+		local bank = bankOf(model, dt)
+		if visualOffset[model] or bank ~= 0 then
 			visualOffset[model] = nil
 			visualTilt[model] = nil
-			setVisualOffset(model, 0) -- our own hull shows its true physics pose
+			setVisualOffset(model, 0, Vector2.new(0, bank)) -- our own hull: its physics pose (+ a jet ski's bank)
 		end
 	end
 	simulated = nowSimulated

@@ -106,12 +106,12 @@ local humConn: RBXScriptConnection? = nil
 type Movement = { walk: number, jump: number, jumpHeight: number }
 local savedMovement: Movement? = nil
 
--- A one-line card label shrinks to fit (down to 12) instead of cutting its word ("Rescu...").
+-- A one-line card label shrinks to fit (down to 20: 14 pt on a phone) instead of cutting its word ("Rescu...").
 local function fit(label: TextLabel, size: number)
 	label.TextScaled = true
 	local cap = Instance.new("UITextSizeConstraint")
 	cap.MaxTextSize = size
-	cap.MinTextSize = 12
+	cap.MinTextSize = 20
 	cap.Parent = label
 end
 
@@ -757,12 +757,12 @@ local function badgeRow(parent: GuiObject, st: Status): GuiObject?
 	else
 		Style.icon(mark, reason.icon)
 	end
-	local label = Style.label(row, reason.text, Theme.Text.small)
+	local label = Style.label(row, reason.text, Theme.Text.body)
 	label.TextWrapped = false
 	label.TextTruncate = Enum.TextTruncate.AtEnd
 	label.TextXAlignment = Enum.TextXAlignment.Left
 	label.Size = UDim2.new(1, if need then -62 else -32, 1, 0)
-	fit(label, Theme.Text.small)
+	fit(label, Theme.Text.body)
 	label.LayoutOrder = 1
 	if need and row:IsA("GuiButton") then
 		Style.press(row, function()
@@ -785,7 +785,7 @@ local function stars(parent: GuiObject, st: Status): Frame
 		star.BackgroundTransparency = 1
 		star.Image = if i <= st.level then UiImages.Badges.StarOn else UiImages.Badges.StarOff
 		star.ScaleType = Enum.ScaleType.Fit
-		star.Size = UDim2.fromOffset(24, 24)
+		star.Size = UDim2.fromOffset(28, 28)
 		star.Parent = row
 		star.LayoutOrder = i
 	end
@@ -908,9 +908,9 @@ local function refreshCards()
 			local y = 48
 			if item.kind == "Building" then
 				local row = stars(face, st)
-				row.Position = UDim2.fromOffset(98, 37)
-				row.Size = UDim2.new(1, -108, 0, 24)
-				y = 62 -- the badge row ends above the buy slot (SE: "Free" covered "Build")
+				row.Position = UDim2.fromOffset(98, 36)
+				row.Size = UDim2.new(1, -108, 0, 28)
+				y = 65 -- the badge row ends above the buy slot (SE: "Free" covered "Build")
 			end
 			local needs = if item.kind == "Building" and item.key == "HQ"
 				then hqNeeds(face)

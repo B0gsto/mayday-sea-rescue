@@ -1,5 +1,44 @@
 # M_Bld_HQAddons result (docs/25 A + J, 2026-10-27; passed art director Lv4 8.5, Lv5 8.5; walk-in stair fix after)
 
+## Round PERF-HQ r5 (2026-11-01, after AD r4 L3 9.0 / L4 8.8 / L5 9.1; unjudged)
+
+Leaves (Lv3 bay, Lv4 block) open 90 deg, square to the facade, clear of the windows; ridges (hall, bay, radio room) are stepped 2-stud white segments with 0.05 seams, a red stud each and red end caps (gables, both cupola sides); grey mortar course lines + staggered head joints (3 studs) on the hall's 4 walls and the Lv4 block front/east; plaque 13.3 x 4.15 red rim for the 12 x 3 sign, ATT_Sign_03 z 12.2 -> 12.5 (0, -20.59, 12.5); orange lifeboat on a grey wheeled trolley at x -12 (bow to the path, Lv3_Col16); mast legs 0.9, dish 6.75 across on a 2x2 grey bracket, pad 4.0; Lv5 tower windows 2.4 x 3.4 with the hall's frames, cross bars and studded sills. Palette cell 9 cyan -> orange (the chart sea uses glass blue): ALB regenerated, re-upload the texture.
+Tris Lv3 15,816, Lv4 10,794, Lv5 7,931; LOD0 34,541, LOD1 14,579 (LOD1 share scaled x0.845 to fit 15k), LOD2 8,626 (waived). Validate PASS (846, 0 failed), zfight 0 left (3 faces moved); FBX + turntable done.
+
+## Round PERF-HQ r4 (2026-11-01, after AD r3 L3 8.9 / L4 8.4 / L5 9.0; unjudged)
+
+Lv4: a walk-in front block before the radio wing, footprint x 26.9..43.2, y -15.4..-3.0 (above z 14.5 the back stops at -3.45, the west face steps to 27.6 above the eave, clear of the hall gable at 27.5 and 0.5 off the Lv5 stair at 43.72): 15 red/white courses to 18.0, studded navy deck, red/white chequer parapet + red cap (19.65), deep-red portal 6.4 x 8.1 at x 32.2..38.6 with red leaves swung 115 deg out, radio-wave plaque, 4 inset windows, open through to the wing door; COL Lv4_Col14..23. Grey 4.5 parabolic dish (dark rim, 3-strut feed horn) at z 27; red studded canopy porch on 2 white posts over the station door. Lv3: boathouse leaves swung 115 deg out from the portal, red kneelers under the gable overhang, cross ridge cap widened + red studs (the "white rod"), main ridge cap 1.2 high, roof studs 1.3x. Lv5: gold/red crest roundel over the bay lifebuoy, red/white band under the gallery, red cap band at the tower base, red 2-rise brick stringers on the stair and landing.
+Tris Lv3 11,724, Lv4 10,100, Lv5 7,811; LOD0 29,635, LOD1 14,812, LOD2 7,400. Validate PASS (841, 0 failed), zfight 0 left (3 faces moved); FBX + turntable done.
+
+## Round PERF-HQ r3 (2026-11-01, after AD r2 L3 9.2 / L4 8.7 / L5 9.2; unjudged)
+
+Lv4: a one-storey radio room on the wing roof west of the mast (x 28.8..33.6, y 0.4..8.4, 15.05..20.05: red/white courses, red pilasters, framed inset window band facing the path + one on the -X end, stepped red studded roof, white red-studded ridge cap, top 22.8, one COL box), clear of the Lv5 fences/landing/bridge; mast legs 0.6, 14 bands of ~2 studs. Lv3: red ball finial on a short gold spike (weathervane gone), back-wall red pilasters at x +/-4.5/13.5. Lv5: brown riser plates under tan nosings, red stud-capped handrail posts every 2 treads (step sizes, COL unchanged).
+Tris Lv3 11,612, Lv4 6,572, Lv5 6,039; LOD0 24,223, LOD1 12,106, LOD2 6,046. Validate PASS (791, 0 failed), zfight 0 left; FBX + turntable done.
+
+## Round PERF-HQ r2 (2026-11-01, after AD r1 8.2; unjudged)
+
+Lv3: 3 mirror windows on the solid +X front half (x 9/15/21, pane on the face, wall solid inside), red 1x2 brick pilasters (4 corners, front x +/-12/18, -X end y +/-4, +X end y -11.5/12), red boathouse leaves flat on the bay side walls (|x| 5.55..6.0, white rails + Z-brace, dark seams, no COL), a ridge lookout cupola at x 5.7..10.3 (glass, red stepped roof, gold weathervane, top 36.6).
+Lv4: mast 30.5 -> 44 (9 red/white bands), red/white warning-light cap, dish 6.5 across at z 26, red/white block band on the front parapet. Tris Lv3 11,364, Lv4 5,160, Lv5 5,651; LOD0 22,175, LOD1 11,080, LOD2 5,534. Validate PASS, zfight 0 left.
+
+## Round PERF-HQ r1: Lv3 station (2026-11-01, unjudged)
+
+The code `station()` shell as Lv3_* meshes (white courses, red base, grey stud plinth, white eave, blue gable,
+windows on the code spots): L01_Base 1,170, L02_Walls 1,938, L03_Trim 1,444, L04_Front 1,120, L05_Roof 4,034 = 9,706
+tris. New: inset 4 x 5 windows (glass 0.3 behind a navy frame, red studded sill; the +X y 0/8 pair flush behind the
+wing), stepped-tile roof with stud rows and a red-studded white ridge cap, and a path-facing entrance bay: deep-red
+portal round the 10 x 9 door (leaves open inside the bay, no COL), framed plaque, crow-stepped white cross gable with
+red copings, lifebuoy roundel and a short flag mast. ATT_Sign_03 (0, -20.59, 12.2) added. COL: Lv3_Col01..15.
+Budget now hero_building (LOD shares kept by patch_lod_targets; LOD2/texture sets waived); palette cell 5 = deep red.
+
+PERF-HQ r1: Lv4/Lv5 (unjudged). Lv4: a deep-red portal (0.8 jambs, lintel, red keystone) round the open door, a
+red-framed white plaque on a grey ledge above it (the signal icon moved onto it), every window a proud navy frame
+with the glass 0.3 behind it, a white mullion and a red studded sill; mast legs 0.36, a 5.2-wide white dish with a
+red rim and feed facing the path at z 23.5. Lv5: the same portal on the tower door, 1.8-wide inset windows with
+sills, gold tile studs on the lantern eave, red studs on each roof step, a gold plate / spike / ball finial (top
+50.55). Footprints, ATT_*, COL, stair and bridge unchanged. Lv4 4,612 tris, Lv5 5,651; LOD0 19,973 (40k), LOD1
+9,982, LOD2 4,982. Validate PASS, zfight 0 left.
+
+
 Validate PASS (596 checks, 0 failed, 120 waived: gameplay node/layer naming, flat-palette LOD UV layout). LOD0 7,895
 tris / 12 visual meshes (budget 8,000): Lv4 3,914 (Base 396, Walls 682, Trim 620, Interior 624, Roof 616, Mast 976),
 Lv5 3,981 (Base 332, Tower 534, Trim 1,959, Balcony 664, Lantern 464, Beacon 28); LOD1 3,946, LOD2 1,966; COL 60
@@ -66,3 +105,19 @@ here) predates the stair (not re-rendered).
 Open: wired in game (DockPieces `hq()` via `addonMesh`, the code mast / gold ball only when the mesh is missing), not
 playtested since the stair: walk an R15 up the 1.04 steps, onto the cap and across the bridge into the tower. The
 station's side windows at y 0 and 8 sit behind the wing (accepted). LOD1/LOD2 are 50%/25% of LOD0.
+
+## Round 6 (2026-11-01, Blender MCP): L4 8.8 -> 9.1, set 9.22 PASS
+
+AD (3 fresh Opus judges, r6_ad_prompt.txt, BoardKit r4 anchor): set 9.22 / 9.24 / 9.14 -> **9.22**; levels L1 9.2,
+L2 9.3, L3 9.3, L4 9.1, L5 9.1; all 3 judges r6 > r5.
+- L4 (build.py): front block one storey taller (15 -> 22 courses, top 26.12, second navy band + 3 windows, walk-in
+  ceiling slab kept at 18.0); radio room moved onto the block roof; dish up to z 35.5; mast legs 0.9 -> 1.3, wider
+  taper, thicker rungs/braces, bigger light cap, 5 x 5 pad. Colliders follow. No ATT moved, no code change.
+- Lv3 lifeboat pulled back 1.4 studs on a shorter trolley (front y -24.27 -> -22.85); the full 2 would hit the
+  x -12 pilaster.
+- LOD0 35,373 / LOD1 14,583 / LOD2 8,832; validate PASS; zfight 0 visible on LOD0/1/2 (LODs fixed after decimation).
+- Uploaded HQAddons LOD0 97972408661195, LOD1 125702385795929, LOD2 123214260392926 (texture unchanged); check.sh
+  ALL CHECKS PASSED (828). Not published; not seen in Studio (Studio stopped).
+- Open: L5 lead over L4 shrank (raise the L5 tower / cap the L4 mast below the lantern); L4 dish reads flat;
+  wing plaque small. Note: zfight_check.check() resets Blender to factory settings (kills the MCP add-on): in the
+  MCP use collect()/analyse() on imported objects instead.

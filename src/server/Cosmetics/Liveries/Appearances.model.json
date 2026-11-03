@@ -163,6 +163,27 @@
      ]
     }
    ]
+  },
+  {
+   "Name": "M_Veh_RescueHeli",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Lego",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://134063939343985",
+        "RoughnessMap": "rbxassetid://77394710200809",
+        "MetalnessMap": "rbxassetid://82741558542658"
+       }
+      }
+     ]
+    }
+   ]
   }
  ]
 }

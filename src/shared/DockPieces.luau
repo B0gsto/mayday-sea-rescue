@@ -570,10 +570,20 @@ end
 -- / Lv3 salvage dock (M_Bld_SubPenAddons) and the Boathouse's Lv3 quick-launch bay (M_Bld_BoathouseAddons): meshes Lv<l>_L<nn>_*
 -- and Lv<l>_COL authored in the yard's final (scaled) frame round its ground centre, so they stay 1x (KEEP_1X
 -- `name`). False when the level is 1 or the mesh is not loaded (the Lv1 yard stands alone, everything included).
-local function addonMesh(m: Model, at: CFrame, n: number, asset: string, name: string): boolean
-	local src = if n >= 2 and DockPieces.meshes then DockPieces.meshes(asset) else nil
+-- `lv1`: the asset also carries Lv1_* meshes, so it loads at level 1 too (the caller checks for them and keeps its
+-- code Parts as the fallback).
+local function addonMesh(
+	m: Model,
+	at: CFrame,
+	n: number,
+	asset: string,
+	name: string,
+	lv1: boolean?
+): boolean
+	local want = n >= 2 or lv1 == true
+	local src = if want and DockPieces.meshes then DockPieces.meshes(asset) else nil
 	if not src then
-		if n >= 2 and DockPieces.meshes then
+		if want and DockPieces.meshes then
 			m:SetAttribute("MissingMesh", asset) -- DockService rebuilds it once the mesh loads
 		end
 		return false
@@ -776,122 +786,141 @@ end
 
 -- the station on its lot (door toward the spawn): the island's Lego town hall. A stud plinth, white walls on a
 -- red base course, a window row, a blue stud roof behind a white parapet, a door in the owner's colour under a
--- sign; the lit front (neon stripes, floodlights), a beacon on the roof, light strips down the jetty
-local function station(m: Model, b: CFrame)
+-- sign; the lit front (neon stripes, floodlights), a beacon on the roof, light strips down the jetty. `shell` = the
+-- Lv3 mesh (M_Bld_HQAddons Lv3_*): it is the walls, roof and door, so only the sign (the level's name), lights and
+-- beacon stay code
+local function station(m: Model, b: CFrame, shell: Model?, level: number?)
 	local S = b * DockConfig.Buildings.HQ.spot -- -Z = the front
 	local hw, hd, h = ST.hw, ST.hd, ST.h
 	local door = 5
-	plinth(m, Vector3.new(hw * 2 + 4, 0.5, hd * 2 + 4), S * CFrame.new(0, 0.25, 0))
-	brick(m, "Wall", Vector3.new(hw * 2, h, 0.8), S * CFrame.new(0, h / 2, hd), WHITE)
-	for _, x in { -hw, hw } do
-		brick(m, "Wall", Vector3.new(0.8, h, hd * 2), S * CFrame.new(x, h / 2, 0), WHITE)
-	end
-	for _, side in { -1, 1 } do
+	local plaque = shell and shell:FindFirstChild("ATT_Sign_03", true)
+	if shell then
+		sign(
+			m,
+			Vector3.new(12, 3, 0.4),
+			if plaque and plaque:IsA("Attachment")
+				then CFrame.new(plaque.WorldPosition) * S.Rotation
+				else S * CFrame.new(0, 10.6, -hd - 0.65),
+			BRICK_WHITE,
+			DockConfig.Buildings.HQ.levels[level or 3].name or "Station",
+			UiImages.Kit.lifebuoy
+		)
+	else
+		plinth(m, Vector3.new(hw * 2 + 4, 0.5, hd * 2 + 4), S * CFrame.new(0, 0.25, 0))
+		brick(m, "Wall", Vector3.new(hw * 2, h, 0.8), S * CFrame.new(0, h / 2, hd), WHITE)
+		for _, x in { -hw, hw } do
+			brick(m, "Wall", Vector3.new(0.8, h, hd * 2), S * CFrame.new(x, h / 2, 0), WHITE)
+		end
+		for _, side in { -1, 1 } do
+			brick(
+				m,
+				"StationFront",
+				Vector3.new(hw - door, h, 0.8),
+				S * CFrame.new(side * (hw + door) / 2, h / 2, -hd),
+				WHITE
+			)
+		end
 		brick(
 			m,
 			"StationFront",
-			Vector3.new(hw - door, h, 0.8),
-			S * CFrame.new(side * (hw + door) / 2, h / 2, -hd),
+			Vector3.new(door * 2, h - 9, 0.8),
+			S * CFrame.new(0, 9 + (h - 9) / 2, -hd),
 			WHITE
 		)
-	end
-	brick(
-		m,
-		"StationFront",
-		Vector3.new(door * 2, h - 9, 0.8),
-		S * CFrame.new(0, 9 + (h - 9) / 2, -hd),
-		WHITE
-	)
-	brick(
-		m,
-		"Flag",
-		Vector3.new(door * 2 - 1, 8.5, 0.3),
-		S * CFrame.new(0, 4.75, -hd + 0.3),
-		BRICK_RED
-	).CanCollide =
-		false -- the door: walk-in (docs/25 J), it never blocks the doorway
-	-- the red base course round the walls (a gap for the door)
-	brick(
-		m,
-		"BaseCourse",
-		Vector3.new(hw * 2 + 0.6, 1.6, 0.4),
-		S * CFrame.new(0, 1.3, hd + 0.5),
-		BRICK_RED
-	)
-	for _, x in { -1, 1 } do
+		brick(
+			m,
+			"Flag",
+			Vector3.new(door * 2 - 1, 8.5, 0.3),
+			S * CFrame.new(0, 4.75, -hd + 0.3),
+			BRICK_RED
+		).CanCollide =
+			false -- the door: walk-in (docs/25 J), it never blocks the doorway
+		-- the red base course round the walls (a gap for the door)
 		brick(
 			m,
 			"BaseCourse",
-			Vector3.new(0.4, 1.6, hd * 2 + 0.6),
-			S * CFrame.new(x * (hw + 0.5), 1.3, 0),
+			Vector3.new(hw * 2 + 0.6, 1.6, 0.4),
+			S * CFrame.new(0, 1.3, hd + 0.5),
 			BRICK_RED
 		)
-		brick(
-			m,
-			"BaseCourse",
-			Vector3.new(hw - door - 0.4, 1.6, 0.4),
-			S * CFrame.new(x * (hw + door + 0.6) / 2, 1.3, -hd - 0.5),
-			BRICK_RED
-		)
-	end
-	-- windows: the front right of the door (the trophy hall is on its left), both sides and the back
-	for _, x in { 9, 15, 21 } do
-		window(m, S * CFrame.new(x, 7, -hd - 0.4), 4, 5)
-	end
-	for _, x in { -1, 1 } do
-		for _, z in { -8, 0, 8 } do
-			window(
+		for _, x in { -1, 1 } do
+			brick(
 				m,
-				S * CFrame.new(x * (hw + 0.4), 7, z) * CFrame.Angles(0, -x * math.pi / 2, 0),
-				4,
-				5
+				"BaseCourse",
+				Vector3.new(0.4, 1.6, hd * 2 + 0.6),
+				S * CFrame.new(x * (hw + 0.5), 1.3, 0),
+				BRICK_RED
+			)
+			brick(
+				m,
+				"BaseCourse",
+				Vector3.new(hw - door - 0.4, 1.6, 0.4),
+				S * CFrame.new(x * (hw + door + 0.6) / 2, 1.3, -hd - 0.5),
+				BRICK_RED
 			)
 		end
+		-- windows: the front right of the door (the trophy hall is on its left), both sides and the back
+		for _, x in { 9, 15, 21 } do
+			window(m, S * CFrame.new(x, 7, -hd - 0.4), 4, 5)
+		end
+		for _, x in { -1, 1 } do
+			for _, z in { -8, 0, 8 } do
+				window(
+					m,
+					S * CFrame.new(x * (hw + 0.4), 7, z) * CFrame.Angles(0, -x * math.pi / 2, 0),
+					4,
+					5
+				)
+			end
+		end
+		for _, x in { -18, -9, 0, 9, 18 } do
+			window(m, S * CFrame.new(x, 7, hd + 0.4) * CFrame.Angles(0, math.pi, 0), 4, 5)
+		end
+		-- a white eave course and a blue slope-brick roof, ridge along the long side
+		brick(
+			m,
+			"Course",
+			Vector3.new(hw * 2 + 0.6, 1, hd * 2 + 0.6),
+			S * CFrame.new(0, h - 0.5, 0),
+			BRICK_WHITE
+		)
+		gable(
+			m,
+			S * CFrame.new(0, h, 0) * CFrame.Angles(0, math.pi / 2, 0),
+			hd * 2 + 3,
+			hw * 2 + 3,
+			9,
+			BRICK_BLUE
+		)
+		sign(
+			m,
+			Vector3.new(10, 2.4, 0.4),
+			S * CFrame.new(0, 10.6, -hd - 0.65),
+			BRICK_WHITE,
+			"Station",
+			UiImages.Kit.lifebuoy
+		)
+		part(
+			m,
+			"Stripe",
+			Vector3.new(hw * 2, 0.8, 0.3),
+			S * CFrame.new(0, h - 2.5, -hd - 0.5),
+			ORANGE,
+			M.Neon
+		)
+		part(
+			m,
+			"Stripe",
+			Vector3.new(hw * 2, 0.4, 0.3),
+			S * CFrame.new(0, h - 1.2, -hd - 0.5),
+			Color3.fromRGB(40, 90, 200),
+			M.Neon
+		)
 	end
-	for _, x in { -18, -9, 0, 9, 18 } do
-		window(m, S * CFrame.new(x, 7, hd + 0.4) * CFrame.Angles(0, math.pi, 0), 4, 5)
-	end
-	-- a white eave course and a blue slope-brick roof, ridge along the long side
-	brick(
-		m,
-		"Course",
-		Vector3.new(hw * 2 + 0.6, 1, hd * 2 + 0.6),
-		S * CFrame.new(0, h - 0.5, 0),
-		BRICK_WHITE
-	)
-	gable(
-		m,
-		S * CFrame.new(0, h, 0) * CFrame.Angles(0, math.pi / 2, 0),
-		hd * 2 + 3,
-		hw * 2 + 3,
-		9,
-		BRICK_BLUE
-	)
-	sign(
-		m,
-		Vector3.new(10, 2.4, 0.4),
-		S * CFrame.new(0, 10.6, -hd - 0.65),
-		BRICK_WHITE,
-		"Station",
-		UiImages.Kit.lifebuoy
-	)
-	part(
-		m,
-		"Stripe",
-		Vector3.new(hw * 2, 0.8, 0.3),
-		S * CFrame.new(0, h - 2.5, -hd - 0.5),
-		ORANGE,
-		M.Neon
-	)
-	part(
-		m,
-		"Stripe",
-		Vector3.new(hw * 2, 0.4, 0.3),
-		S * CFrame.new(0, h - 1.2, -hd - 0.5),
-		Color3.fromRGB(40, 90, 200),
-		M.Neon
-	)
-	for _, x in { -hw + 2, -door - 1.5, door + 1.5, hw - 2 } do
+	local floods: { number } = if shell
+		then { -hw + 2, hw - 2 }
+		else { -hw + 2, -door - 1.5, door + 1.5, hw - 2 }
+	for _, x in floods do
 		local flood = part(
 			m,
 			"Floodlight",
@@ -2515,9 +2544,23 @@ end
 local function fishMarket(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.FishShed
 	local at = b * def.spot
-	-- Lv2 flank stalls, Lv3 smokehouse at the back (M_Bld_FishMarketAddons); the smokehouse stands on the drying rack
-	local smokehouse = addonMesh(m, at, level or 1, "M_Bld_FishMarketAddons", "FishMarketMesh")
-		and (level or 1) >= 3
+	-- Lv1 booths/walls/props, Lv2 front-corner stalls + gate arch, Lv3 smokehouse at the back (M_Bld_FishMarketAddons); the
+	-- smokehouse (back centre) replaces the drying rack, flag mast and island canopy (Lv1_L06_*). With the Lv1 mesh (it carries the walkway) the code keeps only the plinth, rock, the
+	-- name sign (on the right booth's roof board) and each Counter (the shop act) hidden inside the mesh counter.
+	local loaded = addonMesh(m, at, level or 1, "M_Bld_FishMarketAddons", "FishMarketMesh", true)
+	local smokehouse = loaded and (level or 1) >= 3
+	local mesh = if loaded then m:FindFirstChild("FishMarketMesh") else nil
+	local lv1 = mesh ~= nil and mesh:FindFirstChild("Lv1_L02_Counters", true) ~= nil -- an older upload has no Lv1
+	if mesh and smokehouse then -- the Lv1 drying rack gives way to the smokehouse
+		for _, p in mesh:GetDescendants() do
+			if
+				p:IsA("BasePart")
+				and (string.match(p.Name, "^Lv1_L06_") or string.match(p.Name, "^Lv1_RackCol"))
+			then
+				p:Destroy()
+			end
+		end
+	end
 	local w, d = yardSize(def)
 	local spec = HUTS.FishShed
 	local front = -d / 2
@@ -2525,6 +2568,18 @@ local function fishMarket(m: Model, b: CFrame, level: number?)
 	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
 	for k, x in { -w / 4 - 1, w / 4 + 1 } do
 		local s = at * CFrame.new(x, 0, front + 5)
+		if lv1 then -- inside the mesh counter (its faces all hidden): keeps the shop act and the collision
+			local c = brick(
+				m,
+				"Counter",
+				Vector3.new(6.26, 2.35, 2.52),
+				s * CFrame.new(0, 1.175, 0),
+				BRICK_WHITE
+			)
+			c.CastShadow = false
+			c:SetAttribute("BuildY", 2) -- rises with the mesh counters (Lv1_L02)
+			continue
+		end
 		studTop(
 			brick(m, "Counter", Vector3.new(6.4, 2.4, 2.6), s * CFrame.new(0, 1.2, 0), BRICK_WHITE)
 		)
@@ -2541,6 +2596,22 @@ local function fishMarket(m: Model, b: CFrame, level: number?)
 			)
 		end
 		crate(m, s * CFrame.new(-1.4, 0, 2.6), BRICK_WHITE)
+	end
+	if lv1 then
+		local k = def.scale or 1 -- the mesh's ATT_Sign_01, in the market's 1x frame
+		local board = sign(
+			m,
+			Vector3.new(12.08, 4.49, 0.4) / k,
+			at * CFrame.new(Vector3.new(-11.15, 13.0, -8.0) / k),
+			BRICK_WHITE,
+			def.name,
+			spec.icon
+		)
+		board:SetAttribute("BuildY", 4) -- rises with the mesh roofs (Lv1_L04), not floating from the start
+		-- the mesh carries the tiled walkway and plaza (no code yardPath) and its own yard stock; the Lv2 stalls stand
+		-- in the front corners, where yardClutter's crates went
+		rock(m, at * CFrame.new(w / 2 + 5, 0, d / 2 + 4))
+		return
 	end
 	-- crates of fish and a barrel between the stalls
 	crate(m, at * CFrame.new(0, 0, front + 6), BRICK_ORANGE)
@@ -3243,9 +3314,72 @@ function DockPieces.streets(b: CFrame): Model
 	return m
 end
 
+-- The Lego commons kit (M_Prop_CommonsKit, art/source/props/M_Prop_CommonsKit/SPEC.md): each { mesh, slot, frame }
+-- puts a copy of that kit mesh at frame * ATT_<slot>:Inverse(), into a "CommonsKit" model in m, and hides m's code
+-- Parts (they stay as the colliders, seats and anchors). False, and nothing changes, while the kit has no asset id,
+-- didn't load or lacks one of the meshes.
+local function commonsKit(m: Model, place: { { any } }): boolean
+	local kit = AssetIds.Models.M_Prop_CommonsKit
+		and DockPieces.meshes
+		and DockPieces.meshes("M_Prop_CommonsKit")
+	if not kit then
+		return false
+	end
+	for _, e in place do -- all or nothing: a missing mesh keeps the whole prop on its code Parts
+		local src = kit:FindFirstChild(e[1], true)
+		if not (src and src:IsA("BasePart")) then
+			kit:Destroy()
+			return false
+		end
+	end
+	for _, p in m:GetDescendants() do
+		if p:IsA("BasePart") then
+			p.Transparency, p.CastShadow = 1, false
+			local studs = p:FindFirstChild("Studs")
+			if studs then
+				studs:Destroy()
+			end
+		end
+	end
+	local pivot, atts = kit:GetPivot(), AssetIds.Attachments.M_Prop_CommonsKit
+	local out = Instance.new("Model")
+	out.Name = "CommonsKit"
+	for _, e in place do
+		local src = kit:FindFirstChild(e[1], true) :: BasePart
+		local p = src:Clone()
+		p.CFrame = e[3] * CFrame.new(-atts["ATT_" .. e[2]]) * pivot:ToObjectSpace(src.CFrame)
+		p.Anchored = true
+		p.CanCollide, p.CanQuery, p.CanTouch = false, false, false
+		local glow, water, cloth =
+			string.find(p.Name, "Glow$"), p.Name == "D06_FountainWater", p.Name == "D04_FlagCloth"
+		if glow or water or cloth then -- untextured, so Material / Color show (the hidden code bulbs keep NightLamp)
+			for _, c in p:GetChildren() do
+				if c:IsA("SurfaceAppearance") or c.Name == "SurfaceVariants" then
+					c:Destroy()
+				end
+			end
+			if p:IsA("MeshPart") then
+				p.TextureID = ""
+			end
+		end
+		if glow then
+			p.Material, p.Color = M.Neon, WARM
+		elseif water then -- as the code Water
+			p.Material, p.Color, p.Transparency = M.Glass, Color3.fromRGB(80, 190, 255), 0.3
+		elseif cloth then
+			p.Name, p.Material = "Flag", M.Fabric -- DockService paints "Flag"s the owner's colour; the emblem stays white
+		end
+		p.Parent = out
+	end
+	kit:Destroy()
+	out.Parent = m
+	return true
+end
+
 -- The idle crew's commons behind the HQ (shared/Hangout, owner 2026-10-29), placeholder Lego props that arrive with the
 -- streets: a walk-in canteen hut (table, four stools, a soup counter), a campfire between two log benches, two park
--- benches, a hammock and an ice-cream cart. Front = each prop's -Z; heights match Hangout's seats.
+-- benches, a hammock and an ice-cream cart. Front = each prop's -Z; heights match Hangout's seats. The Lego commons
+-- kit dresses them when loaded (commonsKit).
 function DockPieces.hangout(b: CFrame): Model
 	local m = Instance.new("Model")
 	m.Name = "Hangout"
@@ -3511,6 +3645,23 @@ function DockPieces.hangout(b: CFrame): Model
 			Enum.PartType.Ball
 		)
 	end
+	local function fr(key: string): CFrame
+		return Hangout.frame(b, key)
+	end
+	commonsKit(m, {
+		{ "H01_Canteen", "Canteen", c },
+		{ "H02_Campfire", "Campfire", f },
+		{ "H02_CampfireGlow", "Campfire", f },
+		{ "H04_ParkBench", "Bench", fr("BenchA") },
+		{ "H04_ParkBench", "Bench", fr("BenchB") },
+		{ "H05_BenchPatio", "Bench", fr("BenchA") }, -- one patio under both benches
+		{ "H05_BenchPatioGlow", "Bench", fr("BenchA") },
+		{ "H06_Hammock", "Hammock", h },
+		{ "H07_IceCart", "Cart", k },
+		{ "H08_ChatEast", "ChatEast", fr("ChatEast") },
+		{ "H09_ChatWest", "ChatWest", fr("ChatWest") },
+		{ "H09_ChatWestGlow", "ChatWest", fr("ChatWest") },
+	})
 	for _, d in m:GetDescendants() do
 		if d:IsA("BasePart") then
 			d.CanTouch = false
@@ -3645,23 +3796,24 @@ local function hqMesh(m: Model, b: CFrame, n: number): boolean
 	return true
 end
 
--- HQ levels: the Rescue Hut / Post mesh at Lv1/2 (a Lego hut until it loads), today's station from Lv3, then the
--- add-ons on the station's -X side (M_Bld_HQAddons, built in the HQ spot's frame at 1x): the Lv4 walk-in radio wing
--- + lattice mast and the Lv5 beacon tower + bridge (Lv5_L05_Beacon: WorkerController's night lamp). Mesh missing: a
+-- HQ levels: the Rescue Hut / Post mesh at Lv1/2 (a Lego hut until it loads), the station from Lv3 (its walls,
+-- roof and door are M_Bld_HQAddons Lv3_*, code Parts until it loads), then the add-ons on the station's -X side
+-- (M_Bld_HQAddons, built in the HQ spot's frame at 1x): the Lv4 walk-in radio wing + lattice mast and the Lv5 beacon tower + bridge (Lv5_L05_Beacon: WorkerController's night lamp). Mesh missing: a
 -- radio mast at Lv4 and the gold beacon at Lv5.
 local function hq(m: Model, b: CFrame, level: number?)
 	local n = level or 1
+	local S = b * DockConfig.Buildings.HQ.spot
+	local mesh = n >= 3 and addonMesh(m, S, n, "M_Bld_HQAddons", "HQMesh")
 	if n >= 3 then
-		station(m, b)
-		stationInterior(m, b * DockConfig.Buildings.HQ.spot, n)
+		station(m, b, if mesh then m:FindFirstChild("HQMesh") :: Model else nil, n)
+		stationInterior(m, S, n)
 	elseif not hqMesh(m, b, n) then
 		hut(m, b, "HQ")
 	end
-	local S = b * DockConfig.Buildings.HQ.spot
 	if n < 4 then
 		return
 	end
-	if addonMesh(m, S, n, "M_Bld_HQAddons", "HQMesh") then
+	if mesh then
 		if n >= 5 then -- the Lv5 beacon tower is the HQ's light now: the station's ridge beacon goes (no two beacons)
 			for _, name in { "BeaconMast", "BeaconBase", "Beacon" } do
 				local p = m:FindFirstChild(name)
@@ -3835,8 +3987,8 @@ end
 
 -- docs/27 sea plates (RingLayout.SeaPlates): a studded tan Lego deck on 2 x 3 round-brick pillars off the island's
 -- front edge, red/white rim bricks on its three sea sides, bollards and two lamps along the outer edge and a gangway
--- plank over the beach step to the island wing. Placeholder Parts until the Blender kit lands. Every part carries
--- BuildY (ConstructionController's layered rise): the submerged shafts (1) and the two pillar courses above the
+-- plank over the beach step to the island wing. The Lego kit (M_Prop_SeaPlateKit) dresses it when loaded; these
+-- Parts are the fallback. Every part carries BuildY (ConstructionController's layered rise): the submerged shafts (1) and the two pillar courses above the
 -- water (2, 3) rise with the build's progress; the deck and the rest (PLATE_TOP) wait for the finish, where the
 -- plate_drop beat lowers the deck. The Ramp Wharf adds the jump ramp (RingLayout.RAMP: a low-friction wedge, its
 -- invisible RampLip at the top edge) and the teal brick (docs/27 seed 1; DockService binds its prompt); the Freight
@@ -4009,6 +4161,54 @@ local function seaPlate(m: Model, b: CFrame, key: string)
 		a.Name = "ATT_BargeMoor"
 		a.CFrame = CFrame.new(10, sea, -d / 2 - 9.5) * CFrame.Angles(0, -math.pi / 2, 0) -- the barge is 15.8 wide
 		a.Parent = marks
+	end
+	-- the Lego kit (M_Prop_SeaPlateKit: this plate's L01-L07 / L08-L14 round ATT_RampWharf / ATT_FreightWharf, the
+	-- plate frame C): the code Parts above stay as invisible colliders and physics (the teal brick stays visible,
+	-- DockService binds its prompt); no kit keeps them as they are
+	local kit = DockPieces.meshes and DockPieces.meshes("M_Prop_SeaPlateKit")
+	if kit then
+		for _, p in m:GetDescendants() do
+			if p:IsA("BasePart") and p.Name ~= "TealBrick" then
+				p.Transparency, p.CastShadow = 1, false
+				for _, t in p:GetChildren() do -- path() leaves its Texture unnamed
+					if t:IsA("Texture") or t.Name == "Studs" then
+						t:Destroy()
+					end
+				end
+			end
+		end
+		local ramp = key == "SeaPlate1"
+		local first = if ramp then 1 else 8
+		local atts = AssetIds.Attachments.M_Prop_SeaPlateKit
+		kit:PivotTo(C * CFrame.new(-(if ramp then atts.ATT_RampWharf else atts.ATT_FreightWharf)))
+		for _, p in kit:GetDescendants() do
+			if not p:IsA("BasePart") then
+				continue
+			end
+			local k = (tonumber(string.match(p.Name, "^L(%d%d)_")) or 0) - first + 1 -- 1-7 within this plate
+			if k < 1 or k > 7 then
+				p:Destroy() -- the other plate's modules and the Col01_COL token
+				continue
+			end
+			p.Anchored = true
+			-- the props (crates, kiosk, tower, containers) and the cargo crane are solid; the deck, courses and the
+			-- jump ramp leave it to the invisible code Parts
+			local solid = k == 5 or (k == 7 and not ramp)
+			p.CanCollide, p.CanQuery, p.CanTouch = solid, solid, false
+			if k <= 3 then
+				p:SetAttribute("BuildY", k) -- shafts, low course, high course
+			elseif k == 6 then -- lamp heads glow (the hidden code bulbs keep their NightLamp lights)
+				local sa = p:FindFirstChildWhichIsA("SurfaceAppearance")
+				if sa then
+					sa:Destroy()
+				end
+				p.Material, p.Color = M.Neon, WARM
+			end
+		end
+		kit.Name = "SeaPlateKit"
+		kit.Parent = m
+	else
+		m:SetAttribute("MissingMesh", "M_Prop_SeaPlateKit") -- DockService rebuilds it once the kit loads
 	end
 	for _, p in m:GetDescendants() do
 		if p:IsA("BasePart") and p:GetAttribute("BuildY") == nil then
@@ -4823,6 +5023,16 @@ DECOR_BUILDERS.Fountain = function(m: Model, at: CFrame, d: DockConfig.Decor)
 	jet.Transparency = 0.2
 end
 
+-- each decoration's M_Prop_CommonsKit meshes (round ATT_<key>; the kit's D04_FlagCloth becomes the "Flag")
+local DECOR_KIT: { [string]: { string } } = {
+	FlowerBed = { "D01_FlowerBed" },
+	PicnicTable = { "D02_PicnicTable" },
+	LampRow = { "D03_LampRow", "D03_LampRowGlow" },
+	FlagPole = { "D04_FlagPole", "D04_FlagCloth", "D04_FlagEmblem" },
+	Statue = { "D05_Statue" },
+	Fountain = { "D06_Fountain", "D06_FountainWater" },
+}
+
 -- The Model for decoration `key` (DockConfig.Decorations) on its spare-lot spot in the berth frame `b`.
 function DockPieces.decoration(key: string, b: CFrame): Model
 	local m = Instance.new("Model")
@@ -4832,6 +5042,11 @@ function DockPieces.decoration(key: string, b: CFrame): Model
 	local fn = DECOR_BUILDERS[key]
 	if d and at and fn then
 		fn(m, at, d)
+		local place: { { any } } = {}
+		for _, mesh in (DECOR_KIT[key] or {}) :: { string } do
+			table.insert(place, { mesh :: any, key, at })
+		end
+		commonsKit(m, place)
 	end
 	return m
 end

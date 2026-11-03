@@ -23,6 +23,9 @@ return function(t)
 			local px = Theme.panelSize(vp, s, want) * s
 			t.expect(px.X <= vp.X * 0.94 + 0.01).toBe(true)
 			t.expect(px.Y <= vp.Y * (if Theme.compact(vp, s) then 0.98 else 0.9) + 0.01).toBe(true)
+			if Theme.compact(vp, s) then -- 8 du clear above and below (title icon, drop shadow)
+				t.expect(px.Y <= vp.Y - 16 * s + 0.01).toBe(true)
+			end
 		end
 		-- portrait grows to most of the height
 		local tall = Theme.panelSize(Vector2.new(390, 844), 0.7, want)
@@ -51,6 +54,28 @@ return function(t)
 			t.expect(list >= 3 * S.cardCompact + 2 * 12).toBe(true)
 		end
 	end)
+
+	-- MERGE3 fix2: the phone frames that showed headers above the top were a cropped 1920x1080 window (HudDevice
+	-- proxy, desktop sizes); on the phone's real safe area (top bar off) every panel, the Build list and the map fit
+	t.test(
+		"the Build list, the map and the menu panels fit a landscape phone's safe area",
+		function()
+			for _, vp in { Vector2.new(844, 332), Vector2.new(756, 311), Vector2.new(667, 317) } do
+				local s = Theme.scaleFor(vp)
+				for _, c in
+					{
+						{ Vector2.new(440, 2000), false },
+						{ Vector2.new(1160, 640), true },
+						{ Vector2.new(780, 600), false },
+					}
+				do
+					local px = Theme.panelSize(vp, s, c[1], c[2]) * s
+					t.expect(px.Y + 2 * Theme.Size.shadow * s <= vp.Y + 0.01).toBe(true)
+					t.expect(px.X <= vp.X).toBe(true)
+				end
+			end
+		end
+	)
 
 	t.test("kit touch targets are >= 44 px at the phone floor", function()
 		local S = Theme.Size

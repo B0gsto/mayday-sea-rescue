@@ -304,6 +304,51 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 			) -- no name: clean() drops them
 			return true, "Recruited"
 		end,
+		-- capture hook for the recruit arrival beat (FeedbackController): daytime, you on foot ~20 studs in front of the
+		-- category's building sign facing it, then a recruit as above (the beat fires when they reach their spot)
+		recruitbeat = function(_, target, a)
+			local p = target :: Player
+			local key = WorkerRules.buildingOf(a[2])
+			local marina = Workspace:FindFirstChild("Marina")
+			local plot = marina and marina:FindFirstChild(`Plot{p:GetAttribute("DockPlot")}`)
+			local b = if key and plot then plot:FindFirstChild(key) else nil
+			if not (b and b:IsA("Model")) then
+				return false, `No {key or a[2]}`
+			end
+			pcall(OperationService.DevEnd, p, false) -- a running op (the cold open) owns the camera
+			ProgressionService.SetFlag(p, "coldOpenDone", true)
+			p:SetAttribute("ColdOpenDone", true)
+			local clock = game:GetService("Lighting").ClockTime
+			if clock < 8 or clock > 16 then -- workers are home at night: no rig, no walk
+				Workspace:SetAttribute(
+					"DayClockOffset",
+					DayClock.offsetTo(Workspace:GetServerTimeNow(), 12)
+				)
+			end
+			local sign: BasePart? = nil
+			for _, d in b:GetDescendants() do
+				if
+					d.Name == "Sign"
+					and d:IsA("BasePart")
+					and (not sign or d.Size.Magnitude > sign.Size.Magnitude)
+				then
+					sign = d
+				end
+			end
+			local focus = if sign then sign.Position else b:GetPivot().Position
+			local face = if sign
+				then sign.CFrame.LookVector * Vector3.new(1, 0, 1)
+				else Vector3.zAxis
+			local stand =
+				landing(focus + (if face.Magnitude > 0.1 then face.Unit else Vector3.zAxis) * 20)
+			moveTo(
+				p,
+				CFrame.lookAt(stand.Position, Vector3.new(focus.X, stand.Position.Y, focus.Z))
+			)
+			task.wait(1) -- the rig range check (WorkerController) reads where you stand
+			WorkerService.Recruit(p, a[2], 2, WorkerRules.plainName(math.random(1, 9999)))
+			return true, `Recruit -> {key}`
+		end,
 		bosun = function(_, target)
 			local p = target :: Player
 			local dog, root = DogService.GetDog(p), rootOf(p)
@@ -388,6 +433,31 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 			end)
 			DockService.Refresh(target :: Player)
 			return ok, msg
+		end,
+		-- capture hook for the build moments (ConstructionController): off the cold open and any seat, daytime, the
+		-- levels under it, its prerequisites and the Cash in place, you on foot 32 studs off the lot's front facing it;
+		-- the site starts as this returns (t = 0)
+		buildbeat = function(_, target, a)
+			local p = target :: Player
+			pcall(OperationService.DevEnd, p, false) -- a running op (the cold open) owns the seat and the camera
+			ProgressionService.SetFlag(p, "coldOpenDone", true)
+			p:SetAttribute("ColdOpenDone", true)
+			local clock = game:GetService("Lighting").ClockTime
+			if clock < 8 or clock > 16 then
+				Workspace:SetAttribute(
+					"DayClockOffset",
+					DayClock.offsetTo(Workspace:GetServerTimeNow(), 12)
+				)
+			end
+			return DockService.DevBuildBeat(p, a[2], math.floor(a[3]), function(cf)
+				local spot = landing(cf.Position)
+				moveTo(p, CFrame.lookAt(spot.Position, spot.Position + cf.LookVector))
+				task.wait(1.5) -- the camera swings in behind you and the lot streams in
+			end)
+		end,
+		buildfinish = function(_, target)
+			local ok = DockService.FinishBuild(target :: Player)
+			return ok, if ok then "Finished" else "No site"
 		end,
 		unlockAll = function(_, target)
 			return unlockAll(target :: Player)

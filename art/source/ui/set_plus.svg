@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 212 212" width="64" height="64"><!-- r12 (in-game fix r2): camera sensitivity = a fat white aim reticle (ring + 4 inward ticks, red centre dot) zipping right with three white speed streaks behind it; no arrow (old orbit arrow read as reset), no dial (Speed FOV is the dial); revert: build/status/2026-10-31/perfect/ui/ingame/r2/old/set_plus.svg --><defs><linearGradient id="w" gradientUnits="userSpaceOnUse" x1="0" y1="20" x2="0" y2="176"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DFE7F1"/></linearGradient><linearGradient id="rd" gradientUnits="userSpaceOnUse" x1="0" y1="80" x2="0" y2="108"><stop offset="0" stop-color="#FF8A78"/><stop offset="1" stop-color="#E0352B"/></linearGradient>
+<path id="sp" d="M30,62 L64,62 M12,96 L56,96 M30,130 L64,130" fill="none"/>
+<circle id="ring" cx="124" cy="96" r="56" fill="none"/>
+<path id="tk" d="M124,53 L124,62 M124,139 L124,130 M81,96 L90,96 M167,96 L158,96" fill="none"/>
+<circle id="dot" cx="124" cy="96" r="14"/>
+<mask id="ms" maskUnits="userSpaceOnUse" x="-20" y="-20" width="240" height="240"><use href="#sp" stroke="#fff" stroke-width="16" stroke-linecap="round"/></mask>
+<mask id="mr" maskUnits="userSpaceOnUse" x="-20" y="-20" width="240" height="240"><use href="#ring" stroke="#fff" stroke-width="26"/><use href="#tk" stroke="#fff" stroke-width="16" stroke-linecap="round"/></mask>
+<mask id="md" maskUnits="userSpaceOnUse" x="-20" y="-20" width="240" height="240"><use href="#dot" fill="#fff"/></mask>
+<g id="ink"><use href="#sp" stroke="#14121C" stroke-width="36"/><use href="#ring" stroke="#14121C" stroke-width="46"/><use href="#tk" stroke="#14121C" stroke-width="36"/><use href="#dot" fill="#14121C" stroke="#14121C" stroke-width="20"/></g></defs>
+<g transform="translate(100,100) scale(0.95) translate(-98.5,-100.5)" stroke-linecap="round" stroke-linejoin="round">
+<use href="#ink" transform="translate(0,9)"/><use href="#ink"/>
+<g mask="url(#ms)"><rect x="-20" y="-20" width="240" height="240" fill="#A4B3C9"/><use href="#sp" transform="translate(0,-6)" stroke="url(#w)" stroke-width="16"/></g>
+<use href="#ring" stroke="#14121C" stroke-width="46"/>
+<g mask="url(#mr)"><rect x="-20" y="-20" width="240" height="240" fill="#A4B3C9"/><g transform="translate(0,-7)" stroke="url(#w)"><use href="#ring" stroke-width="26"/><use href="#tk" stroke-width="16"/></g></g>
+<g mask="url(#md)"><rect x="-20" y="-20" width="240" height="240" fill="#8F1D1D"/><use href="#dot" transform="translate(0,-5)" fill="url(#rd)"/></g>
+</g></svg>

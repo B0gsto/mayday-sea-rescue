@@ -1,0 +1,326 @@
+{
+ "asset": "M_Veh_RescueHeli",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_MainRotor",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    5.5
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    5.5,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    4.075,
+    -6.5684
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_TailRotor",
+   "parent": null,
+   "blender": [
+    -1.8,
+    21.0,
+    3.4
+   ],
+   "roblox_from_origin": [
+    1.8,
+    3.4,
+    21.0
+   ],
+   "roblox_from_bbox_centre": [
+    1.8,
+    1.975,
+    14.4316
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_DriverSeat",
+   "parent": null,
+   "blender": [
+    -1.4,
+    -2.6,
+    -1.4
+   ],
+   "roblox_from_origin": [
+    1.4,
+    -1.4,
+    -2.6
+   ],
+   "roblox_from_bbox_centre": [
+    1.4,
+    -2.825,
+    -9.1684
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_PassengerSeat1",
+   "parent": null,
+   "blender": [
+    1.4,
+    -2.6,
+    -1.4
+   ],
+   "roblox_from_origin": [
+    -1.4,
+    -1.4,
+    -2.6
+   ],
+   "roblox_from_bbox_centre": [
+    -1.4,
+    -2.825,
+    -9.1684
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_EyePoint",
+   "parent": null,
+   "blender": [
+    -1.4,
+    -2.6,
+    1.2
+   ],
+   "roblox_from_origin": [
+    1.4,
+    1.2,
+    -2.6
+   ],
+   "roblox_from_bbox_centre": [
+    1.4,
+    -0.225,
+    -9.1684
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_WinchPoint",
+   "parent": null,
+   "blender": [
+    -7.9,
+    2.4,
+    1.55
+   ],
+   "roblox_from_origin": [
+    7.9,
+    1.55,
+    2.4
+   ],
+   "roblox_from_bbox_centre": [
+    7.9,
+    0.125,
+    -4.1684
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_WinchHook",
+   "parent": null,
+   "blender": [
+    -7.9,
+    2.8,
+    -0.25
+   ],
+   "roblox_from_origin": [
+    7.9,
+    -0.25,
+    2.8
+   ],
+   "roblox_from_bbox_centre": [
+    7.9,
+    -1.675,
+    -3.7684
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_SurvivorSlot1",
+   "parent": null,
+   "blender": [
+    1.4,
+    2.4,
+    -1.4
+   ],
+   "roblox_from_origin": [
+    -1.4,
+    -1.4,
+    2.4
+   ],
+   "roblox_from_bbox_centre": [
+    -1.4,
+    -2.825,
+    -4.1684
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_SurvivorSlot2",
+   "parent": null,
+   "blender": [
+    -1.4,
+    2.4,
+    -1.4
+   ],
+   "roblox_from_origin": [
+    1.4,
+    -1.4,
+    2.4
+   ],
+   "roblox_from_bbox_centre": [
+    1.4,
+    -2.825,
+    -4.1684
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_PetSeat",
+   "parent": null,
+   "blender": [
+    0.0,
+    4.5,
+    -1.9
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    -1.9,
+    4.5
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -3.325,
+    -2.0684
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Camera",
+   "parent": null,
+   "blender": [
+    0.0,
+    4.0,
+    2.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    2.0,
+    4.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.575,
+    -2.5684
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

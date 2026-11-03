@@ -52,11 +52,14 @@ function DepotArtService.Init()
 		"M_Bld_SubPenAddons",
 		"M_Bld_TrophyHallAddons",
 		"M_Bld_WorkshopAddons",
+		"M_Prop_BoardKit", -- rescue board, coming-soon board, name sign, Harbour Master beacon
 		"M_Prop_BuildSiteKit",
 		"M_Prop_BuildStation",
+		"M_Prop_CommonsKit", -- the commons + decorations Lego kit (DockPieces commonsKit)
 		"M_Prop_HQInterior",
 		"M_Prop_JettyCrane",
 		"M_Prop_PrizeWheel",
+		"M_Prop_SeaPlateKit", -- Ramp Wharf + Freight Wharf sea plates (DockPieces seaPlate)
 		"M_Prop_TrophyCup",
 		"M_Veh_SupplyBarge",
 	})

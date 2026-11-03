@@ -99,9 +99,9 @@ function Card.new(parent: Instance?, props: Props): Card
 		title.Size = UDim2.new(1, 0, 0, if narrow then 60 else 34)
 	end)
 	-- the 2-5 word line: a size up from small with the full-weight outline, readable on every gradient
-	local line = Style.label(words, props.line or "", Theme.Text.small + 2)
+	local line = Style.label(words, props.line or "", Theme.Text.body) -- 18 pt on a phone
 	line.Name = "Line"
-	line.Size = UDim2.new(1, 0, 0, 28)
+	line.Size = UDim2.new(1, 0, 0, 30)
 	line.TextXAlignment = Enum.TextXAlignment.Left
 	line.TextTruncate = Enum.TextTruncate.AtEnd
 	line.LayoutOrder = 1

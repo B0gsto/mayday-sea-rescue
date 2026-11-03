@@ -73,8 +73,8 @@ class Group:
         res = bmesh.ops.create_cube(self.bm, size=1.0, matrix=m)
         self._bevel(res["verts"], bevel)
 
-    def cyl(self, centre, radius, height, segs=8, axis='Z', radius_top=None):
-        rot = Matrix.Identity(4)
+    def cyl(self, centre, radius, height, segs=8, axis='Z', radius_top=None, rot=None):
+        rot = Matrix.Identity(4) if rot is None else rot
         if axis == 'X':
             rot = Matrix.Rotation(math.radians(90.0), 4, 'Y')
         elif axis == 'Y':

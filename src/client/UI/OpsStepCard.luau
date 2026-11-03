@@ -21,18 +21,18 @@ export type StepCard = {
 local WORD: { [string]: string } =
 	{ Craft = "Go", Casualty = "count", Vessel = "count", ["Drop-off"] = "Home" }
 
--- Text-only twins for mechanic panels (Mechanics/PIW/Step headers).
-local ICON_TEXT: { [string]: string } = {
-	tasking = "🚨",
-	launch = "🚤",
-	recovery = "🙋",
-	transport = "🏠",
+-- The Glyph kind for each step's mechanic panel header (Mechanics/PIW/Step).
+local ICON: { [string]: string } = {
+	tasking = "flare",
+	launch = "boat",
+	recovery = "swimmer",
+	transport = "home",
 }
 
 local OpsStepCard = {}
 
 function OpsStepCard.iconFor(id: string?): string
-	return ICON_TEXT[id or ""] or "•"
+	return ICON[id or ""] or "check"
 end
 
 -- At most two words of the step's label (the definitions keep them that short).

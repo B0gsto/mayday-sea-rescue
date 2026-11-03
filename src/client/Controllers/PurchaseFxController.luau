@@ -11,6 +11,8 @@
 --                 else the Boat button); the target squashes with a ding and stars
 -- Not here: island buildings (the Lego build plays), spins (the wheel), Finish now (the build), crew hire.
 -- Reduce motion: no spin-in, rays, stars or camera punch; the card holds and fades.
+-- It waits for Roblox's purchase dialog to close (in-game AD 2026-11-01: it played under the dialog); a purchase's
+-- Cash stays off the wallet (HudController) until the card lands (PurchaseLanded).
 local CollectionService = game:GetService("CollectionService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -25,6 +27,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
+local Layout = require(UI:WaitForChild("Layout"))
 local RewardPop = require(UI:WaitForChild("RewardPop"))
 local Style = require(UI:WaitForChild("Kit"):WaitForChild("Style"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
@@ -32,7 +35,8 @@ local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VF
 local PurchaseFxController = {}
 
 local player = Players.LocalPlayer
-local CARD = 0.24 -- the card's height as a share of the screen (a phone reads it)
+local CARD = 0.48 -- the card's height as a share of the screen (AD 2026-11-01: 0.24 read small)
+local DIALOG_WAIT = 15 -- s at most for Roblox's purchase dialog to close (a receipt granted on join has none)
 local INK = Color3.fromHex("14121C")
 local GOLD = Color3.fromHex("FFD86A")
 local NAVY = Color3.fromHex("1D3B78")
@@ -192,6 +196,11 @@ local function stamp(holder: Frame, size: number, reduced: boolean)
 	end
 end
 
+-- the Cash a purchase paid rolls onto the wallet now (HudController holds it until then)
+local function landed()
+	player:SetAttribute("PurchaseLanded", os.clock())
+end
+
 local function play(kind: string, key: string, item: any)
 	local playerGui = player:FindFirstChildOfClass("PlayerGui")
 	local camera = Workspace.CurrentCamera
@@ -215,7 +224,11 @@ local function play(kind: string, key: string, item: any)
 	AudioController.play("FX_Pop", nil, 1, 1.05)
 	AudioController.play("Music_CrateFanfare", nil, 0.9)
 	if not reduced then
-		RewardPop.rays(gui, start, size * 3, 1.3)
+		local vp = camera.ViewportSize -- phone: the burst stays inside 60% of the short side (MERGE3 V4 ADs)
+		local burst = if Layout.current().touch
+			then math.min(size * 3, 0.6 * math.min(vp.X, vp.Y))
+			else size * 3
+		RewardPop.rays(gui, start, burst, 1.3)
 		grow.Scale = 0.2
 		holder.Rotation = -20
 		TweenService:Create(grow, TweenInfo.new(0.34, Enum.EasingStyle.Back), { Scale = 1.2 })
@@ -250,6 +263,7 @@ local function play(kind: string, key: string, item: any)
 	task.delay(1.35, function()
 		local goal, target = targetFor(playerGui, key, item)
 		if reduced or not goal then
+			landed()
 			local fade = TweenService:Create(grow, TweenInfo.new(0.3), { Scale = 0.01 })
 			fade.Completed:Once(function()
 				gui:Destroy()
@@ -275,6 +289,7 @@ local function play(kind: string, key: string, item: any)
 		)
 		fly.Completed:Once(function()
 			holder:Destroy()
+			landed()
 			AudioController.play("FX_Ding", nil, 0.9, 1.4)
 			if target then
 				local pop = target:FindFirstChildOfClass("UIScale") or Instance.new("UIScale")
@@ -284,7 +299,7 @@ local function play(kind: string, key: string, item: any)
 					:Play()
 			end
 			local w = if target then target.AbsoluteSize.X else size * 0.3
-			RewardPop.rays(gui, to, w * 3.2, 0.6)
+			RewardPop.rays(gui, to, w * 3.2, 0.6).ImageColor3 = GOLD -- a gold core, not white-hot
 			RewardPop.stars(gui, to, w * 1.4, 8)
 			task.delay(0.9, gui.Destroy, gui)
 		end)
@@ -303,6 +318,25 @@ end
 local queue: { () -> () } = {}
 local running = false
 
+-- product / pass id -> os.clock() its Roblox purchase dialog closed
+local closedAt: { [number]: number } = {}
+local function dialogClosed(_: any, id: number)
+	closedAt[id] = os.clock()
+end
+
+-- yields until Roblox's dialog for `id` has closed (since `since`, or just before), at most DIALOG_WAIT s
+local function awaitDialog(id: any, since: number)
+	local deadline = os.clock() + DIALOG_WAIT
+	while
+		type(id) == "number"
+		and not ((closedAt[id] or -math.huge) > since - 5)
+		and os.clock() < deadline
+	do
+		task.wait(0.1)
+	end
+	task.wait(0.25) -- the dialog's own fade
+end
+
 local function onPurchased(payload: any)
 	if
 		type(payload) ~= "table"
@@ -318,7 +352,9 @@ local function onPurchased(payload: any)
 		return
 	end
 	-- one card at a time: a second purchase waits for the first to land
+	local at = os.clock()
 	table.insert(queue, function()
+		awaitDialog(item.id, at)
 		play(kind, key, item)
 	end)
 	if running then
@@ -336,6 +372,8 @@ end
 function PurchaseFxController.Init() end
 
 function PurchaseFxController.Start()
+	MarketplaceService.PromptProductPurchaseFinished:Connect(dialogClosed)
+	MarketplaceService.PromptGamePassPurchaseFinished:Connect(dialogClosed)
 	task.spawn(function()
 		local remote = Net.init():WaitForChild("Monetization_Purchased", 30)
 		if remote and remote:IsA("RemoteEvent") then

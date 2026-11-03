@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 212 212" width="64" height="64"><!-- r12 (in-game fix r2): reduce motion = one wide, thick deep-blue wave crest that flattens and tucks into two fat white pause bars (bars 1.4x wider, 1.2x taller, darker blue-grey lip); revert: build/status/2026-10-31/perfect/ui/ingame/r2/old/set_pause.svg --><defs><linearGradient id="gw" gradientUnits="userSpaceOnUse" x1="0" y1="44" x2="0" y2="150"><stop offset="0" stop-color="#7CC4FF"/><stop offset="1" stop-color="#2463D6"/></linearGradient><linearGradient id="gb" gradientUnits="userSpaceOnUse" x1="0" y1="14" x2="0" y2="176"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E1E8F2"/></linearGradient>
+<path id="s" d="M24,128 C40,60 84,56 98,116 C102,130 114,132 136,130"/><g id="b"><rect x="128" y="18" width="28" height="158" rx="10"/><rect x="166" y="18" width="28" height="158" rx="10"/></g>
+<mask id="mw" maskUnits="userSpaceOnUse" x="-20" y="-20" width="240" height="240"><use href="#s" fill="none" stroke="#fff" stroke-width="34" stroke-linecap="round"/></mask><mask id="mb" maskUnits="userSpaceOnUse" x="-20" y="-20" width="240" height="240"><use href="#b" fill="#fff" stroke="#fff" stroke-width="2"/></mask></defs>
+<g transform="translate(100,100) scale(0.97) translate(-101,-97)" stroke-linecap="round" stroke-linejoin="round">
+<g transform="translate(0,9)" stroke="#14121C"><use href="#s" fill="none" stroke-width="54"/><use href="#b" fill="#14121C" stroke-width="20"/></g>
+<g stroke="#14121C"><use href="#s" fill="none" stroke-width="54"/><use href="#b" fill="#14121C" stroke-width="20"/></g>
+<g mask="url(#mw)"><rect x="-20" y="-20" width="240" height="240" fill="#163A8E"/><use href="#s" transform="translate(0,-8)" fill="none" stroke="url(#gw)" stroke-width="34"/></g>
+<use href="#b" fill="#14121C" stroke="#14121C" stroke-width="20"/>
+<g mask="url(#mb)"><rect x="-20" y="-20" width="240" height="240" fill="#8A9AB8"/><use href="#b" transform="translate(0,-8)" fill="url(#gb)"/></g>
+</g></svg>

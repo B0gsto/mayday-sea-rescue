@@ -43,6 +43,8 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AssetIds = require(Shared:WaitForChild("Config"):WaitForChild("AssetIds"))
+local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeConfig"))
 local BadgeRules = require(Shared:WaitForChild("BadgeRules"))
 local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
@@ -69,6 +71,7 @@ local SkillService = require(script.Parent:WaitForChild("SkillService"))
 local SpinService = require(script.Parent:WaitForChild("SpinService"))
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
 local TrophyRules = require(Shared:WaitForChild("TrophyRules"))
+local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 
 local DockService = {}
@@ -319,6 +322,21 @@ local function nameSign(
 		stroke.Parent = label
 		table.insert(labels, label)
 	end
+	-- the Lego kit sign (M_Prop_BoardKit L03): the code frame, posts and studs stay as invisible colliders; the
+	-- plate stays this NameBoard (27 x 7 in the kit's rim) so the owner tint and setMaster still colour it
+	local kit = AssetLoader.cloneModule("M_Prop_BoardKit", "ATT_Sign", arch, { "L03_IslandSign" })
+	if kit then
+		for _, p in sign:GetChildren() do
+			if p:IsA("BasePart") and p ~= board then
+				p.Transparency = 1
+			end
+		end
+		local atts = AssetIds.Attachments.M_Prop_BoardKit
+		board.Size = Vector3.new(27, 7, 0.8)
+		board.CFrame = arch * CFrame.new(atts.ATT_NamePlate - atts.ATT_Sign)
+		kit.Name = "Kit"
+		kit.Parent = sign
+	end
 	return board, labels, trim, studs
 end
 
@@ -470,7 +488,7 @@ end
 
 -- docs/25 J: the prize wheel set (odds board, tokens) arrives with the HQ, at the plaza's west end facing the cove,
 -- west of the jetty's line so the plaza walk stays open (owner 2026-10-31); fwd 17 leaves 7 studs clear at the foot of
--- the HQ Lv5 outside stair (r -44..-50, foot at fwd 6.7) and 7 in front of the spin button before the rescue board
+-- the HQ Lv5 outside stair (r -44..-50, foot at fwd 6.7) and 7 in front of the spin button
 local function placeWheel(plot: Plot)
 	local i = plot.index
 	local at = plot.frame * Marina.ISLAND * CFrame.new(-40, 0, -17)
@@ -491,8 +509,9 @@ local function placeWheel(plot: Plot)
 	plot.wheelPrompt = cap and cap:FindFirstChildOfClass("ProximityPrompt")
 	plot.wheelCount = if count and count:IsA("TextLabel") then count else nil
 	paintWheel(plot)
-	-- the rescue board mirrors the wheel east of the avenue, facing the cove
-	local board = LeaderboardService.Board(plot.frame * Marina.ISLAND * CFrame.new(28, 5.7, -10.5))
+	-- the rescue board mirrors the wheel at the plaza's east end, facing the cove (MERGE3 W1: at r 28 fwd 10.5 it hid
+	-- the HQ facade from the jetty; r 33-47 fwd 17 clears the HQ (r <= 29), the Harbour crane (fwd 27+) and the paths)
+	local board = LeaderboardService.Board(plot.frame * Marina.ISLAND * CFrame.new(40, 5.7, -17))
 	board.Parent = plot.model
 	plot.rescueBoard = board
 end
@@ -1107,6 +1126,7 @@ local function setMaster(plot: Plot, on: boolean)
 	if on and not plot.master then
 		local m = Instance.new("Model")
 		m.Name = "HarbourMaster"
+		plot.master = m -- claimed before the kit load yields, so a repeat or an off call in that window sees it
 		local at = plot.frame * Marina.ISLAND * CFrame.new(21, 0, -28)
 		local pole = part(
 			m,
@@ -1126,16 +1146,63 @@ local function setMaster(plot: Plot, on: boolean)
 			Enum.Material.SmoothPlastic -- steady, no phone bloom (feel review 27): the PointLight and beam carry the glow
 		)
 		lens.Shape = Enum.PartType.Ball
+		local light: BasePart = lens
+		-- the Lego kit beacon (M_Prop_BoardKit L04-L06): the code pole and ball stay as invisible colliders; the
+		-- glow and beam move to the kit's lens (its centre is ATT_BeaconLight), the medal goes on ATT_BeaconIcon
+		local kit = AssetLoader.cloneModule(
+			"M_Prop_BoardKit",
+			"ATT_Beacon",
+			at,
+			{ "L04_HarbourBeacon", "L05_BeaconLens", "L06_BeaconPanes" }
+		)
+		if plot.master ~= m then -- switched off while the kit loaded (m is already destroyed)
+			if kit then
+				kit:Destroy()
+			end
+			return
+		end
+		local kitLens = kit and kit:FindFirstChild("L05_BeaconLens")
+		local panes = kit and kit:FindFirstChild("L06_BeaconPanes")
+		if kit and kitLens and kitLens:IsA("BasePart") then
+			pole.Transparency, lens.Transparency = 1, 1
+			local sa = kitLens:FindFirstChildOfClass("SurfaceAppearance")
+			if sa then
+				sa:Destroy()
+			end
+			kitLens.Material = Enum.Material.Neon
+			kitLens.Color = Color3.fromHex("FFC83A")
+			if panes and panes:IsA("BasePart") then
+				panes.Transparency = 0.85
+			end
+			local atts = AssetIds.Attachments.M_Prop_BoardKit
+			local icon = part(
+				kit,
+				"Icon",
+				Vector3.new(2.6, 2.6, 0.02),
+				at * CFrame.new(atts.ATT_BeaconIcon - atts.ATT_Beacon) * CFrame.new(0, 0, 0.01),
+				GOLD,
+				Enum.Material.SmoothPlastic
+			)
+			icon.Transparency = 1
+			icon.CanCollide, icon.CanQuery, icon.CanTouch = false, false, false
+			local medal = Instance.new("Decal")
+			medal.Texture = UiImages.Badges.Medal
+			medal.Face = Enum.NormalId.Front
+			medal.Parent = icon
+			kit.Name = "Kit"
+			kit.Parent = m
+			light = kitLens
+		end
 		local glow = Instance.new("PointLight")
 		glow.Color = GOLD
 		glow.Range = 36 -- WP-25 r6: softer, the bloom washed out the berth
 		glow.Brightness = 1.5
-		glow.Parent = lens
+		glow.Parent = light
 		local a0 = Instance.new("Attachment")
-		a0.Parent = lens
+		a0.Parent = light
 		local a1 = Instance.new("Attachment")
 		a1.Position = Vector3.new(0, 45, 0)
-		a1.Parent = lens
+		a1.Parent = light
 		local beam = Instance.new("Beam")
 		beam.Attachment0, beam.Attachment1 = a0, a1
 		beam.Width0, beam.Width1 = 1.6, 4
@@ -1143,9 +1210,8 @@ local function setMaster(plot: Plot, on: boolean)
 		beam.LightEmission = 0.25
 		beam.Color = ColorSequence.new(GOLD)
 		beam.Transparency = NumberSequence.new(0.88, 1)
-		beam.Parent = lens
+		beam.Parent = light
 		m.Parent = plot.model
-		plot.master = m
 	elseif not on and plot.master then
 		plot.master:Destroy()
 		plot.master = nil
@@ -1799,6 +1865,51 @@ function DockService.FinishBuild(player: Player): boolean
 	data.construction.progress = 1
 	finishConstruction(plots[i], player, data)
 	return true
+end
+
+-- DEV capture hook (DevService buildbeat): `key` stands at level-1 (none for 1), its HQ / prerequisites and the Cash
+-- are there, any running site finishes; `place` gets a spot 32 studs off the lot's front facing it (it moves the
+-- player and waits), then the site starts through the Cash buy.
+function DockService.DevBuildBeat(
+	player: Player,
+	key: string,
+	level: number,
+	place: (CFrame) -> ()
+): (boolean, string)
+	local data: any = DataService.Get(player)
+	local i = byPlayer[player]
+	local def = DockConfig.Buildings[key]
+	if not (data and i and def and def.levels[level]) then
+		return false, "No plot / level"
+	end
+	DockService.FinishBuild(player)
+	deriveDock(data)
+	local levels = data.dock.levels
+	levels[key] = if level > 1 then level - 1 else nil
+	data.dock.prepaid[key] = nil
+	for _ = 1, 12 do
+		local ok, reason, price, need = UnlockTree.canBuild(key, level, levels, data.cash)
+		if ok then
+			break
+		elseif reason == "HQ" then
+			levels.HQ = def.levels[level].hq
+		elseif reason == "Needs" and need then
+			levels[need] = UnlockTree.levelOf(levels, need) + 1
+		elseif reason == "Cash" and price then
+			data.cash = price
+		else
+			return false, reason or "Refused"
+		end
+	end
+	deriveDock(data)
+	DataService.MarkDirty(player)
+	ProgressionService.Refresh(player)
+	show(player, false)
+	local lot = plots[i].frame * def.spot
+	local at = lot.Position + lot.LookVector * 32
+	place(CFrame.lookAt(at, Vector3.new(lot.X, at.Y, lot.Z)))
+	busy[player] = nil
+	return buy(player, key)
 end
 
 function DockService.GetPlot(player: Player): number?

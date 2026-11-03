@@ -189,6 +189,15 @@ local function show(prompt: ProximityPrompt, input: Enum.ProximityPromptInputTyp
 
 	bb.Parent = Players.LocalPlayer:FindFirstChildOfClass("PlayerGui")
 	Style.pop(button, true) -- one pop, never a loop
+	table.insert(
+		conns,
+		RunService.Heartbeat:Connect(function()
+			Layout.keepClear(bb) -- off the top HUD (the Next chip)
+			local player = Players.LocalPlayer -- hidden under an open panel or the map (MERGE3 ADs)
+			bb.Enabled = player:GetAttribute("MenuOpen") ~= true
+				and player:GetAttribute("MapOpen") ~= true
+		end)
+	)
 
 	return function()
 		release()

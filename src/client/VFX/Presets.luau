@@ -1020,6 +1020,65 @@ Presets.ALL.nitro_trail = preset({
 	},
 })
 
+-- state: the jet ski's rooster tail (RiderController, every 0.1 s at the stern, up axis back over the wake;
+-- opts.scale = speed): a fan of white / sea-teal streaks, chunky drops and studded foam puffs. Silent: the
+-- driver's Hull_Wake bed swells with speed (AudioController), ski_splash carries the hits
+Presets.ALL.ski_rooster = preset({
+	job = "state",
+	layers = {
+		drops(5, { 20, 30 }, 14, 2.2),
+		{
+			tex = "sea_spray",
+			count = 4,
+			colors = { WHITE, SEA },
+			streak = true,
+			size = curve(4.5, 1.5, outCubic),
+			transparency = POP,
+			lifetime = { 0.45, 0.6 },
+			speed = { 26, 36 },
+			spread = { 10, 10 },
+			accel = Vector3.new(0, -40, 0),
+		},
+		with(puffs(2, FOAM, 1.6, 3.8, 0.7), { speed = { 8, 12 }, spread = { 16, 16 } }),
+	},
+})
+
+-- state: side spray off the outside of a hard carve (RiderController, every 0.1 s; opts.scale = lateral g):
+-- a white bow-wave sheet, drops and studded puffs thrown out and up. Silent like ski_rooster
+Presets.ALL.ski_carve = preset({
+	job = "state",
+	layers = {
+		drops(5, { 16, 24 }, 25, 2), -- a Layer first: the literal below then types as one
+		{
+			tex = "bow_wave",
+			count = 1,
+			colors = { FOAM },
+			size = curve(2, 6, outBack),
+			transparency = { 0.15, 0.25, 1 },
+			lifetime = { 0.45, 0.55 },
+			speed = { 3, 5 },
+			spread = { 25, 25 },
+		},
+		with(puffs(2, FOAM, 1.8, 4, 0.6), { speed = { 6, 10 }, spread = { 30, 30 } }),
+	},
+})
+
+-- feedback: a hard carve bites or the jet ski slams a crest (RiderController): a crown, drops, studded puffs and
+-- a foam ring on the water; a splash under a spray hiss
+Presets.ALL.ski_splash = preset({
+	job = "feedback",
+	layers = {
+		crown(1, 3, 8),
+		drops(12, { 16, 24 }, 40, 2.2),
+		puffs(5, FOAM, 2, 4.5, 0.65),
+		groundRing("foam_ring", FOAM, curve(3, 9, outCubic), 0.8),
+	},
+	sounds = {
+		{ clip = "FX_SplashSmall", volume = 0.8 } :: FxSound,
+		{ clip = "Hull_SprayHiss", delay = 0.03, volume = 0.5, pitch = 1.1 } :: FxSound,
+	},
+})
+
 -- feedback: the hull bumps a rock / quay / boat (BoatController); at the bow: a small crown, drops, spray puffs;
 -- a wooden thud under a splash and a short shake
 Presets.ALL.bump_splash = preset({
@@ -1196,6 +1255,19 @@ Presets.ALL.crew_start = preset({
 	sounds = {
 		{ clip = "FX_Snap", volume = 0.8, pitch = 1.15 } :: FxSound,
 		{ clip = "Cash_Coins", delay = 0.9, volume = 0.6, pitch = 1.15 } :: FxSound,
+	},
+})
+
+-- feedback: the recruit's category icon lands over their building's sign (FeedbackController): a hop of teal plates
+-- off the icon, above the building (never on it), with a ding
+Presets.ALL.crew_clockon = preset({
+	job = "feedback",
+	layers = {
+		with(plates({ SEA, WHITE, YELLOW }, 10), { size = { 1.4 }, speed = { 9, 12 } }),
+	},
+	sounds = {
+		{ clip = "FX_Ding", volume = 0.8, pitch = 1.2 } :: FxSound,
+		{ clip = "FX_ChimeHit", volume = 0.5, pitch = 1.1 } :: FxSound,
 	},
 })
 
@@ -1390,6 +1462,37 @@ Presets.ALL.heli_downwash = preset({
 			transparency = POP,
 		}),
 		with(drops(6, { 10, 16 }, 60, 1.2), { ring = true }),
+	},
+})
+
+-- feedback: you push off into a sprint (SprintController; its up axis points back and up from the push-off foot):
+-- a small kick of studded dust and two plates off the heel; a swoosh over a soft scuff
+Presets.ALL.sprint_kick = preset({
+	job = "feedback",
+	layers = {
+		with(puffs(4, DUST, 0.9, 2.2, 0.45), { speed = { 6, 10 }, spread = { 25, 25 }, drag = 5 }),
+		with(
+			plates({ WHITE, YELLOW }, 2),
+			{ size = { 1.1 }, speed = { 9, 12 }, spread = { 20, 20 } }
+		),
+	},
+	sounds = {
+		{ clip = "FX_Swoosh", volume = 0.8, pitch = 1.15 } :: FxSound,
+		{ clip = "FX_Thud", volume = 0.25, pitch = 1.6 } :: FxSound,
+	},
+})
+
+-- feedback: a sprint brakes to a stop (SprintController; up axis forward and up from the planted front foot): a
+-- low skid of studded dust ahead of the foot; a scuff thud under a short low swoosh
+Presets.ALL.sprint_brake = preset({
+	job = "feedback",
+	layers = {
+		with(puffs(5, DUST, 0.8, 2, 0.5), { speed = { 5, 8 }, spread = { 35, 35 }, drag = 6 }),
+		with(plates({ WHITE }, 1), { size = { 1 }, speed = { 6, 8 }, spread = { 25, 25 } }),
+	},
+	sounds = {
+		{ clip = "FX_Thud", volume = 0.35, pitch = 1.4 } :: FxSound,
+		{ clip = "FX_Swoosh", volume = 0.5, pitch = 0.8 } :: FxSound,
 	},
 })
 

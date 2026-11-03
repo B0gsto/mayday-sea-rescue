@@ -153,6 +153,10 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 			and hum.SeatPart == nil
 			and player:GetAttribute("OpsUiHidden") ~= true
 	end
+	local function underPanel(): boolean -- an open panel or the map hides the cue (MERGE3 ADs)
+		local player = Players.LocalPlayer
+		return player:GetAttribute("MenuOpen") == true or player:GetAttribute("MapOpen") == true
+	end
 	-- out of range the pill still shows the E / X glyph: bind those keys there, unless another prompt is up and
 	-- owns them (live v33: a console player saw "X Build" all over the island and X did nothing)
 	local others = 0
@@ -188,9 +192,13 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 		show(far())
 	end)
 	local bob = RunService.Heartbeat:Connect(function()
-		local away = not inRange and far()
-		show(inRange or away)
+		local covered = underPanel()
+		local away = not inRange and not covered and far()
+		show((inRange or away) and not covered)
 		bindKeys(away and others == 0)
+		if up then
+			Layout.keepClear(bb, Vector2.new(0, 0.5)) -- off the top HUD (the Next chip)
+		end
 		if up and goal then -- a slow bob like the beacon's, never a flash
 			arrow.Position = UDim2.new(0.5, 0, 0, BOB + math.sin(os.clock() * 1.8) * BOB)
 		end

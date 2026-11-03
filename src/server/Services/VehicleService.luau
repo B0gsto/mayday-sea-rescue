@@ -94,6 +94,7 @@ local HELI_RETURN = 60 -- s an empty heli waits (landed or afloat) out past RECA
 local VISUAL_ASSETS: { [string]: { string } } = {
 	RIB = { "M_Veh_RIB", "M_Veh_RIB_Helm" },
 	JetSki = { "M_Veh_JetSki" },
+	RescueHelicopter = { "M_Veh_RescueHeli" },
 }
 -- Wet look (SurfaceAppearance _Wet, attribute Wet on the model): rain/storm at or over this
 -- intensity, spray while running at planing speed, or a SprayHit attribute set by any system;
@@ -887,7 +888,9 @@ local function createVehicle(
 		fitted = table.clone(fitted)
 		fitted.survivorCapacity += extraSeats
 	end
-	local model = if spec.craft then Craft.build(fitted) else Builder.build(fitted, visuals)
+	local model = if spec.craft
+		then Craft.build(fitted, visuals)
+		else Builder.build(fitted, visuals)
 	model:SetAttribute("VehicleUpgrades", mask)
 	dressUpgrades(model, fitted, mask)
 	if visuals then
@@ -2145,7 +2148,8 @@ function VehicleService.BuildProp(vehicleId: string): Model?
 	if not spec then
 		return nil
 	end
-	local model = if spec.craft then Craft.build(spec) else Builder.build(spec, visualsFor(spec))
+	local visuals = visualsFor(spec)
+	local model = if spec.craft then Craft.build(spec, visuals) else Builder.build(spec, visuals)
 	for _, d in model:GetDescendants() do
 		if d:IsA("BasePart") then
 			d.Anchored = true

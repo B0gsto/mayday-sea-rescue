@@ -51,12 +51,12 @@ local NEAR, FAR = 200, 240 -- studs from you: a rig is made within NEAR, dropped
 local LIVELY = 90 -- animated within this (the yard crew badge shows within 60)
 local WALK_SPEED = 9 -- studs/s
 local STROLL = 2.5 -- studs/s for a work loop's 1 to 3 stud steps: at a walk they were a 0.15 s hop
-local ANIM_PACE = 6.4 -- studs/s the stock R15 walk covers at speed 1 (the default Animate script's figure)
+local ANIM_PACE = 8 -- studs/s the Cartoony walk covers at speed 1 (FK on the clip; it was taken as the stock 6.4: feet slid)
 local MAKE_PER_TICK = 8 -- rigs cloned per 0.25 s pass (no hitch when you land on a full island)
 local ANIM_IDS: { [string]: string } =
 	{ -- stock R15 animations (the default Animate script's) + catalog packs
 		Idle = "rbxassetid://10921071918", -- Cartoony Animation Package idle
-		Walk = "rbxassetid://10921082452", -- Cartoony walk (same 6.4 studs/s pace as the stock walk)
+		Walk = "rbxassetid://10921082452", -- Cartoony walk (ANIM_PACE)
 		Swing = "rbxassetid://522635514", -- toolslash, looped slow: hammering / sawing / wrenching
 		Point = "rbxassetid://507770453", -- point: binoculars / clipboard read
 		Climb = "rbxassetid://507765644", -- stock: no catalog climb reached the 9.1 bar (r4/cand)
@@ -1357,17 +1357,25 @@ local function cullPass()
 			local spot = cfg:GetAttribute("Spot")
 			r.feet = if typeof(spot) == "CFrame" then spot else r.feet
 		elseif not r.rig and not r.sleep and d < NEAR and made < MAKE_PER_TICK then
-			r.lively = d < LIVELY
+			local spot, from = cfg:GetAttribute("Spot"), cfg:GetAttribute("From")
+			-- a new recruit still on the jetty (not a dawn walk out of the door: From stays on the cfg) walks in
+			-- animated from anywhere in range: past LIVELY walkTo would snap them and Arrived never fired
+			r.recruit = if typeof(spot) == "CFrame"
+					and spot ~= r.feet
+					and typeof(from) == "CFrame"
+					and r.feet == from
+				then true
+				else nil
+			r.lively = d < LIVELY or r.recruit == true
 			if makeRig(r) then
 				made += 1
-				local spot = cfg:GetAttribute("Spot")
 				if typeof(spot) == "CFrame" and spot ~= r.feet then
-					r.recruit = typeof(cfg:GetAttribute("From")) == "CFrame"
 					walkTo(r, spot) -- a new recruit: from the jetty to their spot
 				end
 			end
 		end
-		local lively = r.rig ~= nil and d < (if r.lively then LIVELY + 15 else LIVELY)
+		local lively = r.rig ~= nil
+			and (r.recruit == true or d < (if r.lively then LIVELY + 15 else LIVELY))
 		if lively ~= r.lively then
 			r.lively = lively
 			pose(r)

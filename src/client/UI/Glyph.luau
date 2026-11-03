@@ -3,7 +3,8 @@
 -- SurfaceGui tags and billboards. Every glyph fills a square parent in scale units.
 --   Glyph.draw(kind, parent, colour)  kind: "swimmer" | "boat" | "cross" | "ring" | "check"
 --                                     | "speed" | "seat" | "coin" | "home" | "flare" | "clock" | "quest"
---                                     | "medal"
+--                                     | "medal" | "paw" | "person" | "bolt" | "can" | "cone" | "diamond" | "dot" | "x"
+--                                     | "chevron" (points right)
 --   Glyph.bar(parent, size, pos, rotation, colour)  one pill (scale units), the building block
 local Glyph = {}
 
@@ -126,6 +127,58 @@ local function quest(p: Instance, c: Color3)
 	bar(p, Vector2.new(0.18, 0.18), Vector2.new(0.5, 0.84), 0, c)
 end
 
+-- an animal paw: one pad and four toes (wildlife rescue; the old ring read as a target). Fat toes with clear
+-- gaps (>= 0.05) that stay inside r 0.43 of the box, so Waypoint can draw it big on the pin head (r2 judges)
+local function paw(p: Instance, c: Color3)
+	bar(p, Vector2.new(0.46, 0.37), Vector2.new(0.5, 0.69), 0, c, 0.45) -- pad
+	bar(p, Vector2.new(0.19, 0.24), Vector2.new(0.19, 0.45), -30, c) -- toes
+	bar(p, Vector2.new(0.19, 0.24), Vector2.new(0.37, 0.25), -10, c)
+	bar(p, Vector2.new(0.19, 0.24), Vector2.new(0.63, 0.25), 10, c)
+	bar(p, Vector2.new(0.19, 0.24), Vector2.new(0.81, 0.45), 30, c)
+end
+
+-- a crewmate: head and shoulders
+local function person(p: Instance, c: Color3)
+	bar(p, Vector2.new(0.32, 0.32), Vector2.new(0.5, 0.3), 0, c)
+	bar(p, Vector2.new(0.62, 0.36), Vector2.new(0.5, 0.72), 0, c, 0.45)
+end
+
+-- a storm: a fat zigzag lightning bolt
+local function bolt(p: Instance, c: Color3)
+	bar(p, Vector2.new(0.17, 0.46), Vector2.new(0.56, 0.3), 28, c, 0.3)
+	bar(p, Vector2.new(0.46, 0.15), Vector2.new(0.5, 0.52), -18, c, 0.3)
+	bar(p, Vector2.new(0.17, 0.46), Vector2.new(0.44, 0.74), 28, c, 0.3)
+end
+
+-- seamark shapes (IALA): port can, starboard cone, cardinal diamond, safe-water ball, isolated danger X
+local function can(p: Instance, c: Color3)
+	bar(p, Vector2.new(0.5, 0.62), Vector2.new(0.5, 0.5), 0, c, 0.15)
+end
+
+local function cone(p: Instance, c: Color3)
+	bar(p, Vector2.new(0.17, 0.62), Vector2.new(0.37, 0.5), 28, c)
+	bar(p, Vector2.new(0.17, 0.62), Vector2.new(0.63, 0.5), -28, c)
+	bar(p, Vector2.new(0.66, 0.17), Vector2.new(0.5, 0.74), 0, c)
+end
+
+local function diamond(p: Instance, c: Color3)
+	bar(p, Vector2.new(0.5, 0.5), Vector2.new(0.5, 0.5), 45, c, 0.15)
+end
+
+local function dot(p: Instance, c: Color3)
+	bar(p, Vector2.new(0.6, 0.6), Vector2.new(0.5, 0.5), 0, c)
+end
+
+local function x(p: Instance, c: Color3)
+	bar(p, Vector2.new(0.2, 0.74), Vector2.new(0.5, 0.5), 45, c, 0.25)
+	bar(p, Vector2.new(0.2, 0.74), Vector2.new(0.5, 0.5), -45, c, 0.25)
+end
+
+local function chevron(p: Instance, c: Color3)
+	bar(p, Vector2.new(0.5, 0.18), Vector2.new(0.5, 0.36), 45, c)
+	bar(p, Vector2.new(0.5, 0.18), Vector2.new(0.5, 0.64), -45, c)
+end
+
 local DRAW: { [string]: (Instance, Color3) -> () } = {
 	swimmer = swimmer,
 	boat = boat,
@@ -140,6 +193,15 @@ local DRAW: { [string]: (Instance, Color3) -> () } = {
 	clock = clock,
 	medal = medal,
 	quest = quest,
+	paw = paw,
+	person = person,
+	bolt = bolt,
+	can = can,
+	cone = cone,
+	diamond = diamond,
+	dot = dot,
+	x = x,
+	chevron = chevron,
 }
 
 function Glyph.draw(kind: string, parent: Instance, colour: Color3)

@@ -180,6 +180,8 @@ return function(t)
 			chimney_puff = "ambience: silent by design",
 			nitro_ring = "under nitro_burst's FX_Whoosh",
 			nitro_trail = "the engine flare (AudioController RPM)",
+			ski_rooster = "the driver's Hull_Wake bed swells with speed (AudioController); ski_splash on hits",
+			ski_carve = "under ski_splash's FX_SplashSmall + Hull_SprayHiss",
 			heli_downwash = "HeliController: Heli_Rotor loop + Hull_Wake bed",
 		}
 		for name, p in Presets.ALL do

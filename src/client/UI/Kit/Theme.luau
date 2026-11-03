@@ -141,8 +141,8 @@ function Theme.compact(viewport: Vector2, scale: number): boolean
 	return viewport.X > viewport.Y and viewport.Y / scale < 600
 end
 
--- A centred panel's du size: its design size, shrunk to 92% x 86% of the viewport (compact: 98% of the
--- height). Desktop (scale >= 0.95, landscape) caps the width at half the screen unless `wide` (the map).
+-- A centred panel's du size: its design size, shrunk to 92% x 86% of the viewport (compact: the height less
+-- 8 du each side for the title icon and the drop shadow; phone ADs 2026-11-01: 98% ran off both edges). Desktop (scale >= 0.95, landscape) caps the width at half the screen unless `wide` (the map).
 -- Portrait returns the most it may grow to (80% of the height); Kit/Panel shrinks it to its content.
 function Theme.panelSize(viewport: Vector2, scale: number, want: Vector2, wide: boolean?): Vector2
 	local portrait = viewport.Y > viewport.X
@@ -151,8 +151,10 @@ function Theme.panelSize(viewport: Vector2, scale: number, want: Vector2, wide: 
 	if scale >= 0.95 and not portrait and not wide then
 		w = math.min(w, math.max(viewport.X * 0.5 / scale, 600))
 	end
-	local fill = if Theme.compact(viewport, scale) then 0.98 else 0.86
-	return Vector2.new(math.floor(w), math.floor(math.min(h, viewport.Y * fill / scale)))
+	local room = if Theme.compact(viewport, scale)
+		then viewport.Y / scale - 2 * Theme.Size.shadow
+		else viewport.Y * 0.86 / scale
+	return Vector2.new(math.floor(w), math.floor(math.min(h, room)))
 end
 
 -- Columns for the left icon-button bar: as many rows as fit in 86% of the height (at least 1).

@@ -122,6 +122,10 @@ DevConfig.Actions = table.freeze({
 	vehicle = { PLAYER, enum(DevConfig.Vehicles) },
 	pet = { PLAYER, enum(DevConfig.Species) },
 	recruit = { PLAYER, enum({ "Builder", "Hauler", "Gatherer", "Rescuer", "Mechanic", "Medic" }) }, -- a crew member (live tests)
+	recruitbeat = {
+		PLAYER,
+		enum({ "Builder", "Hauler", "Gatherer", "Rescuer", "Mechanic", "Medic" }),
+	}, -- capture: stand + recruit
 	bosun = { PLAYER },
 	op = { PLAYER, enum(DevConfig.Ops) },
 	opEnd = { PLAYER, BOOL }, -- true: complete (graded), false: cancel
@@ -131,6 +135,8 @@ DevConfig.Actions = table.freeze({
 	award = { PLAYER, num(0, DevConfig.MaxAmount) },
 	medals = { PLAYER, num(0, 1000) }, -- docs/25 F: Medals for testing the skill tree
 	build = { PLAYER, enum(DevConfig.Buildings) }, -- island buildings (the unlock tree)
+	buildbeat = { PLAYER, enum(DevConfig.Buildings), num(1, 5) }, -- capture: stand in front, start that level's site
+	buildfinish = { PLAYER }, -- capture: the running site finishes now
 	unlockAll = { PLAYER },
 	pass = { PLAYER, enum(DevConfig.Passes) },
 	reset = { PLAYER },
