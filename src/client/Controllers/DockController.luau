@@ -44,6 +44,7 @@ local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
 local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local CashBurst = require(UI:WaitForChild("CashBurst"))
+local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local CosmeticPicker = require(UI:WaitForChild("CosmeticPicker"))
 local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
@@ -91,7 +92,9 @@ local focusStrip: Frame? = nil
 local stripContent: Frame? = nil
 local decorTabs: TabsUI.Tabs? = nil
 local cards: { ImageButton } = {}
-local pulseKey: string? = nil -- docs/24 E, docs/25 J: the HQ / Workshop card pulses while the tutorial points at it
+local pulseKey: string? = nil -- docs/24 E, docs/25 J: the HQ / Workshop card the tutorial points at (its buy button shines)
+local hutCue: { Instance } = {} -- the Hut's Free-button shine (gone on close or a refresh)
+local hutPopped = false -- the Hut's Free button pops once per tablet open
 local pickTab: (number) -> () = function() end
 local closeBuild: () -> ()
 
@@ -834,28 +837,59 @@ local function hqNeeds(parent: GuiObject): Frame?
 	return row
 end
 
--- docs/24 E, docs/25 J: the card the tutorial points at wears a steady gold outline that pops in once
--- (never a blinking pulse: owner 2026-10-28).
--- The ring sits on an inset frame, so it stays inside the card's bounds (never wider than the list's column).
-local function pulseRing(face: GuiObject)
-	local inset = Instance.new("Frame")
-	inset.Name = "Pulse"
-	inset.BackgroundTransparency = 1
-	inset.Position = UDim2.fromOffset(6, 6)
-	inset.Size = UDim2.new(1, -12, 1, -12)
-	inset.ZIndex = 5
-	Style.corner(inset, S.corner - 6)
-	inset.Parent = face
-	local stroke = Instance.new("UIStroke")
-	stroke.Color = OUTLINE
-	stroke.Thickness = 0
-	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	stroke.Parent = inset
-	TweenService:Create(
-		stroke,
-		TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-		{ Thickness = 5 }
-	):Play()
+-- Live 2026-11-01: 10 of 121 new players opened the tablet and never found the Hut's Free button. The card the
+-- tutorial points at (Hut, Workshop) wears no ring (owner 2026-11-01); its buy button pops once
+-- per open (FX_Pop), then a soft white shine band crosses it every 1.9 s (well under 3 Hz, no flash, no ring:
+-- the owner dislikes outlines). Reduce motion: the band rests still on it. Gone on close / a refresh.
+local function cueHut(card: GuiObject)
+	local buy = card:FindFirstChild("Cash", true)
+	local face = buy and buy:FindFirstChild("Face", true)
+	local holder = face and face.Parent
+	if not (face and holder and holder:IsA("GuiObject")) then
+		return
+	end
+	local still = Comfort.reducedMotion()
+	local shine = Instance.new("Frame")
+	shine.Name = "Shine"
+	shine.BackgroundColor3 = Color3.new(1, 1, 1)
+	shine.Size = UDim2.fromScale(1, 1)
+	shine.ZIndex = 3
+	Style.corner(shine, S.corner)
+	local band = Instance.new("UIGradient")
+	band.Rotation = 25
+	band.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 1),
+		NumberSequenceKeypoint.new(0.3, 1),
+		NumberSequenceKeypoint.new(0.45, 0.4),
+		NumberSequenceKeypoint.new(0.5, 0.1),
+		NumberSequenceKeypoint.new(0.55, 0.4),
+		NumberSequenceKeypoint.new(0.7, 1),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	band.Offset = Vector2.new(if still then 0 else -0.75, 0)
+	band.Parent = shine
+	shine.Parent = face
+	table.insert(hutCue, shine)
+	if not still then
+		TweenService:Create(
+			band,
+			TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false, 0.9),
+			{ Offset = Vector2.new(0.75, 0) } -- starts and ends just off the button, so all of the 1 s is visible
+		):Play()
+	end
+	if not hutPopped then
+		hutPopped = true
+		task.delay(0.3, function() -- after the panel's own pop
+			if holder.Parent then
+				if not still then
+					holder.AnchorPoint = Vector2.new(0.5, 0.5) -- UIScale grows from the anchor: pop from the centre
+					holder.Position = UDim2.fromScale(0.5, 0.5)
+					Style.pop(holder, true)
+				end
+				AudioController.play("FX_Pop", nil, 0.5, 1.25)
+			end
+		end)
+	end
 end
 
 -- Gamepad: the tutorial card's own Cash ("Free") button, so A builds; the card root only focuses (live v33: a
@@ -930,8 +964,10 @@ local function refreshCards()
 				buyButtons(slot, item, st)
 			end
 			if pulseKey == item.key then
-				pulseRing(face)
 				pulsed = root
+				if st.forSale then
+					cueHut(root)
+				end
 			end
 			Style.press(root, function()
 				focusItem(item)
@@ -1115,6 +1151,11 @@ closeBuild = function()
 	end
 	displayed = false
 	focused = nil
+	for _, inst in hutCue do
+		inst:Destroy()
+	end
+	hutCue = {}
+	hutPopped = false
 	clearOutline()
 	refreshStrip()
 	hideHud(false)
