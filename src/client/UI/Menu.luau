@@ -9,8 +9,11 @@
 --   LocalPlayer attribute MenuOpen mirrors "a panel is up" (Waypoint and the pager hide under it).
 --   Menu.open(name) / Menu.close() / Menu.toggle(name) / Menu.openBoat(vehicleId) / Menu.isOpen()
 --   Menu.openBoard(rack): a craft board's list (Panels/Board), from its BoardOpen prompt
+--   Sale button (HudLayout "sale", owner mock A 2026-11-01): the Starter Kit's own icon, a tilted SALE tag and a
+--   clock to MonetizationConfig saleEndsUtc (server time); hides once owned or over. Tap opens the Shop on it.
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
+local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -20,10 +23,12 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
+local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
 local QuestData = require(Shared:WaitForChild("Quests"):WaitForChild("Data"))
 local QuestRules = require(Shared:WaitForChild("Quests"):WaitForChild("Rules"))
+local SaleRules = require(Shared:WaitForChild("SaleRules"))
 local Stickers =
 	require(Shared:WaitForChild("Config"):WaitForChild("UiImages")).Stickers :: { [string]: string }
 local Client = script.Parent.Parent
@@ -68,6 +73,11 @@ local Menu = {}
 
 local bar: Frame? = nil
 local chip: GuiObject? = nil -- the quest tracker (HudLayout "quest"): icon, place, distance; tap opens Quests
+local SALE_KEY = "StarterKit"
+local saleItem = (MonetizationConfig :: any).GamePasses[SALE_KEY]
+local sale: GuiObject? = nil
+local saleClock: TextLabel? = nil
+local salePopped = false
 local panels: { [string]: any } = {}
 local buttons: { [string]: IconButton.IconButton } = {}
 local current: string? = nil
@@ -112,7 +122,30 @@ local function shown(): boolean
 	return not Layout.coldOpen() and player:GetAttribute("CinematicPlaying") ~= true
 end
 
+local function paintSale()
+	if not sale then
+		return
+	end
+	local ends = saleItem.saleEndsUtc
+	local now = Workspace:GetServerTimeNow()
+	local on = shown()
+		and current == nil
+		and player:GetAttribute("MapOpen") ~= true
+		and player:GetAttribute("BuildHidesMenu") ~= true
+		and SaleRules.visible(ends, now, player:GetAttribute("Pass_" .. SALE_KEY) == true)
+	if on and saleClock then
+		saleClock.Text = SaleRules.countdown(ends - now)
+	end
+	if on and not salePopped then
+		salePopped = true
+		Style.pop(sale, true) -- one pop the first time it shows, never a loop
+	else
+		sale.Visible = on
+	end
+end
+
 local function chrome()
+	paintSale()
 	if bar then
 		bar.Visible = shown()
 			and current == nil
@@ -456,6 +489,115 @@ local function buildBar(region: Frame)
 	chrome()
 end
 
+local function buildSale(region: Frame)
+	if sale then
+		sale:Destroy()
+	end
+	local mm = Layout.current().menu
+	local side, row, pillH = mm.icon, mm.label, 30
+	local btn = IconButton.new(region, {
+		icon = "shop",
+		label = "Starter",
+		color = "blue",
+		size = side,
+		labelRow = row,
+		onActivate = function()
+			Menu.open("Shop")
+			if current == "Shop" then
+				panels.Shop.focus(SALE_KEY)
+			end
+		end,
+	})
+	local root = btn.root
+	root.Name = "SaleButton"
+	root.AnchorPoint = Vector2.new(0.5, 0)
+	root.Position = UDim2.new(0.5, 0, 0, 14) -- room above for the tag
+	root.Size = UDim2.new(1, 0, 0, side + row + 4 + pillH) -- the clock pill is part of the tap target
+	local tile = root:FindFirstChild("Tile") :: Frame
+	tile.Position = UDim2.new(0.5, -side / 2, 0, 0)
+	local label = root:FindFirstChild("Label") :: TextLabel
+	label.Position = UDim2.new(0.5, 0, 0, side + row + 2)
+	-- the pass's own store icon over the placeholder glyph (the Shop reads it the same way)
+	local face = tile:FindFirstChild("Face", true) :: Frame
+	task.spawn(function()
+		local ok, info = pcall(function()
+			return MarketplaceService:GetProductInfo(saleItem.id, Enum.InfoType.GamePass)
+		end)
+		local id = if ok and type(info) == "table" then info.IconImageAssetId else nil
+		if type(id) == "number" and id > 0 and face.Parent then
+			local img = Instance.new("ImageLabel")
+			img.Name = "PassIcon"
+			img.BackgroundTransparency = 1
+			img.Image = `rbxassetid://{id}`
+			img.AnchorPoint = Vector2.new(0.5, 0.5)
+			img.Position = UDim2.fromScale(0.5, 0.5)
+			img.Size = UDim2.new(1, -6, 1, -6)
+			img.ZIndex = 2
+			Style.corner(img, Theme.Size.corner)
+			img.Parent = face
+		end
+	end)
+
+	-- the red SALE sticker, tilted on the tile's top-left corner: white rim, ink outline, red face
+	local tag = Instance.new("Frame")
+	tag.Name = "SaleTag"
+	tag.BackgroundColor3 = Color3.new(1, 1, 1)
+	tag.AnchorPoint = Vector2.new(0.5, 0.5)
+	tag.Position = UDim2.new(0.5, -side / 2 + 16, 0, 2)
+	tag.Size = UDim2.fromOffset(66, 30)
+	tag.Rotation = -8
+	tag.ZIndex = 4
+	Style.corner(tag, 10)
+	Style.stroke(tag, 3, true)
+	local red = Instance.new("Frame")
+	red.BackgroundColor3 = Color3.new(1, 1, 1)
+	red.Position = UDim2.fromOffset(3, 3)
+	red.Size = UDim2.new(1, -6, 1, -6)
+	red.ZIndex = 4
+	Style.corner(red, 8)
+	Style.gradient(red, Style.grad("red"))
+	red.Parent = tag
+	local word = Style.label(red, "SALE", Theme.Text.small)
+	word.TextWrapped = false
+	word.TextScaled = true
+	word.ZIndex = 5
+	local cap = Instance.new("UITextSizeConstraint")
+	cap.MaxTextSize = Theme.Text.small
+	cap.Parent = word
+	tag.Parent = root
+
+	-- the dark clock pill under the label
+	local pill = Instance.new("Frame")
+	pill.Name = "Clock"
+	pill.BackgroundColor3 = Color3.new(1, 1, 1)
+	pill.AnchorPoint = Vector2.new(0.5, 1)
+	pill.Position = UDim2.fromScale(0.5, 1)
+	pill.Size = UDim2.new(1, 0, 0, pillH)
+	Style.corner(pill, 10)
+	Style.gradient(pill, Style.grad("ink"))
+	Style.stroke(pill, 2, true)
+	local list = Style.list(pill, true, 4)
+	list.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	list.VerticalAlignment = Enum.VerticalAlignment.Center
+	local glyph = Instance.new("Frame")
+	glyph.BackgroundTransparency = 1
+	glyph.Size = UDim2.fromOffset(20, 20)
+	glyph.LayoutOrder = 1
+	glyph.Parent = pill
+	Style.icon(glyph, "daily")
+	local clock = Style.label(pill, "", Theme.Text.small)
+	clock.TextColor3 = Color3.fromHex("FFE066")
+	clock.TextWrapped = false
+	clock.AutomaticSize = Enum.AutomaticSize.X
+	clock.Size = UDim2.fromScale(0, 1)
+	clock.LayoutOrder = 2
+	pill.Parent = root
+
+	sale, saleClock = root, clock
+	root.Visible = false
+	paintSale()
+end
+
 local function buildChip(region: Frame)
 	local b = Style.button(region, UDim2.fromScale(1, 1))
 	b.Name = "QuestChip"
@@ -581,6 +723,23 @@ function Menu.mount()
 		panels["Board_" .. rack] = Board.new(c, noteClosed, rack, title, Menu.openBoat)
 	end
 	buildChip(Layout.region(g, "quest"))
+	local saleRegion = Layout.region(g, "sale")
+	buildSale(saleRegion)
+	Layout.onMetrics(function()
+		buildSale(saleRegion)
+	end)
+	player:GetAttributeChangedSignal("Pass_" .. SALE_KEY):Connect(paintSale)
+	task.spawn(function() -- the clock ticks; past saleEndsUtc the button hides
+		while
+			sale
+			and saleItem.saleEndsUtc
+			and Workspace:GetServerTimeNow() < saleItem.saleEndsUtc
+		do
+			task.wait(1)
+			paintSale()
+		end
+		paintSale()
+	end)
 
 	local function applyShown()
 		if not shown() then

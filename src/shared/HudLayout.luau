@@ -58,6 +58,8 @@ HudLayout.QUEST_TOUCH_HEIGHT = 46 -- touch: a tag over the minimap's bottom edge
 -- 46 du = a 32 px tap target (and 14 px+ scaled text) at the 0.7 phone floor
 HudLayout.CHIPS_WIDTH = 420 -- docs/24 E: the tutorial goal chips / the permanent Next chip (UI/NextChip)
 HudLayout.CHIPS_HEIGHT = 48 -- touch: under the 64 du step card, inside OBJECTIVE_HEIGHT (68 + 48 <= 132)
+HudLayout.SALE_WIDTH = 96 -- the timed-sale sticker button (UI/Menu): icon, label, clock pill
+HudLayout.SALE_HEIGHT = 136
 HudLayout.DEBRIEF_WIDTH = 340 -- the end-of-call toast (UI/OpsDebrief), drawn scaled to its region's width
 HudLayout.DEBRIEF_HEIGHT = 96
 HudLayout.DEBRIEF_MIN = 0.7 -- the smallest the toast may shrink to fit a gap
@@ -88,6 +90,7 @@ export type RegionName =
 	| "menu"
 	| "quest"
 	| "chips"
+	| "sale"
 	| "debrief"
 	| "steer"
 	| "drive"
@@ -144,7 +147,7 @@ local function debriefRect(mt: Metrics, zones: { { number } }): Rect
 	local W, H = HudLayout.DEBRIEF_WIDTH, HudLayout.DEBRIEF_HEIGHT
 	local blocks = table.clone(zones)
 	local ys = { m }
-	for _, name in { "wallet", "menu", "minimap", "quest", "gauges" } do
+	for _, name in { "wallet", "menu", "minimap", "quest", "gauges", "sale" } do
 		local x0, y0, x1, y1 = box(mt.rects[name])
 		table.insert(blocks, { x0 - g, y0 - g, x1 + g, y1 + g })
 		table.insert(ys, y1 + g)
@@ -265,8 +268,15 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		-- portrait: the minimap right of the menu, the objective under it
 		local mapX = if portrait then left else cardLeft - side
 		mt.rects["minimap"] = rect(Vector2.new(0, 0), Vector2.new(mapX, m), Vector2.new(side, side))
+		-- the sale button: top band left of the corner minimap (portrait: the top-right corner beside it)
+		local saleRight = if portrait then cardLeft else mapX - g
+		mt.rects["sale"] = rect(
+			Vector2.new(1, 0),
+			Vector2.new(saleRight, m),
+			Vector2.new(HudLayout.SALE_WIDTH, HudLayout.SALE_HEIGHT)
+		)
 		local objectiveX, objectiveY = left, m
-		local objectiveRight = mapX - g
+		local objectiveRight = saleRight - HudLayout.SALE_WIDTH - g
 		if portrait then
 			objectiveY, objectiveRight = m + side + g, cardLeft - g
 		end
@@ -298,6 +308,8 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		-- head and waypoint pins parked on it (device pass 2026-10-28): it goes under the corner minimap instead
 		local corner = not portrait and walletY + walletH > u.Y * 0.4
 		if corner then
+			-- not under the objective there, so full size (the sale button narrows the objective on small phones)
+			walletH, walletW = HudLayout.WALLET_HEIGHT, HudLayout.WALLET_WIDTH
 			walletX, walletY = cardLeft - walletW, m + side + g
 		end
 		mt.rects["wallet"] =
@@ -362,18 +374,26 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		local chipsW = math.min(x1 - x0, HudLayout.CHIPS_WIDTH)
 		mt.rects["chips"] =
 			rect(Vector2.new(1, 0), Vector2.new(x1, m), Vector2.new(chipsW, HudLayout.CHIPS_HEIGHT))
-		mt.noticeWidth = math.min(x1 - x0, 420)
+		-- the notice band ends left of the sale button's column (right edge, above the quest chip)
+		local nx1 = x1 - HudLayout.SALE_WIDTH - g
+		mt.noticeWidth = math.min(nx1 - x0, 420)
 		mt.rects["notice"] = rect(
 			Vector2.new(0.5, 0),
-			Vector2.new((x0 + x1) / 2, m + HudLayout.CHIPS_HEIGHT + g),
+			Vector2.new((x0 + nx1) / 2, m + HudLayout.CHIPS_HEIGHT + g),
 			Vector2.new(mt.noticeWidth, HudLayout.NOTICE_HEIGHT)
 		)
 		mt.rects["minimap"] =
 			rect(Vector2.new(1, 1), Vector2.new(u.X - m, bottom), Vector2.new(side, side))
+		local questBottom = bottom - side - HudLayout.PILL_HEIGHT - g
 		mt.rects["quest"] = rect(
 			Vector2.new(1, 1),
-			Vector2.new(u.X - m, bottom - side - HudLayout.PILL_HEIGHT - g),
+			Vector2.new(u.X - m, questBottom),
 			Vector2.new(HudLayout.QUEST_WIDTH, HudLayout.QUEST_HEIGHT)
+		)
+		mt.rects["sale"] = rect(
+			Vector2.new(1, 1),
+			Vector2.new(u.X - m, questBottom - HudLayout.QUEST_HEIGHT - g),
+			Vector2.new(HudLayout.SALE_WIDTH, HudLayout.SALE_HEIGHT)
 		)
 	end
 	-- prompt and gauges keep their place on every device (the prompt clears the speed dock;
@@ -414,10 +434,15 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	local gs = if touch then gaugeSide else side
 	mt.rects["gauges"] = rect(Vector2.new(1, 1), Vector2.new(u.X - m, bottom), Vector2.new(gs, gs))
 	local stickRight = if u.X < u.Y then u.X else u.X * 0.4
+	local dx0, dy0, dx1, dy1 = box(mt.rects["drive"]) -- the drive pad reaches past the jump zone on small phones
 	mt.rects["debrief"] = debriefRect(
 		mt,
 		if touch
-			then { { 0, u.Y * 0.55, stickRight, u.Y }, { u.X * 0.7, u.Y * 0.65, u.X, u.Y } }
+			then {
+				{ 0, u.Y * 0.55, stickRight, u.Y },
+				{ u.X * 0.7, u.Y * 0.65, u.X, u.Y },
+				{ dx0 - g, dy0 - g, dx1, dy1 },
+			}
 			else {}
 	)
 	return mt
