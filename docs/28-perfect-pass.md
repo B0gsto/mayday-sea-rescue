@@ -38,6 +38,7 @@ Status lives in the table; one row per item. Sheets: `build/status/2026-10-31/pe
 | Code->mesh | commons kit M_Prop_CommonsKit: Hangout + 6 decorations | PERF-BL5 | 6.2/6.4 -> 8.3/8.8/8.9/9.0 (r4) | 9632e871+0e0a67bd on t3/build-prop-commons-kit (unmerged); no in-game score yet; r5: hammock 8.5, cart + chat corners 8.8 (minifigs in front) |
 | Code->mesh | rescue helicopter M_Veh_RescueHeli | PERF-BL6 | 6.2 -> 7.0/8.0/8.3/8.8 | 0fe6daa5 on t3/rescue-helicopter-asset (unmerged); BEFORE MERGE: livery recolour must apply to the mesh, modelled winch cable doubles the runtime one; r5: rear door face, charcoal skid struts, smaller rotor hub |
 | Code->mesh | hub centre beacon atoll M_Prop_HubKit (tour: empty water) | PERF-BL12 | 5.5 -> 8.6 sheets (r4) | wired, HubLandmark; unseen in game |
+| Code->mesh | Mermaid Lagoon dressing M_Prop_LagoonKit | PERF-BL12 | 5.8 -> 8.4 sheets (r5) | wired, MermaidLagoon/LagoonKit (code props stay as the fallback); unseen in game; white sand terrain NOT changed (sheet used a warm-tan stand-in) |
 | Mesh | M_Prop_BuildStation | Blender | 8.3 (r2) | queued |
 | Mesh | vehicles: JetSki, RIB, StormRunner, Tidewalker, RiptideX, GildedGull, SupplyBarge | Blender | unscored | queued |
 | Mesh | buildings: RescueHQ, HQAddons, Bunkhouse, Depot, Workshop/FishMarket/Clinic/BoatYard/Lookout/RescueBoathouse/TrophyHall/SubPen/AirStation/Boathouse add-ons | Blender | 7.5-8.5 | queued |

@@ -376,7 +376,8 @@
    "T_TrophyHall_Brick_RGH",
    "T_WorkshopAddons_Brick_RGH",
    "T_BuildSiteKit_Brick_RGH",
-   "T_HubKit_Brick_RGH"
+   "T_HubKit_Brick_RGH",
+   "T_LagoonKit_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -13511,6 +13512,15 @@
   "source": "assets/textures/M_Rock_Boulder_04/T_Boulder04_Granite_RGH.png",
   "type": "Image"
  },
+ "Image:9f176b17039158e3e000dd7cde8a44b1fcc84187a4d76d0c4243f901a0b2a13a": {
+  "assetId": "111083993483904",
+  "imageId": "111083993483904",
+  "moderation": "Approved",
+  "name": "T_LagoonKit_Brick_ALB",
+  "sha": "9f176b17039158e3e000dd7cde8a44b1fcc84187a4d76d0c4243f901a0b2a13a",
+  "source": "assets/textures/M_Prop_LagoonKit/T_LagoonKit_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:9f18c12617738c65d78f7f894d391451aa02ff60dabda328cc3df3c91286c180": {
   "assetId": "72189968684164",
   "imageId": "72189968684164",
@@ -13547,7 +13557,8 @@
    "T_WorkshopAddons_Brick_NOR",
    "T_JettyCrane_Brick_NOR",
    "T_BuildSiteKit_Brick_NOR",
-   "T_HubKit_Brick_NOR"
+   "T_HubKit_Brick_NOR",
+   "T_LagoonKit_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -17736,7 +17747,8 @@
    "T_WorkshopAddons_Brick_MET",
    "T_JettyCrane_Brick_MET",
    "T_BuildSiteKit_Brick_MET",
-   "T_HubKit_Brick_MET"
+   "T_HubKit_Brick_MET",
+   "T_LagoonKit_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -21212,6 +21224,16 @@
   "route": "delivery",
   "sha": "07e7d6ee4ead6a163d4259484641134cef658dcf09e7a8415c01066a3e8c2abf",
   "source": "assets/fbx/M_Hbr_QuayKit_Corner/M_Hbr_QuayKit_Corner_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:0852a197a55e1142aac685f6208d9a6db8ef72fd79d5db96a7b5110a5ec5a56b": {
+  "assetId": "134205432014796",
+  "moderation": "Approved",
+  "name": "M_Prop_LagoonKit_LOD2",
+  "rbxm": "assets/models/M_Prop_LagoonKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "0852a197a55e1142aac685f6208d9a6db8ef72fd79d5db96a7b5110a5ec5a56b",
+  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD2.fbx",
   "type": "Model"
  },
  "Model:08af153ff2322def486ce43138834b916edcd40f7ea7173ddb4b25683e56ae33": {
@@ -27084,6 +27106,16 @@
   "source": "assets/fbx/Spike1/M_Spike1_Tentacle40.fbx",
   "type": "Model"
  },
+ "Model:9e7a5e0a9395126b9d3c359d1858092a18b90f908b62509002d49fa1cf5593fc": {
+  "assetId": "78228269224567",
+  "moderation": "Approved",
+  "name": "M_Prop_LagoonKit",
+  "rbxm": "assets/models/M_Prop_LagoonKit.rbxm",
+  "route": "delivery",
+  "sha": "9e7a5e0a9395126b9d3c359d1858092a18b90f908b62509002d49fa1cf5593fc",
+  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:9e9950f231617304f5199110b3ce55e96b0bddd7be7af1b9a570f2b186191c93": {
   "assetId": "106415322294870",
   "moderation": "Approved",
@@ -27852,6 +27884,16 @@
   "route": "delivery",
   "sha": "b35f8468b1100d11cf5e9691e500f30466826911b3ccbe127b8528e7d2c41f2d",
   "source": "assets/fbx/M_Kit_ChartTablet/M_Kit_ChartTablet_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:b3a57ebda13641d7246725873ba6ac05e3a6be6040232c2639719398547abd99": {
+  "assetId": "124768171635748",
+  "moderation": "Approved",
+  "name": "M_Prop_LagoonKit_LOD1",
+  "rbxm": "assets/models/M_Prop_LagoonKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b3a57ebda13641d7246725873ba6ac05e3a6be6040232c2639719398547abd99",
+  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD1.fbx",
   "type": "Model"
  },
  "Model:b3c9cbfe144ca8901839abb97f49d66443f6d0884d2c9cb1e410c64d03de36d4": {

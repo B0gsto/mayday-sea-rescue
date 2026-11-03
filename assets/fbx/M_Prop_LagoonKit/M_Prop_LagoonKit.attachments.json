@@ -1,0 +1,964 @@
+{
+ "asset": "M_Prop_LagoonKit",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Statue",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -459.2719,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Jetty",
+   "parent": null,
+   "blender": [
+    -100.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    100.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -359.2719,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_DayMark",
+   "parent": null,
+   "blender": [
+    -140.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    140.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -319.2719,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Telescope",
+   "parent": null,
+   "blender": [
+    -165.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    165.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -294.2719,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_StampPost",
+   "parent": null,
+   "blender": [
+    -180.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    180.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -279.2719,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Cafe",
+   "parent": null,
+   "blender": [
+    -240.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    240.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -219.2719,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Table",
+   "parent": null,
+   "blender": [
+    -290.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    290.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -169.2719,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_ParasolTeal",
+   "parent": null,
+   "blender": [
+    -305.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    305.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -154.2719,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_ParasolCoral",
+   "parent": null,
+   "blender": [
+    -325.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    325.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -134.2719,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_ParasolYellow",
+   "parent": null,
+   "blender": [
+    -345.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    345.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -114.2719,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_VigLounge",
+   "parent": null,
+   "blender": [
+    -380.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    380.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -79.2719,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_VigTowels",
+   "parent": null,
+   "blender": [
+    -420.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    420.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -39.2719,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_VigCastle",
+   "parent": null,
+   "blender": [
+    -460.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    460.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    0.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_HutCoral",
+   "parent": null,
+   "blender": [
+    -495.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    495.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    35.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_HutTeal",
+   "parent": null,
+   "blender": [
+    -520.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    520.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    60.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Palm",
+   "parent": null,
+   "blender": [
+    -555.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    555.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    95.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_PathPlate",
+   "parent": null,
+   "blender": [
+    -590.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    590.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    130.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Agapanthus",
+   "parent": null,
+   "blender": [
+    -610.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    610.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    150.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_RockArch",
+   "parent": null,
+   "blender": [
+    -655.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    655.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    195.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Coral",
+   "parent": null,
+   "blender": [
+    -705.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    705.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    245.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_ColumnTall",
+   "parent": null,
+   "blender": [
+    -730.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    730.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    270.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_ColumnStump",
+   "parent": null,
+   "blender": [
+    -755.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    755.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    295.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_ColumnFallen",
+   "parent": null,
+   "blender": [
+    -780.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    780.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    320.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_RuinBlock",
+   "parent": null,
+   "blender": [
+    -805.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    805.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    345.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Surfboards",
+   "parent": null,
+   "blender": [
+    -825.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    825.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    365.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_SandPlate",
+   "parent": null,
+   "blender": [
+    -845.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    845.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    385.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_BeachRock",
+   "parent": null,
+   "blender": [
+    -865.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    865.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    405.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_BeachFlag",
+   "parent": null,
+   "blender": [
+    -885.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    885.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    425.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_ShellCluster",
+   "parent": null,
+   "blender": [
+    -905.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    905.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    445.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_PalmBase",
+   "parent": null,
+   "blender": [
+    -930.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    930.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    470.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_VigRed",
+   "parent": null,
+   "blender": [
+    -955.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    955.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    495.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_CoralClump",
+   "parent": null,
+   "blender": [
+    -990.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    990.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    530.7281,
+    -45.66,
+    -55.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp",
+   "parent": null,
+   "blender": [
+    -110.0,
+    14.5,
+    13.5
+   ],
+   "roblox_from_origin": [
+    110.0,
+    13.5,
+    14.5
+   ],
+   "roblox_from_bbox_centre": [
+    -349.2719,
+    -32.16,
+    -41.03
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}
