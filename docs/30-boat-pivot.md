@@ -12,13 +12,20 @@ survivors. This wins over docs/00 sections 3-7 wherever they differ; docs/00 get
   driving away from home. Works on every craft, with or without survivors.
 - Press: a charge of about 1.5 s with a fast camera whoosh, then you, your boat and everyone aboard are home.
   Survivors hop off by themselves, pay lands, workers walk off.
-- **You stay on the boat, already at the jetty, bow to the open sea, throttle ready.** No docking, parking, stepping off
-  or Launch prompt in the loop. The Upgrade button is right there. Getting off to walk your island is optional.
+- **You land in the Upgrade Station's bay, still on the boat, bow to the open sea, throttle ready.** No docking, parking,
+  stepping off, walking or Launch prompt in the loop. Getting off to walk your island is optional.
 - A pirate ram during the charge cancels it (docs/29 D). Server validates everything. Driving home by hand still works.
 
 ## 2. Fifty levels, every one massive
-One boat, one straight ladder, one big **Upgrade** button (home only, green price, one tap; nothing to choose, so it
-is not a choice menu). Cash only. Exaggerate everything.
+One boat, one straight ladder. Cash only. Exaggerate everything.
+
+**Upgrade Station (owner 2026-11-03):** a big landmark at the water on every island, there from the start, with a bay the
+boat lands in, so the station needs no walk. Upgrading happens only here. Its big in-world board always shows:
+- **Lv 7 / 50** and a full progress bar with the five hull stages marked, so how much is left is plain.
+- The next level's look and its jump, such as speed 285 -> 340, room 3 -> 4, with icons.
+- Price, your Cash and how much is missing, then one big green **Upgrade** button (tap, key, gamepad). One option, so not
+  a choice menu.
+Also readable and usable on foot. Placeholder Parts first; concept and AD before Blender.
 
 **Every level changes all of:** speed, how it looks, and a level-up moment. The moment: the boat lifts out of the
 water, spins, blasts bricks and spray, slams down bigger and new, one big sound (reduced-motion: no shake). Under 3 s.
@@ -56,7 +63,7 @@ Unchanged for now, owner to review: Cash packs and 2x Cash (they speed up levels
 ## 4. Island and tutorial
 - The island stays optional: workers, flex, spin. Boat levels stop depending on buildings. Which buildings to cut is a
   later owner review. Helicopter and submarine stay as they are for now.
-- Tutorial: free Hut -> first rescue (docs/29 A) -> Go back -> Upgrade to L2 -> out again, feeling the speed. The Workshop
+- Tutorial: free Hut -> first rescue (docs/29 A) -> Go back -> station: Upgrade to L2 -> out again, feeling the speed. The Workshop
   beat and the jet ski hold (CraftHeld) leave the tutorial.
 
 ## 5. Changes to docs/29
