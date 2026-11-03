@@ -38,7 +38,10 @@ Events.CLIENT_REFILL = 2
 
 -- The onboarding funnel in the order a new player meets it (docs/24 E, docs/25 J; PT5 2026-10-28).
 -- Roblox treats a skipped step as completed, so the numbers MUST follow the real order. Rebuilt
--- 2026-10-29, before launch; after launch only append. Every step is server-side but TabletOpened.
+-- 2026-10-29, before launch; after launch keep every number's place. Every step is server-side but TabletOpened.
+-- docs/30 (2026-11-03): 8 and 9 were WorkshopPlaced / WorkshopBuilt. Same place, the two beats after the delivery, so the
+-- dashboard line stays comparable across the pivot's publish date; trail lines carry the name, so old rows still read
+-- (tools/trail.py). Go back is not a step: driving home by hand skips it (custom GoBack, Started / Landed, measures it).
 Events.Funnel = {
 	{ step = 1, name = "Joined" }, -- PlayerAdded
 	{ step = 2, name = "TabletOpened" }, -- the build tablet opened (client reports it)
@@ -47,9 +50,9 @@ Events.Funnel = {
 	{ step = 5, name = "AtSea" }, -- the cold open put them on the jet ski at sea
 	{ step = 6, name = "FirstBoard" }, -- the first survivor climbed aboard
 	{ step = 7, name = "FirstDelivery" }, -- the first call delivered (the cold open)
-	{ step = 8, name = "WorkshopPlaced" }, -- the tutorial Workshop site started (Cash top-up or Robux)
-	{ step = 9, name = "WorkshopBuilt" }, -- the Workshop stands: the tutorial spin is handed out
-	{ step = 10, name = "FirstSpin" }, -- the tutorial spin used: the Next chip takes over
+	{ step = 8, name = "FirstUpgrade" }, -- boat L2 bought at the Upgrade Station
+	{ step = 9, name = "BackOut" }, -- at the helm past home again after L2
+	{ step = 10, name = "FirstSpin" }, -- the tutorial spin used
 	{ step = 11, name = "NextBuild" }, -- the first build after the tutorial (the Next chip's)
 	{ step = 12, name = "HQ2Placed" }, -- the Rescue Post (HQ Lv2) site started
 	{ step = 13, name = "FirstVehicle" }, -- the first vehicle bought with Cash (the RIB: Boathouse, HQ Lv2)
@@ -78,8 +81,8 @@ function Events.funnelStep(name: string): FunnelStep?
 	return nil
 end
 
--- Onboarding steps a construction start (or finish) completes: the free Hut, the tutorial Workshop,
--- then, once the tutorial's spin is done, the first build (any) and the Rescue Post (HQ Lv2).
+-- Onboarding steps a construction start (or finish) completes: the free Hut, then, once the tutorial
+-- is done, the first build (any) and the Rescue Post (HQ Lv2).
 function Events.buildSteps(
 	key: string,
 	level: number,
@@ -88,8 +91,6 @@ function Events.buildSteps(
 ): { string }
 	if key == "HQ" and level == 1 then
 		return { if finished then "HutBuilt" else "HutPlaced" }
-	elseif key == "Workshop" and level == 1 then
-		return { if finished then "WorkshopBuilt" else "WorkshopPlaced" }
 	elseif finished or not tutorialDone then
 		return {}
 	end

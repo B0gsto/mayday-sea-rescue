@@ -10,11 +10,11 @@
 -- The first calls are fail-safe: condition is held above Critical for the cold open and the next
 -- three calls, so a child who just holds the throttle cannot lose anyone.
 --
--- docs/24 E, docs/25 J: the tutorial's first beat is the free Rescue Hut (HQ Lv1) from the build stand, then
--- the saved beat (data.tutorialStep) walks the world from the cold open to the next build and the first spin. `beat` is pure and reads only saved facts, so a returning player
--- resumes where the save left them; a save that already has a building or 5+ rescues (made before
--- this tutorial existed) skips to the permanent Next chip. The start set (the jetty, the Hut) never counts. The build tablet tops up a new player's
--- Cash to the Workshop price exactly once; the server clients the first rescued survivor as a Builder.
+-- docs/30 section 4, docs/25 J: the free Rescue Hut, then the saved beat (data.tutorialStep) walks from the cold open to
+-- L2 at the Upgrade Station, a first trip back out and the free spin. `beat` is pure and reads only saved facts, so a
+-- returning player resumes where the save left them; a save that already has a building or 5+ rescues (made before this
+-- tutorial existed) skips to the permanent Next chip. The start set (the jetty, the Hut) never counts. The server clients
+-- the first rescued survivor as a Builder.
 local Onboarding = {}
 
 Onboarding.WEATHER_HOLD = 300 -- s a running cold open may hold back a new storm (server-wide) -- tune
@@ -23,22 +23,17 @@ Onboarding.FAILSAFE_FLOOR = 20 -- condition never reaches Critical on those call
 Onboarding.TUTORIAL_CALLS = 4 -- station calls after the cold open (#CallTypes.TutorialChain - 1)
 
 -- Saved tutorial beats (data.tutorialStep). The step only ever moves forward; facts fill the rest.
-Onboarding.STEP_RESCUE = 1 -- the cold open is home; the next call is the goal (not written yet)
-Onboarding.STEP_SITE = 2 -- the Workshop site is running
-Onboarding.STEP_SPIN = 3 -- the Workshop is done; the one tutorial spin waits in the menu
+Onboarding.STEP_RESCUE = 1 -- pins a started tutorial: a new player's first building must not skip it (DockService)
+Onboarding.STEP_SITE = 2 -- old saves: the Workshop beat was running (it gets no beat of its own now)
+Onboarding.STEP_SPIN = 3 -- the first trip back out is done; the one tutorial spin waits at the wheel
 Onboarding.STEP_DONE = 4 -- the tutorial is over, the Next chip leads from here
 Onboarding.SKIP_RESCUES = 5 -- an old save with this many rescues never starts the tutorial
-Onboarding.WORKSHOP = "Workshop"
+Onboarding.WORKSHOP = "Workshop" -- an old STEP_SITE save's finished Workshop still hands out its spin (SpinService)
 Onboarding.HQ = "HQ" -- the free first build (docs/25 J)
+Onboarding.UPGRADE_LEVEL = 2 -- the first delivery pays exactly this boat level
 local START = { Harbour = true, HQ = true } -- every new island has the jetty and builds the Hut first
 
--- Roblox's own prompts wait for the tutorial's first spin (live: they lost players on the Workshop and spin steps);
--- a save with no step skipped the tutorial.
-function Onboarding.tutorialOver(step: number?): boolean
-	return step == nil or step >= Onboarding.STEP_DONE
-end
-
--- Any building beyond the start set (the Workshop on): an established save. PlatformPromptService waits for it too.
+-- Any building beyond the start set (the Workshop on): an established save.
 function Onboarding.established(owned: { [string]: boolean }?): boolean
 	local map: { [string]: boolean } = owned or {}
 	for key, has in map do
@@ -55,8 +50,8 @@ export type Beat =
 	| "HQSite"
 	| "ColdOpen"
 	| "Rescue"
-	| "BuildStation"
-	| "Build"
+	| "Upgrade"
+	| "OutAgain"
 	| "Spin"
 	| "Done"
 
@@ -66,6 +61,7 @@ export type BeatFacts = {
 	step: number?, -- data.tutorialStep (nil = never started)
 	owned: { [string]: boolean }, -- data.dockBuildings
 	constructionKey: string?, -- the island's running site (plot SiteKey)
+	boatLevel: number?, -- data.boatLevel (nil = 1)
 }
 
 export type Facts = {
@@ -128,9 +124,21 @@ function Onboarding.skip(f: BeatFacts): boolean
 	return (f.totalRescues or 0) >= Onboarding.SKIP_RESCUES or Onboarding.established(f.owned)
 end
 
--- The one beat to show now (docs/24 E, docs/25 J): the build stand -> the Hut site -> jet ski -> first
--- survivor -> the build tablet -> Workshop site -> Spin -> done. `Build` also runs while the next tutorial call is the actual goal; the
--- controller shows the call marker then.
+-- The facts of a saved profile (or its snapshot); the site from data.construction unless the plot's is passed.
+function Onboarding.factsOf(data: { [string]: any }, constructionKey: string?): BeatFacts
+	local site = data.construction
+	return {
+		coldOpenDone = data.coldOpenDone == true,
+		totalRescues = tonumber(data.totalRescues) or 0,
+		step = tonumber(data.tutorialStep),
+		owned = if type(data.dockBuildings) == "table" then data.dockBuildings else {},
+		constructionKey = constructionKey or (if type(site) == "table" then site.key else nil),
+		boatLevel = tonumber(data.boatLevel),
+	}
+end
+
+-- The one beat to show now (docs/30 section 4): the build stand -> the Hut site -> the cold open -> Upgrade (L2 at the
+-- station) -> OutAgain (a trip out and home) -> Spin -> done. No Workshop beat: an old save on it continues at Upgrade.
 function Onboarding.beat(f: BeatFacts): Beat
 	if f.step and f.step >= Onboarding.STEP_DONE then
 		return "Done"
@@ -144,16 +152,21 @@ function Onboarding.beat(f: BeatFacts): Beat
 	if not f.coldOpenDone then
 		return "ColdOpen"
 	end
-	if (f.owned or {})[Onboarding.WORKSHOP] == true then
+	if f.step and f.step >= Onboarding.STEP_SPIN then
 		return "Spin"
 	end
-	if f.constructionKey == Onboarding.WORKSHOP then
-		return "Build"
-	end
 	if (f.totalRescues or 0) >= 1 or (f.step and f.step >= Onboarding.STEP_RESCUE) then
-		return "BuildStation"
+		return if (f.boatLevel or 1) >= Onboarding.UPGRADE_LEVEL then "OutAgain" else "Upgrade"
 	end
 	return "Rescue"
+end
+
+-- One poll of a trip: (out, driving, home) -> (out, trip finished). Out needs the helm; any way home ends it.
+function Onboarding.trip(out: boolean, driving: boolean, home: boolean): (boolean, boolean)
+	if home then
+		return false, out
+	end
+	return out or driving, false
 end
 
 -- Robux Finish-now on the running site: only from the Spin beat on, never for a free build (the Hut).
@@ -175,14 +188,6 @@ function Onboarding.buildersFirst(
 		return false
 	end
 	return (totalRescues or 0) <= 0 and not Onboarding.established(owned)
-end
-
--- Cash the tutorial adds so the Workshop is affordable (0 when it already is): exactly the gap.
-function Onboarding.topUp(cash: number, price: number): number
-	if price <= 0 then
-		return 0
-	end
-	return math.max(0, math.floor(price - math.max(0, cash)))
 end
 
 return Onboarding

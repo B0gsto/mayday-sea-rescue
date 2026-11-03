@@ -1,9 +1,10 @@
 --!strict
--- NextGoal: the permanent "what to build next" chip (docs/24 E/F, docs/25 A). Pure (tests/NextGoal.spec.luau):
--- the running construction, else the first level you can build right now (allowed and affordable, card order),
+-- NextGoal: the permanent "what next" chip (docs/24 E/F, docs/25 A, docs/30). Pure (tests/NextGoal.spec.luau):
+-- the boat's next level while there is one (the loop is the boat; the island is optional), then the running construction, else the first level you can build right now (allowed and affordable, card order),
 -- else what you save toward: what the next HQ level needs, then the HQ itself, then any allowed level.
 -- The client chip shows its icon and a Cash progress bar; at full it pulses. No services.
 local Shared = script.Parent
+local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
 local BuildTimer = require(Shared:WaitForChild("BuildTimer"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
@@ -14,10 +15,11 @@ export type Facts = {
 	cash: number,
 	levels: { [string]: number }, -- data.dock.levels
 	construction: Site?,
+	boatLevel: number?, -- data.boatLevel; nil: buildings only
 }
 
 export type Goal = {
-	kind: "Build" | "Site",
+	kind: "Boat" | "Build" | "Site",
 	key: string,
 	level: number, -- the level being built / to build
 	name: string,
@@ -44,6 +46,18 @@ local function build(key: string, n: number, cash: number): Goal
 end
 
 function NextGoal.next(f: Facts): Goal?
+	local boat = f.boatLevel and BoatLevels.nextRow(f.boatLevel)
+	if boat then
+		return {
+			kind = "Boat",
+			key = "Boat",
+			level = boat.level,
+			name = "Boat",
+			price = boat.price,
+			cash = f.cash,
+			progress = math.clamp(f.cash / boat.price, 0, 1),
+		}
+	end
 	local site = f.construction
 	local row = site and DockConfig.Buildings[site.key]
 	local entry: any = row or (site and DockConfig.Decorations[site.key])

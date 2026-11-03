@@ -13,7 +13,7 @@
 -- within HOME_CLEAR of a berth (the coves are the missions'). K13 (docs/16): MOUTH_WANT are always in view off each
 -- player's cove mouth. At the cap the oldest scene nobody is near makes way. A cold-open player gets no spawns
 -- near them and boards nobody free-roam but the two swimmers fanned round their own (docs/29 A: SpawnColdOpenFlank; the
--- first one reached goes to OperationService.ColdOpenFlank; ClearFlanks when it ends). Sight spawns are the added density: they
+-- first one reached goes to OperationService.ColdOpenFlank; ReleaseFlanks when it ends). Sight spawns are the added density: they
 -- pay the lower tier (AmbientMix.CASH x the Bronze grade); timed and cove-mouth ones pay CASH; all x the zone's pay.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -26,6 +26,7 @@ local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local CraftBoard = require(Shared:WaitForChild("Ops"):WaitForChild("CraftBoard"))
+local GoBack = require(Shared:WaitForChild("Boat"):WaitForChild("GoBack"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
 
@@ -181,18 +182,35 @@ function AmbientRescueService.SpawnColdOpenFlank(player: Player, pos: Vector3, o
 	return scene
 end
 
--- The cold open ended: the swimmers nobody took leave, so none sits in the cove's lane to fill the jet ski's one seat on
--- the way to the next call. The cove-mouth spawns (K13) take over. Someone else's boat keeps a passenger it already has.
-function AmbientRescueService.ClearFlanks(flanks: { Scene })
+-- The cold open ended: the swimmers nobody took stay on as ordinary free roam, the next rescues right off the bay on the
+-- way back out (docs/30). Removing them here popped them out in view of the landing.
+function AmbientRescueService.ReleaseFlanks(flanks: { Scene })
 	for _, scene in flanks do
-		if table.find(scenes, scene) and count(scene, "Aboard") == 0 then
-			remove(scene)
+		scene.released = true
+		for _, victim in scene.victims or {} do
+			if victim.model and victim.model.Parent then
+				victim.model:SetAttribute("ColdOpenFan", nil)
+			end
 		end
 	end
 end
 
--- A flank whose player's cold open still runs: it never makes way or ages out under them.
+-- Anyone within sight of this spot.
+local function inSight(p: Vector3): boolean
+	for _, player in Players:GetPlayers() do
+		local char = player.Character
+		if char and CallLogic.flatDistance(char:GetPivot().Position, p) < AmbientMix.SIGHT then
+			return true
+		end
+	end
+	return false
+end
+
+-- A flank whose player's cold open still runs, or a released one in sight: it never makes way or ages out.
 local function reserved(scene: Scene): boolean
+	if scene.released then
+		return inSight(scene.position) -- never pops out in view
+	end
 	local player = scene.flankOf
 	return player ~= nil and player.Parent ~= nil and player:GetAttribute("ColdOpenActive") == true
 end
@@ -386,7 +404,11 @@ function AmbientRescueService.StepBoarding(
 					Board.hasRoom(b.vehicle),
 					Simulator.waterHeight(at.X, at.Z, Workspace:GetServerTimeNow()),
 					(tonumber(b.player:GetAttribute("SkillReach")) or 0)
-						+ (tonumber(b.player:GetAttribute("BoatReach")) or 0)
+						+ GoBack.reachAt(
+							at,
+							b.player:GetAttribute("BayCFrame"),
+							tonumber(b.player:GetAttribute("BoatReach")) or 0
+						)
 				) and (may == nil or may(b.player, i))
 			then
 				ready = b

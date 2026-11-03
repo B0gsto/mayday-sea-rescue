@@ -47,9 +47,9 @@ TelemetryNames.Custom = table.freeze({
 
 -- LogOnboardingFunnelStepEvent step names, in step order. Roblox treats a skipped step as
 -- completed, so the order must match what a player does. Rebuilt 2026-10-29 (before launch) for the
--- docs/24 E + docs/25 J tutorial: tablet -> free Hut -> cold open -> Workshop -> spin -> Next chip.
+-- docs/25 J tutorial; docs/30 (2026-11-03): tablet -> free Hut -> cold open -> L2 -> back out -> spin -> Next chip.
 -- No Day2Return: a return mid-tutorial would mark the skipped steps done (Retention shows D1).
--- Append only after launch.
+-- After launch every number keeps its place (Events.Funnel: why 8 and 9 changed names).
 TelemetryNames.Funnel = table.freeze({
 	"Joined",
 	"TabletOpened",
@@ -58,8 +58,8 @@ TelemetryNames.Funnel = table.freeze({
 	"AtSea",
 	"FirstBoard",
 	"FirstDelivery",
-	"WorkshopPlaced",
-	"WorkshopBuilt",
+	"FirstUpgrade",
+	"BackOut",
 	"FirstSpin",
 	"NextBuild",
 	"HQ2Placed",

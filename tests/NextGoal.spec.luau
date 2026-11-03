@@ -12,6 +12,20 @@ return function(t)
 		return f
 	end
 
+	t.test("the boat's next level leads, past any building or site, until it is maxed", function()
+		local BoatLevels = t.load("src/shared/BoatLevels.luau")
+		local g = N.next(facts({ cash = 250, boatLevel = 1 }))
+		t.expect(g.kind).toBe("Boat")
+		t.expect(g.level).toBe(2)
+		t.expect(g.price).toBe(BoatLevels.nextRow(1).price)
+		t.expect(g.progress).toBe(250 / g.price)
+		local site = { key = "Depot", level = 1, progress = 0.5, rate = 1 }
+		t.expect(N.next(facts({ boatLevel = 3, construction = site })).kind).toBe("Boat")
+		t.expect(N.next(facts({ cash = 1e9, boatLevel = 3 })).progress).toBe(1)
+		t.expect(N.next(facts({ boatLevel = BoatLevels.MAX, construction = site })).kind)
+			.toBe("Site")
+	end)
+
 	t.test("a fresh island builds the free HQ first, and it reads affordable", function()
 		local g = N.next(facts())
 		t.expect(g.kind).toBe("Build")

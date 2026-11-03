@@ -892,13 +892,7 @@ end
 local function finishAllowed(data: any): boolean
 	local c = data.construction
 	return c ~= nil
-		and Onboarding.finishNow({
-			coldOpenDone = data.coldOpenDone == true,
-			totalRescues = data.totalRescues or 0,
-			step = data.tutorialStep,
-			owned = data.dockBuildings or {},
-			constructionKey = c.key,
-		}, cashOf(c.key, c.level))
+		and Onboarding.finishNow(Onboarding.factsOf(data, c.key), cashOf(c.key, c.level))
 end
 
 -- Where a site stands (berth frame) and its footprint, for the base crew's walk.
@@ -1299,25 +1293,16 @@ local function startConstruction(player: Player, data: any, key: string, level: 
 	local buildLevel = if DockConfig.Buildings[key]
 		then math.clamp(level or 1, 1, #DockConfig.Buildings[key].levels)
 		else nil
-	-- docs/24 E: a tutorial Workshop Lv1 (Cash or Robux) advances the saved step so a rejoin is at the site
+	-- A new player's first building past the start set (Cash or Robux) must not read as an established save: the step pins
+	-- the running tutorial (Onboarding.skip).
 	if
-		key == Onboarding.WORKSHOP
-		and (buildLevel or 1) == 1
-		and (data.tutorialStep or 0) < Onboarding.STEP_SITE
+		data.tutorialStep == nil
+		and key ~= Onboarding.HQ
+		and Onboarding.beat(Onboarding.factsOf(data)) ~= "Done"
 	then
-		local beat = Onboarding.beat({
-			coldOpenDone = data.coldOpenDone == true,
-			totalRescues = data.totalRescues or 0,
-			step = data.tutorialStep,
-			owned = data.dockBuildings or {},
-			constructionKey = nil,
-		})
-		-- "Rescue": a cold open that ended without a delivery (0 rescues) still buys the tutorial Workshop
-		if beat == "BuildStation" or beat == "Rescue" then
-			data.tutorialStep = Onboarding.STEP_SITE
-			DataService.MarkDirty(player)
-			ProgressionService.Refresh(player) -- the buy's own Refresh ran before this step moved
-		end
+		data.tutorialStep = Onboarding.STEP_RESCUE
+		DataService.MarkDirty(player)
+		ProgressionService.Refresh(player) -- the buy's own Refresh ran before this step moved
 	end
 	Telemetry.Build(
 		player,
@@ -1441,22 +1426,6 @@ end
 -- Cash purchase of tree building `key` once its prerequisites stand (Robux goes through its product).
 local function buyBuilding(player: Player, data: any, key: string, level: number): (boolean, string)
 	deriveDock(data)
-	-- docs/24 E: the tutorial tops up a short wallet to exactly the Workshop price, once (the buy's
-	-- coin burst shows it). startConstruction moves the saved step on (Robux starts the same site).
-	local beat = Onboarding.beat({
-		coldOpenDone = data.coldOpenDone == true,
-		totalRescues = data.totalRescues or 0,
-		step = data.tutorialStep,
-		owned = data.dockBuildings,
-		constructionKey = if data.construction then data.construction.key else nil,
-	})
-	if key == Onboarding.WORKSHOP and beat == "BuildStation" then
-		local gap = Onboarding.topUp(data.cash, DockConfig.Buildings[key].levels[1].cash)
-		if gap > 0 then
-			data.cash += gap
-			DataService.MarkDirty(player)
-		end
-	end
 	local ok, reason, price = UnlockTree.canBuild(key, level, data.dock.levels, data.cash)
 	if not ok or not price then
 		return false, reason or "Owned"
@@ -1547,7 +1516,7 @@ local function finishConstruction(plot: Plot, player: Player, data: any)
 	clearSite(plot)
 	sendCrewHome(plot)
 	ProgressionService.Refresh(player)
-	-- docs/24 E: the Workshop's completion hands out the one tutorial spin (the chip then pulses Spin)
+	-- an old save on the Workshop beat (STEP_SITE): its finished Workshop still hands out the one tutorial spin
 	if c.key == Onboarding.WORKSHOP then
 		local ok, spin = pcall(require, script.Parent:WaitForChild("SpinService"))
 		if ok and type(spin) == "table" and type(spin.Tutorial) == "function" then

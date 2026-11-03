@@ -7,7 +7,8 @@ usage:
   tools/trail.py --test          # the test universe instead of launch
 
 Each line in a block: "<seconds since join> <event>". "pos x,y,z" every 30 s, "ERR ..." server errors.
-Also prints current players/visits and a Robux summary (prompts shown, purchases, R$ by source).
+Also prints current players/visits, a Robux summary (prompts shown, purchases, R$ by source) and the onboarding funnel
+(unique users per step; old rows such as 8 WorkshopPlaced keep their own line beside 8 FirstUpgrade).
 Read-only; needs the universe's API key (datastores read).
 """
 import argparse
@@ -58,12 +59,44 @@ def robux_summary(lines):
     return f"Robux: {shown} prompts shown, {bought} purchases, {robux} R$ list (by source: {where}){': ' + ' '.join(items) if items else ''}"
 
 
+def funnel_summary(sessions):
+    """Onboarding steps from {user: [lines]}: "<s> onboarding <step> <name>". Rows come from the lines themselves, so
+    names from before a funnel change still read. Go back isn't a step (driving home skips it): "<s> custom GoBack
+    <value> <vehicle> Started" before that user's first delivery line counts it."""
+    reached, pressed = {}, set()
+    for user, lines in sessions.items():
+        delivered = False
+        for line in lines:
+            p = line.split()
+            if len(p) >= 4 and p[1] == "onboarding":
+                reached.setdefault((int(p[2]), p[3]), set()).add(user)
+                delivered = delivered or p[3] == "FirstDelivery"
+            elif len(p) >= 6 and p[1:3] == ["custom", "GoBack"] and p[5] == "Started" and not delivered:
+                pressed.add(user)
+    rows = [f"  {step:>2} {name:<15} {len(users)}" for (step, name), users in sorted(reached.items())]
+    return "\n".join(["Onboarding funnel (unique users):"] + rows + [f"  Go back before the first delivery: {len(pressed)}"])
+
+
+def selftest():
+    text = funnel_summary({
+        "1": ["0 onboarding 7 FirstDelivery", "5 onboarding 8 WorkshopPlaced", "9 custom GoBack 0 JetSki Started"],
+        "2": ["3 custom GoBack 1 JetSki Started", "4 onboarding 7 FirstDelivery", "9 onboarding 8 FirstUpgrade"],
+    })
+    assert "7 FirstDelivery   2" in text, text
+    assert "8 FirstUpgrade    1" in text and "8 WorkshopPlaced  1" in text, text
+    assert text.endswith("first delivery: 1"), text
+    print("ok")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--hours", type=float, default=24)
     ap.add_argument("--test", action="store_true")
     ap.add_argument("--out")
+    ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
+    if a.selftest:
+        return selftest()
     uni, key = target(a.test)
     g = get(f"https://games.roblox.com/v1/games?universeIds={uni}", None)["data"][0]
     out = [f"universe {uni}: playing {g['playing']}, visits {g['visits']}, updated {g['updated']}"]
@@ -84,22 +117,24 @@ def main():
             break
     recent = sorted((k for k in keys if int(k.rsplit("_", 1)[1]) >= since), key=lambda k: int(k.rsplit("_", 1)[1]))
     out.append(f"{len(recent)} sessions in the last {a.hours:g} h ({len(keys)} total)")
-    allLines = []
+    allLines, byUser = [], {}
     for k in recent:
         q = urllib.parse.urlencode({"datastoreName": STORE, "entryKey": k})
         v = get(f"{base}/entry?{q}", key)
         allLines += v.get("lines", [])
         user, joined = k.rsplit("_", 1)
+        byUser.setdefault(user, []).extend(v.get("lines", []))
         when = time.strftime("%Y-%m-%d %H:%M", time.localtime(int(joined)))
         out.append(f"\n== user {user} joined {when} place v{v.get('place')} job {v.get('job')} ({len(v.get('lines', []))} lines)")
         out += v.get("lines", [])
     out.insert(2, robux_summary(allLines))
+    out.insert(3, funnel_summary(byUser))
     text = "\n".join(out)
     if a.out:
         os.makedirs(os.path.dirname(a.out), exist_ok=True)
         with open(a.out, "w") as f:
             f.write(text + "\n")
-        print(f"{out[0]}\n{out[1]}\n{out[2]}\nwrote {a.out}")
+        print(f"{out[0]}\n{out[1]}\n{out[2]}\n{out[3]}\nwrote {a.out}")
     else:
         print(text)
 

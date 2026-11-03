@@ -58,6 +58,8 @@ return function(t)
 	t.test("the fan sits in open water off every cove, out of the berth's reach", function()
 		local RingLayout = t.load("src/shared/Config/RingLayout.luau")
 		local PiwWays = t.load("src/server/Ops/PiwWays.luau")
+		local GoBack = t.load("src/shared/Boat/GoBack.luau")
+		local UpgradeStation = t.load("src/shared/UpgradeStation.luau")
 		for _, island in RingLayout.Islands do
 			local berth = island.berths.Boat.Position * Vector3.new(1, 0, 1)
 			for _, distance in ColdOpen.DISTANCE do
@@ -68,6 +70,15 @@ return function(t)
 					local off = (p - berth).Magnitude
 					t.expect(off > PiwWays.LOST_RANGE).toBe(true) -- never swims to a jet ski at the berth
 					t.expect(off > ColdOpen.DROP_RADIUS + 12).toBe(true) -- a pick-up there is never already home
+					t.expect(GoBack.isHome(p, island.berths.Boat)).toBe(false) -- nobody swims in the landing bay
+					for _, part in UpgradeStation.parts(island.index) do -- clear of the arms, the deck and the tower
+						local o = part.cframe:PointToObjectSpace(p)
+						t.expect(
+							math.abs(o.X) > part.size.X / 2 + 6
+								or math.abs(o.Z) > part.size.Z / 2 + 6
+						)
+							.toBe(true)
+					end
 					t.expect(RingLayout.nearSeaPlate(p.X, p.Z, 5)).toBe(false) -- built or not
 					local l = island.frame:PointToObjectSpace(p)
 					t.expect(-l.Z > RingLayout.IslandPlate.edge + 25).toBe(true) -- past the plate (CLEAR_SPAWN)
@@ -143,7 +154,7 @@ return function(t)
 	end)
 
 	t.test("show, don't tell: casualty close ahead, no graded approach", function()
-		t.expect(ColdOpen.DISTANCE[2] < ColdOpen.HANDOVER_DISTANCE).toBe(true) -- creeps on in
+		t.expect(ColdOpen.DISTANCE[1] > ColdOpen.HANDOVER_DISTANCE).toBe(true) -- the auto-throttle leaves the bay, then it creeps on in
 		t.expect(ColdOpen.DISTANCE[1] > ColdOpen.NUDGE_NEAR).toBe(true) -- one move to make
 		-- the swimmer never sets off for a jet ski still at the berth (it would land them with no pick-up)
 		local PiwWays = t.load("src/server/Ops/PiwWays.luau")

@@ -3,7 +3,8 @@
 -- touch), shown by Boat/GoBack's rule while driving away from home. The press goes to the server (Net GoBack), which
 -- answers everyone aboard: "Charge" widens the camera with a whoosh and wipes the button over 1.5 s; a sea-blue veil
 -- covers the jump; "Land" drops the veil on the craft at home, "Cancel" just lets go. Reduce motion: no FOV and no
--- shake (Camera/Shake itself goes quiet), the veil stays since a bare jump cut is worse.
+-- shake (Camera/Shake itself goes quiet), the veil stays since a bare jump cut is worse. The first survivor ever aboard
+-- gets one steady green arrow on the button (docs/30 section 4), gone at the first press.
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -45,6 +46,9 @@ local root: Frame
 local face: ImageButton
 local wipe: UIGradient
 local veil: Frame
+local arrow: ImageLabel
+local arrowShown = false
+local arrowDone = false
 local fov, fovApplied = 0, 0
 
 -- The craft whose DriverSeat we sit in.
@@ -65,6 +69,18 @@ local function press()
 	end
 end
 
+-- One pop, one sound, no looping: paired feedback for "someone is aboard, this goes home".
+local function setArrow(on: boolean)
+	if on == arrowShown then
+		return
+	end
+	arrowShown = on
+	Style.pop(arrow, on)
+	if on then
+		AudioController.play("UI_Prompt")
+	end
+end
+
 local function refresh()
 	local model = driven()
 	local want = charging
@@ -80,6 +96,13 @@ local function refresh()
 				})
 				== nil
 		)
+	setArrow(
+		want
+			and not (charging or arrowDone)
+			and model ~= nil
+			and (tonumber(model:GetAttribute("SurvivorCount")) or 0) > 0
+			and (tonumber(player:GetAttribute("Rescued")) or 0) == 0
+	)
 	if want == shown then
 		return
 	end
@@ -114,6 +137,8 @@ local function finish()
 end
 
 local function onCharge()
+	arrowDone = true
+	setArrow(false)
 	charging = true
 	run += 1
 	local mine = run
@@ -196,6 +221,17 @@ function GoBackController.Start()
 	words.Position = UDim2.fromScale(0.95, 0.5)
 	words.Size = UDim2.fromScale(0.64, 0.7)
 	InputGlyph.chip(face, Enum.KeyCode.R, Enum.KeyCode.ButtonR3)
+	arrow = Instance.new("ImageLabel")
+	arrow.Name = "Arrow"
+	arrow.BackgroundTransparency = 1
+	arrow.Image = UiImages.Markers.BuildArrow -- points down at the button
+	arrow.ScaleType = Enum.ScaleType.Fit
+	arrow.AnchorPoint = Vector2.new(0.5, 1)
+	arrow.Position = UDim2.fromScale(0.5, -0.04)
+	arrow.SizeConstraint = Enum.SizeConstraint.RelativeYY
+	arrow.Size = UDim2.fromScale(1.1, 1.1)
+	arrow.Visible = false
+	arrow.Parent = root
 	gui.Parent = player:WaitForChild("PlayerGui")
 
 	local veilGui = Instance.new("ScreenGui")

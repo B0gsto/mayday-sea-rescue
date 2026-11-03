@@ -55,4 +55,23 @@ return function(t)
 		t.expect(GoBack.ready(5, 5 + GoBack.COOLDOWN)).toBe(true)
 		t.expect(GoBack.COOLDOWN > GoBack.CHARGE + GoBack.LAND_HOLD).toBe(true)
 	end)
+
+	t.test("the boat's long reach never boards the cove mouth from home", function()
+		local RingLayout = t.load("src/shared/Config/RingLayout.luau")
+		local AmbientMix = t.load("src/shared/Calls/AmbientMix.luau")
+		local BoatLevels = t.load("src/shared/BoatLevels.luau")
+		local UpgradeStation = t.load("src/shared/UpgradeStation.luau")
+		t.expect(GoBack.REACH_HOME).toBe(AmbientMix.HOME_CLEAR)
+		local top = BoatLevels.row(BoatLevels.MAX).reach
+		t.expect(top > 100).toBe(true)
+		for _, island in RingLayout.Islands do
+			local berth = island.berths.Boat
+			local landing = (berth * CFrame.new(0, 0, -UpgradeStation.LANDING_OUT)).Position
+			t.expect(GoBack.reachAt(landing, berth, top)).toBe(0)
+			t.expect(GoBack.reachAt(berth.Position, berth, top)).toBe(0)
+			local out = (berth * CFrame.new(0, 0, -(GoBack.REACH_HOME + 1))).Position
+			t.expect(GoBack.reachAt(out, berth, top)).toBe(top)
+		end
+		t.expect(GoBack.reachAt(Vector3.zero, nil, top)).toBe(top) -- no berth, no home
+	end)
 end

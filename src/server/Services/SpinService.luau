@@ -82,13 +82,21 @@ local function store(player: Player, state: SpinRules.State): boolean
 	return ProgressionService.SetFlag(player, FLAG, SpinRules.encode(state))
 end
 
--- docs/24 E: the finished Workshop earns exactly one tutorial spin, once. The saved step is the
--- receipt: a player who already spun (STEP_DONE) or skipped the tutorial (no STEP_SITE) never gets it.
-local function tutorialSpin(player: Player, data: any, state: SpinRules.State): boolean
-	if data.tutorialStep ~= Onboarding.STEP_SITE then
+-- docs/30 section 4: the first trip back out after L2 earns exactly one tutorial spin, once; so does an old save's
+-- Workshop finished on the old beat (STEP_SITE). The saved step is the receipt: past STEP_SITE it is spent.
+local function tutorialSpin(
+	player: Player,
+	data: any,
+	state: SpinRules.State,
+	tripDone: boolean?
+): boolean
+	if (data.tutorialStep or 0) >= Onboarding.STEP_SPIN then
 		return false
 	end
-	if type(data.dockBuildings) ~= "table" or data.dockBuildings.Workshop ~= true then
+	local oldWorkshop = data.tutorialStep == Onboarding.STEP_SITE
+		and type(data.dockBuildings) == "table"
+		and data.dockBuildings.Workshop == true
+	if not (tripDone or oldWorkshop) then
 		return false
 	end
 	data.tutorialStep = Onboarding.STEP_SPIN
@@ -98,15 +106,15 @@ local function tutorialSpin(player: Player, data: any, state: SpinRules.State): 
 end
 
 -- Accrues the free spins that came due and mirrors the counters to the client.
-function SpinService.Refresh(player: Player): SpinRules.State?
+function SpinService.Refresh(player: Player, tripDone: boolean?): SpinRules.State?
 	local data = DataService.Get(player)
 	if not data then
 		return nil
 	end
 	local state = stateOf(data)
 	local nextState = SpinRules.accrue(state, data.totalRescues or 0, os.time())
-	-- the Workshop completion (DockService) calls Tutorial; this also catches an offline finish on join
-	local tutorial = tutorialSpin(player, data, nextState)
+	-- also catches an old save's offline Workshop finish on join
+	local tutorial = tutorialSpin(player, data, nextState, tripDone)
 	if
 		tutorial
 		or nextState.free ~= state.free
@@ -122,9 +130,10 @@ function SpinService.Refresh(player: Player): SpinRules.State?
 	return nextState
 end
 
--- The Workshop is done: hand over the first spin (docs/24 E). Idempotent through data.tutorialStep.
-function SpinService.Tutorial(player: Player)
-	SpinService.Refresh(player)
+-- The first trip is home (UpgradeService), or an old save's Workshop stands (DockService): hand over the first spin.
+-- Idempotent through data.tutorialStep.
+function SpinService.Tutorial(player: Player, tripDone: boolean?)
+	SpinService.Refresh(player, tripDone)
 end
 
 function SpinService.GiveFree(player: Player, n: number): number?
@@ -245,7 +254,7 @@ function SpinService.Spin(player: Player): { [string]: any }
 	end
 	publish(player, state)
 	CosmeticsService.Refresh(player)
-	-- docs/24 E: the first spin ticks the tutorial's last chip; the permanent Next chip takes over
+	-- docs/30: the first spin ends the tutorial (a trip home without it does too: UpgradeService)
 	local data = DataService.Get(player)
 	if data and data.tutorialStep == Onboarding.STEP_SPIN then
 		data.tutorialStep = Onboarding.STEP_DONE

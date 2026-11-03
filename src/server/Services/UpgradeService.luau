@@ -3,6 +3,7 @@
 -- Upgrade Station (never for Robux), builds the stations on every island and plays the level-up on the boat.
 -- Old data.vehicleUpgrades masks stay in the save, unread. Save floors: ProgressionRules.migrate (owned boats) and
 -- applyPassFloor here (pass ownership is not in the save, so data.boatPassFloor marks a pre-ladder save until read).
+-- Also the tutorial's trip (docs/30 section 4): after L2 a trip out and home earns the free spin; one more ends the beat.
 -- Remotes: Boat_LevelUp C->S function -> ok, reason. BoatLevelMoment S->C all ("Start" | "Swap", userId, model?, level).
 -- Player attribute: BoatReach (extra pick-up studs, Ops/Board's reachAdd).
 -- API: UpgradeService.Landing(player) -> CFrame? (or UpgradeStation.landing(island) directly).
@@ -14,7 +15,9 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
+local GoBack = require(Shared:WaitForChild("Boat"):WaitForChild("GoBack"))
 local Net = require(Shared:WaitForChild("Net"))
+local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
 local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local UpgradeStation = require(Shared:WaitForChild("UpgradeStation"))
@@ -26,6 +29,7 @@ local DataService = require(script.Parent.DataService)
 local DockService = require(script.Parent.DockService)
 local MonetizationService = require(script.Parent.MonetizationService)
 local ProgressionService = require(script.Parent.ProgressionService)
+local SpinService = require(script.Parent.SpinService)
 local Telemetry = require(script.Parent.TelemetryService)
 local VehicleService = require(script.Parent.VehicleService)
 
@@ -38,6 +42,7 @@ local PASS_WAIT = 30 -- s for the join's pass check
 
 local lastUse: { [Player]: number } = {}
 local buttons: { BasePart } = {}
+local tripOut: { [Player]: boolean } = {} -- the tutorial's trip: out at sea this session
 
 function UpgradeService.Landing(player: Player): CFrame?
 	local plot = DockService.GetPlot(player)
@@ -101,6 +106,9 @@ local function buy(player: Player, index: number): (boolean, string)
 	data.boatLevel += 1
 	Telemetry.CashSpent(player, price, data.cash, "Upgrade", "BoatLevel")
 	Telemetry.Shop(player, "Bought", nil, "BoatLevel", "Cash")
+	if data.boatLevel == Onboarding.UPGRADE_LEVEL then
+		Telemetry.Funnel(player, "FirstUpgrade")
+	end
 	if data.boatLevel == ProgressionConfig.Vehicles.Lifeboat.level then
 		BadgeService.Count(player, "LifeboatBought") -- the hull comes with the ladder now (docs/30)
 	end
@@ -148,6 +156,41 @@ local function applyPassFloor(player: Player)
 	ProgressionService.Refresh(player)
 	if raised then
 		VehicleService.Refit(player)
+	end
+end
+
+-- One poll: OutAgain's trip home hands over the free spin; Spin's next trip home ends the tutorial with it unspun (it
+-- stays in the wallet), so a player who skips the optional island still reaches the Next chip and the join card.
+local function stepTrip(player: Player)
+	local data = DataService.Get(player)
+	local beat = if data then Onboarding.beat(Onboarding.factsOf(data)) else nil
+	if not data or (beat ~= "OutAgain" and beat ~= "Spin") then
+		tripOut[player] = nil
+		return
+	end
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if not (root and root:IsA("BasePart") and humanoid) then
+		return
+	end
+	local seat = humanoid.SeatPart
+	local was = tripOut[player] == true
+	local out, finished = Onboarding.trip(
+		was,
+		seat ~= nil and seat.Name == "DriverSeat",
+		GoBack.isHome(root.Position, player:GetAttribute("BayCFrame"))
+	)
+	tripOut[player] = out
+	if out and not was and beat == "OutAgain" then
+		Telemetry.Funnel(player, "BackOut")
+	end
+	if finished and beat == "OutAgain" then
+		SpinService.Tutorial(player, true)
+	elseif finished then
+		data.tutorialStep = Onboarding.STEP_DONE
+		DataService.MarkDirty(player)
+		ProgressionService.Refresh(player)
 	end
 end
 
@@ -203,6 +246,7 @@ function UpgradeService.Init()
 	end
 	Players.PlayerRemoving:Connect(function(player: Player)
 		lastUse[player] = nil
+		tripOut[player] = nil
 	end)
 	if RunService:IsStudio() then
 		local dev = Instance.new("BindableFunction")
@@ -232,6 +276,14 @@ function UpgradeService.Start()
 	buildStations()
 	DataService.OnLoaded(function(player: Player)
 		task.spawn(applyPassFloor, player)
+	end)
+	task.spawn(function()
+		while true do
+			task.wait(1)
+			for _, player in Players:GetPlayers() do
+				stepTrip(player)
+			end
+		end
 	end)
 end
 

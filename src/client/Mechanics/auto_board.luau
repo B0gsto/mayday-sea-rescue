@@ -22,6 +22,7 @@ local World = require(script.Parent.PIW.World)
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
 local CraftBoard = require(Shared:WaitForChild("Ops"):WaitForChild("CraftBoard"))
+local GoBack = require(Shared:WaitForChild("Boat"):WaitForChild("GoBack"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 
 local AutoBoard = {}
@@ -55,8 +56,8 @@ function AutoBoard.start(
 	ring.FillTransparency = 1
 	ring.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 	local held = 0
-	local reachAdd = (tonumber(Players.LocalPlayer:GetAttribute("SkillReach")) or 0)
-		+ (tonumber(Players.LocalPlayer:GetAttribute("BoatReach")) or 0)
+	local skillReach = tonumber(Players.LocalPlayer:GetAttribute("SkillReach")) or 0
+	local boatReach = tonumber(Players.LocalPlayer:GetAttribute("BoatReach")) or 0
 	Step.heartbeat(s, function(dt)
 		if not (victim and victim.Parent) then
 			victim = World.victim(ctx)
@@ -82,6 +83,8 @@ function AutoBoard.start(
 		local tilt = math.deg(math.acos(math.clamp(h.cframe.UpVector.Y, -1, 1)))
 		local craft = h.root:FindFirstAncestorOfClass("Model")
 		local room = Board.hasRoom(craft)
+		local reachAdd = skillReach
+			+ GoBack.reachAt(h.position, Players.LocalPlayer:GetAttribute("BayCFrame"), boatReach)
 		ring.Enabled = room and gap <= (Board.REACH + reachAdd) * 2
 		ring.OutlineColor = if held > 0 then GREEN else WHITE
 		local at = h.position

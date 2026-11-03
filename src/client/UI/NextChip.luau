@@ -1,5 +1,6 @@
 --!strict
--- NextChip: the permanent "what to build next" chip (docs/24 E/F) in the HudLayout "chips" slot.
+-- NextChip: the permanent "what next" chip (docs/24 E/F) in the HudLayout "chips" slot, leading with the boat's next
+-- level (docs/30; tapping points at the Upgrade Station), then buildings.
 -- The UI kit look (owner 2026-10-28: the slate bar read as a dev HUD): a blue block card, the next building's
 -- Lego icon on a white tile over its left edge, its 1-3 word name, a Cash bar to its price and coin + price.
 -- At the price the price turns into a green pill with one pop (never a looping pulse: owner 2026-10-28);
@@ -21,6 +22,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local NextGoal = require(Shared:WaitForChild("NextGoal"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
+local UpgradeStation = require(Shared:WaitForChild("UpgradeStation"))
 
 local UI = script.Parent
 local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
@@ -107,13 +109,7 @@ local function beat(): Onboarding.Beat
 		return "ColdOpen"
 	end
 	local site = siteState()
-	return Onboarding.beat({
-		coldOpenDone = s.coldOpenDone == true,
-		totalRescues = tonumber(s.totalRescues) or 0,
-		step = tonumber(s.tutorialStep),
-		owned = if type(s.dockBuildings) == "table" then s.dockBuildings else {},
-		constructionKey = if site then site.key else nil,
-	})
+	return Onboarding.beat(Onboarding.factsOf(s, if site then site.key else nil))
 end
 
 local function clearPointing()
@@ -149,10 +145,18 @@ local function nearby(pos: Vector3): boolean
 	return Vector3.new(d.X, 0, d.Z).Magnitude <= NEAR_STATION
 end
 
--- The chip's one action: open the tablet at the station, else lead there.
+-- The chip's one action: the boat's level points at the Upgrade Station; a building opens the tablet at the station,
+-- else leads there.
 -- On foot anywhere: the build tablet opens on the shown goal's card (owner 2026-10-28: the station pointer alone read as
 -- "does nothing"). At the helm it points at the station instead: build mode would freeze you at sea.
 local function activate()
+	if shownKey == "Boat" then
+		local i = player:GetAttribute("DockPlot")
+		if type(i) == "number" then
+			pointAt(UpgradeStation.buttonAt(i))
+		end
+		return
+	end
 	local char = player.Character
 	local hum = char and char:FindFirstChildOfClass("Humanoid")
 	if hum and not hum.SeatPart then
@@ -186,7 +190,8 @@ end
 local function refresh()
 	local r = root
 	local s = snapshot
-	local done = s ~= nil and beat() == "Done"
+	local now = s and beat()
+	local done = now == "Done" or now == "Spin" -- the spin waits at the optional wheel; the boat leads meanwhile
 	if not done then
 		doneAt = nil
 	end
@@ -219,6 +224,7 @@ local function refresh()
 		cash = tonumber(s.cash) or 0,
 		levels = levels,
 		construction = site,
+		boatLevel = tonumber(s.boatLevel),
 	})
 	-- your site's own billboard is up (near it): it shows the timer, so the chip steps aside (MERGE3 W5: two "0:20")
 	local pg = player:FindFirstChildOfClass("PlayerGui")
@@ -235,7 +241,9 @@ local function refresh()
 		shownKey = g.key
 		local art = iconArt :: Frame
 		art:ClearAllChildren()
-		if DockConfig.Buildings[g.key] then
+		if g.kind == "Boat" then
+			Style.icon(art, "boat_to_me")
+		elseif DockConfig.Buildings[g.key] then
 			BuildGlyph(art, { kind = "Building", key = g.key })
 		else
 			BuildGlyph(art, { kind = "Decor", key = g.key })
@@ -273,7 +281,7 @@ local function refresh()
 		amountW = w
 		relayout()
 	end
-	setReady(g.kind == "Build" and g.progress >= 1)
+	setReady(not timer and g.progress >= 1)
 end
 
 local function tick()
@@ -294,10 +302,9 @@ local function tick()
 		refresh()
 	end
 	if pointingAt then
-		local station = stationPoint()
 		if
 			os.clock() > pointingUntil
-			or (station and nearby(station))
+			or nearby(pointingAt)
 			or player:GetAttribute("MenuOpen") == true
 		then
 			clearPointing()

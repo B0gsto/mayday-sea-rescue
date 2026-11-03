@@ -811,10 +811,9 @@ end
 
 local launchHidden: { [ProximityPrompt]: boolean } = {}
 
--- No Rescue Hut yet, or the build-station beat (server CraftHeld): no Launch, no Board, no pin; the jet ski waits.
+-- No Rescue Hut yet: no Launch, no Board, no pin; the jet ski waits.
 local function held(): boolean
 	return localPlayer:GetAttribute("DockLevelHQ") == 0
-		or localPlayer:GetAttribute("CraftHeld") == true
 end
 
 -- A berth's Launch hides while you have a craft out, and always on other players' berths (docs/23).
@@ -883,7 +882,6 @@ local function addBoardPrompt(model: Instance)
 		prompt.Enabled = seat.Occupant == nil and not held()
 	end
 	seat:GetPropertyChangedSignal("Occupant"):Connect(refresh)
-	localPlayer:GetAttributeChangedSignal("CraftHeld"):Connect(refresh)
 	refresh()
 	prompt.Triggered:Connect(function()
 		local character = localPlayer.Character

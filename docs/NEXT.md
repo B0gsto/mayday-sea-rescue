@@ -6,6 +6,13 @@ cuts; no quests/radio-cut yet). Builders: DeepSeek V4.1 Flash (`opencode/deepsee
 via T3 `delegate_task`; Opus reviews. Checks: `~/RobloxProjects/tools/check.sh .`. Publish: `python3 tools/publish.py`.
 Keep this file current: tick items off, add new ones.
 
+## Boat pivot tutorial (docs/30 section 4), 2026-11-03, on top of t3/boat-pivot-integration, not published
+
+Free Hut -> first rescue -> one arrow on Go back -> station bay -> L2 arrow -> out again -> trip home -> spin -> Next chip (boat
+first). No Workshop beat, CraftHeld or StepAshore. Live funnel: steps 8 and 9 renamed FirstUpgrade and BackOut; `tools/trail.py`
+prints both old and new rows. Still needs a Studio fresh-save playtest before publishing. Known: pre-ladder saves get a free L2
+(`BoatLevels.legacyFloor`: the jet ski's 80.2 studs/s beats L1's 80), so they skip the Upgrade beat.
+
 ## 1. In flight when this was written (merge into main when done)
 
 Each is a branch; check `git log main..<branch>` and `git status` in its worktree. A branch with uncommitted work

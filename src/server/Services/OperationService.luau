@@ -151,11 +151,6 @@ local lastActiveAt: { [Player]: number } = {} -- last tick on an operation: the 
 local COLD_OPEN_START_GRACE = 10 -- s before a cold open that never got its op counts as lost
 local hutUpAt: { [Player]: number } = {} -- first tick that saw the Rescue Hut standing
 local HUT_BEAT = 2.5 -- s the Hut's last bricks, confetti and HQ beat get before the cold open takes over
--- docs/24 E: after the cold open the tutorial leads to the build station; the next call waits for the Workshop site
--- (it is the goal while the site runs), at most STATION_HOLD s. Playtest 2026-10-30: the call came 15 s after the
--- delivery, auto-accepted on the jet ski, so its "Go" strip and craft pin fought the station beacon.
-local stationHoldUntil: { [Player]: number } = {}
-local STATION_HOLD = 120 -- s -- tune
 local nextId = 0
 local bigOp: any = nil
 local bigLastEnd = 0 -- the last big call's end (Start: the server start), for OfferPacing.nextBigCallAt
@@ -253,22 +248,17 @@ local function onboardingCall(player: Player?): boolean
 	return type(total) == "number" and Onboarding.failsafeCall(total)
 end
 
--- True while the tutorial's beat is the build station (the Workshop not placed yet). Only asked after a rescued cold
--- open, whose delivery the saved total may not count yet (the offer tick can run in the same frame).
-local function stationBeat(player: Player): boolean
+-- docs/30: while the first delivery's L2 waits at the Upgrade Station, no call fights its arrow (playtest 2026-10-30: a
+-- call 15 s after the delivery auto-accepted, its "Go" strip and pin fought the beacon). Never with the Cash short: an
+-- old save that spent it needs the calls. Asked right after a delivery the saved total may not count yet.
+local function upgradeBeat(player: Player): boolean
 	local ok, data = try("ProgressionService", "GetData", player)
-	return ok
-		and type(data) == "table"
-		and Onboarding.beat({
-				coldOpenDone = data.coldOpenDone == true,
-				totalRescues = math.max(1, data.totalRescues or 0),
-				step = data.tutorialStep,
-				owned = data.dockBuildings or {},
-				constructionKey = if type(data.construction) == "table"
-					then data.construction.key
-					else nil,
-			})
-			== "BuildStation"
+	if not (ok and type(data) == "table") then
+		return false
+	end
+	local facts = Onboarding.factsOf(data)
+	facts.totalRescues = math.max(1, facts.totalRescues)
+	return Onboarding.beat(facts) == "Upgrade" and (BoatLevels.canBuy(data.boatLevel, data.cash))
 end
 
 local function markColdOpenDone(player: Player)
@@ -349,10 +339,6 @@ local function endColdOpen(player: Player, reason: string)
 	end
 	player:SetAttribute("ColdOpenActive", nil)
 	markColdOpenDone(player)
-	if ColdOpenFlow.rescued(reason) then
-		stationHoldUntil[player] = now() + STATION_HOLD
-		player:SetAttribute("CraftHeld", true) -- VehicleService: no boarding or launch until the Workshop (tick)
-	end
 	try("TelemetryService", "ColdOpenEnded", player, reason) -- RP-A1 onboarding funnel
 	local ok, v = try("VehicleService", "GetVehicle", player)
 	if ok and typeof(v) == "Instance" and v:IsA("Model") then
@@ -369,16 +355,12 @@ local function endColdOpen(player: Player, reason: string)
 	-- Handover first: OnboardingController reads it when ColdOpenEnded fires
 	player:SetAttribute("ColdOpenHandover", how)
 	player:SetAttribute("ColdOpenEnded", reason) -- Studio tests
-	-- docs/20 M4/M5: the cold open ends on the delivery beat, never a teleport. Seated ("Ride") they
-	-- keep the jet ski; on foot ("Station") they stay where they are and the jet ski stays put too,
+	-- docs/20 M4/M5, docs/30: the cold open ends on the delivery beat, never a teleport. Seated ("Ride") they
+	-- keep the jet ski, throttle ready; on foot ("Station") they stay where they are and the jet ski stays put too,
 	-- so the craft pin shows the way back. Only a death respawns them at the station.
 	if how == "Respawn" then
 		try("VehicleService", "Stow", player) -- nobody left to ride it: it waits at the bay
 		stationOnSpawn[player] = true
-	elseif how == "Ride" and ColdOpenFlow.rescued(reason) then
-		-- live v21: 11 of 19 first deliveries quit still seated at sea, the build station on land behind them.
-		-- Dock the jet ski and stand them at the tablet: the reward burst and the station beacon play there.
-		try("VehicleService", "StepAshore", player)
 	end
 end
 
@@ -1031,7 +1013,7 @@ finish = function(op: any, reason: string)
 	end
 	closeOp(op)
 	if op.fan then
-		try("AmbientRescueService", "ClearFlanks", op.fan)
+		try("AmbientRescueService", "ReleaseFlanks", op.fan)
 	end
 	if op.coldOpen and op.owner then
 		endColdOpen(op.owner, reason)
@@ -1910,12 +1892,6 @@ local function tick()
 	end
 	for _, player in Players:GetPlayers() do
 		local st = stateOf(player)
-		if
-			stationHoldUntil[player] and not (t < stationHoldUntil[player] and stationBeat(player))
-		then
-			stationHoldUntil[player] = nil -- Workshop placed or 120 s up: calls and the jet ski are back
-			player:SetAttribute("CraftHeld", nil)
-		end
 		if st.activeOpId or not lastActiveAt[player] then
 			lastActiveAt[player] = t -- first sight: the two idle minutes count from here
 		end
@@ -1950,7 +1926,7 @@ local function tick()
 				and hutUpAt[player] ~= nil -- no calls before the Rescue Hut stands (a save from before it skipped the cold open)
 				and not inWater(player)
 				and not busy(player)
-				and not stationHoldUntil[player]
+				and not upgradeBeat(player)
 			then
 				-- two idle minutes on the quay: the board nudges an easy call, not a random one
 				local onFoot, stationDistance = stationIdle(player)
@@ -2283,7 +2259,6 @@ local function onPlayerRemoving(player: Player)
 	coldOpenBegunAt[player] = nil
 	lastActiveAt[player] = nil
 	hutUpAt[player] = nil
-	stationHoldUntil[player] = nil
 	for _, op in table.clone(ops) do
 		local j = table.find(op.offeredTo, player)
 		if j then

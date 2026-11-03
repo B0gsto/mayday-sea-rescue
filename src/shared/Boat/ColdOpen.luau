@@ -8,9 +8,9 @@
 --    from the player. Then the throttle is the player's own for good: releasing W coasts (an
 --    idling jet creeps at about 2.5 knots). HANDOVER_DISTANCE leaves room to coast in without
 --    touching the controls; there is no approach brake (docs/24 A: the boat takes them at speed).
--- 2. Show, don't tell (docs/14 F-3, RP-UX2). The op's casualty is placed DISTANCE studs dead ahead,
---    on screen at spawn and well inside HANDOVER_DISTANCE (so the auto-throttle hands over at
---    once and an idling jet creeps on toward them), with two more swimmers fanned either side
+-- 2. Show, don't tell (docs/14 F-3, RP-UX2). The op's casualty is placed DISTANCE studs dead ahead, on
+--    screen at spawn and past the Upgrade Station's bay (so the auto-throttle carries the jet out of it and an idling
+--    jet creeps on toward them from HANDOVER_DISTANCE), with two more swimmers fanned either side
 --    (fan, docs/29 A: no chosen survivor). PLAN skips the graded approach: the recovery
 --    step (docs/14 section 3 ways: drag, throw, or stop and they swim to you) runs from the
 --    first second. The world (normal pick-up rings and waves) shows the way, and client
@@ -58,15 +58,15 @@ ColdOpen.SPAWN_FACING = RingLayout.Islands[1].facing
 -- studs dead ahead: past the cove mouth, outside NUDGE_NEAR, so they drive in to board (docs/16 B0); and outside
 -- PiwWays.LOST_RANGE (110): from 100 the swimmer swam to the jet ski still at the berth, which counted as landed,
 -- and the cold open finished itself (playtest 2) -- tune
-ColdOpen.DISTANCE = { 125, 145 }
+ColdOpen.DISTANCE = { 225, 245 } -- the bay (UpgradeStation.LANDING_OUT 120 + GoBack.BAY_RADIUS 60) stays clear: Go back lands there
 ColdOpen.NUDGE_AFTER = 10 -- s without headway before the world helps (docs/14 10 s rule)
 ColdOpen.NUDGE_PROGRESS = 6 -- studs closer that count as headway
 ColdOpen.NUDGE_NEAR = 45 -- studs: close enough that the casualty comes (PiwWays.COME_RANGE)
 
--- docs/29 A: the fan pivots on the cove mouth, not the berth: 40 degrees off the berth at DISTANCE lands on the sea
--- plates' keep-out, and across the jetty finger from where the jet ski starts. From the mouth all three sit in the
--- exit lane, on screen at spawn, and every one is still outside LOST_RANGE and the drop-off zone. -- tune
-ColdOpen.FAN_PIVOT = 65 -- studs from the berth (fwd 255) to the mouth (fwd 320)
+-- docs/29 A: the fan pivots past the station's arms, not at the berth: 40 degrees off the berth at DISTANCE lands on the
+-- sea plates' keep-out, and across the jetty finger from where the jet ski starts. From here all three sit in the exit
+-- lane, on screen at spawn, outside LOST_RANGE, the drop-off zone and the bay. -- tune
+ColdOpen.FAN_PIVOT = 185 -- studs from the berth (fwd 255) to past the arms' ends (fwd 430)
 ColdOpen.FAN_ANGLE = math.rad(40)
 
 -- The three swimmers, centre first, for a jet ski at `at` facing the flat unit `ahead`; `distance`: from ColdOpen.DISTANCE.

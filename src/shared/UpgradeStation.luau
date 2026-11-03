@@ -4,6 +4,7 @@
 -- and tower on a deck off the starboard arm, which joins the plate so the board can be reached on foot.
 --   UpgradeStation.landing(island) -> CFrame   where a boat lands in that island's bay, bow to the open sea (Go back uses it)
 --   UpgradeStation.parts(island) -> { StationPart }   what the server builds; `Board` and `Button` carry the UI and prompt
+--   UpgradeStation.buttonAt(island) -> Vector3   the green button: the tutorial's arrow and the Next chip point here
 --   UpgradeStation.pose(t, reduced) -> y, spin, tilt   the level-up moment's lift (0..1 of the height), radians, radians
 local RingLayout = require(script.Parent.Config.RingLayout)
 
@@ -104,6 +105,15 @@ local function ease(u: number): number
 end
 
 -- Up, a full spin at the top, then down fast and one small dip on the slam.
+function UpgradeStation.buttonAt(index: number): Vector3
+	for _, part in UpgradeStation.parts(index) do
+		if part.name == "Button" then
+			return part.cframe.Position
+		end
+	end
+	error("UpgradeStation: no Button")
+end
+
 function UpgradeStation.pose(t: number, reduced: boolean?): (number, number, number)
 	local lift
 	if t < 0.55 then
