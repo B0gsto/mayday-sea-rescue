@@ -59,6 +59,7 @@ function DepotArtService.Init()
 		"M_Prop_HQInterior",
 		"M_Prop_JettyCrane",
 		"M_Prop_PrizeWheel",
+		"M_Prop_SeaPlateKit", -- Ramp Wharf + Freight Wharf sea plates (DockPieces seaPlate)
 		"M_Prop_TrophyCup",
 		"M_Veh_SupplyBarge",
 	})
