@@ -231,6 +231,7 @@ function Style.press(button: GuiButton, onActivate: (() -> ())?, radius: number?
 	button.SelectionImageObject = ring(radius or S.corner)
 	local sc = Instance.new("UIScale")
 	sc.Parent = button
+	button:SetAttribute("PressScale", 1) -- AudioController's press dip would otherwise take the mid-squash 0.9 as the rest size
 	local over = false
 	local function rest()
 		tween(sc, 0.25, { Scale = if over and not still then 1.06 else 1 }, Enum.EasingStyle.Back)
