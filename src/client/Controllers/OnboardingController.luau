@@ -229,7 +229,8 @@ local function stepToStation()
 		return -- still welded: never drag the hull along
 	end
 	local station = DockConfig.stationSpot(bay)
-	local at = (station * CFrame.new(0, 0, 8)).Position -- the deck in front of the tablet, inside its open range
+	-- back where a new player first spawned: at 8 studs the sign filled the screen (owner 2026-11-03)
+	local at = DockConfig.newSpawn(bay).Position
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	params.FilterDescendantsInstances = { char }
