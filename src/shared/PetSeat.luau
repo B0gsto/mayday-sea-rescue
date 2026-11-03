@@ -15,6 +15,7 @@
 export type Size = {
 	metres: number, -- real head height or body length
 	built: number, -- the same extent on the built rig (studs)
+	follow: number, -- scale while following or riding: real size on the pre-perfect-pass rig, so the bigger meshes draw bigger
 }
 
 export type Seat = {
@@ -28,11 +29,11 @@ local PetSeat = {}
 
 PetSeat.STUDS_PER_METRE = 3
 PetSeat.Sizes = {
-	SealPup = { metres = 0.9, built = 4.898 }, -- nose to tail
-	Puffin = { metres = 0.3, built = 2.681 }, -- head height
-	Otter = { metres = 1.0, built = 7.637 }, -- nose to tail
-	Turtle = { metres = 0.6, built = 4.26 }, -- shell length
-	Gull = { metres = 0.45, built = 2.696 }, -- head height
+	SealPup = { metres = 0.9, built = 4.898, follow = 0.675 }, -- nose to tail
+	Puffin = { metres = 0.3, built = 2.681, follow = 0.353 }, -- head height
+	Otter = { metres = 1.0, built = 7.637, follow = 0.591 }, -- nose to tail
+	Turtle = { metres = 0.6, built = 4.26, follow = 0.667 }, -- shell length
+	Gull = { metres = 0.45, built = 2.696, follow = 0.595 }, -- head height
 } :: { [string]: Size }
 
 PetSeat.Seats = {
@@ -56,13 +57,13 @@ PetSeat.Seats = {
 } :: { [string]: Seat }
 PetSeat.Fallback = { anchor = "BowPoint", offset = Vector3.new(0, 0.3, 0), yaw = 0 } :: Seat
 
--- The scale factor that turns the built rig into the species' real-world size.
+-- The scale factor a following pet draws at.
 function PetSeat.scaleFor(speciesId: string): number
 	local size = PetSeat.Sizes[speciesId]
 	if not size then
 		return 1
 	end
-	return size.metres * PetSeat.STUDS_PER_METRE / size.built
+	return size.follow
 end
 
 -- The hull-root point for the PetSeat attachment. The jet ski's seat follows its survivor slot

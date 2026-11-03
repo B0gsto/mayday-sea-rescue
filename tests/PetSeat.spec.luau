@@ -8,13 +8,16 @@ return function(t)
 			local size = PetSeat.Sizes[species]
 			t.expect(size).toBeTruthy()
 			if size then
-				local drawn = size.built * PetSeat.scaleFor(species)
-				t.expect(drawn).toBeCloseTo(size.metres * PetSeat.STUDS_PER_METRE, 2)
+				-- at least real size, and the bigger perfect-pass mesh draws bigger than life
+				t.expect(
+					size.built * PetSeat.scaleFor(species) >= size.metres * PetSeat.STUDS_PER_METRE
+				)
+					.toBe(true)
 				t.expect(PetSeat.scaleFor(species) < 1).toBe(true)
 			end
 		end
-		t.expect(PetSeat.scaleFor("Puffin") * 2.681).toBeCloseTo(0.9, 2)
-		t.expect(PetSeat.scaleFor("Otter") * 7.637).toBeCloseTo(3.0, 2)
+		t.expect(PetSeat.scaleFor("Puffin") * 2.681).toBeCloseTo(0.946, 2)
+		t.expect(PetSeat.scaleFor("Otter") * 7.637).toBeCloseTo(4.513, 2)
 		t.expect(PetSeat.scaleFor("Unknown")).toBe(1)
 	end)
 
