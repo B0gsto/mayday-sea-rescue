@@ -110,6 +110,23 @@ return function(t)
 		t.expect(n).toBe(0)
 	end)
 
+	t.test("the goal board on every land lot (GoalBoardController's spot)", function()
+		local GoalBoard = t.load("src/shared/GoalBoard.luau")
+		local n = 0
+		for _, key in DockConfig.BUILDINGS do
+			local def = DockConfig.Buildings[key]
+			if def and not DockConfig.SEA_PLATE_CASH[key] then
+				local roots = table.clone(ground)
+				table.insert(
+					roots,
+					GoalBoard.build(b * def.spot * CFrame.new(0, 0, -def.size.Y / 2 + 3))
+				)
+				n += expectNone(`{key} board`, roots)
+			end
+		end
+		t.expect(n).toBe(0)
+	end)
+
 	t.test("decorations, the build station and trophies", function()
 		local roots = table.clone(ground)
 		for key in DockConfig.Decorations do

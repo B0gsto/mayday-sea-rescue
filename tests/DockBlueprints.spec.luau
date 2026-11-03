@@ -42,7 +42,8 @@ return function(t)
 	end)
 
 	t.test("level rows carry no old padlock; decor and blueprints need nothing", function()
-		t.expect(D.needs({ kind = "Building", key = "Depot" }, {})).toBeNil()
+		t.expect(D.needs({ kind = "Building", key = "Bunkhouse" }, {})).toBeNil()
+		t.expect(D.needs({ kind = "Building", key = "Depot" }, {})).toBe("Workshop") -- after the tutorial's Workshop
 		t.expect(D.needs({ kind = "Building", key = "AirStation" }, {})).toBeNil()
 		t.expect(D.needs({ kind = "Decor", key = "Statue" }, {})).toBeNil()
 		t.expect(D.needs({ kind = "Blueprint", key = "Lighthouse" }, {})).toBeNil()
