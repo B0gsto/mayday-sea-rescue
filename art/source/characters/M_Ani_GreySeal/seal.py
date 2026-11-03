@@ -200,7 +200,11 @@ def eyes(B, regions):
 # flat back panel with a 0.05 stud lip. r6: moved back onto the flat (unbent) back, so the three studs stand level
 STUD_YS, STUD_R, STUD_H, STUD_SINK = (0.600, 0.320, 0.040), 0.120, 0.107, 0.030
 STUD_LIP = 0.018                                                 # a crisp bevel lip
-PLATE_Y, PLATE_W, PLATE_T, PLATE_D, PLATE_B = (0.740, -0.100), 0.158, 0.050, 0.050, 0.017
+PLATE_Y, PLATE_W, PLATE_T, PLATE_D, PLATE_B = (0.740, -0.100), 0.158, 0.055, 0.050, 0.017
+# r7: a dark seam skirt round the plate (0.066 stud wider, 0.045 proud, so the plate stands 0.12 stud clear of it) and a
+# dark ring round each stud's base
+SEAM_M, SEAM_T = 0.022, 0.015
+RING_M, RING_T, RING_SINK = 0.016, 0.015, 0.012
 
 
 def _crest(y):
@@ -230,9 +234,23 @@ def plate(B, regions, n=24):
             (0.5, 0.5), 0.3)
 
 
+def seam(B, regions):
+    """r7: the dark skirt round the plate. A hand-made flat-topped ring: rr's angle sampling cuts a wide, low box's
+    corners so deep that its long sides would sink under the back."""
+    w, b = PLATE_W + SEAM_M, 0.006
+    ring = [(w, -PLATE_D), (w, SEAM_T - b), (w - b, SEAM_T), (b - w, SEAM_T), (-w, SEAM_T - b), (-w, -PLATE_D)]
+    ys = np.linspace(PLATE_Y[0] + SEAM_M, PLATE_Y[1] - SEAM_M, 7)
+    sts = [[((ox, float(y), _crest(y) + oz), j / float(len(ring))) for j, (ox, oz) in enumerate(ring)] for y in ys]
+    grid = surface(B, sts, regions, "GROOVE", "body", s_of=lambda i, j: 0.0)
+    zc = 0.5 * (SEAM_T - PLATE_D)
+    cap_fan(B, grid[0], (0.0, float(ys[0]), _crest(ys[0]) + zc), regions, "GROOVE", (0.5, 0.5), 0.3, flip=True)
+    cap_fan(B, grid[-1], (0.0, float(ys[-1]), _crest(ys[-1]) + zc), regions, "GROOVE", (0.5, 0.5), 0.3)
+
+
 def stud(B, regions, n=24):
     """Bevelled Lego studs on the plate: cylinders sunk into it with a chamfered top edge and a flat cap."""
     plate(B, regions)
+    seam(B, regions)
     for sy in STUD_YS:
         top = _crest(sy) + PLATE_T                            # the plate's top at this y
         c = (0.0, sy, top)
@@ -244,6 +262,15 @@ def stud(B, regions, n=24):
             for vi, _ in row:
                 B.anchor[vi] = c
         cap_fan(B, grid[-1], (c[0], c[1], top + STUD_H), regions, "STUD", (0.5, 0.5), 0.3, anchor=c)
+        prof = [(STUD_R + RING_M, -RING_SINK), (STUD_R + RING_M, RING_T), (STUD_R - RING_M, RING_T)]   # inner edge hidden in the stud
+        sts = [[((c[0] + r * math.cos(2 * math.pi * j / n), c[1] + r * math.sin(2 * math.pi * j / n), top + dz),
+                 j / float(n)) for j in range(n)] for r, dz in prof]
+        grid = surface(B, sts, regions, "GROOVE", "body", s_of=lambda i, j: 0.0)
+        for row in grid:
+            for vi, _ in row:
+                B.anchor[vi] = c
+        cap_fan(B, grid[0], (c[0], c[1], top - RING_SINK), regions, "GROOVE", (0.5, 0.5), 0.3, flip=True, anchor=c)
+        cap_fan(B, grid[-1], (c[0], c[1], top + RING_T), regions, "GROOVE", (0.5, 0.5), 0.3, anchor=c)
 
 
 # ---------------------------------------------------------------- mesh assembly

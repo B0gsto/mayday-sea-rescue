@@ -340,14 +340,19 @@ def _paw(bm):
 VEST_Y, VEST_LEN = -0.06, 1.32          # Blender local y centre / length of the back panel (-0.08)
 # r6 side panels: a rounded near-square pad between the legs (front edge behind the shoulders), so the sit's body pitch
 # doesn't read as a long card tilted off the barrel
-SIDE_Y, SIDE_LEN, SIDE_ZC, SIDE_H, SIDE_X, SIDE_T, SIDE_BEV = 0.30, 0.94, -0.045, 0.83, 0.035, 0.17, 0.16
+# r7: 25 % taller (top edge kept, bottom down to 1.11) and longer back to just short of the hind thigh, thinner navy rim
+SIDE_Y, SIDE_LEN, SIDE_ZC, SIDE_H, SIDE_X, SIDE_T, SIDE_BEV = 0.365, 1.07, -0.15, 1.04, 0.035, 0.17, 0.16
+SIDE_RIM = 0.05
 TAPE_X = 0.5 + SIDE_X + (SIDE_T + 0.04) * 0.5 + 0.0125 - 0.535     # side band sunk 0.01 into the pad's orange face
 
 
 def _harness_back(bm):
     _merge(bm, _box((1.24, VEST_LEN + 0.08, 0.08), (0, VEST_Y, 0), bevel=0.025, segments=2))
-    for s in (-1, 1):       # navy edge front and back (0.10)
-        _merge(bm, _box((1.16, 0.10, 0.03), (0, VEST_Y + s * (VEST_LEN + 0.08 - 0.13) * 0.5, 0.05), bevel=0), "webbing")
+    _merge(bm, _box((1.16, 0.06, 0.03), (0, VEST_Y - 0.655, 0.05), bevel=0), "webbing")   # r7: thin navy front edge
+    # r7: the orange half of the spine band, behind and lower than the white half (Tape), so from behind orange sits under
+    # white and from the game camera they read as one ~0.6 wide stripe; overhangs the panel's rear onto the barrel
+    _merge(bm, _box((1.18, 0.38, 0.21), (0, 0.65, 0.075), bevel=0.03, segments=2), "harness")
+    for s in (-1, 1):
         # one chunky ~0.5 stud per side, dark base band reads as a contact shadow
         _merge(bm, _stud(0.25, 0.24, (0.33 * s, VEST_Y - 0.06, 0.14), segs=12))
 
@@ -356,7 +361,7 @@ def _harness_side(bm, side):
     o = -side                             # outward is Blender -x for his right (+1)
     zc, h = SIDE_ZC, SIDE_H
     _merge(bm, _pad((SIDE_T, SIDE_LEN, h), (o * SIDE_X, SIDE_Y, zc), SIDE_BEV, 0.03), "webbing")   # navy base
-    _merge(bm, _pad((SIDE_T + 0.04, SIDE_LEN - 0.20, h - 0.20), (o * SIDE_X, SIDE_Y, zc), SIDE_BEV - 0.06, 0.05))  # orange inset
+    _merge(bm, _pad((SIDE_T + 0.04, SIDE_LEN - 2 * SIDE_RIM, h - 2 * SIDE_RIM), (o * SIDE_X, SIDE_Y, zc), SIDE_BEV - SIDE_RIM, 0.05))  # orange inset
     for t in (-1, 1):
         stud = _stud(0.11, 0.11, (0, 0, 0), segs=10)       # 1x2 studs below the band
         _rot(stud, D(-90) * side, "Y")       # stud axis points outward
@@ -366,9 +371,9 @@ def _harness_side(bm, side):
 
 def _harness_tape(bm, side):
     _merge(bm, _box((0.045, SIDE_LEN - 0.08, 0.24), (-side * TAPE_X, SIDE_Y, -0.01), bevel=0.012, segments=1))   # side band
-    # r6: its half of a raised white bar across the back panel's rear edge (0.3 wide, 0.21 above the panel): clears
-    # the rump and tail line so it reads from behind and from the game camera, not only from straight above
-    _merge(bm, _box((0.60, 0.30, 0.24), (side * 0.22, 0.46, 0.42), bevel=0.03, segments=2))
+    # r6: its half of a raised white bar across the back panel's rear edge: clears the rump and tail line so it reads
+    # from behind and from the game camera. r7: taller, forward of the orange half, clear of the handle's rear foot
+    _merge(bm, _box((0.60, 0.26, 0.30), (side * 0.22, 0.39, 0.45), bevel=0.03, segments=2))
 
 
 def _harness_belly(bm):

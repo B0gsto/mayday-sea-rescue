@@ -8,7 +8,8 @@ Blender session (MCP), never headless; objects are in studs, Z up, facing -Y.
     adsheet.lineup([("Otter", objs), ...], "H/Pets/rN_sheet.png")
 
 Rows: GAME (sea, grass; 5-stud figure, camera 18 back 7 up, 70 deg FOV), PHONE (25 % then back up), CLOSE (ortho
-front, 3/4, side, back), POSES (3/4 ortho, one per pose). Lineup: one row per pet (game, phone, 3 close-ups).
+front, 3/4, side, back), POSES (3/4 ortho, one per pose). Lineup: one row per pet (game sea + grass, phone of
+both, 3 close-ups).
 """
 import math
 import os
@@ -207,12 +208,14 @@ def render(objs, out_png, poses=None):
 
 
 def lineup(groups, out_png):
-    """groups: [(label, objs)], one row per pet: game (sea), phone, front / 3/4 / side close-ups."""
+    """groups: [(label, objs)], one row per pet: game (sea, grass), phone (both), front / 3/4 / side close-ups.
+    540 x 304 game frames + 304 close-ups = 3072 wide."""
     sc = _stage()
     rows = []
     for _label, objs in groups:
         _use(sc, objs)
         lo, hi = _settle(sc, objs)
-        g = _game(sc, lo, hi, "sea", 768, 432)
-        rows.append(np.concatenate([g, _phone(g)] + [_close(sc, lo, hi, v, 432) for v in ("front", "3q", "side")], 1))
+        game = [_game(sc, lo, hi, g, 540, 304) for g in ("sea", "grass")]
+        rows.append(np.concatenate(game + [_phone(g) for g in game] +
+                                   [_close(sc, lo, hi, v, 304) for v in ("front", "3q", "side")], 1))
     _save(rows, out_png)
