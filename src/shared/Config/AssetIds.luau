@@ -233,6 +233,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://95736914543128",
 		LOD2 = "rbxassetid://72639338712780",
 	},
+	M_Prop_HubKit = {
+		LOD0 = "rbxassetid://88613009854216",
+		LOD1 = "rbxassetid://112011585002545",
+		LOD2 = "rbxassetid://116835442105145",
+	},
 	M_Prop_JettyCrane = {
 		LOD0 = "rbxassetid://105813117125800",
 		LOD1 = "rbxassetid://73207410742283",
@@ -785,6 +790,16 @@ AssetIds.Attachments = {
 		ATT_Screen = Vector3.new(0, 6.2, 3.6),
 	},
 	M_Prop_HQInterior = {},
+	M_Prop_HubKit = {
+		ATT_Atoll = Vector3.new(0, 0, 0),
+		ATT_Beacon = Vector3.new(100, 0, 0),
+		ATT_Wreck = Vector3.new(170, 0, 0),
+		ATT_Buoy = Vector3.new(235, 0, 0),
+		ATT_RockA = Vector3.new(275, 0, 0),
+		ATT_RockB = Vector3.new(330, 0, 0),
+		ATT_Raft = Vector3.new(390, 0, 0),
+		ATT_Light = Vector3.new(100, 93.5, 0),
+	},
 	M_Prop_JettyCrane = {
 		ATT_Hook = Vector3.new(0, 13.4, -36.8),
 		ATT_Lamp_JibTip = Vector3.new(0, 22.1, -39.3),

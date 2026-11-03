@@ -1,0 +1,239 @@
+{
+ "asset": "M_Prop_HubKit",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Atoll",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -174.8497,
+    -61.2136,
+    9.0509
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Beacon",
+   "parent": null,
+   "blender": [
+    -100.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    100.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -74.8497,
+    -61.2136,
+    9.0509
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Wreck",
+   "parent": null,
+   "blender": [
+    -170.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    170.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -4.8497,
+    -61.2136,
+    9.0509
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Buoy",
+   "parent": null,
+   "blender": [
+    -235.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    235.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    60.1503,
+    -61.2136,
+    9.0509
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_RockA",
+   "parent": null,
+   "blender": [
+    -275.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    275.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    100.1503,
+    -61.2136,
+    9.0509
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_RockB",
+   "parent": null,
+   "blender": [
+    -330.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    330.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    155.1503,
+    -61.2136,
+    9.0509
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Raft",
+   "parent": null,
+   "blender": [
+    -390.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    390.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    215.1503,
+    -61.2136,
+    9.0509
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Light",
+   "parent": null,
+   "blender": [
+    -100.0,
+    0.0,
+    93.5
+   ],
+   "roblox_from_origin": [
+    100.0,
+    93.5,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -74.8497,
+    32.2864,
+    9.0509
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

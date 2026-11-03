@@ -375,7 +375,8 @@
    "T_SubPen_Brick_RGH",
    "T_TrophyHall_Brick_RGH",
    "T_WorkshopAddons_Brick_RGH",
-   "T_BuildSiteKit_Brick_RGH"
+   "T_BuildSiteKit_Brick_RGH",
+   "T_HubKit_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -13545,7 +13546,8 @@
    "T_TrophyHall_Brick_NOR",
    "T_WorkshopAddons_Brick_NOR",
    "T_JettyCrane_Brick_NOR",
-   "T_BuildSiteKit_Brick_NOR"
+   "T_BuildSiteKit_Brick_NOR",
+   "T_HubKit_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -17733,7 +17735,8 @@
    "T_TrophyHall_Brick_MET",
    "T_WorkshopAddons_Brick_MET",
    "T_JettyCrane_Brick_MET",
-   "T_BuildSiteKit_Brick_MET"
+   "T_BuildSiteKit_Brick_MET",
+   "T_HubKit_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -19231,6 +19234,15 @@
   "name": "T_Spike1_4096_NOR",
   "sha": "e846f037df8b1fcce1f2d39b6d3c689b6531a9a94954991cda7fee182eeaaf27",
   "source": "assets/textures/Spike1/T_Spike1_4096_NOR.png",
+  "type": "Image"
+ },
+ "Image:e84e8cc6983a9f43f5c7e14a121d2f45e93a7aa86481e42c4099b72cd8b8c42c": {
+  "assetId": "76696982722535",
+  "imageId": "76696982722535",
+  "moderation": "Approved",
+  "name": "T_HubKit_Brick_ALB",
+  "sha": "e84e8cc6983a9f43f5c7e14a121d2f45e93a7aa86481e42c4099b72cd8b8c42c",
+  "source": "assets/textures/M_Prop_HubKit/T_HubKit_Brick_ALB.png",
   "type": "Image"
  },
  "Image:e85aa78931f7c284e99b5ba9ff9c2f3246f4fcc12bd40a48f9ea22821bbe8b9a": {
@@ -26472,6 +26484,16 @@
   "source": "assets/fbx/M_Sea_SandRipples/M_Sea_SandRipples_LOD1.fbx",
   "type": "Model"
  },
+ "Model:902bb47dc87ca1e2eddae9cce64bdfd49281b41d5ea451aa24bc5e10151b4e3b": {
+  "assetId": "88613009854216",
+  "moderation": "Approved",
+  "name": "M_Prop_HubKit",
+  "rbxm": "assets/models/M_Prop_HubKit.rbxm",
+  "route": "delivery",
+  "sha": "902bb47dc87ca1e2eddae9cce64bdfd49281b41d5ea451aa24bc5e10151b4e3b",
+  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:9054d2addedc999efb01322a0e6af4dfb8d39f3ef1d85e30b8700eed58179e86": {
   "assetId": "138994256988411",
   "moderation": "Approved",
@@ -27960,6 +27982,16 @@
   "route": "delivery",
   "sha": "b6d4ebe70c8ab82ca1de076769673de95c4505c46e704cdf7a69193bad7f1b32",
   "source": "assets/fbx/M_Bld_LookoutAddons/M_Bld_LookoutAddons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:b6f7e0a6e029561f9ccfc99305ddb3f772329db3832ee649530aefda942e26d5": {
+  "assetId": "112011585002545",
+  "moderation": "Approved",
+  "name": "M_Prop_HubKit_LOD1",
+  "rbxm": "assets/models/M_Prop_HubKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b6f7e0a6e029561f9ccfc99305ddb3f772329db3832ee649530aefda942e26d5",
+  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD1.fbx",
   "type": "Model"
  },
  "Model:b752ce4a7367f927c984e933dd4eacec856aaed3f4b049265d1dd5ea254b9c18": {
@@ -29620,6 +29652,16 @@
   "route": "delivery",
   "sha": "e5e9aacbcf794fa52e05a935d2de33d5a99dcc66c869baaa5d881e3895eb1216",
   "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:e5eaaa6cee733e539dcbb46fc0b4405364f5150415c3c1d5301fb71e97a766de": {
+  "assetId": "116835442105145",
+  "moderation": "Approved",
+  "name": "M_Prop_HubKit_LOD2",
+  "rbxm": "assets/models/M_Prop_HubKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "e5eaaa6cee733e539dcbb46fc0b4405364f5150415c3c1d5301fb71e97a766de",
+  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD2.fbx",
   "type": "Model"
  },
  "Model:e66062ba4b86382b40d0155fd7239ce06e9d3d48c8e21797e5ccb950021c9ed8": {
