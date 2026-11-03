@@ -58,6 +58,12 @@ function Snorkel.stroke(phase: number): (number, number)
 	return 1 + Snorkel.STROKE_SURGE * c, Snorkel.BOB * c
 end
 
+-- The move a swimmer's Humanoid gets: same stick strength, level. Straight down has no heading, so no move.
+function Snorkel.flatMove(move: Vector3): Vector3
+	local flat = Vector3.new(move.X, 0, move.Z)
+	return if flat.Magnitude > 1e-3 then flat.Unit * move.Magnitude else Vector3.zero
+end
+
 -- Vertical velocity (studs/s) of the float spring. eyeY: the head; lookY: camera LookVector.Y;
 -- bob: extra eye height from Snorkel.stroke.
 function Snorkel.verticalVelocity(
