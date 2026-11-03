@@ -1181,7 +1181,7 @@ end
 -- The nearest open water from `pos` that a `hull` (beam, depth, length) fits in and can drive out of:
 -- rings from BOAT_BACKOFF out, bearings nearest `away` first, and the heading (nearest `away`, back
 -- out the way it came rather than along the shore) with a clear SEA_VIEW stud run; in a home berth notch or exit lane
--- (RingLayout.laneFacing) straight down the lane first (live v33: craft wedged leaving the berth). Nil when none.
+-- (RingLayout.laneFacing) only straight down the lane (live v33: craft wedged leaving the berth). Nil when none.
 -- `fromRing` 0 tries `pos` itself first; `free(at)` rejects spots another vehicle holds.
 local function nearestOpenWater(
 	pos: Vector3,
@@ -1202,7 +1202,8 @@ local function nearestOpenWater(
 			local at = Vector3.new(pos.X + d.X * ring, 0, pos.Z + d.Z * ring)
 			if openAt(at.X, at.Z, r, depth, params) and (not free or free(at)) then
 				local lane = RingLayout.laneFacing(at.X, at.Z)
-				local heads: { Vector3 } = if lane then { lane, table.unpack(dirs) } else dirs
+				-- in a notch or lane only straight out counts: a skewed fallback aims at the notch wall, so try the next spot
+				local heads: { Vector3 } = if lane then { lane } else dirs
 				for _, f in heads do
 					-- the stern clears the quay too (a RIB at Bay1 sat with its transom on the rail)
 					local stern = at - f * (hull.Z / 2 + 4)
