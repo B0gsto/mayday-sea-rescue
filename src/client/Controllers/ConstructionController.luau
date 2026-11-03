@@ -332,8 +332,6 @@ local KIT_SLOT = {
 }
 local kitCache: { [string]: { part: BasePart, offset: CFrame } }? = nil
 local CRANE_S, CONE_S = 1.3, 1.5 -- r5 AD: the mast reads thin and the cones vanish on a phone
-local PALLET = { RED, YELLOW, Color3.fromRGB(30, 96, 186) } -- one Lego colour per pallet
-local STUD_TEXTURE = "rbxassetid://18878365966" -- IslandPlates' white 4 x 4 stud tile, tinted per brick
 
 local function siteKit(): { [string]: { part: BasePart, offset: CFrame } }?
 	if kitCache then
