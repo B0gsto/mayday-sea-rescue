@@ -2,8 +2,8 @@
 -- Menu (docs/23 (m), WP-23c): the left button column and its kit panels. Mounted once by HudController.
 --   Grid (HudLayout "menu" region: 2 icon columns above the thumbstick): Shop, Quests,
 --   Album, Pet, Crew, Settings, Map and Boat (Boat to me: the server's cooldown rule with the Mechanics' shorter wait, drawn as
---   a ring of ticks; Quick Launch shows the bolt and skips it). Each opens a centred kit Panel; Map
---   opens the full map (MapController, also M).
+--   a ring of ticks; Quick Launch shows the bolt and skips it) and Home (only while far from your island: back
+--   on its spawn behind a quick dip to black). Each opens a centred kit Panel; Map opens the full map (MapController, also M).
 --   Keys: P Shop, gamepad Start Settings, D-pad Left focuses the column (D-pad moves, A presses),
 --   B closes the open panel or leaves the column.
 --   LocalPlayer attribute MenuOpen mirrors "a panel is up" (Waypoint and the pager hide under it).
@@ -19,6 +19,7 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
 local QuestData = require(Shared:WaitForChild("Quests"):WaitForChild("Data"))
@@ -60,6 +61,7 @@ local BUTTONS = { -- HudLayout.MENU_COUNT
 	{ name = "Settings", label = "Settings", icon = "settings", color = "blue" },
 	{ name = "Map", label = "Map", icon = "map", color = "green" },
 	{ name = "Boat", label = "Boat", icon = "boat_to_me", color = "red" },
+	{ name = "Home", label = "Home", icon = "home", color = "blue" },
 }
 
 local Menu = {}
@@ -72,30 +74,34 @@ local current: string? = nil
 local mounted = false
 local pulseName: string? = nil
 
--- docs/24 E: the button the tutorial asks for lifts its tile once with a small bounce and stays raised until
--- pressed. No outline ring (owner 2026-11-01), no looping pulse, no orange (owner 2026-10-28).
-local LIFT = 6 -- du the tile rises
+-- docs/24 E: the button the tutorial asks for grows from its centre once with a small bounce and stays raised
+-- until pressed. No outline ring (owner 2026-11-01), no looping pulse, no orange (owner 2026-10-28). Growing, not
+-- moving up: the phone's 6 du row gap would put a lifted tile over the label above.
+local RAISED = 1.08 -- 64 du tile: under 3 du per side (1.12 touched the label above on a phone)
 local function startPulse(root: GuiObject, name: string)
 	local tile = root:FindFirstChild("Tile") :: GuiObject?
 	if not tile or root:GetAttribute("TutorialLift") then
 		return
 	end
 	root:SetAttribute("TutorialLift", true)
-	TweenService:Create(
-		tile,
-		TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-		{ Position = UDim2.fromOffset(0, -LIFT) }
-	):Play()
+	local scale = Instance.new("UIScale")
+	scale.Parent = tile
+	-- UIScale grows from the top-left: keep it centred (offsets are whole numbers, so round rather than truncate)
+	local inset = math.round(-tile.Size.X.Offset * (RAISED - 1) / 2)
+	local info = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+	TweenService:Create(scale, info, { Scale = RAISED }):Play()
+	TweenService:Create(tile, info, { Position = UDim2.fromOffset(inset, inset) }):Play()
 	task.spawn(function()
 		while root.Parent and pulseName == name do
 			task.wait(0.2)
 		end
 		root:SetAttribute("TutorialLift", nil)
-		TweenService:Create(
-			tile,
-			TweenInfo.new(0.2, Enum.EasingStyle.Quad),
-			{ Position = UDim2.fromOffset(0, 0) }
-		):Play()
+		local back = TweenInfo.new(0.2, Enum.EasingStyle.Quad)
+		local down = TweenService:Create(scale, back, { Scale = 1 })
+		TweenService:Create(tile, back, { Position = UDim2.fromOffset(0, 0) }):Play()
+		down:Play()
+		down.Completed:Wait()
+		scale:Destroy()
 	end)
 end
 
@@ -190,7 +196,7 @@ function Menu.open(name: string)
 		return
 	end
 	if name == pulseName then
-		Menu.pulse(nil) -- found it (the quest reveal's lift)
+		Menu.pulse(nil) -- found it (the quest reveal's cue)
 	end
 	if current == name then
 		return
@@ -359,6 +365,41 @@ local function dressBoat(b: IconButton.IconButton)
 	end
 end
 
+-- The Home button: shown only past DockConfig.HOME_FAR from your berth (the grid closes the gap while hidden).
+-- Press: dip to black, the server stands you on your island's spawn.
+local function dressHome(b: IconButton.IconButton)
+	local sending = false
+	local function far(): boolean
+		local bay = player:GetAttribute("BayCFrame")
+		local char = player.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
+		return typeof(bay) == "CFrame"
+			and root ~= nil
+			and (root.Position - bay.Position).Magnitude > DockConfig.HOME_FAR
+			and player:GetAttribute("CraftHeld") ~= true
+	end
+	task.spawn(function()
+		while b.root.Parent do -- until a rebuild destroys it
+			b.root.Visible = sending or far()
+			task.wait(0.5)
+		end
+	end)
+	return function()
+		if sending or not far() then
+			return
+		end
+		sending = true
+		player:SetAttribute("ColdOpenFade", true) -- ColdOpenFadeController paints it
+		task.wait(0.3)
+		pcall(function()
+			Net.func("GoHome"):InvokeServer()
+		end)
+		task.wait(0.15)
+		player:SetAttribute("ColdOpenFade", nil)
+		sending = false
+	end
+end
+
 -- the quest cards you can act on now (the tablet's rows: an offer you can accept, a quest ready to hand in); the
 -- button itself only once quests are open (QuestService QuestsOpen, owner 2026-10-29: not at the first start)
 local function questBadge()
@@ -418,6 +459,8 @@ local function buildBar(region: Frame)
 		end
 		if info.name == "Boat" then
 			onPress = dressBoat(btn)
+		elseif info.name == "Home" then
+			onPress = dressHome(btn)
 		elseif info.name == "Map" then
 			onPress = function()
 				Menu.close()

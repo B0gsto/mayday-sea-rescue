@@ -43,6 +43,23 @@ return function(t)
 		return #lines
 	end
 
+	t.test("the scanner: a cylinder's cap flush with a block's top shows", function()
+		local f = Instance.new("Folder")
+		local rail = Instance.new("Part")
+		rail.Size, rail.CFrame, rail.Color =
+			Vector3.new(4, 1, 1), CFrame.new(0, 0, 0), Color3.new(1, 1, 0)
+		rail.Parent = f
+		local wheel = Instance.new("Part")
+		wheel.Shape = Enum.PartType.Cylinder
+		wheel.Size = Vector3.new(1, 3, 3)
+		wheel.CFrame = CFrame.new(0, 0, 0) * CFrame.Angles(0, 0, math.pi / 2) -- lying flat, cap level with the rail
+		wheel.Color = Color3.new(0, 0, 0)
+		wheel.Parent = f
+		t.expect(#Scan.find(Scan.collect({ f }))).toBe(2) -- the top and the bottom cap
+		wheel.CFrame = CFrame.new(0, 0.05, 0) * CFrame.Angles(0, 0, math.pi / 2)
+		t.expect(#Scan.find(Scan.collect({ f }))).toBe(0)
+	end)
+
 	t.test("the scanner: a flush top shows, a lift or a glued contact does not", function()
 		local function block(parent: Instance, size: Vector3, pos: Vector3, color: Color3)
 			local p = Instance.new("Part")

@@ -42,6 +42,7 @@ local BoatBoard = require(script.Parent.Parent:WaitForChild("Dock"):WaitForChild
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
 local ClimbPath = require(Shared:WaitForChild("Ops"):WaitForChild("ClimbPath"))
 local Crowding = require(Shared:WaitForChild("Crowding"))
+local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local Marina = require(Shared:WaitForChild("Marina"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
@@ -1638,6 +1639,35 @@ function VehicleService.Init()
 	f.Parent = Workspace
 	folder = f
 
+	-- Menu Home (far from your island): off any helm, onto the spawn. The craft stays out until Boat to me, the next launch or the idle sweep.
+	Net.func("GoHome").OnServerInvoke = function(player: Player)
+		local character = player.Character
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		local home = DockService.GetSpawn(player)
+		local bay = bayFor(player)
+		if not (character and humanoid and humanoid.Health > 0 and home and bay) then
+			return false, "NoHome"
+		end
+		local root = character:FindFirstChild("HumanoidRootPart") :: BasePart?
+		if not root or (root.Position - bay.Position).Magnitude < DockConfig.HOME_FAR * 0.9 then
+			return false, "Near" -- a little slack: the client's reading lags a moving rider
+		end
+		local seat = humanoid.SeatPart
+		if seat then
+			humanoid.Sit = false
+			local weld = seat:FindFirstChild("SeatWeld")
+			if weld then
+				weld:Destroy()
+			end
+			-- the owning client must drop the weld before the pivot, else it keeps the rider pinned and the pivot
+			-- snaps back (Studio check 2026-11-01); the client's dip to black covers the wait
+			task.wait(0.25)
+		end
+		local pos = standOnGround(character, home.Position)
+		root.AssemblyLinearVelocity = Vector3.zero
+		character:PivotTo(CFrame.lookAt(pos, pos + home.LookVector * Vector3.new(1, 0, 1)))
+		return true
+	end
 	-- docked = true (the launch step): leave it at the bay for the player to walk to and board
 	Net.func("RequestVehicle").OnServerInvoke = function(
 		player: Player,
