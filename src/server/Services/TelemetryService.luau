@@ -657,6 +657,7 @@ end
 function TelemetryService.Init()
 	addKnown(VehicleConfig.Order)
 	addKnown(VehicleUpgrades.UpgradeOrder)
+	addKnown({ "BoatLevel" })
 	for _, group in { MonetizationConfig.Products, MonetizationConfig.GamePasses } do
 		for key in group :: { [string]: any } do
 			knownItems[key] = true

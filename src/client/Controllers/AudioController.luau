@@ -354,7 +354,7 @@ local function makeRig(model: Model, id: string): BoatRig?
 		lowBase = baseVolume(clips.low),
 		highBase = baseVolume(clips.high),
 		rpm = AudioMix.IDLE_RPM,
-		topSpeed = spec.topSpeed,
+		topSpeed = tonumber(model:GetAttribute("TopSpeed")) or spec.topSpeed, -- docs/30: the level's
 		busy = clips.busy or 0,
 		lastSlam = 0,
 	}

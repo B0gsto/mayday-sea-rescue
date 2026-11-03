@@ -7,6 +7,7 @@ export type VehicleUnlock = {
 	needs: string?, -- the DockConfig building it needs (nil: none)
 	price: number, -- Cash to buy once the building stands (0 = free)
 	passOnly: boolean?, -- Robux only: owned through its MonetizationConfig.GamePasses `vehicle` pass, never Cash
+	level: number?, -- docs/30: the boat level that makes this hull yours (BoatLevels.Stages)
 }
 
 local ProgressionConfig = {}
@@ -15,8 +16,10 @@ ProgressionConfig.SchemaVersion = 2 -- v2: survivors v2 (six rarities, traits, s
 
 ProgressionConfig.Vehicles = {
 	JetSki = { price = 0 },
-	RIB = { needs = "Boathouse", price = 2500 }, -- tune
-	Lifeboat = { needs = "LifeboatSlip", price = 18000 }, -- tune
+	RIB = { needs = "Boathouse", price = 2500, level = 11 }, -- tune
+	Lifeboat = { needs = "LifeboatSlip", price = 18000, level = 21 }, -- tune
+	Hydrofoil = { price = 0, level = 31 },
+	RocketCutter = { price = 0, level = 41 },
 	RescueHelicopter = { needs = "Hangar", price = 40000 }, -- tune: in week 1 (tests/Pacing); was 85,000 (a 95 min save, REVIEW feel #3)
 	Submarine = { needs = "SubPen", price = 64000 }, -- tune
 	-- Premium fleet (2026-10-21, user): Robux only, through the vehicle's Game Pass; launched from the boathouse.

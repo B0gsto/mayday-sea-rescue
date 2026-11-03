@@ -17,6 +17,7 @@ local ServerStorage = game:GetService("ServerStorage")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local GoldenCalls = require(Shared:WaitForChild("Calls"):WaitForChild("GoldenCalls"))
@@ -1340,14 +1341,17 @@ end
 
 -- docs/23 e.2: how far out this player's calls go, from the best craft they can launch.
 local function callReach(player: Player): number
+	-- docs/30: the boat's level sets it (paid looks add nothing); the heli and sub keep their own tier
 	local owned = {}
-	for id in CallTypes.CraftReach do
+	for _, id in { "Submarine", "RescueHelicopter" } do
 		local ok, can = try("ProgressionService", "CanUseVehicle", player, id)
 		if ok and can == true then
 			table.insert(owned, id)
 		end
 	end
-	return CallLogic.craftReach(owned)
+	local okData, data = try("ProgressionService", "GetData", player)
+	local level = if okData and type(data) == "table" then data.boatLevel else nil
+	return math.max(CallLogic.craftReach(owned), BoatLevels.row(level).callReach)
 end
 
 -- forcedKind: an operation id, or "EasyCall" (the idle nudge: a swimmer close in, in calm water).

@@ -1303,6 +1303,21 @@ Presets.ALL.quest_done = preset({
 	impactTint = Color3.fromRGB(246, 248, 255),
 })
 
+-- spectacle: the boat levels up (docs/30, UpgradeStationController): played as it blasts at the top of the lift. Bricks
+-- and spray out, then the slam: a foam ring on the water and one big boom at `impact`. No light, nothing flashes.
+Presets.ALL.boat_levelup = preset({
+	job = "spectacle",
+	impact = 0.5,
+	layers = {
+		confetti(44, { 46, 74 }, 70, { RED, WHITE, YELLOW, NAVY, SEA }),
+		with(plates({ RED, WHITE, YELLOW, NAVY }, 16), { size = { 3.2 } }),
+		with(puffs(14, FOAM, 5, 12, 0.8), { ring = true, delay = 0.5 }),
+		groundRing("shockwave_ring", FOAM, { 9, 13 }, 0.7, 0.5),
+	},
+	sounds = sounds({ { "FX_Boom", 0, 1.3, 1 } }),
+	punch = { fov = 4, shake = 0.4, time = 0.35 },
+})
+
 -- feedback: a decor piece or a pet bought: a dust ring, plates hop, a few bricks above; till + pop
 Presets.ALL.buy_pop = preset({
 	job = "feedback",

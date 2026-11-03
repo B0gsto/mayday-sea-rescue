@@ -435,7 +435,8 @@ local function update(dt: number)
 		Chase.update(dt, {
 			model = craft,
 			root = c.root,
-			topSpeed = if c.spec then c.spec.topSpeed else 60,
+			topSpeed = tonumber(craft:GetAttribute("TopSpeed"))
+				or (if c.spec then c.spec.topSpeed else 60),
 			exclude = exclude,
 			-- a dived sub's camera follows it under the surface (Ocean/Underwater draws the view); surfacing,
 			-- it rises out with the hull instead of snapping up through the water

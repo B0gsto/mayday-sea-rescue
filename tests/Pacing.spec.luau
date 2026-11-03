@@ -1091,4 +1091,61 @@ return function(t)
 		-- the last upgrade is a long goal, not a wall
 		t.expect(minutes(solo, "Tree complete") >= 10 * 60).toBe(true)
 	end)
+	-- docs/30: the boat ladder on free play. One trip: out to a call inside the level's reach, the room filled from the
+	-- free-roam survivors on the way, then Go back. Real payouts; only the trip's fixed seconds are assumed.
+	local BoatLevels = t.load("src/shared/BoatLevels.luau")
+	local TRIP_FIXED = 30 -- s: leave the bay, find them, press Go back, the charge, the Upgrade -- tune
+	local PER_SURVIVOR = 3 -- s to pick each one up -- tune
+	local DISTANCE_SHARE = 0.35 -- of the call reach: the average call's distance
+	local function ladderRun()
+		local cash, done, seconds, level = 0, 0, 0, 1
+		local trips, at = {}, {}
+		for target = 2, BoatLevels.MAX do
+			local price = BoatLevels.Rows[target].price
+			local n = 0
+			while cash < price do
+				local row = BoatLevels.Rows[level]
+				local reward = Grading.payout(1, "Silver", 1, if done < 5 then done else nil)
+				cash += reward.cash + (row.room - 1) * AmbientMix.CASH
+				seconds += TRIP_FIXED + row.room * PER_SURVIVOR + row.callReach * DISTANCE_SHARE / (row.speed * CallTypes.CRUISE_FACTOR)
+				done += 1
+				n += 1
+			end
+			cash -= price
+			level = target
+			trips[target], at[target] = n, seconds
+		end
+		return trips, at, done
+	end
+
+	t.test("docs/30: the ladder pays out on pace", function()
+		local trips, at, total = ladderRun()
+		print(
+			string.format(
+				"\nBoat ladder: %d trips, L10 %.1f h, L20 %.1f h, L30 %.1f h, L40 %.1f h, L50 %.1f h; trips to L2-L8: %d %d %d %d %d %d %d",
+				total,
+				at[10] / 3600,
+				at[20] / 3600,
+				at[30] / 3600,
+				at[40] / 3600,
+				at[50] / 3600,
+				trips[2],
+				trips[3],
+				trips[4],
+				trips[5],
+				trips[6],
+				trips[7],
+				trips[8]
+			)
+		)
+		-- the first rescue pays exactly L2
+		t.expect(BoatLevels.Rows[2].price).toBe(Grading.payout(1, "Silver", 1, 0).cash)
+		t.expect(trips[2]).toBe(1)
+		-- the next few take one or two trips
+		for level = 3, 7 do
+			t.expect(trips[level] <= 2).toBe(true)
+		end
+		-- the whole ladder: about 15 h of free play
+		t.expect(math.abs(at[50] / 3600 - 15) <= 1.5).toBe(true)
+	end)
 end

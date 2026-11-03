@@ -352,7 +352,8 @@ function AmbientRescueService.StepBoarding(
 					tilt,
 					Board.hasRoom(b.vehicle),
 					Simulator.waterHeight(at.X, at.Z, Workspace:GetServerTimeNow()),
-					tonumber(b.player:GetAttribute("SkillReach")) or 0
+					(tonumber(b.player:GetAttribute("SkillReach")) or 0)
+						+ (tonumber(b.player:GetAttribute("BoatReach")) or 0)
 				) and (may == nil or may(b.player, i))
 			then
 				ready = b

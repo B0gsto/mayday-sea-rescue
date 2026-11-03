@@ -199,8 +199,21 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   scale with the player count. `src/shared/VehicleRecovery.luau`: flipped / stuck / sunk craft are put back
   upright; a boat beached past recovery goes with `poof`; a craft nobody drives that is `lost` (far over or under
   the sea, off the map) goes back to its berth.
-- Upgrades: `src/shared/VehicleUpgrades.luau` (Engine, Hull, Fit), fitted by `UpgradeService` (`Upgrade_Buy`),
-  bitmask in `data.vehicleUpgrades`; sold on `UI/BoatCard`.
+- **Boat ladder (docs/30):** `src/shared/BoatLevels.luau`, 50 rows (speed, turning circle, room, scale, stage hull, piece,
+  price, reach, call reach). `data.boatLevel` drives the stats of whatever boat the player wears (`BoatLevels.apply`, in
+  `createVehicle` and `Boat/Simulator`; model attributes `BoatLevel`, `TopSpeed`, `Capacity`, `Draft`; client readers use
+  `TopSpeed`); heli and sub ignore it. Paid boats and the RIB/Lifeboat passes are owned looks with no stats. Stage hulls
+  (`ProgressionConfig.Vehicles[id].level`) come free with the level; `Hydrofoil` and `RocketCutter` are placeholder variants
+  on RIB and Lifeboat hulls with `BoatLevels.pieceParts`. Past the visible seats survivors ride hidden (`AddSurvivor`).
+  Save floors: `Rules.migrate` (owned boats, stat floor, RIB L11, Lifeboat L21), `data.boatPassFloor` until the join's pass
+  check (`UpgradeService.applyPassFloor`). `data.vehicleUpgrades` and `VehicleUpgrades` stay only to read old saves; nothing
+  sells or applies them now. Player attribute `BoatReach` adds to the pick-up reach (`Ops/Board`), call reach follows the row.
+- **Upgrade Station:** `src/shared/UpgradeStation.luau` (layout on every island, `landing(island) -> CFrame`: the bay's
+  landing spot, bow to the sea, for Go back; `UpgradeService.Landing(player)`; `pose`), built by `UpgradeService` under
+  `Workspace.UpgradeStations`; the Button's `UpgradeBoat` prompt calls `Boat_LevelUp` (server: Cash, range, cooldown).
+  `UpgradeStationController` draws the board and plays the moment on `BoatLevelMoment` (VFX `boat_levelup`).
+  `VehicleService.LevelUpBoat`, `VehicleService.Refit(player, look?)`. Studio: `ServerStorage.UpgradeDev` `set` / `buy`.
+- `Boat/Glance`: at 40+ studs/s `BoatController` sweeps ahead and a wall glances the boat off, keeping 55-95% of the speed.
 
 ## Operations (calls)
 

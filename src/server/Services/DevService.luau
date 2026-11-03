@@ -18,6 +18,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
+local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
 local DayClock = require(Shared:WaitForChild("DayClock"))
 local DevConfig = require(Config:WaitForChild("DevConfig"))
 local DockConfig = require(Config:WaitForChild("DockConfig"))
@@ -181,6 +182,7 @@ local function unlockAll(target: Player): (boolean, string)
 		for _, id in VehicleUpgrades.VehicleOrder do
 			data.vehicleUpgrades[id] = VehicleUpgrades.MAX_MASK
 		end
+		data.boatLevel = BoatLevels.MAX
 	end)
 	for _, id in DevConfig.Passes do
 		if id ~= "All" then

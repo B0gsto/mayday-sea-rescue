@@ -11,9 +11,9 @@ local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
+local BoatLevels = require(script.Parent.Parent.BoatLevels)
 local Buoyancy = require(script.Parent.Buoyancy)
 local VehicleConfig = require(script.Parent.Parent.Config.VehicleConfig)
-local VehicleUpgrades = require(script.Parent.Parent.VehicleUpgrades)
 local Waves = require(script.Parent.Parent.Waves)
 local WeatherMath = require(script.Parent.Parent.WeatherMath)
 
@@ -181,8 +181,8 @@ function Simulator.getRig(model: Model): Rig?
 	end
 	local vehicleId = model:GetAttribute("VehicleId")
 	local spec = if type(vehicleId) == "string" then VehicleConfig.get(vehicleId) else nil
-	-- G66: fitted boatyard upgrades change the handling this hull simulates
-	spec = if spec then VehicleUpgrades.apply(spec, model:GetAttribute("VehicleUpgrades")) else nil
+	-- docs/30: the boat's level sets the handling whatever hull it wears
+	spec = if spec then BoatLevels.apply(spec, model:GetAttribute("BoatLevel")) else nil
 	local draft = model:GetAttribute("Draft")
 	local size = if spec then spec.hullSize else root.Size
 	local ix, iy, iz = Buoyancy.boxInertia(1, size)
@@ -223,8 +223,10 @@ function Simulator.step(model: Model, throttle: number, steer: number, now: numb
 	local gravity = Workspace.Gravity
 	local h = rig.handling
 	local mult = model:GetAttribute("SpeedMultiplier")
-	local speedMult =
+	local speedMult = BoatLevels.capMultiplier(
+		h.topSpeed,
 		math.clamp((if type(mult) == "number" then mult else 1) * (speedBoost[model] or 1), 0.5, 3)
+	)
 	local approach = model:GetAttribute("ApproachMode") == true
 	local engine = model:GetAttribute("EngineRunning") ~= false
 
