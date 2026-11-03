@@ -23,6 +23,7 @@ local Waves = require(Shared:WaitForChild("Waves"))
 local RiderController = {}
 
 local CULL = 220 -- studs from the camera
+local SPRAY_CULL = 120 -- same as Ocean/Wake CULL_DIST: past it a far ski's spray reads as a stray puff of smoke
 local JOINTS: { [string]: string } = { Root = "LowerTorso", Waist = "UpperTorso", Neck = "Head" } -- Motor6D -> its Part1
 local SPRAY_TICK = 0.1 -- seconds between spray puffs
 local HARD_CARVE = 0.75 -- RiderPose.spray side strength that throws the splash
@@ -181,7 +182,9 @@ local function step(dt: number)
 			bank = bank,
 		}) :: { [string]: CFrame }
 		r.slammed = r.slammed or r.state.slam -- held for the next spray tick
-		spray(r, root, top, yawRate, speed, player == Players.LocalPlayer)
+		if camera and (seat.Position - camera.CFrame.Position).Magnitude <= SPRAY_CULL then
+			spray(r, root, top, yawRate, speed, player == Players.LocalPlayer)
+		end
 		for joint, m in r.motors do
 			local tf = m.Transform
 			local h = r.held[m]

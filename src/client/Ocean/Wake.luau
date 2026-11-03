@@ -33,6 +33,8 @@ local BOW_SIZE = if Flipbooks.uploaded("FX_Spray_BowSheet") then 1.7 else 1
 local tierScale = 1 -- docs/06 3.5 spray budget for the current ocean tier, refreshed on the scan
 local SCAN_PERIOD = 1.0
 local MIN_SPEED, FULL_SPEED = 3, 40 -- studs/s -- tune
+-- Owner 2026-11-03: past this a far craft's wake reads as a stray wisp of smoke on the sea
+local CULL_DIST = 120 -- studs from the camera -- tune
 -- AD 2026-11-01 (jet ski ride: "almost no wake"): the ski's 3-stud foam lay flush in the wave troughs; wider and
 -- a little higher off the water it reads behind the chase camera
 local SKI_WIDTH, SKI_LIFT = 1.7, 0.3 -- x the default width, studs above the default waterline -- tune
@@ -54,6 +56,7 @@ type Rig = {
 	night: number,
 	bowRate: number,
 	rainbow: number,
+	ribbonOn: boolean,
 }
 
 local Wake = {}
@@ -174,6 +177,7 @@ local function build(model: Model, seat: BasePart): Rig?
 		night = -1,
 		bowRate = WakeMath.BOW_RATE,
 		rainbow = 0,
+		ribbonOn = false,
 	}
 end
 
@@ -218,7 +222,7 @@ local function applyStyle(rig: Rig, night: number)
 	trail.LightEmission = v.lightEmission
 	trail.LightInfluence = v.lightInfluence
 	local ribbon = rig.ribbon
-	ribbon.Enabled = v.ribbon > 0
+	rig.ribbonOn = v.ribbon > 0
 	ribbon.Lifetime = v.lifetime * 1.15
 	ribbon.Color = ColorSequence.new(v.ribbonColor)
 	ribbon.Transparency = NumberSequence.new({
@@ -288,14 +292,16 @@ function Wake.start(seaLevel: number)
 			nextScan = now + SCAN_PERIOD
 			scan()
 		end
+		local cam = Workspace.CurrentCamera.CFrame.Position
 		for _, rig in rigs do
 			local v = rig.part.AssemblyLinearVelocity
 			local speed = Vector2.new(v.X, v.Z).Magnitude
 			local afloat = math.abs(rig.part.Position.Y - seaY) < 8
-			local s = if afloat
+			local s = if afloat and (rig.part.Position - cam).Magnitude <= CULL_DIST
 				then math.clamp((speed - MIN_SPEED) / (FULL_SPEED - MIN_SPEED), 0, 1)
 				else 0
 			rig.trail.Enabled = s > 0
+			rig.ribbon.Enabled = rig.ribbonOn and s > 0
 			rig.bow.Rate = rig.bowRate * s * tierScale
 			if rig.rainbow > 0 and s > 0 then
 				local c = Color3.fromHSV((now * 0.25) % 1, 0.55, 1)
