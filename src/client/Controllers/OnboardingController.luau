@@ -15,6 +15,7 @@
 local CollectionService = game:GetService("CollectionService")
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -33,6 +34,7 @@ local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local DockController = require(script.Parent:WaitForChild("DockController"))
 local MapController = require(script.Parent:WaitForChild("MapController"))
+local Telemetry = require(Client:WaitForChild("Telemetry"))
 local UI = Client:WaitForChild("UI")
 local ColdOpenCue = require(UI:WaitForChild("ColdOpenCue"))
 local Layout = require(UI:WaitForChild("Layout"))
@@ -389,6 +391,8 @@ end
 local LEAD_FAR = 40 -- studs
 local LEAD_WAIT = 20 -- s
 local SWING = 1.2 -- s
+local LEAD_SETTLE = 1 -- s the view stays clear before Bosun runs: the join card can pop right after the shot
+local clearSince: number? = nil
 local farSince: number? = nil
 local nudged = false -- once per session
 local tabletOpened = false
@@ -452,6 +456,17 @@ local function leadTick(leading: boolean)
 	if buildTabletOpen() then
 		tabletOpened = true
 	end
+	if leading then
+		-- the run must be seen: not under the loading screen, the establishing shot or the join card (prompts off)
+		local clear = ProximityPromptService.Enabled
+			and player:GetAttribute("LoadingScreenActive") ~= true
+			and player:GetAttribute("Establishing") ~= true
+			and player:GetAttribute("CinematicPlaying") ~= true
+		clearSince = if clear then clearSince or os.clock() else nil
+		if clearSince and os.clock() - clearSince >= LEAD_SETTLE then
+			Telemetry.once("TabletLeadGo")
+		end
+	end
 	if leading and not nudged then
 		local at, root = stationPoint(), rootPosition()
 		local far = at ~= nil
@@ -462,9 +477,6 @@ local function leadTick(leading: boolean)
 			nudged = true
 			task.spawn(swingToStation)
 		end
-	end
-	if beacon then
-		beacon.edge(not leading or nudged)
 	end
 end
 
@@ -720,11 +732,14 @@ local function update()
 			else nil
 		setGuide(kind)
 	end
-	leadTick(guide == "station" and beat == "BuildHQ" and not tabletOpened)
+	local hutBeat = guide == "station" and beat == "BuildHQ"
+	leadTick(hutBeat and not tabletOpened)
+	local cleared = hutBeat and tabletOpened -- opened once: the arrow, pointer and diamond stay off until the Hut is placed
 	-- at the stand the tablet's own cue (green arrow + Build) is the one marker on it
-	local cued = DockController.TabletGoal(guide == "station")
+	local cued = DockController.TabletGoal(guide == "station" and not cleared)
 	if beacon then
-		beacon.mute(guide == "station" and cued or guide == "craft")
+		beacon.mute(guide == "station" and (cued or cleared) or guide == "craft")
+		beacon.edge(not hutBeat or (nudged and not tabletOpened))
 	end
 	-- the tablet's HQ / Workshop card pulses while the tutorial points at the station
 	if os.clock() >= tickAt then

@@ -578,6 +578,8 @@ local function clientStep(player: Player, name: string, a: any, b: any, c: any, 
 	if name == "TabletOpened" then
 		player:SetAttribute("TabletOpened", true)
 		TelemetryService.Funnel(player, "TabletOpened")
+	elseif name == "TabletLeadGo" then
+		player:SetAttribute("TabletLeadGo", true) -- OnboardingController: the view is clear, Bosun runs to the stand
 	elseif name == "Expand" then
 		-- the build card focused (any plate), or the first ramp jump (an owned Ramp Wharf only)
 		if

@@ -134,7 +134,15 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 	-- the arrow's appearance: one pop and a soft chime, once each time the tablet becomes the goal
 	local chimed = false
 	local function chime()
-		if up and goal and not chimed then
+		local player = Players.LocalPlayer
+		if
+			up
+			and goal
+			and not chimed
+			and ProximityPromptService.Enabled -- never under the join card
+			and player:GetAttribute("LoadingScreenActive") ~= true
+			and player:GetAttribute("Establishing") ~= true
+		then
 			chimed = true
 			Style.pop(arrow, true)
 			AudioController.play("UI_Prompt", nil, 0.8, 1.1)
@@ -150,7 +158,6 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 		bb.Parent = if on then Players.LocalPlayer:FindFirstChildOfClass("PlayerGui") else nil
 		if on then
 			Style.pop(button, true) -- one pop, never a loop
-			chime()
 		end
 	end
 	-- live v30: phone players walked off or fell in the water by the stand, past the prompt's 24 studs, and tapped
@@ -204,6 +211,7 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 		local away = not inRange and far()
 		show(inRange or away)
 		bindKeys(away and others == 0)
+		chime()
 	end)
 	tablet.Destroying:Connect(
 		function() -- the station streams out: the stream-in makes a new prompt and cue
@@ -224,7 +232,6 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 				goal = on
 				chimed = chimed and on
 				layout()
-				chime()
 			end
 		end,
 		shown = function(): boolean

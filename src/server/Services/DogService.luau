@@ -31,7 +31,8 @@
 -- / Head (darkened while he is wet). A life jacket hides the harness. Model attributes DogId, DogName, Breed.
 --
 -- FTUE lead (live 2026-11-01: 28 of 121 new players never opened the build tablet): before a Hut-less player opens it
--- (DockLevelHQ 0, no TabletOpened attribute) he runs from them to the stand and sits beside it, facing them.
+-- (DockLevelHQ 0, no TabletOpened attribute) he runs from them to the stand and sits beside it, facing them. The
+-- run starts on player attribute TabletLeadGo: only the client knows the loading screen and join card are gone.
 --
 -- One companion (owner, 2026-10-24): while a rescued pet is out (player attribute CompanionPet,
 -- PetService) Bosun is home: hidden and still. The pet then does his job: on foot the sniff comes
@@ -68,8 +69,7 @@ local TELEPORT_DISTANCE = 70
 local WET_TICK = 0.5 -- seconds between wetness updates
 local SWIM_DEPTH = LEG_HEIGHT - 0.4 -- water this deep under him: he swims
 local WADE_DEPTH = 0.4 -- water this deep: his coat gets wet
-local LEAD_DELAY = 2 -- s after the player first stands at the new spawn: the establishing shot settles on him running
-local LEAD_SPEED = 22 -- studs/s to the stand: a run the camera can follow (his follow cap is 45)
+local LEAD_SPEED = 16 -- studs/s to the stand: a run the camera can follow (his follow cap is 45)
 
 type Anchors = { [string]: { part: BasePart, rest: CFrame } }
 
@@ -94,7 +94,6 @@ type Dog = {
 	lastSwim: boolean,
 	variant: string, -- Cos_Dog option id this model was built for
 	anchors: Anchors, -- Fore (Torso) / Head, rest pose in the authored frame
-	leadAt: number?, -- os.clock() the FTUE lead to the build stand starts
 }
 
 local WEAR_SLOTS = { "DogHarness", "DogBandana", "DogJacket", "DogHat" }
@@ -552,26 +551,17 @@ end
 
 -- FTUE lead: his spot beside the build stand (DockPieces.buildStation: 16 x 12 pad, tablet at +3.6 facing +Z) while
 -- his Hut-less player has not opened the tablet, else nil.
-local function leadSpot(dog: Dog, root: BasePart, now: number): Vector3?
-	local player = dog.player
+local function leadSpot(player: Player): Vector3?
 	local bay = player:GetAttribute("BayCFrame")
 	if
-		player:GetAttribute("DockLevelHQ") ~= 0
+		player:GetAttribute("TabletLeadGo") ~= true
+		or player:GetAttribute("DockLevelHQ") ~= 0
 		or player:GetAttribute("TabletOpened") == true
 		or typeof(bay) ~= "CFrame"
 	then
 		return nil
 	end
-	if not dog.leadAt then
-		local spawn = DockConfig.newSpawn(bay).Position
-		if ((root.Position - spawn) * Vector3.new(1, 0, 1)).Magnitude > 8 then
-			return nil -- not stood at the spawn yet (the server moves the character there after it loads)
-		end
-		dog.leadAt = now + LEAD_DELAY
-	end
-	return if now >= (dog.leadAt or math.huge)
-		then (DockConfig.stationSpot(bay) * CFrame.new(5, 0, 5)).Position
-		else nil
+	return (DockConfig.stationSpot(bay) * CFrame.new(5, 0, 5)).Position
 end
 
 local function step(dog: Dog, now: number)
@@ -617,7 +607,7 @@ local function step(dog: Dog, now: number)
 	end
 	flatLook = flatLook.Unit
 	local right = Vector3.new(-flatLook.Z, 0, flatLook.X)
-	local lead = leadSpot(dog, root, now)
+	local lead = leadSpot(dog.player)
 	local desired = lead or root.Position + right * 3.2 - flatLook * 1.5
 	local y, depth = groundY(desired, character)
 	desired = Vector3.new(desired.X, y, desired.Z)
