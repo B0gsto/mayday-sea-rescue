@@ -72,30 +72,33 @@ local current: string? = nil
 local mounted = false
 local pulseName: string? = nil
 
--- docs/24 E: the button the tutorial asks for lifts its tile once with a small bounce and stays raised until
--- pressed. No outline ring (owner 2026-11-01), no looping pulse, no orange (owner 2026-10-28).
-local LIFT = 6 -- du the tile rises
+-- docs/24 E: the button the tutorial asks for grows from its centre once with a small bounce and stays raised
+-- until pressed. No outline ring (owner 2026-11-01), no looping pulse, no orange (owner 2026-10-28). Growing, not
+-- moving up: the phone's 6 du row gap would put a lifted tile over the label above.
+local RAISED = 1.12 -- 64 du tile: under 4 du per side, clear of the labels
 local function startPulse(root: GuiObject, name: string)
 	local tile = root:FindFirstChild("Tile") :: GuiObject?
 	if not tile or root:GetAttribute("TutorialLift") then
 		return
 	end
 	root:SetAttribute("TutorialLift", true)
-	TweenService:Create(
-		tile,
-		TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-		{ Position = UDim2.fromOffset(0, -LIFT) }
-	):Play()
+	local scale = Instance.new("UIScale")
+	scale.Parent = tile
+	local inset = -tile.Size.X.Offset * (RAISED - 1) / 2 -- UIScale grows from the top-left: keep it centred
+	local info = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+	TweenService:Create(scale, info, { Scale = RAISED }):Play()
+	TweenService:Create(tile, info, { Position = UDim2.fromOffset(inset, inset) }):Play()
 	task.spawn(function()
 		while root.Parent and pulseName == name do
 			task.wait(0.2)
 		end
 		root:SetAttribute("TutorialLift", nil)
-		TweenService:Create(
-			tile,
-			TweenInfo.new(0.2, Enum.EasingStyle.Quad),
-			{ Position = UDim2.fromOffset(0, 0) }
-		):Play()
+		local back = TweenInfo.new(0.2, Enum.EasingStyle.Quad)
+		local down = TweenService:Create(scale, back, { Scale = 1 })
+		TweenService:Create(tile, back, { Position = UDim2.fromOffset(0, 0) }):Play()
+		down:Play()
+		down.Completed:Wait()
+		scale:Destroy()
 	end)
 end
 
@@ -190,7 +193,7 @@ function Menu.open(name: string)
 		return
 	end
 	if name == pulseName then
-		Menu.pulse(nil) -- found it (the quest reveal's lift)
+		Menu.pulse(nil) -- found it (the quest reveal's cue)
 	end
 	if current == name then
 		return
