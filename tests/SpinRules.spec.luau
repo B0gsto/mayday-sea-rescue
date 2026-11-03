@@ -2,6 +2,8 @@
 -- rolls, duplicate prizes becoming Cash, the owned-prize bits and the free-spin accrual.
 return function(t)
 	local SpinRules = t.load("src/shared/SpinRules.luau")
+	local PetRules = t.load("src/shared/PetRules.luau")
+	local Wildlife = t.load("src/shared/Config/Wildlife.luau")
 
 	-- a deterministic little LCG: rng() in [0, 1)
 	local function seeded(seed: number): () -> number
@@ -22,7 +24,8 @@ return function(t)
 			t.expect(SpinRules.RARITIES[rarity].odds > 0).toBe(true)
 			t.expect(#SpinRules.prizesOf(rarity) > 0).toBe(true)
 		end
-		local kinds = { cash = true, petVariant = true, finish = true, trail = true, boat = true }
+		local kinds =
+			{ cash = true, pet = true, petVariant = true, finish = true, trail = true, boat = true }
 		for _, prize in SpinRules.PRIZES do
 			t.expect(SpinRules.RARITIES[prize.rarity] ~= nil).toBe(true)
 			t.expect(kinds[prize.kind] == true).toBe(true)
@@ -197,8 +200,9 @@ return function(t)
 
 	t.test("the odds board names every prize", function()
 		t.expect(SpinRules.prizeNames("Common")).toBe("150 Cash")
-		t.expect(SpinRules.prizeNames("Rare")).toBe("Golden Pet, Gold Chrome, Rainbow Wake")
-		for _, prize in SpinRules.PRIZES do
+		t.expect(SpinRules.prizeNames("Rare")).toBe("Otter, Gold Chrome")
+		for _, id in SpinRules.WEDGES do
+			local prize = SpinRules.prize(id) :: any
 			t.expect(string.find(SpinRules.prizeNames(prize.rarity), prize.name, 1, true) ~= nil)
 				.toBe(true)
 		end
@@ -249,18 +253,169 @@ return function(t)
 		t.expect(SpinRules.decode(SpinRules.addPaid(nil, 1)).free).toBe(1) -- a fresh profile
 	end)
 
+	t.test("the wheel is these 12 wedges, and each one matches its segment's rarity", function()
+		t.expect(SpinRules.WEDGES).toEqual({
+			"CashSmall",
+			"GullPet",
+			"CashSmall",
+			"OtterPet",
+			"CashSmall",
+			"PuffinPet",
+			"NeonFinish",
+			"CashSmall",
+			"StripesFinish",
+			"GoldFinish",
+			"RiptideBoat",
+			"GrandBoat",
+		})
+		for i, id in SpinRules.WEDGES do
+			local prize = SpinRules.prize(id)
+			t.expect(prize.rarity).toBe(SpinRules.SEGMENTS[i])
+			t.expect(prize.retired).toBeNil()
+		end
+		t.expect(SpinRules.prize("GrandBoat").vehicle).toBe("StormRunner")
+		t.expect(SpinRules.prize("RiptideBoat").vehicle).toBe("RiptideX")
+		t.expect(SpinRules.prize("StripesFinish").option).toBe("SpinStripes")
+		for _, id in { "GullPet", "OtterPet", "PuffinPet" } do
+			t.expect(Wildlife.Species[SpinRules.prize(id).pet] ~= nil).toBe(true)
+		end
+	end)
+
+	t.test("wedge odds split each rarity evenly and sum to 100", function()
+		local sum = 0
+		for i = 1, #SpinRules.WEDGES do
+			sum += SpinRules.wedgeOdds(i)
+		end
+		t.expect(sum).toBeCloseTo(100, 1e-9)
+		t.expect(SpinRules.wedgeOdds(1)).toBe(12.5) -- Common / 4
+		t.expect(SpinRules.wedgeOdds(2)).toBeCloseTo(25 / 3, 1e-9)
+		t.expect(SpinRules.wedgeOdds(4)).toBe(7.5) -- Rare / 2
+		t.expect(SpinRules.wedgeOdds(7)).toBe(7)
+		t.expect(SpinRules.wedgeOdds(12)).toBe(0.5)
+		t.expect(SpinRules.wedgeOdds(13)).toBe(0)
+	end)
+
+	t.test("each wedge pays its own prize: a roll's wedge lands with the wedge's odds", function()
+		local N = 100000
+		local hits: { [number]: number } = {}
+		for k = 0, N - 1 do
+			local calls = 0
+			-- a stratified sweep: the rarity draw covers [0, 1), the wedge draw is decorrelated from it
+			local result = SpinRules.roll(function()
+				calls += 1
+				return if calls == 1 then (k + 0.5) / N else ((k * 7919) % 1000 + 0.5) / 1000
+			end, nil)
+			t.expect(SpinRules.WEDGES[result.wedge]).toBe(result.prize.id)
+			hits[result.wedge] = (hits[result.wedge] or 0) + 1
+		end
+		for i = 1, #SpinRules.WEDGES do
+			t.expect((hits[i] or 0) * 100 / N).toBeCloseTo(SpinRules.wedgeOdds(i), 0.2)
+		end
+		local prize, wedge = SpinRules.prizeOfRarity(function()
+			return 0.5
+		end, "Mythic")
+		t.expect(prize.id).toBe("GrandBoat")
+		t.expect(wedge).toBe(12)
+	end)
+
+	t.test("old saves: PRIZES keeps its bits and retired wins stay owned", function()
+		local old = {
+			"CashSmall",
+			"CashBig",
+			"GoldenPet",
+			"GoldFinish",
+			"RainbowTrail",
+			"NeonPet",
+			"NeonFinish",
+			"FireTrail",
+			"RainbowPet",
+			"LavaFinish",
+			"StarTrail",
+			"GalaxyPet",
+			"GalaxyFinish",
+			"GrandBoat",
+		}
+		for i, id in old do
+			t.expect(SpinRules.PRIZES[i].id).toBe(id)
+		end
+		t.expect(#SpinRules.PRIZES <= 32).toBe(true)
+		-- a save from the old wheel: Gold, Rainbow wake, Lava and Galaxy (bits 4, 5, 10, 13)
+		local saved = SpinRules.decode({ o = 8 + 16 + 512 + 4096 })
+		for _, id in { "GoldFinish", "RainbowTrail", "LavaFinish", "GalaxyFinish" } do
+			t.expect(SpinRules.owns(saved, SpinRules.prize(id))).toBe(true)
+		end
+		t.expect(SpinRules.owns(saved, SpinRules.prize("NeonFinish"))).toBe(false)
+		t.expect(SpinRules.ownedKeys(saved.owned)).toEqual({
+			"spin:GoldFinish",
+			"spin:RainbowTrail",
+			"spin:LavaFinish",
+			"spin:GalaxyFinish",
+		})
+		-- retired prizes never roll or count on the board
+		for _, prize in SpinRules.PRIZES do
+			t.expect(prize.retired == true).toBe(table.find(SpinRules.WEDGES, prize.id) == nil)
+			if prize.retired then
+				t.expect(table.find(SpinRules.prizesOf(prize.rarity), prize)).toBeNil()
+			end
+		end
+		local none = function()
+			return false
+		end
+		t.expect(SpinRules.ownedIds(saved, none, none)).toEqual({ "GoldFinish" })
+		-- a new prize's bit sits past the old ones
+		local stripes = SpinRules.claim(saved, SpinRules.prize("StripesFinish"))
+		t.expect(SpinRules.owns(stripes, SpinRules.prize("GalaxyFinish"))).toBe(true)
+		t.expect(SpinRules.bit("StripesFinish") >= 2 ^ #old).toBe(true)
+	end)
+
+	t.test("the spinBoat flag lists won boats and reads an old single-boat save", function()
+		t.expect(SpinRules.wonBoat(nil, "StormRunner")).toBe(false)
+		t.expect(SpinRules.wonBoat("StormRunner", "StormRunner")).toBe(true) -- an old save
+		t.expect(SpinRules.wonBoat("StormRunner", "RiptideX")).toBe(false)
+		local both = SpinRules.addWonBoat(SpinRules.addWonBoat(nil, "StormRunner"), "RiptideX")
+		t.expect(SpinRules.wonBoat(both, "StormRunner")).toBe(true)
+		t.expect(SpinRules.wonBoat(both, "RiptideX")).toBe(true)
+		t.expect(#SpinRules.wonBoatLooks(both)).toBe(2)
+		t.expect(#SpinRules.wonBoatLooks(nil)).toBe(0)
+		t.expect(#SpinRules.wonBoatLooks("")).toBe(0)
+	end)
+
+	t.test("a pet owned by any route counts; a prize pet is ready at once", function()
+		local state = PetRules.newState()
+		t.expect(PetRules.ownsSpecies(state, "Gull")).toBe(false)
+		-- a rescued rare gull is still a gull, even mid-recovery
+		local rescued = PetRules.add(state, "Gull", true, 1000)
+		t.expect(PetRules.ownsSpecies(rescued, "Gull")).toBe(true)
+		t.expect(PetRules.ownsSpecies(rescued, "Otter")).toBe(false)
+		local ids = SpinRules.ownedIds(SpinRules.newState(), function(species)
+			return PetRules.ownsSpecies(rescued, species)
+		end, function()
+			return false
+		end)
+		t.expect(ids).toEqual({ "GullPet" })
+		local now = 5000
+		local _, prize = PetRules.add(state, "Otter", false, now - Wildlife.RecoverySeconds)
+		t.expect(PetRules.ready(prize, now)).toBe(true)
+	end)
+
 	t.test("owned once-only prizes are listed for the odds board (they pay Cash)", function()
 		local state = SpinRules.claim(SpinRules.newState(), SpinRules.prize("GoldFinish"))
-		local function pets(v)
-			return v == "Neon"
+		local function pets(species)
+			return species == "Puffin"
 		end
-		local ids = SpinRules.ownedIds(state, pets, true)
-		t.expect(ids).toEqual({ "GoldFinish", "NeonPet" }) -- the boat needs the Galaxy finish owned too
+		local function boats(vehicle)
+			return vehicle == "RiptideX" -- a bought pass counts
+		end
+		local ids = SpinRules.ownedIds(state, pets, boats)
+		t.expect(ids).toEqual({ "GoldFinish", "PuffinPet", "RiptideBoat" })
 		t.expect(SpinRules.ownedOf("Rare", ids)).toBe(1)
-		t.expect(SpinRules.ownedOf("Epic", ids)).toBe(1)
+		t.expect(SpinRules.ownedOf("Uncommon", ids)).toBe(1)
+		t.expect(SpinRules.ownedOf("Legendary", ids)).toBe(1)
+		t.expect(SpinRules.ownedOf("Mythic", ids)).toBe(0)
 		t.expect(SpinRules.ownedOf("Common", ids)).toBe(0) -- Cash prizes are never owned
-		local galaxy = SpinRules.claim(state, SpinRules.prize("GalaxyFinish"))
-		t.expect(SpinRules.ownedOf("Mythic", SpinRules.ownedIds(galaxy, pets, true))).toBe(2)
-		t.expect(SpinRules.ownedOf("Mythic", SpinRules.ownedIds(galaxy, pets, false))).toBe(1)
+		for _, id in ids do
+			local prize = SpinRules.prize(id)
+			t.expect(SpinRules.duplicateCash(prize)).toBe(SpinRules.RARITIES[prize.rarity].cash)
+		end
 	end)
 end

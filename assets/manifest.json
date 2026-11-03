@@ -395,6 +395,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:0459e98916faab1dd0d216627b0eceece77cba2ef70b458c88d98166d225decd": {
+  "assetId": "77222974189967",
+  "imageId": "77222974189967",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge11",
+  "sha": "0459e98916faab1dd0d216627b0eceece77cba2ef70b458c88d98166d225decd",
+  "source": "build/spinart/T_DeepSpin_wedge11.png",
+  "type": "Image"
+ },
  "Image:04893d1e34c571ce758292468bede9ea90a026a41d1828f116fe258d59128139": {
   "aliases": [
    "T_AirStationAddons_Brick_RGH",
@@ -731,6 +740,15 @@
   "name": "Mayday_T_Mat_SandRipple_NOR",
   "sha": "07f83e6b2bd639854bc8a7bea3f2f820e946f3dbb215e103ff196c9d83df24c3",
   "source": "assets/textures/Materials/T_Mat_SandRipple_NOR.png",
+  "type": "Image"
+ },
+ "Image:07f963938939c9618927eb2d3af112d58a7754b74d65814093fb086660a6d484": {
+  "assetId": "81027351814332",
+  "imageId": "81027351814332",
+  "moderation": "Reviewing",
+  "name": "T_Seal_Coat_RGH_Wet",
+  "sha": "07f963938939c9618927eb2d3af112d58a7754b74d65814093fb086660a6d484",
+  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_RGH_Wet.png",
   "type": "Image"
  },
  "Image:0814d8bcec1088e5a7d2078280008cb837f79c53c940590c5b3904f38c9519bf": {
@@ -2128,6 +2146,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_MET.png",
   "type": "Image"
  },
+ "Image:168947f5ab17007a7b17c4f41e71586dc879013a9df3f248d8166068e21a1255": {
+  "assetId": "86567871522291",
+  "imageId": "86567871522291",
+  "moderation": "Approved",
+  "name": "FX_SpinHaloBrick",
+  "sha": "168947f5ab17007a7b17c4f41e71586dc879013a9df3f248d8166068e21a1255",
+  "source": "build/prod/spincine/FX_SpinHaloBrick.png",
+  "type": "Image"
+ },
  "Image:16c9e3e99bc6d305c443ed78ad8059b07dda6b0e31c8fd5cbb35d816defcb449": {
   "assetId": "118410171883221",
   "imageId": "118410171883221",
@@ -2554,6 +2581,15 @@
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_NOR.png",
   "type": "Image"
  },
+ "Image:1afac2a77c0766934fcd2eb241137c2a5fbc4dcba90a044012699f1a630c7933": {
+  "assetId": "94540363417317",
+  "imageId": "94540363417317",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge1",
+  "sha": "1afac2a77c0766934fcd2eb241137c2a5fbc4dcba90a044012699f1a630c7933",
+  "source": "build/spinart/T_DeepSpin_wedge1.png",
+  "type": "Image"
+ },
  "Image:1b21a8e3bae0086653e0560bf6ef3d638724c5ef97438108b1bee055b4355a01": {
   "assetId": "73122438395663",
   "imageId": "73122438395663",
@@ -2678,6 +2714,15 @@
   "name": "Mayday_T_Bosun_Body_RGH_Wet",
   "sha": "1c3720e84c5a8c4a90ae16c312026902ea3b9f43dc8c88afe3ab83819ac65d8d",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:1c400ca83ea301e0971d9b50715ecad42517cc98531a256024517b7e955841ae": {
+  "assetId": "119384092940664",
+  "imageId": "119384092940664",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Coat_RGH",
+  "sha": "1c400ca83ea301e0971d9b50715ecad42517cc98531a256024517b7e955841ae",
+  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_RGH.png",
   "type": "Image"
  },
  "Image:1c42a63c13211cdb1a99e971a700d1b354625a8f027237aa27a695eea1507966": {
@@ -2953,6 +2998,15 @@
   "name": "T_LifeguardTower_Hut_RGH_Wet",
   "sha": "1ec96cd36cbc0aced269d2fe92f1361403b6ae6656435fed0cef3ed7d5594feb",
   "source": "assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Hut_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:1ed369dc88abf4c47c20ef93aca0e7340e6b3ec0f405545ec6142f60d80a23a0": {
+  "assetId": "101096196593722",
+  "imageId": "101096196593722",
+  "moderation": "Reviewing",
+  "name": "T_Gull_Feathers_RGH",
+  "sha": "1ed369dc88abf4c47c20ef93aca0e7340e6b3ec0f405545ec6142f60d80a23a0",
+  "source": "assets/textures/M_Ani_Gull/T_Gull_Feathers_RGH.png",
   "type": "Image"
  },
  "Image:1ee100fa583ace7429e034fcb54337354c32cbe7822ba32ee8f81908a2db24c9": {
@@ -3589,6 +3643,15 @@
   "source": "assets/ui/kit/crew.png",
   "type": "Image"
  },
+ "Image:2562388bf0f3014aeaee9f203adf0c47c3aeafebcd3e4cc58cbf862451c3dd86": {
+  "assetId": "137400231777119",
+  "imageId": "137400231777119",
+  "moderation": "Reviewing",
+  "name": "T_Gull_Feathers_ALB",
+  "sha": "2562388bf0f3014aeaee9f203adf0c47c3aeafebcd3e4cc58cbf862451c3dd86",
+  "source": "assets/textures/M_Ani_Gull/T_Gull_Feathers_ALB.png",
+  "type": "Image"
+ },
  "Image:258f410a826698fed01d778a3585ae49c28d62facdb8e57a6311f955bce7a683": {
   "assetId": "110481472018358",
   "imageId": "110481472018358",
@@ -3988,6 +4051,15 @@
   "source": "assets/textures/M_Hbr_TravelHoist/T_TravelHoist_Yard_RGH.png",
   "type": "Image"
  },
+ "Image:296f3a7fa178945d51df1c594943f15e5d0f578d6e8246e15e5bfd8ed039dc2c": {
+  "assetId": "71449305827411",
+  "imageId": "71449305827411",
+  "moderation": "Reviewing",
+  "name": "T_Puffin_Feathers_RGH",
+  "sha": "296f3a7fa178945d51df1c594943f15e5d0f578d6e8246e15e5bfd8ed039dc2c",
+  "source": "assets/textures/M_Ani_Puffin/T_Puffin_Feathers_RGH.png",
+  "type": "Image"
+ },
  "Image:297c1e2af5db5c6eda0ed4053d668f153b93b9a2466d271e60de219bbfa3bd73": {
   "assetId": "83519248866446",
   "imageId": "83519248866446",
@@ -4049,6 +4121,15 @@
   "name": "T_Cottage_Stone_RGH_Wet",
   "sha": "2a87c8df4a8d1ca40aa75798ff7007640e4dfd33812b133839a222e9ff8af004",
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Stone_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:2ab39000e48634eb948fe6f186cc929fcb6c5b1c3d3e888d87225df41799a2d6": {
+  "assetId": "131335108324140",
+  "imageId": "131335108324140",
+  "moderation": "Reviewing",
+  "name": "T_Bosun_Coat_ALB",
+  "sha": "2ab39000e48634eb948fe6f186cc929fcb6c5b1c3d3e888d87225df41799a2d6",
+  "source": "assets/textures/M_Chr_Bosun_LP/T_Bosun_Coat_ALB.png",
   "type": "Image"
  },
  "Image:2ab725bdf901d682c65e09ba3732337dbb56369a42402e08470d0dc9611bada3": {
@@ -4265,6 +4346,15 @@
   "name": "T_ChandleryProps_Atlas_NOR",
   "sha": "2d07cd77af43e43afe385cf2898d09fbe3ac0cf5ab39637464a8e439052e5b71",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_NOR.png",
+  "type": "Image"
+ },
+ "Image:2d410f13e9b9728cb6d95050f0dc3dbda7651b6c22260e1a5fe35c1675bf7ad0": {
+  "assetId": "124248112910361",
+  "imageId": "124248112910361",
+  "moderation": "Reviewing",
+  "name": "T_Otter_Rare_ALB",
+  "sha": "2d410f13e9b9728cb6d95050f0dc3dbda7651b6c22260e1a5fe35c1675bf7ad0",
+  "source": "assets/textures/M_Ani_Otter_Rare/T_Otter_Rare_ALB.png",
   "type": "Image"
  },
  "Image:2d51bfcfad5fd062257053ab68fc3f7974303fd9ccba7702a51191620a539f5f": {
@@ -4807,6 +4897,15 @@
   "source": "assets/textures/Materials/T_Mat_SandWet_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:3223a6ac863a86ee91073f02c13d84ce83a05e272c8cbbc677ac32c5b5c25dfb": {
+  "assetId": "83799967858268",
+  "imageId": "83799967858268",
+  "moderation": "Reviewing",
+  "name": "T_Otter_Coat_RGH",
+  "sha": "3223a6ac863a86ee91073f02c13d84ce83a05e272c8cbbc677ac32c5b5c25dfb",
+  "source": "assets/textures/M_Ani_Otter/T_Otter_Coat_RGH.png",
+  "type": "Image"
+ },
  "Image:3224c932fe2c2f847214f8496b7c86986aa88d3dcf8a4253587fe8453d4cd93b": {
   "assetId": "97976356180005",
   "imageId": "97976356180005",
@@ -5251,6 +5350,15 @@
   "source": "assets/textures/M_Veh_MooredBoat_01/T_FishingBoat_Atlas_MET.png",
   "type": "Image"
  },
+ "Image:36645e46426f989d0a211ff69ff71217bfb57f125fe1816437030cfb5caa318b": {
+  "assetId": "106800331559276",
+  "imageId": "106800331559276",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge10",
+  "sha": "36645e46426f989d0a211ff69ff71217bfb57f125fe1816437030cfb5caa318b",
+  "source": "build/spinart/T_DeepSpin_wedge10.png",
+  "type": "Image"
+ },
  "Image:3670d03788a07892223c9a3b529e54cd83a001389acdf22e909071e68cdef253": {
   "assetId": "76459840600360",
   "imageId": "76459840600360",
@@ -5321,6 +5429,15 @@
   "name": "T_Tidewalker_Fly_RGH_Wet",
   "sha": "377193ef60f18686f849d39ea99b5b87b7062fd7ff860e168ea1943f1377878d",
   "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:3776228746a218bdcf8c4c545d3841b90879409556836fa5acae8adbf2dcc36e": {
+  "assetId": "86611979152710",
+  "imageId": "86611979152710",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Rare_ALB",
+  "sha": "3776228746a218bdcf8c4c545d3841b90879409556836fa5acae8adbf2dcc36e",
+  "source": "assets/textures/M_Ani_Turtle_Rare/T_Turtle_Rare_ALB.png",
   "type": "Image"
  },
  "Image:37a37bd7e3859a32b0c44f781bbfd052c560ae814594ce2ca4b01a3e7268239e": {
@@ -5402,6 +5519,15 @@
   "name": "T_QuayKit_Tide_ALB",
   "sha": "3865d7c2d413ae58c27ca25a7f4ebee318d653114da6ce14f512a333d477020d",
   "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_ALB.png",
+  "type": "Image"
+ },
+ "Image:3869b649de458e6adf68080ad7b512838b88fa9237574500ce82d79780c79ace": {
+  "assetId": "139793976773596",
+  "imageId": "139793976773596",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Rare_ALB",
+  "sha": "3869b649de458e6adf68080ad7b512838b88fa9237574500ce82d79780c79ace",
+  "source": "assets/textures/M_Ani_Turtle_Rare/T_Turtle_Rare_ALB.png",
   "type": "Image"
  },
  "Image:386b62ccfd19c84ef261b42359127d363d6eed49b5bc74ea22595152e75af510": {
@@ -6497,6 +6623,15 @@
   "source": "build/prod/vfx/FX1_core_flash.png",
   "type": "Image"
  },
+ "Image:440971a4300da16d4e6614053efcbb5c3bf2f084d579c26edb75d39844896a43": {
+  "assetId": "126880482395748",
+  "imageId": "126880482395748",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge9",
+  "sha": "440971a4300da16d4e6614053efcbb5c3bf2f084d579c26edb75d39844896a43",
+  "source": "build/spinart/T_DeepSpin_wedge9.png",
+  "type": "Image"
+ },
  "Image:440cf23ad5c86d6e29fe7db9b46aed17f1216d9b2193eed52316ac8db7467f86": {
   "assetId": "94586893341453",
   "imageId": "94586893341453",
@@ -6675,6 +6810,15 @@
   "name": "T_Tidewalker_Cabin_MET",
   "sha": "464f52dcb5eb502f2913e50d4a153a4bc9262f59813d61d5126fb0874915a6c7",
   "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_MET.png",
+  "type": "Image"
+ },
+ "Image:465295cfd964dd891edb6cb66d78e6c6a8873c6178763ddb5111a1496198b7f9": {
+  "assetId": "123283277589315",
+  "imageId": "123283277589315",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge2",
+  "sha": "465295cfd964dd891edb6cb66d78e6c6a8873c6178763ddb5111a1496198b7f9",
+  "source": "build/spinart/T_DeepSpin_wedge2.png",
   "type": "Image"
  },
  "Image:465d21d5c7e94c54992f34d9ee78b40c897831bbf3fb3a731c58d3d274c4f768": {
@@ -6864,6 +7008,15 @@
   "source": "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_MET.png",
   "type": "Image"
  },
+ "Image:4869eec0618deb113b180d10328447491fcbb916ac4bae9790df07c76016ed44": {
+  "assetId": "72996208588583",
+  "imageId": "72996208588583",
+  "moderation": "Approved",
+  "name": "FX_SpinHaloRing",
+  "sha": "4869eec0618deb113b180d10328447491fcbb916ac4bae9790df07c76016ed44",
+  "source": "build/prod/spincine/FX_SpinHaloRing.png",
+  "type": "Image"
+ },
  "Image:486b6da01cb6d2f5e0f52015d8312719fb333bd6ec583c7aea0b353833635ea3": {
   "assetId": "121810620162867",
   "imageId": "121810620162867",
@@ -6925,6 +7078,15 @@
   "name": "T_Seal_Face_ALB_Wet",
   "sha": "4922c69b2617cb81c2e58819733e2078db91100035c71f35f6d58dd3bedad8ab",
   "source": "assets/textures/M_Ani_GreySeal/T_Seal_Face_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:492f49ec12b562b96f11e00d492318aae14860d063978cc7a863106f9c252b95": {
+  "assetId": "109730278230076",
+  "imageId": "109730278230076",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_rotor",
+  "sha": "492f49ec12b562b96f11e00d492318aae14860d063978cc7a863106f9c252b95",
+  "source": "build/spinart/T_DeepSpin_rotor.png",
   "type": "Image"
  },
  "Image:496ca9f7db65709197c09aee2f5384de1ec2890e6643aab04c9486bd91bba32d": {
@@ -6997,6 +7159,15 @@
   "name": "T_SeaChest_Wood_RGH",
   "sha": "49fa6fee7dbfe3ff9e1ff3814db8c4c59d1a413952a8f284a1046cd5ba40e425",
   "source": "assets/textures/M_Prop_SeaChest/T_SeaChest_Wood_RGH.png",
+  "type": "Image"
+ },
+ "Image:4a364de694d2fc7215893d3e4e5a73e8bf46707dbea0fe07fb5fde33e9f199cc": {
+  "assetId": "122771102581832",
+  "imageId": "122771102581832",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge4",
+  "sha": "4a364de694d2fc7215893d3e4e5a73e8bf46707dbea0fe07fb5fde33e9f199cc",
+  "source": "build/spinart/T_DeepSpin_wedge4.png",
   "type": "Image"
  },
  "Image:4a4412f1047fa14eafa78fae23a516e541f31ae3814a0eebbbf0942a7c389495": {
@@ -7107,6 +7278,15 @@
   "source": "assets/ui/signs/sign_street_PortHaven_St3.png",
   "type": "Image"
  },
+ "Image:4b44bcaeb251d301111759bab50e409b5a9ad01d3f6c3345834502dd099100a6": {
+  "assetId": "113612699631301",
+  "imageId": "113612699631301",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Coat_RGH",
+  "sha": "4b44bcaeb251d301111759bab50e409b5a9ad01d3f6c3345834502dd099100a6",
+  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_RGH.png",
+  "type": "Image"
+ },
  "Image:4b5a0aae9dd254cf7129489db3a704892f11a50a781374720b053e8086f76141": {
   "assetId": "95344988024726",
   "imageId": "95344988024726",
@@ -7159,6 +7339,15 @@
   "name": "T_NavMarkSafeWater_Buoy_RGH_Wet",
   "sha": "4bd6419f89bc6c373d4cdb4f2c5a0006e60c01b0faaca7161134d447eeadaf86",
   "source": "assets/textures/M_Hbr_NavMark_SafeWater/T_NavMarkSafeWater_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:4bd74b1241528447bd8417c25c26cb9d87cdd4dc154a82359245d0888a93245b": {
+  "assetId": "109213822680941",
+  "imageId": "109213822680941",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Coat_RGH",
+  "sha": "4bd74b1241528447bd8417c25c26cb9d87cdd4dc154a82359245d0888a93245b",
+  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_RGH.png",
   "type": "Image"
  },
  "Image:4be3e6e6fc3d9ad250bb87f50ab1554b9cbdedd53b5ad8718a5a79d4047eb187": {
@@ -7851,6 +8040,15 @@
   "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/final/Kit.daily.png",
   "type": "Image"
  },
+ "Image:536e28a59faee108f91d3ef565a364fa4c28fa1ec75eb9741859994e753605fa": {
+  "assetId": "125795673222455",
+  "imageId": "125795673222455",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Coat_ALB",
+  "sha": "536e28a59faee108f91d3ef565a364fa4c28fa1ec75eb9741859994e753605fa",
+  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_ALB.png",
+  "type": "Image"
+ },
  "Image:5381b582922cfce4076632f293a1203262627497a3f55e53275138eb2b8dde09": {
   "assetId": "102429028536004",
   "imageId": "102429028536004",
@@ -8296,6 +8494,15 @@
   "name": "T_QuayKit_Armour_NOR",
   "sha": "582d736b4f5bba6bb2e766e1fa0ee4347bbb7a21c82a3218fb473a4cac11aa3c",
   "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Armour_NOR.png",
+  "type": "Image"
+ },
+ "Image:58386edb8526e5d83e13046e14cec0069be1f1bb7d07d8d0eaf3785996967346": {
+  "assetId": "132069333779864",
+  "imageId": "132069333779864",
+  "moderation": "Reviewing",
+  "name": "T_Seal_Face_ALB",
+  "sha": "58386edb8526e5d83e13046e14cec0069be1f1bb7d07d8d0eaf3785996967346",
+  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Face_ALB.png",
   "type": "Image"
  },
  "Image:585c7b71b6e59fd6370cdf9cf21433ea742cc145262c8c8024bfb79c707e8001": {
@@ -8850,6 +9057,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_CobblesTile_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:5ea11ac369cd845aa4c4c5adaf301168257b7810b07c42bee16532a15a964ef8": {
+  "assetId": "131524296062832",
+  "imageId": "131524296062832",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge8",
+  "sha": "5ea11ac369cd845aa4c4c5adaf301168257b7810b07c42bee16532a15a964ef8",
+  "source": "build/spinart/T_DeepSpin_wedge8.png",
+  "type": "Image"
+ },
  "Image:5eb09d634f854be7339a8004a8154f7462f554a15fbfacf98fbd8990bae57a4c": {
   "assetId": "108501151936528",
   "imageId": "108501151936528",
@@ -9028,6 +9244,15 @@
   "name": "UI_Kit_quests",
   "sha": "60bb666d3853a4e54f73c1ca665f390f8beb62afd5da47a4d6b25651bc2f74a8",
   "source": "assets/ui/kit/quests.png",
+  "type": "Image"
+ },
+ "Image:60bd06af7e8748456791c62ea17fbbc8ec63d7975488271329cd8b0cb57a6235": {
+  "assetId": "110634759316321",
+  "imageId": "110634759316321",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge7",
+  "sha": "60bd06af7e8748456791c62ea17fbbc8ec63d7975488271329cd8b0cb57a6235",
+  "source": "build/spinart/T_DeepSpin_wedge7.png",
   "type": "Image"
  },
  "Image:60c5b164b2fc255d3661c5a487a464d93aa63cd1c7964bd7f79a4de85dae2609": {
@@ -9564,6 +9789,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_MET.png",
   "type": "Image"
  },
+ "Image:67c8a046901312a4d9d4b01dac896d048931d36c5c3611f3efb6dd899c2f08ae": {
+  "assetId": "96991801702720",
+  "imageId": "96991801702720",
+  "moderation": "Reviewing",
+  "name": "T_Seal_Coat_RGH",
+  "sha": "67c8a046901312a4d9d4b01dac896d048931d36c5c3611f3efb6dd899c2f08ae",
+  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_RGH.png",
+  "type": "Image"
+ },
  "Image:67cc670a084791e47778e05e8d8b1a6ec50d5e749278cee17d90c7438c1ffe65": {
   "assetId": "107995593466481",
   "imageId": "107995593466481",
@@ -9807,6 +10041,15 @@
   "source": "assets/textures/M_Kit_StretcherBasket/T_StretcherBasket_Kit_MET.png",
   "type": "Image"
  },
+ "Image:6a55d561cefd83ade663608dd4b91be8dfaa0be84a9d320be4d18f919fc636ea": {
+  "assetId": "104558658369874",
+  "imageId": "104558658369874",
+  "moderation": "Reviewing",
+  "name": "T_Puffin_Feathers_ALB",
+  "sha": "6a55d561cefd83ade663608dd4b91be8dfaa0be84a9d320be4d18f919fc636ea",
+  "source": "assets/textures/M_Ani_Puffin/T_Puffin_Feathers_ALB.png",
+  "type": "Image"
+ },
  "Image:6a5df2519e2cfbd6613f6f6e0d78ad4846e600435f9af0d0ae7ded768cc3e09b": {
   "assetId": "73068937715458",
   "imageId": "73068937715458",
@@ -9958,6 +10201,15 @@
   "name": "Mayday_T_Mat_KelpRock_ALB",
   "sha": "6bec8f4111e18b3f2f9419b3be00edc56e47bcc04ecc2de48173e6df370ccfdc",
   "source": "assets/textures/Materials/T_Mat_KelpRock_ALB.png",
+  "type": "Image"
+ },
+ "Image:6c0e400c29a7484688cab1fd9da07b46986c2aa6aa8d805e7046c7d763c80458": {
+  "assetId": "80088177641146",
+  "imageId": "80088177641146",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Coat_ALB",
+  "sha": "6c0e400c29a7484688cab1fd9da07b46986c2aa6aa8d805e7046c7d763c80458",
+  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_ALB.png",
   "type": "Image"
  },
  "Image:6c35fc66b84f02a951c5f8d116d7fe1ddd8f1a0aff38aa09bdc76e3c7df2e1a3": {
@@ -10443,6 +10695,15 @@
   "source": "assets/textures/Materials/T_Mat_Cobbles_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:71b489c24a5e7f820330dbb2b7f25f91edbb100a5d784c5a0f9626aaef5c88d4": {
+  "assetId": "74708168663472",
+  "imageId": "74708168663472",
+  "moderation": "Reviewing",
+  "name": "T_Gull_Feathers_ALB",
+  "sha": "71b489c24a5e7f820330dbb2b7f25f91edbb100a5d784c5a0f9626aaef5c88d4",
+  "source": "assets/textures/M_Ani_Gull/T_Gull_Feathers_ALB.png",
+  "type": "Image"
+ },
  "Image:71db8556152d05e289ebc3700f0abf3bb4fffe20132e7b2ccad01f51f1d922bd": {
   "assetId": "103673891726128",
   "imageId": "103673891726128",
@@ -10477,6 +10738,15 @@
   "name": "FX_Flare_Parachute",
   "sha": "71f7395cf916c1a3032173d6c290ba251dde66d76161124575e4c9729e06f97b",
   "source": "assets/textures/FX/FX_Flare_Parachute.png",
+  "type": "Image"
+ },
+ "Image:7220fa1d65586ecfe749c32344862e7ac242e59a73bdfb05b27546b7c2b66b92": {
+  "assetId": "76900393729882",
+  "imageId": "76900393729882",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_housing",
+  "sha": "7220fa1d65586ecfe749c32344862e7ac242e59a73bdfb05b27546b7c2b66b92",
+  "source": "build/spinart/T_DeepSpin_housing.png",
   "type": "Image"
  },
  "Image:7233856a84348ef46f681dd74dc2377a1d97e3b99c79d0bfe42da4e496590119": {
@@ -10945,6 +11215,15 @@
   "name": "T_NavMarkWest_Buoy_NOR",
   "sha": "76ff94816adcceb76382ea9005f8b36bcd0ce21361157a2bb53f94b54a969e08",
   "source": "assets/textures/M_Hbr_NavMark_West/T_NavMarkWest_Buoy_NOR.png",
+  "type": "Image"
+ },
+ "Image:772d2f2ef7fbc61ff5b278cc3aaae7b50783c3e986cc627d8872a4498541f4d7": {
+  "assetId": "123464404891898",
+  "imageId": "123464404891898",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_rays",
+  "sha": "772d2f2ef7fbc61ff5b278cc3aaae7b50783c3e986cc627d8872a4498541f4d7",
+  "source": "build/spinart/T_DeepSpin_rays.png",
   "type": "Image"
  },
  "Image:777b3e3cf863e836e42706bad142d361a583c5adba85f41603e2f605bfe95101": {
@@ -11527,6 +11806,15 @@
   "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_ALB.png",
   "type": "Image"
  },
+ "Image:7d0617d48e6cb849a27699627f3f378181c8af83153fe92b3917aab7f3fefa5f": {
+  "assetId": "117574394415719",
+  "imageId": "117574394415719",
+  "moderation": "Reviewing",
+  "name": "T_Boathouse_Brick_ALB",
+  "sha": "7d0617d48e6cb849a27699627f3f378181c8af83153fe92b3917aab7f3fefa5f",
+  "source": "assets/textures/M_Bld_BoathouseAddons/T_Boathouse_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:7d0e31240bae5d4a28a7a52680c0267f11038fbe9dd5dbd65efbea28e9d19ea1": {
   "assetId": "82752596877543",
   "imageId": "82752596877543",
@@ -11887,6 +12175,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:81043760897ccb7bcced4a02b3e63333a3f3a45106e97bb2a2a14543e7cce799": {
+  "assetId": "127251361759849",
+  "imageId": "127251361759849",
+  "moderation": "Reviewing",
+  "name": "T_BoatYard_Brick_ALB",
+  "sha": "81043760897ccb7bcced4a02b3e63333a3f3a45106e97bb2a2a14543e7cce799",
+  "source": "assets/textures/M_Bld_BoatYardAddons/T_BoatYard_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:810a8123f15d80f13e34970cd2ac52556e050e0d5e997ce511bf957ae06ff032": {
   "assetId": "74508321471069",
   "imageId": "74508321471069",
@@ -12056,6 +12353,15 @@
   "name": "T_Ledge02_Granite_RGH_Wet",
   "sha": "828f1c01b1516f0ba351a2cf0c971c677cb5923832d13b4bc9450179981bf41d",
   "source": "assets/textures/M_Rock_Ledge_02/T_Ledge02_Granite_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:82b6577e39668cd90124cccd807f2bb2a8649a4f9ebaf2af5b3593fbf3137253": {
+  "assetId": "75427049305275",
+  "imageId": "75427049305275",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_blur",
+  "sha": "82b6577e39668cd90124cccd807f2bb2a8649a4f9ebaf2af5b3593fbf3137253",
+  "source": "build/spinart/T_DeepSpin_blur.png",
   "type": "Image"
  },
  "Image:82da512a8d9a5be42eed9343f2f1415928c358132c542196ac9c9bc0d72aef19": {
@@ -12403,6 +12709,15 @@
   "source": "assets/textures/M_Rock_Cliff_05/T_Cliff05_Granite_ALB.png",
   "type": "Image"
  },
+ "Image:8608023e4d2851471404450f9540184c21e7fe27d1f57b666ad456aee426549f": {
+  "assetId": "115194074228860",
+  "imageId": "115194074228860",
+  "moderation": "Reviewing",
+  "name": "T_RescueBoathouse_Brick_ALB",
+  "sha": "8608023e4d2851471404450f9540184c21e7fe27d1f57b666ad456aee426549f",
+  "source": "assets/textures/M_Bld_RescueBoathouseAddons/T_RescueBoathouse_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:861aa1ddeb283d2c9e1bcd555b0f316cbff19c7854512987374d6cd831eda216": {
   "assetId": "94775411869752",
   "imageId": "94775411869752",
@@ -12527,6 +12842,15 @@
   "name": "Mayday_T_Bosun_Body_ALB",
   "sha": "875d8f0e7612f1f52d5c2f5b59f2919a5b6a23e1bf801660693c2eba46484929",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_ALB.png",
+  "type": "Image"
+ },
+ "Image:8763e4abc477130b371800224d84e09422f102e31c3cb9ddb4faebe42810f124": {
+  "assetId": "103678115207998",
+  "imageId": "103678115207998",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_strata",
+  "sha": "8763e4abc477130b371800224d84e09422f102e31c3cb9ddb4faebe42810f124",
+  "source": "build/spinart/T_DeepSpin_strata.png",
   "type": "Image"
  },
  "Image:876ebb53a1babe2f1deec1f404ffbc7167a4974bff738e8d0826a317a35df73d": {
@@ -12721,6 +13045,15 @@
   "source": "art/map/gale_isles_map_r0c1.png",
   "type": "Image"
  },
+ "Image:89ef9b24da8e8019b7a8d7a649371b1b4312e9d6423b2c8b871bd7d21499263a": {
+  "assetId": "94787573245345",
+  "imageId": "94787573245345",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Rare_ALB",
+  "sha": "89ef9b24da8e8019b7a8d7a649371b1b4312e9d6423b2c8b871bd7d21499263a",
+  "source": "assets/textures/M_Ani_Turtle_Rare/T_Turtle_Rare_ALB.png",
+  "type": "Image"
+ },
  "Image:89fe445c60d3a9582a01c3d7c737111ef146c28369876c4dc83cbb8e54c5c5d1": {
   "assetId": "120167090208955",
   "imageId": "120167090208955",
@@ -12874,6 +13207,15 @@
   "source": "assets/textures/M_Sea_Morwenna/T_Morwenna_Kelp_NOR.png",
   "type": "Image"
  },
+ "Image:8b762af00ce472f37944d9afb8c2d6bacdd873a693716a23e8e377de3f12fd4c": {
+  "assetId": "97661211459421",
+  "imageId": "97661211459421",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Coat_RGH",
+  "sha": "8b762af00ce472f37944d9afb8c2d6bacdd873a693716a23e8e377de3f12fd4c",
+  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_RGH.png",
+  "type": "Image"
+ },
  "Image:8b8db4f05e1c90f4c5ad554f2b268f16f6279f1ebc27cc1c40665f23e93d57f7": {
   "assetId": "138343087923112",
   "imageId": "138343087923112",
@@ -13025,6 +13367,15 @@
   "name": "T_Kit_Hard_ALB",
   "sha": "8cc4d9fa5b0027dafcb36c4923d47b4417aaa14805aca5f8b78587c2d7fb80d6",
   "source": "assets/textures/M_Kit_Atlas/T_Kit_Hard_ALB.png",
+  "type": "Image"
+ },
+ "Image:8cef4f1f28ffdd4c1275e1d1ae58f5921673f7c930e640dc817ae4ba02fb08db": {
+  "assetId": "88383406565084",
+  "imageId": "88383406565084",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Rare_ALB",
+  "sha": "8cef4f1f28ffdd4c1275e1d1ae58f5921673f7c930e640dc817ae4ba02fb08db",
+  "source": "assets/textures/M_Ani_SealPup_Rare/T_SealPup_Rare_ALB.png",
   "type": "Image"
  },
  "Image:8cf1c7b7ba715fef981ba6b6e38bfa09a9cfaba94a58e3143dcde36dd69568ca": {
@@ -14005,6 +14356,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:96dc6cb9e578903b3b0c475f1d98c6a25928f670344d742715576aa27f35ebad": {
+  "assetId": "71264566485232",
+  "imageId": "71264566485232",
+  "moderation": "Reviewing",
+  "name": "T_Seal_Coat_ALB",
+  "sha": "96dc6cb9e578903b3b0c475f1d98c6a25928f670344d742715576aa27f35ebad",
+  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_ALB.png",
+  "type": "Image"
+ },
  "Image:96edcb5e4a69e2b2494d5c0d72e2dd66c5bc5a46b09ade55ef60a2fd1925f1d1": {
   "assetId": "123270192113460",
   "imageId": "123270192113460",
@@ -14183,6 +14543,15 @@
   "name": "Kit.boat_to_me",
   "sha": "98b8635d80a931980d7f8597272a8a35dbba4276a9359882c203f20a7ec9643a",
   "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/Kit.boat_to_me.png",
+  "type": "Image"
+ },
+ "Image:98c408015dbfdbe9016357008e801aee7bc683b7fdaaf67d7bb44203fbc40d00": {
+  "assetId": "84819778667858",
+  "imageId": "84819778667858",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_vortex",
+  "sha": "98c408015dbfdbe9016357008e801aee7bc683b7fdaaf67d7bb44203fbc40d00",
+  "source": "build/spinart/T_DeepSpin_vortex.png",
   "type": "Image"
  },
  "Image:98c94f04ad7d681ef55fa0a2ea10d7dec764c365154e8d5286798ec7893af58a": {
@@ -14650,6 +15019,15 @@
   "source": "assets/textures/M_Veh_Ambulance/T_Ambulance_Wheels_RGH.png",
   "type": "Image"
  },
+ "Image:9e4182ebe63ba93fb038044dcc4627cdbfa9302dbc5326db8ee04c21f8c37689": {
+  "assetId": "111178254293763",
+  "imageId": "111178254293763",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Rare_ALB",
+  "sha": "9e4182ebe63ba93fb038044dcc4627cdbfa9302dbc5326db8ee04c21f8c37689",
+  "source": "assets/textures/M_Ani_SealPup_Rare/T_SealPup_Rare_ALB.png",
+  "type": "Image"
+ },
  "Image:9e48ea2eb99423b66674556f6469288ce2aec63bb567fadfe4e3c8bff1b8d572": {
   "assetId": "112315226986302",
   "imageId": "112315226986302",
@@ -14768,6 +15146,15 @@
   "name": "T_Boulder04_Granite_RGH",
   "sha": "9f06843d27917fe74109f63a9a37fed6fb44fa45c83cb8e2080c3967b67b5cfe",
   "source": "assets/textures/M_Rock_Boulder_04/T_Boulder04_Granite_RGH.png",
+  "type": "Image"
+ },
+ "Image:9f176b17039158e3e000dd7cde8a44b1fcc84187a4d76d0c4243f901a0b2a13a": {
+  "assetId": "111083993483904",
+  "imageId": "111083993483904",
+  "moderation": "Approved",
+  "name": "T_LagoonKit_Brick_ALB",
+  "sha": "9f176b17039158e3e000dd7cde8a44b1fcc84187a4d76d0c4243f901a0b2a13a",
+  "source": "assets/textures/M_Prop_LagoonKit/T_LagoonKit_Brick_ALB.png",
   "type": "Image"
  },
  "Image:9f18c12617738c65d78f7f894d391451aa02ff60dabda328cc3df3c91286c180": {
@@ -15612,6 +15999,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_Gravel_RGH.png",
   "type": "Image"
  },
+ "Image:a9b4fc66d7fb7524ce34e2f15e3d63c37167b00d054fdff2dc8bfb76bd666607": {
+  "assetId": "83177753500457",
+  "imageId": "83177753500457",
+  "moderation": "Approved",
+  "name": "FX_SpinBolt",
+  "sha": "a9b4fc66d7fb7524ce34e2f15e3d63c37167b00d054fdff2dc8bfb76bd666607",
+  "source": "build/prod/spincine/FX_SpinBolt.png",
+  "type": "Image"
+ },
  "Image:a9bbc12b8b05061330f2b010f3ff94c478e611e0f59ed12e9b84142ef17c175a": {
   "assetId": "138222828806396",
   "imageId": "138222828806396",
@@ -15843,6 +16239,15 @@
   "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_NOR.png",
   "type": "Image"
  },
+ "Image:ac19cba7e23e913d34179c889785d3f35d59e6fba5d0b19981de589e9c914443": {
+  "assetId": "132531826365588",
+  "imageId": "132531826365588",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Coat_RGH",
+  "sha": "ac19cba7e23e913d34179c889785d3f35d59e6fba5d0b19981de589e9c914443",
+  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_RGH.png",
+  "type": "Image"
+ },
  "Image:ac3d0f2da072794bd035b2e8b9040701489c5c79976457db20234b8e83afeb94": {
   "assetId": "77504682990987",
   "imageId": "77504682990987",
@@ -15904,6 +16309,15 @@
   "name": "T_Road_GravelTile_RGH",
   "sha": "acc49a8111a56f898ad2e03928a13658a5660ad7fe8c319f6c00906e52f8741d",
   "source": "assets/textures/M_Road_Ribbon/T_Road_GravelTile_RGH.png",
+  "type": "Image"
+ },
+ "Image:acca5c502809a61e75ba188cc9f6ded4d71092152045f2b80bcf401b7f07696b": {
+  "assetId": "127518642959571",
+  "imageId": "127518642959571",
+  "moderation": "Reviewing",
+  "name": "T_Otter_Coat_ALB",
+  "sha": "acca5c502809a61e75ba188cc9f6ded4d71092152045f2b80bcf401b7f07696b",
+  "source": "assets/textures/M_Ani_Otter/T_Otter_Coat_ALB.png",
   "type": "Image"
  },
  "Image:acdf960c1e1bdc2aa24ca622f39323eeb300ba3b0bbc63b000a992a8fe74da39": {
@@ -16443,6 +16857,15 @@
   "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_ALB.png",
   "type": "Image"
  },
+ "Image:b316d0d31561dc871f3d444d175be24064fd6cbda98d94c84c1b75300ddb2caf": {
+  "assetId": "70765764631739",
+  "imageId": "70765764631739",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Coat_ALB",
+  "sha": "b316d0d31561dc871f3d444d175be24064fd6cbda98d94c84c1b75300ddb2caf",
+  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_ALB.png",
+  "type": "Image"
+ },
  "Image:b323a8bcafaeaaab9f32d7b5501db3bce166fc36eea73f217e753b1e49803a4c": {
   "assetId": "139353039702899",
   "imageId": "139353039702899",
@@ -16578,6 +17001,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:b4f2c8712db61d542eca18d8829f7040efde1c59bfb7e15f7759f518082a9f86": {
+  "assetId": "74636212388741",
+  "imageId": "74636212388741",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Coat_RGH",
+  "sha": "b4f2c8712db61d542eca18d8829f7040efde1c59bfb7e15f7759f518082a9f86",
+  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_RGH.png",
+  "type": "Image"
+ },
  "Image:b4f6e39815debb72a92172fd8726eb3473f19b711000bbd435e4bd46f9b383bf": {
   "assetId": "103086040851198",
   "imageId": "103086040851198",
@@ -16594,6 +17026,15 @@
   "name": "T_CommonsKit_Brick_ALB",
   "sha": "b50a24e99634aa221a9bf7b50fed2b00b4d9aa77b1dd75feb6fdeed304716d5c",
   "source": "assets/textures/M_Prop_CommonsKit/T_CommonsKit_Brick_ALB.png",
+  "type": "Image"
+ },
+ "Image:b551239d27b746e13de4a1092e57d63f3217627e2b81b2a5bab9c3403f67cd86": {
+  "assetId": "93037269383535",
+  "imageId": "93037269383535",
+  "moderation": "Reviewing",
+  "name": "T_Seal_Face_ALB_Wet",
+  "sha": "b551239d27b746e13de4a1092e57d63f3217627e2b81b2a5bab9c3403f67cd86",
+  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Face_ALB_Wet.png",
   "type": "Image"
  },
  "Image:b5554d688ba0248a78d8befbf37d4b89eddb143aff8d561f8eba669007a048a0": {
@@ -16783,6 +17224,15 @@
   "name": "T_GaleQueen_Deck_ALB",
   "sha": "b77ab4b28a2a0f03c875c3f993555b4e6c1a1af85767884478e77693d93b9800",
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_ALB.png",
+  "type": "Image"
+ },
+ "Image:b781c1bf2a3b227a88d0eef12501e48b881a2ea96aba9890bd57a6c5f7ce5a61": {
+  "assetId": "88531683244306",
+  "imageId": "88531683244306",
+  "moderation": "Reviewing",
+  "name": "T_Seal_Coat_ALB_Wet",
+  "sha": "b781c1bf2a3b227a88d0eef12501e48b881a2ea96aba9890bd57a6c5f7ce5a61",
+  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_ALB_Wet.png",
   "type": "Image"
  },
  "Image:b78da77208d2086dbb5cec2974330d719d62f74ed73c39464f3be7959dd35276": {
@@ -17334,6 +17784,15 @@
   "source": "assets/textures/M_Veh_SupplyBarge/T_Barge_Hull_ALB.png",
   "type": "Image"
  },
+ "Image:be91d3a653d2a8432184fa9f700918cbbdac5998ef1543051cfd05d805ac9527": {
+  "assetId": "93309007294411",
+  "imageId": "93309007294411",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_flapper",
+  "sha": "be91d3a653d2a8432184fa9f700918cbbdac5998ef1543051cfd05d805ac9527",
+  "source": "build/spinart/T_DeepSpin_flapper.png",
+  "type": "Image"
+ },
  "Image:bed8cf21a3fccaebc952532d8cfe1f31137e00a1b3b73999ea4d0107e72e495f": {
   "assetId": "83307421569966",
   "imageId": "83307421569966",
@@ -17494,6 +17953,15 @@
   "name": "Mayday_T_Bosun_Fur_ALB",
   "sha": "c0a5f0509bd6e0b35e0fad768db16976046ce758f8be8e7edb02066908d3b919",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_ALB.png",
+  "type": "Image"
+ },
+ "Image:c0b48aeabdc14a65f4e5662b0e9894285d0b45c7a6a78c343d7cc73a5e192607": {
+  "assetId": "101576881540244",
+  "imageId": "101576881540244",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Coat_ALB",
+  "sha": "c0b48aeabdc14a65f4e5662b0e9894285d0b45c7a6a78c343d7cc73a5e192607",
+  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_ALB.png",
   "type": "Image"
  },
  "Image:c0b6c056fc4c4151f8b9171ace89b8fed9cc3cdb6b5840edd3944bb9dcc48757": {
@@ -17839,6 +18307,15 @@
   "name": "Mayday_sky_Overcast_Ft",
   "sha": "c610f4d95ff2c3b7ba7c6494d561ebb61a550ed1432ccc44bcbfae34b1e9c4e6",
   "source": "assets/ocean/sky/Overcast_Ft.png",
+  "type": "Image"
+ },
+ "Image:c61d0634a65a4debfe5ae657e83507f0fdf9b349ebbdd95c718346a6b5aff047": {
+  "assetId": "135876199823454",
+  "imageId": "135876199823454",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Coat_ALB",
+  "sha": "c61d0634a65a4debfe5ae657e83507f0fdf9b349ebbdd95c718346a6b5aff047",
+  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_ALB.png",
   "type": "Image"
  },
  "Image:c66c543314ba80568953e1c98c77f6a902feb5353f2a3a1e2290d6bd3b3f0a96": {
@@ -19066,6 +19543,15 @@
   "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/final/Pad.exit.png",
   "type": "Image"
  },
+ "Image:d1a28cd6717dfcd1b85fd9c13e3392c456d76693c144c1010f8a93a0b5d7546b": {
+  "assetId": "134704696550494",
+  "imageId": "134704696550494",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge12",
+  "sha": "d1a28cd6717dfcd1b85fd9c13e3392c456d76693c144c1010f8a93a0b5d7546b",
+  "source": "build/spinart/T_DeepSpin_wedge12.png",
+  "type": "Image"
+ },
  "Image:d1bb8f731795c1742d21e7f70b399d0e45c9867a3079060ea12eb7dcf6d2bfb1": {
   "assetId": "114934093452500",
   "imageId": "114934093452500",
@@ -19447,6 +19933,15 @@
   "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_RGH.png",
   "type": "Image"
  },
+ "Image:d6584ffaddcceaf1dfb9d40c30e2d56c63dc24dcb5219ba293bec8631eeb2890": {
+  "assetId": "71695658142075",
+  "imageId": "71695658142075",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge6",
+  "sha": "d6584ffaddcceaf1dfb9d40c30e2d56c63dc24dcb5219ba293bec8631eeb2890",
+  "source": "build/spinart/T_DeepSpin_wedge6.png",
+  "type": "Image"
+ },
  "Image:d67134c0931701ddc044743defe1802d7000a6ed741a7fe2a3a3540093d3f30d": {
   "assetId": "127798027684396",
   "imageId": "127798027684396",
@@ -19626,6 +20121,15 @@
   "name": "SettingsArt.tap",
   "sha": "d80a8f9af30504ef98e2edf1fb54444d41a2900ea0a403bbdacb1e0d7d3ff6c1",
   "source": "../../../../RobloxProjects/MaydaySeaRescue/build/status/2026-10-31/perfect/ui/anch/upload/SettingsArt.tap.png",
+  "type": "Image"
+ },
+ "Image:d80c55fc2a05dd8407e69cae5b0955d7c6a0476fad29ac8b5cd109b385fa1669": {
+  "assetId": "94911849220229",
+  "imageId": "94911849220229",
+  "moderation": "Reviewing",
+  "name": "T_Gull_Feathers_ALB",
+  "sha": "d80c55fc2a05dd8407e69cae5b0955d7c6a0476fad29ac8b5cd109b385fa1669",
+  "source": "assets/textures/M_Ani_Gull/T_Gull_Feathers_ALB.png",
   "type": "Image"
  },
  "Image:d80c6fe91601129fa60d7b8cf4cf263b206dcd15e0fcb271e653d7150e0a209c": {
@@ -19889,6 +20393,15 @@
   "source": "assets/textures/M_Hbr_NavMark_Port/T_NavMarkPort_Buoy_ALB.png",
   "type": "Image"
  },
+ "Image:da6456a491ded54f83c033acd138d7d50bab615b304a0a93a473b3fd286c122e": {
+  "assetId": "79898443699023",
+  "imageId": "79898443699023",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Coat_ALB",
+  "sha": "da6456a491ded54f83c033acd138d7d50bab615b304a0a93a473b3fd286c122e",
+  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_ALB.png",
+  "type": "Image"
+ },
  "Image:da7949cd4677486c20eede2730ba4c347243279260e6cd0191444fc45fd5d218": {
   "assetId": "99551585299967",
   "imageId": "99551585299967",
@@ -19977,6 +20490,15 @@
   "name": "Mayday_T_Mat_Mud_RGH",
   "sha": "db91bf946d2b336968d29078c5f3480e06b2822b254f04bd83a4f353310b381d",
   "source": "assets/textures/Materials/T_Mat_Mud_RGH.png",
+  "type": "Image"
+ },
+ "Image:dbcfdec37eda244b106d6268a305a66a1a9c1ca6d27749d9363f352d992c6437": {
+  "assetId": "120048195505787",
+  "imageId": "120048195505787",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Rare_ALB",
+  "sha": "dbcfdec37eda244b106d6268a305a66a1a9c1ca6d27749d9363f352d992c6437",
+  "source": "assets/textures/M_Ani_SealPup_Rare/T_SealPup_Rare_ALB.png",
   "type": "Image"
  },
  "Image:dbd9b83c15a886feea5d8599fae760e2d45d22786c64cf7651d391bf1ef2582f": {
@@ -20322,6 +20844,15 @@
   "name": "Mayday_sky_Storm_Ft",
   "sha": "dee081cc616aa2d32628bf7c87b1f852fed9a9c9b6be6f76c0438c1c2ab1e305",
   "source": "assets/ocean/sky/Storm_Ft.png",
+  "type": "Image"
+ },
+ "Image:df1b0c967a6acdae4d58142ec17f5435cadbb3a85941e87739bea0a2442ecc54": {
+  "assetId": "85053024880861",
+  "imageId": "85053024880861",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge3",
+  "sha": "df1b0c967a6acdae4d58142ec17f5435cadbb3a85941e87739bea0a2442ecc54",
+  "source": "build/spinart/T_DeepSpin_wedge3.png",
   "type": "Image"
  },
  "Image:df54fa4e1320f5b188a2d83f5ad9f6cc88a58bfbd22f04c35e50ef986589654b": {
@@ -21113,6 +21644,15 @@
   "name": "T_Spike1_4096_NOR",
   "sha": "e846f037df8b1fcce1f2d39b6d3c689b6531a9a94954991cda7fee182eeaaf27",
   "source": "assets/textures/Spike1/T_Spike1_4096_NOR.png",
+  "type": "Image"
+ },
+ "Image:e84e8cc6983a9f43f5c7e14a121d2f45e93a7aa86481e42c4099b72cd8b8c42c": {
+  "assetId": "76696982722535",
+  "imageId": "76696982722535",
+  "moderation": "Approved",
+  "name": "T_HubKit_Brick_ALB",
+  "sha": "e84e8cc6983a9f43f5c7e14a121d2f45e93a7aa86481e42c4099b72cd8b8c42c",
+  "source": "assets/textures/M_Prop_HubKit/T_HubKit_Brick_ALB.png",
   "type": "Image"
  },
  "Image:e85aa78931f7c284e99b5ba9ff9c2f3246f4fcc12bd40a48f9ea22821bbe8b9a": {
@@ -22103,6 +22643,15 @@
   "name": "T_Slipway_Steel_MET",
   "sha": "f472f60950a79193558c56d0edc770098436b60bb4cee6148daef63f34835681",
   "source": "assets/textures/M_Bld_Slipway/T_Slipway_Steel_MET.png",
+  "type": "Image"
+ },
+ "Image:f4807890a2112b320950cbb4685df8be2c32fe2e76f78f39cb31637e8dd414af": {
+  "assetId": "126137638583787",
+  "imageId": "126137638583787",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge5",
+  "sha": "f4807890a2112b320950cbb4685df8be2c32fe2e76f78f39cb31637e8dd414af",
+  "source": "build/spinart/T_DeepSpin_wedge5.png",
   "type": "Image"
  },
  "Image:f493f4321dd19739e1e1310c44fa734167f7ba1e8b4b803542d3af55bba9bd17": {
@@ -23168,6 +23717,16 @@
   "source": "assets/fbx/M_Hbr_Rope_Chain/M_Hbr_Rope_Chain_LOD1.fbx",
   "type": "Model"
  },
+ "Model:01a96a14a39547e5f65b93154763166d047106f93a859d271b00eee9bfeadd4d": {
+  "assetId": "71732928078183",
+  "moderation": "Approved",
+  "name": "M_Ani_Turtle",
+  "rbxm": "assets/models/M_Ani_Turtle.rbxm",
+  "route": "delivery",
+  "sha": "01a96a14a39547e5f65b93154763166d047106f93a859d271b00eee9bfeadd4d",
+  "source": "assets/fbx/M_Ani_Turtle/M_Ani_Turtle_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:01f68fc4400c3453583b389f9ed13bc48518aa27a61e67ecb116559a52f6b3ab": {
   "assetId": "128988621470833",
   "moderation": "Approved",
@@ -23328,6 +23887,16 @@
   "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD2.fbx",
   "type": "Model"
  },
+ "Model:0852a197a55e1142aac685f6208d9a6db8ef72fd79d5db96a7b5110a5ec5a56b": {
+  "assetId": "134205432014796",
+  "moderation": "Approved",
+  "name": "M_Prop_LagoonKit_LOD2",
+  "rbxm": "assets/models/M_Prop_LagoonKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "0852a197a55e1142aac685f6208d9a6db8ef72fd79d5db96a7b5110a5ec5a56b",
+  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:08af153ff2322def486ce43138834b916edcd40f7ea7173ddb4b25683e56ae33": {
   "assetId": "92503779788373",
   "moderation": "Approved",
@@ -23378,6 +23947,16 @@
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD1.fbx",
   "type": "Model"
  },
+ "Model:0a587fa218a20fae5979b1cf3eba786ba1e43e8ee5049e732ba6c3c9d515aad3": {
+  "assetId": "109218522319473",
+  "moderation": "Approved",
+  "name": "M_Ani_SealPup",
+  "rbxm": "assets/models/M_Ani_SealPup.rbxm",
+  "route": "delivery",
+  "sha": "0a587fa218a20fae5979b1cf3eba786ba1e43e8ee5049e732ba6c3c9d515aad3",
+  "source": "assets/fbx/M_Ani_SealPup/M_Ani_SealPup_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:0aadb1539706937e7192c29c85acfd9a2a072831f13e7499ecb6168d14925c2c": {
   "assetId": "100121123743543",
   "moderation": "Approved",
@@ -23416,6 +23995,16 @@
   "route": "delivery",
   "sha": "0b177fa96d8304025f649c77c53fce59c30527593b7e6fa4c8346213026182eb",
   "source": "assets/fbx/M_Veg_Bracken_01/M_Veg_Bracken_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:0b27bd4183d6ec7a4449cf26ce7d5cefa43014f669d7d82066de8564b5885650": {
+  "assetId": "132548462842536",
+  "moderation": "Approved",
+  "name": "M_Ani_SealPup",
+  "rbxm": "assets/models/M_Ani_SealPup.rbxm",
+  "route": "delivery",
+  "sha": "0b27bd4183d6ec7a4449cf26ce7d5cefa43014f669d7d82066de8564b5885650",
+  "source": "assets/fbx/M_Ani_SealPup/M_Ani_SealPup_LOD0.fbx",
   "type": "Model"
  },
  "Model:0b32c9c05da8514b821e877d17ece0420e4d16a4f6ee34be40b08c1e36ba743e": {
@@ -23808,6 +24397,16 @@
   "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD0.fbx",
   "type": "Model"
  },
+ "Model:163bd3ef305f4729e7134314b0c9eb3ea85f524f7c9e9bbeab6b833b6f9d95be": {
+  "assetId": "90865912056923",
+  "moderation": "Approved",
+  "name": "M_Chr_Bosun_LP",
+  "rbxm": "assets/models/M_Chr_Bosun_LP.rbxm",
+  "route": "delivery",
+  "sha": "163bd3ef305f4729e7134314b0c9eb3ea85f524f7c9e9bbeab6b833b6f9d95be",
+  "source": "assets/fbx/M_Chr_Bosun_LP/M_Chr_Bosun_LP_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:166dfcd6ba0178ddc9349058a76bdc36ee6964d4064e8ed17d8c371a2e5e8a35": {
   "assetId": "123892134964088",
   "moderation": "Approved",
@@ -24066,6 +24665,16 @@
   "route": "delivery",
   "sha": "1c038f30ef90d2c1adf257de143780c38177bd1f7fe4e31362bade4297109f4b",
   "source": "assets/fbx/M_Rock_Cliff_03/M_Rock_Cliff_03_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:1c04722118aacfa4e81b3a40eee46b1f14ba20700dce59e6a6ef7099c4540259": {
+  "assetId": "84876267561523",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons.rbxm",
+  "route": "delivery",
+  "sha": "1c04722118aacfa4e81b3a40eee46b1f14ba20700dce59e6a6ef7099c4540259",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD0.fbx",
   "type": "Model"
  },
  "Model:1c7cf35167f9947a3e45fd8254cda7da2639e5a69cf5e9334867ed7083f9309c": {
@@ -24578,6 +25187,16 @@
   "source": "assets/fbx/M_Kit_ThrowBag/M_Kit_ThrowBag_LOD2.fbx",
   "type": "Model"
  },
+ "Model:262a0c20d82fa3a8884f545d74abea79b44afaf546ba185f5317b72cb6584453": {
+  "assetId": "140672882451069",
+  "moderation": "Approved",
+  "name": "M_Ani_Turtle",
+  "rbxm": "assets/models/M_Ani_Turtle.rbxm",
+  "route": "delivery",
+  "sha": "262a0c20d82fa3a8884f545d74abea79b44afaf546ba185f5317b72cb6584453",
+  "source": "assets/fbx/M_Ani_Turtle/M_Ani_Turtle_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:26606c1d67cd534b10deacfb2584b4b4cbb53e3da9bfe72dc524ce8cf973aa4c": {
   "assetId": "135191363772066",
   "moderation": "Approved",
@@ -24776,6 +25395,16 @@
   "route": "delivery",
   "sha": "2a90020ebae505c2b798027680fd563bf73ab3fc5a4cdd7cbd940fefeca87f9a",
   "source": "assets/fbx/M_Road_Bench/M_Road_Bench_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:2ab7ceb89208156d12c2bb983305ef10406576475688a7f64d8d0824028465c4": {
+  "assetId": "116757607794615",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueBoathouseAddons",
+  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons.rbxm",
+  "route": "delivery",
+  "sha": "2ab7ceb89208156d12c2bb983305ef10406576475688a7f64d8d0824028465c4",
+  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD0.fbx",
   "type": "Model"
  },
  "Model:2b095f9cc0a261d4a599c3e4f92f0871d1eb3b36a1c9f073d26d50c19f774cdf": {
@@ -26058,6 +26687,16 @@
   "source": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD1.fbx",
   "type": "Model"
  },
+ "Model:476ea4b5c18de5df8d6e32d7841ff905acaad1a059d81a4b9c612ed0e40d21f2": {
+  "assetId": "72956797249106",
+  "moderation": "Approved",
+  "name": "M_Ani_Gull",
+  "rbxm": "assets/models/M_Ani_Gull.rbxm",
+  "route": "delivery",
+  "sha": "476ea4b5c18de5df8d6e32d7841ff905acaad1a059d81a4b9c612ed0e40d21f2",
+  "source": "assets/fbx/M_Ani_Gull/M_Ani_Gull_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:478e3a8851cddfa9d6c27e9c26b2bdb16954d7d43ebfe8a61ed029f817b8b0ad": {
   "assetId": "89765664643139",
   "moderation": "Approved",
@@ -26938,6 +27577,16 @@
   "source": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD1.fbx",
   "type": "Model"
  },
+ "Model:5e2cffe6622c333fe2e9b296970f6459683d5ce3beb90befe7da2d564ebb5cf5": {
+  "assetId": "137947599048311",
+  "moderation": "Approved",
+  "name": "M_Ani_Gull",
+  "rbxm": "assets/models/M_Ani_Gull.rbxm",
+  "route": "delivery",
+  "sha": "5e2cffe6622c333fe2e9b296970f6459683d5ce3beb90befe7da2d564ebb5cf5",
+  "source": "assets/fbx/M_Ani_Gull/M_Ani_Gull_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:5e4a2bdc3efb331876a2cea14b786bdfb4ef6fea78c4c1b9cab8bbf4d9bd8d32": {
   "assetId": "94659038910021",
   "moderation": "Approved",
@@ -26956,6 +27605,16 @@
   "route": "delivery",
   "sha": "5e6616b1525eb475f0e024e1774eb179e210cc4f25180c38830e41b58e310e9d",
   "source": "assets/fbx/M_Bld_BoatyardShed/M_Bld_BoatyardShed_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:5ed0feb683991c1575d30824af2b009f18c402d732d9e21f0e5e651b43d2e4a5": {
+  "assetId": "91986723510910",
+  "moderation": "Approved",
+  "name": "M_Ani_Puffin",
+  "rbxm": "assets/models/M_Ani_Puffin.rbxm",
+  "route": "delivery",
+  "sha": "5ed0feb683991c1575d30824af2b009f18c402d732d9e21f0e5e651b43d2e4a5",
+  "source": "assets/fbx/M_Ani_Puffin/M_Ani_Puffin_LOD0.fbx",
   "type": "Model"
  },
  "Model:5f15bfeca506885aeade48ff8098c541760a908fa8718cf58e271649943b5139": {
@@ -27848,6 +28507,16 @@
   "source": "assets/fbx/M_Rock_Ledge_01/M_Rock_Ledge_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:75eb7eabd486c7bfc74bc83d81f099673725aeb7fd89a4edcd5c889460e5be44": {
+  "assetId": "124272032052322",
+  "moderation": "Approved",
+  "name": "M_Ani_GreySeal_LOD1",
+  "rbxm": "assets/models/M_Ani_GreySeal_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "75eb7eabd486c7bfc74bc83d81f099673725aeb7fd89a4edcd5c889460e5be44",
+  "source": "assets/fbx/M_Ani_GreySeal/M_Ani_GreySeal_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:76195192373d0ebad7d5925fd720bbc27f63a927c2849799c7b80fa4ff93985e": {
   "assetId": "125502212984292",
   "moderation": "Approved",
@@ -28016,6 +28685,16 @@
   "route": "delivery",
   "sha": "7bbec489b39e7448b4418198b949c53578faaaac381da1d78c55f7cf942a4d13",
   "source": "assets/fbx/M_Veg_Gorse_03/M_Veg_Gorse_03_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:7c310cfafb8fa8139ca8ed49481a5806cf947f8a35d783dedd64e5f5cc55847c": {
+  "assetId": "71886407094869",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "7c310cfafb8fa8139ca8ed49481a5806cf947f8a35d783dedd64e5f5cc55847c",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD2.fbx",
   "type": "Model"
  },
  "Model:7c94f01657427cfab7b61159de4b2c47c5947132197f775acfa444b226b9f1a8": {
@@ -28348,6 +29027,16 @@
   "source": "assets/fbx/M_Veg_Hawthorn_01/M_Veg_Hawthorn_01_LOD2.fbx",
   "type": "Model"
  },
+ "Model:825844e397c3b3ff000025ebadda2058d708fe306d525b39fc6e02cdec2a6183": {
+  "assetId": "114617733595749",
+  "moderation": "Approved",
+  "name": "M_Ani_GreySeal_LOD2",
+  "rbxm": "assets/models/M_Ani_GreySeal_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "825844e397c3b3ff000025ebadda2058d708fe306d525b39fc6e02cdec2a6183",
+  "source": "assets/fbx/M_Ani_GreySeal/M_Ani_GreySeal_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:82d4d8083c4824933603f21abf50a0feb31f81e19cbb6ef834a8a21f4b3e2640": {
   "assetId": "139345858698024",
   "moderation": "Approved",
@@ -28596,6 +29285,16 @@
   "route": "delivery",
   "sha": "881368863450d5831e23857bc6490e4ac7db3189f1a8beea29814e930c84053c",
   "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:8814a17e7644e5711f5442a35ba8ee38727f1c92b9270ffe59c3d47857c469aa": {
+  "assetId": "116162836339061",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueBoathouseAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "8814a17e7644e5711f5442a35ba8ee38727f1c92b9270ffe59c3d47857c469aa",
+  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD2.fbx",
   "type": "Model"
  },
  "Model:8847d11cbb8c060b8daf588c523fd1da350b2359b933d6524a17563c75673d02": {
@@ -28936,6 +29635,16 @@
   "route": "delivery",
   "sha": "8fab0657219c238d307e88b2190cb5355ec941c6b3b03c2a0afafb8d9c091a3a",
   "source": "assets/fbx/M_Sea_SandRipples/M_Sea_SandRipples_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:902bb47dc87ca1e2eddae9cce64bdfd49281b41d5ea451aa24bc5e10151b4e3b": {
+  "assetId": "88613009854216",
+  "moderation": "Approved",
+  "name": "M_Prop_HubKit",
+  "rbxm": "assets/models/M_Prop_HubKit.rbxm",
+  "route": "delivery",
+  "sha": "902bb47dc87ca1e2eddae9cce64bdfd49281b41d5ea451aa24bc5e10151b4e3b",
+  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD0.fbx",
   "type": "Model"
  },
  "Model:9054d2addedc999efb01322a0e6af4dfb8d39f3ef1d85e30b8700eed58179e86": {
@@ -29388,6 +30097,16 @@
   "source": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD2.fbx",
   "type": "Model"
  },
+ "Model:99aef1b56d561714917816dd7826d2304887ef51325343d3525d6c8c4997d77e": {
+  "assetId": "109254263881729",
+  "moderation": "Approved",
+  "name": "M_Ani_Puffin",
+  "rbxm": "assets/models/M_Ani_Puffin.rbxm",
+  "route": "delivery",
+  "sha": "99aef1b56d561714917816dd7826d2304887ef51325343d3525d6c8c4997d77e",
+  "source": "assets/fbx/M_Ani_Puffin/M_Ani_Puffin_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:9a281877811e919531f106849ec59d974b42f0d8b6e100c96d5fd6715f7d4642": {
   "assetId": "123627259593304",
   "moderation": "Approved",
@@ -29488,6 +30207,16 @@
   "source": "assets/fbx/M_Road_ParkedCar_03/M_Road_ParkedCar_03_LOD1.fbx",
   "type": "Model"
  },
+ "Model:9bbcce10920ea10d1f362c1564d782577b60e64199dd70dcaf692ccce79ecbd5": {
+  "assetId": "78855262584273",
+  "moderation": "Approved",
+  "name": "M_Ani_Gull",
+  "rbxm": "assets/models/M_Ani_Gull.rbxm",
+  "route": "delivery",
+  "sha": "9bbcce10920ea10d1f362c1564d782577b60e64199dd70dcaf692ccce79ecbd5",
+  "source": "assets/fbx/M_Ani_Gull/M_Ani_Gull_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:9bddd5484bbc768dccfb4ea43b77515575098237f4c8e5556f1456f630a65458": {
   "assetId": "75973895972411",
   "moderation": "Approved",
@@ -29556,6 +30285,26 @@
   "route": "delivery",
   "sha": "9d5dfbebbb800cc2f5286c533180047ea7d2e7102213d23699cba3e9006a4f9d",
   "source": "assets/fbx/Spike1/M_Spike1_Tentacle40.fbx",
+  "type": "Model"
+ },
+ "Model:9e34b7720c1b4d3a41eac4f05a8f7047f9c7fdea0ec5779457b17effd6a28938": {
+  "assetId": "88085866697598",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9e34b7720c1b4d3a41eac4f05a8f7047f9c7fdea0ec5779457b17effd6a28938",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:9e7a5e0a9395126b9d3c359d1858092a18b90f908b62509002d49fa1cf5593fc": {
+  "assetId": "78228269224567",
+  "moderation": "Approved",
+  "name": "M_Prop_LagoonKit",
+  "rbxm": "assets/models/M_Prop_LagoonKit.rbxm",
+  "route": "delivery",
+  "sha": "9e7a5e0a9395126b9d3c359d1858092a18b90f908b62509002d49fa1cf5593fc",
+  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD0.fbx",
   "type": "Model"
  },
  "Model:9e9950f231617304f5199110b3ce55e96b0bddd7be7af1b9a570f2b186191c93": {
@@ -30108,6 +30857,16 @@
   "source": "assets/fbx/M_Rock_Cliff_07/M_Rock_Cliff_07_LOD2.fbx",
   "type": "Model"
  },
+ "Model:ad44bb6b664134dc8a72a3e6f568b75322d54565dcc579ae70745d2efccfa355": {
+  "assetId": "116193363210632",
+  "moderation": "Approved",
+  "name": "M_Ani_Otter",
+  "rbxm": "assets/models/M_Ani_Otter.rbxm",
+  "route": "delivery",
+  "sha": "ad44bb6b664134dc8a72a3e6f568b75322d54565dcc579ae70745d2efccfa355",
+  "source": "assets/fbx/M_Ani_Otter/M_Ani_Otter_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:ad704b7db962e958436b5e0ee800fff9d1cf54fcc2e01590b8ca89ab33a30d11": {
   "assetId": "97913775990312",
   "moderation": "Approved",
@@ -30338,6 +31097,16 @@
   "source": "assets/fbx/M_Hbr_TravelHoist/M_Hbr_TravelHoist_LOD2.fbx",
   "type": "Model"
  },
+ "Model:b24b5987775661fe8a0cae26ded975365987744718de609e3a8170458da48ce9": {
+  "assetId": "128380412455028",
+  "moderation": "Approved",
+  "name": "M_Chr_Bosun_LP_LOD1",
+  "rbxm": "assets/models/M_Chr_Bosun_LP_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b24b5987775661fe8a0cae26ded975365987744718de609e3a8170458da48ce9",
+  "source": "assets/fbx/M_Chr_Bosun_LP/M_Chr_Bosun_LP_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:b3069ceba144e0b49fcb732b2a799e2143fcc1c682d5fba7980f7ae3ba01bc19": {
   "assetId": "118205357536086",
   "moderation": "Approved",
@@ -30366,6 +31135,16 @@
   "route": "delivery",
   "sha": "b35f8468b1100d11cf5e9691e500f30466826911b3ccbe127b8528e7d2c41f2d",
   "source": "assets/fbx/M_Kit_ChartTablet/M_Kit_ChartTablet_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:b3a57ebda13641d7246725873ba6ac05e3a6be6040232c2639719398547abd99": {
+  "assetId": "124768171635748",
+  "moderation": "Approved",
+  "name": "M_Prop_LagoonKit_LOD1",
+  "rbxm": "assets/models/M_Prop_LagoonKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b3a57ebda13641d7246725873ba6ac05e3a6be6040232c2639719398547abd99",
+  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD1.fbx",
   "type": "Model"
  },
  "Model:b3c9cbfe144ca8901839abb97f49d66443f6d0884d2c9cb1e410c64d03de36d4": {
@@ -30488,6 +31267,16 @@
   "source": "assets/fbx/M_Veh_JetSki_GildedGull/M_Veh_JetSki_GildedGull_LOD1.fbx",
   "type": "Model"
  },
+ "Model:b66cbc76203deffb3f817daabe230a317ba0a342dc48b5b152444044e2fc2d3d": {
+  "assetId": "132682011780858",
+  "moderation": "Approved",
+  "name": "M_Ani_GreySeal",
+  "rbxm": "assets/models/M_Ani_GreySeal.rbxm",
+  "route": "delivery",
+  "sha": "b66cbc76203deffb3f817daabe230a317ba0a342dc48b5b152444044e2fc2d3d",
+  "source": "assets/fbx/M_Ani_GreySeal/M_Ani_GreySeal_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:b6a638a6d2668eb2cb4da3428617ab7cf0800d5c33275e11a7c34e6c2a9eb663": {
   "assetId": "99348752127648",
   "moderation": "Approved",
@@ -30516,6 +31305,16 @@
   "route": "delivery",
   "sha": "b6d4ebe70c8ab82ca1de076769673de95c4505c46e704cdf7a69193bad7f1b32",
   "source": "assets/fbx/M_Bld_LookoutAddons/M_Bld_LookoutAddons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:b6f7e0a6e029561f9ccfc99305ddb3f772329db3832ee649530aefda942e26d5": {
+  "assetId": "112011585002545",
+  "moderation": "Approved",
+  "name": "M_Prop_HubKit_LOD1",
+  "rbxm": "assets/models/M_Prop_HubKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b6f7e0a6e029561f9ccfc99305ddb3f772329db3832ee649530aefda942e26d5",
+  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD1.fbx",
   "type": "Model"
  },
  "Model:b752ce4a7367f927c984e933dd4eacec856aaed3f4b049265d1dd5ea254b9c18": {
@@ -31018,6 +31817,16 @@
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.fbx",
   "type": "Model"
  },
+ "Model:c3c1e2290c008353e20bfbc569f0e3091453701c45103caf7480d8929da64978": {
+  "assetId": "88387634235000",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueBoathouseAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c3c1e2290c008353e20bfbc569f0e3091453701c45103caf7480d8929da64978",
+  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:c3e8fe199f4abd41d8e646289bf7bb44e6eea9d4888b3896f990d471881317c0": {
   "assetId": "92712016149318",
   "moderation": "Approved",
@@ -31218,6 +32027,16 @@
   "source": "assets/fbx/M_Bld_BoatyardShed/M_Bld_BoatyardShed_LOD1.fbx",
   "type": "Model"
  },
+ "Model:c8c00aeab437548dd09aadd9c23c28454727717fc077c84fb9ce96e9e960d83b": {
+  "assetId": "102629971947480",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons.rbxm",
+  "route": "delivery",
+  "sha": "c8c00aeab437548dd09aadd9c23c28454727717fc077c84fb9ce96e9e960d83b",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:c8fddc9c3beaaca60014042025af897e00c1482ed5b925394168c5af7bee7ead": {
   "assetId": "84358288111349",
   "moderation": "Approved",
@@ -31378,6 +32197,16 @@
   "source": "assets/fbx/M_Sea_LostPot/M_Sea_LostPot_LOD0.fbx",
   "type": "Model"
  },
+ "Model:cdf87b3858dd2af9e506c414781c3a6a4544183163121a159fcb21c94295eefa": {
+  "assetId": "134916075354415",
+  "moderation": "Approved",
+  "name": "M_Ani_Turtle",
+  "rbxm": "assets/models/M_Ani_Turtle.rbxm",
+  "route": "delivery",
+  "sha": "cdf87b3858dd2af9e506c414781c3a6a4544183163121a159fcb21c94295eefa",
+  "source": "assets/fbx/M_Ani_Turtle/M_Ani_Turtle_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:ce0d974cbde7db4223f0408c961e6507ea7b611b6d25af551111165e5cfe098c": {
   "assetId": "87393402791869",
   "moderation": "Approved",
@@ -31426,6 +32255,16 @@
   "route": "delivery",
   "sha": "cf66aed9d4e23a32cfd7b1274a720cb3f8c1b4b8e5b8beead8baeab657be43e0",
   "source": "assets/fbx/M_Ani_GreySeal/M_Ani_GreySeal_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:cf7f3fc9b5fe7745cdffab9ad0a446d2f86ef06f3ed3e6dc725e45b93a786d42": {
+  "assetId": "119777443289178",
+  "moderation": "Approved",
+  "name": "M_Chr_Bosun_LP_LOD2",
+  "rbxm": "assets/models/M_Chr_Bosun_LP_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "cf7f3fc9b5fe7745cdffab9ad0a446d2f86ef06f3ed3e6dc725e45b93a786d42",
+  "source": "assets/fbx/M_Chr_Bosun_LP/M_Chr_Bosun_LP_LOD2.fbx",
   "type": "Model"
  },
  "Model:cfba010d4db32881684e6ab5f009e70bd3767db9a0416c00365b19b2ad8fa94e": {
@@ -31658,6 +32497,16 @@
   "source": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil_LOD0.fbx",
   "type": "Model"
  },
+ "Model:d6f1131efcd68a946dde230ff532feceb75aa5379d1c3c9798ee5d52fd9462f6": {
+  "assetId": "108045817507863",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "d6f1131efcd68a946dde230ff532feceb75aa5379d1c3c9798ee5d52fd9462f6",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:d6ff2c12b46ca2c8f17522d548a355fe0032591371ed20dd54ee3f387848dd98": {
   "assetId": "72925216529877",
   "moderation": "Approved",
@@ -31716,6 +32565,16 @@
   "route": "delivery",
   "sha": "d821eae9923d2c5db950e9ad27a9e901d972f3bbd7e5273bd0ca35b09f9773be",
   "source": "assets/fbx/M_Bld_Depot/M_Bld_Depot_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:d8b639efaf71146b90a00e04293b0f406eccd95d7ad86e79bcf2c40d8d563000": {
+  "assetId": "130896691043221",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d8b639efaf71146b90a00e04293b0f406eccd95d7ad86e79bcf2c40d8d563000",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:d8b6459488f51176fb7cc5126f3173e3e7ad4dbd9b2143207e543f0a25d5e44e": {
@@ -32296,6 +33155,16 @@
   "route": "delivery",
   "sha": "e5e9aacbcf794fa52e05a935d2de33d5a99dcc66c869baaa5d881e3895eb1216",
   "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:e5eaaa6cee733e539dcbb46fc0b4405364f5150415c3c1d5301fb71e97a766de": {
+  "assetId": "116835442105145",
+  "moderation": "Approved",
+  "name": "M_Prop_HubKit_LOD2",
+  "rbxm": "assets/models/M_Prop_HubKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "e5eaaa6cee733e539dcbb46fc0b4405364f5150415c3c1d5301fb71e97a766de",
+  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD2.fbx",
   "type": "Model"
  },
  "Model:e66062ba4b86382b40d0155fd7239ce06e9d3d48c8e21797e5ccb950021c9ed8": {
@@ -32938,6 +33807,16 @@
   "source": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna_LOD2.fbx",
   "type": "Model"
  },
+ "Model:f723ad5563ac2c3e009a4182d3f5488b3b6cc4b34f3b8144977acbdc5505a8b0": {
+  "assetId": "118164400540009",
+  "moderation": "Approved",
+  "name": "M_Ani_SealPup",
+  "rbxm": "assets/models/M_Ani_SealPup.rbxm",
+  "route": "delivery",
+  "sha": "f723ad5563ac2c3e009a4182d3f5488b3b6cc4b34f3b8144977acbdc5505a8b0",
+  "source": "assets/fbx/M_Ani_SealPup/M_Ani_SealPup_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:f72d4baee01a19b882a680fe60b2dbb5557b564e76cae7f9abefd3f6a975286c": {
   "assetId": "102888783474285",
   "moderation": "Approved",
@@ -33358,714 +34237,6 @@
   "route": "delivery",
   "sha": "ff72bda161daf5bf94ea42f1027a85be643fed957d38d0e06369be10ae3eb700",
   "source": "assets/fbx/M_Prop_SeaChest/M_Prop_SeaChest_LOD0.fbx",
-  "type": "Model"
- },
- "Image:168947f5ab17007a7b17c4f41e71586dc879013a9df3f248d8166068e21a1255": {
-  "assetId": "86567871522291",
-  "imageId": "86567871522291",
-  "moderation": "Approved",
-  "name": "FX_SpinHaloBrick",
-  "sha": "168947f5ab17007a7b17c4f41e71586dc879013a9df3f248d8166068e21a1255",
-  "source": "build/prod/spincine/FX_SpinHaloBrick.png",
-  "type": "Image"
- },
- "Image:4869eec0618deb113b180d10328447491fcbb916ac4bae9790df07c76016ed44": {
-  "assetId": "72996208588583",
-  "imageId": "72996208588583",
-  "moderation": "Approved",
-  "name": "FX_SpinHaloRing",
-  "sha": "4869eec0618deb113b180d10328447491fcbb916ac4bae9790df07c76016ed44",
-  "source": "build/prod/spincine/FX_SpinHaloRing.png",
-  "type": "Image"
- },
- "Image:a9b4fc66d7fb7524ce34e2f15e3d63c37167b00d054fdff2dc8bfb76bd666607": {
-  "assetId": "83177753500457",
-  "imageId": "83177753500457",
-  "moderation": "Approved",
-  "name": "FX_SpinBolt",
-  "sha": "a9b4fc66d7fb7524ce34e2f15e3d63c37167b00d054fdff2dc8bfb76bd666607",
-  "source": "build/prod/spincine/FX_SpinBolt.png",
-  "type": "Image"
- },
- "Image:7d0617d48e6cb849a27699627f3f378181c8af83153fe92b3917aab7f3fefa5f": {
-  "assetId": "117574394415719",
-  "imageId": "117574394415719",
-  "moderation": "Reviewing",
-  "name": "T_Boathouse_Brick_ALB",
-  "sha": "7d0617d48e6cb849a27699627f3f378181c8af83153fe92b3917aab7f3fefa5f",
-  "source": "assets/textures/M_Bld_BoathouseAddons/T_Boathouse_Brick_ALB.png",
-  "type": "Image"
- },
- "Image:81043760897ccb7bcced4a02b3e63333a3f3a45106e97bb2a2a14543e7cce799": {
-  "assetId": "127251361759849",
-  "imageId": "127251361759849",
-  "moderation": "Reviewing",
-  "name": "T_BoatYard_Brick_ALB",
-  "sha": "81043760897ccb7bcced4a02b3e63333a3f3a45106e97bb2a2a14543e7cce799",
-  "source": "assets/textures/M_Bld_BoatYardAddons/T_BoatYard_Brick_ALB.png",
-  "type": "Image"
- },
- "Image:8608023e4d2851471404450f9540184c21e7fe27d1f57b666ad456aee426549f": {
-  "assetId": "115194074228860",
-  "imageId": "115194074228860",
-  "moderation": "Reviewing",
-  "name": "T_RescueBoathouse_Brick_ALB",
-  "sha": "8608023e4d2851471404450f9540184c21e7fe27d1f57b666ad456aee426549f",
-  "source": "assets/textures/M_Bld_RescueBoathouseAddons/T_RescueBoathouse_Brick_ALB.png",
-  "type": "Image"
- },
- "Model:1c04722118aacfa4e81b3a40eee46b1f14ba20700dce59e6a6ef7099c4540259": {
-  "assetId": "84876267561523",
-  "moderation": "Approved",
-  "name": "M_Bld_BoathouseAddons",
-  "rbxm": "assets/models/M_Bld_BoathouseAddons.rbxm",
-  "route": "delivery",
-  "sha": "1c04722118aacfa4e81b3a40eee46b1f14ba20700dce59e6a6ef7099c4540259",
-  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD0.fbx",
-  "type": "Model"
- },
- "Model:2ab7ceb89208156d12c2bb983305ef10406576475688a7f64d8d0824028465c4": {
-  "assetId": "116757607794615",
-  "moderation": "Approved",
-  "name": "M_Bld_RescueBoathouseAddons",
-  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons.rbxm",
-  "route": "delivery",
-  "sha": "2ab7ceb89208156d12c2bb983305ef10406576475688a7f64d8d0824028465c4",
-  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD0.fbx",
-  "type": "Model"
- },
- "Model:7c310cfafb8fa8139ca8ed49481a5806cf947f8a35d783dedd64e5f5cc55847c": {
-  "assetId": "71886407094869",
-  "moderation": "Approved",
-  "name": "M_Bld_BoathouseAddons_LOD2",
-  "rbxm": "assets/models/M_Bld_BoathouseAddons_LOD2.rbxm",
-  "route": "delivery",
-  "sha": "7c310cfafb8fa8139ca8ed49481a5806cf947f8a35d783dedd64e5f5cc55847c",
-  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD2.fbx",
-  "type": "Model"
- },
- "Model:8814a17e7644e5711f5442a35ba8ee38727f1c92b9270ffe59c3d47857c469aa": {
-  "assetId": "116162836339061",
-  "moderation": "Approved",
-  "name": "M_Bld_RescueBoathouseAddons_LOD2",
-  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons_LOD2.rbxm",
-  "route": "delivery",
-  "sha": "8814a17e7644e5711f5442a35ba8ee38727f1c92b9270ffe59c3d47857c469aa",
-  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD2.fbx",
-  "type": "Model"
- },
- "Model:9e34b7720c1b4d3a41eac4f05a8f7047f9c7fdea0ec5779457b17effd6a28938": {
-  "assetId": "88085866697598",
-  "moderation": "Approved",
-  "name": "M_Bld_BoathouseAddons_LOD1",
-  "rbxm": "assets/models/M_Bld_BoathouseAddons_LOD1.rbxm",
-  "route": "delivery",
-  "sha": "9e34b7720c1b4d3a41eac4f05a8f7047f9c7fdea0ec5779457b17effd6a28938",
-  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD1.fbx",
-  "type": "Model"
- },
- "Model:c3c1e2290c008353e20bfbc569f0e3091453701c45103caf7480d8929da64978": {
-  "assetId": "88387634235000",
-  "moderation": "Approved",
-  "name": "M_Bld_RescueBoathouseAddons_LOD1",
-  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons_LOD1.rbxm",
-  "route": "delivery",
-  "sha": "c3c1e2290c008353e20bfbc569f0e3091453701c45103caf7480d8929da64978",
-  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD1.fbx",
-  "type": "Model"
- },
- "Model:c8c00aeab437548dd09aadd9c23c28454727717fc077c84fb9ce96e9e960d83b": {
-  "assetId": "102629971947480",
-  "moderation": "Approved",
-  "name": "M_Bld_BoatYardAddons",
-  "rbxm": "assets/models/M_Bld_BoatYardAddons.rbxm",
-  "route": "delivery",
-  "sha": "c8c00aeab437548dd09aadd9c23c28454727717fc077c84fb9ce96e9e960d83b",
-  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD0.fbx",
-  "type": "Model"
- },
- "Model:d6f1131efcd68a946dde230ff532feceb75aa5379d1c3c9798ee5d52fd9462f6": {
-  "assetId": "108045817507863",
-  "moderation": "Approved",
-  "name": "M_Bld_BoatYardAddons_LOD2",
-  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD2.rbxm",
-  "route": "delivery",
-  "sha": "d6f1131efcd68a946dde230ff532feceb75aa5379d1c3c9798ee5d52fd9462f6",
-  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD2.fbx",
-  "type": "Model"
- },
- "Model:d8b639efaf71146b90a00e04293b0f406eccd95d7ad86e79bcf2c40d8d563000": {
-  "assetId": "130896691043221",
-  "moderation": "Approved",
-  "name": "M_Bld_BoatYardAddons_LOD1",
-  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD1.rbxm",
-  "route": "delivery",
-  "sha": "d8b639efaf71146b90a00e04293b0f406eccd95d7ad86e79bcf2c40d8d563000",
-  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD1.fbx",
-  "type": "Model"
- },
- "Image:07f963938939c9618927eb2d3af112d58a7754b74d65814093fb086660a6d484": {
-  "assetId": "81027351814332",
-  "imageId": "81027351814332",
-  "moderation": "Reviewing",
-  "name": "T_Seal_Coat_RGH_Wet",
-  "sha": "07f963938939c9618927eb2d3af112d58a7754b74d65814093fb086660a6d484",
-  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_RGH_Wet.png",
-  "type": "Image"
- },
- "Image:1c400ca83ea301e0971d9b50715ecad42517cc98531a256024517b7e955841ae": {
-  "assetId": "119384092940664",
-  "imageId": "119384092940664",
-  "moderation": "Reviewing",
-  "name": "T_SealPup_Coat_RGH",
-  "sha": "1c400ca83ea301e0971d9b50715ecad42517cc98531a256024517b7e955841ae",
-  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_RGH.png",
-  "type": "Image"
- },
- "Image:1ed369dc88abf4c47c20ef93aca0e7340e6b3ec0f405545ec6142f60d80a23a0": {
-  "assetId": "101096196593722",
-  "imageId": "101096196593722",
-  "moderation": "Reviewing",
-  "name": "T_Gull_Feathers_RGH",
-  "sha": "1ed369dc88abf4c47c20ef93aca0e7340e6b3ec0f405545ec6142f60d80a23a0",
-  "source": "assets/textures/M_Ani_Gull/T_Gull_Feathers_RGH.png",
-  "type": "Image"
- },
- "Image:2562388bf0f3014aeaee9f203adf0c47c3aeafebcd3e4cc58cbf862451c3dd86": {
-  "assetId": "137400231777119",
-  "imageId": "137400231777119",
-  "moderation": "Reviewing",
-  "name": "T_Gull_Feathers_ALB",
-  "sha": "2562388bf0f3014aeaee9f203adf0c47c3aeafebcd3e4cc58cbf862451c3dd86",
-  "source": "assets/textures/M_Ani_Gull/T_Gull_Feathers_ALB.png",
-  "type": "Image"
- },
- "Image:296f3a7fa178945d51df1c594943f15e5d0f578d6e8246e15e5bfd8ed039dc2c": {
-  "assetId": "71449305827411",
-  "imageId": "71449305827411",
-  "moderation": "Reviewing",
-  "name": "T_Puffin_Feathers_RGH",
-  "sha": "296f3a7fa178945d51df1c594943f15e5d0f578d6e8246e15e5bfd8ed039dc2c",
-  "source": "assets/textures/M_Ani_Puffin/T_Puffin_Feathers_RGH.png",
-  "type": "Image"
- },
- "Image:2ab39000e48634eb948fe6f186cc929fcb6c5b1c3d3e888d87225df41799a2d6": {
-  "assetId": "131335108324140",
-  "imageId": "131335108324140",
-  "moderation": "Reviewing",
-  "name": "T_Bosun_Coat_ALB",
-  "sha": "2ab39000e48634eb948fe6f186cc929fcb6c5b1c3d3e888d87225df41799a2d6",
-  "source": "assets/textures/M_Chr_Bosun_LP/T_Bosun_Coat_ALB.png",
-  "type": "Image"
- },
- "Image:2d410f13e9b9728cb6d95050f0dc3dbda7651b6c22260e1a5fe35c1675bf7ad0": {
-  "assetId": "124248112910361",
-  "imageId": "124248112910361",
-  "moderation": "Reviewing",
-  "name": "T_Otter_Rare_ALB",
-  "sha": "2d410f13e9b9728cb6d95050f0dc3dbda7651b6c22260e1a5fe35c1675bf7ad0",
-  "source": "assets/textures/M_Ani_Otter_Rare/T_Otter_Rare_ALB.png",
-  "type": "Image"
- },
- "Image:3223a6ac863a86ee91073f02c13d84ce83a05e272c8cbbc677ac32c5b5c25dfb": {
-  "assetId": "83799967858268",
-  "imageId": "83799967858268",
-  "moderation": "Reviewing",
-  "name": "T_Otter_Coat_RGH",
-  "sha": "3223a6ac863a86ee91073f02c13d84ce83a05e272c8cbbc677ac32c5b5c25dfb",
-  "source": "assets/textures/M_Ani_Otter/T_Otter_Coat_RGH.png",
-  "type": "Image"
- },
- "Image:3776228746a218bdcf8c4c545d3841b90879409556836fa5acae8adbf2dcc36e": {
-  "assetId": "86611979152710",
-  "imageId": "86611979152710",
-  "moderation": "Reviewing",
-  "name": "T_Turtle_Rare_ALB",
-  "sha": "3776228746a218bdcf8c4c545d3841b90879409556836fa5acae8adbf2dcc36e",
-  "source": "assets/textures/M_Ani_Turtle_Rare/T_Turtle_Rare_ALB.png",
-  "type": "Image"
- },
- "Image:3869b649de458e6adf68080ad7b512838b88fa9237574500ce82d79780c79ace": {
-  "assetId": "139793976773596",
-  "imageId": "139793976773596",
-  "moderation": "Reviewing",
-  "name": "T_Turtle_Rare_ALB",
-  "sha": "3869b649de458e6adf68080ad7b512838b88fa9237574500ce82d79780c79ace",
-  "source": "assets/textures/M_Ani_Turtle_Rare/T_Turtle_Rare_ALB.png",
-  "type": "Image"
- },
- "Image:4b44bcaeb251d301111759bab50e409b5a9ad01d3f6c3345834502dd099100a6": {
-  "assetId": "113612699631301",
-  "imageId": "113612699631301",
-  "moderation": "Reviewing",
-  "name": "T_SealPup_Coat_RGH",
-  "sha": "4b44bcaeb251d301111759bab50e409b5a9ad01d3f6c3345834502dd099100a6",
-  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_RGH.png",
-  "type": "Image"
- },
- "Image:4bd74b1241528447bd8417c25c26cb9d87cdd4dc154a82359245d0888a93245b": {
-  "assetId": "109213822680941",
-  "imageId": "109213822680941",
-  "moderation": "Reviewing",
-  "name": "T_SealPup_Coat_RGH",
-  "sha": "4bd74b1241528447bd8417c25c26cb9d87cdd4dc154a82359245d0888a93245b",
-  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_RGH.png",
-  "type": "Image"
- },
- "Image:536e28a59faee108f91d3ef565a364fa4c28fa1ec75eb9741859994e753605fa": {
-  "assetId": "125795673222455",
-  "imageId": "125795673222455",
-  "moderation": "Reviewing",
-  "name": "T_Turtle_Coat_ALB",
-  "sha": "536e28a59faee108f91d3ef565a364fa4c28fa1ec75eb9741859994e753605fa",
-  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_ALB.png",
-  "type": "Image"
- },
- "Image:58386edb8526e5d83e13046e14cec0069be1f1bb7d07d8d0eaf3785996967346": {
-  "assetId": "132069333779864",
-  "imageId": "132069333779864",
-  "moderation": "Reviewing",
-  "name": "T_Seal_Face_ALB",
-  "sha": "58386edb8526e5d83e13046e14cec0069be1f1bb7d07d8d0eaf3785996967346",
-  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Face_ALB.png",
-  "type": "Image"
- },
- "Image:67c8a046901312a4d9d4b01dac896d048931d36c5c3611f3efb6dd899c2f08ae": {
-  "assetId": "96991801702720",
-  "imageId": "96991801702720",
-  "moderation": "Reviewing",
-  "name": "T_Seal_Coat_RGH",
-  "sha": "67c8a046901312a4d9d4b01dac896d048931d36c5c3611f3efb6dd899c2f08ae",
-  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_RGH.png",
-  "type": "Image"
- },
- "Image:6a55d561cefd83ade663608dd4b91be8dfaa0be84a9d320be4d18f919fc636ea": {
-  "assetId": "104558658369874",
-  "imageId": "104558658369874",
-  "moderation": "Reviewing",
-  "name": "T_Puffin_Feathers_ALB",
-  "sha": "6a55d561cefd83ade663608dd4b91be8dfaa0be84a9d320be4d18f919fc636ea",
-  "source": "assets/textures/M_Ani_Puffin/T_Puffin_Feathers_ALB.png",
-  "type": "Image"
- },
- "Image:6c0e400c29a7484688cab1fd9da07b46986c2aa6aa8d805e7046c7d763c80458": {
-  "assetId": "80088177641146",
-  "imageId": "80088177641146",
-  "moderation": "Reviewing",
-  "name": "T_SealPup_Coat_ALB",
-  "sha": "6c0e400c29a7484688cab1fd9da07b46986c2aa6aa8d805e7046c7d763c80458",
-  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_ALB.png",
-  "type": "Image"
- },
- "Image:71b489c24a5e7f820330dbb2b7f25f91edbb100a5d784c5a0f9626aaef5c88d4": {
-  "assetId": "74708168663472",
-  "imageId": "74708168663472",
-  "moderation": "Reviewing",
-  "name": "T_Gull_Feathers_ALB",
-  "sha": "71b489c24a5e7f820330dbb2b7f25f91edbb100a5d784c5a0f9626aaef5c88d4",
-  "source": "assets/textures/M_Ani_Gull/T_Gull_Feathers_ALB.png",
-  "type": "Image"
- },
- "Image:89ef9b24da8e8019b7a8d7a649371b1b4312e9d6423b2c8b871bd7d21499263a": {
-  "assetId": "94787573245345",
-  "imageId": "94787573245345",
-  "moderation": "Reviewing",
-  "name": "T_Turtle_Rare_ALB",
-  "sha": "89ef9b24da8e8019b7a8d7a649371b1b4312e9d6423b2c8b871bd7d21499263a",
-  "source": "assets/textures/M_Ani_Turtle_Rare/T_Turtle_Rare_ALB.png",
-  "type": "Image"
- },
- "Image:8b762af00ce472f37944d9afb8c2d6bacdd873a693716a23e8e377de3f12fd4c": {
-  "assetId": "97661211459421",
-  "imageId": "97661211459421",
-  "moderation": "Reviewing",
-  "name": "T_Turtle_Coat_RGH",
-  "sha": "8b762af00ce472f37944d9afb8c2d6bacdd873a693716a23e8e377de3f12fd4c",
-  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_RGH.png",
-  "type": "Image"
- },
- "Image:8cef4f1f28ffdd4c1275e1d1ae58f5921673f7c930e640dc817ae4ba02fb08db": {
-  "assetId": "88383406565084",
-  "imageId": "88383406565084",
-  "moderation": "Reviewing",
-  "name": "T_SealPup_Rare_ALB",
-  "sha": "8cef4f1f28ffdd4c1275e1d1ae58f5921673f7c930e640dc817ae4ba02fb08db",
-  "source": "assets/textures/M_Ani_SealPup_Rare/T_SealPup_Rare_ALB.png",
-  "type": "Image"
- },
- "Image:96dc6cb9e578903b3b0c475f1d98c6a25928f670344d742715576aa27f35ebad": {
-  "assetId": "71264566485232",
-  "imageId": "71264566485232",
-  "moderation": "Reviewing",
-  "name": "T_Seal_Coat_ALB",
-  "sha": "96dc6cb9e578903b3b0c475f1d98c6a25928f670344d742715576aa27f35ebad",
-  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_ALB.png",
-  "type": "Image"
- },
- "Image:9e4182ebe63ba93fb038044dcc4627cdbfa9302dbc5326db8ee04c21f8c37689": {
-  "assetId": "111178254293763",
-  "imageId": "111178254293763",
-  "moderation": "Reviewing",
-  "name": "T_SealPup_Rare_ALB",
-  "sha": "9e4182ebe63ba93fb038044dcc4627cdbfa9302dbc5326db8ee04c21f8c37689",
-  "source": "assets/textures/M_Ani_SealPup_Rare/T_SealPup_Rare_ALB.png",
-  "type": "Image"
- },
- "Image:ac19cba7e23e913d34179c889785d3f35d59e6fba5d0b19981de589e9c914443": {
-  "assetId": "132531826365588",
-  "imageId": "132531826365588",
-  "moderation": "Reviewing",
-  "name": "T_Turtle_Coat_RGH",
-  "sha": "ac19cba7e23e913d34179c889785d3f35d59e6fba5d0b19981de589e9c914443",
-  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_RGH.png",
-  "type": "Image"
- },
- "Image:acca5c502809a61e75ba188cc9f6ded4d71092152045f2b80bcf401b7f07696b": {
-  "assetId": "127518642959571",
-  "imageId": "127518642959571",
-  "moderation": "Reviewing",
-  "name": "T_Otter_Coat_ALB",
-  "sha": "acca5c502809a61e75ba188cc9f6ded4d71092152045f2b80bcf401b7f07696b",
-  "source": "assets/textures/M_Ani_Otter/T_Otter_Coat_ALB.png",
-  "type": "Image"
- },
- "Image:b316d0d31561dc871f3d444d175be24064fd6cbda98d94c84c1b75300ddb2caf": {
-  "assetId": "70765764631739",
-  "imageId": "70765764631739",
-  "moderation": "Reviewing",
-  "name": "T_Turtle_Coat_ALB",
-  "sha": "b316d0d31561dc871f3d444d175be24064fd6cbda98d94c84c1b75300ddb2caf",
-  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_ALB.png",
-  "type": "Image"
- },
- "Image:b4f2c8712db61d542eca18d8829f7040efde1c59bfb7e15f7759f518082a9f86": {
-  "assetId": "74636212388741",
-  "imageId": "74636212388741",
-  "moderation": "Reviewing",
-  "name": "T_Turtle_Coat_RGH",
-  "sha": "b4f2c8712db61d542eca18d8829f7040efde1c59bfb7e15f7759f518082a9f86",
-  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_RGH.png",
-  "type": "Image"
- },
- "Image:b551239d27b746e13de4a1092e57d63f3217627e2b81b2a5bab9c3403f67cd86": {
-  "assetId": "93037269383535",
-  "imageId": "93037269383535",
-  "moderation": "Reviewing",
-  "name": "T_Seal_Face_ALB_Wet",
-  "sha": "b551239d27b746e13de4a1092e57d63f3217627e2b81b2a5bab9c3403f67cd86",
-  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Face_ALB_Wet.png",
-  "type": "Image"
- },
- "Image:b781c1bf2a3b227a88d0eef12501e48b881a2ea96aba9890bd57a6c5f7ce5a61": {
-  "assetId": "88531683244306",
-  "imageId": "88531683244306",
-  "moderation": "Reviewing",
-  "name": "T_Seal_Coat_ALB_Wet",
-  "sha": "b781c1bf2a3b227a88d0eef12501e48b881a2ea96aba9890bd57a6c5f7ce5a61",
-  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_ALB_Wet.png",
-  "type": "Image"
- },
- "Image:c0b48aeabdc14a65f4e5662b0e9894285d0b45c7a6a78c343d7cc73a5e192607": {
-  "assetId": "101576881540244",
-  "imageId": "101576881540244",
-  "moderation": "Reviewing",
-  "name": "T_Turtle_Coat_ALB",
-  "sha": "c0b48aeabdc14a65f4e5662b0e9894285d0b45c7a6a78c343d7cc73a5e192607",
-  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_ALB.png",
-  "type": "Image"
- },
- "Image:c61d0634a65a4debfe5ae657e83507f0fdf9b349ebbdd95c718346a6b5aff047": {
-  "assetId": "135876199823454",
-  "imageId": "135876199823454",
-  "moderation": "Reviewing",
-  "name": "T_SealPup_Coat_ALB",
-  "sha": "c61d0634a65a4debfe5ae657e83507f0fdf9b349ebbdd95c718346a6b5aff047",
-  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_ALB.png",
-  "type": "Image"
- },
- "Image:d80c55fc2a05dd8407e69cae5b0955d7c6a0476fad29ac8b5cd109b385fa1669": {
-  "assetId": "94911849220229",
-  "imageId": "94911849220229",
-  "moderation": "Reviewing",
-  "name": "T_Gull_Feathers_ALB",
-  "sha": "d80c55fc2a05dd8407e69cae5b0955d7c6a0476fad29ac8b5cd109b385fa1669",
-  "source": "assets/textures/M_Ani_Gull/T_Gull_Feathers_ALB.png",
-  "type": "Image"
- },
- "Image:da6456a491ded54f83c033acd138d7d50bab615b304a0a93a473b3fd286c122e": {
-  "assetId": "79898443699023",
-  "imageId": "79898443699023",
-  "moderation": "Reviewing",
-  "name": "T_SealPup_Coat_ALB",
-  "sha": "da6456a491ded54f83c033acd138d7d50bab615b304a0a93a473b3fd286c122e",
-  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_ALB.png",
-  "type": "Image"
- },
- "Image:dbcfdec37eda244b106d6268a305a66a1a9c1ca6d27749d9363f352d992c6437": {
-  "assetId": "120048195505787",
-  "imageId": "120048195505787",
-  "moderation": "Reviewing",
-  "name": "T_SealPup_Rare_ALB",
-  "sha": "dbcfdec37eda244b106d6268a305a66a1a9c1ca6d27749d9363f352d992c6437",
-  "source": "assets/textures/M_Ani_SealPup_Rare/T_SealPup_Rare_ALB.png",
-  "type": "Image"
- },
- "Model:01a96a14a39547e5f65b93154763166d047106f93a859d271b00eee9bfeadd4d": {
-  "assetId": "71732928078183",
-  "moderation": "Approved",
-  "name": "M_Ani_Turtle",
-  "rbxm": "assets/models/M_Ani_Turtle.rbxm",
-  "route": "delivery",
-  "sha": "01a96a14a39547e5f65b93154763166d047106f93a859d271b00eee9bfeadd4d",
-  "source": "assets/fbx/M_Ani_Turtle/M_Ani_Turtle_LOD0.fbx",
-  "type": "Model"
- },
- "Model:0a587fa218a20fae5979b1cf3eba786ba1e43e8ee5049e732ba6c3c9d515aad3": {
-  "assetId": "109218522319473",
-  "moderation": "Approved",
-  "name": "M_Ani_SealPup",
-  "rbxm": "assets/models/M_Ani_SealPup.rbxm",
-  "route": "delivery",
-  "sha": "0a587fa218a20fae5979b1cf3eba786ba1e43e8ee5049e732ba6c3c9d515aad3",
-  "source": "assets/fbx/M_Ani_SealPup/M_Ani_SealPup_LOD0.fbx",
-  "type": "Model"
- },
- "Model:0b27bd4183d6ec7a4449cf26ce7d5cefa43014f669d7d82066de8564b5885650": {
-  "assetId": "132548462842536",
-  "moderation": "Approved",
-  "name": "M_Ani_SealPup",
-  "rbxm": "assets/models/M_Ani_SealPup.rbxm",
-  "route": "delivery",
-  "sha": "0b27bd4183d6ec7a4449cf26ce7d5cefa43014f669d7d82066de8564b5885650",
-  "source": "assets/fbx/M_Ani_SealPup/M_Ani_SealPup_LOD0.fbx",
-  "type": "Model"
- },
- "Model:163bd3ef305f4729e7134314b0c9eb3ea85f524f7c9e9bbeab6b833b6f9d95be": {
-  "assetId": "90865912056923",
-  "moderation": "Approved",
-  "name": "M_Chr_Bosun_LP",
-  "rbxm": "assets/models/M_Chr_Bosun_LP.rbxm",
-  "route": "delivery",
-  "sha": "163bd3ef305f4729e7134314b0c9eb3ea85f524f7c9e9bbeab6b833b6f9d95be",
-  "source": "assets/fbx/M_Chr_Bosun_LP/M_Chr_Bosun_LP_LOD0.fbx",
-  "type": "Model"
- },
- "Model:262a0c20d82fa3a8884f545d74abea79b44afaf546ba185f5317b72cb6584453": {
-  "assetId": "140672882451069",
-  "moderation": "Approved",
-  "name": "M_Ani_Turtle",
-  "rbxm": "assets/models/M_Ani_Turtle.rbxm",
-  "route": "delivery",
-  "sha": "262a0c20d82fa3a8884f545d74abea79b44afaf546ba185f5317b72cb6584453",
-  "source": "assets/fbx/M_Ani_Turtle/M_Ani_Turtle_LOD0.fbx",
-  "type": "Model"
- },
- "Model:476ea4b5c18de5df8d6e32d7841ff905acaad1a059d81a4b9c612ed0e40d21f2": {
-  "assetId": "72956797249106",
-  "moderation": "Approved",
-  "name": "M_Ani_Gull",
-  "rbxm": "assets/models/M_Ani_Gull.rbxm",
-  "route": "delivery",
-  "sha": "476ea4b5c18de5df8d6e32d7841ff905acaad1a059d81a4b9c612ed0e40d21f2",
-  "source": "assets/fbx/M_Ani_Gull/M_Ani_Gull_LOD0.fbx",
-  "type": "Model"
- },
- "Model:5e2cffe6622c333fe2e9b296970f6459683d5ce3beb90befe7da2d564ebb5cf5": {
-  "assetId": "137947599048311",
-  "moderation": "Approved",
-  "name": "M_Ani_Gull",
-  "rbxm": "assets/models/M_Ani_Gull.rbxm",
-  "route": "delivery",
-  "sha": "5e2cffe6622c333fe2e9b296970f6459683d5ce3beb90befe7da2d564ebb5cf5",
-  "source": "assets/fbx/M_Ani_Gull/M_Ani_Gull_LOD0.fbx",
-  "type": "Model"
- },
- "Model:5ed0feb683991c1575d30824af2b009f18c402d732d9e21f0e5e651b43d2e4a5": {
-  "assetId": "91986723510910",
-  "moderation": "Approved",
-  "name": "M_Ani_Puffin",
-  "rbxm": "assets/models/M_Ani_Puffin.rbxm",
-  "route": "delivery",
-  "sha": "5ed0feb683991c1575d30824af2b009f18c402d732d9e21f0e5e651b43d2e4a5",
-  "source": "assets/fbx/M_Ani_Puffin/M_Ani_Puffin_LOD0.fbx",
-  "type": "Model"
- },
- "Model:75eb7eabd486c7bfc74bc83d81f099673725aeb7fd89a4edcd5c889460e5be44": {
-  "assetId": "124272032052322",
-  "moderation": "Approved",
-  "name": "M_Ani_GreySeal_LOD1",
-  "rbxm": "assets/models/M_Ani_GreySeal_LOD1.rbxm",
-  "route": "delivery",
-  "sha": "75eb7eabd486c7bfc74bc83d81f099673725aeb7fd89a4edcd5c889460e5be44",
-  "source": "assets/fbx/M_Ani_GreySeal/M_Ani_GreySeal_LOD1.fbx",
-  "type": "Model"
- },
- "Model:825844e397c3b3ff000025ebadda2058d708fe306d525b39fc6e02cdec2a6183": {
-  "assetId": "114617733595749",
-  "moderation": "Approved",
-  "name": "M_Ani_GreySeal_LOD2",
-  "rbxm": "assets/models/M_Ani_GreySeal_LOD2.rbxm",
-  "route": "delivery",
-  "sha": "825844e397c3b3ff000025ebadda2058d708fe306d525b39fc6e02cdec2a6183",
-  "source": "assets/fbx/M_Ani_GreySeal/M_Ani_GreySeal_LOD2.fbx",
-  "type": "Model"
- },
- "Model:99aef1b56d561714917816dd7826d2304887ef51325343d3525d6c8c4997d77e": {
-  "assetId": "109254263881729",
-  "moderation": "Approved",
-  "name": "M_Ani_Puffin",
-  "rbxm": "assets/models/M_Ani_Puffin.rbxm",
-  "route": "delivery",
-  "sha": "99aef1b56d561714917816dd7826d2304887ef51325343d3525d6c8c4997d77e",
-  "source": "assets/fbx/M_Ani_Puffin/M_Ani_Puffin_LOD0.fbx",
-  "type": "Model"
- },
- "Model:9bbcce10920ea10d1f362c1564d782577b60e64199dd70dcaf692ccce79ecbd5": {
-  "assetId": "78855262584273",
-  "moderation": "Approved",
-  "name": "M_Ani_Gull",
-  "rbxm": "assets/models/M_Ani_Gull.rbxm",
-  "route": "delivery",
-  "sha": "9bbcce10920ea10d1f362c1564d782577b60e64199dd70dcaf692ccce79ecbd5",
-  "source": "assets/fbx/M_Ani_Gull/M_Ani_Gull_LOD0.fbx",
-  "type": "Model"
- },
- "Model:ad44bb6b664134dc8a72a3e6f568b75322d54565dcc579ae70745d2efccfa355": {
-  "assetId": "116193363210632",
-  "moderation": "Approved",
-  "name": "M_Ani_Otter",
-  "rbxm": "assets/models/M_Ani_Otter.rbxm",
-  "route": "delivery",
-  "sha": "ad44bb6b664134dc8a72a3e6f568b75322d54565dcc579ae70745d2efccfa355",
-  "source": "assets/fbx/M_Ani_Otter/M_Ani_Otter_LOD0.fbx",
-  "type": "Model"
- },
- "Model:b24b5987775661fe8a0cae26ded975365987744718de609e3a8170458da48ce9": {
-  "assetId": "128380412455028",
-  "moderation": "Approved",
-  "name": "M_Chr_Bosun_LP_LOD1",
-  "rbxm": "assets/models/M_Chr_Bosun_LP_LOD1.rbxm",
-  "route": "delivery",
-  "sha": "b24b5987775661fe8a0cae26ded975365987744718de609e3a8170458da48ce9",
-  "source": "assets/fbx/M_Chr_Bosun_LP/M_Chr_Bosun_LP_LOD1.fbx",
-  "type": "Model"
- },
- "Model:b66cbc76203deffb3f817daabe230a317ba0a342dc48b5b152444044e2fc2d3d": {
-  "assetId": "132682011780858",
-  "moderation": "Approved",
-  "name": "M_Ani_GreySeal",
-  "rbxm": "assets/models/M_Ani_GreySeal.rbxm",
-  "route": "delivery",
-  "sha": "b66cbc76203deffb3f817daabe230a317ba0a342dc48b5b152444044e2fc2d3d",
-  "source": "assets/fbx/M_Ani_GreySeal/M_Ani_GreySeal_LOD0.fbx",
-  "type": "Model"
- },
- "Model:cdf87b3858dd2af9e506c414781c3a6a4544183163121a159fcb21c94295eefa": {
-  "assetId": "134916075354415",
-  "moderation": "Approved",
-  "name": "M_Ani_Turtle",
-  "rbxm": "assets/models/M_Ani_Turtle.rbxm",
-  "route": "delivery",
-  "sha": "cdf87b3858dd2af9e506c414781c3a6a4544183163121a159fcb21c94295eefa",
-  "source": "assets/fbx/M_Ani_Turtle/M_Ani_Turtle_LOD0.fbx",
-  "type": "Model"
- },
- "Model:cf7f3fc9b5fe7745cdffab9ad0a446d2f86ef06f3ed3e6dc725e45b93a786d42": {
-  "assetId": "119777443289178",
-  "moderation": "Approved",
-  "name": "M_Chr_Bosun_LP_LOD2",
-  "rbxm": "assets/models/M_Chr_Bosun_LP_LOD2.rbxm",
-  "route": "delivery",
-  "sha": "cf7f3fc9b5fe7745cdffab9ad0a446d2f86ef06f3ed3e6dc725e45b93a786d42",
-  "source": "assets/fbx/M_Chr_Bosun_LP/M_Chr_Bosun_LP_LOD2.fbx",
-  "type": "Model"
- },
- "Model:f723ad5563ac2c3e009a4182d3f5488b3b6cc4b34f3b8144977acbdc5505a8b0": {
-  "assetId": "118164400540009",
-  "moderation": "Approved",
-  "name": "M_Ani_SealPup",
-  "rbxm": "assets/models/M_Ani_SealPup.rbxm",
-  "route": "delivery",
-  "sha": "f723ad5563ac2c3e009a4182d3f5488b3b6cc4b34f3b8144977acbdc5505a8b0",
-  "source": "assets/fbx/M_Ani_SealPup/M_Ani_SealPup_LOD0.fbx",
-  "type": "Model"
- },
- "Image:9f176b17039158e3e000dd7cde8a44b1fcc84187a4d76d0c4243f901a0b2a13a": {
-  "assetId": "111083993483904",
-  "imageId": "111083993483904",
-  "moderation": "Approved",
-  "name": "T_LagoonKit_Brick_ALB",
-  "sha": "9f176b17039158e3e000dd7cde8a44b1fcc84187a4d76d0c4243f901a0b2a13a",
-  "source": "assets/textures/M_Prop_LagoonKit/T_LagoonKit_Brick_ALB.png",
-  "type": "Image"
- },
- "Image:e84e8cc6983a9f43f5c7e14a121d2f45e93a7aa86481e42c4099b72cd8b8c42c": {
-  "assetId": "76696982722535",
-  "imageId": "76696982722535",
-  "moderation": "Approved",
-  "name": "T_HubKit_Brick_ALB",
-  "sha": "e84e8cc6983a9f43f5c7e14a121d2f45e93a7aa86481e42c4099b72cd8b8c42c",
-  "source": "assets/textures/M_Prop_HubKit/T_HubKit_Brick_ALB.png",
-  "type": "Image"
- },
- "Model:0852a197a55e1142aac685f6208d9a6db8ef72fd79d5db96a7b5110a5ec5a56b": {
-  "assetId": "134205432014796",
-  "moderation": "Approved",
-  "name": "M_Prop_LagoonKit_LOD2",
-  "rbxm": "assets/models/M_Prop_LagoonKit_LOD2.rbxm",
-  "route": "delivery",
-  "sha": "0852a197a55e1142aac685f6208d9a6db8ef72fd79d5db96a7b5110a5ec5a56b",
-  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD2.fbx",
-  "type": "Model"
- },
- "Model:902bb47dc87ca1e2eddae9cce64bdfd49281b41d5ea451aa24bc5e10151b4e3b": {
-  "assetId": "88613009854216",
-  "moderation": "Approved",
-  "name": "M_Prop_HubKit",
-  "rbxm": "assets/models/M_Prop_HubKit.rbxm",
-  "route": "delivery",
-  "sha": "902bb47dc87ca1e2eddae9cce64bdfd49281b41d5ea451aa24bc5e10151b4e3b",
-  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD0.fbx",
-  "type": "Model"
- },
- "Model:9e7a5e0a9395126b9d3c359d1858092a18b90f908b62509002d49fa1cf5593fc": {
-  "assetId": "78228269224567",
-  "moderation": "Approved",
-  "name": "M_Prop_LagoonKit",
-  "rbxm": "assets/models/M_Prop_LagoonKit.rbxm",
-  "route": "delivery",
-  "sha": "9e7a5e0a9395126b9d3c359d1858092a18b90f908b62509002d49fa1cf5593fc",
-  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD0.fbx",
-  "type": "Model"
- },
- "Model:b3a57ebda13641d7246725873ba6ac05e3a6be6040232c2639719398547abd99": {
-  "assetId": "124768171635748",
-  "moderation": "Approved",
-  "name": "M_Prop_LagoonKit_LOD1",
-  "rbxm": "assets/models/M_Prop_LagoonKit_LOD1.rbxm",
-  "route": "delivery",
-  "sha": "b3a57ebda13641d7246725873ba6ac05e3a6be6040232c2639719398547abd99",
-  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD1.fbx",
-  "type": "Model"
- },
- "Model:b6f7e0a6e029561f9ccfc99305ddb3f772329db3832ee649530aefda942e26d5": {
-  "assetId": "112011585002545",
-  "moderation": "Approved",
-  "name": "M_Prop_HubKit_LOD1",
-  "rbxm": "assets/models/M_Prop_HubKit_LOD1.rbxm",
-  "route": "delivery",
-  "sha": "b6f7e0a6e029561f9ccfc99305ddb3f772329db3832ee649530aefda942e26d5",
-  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD1.fbx",
-  "type": "Model"
- },
- "Model:e5eaaa6cee733e539dcbb46fc0b4405364f5150415c3c1d5301fb71e97a766de": {
-  "assetId": "116835442105145",
-  "moderation": "Approved",
-  "name": "M_Prop_HubKit_LOD2",
-  "rbxm": "assets/models/M_Prop_HubKit_LOD2.rbxm",
-  "route": "delivery",
-  "sha": "e5eaaa6cee733e539dcbb46fc0b4405364f5150415c3c1d5301fb71e97a766de",
-  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD2.fbx",
   "type": "Model"
  }
 }

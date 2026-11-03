@@ -207,19 +207,13 @@ function DevConfig.vfxName(text: any): string?
 	return if name and #name <= 32 then name else nil
 end
 
--- Chat "/spincine <Rarity>" (the DEV spin cinematic bench): the rarity, any case, or nil.
-function DevConfig.spincineRarity(text: any): string?
+-- Chat "/spin <wedge>" (the DEV Deep Spin bench, wedge 1..12 in SpinRules.WEDGES order): the wedge, or nil.
+function DevConfig.spinWedge(text: any): number?
 	if type(text) ~= "string" then
 		return nil
 	end
-	local word = string.match(text, "^/spincine%s+(%a+)%s*$")
-	if not word then
-		return nil
-	end
-	local name = string.upper(string.sub(word, 1, 1)) .. string.lower(string.sub(word, 2))
-	return if table.find({ "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic" }, name)
-		then name
-		else nil
+	local n = tonumber(string.match(text, "^/spin%s+(%d+)%s*$"))
+	return if n and n >= 1 and n <= 12 then n else nil
 end
 
 -- Sliding-window rate limit: true (and the stamp is kept) while under RateMax in RateWindow.

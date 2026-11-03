@@ -178,6 +178,8 @@ return function(t)
 			wheel_chips = "PrizeWheelController: UI_Prompt flapper tick",
 			wheel_win = "PrizeWheelController: Album_Sticker pop / Spin_Flex FX_Chime",
 			chimney_puff = "ambience: silent by design",
+			deep_bubbles = "DeepSpin Sequence: Under_Ambience drone",
+			deep_grip = "DeepSpin Sequence: the deep_slam thud + roar under it",
 			nitro_ring = "under nitro_burst's FX_Whoosh",
 			nitro_trail = "the engine flare (AudioController RPM)",
 			ski_rooster = "the driver's Hull_Wake bed swells with speed (AudioController); ski_splash on hits",

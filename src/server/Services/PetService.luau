@@ -166,6 +166,26 @@ function PetService.Equip(player: Player, id: any): (boolean, string?)
 	return true
 end
 
+-- SpinService: a prize pet comes home recovered and ready to adopt; false when the species is already
+-- owned, the sanctuary is full or the save failed (the wheel then pays Cash).
+function PetService.GrantPet(player: Player, species: string): boolean
+	local data = DataService.Get(player)
+	if not data then
+		return false
+	end
+	local state = stateOf(data)
+	if PetRules.ownsSpecies(state, species) then
+		return false
+	end
+	local nextState, entry =
+		PetRules.add(state, species, false, os.time() - Wildlife.RecoverySeconds)
+	if not entry or not store(player, nextState) then
+		return false
+	end
+	Telemetry.Companion(player, species, "Adopted") -- analytics H10, as a rescued animal
+	return true
+end
+
 -- SpinService: a prize variant joins the sanctuary; false when it was already owned.
 function PetService.GrantVariant(player: Player, id: string): boolean
 	local data = DataService.Get(player)

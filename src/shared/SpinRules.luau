@@ -6,18 +6,25 @@
 -- Legendary or better at least every 50; the counters are the number of spins since the last such
 -- win and are saved in the profile flag. A prize already owned becomes Cash by rarity.
 --
+-- Each wedge pays exactly one prize (WEDGES), so a rarity's odds split evenly between its wedges and the
+-- wedge shown is the wedge paid. PRIZES keeps every prize ever offered: `retired` ones are off the wheel
+-- (never rolled) but what players won stays theirs.
+--
 -- The saved flag `spin` is a flat table of scalars (ProgressionRules.sanitizeFlag):
 --   d = last UTC day a free spin was granted, f = free spins available,
 --   e / l = spins since the last Epic+ / Legendary+, r = rescued people already paid out,
---   o = bitmask of owned finish / trail prizes (bit i = PRIZES[i]), p = how many of f were bought with Robux.
+--   o = bitmask of owned finish / trail prizes (bit i = PRIZES[i]: only ever append to PRIZES; 32 bits),
+--   p = how many of f were bought with Robux.
+-- The flag `spinBoat` is the boat looks won, comma separated (an old save holds one id). A look has no stats
+-- (docs/30 section 3): winning one never adds a craft to data.vehicles.
 --
 -- Free spins: 1 a day plus 1 for every 10 people rescued (docs/24 D); see accrue.
 --
--- The wheel draws SEGMENTS in this order; the server picks one of the rolled rarity's segments so
--- the animation always stops on the prize it actually granted.
+-- The wheel draws SEGMENTS / WEDGES in this order; the server picks one of the rolled rarity's wedges and
+-- pays that wedge's prize, so the animation always stops on the prize it actually granted.
 
 export type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary" | "Mythic"
-export type Kind = "cash" | "petVariant" | "finish" | "trail" | "boat"
+export type Kind = "cash" | "pet" | "petVariant" | "finish" | "trail" | "boat"
 
 export type Prize = {
 	id: string,
@@ -29,6 +36,8 @@ export type Prize = {
 	variant: string?,
 	option: string?,
 	vehicle: string?,
+	pet: string?, -- Wildlife species id
+	retired: boolean?,
 }
 
 export type Pity = { epic: number, legendary: number }
@@ -40,7 +49,7 @@ export type State = {
 	rescued: number,
 	owned: number,
 }
-export type Result = { prize: Prize, pity: Pity }
+export type Result = { prize: Prize, pity: Pity, wedge: number }
 
 local SpinRules = {}
 
@@ -78,9 +87,17 @@ SpinRules.SEGMENTS = {
 
 SpinRules.PRIZES = {
 	{ id = "CashSmall", rarity = "Common", kind = "cash", name = "Cash", icon = "cash" },
-	{ id = "CashBig", rarity = "Uncommon", kind = "cash", name = "Cash", icon = "cash" },
+	{
+		id = "CashBig",
+		rarity = "Uncommon",
+		kind = "cash",
+		name = "Cash",
+		icon = "cash",
+		retired = true,
+	},
 	{
 		id = "GoldenPet",
+		retired = true,
 		rarity = "Rare",
 		kind = "petVariant",
 		name = "Golden Pet",
@@ -97,6 +114,7 @@ SpinRules.PRIZES = {
 	},
 	{
 		id = "RainbowTrail",
+		retired = true,
 		rarity = "Rare",
 		kind = "trail",
 		name = "Rainbow Wake",
@@ -105,6 +123,7 @@ SpinRules.PRIZES = {
 	},
 	{
 		id = "NeonPet",
+		retired = true,
 		rarity = "Epic",
 		kind = "petVariant",
 		name = "Neon Pet",
@@ -121,6 +140,7 @@ SpinRules.PRIZES = {
 	},
 	{
 		id = "FireTrail",
+		retired = true,
 		rarity = "Epic",
 		kind = "trail",
 		name = "Fire Wake",
@@ -129,6 +149,7 @@ SpinRules.PRIZES = {
 	},
 	{
 		id = "RainbowPet",
+		retired = true,
 		rarity = "Legendary",
 		kind = "petVariant",
 		name = "Rainbow Pet",
@@ -137,6 +158,7 @@ SpinRules.PRIZES = {
 	},
 	{
 		id = "LavaFinish",
+		retired = true,
 		rarity = "Legendary",
 		kind = "finish",
 		name = "Lava",
@@ -145,6 +167,7 @@ SpinRules.PRIZES = {
 	},
 	{
 		id = "StarTrail",
+		retired = true,
 		rarity = "Legendary",
 		kind = "trail",
 		name = "Star Wake",
@@ -153,6 +176,7 @@ SpinRules.PRIZES = {
 	},
 	{
 		id = "GalaxyPet",
+		retired = true,
 		rarity = "Mythic",
 		kind = "petVariant",
 		name = "Galaxy Pet",
@@ -161,6 +185,7 @@ SpinRules.PRIZES = {
 	},
 	{
 		id = "GalaxyFinish",
+		retired = true,
 		rarity = "Mythic",
 		kind = "finish",
 		name = "Galaxy",
@@ -175,21 +200,83 @@ SpinRules.PRIZES = {
 		icon = "boat_to_me",
 		vehicle = "StormRunner",
 	},
+	{
+		id = "GullPet",
+		rarity = "Uncommon",
+		kind = "pet",
+		name = "Gull",
+		icon = "companion",
+		pet = "Gull",
+	},
+	{
+		id = "OtterPet",
+		rarity = "Rare",
+		kind = "pet",
+		name = "Otter",
+		icon = "companion",
+		pet = "Otter",
+	},
+	{
+		id = "PuffinPet",
+		rarity = "Uncommon",
+		kind = "pet",
+		name = "Puffin",
+		icon = "companion",
+		pet = "Puffin",
+	},
+	{
+		id = "StripesFinish",
+		rarity = "Uncommon",
+		kind = "finish",
+		name = "Red Stripes",
+		icon = "boat_to_me",
+		option = "SpinStripes",
+	},
+	{
+		id = "RiptideBoat",
+		rarity = "Legendary",
+		kind = "boat",
+		name = "Riptide X",
+		icon = "boat_to_me",
+		vehicle = "RiptideX",
+	},
 } :: { Prize }
+
+-- The prize each wedge pays, in SEGMENTS order.
+SpinRules.WEDGES = {
+	"CashSmall",
+	"GullPet",
+	"CashSmall",
+	"OtterPet",
+	"CashSmall",
+	"PuffinPet",
+	"NeonFinish",
+	"CashSmall",
+	"StripesFinish",
+	"GoldFinish",
+	"RiptideBoat",
+	"GrandBoat",
+} :: { string }
 
 local byId: { [string]: Prize } = {}
 local byRarity: { [string]: { Prize } } = {}
 for _, prize in SpinRules.PRIZES do
 	byId[prize.id] = prize
-	byRarity[prize.rarity] = byRarity[prize.rarity] or {}
-	table.insert(byRarity[prize.rarity], prize)
 	prize.cash = SpinRules.RARITIES[prize.rarity].cash
+end
+for _, id in SpinRules.WEDGES do
+	local prize = byId[id]
+	byRarity[prize.rarity] = byRarity[prize.rarity] or {}
+	if not table.find(byRarity[prize.rarity], prize) then
+		table.insert(byRarity[prize.rarity], prize)
+	end
 end
 
 function SpinRules.prize(id: string): Prize?
 	return byId[id]
 end
 
+-- The prizes on the wheel at this rarity (retired ones are not).
 function SpinRules.prizesOf(rarity: Rarity): { Prize }
 	return byRarity[rarity] or {}
 end
@@ -354,12 +441,12 @@ local function pickWeighted(rng: () -> number, odds: { [string]: number }): Rari
 	return ORDER[#ORDER]
 end
 
-local function pickPrize(rng: () -> number, rarity: Rarity): Prize
-	local pool = SpinRules.prizesOf(rarity)
-	return pool[math.clamp(math.floor(rng() * #pool) + 1, 1, #pool)]
+local function pickPrize(rng: () -> number, rarity: Rarity): (Prize, number)
+	local wedge = SpinRules.segment(rng, rarity)
+	return byId[SpinRules.WEDGES[wedge]], wedge
 end
 
--- One roll: the prize and the pity counters after it (Epic+ / Legendary+ gaps reset on a win).
+-- One roll: the prize, its wedge and the pity counters after it (Epic+ / Legendary+ gaps reset on a win).
 function SpinRules.roll(rng: () -> number, pity: Pity?): Result
 	local epics = math.max(0, math.floor(tonumber(pity and pity.epic) or 0))
 	local legends = math.max(0, math.floor(tonumber(pity and pity.legendary) or 0))
@@ -370,11 +457,12 @@ function SpinRules.roll(rng: () -> number, pity: Pity?): Result
 			then 0
 			else legends + 1,
 	}
-	return { prize = pickPrize(rng, rarity), pity = nextPity }
+	local prize, wedge = pickPrize(rng, rarity)
+	return { prize = prize, pity = nextPity, wedge = wedge }
 end
 
--- The dev hook's forced rarity: a random prize of exactly that rarity, no pity change.
-function SpinRules.prizeOfRarity(rng: () -> number, rarity: Rarity): Prize
+-- The dev hook's forced rarity: a random wedge of exactly that rarity (prize, wedge), no pity change.
+function SpinRules.prizeOfRarity(rng: () -> number, rarity: Rarity): (Prize, number)
 	return pickPrize(rng, rarity)
 end
 
@@ -387,6 +475,21 @@ function SpinRules.segment(rng: () -> number, rarity: Rarity): number
 		end
 	end
 	return pool[math.clamp(math.floor(rng() * #pool) + 1, 1, #pool)]
+end
+
+-- A wedge's share of the unpitied odds, in percent: its rarity's odds split evenly between that rarity's wedges.
+function SpinRules.wedgeOdds(i: number): number
+	local rarity = SpinRules.SEGMENTS[i]
+	if not rarity then
+		return 0
+	end
+	local count = 0
+	for _, segment in SpinRules.SEGMENTS do
+		if segment == rarity then
+			count += 1
+		end
+	end
+	return SpinRules.RARITIES[rarity].odds / count
 end
 
 -- Prize bits: only finish / trail prizes are stored in the profile flag.
@@ -419,23 +522,20 @@ function SpinRules.claim(state: State, prize: Prize): State
 	}
 end
 
--- The prizes this player already owns, which pay their rarity's Cash instead (the odds board shows them:
--- Roblox requires updated odds for once-per-user outcomes). `ownsPet(variant)` reads the pets flag; the grand
--- boat counts once it and the Galaxy finish it falls back to are both owned.
+-- The wheel's prizes this player already owns, which pay their rarity's Cash instead (the odds board shows them:
+-- Roblox requires updated odds for once-per-user outcomes). `ownsPet(species)` and `ownsBoat(vehicle)` read every
+-- route to owning one (rescued pets, boat passes).
 function SpinRules.ownedIds(
 	state: State,
 	ownsPet: (string) -> boolean,
-	ownsBoat: boolean
+	ownsBoat: (string) -> boolean
 ): { string }
 	local ids: { string } = {}
-	local galaxy = byId.GalaxyFinish
 	for _, prize in SpinRules.PRIZES do
-		local owned = if prize.kind == "petVariant"
-			then prize.variant ~= nil and ownsPet(prize.variant)
-			elseif prize.kind == "boat" then ownsBoat and galaxy ~= nil and SpinRules.owns(
-				state,
-				galaxy
-			)
+		local owned = if prize.retired
+			then false
+			elseif prize.pet then ownsPet(prize.pet)
+			elseif prize.vehicle then ownsBoat(prize.vehicle)
 			else SpinRules.owns(state, prize)
 		if owned then
 			table.insert(ids, prize.id)
@@ -467,6 +567,21 @@ function SpinRules.ownedKeys(ownedBits: number): { string }
 		end
 	end
 	return keys
+end
+
+-- Is `vehicle` in the `spinBoat` flag's list?
+function SpinRules.wonBoat(raw: any, vehicle: string): boolean
+	return type(raw) == "string" and table.find(string.split(raw, ","), vehicle) ~= nil
+end
+
+-- Every boat look in the `spinBoat` flag: what the pivot's look system reads (docs/30 section 3).
+function SpinRules.wonBoatLooks(raw: any): { string }
+	return if type(raw) == "string" and raw ~= "" then string.split(raw, ",") else {}
+end
+
+-- The `spinBoat` flag with `vehicle` added.
+function SpinRules.addWonBoat(raw: any, vehicle: string): string
+	return if type(raw) == "string" and raw ~= "" then `{raw},{vehicle}` else vehicle
 end
 
 return SpinRules

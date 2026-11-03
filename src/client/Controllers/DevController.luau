@@ -230,11 +230,11 @@ local function bench(name: string)
 	end)
 end
 
--- the spin cinematic bench: your wheel spins to that rarity and plays its cinematic (PrizeWheelController.DevSpin)
-local function spincine(rarity: string)
+-- the Deep Spin bench: the sequence plays onto that wedge, free (PrizeWheelController.DevSpin)
+local function devSpin(wedge: number)
 	local wheel = require(script.Parent:WaitForChild("PrizeWheelController")) :: any
-	if not wheel.DevSpin(rarity) and board then
-		board.setStatus(`❌ spincine: no wheel streamed in`)
+	if not wheel.DevSpin(wedge) and board then
+		board.setStatus(`❌ spin: no wheel streamed in`)
 	end
 end
 
@@ -449,11 +449,11 @@ local function fill(b: DevBoard.Board)
 		end)
 	end
 
-	g = DevBoard.section(page, "Spin cinematic (no token)")
-	for _, rarity in { "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic" } do
-		DevBoard.button(g, `🎰 {rarity}`, function()
+	g = DevBoard.section(page, "Deep Spin (no token)")
+	for wedge = 1, 12 do
+		DevBoard.button(g, `🎰 {wedge}`, function()
 			b.setVisible(false)
-			spincine(rarity)
+			devSpin(wedge)
 		end)
 	end
 
@@ -500,8 +500,8 @@ local function onGrant(payload: any)
 		bench(payload.vfx)
 		return
 	end
-	if type(payload) == "table" and type(payload.spincine) == "string" then
-		spincine(payload.spincine)
+	if type(payload) == "table" and type(payload.spinWedge) == "number" then
+		devSpin(payload.spinWedge)
 		return
 	end
 	if board then

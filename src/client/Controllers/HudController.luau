@@ -286,8 +286,8 @@ local function render(data: { [string]: any })
 	cashShown = cash
 end
 
--- Prize-wheel Cash is paid when the spin starts (SpinService): hold it off the wallet until the capsule pops
--- (PrizeWheelController sets SpinRevealed), or a few seconds if the wheel never plays here. A Robux purchase's Cash
+-- Prize-wheel Cash is paid when the spin starts (SpinService): hold it off the wallet until the prize shows
+-- (DeepSpin / PrizeWheelController set SpinRevealed), or the Deep Spin's length if the wheel never plays here. A Robux purchase's Cash
 -- (award reason "Purchase:<key>") waits the same way for PurchaseFxController's card to land (PurchaseLanded).
 local heldBy: { [string]: number } = {} -- "spin" | "buy" -> Cash held off the wallet
 local function release(why: string)

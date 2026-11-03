@@ -8,6 +8,7 @@ local DockConfig = require(script.Parent.Config.DockConfig)
 local MonetizationConfig = require(script.Parent.Config.MonetizationConfig)
 local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
 local SkillRules = require(script.Parent.SkillRules)
+local SpinRules = require(script.Parent.SpinRules)
 local UnlockTree = require(script.Parent.UnlockTree)
 local VehicleUpgrades = require(script.Parent.VehicleUpgrades)
 local WorkerRules = require(script.Parent.WorkerRules)
@@ -120,8 +121,9 @@ function Rules.ownsVehicle(data: PlayerData, vehicleId: string, passOwned: boole
 		return true
 	end
 	if unlock.passOnly then
-		-- the wheel's grand-prize boat is the one pass-only craft a profile flag may own
-		return data.vehicles[vehicleId] == true and data.flags.spinBoat == vehicleId
+		-- old saves only: wheel boats won before docs/30 stay drivable. A new win is a look in the flag, no vehicles entry
+		return data.vehicles[vehicleId] == true
+			and SpinRules.wonBoat(data.flags.spinBoat, vehicleId)
 	end
 	return unlock.price <= 0 or data.vehicles[vehicleId] == true
 end

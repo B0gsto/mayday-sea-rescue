@@ -4,13 +4,13 @@
 --
 -- Free spins: 1 a UTC day and 1 per 10 people rescued (SpinRules.accrue). Robux products (Spin1 /
 -- Spin5 / Spin15) grant their spins through the normal MonetizationService receipt flow.
--- Prizes are granted once (finish / trail bitmask, pet variants in the pets flag, the grand boat in
--- data.vehicles plus flags.spinBoat); a duplicate pays Cash by rarity.
+-- Prizes are granted once (finish bitmask, pets in the pets flag, boat looks in the flags.spinBoat list: no stats, never
+-- a craft in data.vehicles, docs/30 section 3); a duplicate pays Cash by rarity. The wedge rolled is the wedge paid.
 -- A physical wheel spin (DockService's button / prompt) calls WheelSpin: the same roll, saved at
 -- once, then Spin_Wheel goes to every client so the island's wheel animates and reveals the prize.
 -- Legendary / Mythic wins fire Spin_Flex when the wheel stops (banner + confetti).
 -- Remotes: Spin_Wheel S->C spin payload; Spin_Flex S->C flex payload.
--- Studio: ServerStorage.SpinDev "give" (n free spins) / "force" (next roll that rarity) / "spin" (a wheel spin).
+-- Studio: ServerStorage.SpinDev "give" (n free spins) / "force" (next roll that rarity, or that wedge number) / "spin" (a wheel spin).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -22,7 +22,6 @@ local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("M
 local Net = require(Shared:WaitForChild("Net"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local PetRules = require(Shared:WaitForChild("PetRules"))
-local ProgressionRules = require(Shared:WaitForChild("ProgressionRules"))
 local SpinRules = require(Shared:WaitForChild("SpinRules"))
 
 local CosmeticsService = require(script.Parent.CosmeticsService)
@@ -44,6 +43,7 @@ SpinService.WHEEL_TIME = WHEEL_TIME
 local lastSpin: { [Player]: number } = {}
 local wheelBusy: { [Player]: boolean } = {}
 local forced: string? = nil
+local forcedWedge: number? = nil
 local flexRemote: RemoteEvent? = nil
 local wheelRemote: RemoteEvent? = nil
 
@@ -57,21 +57,22 @@ local function paidAllowed(player: Player): boolean
 	return policy ~= nil and policy.ArePaidRandomItemsRestricted == false
 end
 
+-- won on the wheel, or the old pass (a buyer keeps it as an owned look)
+local function ownsBoatLook(player: Player, data: any, vehicle: string): boolean
+	return SpinRules.wonBoat(data.flags.spinBoat, vehicle)
+		or ProgressionService.OwnsVehiclePass(player, vehicle)
+end
+
 local function publish(player: Player, state: SpinRules.State)
 	local pets = PetService.GetState(player)
 	local data = DataService.Get(player)
-	local boat = SpinRules.prize("GrandBoat")
-	local vehicle = boat and boat.vehicle
-	local ownsBoat = data ~= nil
-		and vehicle ~= nil
-		and ProgressionRules.ownsVehicle(
-			data,
-			vehicle,
-			ProgressionService.OwnsVehiclePass(player, vehicle)
-		)
-	local owned = SpinRules.ownedIds(state, function(variant: string): boolean
-		return pets ~= nil and PetRules.ownsVariant(pets, variant)
-	end, ownsBoat)
+	local owned = SpinRules.ownedIds(state, function(species: string): boolean
+		-- a full sanctuary can't take the animal in, so the wedge pays Cash as if owned
+		return pets ~= nil
+			and (PetRules.ownsSpecies(pets, species) or #pets.entries >= PetRules.MAX)
+	end, function(vehicle: string): boolean
+		return data ~= nil and ownsBoatLook(player, data, vehicle)
+	end)
 	player:SetAttribute("SpinOwned", table.concat(owned, ",")) -- the odds board's owned rows
 	player:SetAttribute("FreeSpins", SpinRules.usable(state, paidAllowed(player)))
 	player:SetAttribute("SpinPityEpic", state.pity.epic)
@@ -142,43 +143,36 @@ local function grantCash(player: Player, cash: number)
 	ProgressionService.Award(player, cash, "spin", true)
 end
 
--- Applies one prize. Returns the (possibly changed) spin state, the duplicate Cash paid and the
--- prize actually given when it differs (an owned grand boat becomes the Galaxy finish).
+-- Applies one prize. Returns the (possibly changed) spin state and the duplicate Cash paid, if any.
 local function grantPrize(
 	player: Player,
 	state: SpinRules.State,
 	prize: SpinRules.Prize
-): (SpinRules.State, number?, SpinRules.Prize?)
+): (SpinRules.State, number?)
 	if prize.kind == "cash" then
 		grantCash(player, SpinRules.cashFor(prize.rarity))
 		return state, nil
-	elseif prize.kind == "petVariant" then
-		if prize.variant and PetService.GrantVariant(player, prize.variant) then
+	elseif prize.kind == "pet" and prize.pet then
+		if PetService.GrantPet(player, prize.pet) then
 			return state, nil
 		end
-	elseif prize.kind == "finish" or prize.kind == "trail" then
+	elseif prize.kind == "finish" then
 		if not SpinRules.owns(state, prize) then
 			return SpinRules.claim(state, prize), nil
 		end
 	elseif prize.kind == "boat" and prize.vehicle then
 		local data = DataService.Get(player)
-		local owned = data ~= nil
-			and ProgressionRules.ownsVehicle(
-				data,
-				prize.vehicle,
-				ProgressionService.OwnsVehiclePass(player, prize.vehicle)
+		-- no flag room = the Cash fallback below
+		if
+			data
+			and not ownsBoatLook(player, data, prize.vehicle)
+			and ProgressionService.SetFlag(
+				player,
+				"spinBoat",
+				SpinRules.addWonBoat(data.flags.spinBoat, prize.vehicle)
 			)
-		-- ownsVehicle needs both the vehicle and the flag; no flag room = the Cash fallback below
-		if data and not owned and ProgressionService.SetFlag(player, "spinBoat", prize.vehicle) then
-			data.vehicles[prize.vehicle] = true
-			DataService.MarkDirty(player)
-			ProgressionService.Refresh(player)
+		then
 			return state, nil
-		end
-		-- already owned: the Mythic finish instead
-		local galaxy = SpinRules.prize("GalaxyFinish")
-		if galaxy and not SpinRules.owns(state, galaxy) then
-			return SpinRules.claim(state, galaxy), nil, galaxy
 		end
 	end
 	local cash = SpinRules.duplicateCash(prize)
@@ -221,15 +215,18 @@ function SpinService.Spin(player: Player): { [string]: any }
 		return math.random()
 	end
 	local prize: SpinRules.Prize
+	local segment: number
 	local pity = state.pity
-	if forced then
-		prize = SpinRules.prizeOfRarity(rng, forced :: SpinRules.Rarity)
+	if forcedWedge then
+		segment, forcedWedge = forcedWedge, nil
+		prize = SpinRules.prize(SpinRules.WEDGES[segment]) :: SpinRules.Prize
+	elseif forced then
+		prize, segment = SpinRules.prizeOfRarity(rng, forced :: SpinRules.Rarity)
 		forced = nil
 	else
 		local result = SpinRules.roll(rng, state.pity)
-		prize, pity = result.prize, result.pity
+		prize, segment, pity = result.prize, result.wedge, result.pity
 	end
-	local segment = SpinRules.segment(rng, prize.rarity)
 
 	SpinRules.spendOne(state, paidAllowed(player))
 	state.pity = pity
@@ -237,8 +234,7 @@ function SpinService.Spin(player: Player): { [string]: any }
 	if not store(player, state) then
 		return { ok = false, reason = "Could not save" }
 	end
-	local granted, duplicate, instead = grantPrize(player, state, prize)
-	prize = instead or prize
+	local granted, duplicate = grantPrize(player, state, prize)
 	if granted ~= state then
 		state = granted
 		store(player, state)
@@ -263,10 +259,11 @@ function SpinService.Spin(player: Player): { [string]: any }
 		rarity = prize.rarity,
 		kind = prize.kind,
 		icon = prize.icon,
-		variant = prize.variant,
+		pet = prize.pet,
 		option = prize.option,
 		vehicle = prize.vehicle,
 		segment = segment,
+		duplicate = duplicate ~= nil,
 		duplicateCash = duplicate,
 	}
 end
@@ -296,16 +293,21 @@ function SpinService.WheelSpin(player: Player): { [string]: any }
 			rarity = result.rarity,
 			kind = result.kind,
 			icon = result.icon,
-			variant = result.variant,
+			pet = result.pet,
 			option = result.option,
 			vehicle = result.vehicle,
+			duplicate = result.duplicate,
 			duplicateCash = result.duplicateCash,
 		})
 	end
 	task.delay(WHEEL_TIME, function()
 		wheelBusy[player] = nil
-		-- only the rare wins are worth telling the whole server about
-		if prize and (prize.rarity == "Legendary" or prize.rarity == "Mythic") then
+		-- only the rare wins are worth telling the whole server about; a duplicate paid Cash, it won nothing
+		if
+			prize
+			and result.duplicate ~= true
+			and (prize.rarity == "Legendary" or prize.rarity == "Mythic")
+		then
 			fireFlex(player, prize)
 		end
 	end)
@@ -362,6 +364,10 @@ function SpinService.Init()
 			elseif cmd == "spin" then -- the wheel's own path (a token, the roll, Spin_Wheel): back-to-back tests
 				return SpinService.WheelSpin(player).ok == true
 			elseif cmd == "force" then
+				if type(arg) == "number" and SpinRules.WEDGES[arg] then
+					forcedWedge = arg
+					return true
+				end
 				if type(arg) == "string" and SpinRules.RARITIES[arg] then
 					forced = arg
 					return true

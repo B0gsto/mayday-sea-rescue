@@ -1,0 +1,299 @@
+<!doctype html><meta charset="utf-8"><style>html,body{margin:0;background:transparent}canvas{display:block}</style><body><script>
+'use strict';
+// The Deep Spin sprites. RAR..makeBlur are copied verbatim from the owner-approved reference (docs/prototypes/spin-wheel.html).
+// render.py opens this page once per sprite: ?s=rotor|blur|housing|flapper|vortex|rays|strata|wedge1..wedge12
+let seed = 90210; const srand = () => (seed = (seed * 16807) % 2147483647) / 2147483647; Math.random = srand; // the same art every render
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
+const easeOutBack = k => { const c = 1.9; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };
+const TAU = Math.PI * 2;
+const RAR = {
+  Common:    { tier: 0, odds: 50,  c: '#8d939c', hi: '#c4c9d0', glow: [.75,.8,.85], cash: 150 },
+  Uncommon:  { tier: 1, odds: 25,  c: '#2fa84a', hi: '#6fe07f', glow: [.3,.95,.45], cash: 400 },
+  Rare:      { tier: 2, odds: 15,  c: '#1878d8', hi: '#5cb8ff', glow: [.25,.6,1],   cash: 600 },
+  Epic:      { tier: 3, odds: 7,   c: '#8e2fc2', hi: '#d07cf5', glow: [.75,.3,1],   cash: 1500 },
+  Legendary: { tier: 4, odds: 2.5, c: '#eeb005', hi: '#ffe46a', glow: [1,.8,.2],    cash: 4000 },
+  Mythic:    { tier: 5, odds: .5,  c: '#e92f96', hi: '#ff9bd6', glow: [1,.3,.75],   cash: 10000 },
+};
+const PAL = { w:'#f4f4ee', r:'#d6302d', n:'#1f3a6e', y:'#f4c20d', k:'#23282f', g:'#9aa3ad', t:'#dcbb8c', b:'#a8683a', o:'#f28c1e', c:'#79d7ff', m:'#ff3fb0', u:'#36f0ff', d:'#c8931a', l:'#ffe680', p:'#7a2cff' };
+
+function makeModel(fn, plain) {
+  const m = new Map();
+  const set = (x, y, z, c) => m.set(x + ',' + y + ',' + z, { x, y, z, c });
+  const box = (x0, x1, y0, y1, z0, z1, c) => {
+    for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) for (let z = z0; z <= z1; z++) set(x, y, z, c);
+  };
+  fn(box, set);
+  const all = [...m.values()];
+  const has = (x, y, z) => m.has(x + ',' + y + ',' + z);
+  let lox = 1e9, hix = -1e9, loz = 1e9, hiz = -1e9, hiy = 0;
+  for (const b of all) { lox = Math.min(lox, b.x); hix = Math.max(hix, b.x); loz = Math.min(loz, b.z); hiz = Math.max(hiz, b.z); hiy = Math.max(hiy, b.y); }
+  const bricks = all.filter(b => !(has(b.x + 1, b.y, b.z) && has(b.x - 1, b.y, b.z) && has(b.x, b.y + 1, b.z) && has(b.x, b.y - 1, b.z) && has(b.x, b.y, b.z + 1) && has(b.x, b.y, b.z - 1)));
+  for (const b of bricks) { b.top = !has(b.x, b.y + 1, b.z); b.ox = b.x - (lox + hix) / 2; b.oz = b.z - (loz + hiz) / 2; b.c0 = plain || b.c; }
+  bricks.sort((a, b) => a.y - b.y || Math.random() - .5);
+  bricks.forEach((b, i) => b.order = i / bricks.length);
+  const ext = Math.max(hix - lox + 1, hiz - loz + 1, hiy + 1);
+  return { bricks, ext, height: hiy + 1, minX: lox - (lox + hix) / 2, maxX: hix - (lox + hix) / 2 };
+}
+function hull(box, hullC, railC, deckC) {
+  for (let x = -8; x <= 8; x++) {
+    const w = x > 3 ? Math.max(0, 3 - Math.ceil((x - 3) * .62)) : 3;
+    const keel = x > 5 ? 1 : 0;
+    box(x, x, keel, 1, -Math.max(w - 1, 0), Math.max(w - 1, 0), hullC);
+    box(x, x, 2, 2, -w, w, hullC);
+    box(x, x, 3, 3, -w, w, railC);
+    if (w > 0) box(x, x, 3, 3, -w + 1, w - 1, deckC);
+  }
+  box(-9, -9, 2, 3, -2, 2, railC);
+}
+const harbour = (h, r, d, cab, roof) => makeModel(box => {
+  hull(box, h, r, d);
+  box(-5, -1, 4, 5, -2, 2, cab); box(-1, -1, 5, 5, -1, 1, PAL.c); box(-5, -5, 5, 5, -1, 1, PAL.c);
+  box(-3, -3, 5, 5, -2, -2, PAL.c); box(-3, -3, 5, 5, 2, 2, PAL.c);
+  box(-5, -1, 6, 6, -2, 2, roof); box(-3, -3, 7, 8, 0, 0, PAL.g);
+}, PAL.g);
+const MODELS = {
+  cash: makeModel((box, set) => {
+    box(-3, -2, 0, 3, -2, -1, PAL.y); box(0, 1, 0, 5, -2, -1, PAL.y); box(2, 3, 0, 2, 0, 1, PAL.y); box(-2, -1, 0, 1, 1, 2, PAL.y);
+    for (const [x, y] of [[0, 5], [-3, 3], [2, 2]]) set(x, y, -1, PAL.l);
+    box(-3, -2, 1, 1, -2, -1, PAL.d); box(0, 1, 2, 2, -2, -1, PAL.d); box(0, 1, 4, 4, -2, -1, PAL.d); box(2, 3, 1, 1, 0, 1, PAL.d);
+  }),
+  gull: makeModel((box, set) => {
+    box(-3, 2, 1, 3, -1, 1, PAL.w); box(1, 3, 3, 5, -1, 1, PAL.w); box(4, 5, 4, 4, 0, 0, PAL.y);
+    set(4, 4, -1, PAL.o); set(4, 4, 1, PAL.o); set(3, 5, -1, PAL.k); set(3, 5, 1, PAL.k);
+    box(-2, 1, 3, 3, -3, -2, PAL.g); box(-2, 1, 3, 3, 2, 3, PAL.g); box(-1, 0, 3, 3, -4, -4, PAL.k); box(-1, 0, 3, 3, 4, 4, PAL.k);
+    box(-5, -4, 2, 2, -1, 1, PAL.g); box(0, 0, 0, 0, -1, -1, PAL.o); box(0, 0, 0, 0, 1, 1, PAL.o);
+  }),
+  puffin: makeModel((box, set) => {
+    box(-2, 2, 1, 5, -2, 2, PAL.k); box(1, 2, 1, 4, -1, 1, PAL.w); box(-1, 2, 5, 7, -2, 2, PAL.k); box(1, 2, 5, 6, -2, 2, PAL.w);
+    box(3, 3, 5, 6, -1, 1, PAL.o); box(4, 4, 5, 5, 0, 0, PAL.r); set(3, 6, 0, PAL.y);
+    set(2, 7, -2, PAL.k); set(2, 7, 2, PAL.k); set(2, 6, -2, PAL.k); set(2, 6, 2, PAL.k);
+    box(0, 2, 0, 0, -2, -1, PAL.o); box(0, 2, 0, 0, 1, 2, PAL.o); box(-3, -3, 2, 3, -1, 1, PAL.k);
+  }),
+  otter: makeModel((box, set) => {
+    box(-4, 2, 1, 3, -2, 2, PAL.b); box(1, 4, 2, 5, -2, 2, PAL.b); box(3, 4, 2, 4, -1, 1, PAL.t); box(5, 5, 3, 3, 0, 0, PAL.k);
+    set(4, 5, -2, PAL.k); set(4, 5, 2, PAL.k); set(2, 6, -2, PAL.b); set(2, 6, 2, PAL.b);
+    box(-8, -5, 1, 1, 0, 0, PAL.b); box(-8, -7, 1, 1, -1, 1, PAL.b); box(-3, -2, 0, 0, -2, -2, PAL.b); box(-3, -2, 0, 0, 2, 2, PAL.b); box(1, 2, 0, 0, -2, -2, PAL.b); box(1, 2, 0, 0, 2, 2, PAL.b);
+    box(1, 2, 1, 2, -2, 2, PAL.t); box(2, 4, 1, 1, -1, 1, PAL.t);
+  }),
+  stripes: harbour(PAL.w, PAL.r, PAL.t, PAL.w, PAL.r),
+  gold: harbour(PAL.y, PAL.l, PAL.d, PAL.y, PAL.d),
+  neon: harbour(PAL.p, PAL.u, PAL.k, PAL.m, PAL.u),
+  riptide: makeModel(box => {
+    for (let x = -8; x <= 9; x++) {
+      const w = x > 3 ? Math.max(0, 3 - Math.ceil((x - 3) * .55)) : 3;
+      box(x, x, 0, 1, -w, w, PAL.y); box(x, x, 2, 2, -w, w, PAL.k);
+      if (x > 3 && w > 0) box(x, x, 2, 2, -w + 1, w - 1, PAL.y);
+    }
+    box(-4, 0, 3, 3, -2, 2, PAL.k); box(1, 1, 3, 4, -2, 2, PAL.c);
+    box(-9, -8, 4, 4, -3, 3, PAL.r); box(-8, -8, 3, 3, -3, -3, PAL.k); box(-8, -8, 3, 3, 3, 3, PAL.k);
+    box(-8, -7, 1, 2, -2, -1, PAL.r); box(-8, -7, 1, 2, 1, 2, PAL.r);
+  }),
+  storm: makeModel(box => {
+    for (let x = -10; x <= 10; x++) {
+      const w = x > 4 ? Math.max(0, 4 - Math.ceil((x - 4) * .66)) : 4;
+      box(x, x, 0, 2, -Math.max(0, w - 1), Math.max(0, w - 1), PAL.n);
+      box(x, x, 3, 3, -w, w, PAL.r); box(x, x, 4, 4, -w, w, PAL.w);
+      if (w > 0) box(x, x, 4, 4, -w + 1, w - 1, PAL.t);
+    }
+    box(-7, 1, 5, 7, -3, 3, PAL.w); box(-7, 1, 6, 6, -3, 3, PAL.c); box(-4, -2, 6, 6, -3, 3, PAL.w);
+    box(-6, 1, 8, 8, -3, 3, PAL.n); box(-4, 0, 9, 10, -2, 2, PAL.w); box(-4, 0, 10, 10, -2, 2, PAL.c); box(-4, 0, 11, 11, -2, 2, PAL.r);
+    box(-2, -2, 12, 15, 0, 0, PAL.g); box(-3, -1, 14, 14, 0, 0, PAL.y); box(-10, -8, 5, 6, -1, 1, PAL.y);
+  }),
+};
+const WEDGES = [
+  { r: 'Common',    kind: 'cash', name: 'Cash',          m: 'cash' },
+  { r: 'Uncommon',  kind: 'pet',  name: 'Gull',          m: 'gull' },
+  { r: 'Common',    kind: 'cash', name: 'Cash',          m: 'cash' },
+  { r: 'Rare',      kind: 'pet',  name: 'Otter',         m: 'otter' },
+  { r: 'Common',    kind: 'cash', name: 'Cash',          m: 'cash' },
+  { r: 'Uncommon',  kind: 'pet',  name: 'Puffin',        m: 'puffin' },
+  { r: 'Epic',      kind: 'skin', name: 'Neon Glow',     m: 'neon' },
+  { r: 'Common',    kind: 'cash', name: 'Cash',          m: 'cash' },
+  { r: 'Uncommon',  kind: 'skin', name: 'Red Stripes',   m: 'stripes' },
+  { r: 'Rare',      kind: 'skin', name: 'Gold Chrome',   m: 'gold' },
+  { r: 'Legendary', kind: 'boat', name: 'Riptide X',     m: 'riptide' },
+  { r: 'Mythic',    kind: 'boat', name: 'Storm Runner',  m: 'storm' },
+];
+const shadeCache = {};
+function shade(c, f) {
+  const k = c + f.toFixed(2);
+  if (shadeCache[k]) return shadeCache[k];
+  const n = parseInt(c.slice(1), 16);
+  const ch = s => Math.round(clamp(((n >> s) & 255) * f, 0, 255));
+  return shadeCache[k] = `rgb(${ch(16)},${ch(8)},${ch(0)})`;
+}
+function drawVox(ctx, model, cx, cy, s, yaw, opts = {}) {
+  const pitch = opts.pitch ?? .56, cy0 = Math.cos(yaw), sy0 = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const build = opts.build ?? 1, drop = opts.drop ?? 24, sweep = opts.sweep;
+  const items = [];
+  for (const b of model.bricks) {
+    const local = clamp((build - b.order * .78) / .22);
+    if (local <= 0) continue;
+    const yo = (1 - easeOutBack(local)) * drop;
+    const rx = b.ox * cy0 + b.oz * sy0, rz = -b.ox * sy0 + b.oz * cy0;
+    items.push({ b, yo, depth: rz * cp + (b.y + yo) * sp });
+  }
+  items.sort((a, b) => a.depth - b.depth);
+  const P = (x, y, z) => {
+    const rx = x * cy0 + z * sy0, rz = -x * sy0 + z * cy0;
+    return [cx + s * rx, cy + s * (rz * sp - y * cp)];
+  };
+  const quad = (a, b, c, d, fill) => {
+    ctx.fillStyle = fill; ctx.beginPath();
+    ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.lineTo(d[0], d[1]); ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = fill; ctx.lineWidth = .6; ctx.stroke();
+  };
+  for (const { b, yo } of items) {
+    const col = opts.grey ? '#7c8591' : sweep !== undefined && b.ox > sweep ? b.c0 : b.c;
+    const x = b.ox, z = b.oz, y = b.y + yo, h = .5;
+    const fa = P(x - h, y, z - h), fb = P(x + h, y, z - h), fc = P(x + h, y, z + h), fd = P(x - h, y, z + h);
+    const ta = P(x - h, y + 1, z - h), tb = P(x + h, y + 1, z - h), tc = P(x + h, y + 1, z + h), td = P(x - h, y + 1, z + h);
+    if (-sy0 > 0) quad(fb, fc, tc, tb, shade(col, .62 + .24 * Math.abs(cy0)));
+    if (sy0 > 0) quad(fa, fd, td, ta, shade(col, .62 + .24 * Math.abs(cy0)));
+    if (cy0 > 0) quad(fd, fc, tc, td, shade(col, .76 + .14 * Math.abs(sy0)));
+    if (-cy0 > 0) quad(fa, fb, tb, ta, shade(col, .76 + .14 * Math.abs(sy0)));
+    quad(ta, tb, tc, td, shade(col, 1));
+    if (b.top && s >= 5) {
+      const p = P(x, y + 1, z);
+      ctx.fillStyle = shade(col, .78);
+      ctx.beginPath(); ctx.ellipse(p[0], p[1], s * .29, s * .29 * sp, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = shade(col, 1.14);
+      ctx.beginPath(); ctx.ellipse(p[0], p[1] - s * .11, s * .29, s * .29 * sp, 0, 0, TAU); ctx.fill();
+    }
+  }
+}
+const SPR = 1024;
+const newCanvas = (w, h = w) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+function makeRotor() {
+  const c = newCanvas(SPR), x = c.getContext('2d'), r = SPR / 2;
+  x.translate(r, r);
+  x.fillStyle = '#10234a'; x.beginPath(); x.arc(0, 0, r - 2, 0, TAU); x.fill();
+  const step = TAU / WEDGES.length, ro = r * .985;
+  WEDGES.forEach((w, i) => {
+    const rr = RAR[w.r], a = i * step - Math.PI / 2 - step / 2;
+    const gr = x.createRadialGradient(0, 0, r * .2, 0, 0, ro);
+    gr.addColorStop(0, shade(rr.c, .62)); gr.addColorStop(.62, rr.c); gr.addColorStop(.93, rr.hi); gr.addColorStop(1, rr.c);
+    x.fillStyle = gr;
+    x.beginPath(); x.moveTo(0, 0); x.arc(0, 0, ro, a, a + step); x.closePath(); x.fill();
+    if (w.r === 'Mythic') { // the only multi-colour wedge: a starfield you can spot at speed
+      x.save(); x.clip();
+      for (let k = 0; k < 60; k++) { x.fillStyle = k % 3 ? '#fff' : '#a8f4ff'; x.globalAlpha = rnd(.25, .9); const aa = a + rnd(step), d = rnd(r * .25, ro), z = rnd(1.5, 4.5); x.fillRect(Math.cos(aa) * d, Math.sin(aa) * d, z, z); }
+      x.restore(); x.globalAlpha = 1;
+    }
+    if (w.r === 'Legendary') { // shine bands so gold reads as metal
+      x.save(); x.clip(); x.globalAlpha = .28; x.fillStyle = '#fff';
+      for (let k = 0; k < 3; k++) { x.rotate(a + step * (.2 + k * .3)); x.fillRect(r * .2, -4, r, 8); x.rotate(-(a + step * (.2 + k * .3))); }
+      x.restore(); x.globalAlpha = 1;
+    }
+  });
+  WEDGES.forEach((w, i) => { // raised white dividers + peg at the rim
+    x.save(); x.rotate(i * step + step / 2);
+    x.fillStyle = '#0006'; x.fillRect(-7, -ro, 18, ro * .84);
+    const gr = x.createLinearGradient(-8, 0, 8, 0);
+    gr.addColorStop(0, '#fff'); gr.addColorStop(1, '#c9d2dd');
+    x.fillStyle = gr; x.fillRect(-8, -ro, 16, ro * .84);
+    x.restore();
+  });
+  // icons sit upright along each wedge
+  WEDGES.forEach((w, i) => {
+    x.save(); x.rotate(i * step);
+    x.fillStyle = '#ffffff24'; x.beginPath(); x.arc(0, -r * .67, r * .205, 0, TAU); x.fill();
+    const m = MODELS[w.m], s = r * (w.kind === 'boat' || w.kind === 'skin' ? .34 : .29) / m.ext;
+    drawVox(x, m, 0, -r * .63 + m.height * s * .28, s, .72, { pitch: .62 });
+    x.restore();
+  });
+  // pegs
+  WEDGES.forEach((w, i) => {
+    x.save(); x.rotate(i * step + step / 2);
+    x.fillStyle = '#0005'; x.beginPath(); x.arc(2, -r * .93 + 3, 15, 0, TAU); x.fill();
+    const gr = x.createRadialGradient(-4, -r * .93 - 4, 2, 0, -r * .93, 15);
+    gr.addColorStop(0, '#fff6c2'); gr.addColorStop(1, '#e0a400');
+    x.fillStyle = gr; x.beginPath(); x.arc(0, -r * .93, 14, 0, TAU); x.fill();
+    x.restore();
+  });
+  x.fillStyle = '#10234a'; x.beginPath(); x.arc(0, 0, r * .285, 0, TAU); x.fill();
+  return c;
+}
+function makeBlur() { // saturated speed rings; the Roblox build swaps in a decal like this at speed
+  const c = newCanvas(SPR / 2), x = c.getContext('2d'), r = SPR / 4;
+  x.translate(r, r);
+  const gr = x.createRadialGradient(0, 0, r * .28, 0, 0, r);
+  [[0, '#0e3f9e'], [.22, '#1878d8'], [.42, '#8e2fc2'], [.62, '#e92f96'], [.82, '#eeb005'], [.94, '#fff0a8'], [1, '#eeb005']].forEach(([a, b]) => gr.addColorStop(a, b));
+  x.fillStyle = gr; x.beginPath(); x.arc(0, 0, r, 0, TAU); x.fill();
+  x.lineCap = 'round';
+  for (let i = 0; i < 46; i++) { // broken arcs keep the motion visible as the disc turns
+    const d = rnd(r * .32, r * .97), a = rnd(TAU), rr = RAR[WEDGES[i % 12].r];
+    x.strokeStyle = i % 4 ? rr.hi : '#ffffff'; x.globalAlpha = rnd(.3, .7); x.lineWidth = rnd(1.5, 5);
+    x.beginPath(); x.arc(0, 0, d, a, a + rnd(.3, 1.3)); x.stroke();
+  }
+  return c;
+}
+// New for Roblox: the reference draws these live; here they are fixed sprites.
+function makeHousing() { // lifebuoy ring + chrome hub with the rescue star (does not turn; lit bulbs are Parts)
+  const c = newCanvas(SPR), x = c.getContext('2d'), s = SPR / 2 / 1.1, R = s; x.translate(SPR / 2, SPR / 2);
+  const seg = 24, ro = R * 1.1 - 1, ri = R * .97;
+  for (let i = 0; i < seg; i++) {
+    const a0 = i / seg * TAU, a1 = (i + 1) / seg * TAU;
+    x.fillStyle = (i >> 1) % 2 ? '#f6f4ee' : '#d6302d';
+    x.beginPath(); x.arc(0, 0, ro, a0, a1 + .005); x.arc(0, 0, ri, a1 + .005, a0, true); x.closePath(); x.fill();
+  }
+  x.lineWidth = 3; x.strokeStyle = '#ffffff55'; x.beginPath(); x.arc(0, 0, ro - 3, -Math.PI, -.08); x.stroke();
+  const gl2 = x.createLinearGradient(0, -ri, 0, ri); // gloss stays fixed so the rotor looks lit from above, not painted
+  gl2.addColorStop(0, '#ffffff36'); gl2.addColorStop(.45, '#ffffff00'); gl2.addColorStop(1, '#00091e70');
+  x.fillStyle = gl2; x.beginPath(); x.arc(0, 0, ri, 0, TAU); x.fill();
+  const hr = R * .285, hg = x.createRadialGradient(-hr * .3, -hr * .35, hr * .1, 0, 0, hr);
+  hg.addColorStop(0, '#ffffff'); hg.addColorStop(.45, '#c8d4e0'); hg.addColorStop(.8, '#6e7f92'); hg.addColorStop(1, '#2c3b52');
+  x.fillStyle = '#0d1c3c'; x.beginPath(); x.arc(0, 0, hr * 1.06, 0, TAU); x.fill();
+  x.fillStyle = hg; x.beginPath(); x.arc(0, 0, hr, 0, TAU); x.fill();
+  x.fillStyle = '#d6302d'; x.beginPath();
+  for (let i = 0; i < 10; i++) { const rr = (i % 2 ? .28 : .68) * hr, a = i / 10 * TAU - Math.PI / 2; x.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+  x.closePath(); x.fill(); x.lineWidth = 5; x.strokeStyle = '#fff'; x.stroke();
+  return c;
+}
+function makeFlapper() { // pivots at the white pin: 40% from the top of the sprite
+  const c = newCanvas(256), x = c.getContext('2d'), U = 256 / 18; x.translate(128, 7.2 * U);
+  x.fillStyle = '#0003'; x.fillRect(-3.4 * U, -6 * U, 7.4 * U, 8 * U);
+  const fg = x.createLinearGradient(-3 * U, 0, 3 * U, 0); fg.addColorStop(0, '#ff6456'); fg.addColorStop(1, '#bd1a1a');
+  x.fillStyle = fg; x.beginPath(); x.moveTo(-3.6 * U, -6.5 * U); x.lineTo(3.6 * U, -6.5 * U); x.lineTo(3.6 * U, -1 * U); x.lineTo(0, 7 * U); x.lineTo(-3.6 * U, -1 * U); x.closePath(); x.fill();
+  x.lineWidth = .8 * U; x.strokeStyle = '#fff'; x.lineJoin = 'round'; x.stroke();
+  x.fillStyle = '#fff'; x.beginPath(); x.arc(0, -3.2 * U, 1.5 * U, 0, TAU); x.fill();
+  x.fillStyle = '#7a0f12'; x.beginPath(); x.arc(0, -3.2 * U, .7 * U, 0, TAU); x.fill();
+  return c;
+}
+function makeVortex() { // the shader's vortex arms as a spiral sprite, soft at the centre and edge
+  const c = newCanvas(SPR), x = c.getContext('2d'), im = x.createImageData(SPR, SPR), r = SPR / 2;
+  const sm = (a, b, v) => { const k = clamp((v - a) / (b - a)); return k * k * (3 - 2 * k); };
+  for (let py = 0; py < SPR; py++) for (let px = 0; px < SPR; px++) {
+    const dx = (px - r) / r, dy = (py - r) / r, d = Math.hypot(dx, dy), ang = Math.atan2(dy, dx), ld = Math.log(d + .03);
+    const arm = sm(.1, 1, Math.sin(ang * 7 + ld * 15)), armb = sm(.5, 1, Math.sin(ang * 3 - ld * 6)), mask = sm(.12, .42, d) * sm(1, .5, d);
+    const i = (py * SPR + px) * 4, k = (arm * .8 + armb * .45);
+    im.data[i] = 33 + armb * 110; im.data[i + 1] = 184 + armb * 58; im.data[i + 2] = 217 + armb * 38; im.data[i + 3] = 255 * clamp(k) * mask;
+  }
+  x.putImageData(im, 0, 0); return c;
+}
+function makeRays() { // slow reveal rays behind the prize (white; tinted by rarity in game)
+  const c = newCanvas(SPR), x = c.getContext('2d'), r = SPR / 2; x.translate(r, r);
+  const n = 12, gr = x.createRadialGradient(0, 0, 0, 0, 0, r);
+  gr.addColorStop(0, '#ffffffb0'); gr.addColorStop(.5, '#ffffff44'); gr.addColorStop(1, '#ffffff00');
+  x.fillStyle = gr;
+  for (let i = 0; i < n; i++) { const a = i / n * TAU, sp = TAU / n * .32; x.beginPath(); x.moveTo(0, 0); x.arc(0, 0, r, a - sp, a + sp); x.closePath(); x.fill(); }
+  return c;
+}
+function makeStrata() { // one row of Lego bricks: tiles along the shaft's soil rows (dark seams only, the row Part gives the colour)
+  const c = newCanvas(256, 64), x = c.getContext('2d');
+  x.fillStyle = '#ffffff2e'; x.fillRect(0, 0, 256, 8);
+  x.fillStyle = '#00000052'; x.fillRect(0, 56, 256, 8); x.fillRect(0, 0, 8, 64); x.fillRect(128, 0, 8, 64);
+  return c;
+}
+function makeWedge(i) { // the winning wedge cut from the rotor, same place in the sprite: rises off the rim on the landing
+  const rotor = makeRotor(), c = newCanvas(SPR), x = c.getContext('2d'), r = SPR / 2, step = TAU / 12, a = i * step - Math.PI / 2;
+  x.save(); x.beginPath(); x.moveTo(r, r); x.arc(r, r, r, a - step / 2, a + step / 2); x.closePath(); x.clip(); x.drawImage(rotor, 0, 0); x.restore();
+  x.globalCompositeOperation = 'source-atop'; x.globalAlpha = .24; x.fillStyle = RAR[WEDGES[i].r].hi; x.fillRect(0, 0, SPR, SPR);
+  return c;
+}
+const s = new URLSearchParams(location.search).get('s') || 'rotor';
+const MAKE = { rotor: makeRotor, blur: makeBlur, housing: makeHousing, flapper: makeFlapper, vortex: makeVortex, rays: makeRays, strata: makeStrata };
+document.body.appendChild(s.startsWith('wedge') ? makeWedge(+s.slice(5) - 1) : MAKE[s]());
+</script>

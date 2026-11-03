@@ -585,11 +585,11 @@ function DevService.Start()
 			grant:FireClient(player, { vfx = name })
 		end
 	end
-	-- chat "/spincine <Rarity>": the dev's wheel plays that rarity's spin cinematic (no token, no prize)
-	local function spincine(player: Player?, text: string)
-		local rarity = DevConfig.spincineRarity(text)
-		if player and rarity and isDev(player) then
-			grant:FireClient(player, { spincine = rarity })
+	-- chat "/spin <wedge>": the dev's wheel plays the Deep Spin onto that wedge (no token, no prize)
+	local function devSpin(player: Player?, text: string)
+		local wedge = DevConfig.spinWedge(text)
+		if player and wedge and isDev(player) then
+			grant:FireClient(player, { spinWedge = wedge })
 		end
 	end
 	if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
@@ -610,11 +610,11 @@ function DevService.Start()
 		end)
 		bench.Parent = command.Parent
 		local cine = Instance.new("TextChatCommand")
-		cine.Name = "Dev_SpinCine"
-		cine.PrimaryAlias = "/spincine"
+		cine.Name = "Dev_Spin"
+		cine.PrimaryAlias = "/spin"
 		cine.AutocompleteVisible = false
 		cine.Triggered:Connect(function(source: TextSource, text: string)
-			spincine(Players:GetPlayerByUserId(source.UserId), text)
+			devSpin(Players:GetPlayerByUserId(source.UserId), text)
 		end)
 		cine.Parent = command.Parent
 	else
@@ -624,7 +624,7 @@ function DevService.Start()
 					toggle(player)
 				else
 					vfx(player, message)
-					spincine(player, message)
+					devSpin(player, message)
 				end
 			end)
 		end

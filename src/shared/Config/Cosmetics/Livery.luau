@@ -107,7 +107,20 @@ local options: { Option } = {
 		pattern = "chevron",
 		metallic = true,
 	},
-	-- Spin-wheel finishes (docs/24 D). `earn` keys come from SpinRules.ownedKeys; every one is Rare+.
+	-- Spin-wheel finishes (docs/24 D). `earn` keys come from SpinRules.ownedKeys.
+	{
+		id = "SpinStripes",
+		name = "Red stripes",
+		earn = "spin:StripesFinish",
+		rarity = "Uncommon",
+		blurb = "Racing red stripes over a cream hull.",
+		primary = Color3.fromRGB(238, 230, 186), -- cream: a whiter hull is too close to RetroSilver
+		secondary = Color3.fromRGB(30, 36, 48),
+		stripe = Color3.fromRGB(214, 46, 40),
+		stripe2 = Color3.fromRGB(214, 46, 40),
+		pattern = "stripes",
+		metallic = false,
+	},
 	{
 		id = "SpinGold",
 		name = "Gold chrome",
