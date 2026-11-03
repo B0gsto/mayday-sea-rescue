@@ -4,7 +4,7 @@
 -- module only forwards a fixed name plus a few short values to TelemetryService over Telemetry_Client,
 -- which checks every value against a fixed set and rate limits the remote.
 --   Telemetry.once(name)                         once per session
---   Telemetry.send(name, a?, b?, c?, d?)          every time (Device, InputDead)
+--   Telemetry.send(name, a?, b?, c?, d?)          every time (Device, Fps, InputDead)
 --   Telemetry.shop(step, app?, item?, currency?)  Shop funnel: MenuOpened, PanelOpened, ItemViewed, BuyTapped
 --   Telemetry.stalled(context, stalled, dt)       per frame: InputDead once per 3 s stall (Boat)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

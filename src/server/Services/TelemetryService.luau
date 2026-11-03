@@ -28,7 +28,7 @@
 --   TelemetryService.Recent -> { string }                              last events (Studio: ServerStorage.TelemetryDev)
 -- Client (Telemetry_Client, rate limited, every value checked against a fixed set): TabletOpened (also sets the
 -- player attribute TabletOpened: DogService stops leading to the stand),
--- Device(type), Shop(step, app, item?, currency?), InputDead(context),
+-- Device(type), WorldReady, Fps(number), Shop(step, app, item?, currency?), InputDead(context),
 -- StuckReset(context).
 local AnalyticsService = game:GetService("AnalyticsService")
 local DataStoreService = game:GetService("DataStoreService")
@@ -55,7 +55,7 @@ TelemetryService.Verbose = false -- Studio: print every event (Studio already lo
 TelemetryService.Recent = {} :: { string }
 
 type Shop = { id: string, at: number, app: string }
-type Session = { joinedAt: number, device: string?, day: string? }
+type Session = { joinedAt: number, device: string?, day: string?, ready: number?, fps: string? }
 
 local RECENT_MAX = 60
 local JOB = if game.JobId ~= "" then string.sub(game.JobId, 1, 8) else "studio" -- call session ids per server
@@ -601,6 +601,16 @@ local function clientStep(player: Player, name: string, a: any, b: any, c: any, 
 		if session and Events.Devices[a] then
 			session.device = a
 		end
+	elseif name == "WorldReady" then
+		local session = sessions[player]
+		if session and not session.ready then
+			session.ready = math.floor(os.clock() - session.joinedAt) -- server clock: the client can't fake it
+		end
+	elseif name == "Fps" then
+		local session = sessions[player]
+		if session and type(a) == "number" then
+			session.fps = Events.fpsBucket(a)
+		end
 	elseif name == "InputDead" or name == "StuckReset" then
 		local session = sessions[player]
 		if Events.InputContexts[a] then
@@ -709,6 +719,17 @@ function TelemetryService.Init()
 					Events.lengthBucket(seconds),
 					session.device or "Unknown",
 					session.day or "Unknown"
+				)
+			)
+			-- one event per session, at the end: a client that quits in 4 s still reports NotReady
+			custom(
+				player,
+				Events.custom(
+					"SessionPerf",
+					session.ready or 0,
+					Events.readyBucket(session.ready),
+					session.fps or "Unknown",
+					session.device or "Unknown"
 				)
 			)
 		end

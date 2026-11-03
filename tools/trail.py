@@ -7,7 +7,8 @@ usage:
   tools/trail.py --test          # the test universe instead of launch
 
 Each line in a block: "<seconds since join> <event>". "pos x,y,z" every 30 s, "ERR ..." server errors.
-Also prints current players/visits and a Robux summary (prompts shown, purchases, R$ by source).
+Also prints current players/visits, a Robux summary (prompts shown, purchases, R$ by source) and a
+per-device perf summary (SessionPerf: join-to-world and frame-rate buckets, sessions in each).
 Read-only; needs the universe's API key (datastores read).
 """
 import argparse
@@ -39,15 +40,21 @@ def get(url, key):
 def robux_summary(lines):
     """RobuxPrompt trail lines: "<s> custom RobuxPrompt <value> <source> <key> <Shown|Purchased|Cancelled>".
     A Purchased line's value is the item's list price in R$ (older lines carry kind as the source and value 1)."""
-    shown, bought, robux, by = 0, 0, 0, {}
+    shown, bought, robux, by, waiting = 0, 0, 0, {}, {}
     for line in lines:
         p = line.split()
         if len(p) < 7 or p[1:3] != ["custom", "RobuxPrompt"]:
             continue
         value, source, key, outcome = p[3], p[4], p[5], p[6]
-        if outcome in ("Shown", "Cancelled"):  # the client logs only the outcome, so Cancelled means it was shown
+        if outcome == "Shown":
             shown += 1
-        elif outcome == "Purchased":
+            waiting[key] = waiting.get(key, 0) + 1
+        elif outcome in ("Cancelled", "Purchased"):
+            if waiting.get(key):  # closes a prompt already counted by its Shown line
+                waiting[key] -= 1
+            else:  # older trails log only the outcome, so it is the prompt's only line
+                shown += 1
+        if outcome == "Purchased":
             bought += 1
             r = int(float(value)) if source not in ("Products", "GamePasses") else 0
             robux += r
@@ -56,6 +63,24 @@ def robux_summary(lines):
     items = by.pop("items", [])
     where = ", ".join(f"{s} {r}" for s, r in sorted(by.items())) or "none"
     return f"Robux: {shown} prompts shown, {bought} purchases, {robux} R$ list (by source: {where}){': ' + ' '.join(items) if items else ''}"
+
+
+def perf_summary(lines):
+    """SessionPerf trail lines: "<s> custom SessionPerf <ready seconds> <ready bucket> <fps bucket> <device>"."""
+    by = {}
+    for line in lines:
+        p = line.split()
+        if len(p) == 7 and p[1:3] == ["custom", "SessionPerf"]:
+            d = by.setdefault(p[6], {"ready": {}, "fps": {}})
+            d["ready"][p[4]] = d["ready"].get(p[4], 0) + 1
+            d["fps"][p[5]] = d["fps"].get(p[5], 0) + 1
+    if not by:
+        return "Perf: no SessionPerf lines"
+
+    def counts(c):
+        return " ".join(f"{k}:{n}" for k, n in sorted(c.items()))
+
+    return "Perf: " + " | ".join(f"{dev} ready {counts(d['ready'])} fps {counts(d['fps'])}" for dev, d in sorted(by.items()))
 
 
 def main():
@@ -93,13 +118,13 @@ def main():
         when = time.strftime("%Y-%m-%d %H:%M", time.localtime(int(joined)))
         out.append(f"\n== user {user} joined {when} place v{v.get('place')} job {v.get('job')} ({len(v.get('lines', []))} lines)")
         out += v.get("lines", [])
-    out.insert(2, robux_summary(allLines))
+    out[2:2] = [robux_summary(allLines), perf_summary(allLines)]
     text = "\n".join(out)
     if a.out:
         os.makedirs(os.path.dirname(a.out), exist_ok=True)
         with open(a.out, "w") as f:
             f.write(text + "\n")
-        print(f"{out[0]}\n{out[1]}\n{out[2]}\nwrote {a.out}")
+        print(f"{out[0]}\n{out[1]}\n{out[2]}\n{out[3]}\nwrote {a.out}")
     else:
         print(text)
 
