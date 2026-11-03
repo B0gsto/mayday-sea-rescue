@@ -1,0 +1,34 @@
+<!doctype html><meta charset="utf-8"><title>Zone buoy concept</title>
+<style>@font-face{font-family:F;src:url(file:///Applications/RobloxStudio.app/Contents/Resources/content/fonts/FredokaOne-Regular.ttf)}
+html,body{margin:0;background:#141A26;width:1000px;height:1000px;overflow:hidden;font-family:F;color:#fff}
+.a{position:absolute}.t{font-size:17px;color:#fff;-webkit-text-stroke:3.5px #14121C;paint-order:stroke fill}
+.p{position:absolute;overflow:hidden;border-radius:10px;background:#2A3A52}</style><body>
+<div class="a t" style="left:14px;top:9px;font-size:24px">Zone buoy + glow curtain</div>
+<div class="a" style="left:310px;top:17px;font-size:13px;color:#9FB2C8">50 studs tall. Zone reads 3 ways: colour, topmark, white bands = zone number</div>
+<script src="toon.js"></script><script src="models.js"></script><script>
+const pan=(x,y,w,h,l)=>{const d=document.createElement('div');d.className='p';d.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;document.body.appendChild(d);
+  if(l){const t=document.createElement('div');t.className='a t';t.style.cssText='left:9px;top:6px;z-index:3';t.textContent=l;d.appendChild(t)}return d};
+const W=192,GAP=5;
+ZONES.forEach((pal,i)=>{
+  // hero: low camera close to the buoy, curtain running away behind it
+  {const H=504,F=620,hz=412,camH=7,d=pan(10+i*(W+GAP),44,W,H,pal.name),c=canvasIn(d,W,H),x=c.getContext('2d');paintSea(x,W,H,hz,F,camH,pal,{seed:i+2});
+   const yaw=.32,cam=seaCam(W,H,hz,F,camH,yaw),dist=100,bx=Math.cos(yaw)*dist,bz=Math.sin(yaw)*dist,L=[0,1];
+   // the line runs across the view through the hero buoy
+   curtain(x,cam,W,H,[bx-260,bz+150*3],[bx+260,bz-150*3],132,pal,.92,[1,1],i);
+   x.drawImage(render({mesh:buoy(i),pos:[bx,0,bz],yaw:.32+.22},cam,W,H,{line:.75,lineOuter:1.15,ss:3}),0,0)}
+  // from the boat: the real line ahead, 250 studs off, no outlines, true phone points
+  {const H=232,F=278,hz=92,camH=14,yaw=.1,d=pan(10+i*(W+GAP),554,W,H,null),c=canvasIn(d,W,H),x=c.getContext('2d');paintSea(x,W,H,hz,F,camH,pal,{seed:i+6});
+   const cam=seaCam(W,H,hz,F,camH,yaw),items=[];for(let k=-6;k<=6;k++){const X=240+k*16,Z=k*100;items.push({mesh:buoy(i),pos:[X,0,Z]})}
+   curtain(x,cam,W,H,[240-96,-600],[240+96,600],132,pal,.92,[1,1],i+9);x.drawImage(render(items,cam,W,H,{ss:3,fog:{col:pal.fog,start:100,end:2400}}),0,0)}
+  // size ladder: top third of the buoy alone at 32 pt and 48 pt, plus real phone stack read
+  {const H=96,d=pan(10+i*(W+GAP),792,W,H,null),c=canvasIn(d,W,H),x=c.getContext('2d');x.fillStyle=pal.water;x.fillRect(0,0,W,H);
+   const m=buoy(i);x.drawImage(render(m,orbit([0,20,0],.12,.08,200,{ppu:90/44}),60,92,{ss:4}),4,2);x.drawImage(render(m,orbit([0,20,0],.12,.08,200,{ppu:48/44}),40,50,{ss:4}),70,44);x.drawImage(render(m,orbit([0,20,0],.12,.08,200,{ppu:32/44}),30,34,{ss:4}),116,60);
+   x.drawImage(silhouette(render(m,orbit([0,38,0],0,.05,200,{ppu:4.6}),52,84,{ss:3}),'#fff'),136,6)}
+});
+// panorama: the whole client pool heading out from Shallows to Kelp, fades at the ends so the line feels endless
+{const W2=980,H=98,F=278,hz=38,camH=20,d=pan(10,892,W2,H,null),c=canvasIn(d,W2,H),x=c.getContext('2d');paintSea(x,W2,H,hz,F,camH,ZONES[0],{seed:3});
+ const pal=ZONES[1],cam=seaCam(W2,H,hz,F,camH,0),items=[];for(let k=-12;k<=12;k++){const Z=k*90,X=330+Math.pow(k,2)*1.6;items.push({mesh:buoy(1),pos:[X,0,Z]})}
+ for(let k=-12;k<12;k++){const P=q=>[330+q*q*1.6,q*90],a=Math.min(1,(13-Math.abs(k))/4),b=Math.min(1,(13-Math.abs(k+1))/4);curtain(x,cam,W2,H,P(k),P(k+1),132,pal,.9,[a,b],k)}
+ x.drawImage(render(items,cam,W2,H,{ss:3,fog:{col:ZONES[0].fog,start:100,end:2400}}),0,0);
+ const t=document.createElement('div');t.className='a t';t.style.cssText='left:9px;top:5px;font-size:15px';t.textContent='Pool of 24, near the player, Shallows looking at Kelp';d.appendChild(t)}
+</script>
