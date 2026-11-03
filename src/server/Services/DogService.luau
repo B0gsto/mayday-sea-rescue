@@ -30,6 +30,10 @@
 -- Shared.Dog.DogWear): a tint on the harness parts, and plain Parts in a "Wear" model welded to the Torso
 -- / Head (darkened while he is wet). A life jacket hides the harness. Model attributes DogId, DogName, Breed.
 --
+-- FTUE lead (live 2026-11-01: 28 of 121 new players never opened the build tablet): before a Hut-less player opens it
+-- (DockLevelHQ 0, no TabletOpened attribute) he runs from them to the stand and sits beside it, facing them. The
+-- run starts on player attribute TabletLeadGo: only the client knows the loading screen and join card are gone.
+--
 -- One companion (owner, 2026-10-24): while a rescued pet is out (player attribute CompanionPet,
 -- PetService) Bosun is home: hidden and still. The pet then does his job: on foot the sniff comes
 -- from the player and DogController draws it at the pet; the craft guide point is unchanged.
@@ -46,6 +50,7 @@ local BosunGuide = require(Shared:WaitForChild("Dog"):WaitForChild("BosunGuide")
 local BosunRig = require(Shared:WaitForChild("Dog"):WaitForChild("BosunRig"))
 local BosunWetness = require(Shared:WaitForChild("Dog"):WaitForChild("BosunWetness"))
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
+local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local DogVisual = require(Shared:WaitForChild("Dog"):WaitForChild("DogVisual"))
 local DogWear = require(Shared:WaitForChild("Dog"):WaitForChild("DogWear"))
 local Net = require(Shared:WaitForChild("Net"))
@@ -64,6 +69,7 @@ local TELEPORT_DISTANCE = 70
 local WET_TICK = 0.5 -- seconds between wetness updates
 local SWIM_DEPTH = LEG_HEIGHT - 0.4 -- water this deep under him: he swims
 local WADE_DEPTH = 0.4 -- water this deep: his coat gets wet
+local LEAD_SPEED = 16 -- studs/s to the stand: a run the camera can follow (his follow cap is 45)
 
 type Anchors = { [string]: { part: BasePart, rest: CFrame } }
 
@@ -543,6 +549,21 @@ local function setMode(dog: Dog, mode: string)
 	end
 end
 
+-- FTUE lead: his spot beside the build stand (DockPieces.buildStation: 16 x 12 pad, tablet at +3.6 facing +Z) while
+-- his Hut-less player has not opened the tablet, else nil.
+local function leadSpot(player: Player): Vector3?
+	local bay = player:GetAttribute("BayCFrame")
+	if
+		player:GetAttribute("TabletLeadGo") ~= true
+		or player:GetAttribute("DockLevelHQ") ~= 0
+		or player:GetAttribute("TabletOpened") == true
+		or typeof(bay) ~= "CFrame"
+	then
+		return nil
+	end
+	return (DockConfig.stationSpot(bay) * CFrame.new(5, 0, 5)).Position
+end
+
 local function step(dog: Dog, now: number)
 	local character = dog.player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -587,7 +608,8 @@ local function step(dog: Dog, now: number)
 	flatLook = flatLook.Unit
 	local right = Vector3.new(-flatLook.Z, 0, flatLook.X)
 	-- beside and a little ahead: behind him he filled the foreground of the on-foot camera (locomotion AD r1)
-	local desired = root.Position + right * 3.4 + flatLook * 1.2
+	local lead = leadSpot(dog.player)
+	local desired = lead or root.Position + right * 3.4 + flatLook * 1.2
 	local y, depth = groundY(desired, character)
 	desired = Vector3.new(desired.X, y, desired.Z)
 	dog.depth = depth
@@ -599,14 +621,18 @@ local function step(dog: Dog, now: number)
 		dog.body.AssemblyLinearVelocity = Vector3.zero
 	end
 	dog.alignPos.Position = desired
+	dog.alignPos.MaxVelocity = if lead then LEAD_SPEED else 45
 
 	local face = flatLook
 	if now < dog.pointUntil and dog.pointDir then
 		face = dog.pointDir
 	else
 		local toTarget = Vector3.new(desired.X - pos.X, 0, desired.Z - pos.Z)
+		local toPlayer = Vector3.new(root.Position.X - pos.X, 0, root.Position.Z - pos.Z)
 		if toTarget.Magnitude > 2 then
 			face = toTarget.Unit
+		elseif lead and toPlayer.Magnitude > 1 then
+			face = toPlayer.Unit -- waiting at the stand: looking back at his player
 		end
 	end
 	dog.alignRot.CFrame = CFrame.lookAt(Vector3.zero, face)

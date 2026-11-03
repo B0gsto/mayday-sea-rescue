@@ -337,6 +337,17 @@ function Layout.clearOfHud(at: Vector2, clear: Vector2, hang: number?): Vector2
 			return p
 		end
 	end
+	-- boxed in on the way to the centre (the menu column, a goal to the left): slide along the screen edge past it, so
+	-- a pointer never lands on the avatar
+	local bottom = centre.Y * 2 - clear.Y
+	for i = 1, 24 do
+		for _, y in { at.Y + (bottom - at.Y) * i / 24, at.Y + (clear.Y - at.Y) * i / 24 } do
+			local p = Vector2.new(at.X, y)
+			if not blocked(p, clear, up) then
+				return p
+			end
+		end
+	end
 	return centre -- boxed in all the way: over the play view, never under the HUD
 end
 

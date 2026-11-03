@@ -25,6 +25,7 @@ export type Beacon = {
 	hide: () -> (),
 	target: () -> Vector3?,
 	mute: (on: boolean) -> (), -- the goal keeps its own cue in view (the build tablet's): no diamond; no pointer or trail near it
+	edge: (on: boolean) -> (), -- false: no screen-edge pointer (the FTUE lead holds it back for its first 20 s)
 	destroy: () -> (),
 }
 
@@ -114,6 +115,7 @@ function OnboardingBeacon.start(): Beacon
 	local baseY = 0
 	local active = false
 	local muted = false
+	local edgeOn = true
 
 	local self: any = {}
 
@@ -144,6 +146,10 @@ function OnboardingBeacon.start(): Beacon
 		muted = on
 	end
 
+	function self.edge(on: boolean)
+		edgeOn = on
+	end
+
 	local conn = RunService.Heartbeat:Connect(function()
 		if not active or not at then
 			return
@@ -163,7 +169,7 @@ function OnboardingBeacon.start(): Beacon
 		-- chip over its own (AD phone pass 2026-11-01: "20 70 m"; the cold-open craft wore both)
 		local wp = Players.LocalPlayer.PlayerGui:FindFirstChild("Waypoint")
 		local wpMark = wp and wp:FindFirstChild("Mark")
-		if cutscene or (wpMark and wpMark:IsA("GuiObject") and wpMark.Visible) then
+		if cutscene or not edgeOn or (wpMark and wpMark:IsA("GuiObject") and wpMark.Visible) then
 			return
 		end
 		local cam = Workspace.CurrentCamera :: Camera

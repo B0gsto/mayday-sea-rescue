@@ -15,6 +15,7 @@
 local CollectionService = game:GetService("CollectionService")
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -33,6 +34,7 @@ local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local DockController = require(script.Parent:WaitForChild("DockController"))
 local MapController = require(script.Parent:WaitForChild("MapController"))
+local Telemetry = require(Client:WaitForChild("Telemetry"))
 local UI = Client:WaitForChild("UI")
 local ColdOpenCue = require(UI:WaitForChild("ColdOpenCue"))
 local Layout = require(UI:WaitForChild("Layout"))
@@ -283,6 +285,16 @@ end
 local ESTABLISH = 2.6 -- s
 local SETTLE_ZOOM = 19 -- CameraController START_ZOOM
 local established = false
+
+-- The Foot framing behind `focus` looking along flat unit `ahead`: turned 14 degrees left of it (the stand and the
+-- name arch share the frame, the avatar never covers the stand), 13 degrees down (the quay shows).
+local function behind(focus: Vector3, ahead: Vector3): CFrame
+	local look = (CFrame.fromAxisAngle(Vector3.yAxis, math.rad(14)) * CFrame.fromAxisAngle(
+		ahead:Cross(Vector3.yAxis),
+		math.rad(-13)
+	)).Rotation * ahead
+	return CFrame.lookAt(focus - look * SETTLE_ZOOM, focus)
+end
 local function frameSpawnBody()
 	local wait0 = os.clock() -- the plot attributes replicate after the first character (the loading screen waits too)
 	while
@@ -326,13 +338,7 @@ local function frameSpawnBody()
 	end
 	local ahead = (spawn.LookVector * Vector3.new(1, 0, 1)).Unit
 	local focus = root.Position + Vector3.new(0, 3, 0) -- the Custom camera's subject: head offset + CameraController LIFT
-	-- turned 14 degrees left of the stand: the name arch and the stand share the frame (the arch's board in full), the
-	-- avatar never covers the screen; 13 degrees down shows the quay
-	local look = (CFrame.fromAxisAngle(Vector3.yAxis, math.rad(14)) * CFrame.fromAxisAngle(
-		ahead:Cross(Vector3.yAxis),
-		math.rad(-13)
-	)).Rotation * ahead
-	local settle = CFrame.lookAt(focus - look * SETTLE_ZOOM, focus)
+	local settle = behind(focus, ahead)
 	local cam = Workspace.CurrentCamera
 	if not first then
 		cam.CFrame = settle -- a respawn or reduced motion: the framing, no move
@@ -380,6 +386,101 @@ end
 local function buildTabletOpen(): boolean
 	local gui = playerGui:FindFirstChild("BuildTablet")
 	return gui ~= nil and gui:IsA("ScreenGui") and gui.Enabled
+end
+
+-- FTUE lead (live 2026-11-01: 28 of 121 new players never opened the build tablet; most left inside a minute, some
+-- swam for minutes). Before the first open Bosun waits at the stand (DogService) under the steady green arrow
+-- (UI/TabletCue). 40+ studs off it for 20 s: the edge pointer joins and the camera swings once to frame the stand.
+local LEAD_FAR = 40 -- studs
+local LEAD_WAIT = 20 -- s
+local SWING = 1.2 -- s
+local LEAD_SETTLE = 1 -- s the view stays clear before Bosun runs: the join card can pop right after the shot
+local clearSince: number? = nil
+local farSince: number? = nil
+local nudged = false -- once per session
+local tabletOpened = false
+
+-- Orbit offset `d0` to `d1` around the focus (yaw the short way, height and radius straight): a lerp of the camera
+-- position would cut through the avatar on a half turn.
+local function orbit(d0: Vector3, d1: Vector3, a: number): Vector3
+	local y0, y1 = math.atan2(d0.X, d0.Z), math.atan2(d1.X, d1.Z)
+	local yaw = y0 + ((y1 - y0 + math.pi) % (2 * math.pi) - math.pi) * a
+	local r0, r1 = Vector2.new(d0.X, d0.Z).Magnitude, Vector2.new(d1.X, d1.Z).Magnitude
+	local r = r0 + (r1 - r0) * a
+	return Vector3.new(math.sin(yaw) * r, d0.Y + (d1.Y - d0.Y) * a, math.cos(yaw) * r)
+end
+
+local function swingToStation()
+	local at = stationPoint()
+	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	local root = rootPosition()
+	if
+		not (at and hum and root)
+		or hum.SeatPart
+		or CameraController.Comfort.reducedMotion()
+		or Layout.coldOpen()
+		or player:GetAttribute("MenuOpen") == true
+		or player:GetAttribute("CinematicPlaying") == true
+	then
+		return -- reduced motion (or busy): the edge pointer alone leads
+	end
+	AudioController.play("UI_Step", nil, 0.6, 1.1)
+	local cam = Workspace.CurrentCamera
+	local d0 = cam.CFrame.Position - (root + Vector3.new(0, 3, 0))
+	local t0 = os.clock()
+	local target: CFrame? = nil
+	while true do
+		local now = rootPosition()
+		if not now or buildTabletOpen() then
+			break
+		end
+		local focus = now + Vector3.new(0, 3, 0)
+		local flat = (at - focus) * Vector3.new(1, 0, 1)
+		local settle = behind(focus, if flat.Magnitude > 1 then flat.Unit else Vector3.zAxis)
+		target = settle
+		local a = math.min((os.clock() - t0) / SWING, 1)
+		if a >= 1 then
+			break
+		end
+		local e = TweenService:GetValue(a, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+		CameraController.SetOverride(
+			CFrame.lookAt(focus + orbit(d0, settle.Position - focus, e), focus)
+		)
+		RunService.RenderStepped:Wait()
+	end
+	CameraController.ClearOverride()
+	if target and not buildTabletOpen() then
+		RunService.RenderStepped:Wait() -- the Foot camera takes over, then lands on the framing
+		cam.CFrame = target
+	end
+end
+
+local function leadTick(leading: boolean)
+	if buildTabletOpen() then
+		tabletOpened = true
+	end
+	if leading then
+		-- the run must be seen: not under the loading screen, the establishing shot or the join card (prompts off)
+		local clear = ProximityPromptService.Enabled
+			and player:GetAttribute("LoadingScreenActive") ~= true
+			and player:GetAttribute("Establishing") ~= true
+			and player:GetAttribute("CinematicPlaying") ~= true
+		clearSince = if clear then clearSince or os.clock() else nil
+		if clearSince and os.clock() - clearSince >= LEAD_SETTLE then
+			Telemetry.once("TabletLeadGo")
+		end
+	end
+	if leading and not nudged then
+		local at, root = stationPoint(), rootPosition()
+		local far = at ~= nil
+			and root ~= nil
+			and ((root - at) * Vector3.new(1, 0, 1)).Magnitude > LEAD_FAR
+		farSince = if far then farSince or os.clock() else nil
+		if farSince and os.clock() - farSince >= LEAD_WAIT then
+			nudged = true
+			task.spawn(swingToStation)
+		end
+	end
 end
 
 -- docs/24 E: the one world guide for the beat. The call marker stays UI/Waypoint's job; this handles
@@ -641,10 +742,14 @@ local function update()
 			else nil
 		setGuide(kind)
 	end
+	local hutBeat = guide == "station" and beat == "BuildHQ"
+	leadTick(hutBeat and not tabletOpened)
+	local cleared = hutBeat and tabletOpened -- opened once: the arrow, pointer and diamond stay off until the Hut is placed
 	-- at the stand the tablet's own cue (green arrow + Build) is the one marker on it
-	local cued = DockController.TabletGoal(guide == "station")
+	local cued = DockController.TabletGoal(guide == "station" and not cleared)
 	if beacon then
-		beacon.mute(guide == "station" and cued or guide == "craft")
+		beacon.mute(guide == "station" and (cued or cleared) or guide == "craft")
+		beacon.edge(not hutBeat or (nudged and not tabletOpened))
 	end
 	-- the tablet's HQ / Workshop card pulses while the tutorial points at the station
 	if os.clock() >= tickAt then
