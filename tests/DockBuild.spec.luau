@@ -90,6 +90,22 @@ return function(t)
 		end
 	end)
 
+	-- the 2x plate's outer lots sit past the island view; pressing a card is how each lot is reached, so every
+	-- card's focus view must stay within what a low-quality phone draws
+	t.test("every card's focus view stays within the phone draw distance", function()
+		for _, item in DB.catalog() do
+			local at, size = B.paper(item, frame)
+			-- card press: room 1; a building or decor going up while the tablet is open: room 2.2
+			local room = if item.kind == "Blueprint" then 1 else 2.2
+			-- desktop; landscape phone (no ScreenOrientation set) with the list at its widest
+			for _, view in { { 16 / 9, 0.6 }, { 19.5 / 9, 0.4 } } do
+				local cam = B.focus(frame, at.Position, size * room, view[1], view[2])
+				local reach = (cam.Position - at.Position).Magnitude
+				t.expect(reach < B.SAFE_DISTANCE).toBe(true)
+			end
+		end
+	end)
+
 	t.test("decor is a Cash-only ladder from 2k to 40k on the spare lots", function()
 		t.expect(#D.DECOR).toBe(6)
 		local last = 0
@@ -135,7 +151,7 @@ return function(t)
 			-- beside the jetty (clear of its walk), on the quay half
 			t.expect(math.abs(localCf.X) - st.size.X / 2 >= lot.size.X / 2 - 1e-3).toBe(true)
 			t.expect(localCf.Z > 0).toBe(true)
-			-- inside the head deck, which meets the quay edge (notch head, island f 30) and the jetty's side
+			-- inside the head deck, which meets the quay edge (notch head, island f 190) and the jetty's side
 			t.expect(math.abs(st.offset.X - head.offset.X) + st.size.X / 2 <= head.size.X / 2)
 				.toBe(true)
 			t.expect(math.abs(st.offset.Y - head.offset.Y) + st.size.Y / 2 <= head.size.Y / 2)
@@ -144,7 +160,7 @@ return function(t)
 				* lot.cf
 				* CFrame.new(head.offset.X, 0, head.offset.Y + head.size.Y / 2)
 			local fwd = -(frame * M.ISLAND):PointToObjectSpace(deck.Position).Z
-			t.expect(math.abs(fwd - 30) < 1).toBe(true)
+			t.expect(math.abs(fwd - 190) < 1).toBe(true)
 			t.expect(math.abs(head.offset.X) - head.size.X / 2).toBeCloseTo(lot.size.X / 2, 3)
 		end
 	)
@@ -159,8 +175,8 @@ return function(t)
 			t.expect(flat.Magnitude >= 18).toBe(true) -- the camera frames the stand with the sea, not the screen alone
 			t.expect(d.Magnitude <= 24).toBe(true) -- DockController's tablet prompt range
 			t.expect(spawn.LookVector:Dot(flat.Unit) > 0.97).toBe(true)
-			-- on the plate, not over the cove water (island fwd 30+)
-			t.expect(-(frame * M.ISLAND):PointToObjectSpace(spawn.Position).Z < 28).toBe(true)
+			-- on the plate, not over the cove water (island fwd 190+)
+			t.expect(-(frame * M.ISLAND):PointToObjectSpace(spawn.Position).Z < 188).toBe(true)
 		end
 	)
 

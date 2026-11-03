@@ -25,16 +25,17 @@ export type Spot = {
 	head: Vector2?, -- lying: the head's way (prop x, z)
 }
 
--- island (r, f, yaw): r right, f out toward the cove; yaw turns the prop's front (-Z) round
+-- island (r, f, yaw): r right, f out toward the cove; yaw turns the prop's front (-Z) round. Owner 2026-11-01 (2x plate):
+-- the commons moved 40 back as one, to the middle of the longer avenue
 Hangout.PROPS = {
-	Canteen = { r = 40, f = -48, yaw = 90, size = Vector2.new(14, 12) }, -- open front onto the avenue
-	Campfire = { r = 20, f = -62, yaw = 0, size = Vector2.new(12, 12) },
-	ChatEast = { r = 20, f = -42, yaw = 0, size = Vector2.new(5, 5) },
-	BenchA = { r = -20, f = -40, yaw = 180, size = Vector2.new(6, 3) }, -- facing the spawn and the bridge road
-	BenchB = { r = -32, f = -40, yaw = 180, size = Vector2.new(6, 3) },
-	Cart = { r = -22, f = -60, yaw = -90, size = Vector2.new(5, 4) }, -- serving the avenue
-	Hammock = { r = -44, f = -58, yaw = 0, size = Vector2.new(3, 10) },
-	ChatWest = { r = -34, f = -68, yaw = 0, size = Vector2.new(5, 3) },
+	Canteen = { r = 40, f = -88, yaw = 90, size = Vector2.new(14, 12) }, -- open front onto the avenue
+	Campfire = { r = 20, f = -102, yaw = 0, size = Vector2.new(12, 12) },
+	ChatEast = { r = 20, f = -82, yaw = 0, size = Vector2.new(5, 5) },
+	BenchA = { r = -20, f = -80, yaw = 180, size = Vector2.new(6, 3) }, -- facing the spawn and the bridge road
+	BenchB = { r = -32, f = -80, yaw = 180, size = Vector2.new(6, 3) },
+	Cart = { r = -22, f = -100, yaw = -90, size = Vector2.new(5, 4) }, -- serving the avenue
+	Hammock = { r = -44, f = -98, yaw = 0, size = Vector2.new(3, 10) },
+	ChatWest = { r = -34, f = -108, yaw = 0, size = Vector2.new(5, 3) },
 } :: { [string]: { r: number, f: number, yaw: number, size: Vector2 } }
 
 Hangout.CANTEEN_FLOOR = 0.4 -- the canteen's floor plate top

@@ -53,7 +53,7 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
 ## World: the ring of player islands
 
 - `src/shared/Config/RingLayout.luau` (pure, `tests/RingLayout.spec.luau` checks it against the bake), built from
-  the generated `WorldConfig.Ring` (`tools/world/layout.py`): `Center` (the open lagoon), `Ring` (470),
+  the generated `WorldConfig.Ring` (`tools/world/layout.py`): `Center` (the open lagoon), `Ring` (860; plates 640 wide),
   `Islands` / `byId` (Plot1..6: `center`, `facing` (out to sea), `frame`, `spawn`, `berths` Boat / Sub, `lots`
   Station, Boathouse, Helipad (`clearRadius`), Hangar, SubPen, Jetty, LifeguardTower, Spare1..3, QuestTablet;
   `quest` = { pontoon, slots }), `Bridges` (island i -> i + 1) + `deckY` / `deckAt`, `IslandPlate` + `onPlate` /

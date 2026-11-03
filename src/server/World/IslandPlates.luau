@@ -112,10 +112,10 @@ local function edges(parent: Instance, isl: RingLayout.Island)
 	local beaches = {
 		{ -c, c, -e - T - W, -e - T }, -- back
 		{ -e - T - W, -e - T, -c, c }, -- left
-		{ e + T, e + T + W, -c, 15 }, -- right, either side of the lifeboat slip's ramp (DockConfig LifeboatSlip, fwd 20)
-		{ e + T, e + T + W, 25, c },
-		{ -c, -105, e + T, e + T + W }, -- fwd-left wing, either side of the quest pontoon
-		{ -65, -hw, e + T, e + T + W },
+		{ e + T, e + T + W, -c, 35 }, -- right, either side of the old lifeboat slip ramp gap (fwd 40)
+		{ e + T, e + T + W, 45, c },
+		{ -c, -130, e + T, e + T + W }, -- fwd-left wing, either side of the quest pontoon (r -110)
+		{ -90, -hw, e + T, e + T + W },
 		{ hw, c, e + T, e + T + W }, -- fwd-right wing
 	}
 	for _, sr in { -1, 1 } do

@@ -8,7 +8,11 @@ local Marina = require(script.Parent:WaitForChild("Marina"))
 
 local DockBuild = {}
 
-DockBuild.ISLAND_RADIUS = 172 -- the plateau (160) plus a little beach, from RingLayout.IslandRadius
+-- shortcut: the framed radius, not the whole 320 plate (owner 2026-11-01, 2x plate): 185 is the most a phone's free
+-- share fits inside SAFE_DISTANCE at MAX_FOV, so the plate's outer lots sit past the frame edge (pressing their card
+-- flies `focus` to them); widen it if the build view gets a pan or per-device framing
+DockBuild.ISLAND_RADIUS = 185
+
 DockBuild.PITCH = math.rad(58) -- down from horizontal: high enough to read the lots, low enough to see fronts
 DockBuild.FOV = 45 -- camera FieldOfView
 DockBuild.MARGIN = 1.12 -- breathing room round the island
@@ -98,6 +102,7 @@ end
 
 DockBuild.FOCUS_ROOM = 1.7 -- footprint radius x this = what the focus view fits
 DockBuild.FOCUS_MIN = 45 -- never closer than this (small decor)
+DockBuild.FOCUS_MAX = 150 -- never further: with a phone's side pan (lot left of the list) this stays inside SAFE_DISTANCE
 DockBuild.FOCUS_SHIFT = Vector2.new(0.3, 0.2) -- spot off-centre (viewport halves): left of the list, above the strip
 
 -- The focused view of a lot: same pitch and heading as the island view, close enough to fit the footprint,
@@ -114,9 +119,11 @@ function DockBuild.focus(
 	local r = math.max(size.X, size.Y) / 2
 	local cover = math.clamp(band or 0, 0, 0.8)
 	local fov = DockBuild.fov(aspect * (free or 1), 1 - cover)
-	local d = math.max(
+	-- capped so a long lot (the 80-stud Harbour going up) still draws on a low-quality phone
+	local d = math.clamp(
 		DockBuild.distance(r * DockBuild.FOCUS_ROOM, aspect * (free or 1), fov, 1 - cover),
-		DockBuild.FOCUS_MIN
+		DockBuild.FOCUS_MIN,
+		DockBuild.FOCUS_MAX
 	)
 	local pos = at
 		+ Vector3.new(0, d * math.sin(DockBuild.PITCH), 0)

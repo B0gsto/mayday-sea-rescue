@@ -349,7 +349,7 @@ local function pontoon(m: Model, b: CFrame)
 	flag(m, b, 32, -22, 2, 24)
 
 	local W, H = 10, 5
-	local at = isle(b, -40, 27.5) * CFrame.new(0, 6, 0)
+	local at = isle(b, -40, 187.5) * CFrame.new(0, 6, 0)
 	for _, dx in { -W / 2 - 0.5, W / 2 + 0.5 } do
 		studTop(
 			brick(m, "BoardPost", Vector3.new(1, 8.6, 1), at * CFrame.new(dx, -1.7, 0), BRICK_RED)
@@ -3309,7 +3309,7 @@ local function lifeboatSlip(m: Model, b: CFrame, meshed: boolean?)
 			DBG
 		)
 	end
-	path(m, b, { Vector2.new(-80, 82), Vector2.new(-80, 70) }, 0.1)
+	path(m, b, { Vector2.new(-105, 242), Vector2.new(-105, 230) }, 0.1)
 end
 
 -- docs/25 J (owner 2026-10-27): empty start. The fixed set on every plate is only its edge (DockService adds the
@@ -3317,16 +3317,23 @@ end
 -- (r, f) points: r = right, f = out toward the cove.
 local V = Vector2.new
 -- docs/25-visuals.html map: the bridge road, the avenue from the HQ's back to it (past the spawn), the quay
--- promenades either side of the plaza and the two cove walks (the west one on to the quest tablet)
+-- promenades and the two cove walks (the west one on to the quest tablet). Owner 2026-11-01 (buildings 2x apart on the
+-- 640-stud plate): the side lanes loop from the harbour wings round behind the bridge road, so every door's stub stays
+-- short; the plaza is a compact square at the HQ's front (owner: the stretched one read as an empty beige strip) and
+-- the cove street runs on from it to the jetty head, crossing the promenades. The cove walks follow the notch walls
+-- (r +-70, 2026-11-01 exit lane).
 DockPieces.STREETS = {
-	{ V(-121, -78), V(121, -78) }, -- the bridge road, bridge to bridge
-	{ V(0, -78), V(0, -28) }, -- the avenue, the spawn to the HQ's back
-	{ V(-152, 22), V(-44, 22) }, -- the quay promenades
-	{ V(44, 22), V(152, 22) },
-	{ V(-52, 22), V(-52, 148), V(-96, 148) }, -- the cove walks
-	{ V(52, 22), V(52, 148) },
+	{ V(-296, -165), V(296, -165) }, -- the bridge road, bridge to bridge
+	{ V(0, -165), V(0, -40) }, -- the avenue, the spawn to the HQ's back
+	{ V(-304, 44), V(304, 44) }, -- the quay promenades
+	{ V(-16, 22), V(-16, 185.9) }, -- the cove street, the plaza through the name arch onto the jetty (0.1 short of the notch wall)
+	{ V(-77, 44), V(-77, 308), V(-121, 308) }, -- the cove walks
+	{ V(77, 44), V(77, 308) },
+	{ V(-215, 150), V(-215, -220), V(215, -220), V(215, 150) }, -- the side lanes and the back lane
+	{ V(-110, -165), V(-110, 44) }, -- the village lanes, the bridge road to the promenades
+	{ V(110, -165), V(110, 44) },
 }
-DockPieces.PLAZA = { centre = V(0, 17), size = V(80, 26) } -- from the HQ's front to the jetty head (the avenue)
+DockPieces.PLAZA = { centre = V(0, 7), size = V(80, 30) } -- the HQ's front (fwd -8) to the cove street
 local function tree(m: Model, at: CFrame, s: number)
 	brick(m, "Trunk", Vector3.new(2.4, 6 * s, 2.4), at * CFrame.new(0, 3 * s, 0), RBROWN)
 	for i, w in { 12, 8.5, 5 } do -- stacked round plates: a Lego pine, round from the build camera
@@ -3404,8 +3411,8 @@ function DockPieces.streets(b: CFrame): Model
 	local plaza = brick(
 		m,
 		"Plaza",
-		Vector3.new(s.X, 0.3, s.Y - 0.05), -- its front kept 0.05 behind the berth notch wall (the plate's QuayStrip)
-		isle(b, c.X, c.Y - 0.025) * CFrame.new(0, 0.15, 0),
+		Vector3.new(s.X, 0.3, s.Y),
+		isle(b, c.X, c.Y) * CFrame.new(0, 0.15, 0),
 		PLAZA
 	)
 	plaza.CanCollide = false
@@ -3966,7 +3973,7 @@ end
 
 -- Boathouse Lv2 adds the lifeboat slip on its own harbour lot (kept 1x while the boathouse scales); Lv3 the
 -- quick-launch bay on the cove side (M_Bld_BoathouseAddons, authored at the 1.2 scale round the spot, so kept 1x:
--- island right -48.2..-32.5, fwd 70..115, between the cove walk and the jetty; clear of the boathouse, the slip and
+-- island right -73.2..-57.5, fwd 230..275, between the cove walk and the jetty; clear of the boathouse, the slip and
 -- every lot, so no Lv1/Lv2 piece gives way). Its static Lv3_L07_Lifeboat leaves while yours is out (WorkerController).
 -- Mesh missing: today's look. PERF-BL11: its Lv1_* layers mesh the boathouse and its Lv2_* the slip's shed (the code
 -- keeps the plinths, signs, board slot and slipway).
@@ -4023,7 +4030,7 @@ end
 -- in world place; ATT_QuayLoad (deck by the barge) and ATT_QuayLand (plate top at the quay's land end) are ours.
 -- Both stay 1x (the mesh is authored at the lot's size).
 local DEPOT_SHIFT = CFrame.new(-6, 0, 0) -- the body is authored 6 off the lot centre (its quay was beside it)
-local QUAY_AT = Vector2.new(-173, 2) -- island (right, fwd) of the quay centre: past the beach step
+local QUAY_AT = Vector2.new(-333, 4) -- island (right, fwd) of the quay centre: past the beach step
 local QUAY_X = -18 -- the quay's centre in the export
 local DEPOT_SOLID = { Foundation = true, Base = true, Rack = true, Roof = true, Trestles = true }
 local function depot(m: Model, b: CFrame, level: number?)
@@ -4130,7 +4137,7 @@ local function seaPlate(m: Model, b: CFrame, key: string)
 	local slipR = Marina.ISLAND:PointToObjectSpace(DockConfig.BOATHOUSE_SLIP.Position).X
 	local boxes = { r }
 	if slipR > r[1] and slipR < r[2] then
-		local s0, s1, f = slipR - 5, slipR + 5, r[3] + 20 -- the slipway is 7 wide and meets the water by fwd 181
+		local s0, s1, f = slipR - 5, slipR + 5, r[3] + 20 -- the slipway is 7 wide and meets the water by fwd 341
 		boxes = { { r[1], s0, r[3], r[4] }, { s1, r[2], r[3], r[4] }, { s0, s1, f, r[4] } }
 	end
 	for _, x in boxes do
@@ -4217,9 +4224,9 @@ local function seaPlate(m: Model, b: CFrame, key: string)
 	for _, sx in { -1, 1 } do
 		lamp(m, C, sx * (w / 2 - 4), -d / 2 + 4, 0)
 	end
-	-- the gangway over the trim and beach step (fwd 160-168) to the island wing, 0.06 proud of both tops: a tan
+	-- the gangway over the trim and beach step (fwd 320-328) to the island wing, 0.06 proud of both tops: a tan
 	-- plank under the cove walk's end (STREETS), a path stub joining them, clear of the lifeboat slipway's slot
-	local gx = if (r[1] + r[2]) < 0 then -56 else 56
+	local gx = if (r[1] + r[2]) < 0 then -81 else 81
 	studTop(
 		brick(
 			m,
@@ -4229,7 +4236,7 @@ local function seaPlate(m: Model, b: CFrame, key: string)
 			TAN
 		)
 	)
-	path(m, b, { Vector2.new(gx, 148), Vector2.new(gx, 158) }, 0.1)
+	path(m, b, { Vector2.new(gx, 308), Vector2.new(gx, 318) }, 0.1)
 	if key == "SeaPlate1" then
 		local R = RingLayout.RAMP
 		local at = isle(b, R.at.X, R.at.Y) * CFrame.Angles(0, math.rad(R.yaw), 0) -- -Z: the jump's way
@@ -4470,10 +4477,10 @@ end
 -- WP-25 r4: owner-colour tile bands across the quay walks (both promenades, both cove walks): one clear carrier part
 -- per walk with a SurfaceGui of band frames (few parts). Returns the frames; DockService colours them with the flag.
 local QUAY_WALKS = { -- DockPieces.STREETS' quay legs; DockService lays them with the streets
-	{ V(-152, 22), V(-44, 22) },
-	{ V(44, 22), V(152, 22) },
-	{ V(-52, 22), V(-52, 148) },
-	{ V(52, 22), V(52, 148) },
+	{ V(-304, 44), V(-44, 44) },
+	{ V(44, 44), V(304, 44) },
+	{ V(-77, 44), V(-77, 308) },
+	{ V(77, 44), V(77, 308) },
 }
 function DockPieces.quayBands(parent: Instance, b: CFrame): { Frame }
 	local out = {}

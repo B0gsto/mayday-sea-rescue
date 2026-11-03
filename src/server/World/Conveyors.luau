@@ -21,7 +21,7 @@ Conveyors.TAG = "BeltLane"
 local LANE_W, GAP = 4.4, 0.6 -- each lane, and the bed's divider strip between the two
 local BED_W, BED_H, LANE_H = 10, 0.5, 0.2 -- fits inside the bridge deck's 11 (its rails stand at +-5.6)
 local OFF = (GAP + LANE_W) / 2 -- lane centre from the bed centre
-local SPUR_R, SPUR_END = 48, 12 -- island frame: east of the HQ (|r| <= 27; its add-on meshes reach r -61 on the west) and
+local SPUR_R, SPUR_END = 48, 0 -- island frame: east of the HQ (|r| <= 27; its add-on meshes reach r -61 on the west) and
 -- the leaderboard (r 28), west of the Clinic (r 61+)
 
 local BED = Color3.fromRGB(40, 96, 208) -- Lego blue (the bridge beam)

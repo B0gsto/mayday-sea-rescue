@@ -398,15 +398,15 @@ local function buildPlot(folder: Instance, i: number): Plot
 
 	DockPieces.base(b).Parent = model -- docs/25 J: only the plate's quay edge (every island, owned or not)
 
-	-- the owner's sign (only while the island has an owner): a Lego name sign over the jetty's quay end,
-	-- facing the cove, and a flag beside it
+	-- the owner's sign (only while the island has an owner): a Lego name sign over the jetty's quay end, where the
+	-- cove street runs onto it (the 2x spacing left it on the plaza at fwd 28.5), facing the cove, and a flag beside it
 	local sign = Instance.new("Model")
 	sign.Name = "Sign"
 	local isle = b * Marina.ISLAND
-	local arch = isle * CFrame.new(-16, 0, -28.5) -- over the jetty (RingLayout lot Jetty)
+	local arch = isle * CFrame.new(-16, 0, -188.5) -- over the jetty (RingLayout lot Jetty), 1.5 behind the notch head
 	local board, labels, trim, studs = nameSign(sign, arch, BOARD)
 	-- east of the arch and off the spawn-to-kiosk line; the west quay holds the rescue board and the cove walk
-	local poleAt = isle * CFrame.new(12, 0, -28)
+	local poleAt = isle * CFrame.new(12, 0, -188)
 	studTop(
 		part(
 			sign,
@@ -487,11 +487,11 @@ for key in DockConfig.Blueprints do
 end
 
 -- docs/25 J: the prize wheel set (odds board, tokens) arrives with the HQ, at the plaza's west end facing the cove,
--- west of the jetty's line so the plaza walk stays open (owner 2026-10-31); fwd 17 leaves 7 studs clear at the foot of
--- the HQ Lv5 outside stair (r -44..-50, foot at fwd 6.7) and 7 in front of the spin button
+-- west of the jetty's line so the plaza walk stays open (owner 2026-10-31); fwd 5 leaves 7 studs clear at the foot of
+-- the HQ Lv5 outside stair (r -44..-50, foot at fwd -5.3) and 7 in front of the spin button
 local function placeWheel(plot: Plot)
 	local i = plot.index
-	local at = plot.frame * Marina.ISLAND * CFrame.new(-40, 0, -17)
+	local at = plot.frame * Marina.ISLAND * CFrame.new(-40, 0, -5)
 	local wheel = PrizeWheel.build(at, {
 		spin = function(player: Player)
 			return wheelSpin(i, player)
@@ -510,8 +510,8 @@ local function placeWheel(plot: Plot)
 	plot.wheelCount = if count and count:IsA("TextLabel") then count else nil
 	paintWheel(plot)
 	-- the rescue board mirrors the wheel at the plaza's east end, facing the cove (MERGE3 W1: at r 28 fwd 10.5 it hid
-	-- the HQ facade from the jetty; r 33-47 fwd 17 clears the HQ (r <= 29), the Harbour crane (fwd 27+) and the paths)
-	local board = LeaderboardService.Board(plot.frame * Marina.ISLAND * CFrame.new(40, 5.7, -17))
+	-- the HQ facade from the jetty; r 33-47 clears the HQ (r <= 29), the Harbour crane and the paths)
+	local board = LeaderboardService.Board(plot.frame * Marina.ISLAND * CFrame.new(40, 5.7, -5))
 	board.Parent = plot.model
 	plot.rescueBoard = board
 end
@@ -1127,7 +1127,7 @@ local function setMaster(plot: Plot, on: boolean)
 		local m = Instance.new("Model")
 		m.Name = "HarbourMaster"
 		plot.master = m -- claimed before the kit load yields, so a repeat or an off call in that window sees it
-		local at = plot.frame * Marina.ISLAND * CFrame.new(21, 0, -28)
+		local at = plot.frame * Marina.ISLAND * CFrame.new(21, 0, -16)
 		local pole = part(
 			m,
 			"Pole",

@@ -5,11 +5,11 @@
 --   orbit(center, angle)
 local LoadingPath = {}
 
--- ~62 degrees down from ~740 studs: the whole ring in frame
-LoadingPath.START_HEIGHT = 650
+-- ~62 degrees down from ~1360 studs: the whole ring in frame (the 860 ring of 640-stud plates, owner 2026-11-01)
+LoadingPath.START_HEIGHT = 1200
 -- the camera over this height is inside / above Terrain.Clouds (a blank pale frame): the loading screen hides them
 LoadingPath.CLOUD_BASE = 400
-LoadingPath.START_RADIUS = 350
+LoadingPath.START_RADIUS = 650
 LoadingPath.ORBIT_SPEED = math.rad(6)
 LoadingPath.FOV = 62
 

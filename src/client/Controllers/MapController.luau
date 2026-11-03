@@ -91,13 +91,16 @@ local FOG = DiscoveryConfig.Fog
 local FOG_COLOR = DEEP -- the unexplored sea in the panel's deep blue, no black notches at the edge (MERGE3 U7 ADs)
 
 -- the ring of player islands, drawn live over the bake (its tiles predate WP-27: an old hub island and a wider ring)
-local LAGOON = { -- depth bands, outermost first: they cover the old ring and read as chart contours
-	{ r = 1150, color = Color3.fromRGB(14, 60, 108), t = 0.45 },
-	{ r = 1060, color = Color3.fromRGB(16, 69, 119), t = 0 },
-	{ r = 900, color = Color3.fromRGB(28, 108, 158), t = 0 },
-	{ r = 760, color = Color3.fromRGB(36, 131, 173), t = 0 },
-	{ r = 600, color = Color3.fromRGB(52, 150, 182), t = 0 },
-}
+local LAGOON =
+	{ -- depth bands, outermost first: they cover the old ring and read as chart contours (+550 for the
+		-- 860 ring of 640-stud plates, owner 2026-11-01)
+		{ r = 1700, color = Color3.fromRGB(14, 60, 108), t = 0.45 },
+		{ r = 1610, color = Color3.fromRGB(16, 69, 119), t = 0 },
+		{ r = 1450, color = Color3.fromRGB(28, 108, 158), t = 0 },
+		{ r = 1310, color = Color3.fromRGB(36, 131, 173), t = 0 },
+		{ r = 1150, color = Color3.fromRGB(52, 150, 182), t = 0 },
+	}
+
 local LAND_EDGE = Color3.fromRGB(22, 52, 34)
 local LAND = { plate = Color3.fromRGB(92, 178, 70), bridge = Color3.fromRGB(205, 160, 104) }
 

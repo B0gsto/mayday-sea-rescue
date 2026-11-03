@@ -53,8 +53,8 @@ return function(t)
 			t.expect(CallLogic.isWater(Vector3.new(mid.X, 0, mid.Z), "Open")).toBe(false)
 			t.expect(CallLogic.isWater(Vector3.new(1800, 0, 1750), "Open")).toBe(false) -- Skerry Isle
 			t.expect(CallLogic.isWater(Vector3.new(0, 0, 7000), "Open")).toBe(false)
-			t.expect(CallLogic.isWater(Vector3.new(0, 0, 500), "Open")).toBe(true) -- past the Plot2-Plot3 bridge
-			t.expect(CallLogic.isWater(Vector3.new(0, 0, 500), "Outer")).toBe(false) -- inside the ring
+			t.expect(CallLogic.isWater(Vector3.new(0, 0, 900), "Open")).toBe(true) -- past the Plot2-Plot3 bridge
+			t.expect(CallLogic.isWater(Vector3.new(0, 0, 900), "Outer")).toBe(false) -- inside OuterMin
 			t.expect(CallLogic.isWater(Vector3.new(0, 0, 1300), "Outer")).toBe(true)
 		end
 	)

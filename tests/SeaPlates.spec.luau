@@ -1,5 +1,5 @@
 -- SeaPlates (docs/27 section 1): the sea plates' hard limits. Every plate (and the ramp) stays inside its island's
--- 60 deg wedge (>= 40 studs from the bisectors), <= 900 from the ring centre, >= 120 from every outer island, wreck
+-- 60 deg wedge (>= 40 studs from the bisectors), <= 1450 from the ring centre (docs/27 900, + 550 for the 2x plates), >= 120 from every outer island, wreck
 -- and fixed call site, off the island plate's trim and beach step, over open water, and leaves the berth channel
 -- >= 70 wide; the moved quest pontoon, its boats and the second barge stay clear; no call spawns on them.
 return function(t)
@@ -46,7 +46,7 @@ return function(t)
 	end
 
 	t.test(
-		"every plate and the ramp: inside the wedge, within 900, far from fixed sites",
+		"every plate and the ramp: inside the wedge, within 1450, far from fixed sites",
 		function()
 			local sites = {} -- { centre, radius }
 			for _, o in WorldConfig.Islands do
@@ -65,7 +65,7 @@ return function(t)
 					for _, c in corners(r) do
 						local along = c.Y + R -- the corner's distance out along the island's facing
 						t.expect(along * 0.5 - math.abs(c.X) * math.sqrt(3) / 2 >= 40).toBe(true)
-						t.expect(Vector2.new(c.X, along).Magnitude <= 900).toBe(true)
+						t.expect(Vector2.new(c.X, along).Magnitude <= 1450).toBe(true)
 					end
 					for _, s in sites do
 						local d = rectDist(isl, r, s[1]) - s[2]
@@ -142,7 +142,7 @@ return function(t)
 	t.test("a sea route from the cove out past the plates goes round them", function()
 		for _, isl in L.Islands do
 			local berth = isl.berths.Boat.Position
-			local out = (isl.frame * CFrame.new(-170, 0, -300)).Position -- out beyond P1's outer corner
+			local out = (isl.frame * CFrame.new(-170, 0, -460)).Position -- out beyond P1's outer corner
 			local leg = L.seaRoute(berth, Vector3.new(out.X, 0, out.Z))
 			t.expect(L.nearSeaPlate(leg.X, leg.Z, 10)).toBe(false)
 		end

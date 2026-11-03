@@ -193,7 +193,7 @@ local MapConfig = {
 	-- open sea south of the ring is shaded. CONTRACT (storm stream): set ReplicatedStorage.Weather
 	-- attributes StormCenter (Vector3) and StormRadius (number) and the map uses those instead.
 	StormAreas = {
-		{ center = Vector3.new(0, 0, 1650), radius = 1250 },
+		{ center = Vector3.new(0, 0, 2200), radius = 1250 }, -- clear of the 860 ring of 640-stud plates
 	},
 }
 

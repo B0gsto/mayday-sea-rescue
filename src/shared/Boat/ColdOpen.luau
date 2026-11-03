@@ -98,7 +98,7 @@ for _, island in RingLayout.Islands do
 	table.insert(ColdOpen.SHORE, {
 		id = island.id,
 		water = Vector3.new(berth.X, 0, berth.Z),
-		dry = quay(island.frame, 20),
+		dry = quay(island.frame, 180), -- 10 behind the notch head (fwd 190)
 	})
 end
 ColdOpen.SHORE_RADIUS = 40 -- studs, flat, casualty to the shore point (28 left a jet ski stalled on the slip short of it) -- tune
