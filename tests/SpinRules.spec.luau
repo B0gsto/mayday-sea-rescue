@@ -175,6 +175,34 @@ return function(t)
 		t.expect(state.free).toBe(SpinRules.MAX_FREE)
 	end)
 
+	t.test("bought spins are spent last and never without a clear policy", function()
+		local state = SpinRules.decode(SpinRules.addPaid(nil, 2))
+		state.free += 1 -- one earned
+		t.expect(SpinRules.usable(state, false)).toBe(1)
+		t.expect(SpinRules.spendOne(state, false)).toBe(true) -- the earned one
+		t.expect(state.paid).toBe(2)
+		t.expect(SpinRules.spendOne(state, false)).toBe(false)
+		t.expect(state.free).toBe(2)
+		t.expect(SpinRules.spendOne(state, true)).toBe(true)
+		t.expect(state.free).toBe(1)
+		t.expect(state.paid).toBe(1)
+		local saved = SpinRules.decode(SpinRules.encode(state))
+		t.expect(saved.paid).toBe(1)
+		t.expect(SpinRules.decode({ f = 1, p = 9 }).paid).toBe(1) -- never more than held
+		t.expect(SpinRules.decode({ f = 3 }).paid).toBe(0) -- an old save
+		local claimed = SpinRules.claim(state, SpinRules.prize("GalaxyFinish"))
+		t.expect(claimed.paid).toBe(1)
+		t.expect((SpinRules.accrue(state, 0, 1790000000)).paid).toBe(1)
+	end)
+
+	t.test("the odds board names every prize", function()
+		t.expect(SpinRules.prizeNames("Common")).toBe("150 Cash")
+		for _, prize in SpinRules.PRIZES do
+			t.expect(string.find(SpinRules.prizeNames(prize.rarity), prize.name, 1, true) ~= nil)
+				.toBe(true)
+		end
+	end)
+
 	t.test("free spins can't be farmed: no back-pay, no banked days, no clock rewind", function()
 		local now = 20000 * 86400 + 100
 		local vet = SpinRules.accrue(SpinRules.newState(), 500, now)
@@ -208,6 +236,7 @@ return function(t)
 		local raw = SpinRules.encode({
 			day = 5,
 			free = 98,
+			paid = 0,
 			pity = { epic = 2, legendary = 7 },
 			rescued = 30,
 			owned = 1,

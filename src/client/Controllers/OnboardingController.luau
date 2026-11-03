@@ -75,7 +75,6 @@ local beat: Onboarding.Beat = "ColdOpen"
 local guide: string? = nil
 local lastTabletPulse: string? = nil
 local glanceSerial = 0
-local showEnds = 0 -- os.clock() when the Workshop finish camera hands back: the Day 1 card waits for it
 local siteWatched = false -- the Workshop site ran this session: its finish gets the full beat, a rejoin does not
 local tickAt = 0
 
@@ -193,7 +192,6 @@ local function workshopDone(wheel: Model)
 	if not glance(sitePoint(Onboarding.WORKSHOP), SITE_HOLD) then
 		return -- seated (off on a call) or a panel open: the wheel beacon alone leads
 	end
-	showEnds = os.clock() + SITE_HOLD + WHEEL_HOLD
 	task.delay(
 		SITE_HOLD - 0.1,
 		function() -- before the site glance clears: one cut, no frame of the player camera
@@ -718,13 +716,8 @@ local function update()
 		showReward()
 	end
 	beat = currentBeat()
-	-- the Day 1 card waits for the Workshop: a new player's first screen is the game (owner 2026-11-03)
-	player:SetAttribute(
-		"TutorialHoldReward",
-		if beat == "Done" or (beat == "Spin" and not siteWatched and os.clock() >= showEnds)
-			then nil
-			else true
-	)
+	-- the Day 1 card waits for the first spin: a new player's first screen is the game (owner 2026-11-03)
+	player:SetAttribute("TutorialHoldReward", if beat == "Done" then nil else true)
 	-- off the jet ski mid cold open: the edge pointer leads back to it (its craft pin marks it in view)
 	local craft = strandedFrom()
 	if craft then

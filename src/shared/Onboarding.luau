@@ -32,6 +32,12 @@ Onboarding.WORKSHOP = "Workshop"
 Onboarding.HQ = "HQ" -- the free first build (docs/25 J)
 local START = { Harbour = true, HQ = true } -- every new island has the jetty and builds the Hut first
 
+-- Roblox's own prompts wait for the tutorial's first spin (live: they lost players on the Workshop and spin steps);
+-- a save with no step skipped the tutorial.
+function Onboarding.tutorialOver(step: number?): boolean
+	return step == nil or step >= Onboarding.STEP_DONE
+end
+
 -- Any building beyond the start set (the Workshop on): an established save. PlatformPromptService waits for it too.
 function Onboarding.established(owned: { [string]: boolean }?): boolean
 	local map: { [string]: boolean } = owned or {}

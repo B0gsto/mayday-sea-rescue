@@ -53,7 +53,8 @@ local SprintController = {}
 
 function SprintController.Start()
 	local player = Players.LocalPlayer
-	local held = false -- Shift held / L3 toggled on
+	local toggled = false -- L3 toggled on
+	local focused = true
 	local runAnim = Instance.new("Animation")
 	runAnim.AnimationId = RUN_ANIM
 	local track: AnimationTrack? = nil
@@ -132,25 +133,18 @@ function SprintController.Start()
 		return out
 	end
 
-	ContextActionService:BindAction(
-		"Sprint",
-		function(_, state: Enum.UserInputState, input: InputObject)
-			if input.KeyCode == Enum.KeyCode.ButtonL3 then
-				if state == Enum.UserInputState.Begin then
-					held = not held
-				end
-			else
-				held = state == Enum.UserInputState.Begin
-			end
-			return Enum.ContextActionResult.Pass
-		end,
-		false,
-		Enum.KeyCode.LeftShift,
-		Enum.KeyCode.RightShift,
-		Enum.KeyCode.ButtonL3
-	)
+	ContextActionService:BindAction("Sprint", function(_, state: Enum.UserInputState)
+		if state == Enum.UserInputState.Begin then
+			toggled = not toggled
+		end
+		return Enum.ContextActionResult.Pass
+	end, false, Enum.KeyCode.ButtonL3)
 	UserInputService.WindowFocusReleased:Connect(function()
-		held = false
+		focused = false
+		toggled = false
+	end)
+	UserInputService.WindowFocused:Connect(function()
+		focused = true
 	end)
 
 	RunService.Heartbeat:Connect(function()
@@ -175,11 +169,17 @@ function SprintController.Start()
 		end
 		local moving = hum.MoveDirection.Magnitude
 		if moving < 0.05 then
-			held = held and UserInputService:GetLastInputType() ~= Enum.UserInputType.Gamepad1 -- L3 run ends on stop
+			toggled = toggled and UserInputService:GetLastInputType() ~= Enum.UserInputType.Gamepad1 -- L3 run ends on stop
 		end
 		local touchRun = UserInputService:GetLastInputType() == Enum.UserInputType.Touch
 			and moving > 0.95
-		local want = if held or touchRun then SPRINT else WALK
+		-- read each frame, not from key events: a CAS cancel or a lost key-up must not end the run while Shift is down
+		local shift = focused
+			and (
+				UserInputService:IsKeyDown(Enum.KeyCode.LeftShift)
+				or UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
+			)
+		local want = if shift or toggled or touchRun then SPRINT else WALK
 		if (hum.WalkSpeed == WALK or hum.WalkSpeed == SPRINT) and hum.WalkSpeed ~= want then
 			hum.WalkSpeed = want
 		end

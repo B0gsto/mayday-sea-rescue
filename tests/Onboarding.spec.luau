@@ -12,6 +12,12 @@ return function(t)
 		return f
 	end
 
+	t.test("Roblox prompts wait for the first spin", function()
+		t.expect(O.tutorialOver(O.STEP_SPIN)).toBe(false)
+		t.expect(O.tutorialOver(O.STEP_DONE)).toBe(true)
+		t.expect(O.tutorialOver(nil)).toBe(true) -- skipped the tutorial
+	end)
+
 	t.test("nothing to show before the cold open ends", function()
 		t.expect(O.goal(facts({ coldOpenDone = false, offerReady = true }))).toBe(nil)
 	end)

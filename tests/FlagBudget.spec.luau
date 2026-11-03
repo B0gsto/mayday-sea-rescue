@@ -42,6 +42,7 @@ return function(t)
 			spin = SpinRules.encode({
 				day = 20717,
 				free = SpinRules.MAX_FREE,
+				paid = SpinRules.MAX_FREE,
 				pity = { epic = SpinRules.PITY_EPIC - 1, legendary = SpinRules.PITY_LEGENDARY - 1 },
 				rescued = 1000,
 				owned = 2 ^ #SpinRules.PRIZES - 1,

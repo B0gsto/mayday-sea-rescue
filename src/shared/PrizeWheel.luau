@@ -410,10 +410,10 @@ local function buildOdds(parent: Instance, at: CFrame)
 	local model = Instance.new("Model")
 	model.Name = "OddsBoard"
 	model.Parent = parent
-	local x = -11.5 -- the set's outer (west) end, off the plaza walk
+	local x = -12 -- the set's outer (west) end, off the plaza walk
 	part(model, "Post", Vector3.new(1, 10, 1), at * CFrame.new(x, 5, 0), LBG)
 	local board =
-		part(model, "Board", Vector3.new(7, 10.5, 0.6), at * CFrame.new(x, 10.75, -0.35), WHITE)
+		part(model, "Board", Vector3.new(8, 13.5, 0.6), at * CFrame.new(x, 12.25, -0.35), WHITE)
 	local gui = Instance.new("SurfaceGui")
 	gui.Face = Enum.NormalId.Front
 	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
@@ -434,7 +434,7 @@ local function buildOdds(parent: Instance, at: CFrame)
 	for i, rarity in SpinRules.RARITY_ORDER do
 		local row = Instance.new("Frame")
 		row.Name = `Row{rarity}`
-		row.Size = UDim2.new(1, 0, 0, 46)
+		row.Size = UDim2.new(1, 0, 0, 68)
 		row.BackgroundTransparency = 1
 		row.LayoutOrder = i
 		row.Parent = gui
@@ -446,7 +446,10 @@ local function buildOdds(parent: Instance, at: CFrame)
 		chip.Parent = row
 		boardText(row, "Odds", 28, 42, INK, Enum.TextXAlignment.Left)
 		local each = boardText(row, "Each", 18, 42, SUB, Enum.TextXAlignment.Left)
-		each.Position = UDim2.fromOffset(42, 28)
+		each.Position = UDim2.fromOffset(42, 48)
+		local prizes = boardText(row, "Prizes", 20, 42, INK, Enum.TextXAlignment.Left)
+		prizes.Position = UDim2.fromOffset(42, 28)
+		prizes.Text = SpinRules.prizeNames(rarity :: SpinRules.Rarity)
 	end
 	line("PityEpic", 24, PURPLE, 10)
 	line("PityLegendary", 24, Color3.fromRGB(200, 150, 20), 11)

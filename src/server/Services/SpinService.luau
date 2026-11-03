@@ -51,6 +51,12 @@ local function stateOf(data: any): SpinRules.State
 	return SpinRules.decode(if type(data.flags) == "table" then data.flags[FLAG] else nil)
 end
 
+-- fails closed: no successful policy read yet means no paid random item
+local function paidAllowed(player: Player): boolean
+	local policy = MonetizationService.GetPolicy(player)
+	return policy ~= nil and policy.ArePaidRandomItemsRestricted == false
+end
+
 local function publish(player: Player, state: SpinRules.State)
 	local pets = PetService.GetState(player)
 	local data = DataService.Get(player)
@@ -67,7 +73,7 @@ local function publish(player: Player, state: SpinRules.State)
 		return pets ~= nil and PetRules.ownsVariant(pets, variant)
 	end, ownsBoat)
 	player:SetAttribute("SpinOwned", table.concat(owned, ",")) -- the odds board's owned rows
-	player:SetAttribute("FreeSpins", state.free)
+	player:SetAttribute("FreeSpins", SpinRules.usable(state, paidAllowed(player)))
 	player:SetAttribute("SpinPityEpic", state.pity.epic)
 	player:SetAttribute("SpinPityLegendary", state.pity.legendary)
 end
@@ -207,7 +213,7 @@ function SpinService.Spin(player: Player): { [string]: any }
 	if not state then
 		return { ok = false, reason = "Profile not loaded" }
 	end
-	if state.free < 1 then
+	if SpinRules.usable(state, paidAllowed(player)) < 1 then
 		return { ok = false, reason = "No spins" }
 	end
 
@@ -225,7 +231,7 @@ function SpinService.Spin(player: Player): { [string]: any }
 	end
 	local segment = SpinRules.segment(rng, prize.rarity)
 
-	state.free -= 1
+	SpinRules.spendOne(state, paidAllowed(player))
 	state.pity = pity
 	-- the spent spin is saved before anything is granted: a failed save never yields a free prize
 	if not store(player, state) then
@@ -332,6 +338,11 @@ function SpinService.Init()
 
 	DataService.OnLoaded(function(player: Player)
 		SpinService.Refresh(player)
+		player
+			:GetAttributeChangedSignal("PolicyRead")
+			:Once(function() -- bought spins show once the policy says so
+				SpinService.Refresh(player)
+			end)
 	end)
 	Players.PlayerRemoving:Connect(function(player: Player)
 		lastSpin[player] = nil

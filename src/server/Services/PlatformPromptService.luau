@@ -52,11 +52,12 @@ local function triggered(player: Player, kind: PlatformPrompts.Kind): boolean
 		return true
 	end
 	-- live v33: both OS prompts queued on the first delivery / the free Hut and popped at the 3-minute gate, over
-	-- the Workshop step; touch players quit there. Neither asks before the Workshop (Onboarding.established).
+	-- the Workshop step; touch players quit there. Neither asks before the first spin (Onboarding.tutorialOver).
 	local data: any = DataService.Get(player)
 	local built = data ~= nil
 		and type(data.dockBuildings) == "table"
 		and Onboarding.established(data.dockBuildings)
+		and Onboarding.tutorialOver(data.tutorialStep)
 	if kind == "notify" then -- after a rescue debrief (owner 2026-10-28) once the Workshop stands
 		return built and (tonumber(data.totalRescues) or 0) >= 1
 	elseif kind == "favorite" then -- after the first island building past the jetty and the Hut

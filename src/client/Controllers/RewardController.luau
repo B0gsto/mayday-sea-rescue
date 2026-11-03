@@ -48,6 +48,7 @@ end
 local function busy(): boolean
 	return player:GetAttribute("LoadingScreenActive") == true
 		or player:GetAttribute("CinematicPlaying") == true
+		or player:GetAttribute("SpinCinematic") == true -- the first spin frees the Day 1 card: not over the show
 		or player:GetAttribute("ColdOpenActive") == true
 		or player:GetAttribute("Establishing") == true -- OnboardingController's first-spawn shot comes first
 		-- Studio: Workspace attribute RewardHold keeps the prompt shut while a test sets up its state
@@ -117,6 +118,7 @@ function RewardController.Start()
 			"WorkerOffline",
 			"LoadingScreenActive",
 			"CinematicPlaying",
+			"SpinCinematic",
 			"ColdOpenActive",
 			"Establishing",
 			"TutorialHoldReward",

@@ -9,7 +9,7 @@
 -- The saved flag `spin` is a flat table of scalars (ProgressionRules.sanitizeFlag):
 --   d = last UTC day a free spin was granted, f = free spins available,
 --   e / l = spins since the last Epic+ / Legendary+, r = rescued people already paid out,
---   o = bitmask of owned finish / trail prizes (bit i = PRIZES[i]).
+--   o = bitmask of owned finish / trail prizes (bit i = PRIZES[i]), p = how many of f were bought with Robux.
 --
 -- Free spins: 1 a day plus 1 for every 10 people rescued (docs/24 D); see accrue.
 --
@@ -34,7 +34,8 @@ export type Prize = {
 export type Pity = { epic: number, legendary: number }
 export type State = {
 	day: number,
-	free: number,
+	free: number, -- every spin held, paid ones included
+	paid: number, -- how many of them were bought: a restricted player can't spend these
 	pity: Pity,
 	rescued: number,
 	owned: number,
@@ -193,6 +194,15 @@ function SpinRules.prizesOf(rarity: Rarity): { Prize }
 	return byRarity[rarity] or {}
 end
 
+-- What a rarity can give, for the odds board: "150 Cash" or "Neon Pet, Neon Glow, Fire Wake".
+function SpinRules.prizeNames(rarity: Rarity): string
+	local names = {}
+	for _, prize in SpinRules.prizesOf(rarity) do
+		table.insert(names, if prize.cash then `{prize.cash} {prize.name}` else prize.name)
+	end
+	return table.concat(names, ", ")
+end
+
 function SpinRules.rank(rarity: string): number
 	return table.find(SpinRules.RARITY_ORDER, rarity) or 0
 end
@@ -217,7 +227,14 @@ function SpinRules.duplicateCash(prize: Prize): number
 end
 
 function SpinRules.newState(): State
-	return { day = 0, free = 0, pity = { epic = 0, legendary = 0 }, rescued = 0, owned = 0 }
+	return {
+		day = 0,
+		free = 0,
+		paid = 0,
+		pity = { epic = 0, legendary = 0 },
+		rescued = 0,
+		owned = 0,
+	}
 end
 
 function SpinRules.decode(raw: any): State
@@ -227,6 +244,7 @@ function SpinRules.decode(raw: any): State
 	end
 	state.day = math.max(0, math.floor(tonumber(raw.d) or 0))
 	state.free = math.max(0, math.floor(tonumber(raw.f) or 0))
+	state.paid = math.clamp(math.floor(tonumber(raw.p) or 0), 0, state.free)
 	state.pity.epic = math.max(0, math.floor(tonumber(raw.e) or 0))
 	state.pity.legendary = math.max(0, math.floor(tonumber(raw.l) or 0))
 	state.rescued = math.max(0, math.floor(tonumber(raw.r) or 0))
@@ -238,6 +256,7 @@ function SpinRules.encode(state: State): { [string]: any }
 	return {
 		d = math.max(0, math.floor(state.day)),
 		f = math.max(0, math.floor(state.free)),
+		p = math.max(0, math.floor(state.paid)),
 		e = math.max(0, math.floor(state.pity.epic)),
 		l = math.max(0, math.floor(state.pity.legendary)),
 		r = math.max(0, math.floor(state.rescued)),
@@ -257,6 +276,7 @@ function SpinRules.accrue(state: State, rescued: number, now: number): (State, n
 	local nextState: State = {
 		day = day,
 		free = math.min(state.free + added, math.max(state.free, SpinRules.MAX_FREE)),
+		paid = state.paid,
 		pity = state.pity,
 		rescued = math.max(baseline, people),
 		owned = state.owned,
@@ -265,11 +285,30 @@ function SpinRules.accrue(state: State, rescued: number, now: number): (State, n
 end
 
 -- A paid spin receipt (Spin1 / Spin5 / Spin15): adds `n` spins to the saved flag, never capped and never
--- policy-checked. The PolicyService gate sits at the prompt only: a receipt is always granted (docs/04 §7).
+-- policy-checked: a receipt is always granted (docs/04 §7). The PolicyService gates are the prompt and spendOne.
 function SpinRules.addPaid(raw: any, n: number): { [string]: any }
 	local state = SpinRules.decode(raw)
-	state.free += math.max(0, math.floor(n))
+	local added = math.max(0, math.floor(n))
+	state.free += added
+	state.paid += added
 	return SpinRules.encode(state)
+end
+
+-- Spins this player may use right now: paid ones only when the policy allows paid random items.
+function SpinRules.usable(state: State, paidAllowed: boolean): number
+	return if paidAllowed then state.free else state.free - state.paid
+end
+
+-- Takes one spin, earned ones first, and says if it could.
+function SpinRules.spendOne(state: State, paidAllowed: boolean): boolean
+	if SpinRules.usable(state, paidAllowed) < 1 then
+		return false
+	end
+	if state.free <= state.paid then
+		state.paid -= 1
+	end
+	state.free -= 1
+	return true
 end
 
 -- The next spin's odds in percent per rarity (sums to 100), the same table the board shows and
@@ -370,6 +409,7 @@ function SpinRules.claim(state: State, prize: Prize): State
 	return {
 		day = state.day,
 		free = state.free,
+		paid = state.paid,
 		pity = state.pity,
 		rescued = state.rescued,
 		owned = bit32.bor(state.owned, bit),
