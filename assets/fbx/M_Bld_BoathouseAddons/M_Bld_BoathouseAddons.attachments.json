@@ -7,19 +7,19 @@
    "name": "ATT_Launch",
    "parent": null,
    "blender": [
-    42.0,
+    18.0,
     -41.0,
-    -2.0409
+    -3.0125
    ],
    "roblox_from_origin": [
-    -42.0,
-    -2.0409,
+    -18.0,
+    -3.0125,
     -41.0
    ],
    "roblox_from_bbox_centre": [
-    -29.875,
-    -13.9159,
-    -0.725
+    12.3475,
+    -18.1125,
+    -28.41
    ],
    "look": [
     0.0,
@@ -36,19 +36,19 @@
    "name": "ATT_Work_Winch",
    "parent": null,
    "blender": [
-    10.0,
+    33.6,
     -37.6,
     0.55
    ],
    "roblox_from_origin": [
-    -10.0,
+    -33.6,
     0.55,
     -37.6
    ],
    "roblox_from_bbox_centre": [
-    2.125,
-    -11.325,
-    2.675
+    -3.2525,
+    -14.55,
+    -25.01
    ],
    "look": [
     0.0,
@@ -65,19 +65,19 @@
    "name": "ATT_ReadyRoom",
    "parent": null,
    "blender": [
-    -19.5,
-    -41.0,
+    52.5,
+    -41.5,
     0.55
    ],
    "roblox_from_origin": [
-    19.5,
+    -52.5,
     0.55,
-    -41.0
+    -41.5
    ],
    "roblox_from_bbox_centre": [
-    31.625,
-    -11.325,
-    -0.725
+    -22.1525,
+    -14.55,
+    -28.91
    ],
    "look": [
     0.0,
