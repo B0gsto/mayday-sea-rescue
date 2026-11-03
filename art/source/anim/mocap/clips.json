@@ -1,0 +1,19 @@
+{
+  "_doc": "Mocap -> R15 clips. file: under build/mocap/src; frames: source frame range (take 0-based) the loop/one-shot is cut from; fps: real capture fps (CMU 62_* is 60 although its header says 120); cycle: loop length bounds in s; root: bob (offsets around the mean, in place) | abs (real hip height, sit); root_y: extra studs; native: take already loops, used whole; wrap: native take without a duplicate end frame (frame b samples frame a); upper: upper body only (layers over walk/idle); yaw: extra facing turn in degrees. Stylize (rotations only, R15 limb lengths kept; degrees in AnimKit CFrame.Angles order, +x swings a limb forward and tilts Waist/Neck back): upright: 0-1 (or per part LowerTorso/UpperTorso/Head) scales the part's world tilt toward vertical, arms keep their world direction; amp: {joint: k} scales the joint's motion around its mean; offset: {joint: [x,y,z]} pre-rotates it in its parent frame; pose: {joint: [x,y,z]} replaces it; smooth: gaussian sigma in 30 fps frames (default 0.8); repeat: loop the cut cycle n times (still takes, room for slow sway); sway: [[joint, x, y, z, cycles per loop, phase]] seamless sine layers (loops only).",
+  "clips": [
+    { "name": "WorkerHammer", "file": "ual2/UAL2_Standard.glb", "take": "TreeChopping_Loop", "skel": "ual", "fps": 30, "frames": [0, 30], "loop": true, "cycle": [1.0, 1.0], "native": true, "wrap": true, "priority": "Action", "root": "bob" },
+    { "name": "WorkerSaw", "file": "cmu/62_03.bvh", "skel": "cmu", "fps": 60, "frames": [460, 1060], "loop": true, "cycle": [0.7, 2.5], "priority": "Action", "root": "bob",
+      "upright": { "LowerTorso": 0.3, "UpperTorso": 0.35, "Head": 0.6 }, "amp": { "RightShoulder": 1.5, "RightElbow": 1.5, "Waist": 2.0, "Root": 1.5 } },
+    { "name": "WorkerWrench", "file": "cmu/62_02.bvh", "skel": "cmu", "fps": 60, "frames": [559, 798], "loop": true, "cycle": [0.8, 3.0], "priority": "Action", "root": "bob",
+      "upright": { "LowerTorso": 0.3, "UpperTorso": 0.35, "Head": 0.55 }, "amp": { "RightShoulder": 2.8, "RightElbow": 2.5, "Waist": 1.5 }, "smooth": 1.2 },
+    { "name": "WorkerCarry", "file": "ual2/UAL2_Standard.glb", "take": "Walk_Carry_Loop", "skel": "ual", "fps": 30, "frames": [0, 60], "loop": true, "cycle": [2.0, 2.0], "native": true, "priority": "Action", "upper": true,
+      "upright": { "UpperTorso": 0.8, "Head": 0.9 }, "amp": { "Waist": 2.0 }, "offset": { "Waist": [4, 0, 0], "LeftShoulder": [-12, 0, 0], "RightShoulder": [-12, 0, 0], "LeftElbow": [15, 0, 0], "RightElbow": [15, 0, 0] } },
+    { "name": "WorkerPoint", "file": "cmu/14_24.bvh", "skel": "cmu", "fps": 120, "frames": [2690, 2970], "loop": false, "priority": "Action", "upper": true,
+      "offset": { "LeftShoulder": [18, 0, 0], "Waist": [-6, 0, 0] }, "pose": { "RightShoulder": [115, 60, 10], "RightElbow": [65, 0, 0] } },
+    { "name": "NpcSit", "file": "cmu/82_05.bvh", "skel": "cmu", "fps": 120, "frames": [1230, 1550], "loop": true, "cycle": [2.4, 2.65], "repeat": 2, "priority": "Idle", "root": "abs", "root_y": 0.2,
+      "sway": [["Waist", 1.2, 0, 0, 2, 0], ["Waist", 0, 0, 1.5, 1, 0.1], ["Neck", 0, 14, 0, 1, 0], ["Neck", 0, 5, 0, 2, 0.25], ["Neck", 4, 0, 0, 1, 0.3]] },
+    { "name": "WorkerClimb", "file": "cmu/13_33.bvh", "skel": "cmu", "fps": 120, "frames": [248, 786], "loop": true, "cycle": [0.8, 2.5], "priority": "Movement", "root": "bob", "bob": 0.6,
+      "upright": { "LowerTorso": 0.3, "UpperTorso": 0.5, "Head": 0.3 }, "amp": { "LeftShoulder": 2.5, "RightShoulder": 2.5, "LeftElbow": 1.5, "RightElbow": 1.5, "LeftHip": 1.4, "RightHip": 1.4, "LeftKnee": 1.4, "RightKnee": 1.4 },
+      "offset": { "LeftShoulder": [70, 0, 0], "RightShoulder": [70, 0, 0] }, "smooth": 1.0 }
+  ]
+}

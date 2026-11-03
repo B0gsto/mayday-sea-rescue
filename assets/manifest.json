@@ -1,4 +1,20 @@
 {
+ "Animation:9d8b6edf558ad3a4c2136921972d0a6569648aca214f29e98c579e7189656062": {
+  "assetId": "113014050241702",
+  "moderation": "Approved",
+  "name": "Anim_WorkerHammer",
+  "sha": "9d8b6edf558ad3a4c2136921972d0a6569648aca214f29e98c579e7189656062",
+  "source": "art/out/anims/WorkerHammer.rbxm",
+  "type": "Animation"
+ },
+ "Animation:c813a572c1168270429cebfb370784dc3741305277bafdfe579e9916215054a9": {
+  "assetId": "76836983321485",
+  "moderation": "Approved",
+  "name": "Anim_NpcSit",
+  "sha": "c813a572c1168270429cebfb370784dc3741305277bafdfe579e9916215054a9",
+  "source": "art/out/anims/NpcSit.rbxm",
+  "type": "Animation"
+ },
  "Audio:0bf65b9c582f60e8850a5b0e3d792bbde95bf77a0e97398abed9d543423631ad": {
   "assetId": "137085856844255",
   "moderation": "Approved",

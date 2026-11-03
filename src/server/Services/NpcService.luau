@@ -41,7 +41,7 @@ function NpcService.ShoreHandover(dry: Vector3, water: Vector3)
 		local face = Vector3.new(water.X, dry.Y, water.Z)
 		local cas = NpcFactory.spawn("Swimmer", {
 			name = "ColdOpenCasualty",
-			pose = "Sit",
+			pose = "ShoreSit",
 			seed = 2,
 			cframe = stand(dry, face),
 			parent = folder :: Instance?,
