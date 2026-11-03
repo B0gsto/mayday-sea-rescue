@@ -359,8 +359,8 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   Spin cinematic (owner 2026-11-01, spinner only): `Camera/SpinCinematic` (`start(ctx)`, `active()`, `whenDone(fn)`;
   drives the camera through `CameraController.SetOverride`, hides the HUD, prompts, you and every pet; Epic+ cut under a
   whiteout to a client-side payoff stage 600 studs above the hub and back for the reveal), `SpinCinePlan` (pure
-  ladder/tier timings), presets `spincine_*` (textures `spincine_flare/rays/bolt/halo` in `VFXTextures`, stand-ins for
-  the SPINCINE-ART flipbooks). Player attribute `SpinCinematic` (true while on); `SpinRevealed` is set at its reveal.
+  ladder/tier timings), presets `spincine_*` (textures in `VFXTextures`: `spincine_bolt/brick/halo` are `AssetIds.FxSpin` flipbooks,
+  `spincine_flare/rays` still stand-ins). Player attribute `SpinCinematic` (true while on); `SpinRevealed` is set at its reveal.
   Attributes `FreeSpins`, `SpinPityEpic`, `SpinPityLegendary`. Studio: `ServerStorage.SpinDev` (`give` / `force` /
   `spin`). DEV: chat `/spincine <Rarity>` or the board's VFX tab plays a cinematic at your wheel (no token, no prize).
 - Weather: `src/shared/Weather.luau` reads `ReplicatedStorage.Weather` attributes; `WeatherMath`, `Waves`;

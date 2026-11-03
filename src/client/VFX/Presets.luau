@@ -1395,8 +1395,8 @@ Presets.ALL.heli_downwash = preset({
 
 ---------------------------------------------------------------- spin cinematic (owner 2026-11-01)
 -- SpinCinematic's beats (Camera/SpinCinematic), fired by name with opts.color = the rarity and opts.still (the
--- cinematic drives its own camera). The spincine_* textures (VFXTextures) are stand-ins until the Lego flipbooks
--- land: the art swap is an id change there. Played with the CFrame's up axis toward the camera (flare, halo, tunnel)
+-- cinematic drives its own camera). Bolt, brick and halo are Lego flipbooks; flare and rays are stand-ins until
+-- theirs pass (an id change in VFXTextures). Played with the CFrame's up axis toward the camera (flare, halo, tunnel)
 -- or straight up (beam, rays, shafts, bolt, coins, stars).
 local STAR = Color3.fromRGB(255, 246, 214)
 local BOLT_BLUE = Color3.fromRGB(170, 200, 255)
@@ -1471,17 +1471,17 @@ Presets.ALL.spincine_bolt = preset({
 	layers = {
 		with(core(STAR, 22, 0, 0.9), { tex = "spincine_flare" }),
 		{
-			tex = "spincine_bolt",
-			count = 24,
+			tex = "spincine_bolt", -- toy lightning forks thrown off the strike (one variant each: random start, fps 0)
+			count = 12,
 			colors = { STAR, BOLT_BLUE },
-			streak = true,
-			size = { 2, 6, 3 },
-			transparency = { 0, 0.2, 1 },
-			lifetime = { 0.35, 0.6 },
-			speed = { 40, 70 },
+			size = { 5, 9, 6 },
+			transparency = { 0, 0.15, 1 },
+			lifetime = { 0.3, 0.55 },
+			speed = { 30, 55 },
 			spread = { 180, 180 },
+			rotation = { 0, 360 },
 			drag = 4,
-			emission = 0.9,
+			emission = 1,
 		},
 		studRing(WHITE, 26, 0.8, 0),
 		plates({ WHITE, YELLOW }, 14),
@@ -1541,12 +1541,28 @@ Presets.ALL.spincine_halo = preset({
 	job = "showcase",
 	big = true,
 	layers = {
-		with(groundRing("spincine_halo", GOLD, { 14, 26 }, 1.2), { transparency = { 0, 0.1, 1 } }),
+		with(
+			groundRing("spincine_halo", GOLD, { 14, 26 }, 1.2),
+			{ transparency = { 0, 0.1, 1 }, emission = 1 }
+		),
 		studRing(PALE_GOLD, 18, 0.9, 0.15),
 		with(
-			confetti(60, { 20, 34 }, 180, { GOLD, YELLOW, WHITE }),
+			confetti(36, { 20, 34 }, 180, { GOLD, YELLOW, WHITE }),
 			{ drag = 1.2, accel = Vector3.new(0, -14, 0) }
 		),
+		{
+			tex = "spincine_brick", -- gold bricks tumbling off the locked ring; the sheet is gold already, so no tint
+			count = 16,
+			colors = { WHITE },
+			size = { 2.4, 2.4, 2 },
+			transparency = { 0, 0, 1 },
+			lifetime = { 1.1, 1.7 },
+			speed = { 16, 30 },
+			spread = { 180, 180 },
+			drag = 1,
+			accel = Vector3.new(0, -18, 0),
+			emission = 0.2,
+		},
 		with(rays(12, { PALE_GOLD }, 18, 0, 0.6), { tex = "spincine_rays", spread = { 180, 180 } }),
 	},
 	light = { color = GOLD, brightness = 4, range = 40, time = 1.4 },
