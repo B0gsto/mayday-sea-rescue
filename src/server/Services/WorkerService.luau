@@ -207,8 +207,8 @@ for i = 3, #TENT do
 	table.insert(CLINIC_LV2, TENT[i])
 	table.insert(CLINIC_LV3, TENT[i])
 end
--- the Mechanics' Lv2 engine stand (ATT_Work_Hull) and tool bench, then the Lv3 dock walkway (the stand's spot is on
--- the dock wall's coping at Lv3); the code slots by the cab ladder and the gone tool chests drop out
+-- the Mechanics' Lv2 jib crane foot (ATT_Work_Hull) and tool bench, then the Lv3 dock's west rim (all on the yard
+-- floor); the code slots by the cab ladder and the gone tool chests drop out
 local YARD_BOAT = WORK_SPOTS.BoatYard
 local function mechSlot(name: string, tx: number, y: number?): WorkSlot
 	local s = addonSlot("BoatYard", "M_Bld_BoatYardAddons", name, tx, 0)

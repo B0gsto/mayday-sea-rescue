@@ -5,7 +5,7 @@ is one draw call. Cell index = the order below; row 0 of the image is the bottom
 """
 PALETTE = [
     (250, 249, 245),   # 0  white
-    (198, 202, 208),   # 1  light silver (saw blade, tools; round 3, was 163,162,165)
+    (198, 192, 180),   # 1  warm light grey (Boat Yard r5: 198,202,208 read lavender on the floor)
     (99, 95, 98),      # 2  dark bluish grey
     (30, 44, 66),      # 3  ink / navy (windows, waterline)
     (235, 30, 30),     # 4  red (brighter, round 2)

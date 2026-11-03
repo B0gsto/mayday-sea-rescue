@@ -2671,17 +2671,48 @@ end
 local function boatYard(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.BoatYard
 	local at = b * def.spot
-	-- Lv2 portal crane + hoisted engine and a tool bench, Lv3 dry dock on the east side (M_Bld_BoatYardAddons): the
-	-- code gantry and tool chests give way to the crane and bench, the east slip planks to the dock's caisson
-	local lv = if addonMesh(m, at, level or 1, "M_Bld_BoatYardAddons", "BoatYardMesh")
-		then level or 1
-		else 1
+	-- Lv2 red jib crane (back) + a tool bench (path front), Lv3 wet dock with a boat shed in the front corner opposite
+	-- the office (M_Bld_BoatYardAddons).
+	-- PERF-BL9: the asset's Lv1_* layers mesh the whole yard (floor, walls, boat, gantry, office, props, slipway); then
+	-- the code keeps only the plinth, the name sign, the rock and the Console (the act) hidden inside the mesh console.
+	local loaded = addonMesh(m, at, level or 1, "M_Bld_BoatYardAddons", "BoatYardMesh", true)
+	local lv = if loaded then level or 1 else 1
+	local mesh = if loaded then m:FindFirstChild("BoatYardMesh") else nil
+	local lv1 = mesh ~= nil and mesh:FindFirstChild("Lv1_L03_Boat", true) ~= nil -- an older upload has no Lv1
+	if mesh and lv >= 3 then -- the paint pallet gives way to the Lv3 dock
+		for _, p in mesh:GetDescendants() do
+			if p:IsA("BasePart") and string.match(p.Name, "^Lv1_L07_") then
+				p:Destroy()
+			end
+		end
+	end
 	local w, d = yardSize(def)
 	local spec = HUTS.BoatYard
 	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
+	local boat = at * CFrame.new(0, 0, 0)
+	sign(
+		m,
+		Vector3.new(9, 3.4, 0.4),
+		-- on the Lv1 gantry beam at every level (PERF-BL9 r2: the Lv2 jib crane carries no sign)
+		boat * CFrame.new(0, 25.1, -0.9),
+		BRICK_YELLOW,
+		def.name,
+		spec.icon
+	)
+	rock(m, at * CFrame.new(-w / 2 - 5, 0, d / 2 + 4))
+	if lv1 then -- inside the mesh console (its faces all hidden): keeps the craft-board act and the collision
+		local c = brick(
+			m,
+			"Console",
+			Vector3.new(3.0, 2.2, 2.6),
+			boat * CFrame.new(0, 10.25, -2.4),
+			BRICK_WHITE
+		)
+		c.CastShadow = false
+		return
+	end
 	-- docs/24 C r3: the workboat on four chunky cradle legs with yellow feet
 	-- docs/24 C r4: level on the cradle, 30% smaller, a wedge bow and a white deck line
-	local boat = at * CFrame.new(0, 0, 0)
 	for _, z in { -5, 5 } do
 		studTop(
 			brick(m, "Cradle", Vector3.new(9.4, 1.2, 2.2), boat * CFrame.new(0, 4.8, z), RBROWN)
@@ -2744,15 +2775,6 @@ local function boatYard(m: Model, b: CFrame, level: number?)
 		brick(m, "Hook", Vector3.new(1.1, 1.1, 1.1), boat * CFrame.new(0, 9.65, 0), BRICK_ORANGE)
 		brick(m, "HookTip", Vector3.new(0.4, 0.9, 0.4), boat * CFrame.new(0, 9.1, 0), BRICK_ORANGE)
 	end
-	sign(
-		m,
-		Vector3.new(7, 2, 0.4),
-		-- Lv2+: standing on the crane's girder over the dock (scaled: x 14.1, girder top 18.26, girder mid z 5.7)
-		if lv < 2 then boat * CFrame.new(0, 24.4, -0.9) else boat * CFrame.new(12.28, 16.88, 4.96),
-		BRICK_YELLOW,
-		def.name,
-		spec.icon
-	)
 	-- a tool chest and a tyre stack beside the hull: the yard's one prop cluster (owner 2026-11-01: "too cluttered",
 	-- so no stacked chest and no corner crates/barrels; Lv2+ the mesh's tool bench tells the story)
 	if lv < 2 then
@@ -2792,7 +2814,6 @@ local function boatYard(m: Model, b: CFrame, level: number?)
 		end
 	end
 	yardPath(m, at, d)
-	rock(m, at * CFrame.new(-w / 2 - 5, 0, d / 2 + 4))
 end
 
 -- Rescuer: an open slipway shed with the rescue boat, a lifebuoy rack and a tall lifeguard chair

@@ -10837,6 +10837,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:81043760897ccb7bcced4a02b3e63333a3f3a45106e97bb2a2a14543e7cce799": {
+  "assetId": "127251361759849",
+  "imageId": "127251361759849",
+  "moderation": "Reviewing",
+  "name": "T_BoatYard_Brick_ALB",
+  "sha": "81043760897ccb7bcced4a02b3e63333a3f3a45106e97bb2a2a14543e7cce799",
+  "source": "assets/textures/M_Bld_BoatYardAddons/T_BoatYard_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:810a8123f15d80f13e34970cd2ac52556e050e0d5e997ce511bf957ae06ff032": {
   "assetId": "74508321471069",
   "imageId": "74508321471069",
@@ -28622,6 +28631,16 @@
   "source": "assets/fbx/M_Bld_BoatyardShed/M_Bld_BoatyardShed_LOD1.fbx",
   "type": "Model"
  },
+ "Model:c8c00aeab437548dd09aadd9c23c28454727717fc077c84fb9ce96e9e960d83b": {
+  "assetId": "102629971947480",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons.rbxm",
+  "route": "delivery",
+  "sha": "c8c00aeab437548dd09aadd9c23c28454727717fc077c84fb9ce96e9e960d83b",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:c8fddc9c3beaaca60014042025af897e00c1482ed5b925394168c5af7bee7ead": {
   "assetId": "84358288111349",
   "moderation": "Approved",
@@ -29052,6 +29071,16 @@
   "source": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil_LOD0.fbx",
   "type": "Model"
  },
+ "Model:d6f1131efcd68a946dde230ff532feceb75aa5379d1c3c9798ee5d52fd9462f6": {
+  "assetId": "108045817507863",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "d6f1131efcd68a946dde230ff532feceb75aa5379d1c3c9798ee5d52fd9462f6",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:d6ff2c12b46ca2c8f17522d548a355fe0032591371ed20dd54ee3f387848dd98": {
   "assetId": "72925216529877",
   "moderation": "Approved",
@@ -29110,6 +29139,16 @@
   "route": "delivery",
   "sha": "d821eae9923d2c5db950e9ad27a9e901d972f3bbd7e5273bd0ca35b09f9773be",
   "source": "assets/fbx/M_Bld_Depot/M_Bld_Depot_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:d8b639efaf71146b90a00e04293b0f406eccd95d7ad86e79bcf2c40d8d563000": {
+  "assetId": "130896691043221",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d8b639efaf71146b90a00e04293b0f406eccd95d7ad86e79bcf2c40d8d563000",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:d8b6459488f51176fb7cc5126f3173e3e7ad4dbd9b2143207e543f0a25d5e44e": {

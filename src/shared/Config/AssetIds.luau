@@ -27,9 +27,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://82056579664639",
 	},
 	M_Bld_BoatYardAddons = {
-		LOD0 = "rbxassetid://71254246910044",
-		LOD1 = "rbxassetid://77780701235189",
-		LOD2 = "rbxassetid://118291679778146",
+		LOD0 = "rbxassetid://102629971947480",
+		LOD1 = "rbxassetid://130896691043221",
+		LOD2 = "rbxassetid://108045817507863",
 	},
 	M_Bld_BoathouseAddons = {
 		LOD0 = "rbxassetid://99906960240274",
@@ -530,9 +530,9 @@ AssetIds.Attachments = {
 		ATT_Work_FlightBoard = Vector3.new(-46, 0.7, -14),
 	},
 	M_Bld_BoatYardAddons = {
-		ATT_Work_Hull = Vector3.new(10.5, 3.26, 6),
-		ATT_Work_Bench = Vector3.new(-15.45, 0.92, 0),
-		ATT_Work_Dock = Vector3.new(10.5, 3.26, 13.4),
+		ATT_Work_Hull = Vector3.new(-9, 0.92, 18),
+		ATT_Work_Bench = Vector3.new(5.6, 0.92, -18.5),
+		ATT_Work_Dock = Vector3.new(-8.7, 0.92, -15),
 	},
 	M_Bld_BoathouseAddons = {
 		ATT_Launch = Vector3.new(-42, -2.0409, -41),
