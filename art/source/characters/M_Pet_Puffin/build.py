@@ -61,7 +61,10 @@ def head(p):
 
 def face(p):
     # mostly inside the head: only the front cap shows, as the white puffin mask
-    p.add(K.ball((0.96, 0.9, 0.76), (0, 0.3, -0.02), u=10, v=7), "face")
+    p.add(K.ball((1.1, 0.9, 0.76), (0, 0.3, -0.02), u=10, v=7), "face")      # r3: mask 15 % wider
+
+
+BEAK_BEVEL = 0.14    # r3: of the unit box, ~0.1 studs across each stripe (rounded shoulders read as a 3D wedge head-on)
 
 
 def _beak_seg(y0, y1, zone, p, puff=1.0):
@@ -69,19 +72,19 @@ def _beak_seg(y0, y1, zone, p, puff=1.0):
     def w(c):
         y = y0 + (c.y + 0.5) * (y1 - y0)
         t = (0.3 - y) / 0.86
-        width = (0.4 * (1 - t) + 0.24 * t) * puff        # r2: a wedge, tip 60 % of the base (was a flat plate)
+        width = (0.4 * (1 - t) + 0.19 * t) * puff        # r3: tip 20 % narrower
         top = (0.38 - 0.43 * t ** 0.8) * puff
         bot = (-0.36 * (1 - t) - 0.12 * t) * puff
         return Vector((c.x * width, y, bot + (c.z + 0.5) * (top - bot)))
-    p.add(K.box((1, 1, 1), bevel=0.06, seg=2, warp=w), zone)
+    p.add(K.box((1, 1, 1), bevel=BEAK_BEVEL, seg=2, warp=w), zone)
 
 
 def beak(p):
     # bands overlap 0.02 so every hidden end cap sits inside its proud neighbour (no shared planes)
     _beak_seg(0.3, 0.14, "slate", p)
-    _beak_seg(0.16, 0.05, "yellow", p, 1.05)
+    _beak_seg(0.16, 0.05, "yellow", p, 1.09)
     _beak_seg(0.07, -0.16, "orange", p)
-    _beak_seg(-0.1, -0.33, "yellow", p, 1.06)     # r2: the yellow tip band ~25 % of the beak
+    _beak_seg(-0.1, -0.33, "yellow", p, 1.1)      # r2: the yellow tip band ~25 % of the beak
     _beak_seg(-0.31, -0.56, "orange", p)
 
 
@@ -142,10 +145,13 @@ PARTS = [
 ]
 
 
+SCALE = 1.06     # r2 1.2 stood 3.04 studs; r3 band tops out at 2.7
+
+
 def build():
     parts = [dict(node=n, part=pn, index=i + 1, cframe=K.cf(pos, *ang), roblox=(pos, ang), make=mk)
              for i, (n, pn, pos, ang, mk) in enumerate(PARTS)]
-    spec = K.build_asset(ASSET, PREFIX, "Puffin", "Feathers", ZONES, parts, HERE, fbx_name="M_Ani_Puffin", scale=1.2, smooth=40, extra_mapping={
+    spec = K.build_asset(ASSET, PREFIX, "Puffin", "Feathers", ZONES, parts, HERE, fbx_name="M_Ani_Puffin", scale=SCALE, smooth=40, under=0.25, extra_mapping={
         "source": "src/shared/Config/Wildlife.luau Species.Puffin.parts (index = position in that list)",
         "rare": "the albino palette is not in this atlas (needs a second ALB or a tinted copy)"})
     spec["waivers"]["UV faces"] = "per-face swatch UVs are tiny squares; LOD collapse of the head stud leaves a face with no UV area"

@@ -27,3 +27,10 @@ Low-poly faceted herring gull pet (Bosun LP style), segmented for WildlifeRig.
 - Wings 30 % shorter (SPAN 1.95 -> 1.4) and drooped (DROOP 0.42, ~23 deg with the part roll); mid-grey mantle #9AA6B4/#848F9C; 0.3 grey head stud; beak 1.5x longer with the red spot out near the tip; chunkier bevels (beak/legs/feet 2 segments, wings 0.05).
 - ABS shading: lpkit `smooth=40` (new; default 0 keeps Puffin, SeaChest, Kelp unchanged).
 - validate PASS (286 checks, 0 failed, 25 waived: new "UV faces" waiver like Puffin, LOD1 head-stud collapse). Tris LOD0 2308, LOD1 1154 (small_prop 3000). zfight in session: 0 pairs.
+
+## r3 (2026-11-03)
+
+- SCALE 1.25: mesh 2.06 x 3.96 x 2.69 studs (w x l x h). Undersides 25 % darker (lpkit `under=0.25`).
+- Beak 30 % shorter and straight (hook removed), red gonys dot on the lower mandible. Wings folded 70 deg down against the flank with a short rounded black tip, tip swept back (rig `at` unchanged; PetMotion's shoulder now resolves to the wing top because the part is taller than wide). Mantle #8A99A8/#7A8997.
+- validate PASS (286 checks, 0 failed, 25 waived). Tris LOD0 2268, LOD1 1134. zfight in session (all LODs): 0 pairs. No rare albedo (none before).
+- PetSeat `built` (head height, LOD0): 2.685.

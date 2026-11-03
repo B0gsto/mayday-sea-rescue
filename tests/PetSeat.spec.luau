@@ -13,8 +13,8 @@ return function(t)
 				t.expect(PetSeat.scaleFor(species) < 1).toBe(true)
 			end
 		end
-		t.expect(PetSeat.scaleFor("Puffin") * 2.55).toBeCloseTo(0.9, 2)
-		t.expect(PetSeat.scaleFor("Otter") * 5.08).toBeCloseTo(3.0, 2)
+		t.expect(PetSeat.scaleFor("Puffin") * 2.681).toBeCloseTo(0.9, 2)
+		t.expect(PetSeat.scaleFor("Otter") * 7.637).toBeCloseTo(3.0, 2)
 		t.expect(PetSeat.scaleFor("Unknown")).toBe(1)
 	end)
 

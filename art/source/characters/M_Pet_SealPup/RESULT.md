@@ -25,3 +25,10 @@ Open: Head and body still read a little as two balls from the side (the rig `at`
 - Eye whites 0.52 -> 0.44 (-15 %), glints 0.12 -> 0.15 (readable highlight dot), whiskers 30 % shorter.
 - ABS shading: petkit `smooth=40`.
 - validate PASS (340 checks, 0 failed, 36 waived). Tris LOD0 1944, LOD1 772, LOD2 188. zfight in session (all LODs): 0 pairs.
+
+## r3 (2026-11-03)
+
+- SCALE 1.28 (not the 1.56 first drafted: that stood ~3.3 studs, over the 2.3-2.7 band): mesh 3.87 x 5.09 x 2.66 studs (w x l x h). Undersides 25 % darker.
+- Steel-blue back #4F74A0/#4F86C6, cream-white chest patch, white muzzle patch, no pale saucer rim; head cluster up 0.27 studs (neck break), eyes 1.15x, a 2x2 stud on the crown. Rare ref -> #4F7DB3 (golden ALB still written).
+- validate PASS (340 checks, 0 failed, 38 waived). Tris LOD0 2120, LOD1 842, LOD2 206. zfight in session (all LODs): 0 pairs.
+- PetSeat `built` (nose to tail, LOD0): 5.091.

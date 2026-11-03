@@ -8,6 +8,7 @@ the block Parts for MeshParts by index; M_Pet_Gull.mapping.json lists node, part
       art/source/characters/M_Pet_Gull/build.py --out-root build/prod/M_Pet_Gull \
       --steps build,lod,validate,export,turntable
 """
+import math
 import os
 import sys
 
@@ -22,7 +23,7 @@ PREFIX = "M_Ani_Gull_"          # "Pet" is not a names.py category; nodes are re
 
 ZONES = {
     "white": dict(top="#FBFBF8", bottom="#D2D6D9", rough=0.84),
-    "grey": dict(top="#9AA6B4", bottom="#848F9C", rough=0.82),     # r2: mid-grey mantle
+    "grey": dict(top="#8A99A8", bottom="#7A8997", rough=0.82),     # r3: darker mantle
     "black": dict(top="#2A2C32", bottom="#16171B", rough=0.6),
     "yellow": dict(top="#FFD23A", bottom="#E8A814", rough=0.38, signal=True),
     "red": dict(top="#E0402F", bottom="#B92A22", rough=0.42, signal=True),
@@ -72,13 +73,10 @@ def _mandible(y0, y1, width, top, bot, zone, p):
 
 
 def beak(p):
-    # upper mandible, hooked tip, lower mandible with the red gonys spot
-    # r2: 1.5x longer, the red spot moved out to the tip
-    _mandible(0.3, -0.69, lambda t: 0.36 - 0.16 * t, lambda t: 0.16 - 0.08 * t, lambda t: -0.01 - 0.01 * t, "yellow", p)
-    p.add(K.box((0.16, 0.12, 0.17), (0, -0.69, -0.03), bevel=0.035, taper=("z", 0.55, 1.0)), "yellow")
-    _mandible(0.3, -0.6, lambda t: 0.3 - 0.13 * t, lambda t: -0.02,
-              lambda t: -0.16 - 0.03 * min(t / 0.75, 1.0) + 0.15 * max(0.0, t - 0.75), "yellow", p)
-    p.add(K.box((0.21, 0.12, 0.09), (0, -0.5, -0.145), bevel=0.025), "red")
+    # r3: 30 % shorter and straight (no hook, no droop); upper + lower mandible, a red gonys dot on the lower
+    _mandible(0.3, -0.47, lambda t: 0.36 - 0.16 * t, lambda t: 0.16 - 0.08 * t, lambda t: -0.01 - 0.01 * t, "yellow", p)
+    _mandible(0.3, -0.42, lambda t: 0.3 - 0.13 * t, lambda t: -0.02, lambda t: -0.16 + 0.07 * t, "yellow", p)
+    p.add(K.box((0.22, 0.13, 0.1), (0, -0.31, -0.095), bevel=0.025), "red")
 
 
 def eye_maker(pos):
@@ -94,9 +92,11 @@ def glint(p):
     p.add(K.ball((0.08, 0.07, 0.08), u=6, v=4), "glint")
 
 
-SPAN = 1.4       # tour 2026-10-31 2.5 -> 1.95; r2 AD: 30 % shorter, drooped (tucked toy wings)
-
-DROOP = 0.42     # r2: the wing tips tuck down (~23 deg with the part's 0.12 rad roll)
+WING = 0.95      # r3: folded, shoulder to tip
+FOLD = math.radians(63)      # r3: 70 deg down with the part's 0.12 rad roll, flat against the body (no T-pose)
+ROOT = (-0.68, 0.22)         # the shoulder (x, z) in the part's frame, sunk in the body
+SWEEP = 0.4      # the tip points back along the flank, like a folded wing
+CURL = 0.2       # the tip curves in under the body's widest point
 
 
 def _span(p, s0, s1, le, te, thick, zone, chord=(0.0, 1.0)):
@@ -105,20 +105,23 @@ def _span(p, s0, s1, le, te, thick, zone, chord=(0.0, 1.0)):
         s = s0 + (c.x + 0.5) * (s1 - s0)
         f = chord[0] + (c.y + 0.5) * (chord[1] - chord[0])
         a, b = le(s), te(s)
-        return Vector((-1.25 + SPAN * s, a + f * (b - a), c.z * thick(s) - DROOP * s))
+        along, across = WING * s, c.z * thick(s)
+        return Vector((ROOT[0] + along * math.cos(FOLD) - CURL * s * s + across * math.sin(FOLD), a + f * (b - a) + SWEEP * s,
+                       ROOT[1] - along * math.sin(FOLD) + across * math.cos(FOLD)))
     p.add(K.box((1, 1, 1), bevel=0.05, warp=w), zone)
 
 
 def wing_maker(left):
-    le = lambda s: -0.5 + 0.38 * s ** 1.4
-    te = lambda s: 0.5 - 0.3 * s - 0.12 * s ** 2
+    tip = lambda s: 0.1 * max(0.0, (s - 0.8) / 0.2) ** 2      # the chord rounds off over the last 20 %
+    le = lambda s: -0.5 + 0.3 * s * s + tip(s)
+    te = lambda s: 0.5 - 0.18 * s - 0.2 * s ** 3 - tip(s)
     th = lambda s: 0.2 - 0.1 * s
 
     def make(p):
-        _span(p, 0.0, 0.62, le, te, th, "grey", (0.0, 0.84))
-        _span(p, 0.0, 0.62, le, te, lambda s: th(s) * 0.92, "white", (0.8, 1.0))
-        _span(p, 0.6, 1.0, le, te, lambda s: th(s) * 0.98, "black")
-        p.add(K.box((0.16, 0.14, 0.1), (-1.25 + SPAN * 0.86, 0.02, -DROOP * 0.86), bevel=0.025), "white")
+        _span(p, 0.0, 0.78, le, te, th, "grey", (0.0, 0.84))
+        _span(p, 0.0, 0.78, le, te, lambda s: th(s) * 0.92, "white", (0.8, 1.0))
+        _span(p, 0.76, 0.92, le, te, lambda s: th(s) * 0.98, "black")     # r3: a short rounded black tip
+        _span(p, 0.9, 1.0, le, te, lambda s: th(s) * 0.88, "black")
         if not left:          # authored for the left wing (outward = Blender +X)
             K.mirror_x(p.bm)
     return make
@@ -158,13 +161,13 @@ PARTS = [
     ("FootRight", "Foot", (0.32, 0.12, 0.02), (0, 0, 0), foot, None),
 ]
 PARTS = [(n, pn, pos, ang, mk or eye_maker(pos), rf) for n, pn, pos, ang, mk, rf in PARTS]
-SCALE = 1.2      # r2 AD: the pet read as a speck next to a 5-stud figure
+SCALE = 1.25     # r3: top of the 2.3-2.7 stud band (r2 1.2)
 
 
 def build():
     parts = [dict(node=n, part=pn, index=i + 1, cframe=K.cf(pos, *ang), roblox=(pos, ang), make=mk, refine=rf)
              for i, (n, pn, pos, ang, mk, rf) in enumerate(PARTS)]
-    spec = K.build_asset(ASSET, PREFIX, "Gull", "Feathers", ZONES, parts, HERE, fbx_name="M_Ani_Gull", scale=SCALE, smooth=40, extra_mapping={
+    spec = K.build_asset(ASSET, PREFIX, "Gull", "Feathers", ZONES, parts, HERE, fbx_name="M_Ani_Gull", scale=SCALE, smooth=40, under=0.25, extra_mapping={
         "source": "src/shared/Config/Wildlife.luau Species.Gull.parts (index = position in that list)",
         "rare": "the snow-gull palette is not in this atlas (needs a second ALB or a tinted copy)"})
     spec["waivers"]["UV faces"] = "per-face swatch UVs are tiny squares; LOD collapse of the head stud leaves a face with no UV area"

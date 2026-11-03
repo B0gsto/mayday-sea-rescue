@@ -25,3 +25,10 @@ Open: Shell plates read slightly grid-like up close. Golden rare ALB saturation 
 - ABS shading: `smooth=40`. Close-up camera scaled with the asset.
 - validate PASS (340 checks, 0 failed, 37 waived). Tris LOD0 2594, LOD1 1032, LOD2 254. zfight in session (collect/analyse, all LODs): 0 pairs. Exported (LOD0-2).
 - Lineup: `build/status/2026-11-01/perfect/animals/Pets/r2_sheet.png`.
+
+## r3 (2026-11-03)
+
+- SCALE 1.45: mesh 5.82 x 5.97 x 1.77 studs (w x l x h); stays flat by design, the read comes from the dome and raised head. Undersides 25 % darker.
+- Shell dome 1.4x higher; head + front flippers up 0.3 studs; head 1.3x, eyes and glints a further 1.2x; seams dark green #2A5C26 and 1.5x wider; tan plastron edge and skirt #E6CF86; centre plate stud r 0.26, the 2 ridge studs kept. Rare ALB still written.
+- validate PASS (340 checks, 0 failed, 40 waived). Tris LOD0 2594, LOD1 1032, LOD2 254. zfight in session (all LODs): 0 pairs.
+- PetSeat `built` (shell length, LOD0): 3.844.

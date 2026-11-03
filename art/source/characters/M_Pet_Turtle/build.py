@@ -24,10 +24,10 @@ ZONES = [  # name, top (faces up), bottom, roughness, tinted in the rare (golden
     ("cream", "#E2D8A8", "#D4C792", 0.7, True),
     ("scute", "#4BA03C", "#3E8A31", 0.45, True),
     ("scuteLight", "#6DBE4E", "#63B046", 0.45, True),
-    ("seam", "#21401D", "#1C361A", 0.6, True),
+    ("seam", "#2A5C26", "#254F22", 0.6, True),        # r3: dark green, not black
     ("rim", "#3A8A33", "#44963A", 0.5, True),
     ("plastron", "#E2D49C", "#D2C185", 0.65, True),
-    ("bellyRim", "#CBDA48", "#B6C434", 0.5, True),
+    ("bellyRim", "#E6CF86", "#D9BF72", 0.5, True),    # r3: cream/tan plastron edge
     ("skinDark", "#3B5E2E", "#34522A", 0.6, True),     # r2: darker flipper tips
     ("eye", "#1C1C22", "#1C1C22", 0.08, False),
     ("glint", "#F0F0F0", "#F0F0F0", 0.2, False),
@@ -36,7 +36,7 @@ RARE = ("#6C9956", "#DAAA46")   # the skin's mid green -> Wildlife rarePalette.S
 
 
 def shell():
-    nu, nv, h, base = 10, 12, 0.62, -0.33
+    nu, nv, h, base = 10, 12, 0.87, -0.33      # r3: dome 1.4x higher
     bm = bmesh.new()
     grid = {}
     for j in range(nv + 1):
@@ -65,13 +65,13 @@ def shell():
         for f in faces:
             light = (f.calc_center_median() - centre).length < 0.55 * reach
             zones[f] = "rim" if key[0] == "m" else ("scuteLight" if light else "scute")
-        bmesh.ops.inset_region(bm, faces=faces, thickness=0.035, depth=0.08, use_even_offset=True)   # raised tiles
+        bmesh.ops.inset_region(bm, faces=faces, thickness=0.0525, depth=0.08, use_even_offset=True)   # raised tiles, r3: seams 1.5x wider
         lip = bmesh.ops.inset_region(bm, faces=faces, thickness=0.03, depth=0.02, use_even_offset=True)["faces"]
         for f in lip:                                     # r2: a 0.03 chamfer round each plate top, plate-coloured
             zones[f] = "rim" if key[0] == "m" else "scute"
-        if key[0] == "v" and key[1] in (1, 2, 3):         # r2: three bigger studs on the centre ridge only
+        if key[0] == "v" and key[1] in (1, 2, 3):         # r2: three studs on the centre ridge only, r3: the centre big
             n = sum((f.normal for f in faces), Vector()).normalized()
-            studs.append((sum((f.calc_center_median() for f in faces), Vector()) / len(faces), n))
+            studs.append((sum((f.calc_center_median() for f in faces), Vector()) / len(faces), n, key[1] == 2))
     edge = [e for e in bm.edges if e.is_boundary]
     new = bmesh.ops.extrude_edge_only(bm, edges=edge)["geom"]
     for f in new:
@@ -82,8 +82,8 @@ def shell():
             v.co = Vector((v.co.x * 1.03, base - 0.08, v.co.z * 1.03))
     bmesh.ops.holes_fill(bm, edges=[e for e in bm.edges if e.is_boundary], sides=0)
     s = K.Shape().add(bm, lambda f: zones.get(f, "seam"))
-    for c, n in studs:
-        st = K.stud((0, 0, 0), r=0.18, h=0.12, segments=10)
+    for c, n, big in studs:
+        st = K.stud((0, 0, 0), r=0.26 if big else 0.18, h=0.15 if big else 0.12, segments=10)
         bmesh.ops.rotate(st, verts=st.verts, cent=Vector(), matrix=Vector((0, 1, 0)).rotation_difference(n).to_matrix())
         s.add(K.move(st, c), "scuteLight")
     return s
@@ -150,7 +150,38 @@ PARTS = [  # node, rig name, placeholder size, at (x, y, z, rx, ry, rz), shape: 
 ]
 PARTS = [(n, r, s, tuple(at) + (0.0,) * (6 - len(at)), fn) for n, r, s, at, fn in PARTS]
 
+SCALE = 1.45     # r2 1.2; flat, so the read comes from the dome and the raised head rather than from the height
+HEAD = 1.3       # r3: head cluster 1.3x about the Head part...
+EYE = 1.2        # ...eyes (and their glints) another 1.2x...
+LIFT = 0.21      # ...head + front flippers up 0.3 studs after SCALE
+_H = PARTS[2][3]
+_EYES = {n: at for n, _r, _s, at, _f in PARTS if n.startswith("Eye")}
+
+
+def _grown(fn, k):
+    def shape():
+        s = fn()
+        s.verts = [v * k for v in s.verts]
+        return s
+    return shape
+
+
+def _r3(n, r, s, at, fn):
+    pos = list(at[:3])
+    if n == "Head" or n.startswith(("Eye", "Glint")):
+        if n.startswith("Glint"):         # stays on the grown eye
+            e = _EYES["Eye" + n[5:]]
+            pos = [e[i] + (pos[i] - e[i]) * EYE for i in range(3)]
+        pos = [_H[i] + (pos[i] - _H[i]) * HEAD for i in range(3)]
+        fn = _grown(fn, HEAD if n == "Head" else HEAD * EYE)
+    if n == "Head" or n.startswith(("Eye", "Glint", "FlipperFront")):
+        pos[1] += LIFT
+    return n, r, s, tuple(pos) + tuple(at[3:]), fn
+
+
+PARTS = [_r3(*p) for p in PARTS]
+
 
 def build():
-    face = [{"name": "face", "target": [0.0, -2.16, 1.2], "dist": 5.4, "az": 25, "el": 15}]
-    return K.build("M_Pet_Turtle", "Turtle", PARTS, ZONES, RARE, face, scale=1.2, smooth=40)   # r2: 1.2x, ABS shading
+    face = [{"name": "face", "target": [0.0, -2.75, 1.9], "dist": 6.5, "az": 25, "el": 15}]
+    return K.build("M_Pet_Turtle", "Turtle", PARTS, ZONES, RARE, face, scale=SCALE, smooth=40, under=0.25)

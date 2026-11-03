@@ -27,3 +27,10 @@ Open: The placeholder Body box was 2.5 wide x 1.15 long; the mesh is long and na
 - ABS shading: petkit `build(smooth=40)` (shade smooth + sharp edges above 40 deg; LOD1/2 already smooth via weighted normals).
 - validate PASS (394 checks, 0 failed, 44 waived). Tris LOD0 2168, LOD1 856, LOD2 212. zfight in session (collect/analyse, all LODs): 0 pairs.
 - PetSeat `built` unchanged on purpose, so the seated otter grows 1.08x too.
+
+## r3 (2026-11-03)
+
+- SCALE 1.6 about the rig pivot: mesh 2.30 x 7.64 x 2.66 studs (w x l x h). Undersides 25 % darker (petkit `under=0.25`, twin atlas cells).
+- Chocolate coat #5A3A22/#684530, brighter cream face + chest patch 1.2x, readable eye glints; tail 20 % shorter with a 30 % thicker tapered root; whiskers 2 a side, thicker and shorter. Rare ref -> #61402A (silver ALB still written).
+- validate PASS (394 checks, 0 failed, 45 waived). Tris LOD0 2144, LOD1 846, LOD2 208. zfight in session (all LODs): 0 pairs.
+- PetSeat `built` (nose to tail, LOD0): 7.637.

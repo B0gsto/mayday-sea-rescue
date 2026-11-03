@@ -27,3 +27,10 @@ Low-poly faceted Atlantic puffin pet (Bosun LP style), segmented for WildlifeRig
 - ABS shading: `smooth=40`.
 - validate PASS (268 checks, 0 failed, 25 waived). Tris LOD0 2648, LOD1 1324 (small_prop 3000). zfight in session (collect/analyse, LOD0+LOD1): 0 pairs. Exported. No rare albedo (none before).
 - Lineup: `build/status/2026-11-01/perfect/animals/Pets/r2_sheet.png`.
+
+## r3 (2026-11-03)
+
+- SCALE 1.06, down from 1.2: r2 stood 3.04 studs, over the 2.3-2.7 band. Mesh 1.57 x 2.77 x 2.68 studs (w x l x h). Undersides 25 % darker.
+- Beak: tip 20 % narrower, ~0.1 stud rounded shoulder per stripe, yellow bands prouder, so it reads as a stepped 3D wedge head-on (~0.5 body widths out). White mask 15 % wider.
+- validate PASS (268 checks, 0 failed, 25 waived). Tris LOD0 2648, LOD1 1324. zfight in session (all LODs): 0 pairs. No rare albedo (none before).
+- PetSeat `built` (head height, LOD0): 2.681.

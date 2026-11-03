@@ -122,7 +122,7 @@ PARTS = [  # node, rig name, placeholder size, at (x, y, z, rx, ry, rz), shape: 
 
 PARTS = [(n, r, s, tuple(at) + (0.0,) * (6 - len(at)), fn) for n, r, s, at, fn in PARTS]
 
-LIFT = 0.2       # r3: head cluster up (0.31 studs after SCALE), a neck break
+LIFT = 0.21      # r3: head cluster up (0.27 studs after SCALE), a neck break
 HEAD_NODES = {"Head", "Snout", "Nose", "EyeLeft", "EyeRight", "GlintLeft", "GlintRight"}
 _EYES = {n: at for n, _r, _s, at, _f in PARTS if n.startswith("Eye")}
 
@@ -138,9 +138,9 @@ def _moved(n, at):
 
 
 PARTS = [(n, r, s, _moved(n, at), fn) for n, r, s, at, fn in PARTS]
-SCALE = 1.56     # r2 1.2, r3 1.3x more
+SCALE = 1.28     # r2 1.2; r3 sized to 2.7 studs at the head stud (the lifted head adds height)
 
 
 def build():
-    face = [{"name": "face", "target": [0.0, -2.6, 2.4], "dist": 5.9, "az": 25, "el": 12}]
+    face = [{"name": "face", "target": [0.0, -2.13, 2.25], "dist": 4.9, "az": 25, "el": 12}]
     return K.build("M_Pet_SealPup", "SealPup", PARTS, ZONES, RARE, face, scale=SCALE, smooth=40, under=0.25)
