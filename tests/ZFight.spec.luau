@@ -143,6 +143,11 @@ return function(t)
 		t.expect(expectNone("decor", roots)).toBe(0)
 	end)
 
+	t.test("the pirate boat", function()
+		local PirateBoat = t.load("src/shared/PirateBoat.luau")
+		t.expect(expectNone("pirate boat", { PirateBoat.build() })).toBe(0)
+	end)
+
 	t.test("a fully built island", function()
 		local roots = table.clone(ground)
 		for _, key in DockConfig.BUILDINGS do

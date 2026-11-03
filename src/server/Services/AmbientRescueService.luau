@@ -367,6 +367,11 @@ function AmbientRescueService.StepBoarding(
 			held[victim] = nil
 			continue
 		end
+		local knocked = victim.model:GetAttribute("KnockedUntil") -- a pirate ram: not straight back aboard
+		if type(knocked) == "number" and Workspace:GetServerTimeNow() < knocked then
+			held[victim] = nil
+			continue
+		end
 		local ready: Boat? = nil
 		local hold = Board.HOLD
 		for _, b in boats do

@@ -42,6 +42,7 @@ TelemetryNames.Custom = table.freeze({
 	"SessionEnd", -- value = seconds played: length bucket, device, day bucket
 	"PlateBuilt", -- docs/27: a sea plate stood (value = minutes this session): plate, length bucket, day bucket
 	"TestRide", -- a lent Robux boat (value = seconds ridden): vehicle, Started / Time / SteppedOff
+	"Pirate", -- a pirate chase (value = sea zone): Spawn + vehicle / End + why (Hit, Timeout, Shallows, Shaken, Lost) / Escaped
 	"GoBack", -- the Go back button (value = survivors aboard): vehicle, Started / Landed / Cancelled, why cancelled
 } :: { string })
 

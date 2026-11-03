@@ -2391,6 +2391,33 @@ function VehicleService.AddSurvivor(model: Model, survivorModel: Model): boolean
 end
 
 -- Unwelds every survivor and returns them (anchored where they are; the caller moves them on).
+-- One survivor off the craft (a pirate ram): false when they aren't aboard. The caller replaces the model.
+function VehicleService.RemoveSurvivor(model: Model, survivorModel: Model): boolean
+	local record = records[model]
+	if not record then
+		return false
+	end
+	local count, found = 0, false
+	for i, survivor in record.survivors do
+		if survivor.model == survivorModel then
+			survivor.weld:Destroy()
+			survivorModel:SetAttribute("OnVehicle", nil)
+			record.survivors[i] = nil
+			found = true
+		else
+			count += 1
+		end
+	end
+	if found then
+		model:SetAttribute("SurvivorCount", count)
+		local refit = pendingRefit[record.owner]
+		if refit and count == 0 then
+			task.defer(VehicleService.Refit, record.owner, refit)
+		end
+	end
+	return found
+end
+
 function VehicleService.RemoveSurvivors(model: Model): { Model }
 	local out = {}
 	local record = records[model]

@@ -40,6 +40,9 @@ The game's effects follow the global VFX rules (user CLAUDE.md "VFX (all games)"
 | Sea zone line (docs/29 B) | state | `SeaZoneController`: pooled buoys + a soft steady glow curtain in the colour of the water beyond, near the player only, silent |
 | Sea zone crossing (docs/29 B) | feedback | one Toast pop: zone name + best rarity gem, `FX_Chime`; still under Reduce motion |
 | Legendary+ survivor (docs/29 B) | state | `SurvivorTag`: a steady 800-stud rarity-coloured column while in the water, silent |
+| Pirate appears (docs/29 D) | feedback | `pirate_spawn` where it starts: crown, drops, foam ring (reads to 7,000 studs); one 2D horn and one edge arrow pop for the hunted, nothing flashes |
+| Pirate ram (docs/29 D) | feedback | `pirate_ram` where the survivor went in: crown, red and tan plates, drops, foam ring, hull slam + splash; camera kick on your own boat only, none under Reduce motion |
+| Go back after a clean chase (docs/30 5) | feedback (reward) | `pirate_escape` under the hull: gold and white plates, a gold ring, a chime, one "+25%" toast |
 | Whale breach (sea1) | spectacle | `whale_breach`: wide crown, tall drop column, foam puffs and ring, a deep splash under a slap; reads out to 700 studs (preset `cull`) |
 
 ## Satisfaction bar (owner, 2026-10-28)

@@ -36,6 +36,7 @@ local LiveOpsService = require(script.Parent.LiveOpsService)
 local MonetizationService = require(script.Parent.MonetizationService)
 local OperationService = require(script.Parent.OperationService)
 local PetService = require(script.Parent.PetService)
+local PirateService = require(script.Parent.PirateService)
 local ProgressionService = require(script.Parent.ProgressionService)
 local SkillService = require(script.Parent.SkillService)
 local StormService = require(script.Parent.StormService)
@@ -374,6 +375,9 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 		opEnd = function(_, target, a)
 			local ok = OperationService.DevEnd(target :: Player, a[2])
 			return ok, if ok then (if a[2] then "Completed" else "Cancelled") else "No op"
+		end,
+		pirate = function(_, target)
+			return PirateService.Spawn(target :: Player, true)
 		end,
 		storm = function(_, _, a)
 			StormService.SetDevStorms(a[1] ~= "Calm")

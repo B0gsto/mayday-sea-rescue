@@ -55,6 +55,10 @@ Cartoon Lego pirate boat (placeholder Parts first). One per player at most, 2 pe
   Then the pirates sail off. They give up after 40 s or at the Shallows line.
 - Home with no hit while chased: +25% pay and a small burst.
 - Server-steered, no physics, no combat, culled and cleaned up.
+Built: `shared/PirateRules`, `shared/PirateBoat` (placeholder Parts), `PirateService`, `PirateController`, DEV `pirate`. Spawn distance
+and reach scale with top speed (5 s of it, 300 studs at least); the hunted client draws the pirate at the gap the server
+sees, and a ram needs it on the boat longer than the client's ping. A boost slows it to 0.7x and land between you for 2 s
+shakes it. A knocked survivor can't climb back for 4 s (auto-board would undo the ram).
 
 ## Art
 Design before Blender: concepts in `art/source/concepts/` (HTML), AD first, Blender only for approved ones.

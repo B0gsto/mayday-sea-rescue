@@ -51,6 +51,7 @@ local AssetIds = require(Shared:WaitForChild("Config"):WaitForChild("AssetIds"))
 local DataService = require(script.Parent.DataService)
 local FerryRig = require(Shared:WaitForChild("Ferry"):WaitForChild("FerryRig"))
 local HullKnock = require(Shared:WaitForChild("Ferry"):WaitForChild("HullKnock"))
+local PirateRules = require(Shared:WaitForChild("PirateRules"))
 local Wake = require(Shared:WaitForChild("Boat"):WaitForChild("Wake"))
 local Waves = require(Shared:WaitForChild("Waves"))
 local WorkerRules = require(Shared:WaitForChild("WorkerRules"))
@@ -1523,6 +1524,10 @@ local function checkDeliveries()
 				)
 			)
 		then
+			local pirates = service("PirateService")
+			if pirates then
+				pirates.OnDelivery(driver, carrier:GetAttribute("LandedHome") == true) -- before the pay it may raise
+			end
 			unloadVictims(carrier, list)
 			local perCall: { [any]: number } = {}
 			for _, v in list do
@@ -1603,6 +1608,38 @@ function RescueService.SetStamina(call: any, index: number, stamina: number)
 			victim.model:SetAttribute("Stamina", v)
 		end
 	end
+end
+
+-- A pirate ram (docs/29 D): one survivor off `carrier` and back in the water beside it, keeping their roll, by the same
+-- path as a boat that went (checkDeliveries). They can be picked up again once KNOCK_LOCK is up. Where they went, or nil.
+function RescueService.KnockOverboard(carrier: Model): Vector3?
+	local aboard: { any } = {}
+	for call in liveCalls do
+		for i, v in call.victims do
+			if v.state == "Aboard" and v.carrier == carrier and v.model.Parent then
+				table.insert(aboard, { call = call, index = i, victim = v })
+			end
+		end
+	end
+	if #aboard == 0 then
+		return nil
+	end
+	local pick = aboard[math.random(#aboard)]
+	local svc = service("VehicleService")
+	if not (svc and svc.RemoveSurvivor(carrier, pick.victim.model)) then
+		return nil
+	end
+	local hull = carrier:GetPivot()
+	local at = hull.Position + hull.RightVector * (carrier:GetExtentsSize().X / 2 + 6)
+	local flat = Vector3.new(at.X, 0, at.Z)
+	victimsByModel[pick.victim.model] = nil
+	local fresh = spawnVictim(pick.call, flat, nil, nil, pick.victim.model)
+	fresh.model:SetAttribute("KnockedUntil", Workspace:GetServerTimeNow() + PirateRules.KNOCK_LOCK)
+	pick.victim.model:Destroy()
+	fresh.index = pick.index
+	pick.call.victims[pick.index] = fresh
+	operations().OnVictimLost(pick.call)
+	return flat
 end
 
 -- A casualty was handed over without reaching a pad (stub transport, big-call movement):

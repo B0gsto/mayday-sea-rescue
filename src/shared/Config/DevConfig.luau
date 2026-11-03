@@ -129,6 +129,7 @@ DevConfig.Actions = table.freeze({
 	bosun = { PLAYER },
 	op = { PLAYER, enum(DevConfig.Ops) },
 	opEnd = { PLAYER, BOOL }, -- true: complete (graded), false: cancel
+	pirate = { PLAYER }, -- a pirate hunts the target's boat now (docs/29 D), out of the Shallows
 	storm = { enum({ "Storm", "GreatStorm", "Calm" }) },
 	clock = { num(0, 24) }, -- jumps the day/night clock (DayClock) to this hour
 	event = { enum(DevConfig.Events), BOOL },

@@ -1829,4 +1829,55 @@ Presets.ALL.spincine_skybeam = preset({
 	sounds = sounds({ { "FX_PowerUp", 0, 0.8, 0.8 } }),
 })
 
+-- feedback: a pirate appears on the water (docs/29 D, PirateController, once where it spawns): a crown and foam ring;
+-- reads from a long way off. The horn is PirateController's, heard wherever the hunted boat is
+Presets.ALL.pirate_spawn = preset({
+	job = "feedback",
+	cull = 7000, -- spawn distance at 1100 studs/s
+	layers = {
+		crown(2, 6, 16),
+		drops(14, { 18, 26 }, 30, 2),
+		with(
+			groundRing("foam_ring", FOAM, curve(10, 26, outCubic), 1.2, 0.05),
+			{ transparency = { 0.1, 0.25, 0.8 } }
+		),
+	},
+	sounds = { { clip = "FX_Pop", volume = 0.7, pitch = 0.8 } :: FxSound },
+})
+
+-- feedback: a pirate rams your boat (PirateController, where the survivor went in): crown, a burst of red and tan plates,
+-- foam ring; a hull slam and a splash, a small camera kick on your own boat only
+Presets.ALL.pirate_ram = preset({
+	job = "feedback",
+	cull = 700,
+	layers = {
+		crown(2, 7, 18),
+		with(plates({ RED, DUST }, 10), { size = { 2.4 }, speed = { 18, 26 } }),
+		drops(14, { 20, 28 }, 35, 2),
+		with(
+			groundRing("foam_ring", FOAM, curve(8, 22, outCubic), 0.9, 0.05),
+			{ transparency = { 0.1, 0.25, 0.8 } }
+		),
+	},
+	sounds = {
+		{ clip = "Hull_Slam", volume = 1, pitch = 0.9 } :: FxSound,
+		{ clip = "Splash_Entry", delay = 0.04, volume = 0.8 } :: FxSound,
+	},
+	punch = { fov = -6, shake = 0.3, time = 0.35 },
+})
+
+-- feedback: Go back after a chase with no hit (+25% pay; PirateController, under the hull on landing): gold and white
+-- plates out low, a soft ring; the chime says it paid off
+Presets.ALL.pirate_escape = preset({
+	job = "feedback",
+	layers = {
+		with(plates({ GOLD, WHITE }, 12), { size = { 2.2 }, speed = { 14, 22 } }),
+		with(
+			groundRing("foam_ring", GOLD, curve(8, 20, outCubic), 0.8, 0.05),
+			{ transparency = { 0.15, 0.3, 0.9 } }
+		),
+	},
+	sounds = { { clip = "FX_Chime", volume = 0.8 } :: FxSound },
+})
+
 return Presets

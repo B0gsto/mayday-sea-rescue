@@ -4,6 +4,7 @@
 --   OnPickup(player, vehicle)           RescueService: a survivor came aboard
 --   OnDelivered(player, people)         RescueService: survivors reached home, after their pay
 --   End(player)                         ends the run at once (the pirates' hit, docs/29 D)
+--   SetEscapeBonus(player, untilTime)   PirateService: Go back after a chase with no hit, +25% on that delivery's pay
 -- Attributes: player RunMult + RunEndsAt (UI/RunChip; server time, stale once past), PickupBoostUntil on the craft
 -- (the craft handling) and the player (PickupBoostController). A new player's HUD is stripped (Onboarding.newPlayerHud)
 -- so no run counts yet, and the cold open gets no boost: the tutorial's pay and timing stay as they are.
@@ -13,11 +14,13 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
+local PirateRules = require(Shared:WaitForChild("PirateRules"))
 local RescueRun = require(Shared:WaitForChild("RescueRun"))
 
 local RescueRunService = {}
 
 local runs: { [Player]: RescueRun.State } = {}
+local escapeUntil: { [Player]: number } = {}
 
 local function counting(player: Player): boolean
 	local total = player:GetAttribute("OpsCompletedTotal")
@@ -41,7 +44,13 @@ end
 
 function RescueRunService.Multiplier(player: Player): number
 	local st = runs[player]
-	return if st then RescueRun.current(st, Workspace:GetServerTimeNow()) else 1
+	local now = Workspace:GetServerTimeNow()
+	return (if st then RescueRun.current(st, now) else 1)
+		* PirateRules.payMult(escapeUntil[player], now)
+end
+
+function RescueRunService.SetEscapeBonus(player: Player, untilTime: number)
+	escapeUntil[player] = untilTime
 end
 
 function RescueRunService.OnPickup(player: Player, vehicle: Model)
@@ -78,6 +87,7 @@ end
 function RescueRunService.Init()
 	Players.PlayerRemoving:Connect(function(player: Player)
 		runs[player] = nil
+		escapeUntil[player] = nil
 	end)
 end
 
