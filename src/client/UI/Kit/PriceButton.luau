@@ -16,6 +16,7 @@ export type Props = {
 	currency: ("Robux" | "Cash" | "Medal")?,
 	state: State?,
 	onActivate: (() -> ())?,
+	still: boolean?, -- no hover growth: a left-anchored button in a row would grow past its card
 }
 export type PriceButton = {
 	root: ImageButton,
@@ -112,7 +113,7 @@ function PriceButton.new(parent: Instance?, props: Props): PriceButton
 		num.Text = override or (if state == "owned" then "Owned" else Theme.short(price))
 	end
 	paint()
-	Style.press(root, props.onActivate)
+	Style.press(root, props.onActivate, nil, props.still)
 
 	return {
 		root = root,
