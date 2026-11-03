@@ -81,6 +81,15 @@ AssetLoader.PART_SETS = {
 	-- art/source/vehicles/M_Veh_StormRunner/build.py build_set calls: parts whose set is not in their name rendered
 	-- plain grey (no SurfaceAppearance)
 	M_Veh_StormRunner = { Deck = "Hull", Screen = "Interior", RollBar = "Rig", Rails = "Rig" },
+	-- art/source/vehicles/M_Veh_RescueHeli/build.py parts (r7 added the Glass set, r8 the Gear mesh; the rest stay on Lego)
+	M_Veh_RescueHeli = {
+		Body = "Lego",
+		Paint = "Lego",
+		Gear = "Lego",
+		MainRotor = "Lego",
+		TailRotor = "Lego",
+		Glass = "Glass",
+	},
 	-- art/source/vehicles/M_Veh_Tidewalker/build.py build_set calls (only Flybridge/HullS matched by name before)
 	M_Veh_Tidewalker = {
 		HullP = "Hulls",

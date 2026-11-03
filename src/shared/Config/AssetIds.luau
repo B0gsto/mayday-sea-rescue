@@ -507,6 +507,11 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://128863508442097",
 	},
 	M_Veh_RIB_Helm = { LOD0 = "rbxassetid://139752697951923" },
+	M_Veh_RescueHeli = {
+		LOD0 = "rbxassetid://134981220202490",
+		LOD1 = "rbxassetid://119938875844656",
+		LOD2 = "rbxassetid://73201580130072",
+	},
 	M_Veh_StormRunner = {
 		LOD0 = "rbxassetid://71253168042520",
 		LOD1 = "rbxassetid://116642637177378",
@@ -1107,6 +1112,19 @@ AssetIds.Attachments = {
 	},
 	M_Veh_RIB_Helm = {
 		ATT_WheelHub = Vector3.new(0, 4.25, 0.5761),
+	},
+	M_Veh_RescueHeli = {
+		ATT_MainRotor = Vector3.new(0, 5.5, 0),
+		ATT_TailRotor = Vector3.new(1.8, 3.4, 21),
+		ATT_DriverSeat = Vector3.new(1.4, -1.4, -2.6),
+		ATT_PassengerSeat1 = Vector3.new(-1.4, -1.4, -2.6),
+		ATT_EyePoint = Vector3.new(1.4, 1.2, -2.6),
+		ATT_WinchPoint = Vector3.new(7.9, 1.55, 2.4),
+		ATT_WinchHook = Vector3.new(7.9, -0.25, 2.8),
+		ATT_SurvivorSlot1 = Vector3.new(-1.4, -1.4, 2.4),
+		ATT_SurvivorSlot2 = Vector3.new(1.4, -1.4, 2.4),
+		ATT_PetSeat = Vector3.new(0, -1.9, 4.5),
+		ATT_Camera = Vector3.new(0, 2, 4),
 	},
 	M_Veh_StormRunner = {
 		ATT_DriverSeat = Vector3.new(0, 4.35, 1.6761),
