@@ -100,6 +100,7 @@ return {
 		shop = "rbxassetid://133652722448118",
 		vip = "rbxassetid://89629681853633",
 		spin = "rbxassetid://133365909591902", -- the prize wheel
+		home = "rbxassetid://82079144467220", -- the menu Home button (art/source/ui/home.svg, tools/ui-art/stickers.py)
 		chat = "rbxassetid://74341805468542", -- idle crew chatting (art/source/ui/chat.svg, tools/ui-art/stickers.py)
 		wave = "rbxassetid://78956573306618", -- the wake trail prize icon (Settings' wave art)
 		waves = "rbxassetid://103642240410321", -- spin wheel wake prizes

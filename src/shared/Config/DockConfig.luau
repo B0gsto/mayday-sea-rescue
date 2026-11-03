@@ -82,6 +82,8 @@ DockConfig.Unlocks =
 	{ Quests = { key = "HQ", level = 2 } } :: { [string]: { key: string, level: number } }
 
 -- docs/27 placeholder prices (ECON1 owns the retune; tests/NewPlayerPace + tests/Pacing check the pace)
+-- the menu Home button shows past this many studs from your berth (UI/Menu; VehicleService GoHome checks it too)
+DockConfig.HOME_FAR = 400
 DockConfig.SEA_PLATE_CASH = { SeaPlate1 = 1500, SeaPlate2 = 4500 } -- ~2 early / ~3 HQ2-stage rescues (docs/23 (s))
 
 -- a sea plate's lot: its RingLayout.SeaPlates rect centre, the deck top (island frame, Y 0 = the plate top)

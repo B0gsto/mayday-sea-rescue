@@ -43,6 +43,7 @@ function TabletCue.mount(prompt: ProximityPrompt, onOpen: () -> ()): Cue
 	bb.Adornee = tablet
 	bb.StudsOffsetWorldSpace = Vector3.new(0, 4.6, 0) -- over the 4.2-stud screen's top edge
 	bb.LightInfluence = 0
+	bb.AlwaysOnTop = true -- the name arch's post cut the pill from the arrival spot (like every other prompt pill)
 	bb.MaxDistance = 200
 	bb.ResetOnSpawn = false
 	bb.Enabled = false
