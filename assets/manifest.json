@@ -18648,6 +18648,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:cecc81cc61546ee5b6c7ee542d8edc9f2249d4e01bae586566eb10ddfe11d947": {
+  "assetId": "116876741033298",
+  "imageId": "116876741033298",
+  "moderation": "Reviewing",
+  "name": "T_FishMarket_Brick_ALB",
+  "sha": "cecc81cc61546ee5b6c7ee542d8edc9f2249d4e01bae586566eb10ddfe11d947",
+  "source": "assets/textures/M_Bld_FishMarketAddons/T_FishMarket_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:cece2dea0d15c94111c47f95e193cf3e4a6a1578237ecc9dd55c85c605b03f66": {
   "assetId": "76315419474470",
   "imageId": "76315419474470",
@@ -24435,6 +24444,16 @@
   "source": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag_LOD2.fbx",
   "type": "Model"
  },
+ "Model:2538dd8e2b654e4ef3e61ed1a85289f799b0496d7e01d643b603b164934555c5": {
+  "assetId": "108192056433510",
+  "moderation": "Approved",
+  "name": "M_Bld_FishMarketAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_FishMarketAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "2538dd8e2b654e4ef3e61ed1a85289f799b0496d7e01d643b603b164934555c5",
+  "source": "assets/fbx/M_Bld_FishMarketAddons/M_Bld_FishMarketAddons_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:2540ca3dfac05691021587f57e4234d01de09f133929e45cb5bcc1fef9d94f80": {
   "assetId": "119125465148068",
   "moderation": "Approved",
@@ -24913,6 +24932,16 @@
   "route": "delivery",
   "sha": "2e0fe783277fb6a07f9633d86c15be2d19d753d83ffdc521fecb276168212850",
   "source": "assets/fbx/M_Hbr_Pontoon_Finger/M_Hbr_Pontoon_Finger_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:2e13a3bd62fdafe5cb4574208de0abf8953b2f87559637cf6e8f040439d71c07": {
+  "assetId": "128874051787906",
+  "moderation": "Approved",
+  "name": "M_Bld_FishMarketAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_FishMarketAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "2e13a3bd62fdafe5cb4574208de0abf8953b2f87559637cf6e8f040439d71c07",
+  "source": "assets/fbx/M_Bld_FishMarketAddons/M_Bld_FishMarketAddons_LOD2.fbx",
   "type": "Model"
  },
  "Model:2e8e5ef5d5db27735047d4a118e2ef9f9797dc4b44fa3449ed20301e7eed53d4": {
@@ -25403,6 +25432,16 @@
   "route": "delivery",
   "sha": "38820b730aa4c6869e3e2c0ddf76a501d8807b40d681b0eac574fb049beff0e5",
   "source": "assets/fbx/M_Hbr_FishBox_01/M_Hbr_FishBox_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:389a5feb5752c9fff3213e4e48d49e96ecc3e5262b7c46b6d88fc0c724780231": {
+  "assetId": "119082238609513",
+  "moderation": "Approved",
+  "name": "M_Bld_FishMarketAddons",
+  "rbxm": "assets/models/M_Bld_FishMarketAddons.rbxm",
+  "route": "delivery",
+  "sha": "389a5feb5752c9fff3213e4e48d49e96ecc3e5262b7c46b6d88fc0c724780231",
+  "source": "assets/fbx/M_Bld_FishMarketAddons/M_Bld_FishMarketAddons_LOD0.fbx",
   "type": "Model"
  },
  "Model:38c14eb6e37554971d0f4031adae448c327434c815d89d3702ec52f7d2755872": {

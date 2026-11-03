@@ -171,11 +171,12 @@ table.insert(
 )
 -- the Fishers' 4 (Lv2) / 8 (Lv3) slots reach the new stalls and racks before the market's crate spots
 local MARKET = WORK_SPOTS.FishShed
-local function fishSlot(name: string, tx: number): WorkSlot
-	return addonSlot("FishShed", "M_Bld_FishMarketAddons", name, tx, 0)
+local function fishSlot(name: string, tx: number, tz: number?): WorkSlot
+	return addonSlot("FishShed", "M_Bld_FishMarketAddons", name, tx, tz or 0)
 end
+-- the Lv2 corner stalls face the path (-Z); the smokehouse racks stand either side (+-X)
 local FISH_LV2 =
-	{ MARKET[1], MARKET[2], fishSlot("ATT_Work_Stall3", 2), fishSlot("ATT_Work_Stall4", -2) }
+	{ MARKET[1], MARKET[2], fishSlot("ATT_Work_Stall3", 0, -2), fishSlot("ATT_Work_Stall4", 0, -2) }
 local FISH_LV3 = table.clone(FISH_LV2)
 table.insert(FISH_LV3, fishSlot("ATT_Work_RackLeft", 2))
 table.insert(FISH_LV3, fishSlot("ATT_Work_RackRight", -2))

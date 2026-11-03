@@ -57,9 +57,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://107864865206598",
 	},
 	M_Bld_FishMarketAddons = {
-		LOD0 = "rbxassetid://115437109528119",
-		LOD1 = "rbxassetid://111381306769504",
-		LOD2 = "rbxassetid://77043246609711",
+		LOD0 = "rbxassetid://119082238609513",
+		LOD1 = "rbxassetid://108192056433510",
+		LOD2 = "rbxassetid://128874051787906",
 	},
 	M_Bld_HQAddons = {
 		LOD0 = "rbxassetid://97972408661195",
@@ -604,10 +604,11 @@ AssetIds.Attachments = {
 		ATT_BargeMoor = Vector3.new(-32.8, 0.5, 0),
 	},
 	M_Bld_FishMarketAddons = {
-		ATT_Work_Stall3 = Vector3.new(-16.75, 0.95, 3),
-		ATT_Work_Stall4 = Vector3.new(16.75, 0.95, 3),
-		ATT_Work_RackLeft = Vector3.new(1.2, 0.95, 11.5),
-		ATT_Work_RackRight = Vector3.new(-4.2, 0.95, 11.5),
+		ATT_Work_Stall3 = Vector3.new(-17.7, 1.03, -14.15),
+		ATT_Work_Stall4 = Vector3.new(17.7, 1.03, -14.15),
+		ATT_Work_RackLeft = Vector3.new(3.915, 2.24, 11.1),
+		ATT_Work_RackRight = Vector3.new(-3.915, 2.24, 11.1),
+		ATT_Sign_01 = Vector3.new(-11.15, 13, -8),
 	},
 	M_Bld_HQAddons = {
 		ATT_Sign_03 = Vector3.new(0, 12.5, -20.59),
