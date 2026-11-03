@@ -64,7 +64,7 @@ HudLayout.DEBRIEF_MIN = 0.7 -- the smallest the toast may shrink to fit a gap
 HudLayout.PAD_MIN = 92 -- du: a steer button (64 px at the 0.7 phone floor)
 HudLayout.PAD_MAX = 130
 HudLayout.PAD_GAP = 10 -- du between the pad's buttons
-HudLayout.MENU_COUNT = 9 -- UI/Menu's buttons: Shop, Quests, Album, Pet, Crew, Skills, Settings, Map, Boat
+HudLayout.MENU_COUNT = 10 -- UI/Menu's buttons: Shop, Quests, Album, Pet, Crew, Skills, Settings, Map, Boat, Home
 
 -- The menu grid's cell per device (du): icon square, label row (text = label - 4), row gap, column gap.
 -- Touch icons are >= 44 px at the 0.7 floor; desktop labels are bigger (kit polish).
