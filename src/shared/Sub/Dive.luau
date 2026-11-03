@@ -39,6 +39,7 @@ export type State = {
 	pitch: number, -- target attitude: bow up +
 	roll: number, -- starboard down -
 	submerged: boolean,
+	boost: number?, -- top speed x (the pick-up boost, docs/29 C)
 }
 
 function Dive.new(yaw: number): State
@@ -73,7 +74,9 @@ function Dive.step(
 	dt: number
 ): State
 	local top = if s.submerged then Dive.SUBMERGED_SPEED else Dive.TOP_SPEED
-	local want = if throttle >= 0 then throttle * top else throttle * Dive.REVERSE_SPEED
+	local want = if throttle >= 0
+		then throttle * top * (s.boost or 1)
+		else throttle * Dive.REVERSE_SPEED
 	s.speed = approach(s.speed, want, if throttle ~= 0 then Dive.ACCEL else Dive.DECEL, dt)
 	s.yawRate = approach(s.yawRate, -steer * Dive.TURN_RATE, Dive.TURN_EASE, dt)
 	s.yaw += s.yawRate * dt

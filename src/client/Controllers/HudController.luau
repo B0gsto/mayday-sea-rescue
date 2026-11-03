@@ -30,6 +30,7 @@ local HudTheme = require(UI:WaitForChild("HudTheme"))
 local Layout = require(UI:WaitForChild("Layout"))
 local Menu = require(UI:WaitForChild("Menu"))
 local NextChip = require(UI:WaitForChild("NextChip"))
+local RunChip = require(UI:WaitForChild("RunChip"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local Hud = require(Shared:WaitForChild("Config"):WaitForChild("UiImages")).Hud
 
@@ -530,6 +531,7 @@ function HudController.Init()
 	buildAward()
 	Menu.mount() -- button bar, panel registry, Boat to me
 	NextChip.mount(Layout.region(gui, "chips")) -- the permanent next-goal chip (docs/24 E)
+	RunChip.mount(Layout.region(gui, "run")) -- the rescue run's x and timer (docs/29 C)
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)
 	player:GetAttributeChangedSignal("SpinRevealed"):Connect(function()
 		release("spin")

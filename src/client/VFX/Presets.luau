@@ -982,6 +982,50 @@ Presets.ALL.nitro_burst = preset({
 	impactTint = COOL,
 })
 
+-- feedback: the pick-up boost starts (docs/29 C, PickupBoostController, at the stern on the water, up axis back over
+-- the wake, with a small nitro_ring upright): a low fan of spray; a soft whoosh and hiss. Smaller than Nitro, no camera punch
+Presets.ALL.pickup_boost = preset({
+	job = "feedback",
+	layers = {
+		drops(10, { 18, 26 }, 18, 1.8),
+		{
+			tex = "bow_wave",
+			count = 2,
+			colors = { FOAM },
+			size = curve(2, 6, outBack),
+			transparency = { 0.15, 0.2, 1 },
+			lifetime = { 0.45, 0.55 },
+			speed = { 3, 5 },
+			spread = { 20, 20 },
+		},
+	},
+	sounds = {
+		{ clip = "FX_Whoosh", volume = 0.6, pitch = 1.2 } :: FxSound,
+		{ clip = "Hull_SprayHiss", delay = 0.05, volume = 0.5, pitch = 1.2 } :: FxSound,
+	},
+})
+
+-- state: the pick-up boost is on (PickupBoostController, every 0.3 s of the 3 s): white streaks and drops off
+-- the stern. Silent (pickup_boost and the engine carry it), skipped under Reduce motion
+Presets.ALL.pickup_wake = preset({
+	job = "state",
+	layers = {
+		drops(4, { 16, 22 }, 14, 1.6),
+		{
+			tex = "sea_spray",
+			count = 3,
+			colors = { WHITE, SEA },
+			streak = true,
+			size = curve(4.5, 1.5, outCubic),
+			transparency = POP,
+			lifetime = { 0.4, 0.55 },
+			speed = { 24, 32 },
+			spread = { 10, 10 },
+			accel = Vector3.new(0, -30, 0),
+		},
+	},
+})
+
 -- feedback: the Nitro kick on the water (BoatController, upright at the stern with nitro_burst): a flat
 -- sea-cyan ring snaps out 3 -> 18 studs, a foam ring after it
 Presets.ALL.nitro_ring = preset({

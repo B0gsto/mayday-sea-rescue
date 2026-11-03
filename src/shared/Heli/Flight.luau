@@ -20,7 +20,7 @@ export type Spec = {
 	ceiling: number, -- world Y
 }
 
-export type Input = { forward: number, strafe: number, yaw: number, lift: number } -- each -1..1
+export type Input = { forward: number, strafe: number, yaw: number, lift: number, boost: number? } -- each -1..1; boost: forward speed x (docs/29 C)
 
 -- push: the flat velocity change still wanted (target - velocity), so the nose leads into a speed-up and
 -- flares up into a stop
@@ -103,7 +103,7 @@ function Flight.step(
 	local h = s.heading
 	local look = Vector3.new(-math.sin(h), 0, -math.cos(h))
 	local right = Vector3.new(math.cos(h), 0, -math.sin(h))
-	local flat = look * math.clamp(input.forward, -1, 1) * spec.forwardSpeed
+	local flat = look * math.clamp(input.forward, -1, 1) * spec.forwardSpeed * (input.boost or 1)
 		+ right * math.clamp(input.strafe, -1, 1) * spec.strafeSpeed
 		+ wind
 	local vy = math.clamp(input.lift, -1, 1) * spec.climbSpeed

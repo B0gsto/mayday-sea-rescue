@@ -12,6 +12,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local Buoyancy = require(script.Parent.Buoyancy)
+local RescueRun = require(script.Parent.Parent.RescueRun)
 local VehicleConfig = require(script.Parent.Parent.Config.VehicleConfig)
 local VehicleUpgrades = require(script.Parent.Parent.VehicleUpgrades)
 local Waves = require(script.Parent.Parent.Waves)
@@ -203,7 +204,7 @@ function Simulator.getRig(model: Model): Rig?
 end
 
 -- One simulation step. throttle and steer are -1..1 (0 for an empty or towed boat).
--- Model attributes read here: SpeedMultiplier (gear bonus), ApproachMode (bool, slow-speed governor),
+-- Model attributes read here: SpeedMultiplier (gear bonus), PickupBoostUntil (docs/29 C), ApproachMode (bool, slow-speed governor),
 -- EngineRunning (false = kill cord pulled: no thrust, no idle creep).
 function Simulator.step(model: Model, throttle: number, steer: number, now: number?): Telemetry?
 	local rig = Simulator.getRig(model)
@@ -223,8 +224,13 @@ function Simulator.step(model: Model, throttle: number, steer: number, now: numb
 	local gravity = Workspace.Gravity
 	local h = rig.handling
 	local mult = model:GetAttribute("SpeedMultiplier")
-	local speedMult =
-		math.clamp((if type(mult) == "number" then mult else 1) * (speedBoost[model] or 1), 0.5, 3)
+	local speedMult = math.clamp(
+		(if type(mult) == "number" then mult else 1)
+			* (speedBoost[model] or 1)
+			* RescueRun.boostAt(model:GetAttribute("PickupBoostUntil"), t),
+		0.5,
+		3
+	)
 	local approach = model:GetAttribute("ApproachMode") == true
 	local engine = model:GetAttribute("EngineRunning") ~= false
 

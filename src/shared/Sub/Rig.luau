@@ -8,6 +8,7 @@
 local Workspace = game:GetService("Workspace")
 
 local Dive = require(script.Parent.Dive)
+local RescueRun = require(script.Parent.Parent.RescueRun)
 local Simulator = require(script.Parent.Parent.Boat.Simulator)
 local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
@@ -71,6 +72,8 @@ function Rig.step(
 		states[model] = s
 	end
 	local sea = surfaceY or Simulator.waterHeight(pos.X, pos.Z, Workspace:GetServerTimeNow())
+	s.boost =
+		RescueRun.boostAt(model:GetAttribute("PickupBoostUntil"), Workspace:GetServerTimeNow())
 	Dive.step(s, throttle, steer, dive, pos.Y, sea, Rig.floorAt(pos), dt)
 	local lv, ao = movers(root)
 	lv.MaxForce = root.AssemblyMass * (Workspace.Gravity + 30)

@@ -232,6 +232,13 @@ fail: a slow one grades Bronze (`Condition.overdue`; the big call ends on its ca
   24 with six; lone swimmers, clusters of 2-3, capsized dinghies), one in view off each player's cove and 3 within
   500 studs of every player driving at sea (these pay the lower tier, CASH x Bronze); boarded with `Ops/Board`,
   paid on delivery.
+- Rescue run (docs/29 C): rules `shared/RescueRun` (tiers, 75 s window, `boostAt`). `RescueRunService`: `Multiplier(player)`
+  (delivery pay: `AmbientRescueService` onDelivered, `OperationService` finish; tutorial pay and a no-step share stay flat),
+  `OnPickup(player, vehicle)`, `OnDelivered(player, people)` (`RescueService`, after pay), `End(player)` (the pirates' hit,
+  docs/29 D). No run counts on the new-player HUD. Attributes: player `RunMult` + `RunEndsAt` (`UI/RunChip`, HudLayout "run";
+  nil at x1, stale once past), `PickupBoostUntil` on the craft (Boat/Simulator, Heli `Flight` input `boost`, Sub `Rig`; +25%
+  top speed, `VehicleService.speedLimit` allows it) and the player (`PickupBoostController`, VFX `pickup_boost`, `pickup_wake`);
+  no boost in the cold open.
 - Wildlife: `SanctuaryService` dresses the WildlifeRescue survivor as an animal (`WildlifeRig`); it recovers in
   `PetService`'s sanctuary, then can follow you as your companion.
 

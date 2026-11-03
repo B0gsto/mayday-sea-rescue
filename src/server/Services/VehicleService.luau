@@ -48,6 +48,7 @@ local Marina = require(Shared:WaitForChild("Marina"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
 local Nitro = require(Shared:WaitForChild("Boat"):WaitForChild("Nitro"))
+local RescueRun = require(Shared:WaitForChild("RescueRun"))
 local RespawnPolicy = require(Shared:WaitForChild("Boat"):WaitForChild("RespawnPolicy"))
 local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
@@ -399,6 +400,11 @@ local function speedLimit(record: Record): number
 	if driver and (tonumber(driver:GetAttribute("SkillNitro")) or 0) > 0 then
 		m *= Nitro.MULT -- the burst (client-timed) may run at top speed
 	end
+	-- the pick-up boost, plus as long again for the hull to slow back down
+	m *= RescueRun.boostAt(
+		record.model:GetAttribute("PickupBoostUntil"),
+		Workspace:GetServerTimeNow() - RescueRun.BOOST_SECONDS
+	)
 	return record.spec.topSpeed * m * SPEED_TOLERANCE + SPEED_SLACK
 end
 
