@@ -2,7 +2,7 @@
 -- GoalBoardController: a Lego counter board (GoalBoard) on your next build's empty lot, the in-world twin of the
 -- Next chip (live 2026-11-01: after the Workshop most players never saw a goal to save toward). Its face: the
 -- building's icon, a Cash bar and "240/400", live. When the bar fills: one pop (VFXKit buy_pop, its FX_Pop), the
--- bar turns green and a steady outline stays on (never a pulse). Only on your own island, only after the
+-- bar stays green (no outline, no pulse: owner 2026-11-03). Only on your own island, only after the
 -- tutorial's Workshop, never over water (sea plates) or a running site. Client-only, no text beyond the number.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -29,14 +29,12 @@ local player = Players.LocalPlayer
 local PPS = 50 -- SurfaceGui pixels a stud: the 12 x 6 face is 600 x 300 px
 local POP_NEAR = 160 -- studs: a bar that filled out of sight pops when you come this close
 local BRICK = Color3.fromHex("FFC928") -- the Next chip's yellow icon bricks
-local GREEN = Color3.fromRGB(51, 190, 77)
 
 type Face = { fill: Frame, amount: TextLabel, scale: UIScale }
 type Board = {
 	key: string,
 	model: Model,
 	faces: { Face },
-	outline: Highlight,
 	full: boolean,
 	popped: boolean,
 }
@@ -141,14 +139,8 @@ local function place(key: string, bay: CFrame, plot: Instance): Board
 	local m = GoalBoard.build(lot * CFrame.new(0, 0, -b.size.Y / 2 + 3)) -- at the lot's front, facing out
 	local part = m.PrimaryPart :: BasePart
 	local faces = { face(part, Enum.NormalId.Front, key), face(part, Enum.NormalId.Back, key) }
-	local outline = Instance.new("Highlight")
-	outline.FillTransparency = 1
-	outline.OutlineColor = GREEN
-	outline.DepthMode = Enum.HighlightDepthMode.Occluded
-	outline.Enabled = false
-	outline.Parent = m
 	m.Parent = plot
-	return { key = key, model = m, faces = faces, outline = outline, full = false, popped = true }
+	return { key = key, model = m, faces = faces, full = false, popped = true }
 end
 
 local function pop(b: Board)
@@ -203,7 +195,6 @@ local function refresh()
 		b.popped = false -- pops now, or once you come near
 	end
 	b.full = full
-	b.outline.Enabled = full
 	local text = `{Theme.short(math.min(g.cash, g.price))}/{Theme.short(g.price)}`
 	for _, f in b.faces do
 		f.fill.Size = UDim2.fromScale(g.progress, 1)
