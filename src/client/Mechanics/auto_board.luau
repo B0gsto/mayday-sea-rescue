@@ -55,7 +55,8 @@ function AutoBoard.start(
 	ring.FillTransparency = 1
 	ring.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 	local held = 0
-	local reachAdd = tonumber(Players.LocalPlayer:GetAttribute("SkillReach")) or 0
+	local reachAdd = (tonumber(Players.LocalPlayer:GetAttribute("SkillReach")) or 0)
+		+ (tonumber(Players.LocalPlayer:GetAttribute("BoatReach")) or 0)
 	Step.heartbeat(s, function(dt)
 		if not (victim and victim.Parent) then
 			victim = World.victim(ctx)

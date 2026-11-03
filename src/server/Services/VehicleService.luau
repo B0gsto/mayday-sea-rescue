@@ -39,6 +39,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
 local BoatBoard = require(script.Parent.Parent:WaitForChild("Dock"):WaitForChild("BoatBoard"))
+local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
 local ClimbPath = require(Shared:WaitForChild("Ops"):WaitForChild("ClimbPath"))
 local Crowding = require(Shared:WaitForChild("Crowding"))
@@ -51,9 +52,9 @@ local Nitro = require(Shared:WaitForChild("Boat"):WaitForChild("Nitro"))
 local RespawnPolicy = require(Shared:WaitForChild("Boat"):WaitForChild("RespawnPolicy"))
 local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
+local UpgradeStation = require(Shared:WaitForChild("UpgradeStation"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local VehicleRecovery = require(Shared:WaitForChild("VehicleRecovery"))
-local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
 local Craft = require(script.Parent:WaitForChild("Vehicle"):WaitForChild("Craft"))
@@ -200,20 +201,13 @@ local function speedBonus(player: Player): number
 	return math.clamp(crew * skill, 1, 3)
 end
 
--- Fitted boatyard upgrades (docs 03 section 4.1), read from the profile push.
-local function upgradeMask(player: Player, vehicleId: string): number
-	local p = getProgression()
-	if not p or type(p.GetData) ~= "function" then
-		return 0
-	end
-	local ok, data = pcall(p.GetData, player)
-	if not ok or type(data) ~= "table" or type(data.vehicleUpgrades) ~= "table" then
-		return 0
-	end
-	return VehicleUpgrades.mask(data.vehicleUpgrades[vehicleId])
+-- docs/30: the player's boat level (old upgrade masks stay in the save, unread).
+local function boatLevel(player: Player): number
+	local data = DataService.Get(player)
+	return BoatLevels.level(data and data.boatLevel)
 end
 
--- Local parts that show an upgrade on the hull (welded to the root, no physics).
+-- Local parts that show a level on the hull (welded to the root, no physics).
 local function upgradePart(
 	model: Model,
 	root: BasePart,
@@ -245,114 +239,21 @@ local function upgradePart(
 	return part
 end
 
-local function dressUpgrades(model: Model, spec: VehicleSpec, mask: number)
+local function dressLevel(model: Model, spec: VehicleSpec, level: number)
 	local root = model.PrimaryPart
-	if not root or mask == 0 then
+	if not root then
 		return
 	end
-	local grey = Color3.fromRGB(72, 80, 88)
-	local orange = Color3.fromRGB(240, 122, 46)
-	if VehicleUpgrades.has(mask, "Engine") then
-		-- a bigger outboard cowl on the transom
-		if spec.id == "Lifeboat" then
-			upgradePart(
-				model,
-				root,
-				"UpgradeCowl",
-				Vector3.new(5, 2.4, 3.4),
-				Vector3.new(0, 2.2, 22),
-				grey,
-				Enum.Material.Metal
-			)
-		elseif spec.id == "RIB" then
-			upgradePart(
-				model,
-				root,
-				"UpgradeCowl",
-				Vector3.new(2.6, 1.5, 2.2),
-				Vector3.new(0, 1.1, 10.6),
-				grey,
-				Enum.Material.Metal
-			)
-		else
-			upgradePart(
-				model,
-				root,
-				"UpgradeCowl",
-				Vector3.new(1.6, 0.9, 1.6),
-				Vector3.new(0, 0.1, 4.4),
-				grey,
-				Enum.Material.Metal
-			)
-		end
-	end
-	if VehicleUpgrades.has(mask, "Hull") then
-		local x = spec.hullSize.X * 0.36
-		local z = spec.hullSize.Z * 0.1
-		for _, side in { -1, 1 } do
-			local fin = upgradePart(
-				model,
-				root,
-				`UpgradeFin{if side < 0 then "L" else "R"}`,
-				Vector3.new(0.4, 1.2, spec.hullSize.Z * 0.22),
-				Vector3.new(x * side, -0.9, z),
-				orange,
-				Enum.Material.SmoothPlastic
-			)
-			fin.CFrame *= CFrame.Angles(0, 0, math.rad(12 * side))
-		end
-	end
-	if VehicleUpgrades.has(mask, "Fit") then
-		if spec.id == "Lifeboat" then
-			local lamp = upgradePart(
-				model,
-				root,
-				"UpgradeSearchlight",
-				Vector3.new(1.3, 1.3, 1.6),
-				Vector3.new(0, spec.hullSize.Y * 0.5 + 2, spec.hullSize.Z * 0.3),
-				Color3.fromRGB(232, 232, 220),
-				Enum.Material.Metal
-			)
-			local lens = upgradePart(
-				model,
-				root,
-				"UpgradeLens",
-				Vector3.new(1, 1, 0.2),
-				Vector3.zero,
-				Color3.fromRGB(255, 244, 200),
-				Enum.Material.Neon
-			)
-			lens.CFrame = lamp.CFrame * CFrame.new(0, 0, -0.85)
-			local light = Instance.new("SpotLight")
-			light.Name = "UpgradeSpot"
-			light.Face = Enum.NormalId.Front
-			light.Angle = 50
-			light.Range = 120
-			light.Brightness = 3
-			light.Color = Color3.fromRGB(255, 244, 210)
-			light.Parent = lens
-		elseif spec.id == "RIB" then
-			local post = upgradePart(
-				model,
-				root,
-				"UpgradeTowPost",
-				Vector3.new(0.6, 3.2, 0.6),
-				Vector3.new(0, 1.6, spec.hullSize.Z * 0.28),
-				grey,
-				Enum.Material.Metal
-			)
-			post.CFrame *= CFrame.Angles(math.rad(-12), 0, 0)
-		else
-			upgradePart(
-				model,
-				root,
-				"UpgradeSeat",
-				Vector3.new(1.8, 0.4, 2.2),
-				Vector3.new(0, 0.9, 3.1),
-				Color3.fromRGB(232, 224, 202),
-				Enum.Material.Fabric
-			)
-		end
+	for _, piece in BoatLevels.pieceParts(level, spec.hullSize) do
+		upgradePart(
+			model,
+			root,
+			piece.name,
+			piece.size,
+			piece.offset,
+			piece.color,
+			if piece.neon then Enum.Material.Neon else Enum.Material.SmoothPlastic
+		)
 	end
 end
 
@@ -523,9 +424,14 @@ end
 
 -- K3: the craft the bay's Launch prompt (and a returning player's spawn) puts out.
 local function bayCraft(player: Player): string?
-	return BayLaunch.pick(lastVehicle(player), VehicleConfig.Order, function(id)
-		return canUse(player, id)
-	end)
+	-- nothing launched yet: the level's own hull comes first (docs/30)
+	return BayLaunch.pick(
+		lastVehicle(player) or BoatLevels.row(boatLevel(player)).hull,
+		VehicleConfig.Order,
+		function(id)
+			return canUse(player, id)
+		end
+	)
 end
 
 local function sitDriver(player: Player, seat: VehicleSeat)
@@ -853,6 +759,21 @@ local function clearOtherClasses(
 end
 
 -- Call only after planSpawn said Build or Replace.
+-- Unseat the driver first: destroying the craft under a seated character leaves the client holding a stale seat
+-- weld, and the replacement's seat:Sit fails (rider flung, camera in the sea, a runaway speed reading).
+local function unseatFrom(player: Player, model: Model)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local seatPart = humanoid and humanoid.SeatPart
+	if humanoid and seatPart and seatPart:IsDescendantOf(model) then
+		local weld = seatPart:FindFirstChild("SeatWeld")
+		if weld then
+			weld:Destroy()
+		end
+		humanoid.Sit = false
+	end
+end
+
 local function createVehicle(
 	player: Player,
 	spec: VehicleSpec,
@@ -865,35 +786,28 @@ local function createVehicle(
 	local classes = owned[player]
 	local old = classes and classes[spec.id]
 	if old then
-		-- unseat the driver first: destroying the craft under a seated character leaves the client
-		-- holding a stale seat weld, and the replacement's seat:Sit fails (rider flung, camera in
-		-- the sea, a runaway speed reading)
-		local character = player.Character
-		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-		local seatPart = humanoid and humanoid.SeatPart
-		if humanoid and seatPart and seatPart:IsDescendantOf(old.model) then
-			local weld = seatPart:FindFirstChild("SeatWeld")
-			if weld then
-				weld:Destroy()
-			end
-			humanoid.Sit = false
-		end
+		unseatFrom(player, old.model)
 		despawnModel(old.model, "Replaced")
 	end
 
-	local mask = upgradeMask(player, spec.id)
-	local fitted = VehicleUpgrades.apply(spec, mask)
+	local level = boatLevel(player)
+	local fitted = BoatLevels.apply(spec, level)
 	-- Lifeguard (SkillCraftSeats): your boat seats one more survivor from its next launch (apply may return spec)
 	local extraSeats = tonumber(player:GetAttribute("SkillCraftSeats")) or 0
 	if extraSeats > 0 and not spec.craft then
 		fitted = table.clone(fitted)
 		fitted.survivorCapacity += extraSeats
 	end
-	local model = if spec.craft
-		then Craft.build(fitted, visuals)
-		else Builder.build(fitted, visuals)
-	model:SetAttribute("VehicleUpgrades", mask)
-	dressUpgrades(model, fitted, mask)
+	-- the hull builds at its own size and seats; the level scales it after and past the seats survivors just count
+	local model = if spec.craft then Craft.build(fitted, visuals) else Builder.build(spec, visuals)
+	if not spec.craft then
+		model:ScaleTo(BoatLevels.scaleFor(spec, level))
+		model:SetAttribute("BoatLevel", level)
+		model:SetAttribute("TopSpeed", fitted.topSpeed)
+		model:SetAttribute("Capacity", fitted.survivorCapacity)
+		model:SetAttribute("Draft", fitted.draft)
+		dressLevel(model, fitted, level)
+	end
 	if visuals then
 		model:GetAttributeChangedSignal("Wet"):Connect(function()
 			AssetLoader.setWet(model, model:GetAttribute("Wet") == true)
@@ -903,7 +817,7 @@ local function createVehicle(
 	model:SetAttribute("Owner", player.UserId)
 	model:SetAttribute("SpeedMultiplier", speedBonus(player))
 	model:SetAttribute("EngineRunning", false)
-	model:PivotTo(restAt(model, spec, at))
+	model:PivotTo(restAt(model, fitted, at))
 	for _, d in model:GetDescendants() do
 		if d:IsA("BasePart") then
 			d.CollisionGroup = BOAT_GROUP
@@ -914,7 +828,7 @@ local function createVehicle(
 	local root = model.PrimaryPart :: BasePart
 	local seat = model:FindFirstChild("DriverSeat") :: VehicleSeat
 	local slots = {}
-	for i = 1, fitted.survivorCapacity do
+	for i = 1, spec.survivorCapacity + extraSeats do
 		local slot = root:FindFirstChild(`SurvivorSlot{i}`)
 		if slot and slot:IsA("Attachment") then
 			table.insert(slots, slot)
@@ -1985,8 +1899,7 @@ function VehicleService.DockSpot(player: Player, vehicleId: string): CFrame?
 	return spot
 end
 
--- G66: a just-fitted upgrade applies on the next launch. Despawn the empty docked hull of that
--- class so it rebuilds with the new parts and handling (a crewed hull is left until it is empty).
+-- Stats of a fitted craft changed: rebuild an empty docked hull in place (a crewed one waits until it is empty).
 function VehicleService.RefreshUpgrades(player: Player, vehicleId: string)
 	local classes = owned[player]
 	local record = classes and classes[vehicleId]
@@ -2001,6 +1914,58 @@ function VehicleService.RefreshUpgrades(player: Player, vehicleId: string)
 			despawnModel(record.model, "Replaced")
 		end
 	end
+end
+
+local function boatRecord(player: Player): Record?
+	for _, record in { byPlayer[player], seconds[player] } :: { Record? } do
+		if record and not record.spec.craft then
+			return record
+		end
+	end
+	return nil
+end
+
+-- The boat a level-up plays on: the one out, else a new one in the bay of `index`. nil if neither can be had.
+function VehicleService.LevelUpBoat(player: Player, index: number): Model?
+	local record = boatRecord(player)
+	if record then
+		return record.model
+	end
+	local id = bayCraft(player)
+	if not id then
+		return nil
+	end
+	local ok, model =
+		spawnVehicle(player, id, nil, true, true, "Bay", nil, UpgradeStation.landing(index))
+	return if ok and typeof(model) == "Instance" then model :: Model else nil
+end
+
+-- docs/30: the new level goes on the boat now, in place, the driver back in the seat. `look`: the hull it wears next
+-- (a stage hull promoted on a level-up). With survivors aboard it waits until they are off (RemoveSurvivors).
+local pendingRefit: { [Player]: string } = {}
+function VehicleService.Refit(player: Player, look: string?): Model?
+	local record = boatRecord(player)
+	if not record then
+		return nil
+	end
+	local spec = VehicleConfig.get(look or record.spec.id)
+	if not spec then
+		return nil
+	end
+	if next(record.survivors) ~= nil then
+		pendingRefit[player] = spec.id
+		return nil
+	end
+	pendingRefit[player] = nil
+	local driver = record.driver
+	local other = if byPlayer[player] == record then seconds[player] else byPlayer[player]
+	local keep = if DockService.Owns(player, "Pontoon") then other else nil
+	unseatFrom(player, record.model)
+	local model, seat = createVehicle(player, spec, record.root.CFrame, "Request", keep)
+	if driver == player then
+		sitDriver(player, seat)
+	end
+	return model
 end
 
 -- The player's launch bay (the daily crate stands beside it: StreakService).
@@ -2176,7 +2141,7 @@ function VehicleService.AddSurvivor(model: Model, survivorModel: Model): boolean
 		return false
 	end
 	local slotIndex = nil
-	for i = 1, #record.slots do
+	for i = 1, if #record.slots > 0 then record.spec.survivorCapacity else 0 do
 		if not record.survivors[i] then
 			slotIndex = i
 			break
@@ -2202,7 +2167,14 @@ function VehicleService.AddSurvivor(model: Model, survivorModel: Model): boolean
 	end
 	local bbCF, size = survivorModel:GetBoundingBox()
 	local pivotOffset = bbCF:ToObjectSpace(survivorModel:GetPivot())
-	local slot = record.slots[slotIndex]
+	-- docs/30: past the visible seats survivors just count: they ride hidden on the last seat
+	local slot = record.slots[math.min(slotIndex, #record.slots)]
+	if slotIndex > #record.slots then
+		for _, d in parts do
+			d:SetAttribute("OverflowTransparency", d.Transparency)
+			d.Transparency = 1
+		end
+	end
 	-- upright and facing the bow: the slot's position on the hull's axes. The asset slots carry the export's
 	-- rotation (the jet ski's points its up along the hull), which laid the survivor flat (playtest v46)
 	local function seatCF(): CFrame
@@ -2266,6 +2238,11 @@ function VehicleService.RemoveSurvivors(model: Model): { Model }
 		for _, d in survivor.model:GetDescendants() do
 			if d:IsA("BasePart") then
 				d.Anchored = true
+				local shown = d:GetAttribute("OverflowTransparency")
+				if type(shown) == "number" then
+					d.Transparency = shown
+					d:SetAttribute("OverflowTransparency", nil)
+				end
 			end
 		end
 		survivor.model:SetAttribute("OnVehicle", nil)
@@ -2273,6 +2250,10 @@ function VehicleService.RemoveSurvivors(model: Model): { Model }
 		record.survivors[i] = nil
 	end
 	model:SetAttribute("SurvivorCount", 0)
+	local refit = pendingRefit[record.owner]
+	if refit then
+		task.defer(VehicleService.Refit, record.owner, refit)
+	end
 	return out
 end
 

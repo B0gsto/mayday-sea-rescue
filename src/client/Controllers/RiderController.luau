@@ -58,7 +58,8 @@ local function jetSkiOf(character: Model): (VehicleSeat?, number, BasePart?)
 		if id ~= nil then
 			local spec = if VehicleConfig.isJetSki(id) then VehicleConfig.get(id :: string) else nil
 			local root = if spec and node:IsA("Model") then node.PrimaryPart else nil
-			return if root then seat else nil, if spec then spec.topSpeed else 0, root
+			local top = tonumber(node:GetAttribute("TopSpeed")) -- docs/30: the level's, not the hull's
+			return if root then seat else nil, top or (if spec then spec.topSpeed else 0), root
 		end
 		node = node.Parent
 	end

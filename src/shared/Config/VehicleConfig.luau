@@ -218,6 +218,21 @@ local function variant(baseId: string, over: { [string]: any }): VehicleSpec
 	return spec :: VehicleSpec
 end
 
+-- docs/30 stages 4 and 5: placeholder looks on existing hulls until their concept and AD pass (BoatLevels bolts the
+-- foils and boosters on). Stats come from the level; these numbers only set the low-speed feel.
+VehicleConfig.Hydrofoil = variant("RIB", {
+	id = "Hydrofoil",
+	displayName = "Hydrofoil",
+	planingLift = 0.8,
+	runningTrim = 5,
+})
+VehicleConfig.RocketCutter = variant("Lifeboat", {
+	id = "RocketCutter",
+	displayName = "Rocket Cutter",
+	planingLift = 0.7,
+	runningTrim = 5,
+})
+
 -- Offshore powerboat (Cigarette / Fountain class): stepped deep V, 58 knots, carves hard.
 VehicleConfig.StormRunner = variant("RIB", {
 	id = "StormRunner",
@@ -330,8 +345,17 @@ VehicleConfig.Submarine = craft("Sub", {
 })
 
 -- Every boat id, in shop / bay menu order (boats only: the bay launch and the boat board read it).
-VehicleConfig.Order =
-	{ "JetSki", "RiptideX", "GildedGull", "RIB", "StormRunner", "Tidewalker", "Lifeboat" }
+VehicleConfig.Order = {
+	"JetSki",
+	"RiptideX",
+	"GildedGull",
+	"RIB",
+	"StormRunner",
+	"Tidewalker",
+	"Lifeboat",
+	"Hydrofoil",
+	"RocketCutter",
+}
 -- The docs/23 (h) craft (hangar, sub pen): bought and launched at their dock building (WP-10b).
 VehicleConfig.CraftOrder = { "RescueHelicopter", "Submarine" }
 

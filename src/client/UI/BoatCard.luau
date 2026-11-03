@@ -1,6 +1,6 @@
 --!strict
--- BoatCard: one craft's kit card for the dock boards. Buy with Cash or the vehicle pass, fit the
--- three upgrades, then launch it at your berth. The same actions the old Vehicles app card had.
+-- BoatCard: one craft's kit card for the dock boards: a look on your boat (docs/30: no stats here, levels live at the
+-- Upgrade Station). Own it through the ladder or its pass, then launch it at your berth.
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -17,7 +17,6 @@ local Rules = require(Shared:WaitForChild("ProgressionRules"))
 local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
-local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
 local BoatReveal = require(script.Parent:WaitForChild("BoatReveal"))
 local Kit = script.Parent:WaitForChild("Kit")
@@ -187,23 +186,6 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 		end)
 	end
 
-	local function upgrade(upgradeId: string)
-		if busy or not id then
-			return
-		end
-		busy = true
-		task.spawn(function()
-			local remote = Net.init():WaitForChild("Upgrade_Buy", 10)
-			if remote and remote:IsA("RemoteFunction") then
-				pcall(function()
-					remote:InvokeServer(id, upgradeId)
-				end)
-			end
-			busy = false
-			refresh()
-		end)
-	end
-
 	local function launch()
 		if busy or not id then
 			return
@@ -220,42 +202,6 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 		end)
 	end
 
-	local function section(parent: Instance, order: number, title: string): number
-		local l = Style.label(parent, string.upper(title), Theme.Text.small, true)
-		l.Size = UDim2.new(1, -8, 0, 32)
-		l.LayoutOrder = order
-		l.TextXAlignment = Enum.TextXAlignment.Left
-		return order + 1
-	end
-
-	local function stat(parent: Instance, order: number, label: string, value: string, fill: number)
-		local row = Instance.new("Frame")
-		row.LayoutOrder = order
-		row.Size = UDim2.new(1, 0, 0, 42)
-		row.BackgroundTransparency = 1
-		row.Parent = parent
-		local l = Style.label(row, label, Theme.Text.small, true)
-		l.Size = UDim2.fromOffset(150, 42)
-		l.TextXAlignment = Enum.TextXAlignment.Left
-		local track = Instance.new("Frame")
-		track.AnchorPoint = Vector2.new(1, 0.5)
-		track.Position = UDim2.new(1, -14, 0.5, 0)
-		track.Size = UDim2.new(0.55, 0, 0, 18)
-		track.BackgroundColor3 = Theme.Colors.ink
-		track.Parent = row
-		Style.corner(track, 9)
-		local bar = Instance.new("Frame")
-		bar.Size = UDim2.fromScale(math.clamp(fill, 0, 1), 1)
-		bar.BackgroundColor3 = Style.grad("buy").bottom
-		bar.Parent = track
-		Style.corner(bar, 9)
-		local v = Style.label(row, value, Theme.Text.small, true)
-		v.AnchorPoint = Vector2.new(1, 0.5)
-		v.Position = UDim2.new(1, -14, 0.5, 0)
-		v.Size = UDim2.fromOffset(120, 42)
-		v.TextXAlignment = Enum.TextXAlignment.Right
-	end
-
 	refresh = function()
 		for _, c in panel.body:GetChildren() do
 			if c:IsA("GuiObject") then
@@ -270,7 +216,11 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 		local d = data
 		local owned = d ~= nil and Rules.ownsVehicle(d, craft, ownsPass(craft))
 		local unlock = ProgressionConfig.Vehicles[craft]
-		local need = if d and not owned then Rules.vehicleLock(d, craft) else nil
+		local need = if d
+				and not owned
+				and not (unlock and unlock.level)
+			then Rules.vehicleLock(d, craft)
+			else nil
 		local order = 0
 
 		local hero = Instance.new("Frame")
@@ -290,6 +240,7 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 			face,
 			if owned
 				then "Owned"
+				elseif unlock and unlock.level then `Lv {unlock.level}`
 				elseif need then `Needs: {UnlockTree.needName(need)}`
 				else if unlock and unlock.price > 0
 					then `{Theme.short(unlock.price)} Cash`
@@ -322,6 +273,8 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 				state = if need then "disabled" else nil,
 				onActivate = buyVehicle,
 			})
+			-- docs/30: the ladder gives these hulls; only Robux still buys one early, as a look
+			buy.root.Visible = not (unlock and unlock.level)
 			buy.root.AnchorPoint = Vector2.new(1, 0.5)
 			buy.root.Position = UDim2.new(1, -14, 0.5, -34)
 			local key = passKey(craft)
@@ -354,89 +307,6 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 			local _, gFace = Style.block(go, Style.grad("buy"), { studs = true })
 			Style.label(gFace, "Launch", Theme.Text.button)
 			Style.press(go, launch)
-		end
-
-		order += 1
-		order = section(panel.body, order, "Stats")
-		local knots = math.floor(spec.topSpeed / VehicleConfig.KNOT + 0.5)
-		stat(
-			panel.body,
-			order,
-			"Speed",
-			`{knots} kn`,
-			math.clamp(spec.topSpeed / (45 * VehicleConfig.KNOT), 0.2, 1)
-		)
-		order += 1
-		stat(
-			panel.body,
-			order,
-			"Aboard",
-			`{spec.seats + spec.survivorCapacity}`,
-			math.clamp((spec.seats + spec.survivorCapacity) / 8, 0.15, 1)
-		)
-		order += 1
-		stat(
-			panel.body,
-			order,
-			"Tough",
-			`{math.floor(spec.massHint * 37)} kg`,
-			math.clamp(spec.massHint / 1108, 0.15, 1)
-		)
-
-		local upgrades = VehicleUpgrades.Vehicles[craft]
-		if upgrades then
-			order += 1
-			order = section(panel.body, order, "Upgrades")
-			local mask = VehicleUpgrades.mask(if d then d.vehicleUpgrades[craft] else 0)
-			for _, up in upgrades do
-				local fitted = VehicleUpgrades.has(mask, up.id)
-				local row = Instance.new("Frame")
-				row.LayoutOrder = order
-				row.Size = UDim2.new(1, 0, 0, 76)
-				row.BackgroundTransparency = 1
-				row.Parent = panel.body
-				local _, rFace =
-					Style.block(row, Style.grad(if fitted then "owned" else "body"), { lip = 5 })
-				local artBox = Instance.new("Frame")
-				artBox.BackgroundTransparency = 1
-				artBox.Position = UDim2.fromOffset(14, 12)
-				artBox.Size = UDim2.fromOffset(52, 52)
-				artBox.Parent = rFace
-				Style.icon(
-					artBox,
-					if up.id == "Engine"
-						then "boost"
-						elseif up.id == "Hull" then "lifebuoy"
-						else "crew"
-				)
-				local name = Style.label(rFace, up.name, Theme.Text.body, true)
-				name.Position = UDim2.fromOffset(78, 0)
-				name.Size = UDim2.new(1, -260, 1, 0)
-				name.TextXAlignment = Enum.TextXAlignment.Left
-				name.TextWrapped = false
-				local label = Style.label(
-					rFace,
-					if fitted then "Fitted" else up.effect,
-					Theme.Text.small,
-					true
-				)
-				label.AnchorPoint = Vector2.new(1, 0.5)
-				label.Position = UDim2.new(1, -180, 0.5, 0)
-				label.Size = UDim2.fromOffset(150, 60)
-				label.TextXAlignment = Enum.TextXAlignment.Right
-				if not fitted then
-					local buy = PriceButton.new(rFace, {
-						price = up.price,
-						currency = "Cash",
-						onActivate = function()
-							upgrade(up.id)
-						end,
-					})
-					buy.root.AnchorPoint = Vector2.new(1, 0.5)
-					buy.root.Position = UDim2.new(1, -12, 0.5, 0)
-				end
-				order += 1
-			end
 		end
 	end
 

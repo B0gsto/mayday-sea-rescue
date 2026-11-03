@@ -17,6 +17,7 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
 local Flipbooks = require(Shared:WaitForChild("Fx"):WaitForChild("Flipbooks"))
 local OceanQuality = require(script.Parent:WaitForChild("OceanQuality"))
@@ -197,6 +198,14 @@ local function applyStyle(rig: Rig, night: number)
 	local option = if id then Cosmetics.option("Wake", id) else nil
 	local style = option and option.style
 	local v = WakeMath.visual(if type(style) == "table" then style else nil, night)
+	-- docs/30: the wake and trail grow with the level and turn colour by stage, under any bought wake style
+	local level = rig.model:GetAttribute("BoatLevel")
+	local wakeScale, wakeColor = BoatLevels.wake(level)
+	v.width *= wakeScale
+	v.lifetime *= math.sqrt(wakeScale)
+	if type(style) ~= "table" and BoatLevels.row(level).stage > 1 then
+		v.color, v.ribbonColor, v.ribbon = wakeColor, wakeColor, 1
+	end
 	local half = rig.baseWidth * v.width * 0.5
 	rig.a0.Position = rig.centre - Vector3.new(half, 0, 0)
 	rig.a1.Position = rig.centre + Vector3.new(half, 0, 0)

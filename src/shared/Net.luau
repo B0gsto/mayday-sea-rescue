@@ -26,6 +26,8 @@
 --   BoardLaunch        C->S  launch a craft from your own craft board (board name, vehicleId; server/Dock/BoatBoard)
 --   RequestVehicle     C->S  function: launch a vehicle at a bay (vehicleId, docked?) -> (ok, reasonOrVehicle)
 --   BuyGear            C->S  function: buy a vehicle (vehicleId) -> (ok, reason)
+--   Boat_LevelUp       C->S  function: buy the next boat level at an Upgrade Station -> (ok, reason)
+--   BoatLevelMoment    S->C  ("Start" | "Swap", ownerUserId, boat model?, new level): the level-up moment
 --   TestRide           C->S  function: ride a locked Robux boat 60 s (board name, vehicleId) -> (ok, reason)
 --   GoHome             C->S  function: far from your island (DockConfig.HOME_FAR), stand on its spawn -> (ok, reason)
 --   Spin_Flex          S->C  a Legendary / Mythic wheel win: banner + confetti for everyone
@@ -45,6 +47,7 @@ export type EventName =
 	| "DogPoint"
 	| "Dock_Finish"
 	| "BoardLaunch"
+	| "BoatLevelMoment"
 	| "Spin_Flex"
 	| "Skill_State"
 	| "Spin_Wheel"
@@ -52,6 +55,7 @@ export type EventName =
 export type FunctionName =
 	"RequestVehicle"
 	| "BuyGear"
+	| "Boat_LevelUp"
 	| "Skill_Buy"
 	| "Skill_Reset"
 	| "TestRide"
@@ -66,6 +70,7 @@ Net.EVENTS = table.freeze({
 	"VehicleSpawned",
 	"CrewJoin",
 	"CrewLeave",
+	"BoatLevelMoment",
 	"PlayerDataChanged",
 	"StormChanged",
 	"DogPoint",
@@ -76,9 +81,15 @@ Net.EVENTS = table.freeze({
 	"Spin_Wheel",
 } :: { EventName })
 
-Net.FUNCTIONS = table.freeze(
-	{ "RequestVehicle", "BuyGear", "Skill_Buy", "Skill_Reset", "TestRide", "GoHome" } :: { FunctionName }
-)
+Net.FUNCTIONS = table.freeze({
+	"RequestVehicle",
+	"BuyGear",
+	"Boat_LevelUp",
+	"Skill_Buy",
+	"Skill_Reset",
+	"TestRide",
+	"GoHome",
+} :: { FunctionName })
 
 local folder: Folder? = nil
 

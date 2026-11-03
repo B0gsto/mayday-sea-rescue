@@ -57,6 +57,7 @@ local Buoyancy = require(Shared:WaitForChild("Boat"):WaitForChild("Buoyancy"))
 local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local Crowding = require(Shared:WaitForChild("Crowding"))
+local Glance = require(Shared:WaitForChild("Boat"):WaitForChild("Glance"))
 local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
 local Helm = require(Shared:WaitForChild("Boat"):WaitForChild("Helm"))
 local NavLights = require(Shared:WaitForChild("Boat"):WaitForChild("NavLights"))
@@ -197,14 +198,8 @@ local function snapRemote(model: Model, dt: number, now: number)
 	setVisualOffset(model, current, tilt + Vector2.new(0, bankOf(model, dt)))
 end
 
--- A hull touching a wall (quay, breakwater, beach, a moored boat): four short horizontal rays from
--- the root, each just past the hull's side, find the contact and return the normal pointing out
--- of it. People and casualties don't count.
-local function dockContact(model: Model): (boolean, Vector3?)
-	local root = model.PrimaryPart
-	if not root then
-		return false, nil
-	end
+-- What a hull can hit: not itself, players or call props.
+local function wallParams(model: Model): RaycastParams
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	local ignore: { Instance } = { model }
@@ -220,6 +215,18 @@ local function dockContact(model: Model): (boolean, Vector3?)
 	params.FilterDescendantsInstances = ignore
 	params.IgnoreWater = true
 	params.RespectCanCollide = true
+	return params
+end
+
+-- A hull touching a wall (quay, breakwater, beach, a moored boat): four short horizontal rays from
+-- the root, each just past the hull's side, find the contact and return the normal pointing out
+-- of it. People and casualties don't count.
+local function dockContact(model: Model): (boolean, Vector3?)
+	local root = model.PrimaryPart
+	if not root then
+		return false, nil
+	end
+	local params = wallParams(model)
 	local size = root.Size
 	local forward = Buoyancy.flatForward(root.CFrame.LookVector)
 	local right = root.CFrame.RightVector
@@ -240,6 +247,48 @@ local function dockContact(model: Model): (boolean, Vector3?)
 		end
 	end
 	return false, nil
+end
+
+-- docs/30: at speed a wall glances you off (Boat/Glance): sweep ahead of the bow and the two sides each frame, since a
+-- fast hull moves further per physics step than most walls are thick.
+local glanceAt: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
+local function glanceBoat(model: Model, dt: number)
+	local root = model.PrimaryPart
+	if not root or root.Anchored then
+		return
+	end
+	local v = root.AssemblyLinearVelocity
+	local flat = Vector3.new(v.X, 0, v.Z)
+	local speed = flat.Magnitude
+	local now = os.clock()
+	if speed < Glance.MIN_SPEED or now < (glanceAt[model] or 0) then
+		return
+	end
+	local params = wallParams(model)
+	params.CollisionGroup = root.CollisionGroup -- boats ghost through each other (Crowding)
+	local length = Glance.lookahead(speed, dt, root.Size.Z)
+	local forward = Buoyancy.flatForward(root.CFrame.LookVector)
+	local right = root.CFrame.RightVector
+	for _, side in { 0, -0.45, 0.45 } do
+		local from = root.Position + right * side * root.Size.X
+		local hit = Workspace:Raycast(from, flat.Unit * length, params)
+		local who = hit and hit.Instance:FindFirstAncestorOfClass("Model")
+		if
+			hit
+			and math.abs(hit.Normal.Y) < Glance.MAX_NORMAL_Y
+			and not (who and who:FindFirstChildOfClass("Humanoid"))
+		then
+			local velocity, heading = Glance.deflect(flat, hit.Normal, forward)
+			if velocity and heading then
+				glanceAt[model] = now + Glance.COOLDOWN
+				local at = root.Position
+				root.CFrame = CFrame.lookAt(at, at + heading)
+				root.AssemblyLinearVelocity = velocity + Vector3.new(0, v.Y, 0)
+				root.AssemblyAngularVelocity = Vector3.zero
+				return
+			end
+		end
+	end
 end
 
 local function unstickBoat(model: Model, throttle: number, steer: number, speed: number, dt: number)
@@ -513,7 +562,19 @@ local function step(dt: number)
 					throttle = Helm.throttle(lastThrottle, throttle, dt) -- a tap creeps, the brake is instant
 					local root = child.PrimaryPart
 					local speed = if root then root.AssemblyLinearVelocity.Magnitude else 0
-					helm = Helm.step(helm, steer, speed / (if spec then spec.topSpeed else 60), dt)
+					local top = child:GetAttribute("TopSpeed") -- docs/30: the level's, not the hull's
+					helm = Helm.step(
+						helm,
+						steer,
+						speed
+							/ (
+								if type(top) == "number"
+									then top
+									elseif spec then spec.topSpeed
+									else 60
+							),
+						dt
+					)
 					-- Captain Grip (SkillService's SkillGrip): the hull bites sooner; 1 = no change
 					Simulator.setGrip(
 						child,
@@ -588,6 +649,7 @@ local function step(dt: number)
 					nowSimulated[child] = true
 					checkCapsize(child, seat, dt)
 					unstickBoat(child, throttleIn, steerIn, telemetry and telemetry.speed or 0, dt)
+					glanceBoat(child, dt)
 					Telemetry.stalled( -- analytics H15 (not the cold open's auto-throttle)
 						"Boat",
 						math.abs(throttleIn) > 0.5

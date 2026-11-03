@@ -231,7 +231,9 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	local fov = Comfort.get("fov") - 5
 	if Comfort.get("speedFov") and not Comfort.reducedMotion() then
 		-- a smaller kick on a phone: the same swing reads stronger on a small screen
-		fov = CameraMath.speedFov(fov, flatSpeed, ctx.topSpeed, if phone then 4 else 6)
+		-- docs/30: the kick grows with the boat's level
+		local kick = (if phone then 4 else 6) + math.clamp((ctx.topSpeed - 80) / 100, 0, 8)
+		fov = CameraMath.speedFov(fov, flatSpeed, ctx.topSpeed, kick)
 	end
 	camera.FieldOfView = CameraMath.damp(camera.FieldOfView, fov, 0.25, dt)
 	state.fresh = false

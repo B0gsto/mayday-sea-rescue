@@ -3,18 +3,22 @@
 -- migration). No ranks and no Reputation (docs/23 (q), WP-28): craft unlock through their island building
 -- (shared/UnlockTree). No services, safe to load in Lune (tests/Progression.spec.luau). Server services and
 -- the HUD both use it so they agree.
+local BoatLevels = require(script.Parent.BoatLevels)
 local DepotRules = require(script.Parent.DepotRules)
 local DockConfig = require(script.Parent.Config.DockConfig)
 local MonetizationConfig = require(script.Parent.Config.MonetizationConfig)
 local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
 local SkillRules = require(script.Parent.SkillRules)
 local UnlockTree = require(script.Parent.UnlockTree)
+local VehicleConfig = require(script.Parent.Config.VehicleConfig)
 local VehicleUpgrades = require(script.Parent.VehicleUpgrades)
 local WorkerRules = require(script.Parent.WorkerRules)
 
 export type PlayerData = {
 	version: number,
 	cash: number,
+	boatLevel: number, -- docs/30: the one boat's level, 1..50 (BoatLevels), bought with Cash at the Upgrade Station
+	boatPassFloor: boolean?, -- a pre-ladder save whose game passes are still to be read for their level floors
 	rep: number, -- retired Reputation (WP-28): kept as saved, never read
 	vehicles: { [string]: boolean },
 	-- Fitted vehicle upgrades (docs 03 section 4.1): boat id -> bitmask of VehicleUpgrades levels.
@@ -116,14 +120,14 @@ function Rules.ownsVehicle(data: PlayerData, vehicleId: string, passOwned: boole
 	if not unlock then
 		return false
 	end
-	if passOwned == true then
+	if passOwned == true or (unlock.level and data.boatLevel >= unlock.level) then
 		return true
 	end
 	if unlock.passOnly then
 		-- the wheel's grand-prize boat is the one pass-only craft a profile flag may own
 		return data.vehicles[vehicleId] == true and data.flags.spinBoat == vehicleId
 	end
-	return unlock.price <= 0 or data.vehicles[vehicleId] == true
+	return (unlock.price <= 0 and not unlock.level) or data.vehicles[vehicleId] == true
 end
 
 -- ok, reason: may this player launch this vehicle? Owning it is enough: the building gate is on the buy
@@ -156,6 +160,7 @@ function Rules.fromSnapshot(snap: { [string]: any }): PlayerData
 	data.coldOpenDone = snap.coldOpenDone == true
 	data.tutorialStep = if type(snap.tutorialStep) == "number" then snap.tutorialStep else nil
 	data.totalRescues = if type(snap.totalRescues) == "number" then snap.totalRescues else 0
+	data.boatLevel = BoatLevels.level(snap.boatLevel)
 	for _, key in { "vehicles", "vehicleUpgrades", "workers", "dockBuildings" } do
 		if type(snap[key]) == "table" then
 			(data :: any)[key] = table.clone(snap[key])
@@ -197,6 +202,7 @@ function Rules.defaultData(): PlayerData
 	return {
 		version = ProgressionConfig.SchemaVersion,
 		cash = ProgressionConfig.StartingCash,
+		boatLevel = 1,
 		rep = 0,
 		vehicles = {},
 		vehicleUpgrades = {},
@@ -338,6 +344,24 @@ function Rules.migrate(raw: any): PlayerData
 		end
 	end
 	payBackRetired(raw, data)
+	data.boatLevel = BoatLevels.level(raw.boatLevel)
+	local preLadder = raw.boatLevel == nil -- docs/30: this save predates the ladder, so it may hold boats worth a floor
+	if preLadder then
+		for id in data.vehicles do
+			local spec = VehicleConfig.get(id)
+			if spec then
+				data.boatLevel = math.max(
+					data.boatLevel,
+					BoatLevels.legacyFloor(
+						id,
+						VehicleUpgrades.apply(spec, data.vehicleUpgrades[id])
+					)
+				)
+			end
+		end
+		local jet = VehicleUpgrades.apply(VehicleConfig.JetSki, data.vehicleUpgrades.JetSki)
+		data.boatLevel = math.max(data.boatLevel, BoatLevels.legacyFloor("JetSki", jet))
+	end
 	data.coldOpenDone = raw.coldOpenDone == true
 	local tutorial = math.floor(num(raw.tutorialStep, 0))
 	data.tutorialStep = if tutorial >= 1 then math.clamp(tutorial, 1, 4) else nil
@@ -565,6 +589,13 @@ function Rules.migrate(raw: any): PlayerData
 	end
 	-- version 2 is current; future migrations go here, keyed on raw.version
 	data.version = ProgressionConfig.SchemaVersion
+	-- pass ownership is not in the save: UpgradeService applies the pass floors once, when the passes are read
+	data.boatPassFloor = raw.boatPassFloor == true
+		or (preLadder and (data.coldOpenDone or data.totalRescues > 0))
+		or nil
+	if preLadder and BoatLevels.isStageHull(data.flags.lastVehicle) then
+		data.flags.lastVehicle = BoatLevels.row(data.boatLevel).hull
+	end
 	return data
 end
 
@@ -572,6 +603,7 @@ end
 function Rules.snapshot(data: PlayerData): { [string]: any }
 	return {
 		cash = data.cash,
+		boatLevel = data.boatLevel,
 		totalRescues = data.totalRescues,
 		medals = data.medals,
 		dock = { levels = table.clone(data.dock.levels), prepaid = table.clone(data.dock.prepaid) },
