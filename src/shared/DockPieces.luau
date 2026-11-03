@@ -2577,6 +2577,7 @@ local function fishMarket(m: Model, b: CFrame, level: number?)
 				BRICK_WHITE
 			)
 			c.CastShadow = false
+			c:SetAttribute("BuildY", 2) -- rises with the mesh counters (Lv1_L02)
 			continue
 		end
 		studTop(
@@ -2598,7 +2599,7 @@ local function fishMarket(m: Model, b: CFrame, level: number?)
 	end
 	if lv1 then
 		local k = def.scale or 1 -- the mesh's ATT_Sign_01, in the market's 1x frame
-		sign(
+		local board = sign(
 			m,
 			Vector3.new(12.08, 4.49, 0.4) / k,
 			at * CFrame.new(Vector3.new(-11.15, 13.0, -8.0) / k),
@@ -2606,6 +2607,7 @@ local function fishMarket(m: Model, b: CFrame, level: number?)
 			def.name,
 			spec.icon
 		)
+		board:SetAttribute("BuildY", 4) -- rises with the mesh roofs (Lv1_L04), not floating from the start
 		-- the mesh carries the tiled walkway and plaza (no code yardPath) and its own yard stock; the Lv2 stalls stand
 		-- in the front corners, where yardClutter's crates went
 		rock(m, at * CFrame.new(w / 2 + 5, 0, d / 2 + 4))
@@ -4168,9 +4170,10 @@ local function seaPlate(m: Model, b: CFrame, key: string)
 		for _, p in m:GetDescendants() do
 			if p:IsA("BasePart") and p.Name ~= "TealBrick" then
 				p.Transparency, p.CastShadow = 1, false
-				local studs = p:FindFirstChild("Studs")
-				if studs then
-					studs:Destroy()
+				for _, t in p:GetChildren() do -- path() leaves its Texture unnamed
+					if t:IsA("Texture") or t.Name == "Studs" then
+						t:Destroy()
+					end
 				end
 			end
 		end
@@ -4204,6 +4207,8 @@ local function seaPlate(m: Model, b: CFrame, key: string)
 		end
 		kit.Name = "SeaPlateKit"
 		kit.Parent = m
+	else
+		m:SetAttribute("MissingMesh", "M_Prop_SeaPlateKit") -- DockService rebuilds it once the kit loads
 	end
 	for _, p in m:GetDescendants() do
 		if p:IsA("BasePart") and p:GetAttribute("BuildY") == nil then

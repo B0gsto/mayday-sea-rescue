@@ -877,7 +877,7 @@ local function plateDrop(site: Site, parts: { BasePart }, finals: { CFrame }, mi
 	local deck, rim, rest = {}, {}, {}
 	for i, part in parts do
 		local row = { part = part, final = finals[i] }
-		if part.Name == "Deck" or part.Name == "Gangway" then
+		if string.find(part.Name, "Deck$") or part.Name == "Gangway" then -- kit: L04_RampDeck, L11_FreightDeck
 			table.insert(deck, row)
 		elseif part.Name == "Rim" then
 			table.insert(rim, row)
