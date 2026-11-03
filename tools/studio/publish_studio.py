@@ -3,7 +3,7 @@
 (SurfaceAppearance / MaterialVariant) that an Open Cloud place upload never makes.
 
 usage: python3 tools/studio/publish_studio.py [--skip-check] [--launch] [--batch 8] [--gap 3] [--rounds 4]
-  --launch  the launch experience (deploy/launch-target.json, deploy/state-launch.json, launch pass ids); ask the user first
+  --launch  the launch experience (deploy/launch-target.json, deploy/state-launch.json, launch pass ids); run after every test publish
 
   1. check.sh (unless --skip-check) and build.sh
   2. open the test place (deploy/target.json, never the launch universe) from Roblox in a fresh Studio process
