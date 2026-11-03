@@ -25672,6 +25672,16 @@
   "source": "assets/fbx/M_Veh_BoatTrailer_JetSki/M_Veh_BoatTrailer_JetSki_LOD0.fbx",
   "type": "Model"
  },
+ "Model:45cd9859ddb97ca4467ef139dfe56626bdd5cb67a79498f0d98f383f29d0ad1f": {
+  "assetId": "84626608435007",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD0",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "45cd9859ddb97ca4467ef139dfe56626bdd5cb67a79498f0d98f383f29d0ad1f",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:45e8a76b78f6afe217919f20f1ff06e7a8e3f3d365d322946f4ded5faf41e014": {
   "assetId": "128775327799535",
   "moderation": "Approved",
@@ -27550,6 +27560,16 @@
   "route": "delivery",
   "sha": "76440649fa00f651c344d259309f025ec1d30f644c1ca732ddf6f2db49b17434",
   "source": "assets/fbx/M_Road_ParkedCar_01/M_Road_ParkedCar_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:774792122b319420beee46c32c8ce9ed873f16e411593f1106f48e11f2079f4f": {
+  "assetId": "135932892587615",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD2",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "774792122b319420beee46c32c8ce9ed873f16e411593f1106f48e11f2079f4f",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD2.fbx",
   "type": "Model"
  },
  "Model:7765f99561a51373ce8deba6d11a6d5e5a20edaac139f33942575be25a91a16c": {
@@ -29982,6 +30002,16 @@
   "source": "assets/fbx/Spike1/M_Spike1_Tris19990.fbx",
   "type": "Model"
  },
+ "Model:b3d1dc09dfb7bced11b9842eec4431ad699456f8c3579b0be599520185722cd1": {
+  "assetId": "110631269589818",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD2",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "b3d1dc09dfb7bced11b9842eec4431ad699456f8c3579b0be599520185722cd1",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:b41370915d30472fcd41cd841fee575dfca9354a288b2a183573085b45a6517e": {
   "assetId": "83792259781281",
   "moderation": "Approved",
@@ -30010,6 +30040,16 @@
   "route": "delivery",
   "sha": "b51cf696758e2ab441340bd59c0ce28d44a5ab5854c5feabbe6f3f6a445904dc",
   "source": "assets/fbx/M_Sea_MailSeaplane/M_Sea_MailSeaplane_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:b55567f40a69b35afeea28af706aad82b2c05fdc414d38de0a4db0325738275f": {
+  "assetId": "119405138772748",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD1",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b55567f40a69b35afeea28af706aad82b2c05fdc414d38de0a4db0325738275f",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD1.fbx",
   "type": "Model"
  },
  "Model:b5650ec589f6e2a5c0637b3cecc8be487ad8b249c304d4617817e1b74e307547": {
@@ -31592,6 +31632,16 @@
   "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD1.fbx",
   "type": "Model"
  },
+ "Model:e1fe59e6555b4394c87de371fa1ad36d0cb52f70f0c9e1116884264b5c490176": {
+  "assetId": "71490822192410",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD0",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "e1fe59e6555b4394c87de371fa1ad36d0cb52f70f0c9e1116884264b5c490176",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:e214a737c1a1deb3da96e1417fbb7f5efda4806af68390d68794a281d3159516": {
   "assetId": "82925411815698",
   "moderation": "Approved",
@@ -32080,6 +32130,16 @@
   "route": "delivery",
   "sha": "ecdc125e14e6e1180532c2c0faf629e5e03f66bab0df62abbc42259828d00073",
   "source": "assets/fbx/M_Rock_Cliff_02/M_Rock_Cliff_02_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:ece0cd646d8cf6e66d9ef188a4b04835aec204f013035b5ae38f519d21c0202a": {
+  "assetId": "134456974048052",
+  "moderation": "Approved",
+  "name": "M_Prop_JettyCrane_LOD1",
+  "rbxm": "assets/models/M_Prop_JettyCrane_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ece0cd646d8cf6e66d9ef188a4b04835aec204f013035b5ae38f519d21c0202a",
+  "source": "assets/fbx/M_Prop_JettyCrane/M_Prop_JettyCrane_LOD1.fbx",
   "type": "Model"
  },
  "Model:ed4be27ecc980ab1005852b20ce906a30b20dec9d91a9ac89a190b59a7181764": {
