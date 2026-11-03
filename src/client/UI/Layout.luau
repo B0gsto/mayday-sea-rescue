@@ -286,6 +286,7 @@ local EDGE_REGIONS = {
 	chips = true, -- the Next / tutorial chips (SE device pass 2026-10-28: "40 m" slid under them)
 	steer = true, -- the touch drive pad (TouchDriveController)
 	drive = true,
+	goback = true,
 }
 local hudBoxes: { Box } = {}
 

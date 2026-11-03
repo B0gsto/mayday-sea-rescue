@@ -37,6 +37,7 @@ history, not here.
 | `RequestVehicle` | C->S fn | VehicleService: `(vehicleId, docked?, near?) -> (ok, reasonOrVehicle)`; `near` = Boat to me (id ignored) |
 | `BuyGear` | C->S fn | ProgressionService: buys a craft (`vehicleId`); the name is historical |
 | `TestRide` | C->S fn | server/Dock/BoatBoard: `(boardName, vehicleId) -> (ok, reason)`; lends a locked Robux-only boat for 60 s (shared/TestRide; attributes `TestRide`, `TestRideEnds`, `TestRideAt`) |
+| `GoBack` | both | VehicleService: C->S press Go back (no payload, rate limited); S->C to everyone aboard: `"Charge"`, `"Cancel"`, `"Land"` (GoBackController) |
 | `Spin_Wheel` | S->C | SpinService: one spin `{ userId, plot, segment, startTime, duration, prize, name, rarity, kind, icon, variant, option, vehicle, duplicateCash? }`; the island's wheel animates on every client |
 | `Spin_Flex` | S->C | SpinService: a Legendary / Mythic win `{ userId, name, prize, rarity, icon }` (banner + confetti) |
 | `Skill_Buy` | C->S fn | SkillService: buys a skill node with Medals `(id) -> (ok, reason)` |
@@ -185,6 +186,13 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   (vehicle model name), `ClimbStart` (Vector3), `ClimbSide` (1/-1), `ClimbSeat` (CFrame), `ClimbStartTime`
   (`GetServerTimeNow`), all in hull space; `Ops/ClimbPath` plays them on each client until the weld's Part1
   is set.
+- Go back (docs/30 section 1; rules: `Boat/GoBack`, `tests/GoBack.spec.luau`; client: `GoBackController`, HudLayout
+  `goback`, R / gamepad right stick click / touch): the craft's driver, away from home, not on a test ride, in the
+  cold open only with a survivor aboard. A `CHARGE` of 1.5 s, then hull, driver, crew and survivors land seated at
+  `VehicleService.LandingSpot(player, spec) -> CFrame?` (the driver's berth, bow to sea; the one function the Upgrade
+  Station's bay replaces), anchored `LAND_HOLD` s, then throttle ready. RescueService's delivery tick pays as on any
+  arrival. `VehicleService.CancelGoBack(player) -> boolean` stops a charge (pirates: docs/30 section 5). Telemetry:
+  custom `GoBack` (value survivors aboard: vehicle, Started / Landed / Cancelled, why). VFX: `go_back_land`.
 - Boat to me: `RequestVehicle(nil, false, true)` brings your current or last craft to the open water nearest
   you; free calls wait `MonetizationEffects.boatToMeWait` (player attribute `BoatToMeAt`, scaled by
   `WorkerBoatScale`); the Quick Launch pass or day pass skips the wait.

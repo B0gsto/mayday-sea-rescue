@@ -10,6 +10,7 @@
 --   CameraController.Comfort     (Camera/Comfort: get/set settings)
 --   CameraController.PlayCinematic(shots, opts?) -> handle  (Camera/Cinematic.play)
 --   CameraController.Shake(amount 0..1)
+--   CameraController.SnapBehind()  the craft jumped (Go back): the chase camera is behind it at once
 --   CameraController.SetOverride(cf, fov?) / ClearOverride()  a Scriptable camera (the build tablet)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -535,6 +536,10 @@ end
 
 function CameraController.PlayCinematic(shots: { Cinematic.Shot }, opts: any?): Cinematic.Handle
 	return Cinematic.play(shots, opts)
+end
+
+function CameraController.SnapBehind()
+	Chase.snap()
 end
 
 function CameraController.Shake(amount: number)

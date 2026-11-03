@@ -362,6 +362,14 @@ local function step(dt: number)
 	spinRotors(dt)
 end
 
+-- The craft jumped (Go back): fly on from the new pose, not the old heading and speed.
+function HeliController.Landed()
+	local root = flying and flying.PrimaryPart
+	if root then
+		state = Flight.new(Flight.headingOf(root.CFrame.LookVector), Vector3.zero)
+	end
+end
+
 function HeliController.Start()
 	RunService.PreSimulation:Connect(step)
 end

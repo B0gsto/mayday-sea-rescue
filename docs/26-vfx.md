@@ -26,6 +26,7 @@ The game's effects follow the global VFX rules (user CLAUDE.md "VFX (all games)"
 | HQ level up | spectacle | the above plus a tall burst of confetti bricks and a soft gold shockwave ring on the ground |
 | Survivor picked up | feedback | a white splash crown + droplets where they leave the water |
 | Survivor delivered / rescue done | spectacle (small) | a ring of lifebuoy-coloured plates and a coin burst into the wallet (CashBurst) |
+| Go back landed | feedback | a foam crown, drops, a ring on the water and a few red and white plates under the hull (charge: FOV widen + whoosh + a sea-blue veil over the jump; no FOV or shake under Reduce motion) |
 | Golden call | state + spectacle | a steady gold ring on the pin (slow breath), a gold burst on accept, the survivor's steady glow |
 | Cash / Medal gain | feedback | coins / medal flip into the counter (UI) |
 | Join reward Collect | spectacle | UI/CoinShower: wallet coins pop in across the screen, bob, then stream on curves into the wallet (rising ticks, the counter rolls in step), a till and one soft gold ring at the wallet (~2 s) |

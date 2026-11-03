@@ -40,11 +40,13 @@ local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForC
 local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
 local BoatBoard = require(script.Parent.Parent:WaitForChild("Dock"):WaitForChild("BoatBoard"))
 local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
+local BoatColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
 local ClimbPath = require(Shared:WaitForChild("Ops"):WaitForChild("ClimbPath"))
 local Crowding = require(Shared:WaitForChild("Crowding"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
+local GoBack = require(Shared:WaitForChild("Boat"):WaitForChild("GoBack"))
 local Marina = require(Shared:WaitForChild("Marina"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
@@ -1489,6 +1491,141 @@ function VehicleService.Stow(player: Player): string
 	return if record then stowRecord(record) else "NoVehicle"
 end
 
+---------------------------------------------------------------- Go back (docs/30 section 1)
+
+local goBacks: { [Player]: { why: string? } } = {} -- charging now
+local goBackAt: { [Player]: number } = {} -- the rate limit
+
+-- The one landing spot per island: open water at the driver's berth, bow to sea (inside the drop-off zone, so the
+-- delivery tick fires). The Upgrade Station's bay goes in here. Crew at the helm land at their own berth: that is
+-- the one RescueService delivers at.
+function VehicleService.LandingSpot(player: Player, spec: VehicleSpec): CFrame?
+	local bay = bayFor(player)
+	if not bay then
+		return nil
+	end
+	local open = launchCFrame(bay, spec, player)
+	return if open and BoatColdOpen.atDropOff(open.Position, bay.Position)
+		then open
+		else (dockSpot(player, spec, bay))
+end
+
+local function tellAboard(players: { Player }, phase: string)
+	for _, p in players do
+		if p.Parent then
+			Net.event("GoBack"):FireClient(p, phase)
+		end
+	end
+end
+
+-- Hull, rider, crew and survivors (all welded) go in one move. Anchored first: then no client owns the assembly, a
+-- client-owned rider undid a bare server PivotTo (docs/NEXT ONB-SHORE). Survivors hop off in RescueService's next
+-- delivery tick. lastGood is home, so a client that still snapped back trips checkVehicle's reset to here.
+local function landAt(record: Record, to: CFrame)
+	local root = record.root
+	record.resetting = true -- the sanity checks leave it alone
+	record.strikes = 0
+	record.recovery.lastAt = os.clock()
+	setOwner(root, nil)
+	root.Anchored = true
+	record.model:PivotTo(to)
+	record.lastGood = to
+	task.wait(GoBack.LAND_HOLD)
+	record.resetting = false
+	-- the first delivery's StepAshore may have docked it meanwhile: then it stays docked
+	if records[record.model] == record and record.mode == "Driven" then
+		root.Anchored = false
+		root.AssemblyLinearVelocity = Vector3.zero
+		root.AssemblyAngularVelocity = Vector3.zero
+		setOwner(root, record.driver) -- throttle ready
+	end
+end
+
+local function chargeGoBack(player: Player, record: Record, seat: BasePart)
+	local run = { why = nil :: string? }
+	goBacks[player] = run
+	local model, id = record.model, record.spec.id
+	local function survivors(): number
+		return tonumber(model:GetAttribute("SurvivorCount")) or 0
+	end
+	Telemetry.Custom(player, "GoBack", survivors(), id, "Started")
+	tellAboard(VehicleService.GetOccupants(model), "Charge")
+	task.spawn(function()
+		local bay = bayFor(player)
+		if bay and Workspace.StreamingEnabled then
+			pcall(player.RequestStreamAroundAsync, player, bay.Position, GoBack.CHARGE)
+		end
+	end)
+	local started = os.clock()
+	while os.clock() - started < GoBack.CHARGE and not run.why do
+		RunService.Heartbeat:Wait()
+		local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+		if
+			records[model] ~= record
+			or record.driver ~= player
+			or not humanoid
+			or humanoid.SeatPart ~= seat
+		then
+			run.why = "LeftSeat"
+		elseif record.resetting then
+			run.why = "Reset" -- a recovery glide has the hull
+		end
+	end
+	goBacks[player] = nil -- past here the charge has landed: CancelGoBack answers false
+	local spot = if run.why then nil else VehicleService.LandingSpot(player, record.spec)
+	local aboard = VehicleService.GetOccupants(model)
+	if not spot then
+		tellAboard(aboard, "Cancel")
+		Telemetry.Custom(player, "GoBack", survivors(), id, "Cancelled", run.why or "NoSpot")
+		return
+	end
+	local carried = survivors() -- the delivery tick empties the craft during the landing
+	landAt(record, restAt(model, record.spec, spot))
+	tellAboard(aboard, "Land")
+	Telemetry.Custom(player, "GoBack", carried, id, "Landed")
+end
+
+-- A press (Net GoBack). Everything the client said is ignored but the press itself.
+local function onGoBack(player: Player)
+	local now = os.clock()
+	if goBacks[player] or not GoBack.ready(goBackAt[player], now) then
+		return
+	end
+	goBackAt[player] = now
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local seat = humanoid and humanoid.SeatPart
+	local model = VehicleService.GetVehicle(player)
+	local record = model and records[model]
+	if
+		seat
+		and humanoid
+		and humanoid.Health > 0
+		and record
+		and record.mode == "Driven"
+		and not record.resetting
+		and not GoBack.refusal({
+			driving = seat == record.seat and record.driver == player,
+			coldOpenDone = player:GetAttribute("ColdOpenDone") == true,
+			survivors = tonumber(record.model:GetAttribute("SurvivorCount")) or 0,
+			testRide = player:GetAttribute("TestRide") ~= nil,
+			at = record.root.Position,
+			bay = player:GetAttribute("BayCFrame"),
+		})
+	then
+		chargeGoBack(player, record, seat)
+	end
+end
+
+-- Stop `player`'s charge, if any (a pirate ram, docs/30 section 5). True when one was stopped. Too late once it has landed.
+function VehicleService.CancelGoBack(player: Player): boolean
+	local run = goBacks[player]
+	if run then
+		run.why = run.why or "Cancelled"
+	end
+	return run ~= nil
+end
+
 -- K11 / docs/23: every spawn stands the player on their island (WP-19b: its spawn); a returning player (coldOpenDone) also gets
 -- their craft docked beside them. A new player's cold open
 -- seats them at the berth (SpawnColdOpen); someone already seated is left alone.
@@ -1641,9 +1778,12 @@ function VehicleService.Init()
 		return spawnVehicle(player, vehicleId, nil, nil, docked == true, "Menu")
 	end
 
+	Net.event("GoBack").OnServerEvent:Connect(onGoBack)
+
 	DataService.OnLoaded(watchReturning)
 	Players.PlayerRemoving:Connect(function(player)
 		returnHooks[player] = nil
+		goBackAt[player] = nil
 		local classes: { [string]: Record } = owned[player] or {}
 		for _, record in table.clone(classes) do
 			despawnModel(record.model)

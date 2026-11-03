@@ -211,6 +211,30 @@ return function(t)
 		end
 	)
 
+	-- docs/30 section 1: Go back is big, low, and clear of everything a driver's thumbs and eyes are on
+	t.test("Go back: big, on screen, clear of the thumbstick, the drive pad and the HUD", function()
+		for _, device in { "Touch", "Keyboard" } do
+			for _, s in SCREENS do
+				local mt = HudLayout.compute(s.screen, s.insets, device)
+				local go = mt.rects.goback
+				local x, y, x2, y2 = box(go)
+				t.expect(go.size.Y * mt.scale >= 44).toBe(true)
+				t.expect(x >= -1e-6 and x2 <= mt.usable.X + 1e-6 and y2 <= mt.usable.Y + 1e-6)
+					.toBe(true)
+				for _, other in { "steer", "drive", "prompt", "minimap", "menu", "wallet", "quest" } do
+					local hit = overlaps(go, mt.rects[other])
+					if hit then
+						error(`{s.name} {device}: goback overlaps {other}`)
+					end
+				end
+				if mt.touch and mt.usable.X > mt.usable.Y then
+					t.expect(x >= 0.4 * mt.usable.X).toBe(true) -- the stock thumbstick zone
+				end
+				t.expect(y > 0.5 * mt.usable.Y).toBe(true) -- low on the screen
+			end
+		end
+	end)
+
 	-- owner 2026-10-31 (phone): steering on the stick was awkward; the drive pad takes the stock controls' corners
 	t.test("touch drive pad: in the bottom corners, clear of the HUD, 44 px+ buttons", function()
 		for _, s in SCREENS do
