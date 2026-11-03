@@ -55,18 +55,6 @@ def herm(s, p0, p1, m0, m1):
     return (2*s**3 - 3*s**2 + 1)*p0 + (s**3 - 2*s**2 + s)*m0 + (-2*s**3 + 3*s**2)*p1 + (s**3 - s**2)*m1
 
 
-def arm_ik(hy, hz, rooty, waist):
-    """Hand tip (HRP y, z) -> (Shoulder x, Elbow x) degrees, arm in its sagittal plane, Root unrotated, Waist pitched."""
-    L1, L2, w = 0.754, 1.009, math.radians(waist)  # shoulder->elbow, elbow->hand tip (yz lengths)
-    sy, sz = -0.6 + rooty + 1.363 * math.cos(w), 1.363 * math.sin(w)  # shoulder pivot
-    vy, vz = hy - sy, hz - sz
-    y, z = vy * math.cos(w) + vz * math.sin(w), -vy * math.sin(w) + vz * math.cos(w)  # into UpperTorso space
-    d = min(math.hypot(y, z), L1 + L2 - 1e-3)
-    b = math.acos(max(-1, min(1, (d * d - L1 * L1 - L2 * L2) / (2 * L1 * L2))))
-    a = math.atan2(-z, -y) - math.atan2(L2 * math.sin(b), L1 + L2 * math.cos(b))
-    return math.degrees(a) % 360, math.degrees(b)
-
-
 # WorkerCarry: 0.6 s per two steps at 6.4 studs/s (the worker's walk speed) at playback speed 1. Each foot is planted
 # 60% of the cycle (double support, heavy walk), so the stride is 2 * 6.4 * 0.36 = 2.3 studs (the legs' reach at the dip).
 CARRY_T, CARRY_D = 0.6, 0.6  # cycle, planted fraction
@@ -81,24 +69,27 @@ def carry_feet(t):
             out[side] = (0, 0, -CARRY_A + 2 * CARRY_A * p / CARRY_D)
         else:  # swing: lifts and lands at the planted speed, passing under the hip at mid-swing
             sw = (p - CARRY_D) / (1 - CARRY_D)
-            out[side] = (0, 0.5 * math.sin(math.pi * sw), herm(sw, CARRY_A, -CARRY_A, m, m))
+            out[side] = (0, 0.35 * math.sin(math.pi * sw), herm(sw, CARRY_A, -CARRY_A, m, m))  # low heavy swing
     return {"feet": out}
 
 
 # WorkerClimb: 1.0 s, two mirrored pulls, rise 4 studs per cycle. Per hand (phase p): grab the rung overhead and hang
-# on a straight arm (hold, body sags), pull it down to the chest while the body rises, let go and swing up past the
-# face (bowing out) onto the next rung. Hand tips are HRP-relative; the body rides ~1 stud above the HRP so a straight
-# arm reaches +3.2 (R15 blocky: straight overhead is only +2.4 above the HRP with the body unshifted).
-# shortcut: the grip is world-fixed only on average (hold + pull drop 2.4 studs while the HRP rises 2.6), fine on a ladder.
+# on a long arm (hold, body dips and the knees compress), pull it down to the chest while the body rises, let go and
+# swing up past the face (bowing out) onto the next rung. Both wrists are IK-pinned on one ladder line in front of the
+# face (x +-CL_X, z CL_Z) with mirrored elbow poles, so the two hands are exact mirrors half a cycle apart. The body rides
+# ~1 stud above the HRP and leans ~14 deg into the ladder (hips back, chest over the hands).
+# shortcut: the grip is world-fixed only on average (hold + pull drop ~2 studs while the HRP rises 2.6), fine on a ladder.
 CL_T, CL_RISE = 1.0, 4.0
-CL_TOP, CL_LOW, CL_Z = 3.46, 1.05, -0.8  # grab tip height, release at the chest, ladder hand line (forward of the face)
-CL_LO, CL_UP, CL_DIP = 1.02, 0.3, 0.3  # body (root y) at the bottom of the hang, rise per pull, hang share of a pull
+CL_TOP, CL_LOW, CL_X, CL_Z = 3.2, 1.35, 0.6, -0.95  # wrist: grab height, release at the chest, ladder line x and z
+CL_LO, CL_UP, CL_DIP = 1.0, 0.36, 0.3  # body (root y) at the bottom of the hang, rise per pull, hang share of a pull
+CL_BACK = 0.1  # hips back off the ladder (root z) so the leaning chest and face stay behind the hand line
 CL_HOLD, CL_PULL = 0.15, 0.5  # per hand: hold at the top, pull down; the rest of the cycle swings up
 CL_FOOT = (2.25, -0.85, 0.22)  # foot plant height (thigh near horizontal), rung line, planted time (leg range limits it)
+CL_POLES = {"R": (5.2, -1.2, 0.6), "L": (-5.2, -1.2, 0.6)}  # elbows out, down and a little back (lands 3 studs inward)
 
 
 def cl_body(u):
-    """Root y over one pull (u 0..1, 0 = a hand grabs): sags into the hang, then rises 0.3 through the pull."""
+    """Root y over one pull (u 0..1, 0 = a hand grabs): dips into the hang, then rises through the pull."""
     if u < CL_DIP:
         return CL_LO + CL_UP * (1 + math.cos(math.pi * u / CL_DIP)) / 2
     return CL_LO + CL_UP * (1 - math.cos(math.pi * (u - CL_DIP) / (1 - CL_DIP))) / 2
@@ -106,20 +97,19 @@ def cl_body(u):
 
 def climb(t):
     rooty = cl_body((2 * t / CL_T) % 1)
-    waist = -15 - 4 * (rooty - CL_LO) / CL_UP  # leans in to the ladder, chest in at the top of the pull
-    ch = {"root": (0, rooty, 0), "Waist": (waist, 0, 0)}
-    for side, off, sgn in (("Right", 0.0, 1), ("Left", 0.5, -1)):
-        p, hz, sz = (t / CL_T + off) % 1, CL_Z, 5
-        if p < CL_HOLD:  # hang on the rung on a straight arm while the body sags (the hand rides down with it)
-            hy = CL_TOP + rooty - CL_LO
-        elif p < CL_HOLD + CL_PULL:
-            hy = herm((p - CL_HOLD) / CL_PULL, CL_TOP, CL_LOW, 0, 0)
-        else:  # let go at the chest, swing up past the face (bowing out), reach full stretch a beat before the grab
+    k = (rooty - CL_LO) / CL_UP  # 0 at the bottom of the dip, 1 at the top of the pull
+    ch = {"root": (0, rooty, CL_BACK), "Root": (-5, 0, 0), "Waist": (-9 - 3 * k, 0, 0), "hands": {}}
+    for side, off, sgn in (("R", 0.0, 1), ("L", 0.5, -1)):
+        p, hz = (t / CL_T + off) % 1, CL_Z
+        if p < CL_HOLD:  # hang on the rung, the hand rides down with the dipping body
+            hy = CL_TOP + rooty - CL_LO - CL_UP
+        elif p < CL_HOLD + CL_PULL:  # pull the rung down to the chest
+            hy = herm((p - CL_HOLD) / CL_PULL, CL_TOP - CL_UP, CL_LOW, 0, 0)
+        else:  # let go at the chest, swing up past the face (bowing out), full stretch a beat before the grab
             sw = (p - CL_HOLD - CL_PULL) / (1 - CL_HOLD - CL_PULL)
-            hy = herm(min(1, sw / 0.8), CL_LOW, CL_TOP + CL_UP, 0, 0)
-            hz, sz = CL_Z + 0.25 * math.sin(math.pi * sw), 5 + 14 * math.sin(math.pi * sw)
-        a, b = arm_ik(hy, hz, rooty, waist)
-        ch[side + "Shoulder"], ch[side + "Elbow"] = (a, 0, sgn * sz), (b, 0, 0)
+            hy = herm(min(1, sw / 0.8), CL_LOW, CL_TOP, 0, 0)
+            hz = CL_Z - 0.3 * math.sin(math.pi * sw)
+        ch["hands"][side] = (sgn * CL_X, hy, hz)
     hi, fz, q = CL_FOOT
     df = CL_RISE * q / CL_T
     feet = {}
@@ -139,29 +129,29 @@ def climb(t):
 # ---------------------------------------------------------------------------------------------------------------
 # Key poses. Loops: the first key is repeated at `length`.
 # ---------------------------------------------------------------------------------------------------------------
-CW = (1.3, -0.85)  # WorkerCarry wrists: x (crate side), z (forward of the chest)
+CW = (1.37, -0.92)  # WorkerCarry wrists: x (hands' inner faces on the crate sides, +-0.9), z (forward of the belly)
 
 
 def carry_keys():
-    """Two mirrored heavy steps (R contact at 0, L at 0.3): body dips 0.18 after each contact, leans back ~15 deg; the
-    crate (hands) dips and rises a beat late (elbows give), sways toward the stance leg, the head lags."""
+    """Two mirrored heavy steps (R contact at 0, L at 0.3): body dips 0.28 after each contact, leans back ~12 deg; the
+    crate (hands, held at belly height) dips and rises a beat late (elbows give), sways toward the stance leg, the head lags."""
     def hands(t, y, z):
-        sway = 0.1 * math.sin(2 * math.pi * (t - 0.11) / CARRY_T)
+        sway = 0.05 * math.sin(2 * math.pi * (t - 0.11) / CARRY_T)
         return {"R": (CW[0] + sway, y, z), "L": (-CW[0] + sway, y, z)}
     keys = []
     for t0, g in ((0.0, 1), (0.3, -1)):
         keys += [
-            {"t": t0, "root": (0, -0.45, 0), "Root": (8, 5 * g, -2 * g), "Waist": (6, -5 * g, g), "Neck": (-6, 2 * g, 0),
-             "RightWrist": (0, 30, -75), "LeftWrist": (0, -30, 75)},  # heel contact; hands turned in flat on the crate sides
-            {"t": t0 + 0.1, "root": (0, -0.6, 0.02), "Root": (7, 3 * g, -g), "Waist": (3, -3 * g, 0)},  # absorb: lowest, chest gives
-            {"t": t0 + 0.14, "Neck": (-12, g, 0), "hands": hands(t0 + 0.14, -0.46, CW[1] + 0.03)},  # crate + head dip late
-            {"t": t0 + 0.22, "root": (0.06 * g, -0.42, 0), "Root": (9, 0, 0), "Waist": (9, 0, 0)},  # passing: up on the planted leg
-            {"t": t0 + 0.26, "Neck": (-2, 0, 0), "hands": hands(t0 + 0.26, -0.2, CW[1] - 0.03)},  # crate floats up late
+            {"t": t0, "root": (0, -0.42, -0.2), "Root": (11, 5 * g, -2 * g), "Waist": (4, -5 * g, g), "Neck": (-6, 2 * g, 0),
+             "RightWrist": (0, 0, -10), "LeftWrist": (0, 0, 10)},  # heel contact; palms flat on the crate sides
+            {"t": t0 + 0.1, "root": (0, -0.7, -0.17), "Root": (10, 3 * g, -g), "Waist": (2, -3 * g, 0)},  # absorb: lowest, chest gives
+            {"t": t0 + 0.14, "Neck": (-12, g, 0), "hands": hands(t0 + 0.14, -0.88, CW[1] + 0.04)},  # crate + head dip late
+            {"t": t0 + 0.22, "root": (0.06 * g, -0.4, -0.2), "Root": (12, 0, 0), "Waist": (5, 0, 0)},  # passing: up on the planted leg
+            {"t": t0 + 0.26, "Neck": (-2, 0, 0), "hands": hands(t0 + 0.26, -0.5, CW[1] - 0.03)},  # crate floats up late
         ]
-    keys[0]["hands"] = hands(0.0, -0.24, CW[1])
+    keys[0]["hands"] = hands(0.0, -0.57, CW[1])
     return keys
 
-PT = (124, 29)  # WorkerPoint held point: RightShoulder x, z; with the chest turned ~20 deg right: ~67 deg right of forward, ~17 deg up
+PT = (106, 0, -2)  # WorkerPoint held point: RightShoulder (x, y, z); chest 15 deg right -> straight arm ~35 deg right of forward, shoulder height
 
 
 def hip(root):
@@ -169,41 +159,46 @@ def hip(root):
     return {"L": (-0.95 + root[0], -0.3 + root[1], root[2])}
 
 
-SIT_KNEE = (0.72, -1.55, -0.95)  # NpcSit wrists resting on the knees (mirrored)
+SIT_ROOT = (0, -1.70, 0)  # NpcSit body: hip pivots ~0.49 above the floor, so the flat thighs rest on it (blocky boxes)
+SIT_PLANT = (-1.42, -2.755, 0.5)  # NpcSit left wrist planted on the floor behind the hip (hand tip on the floor)
+SIT_KNEE = (0.8, -1.3, -0.65)  # NpcSit right wrist on top of the raised right knee (forearm lying across it)
+SIT_POLES = {"R": (1.0, -5.0, 0.0), "L": (-3.0, 0.0, 3.0)}  # right elbow out over the knee, left elbow back (straight arm)
 
 
-def sit_hands(x, y, z):
-    return {"R": (x, y, z), "L": (-x, y, z)}
+ST = (8.3, 10.6, 6.1, 8.9, 7.2, 10.7)  # NpcSit chest tilt per key, solved in Blender so the left shoulder stays at
+# y -1.19 (+-0.015) right over the planted hand: the arm stays straight while the chest breathes, sways and turns
 
 
-def sit_poles(x, y, z):
-    """NpcSit elbow poles where they should land (the value lands 3 studs inward, so add 3 outward)."""
-    return {"R": (x + 3, y, z), "L": (-x - 3, y, z)}
+def sit_key(t, b, turn, tilt, look, rh=SIT_KNEE):
+    """NpcSit key: pelvis rolled back on the floor, chest leaning back and left onto the planted arm. b: breath (0 out,
+    1 in: chest lifts), turn: torso yaw (deg, + left), tilt: chest tilt onto the planted arm (deg; solved per key so the
+    left shoulder stays put over the planted hand while the right shoulder breathes and sways), look: neck (pitch, yaw)."""
+    return {"t": t, "Root": (28 - 5 * b, 0, 0), "Waist": (-12 - 5 * b, turn, tilt), "Neck": (look[0], look[1], 2 - tilt),
+            "hands": {"R": rh, "L": SIT_PLANT}}
 
 
-SIT_POLE_KNEE, SIT_POLE_UP = sit_poles(2.5, -1.5, 0.5), sit_poles(3.0, 0.3, 0.6)  # elbows out-down / out to the sides
 POINT_POLE_L, HIP_POLE_L = (-3.0, -1.0, 2.5), (-0.94, 0, 2.57)  # WorkerPoint left elbow: exact rest arm; out to the side on the hip
-SAW_T, SAW_POLE_R, SAW_POLE_L = 0.6, (0, -1.0, 0), (-3.0, -0.4, -0.5)  # stroke period, arm IK poles (R: elbow out + back on the pull)
-SAW_NAIL = (-0.6, 0.0, -1.4)  # WorkerSaw left wrist planted on the timber
+SAW_POLE_R, SAW_POLE_L = (0, -1.0, 0), (-3.0, -0.4, -0.5)  # arm IK poles (R: elbow out + back on the pull)
+SAW_NAIL = (-1.0, -0.38, -1.48)  # WorkerSaw left wrist planted low on the timber, arm long
 
 
 def saw_keys():
-    """One identical push/pull stroke per SAW_T, keyed every 0.075 s: s = +1 pulled back, -1 pushed through. The right
-    wrist runs 2.0 studs on one level line (arm near straight at the push end); hips drive and knees dip on each push."""
-    keys = []
-    for i in range(16):
-        t = i * 0.075
-        w = 2 * math.pi * t / SAW_T
-        s, h, g = math.cos(w), math.cos(w + 0.45), math.cos(w - 0.6)  # hand, hips (lead), head (lag)
-        keys.append({"t": round(t, 4), "ease": "smooth",
-                     "root": (0.04 * h, -0.2 + 0.1 * h, -0.06 + 0.16 * h), "Root": (-4 + 2 * h, -5 * h, 0),
-                     "Waist": (-8 + 3 * s, -10 * s, 0), "Neck": (-16 + 4 * g, 8 * g, 0),
-                     "hands": {"R": (1.1, -0.45, -1.25 + 1.0 * s), "L": SAW_NAIL},
-                     "RightWrist": (-4 + 8 * g, 0, 0), "LeftWrist": (-20, 0, 0)})
-    return keys
+    """Two strokes per 1.2 s, the first harder: pulled back (wrist past the hip) -> push through (arm long) with a
+    shoulder drive, chest twist +-15 (y+ turns left: right shoulder forward), hip rock forward and a knee dip; head
+    counter-turns to stay on the cut. Right wrist keyed on one level line, left wrist planted."""
+    def k(t, ease, z, rz, ry, lean, tw, e=1.0):
+        return {"t": t, "ease": ease, "root": (0.05 * tw / 15, ry, rz), "Root": (-3 * e, 4 * tw / 15, 0),
+                "Waist": (lean, tw, 0), "Neck": (-6, -0.6 * tw - 4 * tw / 15, 0),
+                "hands": {"R": (1.0, -0.38, z), "L": SAW_NAIL}, "RightWrist": (-10 if z < -1 else 10, 0, 0), "LeftWrist": (-15, 0, 0)}
+    return [
+        k(0.0, "in", 0.08, 0.02, -0.12, -5, -15),  # pulled back, chest open right
+        k(0.2667, "out", -2.05, -0.3, -0.27, -10, 15),  # push 1: hard, long
+        k(0.6, "in", -0.04, 0.0, -0.13, -5, -12),  # pulled back (a little shorter)
+        k(0.8667, "out", -1.85, -0.24, -0.22, -9, 11, 0.7),  # push 2: lighter
+    ]
 
 
-HC, HN = (0.8, 0.1, -1.2), (-0.5, 0.15, -1.25)  # WorkerHammer: right wrist at every hit, left wrist holding the nail beside it
+HC, HN = (0.84, -0.43, -1.51), (-0.24, -0.38, -1.62)  # WorkerHammer: right wrist at every hit (bench in front of the belly), left wrist on the nail
 
 
 def hc(dx=0.0, dy=0.0, dz=0.0, ny=0.0):
@@ -221,142 +216,125 @@ CEL_CROUCH = (1.92, 0.03, -1.28, -0.5)  # WorkerCelebrate gather wrists (x, y, z
 
 
 SLOTS = {
-    # Tap, tap, BIG strike per 1.2 s. Every hit lands the right wrist on one contact point (HC) at bench height and
-    # stops there; the left hand holds the nail there (pinned). Taps lift ~0.5 stud. The big one: lean back and a slight
-    # crouch while the hammer goes up (short top), drop forward, a 2-frame contact hold with a torso crunch and knee
-    # dip, then a rebound that becomes the lift for the next tap.
+    # Tap, tap, BIG strike per 1.2 s, torso near upright (<= 10 deg forward), head up. Every hit lands the right wrist
+    # on one contact point (HC) low and forward (a bench in front of the belly); the left hand holds the nail beside it on
+    # a long arm. Taps lift ~0.85 stud. The big one: the hammer goes up and back over the right shoulder with a lean back,
+    # a fast drop (0.067 s), a 2-frame contact hold with a small knee dip, then a rebound into the next tap's lift.
     "WorkerHammer": {"loop": True, "length": 1.2, "stance": {"L": (-0.2, 0, -0.4), "R": (0.25, 0, 0.35)},
                      "poles": {"R": HAMMER_POLE_R, "L": HAMMER_POLE_L}, "keys": [
-        {"t": 0.0, "ease": "linear", "root": (0, -0.1, 0), "Root": (-2, 0, 0), "Waist": (-10, -4, 0), "Neck": (-26, 4, 0),
-         "hands": hc(), "RightWrist": (-30, 0, 0)},  # tap 1 contact
-        {"t": 0.0667, "ease": "smooth", "root": (0, -0.12, 0), "Waist": (-11, -4, 0), "hands": hc(ny=-0.03)},  # stop on it
-        {"t": 0.1667, "ease": "in", "root": (0, -0.08, 0), "Waist": (-7, -6, 0), "Neck": (-24, 6, 0),
-         "hands": hc(0.05, 0.5, 0.15), "RightWrist": (20, 0, 0)},  # tap 2 lift, wrist lags back
-        {"t": 0.2667, "ease": "linear", "root": (0, -0.11, 0), "Waist": (-10, -4, 0), "Neck": (-27, 4, 0),
-         "hands": hc(), "RightWrist": (-30, 0, 0)},  # tap 2 contact
-        {"t": 0.3333, "ease": "smooth", "root": (0, -0.13, 0), "Waist": (-11, -4, 0), "hands": hc(ny=-0.03)},  # stop on it
-        {"t": 0.4667, "ease": "smooth", "root": (0, -0.18, 0.04), "Root": (3, 0, 0), "Waist": (2, -8, 0), "Neck": (-18, 6, 0),
-         "hands": hc(0.55, 0.95, 0.75), "RightWrist": (10, 0, 0)},  # big lift: lean back, slight crouch
-        {"t": 0.6, "ease": "smooth", "root": (0, -0.24, 0.08), "Root": (5, 0, 0), "Waist": (8, -10, 0), "Neck": (-12, 8, 0),
-         "hands": hc(0.6, 1.8, 1.55), "RightWrist": (30, 0, 0)},  # top
-        {"t": 0.6667, "ease": "in", "Waist": (9, -10, 0), "hands": hc(0.6, 1.85, 1.65), "RightWrist": (42, 0, 0)},  # wrist cocks last
-        {"t": 0.7333, "ease": "in", "root": (0, -0.2, 0.0), "Root": (0, 0, 0), "Waist": (-6, -4, 0), "Neck": (-22, 4, 0),
-         "hands": hc(0.6, 1.25, 0.05), "RightWrist": (10, 0, 0)},  # drop forward
-        {"t": 0.8, "ease": "linear", "root": (0, -0.24, -0.04), "Root": (-4, 0, 0), "Waist": (-12, -2, 0), "Neck": (-32, 2, 0),
-         "hands": hc(ny=-0.08), "RightWrist": (-40, 0, 0)},  # BIG contact: crunch + knee dip, nail hand jolts
-        {"t": 0.8667, "ease": "smooth", "root": (0, -0.28, -0.05), "Waist": (-13, -2, 0), "Neck": (-34, 2, 0),
-         "hands": hc(ny=-0.06), "RightWrist": (-42, 0, 0)},  # 2-frame contact hold
-        {"t": 0.9667, "ease": "smooth", "root": (0, -0.16, 0), "Root": (-2, 0, 0), "Waist": (-6, -6, 0), "Neck": (-22, 6, 0),
-         "hands": hc(0.08, 0.4, 0.12), "RightWrist": (0, 0, 0)},  # rebound
-        {"t": 1.0667, "ease": "in", "root": (0, -0.08, 0), "Waist": (-7, -6, 0), "Neck": (-24, 6, 0),
-         "hands": hc(0.05, 0.55, 0.18), "RightWrist": (22, 0, 0)},  # tap 1 lift
+        {"t": 0.0, "ease": "linear", "root": (0, -0.2, -0.32), "Root": (-2, 0, 0), "Waist": (-7, -8, 0), "Neck": (-4, 4, 0),
+         "hands": hc(), "RightWrist": (-20, 0, 0), "LeftWrist": (-10, 0, 0)},  # tap 1 contact
+        {"t": 0.0667, "ease": "smooth", "root": (0, -0.23, -0.33), "hands": hc(ny=-0.03)},  # stop on it
+        {"t": 0.1667, "ease": "in", "root": (0, -0.17, -0.31), "Waist": (-5, -8, 0), "Neck": (-2, 4, 0),
+         "hands": hc(0.12, 0.85, 0.3), "RightWrist": (25, 0, 0)},  # tap 2 lift, wrist lags back
+        {"t": 0.3, "ease": "linear", "root": (0, -0.21, -0.32), "Waist": (-7, -8, 0), "Neck": (-4, 4, 0),
+         "hands": hc(), "RightWrist": (-20, 0, 0)},  # tap 2 contact
+        {"t": 0.3667, "ease": "smooth", "root": (0, -0.24, -0.33), "hands": hc(ny=-0.03)},  # stop on it
+        {"t": 0.5, "ease": "smooth", "root": (0, -0.15, -0.26), "Root": (2, 0, 0), "Waist": (0, -12, 0), "Neck": (0, 6, 0),
+         "hands": {"R": (1.2, 0.9, -0.5), "L": (HN[0] + 0.02, HN[1] + 0.04, HN[2] + 0.2)}, "RightWrist": (20, 0, 0)},  # wind-up: up the right side
+        {"t": 0.6333, "ease": "smooth", "root": (0, -0.12, -0.2), "Root": (4, 0, 0), "Waist": (4, -14, 0), "Neck": (2, 6, 0),
+         "hands": {"R": (1.25, 2.15, 0.4), "L": (HN[0] + 0.04, HN[1] + 0.07, HN[2] + 0.36)}, "RightWrist": (35, 0, 0)},  # top: up and back, lean back
+        {"t": 0.7333, "ease": "in", "root": (0, -0.12, -0.2), "Waist": (5, -14, 0),
+         "hands": {"R": (1.25, 2.12, 0.5), "L": (HN[0] + 0.04, HN[1] + 0.07, HN[2] + 0.36)}, "RightWrist": (45, 0, 0)},  # wrist cocks last
+        {"t": 0.8, "ease": "linear", "root": (0, -0.3, -0.38), "Root": (-3, 0, 0), "Waist": (-7, -6, 0), "Neck": (-6, 4, 0),
+         "hands": hc(ny=-0.09), "RightWrist": (-30, 0, 0)},  # BIG contact: fast drop, body dips, nail hand jolts
+        {"t": 0.8667, "ease": "smooth", "root": (0, -0.33, -0.39), "Waist": (-8, -6, 0), "Neck": (-7, 4, 0),
+         "hands": hc(ny=-0.07), "RightWrist": (-32, 0, 0)},  # 2-frame contact hold
+        {"t": 1.0, "ease": "smooth", "root": (0, -0.19, -0.32), "Root": (-1, 0, 0), "Waist": (-5, -8, 0), "Neck": (-2, 5, 0),
+         "hands": hc(0.08, 0.5, 0.15), "RightWrist": (10, 0, 0)},  # rebound
+        {"t": 1.1, "ease": "in", "root": (0, -0.17, -0.31), "Root": (-2, 0, 0), "Waist": (-5, -8, 0), "Neck": (-2, 4, 0),
+         "hands": hc(0.12, 0.85, 0.3), "RightWrist": (25, 0, 0)},  # tap 1 lift
     ]},
-    # Continuous saw: one smooth sinusoidal stroke per 0.6 s (saw_keys), right hand IK on a long straight saw line, elbow
-    # driving back past the hip on the pull; hips drive and dip on each push; left hand planted forward on the timber.
+    # Two strokes per 1.2 s (saw_keys): right wrist on one long low line, from back past the hip to a long push, shoulder
+    # drive, chest twist and hip rock with each stroke, the second stroke lighter; left hand planted low on the timber.
     "WorkerSaw": {"loop": True, "length": 1.2, "stance": {"L": (-0.15, 0, -0.7), "R": (0.35, 0, 0.6)},
                   "poles": {"R": SAW_POLE_R, "L": SAW_POLE_L}, "keys": saw_keys()},
-    # Crouch (gather) -> hop with a wide V, feet well off the ground -> landing squash while the fists travel up and in
-    # to a double fist pump over the head (never below the shoulders) -> dip -> second, bigger hop with the highest V,
-    # held through the landing bounce -> arms float down forward -> settle on the rest pose. Wrists on arm IK.
-    # One-shot 1.93 s (58 frames).
-    "WorkerCelebrate": {"loop": False, "length": 1.9333, "stance": {}, "poles": CEL_DOWN, "keys": [
+    # Gather (arms swing back) -> small hop, fists up in a wide V over the head -> land and pump the fists down to
+    # wide goalposts (elbows out, head up) -> big second hop: feet 0.45 off, lean back, the highest widest V, held in
+    # the air -> land in a knee dip with the arms following through down and out -> overshoot past rest -> settle.
+    "WorkerCelebrate": {"loop": False, "length": 2.1667, "stance": {}, "poles": CEL_DOWN, "keys": [
         {"t": 0.0, "rest": True, "ease": "smooth", "hands": cel(1.5, -0.69, 0)},
-        {"t": 0.3, "ease": "in", "root": (0, -0.5, 0.05), "Root": (-10, 0, 0), "Waist": (-16, 0, 0), "Neck": (-10, 0, 0),
-         "feet": {"L": (0, 0, 0), "R": (0, 0, 0)}, "hands": cel(*CEL_CROUCH)},  # gather, arms out of the chest
-        {"t": 0.3667, "ease": "out", "root": (0, 0.1, 0), "Root": (0, 0, 0), "Waist": (4, 0, 0), "Neck": (6, 0, 0),
-         "feet": {"L": (0, 0, 0), "R": (0, 0, 0)}, "hands": cel(1.75, 1.0, -0.2, 0.1)},  # take-off: legs extend, arms fling
-        {"t": 0.5333, "ease": "smooth", "root": (0, 0.95, 0), "Root": (4, 0, 0), "Waist": (12, 0, 0), "Neck": (18, 0, 0),
-         "feet": {"L": (-0.1, 0.6, 0.1), "R": (0.1, 0.6, 0.1)}, "hands": cel(2.1, 1.85, 0.25, 0.95), "poles": CEL_UP},  # apex: wide V
-        {"t": 0.6333, "ease": "in", "root": (0, 0.62, 0), "Waist": (12, 0, 0), "Neck": (16, 0, 0),
-         "feet": {"L": (-0.1, 0.45, 0.06), "R": (0.1, 0.45, 0.06)}, "hands": cel(2.0, 1.95, 0.2, 0.62)},  # falling
-        {"t": 0.7, "ease": "out", "root": (0, 0.0, 0), "Root": (0, 0, 0), "Waist": (6, 0, 0), "Neck": (10, 0, 0),
-         "feet": {"L": (-0.1, 0, 0), "R": (0.1, 0, 0)}, "hands": cel(1.6, 2.0, 0.0, 0.0)},  # touch down, fists sweep in
-        {"t": 0.8, "ease": "smooth", "root": (0, -0.45, 0.02), "Root": (-6, 0, 0), "Waist": (-2, 0, 0), "Neck": (8, 0, 0),
-         "hands": cel(1.15, 2.05, -0.1, -0.45)},  # squash: double fist pump over the head
-        {"t": 0.9667, "ease": "in", "root": (0, -0.5, 0.03), "Root": (-8, 0, 0), "Waist": (-6, 0, 0), "Neck": (2, 0, 0),
-         "hands": cel(1.2, 1.65, -0.12, -0.5)},  # dip: fists pump down, still above the shoulders
-        {"t": 1.0667, "ease": "out", "root": (0, 0.1, 0), "Root": (0, 0, 0), "Waist": (8, 0, 0), "Neck": (14, 0, 0),
-         "feet": {"L": (-0.1, 0, 0), "R": (0.1, 0, 0)}, "hands": cel(1.45, 2.05, 0.0, 0.1)},  # take-off 2
-        {"t": 1.2, "ease": "smooth", "root": (0, 0.75, 0), "Root": (4, 0, 0), "Waist": (16, 0, 0), "Neck": (24, 0, 0),
-         "feet": {"L": (-0.1, 0.45, 0.06), "R": (0.1, 0.45, 0.06)}, "hands": cel(1.66, 2.12, 0.25, 0.75)},  # apex: highest V
-        {"t": 1.3333, "ease": "out", "root": (0, -0.05, 0), "Root": (2, 0, 0), "Waist": (14, 0, 0), "Neck": (22, 0, 0),
-         "feet": {"L": (-0.1, 0, 0), "R": (0.1, 0, 0)}, "hands": cel(1.68, 2.1, 0.25, -0.05)},  # land, V held
-        {"t": 1.4333, "ease": "smooth", "root": (0, -0.3, 0), "Root": (-3, 0, 0), "Waist": (10, 0, 0), "Neck": (18, 0, 0),
-         "hands": cel(1.7, 2.04, 0.22, -0.3)},  # knee bounce, V still held
-        {"t": 1.6, "ease": "smooth", "root": (0, -0.12, 0), "Root": (0, 0, 0), "Waist": (2, 0, 0), "Neck": (4, 0, 0),
-         "feet": {"L": (0, 0, 0), "R": (0, 0, 0)}, "hands": cel(1.9, 0.35, -0.45, -0.12)},  # arms float down forward
-        {"t": 1.7667, "ease": "smooth", "root": (0, -0.04, 0), "Root": (0, 0, 0), "Waist": (0, 0, 0), "Neck": (0, 0, 0),
-         "hands": cel(1.58, -0.58, -0.1, -0.04), "poles": CEL_DOWN},  # settle
-        {"t": 1.9333, "rest": True, "hands": cel(1.5, -0.69, 0)},
+        {"t": 0.3, "ease": "in", "root": (0, -0.45, 0.05), "Root": (-6, 0, 0), "Waist": (-8, 0, 0), "Neck": (-2, 0, 0),
+         "feet": {"L": (0, 0, 0), "R": (0, 0, 0)}, "hands": cel(1.6, -0.55, 0.45, -0.45)},  # gather, arms swung back
+        {"t": 0.4, "ease": "out", "root": (0, 0.12, 0), "Root": (0, 0, 0), "Waist": (4, 0, 0), "Neck": (8, 0, 0),
+         "feet": {"L": (0, 0, 0), "R": (0, 0, 0)}, "hands": cel(1.55, 1.4, -0.2, 0.12)},  # take-off, arms fling up
+        {"t": 0.55, "ease": "smooth", "root": (0, 0.26, 0), "Waist": (8, 0, 0), "Neck": (14, 0, 0),
+         "feet": {"L": (-0.05, 0.2, 0.05), "R": (0.05, 0.2, 0.05)}, "hands": cel(1.3, 2.25, 0.1, 0.26), "poles": CEL_UP},  # hop 1: V
+        {"t": 0.7, "ease": "out", "root": (0, -0.05, 0), "Waist": (6, 0, 0), "Neck": (12, 0, 0),
+         "feet": {"L": (0, 0, 0), "R": (0, 0, 0)}, "hands": cel(1.32, 2.24, 0.1, -0.05)},  # land, V held
+        {"t": 0.85, "ease": "smooth", "root": (0, -0.42, 0.02), "Root": (-4, 0, 0), "Waist": (0, 0, 0), "Neck": (10, 0, 0),
+         "hands": cel(1.75, 1.15, -0.1, -0.42)},  # pump: fists down to wide goalposts, elbows out, head up
+        {"t": 1.05, "ease": "in", "root": (0, -0.47, 0.03), "Root": (-6, 0, 0), "Waist": (-4, 0, 0), "Neck": (6, 0, 0),
+         "feet": {"L": (0, 0, 0), "R": (0, 0, 0)}, "hands": cel(1.8, 1.05, -0.05, -0.47)},  # load for the big one
+        {"t": 1.15, "ease": "out", "root": (0, 0.22, 0), "Root": (0, 0, 0), "Waist": (8, 0, 0), "Neck": (14, 0, 0),
+         "feet": {"L": (0, 0.05, 0), "R": (0, 0.05, 0)}, "hands": cel(1.45, 1.95, 0.1, 0.22)},  # take-off 2
+        {"t": 1.3167, "ease": "smooth", "root": (0, 0.6, 0), "Root": (4, 0, 0), "Waist": (14, 0, 0), "Neck": (20, 0, 0),
+         "feet": {"L": (-0.1, 0.45, 0.08), "R": (0.1, 0.45, 0.08)}, "hands": cel(1.42, 2.24, 0.3, 0.6)},  # apex 2: highest V
+        {"t": 1.5167, "ease": "in", "root": (0, 0.48, 0), "Root": (4, 0, 0), "Waist": (15, 0, 0), "Neck": (20, 0, 0),
+         "feet": {"L": (-0.1, 0.34, 0.06), "R": (0.1, 0.34, 0.06)}, "hands": cel(1.42, 2.21, 0.32, 0.48)},  # hang, V held
+        {"t": 1.6167, "ease": "out", "root": (0, -0.05, 0), "Root": (2, 0, 0), "Waist": (12, 0, 0), "Neck": (16, 0, 0),
+         "feet": {"L": (0, 0, 0), "R": (0, 0, 0)}, "hands": cel(1.42, 2.21, 0.28, -0.05)},  # land
+        {"t": 1.7667, "ease": "smooth", "root": (0, -0.36, 0.02), "Root": (-3, 0, 0), "Waist": (2, 0, 0), "Neck": (8, 0, 0),
+         "hands": cel(1.9, 0.55, -0.25, -0.36), "poles": CEL_DOWN},  # knee dip, arms follow through down and out
+        {"t": 1.9667, "ease": "smooth", "root": (0, 0.03, 0), "Root": (1, 0, 0), "Waist": (-1, 0, 0), "Neck": (2, 0, 0),
+         "hands": cel(1.55, -0.74, 0.12, 0.03)},  # overshoot: arms swing a touch past rest
+        {"t": 2.1667, "rest": True, "hands": cel(1.5, -0.69, 0)},
     ]},
-    # Eyes lead (head snaps to the target) while the arm cocks across the chest -> snap a straight arm ~65 deg right of
-    # forward, ~18 deg up, past the mark -> settle; chest ~20 deg and head ~40 deg into it, small lean, left hand on the hip
-    # (elbow out) -> pump (elbow folds back) and jab -> re-aim further right and up -> release with overlap. No crouch.
-    "WorkerPoint": {"loop": False, "length": 1.8, "stance": {}, "poles": {"L": POINT_POLE_L}, "keys": [
+    # Eyes lead (head turns 30 deg to the target) while the arm cocks across the chest and the right foot lifts -> step
+    # onto it and snap a straight arm forward-right (~35 deg off forward, shoulder height), past the mark -> settle; chest
+    # 15 deg into it, small lean forward, weight on the front foot, left hand on the hip (elbow out) -> small re-aim during
+    # a 0.65 s hold -> arm down with the elbow trailing, step back -> rest.
+    "WorkerPoint": {"loop": False, "length": 1.9, "stance": {}, "poles": {"L": POINT_POLE_L}, "keys": [
         {"t": 0.0, "rest": True, "ease": "smooth", "hands": {"L": (-1.5, -0.69, 0)}},
-        {"t": 0.2333, "ease": "in", "root": (-0.04, -0.03, 0.06), "Root": (-1, 10, 0), "Waist": (2, 10, 0), "Neck": (-4, -36, 0),
-         "RightShoulder": (40, 0, -14), "RightElbow": (100, 0, 0), "RightWrist": (0, 0, 0), "hands": hip((-0.04, -0.03, 0.06)),
-         "poles": {"L": HIP_POLE_L}},  # wind-up
-        {"t": 0.4, "ease": "out", "root": (0.06, 0.02, -0.1), "Root": (-4, -10, 0), "Waist": (-8, -14, 0), "Neck": (-4, -22, 0),
-         "RightShoulder": (PT[0] + 8, 0, PT[1] + 8), "RightElbow": (0, 0, 0), "RightWrist": (-8, 0, 0),
-         "hands": hip((0.06, 0.02, -0.1))},  # snap past the point
-        {"t": 0.5333, "ease": "smooth", "root": (0.05, 0, -0.08), "Root": (-3, -8, 0), "Waist": (-6, -12, 0), "Neck": (-2, -20, 0),
-         "RightShoulder": (PT[0], 0, PT[1]), "RightElbow": (2, 0, 0), "RightWrist": (0, 0, 0), "hands": hip((0.05, 0, -0.08))},  # settle
-        {"t": 0.7, "ease": "in", "root": (0.03, 0.02, -0.04), "Root": (-1, -7, 0), "Waist": (-2, -11, 0), "Neck": (2, -19, 0),
-         "RightShoulder": (PT[0] - 12, 0, PT[1] - 8), "RightElbow": (40, 0, 0), "RightWrist": (12, 0, 0),
-         "hands": hip((0.03, 0.02, -0.04))},  # pump: elbow folds back
-        {"t": 0.8333, "ease": "out", "root": (0.07, -0.02, -0.12), "Root": (-5, -9, 0), "Waist": (-10, -13, 0), "Neck": (-8, -21, 0),
-         "RightShoulder": (PT[0] + 4, 0, PT[1] + 2), "RightElbow": (0, 0, 0), "RightWrist": (-10, 0, 0),
-         "hands": hip((0.07, -0.02, -0.12))},  # jab: "there!"
-        {"t": 1.0333, "ease": "smooth", "root": (0.06, 0, -0.1), "Root": (-4, -12, 0), "Waist": (-7, -16, 0), "Neck": (6, -24, 0),
-         "RightShoulder": (PT[0] + 8, 0, PT[1] + 4), "RightElbow": (2, 0, 0), "RightWrist": (0, 0, 0),
-         "hands": hip((0.06, 0, -0.1))},  # re-aim: further right and up, head follows
-        {"t": 1.2, "ease": "smooth", "Neck": (4, -22, 0), "RightShoulder": (PT[0] + 6, 0, PT[1] + 3)},  # drift
-        {"t": 1.4, "ease": "smooth", "root": (0, -0.02, 0), "Root": (0, -3, 0), "Waist": (-2, -4, 0), "Neck": (-2, -8, 0),
-         "RightShoulder": (24, 0, 10), "RightElbow": (30, 0, 0), "hands": {"L": (-1.55, -0.72, -0.06)}, "poles": {"L": POINT_POLE_L}},  # arms down, elbow trails
-        {"t": 1.5667, "ease": "smooth", "root": (0, 0, 0), "Root": (0, 1, 0), "Waist": (0, 0, 0), "Neck": (1, 2, 0),
-         "RightShoulder": (-5, 0, 4), "RightElbow": (8, 0, 0), "hands": {"L": (-1.5, -0.69, 0)}},  # follow-through
-        {"t": 1.8, "rest": True},
+        {"t": 0.2333, "ease": "in", "root": (-0.04, -0.05, 0.04), "Root": (-1, 8, 0), "Waist": (2, 8, 0), "Neck": (0, -30, 0),
+         "RightShoulder": (40, 0, -14), "RightElbow": (100, 0, 0), "RightWrist": (0, 0, 0), "hands": hip((-0.04, -0.05, 0.04)),
+         "feet": {"R": (0.06, 0.25, -0.2)}, "poles": {"L": HIP_POLE_L}},  # wind-up, right foot lifts
+        {"t": 0.4, "ease": "out", "root": (0.1, -0.13, -0.26), "Root": (-4, -6, 0), "Waist": (-5, -12, 0), "Neck": (3, -18, 0),
+         "RightShoulder": (PT[0] + 4, 0, PT[2] + 9), "RightElbow": (0, 0, 0), "RightWrist": (-6, 0, 0),
+         "feet": {"R": (0.12, 0, -0.45)}, "hands": hip((0.1, -0.13, -0.26))},  # step + snap past the mark
+        {"t": 0.6, "ease": "smooth", "root": (0.08, -0.08, -0.22), "Root": (-3, -5, 0), "Waist": (-4, -10, 0), "Neck": (3, -15, 0),
+         "RightShoulder": PT, "RightElbow": (2, 0, 0), "RightWrist": (0, 0, 0), "hands": hip((0.08, -0.08, -0.22))},  # settle
+        {"t": 0.95, "ease": "smooth", "root": (0.09, -0.09, -0.23), "Root": (-3, -5, 0), "Waist": (-5, -12, 0), "Neck": (4, -18, 0),
+         "RightShoulder": (PT[0] + 1, 0, PT[2] + 3), "RightElbow": (1, 0, 0), "hands": hip((0.09, -0.09, -0.23))},  # re-aim: a touch further right
+        {"t": 1.25, "ease": "smooth", "root": (0.08, -0.08, -0.22), "Root": (-3, -5, 0), "Waist": (-4, -11, 0), "Neck": (3, -17, 0),
+         "RightShoulder": (PT[0], 0, PT[2] + 2), "RightElbow": (2, 0, 0), "feet": {"R": (0.12, 0, -0.45)}, "hands": hip((0.08, -0.08, -0.22))},  # hold
+        {"t": 1.45, "ease": "smooth", "root": (0.03, -0.04, -0.08), "Root": (0, -2, 0), "Waist": (-1, -3, 0), "Neck": (0, -6, 0),
+         "RightShoulder": (24, 0, 8), "RightElbow": (30, 0, 0), "feet": {"R": (0.06, 0.18, -0.2)},
+         "hands": {"L": (-1.55, -0.72, -0.06)}, "poles": {"L": POINT_POLE_L}},  # arm down, elbow trails, step back
+        {"t": 1.65, "ease": "smooth", "root": (0, 0, 0), "Root": (0, 1, 0), "Waist": (0, 0, 0), "Neck": (1, 2, 0),
+         "RightShoulder": (-5, 0, 4), "RightElbow": (8, 0, 0), "feet": {"R": (0, 0, 0)}, "hands": {"L": (-1.5, -0.69, 0)}},  # follow-through
+        {"t": 1.9, "rest": True},
     ]},
-    # Two-hand crate carry walk: wrists pinned either side of a ~1.8 stud crate, forearms forward and parallel at chest
-    # height, elbows out; whole upper body leans back ~15 deg against the load; body dips 0.18 after each contact, the
+    # Two-hand crate carry walk: wrists pinned either side of a ~1.8 stud crate, forearms forward along its sides at belly
+    # height, elbows tucked; hips forward and the upper body leaning back ~12 deg against the load; body dips 0.28 after each contact, the
     # crate (hands) and head follow a beat late, crate sways. Hips turn a little with the stepping leg, shoulders counter-turn.
     # Feet from carry_feet.
     "WorkerCarry": {"loop": True, "length": CARRY_T, "stance": {"L": (-0.08, 0, 0), "R": (0.08, 0, 0)}, "fn": carry_feet,
-                    "poles": {"R": (1.0, -0.6, 0.3), "L": (-1.0, -0.6, 0.3)},  # poles act ~90 deg round the arm: elbows down, a little out
+                    "poles": {"R": (1.0, 4.0, -1.0), "L": (-1.0, 4.0, -1.0)},  # poles act ~90 deg round the arm: elbows down, tucked in
                     "keys": carry_keys()},
     # Hand-over-hand ladder climb in place (code lifts the rig): arms, body dip and feet from climb(); head looks
     # up at the reaching hand. rise = studs per cycle at speed 1.
     "WorkerClimb": {"loop": True, "length": CL_T, "priority": "Movement", "rise": CL_RISE, "stance": {}, "fn": climb,
+                    "poles": CL_POLES,
                     "keys": [
-        {"t": 0.0, "Neck": (24, 0, 0)},  # right hand grabs overhead
-        {"t": 0.25, "Neck": (32, 12, 0)},  # looks up at the left hand reaching
-        {"t": 0.5, "Neck": (24, 0, 0)},  # left grabs
-        {"t": 0.75, "Neck": (32, -12, 0)},
+        {"t": 0.0, "Neck": (12, 0, 0)},  # right hand grabs overhead
+        {"t": 0.25, "Neck": (20, 12, 0)},  # looks up at the left hand reaching
+        {"t": 0.5, "Neck": (12, 0, 0)},  # left grabs
+        {"t": 0.75, "Neck": (20, -12, 0)},
     ]},
-    # Rescued survivor resting on the blanket: sits upright-ish, knees up and apart, hands resting on the knees, head up.
-    # 4.8 s: breath in (chest opens, sways right) -> hunch forward -> big stretch, both arms overhead, looking up ->
-    # arms float down and out back to the knees, slump (exhale) -> look round to the left with the torso following ~25
-    # deg -> back past centre -> start. Feet planted, knees out on static knee poles.
-    "NpcSit": {"loop": True, "length": 4.8, "priority": "Idle", "stance": {"L": (-0.38, 0, -0.95), "R": (0.38, 0, -0.9)},
-               "kneepoles": {"L": (-1.6, 1.0, 0), "R": (1.6, 1.0, 0)}, "poles": SIT_POLE_KNEE, "keys": [
-        {"t": 0.0, "root": (0, -1.6, 0), "Root": (6, 0, 0), "Waist": (-5, 0, -3), "Neck": (4, 0, 0),
-         "hands": sit_hands(*SIT_KNEE), "RightWrist": (0, 0, 0), "LeftWrist": (0, 0, 0)},  # exhaled, hands on the knees
-        {"t": 0.7, "root": (0, -1.52, 0), "Waist": (3, 0, 3), "Neck": (10, 0, 0)},  # breath in: chest opens, sways right
-        {"t": 1.2, "ease": "in", "root": (0, -1.6, 0), "Waist": (-11, 0, 0), "Neck": (2, 0, 0),
-         "hands": sit_hands(0.62, -1.68, -0.9)},  # hunch forward (anticipation)
-        {"t": 1.75, "ease": "out", "root": (0, -1.5, 0), "Root": (9, 0, 0), "Waist": (9, 0, 0), "Neck": (18, 0, 0),
-         "hands": sit_hands(1.3, 0.58, 0.15), "poles": SIT_POLE_UP},  # big stretch: arms overhead, looks up
-        {"t": 2.15, "Waist": (10, 0, 4), "Neck": (20, 0, 6), "hands": sit_hands(1.38, 0.62, 0.25)},  # holds, leans into it
-        {"t": 2.65, "root": (0, -1.57, 0), "Root": (6, 0, 0), "Waist": (2, 0, 0), "Neck": (8, 0, 0),
-         "hands": sit_hands(1.9, -0.8, -0.35)},  # arms float down and out
-        {"t": 3.0, "root": (0, -1.6, 0), "Waist": (-7, 0, 0), "Neck": (2, 0, 0), "hands": sit_hands(*SIT_KNEE),
-         "poles": SIT_POLE_KNEE},  # back on the knees, slumps (exhale)
-        {"t": 3.5, "ease": "out", "Waist": (-2, 24, 3), "Neck": (6, 28, 4),
-         "hands": {"R": SIT_KNEE, "L": (-0.8, -1.48, -0.75)}},  # looks round left, torso follows (left hand slides back)
-        {"t": 4.0, "root": (0, -1.54, 0), "Waist": (0, 22, 2), "Neck": (9, 24, 7),
-         "hands": {"R": SIT_KNEE, "L": (-0.85, -1.4, -0.7)}},  # breath in while looking, head tilts
-        {"t": 4.4, "root": (0, -1.58, 0), "Waist": (-4, -5, -2), "Neck": (3, -6, -2), "hands": sit_hands(*SIT_KNEE)},  # back past centre
+    # Rescued survivor resting on the blanket: sits on the floor, left leg stretched out, right knee up, leaning back
+    # ~15 deg (and a little left) on the straight left arm planted behind the hip, right forearm over the raised knee,
+    # head up. 4.8 s of slow life, keys 0.8 s apart: breath in / out every 1.6 s (shoulders rise and fall), a gentle
+    # sway, one relaxed look round to the left with the torso following ~20 deg, then the right hand brushes sand off
+    # the knee's outer side (held 0.8 s) and slides back onto the knee. Feet planted; knees up on static knee poles.
+    "NpcSit": {"loop": True, "length": 4.8, "priority": "Idle", "stance": {"L": (-0.1, 0.22, -1.78), "R": (0.05, 0.03, -0.7)},
+               "kneepoles": {"L": (0, 1.5, 1.5), "R": (0.6, 1.5, 1.0)}, "poles": SIT_POLES, "keys": [
+        dict(sit_key(0.0, 0, 0, ST[0], (-6, 0)), root=SIT_ROOT, RightWrist=(0, 0, 0), LeftWrist=(-2, 0, -2)),  # exhaled, head up; left palm flat
+        sit_key(0.8, 1, 3, ST[1], (-9, 2)),  # breath in: chest lifts, sways right
+        sit_key(1.6, 0, 8, ST[2], (-4, 16)),  # breath out, starts looking left
+        sit_key(2.4, 1, 20, ST[3], (-8, 22)),  # look round: torso follows ~20, breath in
+        sit_key(3.2, 0, 4, ST[4], (-2, 2), (1.2, -1.55, -0.35)),  # back, breath out; right hand brushes sand off the knee
+        sit_key(4.0, 1, 2, ST[5], (-6, 0), (1.25, -1.6, -0.3)),  # breath in, brushing hand held on the knee's outer side
     ]},
 }
 EASE = {"smooth": ("BEZIER", None), "in": ("CUBIC", "EASE_IN"), "out": ("CUBIC", "EASE_OUT"), "linear": ("LINEAR", None)}
@@ -466,17 +444,18 @@ def poses(slot):
 
 
 def fn_poses(slot):
-    """slot["fn"](t) -> {joint: degrees, "root": studs, "feet": {L/R: offset}}, keyed linear on every frame: for
+    """slot["fn"](t) -> {joint: degrees, "root": studs, "feet": {L/R: offset}, "hands": {L/R: HRP point}}, keyed linear on every frame: for
     channels that must track a planted contact exactly (feet, gripping hands); fn(0) == fn(length) for loops."""
     if "fn" not in slot:
         return []
     out = []
     for f in range(round(slot["length"] * FPS) + 1):
         ch = slot["fn"](f / FPS)
-        ft = ch.get("feet")
+        ft, hd = ch.get("feet"), ch.get("hands")
         out.append([f, "linear", {j: euler(v) for j, v in ch.items() if j in JOINTS},
                     Vector(ch["root"]) if "root" in ch else None,
-                    ft and {s: Vector(slot["stance"].get(s, (0, 0, 0))) + Vector(ft[s]) for s in "LR"}, None, None])
+                    ft and {s: Vector(slot["stance"].get(s, (0, 0, 0))) + Vector(ft[s]) for s in "LR"},
+                    hd and {s: Vector(v) - WRIST[s] for s, v in hd.items()}, None])
     return out
 
 
