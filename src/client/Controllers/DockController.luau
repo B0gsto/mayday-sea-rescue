@@ -889,7 +889,7 @@ local function cueHut(card: GuiObject)
 		NumberSequenceKeypoint.new(0.7, 1),
 		NumberSequenceKeypoint.new(1, 1),
 	})
-	band.Offset = Vector2.new(if still then 0 else -1, 0)
+	band.Offset = Vector2.new(if still then 0 else -0.75, 0)
 	band.Parent = shine
 	shine.Parent = face
 	table.insert(hutCue, shine)
@@ -897,7 +897,7 @@ local function cueHut(card: GuiObject)
 		TweenService:Create(
 			band,
 			TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false, 0.9),
-			{ Offset = Vector2.new(1, 0) }
+			{ Offset = Vector2.new(0.75, 0) } -- starts and ends just off the button, so all of the 1 s is visible
 		):Play()
 	end
 	if not hutPopped then
@@ -905,6 +905,8 @@ local function cueHut(card: GuiObject)
 		task.delay(0.3, function() -- after the panel's own pop
 			if holder.Parent then
 				if not still then
+					holder.AnchorPoint = Vector2.new(0.5, 0.5) -- UIScale grows from the anchor: pop from the centre
+					holder.Position = UDim2.fromScale(0.5, 0.5)
 					Style.pop(holder, true)
 				end
 				AudioController.play("FX_Pop", nil, 0.5, 1.25)
