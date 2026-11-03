@@ -317,9 +317,15 @@ local KIT_SLOT = {
 	CraneSlew = "Crane",
 	CraneHook = "Crane",
 	StackPallet = "Stack",
-	StackLow = "Stack",
-	StackMid = "Stack",
-	StackTop = "Stack",
+	StackLowA = "Stack", -- each pallet's courses are their own meshes (own colour), B / C at their own origins
+	StackMidA = "Stack",
+	StackTopA = "Stack",
+	StackLowB = "StackB",
+	StackMidB = "StackB",
+	StackTopB = "StackB",
+	StackLowC = "StackC",
+	StackMidC = "StackC",
+	StackTopC = "StackC",
 	SignBoard = "Sign",
 	Cone = "Cone",
 	Barrier = "Barrier",
@@ -352,7 +358,7 @@ local function siteKit(): { [string]: { part: BasePart, offset: CFrame } }?
 			count += 1
 		end
 	end
-	if count < 14 then -- a partial upload: keep the Parts
+	if count < 20 then -- a partial upload: keep the Parts
 		return nil
 	end
 	kitCache = out
@@ -468,19 +474,8 @@ local function kitProps(st: Site, props: Model, at: CFrame): boolean
 					0
 				)
 		module(props, "StackPallet", cf)
-		local colour = PALLET[n + 1]
-		for k = 1, 3 do -- k = 1: the top course
-			local level = 3 - k -- 0 low .. 2 top
-			local size = Vector3.new(3.1 - level * 0.5, 0.8, 2.15 - level * 0.35)
-			local b =
-				brick(props, "Bricks", size, cf * CFrame.new(0, 0.9 + level * 0.75, 0), colour)
-			local tex = Instance.new("Texture")
-			tex.Face = Enum.NormalId.Top
-			tex.Texture = STUD_TEXTURE
-			tex.StudsPerTileU, tex.StudsPerTileV = 3.2, 3.2 -- 4 x 4 studs a tile: the kit's 0.8 grid
-			tex.Color3 = colour:Lerp(Color3.new(0, 0, 0), 0.12)
-			tex.Parent = b
-			table.insert(courses[k], b)
+		for k, key in { "StackTop", "StackMid", "StackLow" } do
+			table.insert(courses[k], module(props, key .. string.sub("ABC", n + 1, n + 1), cf))
 		end
 	end
 	st.stacks = table.move(courses[3], 1, 3, 7, table.move(courses[2], 1, 3, 4, courses[1]))

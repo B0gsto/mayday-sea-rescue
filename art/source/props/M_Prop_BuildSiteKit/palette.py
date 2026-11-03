@@ -7,10 +7,10 @@ PALETTE = [
     (250, 249, 245),   # 0  white
     (198, 202, 208),   # 1  light silver (saw blade, tools; round 3, was 163,162,165)
     (99, 95, 98),      # 2  dark bluish grey
-    (30, 44, 66),      # 3  ink / navy (windows, waterline)
+    (46, 158, 68),     # 3  bright green (site kit r7: pallet A; was ink, unused here; r8 more saturated)
     (235, 30, 30),     # 4  red (brighter, round 2)
-    (250, 140, 30),    # 5  orange
-    (255, 200, 12),    # 6  bright Lego yellow (site kit round 4: the jetty 255,188,0 read ochre in shade)
+    (240, 127, 30),    # 5  orange (site kit r8: more saturated)
+    (242, 194, 27),    # 6  Lego yellow #F2C21B (site kit r8; round 4 was 255,200,12)
     (142, 146, 152),   # 7  medium stone grey (rims, pillars, gables, steps)
     (40, 96, 208),     # 8  blue
     (172, 24, 30),     # 9  dark red (alternate roof courses)
@@ -18,10 +18,10 @@ PALETTE = [
     (212, 184, 132),   # 11 tan
     (105, 64, 40),     # 12 reddish brown
     (238, 160, 70),    # 13 orange-tan (boat ribs, fresh planks)
-    (150, 205, 240),   # 14 light glass blue
+    (155, 203, 46),    # 14 lime (site kit r7: pallet C; was glass blue, unused here; r8 #9BCB2E)
     (42, 44, 48),      # 15 black (tyres)
 ]
-WHITE, LBG, DBG, INK, RED, ORANGE, YELLOW, STONE, BLUE, RRED, DTAN, TAN, BROWN, RIB, GLASS, BLACK = range(16)
+WHITE, LBG, DBG, GREEN, RED, ORANGE, YELLOW, STONE, BLUE, RRED, DTAN, TAN, BROWN, RIB, LIME, BLACK = range(16)
 
 CELL, GRID, SIZE = 256, 4, 1024
 
