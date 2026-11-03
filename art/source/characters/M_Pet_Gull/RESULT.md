@@ -34,3 +34,10 @@ Low-poly faceted herring gull pet (Bosun LP style), segmented for WildlifeRig.
 - Beak 30 % shorter and straight (hook removed), red gonys dot on the lower mandible. Wings folded 70 deg down against the flank with a short rounded black tip, tip swept back (rig `at` unchanged; PetMotion's shoulder now resolves to the wing top because the part is taller than wide). Mantle #8A99A8/#7A8997.
 - validate PASS (286 checks, 0 failed, 25 waived). Tris LOD0 2268, LOD1 1134. zfight in session (all LODs): 0 pairs. No rare albedo (none before).
 - PetSeat `built` (head height, LOD0): 2.685.
+
+## r4 (2026-11-03)
+
+- Mantle #84919E/#7A8794 (~#7F8C99). Black wingtip 0.24 -> 0.45 of the span, CURL 0.2 -> 0.12 so it shows from the front. Red dot 2x. Head cluster (Head, Beak, Eyes, Glints) +15 %, down 0.055 so it stays under 2.7. Legs 1.4x thicker. Yellow more saturated #FFC800/#F2A200.
+- Mesh 2.20 x 4.13 x 2.70 studs (w x l x h).
+- validate PASS (297 checks, 0 failed, 27 waived). Tris LOD0 2268, LOD1 1134. zfight in session (all LODs): 0 pairs.
+- PetSeat `built` (head height, LOD0: 2.696). Not edited in PetSeat.luau.

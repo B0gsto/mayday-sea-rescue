@@ -32,3 +32,10 @@ Open: Head and body still read a little as two balls from the side (the rig `at`
 - Steel-blue back #4F74A0/#4F86C6, cream-white chest patch, white muzzle patch, no pale saucer rim; head cluster up 0.27 studs (neck break), eyes 1.15x, a 2x2 stud on the crown. Rare ref -> #4F7DB3 (golden ALB still written).
 - validate PASS (340 checks, 0 failed, 38 waived). Tris LOD0 2120, LOD1 842, LOD2 206. zfight in session (all LODs): 0 pairs.
 - PetSeat `built` (nose to tail, LOD0): 5.091.
+
+## r4 (2026-11-03)
+
+- Crown: a row of 3 flat round studs (r 0.12, h 0.06) replace the 2x2 spiky cones. Rear flippers (Tail) 20 % shorter, 1.5x thicker with a blunt edge (petkit `CHUNKY` lens rings), near-black `tailTip` zone (#1E1F26). Muzzle +20 %; nose moved back onto it (it floated).
+- Mesh 3.87 x 4.84 x 2.67 studs (w x l x h).
+- validate PASS (356 checks, 0 failed, 40 waived). Tris LOD0 2148, LOD1 854, LOD2 208. zfight in session (all LODs): 0 pairs.
+- PetSeat `built` (nose to tail, LOD0: 4.840). Not edited in PetSeat.luau.

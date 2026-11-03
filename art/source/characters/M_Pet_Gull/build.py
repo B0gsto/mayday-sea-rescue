@@ -12,6 +12,7 @@ import math
 import os
 import sys
 
+import bmesh
 from mathutils import Vector
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -23,9 +24,9 @@ PREFIX = "M_Ani_Gull_"          # "Pet" is not a names.py category; nodes are re
 
 ZONES = {
     "white": dict(top="#FBFBF8", bottom="#D2D6D9", rough=0.84),
-    "grey": dict(top="#8A99A8", bottom="#7A8997", rough=0.82),     # r3: darker mantle
+    "grey": dict(top="#84919E", bottom="#7A8794", rough=0.82),     # r4: mantle ~#7F8C99
     "black": dict(top="#2A2C32", bottom="#16171B", rough=0.6),
-    "yellow": dict(top="#FFD23A", bottom="#E8A814", rough=0.38, signal=True),
+    "yellow": dict(top="#FFC800", bottom="#F2A200", rough=0.38, signal=True),     # r4: more saturated
     "red": dict(top="#E0402F", bottom="#B92A22", rough=0.42, signal=True),
     "eye": dict(top="#26262C", bottom="#141418", rough=0.12),
     "glint": dict(top="#FFFFFF", bottom="#F2F2F2", rough=0.1),
@@ -76,7 +77,7 @@ def beak(p):
     # r3: 30 % shorter and straight (no hook, no droop); upper + lower mandible, a red gonys dot on the lower
     _mandible(0.3, -0.47, lambda t: 0.36 - 0.16 * t, lambda t: 0.16 - 0.08 * t, lambda t: -0.01 - 0.01 * t, "yellow", p)
     _mandible(0.3, -0.42, lambda t: 0.3 - 0.13 * t, lambda t: -0.02, lambda t: -0.16 + 0.07 * t, "yellow", p)
-    p.add(K.box((0.22, 0.13, 0.1), (0, -0.31, -0.095), bevel=0.025), "red")
+    p.add(K.box((0.3, 0.22, 0.13), (0, -0.27, -0.09), bevel=0.03), "red")     # r4: 2x
 
 
 def eye_maker(pos):
@@ -96,7 +97,7 @@ WING = 0.95      # r3: folded, shoulder to tip
 FOLD = math.radians(63)      # r3: 70 deg down with the part's 0.12 rad roll, flat against the body (no T-pose)
 ROOT = (-0.68, 0.22)         # the shoulder (x, z) in the part's frame, sunk in the body
 SWEEP = 0.4      # the tip points back along the flank, like a folded wing
-CURL = 0.2       # the tip curves in under the body's widest point
+CURL = 0.12      # the tip curves in under the body's widest point (r4: less, so the black shows from the front)
 
 
 def _span(p, s0, s1, le, te, thick, zone, chord=(0.0, 1.0)):
@@ -118,10 +119,10 @@ def wing_maker(left):
     th = lambda s: 0.2 - 0.1 * s
 
     def make(p):
-        _span(p, 0.0, 0.78, le, te, th, "grey", (0.0, 0.84))
-        _span(p, 0.0, 0.78, le, te, lambda s: th(s) * 0.92, "white", (0.8, 1.0))
-        _span(p, 0.76, 0.92, le, te, lambda s: th(s) * 0.98, "black")     # r3: a short rounded black tip
-        _span(p, 0.9, 1.0, le, te, lambda s: th(s) * 0.88, "black")
+        _span(p, 0.0, 0.57, le, te, th, "grey", (0.0, 0.84))
+        _span(p, 0.0, 0.57, le, te, lambda s: th(s) * 0.92, "white", (0.8, 1.0))
+        _span(p, 0.55, 0.85, le, te, lambda s: th(s) * 0.98, "black")     # r4: rounded black tip, 0.24 -> 0.45 of the span
+        _span(p, 0.83, 1.0, le, te, lambda s: th(s) * 0.88, "black")
         if not left:          # authored for the left wing (outward = Blender +X)
             K.mirror_x(p.bm)
     return make
@@ -132,7 +133,7 @@ def tail(p):
 
 
 def leg(p):
-    p.add(K.box((0.16, 0.16, 0.48), bevel=0.05, seg=2, taper=("z", 0.85, 1.0)), "yellow")   # r2: 20 % shorter
+    p.add(K.box((0.224, 0.224, 0.48), bevel=0.05, seg=2, taper=("z", 0.85, 1.0)), "yellow")   # r2: 20 % shorter, r4: 1.4x thicker
 
 
 def foot(p):
@@ -161,6 +162,26 @@ PARTS = [
     ("FootRight", "Foot", (0.32, 0.12, 0.02), (0, 0, 0), foot, None),
 ]
 PARTS = [(n, pn, pos, ang, mk or eye_maker(pos), rf) for n, pn, pos, ang, mk, rf in PARTS]
+HEAD = 1.15      # r4: head cluster +15 % about the Head...
+DROP = 0.055     # ...and down so its stud stays inside the 2.7 stud band
+_H = PARTS[2][2]
+
+
+def _grown(mk):
+    def make(p):
+        mk(p)
+        bmesh.ops.scale(p.bm, vec=(HEAD, HEAD, HEAD), verts=p.bm.verts)
+    return make
+
+
+def _r4(n, pn, pos, ang, mk, rf):
+    if n == "Head" or n.startswith(("Beak", "Eye", "Glint")):
+        pos = tuple(_H[i] + (pos[i] - _H[i]) * HEAD - (DROP if i == 1 else 0) for i in range(3))
+        mk = _grown(mk)
+    return n, pn, pos, ang, mk, rf
+
+
+PARTS = [_r4(*p) for p in PARTS]
 SCALE = 1.25     # r3: top of the 2.3-2.7 stud band (r2 1.2)
 
 

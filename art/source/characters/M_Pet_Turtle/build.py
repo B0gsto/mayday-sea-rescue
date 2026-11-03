@@ -22,13 +22,16 @@ ZONES = [  # name, top (faces up), bottom, roughness, tinted in the rare (golden
     ("skin", "#5A8A47", "#7FA866", 0.6, True),         # r2: ~+20 % saturation, brighter Lego greens
     ("scale", "#8DB463", "#9DC070", 0.6, True),
     ("cream", "#E2D8A8", "#D4C792", 0.7, True),
-    ("scute", "#4BA03C", "#3E8A31", 0.45, True),
-    ("scuteLight", "#6DBE4E", "#63B046", 0.45, True),
-    ("seam", "#2A5C26", "#254F22", 0.6, True),        # r3: dark green, not black
-    ("rim", "#3A8A33", "#44963A", 0.5, True),
+    ("scute", "#408833", "#35752A", 0.45, True),      # r4: shell 15 % darker
+    ("scuteLight", "#5DA142", "#54963B", 0.45, True),
+    ("seam", "#244E20", "#1F431D", 0.6, True),        # r3: dark green, not black
+    ("rim", "#31752B", "#3A8031", 0.5, True),
     ("plastron", "#E2D49C", "#D2C185", 0.65, True),
     ("bellyRim", "#E6CF86", "#D9BF72", 0.5, True),    # r3: cream/tan plastron edge
     ("skinDark", "#3B5E2E", "#34522A", 0.6, True),     # r2: darker flipper tips
+    ("headSkin", "#A4C440", "#B2CE55", 0.6, True),    # r4: yellow-green head
+    ("headScale", "#AECA4C", "#BAD25E", 0.6, True),
+    ("stud", "#C8E86A", "#B4D858", 0.45, True),       # r4: the ridge studs pop off the darker shell
     ("eye", "#1C1C22", "#1C1C22", 0.08, False),
     ("glint", "#F0F0F0", "#F0F0F0", 0.2, False),
 ]
@@ -79,13 +82,16 @@ def shell():
             zones[f] = "bellyRim"                         # the yellow-green skirt under the shell
     for v in new:
         if isinstance(v, bmesh.types.BMVert):
-            v.co = Vector((v.co.x * 1.03, base - 0.08, v.co.z * 1.03))
+            tx, tz = v.co.x / (1.1 * (1 - 0.1 * max(0.0, v.co.z / 1.3))), v.co.z / 1.3     # back on the unit circle
+            r = math.hypot(tx, tz) or 1.0
+            # r4: tan rim 2x on a clean ellipse 10 % out: the raised rim plates overhang anything closer
+            v.co = Vector((tx / r * 1.1 * (1 - 0.1 * max(0.0, tz / r)) * 1.1, base - 0.18, tz / r * 1.3 * 1.1))
     bmesh.ops.holes_fill(bm, edges=[e for e in bm.edges if e.is_boundary], sides=0)
     s = K.Shape().add(bm, lambda f: zones.get(f, "seam"))
     for c, n, big in studs:
-        st = K.stud((0, 0, 0), r=0.26 if big else 0.18, h=0.15 if big else 0.12, segments=10)
+        st = K.stud((0, 0, 0), r=0.32 if big else 0.18, h=0.15 if big else 0.12, segments=12)     # r4: centre r 0.32
         bmesh.ops.rotate(st, verts=st.verts, cent=Vector(), matrix=Vector((0, 1, 0)).rotation_difference(n).to_matrix())
-        s.add(K.move(st, c), "scuteLight")
+        s.add(K.move(st, c), "stud")
     return s
 
 
@@ -95,8 +101,8 @@ def plastron():
     return K.Shape().add(K.lens(pts, 0.24), rim)
 
 
-def _skin(rng, share=0.22):
-    return K.speckle(rng, share, "scale", K.by([(lambda c, n: n.y < -0.45, "cream")], "skin"))
+def _skin(rng, share=0.22, skin="skin", scale="scale"):
+    return K.speckle(rng, share, scale, K.by([(lambda c, n: n.y < -0.45, "cream")], skin))
 
 
 def head():
@@ -105,8 +111,8 @@ def head():
     def beak(c):
         t = max(0.0, -c.z - 0.2) / 0.25
         return (c.x * (1 - 0.1 * t), c.y - 0.06 * t, c.z)
-    s = K.Shape().add(K.deform(K.ellipsoid((0.9, 0.76, 1.03), u=12, v=8), beak), _skin(rng))     # 1.15x: cuter
-    return s.add(K.ellipsoid((0.66, 0.57, 0.75), (0, -0.05, 0.5), u=10, v=6), _skin(rng, 0.2))
+    s = K.Shape().add(K.deform(K.ellipsoid((0.9, 0.76, 1.03), u=12, v=8), beak), _skin(rng, 0.22, "headSkin", "headScale"))     # 1.15x: cuter
+    return s.add(K.ellipsoid((0.66, 0.57, 0.75), (0, -0.05, 0.5), u=10, v=6), _skin(rng, 0.2, "headSkin", "headScale"))
 
 
 def eye():
@@ -117,15 +123,20 @@ def glint():
     return K.Shape().add(K.ellipsoid((0.1, 0.1, 0.05), u=8, v=4), "glint")
 
 
-FRONT = [(-0.72, -0.12), (-0.35, -0.34), (0.2, -0.32), (0.62, -0.16), (0.76, 0.06), (0.55, 0.2), (0.0, 0.3),
-         (-0.5, 0.3), (-0.75, 0.12)]
-BACK = [(-0.45, -0.2), (0.05, -0.28), (0.42, -0.15), (0.5, 0.08), (0.3, 0.26), (-0.2, 0.26), (-0.48, 0.08)]
+def _shorter(outline, x0):
+    """r4: 25 % shorter past the shell edge x0 (the part hidden under the shell doesn't count)."""
+    return [(x0 + (x - x0) * 0.75, z) for x, z in outline]
+
+
+FRONT = _shorter([(-0.72, -0.12), (-0.35, -0.34), (0.2, -0.32), (0.62, -0.16), (0.76, 0.06), (0.55, 0.2), (0.0, 0.3),
+                  (-0.5, 0.3), (-0.75, 0.12)], -0.2)
+BACK = _shorter([(-0.45, -0.2), (0.05, -0.28), (0.42, -0.15), (0.5, 0.08), (0.3, 0.26), (-0.2, 0.26), (-0.48, 0.08)], 0.05)
 
 
 def flipper(outline, thick, side, seed):
     tip = 0.45 * max(x for x, _z in outline)            # outline +x is the outward tip
-    dark = K.by([(lambda c, n: c.x * side > tip, "skinDark")], _skin(random.Random(seed), 0.25))
-    return lambda: K.Shape().add(K.lens([(x * side, z) for x, z in outline], thick), dark)
+    dark = K.by([(lambda c, n: c.x * side > tip, "skinDark")], _skin(random.Random(seed), 0.12))
+    return lambda: K.Shape().add(K.lens([(x * side, z) for x, z in outline], thick, rings=K.CHUNKY), dark)
 
 
 def tail():
@@ -142,10 +153,10 @@ PARTS = [  # node, rig name, placeholder size, at (x, y, z, rx, ry, rz), shape: 
     ("EyeRight", "Eye", (0.22, 0.22, 0.22), (0.28, 1.1, -1.98), eye),
     ("GlintLeft", "Glint", (0.07, 0.07, 0.07), (-0.24, 1.15, -2.1), glint),
     ("GlintRight", "Glint", (0.07, 0.07, 0.07), (0.24, 1.15, -2.1), glint),
-    ("FlipperFrontLeft", "Flipper", (1.5, 0.16, 0.85), (-1.3, 0.6, -0.85, 0, 0.25, 0.2), flipper(FRONT, 0.184, -1, 1)),
-    ("FlipperFrontRight", "Flipper", (1.5, 0.16, 0.85), (1.3, 0.6, -0.85, 0, -0.25, -0.2), flipper(FRONT, 0.184, 1, 2)),
-    ("FlipperBackLeft", "Flipper", (1.0, 0.14, 0.6), (-1.05, 0.55, 0.95, 0, -0.2, 0.15), flipper(BACK, 0.15, -1, 3)),
-    ("FlipperBackRight", "Flipper", (1.0, 0.14, 0.6), (1.05, 0.55, 0.95, 0, 0.2, -0.15), flipper(BACK, 0.15, 1, 4)),
+    ("FlipperFrontLeft", "Flipper", (1.5, 0.16, 0.85), (-1.3, 0.6, -0.85, 0, 0.25, 0.2), flipper(FRONT, 0.368, -1, 1)),
+    ("FlipperFrontRight", "Flipper", (1.5, 0.16, 0.85), (1.3, 0.6, -0.85, 0, -0.25, -0.2), flipper(FRONT, 0.368, 1, 2)),
+    ("FlipperBackLeft", "Flipper", (1.0, 0.14, 0.6), (-1.05, 0.55, 0.95, 0, -0.2, 0.15), flipper(BACK, 0.3, -1, 3)),
+    ("FlipperBackRight", "Flipper", (1.0, 0.14, 0.6), (1.05, 0.55, 0.95, 0, 0.2, -0.15), flipper(BACK, 0.3, 1, 4)),
     ("Tail", "Tail", (0.4, 0.2, 0.62), (0, 0.62, 1.5), tail),
 ]
 PARTS = [(n, r, s, tuple(at) + (0.0,) * (6 - len(at)), fn) for n, r, s, at, fn in PARTS]
@@ -153,7 +164,8 @@ PARTS = [(n, r, s, tuple(at) + (0.0,) * (6 - len(at)), fn) for n, r, s, at, fn i
 SCALE = 1.45     # r2 1.2; flat, so the read comes from the dome and the raised head rather than from the height
 HEAD = 1.3       # r3: head cluster 1.3x about the Head part...
 EYE = 1.2        # ...eyes (and their glints) another 1.2x...
-LIFT = 0.21      # ...head + front flippers up 0.3 studs after SCALE
+LIFT = 0.21      # ...head + front flippers up 0.3 studs after SCALE...
+HEAD_UP = 0.116  # ...r4: the head alone 10 % higher again
 _H = PARTS[2][3]
 _EYES = {n: at for n, _r, _s, at, _f in PARTS if n.startswith("Eye")}
 
@@ -176,6 +188,8 @@ def _r3(n, r, s, at, fn):
         fn = _grown(fn, HEAD if n == "Head" else HEAD * EYE)
     if n == "Head" or n.startswith(("Eye", "Glint", "FlipperFront")):
         pos[1] += LIFT
+    if n == "Head" or n.startswith(("Eye", "Glint")):
+        pos[1] += HEAD_UP
     return n, r, s, tuple(pos) + tuple(at[3:]), fn
 
 

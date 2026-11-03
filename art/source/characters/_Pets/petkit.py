@@ -114,6 +114,9 @@ def lens(outline, thick, rings=((1.0, 0.0), (0.68, 0.85), (0.3, 1.0)), y=0.0):
     return bm
 
 
+CHUNKY = ((1.0, 0.0), (0.9, 0.72), (0.5, 1.0))     # lens rings: a blunt, thick edge rather than a knife edge
+
+
 def stud(centre, r=0.12, h=0.1, sink=0.06, segments=10):
     """A Lego stud standing up (+Y) on a surface at `centre`: its base sinks `sink` into the surface, so no
     face shares a plane with the body. A small top bevel ring keeps it chunky, not a bare cylinder."""

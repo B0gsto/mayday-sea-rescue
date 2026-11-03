@@ -32,3 +32,10 @@ Open: Shell plates read slightly grid-like up close. Golden rare ALB saturation 
 - Shell dome 1.4x higher; head + front flippers up 0.3 studs; head 1.3x, eyes and glints a further 1.2x; seams dark green #2A5C26 and 1.5x wider; tan plastron edge and skirt #E6CF86; centre plate stud r 0.26, the 2 ridge studs kept. Rare ALB still written.
 - validate PASS (340 checks, 0 failed, 40 waived). Tris LOD0 2594, LOD1 1032, LOD2 254. zfight in session (all LODs): 0 pairs.
 - PetSeat `built` (shell length, LOD0): 3.844.
+
+## r4 (2026-11-03)
+
+- Flippers 2x thicker with a blunt edge, 25 % shorter past the shell edge, speckle halved. Yellow-green head (headSkin #A4C440, headScale). Head + eyes up 10 % (+0.168 studs). Shell zones 15 % darker. Ridge studs in a new bright `stud` zone, centre r 0.32. Tan skirt rebuilt 2x tall on a clean ellipse 10 % out: at 1.03 flare the raised rim plates hid it (only seam spikes showed). Rare ALB still written.
+- Mesh 5.16 x 5.97 x 2.03 studs (w x l x h). High point 2.567 studs, up from 2.399 in r3: the head is the top and the AD asked for it 10 % higher (still inside 2.3-2.7).
+- validate PASS (356 checks, 0 failed, 42 waived). Tris LOD0 2630, LOD1 1046, LOD2 258. zfight in session (all LODs): 0 pairs.
+- PetSeat `built` (shell length, LOD0: 4.147). Not edited in PetSeat.luau.

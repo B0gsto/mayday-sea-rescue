@@ -61,7 +61,7 @@ def head(p):
 
 def face(p):
     # mostly inside the head: only the front cap shows, as the white puffin mask
-    p.add(K.ball((1.1, 0.9, 0.76), (0, 0.3, -0.02), u=10, v=7), "face")      # r3: mask 15 % wider
+    p.add(K.ball((1.18, 0.96, 0.874), (0, 0.3, -0.02), u=10, v=7), "face")      # r4: mask +15 %
 
 
 BEAK_BEVEL = 0.14    # r3: of the unit box, ~0.1 studs across each stripe (rounded shoulders read as a 3D wedge head-on)
@@ -71,21 +71,20 @@ def _beak_seg(y0, y1, zone, p, puff=1.0):
     """One brick band of the beak; puff > 1 makes a band stand proud of its neighbours (a raised stripe)."""
     def w(c):
         y = y0 + (c.y + 0.5) * (y1 - y0)
-        t = (0.3 - y) / 0.86
-        width = (0.4 * (1 - t) + 0.19 * t) * puff        # r3: tip 20 % narrower
-        top = (0.38 - 0.43 * t ** 0.8) * puff
-        bot = (-0.36 * (1 - t) - 0.12 * t) * puff
+        t = (0.3 - y) / 0.92
+        width = (0.32 * (1 - t) + 0.15 * t) * puff       # r4: 20 % narrower
+        top = (0.34 - 0.39 * t ** 0.8) * puff
+        bot = (-0.32 * (1 - t) - 0.1 * t) * puff
         return Vector((c.x * width, y, bot + (c.z + 0.5) * (top - bot)))
     p.add(K.box((1, 1, 1), bevel=BEAK_BEVEL, seg=2, warp=w), zone)
 
 
 def beak(p):
     # bands overlap 0.02 so every hidden end cap sits inside its proud neighbour (no shared planes)
+    # r4: three clean bands, grey base, proud yellow, orange tapering to a visible tip
     _beak_seg(0.3, 0.14, "slate", p)
-    _beak_seg(0.16, 0.05, "yellow", p, 1.09)
-    _beak_seg(0.07, -0.16, "orange", p)
-    _beak_seg(-0.1, -0.33, "yellow", p, 1.1)      # r2: the yellow tip band ~25 % of the beak
-    _beak_seg(-0.31, -0.56, "orange", p)
+    _beak_seg(0.16, -0.12, "yellow", p, 1.08)
+    _beak_seg(-0.1, -0.62, "orange", p)
 
 
 def eye_maker(pos):
@@ -107,11 +106,11 @@ def wing_maker(s):
     def make(p):
         def w(c):
             t = max(0.0, -c.z / 0.62)
-            c.y = c.y * (1 - 0.35 * t) + 0.18 * t
+            c.y = c.y * (1 - 0.35 * t) * (1 - 0.45 * (c.z / 0.625) ** 2) + 0.18 * t      # r4: the ends chamfer in, a wing not a slab
             c.z += 0.12
             c.x += s * (0.28 + 0.1 * c.z)
             return c
-        p.add(K.ball((0.22, 0.8, 1.25), u=8, v=6, warp=w), "black")
+        p.add(K.box((0.3, 0.8, 1.25), bevel=0.11, seg=2, warp=w), "black")     # r4: chunkier bevel
     return make
 
 
@@ -132,11 +131,11 @@ PARTS = [
     ("Belly", "Belly", (0, 0.95, -0.35), (0, 0, 0), belly),
     ("Head", "Head", (0, 2.0, -0.2), (0, 0, 0), head),
     ("Face", "Face", (0, 2.0, -0.7), (0, 0, 0), face),
-    ("Beak", "Beak", (0, 1.98, -1.03), (0, 0, 0), beak),
-    ("EyeLeft", "Eye", (-0.34, 2.14, -0.72), (0, 0, 0), eye_maker((-0.34, 2.14, -0.72))),
-    ("EyeRight", "Eye", (0.34, 2.14, -0.72), (0, 0, 0), eye_maker((0.34, 2.14, -0.72))),
-    ("GlintLeft", "Glint", (-0.3, 2.2, -0.82), (0, 0, 0), glint),
-    ("GlintRight", "Glint", (0.3, 2.2, -0.82), (0, 0, 0), glint),
+    ("Beak", "Beak", (0, 2.08, -1.03), (0, 0, 0), beak),     # r4: up to the eye line
+    ("EyeLeft", "Eye", (-0.34, 2.14, -0.76), (0, 0, 0), eye_maker((-0.34, 2.14, -0.76))),     # r4: out of the bigger mask
+    ("EyeRight", "Eye", (0.34, 2.14, -0.76), (0, 0, 0), eye_maker((0.34, 2.14, -0.76))),
+    ("GlintLeft", "Glint", (-0.3, 2.2, -0.86), (0, 0, 0), glint),
+    ("GlintRight", "Glint", (0.3, 2.2, -0.86), (0, 0, 0), glint),
     ("WingLeft", "Wing", (-0.9, 1.05, 0.1), (0, 0, 0.15), wing_maker(-1)),
     ("WingRight", "Wing", (0.9, 1.05, 0.1), (0, 0, -0.15), wing_maker(1)),
     ("FootLeft", "Foot", (-0.38, 0.14, -0.5), (0, 0, 0), foot),

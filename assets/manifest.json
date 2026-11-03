@@ -2440,6 +2440,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:1c400ca83ea301e0971d9b50715ecad42517cc98531a256024517b7e955841ae": {
+  "assetId": "119384092940664",
+  "imageId": "119384092940664",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Coat_RGH",
+  "sha": "1c400ca83ea301e0971d9b50715ecad42517cc98531a256024517b7e955841ae",
+  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_RGH.png",
+  "type": "Image"
+ },
  "Image:1c42a63c13211cdb1a99e971a700d1b354625a8f027237aa27a695eea1507966": {
   "assetId": "78818609026591",
   "imageId": "78818609026591",
@@ -7251,6 +7260,15 @@
   "source": "assets/textures/M_Ani_SealPup_Rare/T_SealPup_Rare_ALB.png",
   "type": "Image"
  },
+ "Image:536e28a59faee108f91d3ef565a364fa4c28fa1ec75eb9741859994e753605fa": {
+  "assetId": "125795673222455",
+  "imageId": "125795673222455",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Coat_ALB",
+  "sha": "536e28a59faee108f91d3ef565a364fa4c28fa1ec75eb9741859994e753605fa",
+  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_ALB.png",
+  "type": "Image"
+ },
  "Image:5381b582922cfce4076632f293a1203262627497a3f55e53275138eb2b8dde09": {
   "assetId": "102429028536004",
   "imageId": "102429028536004",
@@ -9645,6 +9663,15 @@
   "source": "assets/textures/Materials/T_Mat_Cobbles_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:71b489c24a5e7f820330dbb2b7f25f91edbb100a5d784c5a0f9626aaef5c88d4": {
+  "assetId": "74708168663472",
+  "imageId": "74708168663472",
+  "moderation": "Reviewing",
+  "name": "T_Gull_Feathers_ALB",
+  "sha": "71b489c24a5e7f820330dbb2b7f25f91edbb100a5d784c5a0f9626aaef5c88d4",
+  "source": "assets/textures/M_Ani_Gull/T_Gull_Feathers_ALB.png",
+  "type": "Image"
+ },
  "Image:71db8556152d05e289ebc3700f0abf3bb4fffe20132e7b2ccad01f51f1d922bd": {
   "assetId": "103673891726128",
   "imageId": "103673891726128",
@@ -11743,6 +11770,15 @@
   "source": "art/map/gale_isles_map_r0c1.png",
   "type": "Image"
  },
+ "Image:89ef9b24da8e8019b7a8d7a649371b1b4312e9d6423b2c8b871bd7d21499263a": {
+  "assetId": "94787573245345",
+  "imageId": "94787573245345",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Rare_ALB",
+  "sha": "89ef9b24da8e8019b7a8d7a649371b1b4312e9d6423b2c8b871bd7d21499263a",
+  "source": "assets/textures/M_Ani_Turtle_Rare/T_Turtle_Rare_ALB.png",
+  "type": "Image"
+ },
  "Image:89fe445c60d3a9582a01c3d7c737111ef146c28369876c4dc83cbb8e54c5c5d1": {
   "assetId": "120167090208955",
   "imageId": "120167090208955",
@@ -11894,6 +11930,15 @@
   "name": "T_Morwenna_Kelp_NOR",
   "sha": "8b41a012a16818698d7f06acc00c6a1c450d0d394376811bed6306b26d0a7342",
   "source": "assets/textures/M_Sea_Morwenna/T_Morwenna_Kelp_NOR.png",
+  "type": "Image"
+ },
+ "Image:8b762af00ce472f37944d9afb8c2d6bacdd873a693716a23e8e377de3f12fd4c": {
+  "assetId": "97661211459421",
+  "imageId": "97661211459421",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Coat_RGH",
+  "sha": "8b762af00ce472f37944d9afb8c2d6bacdd873a693716a23e8e377de3f12fd4c",
+  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_RGH.png",
   "type": "Image"
  },
  "Image:8b8db4f05e1c90f4c5ad554f2b268f16f6279f1ebc27cc1c40665f23e93d57f7": {
@@ -16432,6 +16477,15 @@
   "source": "assets/ocean/sky/Overcast_Ft.png",
   "type": "Image"
  },
+ "Image:c61d0634a65a4debfe5ae657e83507f0fdf9b349ebbdd95c718346a6b5aff047": {
+  "assetId": "135876199823454",
+  "imageId": "135876199823454",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Coat_ALB",
+  "sha": "c61d0634a65a4debfe5ae657e83507f0fdf9b349ebbdd95c718346a6b5aff047",
+  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_ALB.png",
+  "type": "Image"
+ },
  "Image:c66c543314ba80568953e1c98c77f6a902feb5353f2a3a1e2290d6bd3b3f0a96": {
   "assetId": "103084908570507",
   "imageId": "103084908570507",
@@ -18398,6 +18452,15 @@
   "name": "Mayday_T_Mat_Mud_RGH",
   "sha": "db91bf946d2b336968d29078c5f3480e06b2822b254f04bd83a4f353310b381d",
   "source": "assets/textures/Materials/T_Mat_Mud_RGH.png",
+  "type": "Image"
+ },
+ "Image:dbcfdec37eda244b106d6268a305a66a1a9c1ca6d27749d9363f352d992c6437": {
+  "assetId": "120048195505787",
+  "imageId": "120048195505787",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Rare_ALB",
+  "sha": "dbcfdec37eda244b106d6268a305a66a1a9c1ca6d27749d9363f352d992c6437",
+  "source": "assets/textures/M_Ani_SealPup_Rare/T_SealPup_Rare_ALB.png",
   "type": "Image"
  },
  "Image:dbd9b83c15a886feea5d8599fae760e2d45d22786c64cf7651d391bf1ef2582f": {
@@ -24863,6 +24926,16 @@
   "source": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD1.fbx",
   "type": "Model"
  },
+ "Model:5e2cffe6622c333fe2e9b296970f6459683d5ce3beb90befe7da2d564ebb5cf5": {
+  "assetId": "137947599048311",
+  "moderation": "Approved",
+  "name": "M_Ani_Gull",
+  "rbxm": "assets/models/M_Ani_Gull.rbxm",
+  "route": "delivery",
+  "sha": "5e2cffe6622c333fe2e9b296970f6459683d5ce3beb90befe7da2d564ebb5cf5",
+  "source": "assets/fbx/M_Ani_Gull/M_Ani_Gull_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:5e4a2bdc3efb331876a2cea14b786bdfb4ef6fea78c4c1b9cab8bbf4d9bd8d32": {
   "assetId": "94659038910021",
   "moderation": "Approved",
@@ -27193,6 +27266,16 @@
   "source": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD2.fbx",
   "type": "Model"
  },
+ "Model:99aef1b56d561714917816dd7826d2304887ef51325343d3525d6c8c4997d77e": {
+  "assetId": "109254263881729",
+  "moderation": "Approved",
+  "name": "M_Ani_Puffin",
+  "rbxm": "assets/models/M_Ani_Puffin.rbxm",
+  "route": "delivery",
+  "sha": "99aef1b56d561714917816dd7826d2304887ef51325343d3525d6c8c4997d77e",
+  "source": "assets/fbx/M_Ani_Puffin/M_Ani_Puffin_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:9a281877811e919531f106849ec59d974b42f0d8b6e100c96d5fd6715f7d4642": {
   "assetId": "123627259593304",
   "moderation": "Approved",
@@ -29083,6 +29166,16 @@
   "source": "assets/fbx/M_Sea_LostPot/M_Sea_LostPot_LOD0.fbx",
   "type": "Model"
  },
+ "Model:cdf87b3858dd2af9e506c414781c3a6a4544183163121a159fcb21c94295eefa": {
+  "assetId": "134916075354415",
+  "moderation": "Approved",
+  "name": "M_Ani_Turtle",
+  "rbxm": "assets/models/M_Ani_Turtle.rbxm",
+  "route": "delivery",
+  "sha": "cdf87b3858dd2af9e506c414781c3a6a4544183163121a159fcb21c94295eefa",
+  "source": "assets/fbx/M_Ani_Turtle/M_Ani_Turtle_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:ce0d974cbde7db4223f0408c961e6507ea7b611b6d25af551111165e5cfe098c": {
   "assetId": "87393402791869",
   "moderation": "Approved",
@@ -30581,6 +30674,16 @@
   "route": "delivery",
   "sha": "f7002068a8f02942f4a42761af643871495aa2d7a985f20e2cdfc4c9cf4e5097",
   "source": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:f723ad5563ac2c3e009a4182d3f5488b3b6cc4b34f3b8144977acbdc5505a8b0": {
+  "assetId": "118164400540009",
+  "moderation": "Approved",
+  "name": "M_Ani_SealPup",
+  "rbxm": "assets/models/M_Ani_SealPup.rbxm",
+  "route": "delivery",
+  "sha": "f723ad5563ac2c3e009a4182d3f5488b3b6cc4b34f3b8144977acbdc5505a8b0",
+  "source": "assets/fbx/M_Ani_SealPup/M_Ani_SealPup_LOD0.fbx",
   "type": "Model"
  },
  "Model:f72d4baee01a19b882a680fe60b2dbb5557b564e76cae7f9abefd3f6a975286c": {

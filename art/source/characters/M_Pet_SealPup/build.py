@@ -22,6 +22,7 @@ ZONES = [  # name, top (faces up), bottom, roughness, tinted in the rare (golden
     ("glint", "#F0F0F0", "#F0F0F0", 0.2, False),
     ("flipper", "#3F5F88", "#4A6C98", 0.65, True),
     ("tip", "#1C2836", "#222E3C", 0.6, True),        # flipper tips
+    ("tailTip", "#1E1F26", "#1E2028", 0.6, True),    # r4: rear flipper tips, near black
     ("white", "#F6F6F2", "#ECECE8", 0.25, False),   # eye whites
     ("stud", "#8FB4DE", "#8FB4DE", 0.55, True),
 ]
@@ -49,21 +50,21 @@ def belly():
 def head():
     bm = K.ellipsoid((1.3, 1.12, 1.2), u=12, v=8)
     s = K.Shape().add(bm, K.by([(lambda c, n: n.y < -0.55, "belly")], "fur"))
-    for x in (-0.13, 0.13):                            # r3: a 2x2 stud on the crown
-        for z in (-0.13, 0.13):
-            s.add(K.stud((x, 0.525, z), r=0.09, h=0.08, sink=0.07, segments=8), "stud")
+    for x, y in ((-0.26, 0.515), (0, 0.55), (0.26, 0.515)):       # r4: a row of 3 flat round studs, wide and low
+        s.add(K.stud((x, y, 0), r=0.12, h=0.06, sink=0.09, segments=12), "stud")
     return s
 
 
 def snout():
     rng = random.Random(4)
     s = K.Shape()
-    for x in (-0.16, 0.16):
-        s.add(K.ellipsoid((0.4, 0.38, 0.42), (x, 0.0, 0.0), u=10, v=6), K.speckle(rng, 0.08, "dot", "muzzle"))
-    s.add(K.ellipsoid((0.34, 0.2, 0.3), (0, -0.17, 0.06), u=8, v=4), "muzzle")
+    m = 1.2                                            # r4: muzzle +20 %
+    for x in (-0.16 * m, 0.16 * m):
+        s.add(K.ellipsoid((0.4 * m, 0.38 * m, 0.42 * m), (x, 0.0, 0.0), u=10, v=6), K.speckle(rng, 0.08, "dot", "muzzle"))
+    s.add(K.ellipsoid((0.34 * m, 0.2 * m, 0.3 * m), (0, -0.17 * m, 0.06 * m), u=8, v=4), "muzzle")
     for side in (-1, 1):
         for y, dy in ((0.05, 0.08), (-0.03, 0.0), (-0.11, -0.08)):
-            s.add(K.whisker((0.3 * side, y, -0.04), (0.55 * side, y + dy * 0.7, 0.06)), "whisker")   # r2: 30 % shorter
+            s.add(K.whisker((0.36 * side, y, -0.04), (0.61 * side, y + dy * 0.7, 0.06)), "whisker")   # r2: 30 % shorter
     return s
 
 
@@ -96,12 +97,12 @@ def flipper(side):
 
 def tail():
     s = K.Shape()
-    lobe = [(-0.16, -0.35), (0.12, -0.35), (0.22, 0.1), (0.12, 0.45), (-0.12, 0.45), (-0.22, 0.1)]
+    lobe = [(-0.16, -0.35), (0.12, -0.35), (0.22, 0.01), (0.12, 0.29), (-0.12, 0.29), (-0.22, 0.01)]    # r4: 20 % shorter
     for side in (-1, 1):
-        bm = K.lens([(x * side, z) for x, z in lobe], 0.14)
+        bm = K.lens([(x * side, z) for x, z in lobe], 0.21, rings=K.CHUNKY)     # r4: 1.5x thicker
         K.rotate(bm, ry=0.38 * side)
-        s.add(K.move(bm, (0.17 * side, 0, 0.05)), K.by([(lambda c, n: c.z > 0.3, "tip")], "flipper"))
-    s.add(K.ellipsoid((0.5, 0.2, 0.45), (0, 0, -0.35), u=8, v=4), "flipper")
+        s.add(K.move(bm, (0.17 * side, 0, 0.05)), K.by([(lambda c, n: c.z > 0.14, "tailTip")], "flipper"))
+    s.add(K.ellipsoid((0.5, 0.26, 0.45), (0, 0, -0.35), u=8, v=4), "flipper")
     return s
 
 
@@ -110,7 +111,7 @@ PARTS = [  # node, rig name, placeholder size, at (x, y, z, rx, ry, rz), shape: 
     ("Belly", "Belly", (2.3, 0.7, 1.5), (0, 0.55, -0.1), belly),
     ("Head", "Head", (1.3, 1.15, 1.2), (0, 1.55, -1.45), head),
     ("Snout", "Snout", (0.7, 0.5, 0.6), (0, 1.38, -2.05), snout),
-    ("Nose", "Nose", (0.22, 0.18, 0.18), (0, 1.5, -2.36), nose),
+    ("Nose", "Nose", (0.22, 0.18, 0.18), (0, 1.5, -2.31), nose),      # r4: seated on the bigger muzzle
     ("EyeLeft", "Eye", (0.3, 0.3, 0.3), (-0.38, 1.78, -1.98), eye),
     ("EyeRight", "Eye", (0.3, 0.3, 0.3), (0.38, 1.78, -1.98), eye),
     ("GlintLeft", "Glint", (0.1, 0.1, 0.1), (-0.32, 1.86, -2.14), glint),
