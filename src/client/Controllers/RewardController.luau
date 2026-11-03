@@ -1,7 +1,7 @@
 --!strict
 -- RewardController: the one reward prompt on join (owner, 2026-10-28: no chest; "if we get stuff while offline,
--- just prompt that"). Once the loading screen, its flyover and a new player's cold open are done, and there is
--- anything to collect (today's streak reward with its welcome-back bonus, from Streak_State / Streak_Get; the
+-- just prompt that"). Once the loading screen, its flyover and a new player's tutorial up to the Workshop are done,
+-- and there is anything to collect (today's streak reward with its welcome-back bonus, from Streak_State / Streak_Get; the
 -- crew's offline earnings, player attribute WorkerOffline), UI/RewardPrompt shows it. Collect claims the
 -- streak through Streak_Collect (the server grants it only then; left uncollected it stays available on the
 -- next join) and plays UI/CoinShower. Offline pay is granted on join by WorkerService, so the wallet holds it
@@ -35,8 +35,12 @@ end
 
 local function streakPreview(): any
 	local p = type(view) == "table" and view.available and view.preview
-	if type(p) ~= "table" or p.day == failedDay then
-		return nil
+	if
+		type(p) ~= "table"
+		or p.day == failedDay
+		or player:GetAttribute("TutorialHoldReward") == true
+	then
+		return nil -- held: it stays available on the server, offline crew pay still shows
 	end
 	return p
 end
@@ -115,6 +119,7 @@ function RewardController.Start()
 			"CinematicPlaying",
 			"ColdOpenActive",
 			"Establishing",
+			"TutorialHoldReward",
 		}
 	do
 		player

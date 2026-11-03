@@ -74,32 +74,33 @@ local current: string? = nil
 local mounted = false
 local pulseName: string? = nil
 
--- docs/24 E: a steady gold ring on the one button the tutorial asks for, and nothing else. It pops in
--- once and then holds still (never a looping pulse: owner 2026-10-28).
+-- docs/24 E: the button the tutorial asks for grows from its centre once with a small bounce and stays raised
+-- until pressed. No outline ring (owner 2026-11-01), no looping pulse, no orange (owner 2026-10-28). Growing, not
+-- moving up: the phone's 6 du row gap would put a lifted tile over the label above.
+local RAISED = 1.12 -- 64 du tile: under 4 du per side, clear of the labels
 local function startPulse(root: GuiObject, name: string)
-	local ring = Instance.new("Frame")
-	ring.Name = "PulseRing"
-	ring.BackgroundTransparency = 1
-	ring.Position = UDim2.fromOffset(-4, -4)
-	ring.Size = UDim2.new(1, 8, 1, 8)
-	ring.Parent = root
-	Style.corner(ring, Theme.Size.corner + 8)
-	local stroke = Style.stroke(ring, 4, true)
-	stroke.Color = GOLD
+	local tile = root:FindFirstChild("Tile") :: GuiObject?
+	if not tile or root:GetAttribute("TutorialLift") then
+		return
+	end
+	root:SetAttribute("TutorialLift", true)
 	local scale = Instance.new("UIScale")
-	scale.Name = "PulseScale"
-	scale.Scale = 1.15
-	scale.Parent = ring
-	TweenService:Create(
-		scale,
-		TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-		{ Scale = 1 }
-	):Play()
+	scale.Parent = tile
+	local inset = -tile.Size.X.Offset * (RAISED - 1) / 2 -- UIScale grows from the top-left: keep it centred
+	local info = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+	TweenService:Create(scale, info, { Scale = RAISED }):Play()
+	TweenService:Create(tile, info, { Position = UDim2.fromOffset(inset, inset) }):Play()
 	task.spawn(function()
 		while root.Parent and pulseName == name do
 			task.wait(0.2)
 		end
-		ring:Destroy()
+		root:SetAttribute("TutorialLift", nil)
+		local back = TweenInfo.new(0.2, Enum.EasingStyle.Quad)
+		local down = TweenService:Create(scale, back, { Scale = 1 })
+		TweenService:Create(tile, back, { Position = UDim2.fromOffset(0, 0) }):Play()
+		down:Play()
+		down.Completed:Wait()
+		scale:Destroy()
 	end)
 end
 
@@ -107,7 +108,7 @@ function Menu.pulse(name: string?)
 	pulseName = name
 	if name then
 		local b = buttons[name]
-		if b and not b.root:FindFirstChild("PulseRing") then
+		if b then
 			startPulse(b.root, name)
 		end
 	end
@@ -194,7 +195,7 @@ function Menu.open(name: string)
 		return
 	end
 	if name == pulseName then
-		Menu.pulse(nil) -- found it (the quest reveal's ring)
+		Menu.pulse(nil) -- found it (the quest reveal's cue)
 	end
 	if current == name then
 		return

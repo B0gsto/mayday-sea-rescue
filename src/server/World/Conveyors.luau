@@ -162,7 +162,7 @@ function Conveyors.place(base: Instance)
 		local cap = part(
 			m,
 			"BeltCap",
-			Vector3.new(BED_W, 0.8, 0.8),
+			Vector3.new(BED_W - 0.1, 0.8, 0.8), -- 0.05 inside each side: flush, its ends fought the bed's sides
 			CFrame.lookAt(b, b + (b - a).Unit) * CFrame.new(0, 0.4, 0), -- X (the cylinder's axis) across the belt
 			CAP
 		)

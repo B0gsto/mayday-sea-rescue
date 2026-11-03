@@ -6,7 +6,7 @@
 -- own island's QuestTablet (Workspace.QuestPontoons.Island<plot>), which opens UI/QuestTablet. And moored quest boats
 -- (Workspace.QuestBoats, Moored) bob and sway on the shared wave field with their giver, locally (the server leaves
 -- them still at the slot). Quests open later (QuestService gate): on QuestReveal, once per player, a calm wordless
--- intro: the Quests button appears with one pop of its steady gold ring and a chime, and when the first giver has tied
+-- intro: the Quests button appears, grows once with a small bounce and a chime, and when the first giver has tied
 -- up, the camera eases over to them and back (skippable).
 -- The objective reads from the world: your own quest thing (Workspace.Quests, Owner = you: the waiting item or the
 -- drop flag) wears a steady gold outline (the map pin and the menu chip point at it from afar), and picking it up /
@@ -245,7 +245,7 @@ local function reveal(npcs: Instance)
 		repeat
 			task.wait(1)
 		until free()
-		Menu.pulse("Quests") -- one pop, then a steady ring till the panel opens
+		Menu.pulse("Quests") -- one bounce, then it stays raised till the panel opens
 		AudioController.play("UI_Success")
 		local giver, t0 = moored(npcs), os.clock()
 		while not giver and os.clock() - t0 < 60 do -- they sail in (~26 s)

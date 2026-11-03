@@ -550,8 +550,10 @@ local function step(dog: Dog, now: number)
 	if not character or not humanoid or not root then
 		return
 	end
-	if dog.player:GetAttribute("CompanionPet") ~= nil then
-		-- a pet is out: Bosun is home (hidden); he reappears beside the player when picked again
+	if
+		dog.player:GetAttribute("CompanionPet") ~= nil or dog.player:GetAttribute("DevInvisible")
+	then
+		-- a pet is out (or his dev is invisible): Bosun is home (hidden); he reappears beside the player
 		if not dog.hidden then
 			dog.hidden = true
 			dog.model:SetAttribute("Hidden", true)

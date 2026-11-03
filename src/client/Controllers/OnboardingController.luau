@@ -229,7 +229,8 @@ local function stepToStation()
 		return -- still welded: never drag the hull along
 	end
 	local station = DockConfig.stationSpot(bay)
-	local at = (station * CFrame.new(0, 0, 8)).Position -- the deck in front of the tablet, inside its open range
+	-- back where a new player first spawned: at 8 studs the sign filled the screen (owner 2026-11-03)
+	local at = DockConfig.newSpawn(bay).Position
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	params.FilterDescendantsInstances = { char }
@@ -614,6 +615,11 @@ local function update()
 		showReward()
 	end
 	beat = currentBeat()
+	-- the Day 1 card waits for the Workshop: a new player's first screen is the game (owner 2026-11-03)
+	player:SetAttribute(
+		"TutorialHoldReward",
+		if beat == "Spin" or beat == "Done" then nil else true
+	)
 	-- off the jet ski mid cold open: the edge pointer leads back to it (its craft pin marks it in view)
 	local craft = strandedFrom()
 	if craft then
@@ -651,6 +657,7 @@ local function update()
 end
 
 function OnboardingController.Init()
+	player:SetAttribute("TutorialHoldReward", true) -- before RewardController's first look; update() releases it
 	beacon = OnboardingBeacon.start()
 
 	-- a delivery sets Rescued before the next snapshot
