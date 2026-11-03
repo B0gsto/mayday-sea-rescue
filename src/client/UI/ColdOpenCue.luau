@@ -1,10 +1,12 @@
 --!strict
--- ColdOpenCue: the cold open's world cues (docs/14 F-3, RP-UX2), local only. While the player
--- rides the cold-open jet ski, the casualty (CallProps "Victim" of ColdOpenOpId) gets a white ring on the
--- water that pops in once and then breathes slowly (never a flashing orange pulse: owner 2026-10-28; the steady orange ring is PickupRingController's), orange smoke and splashes (and the
--- casualty waves: CasualtyController), so the goal reads from the world with no text to read. If the player makes no headway
--- for 10 s (shared/Boat/ColdOpen.nudge) a red flare pops over them. All of it goes once the
--- casualty holds on (PiwMode "held") or climbs aboard, or the cold open ends.
+-- ColdOpenCue: the world cues of the first calls (docs/14 F-3, RP-UX2), local only. The call found with `opIdOf`
+-- (first station calls): its casualty (CallProps "Victim" of that op) gets a white ring on the water that pops in once
+-- and then breathes slowly (never a flashing orange pulse: owner 2026-10-28; the steady orange ring is
+-- PickupRingController's), orange smoke and splashes (and the casualty waves: CasualtyController), so the goal reads
+-- from the world with no text to read. The cold open (no `opIdOf`, docs/29 A) marks nobody: its three swimmers only have
+-- the normal ring and wave. If the player makes no headway for 10 s (shared/Boat/ColdOpen.nudge) a red flare pops over
+-- the casualty, in the cold open the nearest swimmer of the fan. All of it goes once the
+-- casualty holds on (PiwMode "held") or climbs aboard, or the call ends.
 -- ColdOpenCue.home (docs/20 change 4, every delivery): with survivors aboard, the drop-off pulses
 -- green from 60 m (your berth, the cold open too), where the green house pin points.
 -- Started by OpsHud.
@@ -57,6 +59,24 @@ local function victimOf(opId: string): Model?
 		end
 	end
 	return nil
+end
+
+-- Where the cold open's swimmers still in the water are: the op's own and its fan (RescueService marks ColdOpenFan).
+local function fanSpots(opId: string): { Vector3 }
+	local out = {}
+	local folder = Workspace:FindFirstChild("CallProps")
+	for _, m in if folder then folder:GetChildren() else {} do
+		if
+			m:IsA("Model")
+			and m.Name == "Victim"
+			and m.PrimaryPart
+			and m:GetAttribute("OnVehicle") == nil
+			and (m:GetAttribute("CallId") == opId or m:GetAttribute("ColdOpenFan") == opId)
+		then
+			table.insert(out, m.PrimaryPart.Position)
+		end
+	end
+	return out
 end
 
 export type Ring = { anchor: Part, band: CylinderHandleAdornment }
@@ -155,6 +175,10 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 		f.Name = "ColdOpenCue"
 		f.Parent = Workspace
 		folder = f
+		nudge = ColdOpen.newNudge(os.clock())
+		if not opIdOf then
+			return -- the cold open: nobody is singled out, only the nudge flare runs
+		end
 		pulse = ring("Mark", Color3.new(1, 1, 1), f)
 		born = os.clock()
 		local a = Instance.new("Attachment")
@@ -166,7 +190,6 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 		f.Destroying:Connect(function()
 			a:Destroy()
 		end)
-		nudge = ColdOpen.newNudge(os.clock())
 	end
 
 	local conn = RunService.Heartbeat:Connect(function()
@@ -206,9 +229,12 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 		local char = Players.LocalPlayer.Character
 		local pivot = char and char:GetPivot().Position
 		if pivot and folder then
-			local d = (Vector3.new(pivot.X, 0, pivot.Z) - Vector3.new(base.X, 0, base.Z)).Magnitude
+			local goal = if opIdOf
+				then base
+				else ColdOpen.nearest(pivot, fanSpots(opId :: string)) or base
+			local d = (Vector3.new(pivot.X, 0, pivot.Z) - Vector3.new(goal.X, 0, goal.Z)).Magnitude
 			if ColdOpen.nudge(nudge, t, d) then
-				PyroController.parachute(base)
+				PyroController.parachute(Vector3.new(goal.X, waterY(goal) + 0.08, goal.Z))
 			end
 		end
 	end)

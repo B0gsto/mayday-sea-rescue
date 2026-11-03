@@ -11,7 +11,8 @@
 -- Timed spawns go to the Outer ring or, FAR of the time, off an outer island. Nothing spawns in the lagoon or
 -- within HOME_CLEAR of a berth (the coves are the missions'). K13 (docs/16): MOUTH_WANT are always in view off each
 -- player's cove mouth. At the cap the oldest scene nobody is near makes way. A cold-open player gets no spawns
--- near them and boards nobody free-roam (their own swimmer comes first). Sight spawns are the added density: they
+-- near them and boards nobody free-roam but the two swimmers fanned round their own (docs/29 A: SpawnColdOpenFlank; the
+-- first one reached goes to OperationService.ColdOpenFlank). Sight spawns are the added density: they
 -- pay the lower tier (AmbientMix.CASH x the Bronze grade); timed and cove-mouth ones pay CASH.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -31,6 +32,10 @@ local ProgressionService = require(script.Parent.ProgressionService) :: any
 local RescueService = require(script.Parent.RescueService) :: any
 
 local AmbientRescueService = {}
+
+local function operations(): any
+	return require(script.Parent:WaitForChild("OperationService") :: ModuleScript) :: any
+end
 
 AmbientRescueService.RESPAWN = 20 -- s between timed spawns while under the cap -- tune
 AmbientRescueService.MAX_AGE = 360 -- s unrescued before they are swept off (a fresh one spawns elsewhere)
@@ -140,9 +145,10 @@ local function roll(): number
 end
 
 -- extra: a sight spawn (sea1's added density) pays the Bronze grade share of CASH, the lower tier (ECON1)
-local function spawnAt(pos: Vector3, extra: boolean?): Scene
+-- owner: a cold-open flank, a lone swimmer rolled like their own call's (the first home is a Builder)
+local function spawnAt(pos: Vector3, extra: boolean?, owner: Player?): Scene
 	nextId += 1
-	local mix = AmbientMix.pick(roll())
+	local mix = if owner then { kind = "Swimmer", total = 1 } else AmbientMix.pick(roll())
 	local scene: Scene = {
 		id = `AMB{nextId}`, -- never an op id: PIW_Rescue and OperationService.CanAct ignore it
 		kind = mix.kind,
@@ -154,6 +160,7 @@ local function spawnAt(pos: Vector3, extra: boolean?): Scene
 		opsDriven = true, -- no hold prompt: the server boards them (below)
 		ambient = true,
 		bornAt = os.clock(),
+		owner = owner,
 		pay = math.floor(AmbientMix.CASH * (if extra then CallTypes.Payout.Grade.Bronze else 1)),
 	}
 	scene.onDelivered = function(n: number, driver: Player?)
@@ -162,6 +169,19 @@ local function spawnAt(pos: Vector3, extra: boolean?): Scene
 	RescueService.SpawnCall(scene)
 	table.insert(scenes, scene)
 	return scene
+end
+
+-- One of the cold open's fan (docs/29 A): an ordinary free-roam scene that `player` may also take during their cold open.
+function AmbientRescueService.SpawnColdOpenFlank(player: Player, pos: Vector3, opId: string): Scene
+	local scene = spawnAt(pos, false, player)
+	scene.victims[1].model:SetAttribute("ColdOpenFan", opId)
+	return scene
+end
+
+-- A flank whose player's cold open still runs: it never makes way or ages out under them.
+local function reserved(scene: Scene): boolean
+	local owner = scene.owner
+	return owner ~= nil and owner.Parent ~= nil and owner:GetAttribute("ColdOpenActive") == true
 end
 
 local function spawnOne(): Scene?
@@ -272,6 +292,7 @@ local function stepSight()
 				if
 					not watched
 					and count(scene, "Aboard") == 0
+					and not reserved(scene)
 					and playersClear(scene.position)
 					and (not oldest or scene.bornAt < oldest.bornAt)
 				then
@@ -384,7 +405,15 @@ end
 local function stepBoarding(dt: number)
 	local boats = AmbientRescueService.SeatedBoats()
 	for _, scene in scenes do
-		AmbientRescueService.StepBoarding(scene, dt, boats, notColdOpen)
+		AmbientRescueService.StepBoarding(scene, dt, boats, function(player: Player)
+			return notColdOpen(player) or scene.owner == player
+		end, function(i: number, player: Player)
+			if notColdOpen(player) then
+				RescueService.BoardVictim(scene, i, player)
+			else
+				operations().ColdOpenFlank(player, scene, i)
+			end
+		end)
 	end
 end
 
@@ -395,7 +424,11 @@ local function stepLife()
 		-- boarding failed (no room after all), or nobody came for them in time
 		if
 			water + aboard == 0
-			or (aboard == 0 and now - scene.bornAt > AmbientRescueService.MAX_AGE)
+			or (
+				aboard == 0
+				and not reserved(scene)
+				and now - scene.bornAt > AmbientRescueService.MAX_AGE
+			)
 		then
 			remove(scene)
 		end
