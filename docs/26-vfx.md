@@ -25,6 +25,7 @@ The game's effects follow the global VFX rules (user CLAUDE.md "VFX (all games)"
 | Building / level finished | feedback | bricks snap down, a ring of flat Lego plates bursts out low and lands, one dust puff ring; confetti only above the site, never on the building |
 | HQ level up | spectacle | the above plus a tall burst of confetti bricks and a soft gold shockwave ring on the ground |
 | Survivor picked up | feedback | a white splash crown + droplets where they leave the water |
+| Pick-up boost (docs/29 C) | feedback + state | `pickup_boost`: a spray fan off the stern, a small `nitro_ring`, whoosh + hiss; `pickup_wake`: stern streaks for the 3 s (off under Reduce motion) |
 | Survivor delivered / rescue done | spectacle (small) | a ring of lifebuoy-coloured plates and a coin burst into the wallet (CashBurst) |
 | Go back landed | feedback | a foam crown, drops, a ring on the water and a few red and white plates under the hull (charge: FOV widen + whoosh + a sea-blue veil over the jump; no FOV or shake under Reduce motion) |
 | Golden call | state + spectacle | a steady gold ring on the pin (slow breath), a gold burst on accept, the survivor's steady glow |

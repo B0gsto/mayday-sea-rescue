@@ -67,6 +67,8 @@ HudLayout.SALE_HEIGHT = 136
 HudLayout.DEBRIEF_WIDTH = 340 -- the end-of-call toast (UI/OpsDebrief), drawn scaled to its region's width
 HudLayout.DEBRIEF_HEIGHT = 96
 HudLayout.DEBRIEF_MIN = 0.7 -- the smallest the toast may shrink to fit a gap
+HudLayout.RUN_WIDTH = 140 -- the rescue run chip (UI/RunChip): icon, x, seconds
+HudLayout.RUN_HEIGHT = 48
 HudLayout.PAD_MIN = 92 -- du: a steer button (64 px at the 0.7 phone floor)
 HudLayout.PAD_MAX = 130
 HudLayout.PAD_GAP = 10 -- du between the pad's buttons
@@ -96,6 +98,7 @@ export type RegionName =
 	| "chips"
 	| "sale"
 	| "debrief"
+	| "run"
 	| "steer"
 	| "drive"
 	| "goback"
@@ -144,15 +147,21 @@ local function box(r: Rect): (number, number, number, number)
 	return x, y, x + r.size.X, y + r.size.Y
 end
 
--- The debrief toast: the topmost band (at the toast's full height) with a free gap of at least DEBRIEF_MIN of its
--- width between the edge HUD (wallet, menu, minimap, quest, gauges) and the touch zones; the toast
--- shrinks to the gap. The objective is free: the step card hides while the debrief shows (OpsHud).
-local function debriefRect(mt: Metrics, zones: { { number } }): Rect
+-- The topmost band (at the full height H) with a free gap of at least min x W between the `names` regions and the
+-- touch zones; the rect shrinks to the gap. Used by the debrief toast (the objective is free: the step card hides
+-- while the debrief shows, OpsHud) and the run chip (min 1, every top region taken: it stays up all through a call).
+local function freeRect(
+	mt: Metrics,
+	zones: { { number } },
+	names: { string },
+	W: number,
+	H: number,
+	min: number
+): Rect
 	local u, m, g = mt.usable, HudLayout.MARGIN, HudLayout.GAP
-	local W, H = HudLayout.DEBRIEF_WIDTH, HudLayout.DEBRIEF_HEIGHT
 	local blocks = table.clone(zones)
 	local ys = { m }
-	for _, name in { "wallet", "menu", "minimap", "quest", "gauges", "sale" } do
+	for _, name in names do
 		local x0, y0, x1, y1 = box(mt.rects[name])
 		table.insert(blocks, { x0 - g, y0 - g, x1 + g, y1 + g })
 		table.insert(ys, y1 + g)
@@ -178,7 +187,7 @@ local function debriefRect(mt: Metrics, zones: { { number } }): Rect
 		if u.X - m - x > gapW then
 			gapX, gapW = x, u.X - m - x
 		end
-		if gapW >= W * HudLayout.DEBRIEF_MIN and y + H <= u.Y - m then
+		if gapW >= W * min and y + H <= u.Y - m then
 			local w = math.min(gapW, W)
 			return rect(
 				Vector2.new(0.5, 0),
@@ -462,15 +471,28 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	mt.rects["gauges"] = rect(Vector2.new(1, 1), Vector2.new(u.X - m, bottom), Vector2.new(gs, gs))
 	local stickRight = if u.X < u.Y then u.X else u.X * 0.4
 	local dx0, dy0, dx1, dy1 = box(mt.rects["drive"]) -- the drive pad reaches past the jump zone on small phones
-	mt.rects["debrief"] = debriefRect(
+	local zones = if touch
+		then {
+			{ 0, u.Y * 0.55, stickRight, u.Y },
+			{ u.X * 0.7, u.Y * 0.65, u.X, u.Y },
+			{ dx0 - g, dy0 - g, dx1, dy1 },
+		}
+		else {}
+	mt.rects["run"] = freeRect(
 		mt,
-		if touch
-			then {
-				{ 0, u.Y * 0.55, stickRight, u.Y },
-				{ u.X * 0.7, u.Y * 0.65, u.X, u.Y },
-				{ dx0 - g, dy0 - g, dx1, dy1 },
-			}
-			else {}
+		zones,
+		{ "wallet", "menu", "minimap", "quest", "gauges", "sale", "objective", "chips", "notice" },
+		HudLayout.RUN_WIDTH,
+		HudLayout.RUN_HEIGHT,
+		1
+	)
+	mt.rects["debrief"] = freeRect(
+		mt,
+		zones,
+		{ "wallet", "menu", "minimap", "quest", "gauges", "sale", "run" },
+		HudLayout.DEBRIEF_WIDTH,
+		HudLayout.DEBRIEF_HEIGHT,
+		HudLayout.DEBRIEF_MIN
 	)
 	return mt
 end

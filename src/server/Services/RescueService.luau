@@ -1062,6 +1062,10 @@ onPull = function(victim: any, player: Player, forced: boolean?)
 		Ops.RecordAction(call, driver)
 	end
 	Ops.OnVictimBoarded(call, player)
+	local run = service("RescueRunService")
+	if run then
+		run.OnPickup(driver or player, vehicle)
+	end
 end
 
 ---------------------------------------------------------------- per-frame motion
@@ -1526,6 +1530,10 @@ local function checkDeliveries()
 				else
 					operations().OnVictimsDelivered(call, count, driver, "Home")
 				end
+			end
+			local run = service("RescueRunService") -- after the pay above: it read the x on the chip
+			if driver and run then
+				run.OnDelivered(driver, #list)
 			end
 		end
 	end

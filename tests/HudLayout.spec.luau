@@ -56,6 +56,7 @@ return function(t)
 		"quest",
 		"chips",
 		"sale",
+		"run",
 	}
 
 	local function box(rect)
@@ -146,8 +147,17 @@ return function(t)
 	-- verify 2026-10-26 (fix-f1): the debrief toast covered the Cash counter at 667x375; portrait the menu ran into
 	-- the minimap. Phone sizes (any device, with and without the top-bar inset): the wallet, menu, minimap, debrief,
 	-- quest tracker and call card column never overlap, and the debrief keeps off the touch zones.
+	t.test("the run chip gets its own full-size gap on every screen", function()
+		for _, s in SCREENS do
+			local mt = HudLayout.compute(s.screen, s.insets, "Touch")
+			t.expect(mt.rects.run.size)
+				.toEqual(Vector2.new(HudLayout.RUN_WIDTH, HudLayout.RUN_HEIGHT))
+			t.expect(HudLayout.RUN_HEIGHT * mt.scale >= 32).toBe(true)
+		end
+	end)
+
 	t.test("phone sizes: wallet, menu, minimap, debrief, quest, call card never overlap", function()
-		local KEY = { "wallet", "menu", "minimap", "debrief", "quest", "sale" }
+		local KEY = { "wallet", "menu", "minimap", "debrief", "quest", "sale", "run" }
 		for _, screen in { Vector2.new(667, 375), Vector2.new(844, 390), Vector2.new(390, 844) } do
 			for _, top in { 0, 58 } do
 				for _, dev in { "Touch", "Keyboard" } do
@@ -274,7 +284,7 @@ return function(t)
 	t.test("desktop: the quest chip clears the minimap pill, no overlaps", function()
 		-- gauges shares the minimap's square on desktop (touch buttons only)
 		local LEFT =
-			{ "menu", "wallet", "objective", "minimap", "notice", "quest", "chips", "sale" }
+			{ "menu", "wallet", "objective", "minimap", "notice", "quest", "chips", "sale", "run" }
 		for _, screen in DESKTOP do
 			local mt = HudLayout.compute(screen, NO_INSETS, "Keyboard")
 			local _, my = box(mt.rects.minimap)

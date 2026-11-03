@@ -29,6 +29,7 @@ local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
 
 local ProgressionService = require(script.Parent.ProgressionService) :: any
+local RescueRunService = require(script.Parent.RescueRunService)
 local RescueService = require(script.Parent.RescueService) :: any
 
 local AmbientRescueService = {}
@@ -86,7 +87,8 @@ end
 
 local function onDelivered(scene: Scene, n: number, driver: Player?)
 	if driver then
-		pcall(ProgressionService.Award, driver, scene.pay * n, "AmbientRescue")
+		local pay = scene.pay * n * RescueRunService.Multiplier(driver)
+		pcall(ProgressionService.Award, driver, pay, "AmbientRescue")
 	end
 	if count(scene, "Water") + count(scene, "Aboard") == 0 then
 		remove(scene) -- a cluster stays until its last survivor is home

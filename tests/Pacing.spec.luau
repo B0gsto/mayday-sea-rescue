@@ -19,6 +19,8 @@ return function(t)
 	local DepotRules = t.load("src/shared/DepotRules.luau")
 	local SkillRules = t.load("src/shared/SkillRules.luau")
 	local SpinRules = t.load("src/shared/SpinRules.luau")
+	local Onboarding = t.load("src/shared/Onboarding.luau")
+	local RescueRun = t.load("src/shared/RescueRun.luau")
 
 	local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
 	local GoldenCalls = t.load("src/shared/Calls/GoldenCalls.luau")
@@ -110,12 +112,15 @@ return function(t)
 	-- `flatDepot`: the Depot never upgrades past Lv1 and no Hauler works there (docs/25 K4's slow case)
 	-- `paid`: the 2x Cash pass and the Starter Kit's 3,000 (the owner's account owns every pass it created)
 	-- `callsOnly`: no free-roam pickups (the ECON1 sim, for the before/after table)
+	-- `runMode` (docs/29 C): "off" = no rescue run (the before side), "chase" = a player who never lets it lapse within
+	-- a session (the upper bound: no pirates, no waiting for a call, no extra sailing time)
 	local function run(
 		friends: number,
 		legacy: boolean?,
 		flatDepot: boolean?,
 		paid: boolean?,
-		callsOnly: boolean?
+		callsOnly: boolean?,
+		runMode: string?
 	)
 		local data = Progression.defaultData()
 		if paid then
@@ -483,7 +488,9 @@ return function(t)
 
 		-- the next real call (docs/23 e.2): its pay weight x distancePay and minutes
 		local perCraft = {}
-		local function nextCall(storm: boolean): (number, number, number, number, { number })
+		local function nextCall(
+			storm: boolean
+		): (number, number, number, number, number, number, number, number, { number })
 			local ids = { "JetSki" }
 			for id in owned do
 				table.insert(ids, id)
@@ -501,7 +508,7 @@ return function(t)
 			local at = CallLogic.pickSpawnPoint(choice.zone, random, nil, home)
 			local distance = CallLogic.flatDistance(at, home)
 			-- the reach comes from every owned craft; the player takes whichever owned boat is quickest
-			local seconds, best = math.huge, "JetSki"
+			local seconds, best, trip, tripCount = math.huge, "JetSki", 0, 1
 			local speed = fx().craftSpeed * (1 + skills().speedMult)
 			for _, id in { "JetSki", "RIB", "Lifeboat" } do
 				if id == "JetSki" or owned[id] then
@@ -515,7 +522,8 @@ return function(t)
 								craft.topSpeed * speed
 							))
 					if s < seconds then
-						seconds, best = s, id
+						seconds, best, tripCount = s, id, trips
+						trip = CallLogic.travelSeconds(distance, craft.topSpeed * speed)
 					end
 				end
 			end
@@ -525,10 +533,9 @@ return function(t)
 			local path = if callsOnly
 				then 0
 				else math.min(FREE_PATH, seats * math.ceil(victims / seats) - victims)
-			local freeCash = if callsOnly
-				then 0
-				else FREE_GAP * FREE_MOUTH
-					+ path * AmbientMix.payAt(at, true) -- docs/29 B: the sight spawns round the call pay its zone
+			local mouthCash = if callsOnly then 0 else FREE_GAP * FREE_MOUTH
+			-- docs/29 B: the sight spawns round the call pay its zone
+			local pathCash = if callsOnly then 0 else path * AmbientMix.payAt(at, true)
 			freePeople += if callsOnly then 0 else FREE_GAP + path
 			seconds += path * DETOUR_S
 			local row = perCraft[best] or { calls = 0, minutes = 0, pay = 0 }
@@ -539,8 +546,56 @@ return function(t)
 			return Operations.Defs[Operations.FromCallKind[choice.kind]].weight * pay,
 				seconds / 60,
 				victims,
-				freeCash,
+				mouthCash,
+				pathCash,
+				if callsOnly then 0 else path,
+				trip,
+				tripCount,
 				SeaZones.weightsAt(at)
+		end
+
+		-- docs/29 C: the run on the play clock, with the real rules. Per op: the cove-mouth survivor in the offer gap,
+		-- then each trip (TRIP_S split round the sail out and home). Pay reads the x before its delivery counts.
+		-- Returns the x the mouth survivor and the call (with its path survivors) paid.
+		local runState = RescueRun.new()
+		local runClock = 0
+		local runPaid, runCash = 0, 0 -- Cash-weighted average x, for the report
+		local function stepRun(
+			mouth: boolean,
+			pathPeople: number,
+			victims: number,
+			trip: number,
+			trips: number
+		): (number, number)
+			if runMode == "off" or legacy or Onboarding.newPlayerHud(true, totalOps) then
+				return 1, 1
+			end
+			local function tick(seconds: number)
+				runClock += if runMode == "chase" then 0 else seconds -- chase: the window never lapses
+			end
+			local mouthMult = 1
+			local gap = CALL_S
+			if mouth then -- about 26 s offer gap: out to the mouth and back
+				tick(10)
+				RescueRun.pickup(runState, runClock)
+				tick(10)
+				mouthMult = RescueRun.current(runState, runClock)
+				RescueRun.delivered(runState, 1, runClock)
+				gap = CALL_S - 20
+			end
+			local callMult = 1
+			local people = victims + pathPeople
+			for k = 1, trips do
+				tick(gap + TRIP_S / 2 + trip)
+				RescueRun.pickup(runState, runClock)
+				tick(TRIP_S / 2 + trip + (if k == trips then pathPeople * DETOUR_S else 0))
+				callMult = RescueRun.current(runState, runClock)
+				local aboard = math.ceil(people / (trips - k + 1))
+				RescueRun.delivered(runState, aboard, runClock)
+				people -= aboard
+				gap = 0
+			end
+			return mouthMult, callMult
 		end
 
 		local function runOperation(
@@ -549,7 +604,11 @@ return function(t)
 			now: number,
 			weight: number?,
 			people: number,
-			freeCash: number,
+			mouthCash: number,
+			pathCash: number,
+			pathPeople: number,
+			trip: number,
+			trips: number,
 			weights: { number }?
 		)
 			local completeAt = now + minutes * 60
@@ -569,7 +628,10 @@ return function(t)
 			earned.workers += work
 			local pay = (1 + f.payBonus) * (1 + skills().payBonus)
 			-- docs/25 E: golden calls pay CASH_MULT, at their expected share (never the tutorial's calls)
-			local callCash = reward.cash
+			local mouthMult, callMult = stepRun(mouthCash > 0, pathPeople, people, trip, trips)
+			local freeCash = mouthCash * mouthMult + pathCash * callMult
+			local callCash = callMult
+				* reward.cash
 				* (
 					if weight
 						then 1 + GoldenCalls.chance(
@@ -578,6 +640,8 @@ return function(t)
 						) * (GoldenCalls.CASH_MULT - 1)
 						else 1
 				)
+			runPaid += (callCash + freeCash) * scale
+			runCash += (callCash / callMult + mouthCash + pathCash) * scale
 			earned.calls += callCash * scale * friendMult
 			earned.medic += callCash * scale * (pay - 1) * friendMult
 			award(callCash * scale * pay, storm, great)
@@ -628,6 +692,7 @@ return function(t)
 				local now = START_UTC + (d - 1) * 86400 + startMinute * 60
 
 				local remaining = SESSION_MIN
+				RescueRun.finish(runState) -- a new session: the 75 s window is long gone
 				if lastEnd and not legacy then
 					local away = WorkerRules.offlinePay(fx(), now - lastEnd) -- collected on join
 					data.cash += away
@@ -649,13 +714,26 @@ return function(t)
 				end
 				local cashAtStart = data.cash
 				while remaining > 0.01 do
-					local planned, weight, people, freeCash, weights =
-						TUTORIAL_MIN[totalOps + 1], nil, 1, 0, nil
+					local planned, weight, people = TUTORIAL_MIN[totalOps + 1], nil, 1
+					local mouthCash, pathCash, pathPeople, trip, trips, weights = 0, 0, 0, 0, 1, nil
 					if not planned then
-						weight, planned, people, freeCash, weights = nextCall(opIndex % 5 == 4)
+						weight, planned, people, mouthCash, pathCash, pathPeople, trip, trips, weights =
+							nextCall(opIndex % 5 == 4)
 					end
 					local minutes = math.min(planned, remaining)
-					runOperation(minutes, planned, now, weight, people, freeCash, weights)
+					runOperation(
+						minutes,
+						planned,
+						now,
+						weight,
+						people,
+						mouthCash,
+						pathCash,
+						pathPeople,
+						trip,
+						trips,
+						weights
+					)
 					now += minutes * 60
 					remaining -= minutes
 					if trackDone() then
@@ -709,6 +787,7 @@ return function(t)
 			treeSpinShare = treeSpinShare or 0,
 			samples = samples,
 			freePeople = freePeople,
+			runAverage = if runCash > 0 then runPaid / runCash else 1,
 		}
 	end
 
@@ -872,6 +951,8 @@ return function(t)
 
 	local before = run(0, true)
 	local solo = run(0)
+	local noRun = run(0, false, false, false, false, "off")
+	local chase = run(0, false, false, false, false, "chase")
 	local friend = run(1)
 	local flat = run(0, false, true)
 	report(before, "before (no streak crate)")
@@ -900,6 +981,26 @@ return function(t)
 		)
 	)
 	print(string.format("  paid: tree %.1f h", paid.playMin / 60))
+	print(
+		string.format(
+			"  rescue run (docs/29 C): tree %.1f h without, %.1f h with (%.1f%% faster, average x%.2f), %.1f h chasing it (%.1f%% faster, average x%.2f)",
+			noRun.playMin / 60,
+			solo.playMin / 60,
+			100 * (1 - solo.playMin / noRun.playMin),
+			solo.runAverage,
+			chase.playMin / 60,
+			100 * (1 - chase.playMin / noRun.playMin),
+			chase.runAverage
+		)
+	)
+	print(
+		string.format(
+			"  building tree done (Cash only, no Medal-bound skill nodes): %.1f h without, %.1f h with, %.1f h chasing",
+			find(noRun, "Tree complete").at / 60,
+			find(solo, "Tree complete").at / 60,
+			find(chase, "Tree complete").at / 60
+		)
+	)
 	print(
 		string.format(
 			"  depot: solo lost %.1f build min to an empty Depot (Depot Lv1, no Haulers: %.1f min; tree %.1f h)",
@@ -982,6 +1083,11 @@ return function(t)
 		for i = 2, #anchors do
 			t.expect(anchors[i] - anchors[i - 1] <= 22).toBe(true)
 		end
+	end)
+
+	t.test("the rescue run's multiplier rushes the whole tree by at most about 15%", function()
+		t.expect(solo.playMin >= 0.85 * noRun.playMin).toBe(true)
+		t.expect(chase.playMin >= 0.85 * noRun.playMin).toBe(true)
 	end)
 
 	t.test("the whole progression (tree + skill nodes) takes about 17 h, +/- 15%", function()

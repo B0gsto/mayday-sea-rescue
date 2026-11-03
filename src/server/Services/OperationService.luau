@@ -909,6 +909,11 @@ local function closeOp(op: any)
 	end
 end
 
+local function runMultiplier(player: Player): number
+	local run = service("RescueRunService")
+	return if run then run.Multiplier(player) else 1
+end
+
 finish = function(op: any, reason: string)
 	if op.state == "Done" then
 		return
@@ -946,15 +951,20 @@ finish = function(op: any, reason: string)
 		local st = stateOf(p)
 		local reward: Grading.Reward
 		local paidAs: string
+		local run = 1 -- docs/29 C: the rescue run; tutorial pay and a share without a step stay flat
 		if op.helpers[p] then
 			table.insert(helpers, p)
 			if op.isBig then
 				reward = Grading.bigCompletionBonus(op.saved, #op.casualties)
 				paidAs = "Op:CapsizedFerry"
+				run = runMultiplier(p)
 			else
 				local tut = if st.completed < #Grading.Payout.Tutorial then st.completed else nil
 				reward = Grading.payout(op.weight, op.grade, humans, tut)
 				paidAs = `Op:{op.kind}`
+				if not tut then
+					run = runMultiplier(p)
+				end
 			end
 			st.completed += 1
 			p:SetAttribute("OpsCompleted", st.completed)
@@ -965,7 +975,7 @@ finish = function(op: any, reason: string)
 		-- Medics at work on your island (WP-26) and the Captain skill (docs/24 G) pay a share more
 		local pay = 1 + (tonumber(p:GetAttribute("WorkerPayBonus")) or 0)
 		pay *= 1 + (tonumber(p:GetAttribute("SkillPayBonus")) or 0)
-		local cash = reward.cash * pay * (if op.golden then GoldenCalls.CASH_MULT else 1)
+		local cash = reward.cash * pay * run * (if op.golden then GoldenCalls.CASH_MULT else 1)
 		local paid: number? = nil -- what actually landed (passes, friends, events, storm): the debrief shows it
 		if cash > 0 then
 			local ok, got = try("ProgressionService", "Award", p, cash, paidAs)

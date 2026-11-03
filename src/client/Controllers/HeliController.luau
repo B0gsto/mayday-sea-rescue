@@ -33,6 +33,7 @@ local AudioController = require(script.Parent.AudioController)
 local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
 local Flight = require(Shared:WaitForChild("Heli"):WaitForChild("Flight"))
 local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
+local RescueRun = require(Shared:WaitForChild("RescueRun"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local TouchDriveController = require(script.Parent.TouchDriveController)
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
@@ -244,6 +245,8 @@ local function fly(model: Model, spec: Flight.Spec, dt: number)
 	input.strafe *= power
 	input.yaw *= power
 	input.lift *= power
+	input.boost =
+		RescueRun.boostAt(model:GetAttribute("PickupBoostUntil"), Workspace:GetServerTimeNow())
 	Flight.step(
 		s,
 		input,

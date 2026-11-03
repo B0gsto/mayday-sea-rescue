@@ -41,7 +41,8 @@ Clearly visible, in order of importance:
 A run counts survivors delivered home in a row. Multiplier on delivery pay: x1, x1.25 at 3, x1.5 at 6, x2 at 10 (cap).
 It ends 75 s after your last pick-up or delivery, or when a pirate hits you. A small HUD chip shows x and a timer. It
 pays at delivery, so "one more, or go home?" matters. **Pick-up boost:** each pick-up gives +25% top speed for 3 s
-with a wake effect and sound.
+with a wake effect and sound. Built: `shared/RescueRun`, `RescueRunService`, `UI/RunChip`; pay reads the x before its own
+delivery counts (the x on the chip when you arrive); no run counts on the new player's stripped HUD (flat tutorial pay).
 
 ## D. Pirates
 **Changed by docs/30 section 5:** no chase home; rams hit during collecting and cancel a Go back charge.
