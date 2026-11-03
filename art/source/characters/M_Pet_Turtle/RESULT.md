@@ -1,0 +1,27 @@
+# M_Pet_Turtle
+
+Low-poly faceted Turtle pet in Bosun LP style, one mesh per WildlifeRig part (src/shared/Config/Wildlife.luau order). Shared code: `art/source/characters/_Pets/petkit.py`.
+
+- validate: PASS, 340 checks, 0 failed, 38 waived (one swatch set for the dog class, swatch texel density, LOD UV bounds / UV faces from per-face swatches). Origin `free`: the rig pivot on the ground.
+- Tris: LOD0 1910, LOD1 758, LOD2 186 (budget class `dog`, asset ceiling 3,000).
+- FBX nodes (rig-index order): Shell, Plastron, Head, EyeLeft, EyeRight, GlintLeft, GlintRight, FlipperFrontLeft, FlipperFrontRight, FlipperBackLeft, FlipperBackRight, Tail. Duplicate rig names (Eye, Glint, Flipper) are split Left/Right; `M_Pet_Turtle.mapping.json` gives rig name, rig index, `at` CFrame, mesh size and bounds offset per node. Each node's origin is its part `at` CFrame.
+- Textures: `T_Turtle_Coat_ALB/NOR/RGH/MET` 1024 (pass check_textures), plus `T_Turtle_Rare_ALB` for the rare colour variant.
+- Names: `M_Pet` is not a names.py category, so meshes / FBX are `M_Ani_Turtle`; folders stay `M_Pet_Turtle`.
+
+Outputs: `build/prod/M_Pet_Turtle/fbx/M_Pet_Turtle/M_Ani_Turtle_LOD0.fbx` (+LOD1, LOD2), `build/prod/M_Pet_Turtle/textures/M_Pet_Turtle/`, `build/prod/M_Pet_Turtle/review/M_Pet_Turtle/turntable/`, sheet `build/prod/M_Pet_Turtle/review/M_Pet_Turtle/2026-10-24_sheet.png`.
+
+Open: Shell plates read slightly grid-like up close. Golden rare ALB saturation 0.68 (by design). No Studio import yet; WildlifeRig still builds Parts (swap not wired, no src edits).
+
+## 2026-11-01 perfect pass r1 (tour 8.0: "studded raised shell tiles, yellow-green belly rim, bigger head/eyes")
+
+- Scutes inset deeper and raised 0.06 (tiles with dark seams); a Lego stud (r 0.15, along the tile normal, base sunk) on each of the 13 vertebral/costal tiles; the shell skirt and the plastron's outer ring are a new yellow-green `bellyRim` zone (plastron widened to 1.0 x 1.2); head 1.15x, eyes 0.3 (was 0.24), glints bigger.
+- validate PASS (356 checks, 0 failed, 38 waived). Tris LOD0 2,482, LOD1 986, LOD2 242. zfight in session (LOD0-2): 0 pairs. Rare `T_Turtle_Rare_ALB` still written. Rig order, names and `at` frames unchanged.
+- Lineup: `build/status/2026-11-01/perfect/animals/Pets/r1_sheet.png`.
+
+## 2026-11-01 perfect pass r2 (r1 AD 7.8: "tiles read as painted lines; dull green; small")
+
+- Whole turtle 1.2x about the rig pivot (petkit `build(scale=1.2)`); mesh 4.82 x 4.72 x 1.09 studs (w x l x h). Names, order, angles unchanged; mapping.json carries the scaled `at`/size.
+- Shell plates raised 0.08 with a 0.03 plate-coloured chamfer (second inset); 3 bigger studs (r 0.18) on the centre-ridge vertebral tiles only (the 10 costal studs dropped). Brighter Lego greens: scute #4BA03C/#3E8A31, scuteLight #6DBE4E, rim #3A8A33, seam #21401D; skin #5A8A47/#7FA866, scale #8DB463; plastron/cream a touch warmer. Flippers 15 % thicker (lens 0.184 / 0.15) with darker tips (new `skinDark` #3B5E2E, outer 55 %). Rare ref -> #6C9956; `T_Turtle_Rare_ALB` still written.
+- ABS shading: `smooth=40`. Close-up camera scaled with the asset.
+- validate PASS (340 checks, 0 failed, 37 waived). Tris LOD0 2594, LOD1 1032, LOD2 254. zfight in session (collect/analyse, all LODs): 0 pairs. Exported (LOD0-2).
+- Lineup: `build/status/2026-11-01/perfect/animals/Pets/r2_sheet.png`.
