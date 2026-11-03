@@ -12,6 +12,7 @@ local B = {}
 B.MIN, B.MAX = 20, 600 -- seconds of one-crew work
 B.SCALE, B.POW = 20, 0.9 -- 1k 20 s, 2.5k 45 s, 10k 2:39, 40k 9:15 of one-crew work -- tune
 B.DECOR = 8
+B.FREE = 5 -- the free first build, the Rescue Hut (owner 2026-11-03: "max 5 seconds")
 B.PER = 0.15 -- rate per Builder unit -- tune
 B.BUILDERS = 5 -- the most Builders a site takes (the best rarities): 5 commons x1.75, a late rarer crew ~x2.2 -- tune
 B.BASE_CREW = 2 -- the hard-hat NPCs every island builds with (docs/24 B); SkillRules' baseCrew adds one -- tune
@@ -23,6 +24,9 @@ function B.work(cash: number, decor: boolean?): number
 		return B.DECOR
 	end
 	local value = math.max(0, cash or 0)
+	if value == 0 then
+		return B.FREE
+	end
 	return math.clamp(B.SCALE * (value / 1000) ^ B.POW, B.MIN, B.MAX)
 end
 

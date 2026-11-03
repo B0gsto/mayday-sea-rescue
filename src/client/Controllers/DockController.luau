@@ -608,6 +608,7 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 		state = if wait or (st.cash > (snapshot.cash or 0) and not tutorialBuild(item))
 			then "disabled"
 			else "buy",
+		still = true,
 		onActivate = function()
 			-- the tutorial top-up is the existing coin burst; the server turns it into the buy
 			if st.cash > (snapshot.cash or 0) and tutorialBuild(item) then
@@ -631,6 +632,7 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 		price = st.robux,
 		currency = "Robux",
 		state = if wait then "disabled" else "buy",
+		still = true,
 		onActivate = function()
 			robuxBuy(id)
 		end,

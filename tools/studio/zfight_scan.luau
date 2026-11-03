@@ -8,8 +8,8 @@
 -- look different (colour, material, transparency, reflectance, textures on that face) and the overlap is not
 -- covered: the point just outside one of the faces must be in the open (inside no opaque box). Glued contacts
 -- (opposite normals, both opaque) are therefore covered and dropped. Same-face Texture/Decal stacks are flagged.
--- Shapes: Block = 6 faces; Wedge = its bottom + back; MeshPart / Union = bounding box (low confidence);
--- cylinders, balls, corner wedges, trusses are skipped.
+-- Shapes: Block = 6 faces; Wedge = its bottom + back; Cylinder = its two end caps (as their inscribed squares);
+-- MeshPart / Union = bounding box (low confidence); balls, corner wedges, trusses are skipped.
 local Scan = {}
 
 local EPS_PLANE = 0.02
@@ -43,6 +43,8 @@ local function kind(p: BasePart): string?
 			return "block"
 		elseif shape == Enum.PartType.Wedge then
 			return "wedge"
+		elseif shape == Enum.PartType.Cylinder then
+			return "cylinder"
 		end
 		return nil
 	elseif p:IsA("MeshPart") or p:IsA("UnionOperation") then
@@ -202,10 +204,17 @@ local function faces(p: BasePart, k: string): { Face }
 	local cf, s = p.CFrame, p.Size
 	local ax = axes(cf)
 	local half = { s.X / 2, s.Y / 2, s.Z / 2 }
+	if k == "cylinder" then -- the caps on its X axis, as inscribed squares: never claims area outside the disc
+		local inscribed = math.min(s.Y, s.Z) / 2 * math.sqrt(0.5)
+		half = { s.X / 2, inscribed, inscribed }
+	end
 	local out = {}
 	for _, f in FACES do
 		local name, i, sign = f[1], f[2], f[3]
-		if k ~= "wedge" or name == "Bottom" or name == "Back" then
+		if
+			(k ~= "wedge" or name == "Bottom" or name == "Back")
+			and (k ~= "cylinder" or i == 1)
+		then
 			local j, l = i % 3 + 1, (i + 1) % 3 + 1
 			table.insert(out, {
 				part = p,
@@ -241,7 +250,8 @@ function Scan.find(parts: { BasePart }, solid: ((Vector3) -> boolean)?): { Findi
 	local opaque: { [number]: { BasePart } } = {} -- 16-stud grid cells (cellKey) -> the opaque boxes touching them
 	for _, p in parts do
 		local k = kind(p) :: string
-		if p.Transparency < 0.05 and k ~= "mesh" then
+		-- a cylinder's box corners are not solid, so it never counts as cover
+		if p.Transparency < 0.05 and k ~= "mesh" and k ~= "cylinder" then
 			local cf, h = p.CFrame, p.Size / 2
 			local ext = Vector3.new(
 				math.abs(cf.XVector.X) * h.X
@@ -280,7 +290,10 @@ function Scan.find(parts: { BasePart }, solid: ((Vector3) -> boolean)?): { Findi
 			end
 			-- shortcut: normals rounded to 0.01 and offsets binned by 0.1 (+ the next bin); a plane that sits right
 			-- on a normal rounding edge can be missed, fine for the axis-aligned and few-angle builds in this game
-			local nk = string.format("%.2f,%.2f,%.2f", n.X, n.Y, n.Z)
+			local function round(x: number): number
+				return math.round(x * 100) / 100 + 0 -- + 0: -0.00 and 0.00 must share a bucket
+			end
+			local nk = string.format("%.2f,%.2f,%.2f", round(n.X), round(n.Y), round(n.Z))
 			local d = n:Dot(f.c)
 			local bin = math.floor(d / 0.1)
 			for _, bb in { bin, bin + 1 } do
