@@ -74,34 +74,27 @@ local current: string? = nil
 local mounted = false
 local pulseName: string? = nil
 
--- docs/24 E: the button the tutorial asks for grows from its centre once with a small bounce and stays raised
--- until pressed. No outline ring (owner 2026-11-01), no looping pulse, no orange (owner 2026-10-28). Growing, not
--- moving up: the phone's 6 du row gap would put a lifted tile over the label above.
-local RAISED = 1.08 -- 64 du tile: under 3 du per side (1.12 touched the label above on a phone)
+-- docs/24 E: on the button the tutorial asks for, the icon grows inside its tile once with a small bounce and stays
+-- big until pressed. No outline ring (owner 2026-11-01), no looping pulse, no orange (owner 2026-10-28). Only the icon
+-- grows: the phone's rows are too tight for the tile itself to move or grow without touching the label above.
 local function startPulse(root: GuiObject, name: string)
-	local tile = root:FindFirstChild("Tile") :: GuiObject?
-	if not tile or root:GetAttribute("TutorialLift") then
+	local art = root:FindFirstChild("Art", true) :: GuiObject?
+	if not art or root:GetAttribute("TutorialCue") then
 		return
 	end
-	root:SetAttribute("TutorialLift", true)
-	local scale = Instance.new("UIScale")
-	scale.Parent = tile
-	-- UIScale grows from the top-left: keep it centred (offsets are whole numbers, so round rather than truncate)
-	local inset = math.round(-tile.Size.X.Offset * (RAISED - 1) / 2)
-	local info = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-	TweenService:Create(scale, info, { Scale = RAISED }):Play()
-	TweenService:Create(tile, info, { Position = UDim2.fromOffset(inset, inset) }):Play()
+	root:SetAttribute("TutorialCue", true)
+	local rest = art.Size
+	TweenService:Create(
+		art,
+		TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+		{ Size = UDim2.fromScale(1, 1) }
+	):Play()
 	task.spawn(function()
 		while root.Parent and pulseName == name do
 			task.wait(0.2)
 		end
-		root:SetAttribute("TutorialLift", nil)
-		local back = TweenInfo.new(0.2, Enum.EasingStyle.Quad)
-		local down = TweenService:Create(scale, back, { Scale = 1 })
-		TweenService:Create(tile, back, { Position = UDim2.fromOffset(0, 0) }):Play()
-		down:Play()
-		down.Completed:Wait()
-		scale:Destroy()
+		root:SetAttribute("TutorialCue", nil)
+		TweenService:Create(art, TweenInfo.new(0.2, Enum.EasingStyle.Quad), { Size = rest }):Play()
 	end)
 end
 
