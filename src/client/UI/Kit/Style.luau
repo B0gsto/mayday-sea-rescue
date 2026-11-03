@@ -253,6 +253,9 @@ function Style.press(button: GuiButton, onActivate: (() -> ())?, radius: number?
 	end)
 	button.MouseButton1Down:Connect(function()
 		tween(sc, 0.08, { Scale = 0.9 })
+		-- shortcut: a Studio test saw the squash return after release and stick (cause not found), so it always
+		-- heals; find the cause if it shows up on a real client
+		task.delay(0.35, rest)
 	end)
 	button.MouseButton1Up:Connect(rest)
 	button.Activated:Connect(function()

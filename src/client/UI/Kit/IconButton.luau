@@ -35,6 +35,7 @@ function IconButton.new(parent: Instance?, props: Props): IconButton
 	tile.Parent = root
 	local _, face = Style.block(tile, Style.grad(props.color or "blue"), { radius = S.corner + 4 })
 	local art = Instance.new("Frame")
+	art.Name = "Art"
 	art.BackgroundTransparency = 1
 	art.AnchorPoint = Vector2.new(0.5, 0.5)
 	art.Position = UDim2.fromScale(0.5, 0.5)
