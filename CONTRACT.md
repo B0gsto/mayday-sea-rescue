@@ -292,8 +292,9 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
 - Loading screen (`src/first/LoadingScreen.client.luau`): preloads, orbits the ring behind the overlay, waits
   for the character, cuts to the Custom camera behind it, then lifts the overlay (`shared/LoadingPath`; docs/25 J).
   LocalPlayer attributes `LoadingScreenActive`, `CinematicPlaying`.
-- Cold open: `StartColdOpen` seats a new player on a jet ski (`VehicleService.SpawnColdOpen`) with a swimmer just
-  off their cove; `Boat/ColdOpen` (ease, drop-off), `Boat/ColdOpenFlow`, `UI/ColdOpenCue`, `UI/OnboardingReward`.
+- Cold open: `StartColdOpen` seats a new player on a jet ski (`VehicleService.SpawnColdOpen`) with three swimmers
+  fanned off their cove (`Boat/ColdOpen.fan`; the flanks are `AmbientRescueService.SpawnColdOpenFlank` scenes, and
+  `OperationService.ColdOpenFlank` swaps the first one reached into the op); `Boat/ColdOpen` (ease, drop-off), `Boat/ColdOpenFlow`, `UI/ColdOpenCue`, `UI/OnboardingReward`.
   Profile `coldOpenDone`.
 - Tutorial (docs/25 J): the first beat is the free Rescue Hut (`Onboarding.beat` `BuildHQ` -> `HQSite`); the cold
   open waits for it (`OperationService`: no start while `DockLevelHQ` is 0), then jet ski, survivor, Workshop, spin.

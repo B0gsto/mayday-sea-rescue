@@ -54,6 +54,42 @@ return function(t)
 		return 0
 	end
 
+	-- docs/29 A: three swimmers off every cove, none chosen; the cold open must never finish itself.
+	t.test("the fan sits in open water off every cove, out of the berth's reach", function()
+		local RingLayout = t.load("src/shared/Config/RingLayout.luau")
+		local PiwWays = t.load("src/server/Ops/PiwWays.luau")
+		for _, island in RingLayout.Islands do
+			local berth = island.berths.Boat.Position * Vector3.new(1, 0, 1)
+			for _, distance in ColdOpen.DISTANCE do
+				local fan = ColdOpen.fan(berth, island.facing, distance)
+				t.expect(#fan).toBe(3)
+				t.expect((fan[1] - berth).Magnitude - distance < 0.01).toBe(true)
+				for i, p in fan do
+					local off = (p - berth).Magnitude
+					t.expect(off > PiwWays.LOST_RANGE).toBe(true) -- never swims to a jet ski at the berth
+					t.expect(off > ColdOpen.DROP_RADIUS + 12).toBe(true) -- a pick-up there is never already home
+					t.expect(RingLayout.nearSeaPlate(p.X, p.Z, 5)).toBe(false) -- built or not
+					local l = island.frame:PointToObjectSpace(p)
+					t.expect(-l.Z > RingLayout.IslandPlate.edge + 25).toBe(true) -- past the plate (CLEAR_SPAWN)
+					for j = i + 1, 3 do
+						t.expect((p - fan[j]).Magnitude > 24).toBe(true) -- pick-up rings (Board.RING) never overlap
+					end
+				end
+				local pivot = berth + island.facing * ColdOpen.FAN_PIVOT
+				local a, b = (fan[2] - pivot).Unit, (fan[1] - pivot).Unit
+				t.expect(math.abs(math.deg(math.acos(a:Dot(b))) - 40) < 0.1).toBe(true)
+				t.expect(math.abs((fan[3] - pivot).Magnitude - (fan[1] - pivot).Magnitude) < 0.01)
+					.toBe(true)
+			end
+		end
+	end)
+
+	t.test("the nearest swimmer leads", function()
+		local spots = { Vector3.new(100, 0, 0), Vector3.new(0, 50, 30), Vector3.new(-90, 0, 0) }
+		t.expect(ColdOpen.nearest(Vector3.zero, spots)).toBe(spots[2])
+		t.expect(ColdOpen.nearest(Vector3.zero, {})).toBe(nil)
+	end)
+
 	t.test("the auto-throttle holds about the cold-open speed", function()
 		local v = ColdOpen.AUTO_SPEED
 		for _ = 1, 10 * 120 do

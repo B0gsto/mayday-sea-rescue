@@ -97,6 +97,14 @@ function PiwRescue.velocity(victim: any, dt: number): Vector3?
 	return vel
 end
 
+-- The victim stops answering its rescuer: back to plain drifting (the cold open's swimmer that goes free-roam).
+function PiwRescue.release(victim: any)
+	engaged[victim] = nil
+	if victim.model then
+		victim.model:SetAttribute("PiwMode", nil)
+	end
+end
+
 local function onEvent(
 	player: Player,
 	liveCalls: { [any]: boolean },

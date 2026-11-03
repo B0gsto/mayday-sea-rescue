@@ -1566,6 +1566,21 @@ function RescueService.BoardVictim(call: any, index: number, player: Player): bo
 	return false
 end
 
+-- docs/29 A: swimmer j of `other` takes the place of swimmer i of `call`, and the one it replaces is an ordinary
+-- swimmer of `other` from now on: public, drifting, answering nobody.
+function RescueService.SwapVictims(call: any, i: number, other: any, j: number)
+	local a, b = call.victims[i], other.victims[j]
+	call.victims[i], other.victims[j] = b, a
+	a.call, b.call = other, call
+	a.index, b.index = b.index, a.index
+	a.model:SetAttribute("CallId", other.id)
+	b.model:SetAttribute("CallId", call.id)
+	a.model:SetAttribute("ColdOpenFan", call.id)
+	a.model:SetAttribute("PrivateTo", nil)
+	a.model:SetAttribute("Stamina", nil)
+	PiwRescue.release(a)
+end
+
 -- Stamina (0..1, the condition meter) on the casualty model, for CasualtyController's tiring visual.
 function RescueService.SetStamina(call: any, index: number, stamina: number)
 	local victim = call.victims and call.victims[index]

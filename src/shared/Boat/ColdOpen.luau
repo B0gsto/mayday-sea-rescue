@@ -8,12 +8,13 @@
 --    from the player. Then the throttle is the player's own for good: releasing W coasts (an
 --    idling jet creeps at about 2.5 knots). HANDOVER_DISTANCE leaves room to coast in without
 --    touching the controls; there is no approach brake (docs/24 A: the boat takes them at speed).
--- 2. Show, don't tell (docs/14 F-3, RP-UX2). The casualty is placed DISTANCE studs dead ahead,
+-- 2. Show, don't tell (docs/14 F-3, RP-UX2). The op's casualty is placed DISTANCE studs dead ahead,
 --    on screen at spawn and well inside HANDOVER_DISTANCE (so the auto-throttle hands over at
---    once and an idling jet creeps on toward them). PLAN skips the graded approach: the recovery
+--    once and an idling jet creeps on toward them), with two more swimmers fanned either side
+--    (fan, docs/29 A: no chosen survivor). PLAN skips the graded approach: the recovery
 --    step (docs/14 section 3 ways: drag, throw, or stop and they swim to you) runs from the
---    first second. The world (client UI/ColdOpenCue) shows the way,
---    and pops a flare when the player makes no headway for NUDGE_AFTER seconds (nudge).
+--    first second. The world (normal pick-up rings and waves) shows the way, and client
+--    UI/ColdOpenCue pops a flare when the player makes no headway for NUDGE_AFTER seconds (nudge).
 local Buoyancy = require(script.Parent.Buoyancy)
 local RingLayout = require(script.Parent.Parent.Config.RingLayout)
 
@@ -61,6 +62,37 @@ ColdOpen.DISTANCE = { 125, 145 }
 ColdOpen.NUDGE_AFTER = 10 -- s without headway before the world helps (docs/14 10 s rule)
 ColdOpen.NUDGE_PROGRESS = 6 -- studs closer that count as headway
 ColdOpen.NUDGE_NEAR = 45 -- studs: close enough that the casualty comes (PiwWays.COME_RANGE)
+
+-- docs/29 A: the fan pivots on the cove mouth, not the berth: 40 degrees off the berth at DISTANCE lands on the sea
+-- plates' keep-out, and across the jetty finger from where the jet ski starts. From the mouth all three sit in the
+-- exit lane, on screen at spawn, and every one is still outside LOST_RANGE and the drop-off zone. -- tune
+ColdOpen.FAN_PIVOT = 65 -- studs from the berth (fwd 255) to the mouth (fwd 320)
+ColdOpen.FAN_ANGLE = math.rad(40)
+
+-- The three swimmers, centre first, for a jet ski at `at` facing the flat unit `ahead`; `distance`: from ColdOpen.DISTANCE.
+function ColdOpen.fan(at: Vector3, ahead: Vector3, distance: number): { Vector3 }
+	local pivot = at + ahead * ColdOpen.FAN_PIVOT
+	local r = distance - ColdOpen.FAN_PIVOT
+	local side = Vector3.new(-ahead.Z, 0, ahead.X)
+	local c, s = math.cos(ColdOpen.FAN_ANGLE), math.sin(ColdOpen.FAN_ANGLE)
+	return {
+		at + ahead * distance,
+		pivot + (ahead * c + side * s) * r,
+		pivot + (ahead * c - side * s) * r,
+	}
+end
+
+-- The point nearest `from` (flat); nil with none.
+function ColdOpen.nearest(from: Vector3, points: { Vector3 }): Vector3?
+	local best, bestD = nil, math.huge
+	for _, p in points do
+		local d = Vector3.new(p.X - from.X, 0, p.Z - from.Z).Magnitude
+		if d < bestD then
+			best, bestD = p, d
+		end
+	end
+	return best
+end
 
 export type Nudge = { best: number, since: number }
 

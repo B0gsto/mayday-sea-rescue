@@ -432,7 +432,18 @@ end
 local function casualtyPosition(op: any, index: number): Vector3
 	local v = op.scene.victims and op.scene.victims[index]
 	if v and v.floater and v.state == "Water" then
-		return v.floater.cf.Position
+		local boat = op.fan and op.owner and vehicleOf(op.owner)
+		if not boat then
+			return v.floater.cf.Position
+		end
+		-- the cold open's pin leads to whichever of its swimmers is nearest (docs/29 A: nobody is the chosen one)
+		local spots = { v.floater.cf.Position }
+		for _, scene in op.fan do
+			for _, p in RescueService.GetTargets(scene) do
+				table.insert(spots, p)
+			end
+		end
+		return BoatColdOpen.nearest(boat:GetPivot().Position, spots) or spots[1]
 	end
 	return op.position
 end
@@ -2048,7 +2059,10 @@ function OperationService.StartColdOpen(
 	local d = OperationService.ColdOpenDistance
 	local ahead = cf.LookVector * Vector3.new(1, 0, 1)
 	ahead = if ahead.Magnitude > 1e-3 then ahead.Unit else Vector3.new(0, 0, 1)
-	local pos = cf.Position * Vector3.new(1, 0, 1) + ahead * rng:NextNumber(d[1], d[2])
+	-- docs/29 A: the op's casualty is the centre swimmer; the flanks are free-roam until one is reached first (ColdOpenFlank)
+	local fan =
+		BoatColdOpen.fan(cf.Position * Vector3.new(1, 0, 1), ahead, rng:NextNumber(d[1], d[2]))
+	local pos = fan[1]
 	local op = newOp("PersonInWater", "Swimmer", "CalmBay", pos, nil, homeOf(player))
 	op.coldOpen = true
 	op.storm = false -- a storm already running when the cold open starts is not this op's weather
@@ -2076,6 +2090,13 @@ function OperationService.StartColdOpen(
 		boat:SetAttribute("ColdOpenAutoThrottle", true)
 	end
 	RescueService.SpawnCall(op.scene)
+	op.fan = {}
+	for i = 2, #fan do
+		local ok, scene = try("AmbientRescueService", "SpawnColdOpenFlank", player, fan[i], op.id)
+		if ok and scene then
+			table.insert(op.fan, scene)
+		end
+	end
 	local track = newTrack(op, player, { player })
 	-- the answer is auto-done: record it as the player's (Gold) and go straight to the next step
 	track.index = 1
@@ -2099,6 +2120,28 @@ function OperationService.StartColdOpen(
 	end
 	advance(op, track)
 	return op.id
+end
+
+-- docs/29 A: a cold-open rider reached a flank of the fan first. It takes the op casualty's place and the swimmer that was
+-- there goes free-roam in its scene, so boarding, the ride home, the Builder and the funnel all run the one way they always
+-- did. Not from inside the drop-off zone: a swimmer drifting up to a jet ski still at the berth would finish the cold open.
+function OperationService.ColdOpenFlank(player: Player, scene: any, index: number)
+	local op = ops[stateOf(player).activeOpId or ""]
+	local track = op and op.coldOpen and trackOf(op, player)
+	local inst = track and boardingStep(track)
+	local boat = vehicleOf(player)
+	local own = op and op.scene.victims[1]
+	if
+		inst
+		and inst.def.effect == "board"
+		and own
+		and own.state == "Water"
+		and boat
+		and not isHome(player, boat:GetPivot().Position)
+	then
+		RescueService.SwapVictims(op.scene, 1, scene, index)
+		boardOne(op, 1, player)
+	end
 end
 
 -- Offer a call to `player` without accepting it: the call card appears and the player accepts as
