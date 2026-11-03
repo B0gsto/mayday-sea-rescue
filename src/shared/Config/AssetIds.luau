@@ -7,9 +7,9 @@ local AssetIds = {}
 
 AssetIds.Models = {
 	M_Ani_GreySeal = {
-		LOD0 = "rbxassetid://120274774240154",
-		LOD1 = "rbxassetid://103323047571227",
-		LOD2 = "rbxassetid://125179422883507",
+		LOD0 = "rbxassetid://132682011780858",
+		LOD1 = "rbxassetid://124272032052322",
+		LOD2 = "rbxassetid://114617733595749",
 	},
 	M_Ani_Gull = { LOD0 = "rbxassetid://72956797249106" },
 	M_Ani_HerringGull = {
@@ -102,9 +102,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://76515816763344",
 	},
 	M_Chr_Bosun_LP = {
-		LOD0 = "rbxassetid://72752556177900",
-		LOD1 = "rbxassetid://116216847058714",
-		LOD2 = "rbxassetid://101569266079488",
+		LOD0 = "rbxassetid://90865912056923",
+		LOD1 = "rbxassetid://128380412455028",
+		LOD2 = "rbxassetid://119777443289178",
 	},
 	M_Hbr_Bollard_01 = {
 		LOD0 = "rbxassetid://130451736470147",

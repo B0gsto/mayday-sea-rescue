@@ -1,5 +1,10 @@
 # M_Ani_GreySeal ("Old Ned", grey seal bull)
 
+- **r7 (2026-11-03, final colour + plate pass):** (1) Back albedo #736C68, flanks #79716D: a touch warm because the sheet's sky adds a blue cast; renders ~#7C7C84 (r6 #7C8C9C). Belly + muzzle cell #F8EBD2, renders ~#DCDCD4, 37 points of luminance over the back. (2) Plate + studs albedo #9E9C9B, renders ~#B4B4BC. Plate 0.165 stud proud, standing 0.12 clear of a new dark seam skirt (`seam`, a flat-topped 6-point ring: `S.rr`'s angle sampling sinks a wide low box's long sides under the back); a dark ring round each stud base; both in a small `GROOVE` atlas cell (a big cell pushed LOD2 past the UV-area limit, LOD2 drops them).
+- **validate: PASS** (78 checks, 0 failed, 0 waived; Body LOD2 UV area 14.7 % of the 15 % max). **zfight:** 0 pairs (collect()/analyse(), 6 LOD meshes).
+- **Tris:** LOD0 9,148 (Body 5,964 / Head 3,184) / LOD1 3,656 / LOD2 910. **RIG:** RIG_Seal 16 bones, 5 clips unchanged; RIG FBX exported in session (1.48 MB), no read-back import.
+- **Sheet:** build/status/2026-11-01/perfect/animals/M_Ani_GreySeal/r7_sheet.png (+ _small); poses Swim f37 / HaulOut f22.
+
 - **r6 (2026-11-01, AD r5 8.8 fix list, all six; last round):** (1) Torso section: a rounded rectangle with a crisp
   0.036 m (0.11 stud) corner (`seal_shape.corner`), sampled by weighted arc length (`rr_arc`, the corners get 3.5x
   their share of the 48 ring points) so the flat top / flanks stay flat and the bevels crisp; a 0.004 m crown keeps the

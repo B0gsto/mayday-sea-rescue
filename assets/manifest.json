@@ -664,6 +664,15 @@
   "source": "assets/textures/Materials/T_Mat_SandRipple_NOR.png",
   "type": "Image"
  },
+ "Image:07f963938939c9618927eb2d3af112d58a7754b74d65814093fb086660a6d484": {
+  "assetId": "81027351814332",
+  "imageId": "81027351814332",
+  "moderation": "Reviewing",
+  "name": "T_Seal_Coat_RGH_Wet",
+  "sha": "07f963938939c9618927eb2d3af112d58a7754b74d65814093fb086660a6d484",
+  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:0814d8bcec1088e5a7d2078280008cb837f79c53c940590c5b3904f38c9519bf": {
   "assetId": "86690950355373",
   "imageId": "86690950355373",
@@ -3719,6 +3728,15 @@
   "name": "T_Cottage_Stone_RGH_Wet",
   "sha": "2a87c8df4a8d1ca40aa75798ff7007640e4dfd33812b133839a222e9ff8af004",
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Stone_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:2ab39000e48634eb948fe6f186cc929fcb6c5b1c3d3e888d87225df41799a2d6": {
+  "assetId": "131335108324140",
+  "imageId": "131335108324140",
+  "moderation": "Reviewing",
+  "name": "T_Bosun_Coat_ALB",
+  "sha": "2ab39000e48634eb948fe6f186cc929fcb6c5b1c3d3e888d87225df41799a2d6",
+  "source": "assets/textures/M_Chr_Bosun_LP/T_Bosun_Coat_ALB.png",
   "type": "Image"
  },
  "Image:2ab725bdf901d682c65e09ba3732337dbb56369a42402e08470d0dc9611bada3": {
@@ -7680,6 +7698,15 @@
   "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Armour_NOR.png",
   "type": "Image"
  },
+ "Image:58386edb8526e5d83e13046e14cec0069be1f1bb7d07d8d0eaf3785996967346": {
+  "assetId": "132069333779864",
+  "imageId": "132069333779864",
+  "moderation": "Reviewing",
+  "name": "T_Seal_Face_ALB",
+  "sha": "58386edb8526e5d83e13046e14cec0069be1f1bb7d07d8d0eaf3785996967346",
+  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Face_ALB.png",
+  "type": "Image"
+ },
  "Image:585c7b71b6e59fd6370cdf9cf21433ea742cc145262c8c8024bfb79c707e8001": {
   "assetId": "73487572919515",
   "imageId": "73487572919515",
@@ -8854,6 +8881,15 @@
   "name": "T_RIBHelm_Seats_MET",
   "sha": "67a85e6769c64f6271d75856975b2716ad1d15881c643ad3715199b0b59b090e",
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_MET.png",
+  "type": "Image"
+ },
+ "Image:67c8a046901312a4d9d4b01dac896d048931d36c5c3611f3efb6dd899c2f08ae": {
+  "assetId": "96991801702720",
+  "imageId": "96991801702720",
+  "moderation": "Reviewing",
+  "name": "T_Seal_Coat_RGH",
+  "sha": "67c8a046901312a4d9d4b01dac896d048931d36c5c3611f3efb6dd899c2f08ae",
+  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_RGH.png",
   "type": "Image"
  },
  "Image:67cc670a084791e47778e05e8d8b1a6ec50d5e749278cee17d90c7438c1ffe65": {
@@ -13045,6 +13081,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:96dc6cb9e578903b3b0c475f1d98c6a25928f670344d742715576aa27f35ebad": {
+  "assetId": "71264566485232",
+  "imageId": "71264566485232",
+  "moderation": "Reviewing",
+  "name": "T_Seal_Coat_ALB",
+  "sha": "96dc6cb9e578903b3b0c475f1d98c6a25928f670344d742715576aa27f35ebad",
+  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_ALB.png",
+  "type": "Image"
+ },
  "Image:96edcb5e4a69e2b2494d5c0d72e2dd66c5bc5a46b09ade55ef60a2fd1925f1d1": {
   "assetId": "123270192113460",
   "imageId": "123270192113460",
@@ -15439,6 +15484,15 @@
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Decals_RGH.png",
   "type": "Image"
  },
+ "Image:b551239d27b746e13de4a1092e57d63f3217627e2b81b2a5bab9c3403f67cd86": {
+  "assetId": "93037269383535",
+  "imageId": "93037269383535",
+  "moderation": "Reviewing",
+  "name": "T_Seal_Face_ALB_Wet",
+  "sha": "b551239d27b746e13de4a1092e57d63f3217627e2b81b2a5bab9c3403f67cd86",
+  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Face_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:b5554d688ba0248a78d8befbf37d4b89eddb143aff8d561f8eba669007a048a0": {
   "assetId": "86447923243407",
   "imageId": "86447923243407",
@@ -15608,6 +15662,15 @@
   "name": "T_GaleQueen_Deck_ALB",
   "sha": "b77ab4b28a2a0f03c875c3f993555b4e6c1a1af85767884478e77693d93b9800",
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_ALB.png",
+  "type": "Image"
+ },
+ "Image:b781c1bf2a3b227a88d0eef12501e48b881a2ea96aba9890bd57a6c5f7ce5a61": {
+  "assetId": "88531683244306",
+  "imageId": "88531683244306",
+  "moderation": "Reviewing",
+  "name": "T_Seal_Coat_ALB_Wet",
+  "sha": "b781c1bf2a3b227a88d0eef12501e48b881a2ea96aba9890bd57a6c5f7ce5a61",
+  "source": "assets/textures/M_Ani_GreySeal/T_Seal_Coat_ALB_Wet.png",
   "type": "Image"
  },
  "Image:b7a502950390b109208978705bf17725e700b1efbd1d8886652670f0a17a50f9": {
@@ -22059,6 +22122,16 @@
   "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD0.fbx",
   "type": "Model"
  },
+ "Model:163bd3ef305f4729e7134314b0c9eb3ea85f524f7c9e9bbeab6b833b6f9d95be": {
+  "assetId": "90865912056923",
+  "moderation": "Approved",
+  "name": "M_Chr_Bosun_LP",
+  "rbxm": "assets/models/M_Chr_Bosun_LP.rbxm",
+  "route": "delivery",
+  "sha": "163bd3ef305f4729e7134314b0c9eb3ea85f524f7c9e9bbeab6b833b6f9d95be",
+  "source": "assets/fbx/M_Chr_Bosun_LP/M_Chr_Bosun_LP_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:166dfcd6ba0178ddc9349058a76bdc36ee6964d4064e8ed17d8c371a2e5e8a35": {
   "assetId": "123892134964088",
   "moderation": "Approved",
@@ -25919,6 +25992,16 @@
   "source": "assets/fbx/M_Rock_Ledge_01/M_Rock_Ledge_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:75eb7eabd486c7bfc74bc83d81f099673725aeb7fd89a4edcd5c889460e5be44": {
+  "assetId": "124272032052322",
+  "moderation": "Approved",
+  "name": "M_Ani_GreySeal_LOD1",
+  "rbxm": "assets/models/M_Ani_GreySeal_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "75eb7eabd486c7bfc74bc83d81f099673725aeb7fd89a4edcd5c889460e5be44",
+  "source": "assets/fbx/M_Ani_GreySeal/M_Ani_GreySeal_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:76195192373d0ebad7d5925fd720bbc27f63a927c2849799c7b80fa4ff93985e": {
   "assetId": "125502212984292",
   "moderation": "Approved",
@@ -26367,6 +26450,16 @@
   "route": "delivery",
   "sha": "820002352436e241fc23e2c855dcaa598d7eb0de9181ef899188dd14f244bee3",
   "source": "assets/fbx/M_Veg_Hawthorn_01/M_Veg_Hawthorn_01_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:825844e397c3b3ff000025ebadda2058d708fe306d525b39fc6e02cdec2a6183": {
+  "assetId": "114617733595749",
+  "moderation": "Approved",
+  "name": "M_Ani_GreySeal_LOD2",
+  "rbxm": "assets/models/M_Ani_GreySeal_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "825844e397c3b3ff000025ebadda2058d708fe306d525b39fc6e02cdec2a6183",
+  "source": "assets/fbx/M_Ani_GreySeal/M_Ani_GreySeal_LOD2.fbx",
   "type": "Model"
  },
  "Model:82d4d8083c4824933603f21abf50a0feb31f81e19cbb6ef834a8a21f4b3e2640": {
@@ -28299,6 +28392,16 @@
   "source": "assets/fbx/M_Hbr_TravelHoist/M_Hbr_TravelHoist_LOD2.fbx",
   "type": "Model"
  },
+ "Model:b24b5987775661fe8a0cae26ded975365987744718de609e3a8170458da48ce9": {
+  "assetId": "128380412455028",
+  "moderation": "Approved",
+  "name": "M_Chr_Bosun_LP_LOD1",
+  "rbxm": "assets/models/M_Chr_Bosun_LP_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b24b5987775661fe8a0cae26ded975365987744718de609e3a8170458da48ce9",
+  "source": "assets/fbx/M_Chr_Bosun_LP/M_Chr_Bosun_LP_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:b3069ceba144e0b49fcb732b2a799e2143fcc1c682d5fba7980f7ae3ba01bc19": {
   "assetId": "118205357536086",
   "moderation": "Approved",
@@ -28427,6 +28530,16 @@
   "route": "delivery",
   "sha": "b600778cdc9fbcb1951d518f62bd5bd73b0e4eabff0b1cd256a03c50f4e30682",
   "source": "assets/fbx/M_Veh_JetSki_GildedGull/M_Veh_JetSki_GildedGull_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:b66cbc76203deffb3f817daabe230a317ba0a342dc48b5b152444044e2fc2d3d": {
+  "assetId": "132682011780858",
+  "moderation": "Approved",
+  "name": "M_Ani_GreySeal",
+  "rbxm": "assets/models/M_Ani_GreySeal.rbxm",
+  "route": "delivery",
+  "sha": "b66cbc76203deffb3f817daabe230a317ba0a342dc48b5b152444044e2fc2d3d",
+  "source": "assets/fbx/M_Ani_GreySeal/M_Ani_GreySeal_LOD0.fbx",
   "type": "Model"
  },
  "Model:b6a638a6d2668eb2cb4da3428617ab7cf0800d5c33275e11a7c34e6c2a9eb663": {
@@ -29317,6 +29430,16 @@
   "route": "delivery",
   "sha": "cf66aed9d4e23a32cfd7b1274a720cb3f8c1b4b8e5b8beead8baeab657be43e0",
   "source": "assets/fbx/M_Ani_GreySeal/M_Ani_GreySeal_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:cf7f3fc9b5fe7745cdffab9ad0a446d2f86ef06f3ed3e6dc725e45b93a786d42": {
+  "assetId": "119777443289178",
+  "moderation": "Approved",
+  "name": "M_Chr_Bosun_LP_LOD2",
+  "rbxm": "assets/models/M_Chr_Bosun_LP_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "cf7f3fc9b5fe7745cdffab9ad0a446d2f86ef06f3ed3e6dc725e45b93a786d42",
+  "source": "assets/fbx/M_Chr_Bosun_LP/M_Chr_Bosun_LP_LOD2.fbx",
   "type": "Model"
  },
  "Model:cfba010d4db32881684e6ab5f009e70bd3767db9a0416c00365b19b2ad8fa94e": {

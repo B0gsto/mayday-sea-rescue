@@ -14,6 +14,7 @@ rounded-rectangle (crisp bevel) flippers and muzzle box, a planar-mapped muzzle 
 r5: rounded-rectangle body / head sections (flat panels), darker coat, bigger dapples, a darker seated plate,
 a clearer Swim, eye rings, a wider creased neck. r6: crisp-cornered torso (flat back to the hips, blunt tail), neutral
 stone grey with lighter flanks, a light plate, bigger slate flippers, a head-up Swim with the tail and hind flippers up.
+r7: the back renders neutral mid grey over a warm off-white belly; the plate one step lighter, on a dark seam, ringed studs.
 
     ~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- --build art/source/characters/M_Ani_GreySeal/build.py \
         --out-root build/prod/M_Ani_GreySeal --steps build,lod,validate,export,turntable

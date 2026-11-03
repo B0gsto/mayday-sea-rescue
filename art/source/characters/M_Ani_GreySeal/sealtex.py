@@ -31,6 +31,7 @@ COAT_REGIONS = {
     "FORE": (0.512, 0.884, 0.700, 0.998),      # u root -> tip, v around; left and right share it
     "HIND": (0.712, 0.884, 0.900, 0.998),
     "STUD": (0.928, 0.884, 0.992, 0.948),
+    "GROOVE": (0.928, 0.952, 0.948, 0.968),    # r7: the dark seam under the plate, stud rings (small: LOD2 drops them, UV area check)
 }
 FACE_REGIONS = {
     "HEAD": (0.010, 0.400, 0.674, 0.990),      # u neck split -> nose tip, v around
@@ -44,16 +45,17 @@ FACE_REGIONS = {
 # r6: NEUTRAL stone grey, very slightly cool (never brown): a darker top panel, lighter flanks (the step sits on the
 # crisp corner bevel), charcoal dapples, a near-white bib, slate flippers with a lighter bevel rim; the plate and studs
 # two steps LIGHTER than the back so they pop on it. Body roughness ~0.45 (a soft wet sheen, not a hot streak).
-COAT = (0.424, 0.443, 0.463)                   # #6C7176 the back (top panel)
-FLANK = (0.482, 0.502, 0.525)                  # #7B8086 the flanks (side panels)
+# r7: the sheet's sky adds a blue cast, so the back's albedo sits a touch warm to render neutral (~#7A7E84)
+COAT = (0.451, 0.424, 0.408)                   # #736C68 the back (top panel)
+FLANK = (0.475, 0.443, 0.427)                  # #79716D the flanks (side panels)
 DAPPLE = (0.271, 0.286, 0.302)                 # #45494D printed spots
 SEAM = (0.227, 0.243, 0.259)                   # #3A3E42 the stepped seam line between the coat and the belly
-BELLY = (0.961, 0.957, 0.941)                  # #F5F4F0 near-white bib, belly and throat
+BELLY = (0.973, 0.922, 0.824)                  # #F8EBD2 r7: warm off-white bib, belly and throat
 MUZZLE = BELLY                                 # the muzzle box, same cell
 FLIP = (0.235, 0.251, 0.275)                   # #3C4046 dark slate flippers
 FLIP_TIP = (0.200, 0.212, 0.231)               # #33363B a shade darker at the tips
 FLIP_RIM = (0.357, 0.376, 0.404)               # #5B6067 the lighter bevel edge round each blade
-STUD = (0.592, 0.612, 0.631)                   # #979CA1 the back plate and studs (two steps lighter than the back)
+STUD = (0.620, 0.612, 0.608)                   # #9E9C9B the back plate and studs (r7: renders one step lighter, neutral)
 DOT = DAPPLE                                   # whisker dots
 NOSE = (0.060, 0.062, 0.066)
 MOUTH = (0.165, 0.173, 0.184)
@@ -199,9 +201,10 @@ def paint_flipper(alb, hgt, rgh, used, rng, region):
 
 
 def paint_stud(alb, hgt, rgh, used, rng):
-    r0, r1, c0, c1, u, v, tu, tv = region_grid(COAT_REGIONS, "STUD", COAT_SIZE)
-    n = (r1 - r0) * (c1 - c0)
-    put(alb, hgt, rgh, used, (r0, r1, c0, c1), np.tile(np.array(STUD), (n, 1)), np.zeros(n), np.full(n, ROUGH - 0.04))
+    for region, colour in (("STUD", STUD), ("GROOVE", SEAM)):
+        r0, r1, c0, c1, u, v, tu, tv = region_grid(COAT_REGIONS, region, COAT_SIZE)
+        n = (r1 - r0) * (c1 - c0)
+        put(alb, hgt, rgh, used, (r0, r1, c0, c1), np.tile(np.array(colour), (n, 1)), np.zeros(n), np.full(n, ROUGH - 0.04))
 
 
 def paint_head(alb, hgt, rgh, used, rng):

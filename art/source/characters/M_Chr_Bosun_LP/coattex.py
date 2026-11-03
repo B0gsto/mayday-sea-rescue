@@ -73,7 +73,7 @@ def make(size=SIZE, seed=7):
     alb[:] = _hex("#1E1C1E")
     alb += rng.normal(0.0, 0.006, alb.shape).astype(np.float32)
 
-    _gradient(alb, "coat", "#FFCC33", "#FAC030", rng, noise=0.004)   # r6: buttery yellow-gold (renders ~#CCB05E on the AD sheet), shaded side lifted
+    _gradient(alb, "coat", "#FFB200", "#F59800", rng, noise=0.004)   # r7: saturated golden tan (the AD sheet's AgX pulls it toward ~#D6A04C), r6 butter read pale next to the cream
     _gradient(alb, "tan", "#FFF1D2", "#F2DAAE", rng, noise=0.004)
     _gradient(alb, "ear", "#7A3F1E", "#5E2E14", rng, noise=0.004)   # r6: chestnut
     _gradient(alb, "harness", "#FF6600", "#C83208", rng, noise=0.020, bands=0.05)
