@@ -1241,4 +1241,11 @@ AssetIds.Fx = {
 	FX_Under_MarineSnow = "rbxassetid://115969368337229",
 } :: { [string]: string }
 
+-- Spin cinematic flipbooks (Image ids), art/source/fx/SPINCINE_RESULT.md
+AssetIds.FxSpin = {
+	FX_SpinBolt = "rbxassetid://83177753500457",
+	FX_SpinHaloBrick = "rbxassetid://86567871522291",
+	FX_SpinHaloRing = "rbxassetid://72996208588583",
+} :: { [string]: string }
+
 return AssetIds

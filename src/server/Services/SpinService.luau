@@ -10,7 +10,7 @@
 -- once, then Spin_Wheel goes to every client so the island's wheel animates and reveals the prize.
 -- Legendary / Mythic wins fire Spin_Flex when the wheel stops (banner + confetti).
 -- Remotes: Spin_Wheel S->C spin payload; Spin_Flex S->C flex payload.
--- Studio: ServerStorage.SpinDev "give" (n free spins) / "force" (next roll that rarity).
+-- Studio: ServerStorage.SpinDev "give" (n free spins) / "force" (next roll that rarity) / "spin" (a wheel spin).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -348,6 +348,8 @@ function SpinService.Init()
 			end
 			if cmd == "give" then
 				return SpinService.GiveFree(player, tonumber(arg) or 1)
+			elseif cmd == "spin" then -- the wheel's own path (a token, the roll, Spin_Wheel): back-to-back tests
+				return SpinService.WheelSpin(player).ok == true
 			elseif cmd == "force" then
 				if type(arg) == "string" and SpinRules.RARITIES[arg] then
 					forced = arg

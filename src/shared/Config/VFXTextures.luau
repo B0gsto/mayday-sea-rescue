@@ -21,6 +21,7 @@ export type Texture = {
 }
 
 local Fx = (AssetIds :: any).Fx :: { [string]: string }
+local FxSpin = (AssetIds :: any).FxSpin :: { [string]: string } -- not Fx: those rows must match Flipbooks.SHEETS
 
 return table.freeze({
 	-- ours: a Lego splash ring rising into a crown (fallback: GoldenMan_Dev 17063077953, Grid4x4)
@@ -90,4 +91,17 @@ return table.freeze({
 	sea_spray = { id = "rbxassetid://6763809313", layout = "None", mode = "Loop" },
 	-- TheeTatahThailand, a glossy round bubble (in model 5463907036 Bubble effect!)
 	bubbles = { id = "rbxassetid://243953162", layout = "None", mode = "Loop" },
+	-- spin cinematic (owner 2026-11-01; art/source/fx/SPINCINE_RESULT.md). Flare and rays are stand-ins until their
+	-- sheets pass (swap the id + layout here only)
+	spincine_flare = { id = "rbxassetid://136452411239756", layout = "None", mode = "Loop" }, -- = core_flash
+	spincine_rays = { id = "rbxassetid://102807810048685", layout = "None", mode = "Loop" }, -- = light_ray
+	spincine_bolt = {
+		id = FxSpin.FX_SpinBolt,
+		layout = "Grid2x2",
+		mode = "Loop",
+		fps = 0,
+		random = true,
+	},
+	spincine_brick = { id = FxSpin.FX_SpinHaloBrick, layout = "Grid4x4", mode = "Loop", fps = 16 },
+	spincine_halo = { id = FxSpin.FX_SpinHaloRing, layout = "None", mode = "Loop" },
 } :: { [string]: Texture })

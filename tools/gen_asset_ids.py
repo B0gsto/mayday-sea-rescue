@@ -39,6 +39,7 @@ ALPHA_TRANSPARENCY = ("M_Veg_",)
 ALPHA_TRANSPARENCY_SETS = {("M_Bld_Cottage_Kit", "Grime"), ("M_Bld_Station", "Grime"), ("M_Chr_Bosun", "Fur"), ("M_Hbr_PropAtlas", "Rope"), ("M_Sea_AdmiraltyAnchor", "Sand"), ("M_Sea_Morwenna", "Kelp"), ("M_Veh_GaleQueen", "Decals"), ("M_Veh_RescueHeli", "Glass")}
 SHARED_BYTES = ("M_Veh_SupplyBarge", "M_Bld_WorkshopAddons", "M_Bld_FishMarketAddons", "M_Bld_ClinicAddons", "M_Bld_LookoutAddons", "M_Bld_BoatYardAddons", "M_Bld_RescueBoathouseAddons", "M_Bld_AirStationAddons", "M_Bld_HQAddons", "M_Bld_TrophyHallAddons", "M_Bld_SubPenAddons", "M_Bld_BoathouseAddons", "M_Prop_BuildSiteKit", "M_Prop_CommonsKit", "M_Prop_BoardKit", "M_Prop_BuildStation", "M_Prop_JettyCrane", "M_Prop_HQInterior", "M_Prop_TrophyCup", "M_Veh_RescueHeli", "M_Prop_SeaPlateKit")
 FX_RE = re.compile(r"^assets/textures/FX/(FX_\w+)\.png$")  # FX1 / FX2 flipbooks and foam maps (docs/12 2.11)
+FX_SPIN_RE = re.compile(r"^build/prod/spincine/(FX_Spin\w+)\.png$")  # spin cinematic (art/source/fx/SPINCINE_RESULT.md)
 TEX_RE = re.compile(r"^assets/textures/(M_\w+?)/T_\w+?_([A-Za-z][A-Za-z0-9]*(?:_\d+)?)_(ALB|NOR|RGH|MET)(_Wet)?\.png$")
 
 # WP-16 asset diet (docs/23 (j)): assets nothing in src/ or map/ loads (cut cars, town, kits, spikes; scan before
@@ -117,7 +118,7 @@ def main():
         if e.get("source") and e.get("assetId"):
             by_source.setdefault((e.get("type"), e["source"]), []).append(e)
 
-    models, textures, fx = {}, {}, {}
+    models, textures, fx, fx_spin = {}, {}, {}, {}
     # a map with the same bytes as one already uploaded (a shared palette) is keyed under the first file's path only:
     # give SHARED_BYTES assets' files their own source too, so they get the full set (opt-in: older assets that ship
     # without such maps would change look)
@@ -142,6 +143,9 @@ def main():
             f = FX_RE.match(src)
             if f and e.get("imageId"):
                 fx[f[1]] = e["imageId"]
+            f = FX_SPIN_RE.match(src)
+            if f and e.get("imageId"):
+                fx_spin[f[1]] = e["imageId"]
             r = TEX_RE.match(src)
             if r and e.get("imageId") and r[1] not in DROP:
                 s = textures.setdefault(r[1], {}).setdefault(r[2], {})
@@ -192,6 +196,8 @@ def main():
     out += ["} :: { [string]: { [string]: Vector3 } }", "", "-- FX flipbook sheets and foam maps (Image ids), read by src/shared/Fx/Flipbooks.luau",
             "AssetIds.Fx = {"]
     out += [f"\t{name} = {uri(fx[name])}," for name in sorted(fx)]
+    out += ["} :: { [string]: string }", "", "-- Spin cinematic flipbooks (Image ids), art/source/fx/SPINCINE_RESULT.md", "AssetIds.FxSpin = {"]
+    out += [f"\t{name} = {uri(fx_spin[name])}," for name in sorted(fx_spin)]
     out += ["} :: { [string]: string }", "", "return AssetIds", ""]
     with open(OUT_LUAU, "w") as f:
         f.write("\n".join(out))
