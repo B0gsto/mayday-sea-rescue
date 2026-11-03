@@ -319,18 +319,30 @@ function Layout.clearOfHud(at: Vector2, clear: Vector2, hang: number?): Vector2
 	local cam = Workspace.CurrentCamera
 	local centre = if cam then cam.ViewportSize / 2 else at
 	local up = Vector2.new(0, hang or 0)
-	for i = 0, 24 do
-		local p = at:Lerp(centre, i / 24)
-		local blocked = false
-		for _, b in hudBoxes do
-			local lo, hi = b.min - clear - up, b.max + clear
+	local function free(p: Vector2): boolean
+		for _, box in hudBoxes do
+			local lo, hi = box.min - clear - up, box.max + clear
 			if p.X > lo.X and p.X < hi.X and p.Y > lo.Y and p.Y < hi.Y then
-				blocked = true
-				break
+				return false
 			end
 		end
-		if not blocked then
+		return true
+	end
+	for i = 0, 24 do
+		local p = at:Lerp(centre, i / 24)
+		if free(p) then
 			return p
+		end
+	end
+	-- boxed in on the way to the centre (the menu column, a goal to the left): slide along the screen edge past it, so
+	-- a pointer never lands on the avatar
+	local bottom = centre.Y * 2 - clear.Y
+	for i = 1, 24 do
+		for _, y in { at.Y + (bottom - at.Y) * i / 24, at.Y + (clear.Y - at.Y) * i / 24 } do
+			local p = Vector2.new(at.X, y)
+			if free(p) then
+				return p
+			end
 		end
 	end
 	return centre -- boxed in all the way: over the play view, never under the HUD
