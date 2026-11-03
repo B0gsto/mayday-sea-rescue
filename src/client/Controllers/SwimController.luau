@@ -53,6 +53,7 @@ local climb: { a: CFrame, b: CFrame, c: CFrame, t0: number }? = nil
 local CLIMB_UP, CLIMB_OVER = 0.24, 0.16 -- s
 -- studs the foot camera keeps above the waves (0.8 put the lens in the wave facets: near-solid water frames)
 local CAM_CLEAR = 2
+local drySet: { from: CFrame, to: CFrame }? = nil -- this frame's dry lift, undone before the next camera update
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Exclude
 rayParams.RespectCanCollide = true
@@ -414,12 +415,31 @@ local function keepCameraDry()
 	local floor = surfaceAt(pos.X, pos.Z) + CAM_CLEAR
 	if pos.Y < floor then
 		local lifted = Vector3.new(pos.X, floor, pos.Z)
-		camera.CFrame = CFrame.lookAt(lifted, camera.Focus.Position)
+		local to = CFrame.lookAt(lifted, camera.Focus.Position)
+		drySet = { from = camera.CFrame, to = to }
+		camera.CFrame = to
+	end
+end
+
+-- Just before the default camera's next update: hand it back its own pose. It reads its pitch from
+-- camera.CFrame, so the lift's steeper look fed back each frame and ratcheted a swimmer's camera to
+-- top-down (-80 deg) whenever Poppercam pulled it in close (Studio check, launch v34).
+local function undoDryLift()
+	local set = drySet
+	drySet = nil
+	local camera = Workspace.CurrentCamera
+	if set and camera and (camera.CFrame.Position - set.to.Position).Magnitude < 0.01 then
+		camera.CFrame = set.from
 	end
 end
 
 function SwimController.Start()
 	RunService.Stepped:Connect(eatJump)
+	RunService:BindToRenderStep(
+		"SwimCameraUndry",
+		Enum.RenderPriority.Camera.Value - 1,
+		undoDryLift
+	)
 	RunService:BindToRenderStep("SwimCameraDry", Enum.RenderPriority.Camera.Value + 2, function()
 		xpcall(keepCameraDry, function(err)
 			warn(`[SwimController] {err}`)
