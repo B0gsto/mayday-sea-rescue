@@ -39,3 +39,10 @@ Open: Head and body still read a little as two balls from the side (the rig `at`
 - Mesh 3.87 x 4.84 x 2.67 studs (w x l x h).
 - validate PASS (356 checks, 0 failed, 40 waived). Tris LOD0 2148, LOD1 854, LOD2 208. zfight in session (all LODs): 0 pairs.
 - PetSeat `built` (nose to tail, LOD0: 4.840). Not edited in PetSeat.luau.
+
+## r5 (2026-11-03)
+
+- Flat crown with 3 level studs in an even row (r 0.144, 1.2x). Darker `back` zone on the body top (#42648E, one step under the fur). Rear flipper dark tips +20 %. Muzzle whites +15 % (0.04 down, clear of the eyes), whiskers out with it. Bigger black nose, re-seated.
+- Mesh 3.87 x 4.90 x 2.62 studs (w x l x h). Height 2.615, down from 2.67; the top sits at z 2.982 above the rig pivot because the body floats 0.367.
+- validate PASS (340 checks, 0 failed, 41 waived). Tris LOD0 2148, LOD1 854, LOD2 208. zfight in session (all LODs): 0 pairs.
+- PetSeat `built` (nose to tail, LOD0: 4.898). Not edited in PetSeat.luau.

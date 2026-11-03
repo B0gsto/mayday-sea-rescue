@@ -24,7 +24,7 @@ PREFIX = "M_Ani_Gull_"          # "Pet" is not a names.py category; nodes are re
 
 ZONES = {
     "white": dict(top="#FBFBF8", bottom="#D2D6D9", rough=0.84),
-    "grey": dict(top="#84919E", bottom="#7A8794", rough=0.82),     # r4: mantle ~#7F8C99
+    "grey": dict(top="#66737F", bottom="#5E6B77", rough=0.82),     # r5: mantle two steps darker
     "black": dict(top="#2A2C32", bottom="#16171B", rough=0.6),
     "yellow": dict(top="#FFC800", bottom="#F2A200", rough=0.38, signal=True),     # r4: more saturated
     "red": dict(top="#E0402F", bottom="#B92A22", rough=0.42, signal=True),
@@ -52,7 +52,7 @@ def body(p):
 
 
 def body_refine(zone, c, n):
-    return "grey" if n.z > 0.45 and c.y > -0.45 else zone
+    return "grey" if n.z > 0.2 and c.y > -0.6 else zone      # r5: wider, onto the shoulders
 
 
 def belly(p):
@@ -74,10 +74,9 @@ def _mandible(y0, y1, width, top, bot, zone, p):
 
 
 def beak(p):
-    # r3: 30 % shorter and straight (no hook, no droop); upper + lower mandible, a red gonys dot on the lower
-    _mandible(0.3, -0.47, lambda t: 0.36 - 0.16 * t, lambda t: 0.16 - 0.08 * t, lambda t: -0.01 - 0.01 * t, "yellow", p)
-    _mandible(0.3, -0.42, lambda t: 0.3 - 0.13 * t, lambda t: -0.02, lambda t: -0.16 + 0.07 * t, "yellow", p)
-    p.add(K.box((0.3, 0.22, 0.13), (0, -0.27, -0.09), bevel=0.03), "red")     # r4: 2x
+    # r5: one closed wedge (two mandibles read as a shouting mouth), 20 % narrower/shorter; the red dot only underneath
+    _mandible(0.3, -0.36, lambda t: 0.288 - 0.128 * t, lambda t: 0.15 - 0.09 * t, lambda t: -0.15 + 0.08 * t, "yellow", p)
+    p.add(K.ball((0.18, 0.18, 0.11), (0, -0.2, -0.1), u=8, v=4), "red")
 
 
 def eye_maker(pos):
@@ -119,9 +118,9 @@ def wing_maker(left):
     th = lambda s: 0.2 - 0.1 * s
 
     def make(p):
-        _span(p, 0.0, 0.57, le, te, th, "grey", (0.0, 0.84))
-        _span(p, 0.0, 0.57, le, te, lambda s: th(s) * 0.92, "white", (0.8, 1.0))
-        _span(p, 0.55, 0.85, le, te, lambda s: th(s) * 0.98, "black")     # r4: rounded black tip, 0.24 -> 0.45 of the span
+        _span(p, 0.0, 0.43, le, te, th, "grey", (0.0, 0.84))
+        _span(p, 0.0, 0.43, le, te, lambda s: th(s) * 0.92, "white", (0.8, 1.0))
+        _span(p, 0.415, 0.85, le, te, lambda s: th(s) * 0.98, "black")     # rounded black tip, r4 0.45 of the span, r5 1.3x
         _span(p, 0.83, 1.0, le, te, lambda s: th(s) * 0.88, "black")
         if not left:          # authored for the left wing (outward = Blender +X)
             K.mirror_x(p.bm)

@@ -4948,6 +4948,15 @@
   "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_ALB.png",
   "type": "Image"
  },
+ "Image:3869b649de458e6adf68080ad7b512838b88fa9237574500ce82d79780c79ace": {
+  "assetId": "139793976773596",
+  "imageId": "139793976773596",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Rare_ALB",
+  "sha": "3869b649de458e6adf68080ad7b512838b88fa9237574500ce82d79780c79ace",
+  "source": "assets/textures/M_Ani_Turtle_Rare/T_Turtle_Rare_ALB.png",
+  "type": "Image"
+ },
  "Image:386b62ccfd19c84ef261b42359127d363d6eed49b5bc74ea22595152e75af510": {
   "assetId": "135238717146811",
   "imageId": "135238717146811",
@@ -6622,6 +6631,15 @@
   "name": "T_NavMarkSafeWater_Buoy_RGH_Wet",
   "sha": "4bd6419f89bc6c373d4cdb4f2c5a0006e60c01b0faaca7161134d447eeadaf86",
   "source": "assets/textures/M_Hbr_NavMark_SafeWater/T_NavMarkSafeWater_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:4bd74b1241528447bd8417c25c26cb9d87cdd4dc154a82359245d0888a93245b": {
+  "assetId": "109213822680941",
+  "imageId": "109213822680941",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Coat_RGH",
+  "sha": "4bd74b1241528447bd8417c25c26cb9d87cdd4dc154a82359245d0888a93245b",
+  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_RGH.png",
   "type": "Image"
  },
  "Image:4be3e6e6fc3d9ad250bb87f50ab1554b9cbdedd53b5ad8718a5a79d4047eb187": {
@@ -9205,6 +9223,15 @@
   "name": "Mayday_T_Mat_KelpRock_ALB",
   "sha": "6bec8f4111e18b3f2f9419b3be00edc56e47bcc04ecc2de48173e6df370ccfdc",
   "source": "assets/textures/Materials/T_Mat_KelpRock_ALB.png",
+  "type": "Image"
+ },
+ "Image:6c0e400c29a7484688cab1fd9da07b46986c2aa6aa8d805e7046c7d763c80458": {
+  "assetId": "80088177641146",
+  "imageId": "80088177641146",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Coat_ALB",
+  "sha": "6c0e400c29a7484688cab1fd9da07b46986c2aa6aa8d805e7046c7d763c80458",
+  "source": "assets/textures/M_Ani_SealPup/T_SealPup_Coat_ALB.png",
   "type": "Image"
  },
  "Image:6c35fc66b84f02a951c5f8d116d7fe1ddd8f1a0aff38aa09bdc76e3c7df2e1a3": {
@@ -13591,6 +13618,15 @@
   "source": "assets/textures/M_Veh_Ambulance/T_Ambulance_Wheels_RGH.png",
   "type": "Image"
  },
+ "Image:9e4182ebe63ba93fb038044dcc4627cdbfa9302dbc5326db8ee04c21f8c37689": {
+  "assetId": "111178254293763",
+  "imageId": "111178254293763",
+  "moderation": "Reviewing",
+  "name": "T_SealPup_Rare_ALB",
+  "sha": "9e4182ebe63ba93fb038044dcc4627cdbfa9302dbc5326db8ee04c21f8c37689",
+  "source": "assets/textures/M_Ani_SealPup_Rare/T_SealPup_Rare_ALB.png",
+  "type": "Image"
+ },
  "Image:9e4b70a5f628b854e38c8dfef76f316a431d789a7808481db87093aa0f8bf9a8": {
   "assetId": "135389252680982",
   "imageId": "135389252680982",
@@ -15259,6 +15295,15 @@
   "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_ALB.png",
   "type": "Image"
  },
+ "Image:b316d0d31561dc871f3d444d175be24064fd6cbda98d94c84c1b75300ddb2caf": {
+  "assetId": "70765764631739",
+  "imageId": "70765764631739",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Coat_ALB",
+  "sha": "b316d0d31561dc871f3d444d175be24064fd6cbda98d94c84c1b75300ddb2caf",
+  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_ALB.png",
+  "type": "Image"
+ },
  "Image:b323a8bcafaeaaab9f32d7b5501db3bce166fc36eea73f217e753b1e49803a4c": {
   "assetId": "139353039702899",
   "imageId": "139353039702899",
@@ -15374,6 +15419,15 @@
   "name": "T_RIB_Deck_ALB_Wet",
   "sha": "b4cdfab88587ea0e0c201578e0de91f5f76d2b92c72c9e51dd2166698064ddcd",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:b4f2c8712db61d542eca18d8829f7040efde1c59bfb7e15f7759f518082a9f86": {
+  "assetId": "74636212388741",
+  "imageId": "74636212388741",
+  "moderation": "Reviewing",
+  "name": "T_Turtle_Coat_RGH",
+  "sha": "b4f2c8712db61d542eca18d8829f7040efde1c59bfb7e15f7759f518082a9f86",
+  "source": "assets/textures/M_Ani_Turtle/T_Turtle_Coat_RGH.png",
   "type": "Image"
  },
  "Image:b4f6e39815debb72a92172fd8726eb3473f19b711000bbd435e4bd46f9b383bf": {
@@ -18110,6 +18164,15 @@
   "name": "T_RIBHelm_Console_ALB",
   "sha": "d7c4cea685fe0480073141394974869ccb65f36644589f59fef6fc6d1d9e12f9",
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_ALB.png",
+  "type": "Image"
+ },
+ "Image:d80c55fc2a05dd8407e69cae5b0955d7c6a0476fad29ac8b5cd109b385fa1669": {
+  "assetId": "94911849220229",
+  "imageId": "94911849220229",
+  "moderation": "Reviewing",
+  "name": "T_Gull_Feathers_ALB",
+  "sha": "d80c55fc2a05dd8407e69cae5b0955d7c6a0476fad29ac8b5cd109b385fa1669",
+  "source": "assets/textures/M_Ani_Gull/T_Gull_Feathers_ALB.png",
   "type": "Image"
  },
  "Image:d80c6fe91601129fa60d7b8cf4cf263b206dcd15e0fcb271e653d7150e0a209c": {
@@ -21346,6 +21409,16 @@
   "source": "assets/fbx/M_Hbr_Rope_Chain/M_Hbr_Rope_Chain_LOD1.fbx",
   "type": "Model"
  },
+ "Model:01a96a14a39547e5f65b93154763166d047106f93a859d271b00eee9bfeadd4d": {
+  "assetId": "71732928078183",
+  "moderation": "Approved",
+  "name": "M_Ani_Turtle",
+  "rbxm": "assets/models/M_Ani_Turtle.rbxm",
+  "route": "delivery",
+  "sha": "01a96a14a39547e5f65b93154763166d047106f93a859d271b00eee9bfeadd4d",
+  "source": "assets/fbx/M_Ani_Turtle/M_Ani_Turtle_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:01f68fc4400c3453583b389f9ed13bc48518aa27a61e67ecb116559a52f6b3ab": {
   "assetId": "128988621470833",
   "moderation": "Approved",
@@ -21544,6 +21617,16 @@
   "route": "delivery",
   "sha": "0a253de9a17059dca93c68ac92fc80789ba0b356c49e6a04f41574e8976c313d",
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:0a587fa218a20fae5979b1cf3eba786ba1e43e8ee5049e732ba6c3c9d515aad3": {
+  "assetId": "109218522319473",
+  "moderation": "Approved",
+  "name": "M_Ani_SealPup",
+  "rbxm": "assets/models/M_Ani_SealPup.rbxm",
+  "route": "delivery",
+  "sha": "0a587fa218a20fae5979b1cf3eba786ba1e43e8ee5049e732ba6c3c9d515aad3",
+  "source": "assets/fbx/M_Ani_SealPup/M_Ani_SealPup_LOD0.fbx",
   "type": "Model"
  },
  "Model:0aadb1539706937e7192c29c85acfd9a2a072831f13e7499ecb6168d14925c2c": {
@@ -24084,6 +24167,16 @@
   "route": "delivery",
   "sha": "4754569cd48e3f95e790091b8474ec13a0775cd686410731d53eaf097af3f489",
   "source": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:476ea4b5c18de5df8d6e32d7841ff905acaad1a059d81a4b9c612ed0e40d21f2": {
+  "assetId": "72956797249106",
+  "moderation": "Approved",
+  "name": "M_Ani_Gull",
+  "rbxm": "assets/models/M_Ani_Gull.rbxm",
+  "route": "delivery",
+  "sha": "476ea4b5c18de5df8d6e32d7841ff905acaad1a059d81a4b9c612ed0e40d21f2",
+  "source": "assets/fbx/M_Ani_Gull/M_Ani_Gull_LOD0.fbx",
   "type": "Model"
  },
  "Model:478e3a8851cddfa9d6c27e9c26b2bdb16954d7d43ebfe8a61ed029f817b8b0ad": {

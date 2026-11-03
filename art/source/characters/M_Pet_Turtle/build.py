@@ -24,6 +24,8 @@ ZONES = [  # name, top (faces up), bottom, roughness, tinted in the rare (golden
     ("cream", "#E2D8A8", "#D4C792", 0.7, True),
     ("scute", "#408833", "#35752A", 0.45, True),      # r4: shell 15 % darker
     ("scuteLight", "#5DA142", "#54963B", 0.45, True),
+    ("vert", "#5BA648", "#4F9A3E", 0.45, True),       # r5: the lighter centre row
+    ("vertLight", "#78BC5C", "#6CB052", 0.45, True),
     ("seam", "#244E20", "#1F431D", 0.6, True),        # r3: dark green, not black
     ("rim", "#31752B", "#3A8031", 0.5, True),
     ("plastron", "#E2D49C", "#D2C185", 0.65, True),
@@ -39,7 +41,9 @@ RARE = ("#6C9956", "#DAAA46")   # the skin's mid green -> Wildlife rarePalette.S
 
 
 def shell():
-    nu, nv, h, base = 10, 12, 0.87, -0.33      # r3: dome 1.4x higher
+    nu, nv, h, base = 10, 12, 0.9, -0.38      # r3: dome 1.4x higher; r5: hull +15 % (0.87 -> plates at 1.0), sunk 0.05 to stay under 2.7
+    # r5: plates 25 % larger: rows -> plate index (4 vertebral, 3 costal a side, wider marginals), front-back symmetric
+    vert, costal, rim_u = (0, 0, 1, 1, 1, 2, 2, 2, 3, 3), (0, 0, 0, 1, 1, 1, 1, 2, 2, 2), (0, 0, 0, 1, 1, 2, 2, 3, 3, 3)
     bm = bmesh.new()
     grid = {}
     for j in range(nv + 1):
@@ -52,29 +56,30 @@ def shell():
     for j in range(nv):
         for i in range(nu):
             f = bm.faces.new((grid[i, j], grid[i + 1, j], grid[i + 1, j + 1], grid[i, j + 1]))
-            uc, vc = -1 + 2.0 * (i + 0.5) / nu, -1 + 2.0 * (j + 0.5) / nv
+            uc = -1 + 2.0 * (i + 0.5) / nu
             if i in (0, nu - 1) or j in (0, nv - 1):
-                key = ("m", i // 2, j // 2)                       # marginal: one plate per 2 rim cells
+                key = ("m", rim_u[i], j // 3)
             elif abs(uc) < 0.4:
-                key = ("v", int((vc + 1 - 2.0 / nv) / (2 - 4.0 / nv) * 5))
+                key = ("v", vert[j - 1])
             else:
-                key = ("c", uc > 0, int((vc + 1 - 2.0 / nv) / (2 - 4.0 / nv) * 4))
+                key = ("c", uc > 0, costal[j - 1])
             scutes.setdefault(key, []).append(f)
-    bm.normal_update()
-    zones, studs = {}, []
+    bm.normal_update()                                    # the grid winding faces down: depth < 0 raises, normals negate
+    zones, tops = {}, {}
+    plate = {"m": ("rim", "rim"), "v": ("vert", "vertLight"), "c": ("scute", "scuteLight")}
     for key, faces in scutes.items():
         centre = sum((f.calc_center_median() for f in faces), Vector()) / len(faces)
         reach = max((f.calc_center_median() - centre).length for f in faces) or 1.0
         for f in faces:
             light = (f.calc_center_median() - centre).length < 0.55 * reach
-            zones[f] = "rim" if key[0] == "m" else ("scuteLight" if light else "scute")
-        bmesh.ops.inset_region(bm, faces=faces, thickness=0.0525, depth=0.08, use_even_offset=True)   # raised tiles, r3: seams 1.5x wider
-        lip = bmesh.ops.inset_region(bm, faces=faces, thickness=0.03, depth=0.02, use_even_offset=True)["faces"]
+            zones[f] = plate[key[0]][light]
+        bmesh.ops.inset_region(bm, faces=faces, thickness=0.07, depth=-0.08, use_even_offset=True)   # raised tiles (r5: were sunk), r3: seams 1.5x wider, r5: wider again
+        lip = bmesh.ops.inset_region(bm, faces=faces, thickness=0.03, depth=-0.02, use_even_offset=True)["faces"]
         for f in lip:                                     # r2: a 0.03 chamfer round each plate top, plate-coloured
-            zones[f] = "rim" if key[0] == "m" else "scute"
-        if key[0] == "v" and key[1] in (1, 2, 3):         # r2: three studs on the centre ridge only, r3: the centre big
-            n = sum((f.normal for f in faces), Vector()).normalized()
-            studs.append((sum((f.calc_center_median() for f in faces), Vector()) / len(faces), n, key[1] == 2))
+            zones[f] = plate[key[0]][0]
+        if key[0] == "v":
+            n = -sum((f.normal for f in faces), Vector()).normalized()
+            tops[key[1]] = (sum((f.calc_center_median() for f in faces), Vector()) / len(faces), n)
     edge = [e for e in bm.edges if e.is_boundary]
     new = bmesh.ops.extrude_edge_only(bm, edges=edge)["geom"]
     for f in new:
@@ -84,21 +89,23 @@ def shell():
         if isinstance(v, bmesh.types.BMVert):
             tx, tz = v.co.x / (1.1 * (1 - 0.1 * max(0.0, v.co.z / 1.3))), v.co.z / 1.3     # back on the unit circle
             r = math.hypot(tx, tz) or 1.0
-            # r4: tan rim 2x on a clean ellipse 10 % out: the raised rim plates overhang anything closer
-            v.co = Vector((tx / r * 1.1 * (1 - 0.1 * max(0.0, tz / r)) * 1.1, base - 0.18, tz / r * 1.3 * 1.1))
+            # r4: tan rim on a clean ellipse: the raised rim plates overhang anything closer; r5: 1.3x
+            v.co = Vector((tx / r * 1.1 * (1 - 0.1 * max(0.0, tz / r)) * 1.13, base - 0.234, tz / r * 1.3 * 1.13))
     bmesh.ops.holes_fill(bm, edges=[e for e in bm.edges if e.is_boundary], sides=0)
     s = K.Shape().add(bm, lambda f: zones.get(f, "seam"))
-    for c, n, big in studs:
-        st = K.stud((0, 0, 0), r=0.32 if big else 0.18, h=0.15 if big else 0.12, segments=12)     # r4: centre r 0.32
+    for k in (0, 3):                                      # r2: three studs on the centre ridge only
+        c, n = tops[k]
+        st = K.stud((0, 0, 0), r=0.18, h=0.12, segments=12)
         bmesh.ops.rotate(st, verts=st.verts, cent=Vector(), matrix=Vector((0, 1, 0)).rotation_difference(n).to_matrix())
         s.add(K.move(st, c), "stud")
-    return s
+    # r5: 4 plates, so the big centre stud straddles the middle seam: sunk past the groove floor
+    return s.add(K.move(K.stud((0, 0, 0), r=0.32, h=0.12, sink=0.14, segments=12), (tops[1][0] + tops[2][0]) * 0.5), "stud")
 
 
 def plastron():
     pts = [(1.0 * math.sin(a), 1.2 * math.cos(a)) for a in (2 * math.pi * k / 10 for k in range(10))]
     rim = lambda f: "bellyRim" if (f.calc_center_median().x / 1.0) ** 2 + (f.calc_center_median().z / 1.2) ** 2 > 0.6 else "plastron"
-    return K.Shape().add(K.lens(pts, 0.24), rim)
+    return K.Shape().add(K.lens(pts, 0.24, y=-0.13), rim)      # r5: 0.13 down, still below the taller skirt's cap
 
 
 def _skin(rng, share=0.22, skin="skin", scale="scale"):
@@ -123,13 +130,14 @@ def glint():
     return K.Shape().add(K.ellipsoid((0.1, 0.1, 0.05), u=8, v=4), "glint")
 
 
-def _shorter(outline, x0):
+def _shorter(outline, x0, k=0.75):
     """r4: 25 % shorter past the shell edge x0 (the part hidden under the shell doesn't count)."""
-    return [(x0 + (x - x0) * 0.75, z) for x, z in outline]
+    return [(x0 + (x - x0) * k, z) for x, z in outline]
 
 
-FRONT = _shorter([(-0.72, -0.12), (-0.35, -0.34), (0.2, -0.32), (0.62, -0.16), (0.76, 0.06), (0.55, 0.2), (0.0, 0.3),
-                  (-0.5, 0.3), (-0.75, 0.12)], -0.2)
+# r5: 15 % shorter again, a blunt rounded tip
+FRONT = _shorter([(-0.72, -0.12), (-0.35, -0.34), (0.2, -0.32), (0.58, -0.25), (0.76, -0.06), (0.74, 0.12), (0.52, 0.26),
+                  (0.0, 0.3), (-0.5, 0.3), (-0.75, 0.12)], -0.2, 0.6375)
 BACK = _shorter([(-0.45, -0.2), (0.05, -0.28), (0.42, -0.15), (0.5, 0.08), (0.3, 0.26), (-0.2, 0.26), (-0.48, 0.08)], 0.05)
 
 
@@ -155,8 +163,8 @@ PARTS = [  # node, rig name, placeholder size, at (x, y, z, rx, ry, rz), shape: 
     ("GlintRight", "Glint", (0.07, 0.07, 0.07), (0.24, 1.15, -2.1), glint),
     ("FlipperFrontLeft", "Flipper", (1.5, 0.16, 0.85), (-1.3, 0.6, -0.85, 0, 0.25, 0.2), flipper(FRONT, 0.368, -1, 1)),
     ("FlipperFrontRight", "Flipper", (1.5, 0.16, 0.85), (1.3, 0.6, -0.85, 0, -0.25, -0.2), flipper(FRONT, 0.368, 1, 2)),
-    ("FlipperBackLeft", "Flipper", (1.0, 0.14, 0.6), (-1.05, 0.55, 0.95, 0, -0.2, 0.15), flipper(BACK, 0.3, -1, 3)),
-    ("FlipperBackRight", "Flipper", (1.0, 0.14, 0.6), (1.05, 0.55, 0.95, 0, 0.2, -0.15), flipper(BACK, 0.3, 1, 4)),
+    ("FlipperBackLeft", "Flipper", (1.0, 0.14, 0.6), (-1.05, 0.55, 0.95, 0, -0.2, 0.15), flipper(BACK, 0.42, -1, 3)),
+    ("FlipperBackRight", "Flipper", (1.0, 0.14, 0.6), (1.05, 0.55, 0.95, 0, 0.2, -0.15), flipper(BACK, 0.42, 1, 4)),
     ("Tail", "Tail", (0.4, 0.2, 0.62), (0, 0.62, 1.5), tail),
 ]
 PARTS = [(n, r, s, tuple(at) + (0.0,) * (6 - len(at)), fn) for n, r, s, at, fn in PARTS]

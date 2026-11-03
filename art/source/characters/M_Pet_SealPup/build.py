@@ -13,6 +13,7 @@ import petkit as K  # noqa: E402
 
 ZONES = [  # name, top (faces up), bottom, roughness, tinted in the rare (golden) albedo
     ("fur", "#4F74A0", "#4F86C6", 0.7, True),        # r3: deeper saturated steel blue back
+    ("back", "#42648E", "#476F9E", 0.7, True),       # r5: the back plate, one step darker than the fur
     ("belly", "#F4EFE2", "#E8E1CF", 0.75, True),     # r3: cream-white chest
     ("muzzle", "#FAFAF6", "#EEEEEA", 0.75, True),    # r3: white muzzle patch
     ("dot", "#4A505A", "#4A505A", 0.75, True),
@@ -38,7 +39,7 @@ def body():
         return c
     bm = K.deform(K.ellipsoid((2.1, 1.3, 2.4), u=16, v=8), shape)
     neck = K.ellipsoid((1.35, 1.15, 1.2), (0, 0.4, -0.85), u=12, v=6)
-    s = K.Shape().add(bm, "fur").add(neck, "fur")      # r3: no pale rim; the cream reads on the Belly chest patch
+    s = K.Shape().add(bm, K.by([(lambda c, n: n.y > 0.55, "back")], "fur")).add(neck, "fur")      # r3: no pale rim; the cream reads on the Belly chest patch
     return s.add(K.stud((0, 0.65, -0.15), r=0.2, h=0.14), "stud")      # r2: 0.4 stud, saucer lip dropped
 
 
@@ -48,29 +49,30 @@ def belly():
 
 
 def head():
-    bm = K.ellipsoid((1.3, 1.12, 1.2), u=12, v=8)
+    # r5: a flat crown (upper ring raised, pole clamped) so the studs stand level instead of following the dome
+    bm = K.deform(K.ellipsoid((1.3, 1.12, 1.2), u=12, v=8), lambda c: (c.x, min(0.5, c.y + 0.064 if c.y > 0.3 else c.y), c.z))
     s = K.Shape().add(bm, K.by([(lambda c, n: n.y < -0.55, "belly")], "fur"))
-    for x, y in ((-0.26, 0.515), (0, 0.55), (0.26, 0.515)):       # r4: a row of 3 flat round studs, wide and low
-        s.add(K.stud((x, y, 0), r=0.12, h=0.06, sink=0.09, segments=12), "stud")
+    for x in (-0.33, 0, 0.33):       # r5: an even row, level tops, 1.2x
+        s.add(K.stud((x, 0.5, 0), r=0.144, h=0.07, sink=0.14, segments=12), "stud")
     return s
 
 
 def snout():
     rng = random.Random(4)
     s = K.Shape()
-    m = 1.2                                            # r4: muzzle +20 %
+    m = 1.38                                           # r4: muzzle +20 %; r5: whites +15 %
     for x in (-0.16 * m, 0.16 * m):
-        s.add(K.ellipsoid((0.4 * m, 0.38 * m, 0.42 * m), (x, 0.0, 0.0), u=10, v=6), K.speckle(rng, 0.08, "dot", "muzzle"))
-    s.add(K.ellipsoid((0.34 * m, 0.2 * m, 0.3 * m), (0, -0.17 * m, 0.06 * m), u=8, v=4), "muzzle")
+        s.add(K.ellipsoid((0.4 * m, 0.38 * m, 0.42 * m), (x, -0.04, 0.0), u=10, v=6), K.speckle(rng, 0.08, "dot", "muzzle"))      # r5: 0.04 down, clear of the eyes
+    s.add(K.ellipsoid((0.34 * m, 0.2 * m, 0.3 * m), (0, -0.04 - 0.17 * m, 0.06 * m), u=8, v=4), "muzzle")
     for side in (-1, 1):
         for y, dy in ((0.05, 0.08), (-0.03, 0.0), (-0.11, -0.08)):
-            s.add(K.whisker((0.36 * side, y, -0.04), (0.61 * side, y + dy * 0.7, 0.06)), "whisker")   # r2: 30 % shorter
+            s.add(K.whisker((0.41 * side, y, -0.04), (0.7 * side, y + dy * 0.7, 0.06)), "whisker")   # r2: 30 % shorter; r5: out with the muzzle
     return s
 
 
 def nose():
-    bm = K.ellipsoid((0.24, 0.15, 0.13), u=8, v=4)
-    K.deform(bm, lambda c: (c.x * (1.0 + 0.5 * max(0.0, c.y) / 0.075), c.y, c.z))
+    bm = K.ellipsoid((0.32, 0.2, 0.16), u=8, v=4)      # r5: bigger
+    K.deform(bm, lambda c: (c.x * (1.0 + 0.5 * max(0.0, c.y) / 0.1), c.y, c.z))
     return K.Shape().add(bm, "nose")
 
 
@@ -101,7 +103,7 @@ def tail():
     for side in (-1, 1):
         bm = K.lens([(x * side, z) for x, z in lobe], 0.21, rings=K.CHUNKY)     # r4: 1.5x thicker
         K.rotate(bm, ry=0.38 * side)
-        s.add(K.move(bm, (0.17 * side, 0, 0.05)), K.by([(lambda c, n: c.z > 0.14, "tailTip")], "flipper"))
+        s.add(K.move(bm, (0.17 * side, 0, 0.05)), K.by([(lambda c, n: c.z > 0.10, "tailTip")], "flipper"))      # r5: dark tips +20 %
     s.add(K.ellipsoid((0.5, 0.26, 0.45), (0, 0, -0.35), u=8, v=4), "flipper")
     return s
 
@@ -111,7 +113,7 @@ PARTS = [  # node, rig name, placeholder size, at (x, y, z, rx, ry, rz), shape: 
     ("Belly", "Belly", (2.3, 0.7, 1.5), (0, 0.55, -0.1), belly),
     ("Head", "Head", (1.3, 1.15, 1.2), (0, 1.55, -1.45), head),
     ("Snout", "Snout", (0.7, 0.5, 0.6), (0, 1.38, -2.05), snout),
-    ("Nose", "Nose", (0.22, 0.18, 0.18), (0, 1.5, -2.31), nose),      # r4: seated on the bigger muzzle
+    ("Nose", "Nose", (0.22, 0.18, 0.18), (0, 1.47, -2.34), nose),      # r4, r5: seated on the bigger muzzle
     ("EyeLeft", "Eye", (0.3, 0.3, 0.3), (-0.38, 1.78, -1.98), eye),
     ("EyeRight", "Eye", (0.3, 0.3, 0.3), (0.38, 1.78, -1.98), eye),
     ("GlintLeft", "Glint", (0.1, 0.1, 0.1), (-0.32, 1.86, -2.14), glint),

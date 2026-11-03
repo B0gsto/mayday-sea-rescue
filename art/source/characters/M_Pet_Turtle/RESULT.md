@@ -39,3 +39,12 @@ Open: Shell plates read slightly grid-like up close. Golden rare ALB saturation 
 - Mesh 5.16 x 5.97 x 2.03 studs (w x l x h). High point 2.567 studs, up from 2.399 in r3: the head is the top and the AD asked for it 10 % higher (still inside 2.3-2.7).
 - validate PASS (356 checks, 0 failed, 42 waived). Tris LOD0 2630, LOD1 1046, LOD2 258. zfight in session (all LODs): 0 pairs.
 - PetSeat `built` (shell length, LOD0: 4.147). Not edited in PetSeat.luau.
+
+## r5 (2026-11-03)
+
+- Bug fixed: the shell grid winds downward, so before r5 the "raised" plates were sunk behind a raised seam lattice and the ridge studs pointed inward (read from the code and measured on the first r5 build, r4 mesh not re-inspected). Depth and stud normals flipped; plates now stand proud of real grooves.
+- Plates 25 % larger: 4 vertebral, 3 costal a side, wider marginals; grooves 0.0525 -> 0.07. The big centre stud straddles the middle seam (4 plates, sunk past the groove floor). Lighter centre row (`vert`, `vertLight`). Hull +15 % (0.87 -> 1.0, plates at the top). Tan rim 1.3x tall on a 13 % ellipse; plastron 0.13 down to stay below its cap.
+- Front flippers 15 % shorter with blunt rounded tips; rear flippers 40 % thicker.
+- Mesh 4.95 x 5.97 x 2.12 studs (w x l x h). High point 2.567 studs (the head, unchanged).
+- validate PASS (340 checks, 0 failed, 44 waived). Tris LOD0 2466, LOD1 980, LOD2 240. zfight in session (all LODs): 0 pairs.
+- PetSeat `built` (shell length, LOD0: 4.260). Not edited in PetSeat.luau.

@@ -41,3 +41,10 @@ Low-poly faceted herring gull pet (Bosun LP style), segmented for WildlifeRig.
 - Mesh 2.20 x 4.13 x 2.70 studs (w x l x h).
 - validate PASS (297 checks, 0 failed, 27 waived). Tris LOD0 2268, LOD1 1134. zfight in session (all LODs): 0 pairs.
 - PetSeat `built` (head height, LOD0: 2.696). Not edited in PetSeat.luau.
+
+## r5 (2026-11-03)
+
+- Beak: one closed solid yellow wedge (the two mandibles read as a shouting mouth), 20 % narrower/shorter, red dot only underneath. Mantle two steps darker (#66737F/#5E6B77), widened onto the shoulders. Black wingtips 1.3x of the span (0.45 -> 0.585).
+- Mesh 2.20 x 3.97 x 2.70 studs (w x l x h).
+- validate PASS (286 checks, 0 failed, 27 waived). Tris LOD0 2164, LOD1 1082. zfight in session (all LODs): 0 pairs.
+- PetSeat `built` (head height, LOD0: 2.696, unchanged). Not edited in PetSeat.luau.

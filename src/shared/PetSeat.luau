@@ -28,10 +28,10 @@ local PetSeat = {}
 
 PetSeat.STUDS_PER_METRE = 3
 PetSeat.Sizes = {
-	SealPup = { metres = 0.9, built = 4.84 }, -- nose to tail
+	SealPup = { metres = 0.9, built = 4.898 }, -- nose to tail
 	Puffin = { metres = 0.3, built = 2.681 }, -- head height
 	Otter = { metres = 1.0, built = 7.637 }, -- nose to tail
-	Turtle = { metres = 0.6, built = 4.147 }, -- shell length
+	Turtle = { metres = 0.6, built = 4.26 }, -- shell length
 	Gull = { metres = 0.45, built = 2.696 }, -- head height
 } :: { [string]: Size }
 
