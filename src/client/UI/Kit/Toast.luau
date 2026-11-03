@@ -4,6 +4,7 @@
 --   Toast.show(canvas, "+250", { icon = "cash", color = "green" })   duration 0 = stays
 local TextService = game:GetService("TextService")
 
+local Comfort = require(script.Parent.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local Style = require(script.Parent:WaitForChild("Style"))
 local Theme = require(script.Parent:WaitForChild("Theme"))
 
@@ -84,11 +85,16 @@ function Toast.show(canvas: Instance, text: string, opts: Opts?): Frame
 		end
 	end
 	root.Parent = canvas
-	Style.pop(root, true)
+	local still = Comfort.reducedMotion() -- Reduce motion: it just appears and goes
+	if not still then
+		Style.pop(root, true)
+	end
 	local d = o.duration or 2.5
 	if d > 0 then
 		task.delay(d, function()
-			if root.Parent then
+			if root.Parent and still then
+				root:Destroy()
+			elseif root.Parent then
 				Style.tween(root, 0.3, { Position = UDim2.new(0.5, 0, 0, 40) })
 				Style.pop(root, false)
 				task.delay(0.4, function()

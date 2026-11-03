@@ -80,6 +80,10 @@ return {
 	-- UI Kit (docs/23 (m), UI/Kit): art/source/ui/kit_<key>.svg (tools/ui-art/kit_icons*.py), plus Studs: the
 	-- subtle stud tile on title bars and price buttons (assets/ui/kit).
 	Kit = {
+		gem_rare = "rbxassetid://95504055903225", -- art/source/ui/gem_rare.svg (tools/ui-art/gems.py)
+		gem_epic = "rbxassetid://108922180696474", -- art/source/ui/gem_epic.svg (tools/ui-art/gems.py)
+		gem_legendary = "rbxassetid://89137333634023", -- art/source/ui/gem_legendary.svg (tools/ui-art/gems.py)
+		gem_mythic = "rbxassetid://82687207346877", -- art/source/ui/gem_mythic.svg (tools/ui-art/gems.py)
 		Studs = "rbxassetid://108987158998866",
 		album = "rbxassetid://136020752731579",
 		boat_to_me = "rbxassetid://109082931565496",

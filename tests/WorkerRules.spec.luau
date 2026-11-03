@@ -41,6 +41,24 @@ return function(t)
 		t.expect(sum).toBeCloseTo(100, 1e-9)
 	end)
 
+	t.test("weights replace the rarity table; Crew luck still moves Common to Rare", function()
+		local function rarities(opts: any): { number }
+			local out = { 0, 0, 0, 0, 0, 0 }
+			for seed = 1, 5000 do
+				out[W.roll(seed * 7919, opts).rarity] += 1
+			end
+			return out
+		end
+		t.expect(rarities({ weights = { 0, 0, 0, 0, 0, 100 } })[Rarity.MYTHIC]).toBe(5000)
+		local deep = rarities({ weights = { 5, 15, 30, 30, 16, 4 } })
+		t.expect(deep[1] < 500 and deep[5] > 500).toBe(true)
+		-- the luck can't take Common below nothing: at 5% Common, +50 moves 5, not 50
+		local lucky = rarities({ weights = { 5, 15, 30, 30, 16, 4 }, rareAdd = 0.5 })
+		t.expect(lucky[1]).toBe(0)
+		t.expect(math.abs(lucky[3] - deep[3] - deep[1]) < 100).toBe(true)
+		t.expect(math.abs(lucky[4] - deep[4]) < 100).toBe(true)
+	end)
+
 	t.test("the roll is deterministic and lands ~62/25/9/3/0.9/0.1 over the categories", function()
 		local a = W.roll(12345)
 		t.expect(a).toEqual(W.roll(12345))

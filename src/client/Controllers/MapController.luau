@@ -34,6 +34,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DiscoveryConfig = require(Shared:WaitForChild("Config"):WaitForChild("DiscoveryConfig"))
 local MapConfig = require(Shared:WaitForChild("Config"):WaitForChild("MapConfig"))
 local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
+local SeaZones = require(Shared:WaitForChild("Calls"):WaitForChild("SeaZones"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local Weather = require(Shared:WaitForChild("Weather"))
 local UI = script.Parent.Parent:WaitForChild("UI")
@@ -101,6 +102,7 @@ local LAGOON =
 		{ r = 1150, color = Color3.fromRGB(52, 150, 182), t = 0 },
 	}
 
+local ZONE_LINE = 3 -- the sea zone circles' stroke
 local LAND_EDGE = Color3.fromRGB(22, 52, 34)
 local LAND = { plate = Color3.fromRGB(92, 178, 70), bridge = Color3.fromRGB(205, 160, 104) }
 
@@ -226,6 +228,25 @@ local function makeLand(parent: Instance)
 				ZIndex = 3,
 			})
 		end
+	end
+end
+
+-- docs/29 B: the sea zone circles in the map frame's scale units, each in the colour of the water beyond it. In
+-- scale units, so the full map's design-unit frame and the minimap's px frame both draw them right.
+local function makeZoneRings(parent: Instance)
+	local e = MapConfig.Extent
+	local c = RingLayout.Center
+	local u, v = MapConfig.worldToUV(c.X, c.Z)
+	for line = 1, #SeaZones.Zones - 1 do
+		local r = SeaZones.Zones[line].outer
+		local ring = frame("ZoneRing", parent, {
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.fromScale(u, v),
+			Size = UDim2.fromScale(2 * r / e, 2 * r / e),
+			ZIndex = 4,
+		})
+		corner(ring)
+		stroke(ring, SeaZones.Zones[line + 1].color, ZONE_LINE)
 	end
 end
 
@@ -636,6 +657,7 @@ local function buildMinimap()
 	local img = frame("Map", rotor)
 	makeTiles(img)
 	makeLand(img)
+	makeZoneRings(img)
 	mini.img = img
 	mini.areas = frame("Areas", rotor)
 	mini.dots = frame("Route", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 3 })
@@ -889,6 +911,8 @@ local function buildFullMap()
 	full.img = img
 
 	full.fog = frame("Fog", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 3 })
+	full.zones = frame("Zones", canvas, { ZIndex = 4 }) -- over the fog: the circles show what lies out there
+	makeZoneRings(full.zones)
 
 	full.areas = frame("Areas", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 5 })
 	local hit = Instance.new("TextButton")
@@ -1335,6 +1359,7 @@ local function updateFullMap(now: number)
 	local u, v = MapConfig.worldToUV(c.X, c.Y)
 	full.img.Size = UDim2.fromOffset(mapPx, mapPx)
 	full.img.Position = UDim2.fromOffset(size.X / 2 - u * mapPx, size.Y / 2 - v * mapPx)
+	full.zones.Size, full.zones.Position = full.img.Size, full.img.Position
 	placeFog(scale, size, c)
 	local function at(p: Vector3): (number, number)
 		return size.X / 2 + (p.X - c.X) * scale, size.Y / 2 + (p.Z - c.Y) * scale

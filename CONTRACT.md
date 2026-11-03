@@ -252,7 +252,12 @@ fail: a slow one grades Bronze (`Condition.overdue`; the big call ends on its ca
 - Free-roam survivors: `AmbientRescueService` keeps `Calls/AmbientMix.cap` mission-less scenes (9 with one player,
   24 with six; lone swimmers, clusters of 2-3, capsized dinghies), one in view off each player's cove and 3 within
   500 studs of every player driving at sea (these pay the lower tier, CASH x Bronze); boarded with `Ops/Board`,
-  paid on delivery.
+  paid on delivery (`AmbientMix.payAt`: x the sea zone's pay; timed spawns cover every zone, `AmbientMix.zonePoint`).
+- Sea zones (docs/29 B): `Calls/SeaZones` (pure: `Zones`, `zoneAt`, `step`, `weightsAt`, `ease`, buoy slots).
+  `RescueService` passes `weights = SeaZones.weightsAt(pos)` to `WorkerRules.roll` (`Onboarding.failsafeCall` calls keep
+  the plain table). Client: `SeaZoneController` sets the local player attribute `SeaZone` (1..5), runs the pooled
+  buoy line (`Ocean/SeaBuoy`) and the crossing banner; `WeatherController` eases tint, haze, fog and Overcast to it,
+  untinted while `ColdOpenActive`; `MapController` draws the circles; `UI/SurvivorTag` the Legendary+ column.
 - Wildlife: `SanctuaryService` dresses the WildlifeRescue survivor as an animal (`WildlifeRig`); it recovers in
   `PetService`'s sanctuary, then can follow you as your companion.
 

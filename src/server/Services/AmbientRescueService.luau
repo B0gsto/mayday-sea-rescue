@@ -8,11 +8,12 @@
 -- sea1 (owner 2026-10-29, "too empty"): Shared.Calls.AmbientMix sets the density: a cap that grows with the
 -- server (9 with one player, 24 with six), a lone swimmer, a cluster of 2-3 or a capsized dinghy of two, and
 -- IN_SIGHT scenes kept within SIGHT of every player driving at sea (spawned SIGHT_MIN+ out, ahead of the bow).
--- Timed spawns go to the Outer ring or, FAR of the time, off an outer island. Nothing spawns in the lagoon or
+-- Timed spawns go to a sea zone (docs/29 B: AmbientMix.zonePoint, every zone has some) or, FAR of the time, off an
+-- outer island. Nothing spawns in the lagoon or
 -- within HOME_CLEAR of a berth (the coves are the missions'). K13 (docs/16): MOUTH_WANT are always in view off each
 -- player's cove mouth. At the cap the oldest scene nobody is near makes way. A cold-open player gets no spawns
 -- near them and boards nobody free-roam (their own swimmer comes first). Sight spawns are the added density: they
--- pay the lower tier (AmbientMix.CASH x the Bronze grade); timed and cove-mouth ones pay CASH.
+-- pay the lower tier (AmbientMix.CASH x the Bronze grade); timed and cove-mouth ones pay CASH; all x the zone's pay.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -154,7 +155,7 @@ local function spawnAt(pos: Vector3, extra: boolean?): Scene
 		opsDriven = true, -- no hold prompt: the server boards them (below)
 		ambient = true,
 		bornAt = os.clock(),
-		pay = math.floor(AmbientMix.CASH * (if extra then CallTypes.Payout.Grade.Bronze else 1)),
+		pay = AmbientMix.payAt(pos, extra),
 	}
 	scene.onDelivered = function(n: number, driver: Player?)
 		onDelivered(scene, n, driver)
@@ -166,11 +167,10 @@ end
 
 local function spawnOne(): Scene?
 	for _ = 1, 8 do
-		local zone = if roll() < AmbientMix.FAR
-			then FAR_ZONES[rng:NextInteger(1, #FAR_ZONES)]
-			else "Outer"
-		local pos = CallLogic.pickSpawnPoint(zone, roll)
-		if clearSpot(pos) then
+		local pos = if roll() < AmbientMix.FAR
+			then CallLogic.pickSpawnPoint(FAR_ZONES[rng:NextInteger(1, #FAR_ZONES)], roll)
+			else AmbientMix.zonePoint(roll)
+		if pos and clearSpot(pos) then
 			return spawnAt(pos)
 		end
 	end
