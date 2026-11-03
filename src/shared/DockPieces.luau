@@ -2843,7 +2843,7 @@ local function rescueBoathouse(m: Model, b: CFrame, level: number?)
 			m,
 			"TrailerWheel",
 			Vector3.new(0.9, 3, 3),
-			trailer * CFrame.new(x, 1.6, 0.6) * CFrame.Angles(0, 0, math.pi / 2),
+			trailer * CFrame.new(x, 1.5, 0.6), -- on edge, rolling on the deck (flat, its cap fought the rail's top)
 			Color3.fromRGB(40, 42, 48),
 			M.SmoothPlastic,
 			Enum.PartType.Cylinder
