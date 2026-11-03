@@ -100,3 +100,10 @@ Gotcha (FIN1): tools/blender/zfight_check.check() resets Blender to factory sett
 Sea plates r5-r6 (FIN2): 8.8 -> 8.9, cap reached; revisit after the sweep with a fresh concept pass (biggest gaps from the r6 judges).
 FIN2: heli r6 9.0 (5a980fae; livery repaint via _Paint mesh, modelled cable dropped), sea plates r6 8.9 (b1626adf; props collide). PERF-FIN4 queued: both rounds 7-8 after FIN3.
 FIN3: crane r10 9.0 (d3d564a3, budget class rock 10k), build-site r6 8.8 (3a33dfbc). PERF-FIN5 queued after FIN4: crane groove/jib/joints, build-site per-pallet meshes + colours.
+
+Parallel Blender (owner 2026-11-01 "you may do multiple instances of applications"): heavy pool 4; instances 1-3 via ~/RobloxProjects/tools/blender-mcp-open.sh N on ports 9876-9878, MCP servers blender/blender2/blender3. One asset lane per instance.
+Rescue heli: **PASS 9.15** at r8 (FIN4, ab83f70e on t3/rescue-helicopter-asset; tinted glass + pilot, framed rear doors, white tail, smooth ring, gear mesh). Sea plates r7-8 running.
+Sea plates r7-8 (FIN4): 9.0, 9.05 (f976a767; 0.05 short) -> r9-10 added to FIN5 after crane + build-site.
+FLASH1 (owner flash report): fixed on main 1b9356c8: SwimController keepCameraDry had a 10-stud head-height cutoff and a 0.8-stud wave gap -> camera sank under the sea near the island edge (underwater grade toggled = pumping; wave surface filled the screen = solid cyan). No cutoff, 2-stud gap. 517/521 underwater frames -> 0.
+FIN5: crane **PASS 9.1** (r11), build-site kit **PASS 9.15** (r8), sea plates **PASS 9.1** (r9). Ship agents are uploading meshes and swapping ids on each worktree branch; merge in the next MERGE. Still to come: in-game re-judge (sheet scores overstate). Worker actions r4: celebrate 8.3, rest 6.5-7.3 (pose readability on the blocky rig); r5 running.
+FIN5 shipped (ids swapped, check.sh ok, unpushed worktree commits): crane 7c381d9d (t3/refine-jetty-crane), build-site fc00d847 (t3/buildsite-prop-kit; colour texture was in moderation at upload), sea plates 6891bedc (t3/build-sea-plate-kit) -> MERGE4 after MERGE3; LOD1/2 zfight not checked.

@@ -45,7 +45,7 @@ def robux_summary(lines):
         if len(p) < 7 or p[1:3] != ["custom", "RobuxPrompt"]:
             continue
         value, source, key, outcome = p[3], p[4], p[5], p[6]
-        if outcome == "Shown":
+        if outcome in ("Shown", "Cancelled"):  # the client logs only the outcome, so Cancelled means it was shown
             shown += 1
         elif outcome == "Purchased":
             bought += 1

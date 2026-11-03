@@ -145,6 +145,8 @@ local function setInvisible(player: Player, on: boolean)
 	if not character then
 		return
 	end
+	-- DogService hides Bosun and PetController the rescued pet while this is set
+	player:SetAttribute("DevInvisible", if on then true else nil)
 	for _, d in character:GetDescendants() do
 		if d:IsA("BasePart") or d:IsA("Decal") then
 			local part = d :: any -- both have Transparency
@@ -531,6 +533,7 @@ local function check(player: Player)
 	stamps[player] = {}
 	print(`[DevService] dev board granted to {player.UserId} {player.Name}`)
 	player.CharacterAdded:Connect(function(character)
+		player:SetAttribute("DevInvisible", nil) -- a fresh character is visible again
 		if god[player] then
 			character:WaitForChild("HumanoidRootPart", 10)
 			setGod(player, true)

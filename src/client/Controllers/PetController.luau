@@ -750,10 +750,21 @@ function PetController.Start()
 			return
 		end
 		local model = activeModel
+		local devHidden = player:GetAttribute("DevInvisible") == true
+		if model:GetAttribute("DevHidden") ~= devHidden then
+			model:SetAttribute("DevHidden", devHidden)
+			for _, d in model:GetDescendants() do
+				if d:IsA("BasePart") or d:IsA("Decal") then
+					(d :: any).LocalTransparencyModifier = if devHidden then 1 else 0
+				elseif d:IsA("ParticleEmitter") or d:IsA("BillboardGui") then
+					(d :: any).Enabled = not devHidden
+				end
+			end
+		end
 		if activeVariant == "Rainbow" then
 			cycleRainbow()
 		end
-		if clock >= nextVoice and not napping then
+		if clock >= nextVoice and not napping and not devHidden then
 			nextVoice = clock
 				+ math.random(AudioConfig.Mix.petVoiceMinGap, AudioConfig.Mix.petVoiceMaxGap)
 			playVoice(active.species, model:GetPivot().Position + Vector3.new(0, 2, 0))
