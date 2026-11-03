@@ -17,7 +17,7 @@ each other's islands). 6 players per server.
 |---|---|
 | **6 player islands** in a tight ring (centres 470 studs from the centre, ~80 studs of water between neighbours) | One per player. A flat **Lego baseplate** (green stud plate, berth notch facing the open sea), no terrain. Your plot: everything you build stands here, and your neighbours' empires are right next to it. Unclaimed ones are bare plates with a jetty. You spawn on your own island. |
 | **Ring bridges** | Short walkable bridges join each island to its two neighbours; boats pass under. No cars. |
-| **Centre lagoon** | Open water inside the ring; no island. |
+| **Centre lagoon** | Open water inside the ring with a small beacon atoll landmark; not an island. |
 | **Outer sea** | Exploration and rescues: Skerry, Puffin Isle, Gannet Rock, Wreck Reef, the Arches, Mermaid Lagoon, Penwyn; wrecks on the seabed; open sea. Calls spawn here. |
 
 (WP-27, docs/23 (p): the old middle forest island is gone. At ~380 the 320-stud plates would overlap, so the

@@ -399,7 +399,9 @@
    "T_RescueHeli_Lego_RGH",
    "T_RescueHeli_Glass_RGH",
    "T_SeaPlateKit_Brick_RGH",
-   "T_Boathouse_Brick_RGH"
+   "T_Boathouse_Brick_RGH",
+   "T_HubKit_Brick_RGH",
+   "T_LagoonKit_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -14793,7 +14795,9 @@
    "T_RescueHeli_Lego_NOR",
    "T_RescueHeli_Glass_NOR",
    "T_SeaPlateKit_Brick_NOR",
-   "T_Boathouse_Brick_NOR"
+   "T_Boathouse_Brick_NOR",
+   "T_HubKit_Brick_NOR",
+   "T_LagoonKit_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -19467,7 +19471,9 @@
    "T_RescueHeli_Lego_MET",
    "T_RescueHeli_Glass_MET",
    "T_SeaPlateKit_Brick_MET",
-   "T_Boathouse_Brick_MET"
+   "T_Boathouse_Brick_MET",
+   "T_HubKit_Brick_MET",
+   "T_LagoonKit_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -33966,6 +33972,84 @@
   "route": "delivery",
   "sha": "f723ad5563ac2c3e009a4182d3f5488b3b6cc4b34f3b8144977acbdc5505a8b0",
   "source": "assets/fbx/M_Ani_SealPup/M_Ani_SealPup_LOD0.fbx",
+  "type": "Model"
+ },
+ "Image:9f176b17039158e3e000dd7cde8a44b1fcc84187a4d76d0c4243f901a0b2a13a": {
+  "assetId": "111083993483904",
+  "imageId": "111083993483904",
+  "moderation": "Approved",
+  "name": "T_LagoonKit_Brick_ALB",
+  "sha": "9f176b17039158e3e000dd7cde8a44b1fcc84187a4d76d0c4243f901a0b2a13a",
+  "source": "assets/textures/M_Prop_LagoonKit/T_LagoonKit_Brick_ALB.png",
+  "type": "Image"
+ },
+ "Image:e84e8cc6983a9f43f5c7e14a121d2f45e93a7aa86481e42c4099b72cd8b8c42c": {
+  "assetId": "76696982722535",
+  "imageId": "76696982722535",
+  "moderation": "Approved",
+  "name": "T_HubKit_Brick_ALB",
+  "sha": "e84e8cc6983a9f43f5c7e14a121d2f45e93a7aa86481e42c4099b72cd8b8c42c",
+  "source": "assets/textures/M_Prop_HubKit/T_HubKit_Brick_ALB.png",
+  "type": "Image"
+ },
+ "Model:0852a197a55e1142aac685f6208d9a6db8ef72fd79d5db96a7b5110a5ec5a56b": {
+  "assetId": "134205432014796",
+  "moderation": "Approved",
+  "name": "M_Prop_LagoonKit_LOD2",
+  "rbxm": "assets/models/M_Prop_LagoonKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "0852a197a55e1142aac685f6208d9a6db8ef72fd79d5db96a7b5110a5ec5a56b",
+  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:902bb47dc87ca1e2eddae9cce64bdfd49281b41d5ea451aa24bc5e10151b4e3b": {
+  "assetId": "88613009854216",
+  "moderation": "Approved",
+  "name": "M_Prop_HubKit",
+  "rbxm": "assets/models/M_Prop_HubKit.rbxm",
+  "route": "delivery",
+  "sha": "902bb47dc87ca1e2eddae9cce64bdfd49281b41d5ea451aa24bc5e10151b4e3b",
+  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:9e7a5e0a9395126b9d3c359d1858092a18b90f908b62509002d49fa1cf5593fc": {
+  "assetId": "78228269224567",
+  "moderation": "Approved",
+  "name": "M_Prop_LagoonKit",
+  "rbxm": "assets/models/M_Prop_LagoonKit.rbxm",
+  "route": "delivery",
+  "sha": "9e7a5e0a9395126b9d3c359d1858092a18b90f908b62509002d49fa1cf5593fc",
+  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:b3a57ebda13641d7246725873ba6ac05e3a6be6040232c2639719398547abd99": {
+  "assetId": "124768171635748",
+  "moderation": "Approved",
+  "name": "M_Prop_LagoonKit_LOD1",
+  "rbxm": "assets/models/M_Prop_LagoonKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b3a57ebda13641d7246725873ba6ac05e3a6be6040232c2639719398547abd99",
+  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:b6f7e0a6e029561f9ccfc99305ddb3f772329db3832ee649530aefda942e26d5": {
+  "assetId": "112011585002545",
+  "moderation": "Approved",
+  "name": "M_Prop_HubKit_LOD1",
+  "rbxm": "assets/models/M_Prop_HubKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b6f7e0a6e029561f9ccfc99305ddb3f772329db3832ee649530aefda942e26d5",
+  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:e5eaaa6cee733e539dcbb46fc0b4405364f5150415c3c1d5301fb71e97a766de": {
+  "assetId": "116835442105145",
+  "moderation": "Approved",
+  "name": "M_Prop_HubKit_LOD2",
+  "rbxm": "assets/models/M_Prop_HubKit_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "e5eaaa6cee733e539dcbb46fc0b4405364f5150415c3c1d5301fb71e97a766de",
+  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD2.fbx",
   "type": "Model"
  }
 }

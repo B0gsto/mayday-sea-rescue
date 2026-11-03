@@ -13,6 +13,8 @@
 --   * palms and agapanthus (code-built), marram, boulders and rock pools (existing kits), basking turtles
 --     (WildlifeRig), lateral buoys marking the NE entrance channel (red to port going in).
 -- Every prop is raycast onto the terrain; one whose ground or asset is missing is skipped.
+-- Those code-built props are the fallback: when M_Prop_LagoonKit loads, LagoonKit.luau places its Lego modules (and their
+-- invisible collision) instead. The turtles, buoys and scatter are in both, and so are the bench, lifebuoy and rope coil.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -20,6 +22,7 @@ local Workspace = game:GetService("Workspace")
 local AssetLoader =
 	require(script.Parent.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader")) :: any
 local Kit = require(script:WaitForChild("Kit"))
+local LagoonKit = require(script:WaitForChild("LagoonKit"))
 local StreetFurniture = require(script.Parent.Parent:WaitForChild("StreetFurniture")) :: any
 local WildlifeRig =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("WildlifeRig")) :: any
@@ -148,6 +151,16 @@ local function asset(
 	return holder
 end
 
+local function lookoutBench(root: Instance, at: Vector3)
+	local bench = StreetFurniture.build("M_Road_Bench")
+	local by = groundY(at.X + 7, at.Z + 9)
+	if bench and by then
+		local holder = model("LookoutBench", root)
+		bench:PivotTo(CFrame.new(at.X + 7, by, at.Z + 9) * CFrame.Angles(0, math.pi + 0.3, 0))
+		bench.Parent = holder
+	end
+end
+
 local function dayMark(root: Instance, at: Vector3)
 	local m = model("DayMark", root, Enum.ModelStreamingMode.Persistent)
 	local foot = CFrame.new(at)
@@ -203,13 +216,7 @@ local function dayMark(root: Instance, at: Vector3)
 	)
 	m.WorldPivot = foot
 	-- the viewpoint: a bench facing the lagoon (south) and a brass telescope
-	local bench = StreetFurniture.build("M_Road_Bench")
-	local by = groundY(at.X + 7, at.Z + 9)
-	if bench and by then
-		local holder = model("LookoutBench", root)
-		bench:PivotTo(CFrame.new(at.X + 7, by, at.Z + 9) * CFrame.Angles(0, math.pi + 0.3, 0))
-		bench.Parent = holder
-	end
+	lookoutBench(root, at)
 	local ty = groundY(at.X - 6, at.Z + 8)
 	if ty then
 		local t = model("Telescope", root)
@@ -286,6 +293,19 @@ local function stampPost(root: Instance, island: any)
 	)
 	m.PrimaryPart = plate
 	m.WorldPivot = foot
+end
+
+local function jettyProps(root: Instance, x: number, deckY: number, headZ1: number, headZ2: number)
+	local buoy = asset(
+		"M_Hbr_LifebuoyStation",
+		CFrame.new(x - 6, deckY, headZ2 - 0.8) * CFrame.Angles(0, math.pi, 0),
+		root,
+		false
+	)
+	if not buoy then
+		warn("[MermaidLagoon] lifebuoy station did not load")
+	end
+	asset("M_Hbr_Rope_Coil", CFrame.new(x + 5, deckY, headZ1 + 3), root, false)
 end
 
 local function jetty(root: Instance, island: any)
@@ -461,16 +481,7 @@ local function jetty(root: Instance, island: any)
 		0.08
 	)
 	m.WorldPivot = CFrame.new(x, deckY, dock.Z)
-	local buoy = asset(
-		"M_Hbr_LifebuoyStation",
-		CFrame.new(x - 6, deckY, headZ2 - 0.8) * CFrame.Angles(0, math.pi, 0),
-		root,
-		false
-	)
-	if not buoy then
-		warn("[MermaidLagoon] lifebuoy station did not load")
-	end
-	asset("M_Hbr_Rope_Coil", CFrame.new(x + 5, deckY, headZ1 + 3), root, false)
+	jettyProps(root, x, deckY, headZ1, headZ2)
 end
 
 local function cafe(root: Instance, island: any)
@@ -980,12 +991,27 @@ function M.place(base: Instance, island: any)
 		end
 	end
 	local l = island.landmark :: Vector3
-	try(dayMark, root, Vector3.new(l.X, groundY(l.X, l.Z) or l.Y, l.Z))
-	try(stampPost, root, island)
-	try(jetty, root, island)
-	try(cafe, root, island)
-	try(statue, root)
-	try(plants, root)
+	local dressed = false
+	local kit = AssetLoader.clone(LagoonKit.ASSET, "LOD0")
+	if kit then
+		try(function()
+			dressed = LagoonKit.build(root, kit, groundY, island.id)
+		end)
+		kit:Destroy()
+	end
+	if dressed then
+		try(lookoutBench, root, l)
+		local dock = island.dock :: Vector3
+		try(jettyProps, root, island.landing.X, 3.5, dock.Z + 6, dock.Z + 16) -- the kit's deck and T-head
+	else
+		root:ClearAllChildren()
+		try(dayMark, root, Vector3.new(l.X, groundY(l.X, l.Z) or l.Y, l.Z))
+		try(stampPost, root, island)
+		try(jetty, root, island)
+		try(cafe, root, island)
+		try(statue, root)
+		try(plants, root)
+	end
 	try(turtles, root)
 	try(buoys, root)
 	try(scatterAssets, root)
