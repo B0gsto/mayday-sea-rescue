@@ -14,7 +14,6 @@ local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfi
 local GoalBoard = require(Shared:WaitForChild("GoalBoard"))
 local Net = require(Shared:WaitForChild("Net"))
 local NextGoal = require(Shared:WaitForChild("NextGoal"))
-local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 
 local UI = script.Parent.Parent:WaitForChild("UI")
 local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
@@ -26,7 +25,7 @@ local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VF
 local GoalBoardController = {}
 local player = Players.LocalPlayer
 
-local PPS = 50 -- SurfaceGui pixels a stud: the 12 x 6 face is 600 x 300 px
+local PPS = 50 -- SurfaceGui pixels a stud: the 16 x 8 face is 800 x 400 px
 local POP_NEAR = 160 -- studs: a bar that filled out of sight pops when you come this close
 local BRICK = Color3.fromHex("FFC928") -- the Next chip's yellow icon bricks
 
@@ -65,12 +64,12 @@ local function face(part: BasePart, side: Enum.NormalId, key: string): Face
 	root.Parent = gui
 	local scale = Instance.new("UIScale")
 	scale.Parent = root
-	-- the icon on a white tile, left
+	-- the icon on a white tile, top left
 	local tile = Instance.new("Frame")
 	tile.Name = "Tile"
 	tile.BackgroundColor3 = Color3.new(1, 1, 1)
 	tile.Position = UDim2.fromOffset(8, 8)
-	tile.Size = UDim2.fromOffset(236, 236)
+	tile.Size = UDim2.fromOffset(240, 240)
 	Style.corner(tile, 28)
 	Style.stroke(tile, 8, true)
 	tile.Parent = root
@@ -85,42 +84,33 @@ local function face(part: BasePart, side: Enum.NormalId, key: string): Face
 			b.BackgroundColor3 = BRICK
 		end
 	end
-	-- the bar, right top: ink track, yellow fill (green when full)
-	local track = Instance.new("Frame")
-	track.Name = "Track"
-	track.BackgroundColor3 = Theme.Colors.ink
-	track.Position = UDim2.fromOffset(268, 28)
-	track.Size = UDim2.new(1, -276, 0, 84)
-	Style.corner(track, 42)
-	Style.stroke(track, 6, true)
-	track.Parent = root
-	local fill = Instance.new("Frame")
-	fill.Name = "Fill"
-	fill.BackgroundColor3 = Color3.new(1, 1, 1)
-	fill.Size = UDim2.fromScale(0, 1)
-	Style.corner(fill, 42)
-	Style.gradient(fill, Style.grad("yellow"))
-	fill.Parent = track
-	-- coin + "240/400", right bottom
-	local coin = Instance.new("ImageLabel")
-	coin.Name = "Coin"
-	coin.BackgroundTransparency = 1
-	coin.Image = UiImages.Hud.Coin
-	coin.ScaleType = Enum.ScaleType.Fit
-	coin.Position = UDim2.fromOffset(268, 140)
-	coin.Size = UDim2.fromOffset(92, 92)
-	coin.Parent = root
+	-- "240/400", as big as it fits: it has to read from the plaza on a phone
 	local amount = Instance.new("TextLabel")
 	amount.Name = "Amount"
 	amount.BackgroundTransparency = 1
 	amount.Font = Enum.Font.FredokaOne
 	amount.TextColor3 = Color3.new(1, 1, 1)
 	amount.TextScaled = true
-	amount.TextXAlignment = Enum.TextXAlignment.Left
-	amount.Position = UDim2.fromOffset(372, 136)
-	amount.Size = UDim2.new(1, -380, 0, 100)
+	amount.Position = UDim2.fromOffset(268, 8)
+	amount.Size = UDim2.new(1, -276, 0, 240)
 	amount.Parent = root
-	Style.stroke(amount, 6)
+	Style.stroke(amount, 8)
+	-- the bar along the bottom: ink track, yellow fill (green when full)
+	local track = Instance.new("Frame")
+	track.Name = "Track"
+	track.BackgroundColor3 = Theme.Colors.ink
+	track.Position = UDim2.fromOffset(8, 268)
+	track.Size = UDim2.new(1, -16, 0, 92)
+	Style.corner(track, 46)
+	Style.stroke(track, 6, true)
+	track.Parent = root
+	local fill = Instance.new("Frame")
+	fill.Name = "Fill"
+	fill.BackgroundColor3 = Color3.new(1, 1, 1)
+	fill.Size = UDim2.fromScale(0, 1)
+	Style.corner(fill, 46)
+	Style.gradient(fill, Style.grad("yellow"))
+	fill.Parent = track
 	return { fill = fill, amount = amount, scale = scale }
 end
 

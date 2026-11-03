@@ -4,8 +4,8 @@
 -- Two red posts, a blue face plate between them, a studded yellow cap. No shared planes (tests/ZFight.spec.luau).
 local GoalBoard = {}
 
-GoalBoard.W, GoalBoard.H = 12, 6 -- the face plate, studs
-GoalBoard.LIFT = 2.6 -- studs from the ground to the face's bottom edge
+GoalBoard.W, GoalBoard.H = 16, 8 -- the face plate, studs
+GoalBoard.LIFT = 3 -- studs from the ground to the face's bottom edge
 
 local STUDS = "rbxassetid://18878365966" -- the island's 4 x 4 stud tile (DockPieces)
 local RED = Color3.fromRGB(224, 56, 40)
@@ -46,7 +46,7 @@ function GoalBoard.build(at: CFrame): Model
 	studs.Name = "Studs"
 	studs.Face = Enum.NormalId.Top
 	studs.Texture = STUDS
-	studs.StudsPerTileU, studs.StudsPerTileV = 4, 4
+	studs.StudsPerTileU, studs.StudsPerTileV = 8, 8 -- chunky 2-stud studs, as DockPieces
 	studs.Color3 = YELLOW:Lerp(Color3.new(0, 0, 0), 0.12)
 	studs.Transparency = 0.15
 	studs.Parent = cap
