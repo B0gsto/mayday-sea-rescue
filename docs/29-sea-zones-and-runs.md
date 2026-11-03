@@ -41,6 +41,7 @@ pays at delivery, so "one more, or go home?" matters. **Pick-up boost:** each pi
 with a wake effect and sound.
 
 ## D. Pirates
+**Changed by docs/30 section 5:** no chase home; rams hit during collecting and cancel a Go back charge.
 Cartoon Lego pirate boat (placeholder Parts first). One per player at most, 2 per server per zone band budget.
 - Only with survivors aboard, in zone 2+, after the first 5 saved calls (no tutorial). Chance rises with zone and load.
 - Spawns 300+ studs away, off to the side, then steers an intercept course at 0.92x your craft's top speed, so

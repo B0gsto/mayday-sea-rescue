@@ -1,6 +1,6 @@
 # 00 · Mayday: Sea Rescue — the design (canonical)
 
-Last rewrite: 2026-10-25. **This file is the source of truth.** Every other doc must agree with it; where one
+Last rewrite: 2026-10-25. **Owner pivot 2026-11-03: docs/30-boat-pivot.md wins over this file where they differ.** **This file is the source of truth.** Every other doc must agree with it; where one
 doesn't, this wins. The change log that got here is docs/23 (a)–(n). Old designs (Port Haven town, cars, the
 phone, the dispatch radio, care/CPR steps, first person, the seaplane, land calls, the NPC racer) are gone; they
 live in git tag `pre-hub-cut` and in `docs/archive/`.
