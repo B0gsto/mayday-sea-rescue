@@ -3,8 +3,17 @@ swim glide, skinned to RIG_Seal, with the clips swim / surface / look / haul-out
 
 Geometry, armature and the analytic weights live in seal.py; the two texture sets (Coat 2048, Face 1024, each with a
 _Wet twin) are painted in sealtex.py by evaluating the same shape maths (seal_shape.py) the mesh is lofted from.
-Two MeshParts, one set each, as the pipeline wants one material per mesh: Body (the coat, the four flippers and their
-claws) and Head (the folded neck, the Roman-nose muzzle, the eyes and the whisker rows).
+Two MeshParts, one set each, as the pipeline wants one material per mesh: Body (the coat, the four flippers and the
+back studs) and Head (the neck, the blocky muzzle, the bead eyes). r1 (2026-11-01) is the toy pass; r2 makes the rest
+pose (what the game shows, static) the haul-out arch: head and chest raised, a bigger blocky head, splayed paddle
+fore-flippers, thick V hind flippers, three spine studs, neutral Lego grey with a near-white belly. r3: warm stone
+grey with flat dapples, a cream belly stepped in at the seam, a 1.25x boxy skull with a flat face carrying the eyes, a
+cream muzzle box and black nose block (lofted like the flippers), a taller S-curve arch, bigger darker flippers.
+r4: boxy hips-to-nose section, a narrower skull on a wider neck, a 1x3 brick plate with three studs on the back,
+rounded-rectangle (crisp bevel) flippers and muzzle box, a planar-mapped muzzle front, three clean colour zones.
+r5: rounded-rectangle body / head sections (flat panels), darker coat, bigger dapples, a darker seated plate,
+a clearer Swim, eye rings, a wider creased neck. r6: crisp-cornered torso (flat back to the hips, blunt tail), neutral
+stone grey with lighter flanks, a light plate, bigger slate flippers, a head-up Swim with the tail and hind flippers up.
 
     ~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- --build art/source/characters/M_Ani_GreySeal/build.py \
         --out-root build/prod/M_Ani_GreySeal --steps build,lod,validate,export,turntable
@@ -29,7 +38,8 @@ import versions  # noqa: E402
 NAME = "M_Ani_GreySeal"
 SET_NAME = "Seal"
 COAT, FACE = "Coat", "Face"
-DIMS_M = (0.570, 2.530, 0.505)              # a 2.5 m bull: 0.57 m across the body, 0.505 m tall
+DIMS_M = (1.003, 2.543, 0.940)              # r6 rest pose: a 2.5 m bull, head raised (0.94 m tall), the 1.12x
+                                            # fore-flippers splayed (1.0 m across them), the bigger muzzle box
 
 
 def clear_old():
@@ -118,23 +128,20 @@ def build():
                  {"name": SET_NAME, "set": FACE, "size": sealtex.FACE_SIZE, "wet": True}],
         "meshes": [{"object": ob_body, "set": COAT}, {"object": ob_head, "set": FACE}],
         "closeups": [
-            {"name": "RomanNose", "target": tgt(0.0, -0.96, 0.33, off, scale), "dist": 2.05, "az": 88.0, "el": 4.0},
-            {"name": "Whiskers", "target": tgt(0.16, -1.12, 0.18, off, scale), "dist": 1.40, "az": 138.0, "el": 4.0},
-            {"name": "Eye_Brow", "target": tgt(0.11, -0.95, 0.35, off, scale), "dist": 0.98, "az": 62.0, "el": 10.0},
+            {"name": "RomanNose", "target": tgt(0.0, -1.20, 0.20, off, scale), "dist": 2.05, "az": 88.0, "el": 4.0},
+            {"name": "Whiskers", "target": tgt(0.11, -1.22, 0.18, off, scale), "dist": 1.40, "az": 138.0, "el": 4.0},
+            {"name": "Eye_Brow", "target": tgt(0.155, -1.05, 0.36, off, scale), "dist": 0.98, "az": 62.0, "el": 10.0},
             {"name": "Neck_Folds", "target": tgt(0.06, -0.62, 0.34, off, scale), "dist": 1.40, "az": 118.0, "el": 22.0},
             {"name": "ForeFlipper", "target": tgt(0.30, 0.16, 0.17, off, scale), "dist": 1.30, "az": 146.0, "el": 34.0},
             {"name": "HindFlipper", "target": tgt(0.14, 1.10, 0.18, off, scale), "dist": 1.10, "az": 196.0, "el": 30.0},
         ],
         "tiling": False,
-        # The collapse decimate contracts thin UV islands (the flipper tips, the 20 claw cones, the whisker prisms),
-        # so a LOD's summed UV area falls further than the 15% rule even though the layout is the same regions on
-        # the same atlas and the bounds match to 0.009 (measured: Body LOD1 24%, Body LOD2 44%, Head LOD2 42%).
-        # Bounds-safe at these distances; the clean fix is a lower-density LOD0 loft, a later pass.
-        "waivers": {"LOD UV layout": "thin islands (flipper tips, claws, whiskers) contract under collapse "
-                                     "decimation; same region rectangles on the same atlas, bounds within 0.009"},
+        "lod_symmetry": "X",                            # r5: the flat panels decimate unevenly without it (LOD2 UV area)
+        "waivers": {},                                  # r1: no claws / whisker prisms, the LOD UV layout passes
     }
 
 
 def tgt(x, y, z, off, scale):
     """A build-space (metre) point in the exported (stud, centred) space, for the turntable's close-ups."""
+    x, y, z = seal.S.bend([(x, y, z)])[0]
     return [round((x + off[0]) * scale, 4), round((y + off[1]) * scale, 4), round((z + off[2]) * scale, 4)]

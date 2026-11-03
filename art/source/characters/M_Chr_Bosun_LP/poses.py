@@ -59,14 +59,20 @@ HIP = bl_pivot((0, 1.5, 1.77))
 ROOT = bl_pivot((0, 0, -0.85))
 
 POSES = {
-    "sit": {
-        "root": {"rot": bl_rot(35, 0, 0), "pivot": HIP, "move": Vector((0, 0, -0.55))},
-        "neck": bl_rot(-28, 0, 0),
+    "sit": {      # r4: rump, belly and all four paws on the ground (checked numerically; the fixed front-leg length caps the
+                  # body pitch at ~41 deg, so the head lifts instead); hind thighs splay 20 deg so the cream hind paws poke
+                  # forward beside the front paws; the tail curls round his left hip along the floor
+        "root": {"rot": bl_rot(41, 0, 0), "pivot": HIP, "move": Vector((0, 0, -0.55))},
+        "neck": bl_rot(-38, 0, 0),
         "jaw": bl_rot(-4, 0, 0),
-        "tail1": bl_rot(14, 0, 0),
-        "front": bl_rot(-35, 0, 0),
-        "back_up": bl_rot(35, 0, 0),
-        "back_low": bl_rot(-150, 0, 0),
+        "tail1": bl_rot(-130, -100, 0),
+        "tail2": bl_rot(-20, -30, 0),
+        "fl_up": bl_rot(-41, 0, 0),      # cancel the body pitch: front legs stand straight, paws together
+        "fr_up": bl_rot(-41, 0, 0),
+        "bl_up": bl_rot(78, 0, 0),
+        "br_up": bl_rot(78, 0, 0),
+        "bl_lo": bl_rot(-100, 0, 0),     # shin swings 19 deg forward: the paw pokes out ahead of the haunch
+        "br_lo": bl_rot(-100, 0, 0),
     },
     "trot": {
         "root": {"rot": bl_rot(3, 0, 0), "pivot": ROOT, "move": Vector((0, 0, 0.04))},
@@ -141,6 +147,21 @@ def world_for(part_name, pose):
     return m
 
 
+_BASE = {}
+
+
+def apply(objs, pose_name):
+    """Pose objs in place: built (identity) or pipeline-reposed (rest CFrame) meshes, named with or without PREFIX.
+    Harness parts are welded to the Torso in game (BosunRig `harness()`), so they take the Torso's matrix exactly."""
+    pose = POSES[pose_name]
+    torso = world_for("Torso", pose)
+    for o in objs:
+        part = o.name[len(bb.PREFIX):] if o.name.startswith(bb.PREFIX) else o.name
+        spec = next(p for p in bb.PARTS if p["name"] == part)
+        m = torso if spec["harness"] else world_for(part, pose)
+        o.matrix_world = m @ _BASE.setdefault(o.name, o.matrix_world.copy())
+
+
 def look_at(cam, target):
     cam.rotation_euler = (target - cam.location).to_track_quat("-Z", "Y").to_euler()
 
@@ -206,9 +227,7 @@ def main():
     out_dir = common.review_dir("M_Chr_Bosun_LP")
     os.makedirs(out_dir, exist_ok=True)
     for pose_name, pose in POSES.items():
-        for o in objs:
-            part = o.name[len(bb.PREFIX):]
-            o.matrix_world = world_for(part, pose)
+        apply(objs, pose_name)
         bpy.context.view_layer.update()
         lo, hi = bounds(objs)
         ground = Matrix.Translation((0, 0, -lo.z))
@@ -227,4 +246,5 @@ def main():
     print("[poses] done")
 
 
-main()
+if __name__ == "__main__":
+    main()

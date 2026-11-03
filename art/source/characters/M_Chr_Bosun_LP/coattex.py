@@ -1,7 +1,7 @@
 """Bosun LP: one 1024 swatch-atlas set (ALB / NOR / RGH / MET) for the segmented low-poly dog.
 
-Faces are UV'd to small swatches inside shaded zones (coat top-to-under gradient, harness, webbing, tape,
-eyes, nose, tongue). Form comes from the low-poly geometry; the atlas carries only colour, a subtle
+Faces are UV'd to small swatches inside shaded zones (honey coat and cream points with a top-to-under
+gradient, mid-brown ears, harness, navy webbing, white tape, glossy eyes + glint, nose, tongue). Flat plastic: no fur banding. Form comes from the low-poly geometry; the atlas carries only colour, a subtle
 top-lighter gradient, and roughness. Pure numpy, safe inside Blender.
 """
 import os
@@ -24,9 +24,11 @@ REGIONS = {
     "nose": (0.72, 0.80, 0.52, 0.60),
     "tongue": (0.82, 0.90, 0.52, 0.60),
     "inner": (0.92, 1.00, 0.52, 0.60),
+    "tan": (0.00, 0.50, 0.62, 1.00),
+    "ear": (0.52, 0.72, 0.62, 1.00),
 }
-ROUGH = {"coat": 0.86, "harness": 0.55, "webbing": 0.78, "tape": 0.32, "eye": 0.16,
-         "highlight": 0.22, "nose": 0.30, "tongue": 0.46, "inner": 0.74}
+ROUGH = {"coat": 0.44, "harness": 0.46, "webbing": 0.70, "tape": 0.28, "eye": 0.05,
+         "highlight": 0.10, "nose": 0.20, "tongue": 0.42, "inner": 0.74, "tan": 0.34, "ear": 0.44}   # glossy plastic
 
 
 def _hex(h):
@@ -71,12 +73,14 @@ def make(size=SIZE, seed=7):
     alb[:] = _hex("#1E1C1E")
     alb += rng.normal(0.0, 0.006, alb.shape).astype(np.float32)
 
-    _gradient(alb, "coat", "#332E32", "#1E1C1E", rng, noise=0.010, bands=0.035)
-    _gradient(alb, "harness", "#FF7A1F", "#C64A00", rng, noise=0.020, bands=0.05)
-    _plain(alb, "webbing", "#24272D", rng, noise=0.010, pattern="weave")
-    _plain(alb, "tape", "#D9DCDF", rng, noise=0.012, pattern="tape")
-    _plain(alb, "eye", "#3B2414", rng, noise=0.010)
-    _plain(alb, "highlight", "#F3EFE4", rng, noise=0.008)
+    _gradient(alb, "coat", "#FFCC33", "#FAC030", rng, noise=0.004)   # r6: buttery yellow-gold (renders ~#CCB05E on the AD sheet), shaded side lifted
+    _gradient(alb, "tan", "#FFF1D2", "#F2DAAE", rng, noise=0.004)
+    _gradient(alb, "ear", "#7A3F1E", "#5E2E14", rng, noise=0.004)   # r6: chestnut
+    _gradient(alb, "harness", "#FF6600", "#C83208", rng, noise=0.020, bands=0.05)
+    _plain(alb, "webbing", "#1E2A48", rng, noise=0.010, pattern="weave")
+    _plain(alb, "tape", "#E9ECEF", rng, noise=0.012, pattern="tape")
+    _plain(alb, "eye", "#140C08", rng, noise=0.004)
+    _plain(alb, "highlight", "#FFFFFF", rng, noise=0.0)
     _gradient(alb, "nose", "#242124", "#1B191B", rng, noise=0.006)
     _plain(alb, "tongue", "#C9707E", rng, noise=0.010)
     _plain(alb, "inner", "#3B2729", rng, noise=0.010)
