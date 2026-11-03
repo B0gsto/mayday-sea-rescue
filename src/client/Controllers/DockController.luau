@@ -638,10 +638,7 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 		end,
 	})
 	rb.root.Name = "Robux"
-	local small = Instance.new("UIScale")
-	small.Scale = 0.8
-	small.Parent = rb.root
-	rb.root.Size = UDim2.new(0.4 / 0.8, (-4 - glass * 0.4) / 0.8, 1, 0)
+	rb.root.Size = UDim2.new(0.4, -4 - glass * 0.4, 1, 0) -- no UIScale here: Style.press owns the root's one
 	rb.root.LayoutOrder = 1
 	if not livePrice[id] then
 		task.spawn(function()

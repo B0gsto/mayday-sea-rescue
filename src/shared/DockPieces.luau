@@ -2817,7 +2817,7 @@ local function rescueBoathouse(m: Model, b: CFrame, level: number?)
 		)
 	end
 	-- docs/24 C r3: a boat trailer inside the pen, ready for the slip
-	local trailer = at * CFrame.new(-5, 0, d / 2 - 4.6)
+	local trailer = at * CFrame.new(-5, 0.8, d / 2 - 4.6) -- on the pen's plinth, wheels not sunk in it
 	for _, x in { -2.2, 2.2 } do
 		studTop(
 			brick(
