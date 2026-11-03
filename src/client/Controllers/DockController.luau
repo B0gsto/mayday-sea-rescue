@@ -863,7 +863,7 @@ local function pulseRing(face: GuiObject)
 end
 
 -- Live 2026-11-01: 10 of 121 new players opened the tablet and never found the Hut's Free button. It pops once
--- per open (FX_Pop), then a soft white shine band crosses it every 1.8 s (well under 3 Hz, no flash, no ring:
+-- per open (FX_Pop), then a soft white shine band crosses it every 1.9 s (well under 3 Hz, no flash, no ring:
 -- the owner dislikes outlines). Reduce motion: the band rests still on it. Gone on close / a refresh.
 local function cueHut(card: GuiObject)
 	local buy = card:FindFirstChild("Cash", true)
@@ -880,12 +880,14 @@ local function cueHut(card: GuiObject)
 	shine.ZIndex = 3
 	Style.corner(shine, S.corner)
 	local band = Instance.new("UIGradient")
-	band.Rotation = 20
+	band.Rotation = 25
 	band.Transparency = NumberSequence.new({
 		NumberSequenceKeypoint.new(0, 1),
-		NumberSequenceKeypoint.new(0.38, 1),
-		NumberSequenceKeypoint.new(0.5, 0.45),
-		NumberSequenceKeypoint.new(0.62, 1),
+		NumberSequenceKeypoint.new(0.3, 1),
+		NumberSequenceKeypoint.new(0.45, 0.4),
+		NumberSequenceKeypoint.new(0.5, 0.1),
+		NumberSequenceKeypoint.new(0.55, 0.4),
+		NumberSequenceKeypoint.new(0.7, 1),
 		NumberSequenceKeypoint.new(1, 1),
 	})
 	band.Offset = Vector2.new(if still then 0 else -1, 0)
@@ -895,7 +897,7 @@ local function cueHut(card: GuiObject)
 	if not still then
 		TweenService:Create(
 			band,
-			TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false, 1.1),
+			TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false, 0.9),
 			{ Offset = Vector2.new(1, 0) }
 		):Play()
 	end
