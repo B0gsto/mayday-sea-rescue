@@ -1,7 +1,7 @@
 """Spin-cinematic flipbooks (prize-wheel RNG roll, docs/26): Lego-toy sprites, white-ish so code tints per rarity.
 
-  FX_SpinFlare      4x4  a chunky 8-point stud star: studs spiral in, it charges, bursts (ring + studs), settles
-  FX_SpinRays       4x4  12 rounded plastic rays shoot out, hold, fly outward and thin (god-ray burst / tunnel)
+  FX_SpinFlare      4x4  a chunky 8-point stud star: tiles spiral in, it charges, bursts (a beaded ring), settles
+  FX_SpinRays       4x4  10 rounded plastic rays shoot out to frame 4, then travel outward and fade (god-ray burst / tunnel)
   FX_SpinBolt       2x2  four chunky toy lightning bolts (variants: random start frame, fps 0)
   FX_SpinHaloBrick  4x4  a gold 1x2 Lego brick tumbling one full turn (seamless loop)
   FX_SpinHaloRing   1x1  a soft round ring glow (tint gold)
@@ -55,16 +55,17 @@ def back_out(t, s=1.7):
 # ---------------------------------------------------------------- scene (live session: wipe data, keep the add-on)
 
 
-def clear_objects():
+def clear_objects(keep=("CAMERA", "LIGHT")):
     for o in list(bpy.data.objects):
-        bpy.data.objects.remove(o, do_unlink=True)
+        if o.type not in keep:
+            bpy.data.objects.remove(o, do_unlink=True)
     for m in list(bpy.data.meshes):
         bpy.data.meshes.remove(m)
 
 
 def scene(cell, ortho):
-    clear_objects()
-    for coll in (bpy.data.materials, bpy.data.lights, bpy.data.cameras):
+    clear_objects(keep=())
+    for coll in (bpy.data.lights, bpy.data.cameras):  # materials stay: the sheet functions make them first
         for b in list(coll):
             coll.remove(b)
     sc = bpy.context.scene
@@ -88,7 +89,7 @@ def scene(cell, ortho):
     w.use_nodes = True
     bg = next(n for n in w.node_tree.nodes if n.type == "BACKGROUND")
     bg.inputs["Color"].default_value = (*lin("#C8D2E0"), 1)
-    bg.inputs["Strength"].default_value = 0.35
+    bg.inputs["Strength"].default_value = 0.3
     cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam"))
     cam.data.type = "ORTHO"
     cam.data.ortho_scale = ortho
@@ -96,7 +97,7 @@ def scene(cell, ortho):
     sc.collection.objects.link(cam)
     sc.camera = cam
     # soft key from the image's upper left, cool fill: the bevels read as rounded plastic
-    for name, loc, e, col in (("Key", (-5, 5, 7), 900, "#FFF6E8"), ("Fill", (5, -4, 5), 250, "#DDE8FF")):
+    for name, loc, e, col in (("Key", (-5, 5, 6), 620, "#FFF6E8"), ("Fill", (5, -4, 5), 120, "#DDE8FF")):
         d = bpy.data.lights.new(name, "AREA")
         d.energy, d.size, d.color = e, 6, lin(col)
         o = bpy.data.objects.new(name, d)
@@ -115,6 +116,8 @@ def plastic(name, hexcol, emit=0.35, rough=0.3, alpha=1.0):
     b.inputs["Emission Color"].default_value = (*lin(hexcol), 1)
     b.inputs["Emission Strength"].default_value = emit
     b.inputs["Alpha"].default_value = alpha
+    m.surface_render_method = "BLENDED" if alpha < 1 else "DITHERED"
+    m.use_backface_culling = True
     return m
 
 
@@ -248,90 +251,91 @@ def bake(name, grid, ortho, frames, build, glow=lambda i: 0.0, radius=6, bleed=(
 
 
 def flare():
-    m_star = plastic("Star", WHITE, emit=0.55)
-    m_stud = plastic("Stud", WHITE, emit=0.7)
-    STAR = star(8, 1.0, 0.56, 0.2, p=3.2)
+    m_star = plastic("Star", WHITE, emit=0.42)
+    m_stud = plastic("Stud", WHITE, emit=0.48)
+    STAR = star(8, 1.0, 0.7, 0.4, p=1.4)
+    m_lip = plastic("Lip", "#AEB7C8", emit=0.12)
+    SIZE = [0.6, 0.63, 0.67, 0.71, 0.76, 0.81, 0.85, 0.86, 0.7, 0.58]  # swell, then squash before the pop
     BURST = 10  # the impact frame (of 16)
+
+    def tile(name, r, x, y, z=0.0, mat=m_stud):
+        slab(name, circle(r, 32), r * 0.7, r * 0.3, mat, loc=(x, y, z))
 
     def build(i):
         if i < BURST:  # charge: the star swells and turns, six round tiles spiral in
             c = i / (BURST - 1)
-            s, rot, alpha = 0.3 + 0.42 * ease_in(c, 1.6), math.radians(-30 + 30 * c), 1.0
+            s, rot, alpha = SIZE[i], math.radians(-30 + 30 * c), 1.0
             for k in range(6):
-                rr = 0.24 + 0.72 * (1 - ease_in(c, 1.3))
+                rr = 0.42 + 0.56 * (1 - ease_in(c, 1.3))
                 a = TAU * k / 6 + math.radians(110) * c
-                slab("Tile%d" % k, circle(0.09 * (1 - 0.35 * c), 32), 0.07, 0.025, m_stud,
-                     loc=(rr * math.cos(a), rr * math.sin(a), 0))
-        else:  # burst then settle: the star pops past full size and eases back, a ring and studs fly out
+                tile("Tile%d" % k, 0.125 * (1 - 0.35 * c), rr * math.cos(a), rr * math.sin(a))
+        else:  # burst then settle: the star pops to full size and eases back, a beaded ring flies out
             u = (i - BURST) / (15 - BURST)
-            s = 1.0 - 0.38 * ease_out(u, 2)
+            s = 1.0 - 0.42 * ease_out(u, 2)
             rot = math.radians(6 * u)
             alpha = 1.0 - 0.6 * ease_in(u, 1.5)
-            m_ring = plastic("Ring", WHITE, emit=0.7, alpha=1.0 - ease_in(u, 1.4))
-            r = 0.5 + 0.44 * ease_out(u, 2)
-            w = 0.075 * (1 - 0.55 * u)
-            slab("Ring", *ring_pts(r - w, r + w)[:1], 0.06, 0.03, m_ring, holes=ring_pts(r - w, r + w)[1])
-            if u > 0:
-                m_fly = plastic("Fly", WHITE, emit=0.7, alpha=1.0 - ease_in(u, 1.2))
-                for k in range(8):
-                    a = TAU * (k + 0.5) / 8
-                    rr = 0.42 + 0.5 * ease_out(u, 2)
-                    slab("Fly%d" % k, circle(0.075 * (1 - 0.5 * u), 32), 0.07, 0.025, m_fly,
-                         loc=(rr * math.cos(a), rr * math.sin(a), 0))
-        plastic("Star", WHITE, emit=0.55, alpha=alpha)
-        plastic("Stud", WHITE, emit=0.7, alpha=alpha)
-        st = slab("Star", [(x * s, y * s) for x, y in STAR], 0.16 * s + 0.04, 0.07 * s + 0.02, m_star, rot=rot)
-        slab("Stud", circle(0.17 * s + 0.03, 48), 0.12, 0.035, m_stud, loc=(0, 0, st.modifiers[0].thickness))
+            m_ring = plastic("Ring", WHITE, emit=0.48, alpha=1.0 - ease_in(u, 1.4))
+            r = 0.78 + 0.24 * ease_out(u, 2)
+            for k in range(12):  # a studded shockwave: round tiles on the ring, not a line
+                a = TAU * (k + 0.5) / 12 + math.radians(20 * u)
+                tile("Bead%d" % k, 0.085 * (1 - 0.45 * u), r * math.cos(a), r * math.sin(a), mat=m_ring)
+        plastic("Star", WHITE, emit=0.42, alpha=alpha)
+        plastic("Stud", WHITE, emit=0.48, alpha=alpha)
+        th = 0.18 * s + 0.05
+        slab("Star", [(x * s, y * s) for x, y in STAR], th, 0.09 * s + 0.02, m_star, rot=rot)
+        plastic("Lip", "#AEB7C8", emit=0.12, alpha=alpha)
+        slab("Lip", circle(0.34 * s + 0.03, 48), 0.03, 0.012, m_lip, loc=(0, 0, th - 0.01))
+        tile("Stud", 0.26 * s + 0.02, 0, 0, th + 0.02)
+        for k in range(4):  # a stud tile on each long point: it reads as a toy piece, not a sparkle
+            a = rot + TAU * k / 4
+            tile("Pip%d" % k, 0.075 * s + 0.01, 0.66 * s * math.cos(a), 0.66 * s * math.sin(a), th - 0.01)
 
-    glow = [0.25, 0.28, 0.31, 0.35, 0.39, 0.44, 0.5, 0.56, 0.63, 0.72, 1.0, 0.8, 0.6, 0.42, 0.28, 0.16]
-    bake("FX_SpinFlare", 4, 2.5, 16, build, glow=lambda i: glow[i], radius=6)
+    glow = [0.14, 0.16, 0.18, 0.2, 0.23, 0.26, 0.3, 0.34, 0.38, 0.42, 0.75, 0.55, 0.4, 0.28, 0.18, 0.1]
+    bake("FX_SpinFlare", 4, 2.6, 16, build, glow=lambda i: glow[i], radius=6)
 
 
 def rays():
-    m = plastic("Ray", WHITE, emit=0.6)
+    m = plastic("Ray", WHITE, emit=0.42)
+    m_stud = plastic("RayStud", WHITE, emit=0.5)
+    HUB = 0.34  # a clean gap: the flare sits there and tinted bases never merge into a blob
 
     def build(i):
         spin = math.radians(1.5 * i)
-        if i <= 5:  # shoot out
-            u = back_out(i / 5, 1.2)
-            r0, grow, wk, alpha = 0.13, u, 0.55 + 0.45 * min(u, 1), 1.0
-        elif i <= 9:  # hold
-            r0, grow, wk, alpha = 0.13, 1.0, 1.0, 1.0
-        else:  # fly outward, thin and fade: the tunnel feel
-            v = (i - 9) / 6
-            r0, grow, wk, alpha = 0.13 + 0.62 * ease_in(v, 1.3), 1.0, 1.0 - 0.6 * v, 1.0 - 0.75 * ease_in(v, 1.3)
-        plastic("Ray", WHITE, emit=0.6, alpha=alpha)
-        for k in range(12):
+        if i <= 4:  # shoot out, peak at frame 4
+            u = back_out(i / 4, 1.2)
+            r0, grow, wk, alpha, push = HUB, u, 0.6 + 0.4 * min(u, 1), 1.0, 0.0
+        else:  # then the whole ray travels outward, thins and is gone by frame 14 (the tunnel feel)
+            v = min((i - 4) / 10, 1)
+            r0, grow, wk, alpha, push = HUB + 0.62 * ease_in(v, 1.2), 1.0, 1.0 - 0.5 * v, 1.0 - ease_in(v, 2.2), 0.24 * v
+        if alpha <= 0:
+            return
+        plastic("Ray", WHITE, emit=0.42, alpha=alpha)
+        plastic("RayStud", WHITE, emit=0.5, alpha=alpha)
+        for k in range(10):  # regular long / short rhythm, wide and round-tipped so it holds on a phone
             long_ = k % 2 == 0
-            L = 0.85 if long_ else 0.5
-            w0, w1 = (0.035, 0.085) if long_ else (0.03, 0.06)
-            r1 = max(r0 + 0.02, 0.13 + L * grow + (0.06 * (i - 9) / 6 if i > 9 else 0))
-            a = TAU * k / 12 + spin
-            slab("Ray%d" % k, ray(a, r0, min(r1, 1.0 - w1), w0 * wk, w1 * wk), 0.06, 0.025, m)
+            w0, w1 = (0.105 * wk, 0.07 * wk) if long_ else (0.08 * wk, 0.05 * wk)
+            r1 = max(r0 + 0.02, HUB + (0.6 if long_ else 0.36) * grow + push)
+            a = TAU * k / 10 + spin
+            slab("Ray%d" % k, ray(a, r0, r1, w0, w1), 0.08, 0.035, m)
+            if long_ and r1 - r0 > 0.14:  # a stud on each long ray's fat end: toy rays, not light streaks
+                rs = w0 * 0.58
+                slab("Stud%d" % k, circle(rs, 28), rs * 0.7, rs * 0.3, m_stud,
+                     loc=((r0 + 0.02) * math.cos(a), (r0 + 0.02) * math.sin(a), 0.075))
 
-    glow = [0.35, 0.5, 0.65, 0.75, 0.8, 0.8, 0.72, 0.66, 0.6, 0.55, 0.45, 0.36, 0.28, 0.2, 0.14, 0.1]
-    bake("FX_SpinRays", 4, 2.3, 16, build, glow=lambda i: glow[i], radius=5)
-
-
-def bolt_outline(centre, w_top, w_bot):
-    n = len(centre)
-    left, right = [], []
-    for j, (x, y) in enumerate(centre[:-1]):
-        hw = w_top + (w_bot - w_top) * j / max(n - 2, 1)
-        left.append((x - hw, y))
-        right.append((x + hw, y))
-    return right + [centre[-1]] + list(reversed(left))  # down the right side, the tip, up the left side
+    glow = [0.2, 0.3, 0.42, 0.52, 0.55, 0.5, 0.46, 0.42, 0.38, 0.32, 0.26, 0.2, 0.14, 0.08, 0.04, 0.0]
+    bake("FX_SpinRays", 4, 2.75, 16, build, glow=lambda i: glow[i], radius=5)
 
 
 def bolt():
-    m = plastic("Bolt", WHITE, emit=0.65)
-    emoji = [(0.06, 1.0), (0.46, 1.0), (0.2, 0.2), (0.44, 0.2), (-0.26, -1.0), (-0.06, -0.08), (-0.34, -0.08)]
+    m = plastic("Bolt", WHITE, emit=0.44)
+    emoji = [(0.06, 1.0), (0.46, 1.0), (0.2, 0.2), (0.44, 0.2), (-0.18, -1.0), (-0.32, -1.0), (-0.06, -0.08), (-0.34, -0.08)]
     variants = [
-        [list(reversed(emoji))],  # the iconic chunky bolt (CCW)
-        [bolt_outline([(0.05, 1.0), (-0.2, 0.42), (0.16, 0.12), (-0.12, -0.38), (0.14, -0.62), (-0.04, -1.0)], 0.17, 0.07)],
-        [bolt_outline([(-0.1, 1.0), (0.18, 0.5), (-0.12, 0.08), (0.12, -0.36), (-0.12, -0.66), (0.06, -1.0)], 0.16, 0.06),
-         bolt_outline([(0.06, 0.24), (0.3, -0.02), (0.22, -0.3), (0.4, -0.56)], 0.07, 0.04)],
-        [bolt_outline([(0.12, 1.0), (-0.16, 0.6), (0.1, 0.3), (-0.2, -0.1), (0.04, -0.4), (-0.18, -0.7), (0.02, -1.0)], 0.18, 0.06)],
+        [emoji],  # the iconic chunky bolt
+        [[(-0.38, 1.0), (0.02, 1.0), (-0.12, 0.46), (0.24, 0.46), (0.04, -0.08), (0.38, -0.08), (0.24, -1.0), (0.1, -1.0),
+          (-0.08, -0.28), (-0.36, -0.28), (-0.2, 0.24), (-0.52, 0.24)]],  # three steps
+        [[(-x, y) for x, y in emoji]],  # mirrored
+        [[(-0.06, 1.0), (0.44, 1.0), (0.14, 0.44), (0.42, 0.44), (0.02, -0.16), (0.3, -0.16), (-0.12, -1.0), (-0.27, -1.0),
+          (-0.14, -0.4), (-0.42, -0.4), (-0.14, 0.16), (-0.42, 0.16)]],  # steep, three steps
     ]
 
     def ccw(p):
@@ -340,13 +344,13 @@ def bolt():
 
     def build(i):
         for k, poly in enumerate(variants[i]):
-            slab("Bolt%d" % k, ccw(poly), 0.1, 0.045, m)
+            slab("Bolt%d" % k, ccw(poly), 0.14, 0.05, m, loc=(0, 0, -0.03 * k))
 
-    bake("FX_SpinBolt", 2, 2.35, 4, build, glow=lambda i: 0.85, radius=12)
+    bake("FX_SpinBolt", 2, 2.7, 4, build, glow=lambda i: 0.35, radius=7)
 
 
 def halo_brick():
-    m = plastic("Gold", GOLD, emit=0.18, rough=0.22)
+    m = plastic("Gold", GOLD, emit=0.3, rough=0.22)
     from mathutils import Quaternion, Vector
 
     axis = Vector((1.0, 0.55, 0.35)).normalized()
@@ -377,7 +381,7 @@ def halo_brick():
 
 
 def halo_ring():
-    m = plastic("RingGlow", WHITE, emit=1.0)
+    m = plastic("RingGlow", WHITE, emit=0.6)
 
     def build(i):
         o, h = ring_pts(0.7, 0.8, 128)

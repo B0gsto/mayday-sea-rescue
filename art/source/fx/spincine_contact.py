@@ -44,7 +44,7 @@ def add(bg, spr, x, y, tint, k=1.0):
 
 
 def resize(spr, s):
-    im = Image.fromarray((np.clip(spr, 0, 1) * 255).astype(np.uint8), "RGBA")
+    im = Image.fromarray((np.clip(spr, 0, 1) * 255).astype(np.uint8))
     return np.asarray(im.resize((s, s), Image.LANCZOS), np.float32) / 255
 
 
@@ -69,7 +69,7 @@ def main(out):
     row2.append(bg)
     # epic: rays + flare charge stacked
     bg = sky()
-    add(bg, resize(frame(sheets["FX_SpinRays"], 4, 7), T), 0, 0, RARITY[1], 0.8)
+    add(bg, resize(frame(sheets["FX_SpinRays"], 4, 5), T), 0, 0, RARITY[1], 0.8)
     add(bg, resize(frame(sheets["FX_SpinFlare"], 4, 8), T // 2), T // 4, T // 4, RARITY[1])
     row2.append(bg)
     # legendary bolt strike onto a flare
