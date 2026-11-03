@@ -130,11 +130,11 @@ local WORK_SPOTS: { [string]: { WorkSlot } } = {
 		{ x = 6.6, z = -3.2, tx = 7.3, tz = -0.6 }, -- the tool chests
 	},
 	RescueBoathouse = {
-		{ x = -5, z = -1, tx = -5, tz = 4.4 }, -- the trailer
+		{ x = -3.2, z = 3, tx = -5, tz = 4.4 }, -- the trailer (behind the slip hall's back wall)
 		{ x = -9.6, z = -3.4, tx = -9.9, tz = -5.8 }, -- the lifebuoy rack
 		{ x = 7, z = -5.2, tx = 7, tz = -2.7 }, -- the work table
 		{ x = 3.8, z = -2.6, tx = 0, tz = -2.6 }, -- the rescue boat
-		{ x = 8.6, z = 2, tx = 8.6, tz = 5.8 }, -- the lifeguard chair
+		{ x = 8.6, z = 2.6, tx = 8.6, tz = 5.8 }, -- the lifeguard chair (clear of the hall wall's end)
 	},
 	Clinic = {
 		{ x = -4.8, z = -1.8, tx = -4.8, tz = 2.6 }, -- at the foot of bed A

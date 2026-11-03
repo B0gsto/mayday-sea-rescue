@@ -2821,19 +2821,62 @@ local function rescueBoathouse(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.RescueBoathouse
 	local at = b * def.spot
 	-- Lv2 RIB pontoon on the -X side, Lv3 lifeboat berth + shed roof on the +X side (M_Bld_RescueBoathouseAddons); the
-	-- middle and the gate stay clear. The lifeguard chair stood where the Lv3 berth's back deck and roof go.
-	local lv = if addonMesh(
-			m,
-			at,
-			level or 1,
-			"M_Bld_RescueBoathouseAddons",
-			"RescueBoathouseMesh"
-		)
-		then level or 1
-		else 1
+	-- middle and the gate stay clear. The lifeguard chair stood where the Lv3 berth's back deck and tower go.
+	-- PERF-BL11: the asset's Lv1_* layers mesh the whole boathouse; then the code keeps only the plinth, the name sign, the
+	-- lamp and the Console (the act) hidden inside the mesh console. The Lv2 bay replaces the right front and side walls
+	-- (L07), the Lv3 bay and front-corner tower the left ones (L08), the Lv3 back deck the chair (L09). The mesh fills its
+	-- corner, so no corner tree (DockPieces.building skips it on NoTree).
+	local loaded =
+		addonMesh(m, at, level or 1, "M_Bld_RescueBoathouseAddons", "RescueBoathouseMesh", true)
+	local lv = if loaded then level or 1 else 1
+	local mesh = if loaded then m:FindFirstChild("RescueBoathouseMesh") else nil
+	local lv1 = mesh ~= nil and mesh:FindFirstChild("Lv1_L03_Boat", true) ~= nil -- an older upload has no Lv1
+	if mesh then
+		for _, p in mesh:GetDescendants() do
+			if
+				p:IsA("BasePart")
+				and (
+					(lv >= 2 and string.match(p.Name, "^Lv1_L07_"))
+					or (
+						lv >= 3
+						and (string.match(p.Name, "^Lv1_L08_") or string.match(p.Name, "^Lv1_L09_"))
+					)
+				)
+			then
+				p:Destroy()
+			end
+		end
+	end
 	local w, d = yardSize(def)
 	local spec = HUTS.RescueBoathouse
 	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
+	if lv1 then
+		m:SetAttribute("NoTree", true)
+		local nameSign =
+			sign( -- on the portal header at every level, inside the mesh's yellow rim; the mesh's life ring covers the icon
+				m,
+				Vector3.new(14.4, 4.35, 0.4),
+				at * CFrame.new(0, 11.15, -15.45),
+				BRICK_RED, -- the red band behind white letters
+				"Rescue\nBoathouse", -- two lines: fatter on a phone
+				spec.icon
+			)
+		local stroke = Instance.new("UIStroke") -- thicker letters
+		stroke.Color = BRICK_WHITE
+		stroke.Thickness = 5
+		stroke.Parent = nameSign:FindFirstChildWhichIsA("TextLabel", true)
+		local c =
+			brick( -- inside the mesh console (its faces all hidden): keeps the crew act and the collision
+				m,
+				"Console",
+				Vector3.new(1.8, 1.4, 1.8),
+				at * CFrame.new(0, 4.3, -d / 2 + 4.21), -- the mesh boat stands ~7 studs (5.9 here) forward of the code one
+				BRICK_WHITE
+			)
+		c.CastShadow = false
+		lamp(m, at, -w / 2 - 5, d / 2 + 4, 0)
+		return
+	end
 	for _, x in { -1, 1 } do
 		for _, z in { -1, 1 } do
 			brick(

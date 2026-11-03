@@ -11335,6 +11335,15 @@
   "source": "assets/textures/M_Rock_Cliff_05/T_Cliff05_Granite_ALB.png",
   "type": "Image"
  },
+ "Image:8608023e4d2851471404450f9540184c21e7fe27d1f57b666ad456aee426549f": {
+  "assetId": "115194074228860",
+  "imageId": "115194074228860",
+  "moderation": "Reviewing",
+  "name": "T_RescueBoathouse_Brick_ALB",
+  "sha": "8608023e4d2851471404450f9540184c21e7fe27d1f57b666ad456aee426549f",
+  "source": "assets/textures/M_Bld_RescueBoathouseAddons/T_RescueBoathouse_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:861aa1ddeb283d2c9e1bcd555b0f316cbff19c7854512987374d6cd831eda216": {
   "assetId": "94775411869752",
   "imageId": "94775411869752",
@@ -22611,6 +22620,16 @@
   "source": "assets/fbx/M_Road_Bench/M_Road_Bench_LOD1.fbx",
   "type": "Model"
  },
+ "Model:2ab7ceb89208156d12c2bb983305ef10406576475688a7f64d8d0824028465c4": {
+  "assetId": "116757607794615",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueBoathouseAddons",
+  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons.rbxm",
+  "route": "delivery",
+  "sha": "2ab7ceb89208156d12c2bb983305ef10406576475688a7f64d8d0824028465c4",
+  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:2b095f9cc0a261d4a599c3e4f92f0871d1eb3b36a1c9f073d26d50c19f774cdf": {
   "assetId": "108866787941572",
   "moderation": "Approved",
@@ -26191,6 +26210,16 @@
   "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD2.fbx",
   "type": "Model"
  },
+ "Model:8814a17e7644e5711f5442a35ba8ee38727f1c92b9270ffe59c3d47857c469aa": {
+  "assetId": "116162836339061",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueBoathouseAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "8814a17e7644e5711f5442a35ba8ee38727f1c92b9270ffe59c3d47857c469aa",
+  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:88a62180bcb4af72a987671c1655c82270371205558d1e2af61afae8e9da27d0": {
   "assetId": "70642628167082",
   "moderation": "Approved",
@@ -28449,6 +28478,16 @@
   "route": "delivery",
   "sha": "c32932252f102d4ce7687e82f556912b7a3469c13ae2e6610fb94919c0e18dae",
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:c3c1e2290c008353e20bfbc569f0e3091453701c45103caf7480d8929da64978": {
+  "assetId": "88387634235000",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueBoathouseAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c3c1e2290c008353e20bfbc569f0e3091453701c45103caf7480d8929da64978",
+  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD1.fbx",
   "type": "Model"
  },
  "Model:c3e8fe199f4abd41d8e646289bf7bb44e6eea9d4888b3896f990d471881317c0": {
