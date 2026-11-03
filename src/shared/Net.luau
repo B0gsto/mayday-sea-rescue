@@ -28,6 +28,7 @@
 --   BuyGear            C->S  function: buy a vehicle (vehicleId) -> (ok, reason)
 --   TestRide           C->S  function: ride a locked Robux boat 60 s (board name, vehicleId) -> (ok, reason)
 --   GoHome             C->S  function: far from your island (DockConfig.HOME_FAR), stand on its spawn -> (ok, reason)
+--   GoBack             C->S  press Go back (no payload); S->C to everyone aboard: "Charge" | "Cancel" | "Land" (VehicleService)
 --   Spin_Flex          S->C  a Legendary / Mythic wheel win: banner + confetti for everyone
 --   Skill_State        S->C  the player's bought skill nodes and Medals (on join and after a buy)
 --   Skill_Buy          C->S  function: buy a skill node (id) -> ok, reason
@@ -48,6 +49,7 @@ export type EventName =
 	| "Spin_Flex"
 	| "Skill_State"
 	| "Spin_Wheel"
+	| "GoBack"
 
 export type FunctionName =
 	"RequestVehicle"
@@ -74,6 +76,7 @@ Net.EVENTS = table.freeze({
 	"Spin_Flex",
 	"Skill_State",
 	"Spin_Wheel",
+	"GoBack",
 } :: { EventName })
 
 Net.FUNCTIONS = table.freeze(

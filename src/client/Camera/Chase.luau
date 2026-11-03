@@ -95,6 +95,11 @@ function Chase.enter(model: Model, root: BasePart, touch: boolean?)
 	Workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
 end
 
+-- The hull jumped (Go back): behind it at once, no swing across the map.
+function Chase.snap()
+	state.yaw, state.idle, state.fresh = 0, 10, true
+end
+
 function Chase.zoom(delta: number)
 	state.zoom = math.clamp(state.zoom * (1 + delta), 0.55, 2.2)
 end

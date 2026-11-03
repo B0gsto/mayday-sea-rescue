@@ -10,6 +10,7 @@ return {
 		AcceptButton = "rbxassetid://105225933033810",
 		MissionPiw = "rbxassetid://93413645418060",
 		ExitButton = "rbxassetid://122735301639954",
+		GoBack = "rbxassetid://78154552336505", -- go_back.svg: the pill and house; the words are a label on it
 		MinimapRing = "rbxassetid://105528379718715", -- hud_minimap_ring.svg: hole 72%
 		Panel = "rbxassetid://73068937715458", -- hud_panel.svg, 512x256, slice 32 px
 	},

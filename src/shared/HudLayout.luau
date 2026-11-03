@@ -34,6 +34,8 @@
 -- zones: "steer" bottom left (LEFT, RIGHT, step off above LEFT), "drive" bottom right (GO in the corner, BRAKE left
 -- of it, a small column left of that: approach on boats, rise over dive on the heli and sub). Its sizes are
 -- mt.pad (du); a small button is >= 44 px at the 0.7 floor. Desktop: zero-size rects in the same corners.
+-- Go back (GoBackController, docs/30 section 1): "goback" low in the centre. Touch, landscape: between the thumbstick
+-- zone / steer buttons and the throttle; portrait: over the drive pad, with the prompt above it.
 -- `tests/HudLayout.spec.luau` asserts this on 16:9 / 19.5:9 / small Android phones (landscape and
 -- portrait) and 4:3 tablets.
 local HudLayout = {}
@@ -43,6 +45,8 @@ HudLayout.GAP = 14 -- du between stacked regions
 HudLayout.SUBTITLE_HEIGHT = 118 -- the prompt's clearance over the speed dock (bottom centre)
 HudLayout.OBJECTIVE_HEIGHT = 132 -- step card (92) + breathing room
 HudLayout.PROMPT_HEIGHT = 230
+HudLayout.GO_BACK_WIDTH = 300 -- du, the widest Go back gets; the sprite is GO_BACK_ASPECT : 1
+HudLayout.GO_BACK_ASPECT = 690 / 204
 HudLayout.NOTICE_HEIGHT = 120
 HudLayout.NOTICE_MIN_WIDTH = 200 -- touch: narrower beside the wallet -> the centre band under it
 HudLayout.WALLET_WIDTH = 280 -- the Cash card (HudController)
@@ -94,6 +98,7 @@ export type RegionName =
 	| "debrief"
 	| "steer"
 	| "drive"
+	| "goback"
 
 export type Rect = {
 	anchor: Vector2,
@@ -404,7 +409,14 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	local driveH = math.max(pad.go, 2 * pad.small + pg)
 	local b = bottom - HudLayout.SUBTITLE_HEIGHT - g
 	if touch and u.X < u.Y then
-		b = math.min(b, bottom - math.max(steerH, driveH) - g) -- portrait: full width, so above the drive pad
+		-- portrait: full width, so above the drive pad and Go back
+		b = math.min(
+			b,
+			bottom
+				- math.max(steerH, driveH)
+				- 2 * g
+				- HudLayout.GO_BACK_WIDTH / HudLayout.GO_BACK_ASPECT
+		)
 	end
 	local cx = u.X / 2
 	if not touch then
@@ -430,6 +442,21 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		Vector2.new(1, 1),
 		Vector2.new(u.X - m, bottom),
 		if touch then Vector2.new(driveW, driveH) else Vector2.zero
+	)
+	-- Go back: the space it may take, then centred in it (the prompt ends above it: SUBTITLE_HEIGHT > its height)
+	local goLeft, goRight, goBottom = left, u.X - m - side - g, bottom
+	if touch and u.X < u.Y then
+		goLeft, goRight = m, u.X - m
+		goBottom = bottom - math.max(steerH, driveH) - g
+	elseif touch then
+		goLeft = math.max(m + 2 * pad.steer + pg, u.X * 0.4) + g
+		goRight = u.X - m - driveW - g
+	end
+	local goW = math.min(HudLayout.GO_BACK_WIDTH, goRight - goLeft)
+	mt.rects["goback"] = rect(
+		Vector2.new(0.5, 1),
+		Vector2.new((goLeft + goRight) / 2, goBottom),
+		Vector2.new(goW, goW / HudLayout.GO_BACK_ASPECT)
 	)
 	local gs = if touch then gaugeSide else side
 	mt.rects["gauges"] = rect(Vector2.new(1, 1), Vector2.new(u.X - m, bottom), Vector2.new(gs, gs))

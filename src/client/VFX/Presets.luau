@@ -1373,6 +1373,42 @@ Presets.ALL.survivor_aboard = preset({
 	punch = { fov = 2, shake = 0, time = 0.25 },
 })
 
+-- feedback: Go back landed (GoBackController). The craft slaps down on its own water: a foam crown, drops, a ring
+-- across the water and a few red and white plates; a splash under a hull slap; a small zoom kick
+Presets.ALL.go_back_land = preset({
+	job = "feedback",
+	layers = {
+		groundRing("foam_ring", FOAM, { 18, 20 }, 1), -- a Layer first: the literals below then type as one
+		with(plates({ RED, WHITE }, 8), { size = { 2.4 }, speed = { 14, 20 } }),
+		{
+			tex = "splash_crown",
+			count = 3,
+			colors = { FOAM },
+			size = { 10, 12 },
+			transparency = { 0, 0, 0.4 },
+			lifetime = { 0.7, 0.8 },
+			speed = { 0.5, 1 },
+			spread = { 10, 10 },
+		},
+		{
+			tex = "droplets",
+			count = 20,
+			colors = { WHITE },
+			size = { 1.8, 0.8 },
+			transparency = { 0, 0.2, 1 },
+			lifetime = { 0.6, 0.9 },
+			speed = { 16, 24 },
+			spread = { 40, 40 },
+			accel = GRAVITY,
+		},
+	},
+	sounds = {
+		{ clip = "Splash_Entry", volume = 1, pitch = 0.9 } :: FxSound,
+		{ clip = "Hull_Slap", delay = 0.03, volume = 0.8 } :: FxSound,
+	},
+	punch = { fov = -4, shake = 0.12, time = 0.3 },
+})
+
 -- feedback: layered on pickup_splash (CasualtyController) as the survivor is pulled out: a tall crown snaps up, a
 -- column of white drops shoots after them, teal drops fan out, a white ring kicks across the water; a splash, a
 -- quick rising whoosh (the yank) and a soft pop; a small zoom kick
