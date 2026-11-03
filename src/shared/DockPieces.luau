@@ -483,62 +483,81 @@ local function paintBooth(m: Model, b: CFrame)
 end
 
 -- the boathouse on its lot, the roll-up door facing the cove, a clear marked floor spot for the boat
--- board (DockConfig.BOARD_SLOT) by the back wall; the paint booth over the berth
-local function boathouse(m: Model, b: CFrame)
+-- board (DockConfig.BOARD_SLOT) by the back wall; the paint booth over the berth. `meshed` (PERF-BL11): the asset's
+-- Lv1_* layers replace the walls, door, windows and roof; the plinth, name sign, board slot and booth stay
+local function boathouse(m: Model, b: CFrame, meshed: boolean?)
 	local L = b * DockConfig.Buildings.Boathouse.spot -- -Z = the doors
 	local hw, hd, h = 15, 18, 14
 	local y = h / 2
 	plinth(m, Vector3.new(hw * 2 + 3, 0.4, hd * 2 + 3), L * CFrame.new(0, 0.2, 0))
-	brick(m, "Wall", Vector3.new(0.8, h, hd * 2), L * CFrame.new(-hw, y, 0), BRICK_BLUE)
-	brick(m, "Wall", Vector3.new(0.8, h, hd * 2), L * CFrame.new(hw, y, 0), BRICK_BLUE)
-	brick(m, "Wall", Vector3.new(hw * 2, h, 0.8), L * CFrame.new(0, y, hd), BRICK_BLUE)
-	-- front: two white pillars, the header and the half-rolled door
-	brick(m, "Wall", Vector3.new(5, h, 0.8), L * CFrame.new(-hw + 2.5, y, -hd), BRICK_WHITE)
-	brick(m, "Wall", Vector3.new(5, h, 0.8), L * CFrame.new(hw - 2.5, y, -hd), BRICK_WHITE)
-	brick(m, "Header", Vector3.new(hw * 2, 4, 0.8), L * CFrame.new(0, h - 2, -hd), BRICK_WHITE)
-	brick(
-		m,
-		"Course",
-		Vector3.new(hw * 2 + 0.4, 1, hd * 2 + 0.4),
-		L * CFrame.new(0, h - 0.5, 0),
-		BRICK_WHITE
-	)
-	local doorW = hw * 2 - 10
-	brick(m, "Door", Vector3.new(doorW, 4, 0.4), L * CFrame.new(0, h - 6, -hd + 0.1), BRICK_RED)
-	part(
-		m,
-		"DoorRoll",
-		Vector3.new(doorW, 1.8, 1.8),
-		L * CFrame.new(0, h - 3.4, -hd - 1.1),
-		BRICK_RED,
-		M.SmoothPlastic,
-		Enum.PartType.Cylinder
-	)
-	-- a row of windows down each long wall
-	for _, x in { -1, 1 } do
-		for _, z in { -9, 0, 9 } do
+	if meshed then
+		sign( -- on the mesh's blue gable, in its red frame, the hull-number sticker above
+			m,
+			Vector3.new(15.5, 3.1, 0.4),
+			L * CFrame.new(0, 15, -19.45),
+			BRICK_WHITE,
+			"Boathouse",
+			UiImages.Kit.boat_to_me
+		)
+	else
+		brick(m, "Wall", Vector3.new(0.8, h, hd * 2), L * CFrame.new(-hw, y, 0), BRICK_BLUE)
+		brick(m, "Wall", Vector3.new(0.8, h, hd * 2), L * CFrame.new(hw, y, 0), BRICK_BLUE)
+		brick(m, "Wall", Vector3.new(hw * 2, h, 0.8), L * CFrame.new(0, y, hd), BRICK_BLUE)
+		-- front: two white pillars, the header and the half-rolled door
+		brick(m, "Wall", Vector3.new(5, h, 0.8), L * CFrame.new(-hw + 2.5, y, -hd), BRICK_WHITE)
+		brick(m, "Wall", Vector3.new(5, h, 0.8), L * CFrame.new(hw - 2.5, y, -hd), BRICK_WHITE)
+		brick(m, "Header", Vector3.new(hw * 2, 4, 0.8), L * CFrame.new(0, h - 2, -hd), BRICK_WHITE)
+		brick(
+			m,
+			"Course",
+			Vector3.new(hw * 2 + 0.4, 1, hd * 2 + 0.4),
+			L * CFrame.new(0, h - 0.5, 0),
+			BRICK_WHITE
+		)
+		local doorW = hw * 2 - 10
+		brick(m, "Door", Vector3.new(doorW, 4, 0.4), L * CFrame.new(0, h - 6, -hd + 0.1), BRICK_RED)
+		part(
+			m,
+			"DoorRoll",
+			Vector3.new(doorW, 1.8, 1.8),
+			L * CFrame.new(0, h - 3.4, -hd - 1.1),
+			BRICK_RED,
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+		-- a row of windows down each long wall
+		for _, x in { -1, 1 } do
+			for _, z in { -9, 0, 9 } do
+				window(
+					m,
+					L
+						* CFrame.new(x * (hw + 0.4), h * 0.55, z)
+						* CFrame.Angles(0, -x * math.pi / 2, 0),
+					4.4,
+					3.6
+				)
+			end
+		end
+		-- owner 2026-11-01 ("too cluttered"): the back wall faces the boat yard's path; two windows break its bare blue
+		for _, x in { -7.5, 7.5 } do
 			window(
 				m,
-				L * CFrame.new(x * (hw + 0.4), h * 0.55, z) * CFrame.Angles(0, -x * math.pi / 2, 0),
+				L * CFrame.new(x, h * 0.55, hd + 0.4) * CFrame.Angles(0, math.pi, 0),
 				4.4,
 				3.6
 			)
 		end
+		-- the slope-brick roof, ridge along the depth: the gable over the doors
+		gable(m, L * CFrame.new(0, h, 0), hw * 2 + 2.4, hd * 2 + 2.4, 7, BRICK_RED)
+		sign(
+			m,
+			Vector3.new(13, 2.6, 0.4),
+			L * CFrame.new(0, h + 2.4, -hd - 1.45),
+			BRICK_WHITE,
+			"Boathouse",
+			UiImages.Kit.boat_to_me
+		)
 	end
-	-- owner 2026-11-01 ("too cluttered"): the back wall faces the boat yard's path; two windows break its bare blue
-	for _, x in { -7.5, 7.5 } do
-		window(m, L * CFrame.new(x, h * 0.55, hd + 0.4) * CFrame.Angles(0, math.pi, 0), 4.4, 3.6)
-	end
-	-- the slope-brick roof, ridge along the depth: the gable over the doors
-	gable(m, L * CFrame.new(0, h, 0), hw * 2 + 2.4, hd * 2 + 2.4, 7, BRICK_RED)
-	sign(
-		m,
-		Vector3.new(13, 2.6, 0.4),
-		L * CFrame.new(0, h + 2.4, -hd - 1.45),
-		BRICK_WHITE,
-		"Boathouse",
-		UiImages.Kit.boat_to_me
-	)
 	-- the board slot: an empty floor square outlined in yellow (WP-5 puts the board here)
 	local slot = Instance.new("Model")
 	slot.Name = "BoardSlot"
@@ -2692,17 +2711,48 @@ end
 local function boatYard(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.BoatYard
 	local at = b * def.spot
-	-- Lv2 portal crane + hoisted engine and a tool bench, Lv3 dry dock on the east side (M_Bld_BoatYardAddons): the
-	-- code gantry and tool chests give way to the crane and bench, the east slip planks to the dock's caisson
-	local lv = if addonMesh(m, at, level or 1, "M_Bld_BoatYardAddons", "BoatYardMesh")
-		then level or 1
-		else 1
+	-- Lv2 red jib crane (back) + a tool bench (path front), Lv3 wet dock with a boat shed in the front corner opposite
+	-- the office (M_Bld_BoatYardAddons).
+	-- PERF-BL9: the asset's Lv1_* layers mesh the whole yard (floor, walls, boat, gantry, office, props, slipway); then
+	-- the code keeps only the plinth, the name sign, the rock and the Console (the act) hidden inside the mesh console.
+	local loaded = addonMesh(m, at, level or 1, "M_Bld_BoatYardAddons", "BoatYardMesh", true)
+	local lv = if loaded then level or 1 else 1
+	local mesh = if loaded then m:FindFirstChild("BoatYardMesh") else nil
+	local lv1 = mesh ~= nil and mesh:FindFirstChild("Lv1_L03_Boat", true) ~= nil -- an older upload has no Lv1
+	if mesh and lv >= 3 then -- the paint pallet gives way to the Lv3 dock
+		for _, p in mesh:GetDescendants() do
+			if p:IsA("BasePart") and string.match(p.Name, "^Lv1_L07_") then
+				p:Destroy()
+			end
+		end
+	end
 	local w, d = yardSize(def)
 	local spec = HUTS.BoatYard
 	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
+	local boat = at * CFrame.new(0, 0, 0)
+	sign(
+		m,
+		Vector3.new(9, 3.4, 0.4),
+		-- on the Lv1 gantry beam at every level (PERF-BL9 r2: the Lv2 jib crane carries no sign)
+		boat * CFrame.new(0, 25.1, -0.9),
+		BRICK_YELLOW,
+		def.name,
+		spec.icon
+	)
+	rock(m, at * CFrame.new(-w / 2 - 5, 0, d / 2 + 4))
+	if lv1 then -- inside the mesh console (its faces all hidden): keeps the craft-board act and the collision
+		local c = brick(
+			m,
+			"Console",
+			Vector3.new(3.0, 2.2, 2.6),
+			boat * CFrame.new(0, 10.25, -2.4),
+			BRICK_WHITE
+		)
+		c.CastShadow = false
+		return
+	end
 	-- docs/24 C r3: the workboat on four chunky cradle legs with yellow feet
 	-- docs/24 C r4: level on the cradle, 30% smaller, a wedge bow and a white deck line
-	local boat = at * CFrame.new(0, 0, 0)
 	for _, z in { -5, 5 } do
 		studTop(
 			brick(m, "Cradle", Vector3.new(9.4, 1.2, 2.2), boat * CFrame.new(0, 4.8, z), RBROWN)
@@ -2765,15 +2815,6 @@ local function boatYard(m: Model, b: CFrame, level: number?)
 		brick(m, "Hook", Vector3.new(1.1, 1.1, 1.1), boat * CFrame.new(0, 9.65, 0), BRICK_ORANGE)
 		brick(m, "HookTip", Vector3.new(0.4, 0.9, 0.4), boat * CFrame.new(0, 9.1, 0), BRICK_ORANGE)
 	end
-	sign(
-		m,
-		Vector3.new(7, 2, 0.4),
-		-- Lv2+: standing on the crane's girder over the dock (scaled: x 14.1, girder top 18.26, girder mid z 5.7)
-		if lv < 2 then boat * CFrame.new(0, 24.4, -0.9) else boat * CFrame.new(12.28, 16.88, 4.96),
-		BRICK_YELLOW,
-		def.name,
-		spec.icon
-	)
 	-- a tool chest and a tyre stack beside the hull: the yard's one prop cluster (owner 2026-11-01: "too cluttered",
 	-- so no stacked chest and no corner crates/barrels; Lv2+ the mesh's tool bench tells the story)
 	if lv < 2 then
@@ -2813,7 +2854,6 @@ local function boatYard(m: Model, b: CFrame, level: number?)
 		end
 	end
 	yardPath(m, at, d)
-	rock(m, at * CFrame.new(-w / 2 - 5, 0, d / 2 + 4))
 end
 
 -- Rescuer: an open slipway shed with the rescue boat, a lifebuoy rack and a tall lifeguard chair
@@ -2821,19 +2861,62 @@ local function rescueBoathouse(m: Model, b: CFrame, level: number?)
 	local def = DockConfig.Buildings.RescueBoathouse
 	local at = b * def.spot
 	-- Lv2 RIB pontoon on the -X side, Lv3 lifeboat berth + shed roof on the +X side (M_Bld_RescueBoathouseAddons); the
-	-- middle and the gate stay clear. The lifeguard chair stood where the Lv3 berth's back deck and roof go.
-	local lv = if addonMesh(
-			m,
-			at,
-			level or 1,
-			"M_Bld_RescueBoathouseAddons",
-			"RescueBoathouseMesh"
-		)
-		then level or 1
-		else 1
+	-- middle and the gate stay clear. The lifeguard chair stood where the Lv3 berth's back deck and tower go.
+	-- PERF-BL11: the asset's Lv1_* layers mesh the whole boathouse; then the code keeps only the plinth, the name sign, the
+	-- lamp and the Console (the act) hidden inside the mesh console. The Lv2 bay replaces the right front and side walls
+	-- (L07), the Lv3 bay and front-corner tower the left ones (L08), the Lv3 back deck the chair (L09). The mesh fills its
+	-- corner, so no corner tree (DockPieces.building skips it on NoTree).
+	local loaded =
+		addonMesh(m, at, level or 1, "M_Bld_RescueBoathouseAddons", "RescueBoathouseMesh", true)
+	local lv = if loaded then level or 1 else 1
+	local mesh = if loaded then m:FindFirstChild("RescueBoathouseMesh") else nil
+	local lv1 = mesh ~= nil and mesh:FindFirstChild("Lv1_L03_Boat", true) ~= nil -- an older upload has no Lv1
+	if mesh then
+		for _, p in mesh:GetDescendants() do
+			if
+				p:IsA("BasePart")
+				and (
+					(lv >= 2 and string.match(p.Name, "^Lv1_L07_"))
+					or (
+						lv >= 3
+						and (string.match(p.Name, "^Lv1_L08_") or string.match(p.Name, "^Lv1_L09_"))
+					)
+				)
+			then
+				p:Destroy()
+			end
+		end
+	end
 	local w, d = yardSize(def)
 	local spec = HUTS.RescueBoathouse
 	plinth(m, Vector3.new(w + 3, 0.8, d + 3), at * CFrame.new(0, 0.4, 0))
+	if lv1 then
+		m:SetAttribute("NoTree", true)
+		local nameSign =
+			sign( -- on the portal header at every level, inside the mesh's yellow rim; the mesh's life ring covers the icon
+				m,
+				Vector3.new(14.4, 4.35, 0.4),
+				at * CFrame.new(0, 11.15, -15.45),
+				BRICK_RED, -- the red band behind white letters
+				"Rescue\nBoathouse", -- two lines: fatter on a phone
+				spec.icon
+			)
+		local stroke = Instance.new("UIStroke") -- thicker letters
+		stroke.Color = BRICK_WHITE
+		stroke.Thickness = 5
+		stroke.Parent = nameSign:FindFirstChildWhichIsA("TextLabel", true)
+		local c =
+			brick( -- inside the mesh console (its faces all hidden): keeps the crew act and the collision
+				m,
+				"Console",
+				Vector3.new(1.8, 1.4, 1.8),
+				at * CFrame.new(0, 4.3, -d / 2 + 4.21), -- the mesh boat stands ~7 studs (5.9 here) forward of the code one
+				BRICK_WHITE
+			)
+		c.CastShadow = false
+		lamp(m, at, -w / 2 - 5, d / 2 + 4, 0)
+		return
+	end
 	for _, x in { -1, 1 } do
 		for _, z in { -1, 1 } do
 			brick(
@@ -3147,27 +3230,48 @@ local function clinic(m: Model, b: CFrame, level: number?)
 end
 
 -- the lifeboat slip (Boathouse Lv2) on its own harbour lot: an open shed over a slipway that runs off the plate
--- into the sea. It is kept at 1x inside the boathouse's model and faces +fwd (local -Z).
-local function lifeboatSlip(m: Model, b: CFrame)
+-- into the sea. It is kept at 1x inside the boathouse's model and faces +fwd (local -Z). `meshed` (PERF-BL11): the
+-- asset's Lv2_* layers replace the posts, roof and winch; the plinth, slipway and signs stay.
+local function lifeboatSlip(m: Model, b: CFrame, meshed: boolean?)
 	local at = b * DockConfig.BOATHOUSE_SLIP -- -Z = toward the sea
 	local w, d, h = 22, 50, 11
 	plinth(m, Vector3.new(w + 2, 0.8, d), at * CFrame.new(0, 0.4, 0))
-	for _, x in { -1, 1 } do
-		for _, z in { -1, 1 } do
-			studTop(
-				brick(
-					m,
-					"Post",
-					Vector3.new(1.4, h, 1.4),
-					at * CFrame.new(x * (w / 2 - 0.2), 0.8 + h / 2, z * (d / 2 - 0.8)),
-					BRICK_WHITE
-				)
-			)
-		end
-	end
 	local top = at * CFrame.new(0, 0.8 + h, 0)
-	brick(m, "Course", Vector3.new(w + 1.1, 1, d), top * CFrame.new(0, -0.5, 0), BRICK_BLUE) -- proud of the posts
-	gable(m, top, w + 2, d + 2, 5, BRICK_BLUE)
+	if meshed then
+		sign( -- on the mesh's cross gable, facing the cove walk (the sea-end sign is out of the path's sight)
+			m,
+			Vector3.new(22, 4.8, 0.4),
+			at * CFrame.new(20.85, 16.4, -7) * CFrame.Angles(0, -math.pi / 2, 0),
+			BRICK_WHITE,
+			"Lifeboat",
+			UiImages.Kit.lifebuoy
+		)
+	else
+		for _, x in { -1, 1 } do
+			for _, z in { -1, 1 } do
+				studTop(
+					brick(
+						m,
+						"Post",
+						Vector3.new(1.4, h, 1.4),
+						at * CFrame.new(x * (w / 2 - 0.2), 0.8 + h / 2, z * (d / 2 - 0.8)),
+						BRICK_WHITE
+					)
+				)
+			end
+		end
+		brick(m, "Course", Vector3.new(w + 1.1, 1, d), top * CFrame.new(0, -0.5, 0), BRICK_BLUE) -- proud of the posts
+		gable(m, top, w + 2, d + 2, 5, BRICK_BLUE)
+		studTop(
+			brick(
+				m,
+				"Winch",
+				Vector3.new(3, 2, 2),
+				at * CFrame.new(0, 1.8, d / 2 - 1.5),
+				BRICK_YELLOW
+			)
+		)
+	end
 	sign(
 		m,
 		Vector3.new(w * 0.45, 1.8, 0.4),
@@ -3205,9 +3309,6 @@ local function lifeboatSlip(m: Model, b: CFrame)
 			DBG
 		)
 	end
-	studTop(
-		brick(m, "Winch", Vector3.new(3, 2, 2), at * CFrame.new(0, 1.8, d / 2 - 1.5), BRICK_YELLOW)
-	)
 	path(m, b, { Vector2.new(-80, 82), Vector2.new(-80, 70) }, 0.1)
 end
 
@@ -3865,22 +3966,44 @@ end
 
 -- Boathouse Lv2 adds the lifeboat slip on its own harbour lot (kept 1x while the boathouse scales); Lv3 the
 -- quick-launch bay on the cove side (M_Bld_BoathouseAddons, authored at the 1.2 scale round the spot, so kept 1x:
--- island right -47..-32.5, fwd 30..110, between the cove walk and the jetty; clear of the boathouse, the slip and
+-- island right -48.2..-32.5, fwd 70..115, between the cove walk and the jetty; clear of the boathouse, the slip and
 -- every lot, so no Lv1/Lv2 piece gives way). Its static Lv3_L07_Lifeboat leaves while yours is out (WorkerController).
--- Mesh missing: today's look.
+-- Mesh missing: today's look. PERF-BL11: its Lv1_* layers mesh the boathouse and its Lv2_* the slip's shed (the code
+-- keeps the plinths, signs, board slot and slipway).
 local function boathouseLevel(m: Model, b: CFrame, level: number?)
-	boathouse(m, b)
+	local lv = level or 1
 	addonMesh(
 		m,
 		b * DockConfig.Buildings.Boathouse.spot,
-		level or 1,
+		lv,
 		"M_Bld_BoathouseAddons",
-		"BoathouseMesh"
+		"BoathouseMesh",
+		true
 	)
-	if (level or 1) >= 2 then
+	local mesh = m:FindFirstChild("BoathouseMesh")
+	local wet = if lv >= 3 and mesh then mesh:FindFirstChild("Lv2_L05_LaneWet", true) else nil
+	if wet then -- the Lv3 deck stands over the Lv2 lane's wet end
+		wet:Destroy()
+	end
+	-- an older upload has no Lv1 / Lv2
+	boathouse(m, b, mesh ~= nil and mesh:FindFirstChild("Lv1_L02_Walls", true) ~= nil)
+	if lv >= 2 then
 		local slip = Instance.new("Model")
 		slip.Name = "LifeboatSlip"
-		lifeboatSlip(slip, b)
+		lifeboatSlip(slip, b, mesh ~= nil and mesh:FindFirstChild("Lv2_L02_Shed", true) ~= nil)
+		if lv >= 3 and mesh ~= nil and mesh:FindFirstChild("Lv3_L05_ReadyRoom", true) then
+			sign( -- over the Lv3 hall's door, facing the cove walk like the Lifeboat sign
+				slip,
+				Vector3.new(14, 3.1, 0.4),
+				b
+					* DockConfig.BOATHOUSE_SLIP
+					* CFrame.new(45.6, 10.2, 1.5)
+					* CFrame.Angles(0, -math.pi / 2, 0),
+				BRICK_WHITE,
+				"Launch",
+				UiImages.Kit.lifebuoy
+			)
+		end
 		slip.Parent = m
 	end
 end

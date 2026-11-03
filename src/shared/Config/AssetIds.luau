@@ -27,14 +27,14 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://82056579664639",
 	},
 	M_Bld_BoatYardAddons = {
-		LOD0 = "rbxassetid://71254246910044",
-		LOD1 = "rbxassetid://77780701235189",
-		LOD2 = "rbxassetid://118291679778146",
+		LOD0 = "rbxassetid://102629971947480",
+		LOD1 = "rbxassetid://130896691043221",
+		LOD2 = "rbxassetid://108045817507863",
 	},
 	M_Bld_BoathouseAddons = {
-		LOD0 = "rbxassetid://99906960240274",
-		LOD1 = "rbxassetid://136877981908628",
-		LOD2 = "rbxassetid://93356629229897",
+		LOD0 = "rbxassetid://84876267561523",
+		LOD1 = "rbxassetid://88085866697598",
+		LOD2 = "rbxassetid://71886407094869",
 	},
 	M_Bld_Bunkhouse = {
 		LOD0 = "rbxassetid://100344467314977",
@@ -72,9 +72,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://84012891513184",
 	},
 	M_Bld_RescueBoathouseAddons = {
-		LOD0 = "rbxassetid://138806569334848",
-		LOD1 = "rbxassetid://87675721573630",
-		LOD2 = "rbxassetid://120376087293959",
+		LOD0 = "rbxassetid://116757607794615",
+		LOD1 = "rbxassetid://88387634235000",
+		LOD2 = "rbxassetid://116162836339061",
 	},
 	M_Bld_RescueHQ = {
 		LOD0 = "rbxassetid://102391488538956",
@@ -550,14 +550,14 @@ AssetIds.Attachments = {
 		ATT_Work_FlightBoard = Vector3.new(-46, 0.7, -14),
 	},
 	M_Bld_BoatYardAddons = {
-		ATT_Work_Hull = Vector3.new(10.5, 3.26, 6),
-		ATT_Work_Bench = Vector3.new(-15.45, 0.92, 0),
-		ATT_Work_Dock = Vector3.new(10.5, 3.26, 13.4),
+		ATT_Work_Hull = Vector3.new(-9, 0.92, 18),
+		ATT_Work_Bench = Vector3.new(5.6, 0.92, -18.5),
+		ATT_Work_Dock = Vector3.new(-8.7, 0.92, -15),
 	},
 	M_Bld_BoathouseAddons = {
-		ATT_Launch = Vector3.new(-42, -2.0409, -41),
-		ATT_Work_Winch = Vector3.new(-10, 0.55, -37.6),
-		ATT_ReadyRoom = Vector3.new(19.5, 0.55, -41),
+		ATT_Launch = Vector3.new(-18, -3.0125, -41),
+		ATT_Work_Winch = Vector3.new(-33.6, 0.55, -37.6),
+		ATT_ReadyRoom = Vector3.new(-52.5, 0.55, -41.5),
 	},
 	M_Bld_Bunkhouse = {
 		ATT_Door_01 = Vector3.new(0, 0, -12.6),
@@ -626,7 +626,7 @@ AssetIds.Attachments = {
 		ATT_Work_Pontoon = Vector3.new(-20.3, 1.62, -4.2),
 		ATT_Work_Fuel = Vector3.new(-20.55, 1.62, 2.65),
 		ATT_Work_Berth = Vector3.new(13, 1.62, 2.4),
-		ATT_Work_Davit = Vector3.new(13.6, 1.62, -2.8),
+		ATT_Work_Davit = Vector3.new(13.6, 1.62, 9.4),
 	},
 	M_Bld_RescueHQ = {
 		ATT_Sign_01 = Vector3.new(0, 9.45, -10.12),

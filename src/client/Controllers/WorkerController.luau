@@ -1830,6 +1830,7 @@ local function bayBoat(mesh: Instance)
 	-- shortcut: read once, 2 s after the mesh lands (like the moorings)
 	task.delay(2, function()
 		local boat = mesh:FindFirstChild("Lv3_L07_Lifeboat", true)
+			or mesh:FindFirstChild("Lv2_L04_Lifeboat", true) -- Lv2: the shed's
 		if boat and boat:IsA("BasePart") then
 			bayBoats[mesh] = boat
 		end

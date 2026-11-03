@@ -398,7 +398,8 @@
    "T_CommonsKit_Brick_RGH",
    "T_RescueHeli_Lego_RGH",
    "T_RescueHeli_Glass_RGH",
-   "T_SeaPlateKit_Brick_RGH"
+   "T_SeaPlateKit_Brick_RGH",
+   "T_Boathouse_Brick_RGH"
   ],
   "assetId": "77394710200809",
   "imageId": "77394710200809",
@@ -14791,7 +14792,8 @@
    "T_CommonsKit_Brick_NOR",
    "T_RescueHeli_Lego_NOR",
    "T_RescueHeli_Glass_NOR",
-   "T_SeaPlateKit_Brick_NOR"
+   "T_SeaPlateKit_Brick_NOR",
+   "T_Boathouse_Brick_NOR"
   ],
   "assetId": "134063939343985",
   "imageId": "134063939343985",
@@ -19464,7 +19466,8 @@
    "T_CommonsKit_Brick_MET",
    "T_RescueHeli_Lego_MET",
    "T_RescueHeli_Glass_MET",
-   "T_SeaPlateKit_Brick_MET"
+   "T_SeaPlateKit_Brick_MET",
+   "T_Boathouse_Brick_MET"
   ],
   "assetId": "82741558542658",
   "imageId": "82741558542658",
@@ -33361,5 +33364,122 @@
   "sha": "a9b4fc66d7fb7524ce34e2f15e3d63c37167b00d054fdff2dc8bfb76bd666607",
   "source": "build/prod/spincine/FX_SpinBolt.png",
   "type": "Image"
+ },
+ "Image:7d0617d48e6cb849a27699627f3f378181c8af83153fe92b3917aab7f3fefa5f": {
+  "assetId": "117574394415719",
+  "imageId": "117574394415719",
+  "moderation": "Reviewing",
+  "name": "T_Boathouse_Brick_ALB",
+  "sha": "7d0617d48e6cb849a27699627f3f378181c8af83153fe92b3917aab7f3fefa5f",
+  "source": "assets/textures/M_Bld_BoathouseAddons/T_Boathouse_Brick_ALB.png",
+  "type": "Image"
+ },
+ "Image:81043760897ccb7bcced4a02b3e63333a3f3a45106e97bb2a2a14543e7cce799": {
+  "assetId": "127251361759849",
+  "imageId": "127251361759849",
+  "moderation": "Reviewing",
+  "name": "T_BoatYard_Brick_ALB",
+  "sha": "81043760897ccb7bcced4a02b3e63333a3f3a45106e97bb2a2a14543e7cce799",
+  "source": "assets/textures/M_Bld_BoatYardAddons/T_BoatYard_Brick_ALB.png",
+  "type": "Image"
+ },
+ "Image:8608023e4d2851471404450f9540184c21e7fe27d1f57b666ad456aee426549f": {
+  "assetId": "115194074228860",
+  "imageId": "115194074228860",
+  "moderation": "Reviewing",
+  "name": "T_RescueBoathouse_Brick_ALB",
+  "sha": "8608023e4d2851471404450f9540184c21e7fe27d1f57b666ad456aee426549f",
+  "source": "assets/textures/M_Bld_RescueBoathouseAddons/T_RescueBoathouse_Brick_ALB.png",
+  "type": "Image"
+ },
+ "Model:1c04722118aacfa4e81b3a40eee46b1f14ba20700dce59e6a6ef7099c4540259": {
+  "assetId": "84876267561523",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons.rbxm",
+  "route": "delivery",
+  "sha": "1c04722118aacfa4e81b3a40eee46b1f14ba20700dce59e6a6ef7099c4540259",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:2ab7ceb89208156d12c2bb983305ef10406576475688a7f64d8d0824028465c4": {
+  "assetId": "116757607794615",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueBoathouseAddons",
+  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons.rbxm",
+  "route": "delivery",
+  "sha": "2ab7ceb89208156d12c2bb983305ef10406576475688a7f64d8d0824028465c4",
+  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:7c310cfafb8fa8139ca8ed49481a5806cf947f8a35d783dedd64e5f5cc55847c": {
+  "assetId": "71886407094869",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "7c310cfafb8fa8139ca8ed49481a5806cf947f8a35d783dedd64e5f5cc55847c",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:8814a17e7644e5711f5442a35ba8ee38727f1c92b9270ffe59c3d47857c469aa": {
+  "assetId": "116162836339061",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueBoathouseAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "8814a17e7644e5711f5442a35ba8ee38727f1c92b9270ffe59c3d47857c469aa",
+  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:9e34b7720c1b4d3a41eac4f05a8f7047f9c7fdea0ec5779457b17effd6a28938": {
+  "assetId": "88085866697598",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9e34b7720c1b4d3a41eac4f05a8f7047f9c7fdea0ec5779457b17effd6a28938",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:c3c1e2290c008353e20bfbc569f0e3091453701c45103caf7480d8929da64978": {
+  "assetId": "88387634235000",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueBoathouseAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c3c1e2290c008353e20bfbc569f0e3091453701c45103caf7480d8929da64978",
+  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:c8c00aeab437548dd09aadd9c23c28454727717fc077c84fb9ce96e9e960d83b": {
+  "assetId": "102629971947480",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons.rbxm",
+  "route": "delivery",
+  "sha": "c8c00aeab437548dd09aadd9c23c28454727717fc077c84fb9ce96e9e960d83b",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:d6f1131efcd68a946dde230ff532feceb75aa5379d1c3c9798ee5d52fd9462f6": {
+  "assetId": "108045817507863",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons_LOD2",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "d6f1131efcd68a946dde230ff532feceb75aa5379d1c3c9798ee5d52fd9462f6",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:d8b639efaf71146b90a00e04293b0f406eccd95d7ad86e79bcf2c40d8d563000": {
+  "assetId": "130896691043221",
+  "moderation": "Approved",
+  "name": "M_Bld_BoatYardAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_BoatYardAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d8b639efaf71146b90a00e04293b0f406eccd95d7ad86e79bcf2c40d8d563000",
+  "source": "assets/fbx/M_Bld_BoatYardAddons/M_Bld_BoatYardAddons_LOD1.fbx",
+  "type": "Model"
  }
 }

@@ -1,4 +1,4 @@
-"""Tiny Lego mesh builder shared by M_Bld_Depot and M_Veh_SupplyBarge (flat palette, chunky bricks, round studs).
+"""Tiny Lego mesh builder for M_Bld_WorkshopAddons (copied from M_Bld_Depot: flat palette, chunky bricks, round studs).
 
 Every primitive writes separate shells; normals are recalculated outward per shell. One mesh = one material (the
 palette atlas), colours are palette cells in the UVs, so a whole construction layer is one draw call.
@@ -47,7 +47,8 @@ class B:
         dx, dy = (x1 - x0) / nx, (y1 - y0) / ny
         for ix in range(nx):
             for iy in range(ny):
-                self.cyl(x0 + (ix + 0.5) * dx, y0 + (iy + 0.5) * dy, z, z + h, min(r, 0.42 * min(dx, dy)), c, n)
+                self.cyl(x0 + (ix + 0.5) * dx, y0 + (iy + 0.5) * dy, z, z + h, min(r, 0.42 * min(dx, dy)), c, n,
+                         bottom=False)     # a stud's base sits on the brick: no hidden cap
 
     def stud_row(self, x0, y0, x1, y1, z, c, spacing=2.4, r=0.72, h=STUD_H, n=8):
         """A single line of studs from (x0, y0) to (x1, y1) inclusive."""
@@ -55,14 +56,15 @@ class B:
         k = max(1, int(round(L / spacing)))
         for i in range(k + 1):
             t = i / k
-            self.cyl(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, z, z + h, r, c, n)
+            self.cyl(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, z, z + h, r, c, n, bottom=False)
 
     # ---------------------------------------------------------------- round bits
-    def cyl(self, cx, cy, z0, z1, r, c, n=8, top=True):
+    def cyl(self, cx, cy, z0, z1, r, c, n=8, top=True, bottom=True):
         ring0 = [(cx + r * math.cos(2 * math.pi * i / n), cy + r * math.sin(2 * math.pi * i / n), z0) for i in range(n)]
         ring1 = [(x, y, z1) for x, y, _ in ring0]
         faces = [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
-        faces.append(tuple(reversed(range(n))))
+        if bottom:
+            faces.append(tuple(reversed(range(n))))
         if top:
             faces.append(tuple(range(n, 2 * n)))
         self._emit(ring0 + ring1, faces, c)

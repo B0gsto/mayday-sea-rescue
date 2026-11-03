@@ -9,7 +9,7 @@ PALETTE = [
     (99, 95, 98),      # 2  dark bluish grey
     (30, 44, 66),      # 3  ink / navy (windows, waterline)
     (235, 30, 30),     # 4  red (brighter, round 2)
-    (250, 140, 30),    # 5  orange
+    (255, 158, 48),    # 5  orange (r5: lighter, the HQ's reads this way)
     (255, 188, 0),     # 6  Lego yellow, deeper so AgX does not wash it to butter (round 2; was 250,208,40)
     (142, 146, 152),   # 7  medium stone grey (rims, pillars, gables, steps)
     (40, 96, 208),     # 8  blue

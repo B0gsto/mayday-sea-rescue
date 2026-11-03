@@ -1,4 +1,73 @@
-# M_Bld_BoatYardAddons result (docs/25 B + J, 2026-10-27)
+# M_Bld_BoatYardAddons result
+
+Shipped r5 (AD median 8.6; r2 8.43, r3 8.77, r4 8.8, stop rule; all 3 judges rated r5 above r4 pairwise). Ids: LOD0 102629971947480, LOD1 130896691043221, LOD2 108045817507863; ALB 127251361759849. Not seen in Studio. Next round per build/status/2026-11-01/perfect/buildings/BoatYard/r5_AD.md: calm one-tone floor, wider shed clear of the crane, chunkier Lv2 crane.
+
+PERF-BL9 r5 (2026-11-03, not uploaded; AD r4 median 8.8): Lv1 boat: full-width cradle beams gone, 4 grey brick stands (3 courses, dark seams)
+with yellow caps, saddles and hull-side wedges, the underside open between them (cradle collision follows: walkable gap); slim light keel;
+bow lofted over 3 plan stations (blunt front facet, foot z 6.6: no shaded underside from the path); yellow band z 8.25-9.0; small black anchor
+on the starboard front facet on a short chain. Gantry legs 13 brick courses, girder 6 bricks, dark seams. Slip: dark grey rails 1 wide, 0.3 proud,
+y -13.2 on, on low black sleepers every 2 studs. Floor: palette LBG warmed to (198,192,180), running-bond tiles on a dark bed, colour tile
+patches. Pad: red/blue 2-stud border, crates 4 x 3.9, a 4.4-tall timber stack, 2 yellow bollards. Office plaque: white boat icon on navy.
+Lv2: bench x -5.6, y -14.4, S 1.25, plinth 0.7 (front y -17.8: door lane 2.95 wide), white pegboard, 5-stripe red/white awning 2 studs deep; crane tower
+x 12.5, red brick courses between white collars. Lv3: shed roof x 12.0..19.7 (a crane-width of sky to the tower), left post x 12.6 on a quay strip
+to x 13.2, dark inner wall, hull x 15.4; water deep blue + cyan shallows, 3 raised pale wave plates, white stud ripples, denser quay studs, plaque 0.84x.
+Collision bug: the right front wall's box is now `Lv1_L07_Col01_COL` (dropped with the wall at Lv3 by the existing DockPieces match); the water gate box
+covers the wall line alone. ATT_Work_Hull (9, 18, 0.92), ATT_Work_Bench (-5.6, -18.5, 0.92). LOD0 34,250 / LOD1 17,117 / LOD2 8,550; validate PASS (593, 0
+failed, 124 waived); [zfight] 0 visible. Code: AssetIds attachments. The palette changed: the ALB needs a re-upload with the meshes. Sheet: `lineup.py r5`.
+
+PERF-BL9 r4 (2026-11-03, not uploaded; AD r3 median 8.77): path view decluttered and brightened. Lv1 bow: fuller stem (foot z 7.1),
+yellow 1-stud stripe under the white one, white waterline, white anchor on the stem, no dark boot-top/keel strip, light keel;
+cradle beams and slip sleepers orange-tan, cable and tyres out of the gate, gate piers 0.9 lower, light winch cheeks. Office: double
+door in a white frame: left leaf shut (solid blue, small window, knob, wall behind it), right bay the same open doorway; drum and
+shutter gone, red studded step, plaque 1.3x, ink interior quad gone; second window gone. Pad: dark seams, orange/white stud border,
+2-high crates at the right; dinghy and timber gone. Front wall: blue accent course. West crates moved behind the office. Lv2 crane: tower
+(13.5, 18), half width 1.3, ring z 28.3 (peak 33.95), two-course red/white base, jib flipped outward (tip x 19.35) so nothing crosses
+the gantry leg, crate 1.3x high against the sky. Bench: x -7.2, y -15.2, S 0.96, 3 big tools 1.5x (red hammer, blue wrench, dark saw),
+3-stripe 1-stud awning, tool chest gone (it blocked the office door). Lv3: right front wall moved to Lv1_L07 (gone at Lv3), low
+red/white water gate in its place (deck z 2.40), water z 2.30 cyan with white ripple tiles, light coping, hull 1.1x; shed eave 15, ridge 20.45,
+roof x 10.5..19.7, left posts on a quay strip (eave right of the crane tower in the path view), white/red stepped gable, 7-stripe awning.
+ATT_Work_Hull (10, 18, 0.92), ATT_Work_Bench (-7.2, -18.7, 0.92). LOD0 32,386 / LOD1 16,187 / LOD2 8,085; validate PASS (598, 0 failed,
+125 waived); [zfight] 0 visible. Code: AssetIds attachments, DockPieces boatYard() sign 9 x 3.4 at y 25.1. Sheet: `lineup.py r4`.
+
+PERF-BL9 r3 (2026-11-03, not uploaded; AD r2 median 8.43): Lv1 office brick courses (0.05 seams), red base course + band under the
+eaves, one door: blue roller shutter rolled up over a dark doorway (the swung leaf went, a second framed window took its
+spot), plaque 1.5x. New `Lv1_L09_Pad` (right half, every level): tan plate pad, yellow/black line, upturned blue dinghy on
+trestles, timber stack, full stud rows; `Lv1_L07_Paint` adds the line + stud rows (front right, gone at Lv3). Lv1 boat: dark
+boot-top + white waterline sweeping up the bow, keel strip, plank seams; spreader 2 studs over the cabin, two chunky chains, mast
+lowered under it. Lv2 crane: tower (11, 14.5), half width 1.25, one mast section higher (ring z 20.7), 6x6 base with studded
+ballast stacks, jib 2.05 deep, cab + crate 1.5x (crate blue, clear of the yellow leg). Lv2 bench 1.3x in the gate mouth (x -4.7, y
+-16.4), plinth, orange canopy, lower board, tall tool chest beside it. Lv3: shed shortened to the dock's back third (roof y
+-9.4..-1.7), brick back wall, gable plaque with wrench, bunting gone; dark rim, water plane z 2.2 with ripples, hull 1.2x afloat
+in the open (no mast), caisson 2 lower (z 3.4) with bolder stripes, short posts, winch beam gone, two bollards. ATT_Work_Hull
+(7.5, 14.5, 0.92), ATT_Work_Bench (-4.7, -20.4, 0.92). LOD0 31,624 / LOD1 15,803 / LOD2 7,896; validate PASS (608, 0 failed, 127
+waived); [zfight] 0 visible. Code: AssetIds attachments. Sheet: `lineup.py r3` (close_slip_L1 replaced by close_pad_L1).
+
+PERF-BL9 r2 (2026-11-01, not uploaded; AD r1 median 7.07): the level ladder moved to where the path sees it. Lv2 =
+`Lv2_L01_Crane` (red jib crane at the right back, tower (15, 14.5), white collars, truss jib over the slipway with a
+hook, slings and a slatted crate, studded counterweights, A-frame peak; top ~22) + `Lv2_L02_Bench` (red bench, tan
+pegboard with 4 brick tools, vice, toolbox, facing the path at x -6.55, y -13.6). Lv3 = `Lv3_L01_Dock` (wet dock in the
+right front, rim x 9.6..18.6, y -20.55..-2.0: grey stepped walls, coping with studs and a yellow/black edge, red/white
+caisson at the path end between studded orange posts with a red winch beam), `L02_Water`, `L03_Shed` (half-open boat
+shed, white posts, back wall, stepped studded blue roof + orange ridge, bunting; top ~16.5), `L04_Hull` (the red hull
+afloat, short mast + beacon). Old Lv2 portal crane/engine, Lv3 dry dock, pump house and tall mast removed. Lv1: office
+1.35x set back with its door on the path face (blue leaf, knob, window, orange surround, step, framed boat plaque,
+framed inset windows with white sills, studded roof + ridge cap); gantry hook ends at a spreader with slings to the
+hull sides, yellow foot flanges + stud seams on the legs; cradle posts grey with red caps; continuous slip rails on
+sleepers + hazard edging; wide tan work strip, stud patches; slatted 2-high crates (moved to the west back), Lego
+tyres with hubs, studded pallets, lumber pallet; wall tops 1x2 grey cap plates. `Lv1_L07_Paint` (paint pallet) is
+dropped at Lv3. ATT_Work_Hull (12.4, 14.5, 0.92) crane foot, ATT_Work_Bench (-6.55, -16.8, 0.92), ATT_Work_Dock
+(8.7, -15.0, 0.92). LOD0 27,734 / LOD1 13,860 / LOD2 6,927; validate PASS (590, 0 failed, 122 waived); [zfight] 0
+visible. Code: name sign stays on the gantry beam at every level (DockPieces boatYard), AssetIds attachments.
+
+PERF-BL9 r1 (2026-11-01, not uploaded): Lv1 joins as a mesh (Lv1_L01_Floor tiles + tan path + orange slab trim, L02_Walls
+brick courses/stud caps/orange piers, L03_Boat hull with tapered bow, stripe, portholes, rails, console, framed cabin
+windows, studded roof, mast; L04_Gantry; L05_Office walk-in yard office with framed door, boat plaque, inset windows,
+stepped studded blue roof; L06_Props tool chest, tyres, winch, paint cans, crates; L08_Slip rails + sleepers;
+L07_SlipEast dropped at Lv3). Lv3 hull gets a dressed mast (peak 31 studs, above the gantry). Budget hero_building,
+LOD0 22,068 / LOD1 11,030 / LOD2 5,513; validate PASS (782, 0 failed, 162 waived); [zfight] 0 visible. Code:
+DockPieces boatYard() (lv1 opt-in, keeps plinth, sign, rock, hidden Console). Sheet: lineup.py.
+
+## docs/25 B + J (2026-10-27)
 
 Validate PASS (459 checks, 0 failed, 92 waived: gameplay node/layer naming, flat-palette LOD UV layout). LOD0 7,648
 tris / 10 meshes (budget 8,000): Lv2 3,244 (gantry + cab 1,264, hoist + engine stand 1,072, bench 276, tools 632), Lv3

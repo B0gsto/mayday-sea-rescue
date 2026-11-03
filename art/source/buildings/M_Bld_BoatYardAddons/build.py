@@ -1,29 +1,17 @@
-"""M_Bld_BoatYardAddons: the Boat Yard's level add-ons, Lego style (docs/25 B and J; docs/05 2.2, 3, 4, 5).
+"""M_Bld_BoatYardAddons: the Boat Yard as a mesh, Lego style (PERF-BL9; docs/25 B and J; docs/05 2.2, 3, 4, 5).
 
-The Lv1 yard stays the code-built `boatYard()` in src/shared/DockPieces.luau: plinth, workboat on its cradle, tall
-yellow gantry, fence, slipway planks, front clutter. This asset adds only what the two levels add, in the code yard's
-final frame: 39.5 x 43.5 stud lot, ground at z 0, plinth top z 0.92, front -Y (Roblox -Z), origin the yard's ground
-centre. Place at the yard frame with no extra scale.
+Built in the code yard's final frame (`boatYard()` in src/shared/DockPieces.luau): 39.5 x 43.5 stud lot, ground at z
+0, plinth top z 0.92, front -Y (Roblox -Z), origin the yard's ground centre, Blender +X = in-game -X. The code keeps
+the plinth, the name sign on the gantry beam, the rock and a hidden Console.
 
-Lv2 (engine: 3 -> 5 builder slots): a yellow portal crane straddling the dry dock's line in the west third: west legs on
-a concrete footing where the west dock wall goes, east legs on a footing on the yard beside the east wall, studded base
-plates, side ties above head height, a girder with dark end caps, a cab on a railed platform (ladder up from the yard,
-door onto the platform) on the east front leg, and a red trolley whose black chain lowers a 2 x 3 stud red engine over a
-studded yellow engine cradle (Lv2) / the hull's open engine hatch (Lv3). A work bench stands against the east fence with
-brick tools (3D, on pegs) over a tan board, stock on its two shelves.
+Lv1: tiled floor with a tan work strip, white brick walls with grey cap plates and orange piers, the workboat on two grey
+brick cradles under the yellow gantry, a walk-in brick office (double door on the path face), props, the slipway, a storage
+pad in the right half. Lv2: a tall red jib crane right of the gantry and a red tool bench left of the gate mouth. Lv3: a
+wet dock with a dark rim, a low red/white water gate in the front wall's place and a half-open boat shed in the right front,
+a bigger hull afloat in it. Lv1_L07_Paint (with the right front wall) gives way to the dock at Lv3 (DockPieces).
 
-Lv3 (5 -> 8 builder slots): a walled dry dock in the west third, open to the sea at the back: dark grey brick walls
-(staggered seams) with a light coping, a yellow safety edge, solid grey/yellow fence panels and bollards; a dry floor
-with a strip of water at the sea end behind a yellow/black hazard-striped caisson (orange posts and winch beam), a stair
-down the south wall and a flight up from the yard, a ladder, a walk-in 6 x 6 pump house east of the dock (orange walls,
-studded red roof, open door, pipe through the dock wall into the water) and a second boat hull on three dark-grey keel
-blocks (the Lv2 engine cradle is the fourth) with two shores per side: solid red hull (bilge chine, raked bow) with a
-white stripe, tan deck with an open engine hatch under the hook, white cabin.
-
-Each level is a top-level node (Lv2, Lv3) holding 5-6 construction layers (L01_* bottom to L06_* top), one palette mesh
-per layer (flat colours via UVs, one draw call per layer, like M_Bld_Depot). Collision is `<Node>_ColNN_COL`, one
-convex box per object: posts, plates, bench, board, dock walls, steps, gate, hull in three bites, blocks and ladder, so
-the walkways, the basin and the space under the crane stay open.
+Each level is a top-level node (Lv1, Lv2, Lv3) holding construction layers (L01_* bottom up), one palette mesh per
+layer (flat colours via UVs). Collision is `<Node>_ColNN_COL`, one convex box per object.
 
     python3 art/source/buildings/M_Bld_BoatYardAddons/maketex.py \
         --out build/prod/M_Bld_BoatYardAddons/textures/M_Bld_BoatYardAddons --name BoatYard --set Brick
@@ -43,51 +31,56 @@ import lego  # noqa: E402
 import palette as P  # noqa: E402
 
 NAME = "M_Bld_BoatYardAddons"
-BUDGET = "large_prop"
+BUDGET = "hero_building"   # Lv1 joined (PERF-BL9): 40k class, one flat palette set (waived)
 TIER = "standard"
 SET_NAME, SET = "BoatYard", "Brick"
 TEX = os.path.join(G, "build/prod", NAME, "textures", NAME)
 ALB = os.path.join(TEX, "T_BoatYard_Brick_ALB.png")
 FLOOR = 0.92                    # code yard plinth top (0.8 at 1x, scaled 1.15)
-
-# Lv2 bench against the east fence (inner face x 18.75), top just under the fence cap (3.68)
-BX0, BX1 = 16.30, 18.72
-BY0, BY1 = -4.10, 4.10
-BTOP = 3.62
-FACE = 18.30                    # tool board face, toward the yard (-X)
-# Lv3 dry dock in the west third, open to the sea at the back plinth edge
-WX0, WX1 = -18.75, -17.15       # west wall (1.6 thick)
-EX0, EX1 = -11.10, -9.90        # east wall (1.2 thick)
-SY0, SY1 = -9.40, -8.20         # south wall (1.2 thick)
-NY = 21.40                      # wall ends just inside the plinth edge (21.73)
-WALL_Z1, CAP_Z1 = 3.00, 3.26    # wall top / walkway top
-HX, HY = -14.125, 6.30          # hull centre in the basin, bow to -Y
-HZ = 2.80                       # hull keel bottom (on the keel blocks)
-DFLOOR = 1.05                   # dry dock floor top
+# PERF-BL9 r5 layout (each level grows its own shape where the path sees it): Lv2 = a tall red jib crane right of the gantry
+# + a red tool bench left of the gate mouth; Lv3 = a wet dock in the right front: dark rim, clear water, a low red/white
+# water gate at the path end, a red hull afloat and a half-open boat shed (blue studded roof, white gable) over its stern
+FACE = 18.30                    # tool() board plane in its build frame (bench_lv2 rotates it to face -Y)
+BENCH_X, BENCH_Y = -5.60, -14.40    # Lv2 bench centre x, pegboard plane y: in the gate mouth, plinth front y -17.8 leaves the corridor to the office door
+BENCH_S, BENCH_PL = 1.25, 0.70  # bench scale, plinth height (one brick: the board stands clear above the gate post)
+TOOL_S = 1.50                   # the three hung tools
+BTOP = 3.50
+BBOARD = 7.50                   # pegboard top (before the scale)
+AWN_D = 1.90                    # awning depth (before the scale): 2 studs in the world
+TWX, TWY = 12.50, 18.00         # Lv2 jib crane tower centre: in the path view it stands between the gantry leg and the Lv3 shed
+TW = 1.30                       # tower half width
+TBASE = 3.00                    # two-course red/white base half width (6x6)
+TOWER_Z = 28.30                 # slewing ring (r3 20.7): the crane is its own skyline step beside the gantry
+JIB_X1 = 19.35                  # jib tip, outward over the right half: nothing crosses the gantry leg
+HOOK_X = 17.30                  # trolley / load x (the load hangs clear right of the tower)
+CRATE_S, CRATE_H = 4.68, 4.20   # the load, 1.3x
+DX0, DX1, DY0, DY1 = 9.60, 18.60, -20.55, -2.00     # Lv3 dock outer rim
+RIM, RIM_Z, COPE_Z = 0.90, 2.40, 2.60
+WATER_Z = 2.30
+WATER_C = P.BLUE
+SHED_Y0, EAVE = -10.10, 15.00   # boat shed over the dock's back third (roof y SHED_Y0..DY1): the bow lies in open water
+SHED_PX = (12.60, 19.10)        # shed post x: left on a quay strip (a crane-width of sky between its eave and the crane tower in the path view), right on the side wall
+QUAY_X1 = 13.20                 # quay strip right edge
+SHED_XA, SHED_XB = 12.00, 19.70 # shed roof x
+CAISSON_Z = 2.22                # the low path-side water gate replaces the front wall at Lv3: hull and water show over it
+HX, HY = 15.40, -10.60          # Lv3 hull centre in the dock, bow to -Y (the path)
+HS = 1.10                       # Lv3 hull scale
+HZ = 1.00                       # hull keel bottom (afloat: the water hides the bilge)
 HB = 1.75                       # hull half beam
 HTAPER = ((-6.80, HB), (2.60, HB), (4.00, 1.65), (5.20, 1.15), (6.10, 0.62), (6.60, 0.28))   # (x, half beam)
 # hull bands (z0, z1, half-beam scale, colour): red hull, white stripe, red sheer
 HBANDS = ((2.10, 2.75, 1.02, P.WHITE), (2.75, 3.35, 1.00, P.RED))      # over the red bilge hull (hull())
 HKEEL = (0.00, 0.00, 0.25, 0.85, 1.55, 1.95)    # keel bottom per HTAPER station: flat, then a raked bow
-KEEL_BLOCKS = ((3.40, 0.60), (9.00, 0.70), (12.00, 0.70))   # (y, half length); the cradle (CY0..CY1) sits between
 DECK = 3.55
-HUT_X0, HUT_X1, HUT_Y0, HUT_Y1 = -8.20, -2.20, 12.40, 18.40      # pump house footprint (6 x 6)
-HUT_T, HUT_Z = 0.50, 6.50
-DOOR_X0, DOOR_X1 = -6.80, -4.20
-# Lv2 crane: a portal straddling the dock (Lv3): west legs on the west wall line, east legs on the yard beside the east
-# wall (clear of the code gantry leg at x -9.78, y +-0.69); the hook hangs over the hull's engine hatch
-GXW, GXE = -19.15, -9.20        # post centres: the west legs stand on the code yard's side wall line (x -19.55..-18.75)
-FOOTW, FOOTE = (-19.72, -18.70), (-9.90, -8.50)     # concrete footings (x); the west one keeps the dock walkway clear
-PHW, PHE = 0.40, 0.55           # post half widths (west narrower: it fits the code side wall's 0.8 width)
-GYC, GY = 5.70, 3.70            # hatch / cradle centre y; posts at GYC +- GY
-FY0, FY1 = GYC - GY - 1.0, GYC + GY + 1.0
-POST = 1.10
-FOOT_Z = 3.70                   # footing top, above the dock coping (3.26)
-PLATE_Z = 4.00                  # base plate top
-BEAM_Z0, BEAM_Z1 = 16.80, 18.00
-TIES = (9.40, 13.40)            # side ties, above head height on the walkway
-CY0, CY1 = 4.10, 7.30           # engine stand (Lv2) between the keel blocks, under the hull bottom (Lv3)
-PLAT_Z = 9.30                   # cab platform top, on the east front post
+
+
+def patch_lod_targets():
+    """LODs keep the large_prop shares (50% / 25%) the add-ons shipped with: the hero_building LOD2 ceiling collapses
+    the small Lego detail meshes (session-only patch, like M_Bld_FishMarketAddons)."""
+    import budgets
+    orig = getattr(budgets, "_by_orig_lod_target", budgets.lod_target)
+    budgets._by_orig_lod_target = orig
+    budgets.lod_target = lambda budget_class, lod, lod0_tris, asset_tris=None: orig("large_prop", lod, lod0_tris)
 
 
 def patch_lod_names():
@@ -158,123 +151,6 @@ def hazard(b, x0, x1, y, z0, z1, depth, thick=1.0, period=1.5):
         k += period
 
 
-# ------------------------------------------------------------------ Lv2 kit
-def gantry(b):
-    """Yellow portal crane over the dock line: concrete footings, studded base plates, four posts, ties, the girder, and
-    a cab on a railed platform on the east front post with a ladder up from the yard."""
-    for xc, (fx0, fx1), ph in ((GXW, FOOTW, PHW), (GXE, FOOTE, PHE)):
-        b.box((fx0, FY0, FLOOR), (fx1, FY1, FOOT_Z), P.DBG, bevel=0.08)                  # concrete footing
-        b.box((fx0 + 0.06, FY0 + 0.25, FOOT_Z), (fx1 - 0.06, FY1 - 0.25, PLATE_Z), P.YELLOW, bevel=0.06)
-        for sy in (-1, 1):
-            py = GYC + sy * GY
-            b.studs(fx0 + 0.25, fx1 - 0.25, py + sy * 0.70, py + sy * 1.55, PLATE_Z, P.YELLOW, step=0.85, r=0.30,
-                    h=0.22, n=10)                                                         # studs beside each post
-            b.box((xc - ph - 0.10, py - 0.65, PLATE_Z), (xc + ph + 0.10, py + 0.65, PLATE_Z + 0.14), P.DBG, bevel=0.04)
-            b.box((xc - ph, py - POST / 2, PLATE_Z + 0.14), (xc + ph, py + POST / 2, BEAM_Z0), P.YELLOW, bevel=0.06)
-            b.box((xc - ph - 0.11, py - 0.66, BEAM_Z1), (xc + ph + 0.11, py + 0.66, BEAM_Z1 + 0.18), P.DBG, bevel=0.04)
-            ya, yb = sorted((py - sy * 0.80, py - sy * 2.35))
-            b.studs(xc - 0.3, xc + 0.3, ya, yb, BEAM_Z1, P.YELLOW, step=0.80, r=0.30, h=0.24, n=10)   # end beam studs
-        for z0 in TIES:                                                                   # front post to back post
-            b.box((xc - ph + 0.05, GYC - GY, z0), (xc + ph - 0.05, GYC + GY, z0 + 0.80), P.YELLOW, bevel=0.05)
-        b.box((xc - ph - 0.05, GYC - GY - 0.60, BEAM_Z0), (xc + ph + 0.05, GYC + GY + 0.60, BEAM_Z1), P.YELLOW,
-              bevel=0.06)
-    gx0, gx1 = GXW - PHW - 0.15, GXE + 0.70
-    b.box((gx0, GYC - 1.20, BEAM_Z0), (gx1, GYC + 1.20, BEAM_Z1), P.YELLOW, bevel=0.07)    # girder across the dock
-    b.box((gx1, GYC - 1.30, BEAM_Z0 - 0.10), (gx1 + 0.30, GYC + 1.30, BEAM_Z1 + 0.16), P.DBG, bevel=0.04)
-    b.box((gx0 - 0.30, GYC - 1.30, BEAM_Z0 - 0.10), (gx0, GYC + 1.30, BEAM_Z1 + 0.16), P.DBG, bevel=0.04)
-    b.studs(gx0 + 0.3, gx1 - 0.3, GYC - 0.95, GYC + 0.95, BEAM_Z1, P.YELLOW, step=1.80, r=0.36, h=0.26, n=10)
-    # cab platform bolted to the east front post's yard side, two braces under it
-    py = GYC - GY
-    px0, px1, py0, py1 = GXE + POST / 2, GXE + 4.30, py - 1.45, py + 1.45
-    b.box((px0, py0, PLAT_Z - 0.30), (px1, py1, PLAT_Z), P.DBG, bevel=0.05)
-    for y in (py0 + 0.35, py1 - 0.35):
-        b.beam((px0, y, PLAT_Z - 2.60), (px1 - 0.60, y, PLAT_Z - 0.30), 0.30, 0.30, P.DBG)
-    # cab: yellow box, windows front, back and toward the hook, white studded roof, red door onto the platform
-    cx0, cx1, cy0, cy1, cz0, cz1 = px0 + 0.10, px0 + 2.30, py0 + 0.15, py1 - 0.15, PLAT_Z, PLAT_Z + 2.60
-    b.box((cx0, cy0, cz0), (cx1, cy1, cz1), P.YELLOW, bevel=0.07)
-    b.box((cx0 + 0.25, cy0 - 0.05, cz0 + 1.00), (cx1 - 0.25, cy0, cz1 - 0.35), P.INK)         # front window
-    b.box((cx0 + 0.25, cy1, cz0 + 1.00), (cx1 - 0.25, cy1 + 0.05, cz1 - 0.35), P.INK)         # back window
-    b.box((cx1 - 0.04, py - 0.70, cz0), (cx1 + 0.08, py + 0.70, cz0 + 2.15), P.WHITE, bevel=0.03)   # door frame
-    b.box((cx1, py - 0.52, cz0 + 0.05), (cx1 + 0.12, py + 0.52, cz0 + 2.00), P.RED, bevel=0.03)       # door
-    b.box((cx1 + 0.12, py - 0.32, cz0 + 1.15), (cx1 + 0.15, py + 0.32, cz0 + 1.75), P.INK)           # door window
-    b.box((cx0 - 0.20, cy0 - 0.20, cz1), (cx1 + 0.20, cy1 + 0.20, cz1 + 0.28), P.WHITE, bevel=0.05)
-    b.studs(cx0, cx1, cy0, cy1, cz1 + 0.28, P.WHITE, step=1.2, r=0.34, h=0.22, n=10)
-    # platform railing on the back edge and the far end; the front edge stays open where the ladder from the yard arrives
-    rx = px1 - 0.10
-    for x, y in ((cx1 + 0.15, py1 - 0.10), (rx, py1 - 0.10), (rx, py0 + 0.10)):
-        b.box((x - 0.08, y - 0.08, PLAT_Z), (x + 0.08, y + 0.08, PLAT_Z + 1.20), P.YELLOW, bevel=0.02)
-    b.box((cx1, py1 - 0.21, PLAT_Z + 1.10), (px1, py1, PLAT_Z + 1.32), P.YELLOW, bevel=0.03)
-    b.box((rx - 0.11, py0, PLAT_Z + 1.10), (rx + 0.11, py1, PLAT_Z + 1.32), P.YELLOW, bevel=0.03)
-    lx0, lx1, ly = cx1 + 0.25, px1 - 0.45, py0 - 0.12
-    for x in (lx0, lx1):
-        b.box((x - 0.08, ly - 0.10, FLOOR), (x + 0.08, ly + 0.10, PLAT_Z + 1.20), P.YELLOW, bevel=0.02)
-    z = FLOOR + 0.60
-    while z < PLAT_Z - 0.20:
-        b.box((lx0 + 0.08, ly - 0.07, z), (lx1 - 0.08, ly + 0.07, z + 0.12), P.DBG, bevel=0.0)
-        z += 0.65
-
-
-def hoist(b):
-    """Red trolley over the dock, a black chain, a hook block and a 2 x 3 stud red engine hanging over the cradle /
-    hatch, and the studded engine cradle on the floor under it."""
-    x, y = HX, GYC
-    b.box((x - 0.85, y - 1.00, 15.62), (x + 0.85, y + 1.00, 16.78), P.RED, bevel=0.06)      # trolley body
-    for cx in (x - 0.45, x + 0.45):
-        for sy in (-1, 1):
-            disc_y(b, cx, y + sy * 1.34, 17.15, 0.30, 0.24, P.DBG, n=12)                    # rollers on the girder
-    z, k = 15.62, 0
-    while z > 11.30:                                                              # chain links, alternating 90 degrees
-        if k % 2:
-            b.box((x - 0.20, y - 0.07, z - 0.50), (x + 0.20, y + 0.07, z), P.BLACK)
-        else:
-            b.box((x - 0.07, y - 0.20, z - 0.50), (x + 0.07, y + 0.20, z), P.BLACK)
-        z -= 0.40
-        k += 1
-    b.box((x - 0.55, y - 0.45, 10.70), (x + 0.55, y + 0.45, 11.30), P.DBG, bevel=0.05)  # hook block
-    # engine: red block 2 x 3 studs (2.0 x 3.0, fits the hull's 2.2 x 3.4 hatch), black heads, silver pulley at the front
-    # round 4: lowered to just above the engine stand (Lv2) and the hatch coaming (Lv3, world z 6.75)
-    ex0, ex1, ey0, ey1, ez0, ez1 = x - 1.00, x + 1.00, y - 1.50, y + 1.50, 7.30, 9.20
-    for sy in (-1, 1):
-        b.beam((x, y + sy * 0.35, 10.75), (x, y + sy * 1.10, ez1 + 0.55), 0.22, 0.22, P.BLACK)   # slings
-    b.box((ex0, ey0, ez0), (ex1, ey1, ez1), P.RED, bevel=0.10)
-    b.box((ex0 + 0.15, ey0 + 0.15, ez0 - 0.40), (ex1 - 0.15, ey1 - 0.15, ez0), P.DBG, bevel=0.05)   # sump
-    for i in range(3):
-        yy = ey0 + 0.50 + i * 1.00
-        b.cyl(x, yy, ez1, ez1 + 0.80, 0.40, P.BLACK, n=12)                                    # cylinder heads
-        b.cyl(x, yy, ez1 + 0.80, ez1 + 0.98, 0.26, P.DBG, n=10)
-        for sx in (-1, 1):
-            b.cyl(x + sx * 0.66, yy, ez1, ez1 + 0.22, 0.24, P.RED, n=10, bottom=False)       # studs
-    disc_y(b, x, ey0 - 0.18, ez0 + 0.95, 0.72, 0.30, P.LBG, n=14)                            # pulley
-    disc_y(b, x, ey0 - 0.42, ez0 + 0.95, 0.30, 0.20, P.DBG, n=10)
-    b.box((ex1, y - 0.80, ez0 + 0.40), (ex1 + 0.40, y + 0.80, ez1 - 0.35), P.DBG, bevel=0.04)   # exhaust manifold
-    # engine stand: the landing spot under the hook. Lv3: its base is a fourth support under the hull bottom (z HZ)
-    # and the column hides inside the solid hull (inside the flat bottom, +-1.26); the studded top and the chocks
-    # show in the hatch (hole x +-1.1, y GYC +-1.7, deck world z 6.35)
-    b.box((x - 1.50, CY0, FLOOR), (x + 1.50, CY1, 2.25), P.DBG, bevel=0.07)
-    b.box((x - 1.40, CY0 + 0.10, 2.25), (x + 1.40, CY1 - 0.10, 2.58), P.YELLOW, bevel=0.06)
-    b.box((x - 1.10, CY0 + 0.30, 2.58), (x + 1.10, CY1 - 0.30, 5.95), P.DBG, bevel=0.05)          # column
-    b.box((x - 1.22, CY0 + 0.20, 5.95), (x + 1.22, CY1 - 0.20, 6.28), P.YELLOW, bevel=0.05)        # top plate
-    b.studs(x - 1.05, x + 1.05, y - 1.05, y + 1.05, 6.28, P.YELLOW, step=1.05, r=0.34, h=0.20, n=10)
-    for sy in (-1, 1):                                                            # timber chocks either end
-        b.box((x - 1.05, y + sy * 1.40 - 0.18, 6.28), (x + 1.05, y + sy * 1.40 + 0.18, 6.60), P.BROWN, bevel=0.04)
-
-
-def bench(b):
-    """Tan studded bench on dark legs with two shelves, a tan back board in a dark frame against the east fence."""
-    for x in (BX0 + 0.15, BX1 - 0.52):
-        for y in (BY0 + 0.15, BY1 - 0.65):
-            b.box((x, y, FLOOR), (x + 0.50, y + 0.50, 3.30), P.DBG)
-    b.box((BX0, BY0, 3.30), (BX1, BY1, BTOP), P.TAN, bevel=0.08)
-    b.studs(BX0 + 0.35, BX1 - 0.35, BY0 + 0.45, BY1 - 0.45, BTOP, P.TAN, step=1.20, r=0.34, h=0.22)
-    for z in (1.75, 2.65):
-        b.box((BX0 + 0.15, BY0 + 0.25, z), (BX1 - 0.12, BY1 - 0.25, z + 0.22), P.DBG, bevel=0.04)
-    b.box((18.30, -3.60, BTOP), (BX1, 3.60, 7.10), P.TAN, bevel=0.04)            # back board on the bench top
-    for y0, y1 in ((-3.90, -3.55), (3.55, 3.90)):                                # dark frame: end posts
-        b.box((18.26, y0, BTOP), (18.30, y1, 7.12), P.DBG, bevel=0.02)
-    b.box((18.26, -3.90, 6.92), (18.30, 3.90, 7.12), P.DBG, bevel=0.02)          # top rail
-    b.box((18.26, -3.90, BTOP), (18.30, 3.90, BTOP + 0.24), P.DBG, bevel=0.02)   # bottom rail
-
-
 def tool(b, kind, y, z):
     """One hung brick tool, 3D (0.6 deep) with studs on its handle, on two pegs; tools point into the yard (-X)."""
     d = 0.60
@@ -286,43 +162,23 @@ def tool(b, kind, y, z):
         b.cyl_x(FACE - 0.09, y, z + pz, 0.10, 0.18, P.DBG, n=6)
     if kind == "hammer":
         part(-0.20, 0.20, 0.0, 1.45, P.BROWN, True)
-        part(-0.48, 0.48, 1.20, 1.80, P.DBG, True)
-        part(-0.48, -0.25, 1.80, 2.00, P.DBG)
+        part(-0.48, 0.48, 1.20, 1.80, P.RED, True)
+        part(-0.48, -0.25, 1.80, 2.00, P.RED)
     elif kind == "wrench":
-        part(-0.18, 0.18, 0.0, 1.50, P.LBG, True)
-        part(-0.45, 0.45, 1.50, 1.80, P.LBG)
-        part(-0.45, -0.17, 1.80, 2.15, P.LBG)
-        part(0.17, 0.45, 1.80, 2.15, P.LBG)
+        part(-0.18, 0.18, 0.0, 1.50, P.BLUE, True)
+        part(-0.45, 0.45, 1.50, 1.80, P.BLUE)
+        part(-0.45, -0.17, 1.80, 2.15, P.BLUE)
+        part(0.17, 0.45, 1.80, 2.15, P.BLUE)
     elif kind == "drill":
         part(-0.30, 0.30, 0.65, 1.50, P.DBG, True)
         part(-0.14, 0.14, 0.10, 0.65, P.ORANGE)
         part(-0.06, 0.06, 1.50, 2.10, P.LBG)
         part(-0.50, 0.50, 1.50, 1.80, P.ORANGE)
     else:  # saw
-        part(-0.55, 0.55, 0.75, 1.95, P.LBG)
+        part(-0.55, 0.55, 0.75, 1.95, P.DBG)
         part(-0.20, 0.20, 0.0, 0.75, P.YELLOW, True)
         for i in range(4):
-            part(-0.48 + i * 0.32, -0.27 + i * 0.32, 0.55, 0.75, P.LBG)
-
-
-def bench_tools(b):
-    """Tools on the board, a vice and a toolbox on the top, stock on the upper shelf: no loose props on the floor."""
-    for i, kind in enumerate(("hammer", "saw", "wrench", "drill")):
-        tool(b, kind, -2.60 + i * 1.75, 4.25)
-    b.box((16.60, -3.55, BTOP), (17.40, -3.05, BTOP + 0.50), P.DBG, bevel=0.04)   # vice body
-    b.box((16.60, -3.55, BTOP + 0.50), (17.40, -3.40, BTOP + 0.78), P.LBG, bevel=0.02)
-    b.box((16.60, -3.20, BTOP + 0.50), (17.40, -3.05, BTOP + 0.78), P.LBG, bevel=0.02)
-    b.box((16.10, -3.38, BTOP + 0.34), (17.90, -3.22, BTOP + 0.48), P.RED, bevel=0.02)
-    b.box((16.60, 2.50, BTOP), (17.60, 3.60, BTOP + 0.80), P.RED, bevel=0.06)     # toolbox on the top
-    b.box((16.85, 2.80, BTOP + 0.80), (17.35, 3.30, BTOP + 0.92), P.WHITE, bevel=0.02)
-    b.box((16.80, 0.40, BTOP), (18.00, 0.85, BTOP + 0.18), P.BROWN, bevel=0.03)   # a board off the saw
-    b.box((16.60, -3.45, 2.87), (17.50, -2.35, 3.18), P.RED, bevel=0.04)          # shelf stock
-    b.box((16.55, -3.50, 3.18), (17.55, -2.30, 3.26), P.DBG, bevel=0.03)
-    for i in range(3):
-        b.box((16.60, 1.00 + i * 0.05, 2.87 + i * 0.12), (18.55, 3.60 - i * 0.06, 2.99 + i * 0.12), P.BROWN, bevel=0.02)
-    b.box((16.70, -0.40, 2.87), (18.40, 0.35, 3.18), P.BLUE, bevel=0.04)
-    b.box((16.85, -0.32, 3.18), (18.25, 0.27, 3.24), P.LBG, bevel=0.02)
-
+            part(-0.48 + i * 0.32, -0.27 + i * 0.32, 0.55, 0.75, P.DBG)
 
 # ------------------------------------------------------------------ Lv3 kit
 SEAM = 0.07                     # brick seam width / proud
@@ -363,126 +219,6 @@ def seams_x(b, y, face, x0, x1, z0, z1):
             x += BRICK
 
 
-def walls(b):
-    """Dark grey brick dock walls (staggered seams), light coping with a yellow safety edge, studs, solid fence panels
-    along the basin edge, bollards, a dry floor."""
-    for x0, x1, y0, y1 in ((WX0, WX1, SY0, NY), (EX0, EX1, SY0, NY), (WX1, EX0, SY0, SY1)):
-        b.box((x0, y0, FLOOR), (x1, y1, WALL_Z1), P.DBG, bevel=0.06)
-    b.box((WX1, SY1, FLOOR), (EX0, NY, DFLOOR), P.LBG, bevel=0.03)                                   # dry basin floor
-    b.box((WX0 - 0.05, SY0 - 0.05, WALL_Z1), (WX1 + 0.05, NY + 0.05, CAP_Z1), P.LBG, bevel=0.05)   # coping
-    b.box((EX0 - 0.05, SY0 - 0.05, WALL_Z1), (EX1 + 0.05, NY + 0.05, CAP_Z1), P.LBG, bevel=0.05)
-    b.box((WX1, SY0 - 0.05, WALL_Z1), (EX0, SY1 + 0.05, CAP_Z1), P.LBG, bevel=0.05)
-    seams_y(b, WX1, +1, SY1, NY, FLOOR, WALL_Z1)                      # inner faces + the yard side of the east wall
-    seams_y(b, EX0, -1, SY1, NY, DFLOOR, WALL_Z1)
-    seams_y(b, EX1, +1, SY0, NY, FLOOR, WALL_Z1)
-    seams_x(b, SY0, -1, WX1, EX0, FLOOR, WALL_Z1)
-    z = CAP_Z1
-    for x0, x1, y0, y1 in ((WX1 - 0.28, WX1, SY0 - 0.05, NY + 0.05), (EX0, EX0 + 0.28, SY0 - 0.05, NY + 0.05),
-                           (WX1, EX0, SY1 - 0.23, SY1 + 0.05)):                                    # yellow safety edge
-        b.box((x0, y0, z), (x1, y1, z + 0.07), P.YELLOW, bevel=0.0)
-    for x0, x1, y0, y1 in ((WX0 + 0.25, WX1 - 0.45, SY0 + 0.30, NY - 0.30), (EX0 + 0.45, EX1 - 0.25, SY0 + 0.30, NY - 0.30)):
-        b.studs(x0, x1, y0, y1, CAP_Z1, P.LBG, step=2.40, r=0.30, h=0.22)
-    # solid fence panels along the basin edge of each walkway (light grey panel, yellow cap rail, dark posts: they must
-    # not blur into the hull's red/white bands); gaps at the ladder, the south stair and the crane's west footing
-    def fence(x, y0, y1):
-        n = max(1, int(round((y1 - y0) / 3.0)))
-        step = (y1 - y0) / n
-        for i in range(n):
-            ya, yb = y0 + i * step, y0 + (i + 1) * step
-            b.box((x - 0.10, ya + 0.12, CAP_Z1 + 0.30), (x + 0.10, yb - 0.12, CAP_Z1 + 1.15), P.LBG, bevel=0.03)
-            b.box((x - 0.14, ya, CAP_Z1 + 1.15), (x + 0.14, yb, CAP_Z1 + 1.40), P.YELLOW, bevel=0.04)
-            b.cyl(x, ya, CAP_Z1, CAP_Z1 + 1.40, 0.24, P.DBG, n=8, bottom=False)
-        b.cyl(x, y1, CAP_Z1, CAP_Z1 + 1.40, 0.24, P.DBG, n=8, bottom=False)
-    fence(WX1 - 0.14, SY1 + 2.6, FY0 - 0.2)
-    fence(WX1 - 0.14, FY1 + 0.2, 20.0)
-    fence(EX0 + 0.14, SY1 + 2.6, 10.5)
-    fence(EX0 + 0.14, 11.55, 20.0)
-    for x, y in ((WX0 + 0.30, -4.0), (WX0 + 0.30, 13.0), (WX0 + 0.30, 17.5),
-                 (EX1 - 0.30, -4.0), (EX1 - 0.30, 0.0), (EX1 - 0.30, 11.0)):                       # bollards
-        b.cyl(x, y, CAP_Z1, CAP_Z1 + 0.80, 0.40, P.ORANGE, n=12, bottom=False)
-        b.cyl(x, y, CAP_Z1 + 0.80, CAP_Z1 + 0.98, 0.52, P.BLACK, n=12)
-
-
-def water(b):
-    """A strip of water at the sea end of the basin (the dock stays dry), behind the caisson's line."""
-    b.box((WX1 + 0.05, 16.30, DFLOOR), (EX0 - 0.05, 19.60, 1.24), P.BLUE, bevel=0.03)
-
-
-def steps(b):
-    """Three treads up from the yard to the east walkway, three down from the south walkway into the basin."""
-    for y0, y1, z1 in ((-11.65, -10.90, 1.50), (-10.90, -10.15, 2.08), (-10.15, -9.40, 2.66)):
-        b.box((-10.95, y0, FLOOR), (-9.45, y1, z1), P.LBG, bevel=0.04)
-        b.box((-10.99, y0, z1 - 0.10), (-9.41, y0 + 0.10, z1), P.DBG, bevel=0.02)
-    for y0, y1, z1 in ((SY1, SY1 + 0.80, 2.73), (SY1 + 0.80, SY1 + 1.60, 2.20), (SY1 + 1.60, SY1 + 2.40, 1.67)):
-        b.box((WX1, y0, FLOOR), (EX0, y1, z1), P.LBG, bevel=0.04)
-        b.box((WX1, y1 - 0.10, z1 - 0.10), (EX0, y1, z1), P.DBG, bevel=0.02)
-
-
-def gate(b):
-    """Orange gate posts, the yellow lifting beam with its drum, a hazard-striped yellow/black caisson in the mouth,
-    and the pump house (walk-in, coloured walls, studded roof, open door) with a pipe into the basin."""
-    for x0, x1 in ((WX0 + 0.75, WX1), (EX0, EX0 + 0.85)):
-        b.box((x0, 20.30, CAP_Z1), (x1, 21.00, 4.00), P.ORANGE, bevel=0.05)
-    b.box((-18.10, 20.35, 3.95), (-10.15, 21.00, 4.55), P.YELLOW, bevel=0.06)     # lifting beam
-    b.cyl_x(-14.125, 20.67, 4.87, 0.32, 1.10, P.DBG)                             # winch drum
-    for x in (-15.60, -12.65):
-        b.box((x - 0.05, 20.42, 3.30), (x + 0.05, 20.55, 3.95), P.BLACK)          # chains to the caisson
-    hazard(b, WX1, EX0, 19.50, DFLOOR, 3.30, 0.07, thick=1.10)                    # caisson: black body, yellow stripes
-    b.box((WX1, 19.45, 3.30), (EX0, 20.65, 3.50), P.DBG, bevel=0.05)             # caisson deck
-    b.studs(WX1 + 0.3, EX0 - 0.3, 19.60, 20.50, 3.50, P.YELLOW, step=1.5, r=0.40, h=0.22, n=10)
-    # ---- pump house
-    x0, x1, y0, y1, T, H = HUT_X0, HUT_X1, HUT_Y0, HUT_Y1, HUT_T, HUT_Z
-    b.box((x0, y0, FLOOR), (x1, y1, FLOOR + 0.12), P.TAN, bevel=0.02)                       # floor
-    b.box((x0, y0, FLOOR + 0.12), (x0 + T, y1, H), P.ORANGE, bevel=0.05)                   # west wall
-    b.box((x1 - T, y0, FLOOR + 0.12), (x1, y1, H), P.ORANGE, bevel=0.05)                   # east wall
-    b.box((x0 + T, y1 - T, FLOOR + 0.12), (x1 - T, y1, H), P.ORANGE, bevel=0.05)           # north wall
-    b.box((x0 + T, y0, FLOOR + 0.12), (DOOR_X0, y0 + T, H), P.ORANGE, bevel=0.05)          # south wall, either side of the door
-    b.box((DOOR_X1, y0, FLOOR + 0.12), (x1 - T, y0 + T, H), P.ORANGE, bevel=0.05)
-    b.box((DOOR_X0, y0, 5.92), (DOOR_X1, y0 + T, H), P.ORANGE, bevel=0.05)                 # lintel
-    b.box((x0, y0, FLOOR + 0.12), (x1, y0 + 0.08 + T, 1.70), P.DBG, bevel=0.0)             # dark base course
-    for jx0, jx1 in ((DOOR_X0 - 0.30, DOOR_X0), (DOOR_X1, DOOR_X1 + 0.30)):                # door frame
-        b.box((jx0, y0 - 0.06, FLOOR + 0.12), (jx1, y0 + T + 0.06, 5.98), P.WHITE, bevel=0.03)
-    b.box((DOOR_X0 - 0.30, y0 - 0.06, 5.92), (DOOR_X1 + 0.30, y0 + T + 0.06, 6.22), P.WHITE, bevel=0.03)
-    b.box((DOOR_X0 - 0.25, y0 - 2.50, FLOOR + 0.12), (DOOR_X0 - 0.02, y0 - 0.05, 5.80), P.BROWN, bevel=0.03)   # open door leaf
-    b.box((x1 - 0.04, 14.20, 3.30), (x1 + 0.06, 16.60, 5.20), P.INK)                       # window, east face
-    b.box((x1 - 0.04 - 0.16, 14.04, 3.14), (x1 + 0.02, 16.76, 3.30), P.WHITE, bevel=0.02)  # sill
-    b.box((-5.30, y1 - 0.04, 3.30), (-3.30, y1 + 0.06, 5.20), P.INK)                       # window, north face
-    b.box((x0 - 0.55, y0 - 0.55, H), (x1 + 0.55, y1 + 0.55, H + 0.50), P.RED, bevel=0.08)  # roof slab
-    b.studs(x0 - 0.2, x1 + 0.2, y0 - 0.2, y1 + 0.2, H + 0.50, P.RED, step=1.5, r=0.42, h=0.30, n=10)
-    # inside: pump block, red flywheel, the pipe leaving through the west wall
-    b.box((x0 + T + 0.20, 15.90, FLOOR + 0.12), (x0 + T + 1.80, 17.90, 2.50), P.DBG, bevel=0.06)
-    b.cyl_x(x0 + T + 1.10, 16.90, 3.20, 0.85, 0.35, P.RED, n=10)
-    b.box((x0 + T + 0.30, 16.60, 2.50), (x0 + T + 0.90, 17.20, 3.20), P.LBG)
-    # pipe: through the hut wall and the dock wall into the basin, saddles under the outdoor run, spout over the water
-    PZ0, PZ1 = 1.70, 2.30
-    b.box((-11.80, 16.60, PZ0), (x0 + T, 17.20, PZ1), P.LBG, bevel=0.04)
-    for xs in (-9.30, -8.75):
-        b.box((xs - 0.12, 16.52, PZ0 - 0.04), (xs + 0.12, 17.28, PZ1 + 0.04), P.DBG, bevel=0.0)          # flanges
-    for xs in (-9.10, -8.55):
-        b.box((xs - 0.15, 16.70, FLOOR), (xs + 0.15, 17.10, PZ0), P.DBG, bevel=0.02)                       # saddles
-    b.box((-11.80, 16.60, 1.20), (-11.20, 17.20, PZ1), P.LBG, bevel=0.04)                                     # spout, down to the water
-    b.box((-11.90, 16.52, 1.20), (-11.10, 17.28, 1.34), P.DBG, bevel=0.0)
-
-
-def blocks(b):
-    """Three chunky dark-grey keel blocks (the Lv2 engine cradle is the fourth) and two brown shores per side."""
-    for y, half in KEEL_BLOCKS:      # tops just into the hull bottom (no studs: the hull hides them)
-        b.box((HX - 1.05, y - half, DFLOOR), (HX + 1.05, y + half, HZ + 0.10), P.DBG, bevel=0.07)
-    for sx in (-1, 1):
-        for y in (HY - 1.50, HY + 1.50):            # clear of the crane's west footing (y FY0..FY1)
-            x_hull, x_foot = HX + sx * (HB - 0.10), HX + sx * (HB + 0.70)
-            b.beam((x_foot, y, DFLOOR + 0.25), (x_hull, y, HZ + 2.30), 0.55, 0.55, P.BROWN)
-            b.box((x_foot - 0.40, y - 0.45, DFLOOR), (x_foot + 0.40, y + 0.45, DFLOOR + 0.30), P.DBG, bevel=0.04)
-
-
-def ladder(b):
-    """A yellow dock ladder on the east wall, aft of the hull, down into the basin."""
-    for y in (10.85, 11.23):
-        b.box((-11.20, y, DFLOOR), (-11.08, y + 0.12, CAP_Z1), P.YELLOW, bevel=0.02)
-    for z in (1.55, 1.95, 2.35, 2.75):
-        b.box((-11.18, 10.97, z), (-11.10, 11.23, z + 0.12), P.DBG)
-
-
 def hw(x):
     """Hull half beam at local x (full amidships, tapering over the bow)."""
     for (xa, wa), (xb, wb) in zip(HTAPER, HTAPER[1:]):
@@ -504,7 +240,7 @@ def hull(b):
         b.loft([[(x, -hw(x) * sc, z0), (x, hw(x) * sc, z0), (x, hw(x) * sc, z1), (x, -hw(x) * sc, z1)] for x in xs], colour)
     b.loft([[(x, -hw(x) * 0.88, 3.35), (x, hw(x) * 0.88, 3.35), (x, hw(x) * 0.88, DECK), (x, -hw(x) * 0.88, DECK)]
             for x in xs[:-2]], P.TAN)                                                    # solid deck
-    hx = HY - GYC                               # open engine hatch under the crane hook: yellow coaming, dark hole
+    hx = 0.30                                   # open engine hatch amidships: yellow coaming, dark hole
     b.box((hx - 1.70, -1.10, DECK), (hx + 1.70, 1.10, DECK + 0.03), P.INK, bevel=0.0)
     for y0, y1 in ((-1.30, -1.10), (1.10, 1.30)):
         b.box((hx - 1.90, y0, DECK), (hx + 1.90, y1, DECK + 0.40), P.YELLOW, bevel=0.04)
@@ -523,16 +259,889 @@ def hull(b):
 def place_rot(b):
     """Local hull (bow +X) -> the world basin: bow to -Y, keel at HZ, centre (HX, HY)."""
     for i, (x, y, z) in enumerate(b.v):
-        b.v[i] = (HX + y, HY - x, HZ + z)
+        b.v[i] = (HX + HS * y, HY - HS * x, HZ + HS * z)
+
+
+# ------------------------------------------------------------------ Lv1 yard (PERF-BL9: refines the code `boatYard()`)
+# The code yard at 1.15 (Blender +X = in-game -X, +Y = in-game +Z). The code keeps the plinth, the name sign on the
+# gantry beam (Lv1) / crane girder (Lv2+), the rock and the Console part (the craft-board act) hidden inside the mesh
+# console. Lv1_L07_Paint (the paint pallet in the right front) gives way to the Lv3 dock (DockPieces drops it at Lv3).
+K = 1.15
+YW = 18.70                      # side wall inner face (code 19.15 - 0.40, inset 0.05 into the Lv3 dock wall)
+YWO = 19.55                     # side wall outer face
+FZ0, FZ1 = -21.55, -20.75       # front wall (y)
+GATE = 6.90                     # gate post centres (+-x), 13.8 opening
+WALL_TOP = 3.68
+TILE_TOP = 0.99
+HULL_Z0, HULL_Z1 = 6.21, 9.89
+HULL_HW, HULL_Y = 4.255, 8.625
+BOW_TIP = -13.69
+BOW_Z = 6.60                    # the stem's foot: the bow's underside stays out of the path camera's sight (it shaded muddy)
+BOW_ST = ((HULL_HW, -8.50), (3.05, -12.00), (0.90, BOW_TIP))    # plan stations: a blunt front facet catches the light
+YEL_Z0, YEL_Z1 = 8.25, 9.00     # yellow band
+PATH_X = 6.233                  # tan path half width (a tile edge)
+TSX, TSY = 2 * YW / 12, (21.65 - FZ1) / 14     # floor tile size
+# colour tile patches on the grey floor (x0, x1, y0, y1, colour): a tile takes the colour its centre falls in
+PATCHES = ((13.0, 18.7, -16.0, -12.0, P.BLUE), (15.4, 18.7, -8.0, -3.0, P.RED), (8.5, 12.5, 8.0, 14.0, P.YELLOW),
+           (14.0, 18.7, 11.0, 14.0, P.BLUE), (-14.5, -9.0, 2.0, 8.0, P.BLUE))
+DECK_Z1 = 10.465
+GLEG_X, GLEG_HX, GLEG_HY = 7.60, 0.65, 0.45
+GBEAM_Z0, GBEAM_Z1 = 27.40, 28.70
+OX0, OX1, OY0, OY1 = -18.40, -9.60, -17.80, -9.40       # yard office (front -X corner, set back: its door faces the path)
+OWT, OWALL = 0.50, 9.60
+ODX0, ODX1, ODZ1 = -12.45, -10.15, FLOOR + 5.60         # doorway in the -Y face
+WZ0, WZ1 = 4.40, 6.90                                   # window band
+
+
+def tile_edges(j):
+    """Tile edges of floor row j: a running bond, split at the tan path's edges."""
+    if j % 2 == 0:
+        return [-YW + k * TSX for k in range(13)]
+    return sorted([-YW, YW, -PATH_X, PATH_X] + [-YW + (k + 0.5) * TSX for k in range(12)])
+
+
+def tile_colour(cx, cy):
+    if abs(cx) < PATH_X:
+        return P.TAN
+    return next((c for x0, x1, y0, y1, c in PATCHES if x0 <= cx < x1 and y0 <= cy < y1), P.LBG)
+
+
+def floor_studs(b, x0, x1, y0, y1, step=1.25):
+    """A stud grid on the floor, each stud in its tile's colour."""
+    nx, ny = max(1, round((x1 - x0) / step)), max(1, round((y1 - y0) / step))
+    for ix in range(nx):
+        for iy in range(ny):
+            x, y = x0 + (ix + 0.5) * (x1 - x0) / nx, y0 + (iy + 0.5) * (y1 - y0) / ny
+            j = int((y - FZ1) / TSY)
+            ed = tile_edges(j)
+            cx = next(((a + d) / 2 for a, d in zip(ed, ed[1:]) if a <= x < d), x)
+            b.cyl(x, y, TILE_TOP, TILE_TOP + 0.20, 0.34, tile_colour(cx, FZ1 + (j + 0.5) * TSY), n=8, bottom=False)
+
+
+def lv1_floor(b):
+    """Warm grey 3-stud tiles in a running bond on a dark bed (crisp seams), colour tile patches, a tan path from the gate
+    to the bow, an orange trim round the slab edge."""
+    gap = 0.12
+    Zb = FLOOR + 0.03
+    b._emit([(-YW, FZ1, Zb), (YW, FZ1, Zb), (YW, 21.65, Zb), (-YW, 21.65, Zb)], ((0, 1, 2, 3),), P.DBG)
+    b._emit([(-GATE + 0.6, FZ0, Zb), (GATE - 0.6, FZ0, Zb), (GATE - 0.6, FZ1, Zb), (-GATE + 0.6, FZ1, Zb)], ((0, 1, 2, 3),), P.DBG)
+    for j in range(14):
+        y0, ed = FZ1 + j * TSY, tile_edges(j)
+        cy = y0 + TSY / 2
+        for i, (x0, x1) in enumerate(zip(ed, ed[1:])):
+            cx = (x0 + x1) / 2
+            b.box((x0 + gap / 2, y0 + gap / 2, FLOOR - 0.02), (x1 - gap / 2, y0 + TSY - gap / 2, TILE_TOP), tile_colour(cx, cy),
+                  bevel=0.05)
+            keep_faces(b, (1, 2, 3, 4, 5))
+            covered = (cx < -9.0 and (cy < -9.0 or cy > 11.5)) or (cx > 9.0 and cy < -1.5) or abs(cx) < 6.3
+            if not covered and cx < 0 and x1 - x0 > 2.5 and (i * 5 + j * 3) % 7 == 0:    # stud patches break the grey field (left half)
+                b.studs(cx - 0.9, cx + 0.9, cy - 0.9, cy + 0.9, TILE_TOP, tile_colour(cx, cy), step=0.9, r=0.30, h=0.20, n=10)
+    # the gate mouth (between the front wall pieces) and the trim: orange band proud of the plinth edge
+    for i in range(4):
+        x0 = -GATE + 0.6 + i * (2 * GATE - 1.2) / 4
+        b.box((x0 + 0.06, FZ0 + 0.06, FLOOR - 0.02), (x0 + (2 * GATE - 1.2) / 4 - 0.06, FZ1 - 0.06, TILE_TOP), P.TAN,
+              bevel=0.05)
+        keep_faces(b, (1, 2, 3, 4, 5))
+    E, T = 0.06, 0.30
+    for s in (-1, 1):
+        b.box((s * (19.725 - T), -21.725 - E, 0.50), (s * (19.725 + E), 21.725 + E, 0.97), P.ORANGE, bevel=0.03)
+    b.box((-19.725 + T, -21.725 - E, 0.50), (19.725 - T, -21.725 + T, 0.97), P.ORANGE, bevel=0.03)
+    b.box((-19.725 + T, 21.725 - T, 0.50), (19.725 - T, 21.725 + E, 0.97), P.ORANGE, bevel=0.03)
+    b.studs(-GATE + 0.8, GATE - 0.8, -21.70, -21.45, 0.97, P.ORANGE, step=1.25, r=0.28, h=0.18, n=10)
+
+
+def courses(b, along, plane, s, u0, u1, z0, z1, n=6, brick=2.80, holes=(), c=P.DBG):
+    """Staggered brick seams 0.05 proud of a wall face: along "x" (face at y = plane) or "y" (face at x = plane), s the
+    outward normal's sign; holes = (u0, u1, z0, z1) rectangles the seams stop at (windows, doors, plaques)."""
+    t, p = 0.08, 0.05
+    a, d = sorted((plane, plane + s * p))
+    back = {("x", 1): 2, ("x", -1): 4, ("y", 1): 5, ("y", -1): 3}[(along, s)]
+
+    def seg(ua, ub, za, zb, drop):
+        lo, hi = ((ua, a, za), (ub, d, zb)) if along == "x" else ((a, ua, za), (d, ub, zb))
+        b.box(lo, hi, c, bevel=0.0)
+        keep_faces(b, [k for k in range(6) if k not in drop])
+
+    h = (z1 - z0) / n
+    for i in range(1, n):
+        z = z0 + i * h
+        cuts = sorted((max(u0, r[0]), min(u1, r[1])) for r in holes if r[2] < z + t / 2 and r[3] > z - t / 2)
+        ua = u0
+        for ca, cb in cuts + [(u1, u1)]:
+            if ca - ua > 0.15:
+                seg(ua, ca, z - t / 2, z + t / 2, (back,))
+            ua = max(ua, cb)
+    for i in range(n):
+        za, zb = z0 + i * h, z0 + (i + 1) * h
+        u = u0 + (brick / 2 if i % 2 else brick)
+        while u < u1 - 0.3:
+            if not any(r[0] - 0.05 < u < r[1] + 0.05 and r[2] < zb and r[3] > za for r in holes):
+                seg(u - t / 2, u + t / 2, za + t / 2, zb - t / 2, (back, 0, 1))
+            u += brick
+
+
+def wall_run(b, x0, x1, y0, y1, skip=()):
+    """A white two-course brick wall (staggered 4-stud bricks, bevelled so the seams read) with a stud row on top."""
+    along_y = (y1 - y0) > (x1 - x0)
+    L = (y1 - y0) if along_y else (x1 - x0)
+    a0 = y0 if along_y else x0
+    zs = (FLOOR, 2.30, WALL_TOP)
+    for k in range(2):
+        cuts = [a0] + [a0 + t for t in [((i + 0.5 * k) * 4.0) for i in range(1, 12)] if t < L - 1.0] + [a0 + L]
+        for u0, u1 in zip(cuts, cuts[1:]):
+            lo = (x0, u0, zs[k]) if along_y else (u0, y0, zs[k])
+            hi = (x1, u1, zs[k + 1]) if along_y else (u1, y1, zs[k + 1])
+            b.box(lo, hi, P.WHITE, bevel=0.07)
+    n = max(1, int(L / 2.0))                     # clean 1x2 cap plates (light grey), two studs each
+    for i in range(n):
+        u0, u1 = a0 + i * L / n + 0.04, a0 + (i + 1) * L / n - 0.04
+        lo = (x0 - 0.08, u0, WALL_TOP) if along_y else (u0, y0 - 0.08, WALL_TOP)
+        hi = (x1 + 0.08, u1, WALL_TOP + 0.20) if along_y else (u1, y1 + 0.08, WALL_TOP + 0.20)
+        b.box(lo, hi, P.LBG, bevel=0.04)
+        for t in (0.27, 0.73):
+            u = u0 + (u1 - u0) * t
+            cx, cy = ((x0 + x1) / 2, u) if along_y else (u, (y0 + y1) / 2)
+            b.cyl(cx, cy, WALL_TOP + 0.20, WALL_TOP + 0.40, 0.30, P.LBG, n=10, bottom=False)
+
+
+def pier(b, cx, cy, hx, hy, z1, c=P.ORANGE):
+    b.box((cx - hx, cy - hy, FLOOR), (cx + hx, cy + hy, z1), c, bevel=0.08)
+    b.box((cx - hx - 0.08, cy - hy - 0.08, z1), (cx + hx + 0.08, cy + hy + 0.08, z1 + 0.30), P.WHITE, bevel=0.06)
+    b.studs(cx - hx, cx + hx, cy - hy, cy + hy, z1 + 0.30, P.WHITE, step=0.9, r=0.30, h=0.22, n=10)
+
+
+def front_wall(b, s):
+    """A front wall piece either side of the gate: white brick courses with a blue accent course on the path face."""
+    xa, xb = sorted((s * (GATE + 0.80), s * YWO))
+    wall_run(b, xa, xb, FZ0, FZ1)
+    for u0 in range(0, 3):
+        x0, x1 = xa + u0 * (xb - xa) / 3 + 0.04, xa + (u0 + 1) * (xb - xa) / 3 - 0.04
+        b.box((x0, FZ0 - 0.07, 2.05), (x1, FZ0 + 0.04, 2.65), P.BLUE, bevel=0.03)
+
+
+def lv1_walls(b):
+    """The code yard's white edge walls as brick courses with stud caps, orange pilasters every ~8.6 studs, chunky
+    orange gate piers (studded white caps). The right front wall is in Lv1_L07 (the Lv3 water gate replaces it)."""
+    for s in (-1, 1):
+        x0, x1 = sorted((s * YW, s * YWO))
+        wall_run(b, x0, x1, -21.55, 21.55)
+        for y in (-17.2, -8.6, 0.0, 8.6, 17.2):
+            pier(b, s * 19.125, y, 0.58, 0.55, 4.05)
+        if s < 0:
+            front_wall(b, s)
+        pier(b, s * GATE, (FZ0 + FZ1) / 2, 0.85, 0.85, 4.20)
+        pier(b, s * 19.125, -21.15, 0.58, 0.58, 4.05)
+
+
+def porthole(b, x, y, z, s):
+    b.cyl_x(x + s * 0.06, y, z, 0.62, 0.14, P.WHITE, n=12)
+    b.cyl_x(x + s * 0.16, y, z, 0.42, 0.10, P.INK, n=12)
+
+
+def lv1_boat(b):
+    """The workboat on its cradle (the code hull, refined): bevelled red hull with a tapered raked bow, white stripe,
+    portholes, white deck rails, the console (helm, windscreen), the cabin with framed windows, a studded red roof
+    and a little mast; two grey brick cradles with yellow caps and wedges, the hull's underside open between them."""
+    for y in (-5.75, 5.75):
+        for sx in (-1, 1):                       # 2 clean grey brick cradles on the rails, the hull's underside open between them
+            x = sx * 4.14
+            b.box((x - 1.5, y - 1.5, FLOOR), (x + 1.5, y + 1.5, 1.61), P.LBG, bevel=0.08)
+            b.studs(x - 1.2, x + 1.2, y - 1.2, y + 1.2, 1.61, P.LBG, step=1.2, r=0.38, h=0.22, n=10)
+            brick_stack(b, x - 1.05, x + 1.05, y - 1.05, y + 1.05, 1.61, 5.35, 3, P.LBG)
+            b.box((x - 1.28, y - 1.28, 5.35), (x + 1.28, y + 1.28, 5.72), P.YELLOW, bevel=0.06)        # yellow cap
+            xa, xb = sorted((sx * 3.10, sx * 4.25))
+            b.box((xa, y - 1.05, 5.72), (xb, y + 1.05, HULL_Z0 - 0.04), P.YELLOW, bevel=0.04)          # saddle under the hull
+            prism_y(b, y - 0.80, y + 0.80, [(sx * 4.36, 5.72), (sx * 5.42, 5.72), (sx * 4.36, 7.00)], P.YELLOW)   # wedge on the hull side
+    b.box((-HULL_HW, -HULL_Y, HULL_Z0), (HULL_HW, HULL_Y, HULL_Z1), P.RED, bevel=0.10)
+    b.box((-0.25, -HULL_Y + 0.4, HULL_Z0 - 0.24), (0.25, HULL_Y - 0.2, HULL_Z0 + 0.02), P.LBG, bevel=0.05)   # slim keel
+    b.beam((0, -8.10, HULL_Z0 - 0.11), (0, BOW_TIP - 0.08, BOW_Z - 0.04), 0.46, 0.26, P.LBG)
+    # bow: lofted over the plan stations from the hull's front to a short stem (band z0, z1 at the root and at the tip)
+    def bow(pad, a0, a1, t0, t1, c, tip=0.0):
+        secs = []
+        for w, y in BOW_ST:
+            k = (y + 8.50) / (BOW_TIP + 8.50)
+            y = y if w != BOW_ST[-1][0] else y - tip
+            z0, z1 = a0 + (t0 - a0) * k, a1 + (t1 - a1) * k
+            secs.append([(-w - pad, y, z0), (w + pad, y, z0), (w + pad, y, z1), (-w - pad, y, z1)])
+        b.loft(secs, c)
+    bow(0.0, HULL_Z0, HULL_Z1, BOW_Z, HULL_Z1, P.RED)
+    zs0, zs1 = 9.03, 9.83
+    b.box((-HULL_HW - 0.06, -HULL_Y + 0.12, zs0), (HULL_HW + 0.06, HULL_Y + 0.06, zs1), P.WHITE, bevel=0.03)
+    bow(0.06, zs0, zs1, zs0, zs1, P.WHITE, 0.06)
+    # the bright yellow band high under the white one, round the bow; a white waterline low on the hull
+    b.box((-HULL_HW - 0.06, -HULL_Y + 0.12, YEL_Z0), (HULL_HW + 0.06, HULL_Y + 0.06, YEL_Z1), P.YELLOW, bevel=0.03)
+    bow(0.06, YEL_Z0, YEL_Z1, YEL_Z0, YEL_Z1, P.YELLOW, 0.06)
+    b.box((-HULL_HW - 0.06, -HULL_Y + 0.12, 6.26), (HULL_HW + 0.06, HULL_Y + 0.06, 6.70), P.WHITE, bevel=0.03)
+    bow(0.06, 6.26, 6.70, BOW_Z + 0.02, BOW_Z + 0.46, P.WHITE, 0.06)
+    b.beam((0, BOW_TIP - 0.12, BOW_Z - 0.10), (0, BOW_TIP + 0.9, HULL_Z1 + 0.25), 0.55, 0.55, P.RED)    # stem post
+    # a small black anchor on the bow's front facet (starboard), hung from a lug on a short chain, over the yellow and red bands
+    i0 = len(b.v)
+    A = (BOW_ST[1][0] + 0.06, BOW_ST[1][1])
+    B_ = (BOW_ST[2][0] + 0.06, BOW_TIP - 0.06)
+    L = math.hypot(B_[0] - A[0], B_[1] - A[1])
+    nx, ny = (A[1] - B_[1]) / L, (B_[0] - A[0]) / L     # the facet's outward normal
+    px, py = A[0] + 0.45 * (B_[0] - A[0]) - 0.03 * nx, A[1] + 0.45 * (B_[1] - A[1]) - 0.03 * ny
+    b.box((-0.25, -0.18, 9.25), (0.25, 0.0, 9.52), P.DBG, bevel=0.03)                  # lug on the white band
+    for k, z in enumerate((8.76, 8.92, 9.08)):                                          # three chain links
+        wx = 0.07 if k % 2 else 0.13
+        b.box((-wx, -0.15, z), (wx, 0.0, z + 0.19), P.BLACK, bevel=0.02)
+    b.box((-0.16, -0.20, 8.60), (0.16, 0.0, 8.77), P.BLACK, bevel=0.03)                 # ring
+    b.box((-0.10, -0.16, 7.35), (0.10, 0.0, 8.62), P.BLACK, bevel=0.03)                 # shank
+    b.box((-0.52, -0.16, 8.20), (0.52, 0.0, 8.38), P.BLACK, bevel=0.03)                 # stock
+    for k in (-1, 1):
+        b.beam((0, -0.08, 7.37), (k * 0.62, -0.08, 7.82), 0.18, 0.16, P.BLACK)          # flukes
+        b.box((k * 0.62 - 0.11, -0.16, 7.76), (k * 0.62 + 0.11, 0.0, 8.00), P.BLACK, bevel=0.03)
+    remap(b, i0, lambda x, y, z: (px - x * ny - y * nx, py + x * nx - y * ny, z))     # local -Y onto the facet normal
+    # butt joints on the red strakes
+    for s in (-1, 1):
+        xa, xb = sorted((s * HULL_HW, s * (HULL_HW + 0.05)))
+        for y in (-4.8, -1.6, 1.6, 4.8):
+            b.box((xa, y - 0.04, 6.70), (xb, y + 0.04, YEL_Z0), P.BLACK, bevel=0.0)
+            keep_faces(b, (2, 4, 3 if s > 0 else 5))
+    for s in (-1, 1):
+        for y in (-7.4, -3.2, 0.0, 3.2, 7.4):     # clear of the cradle wedges
+            porthole(b, s * HULL_HW, y, 7.35, s)
+    b.box((-3.565, -7.245, HULL_Z1 - 0.04), (3.565, 7.245, DECK_Z1), P.DBG, bevel=0.04)          # deck
+    # rails: white posts round the gunwale, a top rail, converging over the bow
+    RZ = DECK_Z1 + 1.15
+    for s in (-1, 1):
+        x = s * 3.85
+        for y in (-7.6, -5.1, -2.6, -0.1, 2.4, 4.9, 7.4):
+            b.box((x - 0.13, y - 0.13, HULL_Z1 - 0.02), (x + 0.13, y + 0.13, RZ), P.WHITE, bevel=0.03)
+        b.box((x - 0.18, -7.75, RZ - 0.05), (x + 0.18, 7.55, RZ + 0.25), P.WHITE, bevel=0.04)
+        kn = (s * 2.75, -11.60)                  # the rail follows the bow's plan
+        b.beam((x, -7.6, RZ + 0.10), (kn[0], kn[1], RZ + 0.10), 0.34, 0.30, P.WHITE)
+        b.beam((kn[0], kn[1], RZ + 0.10), (s * 0.55, -13.05, RZ + 0.10), 0.34, 0.30, P.WHITE)
+        for px, py in (kn, (s * 1.60, -12.35)):
+            b.box((px - 0.13, py - 0.13, HULL_Z1 - 0.02), (px + 0.13, py + 0.13, RZ), P.WHITE, bevel=0.03)
+    b.box((-3.85, 7.40, RZ - 0.05), (3.85, 7.76, RZ + 0.25), P.WHITE, bevel=0.04)                 # stern rail
+    # console (the code Console part hides inside it)
+    b.box((-1.84, -4.37, DECK_Z1 - 0.04), (1.84, -1.15, 13.225), P.WHITE, bevel=0.07)
+    b.prof_x(-1.70, 1.70, [(-4.25, 13.20), (-3.20, 13.20), (-3.55, 14.35), (-3.75, 14.35)], P.INK)  # windscreen
+    b.box((-1.30, -1.20, 11.30), (1.30, -1.10, 12.70), P.INK)                                     # helm panel
+    b.cyl(0, -0.95, 11.9, 12.05, 0.55, P.BROWN, n=10)                                              # helm wheel
+    # cabin: white, framed windows (glass behind a proud white frame), studded red roof, mast + beacon
+    cx0, cx1, cy0, cy1, cz0, cz1 = -2.645, 2.645, 1.265, 6.095, DECK_Z1 - 0.04, 14.60
+    b.box((cx0, cy0, cz0), (cx1, cy1, cz1), P.WHITE, bevel=0.07)
+    def win_y(x0, x1, y, s):                     # window on a -Y / +Y face
+        b.box((x0, y + s * 0.02, 11.80), (x1, y + s * 0.08, 13.70), P.GLASS, bevel=0.0)
+        for (a0, a1, z0, z1) in ((x0 - 0.22, x1 + 0.22, 11.58, 11.80), (x0 - 0.22, x1 + 0.22, 13.70, 13.92),
+                                 (x0 - 0.22, x0, 11.80, 13.70), (x1, x1 + 0.22, 11.80, 13.70)):
+            b.box((a0, y, z0), (a1, y + s * 0.20, z1), P.WHITE, bevel=0.02)
+        b.box((x0 - 0.30, y, 11.30), (x1 + 0.30, y + s * 0.34, 11.58), P.DBG, bevel=0.03)        # sill
+    win_y(-1.95, 1.95, cy0, -1)
+    def win_x(x, y0, y1, s):
+        b.box((x + s * 0.02, y0, 11.80), (x + s * 0.08, y1, 13.70), P.GLASS, bevel=0.0)
+        for (a0, a1, z0, z1) in ((y0 - 0.22, y1 + 0.22, 11.58, 11.80), (y0 - 0.22, y1 + 0.22, 13.70, 13.92),
+                                 (y0 - 0.22, y0, 11.80, 13.70), (y1, y1 + 0.22, 11.80, 13.70)):
+            b.box((x, a0, z0), (x + s * 0.20, a1, z1), P.WHITE, bevel=0.02)
+        b.box((x, y0 - 0.30, 11.30), (x + s * 0.34, y1 + 0.30, 11.58), P.DBG, bevel=0.03)
+    for s in (-1, 1):
+        win_x(s * 2.645, 2.10, 5.25, s)
+    b.box((-3.105, 0.805, cz1), (3.105, 6.555, 15.06), P.RED, bevel=0.06)
+    b.studs(-2.8, 2.8, 1.1, 6.25, 15.06, P.RED, step=1.15, r=0.34, h=0.22, n=10)
+    b.box((-0.22, 5.20, 15.06), (0.22, 5.64, 16.60), P.WHITE, bevel=0.04)                         # mast
+    b.box((-1.10, 5.30, 15.85), (1.10, 5.54, 16.10), P.WHITE, bevel=0.03)
+    b.cyl(0, 5.42, 16.60, 17.00, 0.32, P.RED, n=10)
+
+
+def chain(b, x, y, z0, z1, link=0.60):
+    """Chunky chain: links crossing at right angles (each overlaps the next by 0.04)."""
+    z, k = z0, 0
+    while z < z1 - 0.02:
+        wx, wy = (0.26, 0.12) if k % 2 else (0.12, 0.26)
+        b.box((x - wx, y - wy, z), (x + wx, y + wy, min(z + link + 0.04, z1)), P.BLACK, bevel=0.03)
+        z, k = z + link, k + 1
+
+
+def lv1_gantry(b):
+    """The tall yellow gantry over the boat (code, refined): studded dark base plates, knee braces, studded girder
+    with dark end caps, a red trolley, black cable and an orange hook block over the deck."""
+    for s in (-1, 1):
+        x = s * GLEG_X
+        b.box((x - 1.25, -1.05, FLOOR - 0.02), (x + 1.25, 1.05, 1.42), P.DBG, bevel=0.06)
+        b.studs(x - 1.15, x + 1.15, -0.95, 0.95, 1.42, P.DBG, step=1.15, r=0.32, h=0.20, n=10)
+        brick_stack(b, x - GLEG_HX, x + GLEG_HX, -GLEG_HY, GLEG_HY, 1.42, GBEAM_Z0, 13, P.YELLOW)     # courses every 2 studs
+        b.box((x - 0.95, -0.75, 1.42), (x + 0.95, 0.75, 1.82), P.YELLOW, bevel=0.05)               # foot flange
+        b.beam((x - s * 0.3, 0, 23.6), (s * 4.6, 0, GBEAM_Z0 + 0.05), 0.5, 0.5, P.YELLOW)
+        b.box((s * 8.40, -0.66, GBEAM_Z0 - 0.08), (s * 8.70, 0.66, GBEAM_Z1 + 0.10), P.DBG, bevel=0.04)
+    b.box((-8.30, -0.50, GBEAM_Z0 + 0.02), (8.30, 0.50, GBEAM_Z1 - 0.02), P.DBG, bevel=0.0)      # girder: 6 bricks on a dark core
+    keep_faces(b, (2, 3, 4, 5))
+    for k in range(6):
+        x0, x1 = -8.40 + k * 2.80, -8.40 + (k + 1) * 2.80
+        b.box((x0 + (0.08 if k else 0), -0.60, GBEAM_Z0), (x1 - (0.08 if k < 5 else 0), 0.60, GBEAM_Z1), P.YELLOW, bevel=0.07)
+    b.studs(-8.0, 8.0, -0.40, 0.40, GBEAM_Z1, P.YELLOW, step=1.0, r=0.30, h=0.22, n=10)
+    b.box((-0.80, -0.75, 26.40), (0.80, 0.75, GBEAM_Z0 - 0.01), P.RED, bevel=0.06)               # trolley
+    b.box((-0.12, -0.12, 19.50), (0.12, 0.12, 26.40), P.BLACK, bevel=0.0)                        # cable
+    b.box((-0.60, -0.45, 18.50), (0.60, 0.45, 19.50), P.ORANGE, bevel=0.08)                      # hook block
+    b.box((-0.18, -0.18, 17.86), (0.18, 0.18, 18.50), P.ORANGE, bevel=0.03)
+    b.box((-4.95, -0.30, 17.30), (4.95, 0.30, 17.90), P.ORANGE, bevel=0.06)                      # spreader, 2 studs over the cabin
+    for s in (-1, 1):                    # slings: hook to the bar; two thick chains from the bar ends to lugs on the hull
+        b.beam((0, 0, 17.96), (s * 4.40, 0, 17.92), 0.18, 0.18, P.BLACK)
+        chain(b, s * 4.62, 0, 9.28, 17.32)
+        b.box((s * 4.255 - 0.02, -0.34, 8.90), (s * 4.88, 0.34, 9.30), P.DBG, bevel=0.03)
+
+
+def brick_stack(b, x0, x1, y0, y1, z0, z1, n, c, seam=0.16, bev=0.08, core=P.DBG):
+    """A post of n stacked brick courses: a dark core shows through the seams between them."""
+    b.box((x0 + 0.10, y0 + 0.10, z0 + 0.02), (x1 - 0.10, y1 - 0.10, z1 - 0.02), core, bevel=0.0)
+    keep_faces(b, (2, 3, 4, 5))
+    h = (z1 - z0) / n
+    for k in range(n):
+        b.box((x0, y0, z0 + k * h + (seam / 2 if k else 0)), (x1, y1, z0 + (k + 1) * h - (seam / 2 if k < n - 1 else 0)), c, bevel=bev)
+
+
+def remap(b, i0, fn):
+    """Move the vertices emitted since index i0 through fn(x, y, z) (normals are recomputed per shell)."""
+    for i in range(i0, len(b.v)):
+        b.v[i] = fn(*b.v[i])
+
+
+def lv1_office(b):
+    """A walk-in yard office in the front -X corner: white brick courses with a red base course and a red band under the
+    eaves; a big double door in a white frame on the path face: the left leaf shut (solid bright blue, a small window,
+    a yellow knob; the wall stands behind it), the right one open (the walk-in doorway), a red step, a big framed plaque
+    (a white boat icon on navy) over it (white boat icon on navy); a framed inset window with a white sill, a stepped studded blue roof with an
+    orange studded ridge cap."""
+    W0 = lambda lo, hi: b.box(lo, hi, P.WHITE, bevel=0.05)
+    wins = ((-17.80, -15.95),)                       # front window
+    y0f = OY0 + OWT
+    W0((OX0, OY0, FLOOR), (ODX0, y0f, WZ0))
+    W0((OX0, OY0, WZ0), (wins[0][0], y0f, WZ1))
+    W0((wins[0][1], OY0, WZ0), (ODX0, y0f, WZ1))
+    W0((OX0, OY0, WZ1), (ODX0, y0f, OWALL))
+    W0((ODX0, OY0, ODZ1), (ODX1, y0f, OWALL))
+    W0((ODX1, OY0, FLOOR), (OX1, y0f, OWALL))
+    for wx0, wx1 in wins:
+        b.box((wx0, OY0 + 0.27, WZ0), (wx1, OY0 + 0.33, WZ1), P.GLASS, bevel=0.0)      # glass 0.27 behind the face
+        for a0, a1, z0, z1 in ((wx0 - 0.25, wx1 + 0.25, WZ0 - 0.25, WZ0), (wx0 - 0.25, wx1 + 0.25, WZ1, WZ1 + 0.25),
+                               (wx0 - 0.25, wx0, WZ0, WZ1), (wx1, wx1 + 0.25, WZ0, WZ1)):
+            b.box((a0, OY0 - 0.15, z0), (a1, OY0 + 0.05, z1), P.ORANGE, bevel=0.02)
+        b.box((wx0 - 0.40, OY0 - 0.42, WZ0 - 0.55), (wx1 + 0.40, OY0 + 0.05, WZ0 - 0.25), P.WHITE, bevel=0.04)   # sill
+    b.box((-16.93, OY0 + 0.20, WZ0), (-16.82, OY0 + 0.27, WZ1), P.WHITE, bevel=0.0)                        # mullion
+    # the double door: white frame, the left leaf shut on the wall, the right bay open (the doorway), a red step
+    DLX, FW = -15.05, 0.30                           # left leaf's outer edge, frame width
+    MX0, MX1 = ODX0 - 0.30, ODX0                     # centre post
+    for a0, a1 in ((DLX - FW, DLX), (MX0, MX1), (ODX1, ODX1 + FW)):
+        b.box((a0, OY0 - 0.28, FLOOR), (a1, OY0 + 0.05, ODZ1), P.WHITE, bevel=0.05)
+    b.box((DLX - FW - 0.10, OY0 - 0.34, ODZ1 - 0.02), (ODX1 + FW + 0.10, OY0 + 0.05, ODZ1 + FW), P.WHITE, bevel=0.06)
+    b.box((DLX, OY0 - 0.12, FLOOR + 0.02), (MX0, OY0 + 0.05, ODZ1), P.BLUE, bevel=0.05)
+    gx0, gx1, gz0, gz1 = DLX + 0.65, MX0 - 0.65, ODZ1 - 1.95, ODZ1 - 0.60   # the small window, framed proud on the leaf
+    b.box((gx0, OY0 - 0.16, gz0), (gx1, OY0 - 0.08, gz1), P.GLASS, bevel=0.0)
+    for a0, a1, z0, z1 in ((gx0 - 0.18, gx1 + 0.18, gz0 - 0.18, gz0), (gx0 - 0.18, gx1 + 0.18, gz1, gz1 + 0.18),
+                           (gx0 - 0.18, gx0, gz0, gz1), (gx1, gx1 + 0.18, gz0, gz1)):
+        b.box((a0, OY0 - 0.22, z0), (a1, OY0 - 0.08, z1), P.WHITE, bevel=0.02)
+    b.box((MX0 - 0.55, OY0 - 0.30, FLOOR + 2.55), (MX0 - 0.22, OY0 - 0.10, FLOOR + 2.95), P.YELLOW, bevel=0.03)   # knob
+    b.box((DLX - FW - 0.10, OY0 - 1.25, FLOOR), (ODX1 + FW + 0.10, OY0 - 0.02, FLOOR + 0.40), P.RED, bevel=0.06)   # step
+    b.studs(DLX - FW, ODX1 + FW, OY0 - 1.05, OY0 - 0.75, FLOOR + 0.40, P.RED, step=1.25, r=0.26, h=0.14, n=8)
+    # plaque over the door, 1.3x: orange frame, white board, red boat icon, two lettering bars
+    pz0, pz1, px0, px1 = 7.28, 9.14, -15.25, -9.92
+    fy, by, iy = OY0 - 0.62, OY0 - 0.68, OY0 - 0.78
+    b.box((px0 - 0.18, fy, pz0 - 0.18), (px1 + 0.12, OY0 + 0.05, pz1 + 0.18), P.ORANGE, bevel=0.06)
+    b.box((px0, by, pz0), (px1 - 0.06, fy, pz1), P.INK, bevel=0.0)
+    zc, xc = (pz0 + pz1) / 2, (px0 + px1 - 0.06) / 2
+    hx = [xc - 1.25, xc + 1.25, xc + 1.75, xc - 1.75]                                  # a clean white boat icon on the navy plate
+    hz = [zc - 0.68, zc - 0.68, zc - 0.05, zc - 0.05]
+    b._emit([(x, by, z) for x, z in zip(hx, hz)] + [(x, iy, z) for x, z in zip(hx, hz)],
+            ((0, 1, 2, 3), (7, 6, 5, 4), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)), P.WHITE)
+    b.box((xc - 0.80, iy, zc - 0.05), (xc + 0.40, by, zc + 0.62), P.YELLOW, bevel=0.0)
+    # +X face (toward the bench and the path): one framed inset window with a white sill
+    wy0, wy1 = -14.70, -12.40
+    W0((OX1 - OWT, y0f, FLOOR), (OX1, OY1 - OWT, WZ0))
+    W0((OX1 - OWT, y0f, WZ1), (OX1, OY1 - OWT, OWALL))
+    W0((OX1 - OWT, y0f, WZ0), (OX1, wy0, WZ1))
+    W0((OX1 - OWT, wy1, WZ0), (OX1, OY1 - OWT, WZ1))
+    b.box((OX1 - 0.33, wy0, WZ0), (OX1 - 0.27, wy1, WZ1), P.GLASS, bevel=0.0)
+    for a0, a1, z0, z1 in ((wy0 - 0.25, wy1 + 0.25, WZ0 - 0.25, WZ0), (wy0 - 0.25, wy1 + 0.25, WZ1, WZ1 + 0.25),
+                           (wy0 - 0.25, wy0, WZ0, WZ1), (wy1, wy1 + 0.25, WZ0, WZ1)):
+        b.box((OX1 - 0.05, a0, z0), (OX1 + 0.15, a1, z1), P.ORANGE, bevel=0.02)
+    b.box((OX1 - 0.05, wy0 - 0.40, WZ0 - 0.55), (OX1 + 0.42, wy1 + 0.40, WZ0 - 0.25), P.WHITE, bevel=0.04)
+    # back (+Y) and west (-X) walls
+    W0((OX0, OY1 - OWT, FLOOR), (OX1, OY1, OWALL))
+    W0((OX0, y0f, FLOOR), (OX0 + OWT, OY1 - OWT, OWALL))
+    # brick courses, red base course (4-stud bricks), red band under the eaves
+    BZ, EZ0, EZ1 = FLOOR + 1.05, 8.85, 9.26
+    fh = [(wins[0][0] - 0.40, wins[0][1] + 0.40, WZ0 - 0.55, WZ1 + 0.25),
+          (DLX - FW - 0.10, ODX1 + FW + 0.10, FLOOR, ODZ1 + FW), (px0 - 0.18, px1 + 0.12, pz0 - 0.18, pz1 + 0.18)]
+    courses(b, "x", OY0, -1, OX0, OX1, BZ, EZ0, holes=fh)
+    courses(b, "y", OX1, 1, OY0, OY1, BZ, EZ0, holes=[(wy0 - 0.40, wy1 + 0.40, WZ0 - 0.55, WZ1 + 0.25)])
+    courses(b, "x", OY1, 1, OX0, OX1, BZ, EZ0)
+    courses(b, "y", OX0, -1, OY0, OY1, BZ, EZ0)
+    P_ = 0.14
+    def base(lo, hi):
+        along_x = hi[0] - lo[0] > hi[1] - lo[1]
+        a0, a1 = (lo[0], hi[0]) if along_x else (lo[1], hi[1])
+        n = max(1, round((a1 - a0) / 2.8))
+        for i in range(n):
+            u0, u1 = a0 + i * (a1 - a0) / n + 0.03, a0 + (i + 1) * (a1 - a0) / n - 0.03
+            b.box((u0, lo[1], FLOOR) if along_x else (lo[0], u0, FLOOR), (u1, hi[1], BZ) if along_x else (hi[0], u1, BZ),
+                  P.RED, bevel=0.07)
+            keep_faces(b, (1, 2, 3, 4, 5))
+    base((OX0 - P_, OY0 - P_), (DLX - FW - 0.12, OY0 + 0.05))
+    base((OX1 - 0.05, OY0 + 0.08), (OX1 + P_, OY1 - 0.08))
+    base((OX0 - P_, OY1 - 0.05), (OX1 + P_, OY1 + P_))
+    base((OX0 - P_, OY0 + 0.08), (OX0 + 0.05, OY1 - 0.08))
+    for lo, hi in (((OX0 - 0.10, OY0 - 0.10), (OX1 + 0.10, OY0 + 0.45)), ((OX0 - 0.10, OY1 - 0.45), (OX1 + 0.10, OY1 + 0.10)),
+                   ((OX0 - 0.10, OY0 + 0.40), (OX0 + 0.45, OY1 - 0.40)), ((OX1 - 0.45, OY0 + 0.40), (OX1 + 0.10, OY1 - 0.40))):
+        b.box((lo[0], lo[1], EZ0), (hi[0], hi[1], EZ1), P.RED, bevel=0.04)
+    # interior: a desk with a chart
+    b.box((OX0 + OWT + 0.05, -14.6, FLOOR), (OX0 + OWT + 1.6, -12.0, FLOOR + 2.4), P.BROWN, bevel=0.06)
+    b.box((OX0 + OWT + 0.3, -14.0, FLOOR + 2.4), (OX0 + OWT + 1.3, -12.6, FLOOR + 2.44), P.WHITE, bevel=0.0)
+    # stepped roof: blue tiers stepping in from the +-X eaves, stud rows on each ledge, orange studded ridge cap
+    zr, th, st, ov = OWALL, 0.70, 1.00, 0.45
+    xa, xb, ya, yb = OX0 - ov, OX1 + ov, OY0 - ov, OY1 + ov
+    for t in range(4):
+        b.box((xa + t * st, ya, zr + t * th), (xb - t * st, yb, zr + (t + 1) * th), P.BLUE, bevel=0.05)
+        if t < 3:
+            for x in (xa + t * st + st / 2, xb - t * st - st / 2):
+                b.stud_row(x, ya + 0.6, x, yb - 0.6, zr + (t + 1) * th, P.BLUE, spacing=1.05, r=0.30, h=0.22, n=10)
+    zt, xm = zr + 4 * th, (xa + xb) / 2
+    b.box((xm - 0.60, ya - 0.10, zt), (xm + 0.60, yb + 0.10, zt + 0.45), P.ORANGE, bevel=0.05)
+    b.stud_row(xm, ya + 0.4, xm, yb - 0.4, zt + 0.45, P.ORANGE, spacing=1.05, r=0.30, h=0.22, n=10)
+    b.box((xa - 0.06, ya - 0.06, zr - 0.30), (xb + 0.06, yb + 0.06, zr), P.WHITE, bevel=0.04)   # eave course
+
+
+def crate(b, cx, cy, z, s, h, c):
+    """A slatted Lego crate: dark core, corner posts and three proud slats per face in colour c, a studded lid."""
+    a = s / 2
+    b.box((cx - a + 0.12, cy - a + 0.12, z), (cx + a - 0.12, cy + a - 0.12, z + h - 0.25), P.DBG, bevel=0.0)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            b.box((cx + sx * a - 0.22, cy + sy * a - 0.22, z), (cx + sx * a + 0.22, cy + sy * a + 0.22, z + h - 0.25), c,
+                  bevel=0.04)
+    sh = (h - 0.25) / 3
+    for k in range(3):
+        z0, z1 = z + k * sh + 0.08, z + (k + 1) * sh - 0.08
+        for sy in (-1, 1):
+            b.box((cx - a + 0.22, cy + sy * (a - 0.02) - 0.10, z0), (cx + a - 0.22, cy + sy * (a - 0.02) + 0.10, z1), c,
+                  bevel=0.03)
+        for sx in (-1, 1):
+            b.box((cx + sx * (a - 0.02) - 0.10, cy - a + 0.22, z0), (cx + sx * (a - 0.02) + 0.10, cy + a - 0.22, z1), c,
+                  bevel=0.03)
+    b.box((cx - a - 0.05, cy - a - 0.05, z + h - 0.25), (cx + a + 0.05, cy + a + 0.05, z + h), c, bevel=0.05)
+    b.studs(cx - a, cx + a, cy - a, cy + a, z + h, c, step=s / 2, r=0.40, h=0.24, n=10)
+
+
+def tyre_stack(b, cx, cy, n):
+    """Lego tyres lying flat: black rings with light grey hubs and dark centres."""
+    for k in range(n):
+        zc = FLOOR + 0.45 + k * 0.90
+        i0 = len(b.v)
+        b.torus(0, 0, 0, 1.00, 0.45, P.BLACK, maj=14, mnr=6)
+        remap(b, i0, lambda x, y, z, zc=zc: (cx + y, cy + z, zc + x))
+        b.cyl(cx, cy, zc - 0.30, zc + 0.30, 0.62, P.LBG, n=12)
+        b.cyl(cx, cy, zc + 0.30, zc + 0.36, 0.26, P.DBG, n=8, bottom=False)
+
+
+def pallet(b, x0, y0, z, w, d, c=P.TAN):
+    """A bevelled Lego pallet: brown runners, three slats, studs on the slat ends; deck top at z."""
+    for xx in (x0 + 0.5, x0 + w - 0.5):
+        b.box((xx - 0.35, y0 + 0.1, z - 0.70), (xx + 0.35, y0 + d - 0.1, z - 0.34), P.BROWN, bevel=0.04)
+    for k in range(3):
+        yy = y0 + (k + 0.5) * d / 3
+        b.box((x0, yy - d / 7, z - 0.34), (x0 + w, yy + d / 7, z), c, bevel=0.06)
+        for xx in (x0 + 0.35, x0 + w - 0.35):
+            b.cyl(xx, yy, z, z + 0.18, 0.24, c, n=8, bottom=False)
+
+
+def lv1_props(b):
+    """Chunky Lego yard stock: a red tool chest and a tyre stack by the bow, a winch with a cable to the cradle, a
+    lumber pallet on the west side, slatted crates stacked two high at the west back."""
+    x0, x1, y0, y1, zt = -9.55, -7.35, -8.10, -4.20, FLOOR + 2.60
+    b.box((x0, y0, FLOOR), (x1, y1, zt), P.RED, bevel=0.08)
+    for k in range(3):
+        z = FLOOR + 0.30 + k * 0.78
+        b.box((x1 - 0.02, y0 + 0.25, z), (x1 + 0.08, y1 - 0.25, z + 0.58), P.WHITE if k == 1 else P.RED, bevel=0.02)
+        b.box((x1 + 0.08, (y0 + y1) / 2 - 0.55, z + 0.20), (x1 + 0.20, (y0 + y1) / 2 + 0.55, z + 0.38), P.LBG,
+              bevel=0.0)
+    b.studs(x0 + 0.1, x1 - 0.1, y0 + 0.1, y1 - 0.1, zt, P.RED, step=1.1, r=0.36, h=0.24, n=10)
+    tyre_stack(b, -11.60, -7.00, 3)
+    tyre_stack(b, -15.60, 5.20, 2)
+    # winch: yellow studded base, two dark cheeks, a red drum with black cable, a crank on the -X side
+    wx, wy = 7.85, -10.40
+    b.box((wx - 1.6, wy - 1.3, FLOOR), (wx + 1.6, wy + 1.3, FLOOR + 0.70), P.YELLOW, bevel=0.06)
+    b.studs(wx - 1.5, wx + 1.5, wy + 0.55, wy + 1.25, FLOOR + 0.70, P.YELLOW, step=1.0, r=0.30, h=0.20, n=10)
+    for sx in (-1, 1):
+        b.box((wx + sx * 1.35 - 0.2, wy - 0.7, FLOOR + 0.70), (wx + sx * 1.35 + 0.2, wy + 0.5, FLOOR + 2.50), P.LBG,
+              bevel=0.04)
+    b.cyl_x(wx, wy - 0.10, FLOOR + 1.80, 0.75, 2.30, P.RED, n=12)
+    b.cyl_x(wx, wy - 0.10, FLOOR + 1.80, 0.85, 1.60, P.BLACK, n=12)
+    b.box((wx - 1.75, wy - 0.25, FLOOR + 1.65), (wx - 1.55, wy + 0.10, FLOOR + 2.60), P.LBG, bevel=0.02)
+    b.cyl_x(wx - 1.95, wy + 0.0, FLOOR + 2.55, 0.14, 0.50, P.RED, n=8)
+    # lumber pallet (west side): three courses of brown planks with proud ends
+    pallet(b, -17.40, -4.20, FLOOR + 0.70, 4.4, 3.2)
+    for k in range(3):
+        z = FLOOR + 0.70 + k * 0.42
+        for j in range(4):
+            y = -4.05 + j * 0.75
+            b.box((-17.35 + 0.08 * (k % 2), y + 0.04, z), (-13.10 - 0.08 * (k % 2), y + 0.70, z + 0.38),
+                  P.BROWN if (j + k) % 2 else P.ORANGE, bevel=0.04)
+    # slatted crates, two high, at the west back
+    for cx, cy, z, c in ((-16.0, 14.4, FLOOR, P.ORANGE), (-16.0, 10.8, FLOOR, P.BLUE), (-16.0, 18.0, FLOOR, P.YELLOW),
+                         (-16.0, 14.4, FLOOR + 2.75, P.RED), (-16.0, 10.8, FLOOR + 2.75, P.GREEN)):
+        crate(b, cx, cy, z, 3.2, 2.6, c)
+
+
+def lane(b, x0, y0, x1, y1, c0=P.YELLOW, c1=P.BLACK, seg=1.2):
+    """A painted yellow/black safety line on the floor tiles."""
+    along_x = x1 - x0 > y1 - y0
+    a0, a1 = (x0, x1) if along_x else (y0, y1)
+    k, u = 0, a0
+    while u < a1 - 0.05:
+        v = min(u + seg, a1)
+        lo, hi = ((u, y0), (v, y1)) if along_x else ((x0, u), (x1, v))
+        b.box((lo[0], lo[1], TILE_TOP - 0.02), (hi[0], hi[1], TILE_TOP + 0.05), c0 if k % 2 else c1, bevel=0.0)
+        keep_faces(b, (1, 2, 3, 4, 5))
+        u, k = v, k + 1
+
+
+def lv1_paint(b):
+    """The right front until the Lv3 dock takes it (Lv1_L07): the front wall, a painted safety line, full stud rows, paint
+    cans on a pallet."""
+    front_wall(b, 1)
+    lane(b, 9.75, -20.55, 10.15, -1.05)
+    floor_studs(b, 10.8, 18.3, -19.8, -11.0)
+    floor_studs(b, 15.3, 18.3, -10.8, -1.8)
+    pallet(b, 10.60, -9.60, FLOOR + 0.70, 4.2, 3.6)
+    for cx, cy, c in ((11.70, -8.70, P.RED), (13.75, -8.70, P.BLUE), (11.70, -6.90, P.YELLOW), (13.75, -6.90, P.GREEN)):
+        z0 = FLOOR + 0.70
+        b.cyl(cx, cy, z0, z0 + 1.30, 0.72, P.LBG, n=12, bottom=False)
+        b.cyl(cx, cy, z0 + 1.30, z0 + 1.42, 0.76, c, n=12, bottom=False)
+        b.cyl(cx, cy, z0 + 0.35, z0 + 0.95, 0.75, c, n=12, top=False, bottom=False)
+        b.box((cx - 0.06, cy - 0.66, z0 + 1.42), (cx + 0.06, cy + 0.66, z0 + 1.75), P.DBG, bevel=0.0)
+
+
+PAD = (10.40, 17.60, -0.60, 6.60)
+PAD_Z = 1.15
+PAD_CX = 16.00                  # crate stack x
+CRATE_PS, CRATE_PH = 4.00, 3.90 # pad crates ~4 studs tall
+CRATE_Y0, CRATE_Y1 = 1.55, 5.60 # front stack, back crate centres
+TIMBER = (10.85, 13.73, -0.25, 3.45, 5.55)    # timber stack x0, x1, y0, y1, top
+
+
+def lv1_pad(b):
+    """The right half's storage (Lv1_L09, every level): tan plates (two coloured) on a dark bed, a red/blue border of
+    2-stud plates, a timber stack as tall as the boat's cabin, big crates ~4 studs tall two high behind it, yellow bollards."""
+    px0, px1, py0, py1 = PAD
+    b._emit([(px0, py0, 1.04), (px1, py0, 1.04), (px1, py1, 1.04), (px0, py1, 1.04)], ((0, 1, 2, 3),), P.DBG)
+    n, sx, sy = 4, (px1 - px0) / 4, (py1 - py0) / 4
+    for i in range(n):
+        for j in range(n):
+            c = {(0, 3): P.YELLOW, (1, 3): P.BLUE}.get((i, j), P.TAN)
+            b.box((px0 + i * sx + 0.07, py0 + j * sy + 0.07, TILE_TOP - 0.02),
+                  (px0 + (i + 1) * sx - 0.07, py0 + (j + 1) * sy - 0.07, PAD_Z), c, bevel=0.05)
+            keep_faces(b, (1, 2, 3, 4, 5))
+    u, E, BZ = 1.20, 0.04, 1.22                      # border: 2-stud plates, alternating red and blue
+
+    def plate(x, y, along_x, c):
+        w, d = (2 * u, u) if along_x else (u, 2 * u)
+        b.box((x + E, y + E, TILE_TOP - 0.02), (x + w - E, y + d - E, BZ), c, bevel=0.04)
+        keep_faces(b, (1, 2, 3, 4, 5))
+        for k in (0.5, 1.5):
+            sx_, sy_ = (x + k * u, y + u / 2) if along_x else (x + u / 2, y + k * u)
+            b.cyl(sx_, sy_, BZ, BZ + 0.20, 0.34, c, n=8, bottom=False)
+    x0b, y0b = px0 - u, py0 - u
+    for i in range(4):
+        plate(x0b + i * 2 * u, y0b, True, P.RED if i % 2 else P.BLUE)
+        plate(x0b + i * 2 * u, py1, True, P.BLUE if i % 2 else P.RED)
+    for j in range(3):
+        plate(x0b, py0 + j * 2 * u, False, P.RED if j % 2 else P.BLUE)
+        plate(px1, py0 + j * 2 * u, False, P.BLUE if j % 2 else P.RED)
+    floor_studs(b, 7.2, 8.6, 1.5, 7.2)
+    floor_studs(b, 7.2, 18.2, 9.0, 11.2)
+    floor_studs(b, 7.2, 8.9, 18.0, 21.0)
+    # crates, two high: orange under blue at the front, a yellow one behind
+    crate(b, PAD_CX, CRATE_Y0, PAD_Z, CRATE_PS, CRATE_PH, P.ORANGE)
+    crate(b, PAD_CX, CRATE_Y0, PAD_Z + CRATE_PH, CRATE_PS, CRATE_PH, P.BLUE)
+    crate(b, PAD_CX, CRATE_Y1, PAD_Z, CRATE_PS, CRATE_PH, P.YELLOW)
+    # timber stack: four courses of three beams, their ends to the path, studs on top
+    tx0, tx1, ty0, ty1, tz = TIMBER
+    bw, bh = (tx1 - tx0) / 3, (tz - PAD_Z) / 4
+    for k in range(4):
+        for i in range(3):
+            b.box((tx0 + i * bw + 0.03, ty0 + 0.12 * (k % 2), PAD_Z + k * bh), (tx0 + (i + 1) * bw - 0.03, ty1 - 0.12 * (k % 2), PAD_Z + (k + 1) * bh - 0.03),
+                  P.RIB if (i + k) % 2 else P.TAN, bevel=0.09)
+    b.studs(tx0, tx1, ty0 + 0.3, ty1 - 0.3, tz - 0.03, P.TAN, step=1.1, r=0.32, h=0.20, n=8)
+    for x in (11.00, 13.40):                         # yellow bollards at the pad's front
+        b.cyl(x, y0b + u / 2, BZ, BZ + 1.35, 0.52, P.YELLOW, n=12, top=False, bottom=False)
+        b.cyl(x, y0b + u / 2, BZ + 1.35, BZ + 1.65, 0.68, P.YELLOW, n=12)
+        b.cyl(x, y0b + u / 2, BZ + 1.65, BZ + 1.85, 0.30, P.YELLOW, n=8, bottom=False)
+
+
+def lv1_slip(b):
+    """The slipway: two continuous dark grey rails on darker sleepers from under the bow out to the sea, end stops,
+    and yellow/black hazard edging along both sides."""
+    y = -13.00
+    while y < 21.0:
+        b.box((-5.10, y, FLOOR + 0.05), (5.10, y + 0.70, 1.05), P.BLACK, bevel=0.04)    # low and spaced: stripes, not a black mass from the path
+        keep_faces(b, (1, 2, 3, 4, 5))
+        y += 2.00
+    for x in (-4.14, 4.14):
+        b.box((x - 0.50, -13.20, 1.05), (x + 0.50, 21.45, 1.35), P.DBG, bevel=0.06)                  # rails 1 wide, 0.3 proud
+        b.box((x - 0.65, 21.05, FLOOR + 0.05), (x + 0.65, 21.62, 2.00), P.RED, bevel=0.06)          # end stops
+    for s in (-1, 1):
+        k, y = 0, -9.40
+        while y < 21.4:
+            b.box((s * 6.0, y, FLOOR + 0.03), (s * 6.4, min(y + 1.0, 21.5), 1.06), P.YELLOW if k % 2 else P.BLACK,
+                  bevel=0.0)
+            keep_faces(b, (1, 2, 3, 4, 5))
+            y, k = y + 1.0, k + 1
+
+
+def lv1_cols(c):
+    """Lv1 collision boxes (walls, gate piers, cradle, hull, cabin, gantry legs, office walls round the door, props)."""
+    for s in (-1, 1):
+        xa, xb = sorted((s * YW, s * YWO))
+        c.box((xa, -21.55, FLOOR), (xb, 21.55, WALL_TOP), P.WHITE)
+    c.box((-YW, FZ0, FLOOR), (-GATE - 0.8, FZ1, WALL_TOP), P.WHITE)     # the right front wall's box is Lv1_L07's (gone at Lv3)
+    for s in (-1, 1):
+        c.box((s * GATE - 0.85, -22.0, FLOOR), (s * GATE + 0.85, -20.3, 4.50), P.ORANGE)
+        c.box((s * GLEG_X - GLEG_HX, -GLEG_HY, FLOOR), (s * GLEG_X + GLEG_HX, GLEG_HY, GBEAM_Z0), P.YELLOW)
+        for y in (-5.75, 5.75):
+            c.box((s * 4.14 - 1.28, y - 1.5, FLOOR), (s * 4.14 + 1.28, y + 1.5, HULL_Z0), P.DBG)
+    c.box((-HULL_HW, -HULL_Y, HULL_Z0), (HULL_HW, HULL_Y, DECK_Z1), P.RED)
+    c.box((-2.6, BOW_TIP + 0.4, 8.0), (2.6, -HULL_Y, DECK_Z1), P.RED)
+    c.box((-2.645, 1.265, DECK_Z1), (2.645, 6.095, 15.06), P.WHITE)
+    c.box((OX0, OY0, FLOOR), (ODX0, OY0 + OWT, OWALL), P.WHITE)          # office: front either side of the door
+    c.box((ODX1, OY0, FLOOR), (OX1, OY0 + OWT, OWALL), P.WHITE)
+    c.box((OX0, OY1 - OWT, FLOOR), (OX1, OY1, OWALL), P.WHITE)
+    c.box((OX0, OY0 + OWT, FLOOR), (OX0 + OWT, OY1 - OWT, OWALL), P.WHITE)
+    c.box((OX1 - OWT, OY0 + OWT, FLOOR), (OX1, OY1 - OWT, OWALL), P.WHITE)
+    c.box((OX0 - 0.45, OY0 - 0.45, OWALL), (OX1 + 0.45, OY1 + 0.45, OWALL + 2.8), P.BLUE)
+    c.box((-9.55, -8.10, FLOOR), (-7.35, -4.20, FLOOR + 2.6), P.RED)
+    c.box((-13.05, -8.45, FLOOR), (-10.15, -5.55, FLOOR + 2.7), P.BLACK)
+    c.box((6.25, -11.7, FLOOR), (9.45, -9.1, FLOOR + 2.6), P.YELLOW)
+    c.box((-17.4, -4.2, FLOOR), (-13.0, -1.0, FLOOR + 1.9), P.TAN)
+    c.box((-17.6, 9.2, FLOOR), (-14.4, 19.6, FLOOR + 5.35), P.BROWN)
+    a = CRATE_PS / 2
+    c.box((PAD_CX - a, CRATE_Y0 - a, FLOOR), (PAD_CX + a, CRATE_Y0 + a, PAD_Z + 2 * CRATE_PH), P.BLUE)   # crate stack, two high
+    c.box((PAD_CX - a, CRATE_Y1 - a, FLOOR), (PAD_CX + a, CRATE_Y1 + a, PAD_Z + CRATE_PH), P.YELLOW)     # crate
+    c.box((TIMBER[0], TIMBER[2], FLOOR), (TIMBER[1], TIMBER[3], TIMBER[4]), P.TAN)      # timber stack
+
+
+# ------------------------------------------------------------------ Lv2: red jib crane (right back) + tool bench (path front)
+def crane_lv2(b):
+    """A tall red jib crane right of the gantry, standing clear of its leg: a dark foot, a two-course red/white brick base,
+    a chunky red tower with white collars, a slewing ring, a big white cab, a deep red truss jib (white braces, studded
+    top) outward over the right half, a short counter-jib with studded blocks toward the gantry, an A-frame peak with tie
+    bars, and a trolley whose short cable holds a hook, two slings and a big slatted blue crate high against the sky."""
+    x, y, T, F = TWX, TWY, TW, TBASE
+    b.box((x - F - 0.20, y - F - 0.20, FLOOR), (x + F + 0.20, y + F + 0.20, 1.40), P.DBG, bevel=0.08)
+    keep_faces(b, (1, 2, 3, 4, 5))
+    for hw_, z0, z1, c in ((F, 1.38, 3.20, P.RED), (F - 0.75, 3.18, 4.90, P.WHITE)):   # two courses, two bricks each
+        for sx in (-1, 1):
+            xa, xb = sorted((x + sx * 0.03, x + sx * hw_))
+            b.box((xa, y - hw_, z0), (xb, y + hw_, z1), c, bevel=0.09)
+    for sy in (-1, 1):
+        b.stud_row(x - F + 0.40, y + sy * (F - 0.38), x + F - 0.40, y + sy * (F - 0.38), 3.20, P.RED, spacing=1.05, r=0.28, h=0.20, n=10)
+        b.stud_row(x + sy * (F - 0.38), y - F + 1.40, x + sy * (F - 0.38), y + F - 1.40, 3.20, P.RED, spacing=1.05, r=0.28, h=0.20, n=10)
+    z, zb = 7.20, 4.85                          # red brick courses between the white collars, a dark seam at each joint
+    while z < TOWER_Z - 4.0:
+        brick_stack(b, x - T, x + T, y - T, y + T, zb, z + 0.02, 2, P.RED)
+        b.box((x - T - 0.06, y - T - 0.06, z), (x + T + 0.06, y + T + 0.06, z + 0.40), P.WHITE, bevel=0.04)
+        zb, z = z + 0.38, z + 3.20
+    brick_stack(b, x - T, x + T, y - T, y + T, zb, TOWER_Z, 3, P.RED)
+    b.cyl(x, y, TOWER_Z, TOWER_Z + 0.35, T + 0.40, P.DBG, n=16)
+    j0, j1 = TOWER_Z + 0.35, TOWER_Z + 2.05
+    for za, zb in ((j0, j0 + 0.40), (j1 - 0.40, j1)):                          # jib chords
+        b.box((x - 1.20, y - 0.80, za), (JIB_X1, y + 0.80, zb), P.RED, bevel=0.05)
+    b.box((JIB_X1 - 0.45, y - 0.80, j0 + 0.40), (JIB_X1, y + 0.80, j1 - 0.40), P.RED, bevel=0.03)
+    xx, up = x + 1.20, True
+    while xx < JIB_X1 - 1.0:
+        for sy in (-1, 1):
+            b.beam((xx, y + sy * 0.68, j0 + (0.40 if up else 1.30)), (xx + 1.1, y + sy * 0.68, j0 + (1.30 if up else 0.40)),
+                   0.22, 0.22, P.WHITE)
+        xx, up = xx + 1.1, not up
+    for sy in (-1, 1):
+        b.stud_row(x + 0.9, y + sy * 0.40, JIB_X1 - 0.5, y + sy * 0.40, j1, P.RED, spacing=1.15, r=0.30, h=0.22, n=10)
+    b.box((JIB_X1, y - 0.88, j0 - 0.05), (JIB_X1 + 0.28, y + 0.88, j1 + 0.05), P.DBG, bevel=0.04)      # tip cap
+    b.box((x - 2.60, y - 0.80, j0), (x - 1.20, y + 0.80, j0 + 0.70), P.RED, bevel=0.05)                # counter-jib
+    for k in range(2):
+        b.box((x - 2.55, y - 1.00, j0 + 0.70 + k * 0.72), (x - 1.25, y + 1.00, j0 + 1.40 + k * 0.72), P.LBG, bevel=0.05)
+    b.studs(x - 2.55, x - 1.25, y - 1.00, y + 1.00, j0 + 2.12, P.LBG, step=0.65, r=0.26, h=0.20, n=10)
+    b.box((x - 0.45, y - 0.45, j1), (x + 0.45, y + 0.45, j1 + 3.2), P.RED, bevel=0.05)                 # peak
+    b.cyl(x, y, j1 + 3.2, j1 + 3.6, 0.50, P.ORANGE, n=10)
+    for tx in (x - 2.0, JIB_X1 - 1.5):
+        b.beam((x, y, j1 + 3.0), (tx, y, j1 + 0.2), 0.16, 0.16, P.BLACK)
+    # cab under the jib on the path side of the tower
+    cz0, cz1 = TOWER_Z - 2.85, TOWER_Z + 0.30
+    b.box((x - 1.15, y - 3.30, cz0), (x + 1.15, y - T + 0.05, cz1), P.WHITE, bevel=0.07)
+    b.box((x - 0.85, y - 3.36, cz0 + 1.05), (x + 0.85, y - 3.30, cz1 - 0.35), P.INK, bevel=0.0)
+    b.box((x - 1.21, y - 3.00, cz0 + 1.05), (x - 1.15, y - 1.50, cz1 - 0.35), P.INK, bevel=0.0)
+    b.box((x - 1.25, y - 3.40, cz0 - 0.30), (x + 1.25, y - T + 0.05, cz0), P.RED, bevel=0.05)
+    b.box((x - 1.25, y - 3.40, cz1), (x + 1.25, y - T + 0.05, cz1 + 0.05), P.DBG, bevel=0.0)
+    # trolley, short cable, hook, slings and the big slatted crate
+    hz = j0 - 2.00                                                             # hook block bottom
+    b.box((HOOK_X - 0.75, y - 0.95, j0 - 0.60), (HOOK_X + 0.75, y + 0.95, j0), P.DBG, bevel=0.05)
+    b.box((HOOK_X - 0.12, y - 0.12, hz + 0.70), (HOOK_X + 0.12, y + 0.12, j0 - 0.60), P.BLACK, bevel=0.0)
+    b.box((HOOK_X - 0.60, y - 0.50, hz), (HOOK_X + 0.60, y + 0.50, hz + 0.70), P.ORANGE, bevel=0.08)
+    ctop = hz - 0.45
+    for sx in (-1, 1):
+        b.beam((HOOK_X, y, hz + 0.08), (HOOK_X + sx * 1.60, y, ctop + 0.10), 0.18, 0.18, P.BLACK)
+    crate(b, HOOK_X, y, ctop - CRATE_H, CRATE_S, CRATE_H, P.BLUE)
+
+
+def bench_lv2(b):
+    """A red tool bench left of the gate mouth, 2 studs clear of the hull in the path view: a red cabinet with white
+    drawer handles, a studded tan top, a tan board (dark frame) with three big brick tools under a low
+    five-stripe red/white awning 2 studs deep, on a one-brick studded plinth. Built in the tool() frame (board at x = FACE, tools toward -X), then turned
+    so the tools face the path (-Y)."""
+    i0 = len(b.v)
+    x0, x1, y0, y1 = FACE - 2.10, FACE, -2.30, 2.30
+    b.box((x0, y0, FLOOR), (x1, y1, BTOP - 0.30), P.RED, bevel=0.08)
+    for ya, yb in ((y0 + 0.25, -0.10), (0.10, y1 - 0.25)):
+        for j in range(2):
+            z = FLOOR + 0.35 + j * 1.05
+            b.box((x0 - 0.08, ya, z), (x0 + 0.02, yb, z + 0.85), P.RED, bevel=0.03)
+            b.box((x0 - 0.20, (ya + yb) / 2 - 0.45, z + 0.55), (x0 - 0.08, (ya + yb) / 2 + 0.45, z + 0.70), P.WHITE,
+                  bevel=0.0)
+    b.box((x0 - 0.15, y0 - 0.15, BTOP - 0.30), (x1, y1 + 0.15, BTOP), P.TAN, bevel=0.06)
+    b.studs(x0, x0 + 0.9, y0 + 0.9, y1 - 1.3, BTOP, P.TAN, step=0.9, r=0.30, h=0.20, n=10)
+    b.box((x1, y0, BTOP), (x1 + 0.30, y1, BBOARD), P.WHITE, bevel=0.04)                            # bright pegboard
+    for a0, a1, z0, z1 in ((y0 - 0.12, y0 + 0.18, BTOP, BBOARD + 0.02), (y1 - 0.18, y1 + 0.12, BTOP, BBOARD + 0.02),
+                           (y0 - 0.12, y1 + 0.12, BBOARD - 0.22, BBOARD + 0.02)):
+        b.box((x1 - 0.04, a0, z0), (x1 + 0.34, a1, z1), P.DBG, bevel=0.02)
+    for i, kind in enumerate(("hammer", "wrench", "saw")):                        # three big tools, nothing else on the board
+        ty, tz, j = -1.45 + i * 1.45, BTOP + 0.20, len(b.v)
+        tool(b, kind, ty, tz)
+        remap(b, j, lambda x, y, z, ty=ty, tz=tz: (FACE + TOOL_S * (x - FACE), ty + TOOL_S * (y - ty), tz + TOOL_S * (z - tz)))
+    ay0, ay1, ns = y0 - 0.25, y1 + 0.25, 5                                                         # awning: red/white stripes, 2 studs deep
+    zh, zl = BBOARD + 0.80, BBOARD + 0.12
+    for k in range(ns):
+        u0, u1 = ay0 + k * (ay1 - ay0) / ns + 0.02, ay0 + (k + 1) * (ay1 - ay0) / ns - 0.02
+        col = P.RED if k % 2 == 0 else P.WHITE
+        xf = x1 - AWN_D
+        b._emit([(x1 + 0.30, u0, zh), (x1 + 0.30, u1, zh), (xf, u1, zl), (xf, u0, zl),
+                 (x1 + 0.30, u0, zh + 0.22), (x1 + 0.30, u1, zh + 0.22), (xf, u1, zl + 0.22), (xf, u0, zl + 0.22)],
+                ((0, 3, 2, 1), (4, 5, 6, 7), (2, 3, 7, 6), (1, 2, 6, 5), (3, 0, 4, 7), (0, 1, 5, 4)), col)
+        b.box((xf - 0.12, u0, zl - 0.40), (xf + 0.02, u1, zl + 0.22), col, bevel=0.03)
+    for yy in (y0 + 0.10, y1 - 0.10):
+        b.beam((x1, yy, BBOARD - 0.80), (x1 - AWN_D + 0.15, yy, zl - 0.02), 0.14, 0.14, P.DBG)
+    remap(b, i0, lambda x, y, z: (BENCH_X - BENCH_S * y, BENCH_Y + BENCH_S * (x - FACE), FLOOR + BENCH_PL + BENCH_S * (z - FLOOR)))
+    # plinth: orange plate with a stud row along the front
+    px0, px1, py0, py1 = BENCH_X - 3.10, BENCH_X + 3.10, BENCH_Y - 3.40, BENCH_Y + 0.55
+    b.box((px0, py0, TILE_TOP - 0.02), (px1, py1, FLOOR + BENCH_PL), P.ORANGE, bevel=0.05)
+    keep_faces(b, (1, 2, 3, 4, 5))
+    b.stud_row(px0 + 0.4, py0 + 0.30, px1 - 0.4, py0 + 0.30, FLOOR + BENCH_PL, P.ORANGE, spacing=1.2, r=0.22, h=0.16, n=8)
+
+
+# ------------------------------------------------------------------ Lv3: wet dock + boat shed (right front)
+def dock(b):
+    """A grey brick rim round clear water (seams outside), a light coping with studs; a low red/white striped
+    water gate at the path end in the front wall's place, a quay strip, two mooring bollards."""
+    ix0, ix1, iy0, iy1 = DX0 + RIM, DX1 - RIM, DY0 + RIM, DY1 - RIM
+    for lo, hi in (((DX0, DY0, FLOOR), (ix0, DY1, RIM_Z)), ((ix1, DY0, FLOOR), (DX1, DY1, RIM_Z)),
+                   ((ix0, iy1, FLOOR), (ix1, DY1, RIM_Z))):
+        b.box(lo, hi, P.DBG, bevel=0.06)
+    b.box((DX0 - 0.05, DY0 - 0.05, RIM_Z), (ix0, DY1 + 0.05, COPE_Z), P.LBG, bevel=0.05)
+    b.box((ix1, DY0 - 0.05, RIM_Z), (DX1 + 0.04, DY1 + 0.05, COPE_Z), P.LBG, bevel=0.05)
+    b.box((ix0, iy1, RIM_Z), (ix1, DY1 + 0.05, COPE_Z), P.LBG, bevel=0.05)
+    for x in (DX0 + 0.32, DX1 - 0.32):
+        b.stud_row(x, DY0 + 1.2, x, DY1 - 0.6, COPE_Z, P.LBG, spacing=1.2, r=0.28, h=0.20, n=10)
+    seams_y(b, DX0, -1, DY0, DY1, FLOOR, RIM_Z)
+    seams_x(b, DY1, +1, DX0, DX1, FLOOR, RIM_Z)
+    # the low water gate at the path end, in the front wall's place: white body, bold red stripes, a light studded deck
+    cx0, cx1, cy0, cz1 = GATE + 0.85, DX1 - 0.05, FZ0 + 0.05, CAISSON_Z
+    b.box((cx0, cy0, FLOOR - 0.02), (cx1, iy0, cz1), P.WHITE, bevel=0.06)
+    keep_faces(b, (1, 2, 3, 4, 5))
+    x = cx0 + 0.40
+    while x < cx1 - 0.8:
+        b.box((x, cy0 - 0.06, FLOOR + 0.22), (min(x + 1.20, cx1 - 0.20), cy0 + 0.02, cz1 - 0.20), P.RED, bevel=0.02)
+        x += 2.40
+    b.box((cx0 - 0.04, cy0 - 0.05, cz1), (cx1 + 0.05, iy0 + 0.05, cz1 + 0.18), P.LBG, bevel=0.05)
+    b.stud_row(cx0 + 0.5, cy0 + 0.45, cx1 - 0.5, cy0 + 0.45, cz1 + 0.18, P.YELLOW, spacing=1.20, r=0.30, h=0.20, n=10)
+    for px in (DX0 + 0.45, DX1 - 0.45):
+        b.cyl(px, -14.2, COPE_Z, COPE_Z + 0.90, 0.30, P.BLACK, n=10, bottom=False)                  # mooring bollards
+    # quay strip under the shed's left posts (the shed's eave stands right of the crane tower in the path view)
+    b.box((ix0 - 0.05, SHED_Y0 - 0.75, FLOOR), (QUAY_X1, iy1 + 0.05, COPE_Z - 0.04), P.LBG, bevel=0.05)
+    b.stud_row(11.30, SHED_Y0 - 0.05, 11.30, iy1 - 0.4, COPE_Z - 0.04, P.LBG, spacing=1.2, r=0.28, h=0.20, n=10)
+    b.stud_row(ix0 + 0.35, SHED_Y0 - 0.40, QUAY_X1 - 0.35, SHED_Y0 - 0.40, COPE_Z - 0.04, P.YELLOW, spacing=1.0, r=0.28, h=0.20, n=10)
+
+
+def water(b):
+    """Deep blue water with cyan shallows along the walls, three raised pale wave plates, white stud ripples at the hull's
+    waterline (its sides are hidden inside the walls)."""
+    ix0, ix1, iy0, iy1 = DX0 + RIM, DX1 - RIM, DY0 + RIM, DY1 - RIM
+    xa, xb, ya, yb = ix0 - 0.05, ix1 + 0.05, iy0 - 0.05, iy1 + 0.05
+    b._emit([(xa, ya, WATER_Z), (xb, ya, WATER_Z), (xb, yb, WATER_Z), (xa, yb, WATER_Z)], ((0, 1, 2, 3),), WATER_C)
+    for lo, hi in (((xa, ya), (11.75, SHED_Y0 - 0.70)), ((11.75, ya), (xb, -18.70)), ((17.05, -18.70), (xb, yb))):
+        b.box((lo[0], lo[1], WATER_Z - 0.02), (hi[0], hi[1], WATER_Z + 0.05), P.CYAN, bevel=0.0)    # shallows
+        keep_faces(b, (1, 2, 3, 4, 5))
+    for x0, x1, y0, y1 in ((11.95, 13.25, -17.20, -16.10), (10.75, 12.45, -14.30, -13.20), (12.00, 13.20, -12.20, -11.25)):
+        b.box((x0, y0, WATER_Z - 0.02), (x1, y1, WATER_Z + 0.14), P.GLASS, bevel=0.05)               # wave plates: a step up each
+        keep_faces(b, (1, 2, 3, 4, 5))
+        b.box((x0 + 0.30, y0 + 0.28, WATER_Z + 0.12), (x1 - 0.30, y1 - 0.28, WATER_Z + 0.24), P.WHITE, bevel=0.04)
+        keep_faces(b, (1, 2, 3, 4, 5))
+    for x, y0, y1 in ((13.30, -16.60, -11.20), (17.48, -17.40, -3.60)):
+        b.stud_row(x, y0, x, y1, WATER_Z + 0.03, P.WHITE, spacing=0.95, r=0.14, h=0.12, n=6)      # ripples at the waterline
+    b.stud_row(HX - 1.10, HY - HS * 6.95, HX + 1.10, HY - HS * 6.95, WATER_Z + 0.03, P.WHITE, spacing=0.75, r=0.14, h=0.12, n=6)
+
+
+def shed(b):
+    """Half-open boat shed over the dock's back third, stern of the hull inside: white posts (dark feet, stud seams), left
+    on the quay strip, right on the side wall, white eave beams, a red tie beam, a white back wall with brick courses, a
+    stepped studded blue roof with an orange studded ridge cap, a stepped white gable with a red rim and a framed plaque with a
+    wrench, a dark inner wall behind the boat, and a red/white striped awning 1 stud deep."""
+    pxs, pys = SHED_PX, (SHED_Y0 + 0.40, DY1 - 0.45)
+    for x, foot in ((pxs[0], COPE_Z - 0.04), (pxs[1], WALL_TOP + 0.20)):
+        for y in pys:
+            b.box((x - 0.55, y - 0.55, foot), (x + 0.55, y + 0.55, foot + 0.40), P.DBG, bevel=0.04)
+            b.box((x - 0.40, y - 0.40, foot + 0.40), (x + 0.40, y + 0.40, EAVE - 0.90), P.WHITE, bevel=0.06)
+            for z in (6.4, 9.6, 12.8):
+                b.box((x - 0.44, y - 0.44, z), (x + 0.44, y + 0.44, z + 0.10), P.DBG, bevel=0.0)
+        b.box((x - 0.45, SHED_Y0 - 0.05, EAVE - 0.90), (x + 0.45, DY1, EAVE), P.WHITE, bevel=0.05)     # eave beams
+    b.box((pxs[0] + 0.45, SHED_Y0 - 0.05, EAVE - 0.90), (pxs[1] - 0.45, SHED_Y0 + 0.80, EAVE), P.RED, bevel=0.05)    # tie beams
+    b.box((pxs[0] + 0.45, DY1 - 0.85, EAVE - 0.90), (pxs[1] - 0.45, DY1 - 0.10, EAVE), P.WHITE, bevel=0.05)
+    b.box((pxs[0] + 0.40, DY1 - 0.55, COPE_Z), (pxs[1] - 0.40, DY1 - 0.10, EAVE - 0.90), P.WHITE, bevel=0.04)
+    b.box((pxs[0] + 0.40, DY1 - 0.60, COPE_Z), (pxs[1] - 0.40, DY1 - 0.53, EAVE - 0.90), P.INK, bevel=0.0)     # the dark opening behind the boat
+    courses(b, "x", DY1 - 0.60, -1, pxs[0] + 0.45, pxs[1] - 0.45, COPE_Z, EAVE - 0.90, n=8, brick=2.40)
+    zr, th, st = EAVE, 1.00, 0.70
+    xa, xb, ya, yb = SHED_XA, SHED_XB, SHED_Y0 - 0.40, DY1 + 0.30
+    for t in range(5):
+        b.box((xa + t * st, ya, zr + t * th), (xb - t * st, yb, zr + (t + 1) * th), P.BLUE, bevel=0.05)
+        if t < 4:
+            for x in (xa + t * st + st / 2, xb - t * st - st / 2):
+                b.stud_row(x, ya + 0.6, x, yb - 0.6, zr + (t + 1) * th, P.BLUE, spacing=1.30, r=0.30, h=0.22, n=10)
+        # gable: each tier's front white with a red rim at its ends
+        g0, g1, gy = xa + t * st, xb - t * st, ya - 0.07
+        b.box((g0 + 0.34, gy, zr + t * th + 0.03), (g1 - 0.34, ya + 0.03, zr + (t + 1) * th - 0.03), P.WHITE, bevel=0.02)
+        for a0, a1 in ((g0 + 0.02, g0 + 0.30), (g1 - 0.30, g1 - 0.02)):
+            b.box((a0, gy, zr + t * th + 0.03), (a1, ya + 0.03, zr + (t + 1) * th - 0.03), P.RED, bevel=0.02)
+    zt, xm = zr + 5 * th, (xa + xb) / 2
+    b.box((xm - 0.65, ya - 0.10, zt), (xm + 0.65, yb + 0.10, zt + 0.45), P.ORANGE, bevel=0.05)
+    b.stud_row(xm, ya + 0.4, xm, yb - 0.4, zt + 0.45, P.ORANGE, spacing=1.05, r=0.30, h=0.22, n=10)
+    b.box((xa - 0.06, ya - 0.06, zr - 0.30), (xb + 0.06, yb + 0.06, zr), P.WHITE, bevel=0.04)       # eave course
+    # the awning: seven red/white sloped stripes 1 stud deep with a hanging valance, under the eave
+    ax0, ax1, n = pxs[0] - 0.40, pxs[1] + 0.40, 7
+    y0a, y1a, zh, zl = SHED_Y0 + 0.05, ya - 1.25, EAVE - 0.45, EAVE - 1.45
+    for k in range(n):
+        u0, u1 = ax0 + k * (ax1 - ax0) / n + 0.02, ax0 + (k + 1) * (ax1 - ax0) / n - 0.02
+        c = P.RED if k % 2 == 0 else P.WHITE
+        b._emit([(u0, y0a, zh), (u1, y0a, zh), (u1, y1a, zl), (u0, y1a, zl),
+                 (u0, y0a, zh + 0.22), (u1, y0a, zh + 0.22), (u1, y1a, zl + 0.22), (u0, y1a, zl + 0.22)],
+                ((0, 3, 2, 1), (4, 5, 6, 7), (2, 3, 7, 6), (1, 2, 6, 5), (3, 0, 4, 7), (0, 1, 5, 4)), c)
+        b.box((u0, y1a - 0.12, zl - 0.38), (u1, y1a + 0.02, zl + 0.22), c, bevel=0.03)
+    # gable plaque: orange frame, white board, a dark wrench at 30 degrees
+    hw_, z0, z1 = 1.60, EAVE + 0.42, EAVE + 3.00
+    fy, by, iy = ya - 0.50, ya - 0.56, ya - 0.66
+    b.box((xm - hw_ - 0.18, fy, z0 - 0.18), (xm + hw_ + 0.18, ya + 0.05, z1 + 0.18), P.ORANGE, bevel=0.07)
+    b.box((xm - hw_, by, z0), (xm + hw_, fy, z1), P.WHITE, bevel=0.0)
+    b.stud_row(xm - hw_ + 0.2, ya - 0.25, xm + hw_ - 0.2, ya - 0.25, z1 + 0.18, P.ORANGE, spacing=0.95, r=0.20, h=0.14, n=8)
+    zc, ca, sa = (z0 + z1) / 2, math.cos(math.radians(30)), math.sin(math.radians(30))
+    rot = lambda u, v: (xm + 0.84 * (u * ca - v * sa), zc + 0.84 * (u * sa + v * ca))
+    for u0, u1, v0, v1 in ((-1.70, 0.65, -0.30, 0.30), (0.65, 1.15, -0.72, 0.72), (1.15, 1.75, -0.72, -0.24), (1.15, 1.75, 0.24, 0.72),
+                           (-2.05, -1.70, -0.42, 0.42)):
+        prism_y(b, iy, by, [rot(u0, v0), rot(u1, v0), rot(u1, v1), rot(u0, v1)], P.DBG)
 
 
 # ------------------------------------------------------------------ build
 def build():
     import bpy  # noqa: F401  (Blender only)
     patch_lod_names()
+    patch_lod_targets()
     mat = lego.material("MI_BoatYard_Brick", ALB)
     meshes = []
-    nodes = {k: lego.node(k) for k in ("Lv2", "Lv3")}
+    nodes = {k: lego.node(k) for k in ("Lv1", "Lv2", "Lv3")}
 
     def out(name, b, node):
         if b.empty():
@@ -544,7 +1153,7 @@ def build():
                       else {"object": obj, "role": "col"})
         print("[boatyard] %-28s %5d tris" % (name, b.tris()))
 
-    def out_cols(node, c):
+    def out_cols(node, c, prefix=None):
         # one object per box (8 verts, 6 faces each): Roblox hulls each _COL mesh, so a merged one fills the basin
         assert len(c.v) == 8 * (len(c.f) // 6) and len(c.f) % 6 == 0, "COL must be plain boxes"
         for k in range(len(c.f) // 6):
@@ -552,100 +1161,64 @@ def build():
             box.v = c.v[8 * k:8 * k + 8]
             box.f = [(tuple(i - 8 * k for i in f), cell) for f, cell in c.f[6 * k:6 * k + 6]]
             assert all(0 <= i < 8 for f, _ in box.f for i in f)
-            out("%s_Col%02d_COL" % (node, k + 1), box, node)
+            out("%s_Col%02d_COL" % (prefix or node, k + 1), box, node)
 
-    # ================================================================ Lv2: portal crane over the boat + bench
-    b = lego.B()
-    gantry(b)
-    out("Lv2_L01_Gantry", b, "Lv2")
-
-    b = lego.B()
-    hoist(b)
-    out("Lv2_L02_Hoist", b, "Lv2")
-
-    b = lego.B()
-    bench(b)
-    out("Lv2_L03_Bench", b, "Lv2")
-
-    b = lego.B()
-    bench_tools(b)
-    out("Lv2_L04_Tools", b, "Lv2")
-
+    # ================================================================ Lv1: the code yard as a mesh
+    for name, fn in (("Lv1_L01_Floor", lv1_floor), ("Lv1_L02_Walls", lv1_walls), ("Lv1_L03_Boat", lv1_boat),
+                     ("Lv1_L04_Gantry", lv1_gantry), ("Lv1_L05_Office", lv1_office), ("Lv1_L06_Props", lv1_props),
+                     ("Lv1_L07_Paint", lv1_paint), ("Lv1_L08_Slip", lv1_slip), ("Lv1_L09_Pad", lv1_pad)):
+        b = lego.B()
+        fn(b)
+        out(name, b, "Lv1")
     c = lego.B()
-    for xc, (fx0, fx1), ph in ((GXW, FOOTW, PHW), (GXE, FOOTE, PHE)):
-        c.box((fx0, FY0, FLOOR), (fx1, FY1, PLATE_Z), P.DBG)                      # footing + base plate
-        for sy in (-1, 1):
-            c.box((xc - ph, GYC + sy * GY - 0.55, PLATE_Z), (xc + ph, GYC + sy * GY + 0.55, BEAM_Z1), P.YELLOW)
-    c.box((GXW - PHW - 0.45, GYC - 1.30, BEAM_Z0 - 0.10), (GXE + 1.00, GYC + 1.30, BEAM_Z1 + 0.18), P.DBG)   # girder
-    c.box((GXE + 0.55, GYC - GY - 1.45, PLAT_Z - 0.30), (GXE + 4.30, GYC - GY + 1.45, PLAT_Z), P.DBG)  # cab platform
-    c.box((GXE + 0.65, GYC - GY - 1.30, PLAT_Z), (GXE + 2.85, GYC - GY + 1.30, PLAT_Z + 2.88), P.YELLOW)   # cab
-    c.box((HX - 1.50, CY0, FLOOR), (HX + 1.50, CY1, 2.58), P.DBG)               # engine stand base
-    c.box((HX - 1.22, CY0 + 0.20, 2.58), (HX + 1.22, CY1 - 0.20, 6.60), P.DBG)  # engine stand column + top
-    c.box((BX0, BY0, FLOOR), (BX1, BY1, BTOP), P.TAN)                             # bench
-    c.box((18.26, -3.90, BTOP), (18.75, 3.90, 7.12), P.DBG)                       # tool board
+    lv1_cols(c)
+    out_cols("Lv1", c)
+    c = lego.B()                                # named Lv1_L07_*: DockPieces drops it with the wall at Lv3
+    c.box((GATE + 0.8, FZ0, FLOOR), (YW, FZ1, WALL_TOP), P.WHITE)
+    out_cols("Lv1", c, "Lv1_L07")
+
+    # ================================================================ Lv2: red jib crane (right back) + tool bench
+    for name, fn in (("Lv2_L01_Crane", crane_lv2), ("Lv2_L02_Bench", bench_lv2)):
+        b = lego.B()
+        fn(b)
+        out(name, b, "Lv2")
+    c = lego.B()
+    bz = lambda z: FLOOR + BENCH_PL + BENCH_S * (z - FLOOR)
+    c.box((TWX - TBASE, TWY - TBASE, FLOOR), (TWX + TBASE, TWY + TBASE, 4.90), P.DBG)       # brick base
+    c.box((TWX - TW, TWY - TW, 4.90), (TWX + TW, TWY + TW, TOWER_Z + 2.05), P.RED)          # tower
+    c.box((BENCH_X - 3.10, BENCH_Y - 3.40, FLOOR), (BENCH_X + 3.10, BENCH_Y, bz(BTOP)), P.RED)   # bench + plinth
+    c.box((BENCH_X - 3.00, BENCH_Y, FLOOR), (BENCH_X + 3.00, BENCH_Y + 0.42, bz(BBOARD + 0.80)), P.TAN)   # board
     out_cols("Lv2", c)
 
-    # ================================================================ Lv3: walled dry dock + hull on blocks
-    b = lego.B()
-    walls(b)
-    ladder(b)
-    out("Lv3_L01_Walls", b, "Lv3")
-
-    b = lego.B()
-    water(b)
-    out("Lv3_L02_Water", b, "Lv3")
-
-    b = lego.B()
-    steps(b)
-    out("Lv3_L03_Steps", b, "Lv3")
-
-    b = lego.B()
-    gate(b)
-    out("Lv3_L04_Gate", b, "Lv3")
-
-    b = lego.B()
-    blocks(b)
-    out("Lv3_L05_Blocks", b, "Lv3")
-
+    # ================================================================ Lv3: wet dock + boat shed + hull (right front)
+    for name, fn in (("Lv3_L01_Dock", dock), ("Lv3_L02_Water", water), ("Lv3_L03_Shed", shed)):
+        b = lego.B()
+        fn(b)
+        out(name, b, "Lv3")
     b = lego.B()
     hull(b)
     place_rot(b)
-    out("Lv3_L06_Hull", b, "Lv3")
-
+    out("Lv3_L04_Hull", b, "Lv3")
+    ix0, ix1, iy0, iy1 = DX0 + RIM, DX1 - RIM, DY0 + RIM, DY1 - RIM
     c = lego.B()
-    c.box((WX0, SY0, FLOOR), (WX1, NY, CAP_Z1), P.DBG)                            # west wall
-    c.box((EX0, SY0, FLOOR), (EX1, NY, CAP_Z1), P.DBG)                            # east wall
-    c.box((WX1, SY0, FLOOR), (EX0, SY1, CAP_Z1), P.DBG)                           # south wall
-    c.box((WX1, 19.50, FLOOR), (EX0, 20.60, 3.30), P.DBG)                         # caisson
-    c.box((WX0 + 0.75, 20.30, CAP_Z1), (WX1, 21.00, 4.00), P.ORANGE)              # gate posts
-    c.box((EX0, 20.30, CAP_Z1), (EX0 + 0.85, 21.00, 4.00), P.ORANGE)
-    c.box((-18.10, 20.35, 3.95), (-10.15, 21.00, 4.55), P.YELLOW)                 # beam, overhead
-    for y0, y1, z1 in ((-11.65, -10.90, 1.50), (-10.90, -10.15, 2.08), (-10.15, -9.40, 2.66)):
-        c.box((-10.95, y0, FLOOR), (-9.45, y1, z1), P.LBG)                        # steps up
-    for y0, y1, z1 in ((SY1, SY1 + 0.80, 2.73), (SY1 + 0.80, SY1 + 1.60, 2.20), (SY1 + 1.60, SY1 + 2.40, 1.67)):
-        c.box((WX1, y0, FLOOR), (EX0, y1, z1), P.LBG)                             # steps down
-    c.box((HX - 1.80, 3.70, 3.50), (HX + 1.80, 13.10, 6.15), P.LBG)               # hull, four bites
-    c.box((HX - 1.65, 2.30, 3.50), (HX + 1.65, 3.70, 6.25), P.LBG)
-    c.box((HX - 1.10, 1.10, 3.50), (HX + 1.10, 2.30, 6.40), P.LBG)
-    c.box((HX - 0.45, -0.30, 3.50), (HX + 0.45, 1.10, 6.70), P.LBG)
-    c.box((HX - 1.05, 2.80, DFLOOR), (HX + 1.05, 12.70, HZ), P.DBG)               # keel blocks + the Lv2 cradle
-    c.box((-11.24, 10.80, 1.15), (-11.06, 11.40, CAP_Z1), P.YELLOW)               # ladder
-    c.box((WX1 - 0.34, SY1 + 2.6, CAP_Z1), (WX1, FY0 - 0.2, CAP_Z1 + 1.40), P.WHITE)   # fence panels (rails stop falls)
-    c.box((WX1 - 0.34, FY1 + 0.2, CAP_Z1), (WX1, 20.0, CAP_Z1 + 1.40), P.WHITE)   # gap by the crane legs: 2-stud lane
-    c.box((EX0, SY1 + 2.6, CAP_Z1), (EX0 + 0.34, 10.5, CAP_Z1 + 1.40), P.WHITE)
-    c.box((EX0, 11.55, CAP_Z1), (EX0 + 0.34, 20.0, CAP_Z1 + 1.40), P.WHITE)
-    c.box((HUT_X0, HUT_Y0, FLOOR), (HUT_X0 + HUT_T, HUT_Y1, HUT_Z), P.ORANGE)     # pump house walls (door side open)
-    c.box((HUT_X1 - HUT_T, HUT_Y0, FLOOR), (HUT_X1, HUT_Y1, HUT_Z), P.ORANGE)
-    c.box((HUT_X0, HUT_Y1 - HUT_T, FLOOR), (HUT_X1, HUT_Y1, HUT_Z), P.ORANGE)
-    c.box((HUT_X0, HUT_Y0, FLOOR), (DOOR_X0, HUT_Y0 + HUT_T, HUT_Z), P.ORANGE)
-    c.box((DOOR_X1, HUT_Y0, FLOOR), (HUT_X1, HUT_Y0 + HUT_T, HUT_Z), P.ORANGE)
-    c.box((HUT_X0 + HUT_T + 0.20, 15.90, FLOOR), (HUT_X0 + HUT_T + 1.80, 17.90, 2.50), P.DBG)   # pump
+    c.box((DX0, DY0, FLOOR), (ix0, DY1, COPE_Z), P.DBG)                                   # rim walls
+    c.box((ix1, DY0, FLOOR), (DX1, DY1, COPE_Z), P.DBG)
+    c.box((ix0, iy1, FLOOR), (ix1, DY1, COPE_Z), P.DBG)
+    c.box((GATE + 0.85, FZ0, FLOOR), (DX1, iy0, CAISSON_Z + 0.18), P.WHITE)               # water gate, the wall line's only box at Lv3
+    c.box((ix0, SHED_Y0 - 0.75, FLOOR), (QUAY_X1, iy1, COPE_Z - 0.04), P.DBG)               # quay strip
+    for px in SHED_PX:
+        for py in (SHED_Y0 + 0.40, DY1 - 0.45):
+            c.box((px - 0.55, py - 0.55, COPE_Z), (px + 0.55, py + 0.55, EAVE), P.WHITE)    # shed posts
+    c.box((SHED_PX[0] + 0.40, DY1 - 0.55, COPE_Z), (SHED_PX[1] - 0.40, DY1 - 0.10, EAVE), P.WHITE)    # shed back wall
+    c.box((HX - 1.80 * HS, HY - 2.60 * HS, HZ + 0.60 * HS), (HX + 1.80 * HS, HY + 6.80 * HS, HZ + 3.55 * HS), P.RED)  # hull, three bites
+    c.box((HX - 1.20 * HS, HY - 5.40 * HS, HZ + 1.50 * HS), (HX + 1.20 * HS, HY - 2.60 * HS, HZ + 3.55 * HS), P.RED)
+    c.box((HX - 1.35 * HS, HY + 1.80 * HS, HZ + 3.55 * HS), (HX + 1.35 * HS, HY + 5.60 * HS, HZ + 5.80 * HS), P.WHITE)
     out_cols("Lv3", c)
 
     atts = []
-    for name, loc in (("ATT_Work_Hull", (-10.50, 6.00, CAP_Z1)),
-                      ("ATT_Work_Bench", (15.45, 0.00, FLOOR)),
-                      ("ATT_Work_Dock", (-10.50, 13.40, CAP_Z1))):
+    for name, loc in (("ATT_Work_Hull", (TWX - 3.50, TWY, FLOOR)),          # Lv2: the crane's foot
+                      ("ATT_Work_Bench", (BENCH_X, BENCH_Y - 4.10, FLOOR)),  # Lv2: in front of the bench plinth
+                      ("ATT_Work_Dock", (DX0 - 0.90, -15.00, FLOOR))):      # Lv3: beside the dock's west rim
         atts.append(lego.attach(name, loc))
 
     pts = []
@@ -668,6 +1241,10 @@ def build():
                      "origin the yard ground centre, built at the yard's final 1.15 scale (place with no extra scale)",
         "sets": [{"name": SET_NAME, "set": SET, "size": 1024, "wet": False}],
         "waivers": {
+            "texture sets": "Lego rule docs/05 5: one flat palette set (like M_Bld_HQAddons / M_Bld_FishMarketAddons), no PBR scans",
+            "LOD1 triangles": "LOD1 keeps the add-ons' 50% share (patch_lod_targets)",
+            "LOD2 triangles": "LOD2 keeps the add-ons' 25% share (patch_lod_targets): the hero ceiling would collapse the "
+                              "small Lego detail meshes",
             "naming": "gameplay node/layer names (docs/25 B/J): Lv2_L01_..., Lv3_L01_..., Lv2_Col01_COL.., "
                       "Lv3_Col01_COL..; the FBX importer flattens empty parents, so the node name is the mesh prefix",
             "LOD UV layout": "flat palette cells (one shared material): decimation merges cells, UVs are not a unique "
@@ -676,11 +1253,9 @@ def build():
         "meshes": meshes,
         "attachments": atts,
         "closeups": [
-            {"name": "gantry", "target": [-12.0, GYC, 10.0], "dist": 36, "az": -30, "el": 10},
-            {"name": "cab", "target": [GXE + 2.0, GYC - GY, 9.0], "dist": 16, "az": -30, "el": 12},
-            {"name": "bench", "target": [17.0, 0.0, 4.6], "dist": 13, "az": -62, "el": 10},
-            {"name": "dry_dock", "target": [HX, 6.0, 3.6], "dist": 34, "az": -40, "el": 26},
-            {"name": "hull", "target": [HX, 6.0, 4.6], "dist": 24, "az": 90, "el": 16},
-            {"name": "pump_house", "target": [-5.2, 15.4, 3.5], "dist": 20, "az": -35, "el": 14},
+            {"name": "crane", "target": [TWX - 4.0, TWY, 12.0], "dist": 34, "az": -30, "el": 10},
+            {"name": "bench", "target": [BENCH_X, BENCH_Y - 1.0, 4.6], "dist": 13, "az": 0, "el": 10},
+            {"name": "dock", "target": [(DX0 + DX1) / 2, -11.0, 5.0], "dist": 34, "az": -30, "el": 22},
+            {"name": "office", "target": [-14.0, -13.6, 6.0], "dist": 22, "az": 10, "el": 12},
         ],
     }
