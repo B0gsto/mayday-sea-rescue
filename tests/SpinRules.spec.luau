@@ -197,6 +197,7 @@ return function(t)
 
 	t.test("the odds board names every prize", function()
 		t.expect(SpinRules.prizeNames("Common")).toBe("150 Cash")
+		t.expect(SpinRules.prizeNames("Rare")).toBe("Golden Pet, Gold Chrome, Rainbow Wake")
 		for _, prize in SpinRules.PRIZES do
 			t.expect(string.find(SpinRules.prizeNames(prize.rarity), prize.name, 1, true) ~= nil)
 				.toBe(true)

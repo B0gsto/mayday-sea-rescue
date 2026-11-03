@@ -198,7 +198,10 @@ end
 function SpinRules.prizeNames(rarity: Rarity): string
 	local names = {}
 	for _, prize in SpinRules.prizesOf(rarity) do
-		table.insert(names, if prize.cash then `{prize.cash} {prize.name}` else prize.name)
+		table.insert(
+			names,
+			if prize.kind == "cash" then `{prize.cash} {prize.name}` else prize.name
+		)
 	end
 	return table.concat(names, ", ")
 end
