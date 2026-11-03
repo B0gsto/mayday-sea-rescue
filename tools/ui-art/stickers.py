@@ -230,6 +230,21 @@ STICKERS.update({
 })
 
 
+def home():
+    """The menu's Home button: a chunky cream house, red Lego roof with one stud on the peak, a blue door."""
+    stud = "M84,30 L84,14 Q84,6 100,6 Q116,6 116,14 L116,30 Z"
+    roof = "M100,22 L184,94 Q190,100 182,102 L18,102 Q10,100 16,94 Z"
+    walls = "M40,96 L160,96 L160,170 Q160,180 150,180 L50,180 Q40,180 40,170 Z"
+    defs, body = sticker(f"{stud} {roof} {walls}", "#FFF4D6", "#F2D49A", "#C79A52", lip_dy=10)
+    ink = f' stroke="{INK}" stroke-width="7" stroke-linejoin="round"'
+    door = "M84,180 L84,136 Q84,120 100,120 Q116,120 116,136 L116,180 Z"
+    extra = (f'<path d="{stud}" fill="#E0303A"{ink}/><ellipse cx="100" cy="14" rx="14" ry="5" fill="#FF8A7D"/>'
+             f'<path d="{roof}" transform="translate(0,8)" fill="#A3161E"{ink}/><path d="{roof}" fill="#E0303A"{ink}/>'
+             '<path d="M40,92 L100,40" fill="none" stroke="#fff" stroke-opacity="0.55" stroke-width="10" stroke-linecap="round"/>'
+             f'<path d="{door}" fill="#2A86E8"{ink}/><circle cx="108" cy="154" r="5" fill="#fff"/>')
+    return defs, body + extra
+
+
 def render(name, w, h, keep=False):
     subprocess.run([sys.executable, str(ROOT / "tools/ui-art/render.py"), str(SRC / f"{name}.svg"),
                     str(OUT / f"{name}.png"), "--size", str(w), str(h)] + (["--keep"] if keep else []), check=True)
@@ -242,4 +257,6 @@ for name, (layers, note) in STICKERS.items():
     box = SQUARE.get(name, (-22, -22, 244, 256))
     svg(name, layers, box=box, note=note)
     render(name, box[2], box[3], keep=name == "map_player" or name in SQUARE)
+svg("home", home(), note="the menu Home button: back to your island spawn")
+render("home", 244, 256)
 # beacon_mark.svg, tap.svg are hand-authored; transport_pin.svg comes from pin_variants.py

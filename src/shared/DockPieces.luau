@@ -2888,7 +2888,7 @@ local function rescueBoathouse(m: Model, b: CFrame, level: number?)
 		)
 	end
 	-- docs/24 C r3: a boat trailer inside the pen, ready for the slip
-	local trailer = at * CFrame.new(-5, 0, d / 2 - 4.6)
+	local trailer = at * CFrame.new(-5, 0.8, d / 2 - 4.6) -- on the pen's plinth, wheels not sunk in it
 	for _, x in { -2.2, 2.2 } do
 		studTop(
 			brick(
@@ -2914,7 +2914,7 @@ local function rescueBoathouse(m: Model, b: CFrame, level: number?)
 			m,
 			"TrailerWheel",
 			Vector3.new(0.9, 3, 3),
-			trailer * CFrame.new(x, 1.6, 0.6) * CFrame.Angles(0, 0, math.pi / 2),
+			trailer * CFrame.new(x, 1.5, 0.6), -- on edge, rolling on the deck (flat, its cap fought the rail's top)
 			Color3.fromRGB(40, 42, 48),
 			M.SmoothPlastic,
 			Enum.PartType.Cylinder

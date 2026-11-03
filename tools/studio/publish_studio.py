@@ -159,12 +159,10 @@ def selftest():
     print("selftest ok")
 
 
-def find_place(s):
+def find_places(s):
     ok, texts, _ = s.call("list_roblox_studios", {}, 30)
-    for st in json.loads(texts[0]).get("studios", []) if ok and texts else []:
-        if "placeId: %d)" % PLACE in (st.get("name") or ""):
-            return st["id"]
-    return None
+    return [st["id"] for st in (json.loads(texts[0]).get("studios", []) if ok and texts else [])
+            if "placeId: %d)" % PLACE in (st.get("name") or "")]
 
 
 def main():
@@ -207,6 +205,9 @@ def main():
         for f in glob.glob(os.path.join(AUTOSAVES, "%d_AutoRecovery_*.rbxl" % PLACE)):
             os.makedirs(os.path.join(AUTOSAVES, "Archived"), exist_ok=True)
             os.replace(f, os.path.join(AUTOSAVES, "Archived", "%d_%s" % (time.time(), os.path.basename(f))))
+        # another agent's bench can report the same placeId (its play test, 2026-11-03): only our new window counts
+        with StudioSession(settle=2) as s:
+            others = set(find_places(s))
         subprocess.run(["open", "-g", "roblox-studio:1+launchmode:edit+task:EditPlace+placeId:%d+universeId:%d"
                         % (PLACE, UNIVERSE)], check=True)
         pid, sid = None, None
@@ -216,7 +217,7 @@ def main():
                 while time.time() < end and not sid:
                     time.sleep(5)
                     pid = pid or next(iter(studio_pids()), None)
-                    sid = find_place(s)
+                    sid = next((i for i in find_places(s) if i not in others), None)
                 if not sid:
                     sys.exit("the test place never showed up in the Studio MCP")
                 log = log_of(pid)

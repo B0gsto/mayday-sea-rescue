@@ -11481,6 +11481,15 @@
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_RGH.png",
   "type": "Image"
  },
+ "Image:7ce31afcede2056d893d3937b2799abf539f29078f4907f8e6d6b09ce5ccc030": {
+  "assetId": "82079144467220",
+  "imageId": "82079144467220",
+  "moderation": "Reviewing",
+  "name": "UI_Kit_Home",
+  "sha": "7ce31afcede2056d893d3937b2799abf539f29078f4907f8e6d6b09ce5ccc030",
+  "source": "build/ui-art/home.png",
+  "type": "Image"
+ },
  "Image:7ce9aa5f4f2792e5c71b825ef0de934c25e8f82e5d89193c87814dd5da384a41": {
   "assetId": "134988817960278",
   "imageId": "134988817960278",
