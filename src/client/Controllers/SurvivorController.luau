@@ -126,6 +126,12 @@ function SurvivorController.attach(model: Model)
 			open(model)
 		end
 	end)
+	-- no pill over passengers: it covered the craft while driving (owner 2026-11-01)
+	local function syncAboard()
+		prompt.Enabled = model:GetAttribute("OnVehicle") == nil
+	end
+	syncAboard()
+	model:GetAttributeChangedSignal("OnVehicle"):Connect(syncAboard)
 end
 
 local function personish(model: Model): boolean

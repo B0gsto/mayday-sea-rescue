@@ -611,6 +611,7 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 		state = if wait or (st.cash > (snapshot.cash or 0) and not tutorialBuild(item))
 			then "disabled"
 			else "buy",
+		still = true,
 		onActivate = function()
 			-- the tutorial top-up is the existing coin burst; the server turns it into the buy
 			if st.cash > (snapshot.cash or 0) and tutorialBuild(item) then
@@ -634,15 +635,13 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 		price = st.robux,
 		currency = "Robux",
 		state = if wait then "disabled" else "buy",
+		still = true,
 		onActivate = function()
 			robuxBuy(id)
 		end,
 	})
 	rb.root.Name = "Robux"
-	local small = Instance.new("UIScale")
-	small.Scale = 0.8
-	small.Parent = rb.root
-	rb.root.Size = UDim2.new(0.4 / 0.8, (-4 - glass * 0.4) / 0.8, 1, 0)
+	rb.root.Size = UDim2.new(0.4, -4 - glass * 0.4, 1, 0) -- no UIScale here: Style.press owns the root's one
 	rb.root.LayoutOrder = 1
 	if not livePrice[id] then
 		task.spawn(function()
