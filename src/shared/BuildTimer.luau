@@ -9,7 +9,7 @@ local WorkerRules = require(script.Parent:WaitForChild("WorkerRules"))
 
 local B = {}
 
-B.MIN, B.MAX = 20, 600 -- seconds of one-crew work
+B.MIN, B.MAX = 20, 660 -- seconds of one-crew work
 B.SCALE, B.POW = 20, 0.9 -- 1k 20 s, 2.5k 45 s, 10k 2:39, 40k 9:15 of one-crew work -- tune
 B.DECOR = 8
 B.FREE = 5 -- the free first build, the Rescue Hut (owner 2026-11-03: "max 5 seconds")

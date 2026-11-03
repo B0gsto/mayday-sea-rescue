@@ -188,6 +188,9 @@ function Rules.canBuyVehicle(
 	if unlock.passOnly then
 		return false, "Robux only", 0
 	end
+	if unlock.level then
+		return false, "Boat level", 0 -- docs/30: hulls come with the ladder; Cash buys levels, never a hull
+	end
 	local need = Rules.vehicleLock(data, vehicleId)
 	if need then
 		return false, `Needs {UnlockTree.needName(need)}`, unlock.price

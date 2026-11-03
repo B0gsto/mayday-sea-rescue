@@ -13,7 +13,7 @@
 -- within HOME_CLEAR of a berth (the coves are the missions'). K13 (docs/16): MOUTH_WANT are always in view off each
 -- player's cove mouth. At the cap the oldest scene nobody is near makes way. A cold-open player gets no spawns
 -- near them and boards nobody free-roam but the two swimmers fanned round their own (docs/29 A: SpawnColdOpenFlank; the
--- first one reached goes to OperationService.ColdOpenFlank). Sight spawns are the added density: they
+-- first one reached goes to OperationService.ColdOpenFlank; ClearFlanks when it ends). Sight spawns are the added density: they
 -- pay the lower tier (AmbientMix.CASH x the Bronze grade); timed and cove-mouth ones pay CASH; all x the zone's pay.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -148,10 +148,10 @@ local function roll(): number
 end
 
 -- extra: a sight spawn (sea1's added density) pays the Bronze grade share of CASH, the lower tier (ECON1)
--- owner: a cold-open flank, a lone swimmer rolled like their own call's (the first home is a Builder)
-local function spawnAt(pos: Vector3, extra: boolean?, owner: Player?): Scene
+-- flankOf: a cold-open flank, one lone swimmer. Not `owner`: it rolls as free roam, no pity, no forced Builder.
+local function spawnAt(pos: Vector3, extra: boolean?, flankOf: Player?): Scene
 	nextId += 1
-	local mix = if owner then { kind = "Swimmer", total = 1 } else AmbientMix.pick(roll())
+	local mix = if flankOf then { kind = "Swimmer", total = 1 } else AmbientMix.pick(roll())
 	local scene: Scene = {
 		id = `AMB{nextId}`, -- never an op id: PIW_Rescue and OperationService.CanAct ignore it
 		kind = mix.kind,
@@ -163,7 +163,7 @@ local function spawnAt(pos: Vector3, extra: boolean?, owner: Player?): Scene
 		opsDriven = true, -- no hold prompt: the server boards them (below)
 		ambient = true,
 		bornAt = os.clock(),
-		owner = owner,
+		flankOf = flankOf,
 		pay = AmbientMix.payAt(pos, extra),
 	}
 	scene.onDelivered = function(n: number, driver: Player?)
@@ -181,10 +181,20 @@ function AmbientRescueService.SpawnColdOpenFlank(player: Player, pos: Vector3, o
 	return scene
 end
 
+-- The cold open ended: the swimmers nobody took leave, so none sits in the cove's lane to fill the jet ski's one seat on
+-- the way to the next call. The cove-mouth spawns (K13) take over. Someone else's boat keeps a passenger it already has.
+function AmbientRescueService.ClearFlanks(flanks: { Scene })
+	for _, scene in flanks do
+		if table.find(scenes, scene) and count(scene, "Aboard") == 0 then
+			remove(scene)
+		end
+	end
+end
+
 -- A flank whose player's cold open still runs: it never makes way or ages out under them.
 local function reserved(scene: Scene): boolean
-	local owner = scene.owner
-	return owner ~= nil and owner.Parent ~= nil and owner:GetAttribute("ColdOpenActive") == true
+	local player = scene.flankOf
+	return player ~= nil and player.Parent ~= nil and player:GetAttribute("ColdOpenActive") == true
 end
 
 local function spawnOne(): Scene?
@@ -409,7 +419,7 @@ local function stepBoarding(dt: number)
 	local boats = AmbientRescueService.SeatedBoats()
 	for _, scene in scenes do
 		AmbientRescueService.StepBoarding(scene, dt, boats, function(player: Player)
-			return notColdOpen(player) or scene.owner == player
+			return notColdOpen(player) or scene.flankOf == player
 		end, function(i: number, player: Player)
 			if notColdOpen(player) then
 				RescueService.BoardVictim(scene, i, player)

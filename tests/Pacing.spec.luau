@@ -323,7 +323,13 @@ return function(t)
 					planIndex += 1
 					return
 				else
+					-- shortcut: the tree sim keeps its RIB and Lifeboat as Cash steps (docs/30 sells them as levels;
+					-- ladderRun below models that). Replace once docs/00's rewrite cuts the tree.
+					local unlock = ProgressionConfig.Vehicles[key]
 					local ok, reason, price = Progression.canBuyVehicle(data, key)
+					if unlock.level then
+						ok, reason, price = data.cash >= unlock.price, "", unlock.price
+					end
 					assert(not string.find(reason, "Needs", 1, true), `PLAN buys {key} first`)
 					if not ok then
 						return
@@ -488,9 +494,17 @@ return function(t)
 
 		-- the next real call (docs/23 e.2): its pay weight x distancePay and minutes
 		local perCraft = {}
-		local function nextCall(
-			storm: boolean
-		): (number, number, number, number, number, number, number, number, { number })
+		local function nextCall(storm: boolean): (
+			number,
+			number,
+			number,
+			number,
+			number,
+			number,
+			number,
+			number,
+			{ number }
+		)
 			local ids = { "JetSki" }
 			for id in owned do
 				table.insert(ids, id)
@@ -1262,17 +1276,40 @@ return function(t)
 	local TRIP_FIXED = 30 -- s: leave the bay, find them, press Go back, the charge, the Upgrade -- tune
 	local PER_SURVIVOR = 3 -- s to pick each one up -- tune
 	local DISTANCE_SHARE = 0.35 -- of the call reach: the average call's distance
-	local function ladderRun()
+	local HOME_RADIUS = RingLayout.Ring + 255 -- studs from the ring's centre to a player's berth (docs/29 B)
+	-- Stacks as the game pays: the call x the run (tutorial calls flat, OperationService), free-roam x its zone x the
+	-- run (AmbientRescueService). A stop every SESSION_S lets the run lapse. `withRun`: false is the before side.
+	local SESSION_S = 1800 -- tune
+	local function ladderRun(withRun: boolean?, reachShare: number?)
 		local cash, done, seconds, level = 0, 0, 0, 1
 		local trips, at = {}, {}
+		local state, stops = RescueRun.new(), 0
 		for target = 2, BoatLevels.MAX do
 			local price = BoatLevels.Rows[target].price
 			local n = 0
 			while cash < price do
 				local row = BoatLevels.Rows[level]
-				local reward = Grading.payout(1, "Silver", 1, if done < 5 then done else nil)
-				cash += reward.cash + (row.room - 1) * AmbientMix.CASH
-				seconds += TRIP_FIXED + row.room * PER_SURVIVOR + row.callReach * DISTANCE_SHARE / (row.speed * CallTypes.CRUISE_FACTOR)
+				local tut = if done < 5 then done else nil
+				local reward = Grading.payout(1, "Silver", 1, tut)
+				local out = row.callReach * (reachShare or DISTANCE_SHARE)
+				local trip = TRIP_FIXED
+					+ row.room * PER_SURVIVOR
+					+ out / (row.speed * CallTypes.CRUISE_FACTOR)
+				local free =
+					AmbientMix.payAt(Vector3.new(HOME_RADIUS + out, 0, 0) + RingLayout.Center)
+				seconds += trip
+				if math.floor(seconds / SESSION_S) > stops then
+					stops = math.floor(seconds / SESSION_S)
+					RescueRun.finish(state)
+				end
+				-- pick-ups run through the trip, so the window only sees the longest stretch of it
+				local x = 1
+				if withRun ~= false and not Onboarding.newPlayerHud(true, done) then
+					RescueRun.pickup(state, seconds - PER_SURVIVOR)
+					x = RescueRun.current(state, seconds)
+					RescueRun.delivered(state, row.room, seconds)
+				end
+				cash += reward.cash * (if tut then 1 else x) + (row.room - 1) * free * x
 				done += 1
 				n += 1
 			end
@@ -1285,9 +1322,18 @@ return function(t)
 
 	t.test("docs/30: the ladder pays out on pace", function()
 		local trips, at, total = ladderRun()
+		local _, flatPay = ladderRun(false)
+		local _, deep = ladderRun(true, 1) -- always the far edge of the level's reach
 		print(
 			string.format(
-				"\nBoat ladder: %d trips, L10 %.1f h, L20 %.1f h, L30 %.1f h, L40 %.1f h, L50 %.1f h; trips to L2-L8: %d %d %d %d %d %d %d",
+				"\nBoat ladder: no run L50 %.1f h, deep runner L50 %.1f h",
+				flatPay[50] / 3600,
+				deep[50] / 3600
+			)
+		)
+		print(
+			string.format(
+				"Boat ladder: %d trips, L10 %.1f h, L20 %.1f h, L30 %.1f h, L40 %.1f h, L50 %.1f h; trips to L2-L8: %d %d %d %d %d %d %d",
 				total,
 				at[10] / 3600,
 				at[20] / 3600,

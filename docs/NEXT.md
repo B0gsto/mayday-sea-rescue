@@ -31,6 +31,8 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
 
 ## 2. Queued (in order)
 
+0p. **BOAT-PIVOT MERGE 2026-11-03 (branch t3/boat-pivot-integration, unpublished, NOT SEEN IN STUDIO): the 0n boat levels, Go back, sea zones, run and three-swimmer cold open plus the zone concepts, in one branch.** Go back lands at `UpgradeStation.landing` with `LandedHome` (delivery works past the drop-off zone); cold-open flanks roll without pity or a forced Builder and leave when it ends, the delivered one takes the Builder job (`SwapVictims`); Cash no longer buys a `level` hull (RIB, Lifeboat, Hydrofoil, Rocket Cutter; `LifeboatBought` badge moved to reaching L21). Pick-up boost multiplies past `capMultiplier`. Ladder prices about x3 past L8, since zones and the run's x2 stack: 15.1 h (29 h with no run, 9.6 h always at the far edge). **Next:** Studio playtest, pirates, tutorial beats. **Open:** tree and ladder share one Cash purse but Pacing times each alone; `Board` still lists ladder hulls as "Lv N".
+
 0n. **BOAT-LEVELS 2026-11-03 (branch t3/boat-level-upgrade-station, unpublished, NOT SEEN IN STUDIO):** docs/30 section 2 and the save and stat parts of section 3. `BoatLevels` (50 rows), `UpgradeService` + `UpgradeStation` (placeholder Parts on every island, `UpgradeStation.landing(island)` for Go back), level-up moment (VFX `boat_levelup`), `Boat/Glance`. tests/BoatLevels: Buoyancy holds the whole table to 1100 studs/s, calm and storm. tests/Pacing: 859 trips, about 15 h. Not done here: tutorial, removing buildings, level art (concept first).
 
 0j. **PIVOT (owner 2026-11-03, thread "Make Rescues More Engaging"): docs/30 + docs/29.** Boat levels, Go back, sea zones, run, pirates. Top priority; check new work against it.

@@ -127,7 +127,8 @@ function Board.new(
 		local d = data
 		local unlock = ProgressionConfig.Vehicles[id]
 		local have = d ~= nil and (Rules.canUseVehicle(d, id, ownsPass(id)))
-		local need = if d and not have then Rules.vehicleLock(d, id) else nil
+		local ladder = unlock ~= nil and unlock.level ~= nil -- docs/30: this hull comes with its boat level, Cash buys levels
+		local need = if d and not have and not ladder then Rules.vehicleLock(d, id) else nil
 		local cashOk = d ~= nil and not have and (Rules.canBuyVehicle(d, id, ownsPass(id)))
 		local try = d ~= nil
 			and unlock ~= nil
@@ -153,9 +154,13 @@ function Board.new(
 		local c = Card.new(panel.body, {
 			art = "boat_to_me",
 			title = spec.displayName,
-			line = if equipped then "Equipped" elseif have then "Owned" else nil,
+			line = if equipped
+				then "Equipped"
+				elseif have then "Owned"
+				elseif ladder then `Lv {(unlock :: any).level}`
+				else nil,
 			color = if equipped then "yellow" elseif have then "green" else "blue",
-			price = if unlock then unlock.price else 0,
+			price = if unlock and not ladder then unlock.price else 0,
 			currency = "Cash",
 			state = if have or cashOk or try then "buy" elseif need then "locked" else "disabled",
 			onBuy = function()

@@ -1030,6 +1030,9 @@ finish = function(op: any, reason: string)
 		})
 	end
 	closeOp(op)
+	if op.fan then
+		try("AmbientRescueService", "ClearFlanks", op.fan)
+	end
 	if op.coldOpen and op.owner then
 		endColdOpen(op.owner, reason)
 	end
@@ -1752,7 +1755,9 @@ end
 -- Server-side transport: the client Mechanics/transport rule (home = the drop-off zone round the player's own
 -- berth only (BayCFrame, docs/23 (p)), at any speed or on foot), checked on the server's own view.
 local function isHome(player: Player, pos: Vector3): boolean
-	return BoatColdOpen.atDropOff(pos, player:GetAttribute("BayCFrame"))
+	local boat = vehicleOf(player)
+	return boat ~= nil and boat:GetAttribute("LandedHome") == true -- Go back's landing, past the drop-off zone
+		or BoatColdOpen.atDropOff(pos, player:GetAttribute("BayCFrame"))
 end
 
 local function stepHome(op: any)

@@ -16,6 +16,7 @@ ProgressionConfig.SchemaVersion = 2 -- v2: survivors v2 (six rarities, traits, s
 
 ProgressionConfig.Vehicles = {
 	JetSki = { price = 0 },
+	-- `level` hulls are never sold for Cash (docs/30); price and needs are only the old tree's, tests/Pacing still walks them
 	RIB = { needs = "Boathouse", price = 2500, level = 11 }, -- tune
 	Lifeboat = { needs = "LifeboatSlip", price = 18000, level = 21 }, -- tune
 	Hydrofoil = { price = 0, level = 31 },

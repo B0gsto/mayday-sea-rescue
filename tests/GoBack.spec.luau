@@ -40,6 +40,15 @@ return function(t)
 		t.expect(GoBack.refusal(state({ bay = false }))).toBe("NoHome")
 	end)
 
+	t.test("in the Upgrade Station's bay it is home too, past the drop-off zone", function()
+		local Station = t.load("src/shared/UpgradeStation.luau")
+		t.expect(Station.LANDING_OUT > ColdOpen.DROP_RADIUS).toBe(true)
+		local landing = (bay * CFrame.new(0, 0, -Station.LANDING_OUT)).Position
+		t.expect(GoBack.refusal(state({ at = landing }))).toBe("Home")
+		local past = (bay * CFrame.new(0, 0, -Station.LANDING_OUT - GoBack.BAY_RADIUS - 1)).Position
+		t.expect(GoBack.refusal(state({ at = past }))).toBe(nil)
+	end)
+
 	t.test("rate limit: a press outlasts the charge and the landing", function()
 		t.expect(GoBack.ready(nil, 5)).toBe(true)
 		t.expect(GoBack.ready(5, 5 + GoBack.COOLDOWN - 0.01)).toBe(false)

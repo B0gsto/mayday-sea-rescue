@@ -21,6 +21,7 @@ local UpgradeStation = require(Shared:WaitForChild("UpgradeStation"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
+local BadgeService = require(script.Parent.BadgeService)
 local DataService = require(script.Parent.DataService)
 local DockService = require(script.Parent.DockService)
 local MonetizationService = require(script.Parent.MonetizationService)
@@ -100,6 +101,9 @@ local function buy(player: Player, index: number): (boolean, string)
 	data.boatLevel += 1
 	Telemetry.CashSpent(player, price, data.cash, "Upgrade", "BoatLevel")
 	Telemetry.Shop(player, "Bought", nil, "BoatLevel", "Cash")
+	if data.boatLevel == ProgressionConfig.Vehicles.Lifeboat.level then
+		BadgeService.Count(player, "LifeboatBought") -- the hull comes with the ladder now (docs/30)
+	end
 	DataService.MarkDirty(player)
 	publish(player, data.boatLevel)
 	ProgressionService.Refresh(player)

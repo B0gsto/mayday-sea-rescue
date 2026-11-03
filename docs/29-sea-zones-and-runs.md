@@ -9,7 +9,8 @@ nobody dies, kid-safe (no guns), every action on keyboard, touch, gamepad. Every
 ## A. Tutorial: no chosen survivor
 The cold open spawns 3 swimmers fanned off your cove (about 40 degrees apart, same distance as today). None gets the
 special white ring: all get the normal pick-up ring and wave. The first one you bring home completes the cold open
-(a Builder, as today). The other two stay as ordinary free-roam swimmers. Later tutorial calls are unchanged.
+(a Builder, as today). The other two roll as free roam (no pity, no Builder) and leave when the cold open ends, so neither
+sits in the cove lane or fills the seat on the next call; the cove-mouth spawns take over. Later tutorial calls are unchanged.
 
 ## B. Sea zones: five circles round the lagoon
 Measured from `RingLayout.Center` (origin/main: islands at 860 + 320 radius, so the Shallows hold all six and the outer islands fall in zones 2-5). New pure module `shared/Calls/SeaZones.luau` (Lune-tested): the table and
@@ -24,7 +25,7 @@ Measured from `RingLayout.Center` (origin/main: islands at 860 + 320 radius, so 
 | 5 | Wreck Abyss | 5200+ | near-black indigo | 5/15/30/30/16/4 | x4 |
 
 Pay tuned down from x1.5 / 2.5 / 4 / 6 (tests/Pacing: a full RIB or lifeboat made 1.8-1.9x the calls, now at most
-1.3x). Better crews also rushed the tree, so Gatherer 3 -> 2.5 and Rescuer 40 -> 34 Cash per unit.
+1.3x). Better crews also rushed the tree, so Gatherer 3 -> 2.3 and Rescuer 40 -> 31 Cash per unit (with the run stacked).
 
 A survivor's rarity rolls from the zone they spawn in (`WorkerRules` `opts.weights`; pity, specials and Crew luck
 unchanged). Call pay keeps its own distance rule. Free-roam spawns must cover every zone, so far water is worth the

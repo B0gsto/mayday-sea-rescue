@@ -28,7 +28,6 @@ local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("Pr
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
 local TestRide = require(Shared:WaitForChild("TestRide"))
 
-local BadgeService = require(script.Parent:WaitForChild("BadgeService"))
 local CashEffects = require(script.Parent:WaitForChild("Monetization"):WaitForChild("CashEffects"))
 local DataService = require(script.Parent.DataService)
 local FriendService = require(script.Parent:WaitForChild("FriendService"))
@@ -262,9 +261,6 @@ local function buy(player: Player, itemId: any): (boolean, string)
 	DataService.MarkDirty(player)
 	push(player, data, { bought = itemId })
 	task.spawn(DataService.Save, player, false) -- purchases are saved right away
-	if itemId == "Lifeboat" then
-		BadgeService.Count(player, "LifeboatBought")
-	end
 	return true, "ok"
 end
 

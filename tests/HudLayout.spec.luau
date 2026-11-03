@@ -245,6 +245,38 @@ return function(t)
 		end
 	end)
 
+	-- the merged pivot HUD: everything on screen at once while driving out with a run going, 844x390 included
+	t.test("Go back, the run chip, wallet and drive pad share a phone", function()
+		local KEY =
+			{ "goback", "run", "wallet", "steer", "drive", "menu", "minimap", "quest", "sale" }
+		local sizes = {}
+		for _, s in SCREENS do
+			table.insert(sizes, { screen = s.screen, insets = s.insets })
+		end
+		table.insert(sizes, { screen = Vector2.new(844, 390), insets = NO_INSETS })
+		for _, s in sizes do
+			local mt = HudLayout.compute(s.screen, s.insets, "Touch")
+			for i = 1, #KEY do
+				for j = i + 1, #KEY do
+					local tag = KEY[i] == "minimap" and KEY[j] == "quest" -- hangs over its edge on purpose
+					if not tag and overlaps(mt.rects[KEY[i]], mt.rects[KEY[j]]) then
+						error(`{s.screen}: {KEY[i]} overlaps {KEY[j]}`)
+					end
+				end
+			end
+			for _, name in KEY do
+				local x, y, x2, y2 = box(mt.rects[name])
+				t.expect(
+					x >= -1e-6
+						and y >= -1e-6
+						and x2 <= mt.usable.X + 1e-6
+						and y2 <= mt.usable.Y + 1e-6
+				).toBe(true)
+			end
+			t.expect(overlaps(mt.rects.debrief, mt.rects.goback)).toBe(false)
+		end
+	end)
+
 	-- owner 2026-10-31 (phone): steering on the stick was awkward; the drive pad takes the stock controls' corners
 	t.test("touch drive pad: in the bottom corners, clear of the HUD, 44 px+ buttons", function()
 		for _, s in SCREENS do

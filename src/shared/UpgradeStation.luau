@@ -20,6 +20,7 @@ local UpgradeStation = {}
 UpgradeStation.USE_RANGE = 160 -- studs from the button: the whole bay and the deck -- tune
 UpgradeStation.LANDING_FWD = 375 -- island frame: between the sea plates, clear of the lane's narrow slot
 UpgradeStation.LANDING_RIGHT = 6 -- the berth line
+UpgradeStation.LANDING_OUT = UpgradeStation.LANDING_FWD - 255 -- studs straight out from the berth (fwd 255)
 UpgradeStation.BOARD_SIZE = Vector3.new(44, 28, 1.5)
 UpgradeStation.MOMENT = 1.8 -- s, the whole level-up (docs/30: under 3)
 UpgradeStation.BLAST_AT = 0.85 -- s: the bricks fly and the boat swaps to its new self
@@ -39,8 +40,7 @@ end
 function UpgradeStation.landing(index: number): CFrame
 	local island = islandOf(index)
 	-- the berth's own water height and facing, out along its line
-	local shift = UpgradeStation.LANDING_FWD - 255
-	return island.berths.Boat * CFrame.new(0, 0, -shift)
+	return island.berths.Boat * CFrame.new(0, 0, -UpgradeStation.LANDING_OUT)
 end
 
 function UpgradeStation.parts(index: number): { StationPart }

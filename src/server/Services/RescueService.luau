@@ -1455,7 +1455,11 @@ local function unloadVictims(vehicle: Model, victims: { any }, patrol: boolean?)
 	end
 	local from = vehicle:GetPivot().Position
 	-- WP-26: landed at your own berth, each person becomes one of your workers
-	local home = driver ~= nil and ColdOpen.atDropOff(from, driver:GetAttribute("BayCFrame"))
+	local home = driver ~= nil
+		and (
+			vehicle:GetAttribute("LandedHome") == true -- Go back's landing (the Upgrade Station's bay)
+			or ColdOpen.atDropOff(from, driver:GetAttribute("BayCFrame"))
+		)
 	for i, v in victims do
 		local category = v.model:GetAttribute("Category")
 		if home and type(category) == "string" then
@@ -1510,10 +1514,13 @@ local function checkDeliveries()
 			driver
 			and rider
 			and rider:IsA("BasePart")
-			and ColdOpen.deliveryHome(
-				carrier:GetPivot().Position,
-				rider.Position,
-				driver:GetAttribute("BayCFrame")
+			and (
+				carrier:GetAttribute("LandedHome") == true
+				or ColdOpen.deliveryHome(
+					carrier:GetPivot().Position,
+					rider.Position,
+					driver:GetAttribute("BayCFrame")
+				)
 			)
 		then
 			unloadVictims(carrier, list)
@@ -1567,12 +1574,18 @@ function RescueService.BoardVictim(call: any, index: number, player: Player): bo
 end
 
 -- docs/29 A: swimmer j of `other` takes the place of swimmer i of `call`, and the one it replaces is an ordinary
--- swimmer of `other` from now on: public, drifting, answering nobody.
+-- swimmer of `other` from now on: public, drifting, answering nobody. The job goes with the place: the call's roll held
+-- the guaranteed Builder, and whoever is delivered is the Builder.
 function RescueService.SwapVictims(call: any, i: number, other: any, j: number)
 	local a, b = call.victims[i], other.victims[j]
 	call.victims[i], other.victims[j] = b, a
 	a.call, b.call = other, call
 	a.index, b.index = b.index, a.index
+	for _, key in { "Category", "WorkerCategory" } do
+		local job = a.model:GetAttribute(key)
+		a.model:SetAttribute(key, b.model:GetAttribute(key))
+		b.model:SetAttribute(key, job)
+	end
 	a.model:SetAttribute("CallId", other.id)
 	b.model:SetAttribute("CallId", call.id)
 	a.model:SetAttribute("ColdOpenFan", call.id)

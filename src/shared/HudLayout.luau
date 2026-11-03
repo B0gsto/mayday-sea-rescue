@@ -478,18 +478,30 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 			{ dx0 - g, dy0 - g, dx1, dy1 },
 		}
 		else {}
-	mt.rects["run"] = freeRect(
-		mt,
-		zones,
-		{ "wallet", "menu", "minimap", "quest", "gauges", "sale", "objective", "chips", "notice" },
-		HudLayout.RUN_WIDTH,
-		HudLayout.RUN_HEIGHT,
-		1
-	)
+	-- a short phone under a top bar: the notice band gives the run chip its row above Go back
+	local notice = mt.rects["notice"]
+	local _, _, _, noticeEnd = box(notice)
+	local _, goTop = box(mt.rects["goback"])
+	local over = noticeEnd + 2 * g + HudLayout.RUN_HEIGHT - goTop
+	if touch and over > 0 and notice.size.Y - over >= 48 then
+		notice.size -= Vector2.new(0, over)
+	end
+	mt.rects["run"] = freeRect(mt, zones, {
+		"wallet",
+		"menu",
+		"minimap",
+		"quest",
+		"gauges",
+		"sale",
+		"objective",
+		"chips",
+		"notice",
+		"goback",
+	}, HudLayout.RUN_WIDTH, HudLayout.RUN_HEIGHT, 1)
 	mt.rects["debrief"] = freeRect(
 		mt,
 		zones,
-		{ "wallet", "menu", "minimap", "quest", "gauges", "sale", "run" },
+		{ "wallet", "menu", "minimap", "quest", "gauges", "sale", "run", "goback" },
 		HudLayout.DEBRIEF_WIDTH,
 		HudLayout.DEBRIEF_HEIGHT,
 		HudLayout.DEBRIEF_MIN

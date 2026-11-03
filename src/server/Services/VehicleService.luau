@@ -40,7 +40,6 @@ local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForC
 local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
 local BoatBoard = require(script.Parent.Parent:WaitForChild("Dock"):WaitForChild("BoatBoard"))
 local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
-local BoatColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
 local ClimbPath = require(Shared:WaitForChild("Ops"):WaitForChild("ClimbPath"))
 local Crowding = require(Shared:WaitForChild("Crowding"))
@@ -1502,18 +1501,34 @@ end
 local goBacks: { [Player]: { why: string? } } = {} -- charging now
 local goBackAt: { [Player]: number } = {} -- the rate limit
 
--- The one landing spot per island: open water at the driver's berth, bow to sea (inside the drop-off zone, so the
--- delivery tick fires). The Upgrade Station's bay goes in here. Crew at the helm land at their own berth: that is
--- the one RescueService delivers at.
-function VehicleService.LandingSpot(player: Player, spec: VehicleSpec): CFrame?
+-- The one landing spot per island: the Upgrade Station's bay, bow to sea. Crew at the helm land at their own: that is
+-- the berth RescueService delivers at. It is past the drop-off zone, so landAt marks the hull LandedHome.
+function VehicleService.LandingSpot(player: Player, _spec: VehicleSpec): CFrame?
+	local plot = DockService.GetPlot(player)
+	return if plot then UpgradeStation.landing(plot) else nil
+end
+
+-- A craft the player left floating in the bay goes to the berth, so a landing never comes down on it. The berth itself
+-- is always clear of a landing, whatever the hulls' sizes (tests/BoatLevels.spec).
+local function clearLanding(record: Record, to: CFrame)
+	local player = record.owner
 	local bay = bayFor(player)
-	if not bay then
-		return nil
+	local classes: { [string]: Record } = owned[player] or {}
+	for _, other in classes do
+		local d = to:PointToObjectSpace(other.root.Position)
+		if
+			other ~= record
+			and bay
+			and #VehicleService.GetOccupants(other.model) == 0
+			and math.abs(d.X) < (record.spec.hullSize.X + other.spec.hullSize.X) / 2
+			and math.abs(d.Z) < (record.spec.hullSize.Z + other.spec.hullSize.Z) / 2
+		then
+			other.model:PivotTo(
+				restAt(other.model, other.spec, (dockSpot(player, other.spec, bay)))
+			)
+			dock(other)
+		end
 	end
-	local open = launchCFrame(bay, spec, player)
-	return if open and BoatColdOpen.atDropOff(open.Position, bay.Position)
-		then open
-		else (dockSpot(player, spec, bay))
 end
 
 local function tellAboard(players: { Player }, phase: string)
@@ -1529,6 +1544,8 @@ end
 -- delivery tick. lastGood is home, so a client that still snapped back trips checkVehicle's reset to here.
 local function landAt(record: Record, to: CFrame)
 	local root = record.root
+	clearLanding(record, to)
+	record.model:SetAttribute("LandedHome", true) -- RescueService and OperationService isHome: home for the hold
 	record.resetting = true -- the sanity checks leave it alone
 	record.strikes = 0
 	record.recovery.lastAt = os.clock()
@@ -1537,6 +1554,7 @@ local function landAt(record: Record, to: CFrame)
 	record.model:PivotTo(to)
 	record.lastGood = to
 	task.wait(GoBack.LAND_HOLD)
+	record.model:SetAttribute("LandedHome", nil)
 	record.resetting = false
 	-- the first delivery's StepAshore may have docked it meanwhile: then it stays docked
 	if records[record.model] == record and record.mode == "Driven" then

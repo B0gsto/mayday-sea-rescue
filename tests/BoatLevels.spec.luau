@@ -171,6 +171,18 @@ return function(t)
 		t.expect(L.row(50).speed <= L.SPEED_LIMIT).toBe(true)
 	end)
 
+	-- docs/29 C: the pick-up boost goes past the level's top, L50 included (Simulator applies it past capMultiplier)
+	t.test("the physics holds a pick-up boost on the top level", function()
+		local Run = t.load("src/shared/RescueRun.luau")
+		local spec = table.clone(L.apply(hullFor(L.row(50)), 50))
+		spec.topSpeed *= Run.BOOST_MULT
+		local calm, storm = drive(spec, 0, 0, 14), drive(spec, 1, 0, 14)
+		t.expect(calm.nan or storm.nan).toBe(false)
+		t.expect(calm.maxTilt <= 25).toBe(true)
+		t.expect(storm.maxTilt <= 40).toBe(true)
+		t.expect(L.row(50).speed * Run.BOOST_MULT > L.SPEED_LIMIT).toBe(true)
+	end)
+
 	t.test("playable: inside the sight range a boat can always swing onto a survivor", function()
 		local Ambient = t.load("src/shared/Calls/AmbientMix.luau")
 		for _, row in L.Rows do
@@ -377,6 +389,16 @@ return function(t)
 		end
 		-- out of range arguments still give a real island
 		t.expect(typeof(Station.landing(99))).toBe("CFrame")
+		-- a landing clears a craft docked at the berth or pontoon, the biggest of each: a hull longer than the bay
+		-- slides seaward until its stern meets the quay, so its bow is at most one hull length out from the berth
+		for _, id in VehicleConfig.Order do
+			local spec = VehicleConfig.get(id)
+			if spec and not spec.craft then
+				local length = L.apply(spec, 50).hullSize.Z
+				t.expect(length <= L.MAX_LENGTH + 0.01).toBe(true)
+				t.expect(Station.LANDING_OUT - L.MAX_LENGTH / 2 > length).toBe(true)
+			end
+		end
 	end)
 
 	t.test(

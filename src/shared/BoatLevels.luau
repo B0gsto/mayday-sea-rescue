@@ -56,14 +56,15 @@ local SPEED = { -- docs/30: huge early % jumps, huge late numbers -- tune
 -- stylua: ignore
 local ROOM_FROM = { [1] = 1, [3] = 2, [6] = 3, [11] = 4, [16] = 5, [21] = 8, [26] = 9, [31] = 10, [41] = 12, [50] = 14 }
 
--- L2 is exactly the first rescue's pay; the rest come from the trip model in tests/Pacing.spec -- tune
+-- L2 is exactly the first rescue's pay; the rest come from the trip model in tests/Pacing.spec: zones, then the run's x2
+-- (a Go back trip is shorter than its window), so past L8 they are about x3 a flat-pay ladder -- tune
 -- stylua: ignore
 local PRICE = {
-	0, Grading.Payout.Tutorial[1].cash, 600, 800, 1200, 1300, 1500, 2200, 2800, 3500,
-	4100, 5500, 6000, 7000, 7500, 8500, 10000, 11000, 12000, 13000,
-	14000, 20000, 21000, 22000, 23000, 24000, 27000, 28000, 30000, 31000,
-	32000, 36000, 37000, 39000, 40000, 41000, 42000, 44000, 45000, 46000,
-	48000, 55000, 57000, 59000, 61000, 63000, 65000, 67000, 69000, 72000,
+	0, Grading.Payout.Tutorial[1].cash, 600, 800, 1200, 1300, 1500, 2200, 2800, 4300,
+	6000, 9300, 11500, 15000, 18000, 21000, 25000, 28500, 31500, 35000,
+	38500, 56500, 60500, 64500, 69000, 72500, 82000, 85500, 92500, 96000,
+	100000, 113000, 117000, 124000, 128000, 132000, 136000, 143000, 148000, 152000,
+	159000, 184000, 192000, 199000, 207000, 214000, 221000, 228000, 235000, 245000,
 }
 
 -- level -> { name, kind }. Exaggerated, one clearly visible piece each (docs/30 table).

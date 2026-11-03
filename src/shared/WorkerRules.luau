@@ -92,9 +92,9 @@ W.SLOTS = 3 -- per worker building -- tune
 W.RIGS = 12 -- WorkerRigs outfit templates the clients clone (more = more variety, more memory)
 W.STATION_SLOTS = 2 -- more per building once the Station stands (the island's top tier) -- tune
 
-W.GATHER_PER = 2.5 -- Gatherer: Cash a minute per unit (3 before docs/29 B: zone rarities doubled crew pay and rushed the tree) -- tune
+W.GATHER_PER = 2.3 -- Gatherer: Cash a minute per unit (3 before docs/29 B: zone rarities doubled crew pay and rushed the tree) -- tune
 W.RESCUE_PERIOD = 300 -- s between NPC rescue boat trips -- tune
-W.RESCUE_PER = 34 -- Rescuer: Cash per trip per unit (40 before docs/29 B, see GATHER_PER) -- tune
+W.RESCUE_PER = 31 -- Rescuer: Cash per trip per unit (40 before docs/29 B, see GATHER_PER) -- tune
 W.RESCUE_RECRUIT = 0.1 -- a trip brings home a new worker this often -- tune
 W.BOAT_PER, W.BOAT_CAP = 0.1, 0.5 -- Mechanic: Boat to me cooldown -10% per unit, cap -50%
 W.SPEED_PER, W.SPEED_CAP = 0.03, 0.15 -- Mechanic: craft top speed +3% per unit, cap +15%

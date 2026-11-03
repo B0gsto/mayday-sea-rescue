@@ -189,9 +189,10 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
 - Go back (docs/30 section 1; rules: `Boat/GoBack`, `tests/GoBack.spec.luau`; client: `GoBackController`, HudLayout
   `goback`, R / gamepad right stick click / touch): the craft's driver, away from home, not on a test ride, in the
   cold open only with a survivor aboard. A `CHARGE` of 1.5 s, then hull, driver, crew and survivors land seated at
-  `VehicleService.LandingSpot(player, spec) -> CFrame?` (the driver's berth, bow to sea; the one function the Upgrade
-  Station's bay replaces), anchored `LAND_HOLD` s, then throttle ready. RescueService's delivery tick pays as on any
-  arrival. `VehicleService.CancelGoBack(player) -> boolean` stops a charge (pirates: docs/30 section 5). Telemetry:
+  `VehicleService.LandingSpot(player, spec) -> CFrame?` (`UpgradeStation.landing(plot)`, the driver's bay, bow to sea; an
+  empty craft of theirs floating there goes to the berth first), anchored `LAND_HOLD` s, then throttle ready. The bay is
+  past the drop-off zone, so the hull carries the server attribute `LandedHome` for the hold: RescueService's delivery tick
+  and OperationService `isHome` count it as home. `VehicleService.CancelGoBack(player) -> boolean` stops a charge (pirates: docs/30 section 5). Telemetry:
   custom `GoBack` (value survivors aboard: vehicle, Started / Landed / Cancelled, why). VFX: `go_back_land`.
 - Boat to me: `RequestVehicle(nil, false, true)` brings your current or last craft to the open water nearest
   you; free calls wait `MonetizationEffects.boatToMeWait` (player attribute `BoatToMeAt`, scaled by

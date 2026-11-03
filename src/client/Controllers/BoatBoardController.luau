@@ -204,7 +204,13 @@ local function paintTag(gui: BillboardGui, id: string)
 	cashIcon:ClearAllChildren()
 	Instance.new("UIAspectRatioConstraint").Parent = cashIcon
 	local need = if snap then Rules.vehicleLock(Rules.fromSnapshot(snap), id) else nil
-	if not need and tryable(id) then
+	if unlock and unlock.level then
+		-- docs/30: this hull comes with its boat level, never for Cash
+		need = nil
+		cash.Visible = true
+		Glyph.draw("speed", cashIcon, C.gold)
+		cashText.Text = `Lv {unlock.level}`
+	elseif not need and tryable(id) then
 		-- the test ride: a clock and "Try" (tap the model)
 		cash.Visible = true
 		Glyph.draw("clock", cashIcon, C.gold)

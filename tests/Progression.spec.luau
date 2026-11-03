@@ -41,16 +41,15 @@ return function(t)
 		local ok, why = Rules.canUseVehicle(data(99999), "RIB")
 		t.expect(ok).toBe(false)
 		t.expect(why).toBe("Not owned")
-		local buy, reason = Rules.canBuyVehicle(data(99999), "RIB")
-		t.expect(buy).toBe(false)
-		t.expect(reason).toBe("Needs Boathouse")
+		-- docs/30: Cash buys levels, never a ladder hull; what a player already owns stays
+		for _, id in { "RIB", "Lifeboat", "Hydrofoil", "RocketCutter" } do
+			local buy, reason =
+				Rules.canBuyVehicle(data(1e9, { Boathouse = true, LifeboatSlip = true }), id)
+			t.expect(buy).toBe(false)
+			t.expect(reason).toBe("Boat level")
+		end
 		t.expect(Rules.vehicleLock(data(0), "RIB")).toBe("Boathouse")
 		t.expect(Rules.vehicleLock(data(0, { Boathouse = true }), "RIB")).toBeNil()
-		t.expect((Rules.canBuyVehicle(data(2499, { Boathouse = true }), "RIB"))).toBe(false)
-		local price
-		buy, _, price = Rules.canBuyVehicle(data(2500, { Boathouse = true }), "RIB")
-		t.expect(buy).toBe(true)
-		t.expect(price).toBe(2500)
 		-- owned craft keep launching without the building (bought before WP-28, or a website pass)
 		t.expect((Rules.canUseVehicle(data(0, {}, { RIB = true }), "RIB"))).toBe(true)
 		t.expect(Rules.vehicleLock(data(0), "Lifeboat")).toBe("LifeboatSlip")
