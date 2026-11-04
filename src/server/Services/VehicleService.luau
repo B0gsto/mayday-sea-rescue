@@ -1575,6 +1575,8 @@ function VehicleService.Stow(player: Player): string
 	return if record then stowRecord(record) else "NoVehicle"
 end
 
+local BERTH_NEAR = 40 -- studs from the berth at which a craft counts as waiting there
+
 -- K11 / docs/23: every spawn stands the player on their island (WP-19b: its spawn); a returning player (coldOpenDone) also gets
 -- their craft docked beside them. A new player's cold open
 -- seats them at the berth (SpawnColdOpen); someone already seated is left alone.
@@ -1601,8 +1603,12 @@ local function homeAtBay(player: Player, character: Model)
 			spawnVehicle(player, id, bay, true, true, "Bay")
 		end
 	end
-	-- WP-19b: on their island's spawn, facing the way it faces (the station); else beside the berth
-	local home = DockService.GetSpawn(player)
+	-- WP-19b: on their island's spawn, facing the way it faces (the station); with a craft waiting at the berth,
+	-- beside it (the doubled islands, launch v37, put the island spawn ~390 studs from the berth). The join can load
+	-- the character twice, so this reads where the craft is, not whether this pass docked it.
+	local craft = byPlayer[player]
+	local docked = craft ~= nil and (craft.seat.Position - bay.Position).Magnitude < BERTH_NEAR
+	local home = if docked then nil else DockService.GetSpawn(player)
 	local pos = standOnGround(
 		character,
 		if home then home.Position else (bay.CFrame * BayLaunch.STAND).Position
