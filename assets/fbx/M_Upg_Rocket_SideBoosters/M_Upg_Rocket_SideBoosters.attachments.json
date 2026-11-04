@@ -1,0 +1,65 @@
+{
+ "asset": "M_Upg_Rocket_SideBoosters",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Flame_S",
+   "parent": null,
+   "blender": [
+    -6.2,
+    25.6,
+    9.1
+   ],
+   "roblox_from_origin": [
+    6.2,
+    9.1,
+    25.6
+   ],
+   "roblox_from_bbox_centre": [
+    6.2,
+    0.57,
+    8.05
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Flame_P",
+   "parent": null,
+   "blender": [
+    6.2,
+    25.6,
+    9.1
+   ],
+   "roblox_from_origin": [
+    -6.2,
+    9.1,
+    25.6
+   ],
+   "roblox_from_bbox_centre": [
+    -6.2,
+    0.57,
+    8.05
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

@@ -1,0 +1,36 @@
+{
+ "asset": "M_Upg_Rocket_MegaTrophy",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Gleam",
+   "parent": null,
+   "blender": [
+    0.0,
+    -14.5,
+    19.825
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    19.825,
+    -14.5
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    6.78,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}
