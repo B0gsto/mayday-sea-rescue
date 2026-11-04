@@ -39,6 +39,7 @@ ALPHA_TRANSPARENCY = ("M_Veg_",)
 ALPHA_TRANSPARENCY_SETS = {("M_Bld_Cottage_Kit", "Grime"), ("M_Bld_Station", "Grime"), ("M_Chr_Bosun", "Fur"), ("M_Hbr_PropAtlas", "Rope"), ("M_Sea_AdmiraltyAnchor", "Sand"), ("M_Sea_Morwenna", "Kelp"), ("M_Veh_GaleQueen", "Decals"), ("M_Veh_RescueHeli", "Glass")}
 SHARED_BYTES = ("M_Veh_SupplyBarge", "M_Bld_WorkshopAddons", "M_Bld_FishMarketAddons", "M_Bld_ClinicAddons", "M_Bld_LookoutAddons", "M_Bld_BoatYardAddons", "M_Bld_RescueBoathouseAddons", "M_Bld_AirStationAddons", "M_Bld_HQAddons", "M_Bld_TrophyHallAddons", "M_Bld_SubPenAddons", "M_Bld_BoathouseAddons", "M_Prop_BuildSiteKit", "M_Prop_CommonsKit", "M_Prop_BoardKit", "M_Prop_BuildStation", "M_Prop_JettyCrane", "M_Prop_HQInterior", "M_Prop_TrophyCup", "M_Veh_RescueHeli", "M_Prop_SeaPlateKit", "M_Prop_HubKit", "M_Prop_LagoonKit")
 FX_RE = re.compile(r"^assets/textures/FX/(FX_\w+)\.png$")  # FX1 / FX2 flipbooks and foam maps (docs/12 2.11)
+DEEP_SPIN_RE = re.compile(r"^build/spinart/T_DeepSpin_(\w+)\.png$")  # Deep Spin sprites (art/source/ui/spin/render.py)
 FX_SPIN_RE = re.compile(r"^build/prod/spincine/(FX_Spin\w+)\.png$")  # spin cinematic (art/source/fx/SPINCINE_RESULT.md)
 TEX_RE = re.compile(r"^assets/textures/(M_\w+?)/T_\w+?_([A-Za-z][A-Za-z0-9]*(?:_\d+)?)_(ALB|NOR|RGH|MET)(_Wet)?\.png$")
 
@@ -118,7 +119,7 @@ def main():
         if e.get("source") and e.get("assetId"):
             by_source.setdefault((e.get("type"), e["source"]), []).append(e)
 
-    models, textures, fx, fx_spin = {}, {}, {}, {}
+    models, textures, fx, fx_spin, deep_spin = {}, {}, {}, {}, {}
     # a map with the same bytes as one already uploaded (a shared palette) is keyed under the first file's path only:
     # give SHARED_BYTES assets' files their own source too, so they get the full set (opt-in: older assets that ship
     # without such maps would change look)
@@ -146,6 +147,9 @@ def main():
             f = FX_SPIN_RE.match(src)
             if f and e.get("imageId"):
                 fx_spin[f[1]] = e["imageId"]
+            d = DEEP_SPIN_RE.match(src)
+            if d and e.get("imageId"):
+                deep_spin[d[1]] = e["imageId"]
             r = TEX_RE.match(src)
             if r and e.get("imageId") and r[1] not in DROP:
                 s = textures.setdefault(r[1], {}).setdefault(r[2], {})
@@ -198,6 +202,8 @@ def main():
     out += [f"\t{name} = {uri(fx[name])}," for name in sorted(fx)]
     out += ["} :: { [string]: string }", "", "-- Spin cinematic flipbooks (Image ids), art/source/fx/SPINCINE_RESULT.md", "AssetIds.FxSpin = {"]
     out += [f"\t{name} = {uri(fx_spin[name])}," for name in sorted(fx_spin)]
+    out += ["} :: { [string]: string }", "", "-- Deep Spin sprites (Image ids), art/source/ui/spin/render.py", "AssetIds.DeepSpin = {"]
+    out += [f"\t{name} = {uri(deep_spin[name])}," for name in sorted(deep_spin)]
     out += ["} :: { [string]: string }", "", "return AssetIds", ""]
     with open(OUT_LUAU, "w") as f:
         f.write("\n".join(out))

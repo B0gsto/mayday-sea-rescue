@@ -300,6 +300,16 @@ function PetRules.ownsVariant(state: State, id: string): boolean
 	return table.find(PetRules.VARIANTS, id) ~= nil and state.variants[id] == true
 end
 
+-- Any animal of this species in the sanctuary, however it got there.
+function PetRules.ownsSpecies(state: State, species: string): boolean
+	for _, entry in state.entries do
+		if entry.species == species then
+			return true
+		end
+	end
+	return false
+end
+
 -- Adds a spin-wheel variant to the sanctuary. Returns the state and true only the first time.
 function PetRules.grantVariant(state: State, id: string): (State, boolean)
 	if not table.find(PetRules.VARIANTS, id) or state.variants[id] then

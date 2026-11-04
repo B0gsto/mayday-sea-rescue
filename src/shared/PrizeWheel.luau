@@ -7,6 +7,7 @@
 -- button and the free-spin sign, the odds board (paid random items must show odds) and the token
 -- machine (1 / 5 / 15 Robux spins). Parts: wheel 23 (rim, 12 wedge segments, hub; pegs are rim SurfaceGui frames),
 -- odds board 2, token machine 13.
+local AssetIds = require(script.Parent:WaitForChild("Config"):WaitForChild("AssetIds"))
 local MonetizationConfig =
 	require(script.Parent:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local ProductShelves = require(script.Parent:WaitForChild("ProductShelves"))
@@ -41,6 +42,7 @@ local WHEEL_R = 7
 local SEG_R = 5.6 -- segment radius: the saw-tooth tips (SEG_R / cos 30°) stay inside the rim pegs
 local WHEEL_Y = 10
 local WHEEL_Z = -3.6
+local FACE_R = 6.3 -- tucks under the mesh housing's white trim
 
 local PrizeWheel = {}
 
@@ -298,6 +300,55 @@ local function meshParts(
 	return rot, flap
 end
 
+-- The rotor's face (owner-approved Deep Spin look): the prize art on a navy disc, a chrome hub in front. Wedge i sits
+-- where WheelMath puts it: the sprite's 12 o'clock (wedge 1) on the centre's +X.
+local function rotorFace(rotor: Model, centre: CFrame)
+	local back = part(
+		rotor,
+		"FaceDisc",
+		Vector3.new(0.4, FACE_R * 2, FACE_R * 2),
+		centre * CFrame.new(0, 0, -0.25) * CFrame.Angles(0, math.pi / 2, 0),
+		Color3.fromRGB(16, 35, 74),
+		nil,
+		Enum.PartType.Cylinder
+	)
+	back.CanCollide, back.CanQuery, back.CanTouch = false, false, false
+	local face = part(
+		rotor,
+		"Face",
+		Vector3.new(FACE_R * 2, FACE_R * 2, 0.02),
+		centre * CFrame.new(0, 0, -0.51) * CFrame.Angles(0, 0, -math.pi / 2),
+		WHITE
+	)
+	face.Transparency = 1
+	face.CanCollide, face.CanQuery, face.CanTouch = false, false, false
+	local decal = Instance.new("Decal")
+	decal.Name = "Art"
+	decal.Face = Enum.NormalId.Front
+	decal.Texture = AssetIds.DeepSpin.rotor
+	decal.Parent = face
+	local function hubDisc(
+		name: string,
+		radius: number,
+		depth: number,
+		color: Color3,
+		material: Enum.Material
+	)
+		local disc = part(
+			rotor,
+			name,
+			Vector3.new(depth, radius * 2, radius * 2),
+			centre * CFrame.new(0, 0, -0.5 - depth / 2) * CFrame.Angles(0, math.pi / 2, 0),
+			color,
+			material,
+			Enum.PartType.Cylinder
+		)
+		disc.CanCollide, disc.CanQuery, disc.CanTouch = false, false, false
+	end
+	hubDisc("FaceHub", 2.05, 0.7, Color3.fromRGB(200, 212, 224), M.Metal)
+	hubDisc("FaceHubCap", 1.1, 0.95, RED, M.SmoothPlastic)
+end
+
 local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> boolean?, art: Model?)
 	local model = Instance.new("Model")
 	model.Name = "Wheel"
@@ -312,10 +363,14 @@ local function buildWheel(parent: Instance, at: CFrame, onSpin: (Player) -> bool
 	local hub: BasePart?, flapper: BasePart?
 	if art then
 		hub, flapper = meshParts(model, rotor, at, centre, art)
+		if hub then
+			hub.Transparency = 1 -- the old gem tiles; the stand's housing and flapper stay
+		end
 	end
 	if not (hub and flapper) then
 		hub, flapper = codeParts(model, rotor, at, centre)
 	end
+	rotorFace(rotor, centre)
 
 	local sign = part(
 		model,

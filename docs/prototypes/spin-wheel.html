@@ -1,0 +1,1187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mayday: Deep Spin reference</title>
+<style>
+  #app{position:relative;width:100%;aspect-ratio:16/9;margin:0 auto;overflow:hidden;border-radius:12px;background:#04101f;user-select:none;touch-action:manipulation}
+  #app canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .gamebtn{position:absolute;border:0;cursor:pointer;color:#fff;font:400 clamp(16px,3.4cqw,34px)/1 "Fredoka One","Arial Rounded MT Bold","Trebuchet MS",sans-serif;letter-spacing:.04em;transition:transform .08s,opacity .2s}
+  #app{container-type:inline-size}
+  #spin{left:50%;bottom:4%;translate:-50% 0;padding:.62em 1.5em .72em;border-radius:.5em;background:linear-gradient(#ff5a4d,#d3201f);box-shadow:0 .26em 0 #8d0f12,0 .5em .7em #0007;text-shadow:0 .08em 0 #8d0f12}
+  #spin:active,#spin.down{transform:translateY(.2em);box-shadow:0 .06em 0 #8d0f12,0 .2em .3em #0007}
+  .hide{opacity:0;pointer-events:none}
+  #dev{max-width:100%;margin:10px auto 0;font:13px/1.45 var(--font-sans,system-ui,sans-serif);color:var(--foreground,#ddd)}
+  .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+  .row b{min-width:52px;font-weight:600;color:var(--muted-foreground,#999)}
+  .chip{border:1px solid var(--border,#444);background:var(--card,#222);color:inherit;border-radius:6px;padding:3px 9px;font:inherit;cursor:pointer}
+  .chip.on{background:var(--primary,#4af);color:var(--primary-foreground,#012);border-color:transparent}
+  #beats{display:flex;gap:2px;margin-top:8px;height:24px}
+  #beats span{display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;font-size:11px;background:var(--secondary,#333);color:var(--secondary-foreground,#ccc);border-radius:3px}
+  #beats span.on{background:var(--primary,#4af);color:var(--primary-foreground,#012)}
+  details{margin-top:8px}
+  summary{cursor:pointer;font-weight:600}
+  table{border-collapse:collapse;width:100%;margin-top:6px;font-size:12px}
+  td,th{border-bottom:1px solid var(--border,#444);padding:3px 6px;text-align:left;vertical-align:top}
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="bg"></canvas>
+  <canvas id="fx"></canvas>
+  <button id="spin" class="gamebtn">SPIN</button>
+</div>
+
+<div id="dev">
+  <div id="beats"></div>
+  <div class="row" id="forceRow"><b>Land on</b></div>
+  <div class="row" id="optRow"><b>Test</b></div>
+  <details>
+    <summary>Wheel odds and Roblox build notes</summary>
+    <table id="odds"><tr><th>Wedge</th><th>Prize</th><th>Rarity</th><th>Odds</th></tr></table>
+    <table>
+      <tr><th>Beat</th><th>Time</th><th>Build in Roblox with</th></tr>
+      <tr><td>Ground break + dive</td><td>1.9 s, first spin only: 0.55 s cracks, then the fall</td><td>Client-only: Scriptable camera. Hide the local plaza and swap in a clone with crack decals, then Lego ground chunks (pooled, thrown once) and a rock-shaft mesh the camera drops through at speed. It hits water, then a local Deep set far under the map (dome mesh, Atmosphere, ColorCorrection, low-passed audio). Other players see the wheel stay where it is.</td></tr>
+      <tr><td>Wind-up</td><td>0.8 s</td><td>Rotor PivotTo backwards 76 degrees, bubbles pulled inward, rising tone.</td></tr>
+      <tr><td>Spin hard</td><td>2.6 s, up to 3200 deg/s</td><td>Same rotor + a blurred rotor decal cross-faded in above about 800 deg/s. Vortex is a scrolling spiral mesh behind the wheel. FOV pushes in.</td></tr>
+      <tr><td>Brake slams</td><td>3 hits, 0.65 s apart</td><td>Two claw meshes on rails. Each hit: speed cut, camera kick, sparks with Emit, thud. Between hits the wheel rips loose and speeds up.</td></tr>
+      <tr><td>Crawl</td><td>2.1 s</td><td>Speed curve runs out; flapper ticks are single, countable. Landing point is random inside the wedge the server already chose.</td></tr>
+      <tr><td>Stop</td><td>0.28 s</td><td>All audio cuts, nothing moves, the winning wedge rises once.</td></tr>
+      <tr><td>Reveal</td><td>1.5 to 4 s by rarity</td><td>The prize builds brick by brick (existing Lego build animation), turntable, 1 to 3 word label. Burst size, beams and fanfare scale with rarity.</td></tr>
+    </table>
+  </details>
+</div>
+
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const app = $('app'), bgC = $('bg'), fxC = $('fx');
+let g = fxC.getContext('2d');
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const smooth = (a, b, x) => { const k = clamp((x - a) / (b - a)); return k * k * (3 - 2 * k); };
+const rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
+const TAU = Math.PI * 2, RAD = Math.PI / 180;
+const easeOutBack = k => { const c = 1.9; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };
+const table = (keys, t) => {
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) {
+    const [a, x] = keys[i - 1], [b, y] = keys[i];
+    return lerp(x, y, (t - a) / (b - a || 1));
+  }
+  return keys[keys.length - 1][1];
+};
+
+/* ---------- Prize data: odds stay as in src/shared/SpinRules.luau, wedge order = SEGMENTS ---------- */
+const RAR = {
+  Common:    { tier: 0, odds: 50,  c: '#8d939c', hi: '#c4c9d0', glow: [.75,.8,.85], cash: 150 },
+  Uncommon:  { tier: 1, odds: 25,  c: '#2fa84a', hi: '#6fe07f', glow: [.3,.95,.45], cash: 400 },
+  Rare:      { tier: 2, odds: 15,  c: '#1878d8', hi: '#5cb8ff', glow: [.25,.6,1],   cash: 600 },
+  Epic:      { tier: 3, odds: 7,   c: '#8e2fc2', hi: '#d07cf5', glow: [.75,.3,1],   cash: 1500 },
+  Legendary: { tier: 4, odds: 2.5, c: '#eeb005', hi: '#ffe46a', glow: [1,.8,.2],    cash: 4000 },
+  Mythic:    { tier: 5, odds: .5,  c: '#e92f96', hi: '#ff9bd6', glow: [1,.3,.75],   cash: 10000 },
+};
+const PAL = { w:'#f4f4ee', r:'#d6302d', n:'#1f3a6e', y:'#f4c20d', k:'#23282f', g:'#9aa3ad', t:'#dcbb8c', b:'#a8683a', o:'#f28c1e', c:'#79d7ff', m:'#ff3fb0', u:'#36f0ff', d:'#c8931a', l:'#ffe680', p:'#7a2cff' };
+
+function makeModel(fn, plain) {
+  const m = new Map();
+  const set = (x, y, z, c) => m.set(x + ',' + y + ',' + z, { x, y, z, c });
+  const box = (x0, x1, y0, y1, z0, z1, c) => {
+    for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) for (let z = z0; z <= z1; z++) set(x, y, z, c);
+  };
+  fn(box, set);
+  const all = [...m.values()];
+  const has = (x, y, z) => m.has(x + ',' + y + ',' + z);
+  let lox = 1e9, hix = -1e9, loz = 1e9, hiz = -1e9, hiy = 0;
+  for (const b of all) { lox = Math.min(lox, b.x); hix = Math.max(hix, b.x); loz = Math.min(loz, b.z); hiz = Math.max(hiz, b.z); hiy = Math.max(hiy, b.y); }
+  const bricks = all.filter(b => !(has(b.x + 1, b.y, b.z) && has(b.x - 1, b.y, b.z) && has(b.x, b.y + 1, b.z) && has(b.x, b.y - 1, b.z) && has(b.x, b.y, b.z + 1) && has(b.x, b.y, b.z - 1)));
+  for (const b of bricks) { b.top = !has(b.x, b.y + 1, b.z); b.ox = b.x - (lox + hix) / 2; b.oz = b.z - (loz + hiz) / 2; b.c0 = plain || b.c; }
+  bricks.sort((a, b) => a.y - b.y || Math.random() - .5);
+  bricks.forEach((b, i) => b.order = i / bricks.length);
+  const ext = Math.max(hix - lox + 1, hiz - loz + 1, hiy + 1);
+  return { bricks, ext, height: hiy + 1, minX: lox - (lox + hix) / 2, maxX: hix - (lox + hix) / 2 };
+}
+function hull(box, hullC, railC, deckC) {
+  for (let x = -8; x <= 8; x++) {
+    const w = x > 3 ? Math.max(0, 3 - Math.ceil((x - 3) * .62)) : 3;
+    const keel = x > 5 ? 1 : 0;
+    box(x, x, keel, 1, -Math.max(w - 1, 0), Math.max(w - 1, 0), hullC);
+    box(x, x, 2, 2, -w, w, hullC);
+    box(x, x, 3, 3, -w, w, railC);
+    if (w > 0) box(x, x, 3, 3, -w + 1, w - 1, deckC);
+  }
+  box(-9, -9, 2, 3, -2, 2, railC);
+}
+const harbour = (h, r, d, cab, roof) => makeModel(box => {
+  hull(box, h, r, d);
+  box(-5, -1, 4, 5, -2, 2, cab); box(-1, -1, 5, 5, -1, 1, PAL.c); box(-5, -5, 5, 5, -1, 1, PAL.c);
+  box(-3, -3, 5, 5, -2, -2, PAL.c); box(-3, -3, 5, 5, 2, 2, PAL.c);
+  box(-5, -1, 6, 6, -2, 2, roof); box(-3, -3, 7, 8, 0, 0, PAL.g);
+}, PAL.g);
+const MODELS = {
+  cash: makeModel((box, set) => {
+    box(-3, -2, 0, 3, -2, -1, PAL.y); box(0, 1, 0, 5, -2, -1, PAL.y); box(2, 3, 0, 2, 0, 1, PAL.y); box(-2, -1, 0, 1, 1, 2, PAL.y);
+    for (const [x, y] of [[0, 5], [-3, 3], [2, 2]]) set(x, y, -1, PAL.l);
+    box(-3, -2, 1, 1, -2, -1, PAL.d); box(0, 1, 2, 2, -2, -1, PAL.d); box(0, 1, 4, 4, -2, -1, PAL.d); box(2, 3, 1, 1, 0, 1, PAL.d);
+  }),
+  gull: makeModel((box, set) => {
+    box(-3, 2, 1, 3, -1, 1, PAL.w); box(1, 3, 3, 5, -1, 1, PAL.w); box(4, 5, 4, 4, 0, 0, PAL.y);
+    set(4, 4, -1, PAL.o); set(4, 4, 1, PAL.o); set(3, 5, -1, PAL.k); set(3, 5, 1, PAL.k);
+    box(-2, 1, 3, 3, -3, -2, PAL.g); box(-2, 1, 3, 3, 2, 3, PAL.g); box(-1, 0, 3, 3, -4, -4, PAL.k); box(-1, 0, 3, 3, 4, 4, PAL.k);
+    box(-5, -4, 2, 2, -1, 1, PAL.g); box(0, 0, 0, 0, -1, -1, PAL.o); box(0, 0, 0, 0, 1, 1, PAL.o);
+  }),
+  puffin: makeModel((box, set) => {
+    box(-2, 2, 1, 5, -2, 2, PAL.k); box(1, 2, 1, 4, -1, 1, PAL.w); box(-1, 2, 5, 7, -2, 2, PAL.k); box(1, 2, 5, 6, -2, 2, PAL.w);
+    box(3, 3, 5, 6, -1, 1, PAL.o); box(4, 4, 5, 5, 0, 0, PAL.r); set(3, 6, 0, PAL.y);
+    set(2, 7, -2, PAL.k); set(2, 7, 2, PAL.k); set(2, 6, -2, PAL.k); set(2, 6, 2, PAL.k);
+    box(0, 2, 0, 0, -2, -1, PAL.o); box(0, 2, 0, 0, 1, 2, PAL.o); box(-3, -3, 2, 3, -1, 1, PAL.k);
+  }),
+  otter: makeModel((box, set) => {
+    box(-4, 2, 1, 3, -2, 2, PAL.b); box(1, 4, 2, 5, -2, 2, PAL.b); box(3, 4, 2, 4, -1, 1, PAL.t); box(5, 5, 3, 3, 0, 0, PAL.k);
+    set(4, 5, -2, PAL.k); set(4, 5, 2, PAL.k); set(2, 6, -2, PAL.b); set(2, 6, 2, PAL.b);
+    box(-8, -5, 1, 1, 0, 0, PAL.b); box(-8, -7, 1, 1, -1, 1, PAL.b); box(-3, -2, 0, 0, -2, -2, PAL.b); box(-3, -2, 0, 0, 2, 2, PAL.b); box(1, 2, 0, 0, -2, -2, PAL.b); box(1, 2, 0, 0, 2, 2, PAL.b);
+    box(1, 2, 1, 2, -2, 2, PAL.t); box(2, 4, 1, 1, -1, 1, PAL.t);
+  }),
+  stripes: harbour(PAL.w, PAL.r, PAL.t, PAL.w, PAL.r),
+  gold: harbour(PAL.y, PAL.l, PAL.d, PAL.y, PAL.d),
+  neon: harbour(PAL.p, PAL.u, PAL.k, PAL.m, PAL.u),
+  riptide: makeModel(box => {
+    for (let x = -8; x <= 9; x++) {
+      const w = x > 3 ? Math.max(0, 3 - Math.ceil((x - 3) * .55)) : 3;
+      box(x, x, 0, 1, -w, w, PAL.y); box(x, x, 2, 2, -w, w, PAL.k);
+      if (x > 3 && w > 0) box(x, x, 2, 2, -w + 1, w - 1, PAL.y);
+    }
+    box(-4, 0, 3, 3, -2, 2, PAL.k); box(1, 1, 3, 4, -2, 2, PAL.c);
+    box(-9, -8, 4, 4, -3, 3, PAL.r); box(-8, -8, 3, 3, -3, -3, PAL.k); box(-8, -8, 3, 3, 3, 3, PAL.k);
+    box(-8, -7, 1, 2, -2, -1, PAL.r); box(-8, -7, 1, 2, 1, 2, PAL.r);
+  }),
+  storm: makeModel(box => {
+    for (let x = -10; x <= 10; x++) {
+      const w = x > 4 ? Math.max(0, 4 - Math.ceil((x - 4) * .66)) : 4;
+      box(x, x, 0, 2, -Math.max(0, w - 1), Math.max(0, w - 1), PAL.n);
+      box(x, x, 3, 3, -w, w, PAL.r); box(x, x, 4, 4, -w, w, PAL.w);
+      if (w > 0) box(x, x, 4, 4, -w + 1, w - 1, PAL.t);
+    }
+    box(-7, 1, 5, 7, -3, 3, PAL.w); box(-7, 1, 6, 6, -3, 3, PAL.c); box(-4, -2, 6, 6, -3, 3, PAL.w);
+    box(-6, 1, 8, 8, -3, 3, PAL.n); box(-4, 0, 9, 10, -2, 2, PAL.w); box(-4, 0, 10, 10, -2, 2, PAL.c); box(-4, 0, 11, 11, -2, 2, PAL.r);
+    box(-2, -2, 12, 15, 0, 0, PAL.g); box(-3, -1, 14, 14, 0, 0, PAL.y); box(-10, -8, 5, 6, -1, 1, PAL.y);
+  }),
+};
+const WEDGES = [
+  { r: 'Common',    kind: 'cash', name: 'Cash',          m: 'cash' },
+  { r: 'Uncommon',  kind: 'pet',  name: 'Gull',          m: 'gull' },
+  { r: 'Common',    kind: 'cash', name: 'Cash',          m: 'cash' },
+  { r: 'Rare',      kind: 'pet',  name: 'Otter',         m: 'otter' },
+  { r: 'Common',    kind: 'cash', name: 'Cash',          m: 'cash' },
+  { r: 'Uncommon',  kind: 'pet',  name: 'Puffin',        m: 'puffin' },
+  { r: 'Epic',      kind: 'skin', name: 'Neon Glow',     m: 'neon' },
+  { r: 'Common',    kind: 'cash', name: 'Cash',          m: 'cash' },
+  { r: 'Uncommon',  kind: 'skin', name: 'Red Stripes',   m: 'stripes' },
+  { r: 'Rare',      kind: 'skin', name: 'Gold Chrome',   m: 'gold' },
+  { r: 'Legendary', kind: 'boat', name: 'Riptide X',     m: 'riptide' },
+  { r: 'Mythic',    kind: 'boat', name: 'Storm Runner',  m: 'storm' },
+];
+const wedgeOdds = i => { const r = WEDGES[i].r; return RAR[r].odds / WEDGES.filter(w => w.r === r).length; };
+console.assert(Math.abs(WEDGES.reduce((s, _, i) => s + wedgeOdds(i), 0) - 100) < 1e-9, 'wedge odds must sum to 100');
+function rollWedge() {
+  let x = rnd(100);
+  for (let i = 0; i < WEDGES.length; i++) { x -= wedgeOdds(i); if (x <= 0) return i; }
+  return 0;
+}
+
+/* ---------- Voxel drawing ---------- */
+const shadeCache = {};
+function shade(c, f) {
+  const k = c + f.toFixed(2);
+  if (shadeCache[k]) return shadeCache[k];
+  const n = parseInt(c.slice(1), 16);
+  const ch = s => Math.round(clamp(((n >> s) & 255) * f, 0, 255));
+  return shadeCache[k] = `rgb(${ch(16)},${ch(8)},${ch(0)})`;
+}
+function drawVox(ctx, model, cx, cy, s, yaw, opts = {}) {
+  const pitch = opts.pitch ?? .56, cy0 = Math.cos(yaw), sy0 = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const build = opts.build ?? 1, drop = opts.drop ?? 24, sweep = opts.sweep;
+  const items = [];
+  for (const b of model.bricks) {
+    const local = clamp((build - b.order * .78) / .22);
+    if (local <= 0) continue;
+    const yo = (1 - easeOutBack(local)) * drop;
+    const rx = b.ox * cy0 + b.oz * sy0, rz = -b.ox * sy0 + b.oz * cy0;
+    items.push({ b, yo, depth: rz * cp + (b.y + yo) * sp });
+  }
+  items.sort((a, b) => a.depth - b.depth);
+  const P = (x, y, z) => {
+    const rx = x * cy0 + z * sy0, rz = -x * sy0 + z * cy0;
+    return [cx + s * rx, cy + s * (rz * sp - y * cp)];
+  };
+  const quad = (a, b, c, d, fill) => {
+    ctx.fillStyle = fill; ctx.beginPath();
+    ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.lineTo(d[0], d[1]); ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = fill; ctx.lineWidth = .6; ctx.stroke();
+  };
+  for (const { b, yo } of items) {
+    const col = opts.grey ? '#7c8591' : sweep !== undefined && b.ox > sweep ? b.c0 : b.c;
+    const x = b.ox, z = b.oz, y = b.y + yo, h = .5;
+    const fa = P(x - h, y, z - h), fb = P(x + h, y, z - h), fc = P(x + h, y, z + h), fd = P(x - h, y, z + h);
+    const ta = P(x - h, y + 1, z - h), tb = P(x + h, y + 1, z - h), tc = P(x + h, y + 1, z + h), td = P(x - h, y + 1, z + h);
+    if (-sy0 > 0) quad(fb, fc, tc, tb, shade(col, .62 + .24 * Math.abs(cy0)));
+    if (sy0 > 0) quad(fa, fd, td, ta, shade(col, .62 + .24 * Math.abs(cy0)));
+    if (cy0 > 0) quad(fd, fc, tc, td, shade(col, .76 + .14 * Math.abs(sy0)));
+    if (-cy0 > 0) quad(fa, fb, tb, ta, shade(col, .76 + .14 * Math.abs(sy0)));
+    quad(ta, tb, tc, td, shade(col, 1));
+    if (b.top && s >= 5) {
+      const p = P(x, y + 1, z);
+      ctx.fillStyle = shade(col, .78);
+      ctx.beginPath(); ctx.ellipse(p[0], p[1], s * .29, s * .29 * sp, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = shade(col, 1.14);
+      ctx.beginPath(); ctx.ellipse(p[0], p[1] - s * .11, s * .29, s * .29 * sp, 0, 0, TAU); ctx.fill();
+    }
+  }
+}
+
+/* ---------- Wheel sprites, prerendered once ---------- */
+const SPR = 1024;
+const newCanvas = (w, h = w) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+function makeRotor() {
+  const c = newCanvas(SPR), x = c.getContext('2d'), r = SPR / 2;
+  x.translate(r, r);
+  x.fillStyle = '#10234a'; x.beginPath(); x.arc(0, 0, r - 2, 0, TAU); x.fill();
+  const step = TAU / WEDGES.length, ro = r * .985;
+  WEDGES.forEach((w, i) => {
+    const rr = RAR[w.r], a = i * step - Math.PI / 2 - step / 2;
+    const gr = x.createRadialGradient(0, 0, r * .2, 0, 0, ro);
+    gr.addColorStop(0, shade(rr.c, .62)); gr.addColorStop(.62, rr.c); gr.addColorStop(.93, rr.hi); gr.addColorStop(1, rr.c);
+    x.fillStyle = gr;
+    x.beginPath(); x.moveTo(0, 0); x.arc(0, 0, ro, a, a + step); x.closePath(); x.fill();
+    if (w.r === 'Mythic') { // the only multi-colour wedge: a starfield you can spot at speed
+      x.save(); x.clip();
+      for (let k = 0; k < 60; k++) { x.fillStyle = k % 3 ? '#fff' : '#a8f4ff'; x.globalAlpha = rnd(.25, .9); const aa = a + rnd(step), d = rnd(r * .25, ro), z = rnd(1.5, 4.5); x.fillRect(Math.cos(aa) * d, Math.sin(aa) * d, z, z); }
+      x.restore(); x.globalAlpha = 1;
+    }
+    if (w.r === 'Legendary') { // shine bands so gold reads as metal
+      x.save(); x.clip(); x.globalAlpha = .28; x.fillStyle = '#fff';
+      for (let k = 0; k < 3; k++) { x.rotate(a + step * (.2 + k * .3)); x.fillRect(r * .2, -4, r, 8); x.rotate(-(a + step * (.2 + k * .3))); }
+      x.restore(); x.globalAlpha = 1;
+    }
+  });
+  WEDGES.forEach((w, i) => { // raised white dividers + peg at the rim
+    x.save(); x.rotate(i * step + step / 2);
+    x.fillStyle = '#0006'; x.fillRect(-7, -ro, 18, ro * .84);
+    const gr = x.createLinearGradient(-8, 0, 8, 0);
+    gr.addColorStop(0, '#fff'); gr.addColorStop(1, '#c9d2dd');
+    x.fillStyle = gr; x.fillRect(-8, -ro, 16, ro * .84);
+    x.restore();
+  });
+  // icons sit upright along each wedge
+  WEDGES.forEach((w, i) => {
+    x.save(); x.rotate(i * step);
+    x.fillStyle = '#ffffff24'; x.beginPath(); x.arc(0, -r * .67, r * .205, 0, TAU); x.fill();
+    const m = MODELS[w.m], s = r * (w.kind === 'boat' || w.kind === 'skin' ? .34 : .29) / m.ext;
+    drawVox(x, m, 0, -r * .63 + m.height * s * .28, s, .72, { pitch: .62 });
+    x.restore();
+  });
+  // pegs
+  WEDGES.forEach((w, i) => {
+    x.save(); x.rotate(i * step + step / 2);
+    x.fillStyle = '#0005'; x.beginPath(); x.arc(2, -r * .93 + 3, 15, 0, TAU); x.fill();
+    const gr = x.createRadialGradient(-4, -r * .93 - 4, 2, 0, -r * .93, 15);
+    gr.addColorStop(0, '#fff6c2'); gr.addColorStop(1, '#e0a400');
+    x.fillStyle = gr; x.beginPath(); x.arc(0, -r * .93, 14, 0, TAU); x.fill();
+    x.restore();
+  });
+  x.fillStyle = '#10234a'; x.beginPath(); x.arc(0, 0, r * .285, 0, TAU); x.fill();
+  return c;
+}
+function makeBlur() { // saturated speed rings; the Roblox build swaps in a decal like this at speed
+  const c = newCanvas(SPR / 2), x = c.getContext('2d'), r = SPR / 4;
+  x.translate(r, r);
+  const gr = x.createRadialGradient(0, 0, r * .28, 0, 0, r);
+  [[0, '#0e3f9e'], [.22, '#1878d8'], [.42, '#8e2fc2'], [.62, '#e92f96'], [.82, '#eeb005'], [.94, '#fff0a8'], [1, '#eeb005']].forEach(([a, b]) => gr.addColorStop(a, b));
+  x.fillStyle = gr; x.beginPath(); x.arc(0, 0, r, 0, TAU); x.fill();
+  x.lineCap = 'round';
+  for (let i = 0; i < 46; i++) { // broken arcs keep the motion visible as the disc turns
+    const d = rnd(r * .32, r * .97), a = rnd(TAU), rr = RAR[WEDGES[i % 12].r];
+    x.strokeStyle = i % 4 ? rr.hi : '#ffffff'; x.globalAlpha = rnd(.3, .7); x.lineWidth = rnd(1.5, 5);
+    x.beginPath(); x.arc(0, 0, d, a, a + rnd(.3, 1.3)); x.stroke();
+  }
+  return c;
+}
+
+/* ---------- Audio: synth only, so the reference has no asset dependency ---------- */
+const Audio = {
+  ctx: null, muted: false,
+  init() {
+    if (this.ctx) { this.ctx.resume(); return; }
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    const c = this.ctx = new AC();
+    this.master = c.createGain(); this.master.gain.value = this.muted ? 0 : .8;
+    this.lp = c.createBiquadFilter(); this.lp.type = 'lowpass'; this.lp.frequency.value = 18000;
+    const comp = c.createDynamicsCompressor();
+    this.lp.connect(comp); comp.connect(this.master); this.master.connect(c.destination);
+    const len = c.sampleRate * 2, buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    this.noise = buf;
+    // roar: saw + noise through one filter, driven by the wheel speed
+    this.roarG = c.createGain(); this.roarG.gain.value = 0;
+    this.roarF = c.createBiquadFilter(); this.roarF.type = 'lowpass'; this.roarF.frequency.value = 200; this.roarF.Q.value = 5;
+    this.roarO = c.createOscillator(); this.roarO.type = 'sawtooth'; this.roarO.frequency.value = 40;
+    const n = c.createBufferSource(); n.buffer = buf; n.loop = true; const nG = c.createGain(); nG.gain.value = .45;
+    this.roarO.connect(this.roarF); n.connect(nG); nG.connect(this.roarF); this.roarF.connect(this.roarG); this.roarG.connect(this.lp);
+    this.roarO.start(); n.start();
+    // deep drone
+    this.drone = c.createGain(); this.drone.gain.value = 0;
+    for (const f of [41, 61.7, 82.3]) { const o = c.createOscillator(); o.frequency.value = f; const gg = c.createGain(); gg.gain.value = .3; o.connect(gg); gg.connect(this.drone); o.start(); }
+    this.drone.connect(this.lp);
+  },
+  tone(f0, f1, dur, vol, type = 'sine', at = 0) {
+    if (!this.ctx) return;
+    const c = this.ctx, t = c.currentTime + at, o = c.createOscillator(), gn = c.createGain();
+    o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(Math.max(f1, 1), t + dur);
+    gn.gain.setValueAtTime(vol, t); gn.gain.exponentialRampToValueAtTime(.0005, t + dur);
+    o.connect(gn); gn.connect(this.lp); o.start(t); o.stop(t + dur + .02);
+  },
+  burst(dur, vol, f0, f1, type = 'bandpass', q = 1) {
+    if (!this.ctx) return;
+    const c = this.ctx, t = c.currentTime, s = c.createBufferSource(), fl = c.createBiquadFilter(), gn = c.createGain();
+    s.buffer = this.noise; s.loop = true; fl.type = type; fl.Q.value = q;
+    fl.frequency.setValueAtTime(f0, t); fl.frequency.exponentialRampToValueAtTime(Math.max(f1, 1), t + dur);
+    gn.gain.setValueAtTime(vol, t); gn.gain.exponentialRampToValueAtTime(.0005, t + dur);
+    s.connect(fl); fl.connect(gn); gn.connect(this.lp); s.start(t); s.stop(t + dur + .02);
+  },
+  set(param, v, tc = .05) { if (this.ctx) param.setTargetAtTime(v, this.ctx.currentTime, tc); },
+  tick(v) { this.tone(1500 + Math.min(v, 900), 500, .035, .34, 'square'); this.burst(.02, .2, 3500, 2500); },
+  thud() { this.tone(130, 26, .55, 1); this.burst(.3, .75, 900, 120); this.burst(.5, .32, 4200, 1600, 'bandpass', 3); },
+  rumble() { this.tone(38, 70, .6, .8, 'sawtooth'); this.burst(.6, .4, 120, 500, 'lowpass'); },
+  groundBreak() { this.tone(110, 22, .9, 1); this.burst(.7, 1, 2600, 160, 'lowpass'); this.burst(.35, .5, 5200, 1800, 'bandpass', 2); },
+  splash() { this.burst(.8, .9, 3200, 260, 'lowpass'); this.tone(240, 40, .9, .6); },
+  surface() { this.burst(.9, .7, 300, 3000); this.tone(60, 220, .8, .4); },
+  riser() { this.tone(55, 240, .78, .4, 'sawtooth'); },
+  release() { this.tone(90, 30, .8, 1); this.burst(.6, .8, 300, 7000, 'highpass'); },
+  win(tier) {
+    const base = [523, 587, 659, 698, 784, 880][tier], chord = [1, 1.25, 1.5, 2, 2.5, 3];
+    const notes = chord.slice(0, 2 + tier);
+    notes.forEach((n, i) => { this.tone(base * n, base * n, .55 + tier * .1, .28, 'triangle', i * .085); });
+    if (tier >= 3) { this.tone(70, 40, 1.3, .7); this.burst(1.2, .25, 5000, 9000, 'highpass'); }
+    if (tier >= 4) notes.forEach((n, i) => this.tone(base * n * 2, base * n * 2, .8, .1, 'sine', .55 + i * .07));
+  },
+  coin() { this.tone(1600, 2400, .1, .16, 'square'); this.tone(2400, 2800, .15, .12, 'square', .06); },
+  brick() { this.burst(.03, .22, 2600, 1500); },
+};
+
+/* ---------- Spin curve: speed keys, scaled less than a few percent so the landing is exact ---------- */
+const SPIN_KEYS = [
+  [0, 0], [.3, -210], [.6, -60], [.74, -6], [.75, 0], [.81, 0],      // wind-up + a held breath
+  [.87, 1500], [1.5, 2600], [3.40, 3200],                            // spin hard
+  [3.49, 1150], [4.10, 1500],                                        // slam 1, wheel rips loose
+  [4.19, 540], [4.75, 760],                                          // slam 2, fights again
+  [4.83, 210], [5.6, 75], [6.25, 22], [6.7, 0], [6.78, -38], [6.92, 0], // slam 3, crawl, rock back
+];
+const T_BREAK = .55, T_DIVE = 1.5, T_PLUNGE = 1.9, FALL_H = 2.4, GROUND_Y = .84, SOIL_H = 1;
+const T_RELEASE = .81, T_SLAM = [3.41, 4.11, 4.76], T_END = 6.92;
+const CLAW_KEYS = [[0, 0], [3.31, 0], [3.41, 1.1], [3.47, .98], [3.9, .96], [4.03, .55], [4.10, .6], [4.11, 1.12], [4.17, .98], [4.62, .95], [4.72, .6], [4.76, 1.14], [4.82, 1], [7, 1]];
+const STEP = 30;
+function buildCurve(startAngle, wedge, off) {
+  const dt = 1 / 240, n = Math.ceil(T_END / dt) + 1, raw = new Float32Array(n);
+  let A = 0;
+  for (let i = 1; i < n; i++) { A += table(SPIN_KEYS, i * dt) * dt; raw[i] = A; }
+  const want = ((-wedge * STEP + off - startAngle) % 360 + 360) % 360;
+  const total = want + 360 * Math.round((A - want) / 360), scale = total / A;
+  return { dt, raw, scale, start: startAngle, at(t) { const f = clamp(t / dt, 0, n - 1), i = Math.floor(f), j = Math.min(i + 1, n - 1); return startAngle + lerp(raw[i], raw[j], f - i) * scale; } };
+}
+const wedgeUnder = a => (Math.round(-a / STEP) % 12 + 12) % 12;
+
+/* ---------- State ---------- */
+let W = 0, H = 0, DPR = 1, U = 1;
+const O = { force: -1, speed: 1, owned: false, reduce: false };
+const S = {
+  mode: 'day', t: 0, time: 0, angle: 0, v: 0, ticks: 0, flap: 0, flapV: 0,
+  lvl: 0, dep: 0, sw: 0, swA: 0, zoom: .78, shake: 0, kick: 0, roll: 0, shock: -1, flash: 0, claw: 0,
+  curve: null, st: 0, ev: 0, wedge: 0, off: 0, firstT: 0, wheelY: 0, standDrop: 0, impact: 0, fall: 0, crack: 0, broken: 0, didBreak: false, didWater: false, wallA: 0, hold: 0, tilt: 0, tiltV: 0, dim: 0, rar: 0, rarC: [.3, .6, 1], winPop: 0, whaleT0: 0, spinDir: 1, whaleBoost: 0,
+  rv: null, deep: false,
+};
+const parts = [];
+function push(p) { if (parts.length < 620) parts.push(p); }
+const bubble = (x, y, vy, r, front) => push({ k: 'b', x, y, vx: rnd(-4, 4), vy, r, life: rnd(2, 5), age: 0, front });
+function spark(x, y, a, sp, life = .5, col) { push({ k: 's', x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life, age: 0, col: col || (Math.random() < .5 ? '#ffe680' : '#ffb52e'), front: true }); }
+function brick(x, y, a, sp, col, life = 1.2) { push({ k: 'k', x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life, age: 0, col, rot: rnd(TAU), vr: rnd(-6, 6), r: rnd(.9, 1.7), front: true }); }
+function coin(x, y, a, sp) { push({ k: 'c', x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: rnd(.9, 1.6), age: 0, rot: rnd(TAU), vr: rnd(5, 12), front: true }); }
+function ring(x, y, col, speed = 90, life = .55, w = 1.5) { push({ k: 'r', x, y, r: 0, life, age: 0, col, speed, w, front: true }); }
+
+const GROUND = { cracks: [], shaft: [], drips: [] };
+function buildGround() {
+  GROUND.cracks = [];
+  for (let i = 0; i < 12; i++) { // jagged walks across the plate; y stays inside the visible 16-unit ground band
+    const dir = i % 2 ? 1 : -1, pts = []; let x = 0, y = 0;
+    const steps = Math.floor(rnd(5, 9)), dy = rnd(-1.1, 1.5);
+    for (let k = 0; k < steps; k++) { x += dir * rnd(6, 14); pts.push([x, y]); y = clamp(y + (k % 2 ? 1 : -1) * rnd(2, 3.6) + dy, -2.5, 12); pts.push([x, y]); } // right-angle steps follow the brick grid
+    GROUND.cracks.push(pts);
+  }
+  GROUND.shaft = []; for (let i = 0; i <= 18; i++) GROUND.shaft.push([i / 18, rnd(0, 7)]);
+  GROUND.drips = []; for (let i = 0; i < 26; i++) GROUND.drips.push([rnd(1), rnd(2, 11)]);
+}
+const FAR = { reefs: [], kelp: [], floats: [], jellies: [] };
+function buildFar() {
+  FAR.reefs = [0, 1, 2].map(l => { // jagged silhouettes, tallest at the frame edges so the wheel stays clear
+    const pts = []; let x = -.02;
+    while (x < 1.03) { const edge = Math.pow(Math.abs(x - .5) * 2, 1.6); pts.push([x, (.03 + edge * (.2 - l * .05)) * rnd(.8, 1.1)]); x += rnd(.035, .09); }
+    return pts;
+  });
+  FAR.kelp = []; FAR.floats = []; FAR.jellies = [];
+  for (let i = 0; i < 20; i++) { const side = i % 2 ? rnd(0, .26) : rnd(.74, 1); FAR.kelp.push({ x: side, l: i % 2, h: rnd(.2, .55), w: rnd(1, 1.9), p: rnd(TAU) }); }
+  for (let i = 0; i < 14; i++) FAR.floats.push({ x: rnd(1), y: rnd(.1, .85), s: rnd(.7, 2.2), a: rnd(TAU), v: rnd(-.25, .25), p: rnd(TAU), col: ['#d6302d', '#f4c20d', '#2fa84a', '#1878d8', '#f4f4ee'][i % 5] });
+  for (let i = 0; i < 5; i++) FAR.jellies.push({ x: rnd(.04, .96), y: rnd(.15, .8), s: rnd(1.6, 3.2), p: rnd(TAU), c: i % 2 ? '#ff7bd5' : '#5cf2ff' });
+}
+
+/* ---------- WebGL background (the look; Roblox uses dome + Atmosphere + beams + spiral mesh) ---------- */
+const gl = bgC.getContext('webgl', { antialias: false, preserveDrawingBuffer: true });
+const VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+const FS = `precision highp float;
+uniform vec2 res,c;uniform float t,lvl,dep,sw,swA,shock,flash,rar;uniform vec3 rc;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*n(p);p=p*2.03+7.;a*=.5;}return v;}
+void main(){
+ vec2 uv=gl_FragCoord.xy/res;float asp=res.x/res.y;vec2 p=(uv-.5)*vec2(asp,1.);vec2 d0=p-c;float d=length(d0);
+ if(shock>=0.){float g=exp(-pow((d-shock)*11.,2.));p+=normalize(d0+1e-4)*g*.05*(1.-clamp(shock,0.,1.));uv=p/vec2(asp,1.)+.5;d0=p-c;d=length(d0);}
+ float ang=atan(d0.y,d0.x);
+ // swirl bends the whole dimension round the wheel
+ float tw=sw*1.5/(d+.35);vec2 q=vec2(cos(tw)*d0.x-sin(tw)*d0.y,sin(tw)*d0.x+cos(tw)*d0.y)+c;vec2 suv=q/vec2(asp,1.)+.5;
+ vec3 top=mix(vec3(.08,.62,.72),vec3(.006,.105,.215),dep);vec3 bot=mix(vec3(.02,.27,.42),vec3(.002,.02,.075),dep);
+ vec3 w=mix(bot,top,pow(clamp(suv.y,0.,1.),1.35));
+ // god rays
+ vec2 s=suv-vec2(.5+.12*sin(t*.13),1.3);float a=atan(s.x,-s.y);
+ float rays=.55*n(vec2(a*9.+t*.12,t*.05))+.45*n(vec2(a*23.-t*.17,3.));rays=smoothstep(.42,.82,rays);
+ w+=vec3(.25,.75,.85)*rays*pow(clamp(suv.y,0.,1.),1.6)*mix(.75,.52,dep);
+ // caustic shimmer near the top
+ float ca=fbm(suv*vec2(asp,1.)*7.+vec2(t*.22,-t*.17));ca=pow(1.-abs(ca*2.-1.),7.);
+ w+=vec3(.4,.9,.95)*ca*pow(clamp(suv.y,0.,1.),3.)*.32;
+ // abyss haze
+ w+=vec3(.02,.09,.16)*fbm(suv*3.+vec2(t*.03,0.))*.75*dep;
+ // vortex arms
+ float ld=log(d+.03);float arm=sin(ang*7.+ld*15.-swA);arm=smoothstep(.1,1.,arm);float armb=sin(ang*3.-ld*6.-swA*.6);armb=smoothstep(.5,1.,armb);
+ float vmask=smoothstep(.1,.42,d)*smoothstep(1.35,.42,d);
+ w+=(vec3(.13,.72,.85)*arm+vec3(.55,.95,1.)*armb*.5)*vmask*sw*.82;
+ w*=1.-sw*.45*smoothstep(.85,.15,d)*.6;
+ // rarity light behind the prize
+ w+=rc*rar*exp(-d*d*4.8)*.85;
+ w+=rc*rar*.07;
+ // shock tint
+ if(shock>=0.)w+=vec3(.4,.9,1.)*exp(-pow((d-shock)*16.,2.))*.5*(1.-clamp(shock,0.,1.));
+ // above water
+ vec3 sky=mix(vec3(.72,.92,1.),vec3(.25,.65,1.),smoothstep(.35,1.,uv.y));
+ float cl=fbm(vec2(uv.x*asp*3.+t*.012,uv.y*7.));sky=mix(sky,vec3(1.),smoothstep(.56,.74,cl)*smoothstep(.45,.75,uv.y));
+ vec3 sea=mix(vec3(.05,.46,.68),vec3(.22,.78,.85),smoothstep(.2,.42,uv.y));
+ float sg=pow(n(vec2(uv.x*80.,uv.y*170.+t)),9.);sea+=sg*.5;
+ vec3 day=uv.y>.42?sky:sea;
+ float line=lvl+.016*sin(uv.x*11.+t*6.)+.008*sin(uv.x*27.-t*9.);
+ vec3 col=uv.y<line?w:day;
+ if(lvl>.001&&lvl<1.05)col=mix(col,vec3(1.),smoothstep(.024,.0,abs(uv.y-line)));
+ col*=1.-smoothstep(.45,1.05,length((uv-.5)*vec2(1.25,1.1)))*mix(.1,.62,dep);
+ col+=flash*vec3(.8,.95,1.);
+ gl_FragColor=vec4(col,1.);
+}`;
+let U_ = {};
+if (gl) {
+  const mk = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s)); return s; };
+  const pr = gl.createProgram(); gl.attachShader(pr, mk(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, mk(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  for (const n of ['res', 'c', 't', 'lvl', 'dep', 'sw', 'swA', 'shock', 'flash', 'rar', 'rc']) U_[n] = gl.getUniformLocation(pr, n);
+}
+function renderBg() {
+  if (!gl) { g.fillStyle = S.lvl > .5 ? '#05203e' : '#6cc5ff'; return; }
+  const cxN = (wheelX() - W / 2) / H, cyN = -(wheelY() - H / 2) / H;
+  gl.viewport(0, 0, bgC.width, bgC.height);
+  gl.uniform2f(U_.res, bgC.width, bgC.height); gl.uniform2f(U_.c, cxN, cyN); gl.uniform1f(U_.t, S.time);
+  gl.uniform1f(U_.lvl, S.lvl); gl.uniform1f(U_.dep, S.dep);
+  gl.uniform1f(U_.sw, S.sw * (O.reduce ? .4 : 1)); gl.uniform1f(U_.swA, S.swA);
+  gl.uniform1f(U_.shock, O.reduce ? -1 : S.shock); gl.uniform1f(U_.flash, O.reduce ? 0 : S.flash);
+  gl.uniform1f(U_.rar, S.rar); gl.uniform3fv(U_.rc, S.rarC);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+
+/* ---------- Layout ---------- */
+const wheelX = () => W / 2 + (O.reduce ? 0 : S.tilt * 40 * U);
+const wheelY = () => H * (.53 + .015 * Math.sin(S.time * .9) * S.dep) + S.wheelY * U;
+function resize() {
+  const parentW = document.documentElement.clientWidth;
+  const maxH = Math.max(window.innerHeight - 120, 300);
+  app.style.maxWidth = Math.min(parentW, Math.max(maxH * 16 / 9, 640)) + 'px';
+  $('dev').style.maxWidth = app.style.maxWidth;
+  const r = app.getBoundingClientRect();
+  W = r.width || 960; H = r.height || 540; U = H / 100; DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+  // assigning a canvas size clears it, so only touch it on a real change and repaint straight away
+  const fw = Math.round(W * DPR), fh = Math.round(H * DPR);
+  if (fxC.width === fw && fxC.height === fh) return;
+  fxC.width = fw; fxC.height = fh;
+  bgC.width = Math.max(1, fw * .6 | 0); bgC.height = Math.max(1, fh * .6 | 0);
+  if (rotorImg) draw();
+}
+
+/* ---------- Flow ---------- */
+const spinBtn = $('spin');
+function showButtons(spin) { spinBtn.classList.toggle('hide', !spin); }
+function setMode(m) { S.mode = m; S.t = 0; }
+function pressSpin() {
+  if (S.mode !== 'day') return;
+  Audio.init(); showButtons(false);
+  S.rv = null; S.rar = 0; S.dim = 0;
+  S.wedge = O.force >= 0 ? O.force : rollWedge();
+  S.off = rnd(-11, 11);
+  if (S.mode === 'day') { S.whaleT0 = S.time + 1.3 - 26 * (.2 + .45) / 1.9; S.didBreak = S.didWater = false; Audio.rumble(); Audio.set(Audio.drone?.gain, 0); setMode('plunge'); }
+}
+function startSpin() {
+  setMode('spin');
+  S.curve = buildCurve(S.angle, S.wedge, S.off);
+  S.st = 0; S.ev = 0;
+  Audio.riser();
+}
+function surface() {
+  if (S.mode !== 'idle') return;
+  Audio.surface(); setMode('surfacing');
+}
+function release() {
+  S.kick = 1; S.shake = 1; S.shock = 0; S.flash = .1; Audio.release();
+  for (let i = 0; i < 26; i++) { const a = rnd(TAU); bubble(wheelX() + Math.cos(a) * 34 * U, wheelY() + Math.sin(a) * 34 * U, Math.sin(a) * 40 - 8, rnd(.6, 1.8), true); }
+}
+function slam(k) {
+  S.shake = 1 + k * .15; S.kick = -.85; S.flash = .07; S.shock = 0; S.sw *= .62; Audio.thud();
+  S.hold = .05 + k * .012; S.tiltV += (k % 2 ? -1 : 1) * (2.4 + k * .5);
+  const R = wheelR();
+  for (const side of [-1, 1]) {
+    const x = wheelX() + side * R, y = wheelY();
+    // rim runs vertically at the claws, so sparks shear along the spin direction
+    for (let i = 0; i < 26; i++) spark(x, y + rnd(-5, 5) * U, (side < 0 ? -1 : 1) * Math.PI / 2 + rnd(-.32, .32) + (side < 0 ? rnd(-.35, 0) : rnd(0, .35)), rnd(70, 190) * U, rnd(.18, .5));
+    for (let i = 0; i < 16; i++) { brick(x, y, rnd(TAU), rnd(30, 95) * U * .6, ['#f4c20d', '#d6302d', '#f4f4ee'][i % 3], rnd(.5, 1)); parts[parts.length - 1].r *= 1.5; }
+  }
+}
+function land() {
+  const under = wedgeUnder(S.angle);
+  console.assert(under === S.wedge, 'wheel landed on wedge ' + under + ', server chose ' + S.wedge);
+  Audio.set(Audio.roarG?.gain, 0, .01);
+  S.winPop = 1; setMode('land');
+}
+function startReveal() {
+  const w = WEDGES[S.wedge], rr = RAR[w.r], tier = rr.tier;
+  S.rarC = rr.glow; S.flash = tier >= 4 ? .12 : 0;
+  S.rv = { w, rr, tier, t: 0, built: false, dup: O.owned && w.kind !== 'cash', shat: false, buildDur: [.5, .7, .85, 1.05, 1.3, 1.6][tier], hold: [.9, 1, 1.2, 1.6, 2, 2.6][tier], lastBr: 0, sweep: -99 };
+  const x = wheelX(), top = wheelY() - wheelR();
+  const n = [18, 30, 46, 70, 100, 130][tier];
+  for (let i = 0; i < n; i++) brick(x, top + 8 * U, rnd(TAU), rnd(8, 50) * U * .55, i % 3 ? rr.c : rr.hi, rnd(.6, 1.4));
+  ring(x, top + 8 * U, rr.hi, 60 + tier * 14, .5);
+  if (tier === 5) S.whaleBoost = 1;
+  setMode('reveal');
+}
+function finishPrize() {
+  const R = S.rv; R.built = true;
+  const x = W / 2, y = H * .44;
+  S.kick = .4; S.shake = Math.max(S.shake, R.tier >= 3 ? .55 : 0);
+  Audio.win(R.tier);
+  const n = [10, 18, 34, 60, 90, 140][R.tier];
+  for (let i = 0; i < n; i++) brick(x, y, rnd(TAU), rnd(20, 70) * U * .6, i % 2 ? R.rr.c : R.rr.hi, rnd(.7, 1.7));
+  if (R.tier >= 2) ring(x, y, R.rr.hi, 90 + R.tier * 12, .65, 1.2 + R.tier * .4);
+  if (R.tier >= 4) ring(x, y, '#ffffff', 135, .75, 1);
+  if (R.w.kind === 'cash') for (let i = 0; i < 26; i++) coin(x, y, rnd(-2.8, -.34), rnd(26, 72) * U * .8);
+}
+function shatter() {
+  const R = S.rv; R.shat = true;
+  const x = W / 2, y = H * .46; Audio.coin();
+  for (let i = 0; i < 40; i++) brick(x, H * .42, rnd(TAU), rnd(14, 55) * U * .6, R.rr.c, rnd(.5, 1));
+  for (let i = 0; i < 18; i++) coin(x, H * .42, rnd(-2.8, -.34), rnd(26, 62) * U * .8);
+}
+
+/* ---------- Sim step ---------- */
+function sim(dt) {
+  S.t += dt; S.time += dt;
+  const m = S.mode;
+  if (m === 'day') { S.zoom = lerp(S.zoom, .78, dt * 4); S.claw = 0; }
+  if (m === 'plunge') {
+    const k = S.t, x = clamp((k - T_BREAK) / (T_DIVE - T_BREAK));
+    const F = FALL_H * H * Math.pow(x, 1.6), dF = F - S.fall; S.fall = F;
+    for (const p of parts) if (p.world) p.y -= dF; // debris lives in the world: the camera outruns it
+    S.crack = smooth(.08, T_BREAK, k); S.broken = smooth(T_BREAK - .03, T_BREAK + .16, k);
+    const soilBottom = H * (GROUND_Y + SOIL_H) - F;
+    S.lvl = F > 0 ? clamp(1 - soilBottom / H + .04, 0, 1.2) : 0; // the line sits behind the rock so its foam never peeks out
+    S.dep = smooth(1.1, 1.85, k);
+    S.zoom = lerp(.78, 1, smooth(.95, 1.7, k));
+    S.wheelY = Math.sin(k * 41) * .9 * S.crack * (1 - x) + 13 * Math.sin(Math.PI * x); // the wheel outruns the camera, then it catches up
+    S.v = table([[0, 0], [T_BREAK, 900], [T_BREAK + .15, 1500], [T_DIVE, 700], [T_PLUNGE, 0]], k); // grinds up on land, drills through
+    S.angle += S.v * dt;
+    const tk = Math.floor((S.angle + 15) / STEP);
+    if (tk !== S.ticks) { S.flapV -= Math.min(Math.abs(tk - S.ticks), 2) * 6; S.ticks = tk; if (S.v < 950) Audio.tick(S.v); }
+    S.shake = Math.max(S.shake, S.didBreak ? 0 : S.crack * .62);
+    Audio.set(Audio.roarF?.frequency, 90 + S.v * .5, .05); Audio.set(Audio.roarG?.gain, S.v / 1500 * .3, .05);
+    if (!S.didBreak && k >= T_BREAK) {
+      S.didBreak = true; S.shake = 1.25; S.kick = -.7; S.flash = .08; Audio.groundBreak();
+      const cx = W / 2, by = H * GROUND_Y + 3 * U, span = wheelR() * 1.7;
+      for (let i = 0; i < 46; i++) { // big plates of ground first, dirt and soil after
+        const big = i < 22, side = i % 2 ? 1 : -1, px = cx + side * rnd(0, span);
+        brick(px, by + rnd(0, 5) * U, -Math.PI / 2 + side * rnd(.1, 1.05), rnd(45, big ? 120 : 170) * U * .6, big ? (i % 3 ? '#4fbf46' : '#6fd763') : (i % 3 ? '#7a4f2b' : '#5c3a20'), rnd(1, 1.7));
+        const b = parts[parts.length - 1]; b.world = true; b.plate = big; b.r *= big ? rnd(2.6, 4.4) : 1.3;
+      }
+    }
+    if (!S.didWater && soilBottom <= wheelY()) {
+      S.didWater = true; S.impact = 1; S.kick = -.55; S.shake = Math.max(S.shake, .9); S.flash = .1; S.shock = 0; Audio.splash();
+      Audio.set(Audio.lp?.frequency, 2600, .12); Audio.set(Audio.drone?.gain, .22, .4);
+      for (let i = 0; i < 44; i++) spark(wheelX() + rnd(-30, 30) * U, wheelY() - rnd(0, 12) * U, -Math.PI / 2 + rnd(-1.15, 1.15), rnd(70, 200) * U, rnd(.3, .65), i % 3 ? '#ffffff' : '#bff3ff');
+      for (let i = 0; i < 110; i++) { const a = rnd(TAU), v = rnd(30, 130) * U; bubble(wheelX() + Math.cos(a) * 26 * U, wheelY() + Math.sin(a) * 26 * U, Math.sin(a) * v - 60 * U, rnd(.5, 2.4), i % 2 === 0); parts[parts.length - 1].vx = Math.cos(a) * v; }
+    }
+    const rush = S.didWater ? 1 - smooth(T_DIVE, T_PLUNGE, k) * .85 : 0; // streaks say "fast" until the deep calms down
+    if (rush > .02) for (let i = 0; i < 8; i++) if (Math.random() < .8) bubble(rnd(W), H + 3 * U, -rnd(110, 260) * U * rush, rnd(.4, 2.2), Math.random() < .5);
+    if (k >= T_PLUNGE) { S.lvl = 1.2; S.dep = 1; S.standDrop = 1; S.fall = 0; S.crack = 0; S.broken = 0; S.wheelY = 0; startSpin(); return; }
+  }
+  if (m === 'spin') {
+    if (S.hold > 0) S.hold -= dt; // hit-stop: the wheel visibly bites on each slam
+    S.st += S.hold > 0 ? dt * .1 : dt;
+    const prev = S.angle;
+    S.angle = S.curve.at(S.st);
+    S.v = (S.angle - prev) / Math.max(dt, 1e-4);
+    S.claw = table(CLAW_KEYS, S.st);
+    const speedK = clamp(Math.abs(S.v) / 3200);
+    S.sw = lerp(S.sw, speedK, 1 - Math.exp(-dt * 4));
+    S.swA += dt * (3 + speedK * 15);
+    const windK = S.st < T_RELEASE ? smooth(.1, .78, S.st) : 0;
+    S.zoom = lerp(S.zoom, 1 + speedK * .17 + windK * .07, 1 - Math.exp(-dt * 5));
+    if (S.st < T_RELEASE && S.ev === 0 && S.st > .1) { S.shake = Math.max(S.shake, windK * .22); }
+    if (S.st < T_RELEASE && Math.random() < .8) { const a = rnd(TAU), r = rnd(55, 95) * U; push({ k: 'b', x: wheelX() + Math.cos(a) * r, y: wheelY() + Math.sin(a) * r, vx: -Math.cos(a) * r * 2, vy: -Math.sin(a) * r * 2, r: rnd(.5, 1.3), life: .45, age: 0, front: false }); }
+    if (S.ev === 0 && S.st >= T_RELEASE) { release(); S.ev = 1; }
+    for (let i = 0; i < 3; i++) if (S.ev === i + 1 && S.st >= T_SLAM[i]) { slam(i); S.ev = i + 2; }
+    // brake pads spit sparks while they grip
+    if (S.claw > .92 && Math.abs(S.v) > 150) {
+      const R = wheelR(), n = Math.abs(S.v) > 700 ? 3 : 1;
+      for (const side of [-1, 1]) for (let i = 0; i < n; i++) { const a = -Math.PI / 2 * side + rnd(-.6, .6) + (side > 0 ? 0 : 0); spark(wheelX() + side * R, wheelY() + rnd(-3, 3) * U, side < 0 ? rnd(-3.8, -2.4) : rnd(-.8, .7), rnd(30, 90) * U * .5, rnd(.25, .55)); }
+    }
+    // flapper + ticks
+    const tk = Math.floor((S.angle + 15) / STEP);
+    if (tk !== S.ticks) { const d = Math.abs(tk - S.ticks); S.ticks = tk; S.flapV -= Math.min(d, 2) * 6 * Math.sign(S.v || 1); if (Math.abs(S.v) < 950) { Audio.tick(Math.abs(S.v)); } }
+    // audio roar follows speed
+    Audio.set(Audio.roarF?.frequency, 120 + speedK * 2100, .04); Audio.set(Audio.roarO?.frequency, 35 + speedK * 170, .04);
+    Audio.set(Audio.roarG?.gain, S.st < T_RELEASE ? 0 : speedK * .4, .05);
+    if (Math.random() < speedK * 2.3) {
+      const a = rnd(TAU), rr = rnd(38, 80) * U, ta = a + Math.PI / 2;
+      push({ k: 'b', x: wheelX() + Math.cos(a) * rr, y: wheelY() + Math.sin(a) * rr, vx: Math.cos(ta) * rr * 3 - Math.cos(a) * 12 * U, vy: Math.sin(ta) * rr * 3 - Math.sin(a) * 12 * U, r: rnd(.4, 1.3), life: rnd(.4, .9), age: 0, front: Math.random() < .5 });
+    }
+    if (S.st >= T_END) land();
+  } else if (m !== 'plunge') {
+    S.v = 0;
+  }
+  if (m === 'land') {
+    S.claw = lerp(S.claw, 0, 1 - Math.exp(-dt * 7));
+    if (S.t >= .28) startReveal();
+  }
+  if (m === 'reveal' || m === 'idle') {
+    S.claw = lerp(S.claw, 0, 1 - Math.exp(-dt * 14));
+    const R = S.rv;
+    S.sw = lerp(S.sw, 0, dt * 3); S.swA += dt * 2;
+    S.zoom = lerp(S.zoom, .84, 1 - Math.exp(-dt * 4));
+    S.dim = lerp(S.dim, .62, 1 - Math.exp(-dt * 9));
+    S.rar = lerp(S.rar, [.1, .18, .3, .45, .6, .8][R.tier], 1 - Math.exp(-dt * 5));
+    R.t += dt;
+    const prog = clamp(R.t / R.buildDur);
+    if (!R.built && prog * 40 - R.lastBr > 1) { R.lastBr = prog * 40 | 0; if (R.lastBr % 2 === 0) Audio.brick(); }
+    if (!R.built && R.t >= R.buildDur) finishPrize();
+    if (R.built && R.dup && !R.shat && R.t >= R.buildDur + .6) shatter();
+    if (R.w.kind === 'skin') R.sweep = lerp(MODELS[R.w.m].minX - 1, MODELS[R.w.m].maxX + 1, smooth(R.buildDur * .75, R.buildDur + .45, R.t));
+    const tier = R.tier;
+    if (R.built && tier >= 2 && Math.random() < dt * (tier * 9)) push({ k: 'f', x: rnd(W), y: -2 * U, vx: rnd(-12, 12), vy: rnd(25, 50) * U * .5, life: 2.6, age: 0, rot: rnd(TAU), vr: rnd(-5, 5), col: [R.rr.hi, R.rr.c, '#fff'][Math.random() * 3 | 0], front: true });
+    if (m === 'reveal' && R.t >= R.buildDur + R.hold) { setMode('idle'); surface(); } // one spin per trip: straight back up
+    if (S.whaleBoost > 0) S.whaleBoost = Math.max(0, S.whaleBoost - dt * .16);
+  }
+  if (m === 'surfacing') {
+    const k = S.t;
+    S.lvl = lerp(1.2, 0, smooth(.08, .95, k)); S.dep = 1 - smooth(0, .75, k); S.wallA = smooth(0, .14, k);
+    S.fall = 0; S.crack = 0; S.broken = 0;
+    if (k > .14) S.rv = null; // the rising water has covered the prize by now
+    S.standDrop = 1 - smooth(.2, 1.05, k); S.zoom = lerp(S.zoom, .78, dt * 5); S.sw = lerp(S.sw, 0, dt * 6); S.rar = lerp(S.rar, 0, dt * 6); S.dim = lerp(S.dim, 0, dt * 8);
+    Audio.set(Audio.lp?.frequency, 18000, .2); Audio.set(Audio.drone?.gain, 0, .2);
+    if (k < .55) for (let i = 0; i < 4; i++) bubble(rnd(W), H + 2 * U, -rnd(90, 210) * U, rnd(.5, 2.2), Math.random() < .5);
+    if (k >= 1.1) { S.wallA = 0; S.lvl = 0; S.dep = 0; S.standDrop = 0; S.dim = 0; S.rar = 0; setMode('day'); showButtons(true); }
+  }
+  S.tiltV += -S.tilt * 130 * dt - S.tiltV * 12 * dt; S.tilt += S.tiltV * dt;
+  S.flap += S.flapV * dt * 60 * .016; S.flapV += (-S.flap * 240 - S.flapV * 19) * dt;
+  S.flap = clamp(S.flap, -.75, .75);
+  S.impact = Math.max(0, S.impact - dt * 2.6);
+  S.shake = Math.max(0, S.shake - dt * 3.5); S.kick = lerp(S.kick, 0, 1 - Math.exp(-dt * 8)); S.flash = Math.max(0, S.flash - dt * .85); S.winPop = Math.max(0, S.winPop - dt * 1.2);
+  if (S.shock >= 0) { S.shock += dt * 1.5; if (S.shock > 1.5) S.shock = -1; }
+  if (S.dep > .5 && m !== 'plunge' && Math.random() < dt * 7) bubble(rnd(W), H + 2 * U, -rnd(7, 18) * U, rnd(.3, 1.3), Math.random() < .4);
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i]; p.age += dt;
+    if (p.age >= p.life) { parts.splice(i, 1); continue; }
+    if (p.k === 'r') { p.r += p.speed * U * dt * (1 - p.age / p.life * .5); continue; }
+    if (p.k === 's') p.vy += 45 * U * .55 * dt;
+    if (p.k === 'k' || p.k === 'c') { p.vy += 62 * U * .55 * dt; p.vx *= (1 - dt * .9); p.rot += p.vr * dt; }
+    if (p.k === 'f') { p.rot += p.vr * dt; p.vx += Math.sin(p.age * 3 + p.rot) * dt * 40; }
+    p.x += p.vx * dt; p.y += p.vy * dt;
+  }
+}
+const wheelR = () => H * .36 * (S.zoom + S.kick * .045);
+
+/* ---------- Draw ---------- */
+function drawFar() {
+  const d = S.dep; if (d < .02) return;
+  const rise = (1 - d) * H * 1.15, t = S.time;
+  g.save();
+  const tones = ['#07304f', '#052542', '#031a33'];
+  FAR.reefs.forEach((pts, l) => {
+    const by = H * (.72 + l * .09) + rise * (1.1 + l * .25);
+    g.fillStyle = tones[l]; g.beginPath(); g.moveTo(-5, H + rise + 50);
+    for (const [px, py] of pts) g.lineTo(px * W, by - py * H);
+    g.lineTo(W + 5, H + rise + 50); g.closePath(); g.fill();
+  });
+  g.lineCap = 'round';
+  for (const k of FAR.kelp) {
+    const bx = k.x * W, by = H * (.8 + k.l * .09) + rise * 1.25, seg = 7, len = k.h * H;
+    g.strokeStyle = k.l ? '#0a4a4c' : '#0c5e58'; g.lineWidth = k.w * U; g.beginPath(); g.moveTo(bx, by);
+    for (let i = 1; i <= seg; i++) g.lineTo(bx + Math.sin(t * .8 + k.p + i * .7) * i * .55 * U, by - len * i / seg);
+    g.stroke();
+  }
+  g.restore();
+  // whale: a slow, huge Lego silhouette. Mythic pulls it close.
+  const xw = lerp(-.45, 1.45, ((S.time - S.whaleT0) % 26 + 26) % 26 / 26) * W, sc = lerp(1.25, 1.9, S.whaleBoost);
+  const yw = H * (.24 + .02 * Math.sin(t * .35)) + rise * .7, s = U * 2.1 * sc;
+  g.fillStyle = '#10527f';
+  // smooth body, not blocks: a stack of rectangles read as a render glitch at this size
+  g.beginPath(); g.ellipse(xw, yw, 22 * s, 6.5 * s, 0, 0, TAU); g.fill();
+  g.beginPath(); g.moveTo(xw - 19 * s, yw - 2 * s); g.lineTo(xw - 31 * s, yw - 1 * s); g.lineTo(xw - 36 * s, yw - 6 * s); g.lineTo(xw - 34 * s, yw + 1 * s); g.lineTo(xw - 36 * s, yw + 6 * s); g.lineTo(xw - 30 * s, yw + 2 * s); g.lineTo(xw - 19 * s, yw + 4 * s); g.closePath(); g.fill();
+  g.beginPath(); g.moveTo(xw + 7 * s, yw + 4 * s); g.lineTo(xw + 1 * s, yw + 13 * s); g.lineTo(xw - 3 * s, yw + 5 * s); g.closePath(); g.fill();
+  g.fillStyle = '#2a7cae'; g.beginPath(); g.ellipse(xw + 4 * s, yw + 3.2 * s, 15 * s, 2.6 * s, 0, 0, TAU); g.fill();
+  g.fillStyle = '#d4f6ff'; g.beginPath(); g.arc(xw + 15 * s, yw - 1 * s, .8 * s, 0, TAU); g.fill();
+  // jellies give the deep tiny living lights
+  for (const j of FAR.jellies) {
+    const y = j.y * H + rise + Math.sin(t * .35 + j.p) * 2 * U, x = j.x * W + Math.sin(t * .22 + j.p) * 2 * U, s2 = j.s * U * .55, pu = .84 + Math.sin(t * .9 + j.p) * .16;
+    g.globalAlpha = .55 * d; g.fillStyle = j.c;
+    g.beginPath(); g.ellipse(x, y, s2 * 1.3 * pu, s2, 0, Math.PI, 0); g.closePath(); g.fill();
+    g.fillRect(x - s2 * .85, y, s2 * .25, s2 * 1.8); g.fillRect(x - s2 * .12, y, s2 * .25, s2 * 2.3); g.fillRect(x + s2 * .6, y, s2 * .25, s2 * 1.6);
+    g.globalAlpha = .13 * d; g.beginPath(); g.arc(x, y, s2 * 4, 0, TAU); g.fill();
+  }
+  g.globalAlpha = 1;
+  // drifting lost bricks, parallax past the camera
+  for (const f of FAR.floats) {
+    const y = ((f.y * H + rise * .9 + Math.sin(t * .3 + f.p) * 1.2 * U)), x = f.x * W + Math.cos(t * .18 + f.p) * 1.5 * U;
+    const s3 = f.s * U * .9;
+    g.save(); g.translate(x, y); g.rotate(f.a + t * f.v); g.globalAlpha = .55 * d;
+    g.fillStyle = shade(f.col, .55); g.fillRect(-s3, -s3 * .55, s3 * 2, s3 * 1.1);
+    g.fillStyle = shade(f.col, .75); g.fillRect(-s3 * .7, -s3 * .9, s3 * .55, s3 * .35); g.fillRect(s3 * .15, -s3 * .9, s3 * .55, s3 * .35);
+    g.restore();
+  }
+  g.globalAlpha = 1;
+}
+function drawDay() {
+  const a = S.mode === 'plunge' ? 1 : 1 - smooth(.55, 1.05, S.lvl); if (a <= 0) return;
+  const drop = S.standDrop * H * .85, base = H * GROUND_Y;
+  g.save(); g.globalAlpha = a; g.translate(0, drop - S.fall);
+  // Lego baseplate ground, studs in rows
+  const gr = g.createLinearGradient(0, base, 0, H);
+  gr.addColorStop(0, '#4fbf46'); gr.addColorStop(1, '#2f8c32');
+  g.fillStyle = gr; g.fillRect(0, base, W, S.fall > 0 ? 16 * U : H - base + drop + 20);
+  if (S.fall > 0) drawSoil(base + 16 * U);
+  g.fillStyle = '#2b7a2d'; g.fillRect(0, base - .5 * U, W, 1 * U);
+  const st = 6 * U;
+  for (let row = 0; row < 3; row++) for (let i = -1; i < W / st + 2; i++) {
+    const x = i * st + (row % 2) * st * .5, y = base + 3 * U + row * 5 * U;
+    g.fillStyle = '#2e8b30'; g.beginPath(); g.ellipse(x, y + .5 * U, 1.8 * U, .85 * U, 0, 0, TAU); g.fill();
+    g.fillStyle = '#6fd763'; g.beginPath(); g.ellipse(x, y, 1.8 * U, .85 * U, 0, 0, TAU); g.fill();
+  }
+  drawBreak(base);
+  // wheel stand
+  const x = W / 2, R = H * .36 * .78, sy = H * .53;
+  for (const side of [-1, 1]) {
+    const px = x + side * R * .78, pw = 5 * U;
+    // columns topple outward when the ground gives way
+    g.save(); g.translate(px + side * S.broken * 16 * U, base + U * 2 + S.broken * 3 * U); g.rotate(side * S.broken * 1.05); g.translate(-px, -(base + U * 2));
+    const c1 = g.createLinearGradient(px - pw / 2, 0, px + pw / 2, 0); c1.addColorStop(0, '#fff'); c1.addColorStop(1, '#b6c0ca');
+    g.fillStyle = c1; g.fillRect(px - pw / 2, sy, pw, base - sy + U * 2);
+    g.fillStyle = '#d6302d'; for (let k = 0; k < 3; k++) g.fillRect(px - pw / 2, sy + 6 * U + k * 9 * U, pw, 2.6 * U);
+    g.restore();
+  }
+  if (S.broken < .05) {
+    g.fillStyle = '#1f3a6e'; g.fillRect(x - R * 1.05, base - 2 * U, R * 2.1, 4 * U);
+    g.fillStyle = '#35598f'; g.fillRect(x - R * 1.05, base - 2 * U, R * 2.1, 1.2 * U);
+  }
+  g.restore();
+}
+const SOIL = ['#7a4f2b', '#6b4426', '#5c3a20', '#4d3a2c', '#46464f', '#393a45', '#2d2e3a'];
+function drawSoil(top) { // Lego strata the wheel falls past; the bottom edge is the water's surface
+  const rowH = 6 * U, brickW = 14 * U, bottom = H * (GROUND_Y + SOIL_H);
+  const viewTop = S.fall - 2 * U, viewBot = S.fall + H + 2 * U; // this layer is translated up by S.fall
+  for (let r = 0, y = top; y < bottom; r++, y += rowH) {
+    if (y + rowH < viewTop || y > viewBot) continue;
+    const col = SOIL[Math.min(SOIL.length - 1, r * SOIL.length / 13 | 0)];
+    g.fillStyle = col; g.fillRect(0, y, W, rowH);
+    g.fillStyle = shade(col, 1.16); g.fillRect(0, y, W, .8 * U);
+    g.fillStyle = shade(col, .72);
+    for (let x = (r % 2) * brickW * .5; x < W; x += brickW) g.fillRect(x, y, .6 * U, rowH);
+    g.fillRect(0, y + rowH - .6 * U, W, .6 * U);
+  }
+  // broken-off bricks hang from the underside
+  g.fillStyle = SOIL[SOIL.length - 1];
+  for (const [fx, fh] of GROUND.drips) g.fillRect(fx * W - 3.5 * U, bottom - .5 * U, 7 * U, fh * U);
+}
+function drawBreak(base) {
+  if (S.crack <= .001) return;
+  const cx = W / 2;
+  if (S.broken > .01) { // the shaft: a jagged hole the wheel drills through
+    const hw = wheelR() * 1.42 * Math.max(S.broken, .1), bot = H * (GROUND_Y + SOIL_H);
+    g.beginPath(); g.moveTo(cx - hw, base - .5 * U);
+    GROUND.shaft.forEach(([y, o]) => g.lineTo(cx - hw - o * U, base + y * (bot - base)));
+    g.lineTo(cx + hw, bot);
+    [...GROUND.shaft].reverse().forEach(([y, o]) => g.lineTo(cx + hw + (o * .8 + 1) * U, base + y * (bot - base)));
+    g.lineTo(cx + hw, base - .5 * U); g.closePath();
+    const sg = g.createLinearGradient(cx - hw, 0, cx + hw, 0);
+    sg.addColorStop(0, '#120b06'); sg.addColorStop(.5, '#241710'); sg.addColorStop(1, '#0e0805');
+    g.fillStyle = sg; g.fill();
+    const bottom = bot;
+  g.fillStyle = '#ffffffe6'; // the water's surface: a foam crown along the broken underside
+  for (let i = 0; i < 44; i++) { const fx = (i + .5) / 44 * W, r = (1.5 + (i * 7 % 5) * .55) * U; g.beginPath(); g.arc(fx, bottom + 1.5 * U + Math.sin(S.time * 8 + i) * U, r, 0, TAU); g.fill(); }
+  }
+  // cracks race out from under the wheel, chunky enough to read on a phone
+  g.lineJoin = 'round'; g.lineCap = 'round';
+  for (const c of GROUND.cracks) {
+    const n = Math.max(1, Math.ceil(c.length * S.crack));
+    for (const [lit, off, wid] of [[true, .55, .55], [false, 0, 1]]) {
+      g.strokeStyle = lit ? '#a9ec93' : '#1e1408'; g.lineCap = 'square';
+      let px = cx, py = base + 3 * U;
+      for (let i = 0; i < n; i++) { // tapers to nothing at the tip
+        g.lineWidth = wid * lerp(2.6, .45, i / c.length) * U;
+        const qx = cx + c[i][0] * U, qy = base + 3 * U + c[i][1] * U;
+        g.beginPath(); g.moveTo(px, py + off * U); g.lineTo(qx, qy + off * U); g.stroke();
+        px = qx; py = qy;
+      }
+    }
+  }
+}
+function drawImpact() { // white water erupts round the wheel and clears in under half a second
+  if (S.impact <= 0 || O.reduce) return;
+  const k = 1 - S.impact, x = wheelX(), y = wheelY(), R = H * .3 + k * H * .75;
+  g.save(); g.globalAlpha = S.impact * S.impact * .95; g.fillStyle = '#ffffff';
+  for (let i = 0; i < 26; i++) {
+    const a = i / 26 * TAU, r = R * (.72 + (i * 13 % 7) * .05), b = (5 + (i * 5 % 4) * 2.2) * U * (1 + k * 1.4);
+    g.beginPath(); g.arc(x + Math.cos(a) * r * 1.5, y + Math.sin(a) * r, b, 0, TAU); g.fill();
+  }
+  g.globalAlpha = S.impact * .55; g.fillStyle = '#c9f5ff'; g.fillRect(0, 0, W, H);
+  g.restore();
+}
+function drawWall() { // passes in front of the wheel and covers the whole frame for a moment
+  if (S.wallA <= .01 || S.lvl <= .005) return;
+  const lineY = H * (1 - S.lvl), wave = wx => lineY - U * 1.8 * Math.sin(wx / W * 11 + S.time * 6) - U * .9 * Math.sin(wx / W * 27 - S.time * 9);
+  g.save(); g.globalAlpha = S.wallA; g.beginPath(); g.moveTo(0, H);
+  for (let wx = 0; wx <= W + 12; wx += 12) g.lineTo(wx, wave(wx));
+  g.lineTo(W + 12, H); g.closePath();
+  const wg = g.createLinearGradient(0, lineY, 0, lineY + H);
+  wg.addColorStop(0, '#2bb9cc'); wg.addColorStop(.35, '#0d6f96'); wg.addColorStop(1, '#04294d'); g.fillStyle = wg; g.fill();
+  g.lineJoin = 'round'; g.strokeStyle = '#ffffffe8'; g.lineWidth = 3.2 * U;
+  g.beginPath(); for (let wx = 0; wx <= W + 12; wx += 12) wx ? g.lineTo(wx, wave(wx)) : g.moveTo(wx, wave(wx)); g.stroke();
+  g.fillStyle = '#ffffffc8'; // chunky foam blobs sell the lip at phone size
+  for (let i = 0; i < 22; i++) { const fx = (i + .5) / 22 * W, r = (1.6 + (i * 7 % 5) * .55) * U; g.beginPath(); g.arc(fx, wave(fx) + 1.2 * U + Math.sin(S.time * 7 + i) * U, r, 0, TAU); g.fill(); }
+  g.restore();
+}
+function drawParticles(front) {
+  for (const p of parts) {
+    if (!!p.front !== front) continue;
+    const k = p.age / p.life;
+    if (p.k === 'b') {
+      const sp = Math.hypot(p.vx, p.vy), r = p.r * U * (.6 + k * .4);
+      g.globalAlpha = (1 - k * k) * .7;
+      if (sp > 40 * U) {
+        g.strokeStyle = '#d4f6ff'; g.lineWidth = r * 1.2; g.lineCap = 'round'; const l = .018;
+        g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x - p.vx * l, p.y - p.vy * l); g.stroke();
+      } else {
+        g.strokeStyle = '#d4f6ff'; g.lineWidth = Math.max(1, r * .28);
+        g.beginPath(); g.arc(p.x, p.y, r, 0, TAU); g.stroke();
+        g.fillStyle = '#ffffff'; g.beginPath(); g.arc(p.x - r * .34, p.y - r * .34, r * .24, 0, TAU); g.fill();
+      }
+    } else if (p.k === 's') {
+      g.globalAlpha = 1 - k; g.strokeStyle = p.col; g.lineWidth = 1.3 * U * (1 - k * .5); g.lineCap = 'round';
+      g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x - p.vx * .05, p.y - p.vy * .05); g.stroke();
+    } else if (p.k === 'k') {
+      const s = p.r * U; g.globalAlpha = k > .75 ? (1 - k) * 4 : 1;
+      g.save(); g.translate(p.x, p.y); g.rotate(p.rot);
+      if (p.plate) { // a square 2x2 of baseplate: soil underneath, grass and studs on top
+        g.fillStyle = '#5c3a20'; g.fillRect(-s, -s * .25, s * 2, s * 1.05);
+        g.fillStyle = p.col; g.fillRect(-s, -s, s * 2, s);
+        g.fillStyle = shade(p.col, 1.16);
+        for (const sx of [-.5, .5]) for (const sy of [-.72, -.3]) { g.beginPath(); g.ellipse(sx * s, sy * s, s * .3, s * .17, 0, 0, TAU); g.fill(); }
+        g.restore();
+        continue;
+      }
+      g.fillStyle = shade(p.col.length === 7 ? p.col : '#ffffff', .8); g.fillRect(-s, -s * .55, s * 2, s * 1.1);
+      g.fillStyle = p.col; g.fillRect(-s, -s * .55, s * 2, s * .6);
+      g.fillRect(-s * .65, -s * .9, s * .5, s * .36); g.fillRect(s * .15, -s * .9, s * .5, s * .36);
+      g.restore();
+    } else if (p.k === 'c') {
+      const s = 1.7 * U; g.globalAlpha = k > .8 ? (1 - k) * 5 : 1;
+      g.fillStyle = '#d29a12'; g.beginPath(); g.ellipse(p.x, p.y + .2 * U, s * Math.abs(Math.cos(p.rot)) + .3, s, 0, 0, TAU); g.fill();
+      g.fillStyle = '#ffd74a'; g.beginPath(); g.ellipse(p.x, p.y, s * Math.abs(Math.cos(p.rot)), s, 0, 0, TAU); g.fill();
+    } else if (p.k === 'f') {
+      const s = 1.1 * U; g.globalAlpha = k > .8 ? (1 - k) * 5 : 1;
+      g.save(); g.translate(p.x, p.y); g.rotate(p.rot); g.scale(1, Math.abs(Math.cos(p.age * 5)) + .1); g.fillStyle = p.col; g.fillRect(-s, -s * .65, s * 2, s * 1.3); g.restore();
+    } else if (p.k === 'r') {
+      g.globalAlpha = (1 - k) * .9; g.strokeStyle = p.col; g.lineWidth = p.w * U * (1 - k * .6);
+      g.beginPath(); g.arc(p.x, p.y, p.r, 0, TAU); g.stroke();
+    }
+  }
+  g.globalAlpha = 1;
+}
+let rotorImg, blurImg;
+function drawClaw(side, R) {
+  const p = S.claw; if (p <= .001) return;
+  const off = (1 - p) * 36 * U;
+  const sh = S.mode === 'spin' && p > .9 ? Math.sin(S.time * 73) * .6 * U * clamp(Math.abs(S.v) / 1400) : 0;
+  const x = side * (R * 1.035 + off), sy = sh;
+  g.save(); g.translate(x, sy); g.scale(side, 1);
+  // rail
+  g.fillStyle = '#1f3a6e'; g.fillRect(9 * U, -2.5 * U, W * .4, 5 * U);
+  g.fillStyle = '#35598f'; g.fillRect(9 * U, -2.5 * U, W * .4, 1.6 * U);
+  for (let i = 0; i < 8; i++) { g.fillStyle = '#6b8ec7'; g.beginPath(); g.ellipse(12 * U + i * 6 * U, -2.6 * U, 1.6 * U, .55 * U, 0, 0, TAU); g.fill(); }
+  // claw body: yellow Lego block with two jaws hugging the rim
+  const gr = g.createLinearGradient(0, -14 * U, 0, 14 * U);
+  gr.addColorStop(0, '#ffdd4a'); gr.addColorStop(1, '#d99a00');
+  g.fillStyle = gr;
+  g.fillRect(1 * U, -10 * U, 11 * U, 20 * U);
+  g.fillRect(-6 * U, -14 * U, 12 * U, 6 * U); g.fillRect(-6 * U, 8 * U, 12 * U, 6 * U);
+  g.fillStyle = '#23282f'; g.fillRect(-7 * U, -9 * U, 3.2 * U, 18 * U);
+  g.fillStyle = '#d6302d'; g.fillRect(-4 * U, -8 * U, 5 * U, 16 * U);
+  g.fillStyle = '#f7e27a'; for (let k = 0; k < 3; k++) { g.beginPath(); g.ellipse(4 * U + k * 3.6 * U, -10.2 * U, 1.3 * U, .55 * U, 0, 0, TAU); g.fill(); }
+  g.restore();
+}
+function drawWheel() {
+  const R = wheelR();
+  const shk = O.reduce ? 0 : S.shake * S.shake * 2.2 * U;
+  const x = wheelX() + Math.sin(S.time * 91) * shk, y = wheelY() + Math.cos(S.time * 83) * shk;
+  const roll = (O.reduce ? 0 : S.tilt + (S.sw * .05 * Math.sin(S.time * 1.2))) + (O.reduce ? 0 : Math.sin(S.time * 97) * S.shake * S.shake * .018);
+  const yaw = (O.reduce ? 0 : .13 * Math.sin(S.time * .42) * S.dep) + S.sw * .05;
+  const cosY = Math.cos(yaw), ex = Math.sin(yaw);
+  g.save(); g.translate(x, y); g.rotate(roll);
+  // extruded back: makes the flat sprite read as a solid wheel
+  for (let i = 13; i >= 1; i--) {
+    g.fillStyle = i > 9 ? '#091a38' : '#142b56';
+    g.beginPath(); g.ellipse(-ex * i * .5 * U * 3.2, i * .2 * U * .4, R * 1.1 * cosY, R * 1.1, 0, 0, TAU); g.fill();
+  }
+  g.scale(cosY, 1);
+  // lifebuoy housing: red + white blocks, with studs
+  const seg = 24, ro = R * 1.1, ri = R * .97;
+  for (let i = 0; i < seg; i++) {
+    const a0 = i / seg * TAU, a1 = (i + 1) / seg * TAU;
+    g.fillStyle = (i >> 1) % 2 ? '#f6f4ee' : '#d6302d';
+    g.beginPath(); g.arc(0, 0, ro, a0, a1 + .005); g.arc(0, 0, ri, a1 + .005, a0, true); g.closePath(); g.fill();
+  }
+  g.lineWidth = .9 * U; g.strokeStyle = '#ffffff55'; g.beginPath(); g.arc(0, 0, ro - .7 * U, -Math.PI, -.08); g.stroke();
+  // lights run round the housing, slow wave so they never strobe
+  for (let i = 0; i < 24; i++) {
+    const a = i / 24 * TAU + TAU / 48, br = .5 + .5 * Math.sin(S.time * (1.8 + S.sw * 2) - i * .9);
+    const bx = Math.cos(a) * (ri + ro) / 2, by = Math.sin(a) * (ri + ro) / 2, rb = .9 * U * S.zoom;
+    g.fillStyle = '#3d2a00'; g.beginPath(); g.arc(bx, by, rb + .35 * U, 0, TAU); g.fill();
+    g.fillStyle = `rgb(${200 + 55 * br},${150 + 90 * br},${35 + 90 * br})`; g.beginPath(); g.arc(bx, by, rb, 0, TAU); g.fill();
+    g.globalAlpha = 1 - smooth(600, 1800, Math.abs(S.v)) * .85;
+    if (br > .55) { g.globalAlpha *= (br - .55) * .55; g.beginPath(); g.arc(bx, by, rb * 2.6, 0, TAU); g.fill(); g.globalAlpha = 1; }
+  }
+  // rotor + motion blur crossfade
+  const speed = Math.abs(S.v), blurK = smooth(450, 1500, speed);
+  if (blurK > .1) { // housing lights smear into racing arcs at speed
+    g.save(); g.rotate(S.angle * .19 * RAD); g.lineCap = 'round'; g.lineWidth = 1.5 * U; g.strokeStyle = '#ffe680';
+    for (let i = 0; i < 6; i++) { g.globalAlpha = blurK * .85; const a = i / 6 * TAU; g.beginPath(); g.arc(0, 0, (ri + ro) / 2, a, a + .62); g.stroke(); }
+    g.restore(); g.globalAlpha = 1;
+  }
+  const rotR = R * .975;
+  const drawR = (img, ang, al) => { g.save(); g.globalAlpha = al; g.rotate(ang * RAD); g.drawImage(img, -rotR, -rotR, rotR * 2, rotR * 2); g.restore(); };
+  if (blurK < 1) drawR(rotorImg, S.angle, 1);
+  if (speed > 120 && blurK < 1) { for (let i = 1; i <= 2; i++) drawR(rotorImg, S.angle - S.v * i * .0045, .34 * (1 - blurK)); }
+  if (blurK > 0) drawR(blurImg, S.angle, blurK);
+  // streaks: lights that stay on the rim make the speed legible once the art is a blur
+  if (blurK > .05) {
+    g.save(); g.rotate(S.angle * .137 * RAD); g.lineCap = 'round';
+    for (let i = 0; i < 5; i++) {
+      const a = i / 5 * TAU; g.globalAlpha = blurK * (.28 + .1 * Math.sin(i * 7));
+      g.strokeStyle = '#ffffff'; g.lineWidth = (i % 2 ? .55 : 1.05) * U;
+      const r = rotR * (.45 + ((i * 37) % 5) * .1);
+      g.beginPath(); g.arc(0, 0, r, a, a + .95); g.stroke();
+    }
+    g.restore(); g.globalAlpha = 1;
+  }
+  // gloss stays fixed so the rotor looks lit from above, not painted
+  const gl2 = g.createLinearGradient(0, -rotR, 0, rotR);
+  gl2.addColorStop(0, '#ffffff36'); gl2.addColorStop(.45, '#ffffff00'); gl2.addColorStop(1, '#00091e70');
+  g.fillStyle = gl2; g.beginPath(); g.arc(0, 0, rotR, 0, TAU); g.fill();
+  // winning wedge: one rise, one fall
+  if (S.mode === 'land' || S.mode === 'reveal' || S.mode === 'idle') {
+    const rr = RAR[WEDGES[S.wedge].r], k = S.mode === 'land' ? smooth(0, .2, S.t) : 1;
+    const a = S.angle * RAD + S.wedge * TAU / 12 - Math.PI / 2, hw = TAU / 24, lift = 1 + .15 * (S.mode === 'land' ? easeOutBack(smooth(0, .2, S.t)) : 1);
+    g.fillStyle = `rgba(2,8,24,${.55 * k})`;
+    g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, rotR, a + hw, a - hw + TAU); g.closePath(); g.fill();
+    g.save(); g.shadowColor = '#000a'; g.shadowBlur = 2.4 * U * DPR; g.shadowOffsetY = 1 * U * DPR;
+    g.fillStyle = rr.c; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, rotR * lift, a - hw, a + hw); g.closePath(); g.fill(); g.restore();
+    g.save(); g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, rotR * lift, a - hw, a + hw); g.closePath(); g.clip();
+    g.rotate(S.angle * RAD); g.drawImage(rotorImg, -rotR * lift, -rotR * lift, rotR * lift * 2, rotR * lift * 2); g.restore();
+    g.globalCompositeOperation = 'lighter'; g.globalAlpha = .24 * k; g.fillStyle = rr.hi;
+    g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, rotR * lift, a - hw, a + hw); g.closePath(); g.fill();
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  }
+  // chrome hub with the rescue star
+  const hr = R * .285, hg = g.createRadialGradient(-hr * .3, -hr * .35, hr * .1, 0, 0, hr);
+  hg.addColorStop(0, '#ffffff'); hg.addColorStop(.45, '#c8d4e0'); hg.addColorStop(.8, '#6e7f92'); hg.addColorStop(1, '#2c3b52');
+  g.fillStyle = '#0d1c3c'; g.beginPath(); g.arc(0, 0, hr * 1.06, 0, TAU); g.fill();
+  g.fillStyle = hg; g.beginPath(); g.arc(0, 0, hr, 0, TAU); g.fill();
+  g.save(); g.fillStyle = '#d6302d'; g.beginPath();
+  for (let i = 0; i < 10; i++) { const rr = (i % 2 ? .28 : .68) * hr, a = i / 10 * TAU - Math.PI / 2; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+  g.closePath(); g.fill(); g.lineWidth = .6 * U; g.strokeStyle = '#ffffff'; g.stroke(); g.restore();
+  // flapper: fat Lego pointer swinging on a hinge above the rim
+  g.save(); g.translate(0, -R * 1.02);
+  const bend = clamp(S.v / 3200 * .65 + S.flap, -.75, .75);
+  g.rotate(bend);
+  g.fillStyle = '#0003'; g.fillRect(-3.4 * U, -6 * U, 7.4 * U, 8 * U);
+  const fg = g.createLinearGradient(-3 * U, 0, 3 * U, 0); fg.addColorStop(0, '#ff6456'); fg.addColorStop(1, '#bd1a1a');
+  g.fillStyle = fg; g.beginPath(); g.moveTo(-3.6 * U, -6.5 * U); g.lineTo(3.6 * U, -6.5 * U); g.lineTo(3.6 * U, -1 * U); g.lineTo(0, 7 * U); g.lineTo(-3.6 * U, -1 * U); g.closePath(); g.fill();
+  g.lineWidth = .8 * U; g.strokeStyle = '#ffffff'; g.lineJoin = 'round'; g.stroke();
+  g.fillStyle = '#ffffff'; g.beginPath(); g.arc(0, -3.2 * U, 1.5 * U, 0, TAU); g.fill();
+  g.fillStyle = '#7a0f12'; g.beginPath(); g.arc(0, -3.2 * U, .7 * U, 0, TAU); g.fill();
+  g.restore();
+  g.scale(1 / cosY, 1);
+  drawClaw(-1, R); drawClaw(1, R);
+  g.restore();
+}
+let layer, layerG;
+function drawWheelFaded() {
+  const d = clamp(S.dim / .62);
+  if (d <= .01) { drawWheel(); return; }
+  if (!layer || layer.width !== fxC.width || layer.height !== fxC.height) { layer = newCanvas(fxC.width, fxC.height); layerG = layer.getContext('2d'); }
+  layerG.setTransform(1, 0, 0, 1, 0, 0); layerG.clearRect(0, 0, layer.width, layer.height); layerG.setTransform(DPR, 0, 0, DPR, 0, 0);
+  const main = g; g = layerG; drawWheel(); g = main;
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1 - .75 * d; g.filter = `blur(${d * 3 * DPR}px)`; g.drawImage(layer, 0, 0); g.restore();
+}
+function textOutlined(txt, x, y, size, fill, outline = '#071630') {
+  g.font = `400 ${size}px "Fredoka One","Arial Rounded MT Bold","Trebuchet MS",sans-serif`;
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  g.strokeStyle = outline; g.lineWidth = size * .24; g.strokeText(txt, x, y + size * .05);
+  g.fillStyle = fill; g.fillText(txt, x, y);
+}
+function drawRays() {
+  const R = S.rv; if (!R) return;
+  const x = W / 2, y = H * .5, tier = R.tier;
+  const am = smooth(0, .28, R.t);
+  if (tier >= 2) { // rays: slow, wide, tier-sized
+    g.save(); g.translate(x, y - 2 * U); g.rotate(S.time * .2); g.globalCompositeOperation = 'lighter';
+    const n = 6 + tier * 2, rad = H * (.55 + tier * .1);
+    for (let i = 0; i < n; i++) {
+      const a = i / n * TAU, sp = TAU / n * .32, gr = g.createRadialGradient(0, 0, 0, 0, 0, rad);
+      gr.addColorStop(0, R.rr.hi + '88'); gr.addColorStop(1, R.rr.hi + '00');
+      g.globalAlpha = am * (.32 + tier * .08); g.fillStyle = gr;
+      g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, rad, a - sp, a + sp); g.closePath(); g.fill();
+    }
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.restore();
+  }
+}
+function drawPrize() {
+  const R = S.rv; if (!R) return;
+  const x = W / 2, y = H * .44;
+  {
+    const m = MODELS[R.w.m], base = H * { boat: .72, skin: .68, pet: .6, cash: .42 }[R.w.kind];
+    const s = base / m.ext;
+    const bp = R.built ? 1 + .12 * Math.max(0, 1 - (R.t - R.buildDur) / .28) * Math.sin(clamp((R.t - R.buildDur) / .28) * Math.PI) : 1;
+    const hop = (R.w.kind === 'pet' && R.built) ? Math.abs(Math.sin((R.t - R.buildDur) * 5.5)) * 3.2 * U * Math.max(0, 1 - (R.t - R.buildDur) / 2) : 0;
+    const bob = R.built && (R.w.kind === 'boat' || R.w.kind === 'skin') ? Math.sin(S.time * 2) * .8 * U : 0;
+    // soft shadow disc
+    g.fillStyle = '#00061880'; g.beginPath(); g.ellipse(x, y + 8 * U + m.height * s * .1, base * .46, base * .14, 0, 0, TAU); g.fill();
+    const yaw = .55 + (R.t) * .62;
+    drawVox(g, m, x, y + m.height * s * .35 + 4 * U - hop + bob, s * bp, yaw, { build: clamp(R.t / R.buildDur), drop: 16, sweep: R.w.kind === 'skin' ? R.sweep : undefined, grey: R.shat });
+  }
+}
+function drawLabel() {
+  const R = S.rv; if (!R) return;
+  const x = W / 2;
+  if (R.built) {
+    const k = clamp((R.t - R.buildDur) / .22), sc = easeOutBack(k);
+    if (k > 0) {
+      const y1 = H * .815;
+      g.save(); g.translate(x, y1); g.scale(sc, sc);
+      const rarity = R.shat ? '+' + R.rr.cash.toLocaleString() + ' CASH' : R.w.r.toUpperCase();
+      g.font = `400 ${4.2 * U}px "Fredoka One","Arial Rounded MT Bold","Trebuchet MS",sans-serif`;
+      const w2 = g.measureText(rarity).width + 5.5 * U, pill = R.shat ? '#b98a0c' : R.rr.c;
+      g.fillStyle = shade(pill, .62); g.beginPath(); g.roundRect(-w2 / 2, 6.6 * U, w2, 7.4 * U, 1.8 * U); g.fill();
+      g.fillStyle = pill; g.beginPath(); g.roundRect(-w2 / 2, 6 * U, w2, 7.2 * U, 1.8 * U); g.fill();
+      textOutlined(rarity, 0, 9.65 * U, 4.2 * U, '#fff');
+      textOutlined(R.shat ? 'OWNED' : R.w.name.toUpperCase(), 0, 1.5 * U, 7.6 * U, R.shat ? '#c8d4e0' : '#fff');
+      g.restore();
+      if (R.w.kind === 'cash' && !R.shat) textOutlined('+' + R.rr.cash.toLocaleString(), x, H * .12, 7.4 * U, '#ffd74a');
+    }
+  }
+  g.globalAlpha = 1;
+}
+function draw() {
+  renderBg();
+  g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  g.clearRect(0, 0, W, H);
+  drawFar();
+  drawParticles(false);
+  drawDay();
+  drawWheelFaded();
+  drawRays();
+  drawWall();
+  drawParticles(true);
+  drawImpact();
+  drawPrize();
+  drawLabel();
+  markBeat();
+}
+
+/* ---------- Dev panel ---------- */
+const BEATS = [['Break + dive', 1.9], ['Wind-up', .81], ['Spin hard', 2.6], ['Brakes', 1.35], ['Crawl', 2.16], ['Stop', .28], ['Reveal', 2.6]];
+const beatsEl = $('beats'); BEATS.forEach(([n, d]) => { const s = document.createElement('span'); s.textContent = n; s.style.flex = d + ' 1 0'; beatsEl.append(s); });
+function currentBeat() {
+  if (S.mode === 'plunge') return 0;
+  if (S.mode === 'spin') return S.st < T_RELEASE ? 1 : S.st < T_SLAM[0] ? 2 : S.st < 4.83 ? 3 : 4;
+  if (S.mode === 'land') return 5;
+  if (S.mode === 'reveal') return 6;
+  return -1;
+}
+let lastBeat = -2;
+function markBeat() { const b = currentBeat(); if (b === lastBeat) return; lastBeat = b; [...beatsEl.children].forEach((c, i) => c.classList.toggle('on', i === b)); }
+function chip(parent, label, fn, on) {
+  const b = document.createElement('button'); b.className = 'chip' + (on ? ' on' : ''); b.textContent = label;
+  b.onclick = () => fn(b); parent.append(b); return b;
+}
+function radio(parent, opts, set) {
+  const bs = opts.map(([l, v], i) => chip(parent, l, () => { bs.forEach(x => x.classList.remove('on')); bs[i].classList.add('on'); set(v); }, i === 0));
+}
+const iOf = name => WEDGES.findIndex(w => w.name === name);
+radio($('forceRow'), [['Random', -1], ['Cash', iOf('Cash')], ['Gull', iOf('Gull')], ['Otter', iOf('Otter')], ['Red Stripes', iOf('Red Stripes')], ['Gold Chrome', iOf('Gold Chrome')], ['Neon Glow', iOf('Neon Glow')], ['Riptide X', iOf('Riptide X')], ['Storm Runner', iOf('Storm Runner')]], v => O.force = v);
+const optRow = $('optRow');
+radio(optRow, [['1x', 1], ['0.5x', .5], ['0.25x', .25]], v => O.speed = v);
+chip(optRow, 'Already owned', b => { O.owned = !O.owned; b.classList.toggle('on', O.owned); });
+chip(optRow, 'Reduce motion', b => { O.reduce = !O.reduce; b.classList.toggle('on', O.reduce); });
+chip(optRow, 'Mute', b => { Audio.muted = !Audio.muted; b.classList.toggle('on', Audio.muted); if (Audio.master) Audio.master.gain.value = Audio.muted ? 0 : .8; });
+WEDGES.forEach((w, i) => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${i + 1}</td><td>${w.name} (${w.kind})</td><td>${w.r}</td><td>${wedgeOdds(i).toFixed(2)}%</td>`; $('odds').append(tr); });
+
+spinBtn.onclick = pressSpin;
+app.addEventListener('pointerdown', e => {
+  if (e.target !== fxC) return;
+  if (S.mode === 'reveal' && S.rv && S.rv.t > .25) { S.rv.t = Math.max(S.rv.t, S.rv.buildDur + S.rv.hold - .01); if (!S.rv.built) finishPrize(); }
+});
+
+/* ---------- Boot ---------- */
+buildFar();
+buildGround();
+rotorImg = makeRotor();
+blurImg = makeBlur();
+new ResizeObserver(resize).observe(app);
+resize();
+const h = new URLSearchParams(location.hash.slice(1));
+if (h.has('shot')) { // headless capture: seconds since the click, stepped deterministically
+  const wedge = h.has('w') ? +h.get('w') : 11;
+  Audio.init = () => {}; // no audio context without a real click
+  O.force = wedge; O.owned = h.has('owned'); pressSpin();
+  const n = Math.round(+h.get('shot') * 60);
+  for (let i = 0; i < n; i++) { sim(1 / 60); }
+  draw(); document.title = 'ready';
+} else if (h.has('day')) { draw(); document.title = 'ready'; }
+else {
+  let last = performance.now();
+  (function loop(now) {
+    const dt = Math.min((now - last) / 1000, .05) * O.speed; last = now;
+    sim(dt); draw(); requestAnimationFrame(loop);
+  })(last);
+}
+</script>
+</body>
+</html>

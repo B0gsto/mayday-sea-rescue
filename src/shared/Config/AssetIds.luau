@@ -1303,4 +1303,27 @@ AssetIds.FxSpin = {
 	FX_SpinHaloRing = "rbxassetid://72996208588583",
 } :: { [string]: string }
 
+-- Deep Spin sprites (Image ids), art/source/ui/spin/render.py
+AssetIds.DeepSpin = {
+	blur = "rbxassetid://75427049305275",
+	flapper = "rbxassetid://93309007294411",
+	housing = "rbxassetid://76900393729882",
+	rays = "rbxassetid://123464404891898",
+	rotor = "rbxassetid://109730278230076",
+	strata = "rbxassetid://103678115207998",
+	vortex = "rbxassetid://84819778667858",
+	wedge1 = "rbxassetid://94540363417317",
+	wedge10 = "rbxassetid://106800331559276",
+	wedge11 = "rbxassetid://77222974189967",
+	wedge12 = "rbxassetid://134704696550494",
+	wedge2 = "rbxassetid://123283277589315",
+	wedge3 = "rbxassetid://85053024880861",
+	wedge4 = "rbxassetid://122771102581832",
+	wedge5 = "rbxassetid://126137638583787",
+	wedge6 = "rbxassetid://71695658142075",
+	wedge7 = "rbxassetid://110634759316321",
+	wedge8 = "rbxassetid://131524296062832",
+	wedge9 = "rbxassetid://126880482395748",
+} :: { [string]: string }
+
 return AssetIds

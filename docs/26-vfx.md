@@ -34,7 +34,8 @@ The game's effects follow the global VFX rules (user CLAUDE.md "VFX (all games)"
 | Barge moors | state | a bow wave and a foam ring at the quay, a soft horn smoke puff |
 | Boat wake / spray | state | the existing Ocean/Wake trail + spray, scaled by speed; chunky foam |
 | Storm | state | rain streaks, whitecaps, spindrift (docs/05 7) |
-| Prize wheel | spectacle | spin streaks on the rim, a win burst sized by rarity |
+| Prize wheel (others' view) | spectacle | spin streaks on the rim, a win burst sized by rarity |
+| Deep Spin (your own spin) | feedback + spectacle | `deep_ground_burst`, `deep_water_burst`, `deep_rush`, `deep_release`, `deep_slam`, `deep_grip`, `deep_coins`, `deep_bubbles` + pooled studded plates (DeepSpin/Set); reveal uses `wheel_win` / `fx1_wheel_jackpot` sized by `SpinCurve.BURST` |
 | Chimneys (smokehouse, cottages) | ambience | a slow puff every few seconds, round studded smoke, near the player only |
 | Dolphin leap (sea1) | ambience | `dolphin_leap`: a small crown + drops where a Lego dolphin of a passing pod dives back in, a soft splash; near the camera only |
 | Sea zone line (docs/29 B) | state | `SeaZoneController`: pooled buoys + a soft steady glow curtain in the colour of the water beyond, near the player only, silent |

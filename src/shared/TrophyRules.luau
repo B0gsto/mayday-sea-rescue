@@ -15,14 +15,14 @@ local function traitRank(trait: string?): number
 	return table.find(WorkerRules.TRAIT_BEST, trait or "") or #WorkerRules.TRAIT_BEST + 1
 end
 
--- The wheel prizes the profile keeps (`flags` = data.flags): the claimed finishes and trails, and the grand boat.
+-- The wheel prizes the profile keeps (`flags` = data.flags): the claimed finishes and trails, and the won boats.
 function TrophyRules.wheelPrizes(flags: { [string]: any }): { SpinRules.Prize }
 	local state = SpinRules.decode(flags.spin)
 	local out = {}
 	for _, prize in SpinRules.PRIZES do
 		if
 			SpinRules.owns(state, prize)
-			or (prize.kind == "boat" and flags.spinBoat == prize.vehicle)
+			or (prize.vehicle ~= nil and SpinRules.wonBoat(flags.spinBoat, prize.vehicle))
 		then
 			table.insert(out, prize)
 		end

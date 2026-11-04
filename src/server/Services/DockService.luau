@@ -1638,7 +1638,6 @@ function DockService.Init()
 	buildRemote = buildEvent
 
 	Net.event("Dock_Finish").OnServerEvent:Connect(promptFinish)
-
 	-- Robux skips the Cash, never the order: a level whose HQ gate/prerequisites are missing is granted as
 	-- prepaid (show builds it once legal); a retried receipt for the same level is harmless.
 	for _, key in DockConfig.BUILDINGS do

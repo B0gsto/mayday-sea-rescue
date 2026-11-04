@@ -14,12 +14,14 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
 local PrizeWheel = require(Shared:WaitForChild("PrizeWheel"))
+local SpinCurve = require(Shared:WaitForChild("SpinCurve"))
 local SpinRules = require(Shared:WaitForChild("SpinRules"))
 local WheelMath = require(Shared:WaitForChild("WheelMath"))
 
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
-local SpinCinematic =
-	require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("SpinCinematic"))
+local DeepSpin = script.Parent:WaitForChild("DeepSpin")
+local Prize = require(DeepSpin:WaitForChild("Prize"))
+local Sequence = require(DeepSpin:WaitForChild("Sequence"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local Kit = UI:WaitForChild("Kit")
@@ -107,124 +109,18 @@ local function confetti(userId: number, rarity: string)
 	end
 end
 
-local VARIANT: { [string]: { color: Color3, material: Enum.Material } } = {
-	Golden = { color = Color3.fromRGB(255, 198, 64), material = M.Metal },
-	Neon = { color = Color3.fromRGB(70, 255, 220), material = M.Neon },
-	Rainbow = { color = Color3.fromRGB(255, 90, 190), material = M.Neon },
-	Galaxy = { color = Color3.fromRGB(46, 32, 84), material = M.SmoothPlastic },
-}
-
-local FINISH: { [string]: { color: Color3, material: Enum.Material } } = {
-	SpinGold = { color = Color3.fromRGB(255, 198, 64), material = M.Metal },
-	SpinNeon = { color = Color3.fromRGB(70, 255, 220), material = M.Neon },
-	SpinRainbow = { color = Color3.fromRGB(255, 90, 190), material = M.Neon },
-	SpinLava = { color = Color3.fromRGB(255, 92, 30), material = M.Neon },
-	SpinStars = { color = Color3.fromRGB(255, 238, 150), material = M.Neon },
-	SpinFire = { color = Color3.fromRGB(255, 120, 20), material = M.Neon },
-	SpinGalaxy = { color = Color3.fromRGB(120, 80, 220), material = M.Neon },
-}
-
--- the prize that floats above the wheel: a pet shape, a spinning finish boat / swatch, a boat or coins
+-- the prize that floats above the wheel for everyone else: the real pet or boat, its name over it
 local function prizeAt(payload: any, at: Vector3): Model
-	local model = Instance.new("Model")
+	local model = Prize.model(payload, 5)
 	model.Name = "WheelPrize"
-	local kind = payload.kind
-	local main: Part
-	if kind == "petVariant" then
-		local style = VARIANT[payload.variant] or VARIANT.Golden
-		main = part("Pet", Vector3.new(2.6, 2.6, 3), CFrame.new(at), style.color, style.material)
-		main.Shape = Enum.PartType.Ball
-		main.Parent = model
-		local head = part(
-			"Head",
-			Vector3.new(1.8, 1.8, 1.8),
-			CFrame.new(at + Vector3.new(0, 1.6, -1.1)),
-			style.color,
-			style.material
-		)
-		head.Shape = Enum.PartType.Ball
-		head.Parent = model
-		for _, x in { -0.7, 0.7 } do
-			local ear = part(
-				"Ear",
-				Vector3.new(0.5, 0.9, 0.5),
-				CFrame.new(at + Vector3.new(x, 2.6, -1.1)),
-				style.color,
-				style.material
-			)
-			ear.Parent = model
-		end
-	elseif kind == "finish" or kind == "trail" then
-		local style = FINISH[payload.option] or FINISH.SpinGold
-		if kind == "trail" then
-			main = part(
-				"Swatch",
-				Vector3.new(0.5, 4, 4),
-				CFrame.new(at) * CFrame.Angles(0, 0, math.pi / 2),
-				style.color,
-				style.material,
-				Enum.PartType.Cylinder
-			)
-		else
-			main = part(
-				"Hull",
-				Vector3.new(4.4, 1.2, 2.2),
-				CFrame.new(at),
-				style.color,
-				style.material
-			)
-			part(
-				"Cabin",
-				Vector3.new(1.8, 1.3, 1.4),
-				CFrame.new(at + Vector3.new(-0.5, 1.2, 0)),
-				style.color,
-				style.material
-			).Parent =
-				model
-		end
-		main.Parent = model
-	elseif kind == "boat" then
-		main = part("Hull", Vector3.new(4.6, 1.3, 2.3), CFrame.new(at), Color3.fromRGB(70, 78, 88))
-		part(
-			"Stripe",
-			Vector3.new(4.7, 0.35, 2.4),
-			CFrame.new(at + Vector3.new(0, 0.35, 0)),
-			Color3.fromRGB(224, 56, 40)
-		).Parent =
-			model
-		part(
-			"Cabin",
-			Vector3.new(1.8, 1.4, 1.5),
-			CFrame.new(at + Vector3.new(-0.6, 1.3, 0)),
-			Color3.fromRGB(242, 240, 232)
-		).Parent =
-			model
-		main.Parent = model
-	else
-		main =
-			part("Coin", Vector3.new(0.5, 2.4, 2.4), CFrame.new(at), Color3.fromRGB(255, 208, 80))
-		main.Shape = Enum.PartType.Cylinder
-		main.CFrame *= CFrame.Angles(0, 0, math.pi / 2)
-		main.Parent = model
-		for i = 1, 2 do
-			part(
-				"Coin",
-				Vector3.new(0.4, 2.2, 2.2),
-				CFrame.new(at + Vector3.new(0.5 * i, 0.7 * i, 0)) * CFrame.Angles(0, 0, math.pi / 2),
-				Color3.fromRGB(255, 208, 80)
-			).Parent =
-				model
-		end
-	end
-	model.PrimaryPart = model.PrimaryPart or main
-
+	model:PivotTo(CFrame.new(at))
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "PrizeName"
 	gui.Size = UDim2.fromOffset(240, 76)
 	gui.StudsOffset = Vector3.new(0, 3.4, 0)
 	gui.AlwaysOnTop = true
 	gui.MaxDistance = 220
-	gui.Parent = main
+	gui.Parent = model:FindFirstChildWhichIsA("BasePart", true)
 	local label = Instance.new("TextLabel")
 	label.BackgroundTransparency = 1
 	label.Size = UDim2.fromScale(1, 1)
@@ -235,16 +131,15 @@ local function prizeAt(payload: any, at: Vector3): Model
 	label.TextStrokeColor3 = Color3.new(0, 0, 0)
 	label.Text = payload.name or "Prize"
 	label.Parent = gui
-	model.Parent = Workspace -- its parts moved in from Workspace: unparented, the prize never showed
+	model.Parent = Workspace
 	return model
 end
 
--- `to`: the spinner's cinematic stage (the capsule pops out of the hub toward the camera); else above the wheel
-local function reveal(payload: any, rotor: Model, to: Vector3?)
+local function reveal(payload: any, rotor: Model)
 	local at = rotor:GetPivot().Position
 	local color = rarityColor(payload.rarity)
-	local start = if to then at else at + Vector3.new(0, 3.5, 0)
-	local finish = to or at + Vector3.new(0, 8.5, 0)
+	local start = at + Vector3.new(0, 3.5, 0)
+	local finish = at + Vector3.new(0, 8.5, 0)
 
 	local capsule = Instance.new("Model")
 	capsule.Name = "PrizeCapsule"
@@ -278,9 +173,6 @@ local function reveal(payload: any, rotor: Model, to: Vector3?)
 			conn = nil
 			capsule:Destroy()
 			burst(finish, payload.rarity, tonumber(payload.userId) or 0)
-			if tonumber(payload.userId) == player.UserId then
-				player:SetAttribute("SpinRevealed", os.clock()) -- HudController lands the held Cash now
-			end
 			local jackpot = SpinRules.rank(payload.rarity) >= SpinRules.rank("Legendary") -- FX1 has its own pillar
 			if jackpot and tonumber(payload.userId) ~= player.UserId then -- a sky beam off their island
 				VFXKit.play("spincine_skybeam", CFrame.new(finish), { color = color, still = true })
@@ -372,7 +264,7 @@ local function spin(payload: any)
 	local pivotPart = rotor.PrimaryPart
 	basePivot[payload.plot] = basePivot[payload.plot] or rotor:GetPivot()
 	local base = basePivot[payload.plot]
-	local count = #SpinRules.SEGMENTS
+	local count = SpinCurve.COUNT
 	local want = WheelMath.normalize(WheelMath.spinAngle(payload.segment or 1, count, 0))
 	-- from the rotor's real angle: after streaming out and back it sits at the server's pose, not our last stop
 	local turned = base:ToObjectSpace(rotor:GetPivot()).RightVector
@@ -386,34 +278,18 @@ local function spin(payload: any)
 	local lastTicks = WheelMath.ticksFor(from, count)
 	AudioController.play("Rigging_Creak", pivotPart.Position, 2.5, 1.3) -- the wheel is shoved round
 	spinning[payload.plot] = true
-	-- your own spin is a cinematic (Camera/SpinCinematic); it reveals the prize on its own beat
+	-- your own spin is the Deep Spin (DeepSpin/Sequence); the real rotor still turns and lands for everyone else
 	local cine = tonumber(payload.userId) == player.UserId
 	if cine then
 		for _, d in wheel:GetDescendants() do
 			if d:IsA("ClickDetector") then
-				d.MaxActivationDistance = 0 -- a skip tap must not spend the next token; back at the reveal
+				d.MaxActivationDistance = 0 -- a skip tap must not spend the next token; back on the way out
 			end
 		end
-		SpinCinematic.start({
+		Sequence.start({
 			payload = payload,
 			hub = base,
 			wheel = wheel,
-			landIn = start + duration - Workspace:GetServerTimeNow(),
-			reveal = function(to: Vector3)
-				reveal(payload, rotor, to)
-				gate(wheel)
-			end,
-			colorOf = rarityColor,
-			prizeModel = function(
-				at: Vector3
-			): Model -- the payoff stage's prize, its name kept for the reveal
-				local m = prizeAt(payload, at)
-				local name = m:FindFirstChild("PrizeName", true)
-				if name then
-					name:Destroy()
-				end
-				return m
-			end,
 			onExit = function()
 				gate(wheel)
 			end,
@@ -425,7 +301,9 @@ local function spin(payload: any)
 		local angle = from + WheelMath.angleAt(math.clamp(t, 0, 1), target - from, 7)
 		rotor:PivotTo(base * CFrame.Angles(0, 0, math.rad(angle)))
 		local ticks = WheelMath.ticksFor(angle, count)
-		if ticks > lastTicks then
+		if ticks > lastTicks and cine then
+			lastTicks = ticks -- the spinner is in the Deep: no ticks or chips at the real wheel
+		elseif ticks > lastTicks then
 			lastTicks = ticks
 			flapAt = os.clock()
 			AudioController.play("UI_Prompt", pivotPart.Position, 0.45, 1.25 + math.random() * 0.2)
@@ -562,9 +440,9 @@ local function fetchCatalogue()
 	end)
 end
 
--- DEV bench (`spincine <Rarity>`): your wheel spins to a segment of that rarity and plays the cinematic; nothing
--- is spent or granted (the server never hears of it)
-function PrizeWheelController.DevSpin(rarity: string): boolean
+-- DEV bench (chat `/spin <wedge>`, DEV panel "Deep Spin"): your wheel plays the Deep Spin onto wedge 1..12; nothing
+-- is spent or granted (the server never hears of it).
+function PrizeWheelController.DevSpin(wedge: number): boolean
 	local plot = player:GetAttribute("DockPlot")
 	local wheel = if type(plot) == "number" then wheels[plot] else nil
 	if not wheel then
@@ -573,35 +451,30 @@ function PrizeWheelController.DevSpin(rarity: string): boolean
 			break
 		end
 	end
-	local segment = table.find(SpinRules.SEGMENTS, rarity)
-	local prize: any = nil
-	for _, row in SpinRules.PRIZES do
-		if row.rarity == rarity and (prize == nil or row.kind ~= "cash") then
-			prize = row
-		end
-	end
-	if not (wheel and segment and prize) then
+	local p: any = SpinRules.prize(SpinRules.WEDGES[wedge])
+	if not (wheel and p) then
 		return false
 	end
 	spin({
+		dev = true,
 		userId = player.UserId,
 		plot = plot,
-		segment = segment,
+		segment = wedge,
 		startTime = Workspace:GetServerTimeNow(),
 		duration = 4.5, -- SpinService.WHEEL_TIME
-		prize = prize.id,
-		name = prize.name,
-		rarity = rarity,
-		kind = prize.kind,
-		icon = prize.icon,
-		variant = prize.variant,
-		option = prize.option,
-		vehicle = prize.vehicle,
+		prize = p.id,
+		name = p.name,
+		rarity = p.rarity,
+		kind = p.kind,
+		option = p.option,
+		pet = p.pet,
+		vehicle = p.vehicle,
 	})
 	return true
 end
 
 function PrizeWheelController.Init()
+	Sequence.preload()
 	Net.event("Spin_Wheel").OnClientEvent:Connect(spin)
 	Net.event("Spin_Flex").OnClientEvent:Connect(function(payload: any)
 		if type(payload) ~= "table" or type(payload.name) ~= "string" then
@@ -625,7 +498,7 @@ function PrizeWheelController.Init()
 			AudioController.play("FX_Chime", nil, 0.6)
 			banner()
 		else
-			SpinCinematic.whenDone(banner) -- never over your own cinematic
+			Sequence.whenDone(banner) -- never over your own spin
 		end
 	end)
 

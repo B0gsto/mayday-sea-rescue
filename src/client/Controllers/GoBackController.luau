@@ -93,7 +93,9 @@ local function refresh()
 					testRide = player:GetAttribute("TestRide") ~= nil,
 					at = model:GetPivot().Position,
 					bay = player:GetAttribute("BayCFrame"),
-					spinning = player:GetAttribute("WheelSpinning") == true,
+					-- SpinCinematic: the client's whole Deep Spin, longer than the server's WheelSpinning
+					spinning = player:GetAttribute("WheelSpinning") == true
+						or player:GetAttribute("SpinCinematic") == true,
 				})
 				== nil
 		)

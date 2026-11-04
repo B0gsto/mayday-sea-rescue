@@ -1591,242 +1591,154 @@ Presets.ALL.sprint_brake = preset({
 	},
 })
 
----------------------------------------------------------------- spin cinematic (owner 2026-11-01)
--- SpinCinematic's beats (Camera/SpinCinematic), fired by name with opts.color = the rarity and opts.still (the
--- cinematic drives its own camera). Bolt, brick and halo are Lego flipbooks; flare and rays are stand-ins until
--- theirs pass (an id change in VFXTextures). Played with the CFrame's up axis toward the camera (flare, halo, tunnel)
--- or straight up (beam, rays, shafts, bolt, coins, stars).
-local STAR = Color3.fromRGB(255, 246, 214)
-local BOLT_BLUE = Color3.fromRGB(170, 200, 255)
+---------------------------------------------------------------- the Deep Spin (Controllers/DeepSpin/Sequence)
+-- Fired by name with opts.still (the sequence drives its own camera). Sizes read at the hero wheel's 26-stud shot.
+local SPARK = Color3.fromRGB(255, 214, 90)
 
-local function spinRays(count: number, length: number, delay: number, emission: number): Layer
-	return with(tinted(rays(count, { WHITE }, length, delay, emission)), { tex = "spincine_rays" })
+local function raw(l: any): Layer
+	return l
 end
 
--- feedback: one rung of the rarity ladder: the hub flare pops a size up and throws a ring of studs
-Presets.ALL.spincine_flare = preset({
+-- spectacle: the ground bursts: dust and dirt under the pooled studded plates (Set.throwPlates), one deep boom
+Presets.ALL.deep_ground_burst = preset({
 	job = "spectacle",
 	big = true,
 	layers = {
-		with(tinted(core(WHITE, 9, 0, 0.7)), { tex = "spincine_flare" }),
-		with(spinRays(8, 8, 0, 0.5), { spread = { 180, 180 }, lifetime = { 0.4, 0.5 } }),
-		tinted(studRing(WHITE, 9, 0.45, 0)),
+		with(puffs(14, DUST, 3, 7, 0.9), { speed = { 6, 16 }, spread = { 70, 70 } }),
+		with(plates({ Color3.fromRGB(122, 79, 43), Color3.fromRGB(92, 58, 32) }, 26), {
+			size = { 1.4 },
+			speed = { 14, 30 },
+			spread = { 65, 65 },
+		}),
 	},
-	light = { color = WHITE, brightness = 2, range = 20, time = 0.4 },
-	sounds = sounds({ { "FX_Pop", 0, 0.7, 1 } }), -- SpinCinematic adds the climbing chime
+	sounds = sounds({ { "FX_Boom", 0, 1, 0.8 }, { "FX_Thud", 0, 0.8, 0.6 } }),
 })
 
--- spectacle: Rare: a rarity-coloured pillar shoots up off the wheel
-Presets.ALL.spincine_beam = preset({
+-- spectacle: punching through foam: white crown, drops and a foam ring round the wheel
+Presets.ALL.deep_water_burst = preset({
 	job = "spectacle",
 	big = true,
 	layers = {
-		with(spinRays(10, 16, 0, 0.5), { spread = { 30, 30 } }),
-		tinted(studRing(WHITE, 14, 0.8, 0)),
+		raw({
+			tex = "splash_crown",
+			count = 6,
+			colors = { FOAM },
+			size = { 9, 16 },
+			transparency = { 0, 0.1, 1 },
+			lifetime = { 0.35, 0.55 },
+			speed = { 2, 5 },
+			spread = { 180, 180 },
+		}),
+		with(puffs(26, FOAM, 2.5, 6, 0.6), { speed = { 12, 30 }, spread = { 180, 180 } }),
+		with(groundRing("foam_ring", FOAM, { 8, 30 }, 0.5), {}),
 	},
-	beams = { { color = WHITE, width = 7, height = 90, time = 1.6, emission = 0.6, tint = true } },
-	light = { color = WHITE, brightness = 3, range = 30, time = 1 },
-	sounds = sounds({ { "FX_PowerUp", 0, 1, 1 }, { "FX_Chime", 0.15, 0.8, 1.2 } }),
+	sounds = sounds({ { "Splash_Entry", 0, 1, 0.9 } }),
 })
 
--- spectacle: Epic / Legendary god rays fanning up off the stage
-Presets.ALL.spincine_rays = preset({
-	job = "showcase",
-	big = true,
+-- state: bubble streaks rush past on the way down
+Presets.ALL.deep_rush = preset({
+	job = "state",
 	layers = {
-		with(spinRays(14, 22, 0, 0.5), { lifetime = { 1.2, 1.6 }, drag = 5 }),
-		with(spinRays(10, 16, 0.5, 0.45), { lifetime = { 1, 1.3 }, drag = 5 }),
-		with(tinted(charge(WHITE, 12, 0.5)), { tex = "spincine_flare", emission = 0.5 }),
-	},
-	sounds = sounds({ { "FX_Reveal", 0, 0.9, 1 } }),
-})
-
--- spectacle: Mythic's ray tunnel: streaks race out from round the stage past the camera (opts.radius)
-Presets.ALL.spincine_tunnel = preset({
-	job = "showcase",
-	big = true,
-	layers = {
-		{
-			tex = "spincine_rays",
-			count = 48,
-			colors = { STAR, GOLD },
-			ring = true,
+		raw({
+			tex = "bubbles",
+			count = 26,
+			colors = { Color3.fromRGB(212, 246, 255) },
+			size = { 0.25, 0.9 },
+			transparency = { 0.1, 0.2, 1 },
+			lifetime = { 0.45, 0.8 },
+			speed = { 24, 52 },
+			spread = { 6, 6 },
 			streak = true,
-			size = { 3, 9, 6 },
-			transparency = { 0.6, 0.2, 1 },
-			lifetime = { 0.5, 0.7 },
-			speed = { 50, 80 },
-			emission = 0.7,
-		},
+		}),
 	},
-	sounds = sounds({ { "FX_Whoosh", 0, 0.8, 1.2 } }),
+	sounds = sounds({ { "FX_Whoosh", 0, 0.5, 0.75 } }),
 })
 
--- spectacle: Mythic's lightning strike lands on the wheel: a cold core, sparks, a stud ring and plates
-Presets.ALL.spincine_bolt = preset({
-	job = "showcase",
-	big = true,
+-- ambience: a few slow bubbles in the Deep
+Presets.ALL.deep_bubbles = preset({
+	job = "ambience",
 	layers = {
-		with(core(STAR, 22, 0, 0.9), { tex = "spincine_flare" }),
-		{
-			tex = "spincine_bolt", -- toy lightning forks thrown off the strike (one variant each: random start, fps 0)
-			count = 12,
-			colors = { STAR, BOLT_BLUE },
-			size = { 5, 9, 6 },
-			transparency = { 0, 0.15, 1 },
-			lifetime = { 0.3, 0.55 },
-			speed = { 30, 55 },
+		raw({
+			tex = "bubbles",
+			count = 5,
+			colors = { Color3.fromRGB(212, 246, 255) },
+			size = { 0.25, 0.7 },
+			transparency = { 0.25, 0.35, 1 },
+			lifetime = { 3, 5 },
+			speed = { 2, 4 },
+			spread = { 14, 14 },
+		}),
+	},
+})
+
+-- feedback: the release: a soft ring, bubbles thrown off the rim as the wheel goes
+Presets.ALL.deep_release = preset({
+	job = "feedback",
+	layers = {
+		with(groundRing("shockwave_ring", Color3.fromRGB(150, 235, 255), { 8, 26 }, 0.55), {}),
+		raw({
+			tex = "bubbles",
+			count = 26,
+			colors = { Color3.fromRGB(212, 246, 255) },
+			size = { 0.3, 0.8 },
+			transparency = { 0.1, 0.2, 1 },
+			lifetime = { 0.5, 1 },
+			speed = { 8, 22 },
 			spread = { 180, 180 },
-			rotation = { 0, 360 },
-			drag = 4,
-			emission = 1,
-		},
-		studRing(WHITE, 26, 0.8, 0),
-		plates({ WHITE, YELLOW }, 14),
+		}),
 	},
-	light = { color = BOLT_BLUE, brightness = 4, range = 60, time = 0.8 },
-	sounds = sounds({ { "Thunder_Near", 0, 1.2, 1 }, { "FX_Boom", 0, 1.1, 0.8 } }),
+	sounds = sounds({ { "FX_Whoosh", 0, 0.9, 0.55 }, { "FX_Boom", 0, 0.6, 1.3 } }),
 })
 
--- spectacle: Mythic's night: a starfield ring at opts.radius (play it at a few heights)
-Presets.ALL.spincine_stars = preset({
-	job = "showcase",
-	big = true,
+-- feedback: a claw bites the rim: sparks shear along the spin, Lego chips fly
+Presets.ALL.deep_slam = preset({
+	job = "feedback",
 	layers = {
-		{
-			tex = "spincine_flare",
-			count = 90,
-			colors = { STAR, BOLT_BLUE },
-			ring = true,
-			size = { 0, 0.9, 0.9, 0 },
-			transparency = { 0, 0, 0, 1 },
-			lifetime = { 6, 8 },
-			speed = { 0.5, 2 },
-			spread = { 60, 60 },
-			emission = 1,
-		},
+		raw({
+			tex = "spin_streak",
+			count = 20,
+			colors = { SPARK, Color3.fromRGB(255, 181, 46) },
+			size = { 0.5, 0.9 },
+			transparency = { 0, 0.1, 1 },
+			lifetime = { 0.18, 0.5 },
+			speed = { 14, 36 },
+			spread = { 22, 22 },
+			accel = Vector3.new(0, -9, 0),
+			streak = true,
+			emission = 0.3,
+		}),
+		with(confetti(14, { 4, 11 }, 180, { YELLOW, RED, WHITE }), {
+			size = { 0.9, 0.8 },
+			lifetime = { 0.5, 1 },
+		}),
 	},
-	sounds = sounds({ { "FX_Magic", 0, 0.5, 0.8 } }),
+	sounds = sounds({ { "FX_Thud", 0, 1, 0.55 }, { "Hull_Slam", 0, 0.7, 1.2 } }),
 })
 
--- spectacle: Epic's nebula on the payoff stage: big soft studded clouds in the rarity colour drifting round the box
--- (opts.radius; play it at a few heights)
-Presets.ALL.spincine_nebula = preset({
-	job = "showcase",
-	big = true,
+-- feedback: a cash win or an owned duplicate's payout: a fan of coins
+Presets.ALL.deep_coins = preset({
+	job = "feedback",
+	layers = { coins(26, { 14, 26 }, 60, 0) },
+	sounds = sounds({ { "Cash_Coins", 0, 0.6, 1.1 } }),
+})
+
+-- feedback: brake pads spit a few sparks while they grip
+Presets.ALL.deep_grip = preset({
+	job = "feedback",
 	layers = {
-		{
-			tex = "puff_smoke",
-			count = 24,
-			colors = { WHITE },
-			tint = true,
-			ring = true,
-			size = { 14, 26 },
-			transparency = { 1, 0.55, 0.6, 1 },
-			lifetime = { 3.5, 4.5 },
-			speed = { 1, 3 },
+		raw({
+			tex = "spin_streak",
+			count = 4,
+			colors = { SPARK },
+			size = { 0.3, 0.6 },
+			transparency = { 0, 0.1, 1 },
+			lifetime = { 0.25, 0.55 },
+			speed = { 6, 18 },
 			spread = { 40, 40 },
-			rotation = { 0, 360 },
-			spin = { -10, 10 },
-			emission = 0.4,
-		},
+			accel = Vector3.new(0, -9, 0),
+			streak = true,
+		}),
 	},
-	sounds = sounds({ { "FX_Magic", 0, 0.6, 0.75 } }),
-})
-
--- spectacle: the gold Lego halo locks shut round the prize: a glow ring, a stud ring, gold confetti and rays
-Presets.ALL.spincine_halo = preset({
-	job = "showcase",
-	big = true,
-	layers = {
-		with(
-			groundRing("spincine_halo", GOLD, { 14, 26 }, 1.2),
-			{ transparency = { 0, 0.1, 1 }, emission = 1 }
-		),
-		studRing(PALE_GOLD, 18, 0.9, 0.15),
-		with(
-			confetti(36, { 20, 34 }, 180, { GOLD, YELLOW, WHITE }),
-			{ drag = 1.2, accel = Vector3.new(0, -14, 0) }
-		),
-		{
-			tex = "spincine_brick", -- gold bricks tumbling off the locked ring; the sheet is gold already, so no tint
-			count = 16,
-			colors = { WHITE },
-			size = { 2.4, 2.4, 2 },
-			transparency = { 0, 0, 1 },
-			lifetime = { 1.1, 1.7 },
-			speed = { 16, 30 },
-			spread = { 180, 180 },
-			drag = 1,
-			accel = Vector3.new(0, -18, 0),
-			emission = 0.2,
-		},
-		with(rays(12, { PALE_GOLD }, 18, 0, 0.6), { tex = "spincine_rays", spread = { 180, 180 } }),
-	},
-	light = { color = GOLD, brightness = 4, range = 40, time = 1.4 },
-	sounds = sounds({
-		{ "FX_ChimeHit", 0, 1, 1 },
-		{ "FX_TonalHit", 0, 0.9, 1.1 },
-		{ "FX_ChimeTail", 0.3, 0.9, 1 },
-	}),
-})
-
--- spectacle: Legendary's golden sea: a gold splash ring where the plinth breaks the surface, shafts of light
-Presets.ALL.spincine_shafts = preset({
-	job = "showcase",
-	big = true,
-	layers = {
-		groundRing("foam_ring", GOLD, { 8, 20 }, 1.2),
-		groundRing("shockwave_ring", PALE_GOLD, { 6, 26 }, 1.4, 0.2),
-		with(
-			rays(10, { PALE_GOLD, GOLD }, 26, 0, 0.5),
-			{ tex = "spincine_rays", lifetime = { 1.4, 1.8 }, drag = 4, spread = { 25, 25 } }
-		),
-	},
-	beams = {
-		{ color = GOLD, width = 14, height = 140, time = 4.5, emission = 0.5 },
-		{ color = WARM, width = 6, height = 160, time = 4.2, emission = 0.8 },
-	},
-	light = { color = GOLD, brightness = 4, range = 50, time = 3 },
-	sounds = sounds({ { "FX_Magic", 0, 1, 0.9 }, { "FX_SplashSmall", 0.1, 1, 0.7 } }),
-})
-
--- spectacle: Legendary's coin rain from a disc above the stage (opts.radius)
-Presets.ALL.spincine_coins = preset({
-	job = "showcase",
-	big = true,
-	layers = {
-		with(
-			coins(40, { 2, 6 }, 60, 0),
-			{ ring = true, lifetime = { 2.2, 2.8 }, accel = Vector3.new(0, -25, 0), drag = 0.6 }
-		),
-		with(
-			coins(30, { 2, 6 }, 60, 0.6),
-			{ ring = true, lifetime = { 2.2, 2.8 }, accel = Vector3.new(0, -25, 0), drag = 0.6 }
-		),
-		with(
-			confetti(30, { 4, 10 }, 70, { GOLD, YELLOW }),
-			{ ring = true, lifetime = { 2.4, 3 }, drag = 0.8, accel = Vector3.new(0, -12, 0) }
-		),
-	},
-	sounds = sounds({
-		{ "FX_Coins", 0, 1.1, 1 },
-		{ "FX_PlasticRain", 0.4, 1, 1 },
-		{ "FX_Coins", 0.7, 0.8, 1.1 },
-	}),
-})
-
--- spectacle: someone else's Legendary / Mythic: a tall rarity-coloured beam into the sky off their island
-Presets.ALL.spincine_skybeam = preset({
-	job = "spectacle",
-	big = true,
-	cull = 900,
-	layers = { with(tinted(core(WHITE, 16, 0, 0.6)), { tex = "spincine_flare" }) },
-	beams = {
-		{ color = WHITE, width = 12, height = 420, time = 4, emission = 0.7, tint = true },
-		{ color = WHITE, width = 4, height = 460, time = 3.5, emission = 1, tint = false },
-	},
-	sounds = sounds({ { "FX_PowerUp", 0, 0.8, 0.8 } }),
 })
 
 -- feedback: a pirate appears on the water (docs/29 D, PirateController, once where it spawns): a crown and foam ring;

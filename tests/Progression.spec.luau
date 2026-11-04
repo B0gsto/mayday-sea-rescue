@@ -83,7 +83,12 @@ return function(t)
 			t.expect((Rules.canBuyVehicle(data(1e9, { Boathouse = true }), id))).toBe(false)
 			t.expect((Rules.canUseVehicle(data(0), id, true))).toBe(true)
 		end
-		-- the spin wheel's grand prize: the profile flag owns exactly that one pass-only craft
+		-- a wheel win now is a look: the flag alone never gives a drivable craft (docs/30 section 3)
+		local look = data(0)
+		look.flags.spinBoat = "StormRunner,RiptideX"
+		t.expect(Rules.ownsVehicle(look, "StormRunner")).toBe(false)
+		t.expect((Rules.canUseVehicle(look, "RiptideX"))).toBe(false)
+		-- an old save's wheel boat: the vehicles entry plus the flag stays drivable
 		local won = data(0, {}, { StormRunner = true })
 		t.expect(Rules.ownsVehicle(won, "StormRunner")).toBe(false)
 		-- wheel looks: worn once won, not before, and no level floor from them
@@ -102,6 +107,13 @@ return function(t)
 		t.expect(Rules.ownsVehicle(won, "GildedGull")).toBe(false)
 		local rebuilt = Rules.fromSnapshot(Rules.snapshot(won))
 		t.expect(Rules.ownsVehicle(rebuilt, "StormRunner")).toBe(true)
+		-- a second prize boat joins the list; both stay owned through a rebuild
+		won.vehicles.RiptideX = true
+		t.expect(Rules.ownsVehicle(won, "RiptideX")).toBe(false)
+		won.flags.spinBoat = "StormRunner,RiptideX"
+		local both = Rules.fromSnapshot(Rules.snapshot(won))
+		t.expect(Rules.ownsVehicle(both, "StormRunner")).toBe(true)
+		t.expect(Rules.ownsVehicle(both, "RiptideX")).toBe(true)
 	end)
 
 	t.test("dock decor keys survive the save migration, junk keys drop", function()

@@ -38,7 +38,7 @@ history, not here.
 | `BuyGear` | C->S fn | ProgressionService: buys a craft (`vehicleId`); the name is historical |
 | `TestRide` | C->S fn | server/Dock/BoatBoard: `(boardName, vehicleId) -> (ok, reason)`; lends a locked Robux-only boat for 60 s (shared/TestRide; attributes `TestRide`, `TestRideEnds`, `TestRideAt`) |
 | `GoBack` | both | VehicleService: C->S press Go back (no payload, rate limited); S->C to everyone aboard: `"Charge"`, `"Cancel"`, `"Land"` (GoBackController) |
-| `Spin_Wheel` | S->C | SpinService: one spin `{ userId, plot, segment, startTime, duration, prize, name, rarity, kind, icon, variant, option, vehicle, duplicateCash? }`; the island's wheel animates on every client |
+| `Spin_Wheel` | S->C | SpinService: one spin `{ userId, plot, segment, startTime, duration, prize, name, rarity, kind, icon, pet?, option?, vehicle?, duplicate, duplicateCash? }` (`segment` = the wedge paid, `SpinRules.WEDGES` order); the island's wheel animates on every client |
 | `Spin_Flex` | S->C | SpinService: a Legendary / Mythic win `{ userId, name, prize, rarity, icon }` (banner + confetti) |
 | `Skill_Buy` | C->S fn | SkillService: buys a skill node with Medals `(id) -> (ok, reason)` |
 | `Skill_Reset` | C->S fn | SkillService: free reset, refunds every Medal `-> (ok, refunded)` |
@@ -399,17 +399,13 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   (loads every `client/Cosmetics/*` feature), `CosmeticLoadout` (earned rewards), `LiveryPaint` / `LiveryPattern`,
   `VehicleSounds`, `LightBarFlash`, `ShantyRadio`, `AvatarCosmetics`.
 - Pets: `PetService`, `PetRules`, `PetSeat`, `PetAccessory`, `PetController`.
-- Spin wheel (docs/24 D): `SpinRules` (pure: odds, pity, prizes, free-spin accrual, saved in `flags.spin`),
+- Spin wheel (docs/24 D): `SpinRules` (pure: odds, pity, prizes, `WEDGES`, `wedgeOdds`, free-spin accrual, saved in `flags.spin`),
   `SpinService` (every roll; `Refresh`, `GiveFree`; Spin1/5/15 products are `paidRandom`, granted only when
-  `MonetizationService.GetPolicy` allows paid random items; grand boat = `flags.spinBoat`), `PrizeWheel` (world build),
-  `PushButton`, `PrizeWheelController` (world spin/reveal/flex), `WheelMath`.
-  Spin cinematic (owner 2026-11-01, spinner only): `Camera/SpinCinematic` (`start(ctx)`, `active()`, `whenDone(fn)`;
-  drives the camera through `CameraController.SetOverride`, hides the HUD, prompts, you and every pet; Epic+ cut under a
-  whiteout to a client-side payoff stage 600 studs above the hub and back for the reveal), `SpinCinePlan` (pure
-  ladder/tier timings), presets `spincine_*` (textures in `VFXTextures`: `spincine_bolt/brick/halo` are `AssetIds.FxSpin` flipbooks,
-  `spincine_flare/rays` still stand-ins). Player attribute `SpinCinematic` (true while on); `SpinRevealed` is set at its reveal.
-  Attributes `FreeSpins`, `SpinPityEpic`, `SpinPityLegendary`. Studio: `ServerStorage.SpinDev` (`give` / `force` /
-  `spin`). DEV: chat `/spincine <Rarity>` or the board's VFX tab plays a cinematic at your wheel (no token, no prize).
+  `MonetizationService.GetPolicy` allows paid random items; won boat looks = the `flags.spinBoat` list (no stats, no `data.vehicles` entry; `SpinRules.wonBoatLooks`); pets = `PetService.GrantPet`), `PrizeWheel` (world build),
+  `PushButton`, `PrizeWheelController` (world spin/reveal/flex), `WheelMath`, `SpinCurve` (the Deep Spin's timing, pure).
+  The spinner's own spin is client-only: `Controllers/DeepSpin/` `Sequence` (flow, camera, restore on every exit), `Set`
+  (private set 1800 studs up, destroyed on exit), `Prize` (real prize copy + BuildSeq build). One spin per trip: it surfaces by itself after the reveal. DEV: chat `/spin <wedge 1-12>`, panel "Deep Spin" (free, local).
+  Attributes `FreeSpins`, `SpinPityEpic`, `SpinPityLegendary`. Studio: `ServerStorage.SpinDev` (`give` / `force` (a rarity or a wedge number) / `spin`).
 - Weather: `src/shared/Weather.luau` reads `ReplicatedStorage.Weather` attributes; `WeatherMath`, `Waves`;
   `StormService` (`ForceStorm`, `ForceCalm`, `QueueSummon`; always sunny by default; writes `Lighting.ClockTime` from
   `DayClock` every 0.5 s, dev offset = Workspace attribute `DayClockOffset`); `WeatherController`,

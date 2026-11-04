@@ -34112,5 +34112,176 @@
   "sha": "f728ed9e2761bb1b686f95b8f817d9b116b1b9e3d55296aa1ae54d46d560f358",
   "source": "build/ui-art/gem_legendary.png",
   "type": "Image"
+ },
+ "Image:0459e98916faab1dd0d216627b0eceece77cba2ef70b458c88d98166d225decd": {
+  "assetId": "77222974189967",
+  "imageId": "77222974189967",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge11",
+  "sha": "0459e98916faab1dd0d216627b0eceece77cba2ef70b458c88d98166d225decd",
+  "source": "build/spinart/T_DeepSpin_wedge11.png",
+  "type": "Image"
+ },
+ "Image:1afac2a77c0766934fcd2eb241137c2a5fbc4dcba90a044012699f1a630c7933": {
+  "assetId": "94540363417317",
+  "imageId": "94540363417317",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge1",
+  "sha": "1afac2a77c0766934fcd2eb241137c2a5fbc4dcba90a044012699f1a630c7933",
+  "source": "build/spinart/T_DeepSpin_wedge1.png",
+  "type": "Image"
+ },
+ "Image:36645e46426f989d0a211ff69ff71217bfb57f125fe1816437030cfb5caa318b": {
+  "assetId": "106800331559276",
+  "imageId": "106800331559276",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge10",
+  "sha": "36645e46426f989d0a211ff69ff71217bfb57f125fe1816437030cfb5caa318b",
+  "source": "build/spinart/T_DeepSpin_wedge10.png",
+  "type": "Image"
+ },
+ "Image:440971a4300da16d4e6614053efcbb5c3bf2f084d579c26edb75d39844896a43": {
+  "assetId": "126880482395748",
+  "imageId": "126880482395748",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge9",
+  "sha": "440971a4300da16d4e6614053efcbb5c3bf2f084d579c26edb75d39844896a43",
+  "source": "build/spinart/T_DeepSpin_wedge9.png",
+  "type": "Image"
+ },
+ "Image:465295cfd964dd891edb6cb66d78e6c6a8873c6178763ddb5111a1496198b7f9": {
+  "assetId": "123283277589315",
+  "imageId": "123283277589315",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge2",
+  "sha": "465295cfd964dd891edb6cb66d78e6c6a8873c6178763ddb5111a1496198b7f9",
+  "source": "build/spinart/T_DeepSpin_wedge2.png",
+  "type": "Image"
+ },
+ "Image:492f49ec12b562b96f11e00d492318aae14860d063978cc7a863106f9c252b95": {
+  "assetId": "109730278230076",
+  "imageId": "109730278230076",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_rotor",
+  "sha": "492f49ec12b562b96f11e00d492318aae14860d063978cc7a863106f9c252b95",
+  "source": "build/spinart/T_DeepSpin_rotor.png",
+  "type": "Image"
+ },
+ "Image:4a364de694d2fc7215893d3e4e5a73e8bf46707dbea0fe07fb5fde33e9f199cc": {
+  "assetId": "122771102581832",
+  "imageId": "122771102581832",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge4",
+  "sha": "4a364de694d2fc7215893d3e4e5a73e8bf46707dbea0fe07fb5fde33e9f199cc",
+  "source": "build/spinart/T_DeepSpin_wedge4.png",
+  "type": "Image"
+ },
+ "Image:5ea11ac369cd845aa4c4c5adaf301168257b7810b07c42bee16532a15a964ef8": {
+  "assetId": "131524296062832",
+  "imageId": "131524296062832",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge8",
+  "sha": "5ea11ac369cd845aa4c4c5adaf301168257b7810b07c42bee16532a15a964ef8",
+  "source": "build/spinart/T_DeepSpin_wedge8.png",
+  "type": "Image"
+ },
+ "Image:60bd06af7e8748456791c62ea17fbbc8ec63d7975488271329cd8b0cb57a6235": {
+  "assetId": "110634759316321",
+  "imageId": "110634759316321",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge7",
+  "sha": "60bd06af7e8748456791c62ea17fbbc8ec63d7975488271329cd8b0cb57a6235",
+  "source": "build/spinart/T_DeepSpin_wedge7.png",
+  "type": "Image"
+ },
+ "Image:7220fa1d65586ecfe749c32344862e7ac242e59a73bdfb05b27546b7c2b66b92": {
+  "assetId": "76900393729882",
+  "imageId": "76900393729882",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_housing",
+  "sha": "7220fa1d65586ecfe749c32344862e7ac242e59a73bdfb05b27546b7c2b66b92",
+  "source": "build/spinart/T_DeepSpin_housing.png",
+  "type": "Image"
+ },
+ "Image:772d2f2ef7fbc61ff5b278cc3aaae7b50783c3e986cc627d8872a4498541f4d7": {
+  "assetId": "123464404891898",
+  "imageId": "123464404891898",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_rays",
+  "sha": "772d2f2ef7fbc61ff5b278cc3aaae7b50783c3e986cc627d8872a4498541f4d7",
+  "source": "build/spinart/T_DeepSpin_rays.png",
+  "type": "Image"
+ },
+ "Image:82b6577e39668cd90124cccd807f2bb2a8649a4f9ebaf2af5b3593fbf3137253": {
+  "assetId": "75427049305275",
+  "imageId": "75427049305275",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_blur",
+  "sha": "82b6577e39668cd90124cccd807f2bb2a8649a4f9ebaf2af5b3593fbf3137253",
+  "source": "build/spinart/T_DeepSpin_blur.png",
+  "type": "Image"
+ },
+ "Image:8763e4abc477130b371800224d84e09422f102e31c3cb9ddb4faebe42810f124": {
+  "assetId": "103678115207998",
+  "imageId": "103678115207998",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_strata",
+  "sha": "8763e4abc477130b371800224d84e09422f102e31c3cb9ddb4faebe42810f124",
+  "source": "build/spinart/T_DeepSpin_strata.png",
+  "type": "Image"
+ },
+ "Image:98c408015dbfdbe9016357008e801aee7bc683b7fdaaf67d7bb44203fbc40d00": {
+  "assetId": "84819778667858",
+  "imageId": "84819778667858",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_vortex",
+  "sha": "98c408015dbfdbe9016357008e801aee7bc683b7fdaaf67d7bb44203fbc40d00",
+  "source": "build/spinart/T_DeepSpin_vortex.png",
+  "type": "Image"
+ },
+ "Image:be91d3a653d2a8432184fa9f700918cbbdac5998ef1543051cfd05d805ac9527": {
+  "assetId": "93309007294411",
+  "imageId": "93309007294411",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_flapper",
+  "sha": "be91d3a653d2a8432184fa9f700918cbbdac5998ef1543051cfd05d805ac9527",
+  "source": "build/spinart/T_DeepSpin_flapper.png",
+  "type": "Image"
+ },
+ "Image:d1a28cd6717dfcd1b85fd9c13e3392c456d76693c144c1010f8a93a0b5d7546b": {
+  "assetId": "134704696550494",
+  "imageId": "134704696550494",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge12",
+  "sha": "d1a28cd6717dfcd1b85fd9c13e3392c456d76693c144c1010f8a93a0b5d7546b",
+  "source": "build/spinart/T_DeepSpin_wedge12.png",
+  "type": "Image"
+ },
+ "Image:d6584ffaddcceaf1dfb9d40c30e2d56c63dc24dcb5219ba293bec8631eeb2890": {
+  "assetId": "71695658142075",
+  "imageId": "71695658142075",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge6",
+  "sha": "d6584ffaddcceaf1dfb9d40c30e2d56c63dc24dcb5219ba293bec8631eeb2890",
+  "source": "build/spinart/T_DeepSpin_wedge6.png",
+  "type": "Image"
+ },
+ "Image:df1b0c967a6acdae4d58142ec17f5435cadbb3a85941e87739bea0a2442ecc54": {
+  "assetId": "85053024880861",
+  "imageId": "85053024880861",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge3",
+  "sha": "df1b0c967a6acdae4d58142ec17f5435cadbb3a85941e87739bea0a2442ecc54",
+  "source": "build/spinart/T_DeepSpin_wedge3.png",
+  "type": "Image"
+ },
+ "Image:f4807890a2112b320950cbb4685df8be2c32fe2e76f78f39cb31637e8dd414af": {
+  "assetId": "126137638583787",
+  "imageId": "126137638583787",
+  "moderation": "Reviewing",
+  "name": "T_DeepSpin_wedge5",
+  "sha": "f4807890a2112b320950cbb4685df8be2c32fe2e76f78f39cb31637e8dd414af",
+  "source": "build/spinart/T_DeepSpin_wedge5.png",
+  "type": "Image"
  }
 }
