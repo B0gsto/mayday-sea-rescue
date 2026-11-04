@@ -8208,6 +8208,15 @@
   "source": "build/ui-art/pip_Done.png",
   "type": "Image"
  },
+ "Image:57c7d6860958ecad6f09b09183de3706da0640fa25b2d11b1c03b83bd874104b": {
+  "assetId": "117753746694610",
+  "imageId": "117753746694610",
+  "moderation": "Reviewing",
+  "name": "T_UpgRocket_Palette_RGH",
+  "sha": "57c7d6860958ecad6f09b09183de3706da0640fa25b2d11b1c03b83bd874104b",
+  "source": "build/prod/_UpgRocket/textures/T_UpgRocket_Palette_RGH.png",
+  "type": "Image"
+ },
  "Image:57f631344ebb63935fdc9a1477789e9697ab81bb85bfcb694ddc8594a15cd833": {
   "assetId": "72358322693256",
   "imageId": "72358322693256",
@@ -23151,6 +23160,26 @@
   "source": "assets/fbx/M_Road_ParkedCar_02/M_Road_ParkedCar_02_LOD1.fbx",
   "type": "Model"
  },
+ "Model:012715b788f6b45750d465b82e05b7b987edd9e1bfaa3f950039ced901cb0744": {
+  "assetId": "126471127491874",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_Pilot",
+  "rbxm": "assets/models/M_Upg_Rocket_Pilot.rbxm",
+  "route": "delivery",
+  "sha": "012715b788f6b45750d465b82e05b7b987edd9e1bfaa3f950039ced901cb0744",
+  "source": "build/prod/M_Upg_Rocket_Pilot/fbx/M_Upg_Rocket_Pilot/M_Upg_Rocket_Pilot_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:015e9058bed55b524c55c181f6c1bc8ad2c60767ad2b3b92109feb04db0c8d45": {
+  "assetId": "136564388311616",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SunBooster_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_SunBooster_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "015e9058bed55b524c55c181f6c1bc8ad2c60767ad2b3b92109feb04db0c8d45",
+  "source": "build/prod/M_Upg_Rocket_SunBooster/fbx/M_Upg_Rocket_SunBooster/M_Upg_Rocket_SunBooster_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:0185200cc34837ea035cc7300bd6e7a6c52aaaa2327bb870956037655699eea8": {
   "assetId": "92452060768345",
   "moderation": "Approved",
@@ -23169,6 +23198,26 @@
   "route": "delivery",
   "sha": "01878829547fa6b24120133240c3bfb44ca2b35c767bc42df04913f4ae3adb0d",
   "source": "assets/fbx/M_Hbr_Rope_Chain/M_Hbr_Rope_Chain_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:0187d4bb2477b346f944f9ee4e9b9b55de9f79539f1a10fd0aad47f149bc3a28": {
+  "assetId": "114076687632474",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_Pilot_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_Pilot_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "0187d4bb2477b346f944f9ee4e9b9b55de9f79539f1a10fd0aad47f149bc3a28",
+  "source": "build/prod/M_Upg_Rocket_Pilot/fbx/M_Upg_Rocket_Pilot/M_Upg_Rocket_Pilot_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:01a96a14a39547e5f65b93154763166d047106f93a859d271b00eee9bfeadd4d": {
+  "assetId": "71732928078183",
+  "moderation": "Approved",
+  "name": "M_Ani_Turtle",
+  "rbxm": "assets/models/M_Ani_Turtle.rbxm",
+  "route": "delivery",
+  "sha": "01a96a14a39547e5f65b93154763166d047106f93a859d271b00eee9bfeadd4d",
+  "source": "assets/fbx/M_Ani_Turtle/M_Ani_Turtle_LOD0.fbx",
   "type": "Model"
  },
  "Model:01f68fc4400c3453583b389f9ed13bc48518aa27a61e67ecb116559a52f6b3ab": {
@@ -23249,6 +23298,16 @@
   "route": "delivery",
   "sha": "052356acd967fa34ae798ec07b052f4f5acadeb01f2d18501d70a878a3df6b05",
   "source": "assets/fbx/M_Veg_Gorse_03/M_Veg_Gorse_03_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:055b5a806141e11b260e0c6c822a3498d29919fbf07bba0ee44b8a58ea4f03f2": {
+  "assetId": "109637142495504",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_Pilot_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_Pilot_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "055b5a806141e11b260e0c6c822a3498d29919fbf07bba0ee44b8a58ea4f03f2",
+  "source": "build/prod/M_Upg_Rocket_Pilot/fbx/M_Upg_Rocket_Pilot/M_Upg_Rocket_Pilot_LOD1.fbx",
   "type": "Model"
  },
  "Model:06d128e8f0e0aa888aa0fff148e2e8c576ad03f1d014b955f89cec701fdd4fdd": {
@@ -23581,6 +23640,16 @@
   "source": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag_LOD2.fbx",
   "type": "Model"
  },
+ "Model:0f3ac51f4f8e057c13cb740b610e94601bff6a718699c00bffba8ad9675e7417": {
+  "assetId": "91452394172233",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TopJet_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TopJet_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "0f3ac51f4f8e057c13cb740b610e94601bff6a718699c00bffba8ad9675e7417",
+  "source": "build/prod/M_Upg_Hydrofoil_TopJet/fbx/M_Upg_Hydrofoil_TopJet/M_Upg_Hydrofoil_TopJet_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:0f4ab07fed6006b122a73311d2908bd839aef791341223e911620115f0805c12": {
   "assetId": "84661633756319",
   "moderation": "Approved",
@@ -23611,6 +23680,26 @@
   "source": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD2.fbx",
   "type": "Model"
  },
+ "Model:108da8ca1edde66cb2ec3a286346569807b452dca821859d362cd31215a06e28": {
+  "assetId": "81269179017030",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TopJet",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TopJet.rbxm",
+  "route": "delivery",
+  "sha": "108da8ca1edde66cb2ec3a286346569807b452dca821859d362cd31215a06e28",
+  "source": "build/prod/M_Upg_Hydrofoil_TopJet/fbx/M_Upg_Hydrofoil_TopJet/M_Upg_Hydrofoil_TopJet_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:10acc34aa887e47943bb45045bdec691e76625d48e689077fb3d7ab02a4cd67a": {
+  "assetId": "76276091226214",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TopJet_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TopJet_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "10acc34aa887e47943bb45045bdec691e76625d48e689077fb3d7ab02a4cd67a",
+  "source": "build/prod/M_Upg_Hydrofoil_TopJet/fbx/M_Upg_Hydrofoil_TopJet/M_Upg_Hydrofoil_TopJet_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:10f0859f7ea123b9f69529731c9a957aba5009dd372b010c7f10af32ff764332": {
   "assetId": "134981220202490",
   "moderation": "Approved",
@@ -23629,6 +23718,16 @@
   "route": "delivery",
   "sha": "112d3c45e7dd44084d77a2ee9fa9c13180a8ab68de355e70b1f3b44288252ec3",
   "source": "assets/fbx/M_Hbr_NavMark_West/M_Hbr_NavMark_West_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:1136b535b8a81a3a0937819e5dfefdbeb848338cdab15f818e4611ad39aa935f": {
+  "assetId": "83831462402641",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SideBoosters_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_SideBoosters_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "1136b535b8a81a3a0937819e5dfefdbeb848338cdab15f818e4611ad39aa935f",
+  "source": "build/prod/M_Upg_Rocket_SideBoosters/fbx/M_Upg_Rocket_SideBoosters/M_Upg_Rocket_SideBoosters_LOD2.fbx",
   "type": "Model"
  },
  "Model:1168ffcfe1891628bce52b860fc93132ac6f00e8f230f9935ecf495d5c6431eb": {
@@ -23661,6 +23760,16 @@
   "source": "assets/fbx/M_Rock_Ledge_01/M_Rock_Ledge_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:11a97eed4f7100619b848fd960771ce210885a99def4ab55f9cd6eb09078f481": {
+  "assetId": "118737985030439",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_WaveWall",
+  "rbxm": "assets/models/M_Upg_Rocket_WaveWall.rbxm",
+  "route": "delivery",
+  "sha": "11a97eed4f7100619b848fd960771ce210885a99def4ab55f9cd6eb09078f481",
+  "source": "build/prod/M_Upg_Rocket_WaveWall/fbx/M_Upg_Rocket_WaveWall/M_Upg_Rocket_WaveWall_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:11d727693d9edc9b99f905e8c2cbb9136272ce487fae5e584b3924686d768092": {
   "assetId": "94162998733864",
   "moderation": "Approved",
@@ -23681,6 +23790,26 @@
   "source": "assets/fbx/M_Hbr_NavMark_West/M_Hbr_NavMark_West_LOD0.fbx",
   "type": "Model"
  },
+ "Model:121ca2482f1cde4c03de0bf880c901c02b51dd277b6db485cbacc8a21028ae9a": {
+  "assetId": "83282160499949",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_LampTower_LOD1",
+  "rbxm": "assets/models/M_Upg_Lifeboat_LampTower_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "121ca2482f1cde4c03de0bf880c901c02b51dd277b6db485cbacc8a21028ae9a",
+  "source": "build/prod/M_Upg_Lifeboat_LampTower/fbx/M_Upg_Lifeboat_LampTower/M_Upg_Lifeboat_LampTower_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:12262e66cd744169050106a6ad7d9f5dd5c8c2d1b68b223d237f6cbbbc0024b6": {
+  "assetId": "99148932852036",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldEagle",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldEagle.rbxm",
+  "route": "delivery",
+  "sha": "12262e66cd744169050106a6ad7d9f5dd5c8c2d1b68b223d237f6cbbbc0024b6",
+  "source": "build/prod/M_Upg_Rocket_GoldEagle/fbx/M_Upg_Rocket_GoldEagle/M_Upg_Rocket_GoldEagle_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:122d3774cd4298b2b2aeb59ae607821a0d6343e568a9f404118183faee3d9735": {
   "assetId": "104430381278275",
   "moderation": "Approved",
@@ -23689,6 +23818,26 @@
   "route": "delivery",
   "sha": "122d3774cd4298b2b2aeb59ae607821a0d6343e568a9f404118183faee3d9735",
   "source": "assets/fbx/M_Veh_Ambulance/M_Veh_Ambulance_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:12cf6142434bc24b3df50d7973c4913c34cf803655271494b0e1d691f29f92fb": {
+  "assetId": "82444059904089",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_SharkFin",
+  "rbxm": "assets/models/M_Upg_JetSki_SharkFin.rbxm",
+  "route": "delivery",
+  "sha": "12cf6142434bc24b3df50d7973c4913c34cf803655271494b0e1d691f29f92fb",
+  "source": "build/prod/M_Upg_JetSki_SharkFin/fbx/M_Upg_JetSki_SharkFin/M_Upg_JetSki_SharkFin_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:12e3dec3e809e475c7cb9bd5b3b63c7936a4cf7e9cd3064dcd1d126182d6be29": {
+  "assetId": "96038485319866",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_MegaOutboard_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_MegaOutboard_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "12e3dec3e809e475c7cb9bd5b3b63c7936a4cf7e9cd3064dcd1d126182d6be29",
+  "source": "build/prod/M_Upg_RIB_MegaOutboard/fbx/M_Upg_RIB_MegaOutboard/M_Upg_RIB_MegaOutboard_LOD2.fbx",
   "type": "Model"
  },
  "Model:12f6e363e31fe5df37a60f66db3047678928cd0d5d969a20ce9d2f70fa8b4025": {
@@ -23709,6 +23858,46 @@
   "route": "delivery",
   "sha": "1308ba01fc3c3fb9a351469398d86ee61dab33c93e73c13613c244bf70b04b98",
   "source": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:134b28a9f43b370ff6c3f29bad7d736c6d0972dff83c1263adfc15776503b466": {
+  "assetId": "83235853758569",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TurboHalo",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TurboHalo.rbxm",
+  "route": "delivery",
+  "sha": "134b28a9f43b370ff6c3f29bad7d736c6d0972dff83c1263adfc15776503b466",
+  "source": "build/prod/M_Upg_Hydrofoil_TurboHalo/fbx/M_Upg_Hydrofoil_TurboHalo/M_Upg_Hydrofoil_TurboHalo_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:136b86d7c7326f28d63f530fa4b9ffe441ac5d4492ab0d67b8fe1c3eb83e6899": {
+  "assetId": "86492091881669",
+  "moderation": "Approved",
+  "name": "M_Veh_Hydrofoil_LOD2",
+  "rbxm": "assets/models/M_Veh_Hydrofoil_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "136b86d7c7326f28d63f530fa4b9ffe441ac5d4492ab0d67b8fe1c3eb83e6899",
+  "source": "build/prod/M_Veh_Hydrofoil/fbx/M_Veh_Hydrofoil/M_Veh_Hydrofoil_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:13c657eafc759ca6557b8e21053d9461c6b4c8077101321c09ba4d5b92c9ad36": {
+  "assetId": "88611961898504",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_SharkJaws",
+  "rbxm": "assets/models/M_Upg_RIB_SharkJaws.rbxm",
+  "route": "delivery",
+  "sha": "13c657eafc759ca6557b8e21053d9461c6b4c8077101321c09ba4d5b92c9ad36",
+  "source": "build/prod/M_Upg_RIB_SharkJaws/fbx/M_Upg_RIB_SharkJaws/M_Upg_RIB_SharkJaws_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:13d32e3130f0378d2ad410a815c5b40eb5dcfa7f03fb240f23b1aa2434d26a72": {
+  "assetId": "108501137050309",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_BattleBridge_LOD1",
+  "rbxm": "assets/models/M_Upg_Lifeboat_BattleBridge_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "13d32e3130f0378d2ad410a815c5b40eb5dcfa7f03fb240f23b1aa2434d26a72",
+  "source": "build/prod/M_Upg_Lifeboat_BattleBridge/fbx/M_Upg_Lifeboat_BattleBridge/M_Upg_Lifeboat_BattleBridge_LOD1.fbx",
   "type": "Model"
  },
  "Model:13fe2cd0bf4b0f1891da59ffecf0a1c38c13532c4685f83dd450d47acda40993": {
@@ -23821,6 +24010,16 @@
   "source": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD2.fbx",
   "type": "Model"
  },
+ "Model:16af89662d0d7085904ca1304ba6397fc0cb09a4fcda5f1fc0c8fe9ccec320dc": {
+  "assetId": "87034399734856",
+  "moderation": "Approved",
+  "name": "M_Veh_RocketCutter_LOD2",
+  "rbxm": "assets/models/M_Veh_RocketCutter_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "16af89662d0d7085904ca1304ba6397fc0cb09a4fcda5f1fc0c8fe9ccec320dc",
+  "source": "build/prod/M_Veh_RocketCutter/fbx/M_Veh_RocketCutter/M_Veh_RocketCutter_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:16c9dfffec271223e2ebeb0e18e13d67fdbc1da3455c505380769456b050f0e2": {
   "assetId": "92390086636879",
   "moderation": "Approved",
@@ -23919,6 +24118,26 @@
   "route": "delivery",
   "sha": "1959559c3f85b02e81fd43a54d91b6cdcc40d7b1aec43a79b7da237c6f5d3e55",
   "source": "assets/fbx/M_Kit_ThermalBlanket/M_Kit_ThermalBlanket_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:195ab104f2186b3076b330ab5c5956817bcdae3285a419064912c410c7328ad2": {
+  "assetId": "76730767855285",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_RocketFins_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_RocketFins_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "195ab104f2186b3076b330ab5c5956817bcdae3285a419064912c410c7328ad2",
+  "source": "build/prod/M_Upg_Rocket_RocketFins/fbx/M_Upg_Rocket_RocketFins/M_Upg_Rocket_RocketFins_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:19a4a9e61bcba5c9264d9cb78757de7ef39e89aef433672a6b0c5566bbb46a3a": {
+  "assetId": "132726935816721",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_FoilLift",
+  "rbxm": "assets/models/M_Upg_Lifeboat_FoilLift.rbxm",
+  "route": "delivery",
+  "sha": "19a4a9e61bcba5c9264d9cb78757de7ef39e89aef433672a6b0c5566bbb46a3a",
+  "source": "build/prod/M_Upg_Lifeboat_FoilLift/fbx/M_Upg_Lifeboat_FoilLift/M_Upg_Lifeboat_FoilLift_LOD0.fbx",
   "type": "Model"
  },
  "Model:19b83adf825b5de8902d254c986c69f9d43d52b975a817701fd092188b34dd63": {
@@ -24071,6 +24290,26 @@
   "source": "assets/fbx/M_Rock_Cliff_03/M_Rock_Cliff_03_LOD1.fbx",
   "type": "Model"
  },
+ "Model:1c04722118aacfa4e81b3a40eee46b1f14ba20700dce59e6a6ef7099c4540259": {
+  "assetId": "84876267561523",
+  "moderation": "Approved",
+  "name": "M_Bld_BoathouseAddons",
+  "rbxm": "assets/models/M_Bld_BoathouseAddons.rbxm",
+  "route": "delivery",
+  "sha": "1c04722118aacfa4e81b3a40eee46b1f14ba20700dce59e6a6ef7099c4540259",
+  "source": "assets/fbx/M_Bld_BoathouseAddons/M_Bld_BoathouseAddons_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:1c3806fabb6361428e32e7d04ad1dfc64eb3f429c40e64f4bf851a020bed8ca5": {
+  "assetId": "104513650289925",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SideBoosters",
+  "rbxm": "assets/models/M_Upg_Rocket_SideBoosters.rbxm",
+  "route": "delivery",
+  "sha": "1c3806fabb6361428e32e7d04ad1dfc64eb3f429c40e64f4bf851a020bed8ca5",
+  "source": "build/prod/M_Upg_Rocket_SideBoosters/fbx/M_Upg_Rocket_SideBoosters/M_Upg_Rocket_SideBoosters_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:1c7cf35167f9947a3e45fd8254cda7da2639e5a69cf5e9334867ed7083f9309c": {
   "assetId": "89140542933150",
   "moderation": "Approved",
@@ -24151,6 +24390,16 @@
   "source": "assets/fbx/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped_LOD2.fbx",
   "type": "Model"
  },
+ "Model:1eb7ef17d6ea2d5006d36e5daa8d926d602e252e57844693b1923327afc851bc": {
+  "assetId": "110189240521218",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_PartyCannons_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_PartyCannons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "1eb7ef17d6ea2d5006d36e5daa8d926d602e252e57844693b1923327afc851bc",
+  "source": "build/prod/M_Upg_Rocket_PartyCannons/fbx/M_Upg_Rocket_PartyCannons/M_Upg_Rocket_PartyCannons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:1eecf9e253e6cda5cc01e8be53eccfeefc3cf04e5cc7c7fdbdc3b434a0a76320": {
   "assetId": "95599875646630",
   "moderation": "Approved",
@@ -24209,6 +24458,16 @@
   "route": "delivery",
   "sha": "1fe09309e68303d9d00fe1ddefa7e0f9f45da2261ebadf8aa57a80ef0dfa9b52",
   "source": "assets/fbx/M_Veg_Heather_01/M_Veg_Heather_01_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:202bd7292543e8c0d20c70bc9532cee5cce4ad69b9147cf8a45d6d1a41cbef22": {
+  "assetId": "114442742200876",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyStilts_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyStilts_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "202bd7292543e8c0d20c70bc9532cee5cce4ad69b9147cf8a45d6d1a41cbef22",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyStilts/fbx/M_Upg_Hydrofoil_SkyStilts/M_Upg_Hydrofoil_SkyStilts_LOD2.fbx",
   "type": "Model"
  },
  "Model:203caf6c1821b4ed2308b66e0e5af3814e84de26ea2739cc1879ebdce25364ea": {
@@ -24311,6 +24570,16 @@
   "source": "assets/fbx/M_Bld_Cottage_04/M_Bld_Cottage_04_LOD2.fbx",
   "type": "Model"
  },
+ "Model:22107d396ff0098e26a851e10add24c71651c64c57e57ef956c61fde3d221060": {
+  "assetId": "136029341225940",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_PartyCannons",
+  "rbxm": "assets/models/M_Upg_Rocket_PartyCannons.rbxm",
+  "route": "delivery",
+  "sha": "22107d396ff0098e26a851e10add24c71651c64c57e57ef956c61fde3d221060",
+  "source": "build/prod/M_Upg_Rocket_PartyCannons/fbx/M_Upg_Rocket_PartyCannons/M_Upg_Rocket_PartyCannons_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:223291e800ba0dcaa539c7295c2ecd39bc29443266ae864723439934a66a5dd9": {
   "assetId": "128988227477990",
   "moderation": "Approved",
@@ -24401,6 +24670,16 @@
   "source": "assets/fbx/M_Veg_Wrack_Kit/M_Veg_Wrack_Kit_LOD0.fbx",
   "type": "Model"
  },
+ "Model:240d884c193c630357b16e77358784c459d3bb186f0f002551cf7f64a9150e4e": {
+  "assetId": "90447951229913",
+  "moderation": "Approved",
+  "name": "M_Veh_RocketCutter_LOD1",
+  "rbxm": "assets/models/M_Veh_RocketCutter_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "240d884c193c630357b16e77358784c459d3bb186f0f002551cf7f64a9150e4e",
+  "source": "build/prod/M_Veh_RocketCutter/fbx/M_Veh_RocketCutter/M_Veh_RocketCutter_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:241cb0b97dadd237b188bab299c539b2679759a11bf39b5543d19fe40628c018": {
   "assetId": "90462440839329",
   "moderation": "Approved",
@@ -24461,6 +24740,16 @@
   "source": "assets/fbx/M_Road_Bin/M_Road_Bin_LOD2.fbx",
   "type": "Model"
  },
+ "Model:2517ed614d02d15d45196b6dc539ee271188856b084838f98ba0f43c93226269": {
+  "assetId": "103439120103218",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_RocketFins",
+  "rbxm": "assets/models/M_Upg_Rocket_RocketFins.rbxm",
+  "route": "delivery",
+  "sha": "2517ed614d02d15d45196b6dc539ee271188856b084838f98ba0f43c93226269",
+  "source": "build/prod/M_Upg_Rocket_RocketFins/fbx/M_Upg_Rocket_RocketFins/M_Upg_Rocket_RocketFins_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:251845d494d0b307625b2b155de787711721aa9daae253adaa46b016f0595abe": {
   "assetId": "125625940790974",
   "moderation": "Approved",
@@ -24519,6 +24808,26 @@
   "route": "delivery",
   "sha": "2580b375f077a2442de38741b9d3c37ddbcc68e53ff1227b4e5671682cd5808d",
   "source": "assets/fbx/M_Bld_RescueHQ/M_Bld_RescueHQ_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:259450ba2fcdb1110cf22c2dc39b66231b732926b26b9722e5d0c823c7a60d1d": {
+  "assetId": "81258890500728",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_WaveWall_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_WaveWall_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "259450ba2fcdb1110cf22c2dc39b66231b732926b26b9722e5d0c823c7a60d1d",
+  "source": "build/prod/M_Upg_Rocket_WaveWall/fbx/M_Upg_Rocket_WaveWall/M_Upg_Rocket_WaveWall_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:2596808b87650f0018a1709dffc9d2fb4a4c45e9e97abcf81a9ed0b774df5e57": {
+  "assetId": "122620920467163",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_NeedleNose_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_NeedleNose_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "2596808b87650f0018a1709dffc9d2fb4a4c45e9e97abcf81a9ed0b774df5e57",
+  "source": "build/prod/M_Upg_Hydrofoil_NeedleNose/fbx/M_Upg_Hydrofoil_NeedleNose/M_Upg_Hydrofoil_NeedleNose_LOD2.fbx",
   "type": "Model"
  },
  "Model:259ea95551634fb3bd46fee49eb6007f2aedb394deb6f879a4b64157b887a03a": {
@@ -24589,6 +24898,46 @@
   "route": "delivery",
   "sha": "26606c1d67cd534b10deacfb2584b4b4cbb53e3da9bfe72dc524ce8cf973aa4c",
   "source": "assets/fbx/M_Rock_Boulder_04/M_Rock_Boulder_04_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:2661cca7f5f6ee88da8f8d5fcc2503c099c7da553ea96f23b5c23114774d97b3": {
+  "assetId": "126695879452444",
+  "moderation": "Approved",
+  "name": "M_Veh_PirateBoat_LOD0",
+  "rbxm": "assets/models/M_Veh_PirateBoat_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "2661cca7f5f6ee88da8f8d5fcc2503c099c7da553ea96f23b5c23114774d97b3",
+  "source": "build/prod/M_Veh_PirateBoat/fbx/M_Veh_PirateBoat/M_Veh_PirateBoat_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:267a2c2674e44cadf2b9f3f35c4647a884532dcf9d6a3974521415cd26754230": {
+  "assetId": "133072901240643",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldPlating",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldPlating.rbxm",
+  "route": "delivery",
+  "sha": "267a2c2674e44cadf2b9f3f35c4647a884532dcf9d6a3974521415cd26754230",
+  "source": "build/prod/M_Upg_Rocket_GoldPlating/fbx/M_Upg_Rocket_GoldPlating/M_Upg_Rocket_GoldPlating_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:2682a05b4e2769d2ad5bc60115c1df7efe2df4582f64fce06b37f00482b04268": {
+  "assetId": "124092782653891",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_Pilot",
+  "rbxm": "assets/models/M_Upg_Rocket_Pilot.rbxm",
+  "route": "delivery",
+  "sha": "2682a05b4e2769d2ad5bc60115c1df7efe2df4582f64fce06b37f00482b04268",
+  "source": "build/prod/M_Upg_Rocket_Pilot/fbx/M_Upg_Rocket_Pilot/M_Upg_Rocket_Pilot_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:2692555a08d9e40a44db8238d7d4626deb082bc103690bde2d197cb76e4e49f2": {
+  "assetId": "133311546322137",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_PaddleWheel",
+  "rbxm": "assets/models/M_Upg_RIB_PaddleWheel.rbxm",
+  "route": "delivery",
+  "sha": "2692555a08d9e40a44db8238d7d4626deb082bc103690bde2d197cb76e4e49f2",
+  "source": "build/prod/M_Upg_RIB_PaddleWheel/fbx/M_Upg_RIB_PaddleWheel/M_Upg_RIB_PaddleWheel_LOD0.fbx",
   "type": "Model"
  },
  "Model:26cb88d5def62b99c5cac76c2b6ec82409b140cea907e302af6ebfb3e6f97e2e": {
@@ -24721,6 +25070,16 @@
   "source": "assets/fbx/M_Kit_ThermalBlanket/M_Kit_ThermalBlanket_LOD2.fbx",
   "type": "Model"
  },
+ "Model:291c9c3fd5c529165459bd1043427360c8c0cb7d052220c1fcc2881030e1b87f": {
+  "assetId": "76366722386053",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SunBooster",
+  "rbxm": "assets/models/M_Upg_Rocket_SunBooster.rbxm",
+  "route": "delivery",
+  "sha": "291c9c3fd5c529165459bd1043427360c8c0cb7d052220c1fcc2881030e1b87f",
+  "source": "build/prod/M_Upg_Rocket_SunBooster/fbx/M_Upg_Rocket_SunBooster/M_Upg_Rocket_SunBooster_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:29561c9399f20f2e27d3a5b3fa8073a1ddbc614fca89ee6ad66581e34ab77dec": {
   "assetId": "110631355061943",
   "moderation": "Approved",
@@ -24749,6 +25108,26 @@
   "route": "delivery",
   "sha": "29a5ec96ebef42342fcc22503399e50cd3da39a9d321641f16030876614e2569",
   "source": "assets/fbx/M_Rock_Boulder_05/M_Rock_Boulder_05_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:29cf28a5f1cc72c97c90e8b4425b6a3e3cf15374c05880d58225d4ebea03a67c": {
+  "assetId": "76545494500079",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyWings",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyWings.rbxm",
+  "route": "delivery",
+  "sha": "29cf28a5f1cc72c97c90e8b4425b6a3e3cf15374c05880d58225d4ebea03a67c",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyWings/fbx/M_Upg_Hydrofoil_SkyWings/M_Upg_Hydrofoil_SkyWings_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:29fc844d981c25212ee90c20cc46152bbb9ac1b3e7e69b89f80233e5050fdcc5": {
+  "assetId": "106932148401910",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ThunderWing_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_ThunderWing_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "29fc844d981c25212ee90c20cc46152bbb9ac1b3e7e69b89f80233e5050fdcc5",
+  "source": "build/prod/M_Upg_RIB_ThunderWing/fbx/M_Upg_RIB_ThunderWing/M_Upg_RIB_ThunderWing_LOD1.fbx",
   "type": "Model"
  },
  "Model:2a0c32bccaa80d92e80f730ebe9fd2c26a26d637132f310cf7d9d4e4ccc1cca4": {
@@ -24931,6 +25310,16 @@
   "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD2.fbx",
   "type": "Model"
  },
+ "Model:2d79fb6e91c4b3d7d77bd2cb208f7a8932fb5bb37ed8c05c548e7674a99996fd": {
+  "assetId": "128889980047214",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_RocketFins_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_RocketFins_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "2d79fb6e91c4b3d7d77bd2cb208f7a8932fb5bb37ed8c05c548e7674a99996fd",
+  "source": "build/prod/M_Upg_Rocket_RocketFins/fbx/M_Upg_Rocket_RocketFins/M_Upg_Rocket_RocketFins_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:2d8d910f1f4c39f8b7a0472c41d9f123787825ea3a6bf92900dc3394df959499": {
   "assetId": "102080997453159",
   "moderation": "Approved",
@@ -24989,6 +25378,26 @@
   "route": "delivery",
   "sha": "2e8e5ef5d5db27735047d4a118e2ef9f9797dc4b44fa3449ed20301e7eed53d4",
   "source": "assets/fbx/M_Kit_OxygenBag/M_Kit_OxygenBag_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:2ea743d1a1f8672c094d9434b160234766c3ece8b46ae2fa35a8fca8b6427a90": {
+  "assetId": "126992599806706",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_SharkFin",
+  "rbxm": "assets/models/M_Upg_JetSki_SharkFin.rbxm",
+  "route": "delivery",
+  "sha": "2ea743d1a1f8672c094d9434b160234766c3ece8b46ae2fa35a8fca8b6427a90",
+  "source": "build/prod/M_Upg_JetSki_SharkFin/fbx/M_Upg_JetSki_SharkFin/M_Upg_JetSki_SharkFin_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:2efc957cc9bfdba864cfc67da29dfa802f4f61cfba160064a9c022aeeb8682fd": {
+  "assetId": "124943364500892",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_RocketFins_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_RocketFins_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "2efc957cc9bfdba864cfc67da29dfa802f4f61cfba160064a9c022aeeb8682fd",
+  "source": "build/prod/M_Upg_Rocket_RocketFins/fbx/M_Upg_Rocket_RocketFins/M_Upg_Rocket_RocketFins_LOD2.fbx",
   "type": "Model"
  },
  "Model:2f0e587dee28b672e9e9b190ee6141b6335544f9744af4906c33bab3a067f657": {
@@ -25051,6 +25460,16 @@
   "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD1.fbx",
   "type": "Model"
  },
+ "Model:303efec6617da782200c7ad489327b01436ba827fcd8842417c4526c649eee2a": {
+  "assetId": "101081840884770",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_FatTubes",
+  "rbxm": "assets/models/M_Upg_RIB_FatTubes.rbxm",
+  "route": "delivery",
+  "sha": "303efec6617da782200c7ad489327b01436ba827fcd8842417c4526c649eee2a",
+  "source": "build/prod/M_Upg_RIB_FatTubes/fbx/M_Upg_RIB_FatTubes/M_Upg_RIB_FatTubes_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:3069660cfebaf837eac6da7b1d435a179e728e9756ce66522b8a5671f19bd6ba": {
   "assetId": "120417238484295",
   "moderation": "Approved",
@@ -25111,6 +25530,36 @@
   "source": "assets/fbx/M_Veg_Gorse_02/M_Veg_Gorse_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:312fda23670bbca5814e4fb41d2ae0c0d3cdd4fffbca560998b128188e8e0b81": {
+  "assetId": "74149292921338",
+  "moderation": "Approved",
+  "name": "M_Veh_RocketCutter",
+  "rbxm": "assets/models/M_Veh_RocketCutter.rbxm",
+  "route": "delivery",
+  "sha": "312fda23670bbca5814e4fb41d2ae0c0d3cdd4fffbca560998b128188e8e0b81",
+  "source": "build/prod/M_Veh_RocketCutter/fbx/M_Veh_RocketCutter/M_Veh_RocketCutter_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:31336a660a297768155968eb024aafbbc4a4c902a191bf6c7fa6f00f4d3e5609": {
+  "assetId": "88938467975500",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_TurboCrown_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_TurboCrown_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "31336a660a297768155968eb024aafbbc4a4c902a191bf6c7fa6f00f4d3e5609",
+  "source": "build/prod/M_Upg_JetSki_TurboCrown/fbx/M_Upg_JetSki_TurboCrown/M_Upg_JetSki_TurboCrown_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:31514fa685b2fb4293c9444a6456e7f83d12fdd98917b02ba96b2139153e70c2": {
+  "assetId": "130524306765486",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_MegaOutboard_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_MegaOutboard_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "31514fa685b2fb4293c9444a6456e7f83d12fdd98917b02ba96b2139153e70c2",
+  "source": "build/prod/M_Upg_RIB_MegaOutboard/fbx/M_Upg_RIB_MegaOutboard/M_Upg_RIB_MegaOutboard_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:31550a74a8f574bd16a3348c2653c097cec27f9acb766e6214a9a44b40f5e854": {
   "assetId": "136877981908628",
   "moderation": "Approved",
@@ -25159,6 +25608,26 @@
   "route": "delivery",
   "sha": "32095bd123068322263e2046779128b4e3600baa74197fa48e5c2a2558e5cf76",
   "source": "assets/fbx/M_Hbr_NetPile/M_Hbr_NetPile_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:324e7088765ea1deda76364bf51478ace434d65d2526c7027ea797f34317b2b2": {
+  "assetId": "136274778631418",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_PartyCannons_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_PartyCannons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "324e7088765ea1deda76364bf51478ace434d65d2526c7027ea797f34317b2b2",
+  "source": "build/prod/M_Upg_Rocket_PartyCannons/fbx/M_Upg_Rocket_PartyCannons/M_Upg_Rocket_PartyCannons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:3291adbbd45e6b93beb6d06741763f72af33e88835c77873c6648bfb79dfa27f": {
+  "assetId": "70460845277185",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_Afterburners_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_Afterburners_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "3291adbbd45e6b93beb6d06741763f72af33e88835c77873c6648bfb79dfa27f",
+  "source": "build/prod/M_Upg_Hydrofoil_Afterburners/fbx/M_Upg_Hydrofoil_Afterburners/M_Upg_Hydrofoil_Afterburners_LOD2.fbx",
   "type": "Model"
  },
  "Model:32a5e32ff805da6938286ec1ae521cd5bcda9d819e9752c684c904cdd4308f9d": {
@@ -25211,6 +25680,16 @@
   "source": "assets/fbx/M_Hbr_NavMark_Starboard/M_Hbr_NavMark_Starboard_LOD2.fbx",
   "type": "Model"
  },
+ "Model:3420e6186a92a5564ef43a930ec5f3d4b9c729945ceaf871190a2fceda69dbd2": {
+  "assetId": "130499514041522",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldPlating",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldPlating.rbxm",
+  "route": "delivery",
+  "sha": "3420e6186a92a5564ef43a930ec5f3d4b9c729945ceaf871190a2fceda69dbd2",
+  "source": "build/prod/M_Upg_Rocket_GoldPlating/fbx/M_Upg_Rocket_GoldPlating/M_Upg_Rocket_GoldPlating_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:344378a0f0d5edbf3814573012f03413f948dc40c07246d8fc39e4f2cebc0a50": {
   "assetId": "85769079369742",
   "moderation": "Approved",
@@ -25221,6 +25700,36 @@
   "source": "assets/fbx/M_Hbr_NavMark_Port/M_Hbr_NavMark_Port_LOD1.fbx",
   "type": "Model"
  },
+ "Model:345f246da0c61531a0822aba625bbaa2389dd9f525f63c4dc014475497db9efd": {
+  "assetId": "84373615073890",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SideBoosters_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_SideBoosters_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "345f246da0c61531a0822aba625bbaa2389dd9f525f63c4dc014475497db9efd",
+  "source": "build/prod/M_Upg_Rocket_SideBoosters/fbx/M_Upg_Rocket_SideBoosters/M_Upg_Rocket_SideBoosters_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:345f8d46df125117825941a69b68a7b7f8297e8e17cbcec3e96eb8c31cdf9f64": {
+  "assetId": "111530578916057",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SideBoosters",
+  "rbxm": "assets/models/M_Upg_Rocket_SideBoosters.rbxm",
+  "route": "delivery",
+  "sha": "345f8d46df125117825941a69b68a7b7f8297e8e17cbcec3e96eb8c31cdf9f64",
+  "source": "build/prod/M_Upg_Rocket_SideBoosters/fbx/M_Upg_Rocket_SideBoosters/M_Upg_Rocket_SideBoosters_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:346f6416823cb88275b56b58ee506a514c8a81978175e5ce9145b2a2f53fb3f7": {
+  "assetId": "112232417087833",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_RocketFins_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_RocketFins_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "346f6416823cb88275b56b58ee506a514c8a81978175e5ce9145b2a2f53fb3f7",
+  "source": "build/prod/M_Upg_Rocket_RocketFins/fbx/M_Upg_Rocket_RocketFins/M_Upg_Rocket_RocketFins_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:348f35aae39c4b1c71ed21b9aa263c063f0d84875f9be9b496a42502a4390191": {
   "assetId": "75740683780938",
   "moderation": "Approved",
@@ -25229,6 +25738,36 @@
   "route": "delivery",
   "sha": "348f35aae39c4b1c71ed21b9aa263c063f0d84875f9be9b496a42502a4390191",
   "source": "assets/fbx/M_Hbr_Pontoon_Gangway/M_Hbr_Pontoon_Gangway_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:34ac52c68178a342ecf1a4eb1a31a71861e06a119bcb4e3f08796bde5afd2a38": {
+  "assetId": "110238927237734",
+  "moderation": "Approved",
+  "name": "M_Veh_PirateBoat_LOD0",
+  "rbxm": "assets/models/M_Veh_PirateBoat_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "34ac52c68178a342ecf1a4eb1a31a71861e06a119bcb4e3f08796bde5afd2a38",
+  "source": "build/prod/M_Veh_PirateBoat/fbx/M_Veh_PirateBoat/M_Veh_PirateBoat_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:3500262f0c6531375ad0fd07a338c91fac29b566ea47d6ca16460191c1670020": {
+  "assetId": "72723079204826",
+  "moderation": "Approved",
+  "name": "M_Chr_PirateLookout_LOD0",
+  "rbxm": "assets/models/M_Chr_PirateLookout_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "3500262f0c6531375ad0fd07a338c91fac29b566ea47d6ca16460191c1670020",
+  "source": "build/prod/M_Chr_PirateLookout/fbx/M_Chr_PirateLookout/M_Chr_PirateLookout_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:350b4c14bccf3c08676b06c1480dcb7d2c9a58438e807f8352582f802e5c7da0": {
+  "assetId": "72716603627128",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_MegaTrophy_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_MegaTrophy_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "350b4c14bccf3c08676b06c1480dcb7d2c9a58438e807f8352582f802e5c7da0",
+  "source": "build/prod/M_Upg_Rocket_MegaTrophy/fbx/M_Upg_Rocket_MegaTrophy/M_Upg_Rocket_MegaTrophy_LOD2.fbx",
   "type": "Model"
  },
  "Model:356695c942b3c5a6f7b12778005d3d3f73d908b968cf0a76494bc91afd385def": {
@@ -25391,6 +25930,16 @@
   "source": "assets/fbx/M_Hbr_Pontoon_Straight6/M_Hbr_Pontoon_Straight6_LOD2.fbx",
   "type": "Model"
  },
+ "Model:373c3dc8ba0c39c17f405513afec150b326fbcc01d77a3692c5256353ba09a26": {
+  "assetId": "107113494866346",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_WaveWall_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_WaveWall_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "373c3dc8ba0c39c17f405513afec150b326fbcc01d77a3692c5256353ba09a26",
+  "source": "build/prod/M_Upg_Rocket_WaveWall/fbx/M_Upg_Rocket_WaveWall/M_Upg_Rocket_WaveWall_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:376672000f7f6e643a5a5564e93f4b339ffe6bcfd47ab7f4e25e6318e312fa2e": {
   "assetId": "84743963968932",
   "moderation": "Approved",
@@ -25541,6 +26090,26 @@
   "source": "assets/fbx/M_Hbr_NetPile/M_Hbr_NetPile_LOD1.fbx",
   "type": "Model"
  },
+ "Model:3bc8d0779d186bc9ec545b7eb58e1aedef2614caa5e6ebd464ae3c17e30a6788": {
+  "assetId": "110072836627566",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldPlating",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldPlating.rbxm",
+  "route": "delivery",
+  "sha": "3bc8d0779d186bc9ec545b7eb58e1aedef2614caa5e6ebd464ae3c17e30a6788",
+  "source": "build/prod/M_Upg_Rocket_GoldPlating/fbx/M_Upg_Rocket_GoldPlating/M_Upg_Rocket_GoldPlating_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:3be180371261e3ffbe125eb9e4ae34ea8d6b0ca72e8daf4e73c5e94613a82a05": {
+  "assetId": "123430915890969",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_HugeSpoiler_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_HugeSpoiler_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "3be180371261e3ffbe125eb9e4ae34ea8d6b0ca72e8daf4e73c5e94613a82a05",
+  "source": "build/prod/M_Upg_JetSki_HugeSpoiler/fbx/M_Upg_JetSki_HugeSpoiler/M_Upg_JetSki_HugeSpoiler_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:3c20b156d385d5500953dbcddd810a10cd9c719d7a4f7570b6463b1a0d35d4d3": {
   "assetId": "111381306769504",
   "moderation": "Approved",
@@ -25599,6 +26168,36 @@
   "route": "delivery",
   "sha": "3ce99a222438eafe43d8c813e1a3887447919bac64b96d695ced06be895f3447",
   "source": "assets/fbx/M_Veh_MooredBoat_01/M_Veh_MooredBoat_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:3cee38eb3369fb7cf00734837512f1f3adc9105d82b4b84db8f4b3bc3564546f": {
+  "assetId": "132484549921746",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_HornStack_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_HornStack_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "3cee38eb3369fb7cf00734837512f1f3adc9105d82b4b84db8f4b3bc3564546f",
+  "source": "build/prod/M_Upg_JetSki_HornStack/fbx/M_Upg_JetSki_HornStack/M_Upg_JetSki_HornStack_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:3d82115d847c491f6cf305ea84571b33bacf0e79c2eb996c59bcc2a052b0b236": {
+  "assetId": "123470425695440",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldThrone_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldThrone_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "3d82115d847c491f6cf305ea84571b33bacf0e79c2eb996c59bcc2a052b0b236",
+  "source": "build/prod/M_Upg_Rocket_GoldThrone/fbx/M_Upg_Rocket_GoldThrone/M_Upg_Rocket_GoldThrone_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:3da28bef752adcd4e65fb3d355755951a13a6bac1da12b372a81ccc411bed9e9": {
+  "assetId": "131071879953776",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_SharkFin_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_SharkFin_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "3da28bef752adcd4e65fb3d355755951a13a6bac1da12b372a81ccc411bed9e9",
+  "source": "build/prod/M_Upg_JetSki_SharkFin/fbx/M_Upg_JetSki_SharkFin/M_Upg_JetSki_SharkFin_LOD1.fbx",
   "type": "Model"
  },
  "Model:3db0b060bfa38a0ed823600ff877ef826ebac86812b45030b534f20d878c28ce": {
@@ -25671,6 +26270,16 @@
   "source": "assets/fbx/M_Ani_HerringGull/M_Ani_HerringGull_LOD1.fbx",
   "type": "Model"
  },
+ "Model:3e61bacfa51565f93161934fc53ac33ad61e165320a35e7516d99fbd951b1dfb": {
+  "assetId": "98218707535728",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldEagle",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldEagle.rbxm",
+  "route": "delivery",
+  "sha": "3e61bacfa51565f93161934fc53ac33ad61e165320a35e7516d99fbd951b1dfb",
+  "source": "build/prod/M_Upg_Rocket_GoldEagle/fbx/M_Upg_Rocket_GoldEagle/M_Upg_Rocket_GoldEagle_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:3e62657e318cfe6185ebcbd32ce4eeb9f7a78f62bdce3464ccba923f810e62bc": {
   "assetId": "117080818343042",
   "moderation": "Approved",
@@ -25709,6 +26318,16 @@
   "route": "delivery",
   "sha": "3e97ca45377564985877b4e9fd7f2d0fa74e9e733865d530cb0dc9069e1c60c9",
   "source": "assets/fbx/M_Hbr_Rope_Chain/M_Hbr_Rope_Chain_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:3ebb264ae99803d940615da58a2c7963be3e45855d7a5d8867724f3f18a090ee": {
+  "assetId": "94666774660866",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SunBooster_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_SunBooster_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "3ebb264ae99803d940615da58a2c7963be3e45855d7a5d8867724f3f18a090ee",
+  "source": "build/prod/M_Upg_Rocket_SunBooster/fbx/M_Upg_Rocket_SunBooster/M_Upg_Rocket_SunBooster_LOD2.fbx",
   "type": "Model"
  },
  "Model:3ebcda2652a2e7dac9e9a715c298227a54a0a7956158ce73d7931506b211d247": {
@@ -25861,6 +26480,26 @@
   "source": "assets/fbx/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped_LOD0.fbx",
   "type": "Model"
  },
+ "Model:428e637bef9d4cfce7f844fbabb539cd9bd5dcfa9e301483e013a8733ee3a4c8": {
+  "assetId": "122320592445349",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_MegaOutboard",
+  "rbxm": "assets/models/M_Upg_RIB_MegaOutboard.rbxm",
+  "route": "delivery",
+  "sha": "428e637bef9d4cfce7f844fbabb539cd9bd5dcfa9e301483e013a8733ee3a4c8",
+  "source": "build/prod/M_Upg_RIB_MegaOutboard/fbx/M_Upg_RIB_MegaOutboard/M_Upg_RIB_MegaOutboard_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:4298610485254d473a24a303fc20352771b7db1bca98ea3f233416d8d2672674": {
+  "assetId": "81448421430729",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_PartyCannons_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_PartyCannons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "4298610485254d473a24a303fc20352771b7db1bca98ea3f233416d8d2672674",
+  "source": "build/prod/M_Upg_Rocket_PartyCannons/fbx/M_Upg_Rocket_PartyCannons/M_Upg_Rocket_PartyCannons_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:42cb104d1e7d7ecbd71876d899cc52804c7f0b6b00ee6e31cf2ad68f9146de89": {
   "assetId": "119571045877514",
   "moderation": "Approved",
@@ -25879,6 +26518,46 @@
   "route": "delivery",
   "sha": "4331ac4acbe2499fd543711e13d6b00ecc4c6b28cdd29fd23f62418eed1bc905",
   "source": "assets/fbx/M_Prop_SeaPlateKit/M_Prop_SeaPlateKit_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:43a86a1d4920e14074e5cb4509193114a956608ca45d3f934a18bb7418d9d23a": {
+  "assetId": "91917804999377",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_Pilot_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_Pilot_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "43a86a1d4920e14074e5cb4509193114a956608ca45d3f934a18bb7418d9d23a",
+  "source": "build/prod/M_Upg_Rocket_Pilot/fbx/M_Upg_Rocket_Pilot/M_Upg_Rocket_Pilot_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:43ffd2be81badf12cb34159195161966f82512eb4d9f5a8955816ea97f9ffeec": {
+  "assetId": "71996844442537",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_MegaTrophy_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_MegaTrophy_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "43ffd2be81badf12cb34159195161966f82512eb4d9f5a8955816ea97f9ffeec",
+  "source": "build/prod/M_Upg_Rocket_MegaTrophy/fbx/M_Upg_Rocket_MegaTrophy/M_Upg_Rocket_MegaTrophy_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:4443e4a2d2114d15e3e553cc0e32ab86a6cefd3773a5207dcf0f2a1d11e78903": {
+  "assetId": "112354636600269",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_BananaBoat",
+  "rbxm": "assets/models/M_Upg_JetSki_BananaBoat.rbxm",
+  "route": "delivery",
+  "sha": "4443e4a2d2114d15e3e553cc0e32ab86a6cefd3773a5207dcf0f2a1d11e78903",
+  "source": "build/prod/M_Upg_JetSki_BananaBoat/fbx/M_Upg_JetSki_BananaBoat/M_Upg_JetSki_BananaBoat_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:449f240929830d5607f69311e9ae5ef523d546c5ad826a6a03a73053ad118233": {
+  "assetId": "114547032231953",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TopJet_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TopJet_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "449f240929830d5607f69311e9ae5ef523d546c5ad826a6a03a73053ad118233",
+  "source": "build/prod/M_Upg_Hydrofoil_TopJet/fbx/M_Upg_Hydrofoil_TopJet/M_Upg_Hydrofoil_TopJet_LOD1.fbx",
   "type": "Model"
  },
  "Model:44fada7c2e8ee87fd62951da9cecd086353f4cd392ac5c5e1a2c2bfb5feea6ad": {
@@ -26071,6 +26750,16 @@
   "source": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD0.fbx",
   "type": "Model"
  },
+ "Model:47bb58c7063630530fe7d6d98eb2b71875c27b048bfea2d62b4e17ee8346837b": {
+  "assetId": "85953260237997",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_NeedleNose",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_NeedleNose.rbxm",
+  "route": "delivery",
+  "sha": "47bb58c7063630530fe7d6d98eb2b71875c27b048bfea2d62b4e17ee8346837b",
+  "source": "build/prod/M_Upg_Hydrofoil_NeedleNose/fbx/M_Upg_Hydrofoil_NeedleNose/M_Upg_Hydrofoil_NeedleNose_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:47c6fc70dca786000760804acf7a1775e31755c8eeceaa65281ad24c6a22837c": {
   "assetId": "105677462617729",
   "moderation": "Approved",
@@ -26079,6 +26768,16 @@
   "route": "delivery",
   "sha": "47c6fc70dca786000760804acf7a1775e31755c8eeceaa65281ad24c6a22837c",
   "source": "assets/fbx/M_Hbr_Pontoon_Straight12/M_Hbr_Pontoon_Straight12_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:47d3367b2243ab86c655ae7c9ec450ac04801fd8720de1578fa58a4f681efbfa": {
+  "assetId": "130927787287240",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_RadarDish_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_RadarDish_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "47d3367b2243ab86c655ae7c9ec450ac04801fd8720de1578fa58a4f681efbfa",
+  "source": "build/prod/M_Upg_Hydrofoil_RadarDish/fbx/M_Upg_Hydrofoil_RadarDish/M_Upg_Hydrofoil_RadarDish_LOD2.fbx",
   "type": "Model"
  },
  "Model:48176af0118007e4c617200ac8fca9b96af31961b225c3f32197f9b5dc66321f": {
@@ -26211,6 +26910,16 @@
   "source": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD2.fbx",
   "type": "Model"
  },
+ "Model:496886dda01482aa4cfc85d365c8b36cc607652f36d3e34b8357da2730ccfc0a": {
+  "assetId": "79203577871016",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TurboHalo_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TurboHalo_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "496886dda01482aa4cfc85d365c8b36cc607652f36d3e34b8357da2730ccfc0a",
+  "source": "build/prod/M_Upg_Hydrofoil_TurboHalo/fbx/M_Upg_Hydrofoil_TurboHalo/M_Upg_Hydrofoil_TurboHalo_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:499a72a82c91afc3a1a876aff0dc033121396a476e56abf07cc75371c2f3a019": {
   "assetId": "127359534230835",
   "moderation": "Approved",
@@ -26289,6 +26998,16 @@
   "route": "delivery",
   "sha": "4b7c2c3f16811a6f3132c09eabaca6f2af8a47b6d26f754d30d633f388e22e0c",
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD2.rbxm",
+  "type": "Model"
+ },
+ "Model:4be13d8c6db96b9610fd8504bab94ba5f22660146f0f2abc583907691d4e22f0": {
+  "assetId": "124224657301573",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_NeedleNose",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_NeedleNose.rbxm",
+  "route": "delivery",
+  "sha": "4be13d8c6db96b9610fd8504bab94ba5f22660146f0f2abc583907691d4e22f0",
+  "source": "build/prod/M_Upg_Hydrofoil_NeedleNose/fbx/M_Upg_Hydrofoil_NeedleNose/M_Upg_Hydrofoil_NeedleNose_LOD0.fbx",
   "type": "Model"
  },
  "Model:4c4c26c530542f0869f63d2fd5032d9bb84fd49392f164ceb0d46149d27bb2f3": {
@@ -26411,6 +27130,36 @@
   "source": "assets/fbx/M_Hbr_QuayKit_Steps/M_Hbr_QuayKit_Steps_LOD1.fbx",
   "type": "Model"
  },
+ "Model:4ef3e1982b9a1b17e05208b5d6a5af1cffc8c9d278351529d0ba0b1c0d2bf2e1": {
+  "assetId": "99856912538207",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TTail_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TTail_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "4ef3e1982b9a1b17e05208b5d6a5af1cffc8c9d278351529d0ba0b1c0d2bf2e1",
+  "source": "build/prod/M_Upg_Hydrofoil_TTail/fbx/M_Upg_Hydrofoil_TTail/M_Upg_Hydrofoil_TTail_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:4f056ccab43fdf9324725da72bbfeba1d61375f1e78ee0f45636d2469c6e7e29": {
+  "assetId": "133462597322688",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_RescueSled_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_RescueSled_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "4f056ccab43fdf9324725da72bbfeba1d61375f1e78ee0f45636d2469c6e7e29",
+  "source": "build/prod/M_Upg_JetSki_RescueSled/fbx/M_Upg_JetSki_RescueSled/M_Upg_JetSki_RescueSled_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:4f15b7085e8a71b8d51ff64d0994ec7f7dceb46537c4fe8a235e27289e24095e": {
+  "assetId": "122516165689557",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_WaveWall_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_WaveWall_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "4f15b7085e8a71b8d51ff64d0994ec7f7dceb46537c4fe8a235e27289e24095e",
+  "source": "build/prod/M_Upg_Rocket_WaveWall/fbx/M_Upg_Rocket_WaveWall/M_Upg_Rocket_WaveWall_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:4f1f56b64618f2af6bbc54e511fb6118717590de72e8c24c61a81ef2e2ba68e0": {
   "assetId": "126753549604996",
   "moderation": "Approved",
@@ -26511,6 +27260,26 @@
   "source": "assets/fbx/M_Veg_Gorse_01/M_Veg_Gorse_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:5167478bcf31ff670b4cc019158ae8d07a0342ce491adcf2561a4a5c04d0ea4e": {
+  "assetId": "139930463990531",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SunBooster_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_SunBooster_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "5167478bcf31ff670b4cc019158ae8d07a0342ce491adcf2561a4a5c04d0ea4e",
+  "source": "build/prod/M_Upg_Rocket_SunBooster/fbx/M_Upg_Rocket_SunBooster/M_Upg_Rocket_SunBooster_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:523377dea40bb7cf8e8f160f705ca85df0e5b90ef547d9d5301897a1fa41e3b6": {
+  "assetId": "132960858272853",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyWings_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyWings_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "523377dea40bb7cf8e8f160f705ca85df0e5b90ef547d9d5301897a1fa41e3b6",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyWings/fbx/M_Upg_Hydrofoil_SkyWings/M_Upg_Hydrofoil_SkyWings_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:524c73406a30f83e95ddc6362fd8b95e19e02d20da0a9902686fd7798ac635e7": {
   "assetId": "85796063394020",
   "moderation": "Approved",
@@ -26541,6 +27310,36 @@
   "source": "assets/fbx/M_Bld_TrophyHallAddons/M_Bld_TrophyHallAddons_LOD0.fbx",
   "type": "Model"
  },
+ "Model:53353f0d6f21d07f9c852b327e59bf3212c295463783506cd6d3c1ab82ef1010": {
+  "assetId": "111497127061131",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldThrone",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldThrone.rbxm",
+  "route": "delivery",
+  "sha": "53353f0d6f21d07f9c852b327e59bf3212c295463783506cd6d3c1ab82ef1010",
+  "source": "build/prod/M_Upg_Rocket_GoldThrone/fbx/M_Upg_Rocket_GoldThrone/M_Upg_Rocket_GoldThrone_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:53a4298062cdd9ec451b95b9736d3b8a894b152b3e05f7d5bbee17171fceda6b": {
+  "assetId": "117071727731509",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_FlamePipes_LOD2",
+  "rbxm": "assets/models/M_Upg_JetSki_FlamePipes_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "53a4298062cdd9ec451b95b9736d3b8a894b152b3e05f7d5bbee17171fceda6b",
+  "source": "build/prod/M_Upg_JetSki_FlamePipes/fbx/M_Upg_JetSki_FlamePipes/M_Upg_JetSki_FlamePipes_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:5409a984819b8cbeb6e9cf9c5b9b7eed0d364ab282dd2152253e33156aca3a0b": {
+  "assetId": "75264763873474",
+  "moderation": "Approved",
+  "name": "M_Chr_PirateCaptain_LOD1",
+  "rbxm": "assets/models/M_Chr_PirateCaptain_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "5409a984819b8cbeb6e9cf9c5b9b7eed0d364ab282dd2152253e33156aca3a0b",
+  "source": "build/prod/M_Chr_PirateCaptain/fbx/M_Chr_PirateCaptain/M_Chr_PirateCaptain_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:542cfc00d968aa4c4bc47aae4dd92492aed5450352edf1cedb4527e8f6ed85a7": {
   "assetId": "86384648183077",
   "moderation": "Approved",
@@ -26569,6 +27368,26 @@
   "route": "delivery",
   "sha": "548748396aa16d994afff366c43e9d40a8fb61f56d7ac2fe8a09442a6a666c69",
   "source": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:549c086ce0e09bd2d84561d279031a00928a860a59b7440bd1aa026b78e62f1d": {
+  "assetId": "127510354581017",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_RoofRockets",
+  "rbxm": "assets/models/M_Upg_Lifeboat_RoofRockets.rbxm",
+  "route": "delivery",
+  "sha": "549c086ce0e09bd2d84561d279031a00928a860a59b7440bd1aa026b78e62f1d",
+  "source": "build/prod/M_Upg_Lifeboat_RoofRockets/fbx/M_Upg_Lifeboat_RoofRockets/M_Upg_Lifeboat_RoofRockets_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:54cb423ff4078490201f64b75255bdf4a781ada7c497d26dd67a00ad05a90fd9": {
+  "assetId": "121377620867804",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyWings_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyWings_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "54cb423ff4078490201f64b75255bdf4a781ada7c497d26dd67a00ad05a90fd9",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyWings/fbx/M_Upg_Hydrofoil_SkyWings/M_Upg_Hydrofoil_SkyWings_LOD1.fbx",
   "type": "Model"
  },
  "Model:551bd9adbd03d273b56f061471c56f5505b4b942c4d138a2cd33b3ad72febd76": {
@@ -26641,6 +27460,56 @@
   "source": "assets/fbx/M_Rock_Ledge_01/M_Rock_Ledge_01_LOD2.fbx",
   "type": "Model"
  },
+ "Model:55b64831d021ab195456268f88c6625fbd6d764f6aad8751d2236d2d51786576": {
+  "assetId": "78244750359958",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SunBooster_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_SunBooster_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "55b64831d021ab195456268f88c6625fbd6d764f6aad8751d2236d2d51786576",
+  "source": "build/prod/M_Upg_Rocket_SunBooster/fbx/M_Upg_Rocket_SunBooster/M_Upg_Rocket_SunBooster_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:55f726f9f3754c6681cbe00f3ad5437d53beac091dbd6f0211556531903687ee": {
+  "assetId": "110956447012453",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SideBoosters_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_SideBoosters_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "55f726f9f3754c6681cbe00f3ad5437d53beac091dbd6f0211556531903687ee",
+  "source": "build/prod/M_Upg_Rocket_SideBoosters/fbx/M_Upg_Rocket_SideBoosters/M_Upg_Rocket_SideBoosters_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:560b5df2eb54d45770cdc9e215ac456beb34c008fd24899d899773e9e2ed1066": {
+  "assetId": "103797818273246",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_FatTubes_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_FatTubes_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "560b5df2eb54d45770cdc9e215ac456beb34c008fd24899d899773e9e2ed1066",
+  "source": "build/prod/M_Upg_RIB_FatTubes/fbx/M_Upg_RIB_FatTubes/M_Upg_RIB_FatTubes_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:5618d705fc4a42cdba6720ef7cd6e9218fe3d1a83affbcb679136e997998e181": {
+  "assetId": "87884720098911",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SideBoosters_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_SideBoosters_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "5618d705fc4a42cdba6720ef7cd6e9218fe3d1a83affbcb679136e997998e181",
+  "source": "build/prod/M_Upg_Rocket_SideBoosters/fbx/M_Upg_Rocket_SideBoosters/M_Upg_Rocket_SideBoosters_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:561daf89124e7d44d7ec998beec904900d7593c9bb04ff119930f2ee567cca96": {
+  "assetId": "138274608484908",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_BullNose_LOD2",
+  "rbxm": "assets/models/M_Upg_JetSki_BullNose_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "561daf89124e7d44d7ec998beec904900d7593c9bb04ff119930f2ee567cca96",
+  "source": "build/prod/M_Upg_JetSki_BullNose/fbx/M_Upg_JetSki_BullNose/M_Upg_JetSki_BullNose_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:56661823cb9902cc39aefe51c8ff33a9dc18abce52e73f22c7b719e7ea8847db": {
   "assetId": "97380489569882",
   "moderation": "Approved",
@@ -26659,6 +27528,26 @@
   "route": "delivery",
   "sha": "568f9f361493de8ffb281201e2f583795120201f0aae572d3337825528ba3b97",
   "source": "assets/fbx/M_Road_CrashBarrier/M_Road_CrashBarrier_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:56baa891367c1682045a39a8ff87e8932ca03ba4bae53ebffcf413cf82ae9781": {
+  "assetId": "123241557342005",
+  "moderation": "Approved",
+  "name": "M_Veh_Hydrofoil",
+  "rbxm": "assets/models/M_Veh_Hydrofoil.rbxm",
+  "route": "delivery",
+  "sha": "56baa891367c1682045a39a8ff87e8932ca03ba4bae53ebffcf413cf82ae9781",
+  "source": "build/prod/M_Veh_Hydrofoil/fbx/M_Veh_Hydrofoil/M_Veh_Hydrofoil_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:56c67850bde8922e1a446984492cb8aeb3f8dbc2ee3c907c32ab4050e41a51a8": {
+  "assetId": "135462466921517",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyWings_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyWings_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "56c67850bde8922e1a446984492cb8aeb3f8dbc2ee3c907c32ab4050e41a51a8",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyWings/fbx/M_Upg_Hydrofoil_SkyWings/M_Upg_Hydrofoil_SkyWings_LOD2.fbx",
   "type": "Model"
  },
  "Model:56e9f91086512f9f213ea813ed69fce56ca0e9760ad155fb859a7ca2ce469a50": {
@@ -26781,6 +27670,36 @@
   "source": "assets/fbx/M_Road_ParkedCar_01/M_Road_ParkedCar_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:590a9ca0c9a617f9d4c2583a3229ff1644711f2b41839f03dcf3b449addb6ef0": {
+  "assetId": "100645475721822",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_Grandstand_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_Grandstand_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "590a9ca0c9a617f9d4c2583a3229ff1644711f2b41839f03dcf3b449addb6ef0",
+  "source": "build/prod/M_Upg_RIB_Grandstand/fbx/M_Upg_RIB_Grandstand/M_Upg_RIB_Grandstand_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:5941d8689724590f22365865ae3e3e4aa364e61c87ef585659fb89fe5ab9864c": {
+  "assetId": "136992668424250",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_RearRockets_LOD2",
+  "rbxm": "assets/models/M_Upg_Lifeboat_RearRockets_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "5941d8689724590f22365865ae3e3e4aa364e61c87ef585659fb89fe5ab9864c",
+  "source": "build/prod/M_Upg_Lifeboat_RearRockets/fbx/M_Upg_Lifeboat_RearRockets/M_Upg_Lifeboat_RearRockets_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:594778d5090182977d69597ecb31178eefaa22beafd2ce4aedffa0c012de1cb8": {
+  "assetId": "81866683214233",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_RadarDish_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_RadarDish_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "594778d5090182977d69597ecb31178eefaa22beafd2ce4aedffa0c012de1cb8",
+  "source": "build/prod/M_Upg_Hydrofoil_RadarDish/fbx/M_Upg_Hydrofoil_RadarDish/M_Upg_Hydrofoil_RadarDish_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:596541cfb2d744b08fc4a047136b1973d3d32b215b8ed527b0910f1b37d9db71": {
   "assetId": "80584816308761",
   "moderation": "Approved",
@@ -26809,6 +27728,16 @@
   "route": "delivery",
   "sha": "59c6cb0857cfad0a3efbfde3b67439b4d6a480d9b8ffdf763972d6405ec1b98a",
   "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:59d54a2b0154d1c5b8f1971631fe30947aa78f604c6380b7197c38cd03b7e4db": {
+  "assetId": "133320752988996",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ExhaustOrgan",
+  "rbxm": "assets/models/M_Upg_RIB_ExhaustOrgan.rbxm",
+  "route": "delivery",
+  "sha": "59d54a2b0154d1c5b8f1971631fe30947aa78f604c6380b7197c38cd03b7e4db",
+  "source": "build/prod/M_Upg_RIB_ExhaustOrgan/fbx/M_Upg_RIB_ExhaustOrgan/M_Upg_RIB_ExhaustOrgan_LOD0.fbx",
   "type": "Model"
  },
  "Model:59d64c4f5feacecd7f9100a8134324cf8eef56ec7fcf6b3c05425ef0ccf63145": {
@@ -26859,6 +27788,36 @@
   "route": "delivery",
   "sha": "5b611d67bb71e5cf908eeef1bad0ec9438d6405fac74b9a868acfa46b9b37c08",
   "source": "assets/fbx/M_Veg_Heather_03/M_Veg_Heather_03_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:5b9dd052869de3867350d9245332126c37e21b47f191d3114584a9b7700981f7": {
+  "assetId": "119291337210580",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_Afterburners_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_Afterburners_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "5b9dd052869de3867350d9245332126c37e21b47f191d3114584a9b7700981f7",
+  "source": "build/prod/M_Upg_Hydrofoil_Afterburners/fbx/M_Upg_Hydrofoil_Afterburners/M_Upg_Hydrofoil_Afterburners_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:5bb62a2834e3d913f861307162b1a73655c36f0ee8a2825f5fcbd78b8bca23b2": {
+  "assetId": "140643131082920",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SunBooster_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_SunBooster_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "5bb62a2834e3d913f861307162b1a73655c36f0ee8a2825f5fcbd78b8bca23b2",
+  "source": "build/prod/M_Upg_Rocket_SunBooster/fbx/M_Upg_Rocket_SunBooster/M_Upg_Rocket_SunBooster_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:5c38344ee3d92017e90aa935114c871af7639a6ee453cf2b3257687f70362b29": {
+  "assetId": "130143926615466",
+  "moderation": "Approved",
+  "name": "M_Chr_PirateLookout_LOD1",
+  "rbxm": "assets/models/M_Chr_PirateLookout_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "5c38344ee3d92017e90aa935114c871af7639a6ee453cf2b3257687f70362b29",
+  "source": "build/prod/M_Chr_PirateLookout/fbx/M_Chr_PirateLookout/M_Chr_PirateLookout_LOD1.fbx",
   "type": "Model"
  },
  "Model:5c5ccde23c7e72db4ea355b0b68b8f9e1843826e7ad7c1930a7e0563b3ec7796": {
@@ -26959,6 +27918,26 @@
   "route": "delivery",
   "sha": "5e6616b1525eb475f0e024e1774eb179e210cc4f25180c38830e41b58e310e9d",
   "source": "assets/fbx/M_Bld_BoatyardShed/M_Bld_BoatyardShed_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:5eb04f12a0851869e38f69d74c9af7c681fc5552168d61d13f92fe2e28b2f86e": {
+  "assetId": "140123533532668",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_RocketFins_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_RocketFins_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "5eb04f12a0851869e38f69d74c9af7c681fc5552168d61d13f92fe2e28b2f86e",
+  "source": "build/prod/M_Upg_Rocket_RocketFins/fbx/M_Upg_Rocket_RocketFins/M_Upg_Rocket_RocketFins_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:5ed0feb683991c1575d30824af2b009f18c402d732d9e21f0e5e651b43d2e4a5": {
+  "assetId": "91986723510910",
+  "moderation": "Approved",
+  "name": "M_Ani_Puffin",
+  "rbxm": "assets/models/M_Ani_Puffin.rbxm",
+  "route": "delivery",
+  "sha": "5ed0feb683991c1575d30824af2b009f18c402d732d9e21f0e5e651b43d2e4a5",
+  "source": "assets/fbx/M_Ani_Puffin/M_Ani_Puffin_LOD0.fbx",
   "type": "Model"
  },
  "Model:5f15bfeca506885aeade48ff8098c541760a908fa8718cf58e271649943b5139": {
@@ -27071,6 +28050,26 @@
   "source": "assets/fbx/M_Bld_HarbourLight/M_Bld_HarbourLight_LOD0.fbx",
   "type": "Model"
  },
+ "Model:62defc035f9b3992f1a05a0e7f87838ab2e4cdfd38be80ae4dd94e87ea6b836f": {
+  "assetId": "81648303666104",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ThunderWing_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_ThunderWing_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "62defc035f9b3992f1a05a0e7f87838ab2e4cdfd38be80ae4dd94e87ea6b836f",
+  "source": "build/prod/M_Upg_RIB_ThunderWing/fbx/M_Upg_RIB_ThunderWing/M_Upg_RIB_ThunderWing_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:62ebaa0d0f97077bcd6a8c947b4e05e9cfd981917de78668abce84e8534f0c54": {
+  "assetId": "129052639314978",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldPlating_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldPlating_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "62ebaa0d0f97077bcd6a8c947b4e05e9cfd981917de78668abce84e8534f0c54",
+  "source": "build/prod/M_Upg_Rocket_GoldPlating/fbx/M_Upg_Rocket_GoldPlating/M_Upg_Rocket_GoldPlating_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:632b10b25983a9dd20958f67627c923eaae5eee9995947fec73864966cccf5c0": {
   "assetId": "129407195719621",
   "moderation": "Approved",
@@ -27171,6 +28170,16 @@
   "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD0.fbx",
   "type": "Model"
  },
+ "Model:6410e9fa2b0c06c2f863dc757011b55a6ca3c279b5861aee405597524135328a": {
+  "assetId": "130544466102539",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_RadarDish",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_RadarDish.rbxm",
+  "route": "delivery",
+  "sha": "6410e9fa2b0c06c2f863dc757011b55a6ca3c279b5861aee405597524135328a",
+  "source": "build/prod/M_Upg_Hydrofoil_RadarDish/fbx/M_Upg_Hydrofoil_RadarDish/M_Upg_Hydrofoil_RadarDish_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:646940842f74d42c996c4159e4377e410d166a7207c05422023c94270bcc21e1": {
   "assetId": "120376462356030",
   "moderation": "Approved",
@@ -27179,6 +28188,16 @@
   "route": "delivery",
   "sha": "646940842f74d42c996c4159e4377e410d166a7207c05422023c94270bcc21e1",
   "source": "assets/fbx/M_Kit_VHFHandset/M_Kit_VHFHandset_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:64afa9c7779de654ff3dd1869c29787547050e9e27edc4dc506f4e07d0c9cb66": {
+  "assetId": "115000514528355",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldThrone_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldThrone_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "64afa9c7779de654ff3dd1869c29787547050e9e27edc4dc506f4e07d0c9cb66",
+  "source": "build/prod/M_Upg_Rocket_GoldThrone/fbx/M_Upg_Rocket_GoldThrone/M_Upg_Rocket_GoldThrone_LOD1.fbx",
   "type": "Model"
  },
  "Model:65220788868735b3270dfb8d1e1c6559f94521fcc92e79c563f58928809cc43f": {
@@ -27261,6 +28280,16 @@
   "source": "assets/fbx/M_Hbr_Fender_Ball/M_Hbr_Fender_Ball_LOD0.fbx",
   "type": "Model"
  },
+ "Model:65c4ad4b566860da3b24a50da40c197c8b00549aaba7a8e69d556ed817f5679b": {
+  "assetId": "127474263133889",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_MegaTrophy_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_MegaTrophy_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "65c4ad4b566860da3b24a50da40c197c8b00549aaba7a8e69d556ed817f5679b",
+  "source": "build/prod/M_Upg_Rocket_MegaTrophy/fbx/M_Upg_Rocket_MegaTrophy/M_Upg_Rocket_MegaTrophy_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:663fc0244964ecca314a459b28ef8147fbaed308b84126784ad1b3c842673507": {
   "assetId": "108084525137319",
   "moderation": "Approved",
@@ -27341,6 +28370,26 @@
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.fbx",
   "type": "Model"
  },
+ "Model:679abca031410554032539dd2579f653cae8e9b3d252c786b34cb7d351942935": {
+  "assetId": "131810120995788",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_PartyCannons",
+  "rbxm": "assets/models/M_Upg_Rocket_PartyCannons.rbxm",
+  "route": "delivery",
+  "sha": "679abca031410554032539dd2579f653cae8e9b3d252c786b34cb7d351942935",
+  "source": "build/prod/M_Upg_Rocket_PartyCannons/fbx/M_Upg_Rocket_PartyCannons/M_Upg_Rocket_PartyCannons_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:679e34bb599b5e0f274506f55b06e0864cc6167f4e49ed109cb3879f4cd4eefd": {
+  "assetId": "110365175230522",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_GiantJets_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_GiantJets_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "679e34bb599b5e0f274506f55b06e0864cc6167f4e49ed109cb3879f4cd4eefd",
+  "source": "build/prod/M_Upg_Hydrofoil_GiantJets/fbx/M_Upg_Hydrofoil_GiantJets/M_Upg_Hydrofoil_GiantJets_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:67a6958165d1156fded2ee481068368f8d0b20fbeec430516fc037a58d9f015b": {
   "assetId": "107853799637000",
   "moderation": "Approved",
@@ -27369,6 +28418,106 @@
   "route": "delivery",
   "sha": "67f14ca50ebddff07be4f2bca92d82b87df469b87da93b6d29e7e5036f27e00b",
   "source": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:67ff8cbdc8db1b3cb01f3d355dd05990f0c6d1330f792fde0faa5e1a64224abc": {
+  "assetId": "124954465174783",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ArchSpoiler",
+  "rbxm": "assets/models/M_Upg_RIB_ArchSpoiler.rbxm",
+  "route": "delivery",
+  "sha": "67ff8cbdc8db1b3cb01f3d355dd05990f0c6d1330f792fde0faa5e1a64224abc",
+  "source": "build/prod/M_Upg_RIB_ArchSpoiler/fbx/M_Upg_RIB_ArchSpoiler/M_Upg_RIB_ArchSpoiler_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:6800f7dfb57e5af913ca10e856ba3ae30f7ec7b0b184c41120c13c4df6c33b42": {
+  "assetId": "137744251423796",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_HornStack_LOD2",
+  "rbxm": "assets/models/M_Upg_JetSki_HornStack_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "6800f7dfb57e5af913ca10e856ba3ae30f7ec7b0b184c41120c13c4df6c33b42",
+  "source": "build/prod/M_Upg_JetSki_HornStack/fbx/M_Upg_JetSki_HornStack/M_Upg_JetSki_HornStack_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:6873653140577401052d059eacbe86fe7d8b5ee809ee11b6e3c3b1ccc32b914c": {
+  "assetId": "127262750284551",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_HornStack_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_HornStack_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "6873653140577401052d059eacbe86fe7d8b5ee809ee11b6e3c3b1ccc32b914c",
+  "source": "build/prod/M_Upg_JetSki_HornStack/fbx/M_Upg_JetSki_HornStack/M_Upg_JetSki_HornStack_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:68974898e25cd9da6027f497795bfe68240110f8a501e9e79a0875504cdcf618": {
+  "assetId": "79654248038286",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_RadarDish",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_RadarDish.rbxm",
+  "route": "delivery",
+  "sha": "68974898e25cd9da6027f497795bfe68240110f8a501e9e79a0875504cdcf618",
+  "source": "build/prod/M_Upg_Hydrofoil_RadarDish/fbx/M_Upg_Hydrofoil_RadarDish/M_Upg_Hydrofoil_RadarDish_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:6938ba114151599b8f3d117b034fef4f455c436371ae0fc23dfc036bd6e6d5a5": {
+  "assetId": "71274745607661",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_FlamePipes_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_FlamePipes_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "6938ba114151599b8f3d117b034fef4f455c436371ae0fc23dfc036bd6e6d5a5",
+  "source": "build/prod/M_Upg_JetSki_FlamePipes/fbx/M_Upg_JetSki_FlamePipes/M_Upg_JetSki_FlamePipes_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:698224a05a6acbadbd1301fdae0f3b0323e44cf36ce25e250acbd3a1fcc1b017": {
+  "assetId": "88729526606715",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_BananaBoat",
+  "rbxm": "assets/models/M_Upg_JetSki_BananaBoat.rbxm",
+  "route": "delivery",
+  "sha": "698224a05a6acbadbd1301fdae0f3b0323e44cf36ce25e250acbd3a1fcc1b017",
+  "source": "build/prod/M_Upg_JetSki_BananaBoat/fbx/M_Upg_JetSki_BananaBoat/M_Upg_JetSki_BananaBoat_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:69b8e6e2c749d649b1d033166e3032423757a4ef30a34163e87b34087713980a": {
+  "assetId": "85398662286706",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_RocketFins",
+  "rbxm": "assets/models/M_Upg_Rocket_RocketFins.rbxm",
+  "route": "delivery",
+  "sha": "69b8e6e2c749d649b1d033166e3032423757a4ef30a34163e87b34087713980a",
+  "source": "build/prod/M_Upg_Rocket_RocketFins/fbx/M_Upg_Rocket_RocketFins/M_Upg_Rocket_RocketFins_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:69f293746373b4b6de6c46a8531bd8b8bdd2c8a3a22737efb506e5be225f3e8e": {
+  "assetId": "120497757007102",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_RoofRockets",
+  "rbxm": "assets/models/M_Upg_Lifeboat_RoofRockets.rbxm",
+  "route": "delivery",
+  "sha": "69f293746373b4b6de6c46a8531bd8b8bdd2c8a3a22737efb506e5be225f3e8e",
+  "source": "build/prod/M_Upg_Lifeboat_RoofRockets/fbx/M_Upg_Lifeboat_RoofRockets/M_Upg_Lifeboat_RoofRockets_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:69fc871eff48e37168f571f1d3a09e319af2ba2cac3889d695d878aa4565b229": {
+  "assetId": "78395993993927",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_LampTower",
+  "rbxm": "assets/models/M_Upg_Lifeboat_LampTower.rbxm",
+  "route": "delivery",
+  "sha": "69fc871eff48e37168f571f1d3a09e319af2ba2cac3889d695d878aa4565b229",
+  "source": "build/prod/M_Upg_Lifeboat_LampTower/fbx/M_Upg_Lifeboat_LampTower/M_Upg_Lifeboat_LampTower_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:6a0dbe20efc903367e8f9e06f002115abd050369c5b58f64419c4a6b3dfcd26f": {
+  "assetId": "127661786716659",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_TwinEngines",
+  "rbxm": "assets/models/M_Upg_JetSki_TwinEngines.rbxm",
+  "route": "delivery",
+  "sha": "6a0dbe20efc903367e8f9e06f002115abd050369c5b58f64419c4a6b3dfcd26f",
+  "source": "build/prod/M_Upg_JetSki_TwinEngines/fbx/M_Upg_JetSki_TwinEngines/M_Upg_JetSki_TwinEngines_LOD0.fbx",
   "type": "Model"
  },
  "Model:6a51de877f1e566c9354507f2e6bd2513cd97e996858847df91aeb09430fb3bb": {
@@ -27411,6 +28560,16 @@
   "source": "assets/fbx/M_Kit_Strobe/M_Kit_Strobe_LOD1.fbx",
   "type": "Model"
  },
+ "Model:6c1e2ce348073d5300477ef63fd36d1695bfb14a1fe83dcb6c7db278225db317": {
+  "assetId": "140646871274726",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldEagle_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldEagle_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "6c1e2ce348073d5300477ef63fd36d1695bfb14a1fe83dcb6c7db278225db317",
+  "source": "build/prod/M_Upg_Rocket_GoldEagle/fbx/M_Upg_Rocket_GoldEagle/M_Upg_Rocket_GoldEagle_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:6c4ec867980aa2e80682b094d29fc57bde5b731890b76620101c1db4138f6272": {
   "assetId": "77856458721407",
   "moderation": "Approved",
@@ -27419,6 +28578,16 @@
   "route": "delivery",
   "sha": "6c4ec867980aa2e80682b094d29fc57bde5b731890b76620101c1db4138f6272",
   "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:6c5fb46e527906a33f8fea40670b2cc9ff2060d6ded15babfa3dcb8c1b927a04": {
+  "assetId": "127878069442866",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_MegaOutboard_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_MegaOutboard_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "6c5fb46e527906a33f8fea40670b2cc9ff2060d6ded15babfa3dcb8c1b927a04",
+  "source": "build/prod/M_Upg_RIB_MegaOutboard/fbx/M_Upg_RIB_MegaOutboard/M_Upg_RIB_MegaOutboard_LOD1.fbx",
   "type": "Model"
  },
  "Model:6cb581484b0da828acd3162abc6652554d88791c65da3b058e81234485aada3d": {
@@ -27561,6 +28730,16 @@
   "source": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag_LOD1.fbx",
   "type": "Model"
  },
+ "Model:6efe99bdd54f534e52749188feab087c88bb726b1ad4550a8d4ee789e3ca4503": {
+  "assetId": "87798816093621",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_Pilot",
+  "rbxm": "assets/models/M_Upg_Rocket_Pilot.rbxm",
+  "route": "delivery",
+  "sha": "6efe99bdd54f534e52749188feab087c88bb726b1ad4550a8d4ee789e3ca4503",
+  "source": "build/prod/M_Upg_Rocket_Pilot/fbx/M_Upg_Rocket_Pilot/M_Upg_Rocket_Pilot_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:6f1dc2356f351763298f6843381a9382c31529043acf7d2fd353ee4e2e8d516b": {
   "assetId": "124101679376385",
   "moderation": "Approved",
@@ -27591,6 +28770,16 @@
   "source": "assets/fbx/M_Hbr_NavMark_South/M_Hbr_NavMark_South_LOD0.fbx",
   "type": "Model"
  },
+ "Model:700ccd9fe71819520677fd067f7c072e28358b5d54b937d690f368d813c2e302": {
+  "assetId": "138161022724220",
+  "moderation": "Approved",
+  "name": "M_Veh_RocketCutter",
+  "rbxm": "assets/models/M_Veh_RocketCutter.rbxm",
+  "route": "delivery",
+  "sha": "700ccd9fe71819520677fd067f7c072e28358b5d54b937d690f368d813c2e302",
+  "source": "build/prod/M_Veh_RocketCutter/fbx/M_Veh_RocketCutter/M_Veh_RocketCutter_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:70221f006da11ee5892acb462d63dd1ffca1021a07eed21d60f987d7f886ab10": {
   "assetId": "71159174355347",
   "moderation": "Approved",
@@ -27611,6 +28800,16 @@
   "source": "assets/fbx/M_Hbr_Pontoon_Corner/M_Hbr_Pontoon_Corner_LOD0.fbx",
   "type": "Model"
  },
+ "Model:706f744ff10aa5e8c5b507bc5ef8ce4f3de6e6f23b3eec93c79997d576d286bc": {
+  "assetId": "98728363741429",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyStilts",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyStilts.rbxm",
+  "route": "delivery",
+  "sha": "706f744ff10aa5e8c5b507bc5ef8ce4f3de6e6f23b3eec93c79997d576d286bc",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyStilts/fbx/M_Upg_Hydrofoil_SkyStilts/M_Upg_Hydrofoil_SkyStilts_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:707d0ecc3fbf06a9a1125a15b97d57e89404771674dc1301fa2efc08139bdb3c": {
   "assetId": "80183851473693",
   "moderation": "Approved",
@@ -27621,6 +28820,16 @@
   "source": "assets/fbx/M_Hbr_MooringBuoy/M_Hbr_MooringBuoy_LOD0.fbx",
   "type": "Model"
  },
+ "Model:708663ad5bee1284e6949376fefcc7cc13b850eaaa6b1e32f8410f3e287d8b46": {
+  "assetId": "131134470933375",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ArchSpoiler",
+  "rbxm": "assets/models/M_Upg_RIB_ArchSpoiler.rbxm",
+  "route": "delivery",
+  "sha": "708663ad5bee1284e6949376fefcc7cc13b850eaaa6b1e32f8410f3e287d8b46",
+  "source": "build/prod/M_Upg_RIB_ArchSpoiler/fbx/M_Upg_RIB_ArchSpoiler/M_Upg_RIB_ArchSpoiler_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:708d8ba780e0ac69f43522456cae11908ea55ab5cdea963fa565f8978831f1ca": {
   "assetId": "98066585426600",
   "moderation": "Approved",
@@ -27629,6 +28838,16 @@
   "route": "delivery",
   "sha": "708d8ba780e0ac69f43522456cae11908ea55ab5cdea963fa565f8978831f1ca",
   "source": "assets/fbx/M_Kit_HandFlare/M_Kit_HandFlare_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:7109a692be6a666f2c1491eb2ecf41e1fe7bc6103e5195e5d4349ed8c5b988a0": {
+  "assetId": "86566835630503",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TurboHalo_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TurboHalo_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "7109a692be6a666f2c1491eb2ecf41e1fe7bc6103e5195e5d4349ed8c5b988a0",
+  "source": "build/prod/M_Upg_Hydrofoil_TurboHalo/fbx/M_Upg_Hydrofoil_TurboHalo/M_Upg_Hydrofoil_TurboHalo_LOD2.fbx",
   "type": "Model"
  },
  "Model:710c113bd01c78b04c58b11e93b90a3f5d63beb1a6475ef1592588a2237cd2b4": {
@@ -27671,6 +28890,26 @@
   "source": "assets/fbx/M_Veg_Gorse_01/M_Veg_Gorse_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:71f41ea9cd45a3d184e26fb8edf9cf0c62959329898ccc0403cd52d3e87b7851": {
+  "assetId": "80822599718932",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_Afterburners_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_Afterburners_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "71f41ea9cd45a3d184e26fb8edf9cf0c62959329898ccc0403cd52d3e87b7851",
+  "source": "build/prod/M_Upg_Hydrofoil_Afterburners/fbx/M_Upg_Hydrofoil_Afterburners/M_Upg_Hydrofoil_Afterburners_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:7223cdb73161e234e38f5a108115b4af7335ef76ffa7f50641bd49b7fffc6822": {
+  "assetId": "102680468010463",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_WaveWall_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_WaveWall_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "7223cdb73161e234e38f5a108115b4af7335ef76ffa7f50641bd49b7fffc6822",
+  "source": "build/prod/M_Upg_Rocket_WaveWall/fbx/M_Upg_Rocket_WaveWall/M_Upg_Rocket_WaveWall_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:722f68e6eae03a675db240f33f158dd2d685ca5567ecfc5b8a02c5a39e596988": {
   "assetId": "139013408951592",
   "moderation": "Approved",
@@ -27689,6 +28928,16 @@
   "route": "delivery",
   "sha": "72365b669657930d62638e8c60659c831726ff36c191cde3b583b939c035cf5a",
   "source": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:724654599cd2bc0b3c6cf210411f959614d04d1064cdae539bd623db1627bb17": {
+  "assetId": "124815326827560",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ArchSpoiler_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_ArchSpoiler_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "724654599cd2bc0b3c6cf210411f959614d04d1064cdae539bd623db1627bb17",
+  "source": "build/prod/M_Upg_RIB_ArchSpoiler/fbx/M_Upg_RIB_ArchSpoiler/M_Upg_RIB_ArchSpoiler_LOD2.fbx",
   "type": "Model"
  },
  "Model:72509fdada2cfc5135124bfa8a9f32336361320bbe7385714791b3dd36ef28f0": {
@@ -27781,6 +29030,16 @@
   "source": "assets/fbx/M_Prop_BuildSiteKit/M_Prop_BuildSiteKit_LOD1.fbx",
   "type": "Model"
  },
+ "Model:74e056e0f2ab23215580780fe88685026ea8f8e952f5afa10f96a5cb81978c14": {
+  "assetId": "118435069505317",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_RadarDish_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_RadarDish_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "74e056e0f2ab23215580780fe88685026ea8f8e952f5afa10f96a5cb81978c14",
+  "source": "build/prod/M_Upg_Hydrofoil_RadarDish/fbx/M_Upg_Hydrofoil_RadarDish/M_Upg_Hydrofoil_RadarDish_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:75361d6d3265f3c29e5ed711fcdfffd9fdf3531f071812db3a821259f05285fa": {
   "assetId": "127034540557799",
   "moderation": "Approved",
@@ -27849,6 +29108,36 @@
   "route": "delivery",
   "sha": "75e319ea1147a61c58035c081db9849ca8930df7a60e9c5ad94d634f7ef84203",
   "source": "assets/fbx/M_Rock_Ledge_01/M_Rock_Ledge_01_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:75eb7eabd486c7bfc74bc83d81f099673725aeb7fd89a4edcd5c889460e5be44": {
+  "assetId": "124272032052322",
+  "moderation": "Approved",
+  "name": "M_Ani_GreySeal_LOD1",
+  "rbxm": "assets/models/M_Ani_GreySeal_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "75eb7eabd486c7bfc74bc83d81f099673725aeb7fd89a4edcd5c889460e5be44",
+  "source": "assets/fbx/M_Ani_GreySeal/M_Ani_GreySeal_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:75f341a5ffe34e0481d7c949558fb8e9a0f0db1b04bd1dfb0fe51f874848835b": {
+  "assetId": "104468224161552",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_PartyCannons_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_PartyCannons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "75f341a5ffe34e0481d7c949558fb8e9a0f0db1b04bd1dfb0fe51f874848835b",
+  "source": "build/prod/M_Upg_Rocket_PartyCannons/fbx/M_Upg_Rocket_PartyCannons/M_Upg_Rocket_PartyCannons_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:7608e1abeeefc738b1c71df2ad4b72f8f922b5c36be5440cab1d85f77b5eb0ea": {
+  "assetId": "138802809245316",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_WaveWall",
+  "rbxm": "assets/models/M_Upg_Rocket_WaveWall.rbxm",
+  "route": "delivery",
+  "sha": "7608e1abeeefc738b1c71df2ad4b72f8f922b5c36be5440cab1d85f77b5eb0ea",
+  "source": "build/prod/M_Upg_Rocket_WaveWall/fbx/M_Upg_Rocket_WaveWall/M_Upg_Rocket_WaveWall_LOD0.fbx",
   "type": "Model"
  },
  "Model:76195192373d0ebad7d5925fd720bbc27f63a927c2849799c7b80fa4ff93985e": {
@@ -27931,6 +29220,26 @@
   "source": "assets/fbx/M_Road_CrashBarrier/M_Road_CrashBarrier_LOD0.fbx",
   "type": "Model"
  },
+ "Model:787094b7d689f056454534813194d6aad0ee93e02d05b2e390854ef22b101ce1": {
+  "assetId": "80355391833667",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ThunderWing",
+  "rbxm": "assets/models/M_Upg_RIB_ThunderWing.rbxm",
+  "route": "delivery",
+  "sha": "787094b7d689f056454534813194d6aad0ee93e02d05b2e390854ef22b101ce1",
+  "source": "build/prod/M_Upg_RIB_ThunderWing/fbx/M_Upg_RIB_ThunderWing/M_Upg_RIB_ThunderWing_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:7884a9bbe0310008287bd85b2b6716c67ea13a03e1e9c345012a75d89c9fcdfc": {
+  "assetId": "132796902749912",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_PaddleWheel_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_PaddleWheel_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "7884a9bbe0310008287bd85b2b6716c67ea13a03e1e9c345012a75d89c9fcdfc",
+  "source": "build/prod/M_Upg_RIB_PaddleWheel/fbx/M_Upg_RIB_PaddleWheel/M_Upg_RIB_PaddleWheel_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:78d2ebfba09c4a4a870da6bf8d90e9bf9e5bc5ae18f2d7049416765080c0484f": {
   "assetId": "119341089660533",
   "moderation": "Approved",
@@ -27969,6 +29278,16 @@
   "route": "delivery",
   "sha": "7a38a0fb1dcc10a3969bb1f8e3646bcdcded1cb13ae91528f1a384945d70fcd9",
   "source": "assets/fbx/M_Sea_MooringBlock/M_Sea_MooringBlock_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:7a6fa5081e0fa37253fcc4bbe49fb68b681ce243f014d18d5c88072994e6deba": {
+  "assetId": "102375826484490",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_RocketFins_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_RocketFins_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "7a6fa5081e0fa37253fcc4bbe49fb68b681ce243f014d18d5c88072994e6deba",
+  "source": "build/prod/M_Upg_Rocket_RocketFins/fbx/M_Upg_Rocket_RocketFins/M_Upg_Rocket_RocketFins_LOD1.fbx",
   "type": "Model"
  },
  "Model:7a9cb0b52ff77f958f5f1f84d70851ffe229c8785afa4567f05aeb41463d5699": {
@@ -28039,6 +29358,16 @@
   "route": "delivery",
   "sha": "7c959544d36af0bc130be5aab5d5719f0f4ee4f9826b979ca4b5662d0ea53c5d",
   "source": "assets/fbx/M_Hbr_QuayKit_LadderBay/M_Hbr_QuayKit_LadderBay_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:7c9c4fda3f1eedece81bcaca5db1714d52e905ccbd480afda5e2585f42f0f4f5": {
+  "assetId": "127130601967278",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldPlating_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldPlating_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "7c9c4fda3f1eedece81bcaca5db1714d52e905ccbd480afda5e2585f42f0f4f5",
+  "source": "build/prod/M_Upg_Rocket_GoldPlating/fbx/M_Upg_Rocket_GoldPlating/M_Upg_Rocket_GoldPlating_LOD1.fbx",
   "type": "Model"
  },
  "Model:7cae27ec73c9b97e06f284a790eaa212309b51b6c906c09162c566e1bd3cdd5c": {
@@ -28121,6 +29450,16 @@
   "source": "assets/fbx/M_Veg_Heather_01/M_Veg_Heather_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:7f1dd27f91ca4d51aff6d85735520c536adeb5603b5e4c24cca4a2b6831191d9": {
+  "assetId": "71543044168157",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_WaveWall_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_WaveWall_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "7f1dd27f91ca4d51aff6d85735520c536adeb5603b5e4c24cca4a2b6831191d9",
+  "source": "build/prod/M_Upg_Rocket_WaveWall/fbx/M_Upg_Rocket_WaveWall/M_Upg_Rocket_WaveWall_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:7f39c1f24bfe09a8fd4d135e5a07113ef3c6a9acf7f3e035ece968700c3b4aee": {
   "assetId": "118176380187881",
   "moderation": "Approved",
@@ -28129,6 +29468,26 @@
   "route": "delivery",
   "sha": "7f39c1f24bfe09a8fd4d135e5a07113ef3c6a9acf7f3e035ece968700c3b4aee",
   "source": "assets/fbx/M_Prop_BuildStation/M_Prop_BuildStation_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:7f658c61bcfac38a863c6d9f3f0af6c109c3aa7544e3a4806e772b5e06d21583": {
+  "assetId": "100681311702262",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TurboHalo_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TurboHalo_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "7f658c61bcfac38a863c6d9f3f0af6c109c3aa7544e3a4806e772b5e06d21583",
+  "source": "build/prod/M_Upg_Hydrofoil_TurboHalo/fbx/M_Upg_Hydrofoil_TurboHalo/M_Upg_Hydrofoil_TurboHalo_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:7f7456cde2e558b1c5fd756a765f9b26e46e3f8b987162810131adaf2eb3cd1e": {
+  "assetId": "88968642835599",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_LampTower_LOD2",
+  "rbxm": "assets/models/M_Upg_Lifeboat_LampTower_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "7f7456cde2e558b1c5fd756a765f9b26e46e3f8b987162810131adaf2eb3cd1e",
+  "source": "build/prod/M_Upg_Lifeboat_LampTower/fbx/M_Upg_Lifeboat_LampTower/M_Upg_Lifeboat_LampTower_LOD2.fbx",
   "type": "Model"
  },
  "Model:7f78b0478d3ce206321b365e24c70c8d7fbfd31e3465272a10f3ff278bd549f2": {
@@ -28521,6 +29880,16 @@
   "source": "assets/fbx/M_Hbr_QuayKit_Head/M_Hbr_QuayKit_Head_LOD0.fbx",
   "type": "Model"
  },
+ "Model:86018b1e431c53e8fb532161b7794173ba7ca1e407ae7914f5e1a39934567733": {
+  "assetId": "78522651833113",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldPlating_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldPlating_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "86018b1e431c53e8fb532161b7794173ba7ca1e407ae7914f5e1a39934567733",
+  "source": "build/prod/M_Upg_Rocket_GoldPlating/fbx/M_Upg_Rocket_GoldPlating/M_Upg_Rocket_GoldPlating_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:862c0383b335925ac005c625be8ae5aced0b80d11cdeb908322f63c87e57d387": {
   "assetId": "131071598736341",
   "moderation": "Approved",
@@ -28589,6 +29958,26 @@
   "route": "delivery",
   "sha": "87ad4bb05f8822a258768bfc1de46a0144c0ffaa488b38e9d05773d5e7be3133",
   "source": "assets/fbx/M_Kit_Strobe/M_Kit_Strobe_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:87bf3ba0fb40b808f86951aef1336aa65d76dd811b3e9523e5d18cba48b638c7": {
+  "assetId": "89692008802107",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_ArmourSpikes",
+  "rbxm": "assets/models/M_Upg_Lifeboat_ArmourSpikes.rbxm",
+  "route": "delivery",
+  "sha": "87bf3ba0fb40b808f86951aef1336aa65d76dd811b3e9523e5d18cba48b638c7",
+  "source": "build/prod/M_Upg_Lifeboat_ArmourSpikes/fbx/M_Upg_Lifeboat_ArmourSpikes/M_Upg_Lifeboat_ArmourSpikes_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:87d99fdcca3f8b49711923179b3c8fa258cad2c760577507fa62cc656a6bb617": {
+  "assetId": "78848919349112",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_SharkJaws_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_SharkJaws_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "87d99fdcca3f8b49711923179b3c8fa258cad2c760577507fa62cc656a6bb617",
+  "source": "build/prod/M_Upg_RIB_SharkJaws/fbx/M_Upg_RIB_SharkJaws/M_Upg_RIB_SharkJaws_LOD1.fbx",
   "type": "Model"
  },
  "Model:881368863450d5831e23857bc6490e4ac7db3189f1a8beea29814e930c84053c": {
@@ -28671,6 +30060,16 @@
   "source": "assets/fbx/M_Veg_Strand_Pebbles_01/M_Veg_Strand_Pebbles_01_LOD2.fbx",
   "type": "Model"
  },
+ "Model:89c4c706b4c9b5fe5254925ec01289bb43332817333fbbabacca7514e038ba24": {
+  "assetId": "131740947120033",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_RocketFins",
+  "rbxm": "assets/models/M_Upg_Rocket_RocketFins.rbxm",
+  "route": "delivery",
+  "sha": "89c4c706b4c9b5fe5254925ec01289bb43332817333fbbabacca7514e038ba24",
+  "source": "build/prod/M_Upg_Rocket_RocketFins/fbx/M_Upg_Rocket_RocketFins/M_Upg_Rocket_RocketFins_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:8a5c176dd08b7e7b04b937d55605edf8f8b81e91dead7a171f523054d7aa593b": {
   "assetId": "92105404397050",
   "moderation": "Approved",
@@ -28711,6 +30110,16 @@
   "source": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD2.fbx",
   "type": "Model"
  },
+ "Model:8b4a576d0ebcf648c7273ead92f9a072d490ab3c11dbac2bfba6fb9a04d11a1d": {
+  "assetId": "89279125788131",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TTail_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TTail_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "8b4a576d0ebcf648c7273ead92f9a072d490ab3c11dbac2bfba6fb9a04d11a1d",
+  "source": "build/prod/M_Upg_Hydrofoil_TTail/fbx/M_Upg_Hydrofoil_TTail/M_Upg_Hydrofoil_TTail_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:8b5dd4cbc4e1b91a87121ba609fa356acc3c6f796d052ef1fe25d00d8fc2244b": {
   "assetId": "120420678094169",
   "moderation": "Approved",
@@ -28719,6 +30128,16 @@
   "route": "delivery",
   "sha": "8b5dd4cbc4e1b91a87121ba609fa356acc3c6f796d052ef1fe25d00d8fc2244b",
   "source": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:8b6e4fd7cdebd13fa6b45b1c67a7e1383e138001bbfccf40c93ba936e01e7737": {
+  "assetId": "105154504332735",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_NeonFins_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_NeonFins_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "8b6e4fd7cdebd13fa6b45b1c67a7e1383e138001bbfccf40c93ba936e01e7737",
+  "source": "build/prod/M_Upg_RIB_NeonFins/fbx/M_Upg_RIB_NeonFins/M_Upg_RIB_NeonFins_LOD2.fbx",
   "type": "Model"
  },
  "Model:8b6ed75244ed71abbd9b7a9f96592879f932ebee9ac4b4539b821e4719ef34b5": {
@@ -28819,6 +30238,16 @@
   "route": "delivery",
   "sha": "8cba442b008fe7b010bb4b8ec31b6317ed457c9f0c0ed0194546f2ec509ddbc2",
   "source": "assets/fbx/M_Sea_LostPot/M_Sea_LostPot_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:8ccf58dd95bf4805e33b610419759ab2ec82e8ae6f4dbe24b1d93c34fbf8f1bf": {
+  "assetId": "78839605384675",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SunBooster",
+  "rbxm": "assets/models/M_Upg_Rocket_SunBooster.rbxm",
+  "route": "delivery",
+  "sha": "8ccf58dd95bf4805e33b610419759ab2ec82e8ae6f4dbe24b1d93c34fbf8f1bf",
+  "source": "build/prod/M_Upg_Rocket_SunBooster/fbx/M_Upg_Rocket_SunBooster/M_Upg_Rocket_SunBooster_LOD0.fbx",
   "type": "Model"
  },
  "Model:8d0e49d277cf8fb3aa970d82213abb0ba44c3a2a00563b6add02618ba35eaa98": {
@@ -28951,6 +30380,36 @@
   "source": "assets/fbx/M_Rock_Cliff_02/M_Rock_Cliff_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:90598e500238947a88494f088d12c0bff939046daa1f56e0bd58354333659feb": {
+  "assetId": "77541869675498",
+  "moderation": "Approved",
+  "name": "M_Bld_UpgradeStation_LOD2",
+  "rbxm": "assets/models/M_Bld_UpgradeStation_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "90598e500238947a88494f088d12c0bff939046daa1f56e0bd58354333659feb",
+  "source": "assets/fbx/M_Bld_UpgradeStation/M_Bld_UpgradeStation_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:908c52398cc93268664d4f70a0a997a7dd80ff70cad68dfc5408db46ee72415d": {
+  "assetId": "128886213781885",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_LampTower_LOD1",
+  "rbxm": "assets/models/M_Upg_Lifeboat_LampTower_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "908c52398cc93268664d4f70a0a997a7dd80ff70cad68dfc5408db46ee72415d",
+  "source": "build/prod/M_Upg_Lifeboat_LampTower/fbx/M_Upg_Lifeboat_LampTower/M_Upg_Lifeboat_LampTower_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:908f2ec29d23be64a4322ecbf136db58ac00727b22d67f90f5acb98d801ed3ca": {
+  "assetId": "96385341017643",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_GiantJets_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_GiantJets_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "908f2ec29d23be64a4322ecbf136db58ac00727b22d67f90f5acb98d801ed3ca",
+  "source": "build/prod/M_Upg_Hydrofoil_GiantJets/fbx/M_Upg_Hydrofoil_GiantJets/M_Upg_Hydrofoil_GiantJets_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:9097d4993e4f6816561cc8a796eb48a825daf2f760092c2b3b834a405b5406b1": {
   "assetId": "114681053879263",
   "moderation": "Approved",
@@ -29001,6 +30460,26 @@
   "source": "assets/fbx/M_Rock_NeedlesEye/M_Rock_NeedlesEye_LOD0.fbx",
   "type": "Model"
  },
+ "Model:91e783f3f5787cbc311b3c26ff34305357f6345a37280cded56c9841791807fb": {
+  "assetId": "111592996617029",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SideBoosters_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_SideBoosters_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "91e783f3f5787cbc311b3c26ff34305357f6345a37280cded56c9841791807fb",
+  "source": "build/prod/M_Upg_Rocket_SideBoosters/fbx/M_Upg_Rocket_SideBoosters/M_Upg_Rocket_SideBoosters_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:91f87dd461c8b6f2e87489aedfa1882c8657a44e1ae5c09cd05ce53701179538": {
+  "assetId": "140572360259021",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SunBooster",
+  "rbxm": "assets/models/M_Upg_Rocket_SunBooster.rbxm",
+  "route": "delivery",
+  "sha": "91f87dd461c8b6f2e87489aedfa1882c8657a44e1ae5c09cd05ce53701179538",
+  "source": "build/prod/M_Upg_Rocket_SunBooster/fbx/M_Upg_Rocket_SunBooster/M_Upg_Rocket_SunBooster_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:924089818b958a348531dfce37013707424301ad28e5e52c9e91bf052e750041": {
   "assetId": "95948285566575",
   "moderation": "Approved",
@@ -29049,6 +30528,16 @@
   "route": "delivery",
   "sha": "92df9c54b0ed6e92f8494e1908b3a0b595e263d0762700f78b958cde2d65a6b1",
   "source": "assets/fbx/M_Veh_RescueHeli/M_Veh_RescueHeli_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:92f351f6d498186b5698f4688bac7912820a0ec3a405d2cc5df01abd8d4f6de8": {
+  "assetId": "84666262918970",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_Afterburners_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_Afterburners_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "92f351f6d498186b5698f4688bac7912820a0ec3a405d2cc5df01abd8d4f6de8",
+  "source": "build/prod/M_Upg_Hydrofoil_Afterburners/fbx/M_Upg_Hydrofoil_Afterburners/M_Upg_Hydrofoil_Afterburners_LOD2.fbx",
   "type": "Model"
  },
  "Model:93017f7a3bd051ba9dff84e8a5d11666648a97e0621d087d8c822e0644ba82cd": {
@@ -29221,6 +30710,16 @@
   "source": "assets/fbx/M_Bld_Cottage_06/M_Bld_Cottage_06_LOD0.fbx",
   "type": "Model"
  },
+ "Model:9660a61c82a018435536190eefdb9a59c64ef219f45be434110682bbbc3215c7": {
+  "assetId": "74579544616229",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_RadarDish",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_RadarDish.rbxm",
+  "route": "delivery",
+  "sha": "9660a61c82a018435536190eefdb9a59c64ef219f45be434110682bbbc3215c7",
+  "source": "build/prod/M_Upg_Hydrofoil_RadarDish/fbx/M_Upg_Hydrofoil_RadarDish/M_Upg_Hydrofoil_RadarDish_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:9671f488bda7aca4ad0aaf772658df7f3de0d2b96d0410a6ecb4c445c205c36c": {
   "assetId": "84519250249650",
   "moderation": "Approved",
@@ -29259,6 +30758,36 @@
   "route": "delivery",
   "sha": "96f953e3281a807a8e76b44dc49870b10e5667f4eacc263062dea71d9b8e4c9c",
   "source": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:9708a1ae090b6289996f4553093759700e0658b8d805a6cbe4040447077f2e56": {
+  "assetId": "125104302855746",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_RescueSled_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_RescueSled_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9708a1ae090b6289996f4553093759700e0658b8d805a6cbe4040447077f2e56",
+  "source": "build/prod/M_Upg_JetSki_RescueSled/fbx/M_Upg_JetSki_RescueSled/M_Upg_JetSki_RescueSled_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:972e213fedf55b1dd2cfac80c4d7ff376a9d3ae5a69e83d8f2921da2c27946fc": {
+  "assetId": "77133728197709",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyWings",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyWings.rbxm",
+  "route": "delivery",
+  "sha": "972e213fedf55b1dd2cfac80c4d7ff376a9d3ae5a69e83d8f2921da2c27946fc",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyWings/fbx/M_Upg_Hydrofoil_SkyWings/M_Upg_Hydrofoil_SkyWings_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:974990b3e67ad2a439f5f0d3b6681b5753525d767345331f8dc80ceb1f088512": {
+  "assetId": "131670945768831",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldPlating_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldPlating_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "974990b3e67ad2a439f5f0d3b6681b5753525d767345331f8dc80ceb1f088512",
+  "source": "build/prod/M_Upg_Rocket_GoldPlating/fbx/M_Upg_Rocket_GoldPlating/M_Upg_Rocket_GoldPlating_LOD1.fbx",
   "type": "Model"
  },
  "Model:976c8e1d169521759c979bce5cfb59f44a80a4fbd2b08f3655074597d608a087": {
@@ -29311,6 +30840,16 @@
   "source": "assets/fbx/M_Bld_Bunkhouse/M_Bld_Bunkhouse_LOD1.fbx",
   "type": "Model"
  },
+ "Model:988db00d95524fff30055b2e8d0ba7847b77ee45655108fc9a506df2f9d4e6c2": {
+  "assetId": "108670364922524",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_MegaTrophy_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_MegaTrophy_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "988db00d95524fff30055b2e8d0ba7847b77ee45655108fc9a506df2f9d4e6c2",
+  "source": "build/prod/M_Upg_Rocket_MegaTrophy/fbx/M_Upg_Rocket_MegaTrophy/M_Upg_Rocket_MegaTrophy_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:98e432cb323cf358ba150a1c11fd29a6472025fde4241c0c656518d24f4def96": {
   "assetId": "120691025429406",
   "moderation": "Approved",
@@ -29339,6 +30878,16 @@
   "route": "delivery",
   "sha": "98f5b4e1f94be02840ee1cabbe992e9d91a0605c97f24e1b6bee242a7bcc415a",
   "source": "assets/fbx/M_Road_Bench/M_Road_Bench_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:990b0f3c3505c517ce377d21cfacc6e1bcdcfdb3cecd55281e353a4e735e3148": {
+  "assetId": "138186028299617",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_PartyCannons",
+  "rbxm": "assets/models/M_Upg_Rocket_PartyCannons.rbxm",
+  "route": "delivery",
+  "sha": "990b0f3c3505c517ce377d21cfacc6e1bcdcfdb3cecd55281e353a4e735e3148",
+  "source": "build/prod/M_Upg_Rocket_PartyCannons/fbx/M_Upg_Rocket_PartyCannons/M_Upg_Rocket_PartyCannons_LOD0.fbx",
   "type": "Model"
  },
  "Model:9922a0681a910004faf2fc753504f280697be7270f2d720e551eb7e7c1edd16a": {
@@ -29401,6 +30950,16 @@
   "source": "assets/fbx/M_Bld_LookoutAddons/M_Bld_LookoutAddons_LOD0.fbx",
   "type": "Model"
  },
+ "Model:9a38fc4d4e978e9f8fdc7cf4a8df8a9ecb22bdff5dae646e07697f0b6654ef35": {
+  "assetId": "73990537067081",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_Afterburners_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_Afterburners_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9a38fc4d4e978e9f8fdc7cf4a8df8a9ecb22bdff5dae646e07697f0b6654ef35",
+  "source": "build/prod/M_Upg_Hydrofoil_Afterburners/fbx/M_Upg_Hydrofoil_Afterburners/M_Upg_Hydrofoil_Afterburners_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:9a6b208b4a45b7d25d8c9b7bfdea9b605322745cc6fa5074f24b44e27ed7ed45": {
   "assetId": "105694641554631",
   "moderation": "Approved",
@@ -29441,6 +31000,16 @@
   "source": "assets/fbx/M_Kit_Lifebuoy/M_Kit_Lifebuoy_LOD0.fbx",
   "type": "Model"
  },
+ "Model:9abab62b5432ad26636feb535adf121a547c820eb55a8dec2d1b63a6d757515f": {
+  "assetId": "132544257434857",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyWings_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyWings_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "9abab62b5432ad26636feb535adf121a547c820eb55a8dec2d1b63a6d757515f",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyWings/fbx/M_Upg_Hydrofoil_SkyWings/M_Upg_Hydrofoil_SkyWings_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:9ac0550fc612f0047a7555bf91bc84906df1affbd769b88c37efa1c54f4c6a5c": {
   "assetId": "99212271339218",
   "moderation": "Approved",
@@ -29459,6 +31028,26 @@
   "route": "delivery",
   "sha": "9ac7e45f851d46d0643a68d812b7a9392acab049ebd5acee2ab43094d431e69f",
   "source": "assets/fbx/M_Bld_HQAddons/M_Bld_HQAddons_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:9b54fea0dd8168c629e5923092a47e6df12d1ceeffd6ab5ec13179ccb47761ef": {
+  "assetId": "124749591160623",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldEagle_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldEagle_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "9b54fea0dd8168c629e5923092a47e6df12d1ceeffd6ab5ec13179ccb47761ef",
+  "source": "build/prod/M_Upg_Rocket_GoldEagle/fbx/M_Upg_Rocket_GoldEagle/M_Upg_Rocket_GoldEagle_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:9b6a99ee6448e5d7fe3e2678062f15e2c4a5d7acb9066ebf1193c85d856f159f": {
+  "assetId": "135782740059521",
+  "moderation": "Approved",
+  "name": "M_Veh_Hydrofoil",
+  "rbxm": "assets/models/M_Veh_Hydrofoil.rbxm",
+  "route": "delivery",
+  "sha": "9b6a99ee6448e5d7fe3e2678062f15e2c4a5d7acb9066ebf1193c85d856f159f",
+  "source": "build/prod/M_Veh_Hydrofoil/fbx/M_Veh_Hydrofoil/M_Veh_Hydrofoil_LOD0.fbx",
   "type": "Model"
  },
  "Model:9b6fcf5b398f265658ddc87d64c91b5502604eb64c4b6b3d49cabad5b745612d": {
@@ -29551,6 +31140,16 @@
   "source": "assets/fbx/M_Bld_HarbourLight/M_Bld_HarbourLight_LOD0.fbx",
   "type": "Model"
  },
+ "Model:9d2a97bb083d58bd7906a91510a9f6be3316763251be66c0b44d5807739e32b3": {
+  "assetId": "132482248139712",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_Pilot_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_Pilot_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9d2a97bb083d58bd7906a91510a9f6be3316763251be66c0b44d5807739e32b3",
+  "source": "build/prod/M_Upg_Rocket_Pilot/fbx/M_Upg_Rocket_Pilot/M_Upg_Rocket_Pilot_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:9d5dfbebbb800cc2f5286c533180047ea7d2e7102213d23699cba3e9006a4f9d": {
   "assetId": "133379345248155",
   "moderation": "Approved",
@@ -29611,6 +31210,16 @@
   "source": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD1.fbx",
   "type": "Model"
  },
+ "Model:9f61e00de793866d8dbe2d109ac64c2981d2f4f31952da7aa025d8dbd284434c": {
+  "assetId": "102873608104596",
+  "moderation": "Approved",
+  "name": "M_Veh_Hydrofoil_LOD1",
+  "rbxm": "assets/models/M_Veh_Hydrofoil_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9f61e00de793866d8dbe2d109ac64c2981d2f4f31952da7aa025d8dbd284434c",
+  "source": "build/prod/M_Veh_Hydrofoil/fbx/M_Veh_Hydrofoil/M_Veh_Hydrofoil_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:9fe90999014a01c624064122e4770e4f8e5f7cafb81ec00e381ceb1e61c51621": {
   "assetId": "111041890772605",
   "moderation": "Approved",
@@ -29631,6 +31240,16 @@
   "source": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD2.fbx",
   "type": "Model"
  },
+ "Model:a05a8130bfcb62da355c91579ee572b43859027a9e9360674dc7dfc6b363509d": {
+  "assetId": "126198174542503",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldPlating_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldPlating_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a05a8130bfcb62da355c91579ee572b43859027a9e9360674dc7dfc6b363509d",
+  "source": "build/prod/M_Upg_Rocket_GoldPlating/fbx/M_Upg_Rocket_GoldPlating/M_Upg_Rocket_GoldPlating_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:a06064d4504493aad1cb6a61d064df1432a223945ceacf0e57a8109fc6458933": {
   "assetId": "100445251646543",
   "moderation": "Approved",
@@ -29639,6 +31258,26 @@
   "route": "delivery",
   "sha": "a06064d4504493aad1cb6a61d064df1432a223945ceacf0e57a8109fc6458933",
   "source": "assets/fbx/M_Hbr_Pontoon_Finger/M_Hbr_Pontoon_Finger_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:a0d5f7c92c737f2c9541bf50135fe70bccd794cc8711d352e95babfd74031e70": {
+  "assetId": "123649729918810",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_RescueSled",
+  "rbxm": "assets/models/M_Upg_JetSki_RescueSled.rbxm",
+  "route": "delivery",
+  "sha": "a0d5f7c92c737f2c9541bf50135fe70bccd794cc8711d352e95babfd74031e70",
+  "source": "build/prod/M_Upg_JetSki_RescueSled/fbx/M_Upg_JetSki_RescueSled/M_Upg_JetSki_RescueSled_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:a0f1211439d47ede684fd4837eaf43e9bfa9ab801e69b2f9ce1f7d6fca600ce5": {
+  "assetId": "137462181212603",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_Pilot_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_Pilot_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a0f1211439d47ede684fd4837eaf43e9bfa9ab801e69b2f9ce1f7d6fca600ce5",
+  "source": "build/prod/M_Upg_Rocket_Pilot/fbx/M_Upg_Rocket_Pilot/M_Upg_Rocket_Pilot_LOD1.fbx",
   "type": "Model"
  },
  "Model:a11c0197f5e20abf7333d1a3416aeaecfb0365126284743de41253cea1fe42ec": {
@@ -29761,6 +31400,36 @@
   "source": "assets/fbx/M_Veg_Hawthorn_02/M_Veg_Hawthorn_02_LOD2.fbx",
   "type": "Model"
  },
+ "Model:a379167e3925e62221c9163e1bbca73aebde9c81f2d4d22ad7a873d1f696b7e1": {
+  "assetId": "92400242265440",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_NeonFins_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_NeonFins_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a379167e3925e62221c9163e1bbca73aebde9c81f2d4d22ad7a873d1f696b7e1",
+  "source": "build/prod/M_Upg_RIB_NeonFins/fbx/M_Upg_RIB_NeonFins/M_Upg_RIB_NeonFins_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:a3beeb561af148cbdf5612e472aad422ff263791fe3931f901dcdcb616b503ff": {
+  "assetId": "125220251035692",
+  "moderation": "Approved",
+  "name": "M_Veh_RocketCutter_LOD2",
+  "rbxm": "assets/models/M_Veh_RocketCutter_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "a3beeb561af148cbdf5612e472aad422ff263791fe3931f901dcdcb616b503ff",
+  "source": "build/prod/M_Veh_RocketCutter/fbx/M_Veh_RocketCutter/M_Veh_RocketCutter_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:a3ccab97fa03aaefb4b0c86be44ce52005b963ba9c2504f154917eb03024495a": {
+  "assetId": "70652591807313",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_SharkJaws",
+  "rbxm": "assets/models/M_Upg_RIB_SharkJaws.rbxm",
+  "route": "delivery",
+  "sha": "a3ccab97fa03aaefb4b0c86be44ce52005b963ba9c2504f154917eb03024495a",
+  "source": "build/prod/M_Upg_RIB_SharkJaws/fbx/M_Upg_RIB_SharkJaws/M_Upg_RIB_SharkJaws_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:a3e0784519d414cb5b7d9040a4d094d22bf97e502bf38b7b9977292e1eef6165": {
   "assetId": "79371803607247",
   "moderation": "Approved",
@@ -29811,6 +31480,36 @@
   "source": "assets/fbx/M_Bld_Harbourmaster/M_Bld_Harbourmaster_LOD0.fbx",
   "type": "Model"
  },
+ "Model:a578810135cbacb8a1bf8892771f6a5e79825ff714cd9b381f6339e378a0bb00": {
+  "assetId": "84571332158836",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ExhaustOrgan_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_ExhaustOrgan_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "a578810135cbacb8a1bf8892771f6a5e79825ff714cd9b381f6339e378a0bb00",
+  "source": "build/prod/M_Upg_RIB_ExhaustOrgan/fbx/M_Upg_RIB_ExhaustOrgan/M_Upg_RIB_ExhaustOrgan_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:a57954dec911bfb2c3c76d8b706830b2b8b685f1a71683d7b3ebfca885823c8f": {
+  "assetId": "97478482503356",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SideBoosters_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_SideBoosters_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a57954dec911bfb2c3c76d8b706830b2b8b685f1a71683d7b3ebfca885823c8f",
+  "source": "build/prod/M_Upg_Rocket_SideBoosters/fbx/M_Upg_Rocket_SideBoosters/M_Upg_Rocket_SideBoosters_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:a595bcf1d041f16b27d29fd931ce56d487c7ab217c90156a40874e220f39d7c5": {
+  "assetId": "107782778027397",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_BananaBoat_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_BananaBoat_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a595bcf1d041f16b27d29fd931ce56d487c7ab217c90156a40874e220f39d7c5",
+  "source": "build/prod/M_Upg_JetSki_BananaBoat/fbx/M_Upg_JetSki_BananaBoat/M_Upg_JetSki_BananaBoat_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:a5dc6056948053ff6a38dcfe526dbd493756fe862cd9c4d909642b98e6fb3bea": {
   "assetId": "94778079470029",
   "moderation": "Approved",
@@ -29859,6 +31558,16 @@
   "route": "delivery",
   "sha": "a6e497739816a788d770dbac4a9f13c814e15673ee089724b369fd5f91004290",
   "source": "assets/fbx/M_Prop_BoardKit/M_Prop_BoardKit_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:a75eb7163169ef0fe8b1e0279d2a972e63a371f1a738633ebf5fdde892b78c23": {
+  "assetId": "103614228372736",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_NeedleNose_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_NeedleNose_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "a75eb7163169ef0fe8b1e0279d2a972e63a371f1a738633ebf5fdde892b78c23",
+  "source": "build/prod/M_Upg_Hydrofoil_NeedleNose/fbx/M_Upg_Hydrofoil_NeedleNose/M_Upg_Hydrofoil_NeedleNose_LOD2.fbx",
   "type": "Model"
  },
  "Model:a78ca17a213153518c4b7e54d548decbf0f3f87df540c3d93d28f4bd57a7b51b": {
@@ -30041,6 +31750,26 @@
   "source": "assets/fbx/M_Chr_Bosun_LP/M_Chr_Bosun_LP_LOD1.fbx",
   "type": "Model"
  },
+ "Model:abb87a55acbc1a0b9764efdafbe93d4516d15c5f723bebb0f2d3afc709627a84": {
+  "assetId": "134323702883700",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldThrone_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldThrone_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "abb87a55acbc1a0b9764efdafbe93d4516d15c5f723bebb0f2d3afc709627a84",
+  "source": "build/prod/M_Upg_Rocket_GoldThrone/fbx/M_Upg_Rocket_GoldThrone/M_Upg_Rocket_GoldThrone_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:abbf40b7d8f7dc68346fa0989c9100bd0e67701a21eda834ff970d753914355b": {
+  "assetId": "117293282926229",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_IcePlough_LOD1",
+  "rbxm": "assets/models/M_Upg_Lifeboat_IcePlough_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "abbf40b7d8f7dc68346fa0989c9100bd0e67701a21eda834ff970d753914355b",
+  "source": "build/prod/M_Upg_Lifeboat_IcePlough/fbx/M_Upg_Lifeboat_IcePlough/M_Upg_Lifeboat_IcePlough_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:abc3bb5c9decbcc1c6544a275faa926c187f4c753e111c5c24c4ad49212f5b47": {
   "assetId": "88269285714718",
   "moderation": "Approved",
@@ -30049,6 +31778,26 @@
   "route": "delivery",
   "sha": "abc3bb5c9decbcc1c6544a275faa926c187f4c753e111c5c24c4ad49212f5b47",
   "source": "assets/fbx/M_Chr_HumanBase_M/M_Chr_HumanBase_M_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:abdba2c1a3ec91fc510685b2819e80e9c535e92b173efd7fccb09297c50a7290": {
+  "assetId": "108333987489035",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldThrone",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldThrone.rbxm",
+  "route": "delivery",
+  "sha": "abdba2c1a3ec91fc510685b2819e80e9c535e92b173efd7fccb09297c50a7290",
+  "source": "build/prod/M_Upg_Rocket_GoldThrone/fbx/M_Upg_Rocket_GoldThrone/M_Upg_Rocket_GoldThrone_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:abe6ee1dd6148ee751a9bc28208e21f5e6e358f420a0838a5bd156fd30609aa3": {
+  "assetId": "116147832255778",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_RescueSled_LOD2",
+  "rbxm": "assets/models/M_Upg_JetSki_RescueSled_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "abe6ee1dd6148ee751a9bc28208e21f5e6e358f420a0838a5bd156fd30609aa3",
+  "source": "build/prod/M_Upg_JetSki_RescueSled/fbx/M_Upg_JetSki_RescueSled/M_Upg_JetSki_RescueSled_LOD2.fbx",
   "type": "Model"
  },
  "Model:abfdfa2beb89c61593eb3cbbcbfbdf3b18f37b93a83ebaba893fbe71a0d45c9d": {
@@ -30071,6 +31820,16 @@
   "source": "assets/fbx/M_Bld_Harbourmaster/M_Bld_Harbourmaster_LOD2.fbx",
   "type": "Model"
  },
+ "Model:ac844c6a6ae646f9a6e44f66bb5673c2405aea5deab6cf0023cf63a6a3580e3c": {
+  "assetId": "139192088673253",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_RadarDish_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_RadarDish_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ac844c6a6ae646f9a6e44f66bb5673c2405aea5deab6cf0023cf63a6a3580e3c",
+  "source": "build/prod/M_Upg_Hydrofoil_RadarDish/fbx/M_Upg_Hydrofoil_RadarDish/M_Upg_Hydrofoil_RadarDish_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:ac9ef5b85a8acc0a4d34603b7b67c1e8c62a5d2a0e0e2ae4c3e84c4426b380d8": {
   "assetId": "104141300690054",
   "moderation": "Approved",
@@ -30089,6 +31848,16 @@
   "route": "delivery",
   "sha": "acb7cb3e8e2cb4ec3fb71f28501f9595266af7f5cee5a927f815fdc5e338b9b3",
   "source": "assets/fbx/M_Road_ParkedCar_03/M_Road_ParkedCar_03_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:acd337b6ee9d38c088dd0b2bb49ca143213addad2135a26b943bb68c038254ba": {
+  "assetId": "108214220460630",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_PaddleWheel_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_PaddleWheel_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "acd337b6ee9d38c088dd0b2bb49ca143213addad2135a26b943bb68c038254ba",
+  "source": "build/prod/M_Upg_RIB_PaddleWheel/fbx/M_Upg_RIB_PaddleWheel/M_Upg_RIB_PaddleWheel_LOD2.fbx",
   "type": "Model"
  },
  "Model:ad136f4a73036aa5e0863312c720013b068e15e941d129329758411f6cec7e3f": {
@@ -30149,6 +31918,16 @@
   "route": "delivery",
   "sha": "adacff21388c6e50c1226b905694e7d4c4ed1cb26f40910fe92ead4731048a12",
   "source": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:add6eda31c2ffb7e94e1e6912d2f363af8fd04c4f4ee6b47e25ed93baef838be": {
+  "assetId": "96798544940420",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyStilts_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyStilts_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "add6eda31c2ffb7e94e1e6912d2f363af8fd04c4f4ee6b47e25ed93baef838be",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyStilts/fbx/M_Upg_Hydrofoil_SkyStilts/M_Upg_Hydrofoil_SkyStilts_LOD2.fbx",
   "type": "Model"
  },
  "Model:ade3b9fb77342d8412271870267c511ba31ceb9d8d47b723086d36def04eb373": {
@@ -30271,6 +32050,26 @@
   "source": "assets/fbx/M_Veg_Grass_Turf_01/M_Veg_Grass_Turf_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:b02b05201aa6e0be433b1f0d32f78b1c43416e3eb9d91afb0f03313c41e931a7": {
+  "assetId": "77220106432595",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_HugeSpoiler_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_HugeSpoiler_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b02b05201aa6e0be433b1f0d32f78b1c43416e3eb9d91afb0f03313c41e931a7",
+  "source": "build/prod/M_Upg_JetSki_HugeSpoiler/fbx/M_Upg_JetSki_HugeSpoiler/M_Upg_JetSki_HugeSpoiler_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:b06a3f7acf52297103908f626692f4a53c9b63a05185389be08ea2f80a199167": {
+  "assetId": "127077648244694",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyWings_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyWings_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b06a3f7acf52297103908f626692f4a53c9b63a05185389be08ea2f80a199167",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyWings/fbx/M_Upg_Hydrofoil_SkyWings/M_Upg_Hydrofoil_SkyWings_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:b12f6fe6d0ba8990e6f0b84e7a532ecbdc88237789a970ab829139a040d690b6": {
   "assetId": "81374565089031",
   "moderation": "Approved",
@@ -30331,6 +32130,16 @@
   "source": "assets/fbx/M_Veg_Strand_Driftwood_01/M_Veg_Strand_Driftwood_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:b2023c3a23d4229fa651b16d33c2fdb42418e981a053f81fea2f6f94708064aa": {
+  "assetId": "99743618680144",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TurboHalo",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TurboHalo.rbxm",
+  "route": "delivery",
+  "sha": "b2023c3a23d4229fa651b16d33c2fdb42418e981a053f81fea2f6f94708064aa",
+  "source": "build/prod/M_Upg_Hydrofoil_TurboHalo/fbx/M_Upg_Hydrofoil_TurboHalo/M_Upg_Hydrofoil_TurboHalo_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:b23b2cd76001e68e94a8d43f8ef0cdcbd7e5d72c02962a2539f56caa838ae52a": {
   "assetId": "123121287810033",
   "moderation": "Approved",
@@ -30369,6 +32178,36 @@
   "route": "delivery",
   "sha": "b35f8468b1100d11cf5e9691e500f30466826911b3ccbe127b8528e7d2c41f2d",
   "source": "assets/fbx/M_Kit_ChartTablet/M_Kit_ChartTablet_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:b37df42917a13e3fd207644e8bcf600e07082350f8d0399a0a519e58b4200476": {
+  "assetId": "120582387257646",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_MegaTrophy",
+  "rbxm": "assets/models/M_Upg_Rocket_MegaTrophy.rbxm",
+  "route": "delivery",
+  "sha": "b37df42917a13e3fd207644e8bcf600e07082350f8d0399a0a519e58b4200476",
+  "source": "build/prod/M_Upg_Rocket_MegaTrophy/fbx/M_Upg_Rocket_MegaTrophy/M_Upg_Rocket_MegaTrophy_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:b39d4897e3e5ee0e0be553a89c91eb4533bb8f4fd2a17bfecc06eea918ad7b70": {
+  "assetId": "137906770481276",
+  "moderation": "Approved",
+  "name": "M_Veh_PirateBoat_LOD1",
+  "rbxm": "assets/models/M_Veh_PirateBoat_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b39d4897e3e5ee0e0be553a89c91eb4533bb8f4fd2a17bfecc06eea918ad7b70",
+  "source": "build/prod/M_Veh_PirateBoat/fbx/M_Veh_PirateBoat/M_Veh_PirateBoat_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:b3a57ebda13641d7246725873ba6ac05e3a6be6040232c2639719398547abd99": {
+  "assetId": "124768171635748",
+  "moderation": "Approved",
+  "name": "M_Prop_LagoonKit_LOD1",
+  "rbxm": "assets/models/M_Prop_LagoonKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b3a57ebda13641d7246725873ba6ac05e3a6be6040232c2639719398547abd99",
+  "source": "assets/fbx/M_Prop_LagoonKit/M_Prop_LagoonKit_LOD1.fbx",
   "type": "Model"
  },
  "Model:b3c9cbfe144ca8901839abb97f49d66443f6d0884d2c9cb1e410c64d03de36d4": {
@@ -30521,6 +32360,36 @@
   "source": "assets/fbx/M_Bld_LookoutAddons/M_Bld_LookoutAddons_LOD1.fbx",
   "type": "Model"
  },
+ "Model:b6d6da906d675f8fce00646d12be38bee0749bca664e9c2ccdedeb489fa32c71": {
+  "assetId": "102126261461270",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_BattleBridge",
+  "rbxm": "assets/models/M_Upg_Lifeboat_BattleBridge.rbxm",
+  "route": "delivery",
+  "sha": "b6d6da906d675f8fce00646d12be38bee0749bca664e9c2ccdedeb489fa32c71",
+  "source": "build/prod/M_Upg_Lifeboat_BattleBridge/fbx/M_Upg_Lifeboat_BattleBridge/M_Upg_Lifeboat_BattleBridge_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:b6f7e0a6e029561f9ccfc99305ddb3f772329db3832ee649530aefda942e26d5": {
+  "assetId": "112011585002545",
+  "moderation": "Approved",
+  "name": "M_Prop_HubKit_LOD1",
+  "rbxm": "assets/models/M_Prop_HubKit_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b6f7e0a6e029561f9ccfc99305ddb3f772329db3832ee649530aefda942e26d5",
+  "source": "assets/fbx/M_Prop_HubKit/M_Prop_HubKit_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:b73a9d372302b194b714ef9da785efdd48347527abebed0105754e0505f9f30c": {
+  "assetId": "70443479599324",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_FatTubes_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_FatTubes_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b73a9d372302b194b714ef9da785efdd48347527abebed0105754e0505f9f30c",
+  "source": "build/prod/M_Upg_RIB_FatTubes/fbx/M_Upg_RIB_FatTubes/M_Upg_RIB_FatTubes_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:b752ce4a7367f927c984e933dd4eacec856aaed3f4b049265d1dd5ea254b9c18": {
   "assetId": "97155283730374",
   "moderation": "Approved",
@@ -30571,6 +32440,16 @@
   "source": "assets/fbx/M_Veg_Hawthorn_01/M_Veg_Hawthorn_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:b807bdf33ee4c4b943197a244acfd4f7fe7357e8680e346b3ff54a8a42b0c773": {
+  "assetId": "79462680920407",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TTail_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TTail_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "b807bdf33ee4c4b943197a244acfd4f7fe7357e8680e346b3ff54a8a42b0c773",
+  "source": "build/prod/M_Upg_Hydrofoil_TTail/fbx/M_Upg_Hydrofoil_TTail/M_Upg_Hydrofoil_TTail_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:b8096a9aa3d9df42a33d82c9054a1795a1d2676e149fee5c091c417e9417d794": {
   "assetId": "81487299998822",
   "moderation": "Approved",
@@ -30591,6 +32470,26 @@
   "source": "assets/fbx/M_Prop_BoardKit/M_Prop_BoardKit_LOD0.fbx",
   "type": "Model"
  },
+ "Model:b8d527089f42fef60495eb7eb70b4733fc3631a5139b14ffdcf2c5a5ec8b1cd2": {
+  "assetId": "79574888573578",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_BullNose",
+  "rbxm": "assets/models/M_Upg_JetSki_BullNose.rbxm",
+  "route": "delivery",
+  "sha": "b8d527089f42fef60495eb7eb70b4733fc3631a5139b14ffdcf2c5a5ec8b1cd2",
+  "source": "build/prod/M_Upg_JetSki_BullNose/fbx/M_Upg_JetSki_BullNose/M_Upg_JetSki_BullNose_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:b8df57ceb6260f93a3bcabf84ef10ad5f5e00df581a8f6ef09bb4b7d776e2f13": {
+  "assetId": "93103764184258",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldThrone_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldThrone_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "b8df57ceb6260f93a3bcabf84ef10ad5f5e00df581a8f6ef09bb4b7d776e2f13",
+  "source": "build/prod/M_Upg_Rocket_GoldThrone/fbx/M_Upg_Rocket_GoldThrone/M_Upg_Rocket_GoldThrone_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:b8efbe04de2079b7a74e7654e324d63ef8cbeb4ed754fad8c59c0130d437ae26": {
   "assetId": "104715383093085",
   "moderation": "Approved",
@@ -30599,6 +32498,36 @@
   "route": "delivery",
   "sha": "b8efbe04de2079b7a74e7654e324d63ef8cbeb4ed754fad8c59c0130d437ae26",
   "source": "assets/fbx/M_Bld_Cottage_02/M_Bld_Cottage_02_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:b97efda3f9dbe9156119779ee2dce83a42c81306a94ef59cc5c916503349e4e6": {
+  "assetId": "99642071428432",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_FlamePipes_LOD2",
+  "rbxm": "assets/models/M_Upg_JetSki_FlamePipes_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "b97efda3f9dbe9156119779ee2dce83a42c81306a94ef59cc5c916503349e4e6",
+  "source": "build/prod/M_Upg_JetSki_FlamePipes/fbx/M_Upg_JetSki_FlamePipes/M_Upg_JetSki_FlamePipes_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:b9c154103e58222431ac4d01738ed708b9c154eb700198d29bc07b3a18a95c0c": {
+  "assetId": "93367318370611",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_RoofRockets_LOD2",
+  "rbxm": "assets/models/M_Upg_Lifeboat_RoofRockets_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "b9c154103e58222431ac4d01738ed708b9c154eb700198d29bc07b3a18a95c0c",
+  "source": "build/prod/M_Upg_Lifeboat_RoofRockets/fbx/M_Upg_Lifeboat_RoofRockets/M_Upg_Lifeboat_RoofRockets_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:b9c9d87855d6d44579c64a444f20727d2556ce28ac4e33f674267633f7587124": {
+  "assetId": "115565020715266",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ExhaustOrgan_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_ExhaustOrgan_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "b9c9d87855d6d44579c64a444f20727d2556ce28ac4e33f674267633f7587124",
+  "source": "build/prod/M_Upg_RIB_ExhaustOrgan/fbx/M_Upg_RIB_ExhaustOrgan/M_Upg_RIB_ExhaustOrgan_LOD2.fbx",
   "type": "Model"
  },
  "Model:b9cb6cd4073699af8eb21c6315b4b568d50696af3e428afde44355f2df6a704a": {
@@ -30619,6 +32548,16 @@
   "route": "delivery",
   "sha": "b9ff305e1de97a89669dd90bc4964a657f7e2e3b4ea8a892574ef60b8045916c",
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:ba0aa8bdb6c88ac8b46a0b82c9daccbbf284197bff1913eddd31bd211defcec8": {
+  "assetId": "73604106048553",
+  "moderation": "Approved",
+  "name": "M_Veh_RocketCutter_LOD1",
+  "rbxm": "assets/models/M_Veh_RocketCutter_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ba0aa8bdb6c88ac8b46a0b82c9daccbbf284197bff1913eddd31bd211defcec8",
+  "source": "build/prod/M_Veh_RocketCutter/fbx/M_Veh_RocketCutter/M_Veh_RocketCutter_LOD1.fbx",
   "type": "Model"
  },
  "Model:ba1a7f558120b38a831d954ef2927a3282374964c904c04bc644451948d5bbde": {
@@ -30809,6 +32748,16 @@
   "route": "delivery",
   "sha": "bd86c128ceacf1e92718519177ec7fb936237780c2cb44186425152a05081c2d",
   "source": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:bda51dd618368653648025ce693ab9275084cb5b6c9c5250a6daa3f0d0e28413": {
+  "assetId": "136604533722319",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TopJet_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TopJet_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "bda51dd618368653648025ce693ab9275084cb5b6c9c5250a6daa3f0d0e28413",
+  "source": "build/prod/M_Upg_Hydrofoil_TopJet/fbx/M_Upg_Hydrofoil_TopJet/M_Upg_Hydrofoil_TopJet_LOD2.fbx",
   "type": "Model"
  },
  "Model:be04b72ccd22b3d64e9a75a747514aa322cf75c6f0e8a11ff0ad78cf6dfa5b1c": {
@@ -31021,6 +32970,26 @@
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.fbx",
   "type": "Model"
  },
+ "Model:c3550d2d8cee4b94c5efad42d028dced3910523eeaf86a0a6d31c3f9b298a429": {
+  "assetId": "85718046701791",
+  "moderation": "Approved",
+  "name": "M_Veh_RocketCutter_LOD1",
+  "rbxm": "assets/models/M_Veh_RocketCutter_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c3550d2d8cee4b94c5efad42d028dced3910523eeaf86a0a6d31c3f9b298a429",
+  "source": "build/prod/M_Veh_RocketCutter/fbx/M_Veh_RocketCutter/M_Veh_RocketCutter_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:c3c1e2290c008353e20bfbc569f0e3091453701c45103caf7480d8929da64978": {
+  "assetId": "88387634235000",
+  "moderation": "Approved",
+  "name": "M_Bld_RescueBoathouseAddons_LOD1",
+  "rbxm": "assets/models/M_Bld_RescueBoathouseAddons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c3c1e2290c008353e20bfbc569f0e3091453701c45103caf7480d8929da64978",
+  "source": "assets/fbx/M_Bld_RescueBoathouseAddons/M_Bld_RescueBoathouseAddons_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:c3e8fe199f4abd41d8e646289bf7bb44e6eea9d4888b3896f990d471881317c0": {
   "assetId": "92712016149318",
   "moderation": "Approved",
@@ -31029,6 +32998,26 @@
   "route": "delivery",
   "sha": "c3e8fe199f4abd41d8e646289bf7bb44e6eea9d4888b3896f990d471881317c0",
   "source": "assets/fbx/M_Prop_BuildSiteKit/M_Prop_BuildSiteKit_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:c3ff5ccc287d4f528d2845404c55f0f016d4aa32f0129e69260bf3e53ec4240a": {
+  "assetId": "97040277762229",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_WaveWall",
+  "rbxm": "assets/models/M_Upg_Rocket_WaveWall.rbxm",
+  "route": "delivery",
+  "sha": "c3ff5ccc287d4f528d2845404c55f0f016d4aa32f0129e69260bf3e53ec4240a",
+  "source": "build/prod/M_Upg_Rocket_WaveWall/fbx/M_Upg_Rocket_WaveWall/M_Upg_Rocket_WaveWall_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:c40eb467651ac67c7172c02096db54e5fa1b66744743252300658aa2a399a3e6": {
+  "assetId": "82004459947272",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_IcePlough_LOD2",
+  "rbxm": "assets/models/M_Upg_Lifeboat_IcePlough_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "c40eb467651ac67c7172c02096db54e5fa1b66744743252300658aa2a399a3e6",
+  "source": "build/prod/M_Upg_Lifeboat_IcePlough/fbx/M_Upg_Lifeboat_IcePlough/M_Upg_Lifeboat_IcePlough_LOD2.fbx",
   "type": "Model"
  },
  "Model:c45571a8e10219dfec135ebe294942fe419489e66fd865973d087a42340a6a18": {
@@ -31069,6 +33058,16 @@
   "route": "delivery",
   "sha": "c4ba4945dab463adcbada21143ae17db2b9511b282865d3efa7de4fee6188746",
   "source": "assets/fbx/M_Bld_SubPenAddons/M_Bld_SubPenAddons_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:c4cbc974ecbe75b02bd1a21688fcb294552ea5d27b88c0a5cb3818cfd04a7dbc": {
+  "assetId": "94568099872908",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_PartyCannons_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_PartyCannons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c4cbc974ecbe75b02bd1a21688fcb294552ea5d27b88c0a5cb3818cfd04a7dbc",
+  "source": "build/prod/M_Upg_Rocket_PartyCannons/fbx/M_Upg_Rocket_PartyCannons/M_Upg_Rocket_PartyCannons_LOD1.fbx",
   "type": "Model"
  },
  "Model:c4cda1411adf57bcf7c6ee0c8ce3fc3299f8fad52ccb65f96eae55e98d705728": {
@@ -31251,6 +33250,36 @@
   "source": "assets/fbx/M_Road_Bin/M_Road_Bin_LOD0.fbx",
   "type": "Model"
  },
+ "Model:c982b40b2469dfe3272650ab0e9edf600288f771d01bc6bdb1b78273eaaffb1d": {
+  "assetId": "126694226822520",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_NeedleNose_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_NeedleNose_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c982b40b2469dfe3272650ab0e9edf600288f771d01bc6bdb1b78273eaaffb1d",
+  "source": "build/prod/M_Upg_Hydrofoil_NeedleNose/fbx/M_Upg_Hydrofoil_NeedleNose/M_Upg_Hydrofoil_NeedleNose_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:c9ceb63a1fd5c69f91a3ff23837b94cf3a2d3ea898233182b4f592a00cc61581": {
+  "assetId": "77391907536198",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_RoofRockets_LOD1",
+  "rbxm": "assets/models/M_Upg_Lifeboat_RoofRockets_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c9ceb63a1fd5c69f91a3ff23837b94cf3a2d3ea898233182b4f592a00cc61581",
+  "source": "build/prod/M_Upg_Lifeboat_RoofRockets/fbx/M_Upg_Lifeboat_RoofRockets/M_Upg_Lifeboat_RoofRockets_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:ca33718ef25e168d1256d30fdf8b00d16cf4ca0f88dcbe72999fe21d98ea9c92": {
+  "assetId": "125743627321516",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_CrewDeck",
+  "rbxm": "assets/models/M_Upg_Lifeboat_CrewDeck.rbxm",
+  "route": "delivery",
+  "sha": "ca33718ef25e168d1256d30fdf8b00d16cf4ca0f88dcbe72999fe21d98ea9c92",
+  "source": "build/prod/M_Upg_Lifeboat_CrewDeck/fbx/M_Upg_Lifeboat_CrewDeck/M_Upg_Lifeboat_CrewDeck_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:ca5c8b0a12d04b6c8c7cd196f255a9ede8241eb4d3a62227c2e090aa0603eb2c": {
   "assetId": "94038220435586",
   "moderation": "Approved",
@@ -31291,6 +33320,26 @@
   "source": "assets/fbx/M_Rock_Boulder_05/M_Rock_Boulder_05_LOD1.fbx",
   "type": "Model"
  },
+ "Model:cabb952caaef6890ddc2c229b05ee74ae2ba5d669642ea49b248d8d85f01b31b": {
+  "assetId": "78100804322744",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_RoofRockets_LOD1",
+  "rbxm": "assets/models/M_Upg_Lifeboat_RoofRockets_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "cabb952caaef6890ddc2c229b05ee74ae2ba5d669642ea49b248d8d85f01b31b",
+  "source": "build/prod/M_Upg_Lifeboat_RoofRockets/fbx/M_Upg_Lifeboat_RoofRockets/M_Upg_Lifeboat_RoofRockets_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:cad76a0ed25546811e1624a4d54cdfd14be0776f0c1743f7bcc50831b50f40b3": {
+  "assetId": "84523306083279",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_NeonFins_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_NeonFins_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "cad76a0ed25546811e1624a4d54cdfd14be0776f0c1743f7bcc50831b50f40b3",
+  "source": "build/prod/M_Upg_RIB_NeonFins/fbx/M_Upg_RIB_NeonFins/M_Upg_RIB_NeonFins_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:cb333b59556c7a80beb7013eebcf544d56f05dc343a4f343df668146ad95b711": {
   "assetId": "81437179848034",
   "moderation": "Approved",
@@ -31301,6 +33350,16 @@
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.fbx",
   "type": "Model"
  },
+ "Model:cb58289117db85332db0904bdb757cc5b18c06211441ce7308c8ce3dea4f3283": {
+  "assetId": "139103986519780",
+  "moderation": "Approved",
+  "name": "M_Veh_RocketCutter_LOD2",
+  "rbxm": "assets/models/M_Veh_RocketCutter_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "cb58289117db85332db0904bdb757cc5b18c06211441ce7308c8ce3dea4f3283",
+  "source": "build/prod/M_Veh_RocketCutter/fbx/M_Veh_RocketCutter/M_Veh_RocketCutter_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:cb5d1877e3170e7ad742d9bec66c4c8ff7c479a6d5392af870c9e6223d155b56": {
   "assetId": "116721382887126",
   "moderation": "Approved",
@@ -31309,6 +33368,16 @@
   "route": "delivery",
   "sha": "cb5d1877e3170e7ad742d9bec66c4c8ff7c479a6d5392af870c9e6223d155b56",
   "source": "assets/fbx/M_Rock_Cliff_08/M_Rock_Cliff_08_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:cb6bc0d38887e787324add07403ec875e832ab4e6fbff33b3cdbb1c6af76c502": {
+  "assetId": "92946640205751",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_PaddleWheel_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_PaddleWheel_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "cb6bc0d38887e787324add07403ec875e832ab4e6fbff33b3cdbb1c6af76c502",
+  "source": "build/prod/M_Upg_RIB_PaddleWheel/fbx/M_Upg_RIB_PaddleWheel/M_Upg_RIB_PaddleWheel_LOD1.fbx",
   "type": "Model"
  },
  "Model:cba40b3291481e2d53842216d59674688d9ad07fbce913076217e65f026c26ba": {
@@ -31381,6 +33450,46 @@
   "source": "assets/fbx/M_Sea_LostPot/M_Sea_LostPot_LOD0.fbx",
   "type": "Model"
  },
+ "Model:cdb1f8c019d08ebcc3b4e28b24122682e68d45ca2e778837ea0bd6cc054473f9": {
+  "assetId": "86089306993522",
+  "moderation": "Approved",
+  "name": "M_Veh_RocketCutter",
+  "rbxm": "assets/models/M_Veh_RocketCutter.rbxm",
+  "route": "delivery",
+  "sha": "cdb1f8c019d08ebcc3b4e28b24122682e68d45ca2e778837ea0bd6cc054473f9",
+  "source": "build/prod/M_Veh_RocketCutter/fbx/M_Veh_RocketCutter/M_Veh_RocketCutter_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:cdf4ab25acaa9d91019bde14f48e4811e17fb25495f57366702a7e48a41eb56d": {
+  "assetId": "92963749563271",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_Afterburners",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_Afterburners.rbxm",
+  "route": "delivery",
+  "sha": "cdf4ab25acaa9d91019bde14f48e4811e17fb25495f57366702a7e48a41eb56d",
+  "source": "build/prod/M_Upg_Hydrofoil_Afterburners/fbx/M_Upg_Hydrofoil_Afterburners/M_Upg_Hydrofoil_Afterburners_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:cdf87b3858dd2af9e506c414781c3a6a4544183163121a159fcb21c94295eefa": {
+  "assetId": "134916075354415",
+  "moderation": "Approved",
+  "name": "M_Ani_Turtle",
+  "rbxm": "assets/models/M_Ani_Turtle.rbxm",
+  "route": "delivery",
+  "sha": "cdf87b3858dd2af9e506c414781c3a6a4544183163121a159fcb21c94295eefa",
+  "source": "assets/fbx/M_Ani_Turtle/M_Ani_Turtle_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:ce08c72c336b320908747d05398973dab00631a9aba1853e08ee6487033ecfda": {
+  "assetId": "100858468763255",
+  "moderation": "Approved",
+  "name": "M_Veh_Hydrofoil_LOD2",
+  "rbxm": "assets/models/M_Veh_Hydrofoil_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "ce08c72c336b320908747d05398973dab00631a9aba1853e08ee6487033ecfda",
+  "source": "build/prod/M_Veh_Hydrofoil/fbx/M_Veh_Hydrofoil/M_Veh_Hydrofoil_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:ce0d974cbde7db4223f0408c961e6507ea7b611b6d25af551111165e5cfe098c": {
   "assetId": "87393402791869",
   "moderation": "Approved",
@@ -31399,6 +33508,26 @@
   "route": "delivery",
   "sha": "ce297bd3e96651005a0c68a878c7dd92e91a3eb84b130f1d4be49a60df3b6545",
   "source": "assets/fbx/M_Veh_ATV/M_Veh_ATV_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:ce81659b9bbedb3805f58f5175bfb7514190606cb0897d00b6c4ce0235d2cd8c": {
+  "assetId": "85174301061468",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TurboHalo_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TurboHalo_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ce81659b9bbedb3805f58f5175bfb7514190606cb0897d00b6c4ce0235d2cd8c",
+  "source": "build/prod/M_Upg_Hydrofoil_TurboHalo/fbx/M_Upg_Hydrofoil_TurboHalo/M_Upg_Hydrofoil_TurboHalo_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:cebe0047ed48b43b086c6fd8f7e759ed2ac1911944d27ffdd45a6c757983ee3d": {
+  "assetId": "136494554102962",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_BananaBoat_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_BananaBoat_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "cebe0047ed48b43b086c6fd8f7e759ed2ac1911944d27ffdd45a6c757983ee3d",
+  "source": "build/prod/M_Upg_JetSki_BananaBoat/fbx/M_Upg_JetSki_BananaBoat/M_Upg_JetSki_BananaBoat_LOD1.fbx",
   "type": "Model"
  },
  "Model:cf30f6920b30c1b5682e7f8e7403e29846953503f1f4b6eaec3596c3b93747bb": {
@@ -31461,6 +33590,16 @@
   "source": "assets/fbx/M_Kit_Lifebuoy/M_Kit_Lifebuoy_LOD1.fbx",
   "type": "Model"
  },
+ "Model:cfd6a5c32fab1f43b85bb0657210f9c36369709a1db3a52146f74cc34f8bdf00": {
+  "assetId": "97343773200773",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_GiantJets",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_GiantJets.rbxm",
+  "route": "delivery",
+  "sha": "cfd6a5c32fab1f43b85bb0657210f9c36369709a1db3a52146f74cc34f8bdf00",
+  "source": "build/prod/M_Upg_Hydrofoil_GiantJets/fbx/M_Upg_Hydrofoil_GiantJets/M_Upg_Hydrofoil_GiantJets_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:d00ee20b51f1f75dd314e61bc28864a10c2335c663030630b1502c348b7fccdd": {
   "assetId": "126582160918791",
   "moderation": "Approved",
@@ -31481,6 +33620,56 @@
   "source": "assets/fbx/M_Veg_Wrack_Kit/M_Veg_Wrack_Kit_LOD2.fbx",
   "type": "Model"
  },
+ "Model:d04e6932e60340a5da9c8d7e5ba9972dec9bb73cd102f7d27770378a31f12c95": {
+  "assetId": "96286982766885",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SunBooster_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_SunBooster_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d04e6932e60340a5da9c8d7e5ba9972dec9bb73cd102f7d27770378a31f12c95",
+  "source": "build/prod/M_Upg_Rocket_SunBooster/fbx/M_Upg_Rocket_SunBooster/M_Upg_Rocket_SunBooster_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:d0a0344fd1982ab0fe9c888af77d461ebe93cf9f912f2b15e1d61b868304c105": {
+  "assetId": "118159762170603",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldEagle_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldEagle_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d0a0344fd1982ab0fe9c888af77d461ebe93cf9f912f2b15e1d61b868304c105",
+  "source": "build/prod/M_Upg_Rocket_GoldEagle/fbx/M_Upg_Rocket_GoldEagle/M_Upg_Rocket_GoldEagle_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:d0a2dc423308e742cb00bb5eaf9c7789dbea41e1cbf9012e969ca5ae17b1edc4": {
+  "assetId": "97759578350775",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ThunderWing_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_ThunderWing_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d0a2dc423308e742cb00bb5eaf9c7789dbea41e1cbf9012e969ca5ae17b1edc4",
+  "source": "build/prod/M_Upg_RIB_ThunderWing/fbx/M_Upg_RIB_ThunderWing/M_Upg_RIB_ThunderWing_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:d0b19b485d5ae919b3d003a69cb6cb8ea4f757c85832650a2926ba8456f7f03c": {
+  "assetId": "120391320810160",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SideBoosters_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_SideBoosters_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d0b19b485d5ae919b3d003a69cb6cb8ea4f757c85832650a2926ba8456f7f03c",
+  "source": "build/prod/M_Upg_Rocket_SideBoosters/fbx/M_Upg_Rocket_SideBoosters/M_Upg_Rocket_SideBoosters_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:d0f86e259512e131ecb032ab5f62dc865f25489bc57907e49d58450fec1b11e9": {
+  "assetId": "109269895430819",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SunBooster",
+  "rbxm": "assets/models/M_Upg_Rocket_SunBooster.rbxm",
+  "route": "delivery",
+  "sha": "d0f86e259512e131ecb032ab5f62dc865f25489bc57907e49d58450fec1b11e9",
+  "source": "build/prod/M_Upg_Rocket_SunBooster/fbx/M_Upg_Rocket_SunBooster/M_Upg_Rocket_SunBooster_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:d11350befd2493e17775792cc1af9a86f21c35c9ba9f9b66d4bbb82571105400": {
   "assetId": "125596595244196",
   "moderation": "Approved",
@@ -31499,6 +33688,26 @@
   "route": "delivery",
   "sha": "d14ba37b259ef2fa83f40a796572a7d36314f53b43f0c43cfacb3afc398aedbe",
   "source": "assets/fbx/M_Veg_Heather_03/M_Veg_Heather_03_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:d19e84e45e73fa18001ef4ccd7fab759e707756b1c180d6071aa7a190f91cb1a": {
+  "assetId": "78960310754441",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_PartyCannons_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_PartyCannons_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "d19e84e45e73fa18001ef4ccd7fab759e707756b1c180d6071aa7a190f91cb1a",
+  "source": "build/prod/M_Upg_Rocket_PartyCannons/fbx/M_Upg_Rocket_PartyCannons/M_Upg_Rocket_PartyCannons_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:d1ac653a2a36c9574341165c2ff9975e3a80bcc0a1f5ba9bebcdf3caa89585fd": {
+  "assetId": "81290368198868",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ThunderWing",
+  "rbxm": "assets/models/M_Upg_RIB_ThunderWing.rbxm",
+  "route": "delivery",
+  "sha": "d1ac653a2a36c9574341165c2ff9975e3a80bcc0a1f5ba9bebcdf3caa89585fd",
+  "source": "build/prod/M_Upg_RIB_ThunderWing/fbx/M_Upg_RIB_ThunderWing/M_Upg_RIB_ThunderWing_LOD0.fbx",
   "type": "Model"
  },
  "Model:d1cf5ab69d041434303b2fedb3e8d8377477f2c092c987f82b62ea5e795fee2e": {
@@ -31529,6 +33738,26 @@
   "route": "delivery",
   "sha": "d269663a465bc39c871ac8d3a4e0e6cf319f12c4084e943ab2fea8c36def8761",
   "source": "assets/fbx/M_Veg_Eelgrass_Kit/M_Veg_Eelgrass_Kit_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:d26cba8df9307a891f4dfe8086f8d41c9a09b011e26e54aa21e1b5b48e6e605a": {
+  "assetId": "133710880214917",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_RescueSled_LOD2",
+  "rbxm": "assets/models/M_Upg_JetSki_RescueSled_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "d26cba8df9307a891f4dfe8086f8d41c9a09b011e26e54aa21e1b5b48e6e605a",
+  "source": "build/prod/M_Upg_JetSki_RescueSled/fbx/M_Upg_JetSki_RescueSled/M_Upg_JetSki_RescueSled_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:d26e57255d0027bce88130c3da8a65144a587afbe18be36c701c3dfc05a52bda": {
+  "assetId": "131670519879821",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyStilts_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyStilts_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d26e57255d0027bce88130c3da8a65144a587afbe18be36c701c3dfc05a52bda",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyStilts/fbx/M_Upg_Hydrofoil_SkyStilts/M_Upg_Hydrofoil_SkyStilts_LOD1.fbx",
   "type": "Model"
  },
  "Model:d2b119c4a9b3d0880de49bb81dac47b34bfb5b82f545e77f1bdcd63d49e9d2f0": {
@@ -31591,6 +33820,16 @@
   "source": "assets/fbx/M_Bld_BoatyardShed/M_Bld_BoatyardShed_LOD2.fbx",
   "type": "Model"
  },
+ "Model:d43a85cb978395ab36e14a75ab01ac607fc34b9b2b7c16896da7e4b79dbac53d": {
+  "assetId": "107009706068777",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_Afterburners_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_Afterburners_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d43a85cb978395ab36e14a75ab01ac607fc34b9b2b7c16896da7e4b79dbac53d",
+  "source": "build/prod/M_Upg_Hydrofoil_Afterburners/fbx/M_Upg_Hydrofoil_Afterburners/M_Upg_Hydrofoil_Afterburners_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:d43e87d0240748aac53e56e6408e163cfebc11e7b0588c11a111c22cee8688af": {
   "assetId": "76983532828627",
   "moderation": "Approved",
@@ -31651,6 +33890,16 @@
   "source": "assets/fbx/M_Hbr_NavMark_Starboard/M_Hbr_NavMark_Starboard_LOD1.fbx",
   "type": "Model"
  },
+ "Model:d6a85c371f1147658a38c727cac57c4c6a486f99a14b3bbfe6869dcf840b8d26": {
+  "assetId": "121086513948355",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyStilts_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyStilts_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d6a85c371f1147658a38c727cac57c4c6a486f99a14b3bbfe6869dcf840b8d26",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyStilts/fbx/M_Upg_Hydrofoil_SkyStilts/M_Upg_Hydrofoil_SkyStilts_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:d6b830191116b219bb3f8abecbb1dad5b6f1af226d81bef9955ae0fc31f9d24f": {
   "assetId": "92092648982564",
   "moderation": "Approved",
@@ -31669,6 +33918,26 @@
   "route": "delivery",
   "sha": "d6ff2c12b46ca2c8f17522d548a355fe0032591371ed20dd54ee3f387848dd98",
   "source": "assets/fbx/M_Veh_MooredBoat_01/M_Veh_MooredBoat_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:d72211c501ef5264e96a24e9c8b4d370932859beed79e6b83d0d12e1716af02d": {
+  "assetId": "95490018314160",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TurboHalo_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TurboHalo_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d72211c501ef5264e96a24e9c8b4d370932859beed79e6b83d0d12e1716af02d",
+  "source": "build/prod/M_Upg_Hydrofoil_TurboHalo/fbx/M_Upg_Hydrofoil_TurboHalo/M_Upg_Hydrofoil_TurboHalo_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:d734e4fa23c8bc2b7963c2ff8b6a461c4c822ca1c27229abe834df3f1047199d": {
+  "assetId": "102852654623506",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TTail",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TTail.rbxm",
+  "route": "delivery",
+  "sha": "d734e4fa23c8bc2b7963c2ff8b6a461c4c822ca1c27229abe834df3f1047199d",
+  "source": "build/prod/M_Upg_Hydrofoil_TTail/fbx/M_Upg_Hydrofoil_TTail/M_Upg_Hydrofoil_TTail_LOD0.fbx",
   "type": "Model"
  },
  "Model:d7422dc2e710b95985b6c05e07b1a9cb3ff08f72e79d8d6158fbc968b8871917": {
@@ -31791,6 +34060,16 @@
   "source": "assets/fbx/M_Chr_Bosun_LP/M_Chr_Bosun_LP_LOD2.fbx",
   "type": "Model"
  },
+ "Model:d9a2e38fb22c0451a7bf51637c775b8bbdd195ae705bfad72eb3e2efa7c5fc95": {
+  "assetId": "140394473275915",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_FatTubes_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_FatTubes_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "d9a2e38fb22c0451a7bf51637c775b8bbdd195ae705bfad72eb3e2efa7c5fc95",
+  "source": "build/prod/M_Upg_RIB_FatTubes/fbx/M_Upg_RIB_FatTubes/M_Upg_RIB_FatTubes_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:d9ac5227f907ba23a206aae3cfb377a717f778ac5ac0739d85ea40e7a39d5c55": {
   "assetId": "76957325685970",
   "moderation": "Approved",
@@ -31839,6 +34118,46 @@
   "route": "delivery",
   "sha": "da7e21ad9138d55a049e654c2184da12db401c0b8190290bf1e57d61e1318410",
   "source": "assets/fbx/M_Veh_MooredBoat_01/M_Veh_MooredBoat_01_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:da8e584fbbbf5b1956d6c153d71d7734115287128ed374aa632c9935a44e7471": {
+  "assetId": "102367920176621",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_BattleBridge_LOD1",
+  "rbxm": "assets/models/M_Upg_Lifeboat_BattleBridge_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "da8e584fbbbf5b1956d6c153d71d7734115287128ed374aa632c9935a44e7471",
+  "source": "build/prod/M_Upg_Lifeboat_BattleBridge/fbx/M_Upg_Lifeboat_BattleBridge/M_Upg_Lifeboat_BattleBridge_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:daabdc72afc4b8c405856b9eda3d0192a1d94dd691e05b99c4fa43edbf41a0e6": {
+  "assetId": "82529215173211",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldThrone",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldThrone.rbxm",
+  "route": "delivery",
+  "sha": "daabdc72afc4b8c405856b9eda3d0192a1d94dd691e05b99c4fa43edbf41a0e6",
+  "source": "build/prod/M_Upg_Rocket_GoldThrone/fbx/M_Upg_Rocket_GoldThrone/M_Upg_Rocket_GoldThrone_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:db4405b5f5d082a8e73a6fa0f7e78ba8fec4d2b34e7f255b16173237abd4e9af": {
+  "assetId": "94094794022104",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SunBooster_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_SunBooster_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "db4405b5f5d082a8e73a6fa0f7e78ba8fec4d2b34e7f255b16173237abd4e9af",
+  "source": "build/prod/M_Upg_Rocket_SunBooster/fbx/M_Upg_Rocket_SunBooster/M_Upg_Rocket_SunBooster_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:dbb048484456e6d4e673e6c68e189aea855d123e32c752bac6aaadb5e839ff90": {
+  "assetId": "119294291375466",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TTail_LOD2",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TTail_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "dbb048484456e6d4e673e6c68e189aea855d123e32c752bac6aaadb5e839ff90",
+  "source": "build/prod/M_Upg_Hydrofoil_TTail/fbx/M_Upg_Hydrofoil_TTail/M_Upg_Hydrofoil_TTail_LOD2.fbx",
   "type": "Model"
  },
  "Model:dc09024ab21c303e198da3408509ab83e1313b88931de9d25a88ba7cdf41df0c": {
@@ -31971,6 +34290,26 @@
   "source": "assets/fbx/M_Hbr_Pontoon_Gangway/M_Hbr_Pontoon_Gangway_LOD2.fbx",
   "type": "Model"
  },
+ "Model:dedadbf26c5bb9b5c554c50a61658b39bebab2de1716048b1d15997c418bcc33": {
+  "assetId": "118977357360986",
+  "moderation": "Approved",
+  "name": "M_Veh_Hydrofoil_LOD1",
+  "rbxm": "assets/models/M_Veh_Hydrofoil_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "dedadbf26c5bb9b5c554c50a61658b39bebab2de1716048b1d15997c418bcc33",
+  "source": "build/prod/M_Veh_Hydrofoil/fbx/M_Veh_Hydrofoil/M_Veh_Hydrofoil_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:def2cc5a7042a99a57f5ce9e1f8e4406258c93b4c3e2d845d2ea871f6460c4a3": {
+  "assetId": "115929708138480",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_SharkJaws_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_SharkJaws_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "def2cc5a7042a99a57f5ce9e1f8e4406258c93b4c3e2d845d2ea871f6460c4a3",
+  "source": "build/prod/M_Upg_RIB_SharkJaws/fbx/M_Upg_RIB_SharkJaws/M_Upg_RIB_SharkJaws_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:df0160ee7075db8608a2f826bde758df0b4d9f86733d236dcf4a4651f3fc6bbd": {
   "assetId": "93470598821132",
   "moderation": "Approved",
@@ -31991,6 +34330,26 @@
   "source": "assets/fbx/M_Veh_JetSki_RiptideX/M_Veh_JetSki_RiptideX_LOD2.fbx",
   "type": "Model"
  },
+ "Model:df91561082eb84639897e068c3596d6e1041ae389c8772e49a0cbb3d6a747383": {
+  "assetId": "114622243767557",
+  "moderation": "Approved",
+  "name": "M_Veh_PirateBoat_LOD1",
+  "rbxm": "assets/models/M_Veh_PirateBoat_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "df91561082eb84639897e068c3596d6e1041ae389c8772e49a0cbb3d6a747383",
+  "source": "build/prod/M_Veh_PirateBoat/fbx/M_Veh_PirateBoat/M_Veh_PirateBoat_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:df91612bff80b96b90218a067a11764d35485acb16eafd55f1ed4a985fda69f4": {
+  "assetId": "74701960269580",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldEagle_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldEagle_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "df91612bff80b96b90218a067a11764d35485acb16eafd55f1ed4a985fda69f4",
+  "source": "build/prod/M_Upg_Rocket_GoldEagle/fbx/M_Upg_Rocket_GoldEagle/M_Upg_Rocket_GoldEagle_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:dfabd71b58b4369c1d90d392c2127000c855ae859dc25a94afc219100f928e28": {
   "assetId": "138515244938692",
   "moderation": "Approved",
@@ -32009,6 +34368,16 @@
   "route": "delivery",
   "sha": "dfb4df094318cd07b3bfa66481be09d5cb2be226dc8773b2e60b51f32cd99ffa",
   "source": "assets/fbx/M_Veg_Strand_Pebbles_01/M_Veg_Strand_Pebbles_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:e01fc6da07a274c49dd1d9b31ff0cf36c2c9506fb244afa8d9f0cab9887bc2d6": {
+  "assetId": "72329043429762",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_NeonFins",
+  "rbxm": "assets/models/M_Upg_RIB_NeonFins.rbxm",
+  "route": "delivery",
+  "sha": "e01fc6da07a274c49dd1d9b31ff0cf36c2c9506fb244afa8d9f0cab9887bc2d6",
+  "source": "build/prod/M_Upg_RIB_NeonFins/fbx/M_Upg_RIB_NeonFins/M_Upg_RIB_NeonFins_LOD0.fbx",
   "type": "Model"
  },
  "Model:e02a9b1877d170ddd7bd98fc6414099900d85c21654879612295a5fda3045de2": {
@@ -32189,6 +34558,26 @@
   "route": "delivery",
   "sha": "e310d5b70d707e7d5f71356fa93e1c488f0129c51f0393f031e48210b86df116",
   "source": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:e3169f25a02b9d4368076d49856a46b73ce161a879b17cdb9dd8e7efc70c2f6a": {
+  "assetId": "83066127514262",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_BullNose_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_BullNose_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "e3169f25a02b9d4368076d49856a46b73ce161a879b17cdb9dd8e7efc70c2f6a",
+  "source": "build/prod/M_Upg_JetSki_BullNose/fbx/M_Upg_JetSki_BullNose/M_Upg_JetSki_BullNose_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:e32ac4b636666d1d02bf5227671378cf3090478944127fb9abf144e58cf35b58": {
+  "assetId": "112862873829554",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_GiantJets_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_GiantJets_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "e32ac4b636666d1d02bf5227671378cf3090478944127fb9abf144e58cf35b58",
+  "source": "build/prod/M_Upg_Hydrofoil_GiantJets/fbx/M_Upg_Hydrofoil_GiantJets/M_Upg_Hydrofoil_GiantJets_LOD1.fbx",
   "type": "Model"
  },
  "Model:e35b8fc91cfa4ccff08f117404a3c9c7cd3d6fa80843a6ac8c337e86ee039415": {
@@ -32431,6 +34820,16 @@
   "source": "assets/fbx/M_Bld_Cottage_05/M_Bld_Cottage_05_LOD2.fbx",
   "type": "Model"
  },
+ "Model:e95060dfca59ab6c89e3dd6bab91ffc19e233a511e37c1ab212fe3ff0760798e": {
+  "assetId": "75574607084451",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_WaveWall_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_WaveWall_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "e95060dfca59ab6c89e3dd6bab91ffc19e233a511e37c1ab212fe3ff0760798e",
+  "source": "build/prod/M_Upg_Rocket_WaveWall/fbx/M_Upg_Rocket_WaveWall/M_Upg_Rocket_WaveWall_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:e96a528a6c890d141fb6fc5cb79292b9e7b14351dd25ff83d31db063c37f4994": {
   "assetId": "114034433311471",
   "moderation": "Approved",
@@ -32481,6 +34880,46 @@
   "source": "assets/fbx/M_Sea_MooringBlock/M_Sea_MooringBlock_LOD1.fbx",
   "type": "Model"
  },
+ "Model:ea5a9756ebf4108983d19b40e39872590323dd8b26d7f7626b478ef6ff83e8a7": {
+  "assetId": "134202754687313",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_SideBoosters",
+  "rbxm": "assets/models/M_Upg_Rocket_SideBoosters.rbxm",
+  "route": "delivery",
+  "sha": "ea5a9756ebf4108983d19b40e39872590323dd8b26d7f7626b478ef6ff83e8a7",
+  "source": "build/prod/M_Upg_Rocket_SideBoosters/fbx/M_Upg_Rocket_SideBoosters/M_Upg_Rocket_SideBoosters_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:ea83f2cb6a150faea20aabc88b60e84b55ea9dc6abd55f6fdaff6ac0c854ee6b": {
+  "assetId": "111582219800188",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldPlating_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldPlating_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "ea83f2cb6a150faea20aabc88b60e84b55ea9dc6abd55f6fdaff6ac0c854ee6b",
+  "source": "build/prod/M_Upg_Rocket_GoldPlating/fbx/M_Upg_Rocket_GoldPlating/M_Upg_Rocket_GoldPlating_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:ea860fec23d4318b246ea6b2921367c193caf430ff6e963cdab967b95d84b79c": {
+  "assetId": "95024192342762",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldThrone_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldThrone_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ea860fec23d4318b246ea6b2921367c193caf430ff6e963cdab967b95d84b79c",
+  "source": "build/prod/M_Upg_Rocket_GoldThrone/fbx/M_Upg_Rocket_GoldThrone/M_Upg_Rocket_GoldThrone_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:eb156b62c71f1c54779b260975b9159deb2c7e15a7d3437dbab82b6ea161f17c": {
+  "assetId": "93432947657491",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_FatTubes_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_FatTubes_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "eb156b62c71f1c54779b260975b9159deb2c7e15a7d3437dbab82b6ea161f17c",
+  "source": "build/prod/M_Upg_RIB_FatTubes/fbx/M_Upg_RIB_FatTubes/M_Upg_RIB_FatTubes_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:eb3466e38f3d0081736f7a270ed5dbdaaa3d20516d4dee306be5511b4c94dc51": {
   "assetId": "85634491056108",
   "moderation": "Approved",
@@ -32521,6 +34960,16 @@
   "source": "assets/fbx/M_Veg_Grass_Turf_01/M_Veg_Grass_Turf_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:eb7b2524ed85b3be3154579961630bf8fe45e6768ac4954bce204177e18caf1e": {
+  "assetId": "131267272335661",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TopJet",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TopJet.rbxm",
+  "route": "delivery",
+  "sha": "eb7b2524ed85b3be3154579961630bf8fe45e6768ac4954bce204177e18caf1e",
+  "source": "build/prod/M_Upg_Hydrofoil_TopJet/fbx/M_Upg_Hydrofoil_TopJet/M_Upg_Hydrofoil_TopJet_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:eb9653c2e5e0c247cdec72e266cb1123bdb5b4b3b50bd4df506e42f166654056": {
   "assetId": "94174945578296",
   "moderation": "Approved",
@@ -32539,6 +34988,26 @@
   "route": "delivery",
   "sha": "ebcfc4b9c0c3ef6fe07926ee811fa23723a7baac7962618a5e0eff52c6bd33c6",
   "source": "assets/fbx/M_Hbr_Cleat_01/M_Hbr_Cleat_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:ebeb1e1041b4615f857c7f2a409ab9baa74028113c31df7331411a4ca3da95ec": {
+  "assetId": "96161518006513",
+  "moderation": "Approved",
+  "name": "M_Chr_PirateLookout_LOD1",
+  "rbxm": "assets/models/M_Chr_PirateLookout_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ebeb1e1041b4615f857c7f2a409ab9baa74028113c31df7331411a4ca3da95ec",
+  "source": "build/prod/M_Chr_PirateLookout/fbx/M_Chr_PirateLookout/M_Chr_PirateLookout_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:ebf4d02ff361f569af979fc099c9c26c6de2e0acf6400acc2860a15ff8a73870": {
+  "assetId": "138494977558877",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_Pilot_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_Pilot_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "ebf4d02ff361f569af979fc099c9c26c6de2e0acf6400acc2860a15ff8a73870",
+  "source": "build/prod/M_Upg_Rocket_Pilot/fbx/M_Upg_Rocket_Pilot/M_Upg_Rocket_Pilot_LOD2.fbx",
   "type": "Model"
  },
  "Model:ec46788a8c5fb298b2e115c30f365bd032770c3f832c6d3c7c4186c75ab74c22": {
@@ -32631,6 +35100,36 @@
   "source": "assets/fbx/M_Veg_Heather_01/M_Veg_Heather_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:ed71ea9d7b3318493d28502fc46be30f359e47e342421662c5e570ab9836520c": {
+  "assetId": "133634224577330",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_BullNose_LOD1",
+  "rbxm": "assets/models/M_Upg_JetSki_BullNose_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ed71ea9d7b3318493d28502fc46be30f359e47e342421662c5e570ab9836520c",
+  "source": "build/prod/M_Upg_JetSki_BullNose/fbx/M_Upg_JetSki_BullNose/M_Upg_JetSki_BullNose_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:ed8afbdabfb7a1b7d7db5fce60c22fbfb25f955af0a5881692a7aa62ee311bc5": {
+  "assetId": "104200091075748",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_NeedleNose_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_NeedleNose_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ed8afbdabfb7a1b7d7db5fce60c22fbfb25f955af0a5881692a7aa62ee311bc5",
+  "source": "build/prod/M_Upg_Hydrofoil_NeedleNose/fbx/M_Upg_Hydrofoil_NeedleNose/M_Upg_Hydrofoil_NeedleNose_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:ed9cc2a40db1a0f6ee789b49ca6c0fb2504db9fb79886430721fae2e3dba2247": {
+  "assetId": "137663901332536",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_ArmourSpikes_LOD1",
+  "rbxm": "assets/models/M_Upg_Lifeboat_ArmourSpikes_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ed9cc2a40db1a0f6ee789b49ca6c0fb2504db9fb79886430721fae2e3dba2247",
+  "source": "build/prod/M_Upg_Lifeboat_ArmourSpikes/fbx/M_Upg_Lifeboat_ArmourSpikes/M_Upg_Lifeboat_ArmourSpikes_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:eda9f29fb395b00775be9d0aca65d3984e44dd4759ccebee6c5f9a0a9254e071": {
   "assetId": "101617065548352",
   "moderation": "Approved",
@@ -32681,6 +35180,16 @@
   "source": "assets/fbx/M_Bld_HarbourLight/M_Bld_HarbourLight_LOD1.fbx",
   "type": "Model"
  },
+ "Model:eeffd221cc59724e1da371fbe3e241091fea937bf1f5c03e88701a4895c91608": {
+  "assetId": "124828336065215",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ArchSpoiler_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_ArchSpoiler_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "eeffd221cc59724e1da371fbe3e241091fea937bf1f5c03e88701a4895c91608",
+  "source": "build/prod/M_Upg_RIB_ArchSpoiler/fbx/M_Upg_RIB_ArchSpoiler/M_Upg_RIB_ArchSpoiler_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:ef029804db886dce7833a676a6e3710d12accfc8783d1e89c1d10fec44888880": {
   "assetId": "116553799953798",
   "moderation": "Approved",
@@ -32719,6 +35228,26 @@
   "route": "delivery",
   "sha": "ef46f76926c9af1de59c66035ed4de03bd67d6040392305d7287998e2b73f258",
   "source": "assets/fbx/M_Kit_Strobe/M_Kit_Strobe_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:efb52a206d8b8a0480a50b364c7ff198620b86303bf8804b4c824f45082a11e8": {
+  "assetId": "109520468836402",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_ArmourSpikes_LOD1",
+  "rbxm": "assets/models/M_Upg_Lifeboat_ArmourSpikes_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "efb52a206d8b8a0480a50b364c7ff198620b86303bf8804b4c824f45082a11e8",
+  "source": "build/prod/M_Upg_Lifeboat_ArmourSpikes/fbx/M_Upg_Lifeboat_ArmourSpikes/M_Upg_Lifeboat_ArmourSpikes_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:efbfbab4052791f0b4bb75a9b16b7793cab2ec370258c501e0e8a92de18523ef": {
+  "assetId": "123724614370673",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldPlating_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldPlating_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "efbfbab4052791f0b4bb75a9b16b7793cab2ec370258c501e0e8a92de18523ef",
+  "source": "build/prod/M_Upg_Rocket_GoldPlating/fbx/M_Upg_Rocket_GoldPlating/M_Upg_Rocket_GoldPlating_LOD2.fbx",
   "type": "Model"
  },
  "Model:efc1e6b2efa7597ea3b9c7ae3055e1e5622b7d5be9bc08925b9fdafdf798dfd3": {
@@ -32781,6 +35310,26 @@
   "source": "assets/fbx/M_Veg_Grass_Marram_01/M_Veg_Grass_Marram_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:f096f8353555fddfa80778956efb81618e2943f98da7245793098831b5c7f6da": {
+  "assetId": "119014295879530",
+  "moderation": "Approved",
+  "name": "M_Upg_JetSki_FlamePipes",
+  "rbxm": "assets/models/M_Upg_JetSki_FlamePipes.rbxm",
+  "route": "delivery",
+  "sha": "f096f8353555fddfa80778956efb81618e2943f98da7245793098831b5c7f6da",
+  "source": "build/prod/M_Upg_JetSki_FlamePipes/fbx/M_Upg_JetSki_FlamePipes/M_Upg_JetSki_FlamePipes_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:f1baf7dde35f8fa87f180534378c11a993971779961598ca28beda9ba7d4f712": {
+  "assetId": "81220112774551",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_Pilot",
+  "rbxm": "assets/models/M_Upg_Rocket_Pilot.rbxm",
+  "route": "delivery",
+  "sha": "f1baf7dde35f8fa87f180534378c11a993971779961598ca28beda9ba7d4f712",
+  "source": "build/prod/M_Upg_Rocket_Pilot/fbx/M_Upg_Rocket_Pilot/M_Upg_Rocket_Pilot_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:f1d61b53de5bbe21a36967237eccb41f7f03b88a779bac6c7d60beeaf7a41988": {
   "assetId": "101024845817143",
   "moderation": "Approved",
@@ -32801,6 +35350,26 @@
   "source": "assets/fbx/M_Veg_Bracken_02/M_Veg_Bracken_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:f38332eaba53baaee6cc99b44487bd681afb7ac56f8464cffaed76648d27015b": {
+  "assetId": "102726908160156",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_MegaTrophy",
+  "rbxm": "assets/models/M_Upg_Rocket_MegaTrophy.rbxm",
+  "route": "delivery",
+  "sha": "f38332eaba53baaee6cc99b44487bd681afb7ac56f8464cffaed76648d27015b",
+  "source": "build/prod/M_Upg_Rocket_MegaTrophy/fbx/M_Upg_Rocket_MegaTrophy/M_Upg_Rocket_MegaTrophy_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:f38d609734c6395ace9cff8995dcd10f4f85409b4c45b87a3beb733f2ea0dd5b": {
+  "assetId": "122474226274027",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_HugeLamps",
+  "rbxm": "assets/models/M_Upg_Lifeboat_HugeLamps.rbxm",
+  "route": "delivery",
+  "sha": "f38d609734c6395ace9cff8995dcd10f4f85409b4c45b87a3beb733f2ea0dd5b",
+  "source": "build/prod/M_Upg_Lifeboat_HugeLamps/fbx/M_Upg_Lifeboat_HugeLamps/M_Upg_Lifeboat_HugeLamps_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:f39934844cfeb131ef65ac73bcc993f011b101cd729f378dac12eef2b8f98c3e": {
   "assetId": "127250340398779",
   "moderation": "Approved",
@@ -32809,6 +35378,46 @@
   "route": "delivery",
   "sha": "f39934844cfeb131ef65ac73bcc993f011b101cd729f378dac12eef2b8f98c3e",
   "source": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:f3fed6ff1b66e85a7e185fb1b200e06f4e012e4306ac46d6a206c9975a4cda3c": {
+  "assetId": "138121969645766",
+  "moderation": "Approved",
+  "name": "M_Veh_Hydrofoil_LOD1",
+  "rbxm": "assets/models/M_Veh_Hydrofoil_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "f3fed6ff1b66e85a7e185fb1b200e06f4e012e4306ac46d6a206c9975a4cda3c",
+  "source": "build/prod/M_Veh_Hydrofoil/fbx/M_Veh_Hydrofoil/M_Veh_Hydrofoil_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:f41d295592a693577fdf20bfdbe164f5f5d8ee6a9e8f6aebe8a82e3ddac9ff5a": {
+  "assetId": "124589540275713",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyWings",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyWings.rbxm",
+  "route": "delivery",
+  "sha": "f41d295592a693577fdf20bfdbe164f5f5d8ee6a9e8f6aebe8a82e3ddac9ff5a",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyWings/fbx/M_Upg_Hydrofoil_SkyWings/M_Upg_Hydrofoil_SkyWings_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:f434c1c4cde1152ce55752046c5467cc41470a3c5188e22352f3a7b89d25a8a8": {
+  "assetId": "105717029051954",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyStilts_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyStilts_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "f434c1c4cde1152ce55752046c5467cc41470a3c5188e22352f3a7b89d25a8a8",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyStilts/fbx/M_Upg_Hydrofoil_SkyStilts/M_Upg_Hydrofoil_SkyStilts_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:f47d6b1b933285adbd8df124d2204258586226c46eae5e71dd8c4aebc972a4ad": {
+  "assetId": "109034382065473",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_GiantJets_LOD1",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_GiantJets_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "f47d6b1b933285adbd8df124d2204258586226c46eae5e71dd8c4aebc972a4ad",
+  "source": "build/prod/M_Upg_Hydrofoil_GiantJets/fbx/M_Upg_Hydrofoil_GiantJets/M_Upg_Hydrofoil_GiantJets_LOD1.fbx",
   "type": "Model"
  },
  "Model:f4812230c97b763df14ea154366db316762fcfaee6fe5d5a074bbd734c93f541": {
@@ -32871,6 +35480,16 @@
   "source": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD0.fbx",
   "type": "Model"
  },
+ "Model:f560c51fcd861b300aff629bd7919957dfc5cf5064475dcee671c721f6f34627": {
+  "assetId": "127945511112075",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_SkyStilts",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_SkyStilts.rbxm",
+  "route": "delivery",
+  "sha": "f560c51fcd861b300aff629bd7919957dfc5cf5064475dcee671c721f6f34627",
+  "source": "build/prod/M_Upg_Hydrofoil_SkyStilts/fbx/M_Upg_Hydrofoil_SkyStilts/M_Upg_Hydrofoil_SkyStilts_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:f570233e37866e958df581cbc227d30e33a75cc93ef7067dfc62db4e2a331dbe": {
   "assetId": "136906653349912",
   "moderation": "Approved",
@@ -32879,6 +35498,26 @@
   "route": "delivery",
   "sha": "f570233e37866e958df581cbc227d30e33a75cc93ef7067dfc62db4e2a331dbe",
   "source": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:f57fc56ba963126daeec94bd0cefb08217ec19e78226ffc3dedad951a1d662f3": {
+  "assetId": "122032670105723",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldThrone_LOD2",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldThrone_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "f57fc56ba963126daeec94bd0cefb08217ec19e78226ffc3dedad951a1d662f3",
+  "source": "build/prod/M_Upg_Rocket_GoldThrone/fbx/M_Upg_Rocket_GoldThrone/M_Upg_Rocket_GoldThrone_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:f5ad568eb48d2112eb6f3ccc743a14544418e7ee9d66f050d1703086f1e408de": {
+  "assetId": "123216469847524",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_Afterburners",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_Afterburners.rbxm",
+  "route": "delivery",
+  "sha": "f5ad568eb48d2112eb6f3ccc743a14544418e7ee9d66f050d1703086f1e408de",
+  "source": "build/prod/M_Upg_Hydrofoil_Afterburners/fbx/M_Upg_Hydrofoil_Afterburners/M_Upg_Hydrofoil_Afterburners_LOD0.fbx",
   "type": "Model"
  },
  "Model:f5af81544effa9939b29e599fbfdc083ae89e034f69466d363606fa9d24ef78a": {
@@ -33021,6 +35660,26 @@
   "source": "assets/fbx/M_Hbr_Fender_Tyre/M_Hbr_Fender_Tyre_LOD1.fbx",
   "type": "Model"
  },
+ "Model:f9bb2384fcda06ca329337ee9e73947b9372c98ea6b091e2db7aa9dfedb8616b": {
+  "assetId": "128025747485496",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ExhaustOrgan_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_ExhaustOrgan_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "f9bb2384fcda06ca329337ee9e73947b9372c98ea6b091e2db7aa9dfedb8616b",
+  "source": "build/prod/M_Upg_RIB_ExhaustOrgan/fbx/M_Upg_RIB_ExhaustOrgan/M_Upg_RIB_ExhaustOrgan_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:f9bb608b7ea1516230775f4e13c98b98f3c14bdfabe71f08727bfda7d05d20fc": {
+  "assetId": "115926568558094",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_GoldPlating",
+  "rbxm": "assets/models/M_Upg_Rocket_GoldPlating.rbxm",
+  "route": "delivery",
+  "sha": "f9bb608b7ea1516230775f4e13c98b98f3c14bdfabe71f08727bfda7d05d20fc",
+  "source": "build/prod/M_Upg_Rocket_GoldPlating/fbx/M_Upg_Rocket_GoldPlating/M_Upg_Rocket_GoldPlating_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:f9e68cf9cf479fc24118ad131d50ce32a339d3f67b806d7eaf3cecaaf25a8376": {
   "assetId": "104830334132846",
   "moderation": "Approved",
@@ -33049,6 +35708,16 @@
   "route": "delivery",
   "sha": "fa167df25108a1de78ebad11889ea0793f94a7ed2c627006f0b1f992ad7e9a96",
   "source": "assets/fbx/M_Veg_Grass_Marram_01/M_Veg_Grass_Marram_01_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:fa27f9ff0117724bdeb70170764839dbb797c0dfe1dbb36b05524b1f1bd223d0": {
+  "assetId": "87022821820099",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_GiantJets",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_GiantJets.rbxm",
+  "route": "delivery",
+  "sha": "fa27f9ff0117724bdeb70170764839dbb797c0dfe1dbb36b05524b1f1bd223d0",
+  "source": "build/prod/M_Upg_Hydrofoil_GiantJets/fbx/M_Upg_Hydrofoil_GiantJets/M_Upg_Hydrofoil_GiantJets_LOD0.fbx",
   "type": "Model"
  },
  "Model:fa29130901c0c429a58864845a5353c87d7431dd3e10d168477447ed35189f04": {
@@ -33139,6 +35808,16 @@
   "route": "delivery",
   "sha": "fbdfc6369efaf8f3af85428ba5f302138a68225849fb1297feac9d067693044c",
   "source": "assets/fbx/M_Bld_TrophyHallAddons/M_Bld_TrophyHallAddons_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:fbf0ce9e2e4fce718ba135fcb589445ba19a452dabfb9153ee657b5e1a7085aa": {
+  "assetId": "117746492122850",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_Afterburners",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_Afterburners.rbxm",
+  "route": "delivery",
+  "sha": "fbf0ce9e2e4fce718ba135fcb589445ba19a452dabfb9153ee657b5e1a7085aa",
+  "source": "build/prod/M_Upg_Hydrofoil_Afterburners/fbx/M_Upg_Hydrofoil_Afterburners/M_Upg_Hydrofoil_Afterburners_LOD0.fbx",
   "type": "Model"
  },
  "Model:fc0ae948424d581fce196581c987b454f824e9cbdf62131e2a945bd25796888e": {
@@ -33251,6 +35930,16 @@
   "source": "assets/fbx/M_Sea_Bell/M_Sea_Bell_LOD0.fbx",
   "type": "Model"
  },
+ "Model:fe0d0df9dbfd37b7555ec2de47da500cf03452d63e92adfcfd32f4a9e5179466": {
+  "assetId": "86407498717332",
+  "moderation": "Approved",
+  "name": "M_Upg_Rocket_PartyCannons_LOD1",
+  "rbxm": "assets/models/M_Upg_Rocket_PartyCannons_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "fe0d0df9dbfd37b7555ec2de47da500cf03452d63e92adfcfd32f4a9e5179466",
+  "source": "build/prod/M_Upg_Rocket_PartyCannons/fbx/M_Upg_Rocket_PartyCannons/M_Upg_Rocket_PartyCannons_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:fe42f4b950780432757f4235589f338cac7701458cb74cbcc44e3fe74abf622a": {
   "assetId": "105640824287180",
   "moderation": "Approved",
@@ -33299,6 +35988,16 @@
   "route": "delivery",
   "sha": "fefd9089a860f03d0359ed130a12a3eb4dc1011fc6012ebbfbd0766aa2f3ff73",
   "source": "assets/fbx/M_Veg_Hawthorn_02/M_Veg_Hawthorn_02_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:ff10d4844d5316f54af35bd4d02a679ce783f0f8c45f07f943b090aeae1d2c36": {
+  "assetId": "134780310143667",
+  "moderation": "Approved",
+  "name": "M_Upg_Hydrofoil_TTail",
+  "rbxm": "assets/models/M_Upg_Hydrofoil_TTail.rbxm",
+  "route": "delivery",
+  "sha": "ff10d4844d5316f54af35bd4d02a679ce783f0f8c45f07f943b090aeae1d2c36",
+  "source": "build/prod/M_Upg_Hydrofoil_TTail/fbx/M_Upg_Hydrofoil_TTail/M_Upg_Hydrofoil_TTail_LOD0.fbx",
   "type": "Model"
  },
  "Model:ff178f1b737a8c88bf1ebf59254aec9583c2c9abc9ef9c8884c727621fa44106": {

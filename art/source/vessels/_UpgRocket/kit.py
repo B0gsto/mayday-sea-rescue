@@ -28,7 +28,7 @@ PALETTE = [
     ("F5BE3C", 0.25, 0.35),  # 3 gold
     ("E4E8EC", 0.10, 1.0),   # 4 chrome
     ("23262C", 0.60, 0.0),   # 5 rubber
-    ("FFC72C", 0.30, 0.0),   # 6 seat yellow
+    ("FFA020", 0.35, 0.0),   # 6 sun: warmer than the gold, so the two never merge
     ("FF6600", 0.30, 0.0),   # 7 vest orange
     ("FF8F1C", 0.40, 0.0),   # 8 flame orange
     ("FFD23F", 0.40, 0.0),   # 9 flame yellow
@@ -39,7 +39,8 @@ PALETTE = [
     ("C8B27A", 0.45, 0.0),   # 14 deck tan
     ("1A2A38", 0.06, 0.0),   # 15 dark glass
 ]
-WHITE, NAVY, RED, GOLD, CHROME, RUBBER, SEAT, VEST, FLAME_O, FLAME_Y, FLAME_W, SKIN, DEEP, AQUA, TAN, GLASS = range(16)
+WHITE, NAVY, RED, GOLD, CHROME, RUBBER, SUN, VEST, FLAME_O, FLAME_Y, FLAME_W, SKIN, DEEP, AQUA, TAN, GLASS = range(16)
+SEAT = FLAME_Y
 
 ORIGIN = (0.0, -2.8, -0.01)     # Builder.TIDEWALKER_ORIGIN: where a Lifeboat-frame hull model's pivot sits in HullRoot space
 
@@ -93,7 +94,7 @@ class Kit(base.Kit):
     def rim_window(self, x, y, s, r, rocket_r=None):
         """A cartoon porthole on a side at z = s * rocket_r."""
         rr = rocket_r
-        self.torus(r, max(0.2, r * 0.24), (x, y, s * rr), SEAT, n=12, m_=4)
+        self.torus(r, max(0.2, r * 0.24), (x, y, s * rr), NAVY, n=12, m_=4)
         self.cyl(r, 0.7, (x, y, s * (rr - 0.3)), GLASS, (90, 0, 0), n=12)
 
 

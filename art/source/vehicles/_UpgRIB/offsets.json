@@ -20,55 +20,55 @@
  "ArchSpoiler": {
   "level": 13,
   "tris_authored": [
-   2928,
-   1318,
-   340
+   1424,
+   578,
+   236
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   9.569,
-   12.478
+   8.839,
+   11.688
   ],
   "size_roblox": [
-   13.84,
-   13.238,
-   6.605
+   13.44,
+   11.979,
+   6.556
   ]
  },
  "NeonFins": {
   "level": 14,
   "tris_authored": [
-   560,
-   560,
-   304
+   384,
+   384,
+   256
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   5.997,
+   6.006,
    2.355
   ],
   "size_roblox": [
    15.176,
-   6.901,
+   6.883,
    21.012
   ]
  },
  "FatTubes": {
   "level": 15,
   "tris_authored": [
-   6004,
-   2684,
-   748
+   6332,
+   2704,
+   828
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   4.364,
-   -0.681
+   4.87,
+   -0.343
   ],
   "size_roblox": [
    15.49,
-   5.048,
-   28.285
+   6.06,
+   28.962
   ]
  },
  "Grandstand": {
@@ -92,9 +92,9 @@
  "PaddleWheel": {
   "level": 17,
   "tris_authored": [
-   5216,
-   2952,
-   1036
+   4872,
+   2800,
+   1052
   ],
   "meshpart_centre_roblox": [
    -0.0,
@@ -116,49 +116,49 @@
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   8.782,
-   -12.749
+   11.382,
+   -12.606
   ],
   "size_roblox": [
    18.596,
-   16.036,
-   12.238
+   21.236,
+   12.524
   ]
  },
  "ExhaustOrgan": {
   "level": 19,
   "tris_authored": [
-   3056,
-   1804,
-   640
+   1904,
+   1128,
+   400
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   7.342,
+   6.042,
    7.076
   ],
   "size_roblox": [
    14.32,
-   11.004,
-   2.2
+   8.404,
+   1.7
   ]
  },
  "ThunderWing": {
   "level": 20,
   "tris_authored": [
-   584,
-   264,
+   296,
+   168,
    104
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   17.114,
-   12.376
+   14.903,
+   12.446
   ],
   "size_roblox": [
-   22.243,
-   7.741,
-   2.94
+   19.427,
+   3.429,
+   1.76
   ]
  }
 }
