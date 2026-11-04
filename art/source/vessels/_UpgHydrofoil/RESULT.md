@@ -40,7 +40,7 @@ The hull and every piece share one frame and one pivot: the RIB asset's frame (`
 
 ## What the game code must do
 
-1. `VehicleConfig.Hydrofoil`: add `model = "M_Veh_Hydrofoil"`. `hullSize` can stay (hull 25.2 long without the snout or swept foil, RIB 25.3).
+1. `VehicleConfig.Hydrofoil`: add `model = "M_Veh_Hydrofoil"`. `hullSize` can stay (hull 25.0 long without the snout or swept foil, RIB 25.3).
 2. `Builder.buildRIBAsset` reads `AssetIds.Attachments.M_Veh_RIB` by name. Change it to `AssetIds.Attachments[spec.model or "M_Veh_RIB"]`, or seats land in the wrong place. The hull has the RIB's `ATT_` names: DriverSeat, EyePoint, PassengerSeat1-2, SurvivorSlot1-4, TowHitch, BowPoint, DriveAttachment, NavPort, NavStarboard, NavMasthead, NavStern, Beacon, Searchlight, Prop1-2, Float1-8. It has no `ATT_DogSlot`, so the fallback applies.
 3. **The driver sits off centre:** `ATT_DriverSeat` and `ATT_EyePoint` are at asset x +1.7. That keeps the centre fin and Top Jet from hiding him from a centred chase cam. Do not recentre them.
 4. **L34+ (Sky Stilts):** the hull has two MeshParts, body and `M_Veh_Hydrofoil_Foils`. Move the foils part by **(0, -1.6, +0.746)** hull-frame studs, times the scale, so it lands on the sleeves. Raise the boat **1.6** times the scale: the sea then sits at asset y 0.45. `floatPoints` y -1.6 does the lift. `ATT_Prop*` and `ATT_Splash*` go down 1.6 and move +0.746 in z.
