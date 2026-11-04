@@ -11,9 +11,9 @@ COLOURS = {
     "blue": ("#2A6FD6", .32, 0), "navy": ("#1C3F78", .35, 0), "black": ("#2B2D31", .4, 0), "rubber": ("#2B2D31", .8, 0),
     "brown": ("#7A4A2A", .5, 0), "wood": ("#C98E52", .5, 0), "orange": ("#FF6A13", .35, 0), "console": ("#5A6168", .4, 0),
     "brass": ("#E0A526", .3, .55), "glass": ("#A8DBF5", .06, 0), "portLt": ("#FF3B30", .3, 0), "stbdLt": ("#27E05A", .3, 0),
-    "bulb": ("#FFE9A8", .3, 0), "btn": ("#33C04A", .35, 0), "fir1": ("#3E9E48", .45, 0), "fir2": ("#256F34", .45, 0),
-    "palm": ("#A0703F", .5, 0), "crate": ("#D39A5E", .5, 0), "crateDk": ("#8E5A2E", .55, 0), "screen": ("#1E4E94", .4, 0),
-    "ink": ("#1B2430", .4, 0),
+    "bulb": ("#FFE9A8", .3, 0), "btn": ("#2BD94F", .35, 0), "fir1": ("#3E9E48", .45, 0), "fir2": ("#256F34", .45, 0),
+    "palm": ("#A0703F", .5, 0), "crate": ("#D39A5E", .5, 0), "crateDk": ("#8E5A2E", .55, 0), "screen": ("#2F7FE0", .4, 0),
+    "ink": ("#1B2430", .4, 0), "steel": ("#DCE1E6", .62, 0),
 }
 CELL = {k: i for i, k in enumerate(COLOURS)}
 GRID, ROWS, SIZE = 16, 8, 1024
