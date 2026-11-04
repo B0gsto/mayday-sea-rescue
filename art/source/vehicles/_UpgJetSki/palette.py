@@ -10,7 +10,7 @@ RGH_ABS = 0.3
 
 # name: (hex, roughness, metal)
 COLOURS = {
-    "FinGrey": ("7E93A8", RGH_ABS, 0), "ToothWhite": ("FBF9F2", RGH_ABS, 0), "HullCharcoal": ("26282C", 0.36, 0),
+    "SharkTeal": ("00A9C7", RGH_ABS, 0), "ToothWhite": ("FBF9F2", RGH_ABS, 0), "HullCharcoal": ("26282C", 0.36, 0),
     "BrickOrange": ("DD6B2C", RGH_ABS, 0), "BrickWhite": ("F1F0EA", RGH_ABS, 0), "BrickNavy": ("25395C", RGH_ABS, 0),
     "BrickDark": ("4A5158", RGH_ABS, 0), "Chrome": ("E8ECEF", 0.08, 1), "FlameRed": ("E2261A", 0.16, 0),
     "FlameOrange": ("FF7A12", 0.16, 0), "FlameYellow": ("FFD21E", 0.16, 0), "BananaYellow": ("F7CC2E", RGH_ABS, 0),
@@ -64,7 +64,7 @@ def _face():
     from PIL import Image, ImageDraw
     k = 4
     W, H = 512 * k, 256 * k
-    im = Image.new("RGB", (W, H), _rgb(COLOURS["FinGrey"][0]))    # grey to the edge: the mesh is cut to the outline, no alpha
+    im = Image.new("RGB", (W, H), _rgb(COLOURS["SharkTeal"][0]))    # grey to the edge: the mesh is cut to the outline, no alpha
     d = ImageDraw.Draw(im)
     P = lambda u, v: (u * W, (1 - v) * H)
     d.polygon([P(*p) for p in _quad((.02, .38), (.4, 0), (.98, .12)) + [(.98, .03), (.25, .03)]], fill=_rgb("E9ECEC"))
@@ -93,7 +93,7 @@ def write_maps(out_dir, name="UpgJetSki", set_name="Brick"):
     from PIL import Image
     os.makedirs(out_dir, exist_ok=True)
     cell = SIZE // GRID
-    alb = Image.new("RGB", (SIZE, SIZE), _rgb(COLOURS["FinGrey"][0]))
+    alb = Image.new("RGB", (SIZE, SIZE), _rgb(COLOURS["SharkTeal"][0]))
     rgh = Image.new("RGB", (SIZE, SIZE), (int(RGH_ABS * 255),) * 3)
     met = Image.new("RGB", (SIZE, SIZE), (0, 0, 0))
     for nm, (hx, r, m) in COLOURS.items():

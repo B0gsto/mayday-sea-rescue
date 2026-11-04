@@ -2,73 +2,73 @@
  "SharkFin": {
   "level": 2,
   "tris_authored": [
-   1182,
-   630,
-   184
+   1254,
+   614,
+   152
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   2.892,
-   -6.336
+   2.906,
+   -2.569
   ],
   "size_roblox": [
    2.869,
-   3.481,
-   2.082
+   3.508,
+   9.615
   ]
  },
  "RescueSled": {
   "level": 3,
   "tris_authored": [
-   1016,
-   504,
+   1112,
+   536,
    184
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   1.582,
-   3.784
+   1.517,
+   3.969
   ],
   "size_roblox": [
    3.56,
-   1.205,
-   2.91
+   1.335,
+   3.28
   ]
  },
  "TwinEngines": {
   "level": 4,
   "tris_authored": [
-   1216,
-   848,
-   144
+   1464,
+   696,
+   24
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   1.826,
-   6.404
+   2.35,
+   4.029
   ],
   "size_roblox": [
-   4.4,
-   4.428,
-   2.75
+   3.44,
+   1.64,
+   2.5
   ]
  },
  "FlamePipes": {
   "level": 5,
   "tris_authored": [
-   1368,
-   736,
-   268
+   1184,
+   576,
+   192
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   3.097,
-   7.849
+   2.299,
+   6.42
   ],
   "size_roblox": [
-   3.67,
-   1.172,
-   1.896
+   3.7,
+   1.692,
+   2.502
   ]
  },
  "BananaBoat": {
@@ -81,84 +81,84 @@
   "meshpart_centre_roblox": [
    -0.0,
    1.085,
-   8.668
+   7.264
   ],
   "size_roblox": [
    1.326,
    1.89,
-   3.851
+   4.27
   ]
  },
  "HugeSpoiler": {
   "level": 7,
   "tris_authored": [
-   1032,
-   520,
-   72
+   1184,
+   512,
+   48
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   3.664,
-   3.399
+   2.85,
+   4.122
   ],
   "size_roblox": [
-   9.4,
-   3.368,
-   3.168
+   13.6,
+   2.59,
+   3.138
   ]
  },
  "BullNose": {
   "level": 8,
   "tris_authored": [
-   1516,
-   712,
-   156
+   2712,
+   1320,
+   264
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   2.821,
-   -8.401
+   3.214,
+   -8.751
   ],
   "size_roblox": [
-   6.918,
-   3.801,
-   2.56
+   8.516,
+   4.808,
+   2.46
   ]
  },
  "HornStack": {
   "level": 9,
   "tris_authored": [
-   1268,
-   500,
-   140
+   1128,
+   424,
+   128
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   4.49,
-   -8.617
+   2.621,
+   -8.44
   ],
   "size_roblox": [
-   3.867,
-   2.179,
-   3.091
+   7.332,
+   2.343,
+   1.837
   ]
  },
  "TurboCrown": {
   "level": 10,
   "tris_authored": [
-   2124,
-   1018,
-   416
+   2068,
+   946,
+   396
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   5.915,
-   -4.556
+   4.7,
+   -6.176
   ],
   "size_roblox": [
-   4.472,
-   6.43,
-   4.37
+   5.299,
+   4.4,
+   5.19
   ]
  }
 }
