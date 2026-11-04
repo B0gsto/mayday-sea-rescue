@@ -175,6 +175,11 @@ AssetLoader.SHARED_SETS = {
 	M_Hbr_LifebuoyStation = "M_Hbr_PropAtlas",
 	M_Upg_JetSki_ = "_UpgJetSki",
 	M_Upg_Lifeboat_ = "_UpgLifeboat",
+	M_Upg_RIB_ = "_UpgRIB",
+	M_Upg_Hydrofoil_ = "_UpgHydrofoil",
+	M_Veh_Hydrofoil = "_UpgHydrofoil",
+	M_Upg_Rocket_ = "_UpgRocket",
+	M_Veh_RocketCutter = "_UpgRocket",
 	M_Chr_Pirate = "M_Veh_PirateBoat",
 } :: { [string]: string }
 

@@ -1,0 +1,36 @@
+{
+ "asset": "M_Upg_Hydrofoil_RadarDish",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Spin",
+   "parent": null,
+   "blender": [
+    3.5,
+    1.6,
+    15.25
+   ],
+   "roblox_from_origin": [
+    -3.5,
+    15.25,
+    1.6
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.6717,
+    0.2581
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

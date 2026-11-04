@@ -1,0 +1,36 @@
+{
+ "asset": "M_Upg_Hydrofoil_NeedleNose",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Nose",
+   "parent": null,
+   "blender": [
+    -0.0,
+    -25.9,
+    8.85
+   ],
+   "roblox_from_origin": [
+    0.0,
+    8.85,
+    -25.9
+   ],
+   "roblox_from_bbox_centre": [
+    0.0,
+    -0.02,
+    -8.65
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

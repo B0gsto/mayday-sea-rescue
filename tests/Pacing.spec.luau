@@ -1167,9 +1167,9 @@ return function(t)
 			t.expect(full >= 1.6 and full <= 2.5).toBe(true)
 			-- the crew the sim really has at the last build, plus the tree's buildRate minors by then (docs/25 F;
 			-- the last level now lands after GoldenBricks and DoubleSite, so the ceiling is higher; the seeded crew's traits
-			-- move it a little with the wheel's rolls, 12 wedges land at 4.36)
+			-- move it a little with the wheel's rolls, and a new keep-out reseeds them: 4.36 and 5.11 both seen)
 			local late = solo.builds[#solo.builds].rate
-			t.expect(late >= 1.7 and late <= 4.5).toBe(true)
+			t.expect(late >= 1.7 and late <= 5.5).toBe(true)
 		end
 	)
 

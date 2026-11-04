@@ -407,58 +407,73 @@ return function(t)
 		end
 	end)
 
-	t.test("the biggest boat fits the bay, and the station stands clear on all six islands", function()
-		local Station = t.load("src/shared/UpgradeStation.luau")
-		local Ring = t.load("src/shared/Config/RingLayout.luau")
-		local biggestX, biggestZ = 0, 0
-		for _, id in VehicleConfig.Order do
-			local spec = VehicleConfig.get(id)
-			if spec and not spec.craft then
-				local size = L.apply(spec, L.MAX).hullSize
-				biggestX, biggestZ = math.max(biggestX, size.X), math.max(biggestZ, size.Z)
+	t.test(
+		"the biggest boat fits the bay, and the station stands clear on all six islands",
+		function()
+			local Station = t.load("src/shared/UpgradeStation.luau")
+			local Ring = t.load("src/shared/Config/RingLayout.luau")
+			local biggestX, biggestZ = 0, 0
+			for _, id in VehicleConfig.Order do
+				local spec = VehicleConfig.get(id)
+				if spec and not spec.craft then
+					local size = L.apply(spec, L.MAX).hullSize
+					biggestX, biggestZ = math.max(biggestX, size.X), math.max(biggestZ, size.Z)
+				end
 			end
-		end
-		print(`\nStation: biggest hull {biggestX} x {biggestZ}, bay {Station.BAY_WIDTH} x {Station.BAY_LENGTH}, x{Station.SCALE}`)
-		t.expect(biggestX + 2 <= Station.BAY_WIDTH).toBe(true)
-		t.expect(biggestZ + 2 <= Station.BAY_LENGTH).toBe(true)
-		-- under the gate the bare mast of a long hull fits too; behind it nothing is overhead
-		t.expect(Station.GATE_BACK_Z < Station.BAY_MIDDLE_Z).toBe(true)
-		local function clear(a: { number }, b: { number }): boolean
-			return a[2] <= b[1] or a[1] >= b[2] or a[4] <= b[3] or a[3] >= b[4]
-		end
-		local rect = Ring.STATION_RECT
-		for _, lane in Ring.EXIT_LANE do
-			t.expect(clear(rect, lane)).toBe(true)
-		end
-		for _, plate in Ring.IslandPlate.rects do
-			t.expect(clear(rect, plate)).toBe(true)
-		end
-		for _, keep in Ring.SEA_KEEP_OUT do
-			t.expect(keep == rect or clear(rect, keep)).toBe(true)
-		end
-		-- the deck holds the bay, whichever way out it leaves, and no other island's deck or plate touches it
-		for index, island in Ring.Islands do
-			local inFrame = island.frame:PointToObjectSpace(Station.landing(index).Position)
-			t.expect(inFrame.X - Station.BAY_WIDTH / 2 >= rect[1]).toBe(true)
-			t.expect(inFrame.X + Station.BAY_WIDTH / 2 <= rect[2]).toBe(true)
-			t.expect(-inFrame.Z + Station.BAY_LENGTH / 2 <= rect[4]).toBe(true)
-			for other, neighbour in Ring.Islands do
-				if other ~= index then
-					for _, r in { rect[1], rect[2] } do
-						for _, f in { rect[3], rect[4] } do
-							local w = island.frame * Vector3.new(r, 0, -f)
-							local l = neighbour.frame:PointToObjectSpace(w)
-							local there = { l.X, l.X, -l.Z, -l.Z }
-							t.expect(clear(there, rect)).toBe(true)
-							for _, plate in Ring.IslandPlate.rects do
-								t.expect(clear(there, plate)).toBe(true)
+			print(
+				`\nStation: biggest hull {biggestX} x {biggestZ}, bay {Station.BAY_WIDTH} x {Station.BAY_LENGTH}, x{Station.SCALE}`
+			)
+			t.expect(biggestX + 2 <= Station.BAY_WIDTH).toBe(true)
+			t.expect(biggestZ + 2 <= Station.BAY_LENGTH).toBe(true)
+			-- the widest mesh too, at the last level of its hull's stage: wings stay inside the bay
+			for _, stage in L.Stages do
+				local art = L.HullArt[stage.hull]
+				local spec = VehicleConfig.get(stage.hull)
+				if art and spec then
+					local wide = art.width * L.scaleFor(spec, stage.last)
+					print(`{stage.hull}: {wide} wide at L{stage.last}`)
+					t.expect(wide + 2 <= Station.BAY_WIDTH).toBe(true)
+				end
+			end
+			-- under the gate the bare mast of a long hull fits too; behind it nothing is overhead
+			t.expect(Station.GATE_BACK_Z < Station.BAY_MIDDLE_Z).toBe(true)
+			local function clear(a: { number }, b: { number }): boolean
+				return a[2] <= b[1] or a[1] >= b[2] or a[4] <= b[3] or a[3] >= b[4]
+			end
+			local rect = Ring.STATION_RECT
+			for _, lane in Ring.EXIT_LANE do
+				t.expect(clear(rect, lane)).toBe(true)
+			end
+			for _, plate in Ring.IslandPlate.rects do
+				t.expect(clear(rect, plate)).toBe(true)
+			end
+			for _, keep in Ring.SEA_KEEP_OUT do
+				t.expect(keep == rect or clear(rect, keep)).toBe(true)
+			end
+			-- the deck holds the bay, whichever way out it leaves, and no other island's deck or plate touches it
+			for index, island in Ring.Islands do
+				local inFrame = island.frame:PointToObjectSpace(Station.landing(index).Position)
+				t.expect(inFrame.X - Station.BAY_WIDTH / 2 >= rect[1]).toBe(true)
+				t.expect(inFrame.X + Station.BAY_WIDTH / 2 <= rect[2]).toBe(true)
+				t.expect(-inFrame.Z + Station.BAY_LENGTH / 2 <= rect[4]).toBe(true)
+				for other, neighbour in Ring.Islands do
+					if other ~= index then
+						for _, r in { rect[1], rect[2] } do
+							for _, f in { rect[3], rect[4] } do
+								local w = island.frame * Vector3.new(r, 0, -f)
+								local l = neighbour.frame:PointToObjectSpace(w)
+								local there = { l.X, l.X, -l.Z, -l.Z }
+								t.expect(clear(there, rect)).toBe(true)
+								for _, plate in Ring.IslandPlate.rects do
+									t.expect(clear(there, plate)).toBe(true)
+								end
 							end
 						end
 					end
 				end
 			end
 		end
-	end)
+	)
 
 	t.test("the landing shot frames the boat and the board, under the gate", function()
 		local Station = t.load("src/shared/UpgradeStation.luau")
@@ -480,20 +495,27 @@ return function(t)
 			t.expect(inFrame((landing * CFrame.new(0, 3, -length / 2)).Position)).toBe(true)
 			t.expect(inFrame((landing * CFrame.new(0, 3, length / 2)).Position)).toBe(true)
 			local screen = att.ATT_BoardScreen * Station.SCALE
-			for _, c in {
-				Vector2.new(-1, -1),
-				Vector2.new(1, -1),
-				Vector2.new(-1, 1),
-				Vector2.new(1, 1),
-			} do
+			for _, c in
+				{
+					Vector2.new(-1, -1),
+					Vector2.new(1, -1),
+					Vector2.new(-1, 1),
+					Vector2.new(1, 1),
+				}
+			do
 				local corner = screen
-					+ Vector3.new(c.X * Station.SCREEN_SIZE.X / 2, c.Y * Station.SCREEN_SIZE.Y / 2, 0)
+					+ Vector3.new(
+						c.X * Station.SCREEN_SIZE.X / 2,
+						c.Y * Station.SCREEN_SIZE.Y / 2,
+						0
+					)
 				local world = (frame * CFrame.new(corner)).Position
 				t.expect(inFrame(world)).toBe(true)
 				-- the ray to it clears the gate's beam on its way in (the art's warning: a high far camera loses the top)
 				local z0 = frame:PointToObjectSpace(at).Z
 				local u = (Station.GATE_BACK_Z - z0) / (frame:PointToObjectSpace(world).Z - z0)
-				t.expect(at.Y + (world.Y - at.Y) * u < landing.Position.Y + Station.CLEAR_HEIGHT).toBe(true)
+				t.expect(at.Y + (world.Y - at.Y) * u < landing.Position.Y + Station.CLEAR_HEIGHT)
+					.toBe(true)
 			end
 			t.expect(inFrame(Station.buttonAt(1))).toBe(true)
 			t.expect(at.Y > landing.Position.Y + 2).toBe(true)
@@ -503,21 +525,29 @@ return function(t)
 		t.expect(Station.nearest(Station.landing(4).Position)).toBe(4)
 	end)
 
-	t.test("hull art: every mesh is a real asset on its own stage, and the data is honoured", function()
-		local Ids = t.load("src/shared/Config/AssetIds.luau")
-		for hull, art in L.HullArt do
-			for level, asset in art.pieces do
-				t.expect(Ids.Models[asset] ~= nil).toBe(true)
-				t.expect(L.row(level).hull).toBe(hull)
+	t.test(
+		"hull art: every mesh is a real asset on its own stage, and the data is honoured",
+		function()
+			local Ids = t.load("src/shared/Config/AssetIds.luau")
+			for hull, art in L.HullArt do
+				for level, asset in art.pieces do
+					t.expect(Ids.Models[asset] ~= nil).toBe(true)
+					t.expect(L.row(level).hull).toBe(hull)
+				end
 			end
+			local Lifeboat = VehicleConfig.get("Lifeboat")
+			local before = L.apply(Lifeboat, 27).floatPoints[1]
+			local after = L.apply(Lifeboat, 28).floatPoints[1]
+			-- the foil lift rides higher: its float points sit lower under the same root
+			t.expect(math.abs((before.Y - after.Y) - 8.1 * L.scaleFor(Lifeboat, 28)) < 0.01)
+				.toBe(true)
+			t.expect(L.rise("RIB", 28)).toBe(0)
+			local Builder = t.load("src/shared/Boat/Builder.luau")
+			t.expect(L.HullArt.JetSki.origin).toBe(Builder.JETSKI_ORIGIN)
+			t.expect(L.HullArt.RIB.origin).toBe(Builder.RIB_ORIGIN)
+			t.expect(Ids.Models[L.HullArt.RocketCutter.pilot] ~= nil).toBe(true)
 		end
-		local Lifeboat = VehicleConfig.get("Lifeboat")
-		local before = L.apply(Lifeboat, 27).floatPoints[1]
-		local after = L.apply(Lifeboat, 28).floatPoints[1]
-		-- the foil lift rides higher: its float points sit lower under the same root
-		t.expect(math.abs((before.Y - after.Y) - 8.1 * L.scaleFor(Lifeboat, 28)) < 0.01).toBe(true)
-		t.expect(L.rise("RIB", 28)).toBe(0)
-	end)
+	)
 
 	t.test("the pirate mesh reads as a threat, and a ram lands on what is visible", function()
 		local PirateBoat = t.load("src/shared/PirateBoat.luau")

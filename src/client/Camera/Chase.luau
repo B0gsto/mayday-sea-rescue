@@ -274,7 +274,9 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	end
 	local reduced = Comfort.reducedMotion()
 	local wanted = if state.frameIsland then 1 else 0
-	state.frameWeight = if reduced then wanted else CameraMath.damp(state.frameWeight, wanted, FRAME_EASE, dt)
+	state.frameWeight = if reduced
+		then wanted
+		else CameraMath.damp(state.frameWeight, wanted, FRAME_EASE, dt)
 	if state.frameWeight > 0.002 then
 		local _, size = ctx.model:GetBoundingBox()
 		local shotAt, shotFocus = UpgradeStation.shot(state.frameShown, math.max(size.X, size.Z))

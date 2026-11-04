@@ -98,7 +98,12 @@ function UpgradeStation.parts(index: number): { StationPart }
 	add("ArmStarboard", Vector3.new(6, 3, 129), at(56, 384.5, Y - 1.55), WOOD)
 	for i = 0, 4 do
 		local h = Y + 3
-		add(`PileStarboard{i}`, Vector3.new(3.4, h, 3.4), at(56, 340 + i * 25, Y - 3 - h / 2 + 0.2), PILE)
+		add(
+			`PileStarboard{i}`,
+			Vector3.new(3.4, h, 3.4),
+			at(56, 340 + i * 25, Y - 3 - h / 2 + 0.2),
+			PILE
+		)
 	end
 	-- 0.06 off the mesh's blank screen; the Button box wraps the mesh's button, so its colour shows who can pay
 	local BOARD_DEPTH = 0.2
@@ -120,7 +125,16 @@ end
 function UpgradeStation.fallback(index: number): { StationPart }
 	local frame = UpgradeStation.frame(index)
 	local s = ORIGIN.scale
-	local function box(name: string, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, color: Color3): StationPart
+	local function box(
+		name: string,
+		x0: number,
+		x1: number,
+		y0: number,
+		y1: number,
+		z0: number,
+		z1: number,
+		color: Color3
+	): StationPart
 		return {
 			name = name,
 			size = Vector3.new(x1 - x0, y1 - y0, z1 - z0) * s,

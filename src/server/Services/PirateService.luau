@@ -303,7 +303,12 @@ function PirateService.Init()
 end
 
 function PirateService.Start()
-	AssetLoader.preload({ PirateBoat.ASSET, "M_Chr_PirateCaptain", "M_Chr_PirateDeckhand", "M_Chr_PirateLookout" })
+	AssetLoader.preload({
+		PirateBoat.ASSET,
+		"M_Chr_PirateCaptain",
+		"M_Chr_PirateDeckhand",
+		"M_Chr_PirateLookout",
+	})
 	local stepped, published, rolled = 0, 0, 0
 	RunService.Heartbeat:Connect(function(dt: number)
 		stepped += dt

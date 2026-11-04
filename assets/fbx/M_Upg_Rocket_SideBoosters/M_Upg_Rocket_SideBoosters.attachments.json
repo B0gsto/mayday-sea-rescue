@@ -7,19 +7,19 @@
    "name": "ATT_Flame_S",
    "parent": null,
    "blender": [
-    -6.2,
+    -7.8,
     25.6,
-    9.1
+    9.8
    ],
    "roblox_from_origin": [
-    6.2,
-    9.1,
+    7.8,
+    9.8,
     25.6
    ],
    "roblox_from_bbox_centre": [
-    6.2,
-    0.57,
-    8.05
+    7.8,
+    0.815,
+    7.1
    ],
    "look": [
     0.0,
@@ -36,19 +36,19 @@
    "name": "ATT_Flame_P",
    "parent": null,
    "blender": [
-    6.2,
+    7.8,
     25.6,
-    9.1
+    9.8
    ],
    "roblox_from_origin": [
-    -6.2,
-    9.1,
+    -7.8,
+    9.8,
     25.6
    ],
    "roblox_from_bbox_centre": [
-    -6.2,
-    0.57,
-    8.05
+    -7.8,
+    0.815,
+    7.1
    ],
    "look": [
     0.0,

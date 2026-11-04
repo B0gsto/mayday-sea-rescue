@@ -74,14 +74,14 @@ local PRICE = {
 local PIECES = {
 	{ "Bare jet ski", "none" }, { "Shark fin", "fin" }, { "Rescue sled", "sled" }, { "Twin engines", "engine" }, { "Flame pipes", "flame" },
 	{ "Banana boat", "tube" }, { "Huge spoiler", "spoiler" }, { "Bull nose", "nose" }, { "Horn stack", "stack" }, { "Turbo crown", "rocket" },
-	{ "Fat tubes", "tube" }, { "Big outboards", "engine" }, { "Race spoiler", "spoiler" }, { "Twin fins", "fin" }, { "Roll bar", "arch" },
-	{ "Neon strips", "neon" }, { "Turbo stack", "stack" }, { "Nose ram", "nose" }, { "Side rockets", "rocket" }, { "Monster engines", "wall" },
+	{ "Big RIB", "none" }, { "Mega outboard", "engine" }, { "Arch spoiler", "spoiler" }, { "Neon fins", "fin" }, { "Fat tubes", "tube" },
+	{ "Grandstand", "arch" }, { "Paddle wheel", "rocket" }, { "Shark jaws", "nose" }, { "Exhaust organ", "stack" }, { "Thunder wing", "wall" },
 	{ "Big lifeboat", "none" }, { "Armour spikes", "plate" }, { "Huge lamps", "lamp" }, { "Ice plough", "nose" }, { "Roof rockets", "rocket" },
 	{ "Crew deck", "arch" }, { "Lamp tower", "stack" }, { "Foil lift", "wing" }, { "Rear rockets", "wall" }, { "Battle bridge", "arch" },
-	{ "Main foils", "wing" }, { "Giant jets", "rocket" }, { "Tall fin", "fin" }, { "Foil struts", "strut" }, { "Neon wings", "neon" },
-	{ "Air scoops", "stack" }, { "Delta spoiler", "spoiler" }, { "Sharp nose", "nose" }, { "Thrust ring", "arch" }, { "Jet wall", "wall" },
-	{ "Boosters", "rocket" }, { "Gold plate", "gold" }, { "Solar sails", "wing" }, { "Twin boosters", "stack" }, { "Gold spoiler", "spoiler" },
-	{ "Gold nose", "nose" }, { "Neon ring", "arch" }, { "Giant fins", "fin" }, { "Gold armour", "plate" }, { "The Wall", "wall" },
+	{ "Hydrofoil", "none" }, { "Giant jets", "rocket" }, { "T-tail", "fin" }, { "Sky stilts", "strut" }, { "Needle nose", "nose" },
+	{ "Sky wings", "wing" }, { "Afterburners", "wall" }, { "Radar dish", "stack" }, { "Top jet", "spoiler" }, { "Turbo halo", "arch" },
+	{ "Rocket Cutter", "none" }, { "Side boosters", "rocket" }, { "Gold plating", "gold" }, { "Wave wall", "wing" }, { "Gold eagle", "nose" },
+	{ "Rocket fins", "fin" }, { "Gold throne", "arch" }, { "Party cannons", "stack" }, { "Mega trophy", "spoiler" }, { "Sun booster", "wall" },
 }
 
 local ROWS: { Row } = {}
@@ -181,16 +181,19 @@ end
 -- The approved meshes, per hull id (art/source/*/_Upg*/RESULT.md). A later hull or piece is one more entry here (and
 -- its ids from tools/gen_asset_ids.py); a level with no mesh keeps its placeholder Parts, and any other hull a look
 -- wears keeps them all, since a mesh only fits the hull it was authored on.
---   origin     where the meshes' pivot sits in the hull's root frame, at x1 (Builder.JETSKI_ORIGIN)
+--   origin     where the meshes' pivot sits in the hull's root frame, at x1 (Builder.*_ORIGIN)
+--   width      the widest mesh, at x1: the bay's fit (tests/BoatLevels.spec)
 --   pieces     level -> asset, cumulative through the stage
 --   hide       the hull's own parts (by name prefix) from a level on
---   raise      the hull's own parts moved up (hull studs at x1) from a level on
+--   move       the hull's own parts moved (hull studs at x1) from a level on
 --   rise       the hull floats this much higher (hull studs at x1) from a level on
---   chasePull  x the chase camera's arm from a level on
+--   chase      { from, x } the chase camera's arm, the last that applies
 --   glow       ATT_* marker prefix -> a steady PointLight's colour
+--   pilot      a mesh shown only while nobody drives: the driver sits where it rides
 BoatLevels.HullArt = {
 	JetSki = {
 		origin = Vector3.new(0, -1.1, 2.3213),
+		width = 13.6,
 		pieces = {
 			[2] = "M_Upg_JetSki_SharkFin",
 			[3] = "M_Upg_JetSki_RescueSled",
@@ -204,8 +207,25 @@ BoatLevels.HullArt = {
 		},
 		hide = { { from = 3, prefixes = { "M_Veh_JetSki_Sled" } } },
 	},
+	RIB = {
+		origin = Vector3.new(0, -2.1, -0.0761),
+		width = 28.45,
+		pieces = {
+			[12] = "M_Upg_RIB_MegaOutboard",
+			[13] = "M_Upg_RIB_ArchSpoiler",
+			[14] = "M_Upg_RIB_NeonFins",
+			[15] = "M_Upg_RIB_FatTubes",
+			[16] = "M_Upg_RIB_Grandstand",
+			[17] = "M_Upg_RIB_PaddleWheel",
+			[18] = "M_Upg_RIB_SharkJaws",
+			[19] = "M_Upg_RIB_ExhaustOrgan",
+			[20] = "M_Upg_RIB_ThunderWing",
+		},
+		hide = { { from = 12, prefixes = { "M_Veh_RIB_Engines" } } },
+	},
 	Lifeboat = {
 		origin = Vector3.zero,
+		width = 26.1,
 		pieces = {
 			[22] = "M_Upg_Lifeboat_ArmourSpikes",
 			[23] = "M_Upg_Lifeboat_HugeLamps",
@@ -218,18 +238,73 @@ BoatLevels.HullArt = {
 			[30] = "M_Upg_Lifeboat_BattleBridge",
 		},
 		hide = { { from = 23, prefixes = { "Stay" } } },
-		raise = {
-			from = 30,
-			y = 7.2,
-			prefixes = { "MastBase", "Mast", "Yard", "RadarPedestal", "Radar", "NavMasthead", "Antenna", "BeaconBase", "Beacon" },
+		move = {
+			{
+				from = 30,
+				by = Vector3.new(0, 7.2, 0),
+				prefixes = {
+					"MastBase",
+					"Mast",
+					"Yard",
+					"RadarPedestal",
+					"Radar",
+					"NavMasthead",
+					"Antenna",
+					"BeaconBase",
+					"Beacon",
+				},
+			},
 		},
 		rise = { from = 28, y = 8.1 },
-		chasePull = { from = 27, x = 1.45 },
+		chase = { { from = 27, x = 1.45 } },
 		glow = {
 			ATT_Lens = Color3.fromRGB(255, 244, 214),
 			ATT_Beacon = Color3.fromRGB(255, 244, 214),
 			ATT_Flame = Color3.fromRGB(255, 170, 90),
 		},
+	},
+	Hydrofoil = {
+		origin = Vector3.new(0, -2.1, -0.0761),
+		width = 25.4,
+		pieces = {
+			[32] = "M_Upg_Hydrofoil_GiantJets",
+			[33] = "M_Upg_Hydrofoil_TTail",
+			[34] = "M_Upg_Hydrofoil_SkyStilts",
+			[35] = "M_Upg_Hydrofoil_NeedleNose",
+			[36] = "M_Upg_Hydrofoil_SkyWings",
+			[37] = "M_Upg_Hydrofoil_Afterburners",
+			[38] = "M_Upg_Hydrofoil_RadarDish",
+			[39] = "M_Upg_Hydrofoil_TopJet",
+			[40] = "M_Upg_Hydrofoil_TurboHalo",
+		},
+		-- the foils land on the stilts
+		move = {
+			{ from = 34, by = Vector3.new(0, -2.5, 1.329), prefixes = { "M_Veh_Hydrofoil_Foils" } },
+		},
+		rise = { from = 34, y = 2.5 },
+		chase = { { from = 34, x = 1.15 }, { from = 39, x = 1.3 } },
+		glow = {
+			ATT_Glow = Color3.fromRGB(150, 220, 255),
+			ATT_Flame = Color3.fromRGB(255, 170, 90),
+		},
+	},
+	RocketCutter = {
+		origin = Vector3.zero,
+		width = 43.8,
+		pieces = {
+			[42] = "M_Upg_Rocket_SideBoosters",
+			[43] = "M_Upg_Rocket_GoldPlating",
+			[44] = "M_Upg_Rocket_WaveWall",
+			[45] = "M_Upg_Rocket_GoldEagle",
+			[46] = "M_Upg_Rocket_RocketFins",
+			[47] = "M_Upg_Rocket_GoldThrone",
+			[48] = "M_Upg_Rocket_PartyCannons",
+			[49] = "M_Upg_Rocket_MegaTrophy",
+			[50] = "M_Upg_Rocket_SunBooster",
+		},
+		chase = { { from = 44, x = 1.25 } },
+		glow = { ATT_Flame = Color3.fromRGB(255, 170, 90) },
+		pilot = "M_Upg_Rocket_Pilot",
 	},
 } :: { [string]: any }
 
@@ -246,6 +321,9 @@ function BoatLevels.meshAssets(): { string }
 	for _, art in BoatLevels.HullArt do
 		for _, asset in art.pieces do
 			table.insert(out, asset)
+		end
+		if art.pilot then
+			table.insert(out, art.pilot)
 		end
 	end
 	return out

@@ -1,0 +1,65 @@
+{
+ "asset": "M_Upg_Hydrofoil_TopJet",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Flame_Top",
+   "parent": null,
+   "blender": [
+    0.0,
+    10.035,
+    18.85
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    18.85,
+    10.035
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.0,
+    0.9763
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Glow_Top",
+   "parent": null,
+   "blender": [
+    0.0,
+    10.035,
+    18.85
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    18.85,
+    10.035
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.0,
+    0.9763
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

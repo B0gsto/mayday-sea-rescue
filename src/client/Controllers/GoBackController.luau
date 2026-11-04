@@ -13,11 +13,11 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
-local UpgradeStation = require(Shared:WaitForChild("UpgradeStation"))
 local GoBack = require(Shared:WaitForChild("Boat"):WaitForChild("GoBack"))
 local Net = require(Shared:WaitForChild("Net"))
 local SubRig = require(Shared:WaitForChild("Sub"):WaitForChild("Rig"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
+local UpgradeStation = require(Shared:WaitForChild("UpgradeStation"))
 
 local AudioController = require(script.Parent.AudioController)
 local CameraController = require(script.Parent.CameraController)

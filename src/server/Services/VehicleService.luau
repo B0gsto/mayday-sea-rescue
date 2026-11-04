@@ -297,9 +297,12 @@ local function fitHull(model: Model, root: BasePart, art: any, level: number, sc
 					d.Transparency = 1
 				end
 			end
-			local raise = art.raise
-			if raise and level >= raise.from and hasPrefix(d.Name, raise.prefixes) then
-				d.CFrame += Vector3.new(0, raise.y * scale, 0)
+			for _, move in art.move or {} do
+				if level >= move.from and hasPrefix(d.Name, move.prefixes) then
+					d.CFrame = root.CFrame
+						* CFrame.new(move.by * scale)
+						* root.CFrame:ToObjectSpace(d.CFrame)
+				end
 			end
 		end
 	end
@@ -311,10 +314,31 @@ local function fitHull(model: Model, root: BasePart, art: any, level: number, sc
 			end
 		end
 	end
-	local pull = art.chasePull
-	if pull and level >= pull.from then
-		model:SetAttribute("ChasePull", pull.x)
+	for _, pull in art.chase or {} do
+		if level >= pull.from then
+			model:SetAttribute("ChasePull", pull.x)
+		end
 	end
+end
+
+-- A mesh that rides at the helm while nobody drives: the driver sits exactly there.
+local function addPilot(model: Model, root: BasePart, art: any, scale: number)
+	local seat = model:FindFirstChild("DriverSeat")
+	if
+		not (seat and seat:IsA("VehicleSeat") and meshPiece(model, root, art, art.pilot, 0, scale))
+	then
+		return
+	end
+	local pilot = model:FindFirstChild(`Lv0_{art.pilot}`) :: Instance
+	local function sync()
+		for _, d in pilot:GetDescendants() do
+			if d:IsA("BasePart") then
+				d.Transparency = if seat.Occupant then 1 else 0
+			end
+		end
+	end
+	seat:GetPropertyChangedSignal("Occupant"):Connect(sync)
+	sync()
 end
 
 local function dressLevel(model: Model, spec: VehicleSpec, level: number, scale: number)
@@ -325,6 +349,9 @@ local function dressLevel(model: Model, spec: VehicleSpec, level: number, scale:
 	local art = BoatLevels.HullArt[spec.id]
 	if art then
 		fitHull(model, root, art, level, scale)
+		if art.pilot then
+			addPilot(model, root, art, scale)
+		end
 	end
 	local row = BoatLevels.row(level)
 	for lv = BoatLevels.Stages[row.stage].first, row.level do

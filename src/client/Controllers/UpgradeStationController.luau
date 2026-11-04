@@ -334,8 +334,14 @@ local function finish(run: Moment)
 end
 
 local function start(model: Model?, level: number)
-	local run: Moment =
-		{ model = model, started = os.clock(), level = level, rest = {}, hidden = {}, popped = false }
+	local run: Moment = {
+		model = model,
+		started = os.clock(),
+		level = level,
+		rest = {},
+		hidden = {},
+		popped = false,
+	}
 	running = run
 	local blasted = false
 	local connection: RBXScriptConnection

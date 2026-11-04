@@ -439,7 +439,9 @@ Builder.RIB_ORIGIN = Vector3.new(0, -2.1, -0.0761)
 local function buildRIBAsset(spec: VehicleSpec, visuals: { Model }): Model
 	local ctx = newCtx(spec, Vector3.new(1, 1, 1), Vector3.zero, CHARCOAL)
 	local origin = Builder.RIB_ORIGIN
-	local atts = AssetIds.Attachments.M_Veh_RIB or {}
+	local atts = (spec.model and AssetIds.Attachments[spec.model])
+		or AssetIds.Attachments.M_Veh_RIB
+		or {}
 	local function at(name: string, fallback: Vector3): Vector3
 		local p = atts[name]
 		return if p then p + origin else fallback

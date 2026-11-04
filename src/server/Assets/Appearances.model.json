@@ -3350,6 +3350,27 @@
    ]
   },
   {
+   "Name": "_UpgHydrofoil",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Palette",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://119894043403469",
+        "RoughnessMap": "rbxassetid://117446448784696",
+        "MetalnessMap": "rbxassetid://74132887490056"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "_UpgJetSki",
    "ClassName": "Folder",
    "Children": [
@@ -3386,6 +3407,48 @@
         "NormalMap": "rbxassetid://94365844917813",
         "RoughnessMap": "rbxassetid://128252020870174",
         "MetalnessMap": "rbxassetid://134651320857380"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "_UpgRIB",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://82036918491208",
+        "RoughnessMap": "rbxassetid://138028895836822",
+        "MetalnessMap": "rbxassetid://77201546496505"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "_UpgRocket",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Palette",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://71059489637718",
+        "RoughnessMap": "rbxassetid://114523207797253",
+        "MetalnessMap": "rbxassetid://104820073034248"
        }
       }
      ]
