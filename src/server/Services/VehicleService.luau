@@ -76,6 +76,7 @@ type Record = {
 	driver: Player?,
 	lastGood: CFrame,
 	strikes: number,
+	goodAge: number, -- s since lastGood last moved (VehicleRecovery.moveCheck)
 	resetting: boolean,
 	wetUntil: number,
 	spawnedAt: number, -- os.clock()
@@ -105,16 +106,13 @@ local DRY_TIME = 20 -- tune
 -- Anti-teleport: the limit is speed-based, relative to the vehicle's own top speed (x gear bonus).
 -- A check fails when the hull's speed, or its distance from the last good spot divided by the time
 -- since, beats topSpeed * SPEED_TOLERANCE + SPEED_SLACK (surfing a wave face and wake pushes add
--- speed), plus TELEPORT_SLACK studs for a replication burst. STRIKES_TO_RESET failures in a row
--- reset the hull. At 0.5 s checks a jet ski may move about 63 studs per check, a RIB about 51.
+-- speed). VehicleRecovery.moveCheck holds the rule and its strikes.
 -- Studio only: attribute StudioBypassChecks = true on the vehicle model or on Workspace skips the
 -- check (test scripts that PivotTo a boat); ignored in live servers.
 local SPEED_TOLERANCE = 1.3 -- x top speed -- tune
 local SPEED_SLACK = 8 -- studs/s -- tune
-local TELEPORT_SLACK = 12 -- studs per check -- tune
 local BYPASS_ATTRIBUTE = "StudioBypassChecks"
 local IS_STUDIO = RunService:IsStudio()
-local STRIKES_TO_RESET = 2
 local SURVIVOR_WELD_DELAY = 0.2 -- s a boarded survivor rides anchored before its weld goes on
 local MAX_Y, MIN_Y = 40, -20
 local RESET_HOLD = 0.5 -- seconds the server keeps ownership after a reset
@@ -932,6 +930,7 @@ local function createVehicle(
 		driver = nil,
 		lastGood = root.CFrame,
 		strikes = 0,
+		goodAge = 0,
 		resetting = false,
 		wetUntil = 0,
 		spawnedAt = os.clock(),
@@ -1107,6 +1106,7 @@ local function resetVehicle(record: Record, reason: string, target: CFrame?)
 			if records[record.model] == record and record.driver then
 				setOwner(root, record.driver)
 				record.lastGood = root.CFrame
+				record.goodAge = 0
 			end
 		end)
 	end
@@ -1398,16 +1398,13 @@ local function checkVehicle(record: Record, dt: number)
 	local moved = flatDistance(pos, record.lastGood.Position)
 	if lost then
 		resetVehicle(record, "out of bounds")
-	elseif speed > limit or moved > limit * dt + TELEPORT_SLACK then
-		-- dt is the time since the last check, and lastGood was taken at that check
-		record.strikes += 1
-		if record.strikes >= STRIKES_TO_RESET then
-			resetVehicle(record, `speed {math.floor(speed)} moved {math.floor(moved)}`)
-		end
-	else
-		record.strikes = 0
-		if fine then
-			record.lastGood = root.CFrame -- the last spot upright and afloat: where recovery returns
+	elseif VehicleRecovery.moveCheck(record, dt, moved, speed, limit) then
+		local kind = if speed > limit then "overspeed" else "teleport"
+		resetVehicle(record, `{kind} speed {math.floor(speed)} moved {math.floor(moved)}`)
+	elseif record.strikes == 0 and fine then
+		record.lastGood = root.CFrame -- the last spot upright and afloat: where recovery returns
+		if moved > 0.01 then -- a stalled replica hasn't moved: the time it stalled still counts
+			record.goodAge = 0
 		end
 	end
 end

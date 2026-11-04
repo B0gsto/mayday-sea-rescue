@@ -47,6 +47,31 @@ function VehicleRecovery.lost(pos: Vector3, craft: boolean, mapRadius: number): 
 	return pos.Y > top or pos.Y < bottom or Vector2.new(pos.X, pos.Z).Magnitude > mapRadius
 end
 
+-- Anti-teleport, one check every dt s: true when the hull should be pulled back. The hull may be `limit` x the time
+-- since its last good spot away from it (m.goodAge, which the caller zeroes when it takes a new spot that moved). Live
+-- v37: this budget was one check's worth while the spot went stale on any strike or any not-fine sample, so one
+-- replication stall or one tipped sample at speed pulled a fair hull back. It scales with limit, so with any top speed.
+VehicleRecovery.STRIKES_TO_RESET = 2
+VehicleRecovery.TELEPORT_SLACK = 12 -- studs for a replication burst -- tune
+VehicleRecovery.MOVE_CREDIT = 3 -- s of budget at most: a parked hull can't bank a long jump -- tune
+function VehicleRecovery.moveCheck(
+	m: { strikes: number, goodAge: number },
+	dt: number,
+	moved: number,
+	speed: number,
+	limit: number
+): boolean
+	m.goodAge += dt
+	local budget = limit * math.min(m.goodAge, VehicleRecovery.MOVE_CREDIT)
+		+ VehicleRecovery.TELEPORT_SLACK
+	if speed > limit or moved > budget then
+		m.strikes += 1
+		return m.strikes >= VehicleRecovery.STRIKES_TO_RESET
+	end
+	m.strikes = 0
+	return false
+end
+
 -- Advances the misplaced timer by dt; true when the vehicle should go now.
 function VehicleRecovery.misplaced(
 	s: State,
