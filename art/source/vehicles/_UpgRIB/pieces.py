@@ -40,7 +40,7 @@ V = Vector
 EX, EY, EZ = V((1, 0, 0)), V((0, 1, 0)), V((0, 0, 1))
 SIDES = (1, -1)
 DECK = 2.1
-SPOILER_Y = 15.0    # high enough that the driver and the crowd read under it from the chase camera
+SPOILER_Y = 14.3    # high enough that the driver and the crowd read under it from the chase camera
 FAT = dict(x=5.0, y=4.0, r=2.0, z0=-6.0, z1=-13.0, rise=0.5, stern=11.3, k=2 / .825)
 BOLT = [(-.9, 1.6), (1.1, 1.6), (.1, .1), (1.2, .1), (-.9, -2.2), (-.2, -.45), (-1.2, -.45)]    # shape x, y
 
@@ -131,7 +131,7 @@ def mega_outboard(b):
     # one yellow bolt on the back: the only yellow on the engine
     b.extrude(BOLT, .25, .08, .08, "Yellow", T=face_z((0, 6.0, zc + 3.1)))
     for s in SIDES:
-        b.lathe(V((s * 1.5, 7.5, zc + 1.8)), V((s * .12, .78, .6)), [(0, 0), (.42, 0), (.42, 1.2), (.62, 1.6), (.62, 1.8), (.3, 1.8), (.3, 1.5), (0, 1.5)], "Chrome", n=12)
+        b.lathe(V((s * 1.5, 7.5, zc + 1.8)), V((s * .12, .78, .6)), [(0, 0), (.42, 0), (.42, 1.2), (.62, 1.6), (.62, 1.8), (.3, 1.8), (.3, 1.5), (0, 1.5)], "Dark", n=12)
 
 
 # ------------------------------------------------------------------ L13
@@ -139,29 +139,21 @@ def arch_spoiler(b):
     n = b.seg(14)
     rake = math.radians(12)
     chord, thick = V((0, math.sin(rake), math.cos(rake))), V((0, math.cos(rake), -math.sin(rake)))
-    arch = lambda x: SPOILER_Y - .85 * (x / 6.2) ** 2     # arched like the name: high in the middle, down to the endplates
+    arch = lambda x: SPOILER_Y - .7 * (x / 6.2) ** 2     # arched like the name: high in the middle, down to the endplates
     for s in SIDES:
-        # one fat raked wedge per side on a stepped plinth, clamped to the foil: bolted on, not stuck on
-        st = ((3.2, 11.0, 1.05, 1.5), (5.0, 11.2, .9, 1.25), (SPOILER_Y - .9, 12.1, .62, .85))
-        loft(b, [ring((s * 3.6, y, z), EX, EZ, hx, hz, 4, n) for y, z, hx, hz in st], "Dark")
-        b.rbox((s * 3.6, 3.2, 11.0), (3.0, .5, 3.8), "Tube", r=.16)
-        brick(b, (s * 3.6, 3.65, 11.0), (2.3, .5, 3.1), "Dark", r=.14, xs=[-.75, .75], mask=lambda lx, lz: abs(lz) > 1.0)
-        for y, z, hx, hz in ((7.0, 11.45, 1.0, 1.32), (SPOILER_Y - 2.1, 11.95, .92, 1.15)):
-            loft(b, [ring((s * 3.6, y + d, z), EX, EZ, hx - (.06 if abs(d) > .3 else 0), hz - (.06 if abs(d) > .3 else 0), 4, n) for d in (-.36, -.26, .26, .36)], "Tube")
-        b.rbox((s * 3.6, arch(3.6) - .62, 12.15), (2.0, .4, 2.9), "Tube", r=.14, T=None)
-        ep = [(-2.9, -1.7), (2.9, -1.2), (3.2, 1.3), (-2.4, 1.3)]
-        b.extrude(ep, .4, .14, .14, "Blue", T=Tr((s * 6.3, SPOILER_Y - .8, 12.4)))
-        bolt_heads(b, [(s * 6.74, SPOILER_Y - .8 + yy, 12.4 + zz) for yy in (-.5, .5) for zz in (-1.4, 1.4)], (s, 0, 0), "White")
+        # one post per side, flared out of the tube in hull orange so it grows from the boat, clamped to the foil
+        st = ((2.85, 11.0, 2.0, 2.7), (3.3, 11.0, 1.6, 2.2), (3.9, 11.05, 1.25, 1.7), (4.7, 11.15, 1.0, 1.35), (5.8, 11.3, .84, 1.12), (SPOILER_Y - .4, 12.1, .6, .82))
+        loft(b, [ring((s * 3.6, y, z), EX, EZ, hx, hz, 4, n) for y, z, hx, hz in st], lambda i, j: "Tube" if i < 3 else "Dark")
+        y = SPOILER_Y - 1.7
+        loft(b, [ring((s * 3.6, y + d, 11.97), EX, EZ, .84 - (.05 if abs(d) > .3 else 0), 1.08 - (.05 if abs(d) > .3 else 0), 4, n) for d in (-.36, -.26, .26, .36)], "Tube")
+        b.extrude([(-2.2, -1.0), (2.2, -.7), (2.4, .85), (-1.8, .85)], .3, .12, .12, "Tube", T=Tr((s * 6.3, SPOILER_Y - .7, 12.4)))
     k = max(b.seg(16) // 2, 4)
     xs = [-6.3 + 12.6 * i / k for i in range(k + 1)]
-    loft(b, [ring((x, arch(x), 12.4), chord, thick, 2.5, .55, 2.6, n) for x in xs], "Blue")
-    for f, cell in ((-.25, "Blue"), (.25, "Blue")):
-        for i in range(12):
-            x = -5.5 + i
-            stud_on(b, V((x, arch(x), 12.4)) + chord * (f * 2.5) + thick * .52, thick, cell)
-    b.rbox((0, 0, 0), (12.5, .09, .16), "BlueDeep", r=.03, T=Tr((0, arch(0) + .32, 12.4 + 1.5)) @ Rx(rake))
-    T = Tr((0, arch(0) + .46, 12.4)) @ Rx(rake)
-    brick(b, (0, 0, -1.65), (3.2, .22, 1.1), "Tube", r=.08, T=T)
+    # thin foil, trailing edge in hull orange: from behind it reads as trim, not a blue slab
+    loft(b, [ring((x, arch(x), 12.4), chord, thick, 1.95, .3, 2.6, n) for x in xs], lambda i, j: "Tube" if j / n < .12 or j / n > .86 else "Blue")
+    for i in range(12):
+        x = -5.5 + i
+        stud_on(b, V((x, arch(x), 12.4)) + thick * .3, thick, "Blue")
 
 
 # ------------------------------------------------------------------ L14
@@ -174,8 +166,7 @@ def neon_fins(b):
         for z in (-5.0, 8.8):
             T = Tr((s * 3.86, 3.0, z)) @ Rz(-s * math.radians(28))
             b.extrude(FIN, .36, .14, .14, "Neon", T=T)
-            b.rbox((0, .1, 0), (1.5, .6, 5.6), "Dark", r=.16, T=T)
-            brick(b, (0, .55, -1.6), (1.1, .34, 2.0), "Dark", r=.1, T=T, xs=[0], studs=False)
+            b.rbox((0, .1, 0), (1.5, .6, 5.6), "Tube", r=.2, T=T)
 
 
 # ------------------------------------------------------------------ L15
@@ -233,12 +224,12 @@ def fat_tubes(b):
             collar(b, s, z, .85, "Dark")
             T = Tr((s * 7.25, 3.6, z)) @ Rz(-s * math.pi / 2)
             brick(b, (0, 0, 0), (1.7, .55, 1.7), "Dark", r=.16, T=T)
-        # sockets where the spoiler posts and neon fins come through the fat skin
-        T = Tr((s * 3.6, 5.72, 11.2)) @ Rz(-s * .95)
-        b.rbox((0, 0, 0), (2.5, 1.0, 3.3), "Dark", r=.24, T=T)
+        # flared hull-orange fairings where the spoiler posts and neon fins come through the fat skin
+        st = ((4.8, 11.1, 2.2, 3.0), (5.5, 11.15, 1.95, 2.7), (6.4, 11.25, 1.4, 1.9), (7.3, 11.35, 1.0, 1.3), (7.9, 11.42, .9, 1.17))
+        loft(b, [ring((s * 3.6, y, z), EX, EZ, hx, hz, 4, b.seg(14)) for y, z, hx, hz in st], "Tube")
         for z in (-5.0, 8.8):
-            T = Tr((s * 5.45, 5.92, z + .75)) @ Rz(-s * .22)
-            b.rbox((0, 0, 0), (1.5, .36, 4.7), "Dark", r=.14, T=T)
+            T = Tr((s * 5.45, 5.5, z + .75)) @ Rz(-s * .22)
+            loft(b, [ring((0, y, 0), EX, EZ, hx, hz, 3, b.seg(14)) for y, hx, hz in ((0, 1.5, 3.3), (.4, 1.25, 3.0), (.9, .72, 2.5))], "Tube", T=T)
 
 
 # ------------------------------------------------------------------ L16
@@ -295,10 +286,8 @@ def paddle_wheel(b):
                 b.rbox((off, 0, 0), (.56, 2 * (R - .5), .56), "Dark", r=.1, T=Tc @ Rx(k * math.pi / 3 + math.pi / 6))
         b.lathe(V((cx - 1.2, cy, cz)), EX, [(0, 0), (.9, 0), (.9, 2.4), (0, 2.4)], "Chrome", n=12)
         b.sphere((cx + s * 1.2, cy, cz), .55, "Dark", n=10)
-        # the fat tube carries the box: flange on the skin, sculpted sponson wedge, solid inner wall, thick arch
-        loft(b, [ring((s * x, cy, cz), EY, EZ, hy, hz, 4, n) for x, hy, hz in ((5.4, 1.5, 1.9), (6.9, 1.1, 1.3), (7.3, .85, .95))], "Dark")
-        b.rbox((s * 6.72, cy + .1, cz), (.42, 2.9, 3.4), "Tube", r=.14)
-        bolt_heads(b, [(s * 6.93, cy + .1 + y, cz + z) for y in (-1.1, 1.1) for z in (-1.3, 1.3)], (s, 0, 0), "White")
+        # the fat tube carries the box: a hull-orange sponson flares out of the skin, solid inner wall, thick arch
+        loft(b, [ring((s * x, cy, cz), EY, EZ, hy, hz, 4, n) for x, hy, hz in ((5.0, 2.5, 3.2), (6.0, 2.1, 2.7), (6.7, 1.5, 1.9), (7.1, 1.05, 1.2), (7.4, .85, .95))], "Tube")
         wall = [(4.3 * math.sin(-1.2 + 2.4 * i / 8), 4.3 * math.cos(-1.2 + 2.4 * i / 8)) for i in range(9)] + [(1.5, -.2), (-1.5, -.2)]
         b.extrude(wall[::-1], .2, .08, .08, "Tube", T=Tr((cx - s * 1.4, cy, cz)))
         rows = []
@@ -378,48 +367,46 @@ def shark_jaws(b):
         b.sphere(eye + look * 1.75 + V((-s * .26, .3, 0)), .22, "White", n=8)
         b.rbox((s * 3.35, 10.55, -14.7), (2.4, .5, .85), "BlueDeep", r=.18)
     # premium toy: studs along the back of the head, either side of the fin
-    for x in (-3.4, -2.4, -1.4, 1.4, 2.4, 3.4):
+    for x in (-4.2, -3.2, -2.2, 2.2, 3.2, 4.2):
         for z in (-12.6, -11.6, -10.6):
             p = dome_point(x, z, up[2], up[1], ul[0], ul[2], ul[1])
             q = dome_point(x + .05, z, up[2], up[1], ul[0], ul[2], ul[1])
             r = dome_point(x, z + .05, up[2], up[1], ul[0], ul[2], ul[1])
             stud_on(b, p, (q - p).cross(r - p) * (1 if (q - p).cross(r - p).y > 0 else -1), "Blue")
-    # dorsal fin sculpted to a point, so it reads as a fin from behind too, not a flat-topped slab
-    st = ((7.4, -12.6, 3.2, 1.15), (10.0, -12.0, 2.8, 1.0), (12.5, -11.0, 2.0, .8), (14.6, -10.0, 1.2, .55), (16.0, -9.3, .6, .3), (16.8, -8.9, .12, .08))
+    # huge dorsal fin, swept aft over the crowd: from the chase camera it towers over the wing, the shark's read from behind
+    st = ((7.4, -13.0, 3.6, 1.7), (11.0, -12.5, 2.7, 1.55), (15.0, -11.1, 1.5, 1.2), (18.5, -9.4, .8, .74), (21.0, -7.6, .4, .32), (22.0, -6.5, .08, .06))    # concave trailing edge
     loft(b, [ring((0, y, z), EX, EZ, hx, hz, 2.5, b.seg(16)) for y, z, hz, hx in st], "Blue")
 
 
 # ------------------------------------------------------------------ L19
 def exhaust_organ(b):
-    # small on purpose: three stepped pipes per side on a collar round the fat tube, tops under the spoiler in the chase view
+    # cut hard: two short stepped pipes per side, tops low so the chase view stays driver, spoiler, fin
     zc = 7.0
-    r = .44
+    r = .48
     for s in SIDES:
-        collar(b, s, zc, 1.05, "Dark")
-        brick(b, (s * 5.2, 6.3, zc), (3.2, .5, 2.2), "Dark", r=.14, studs=False)
-        b.rbox((s * 5.2, 6.68, zc), (3.0, .3, 1.8), "Tube", r=.1)
-        for x, top in ((4.3, 10.8), (5.2, 11.8), (6.1, 12.8)):
-            base = V((s * x, 6.7, zc))
+        collar(b, s, zc, .8, "Dark")
+        b.rbox((s * 5.2, 6.35, zc), (2.6, .5, 1.7), "Dark", r=.14)
+        for x, top in ((4.7, 9.0), (5.7, 10.2)):
+            base = V((s * x, 6.5, zc))
             h = top - base.y
-            b.lathe(base, EY, [(0, 0), (r, 0), (r, h - .6), (r + .16, h - .32), (r + .3, h - .1), (r + .3, h), (r - .12, h), (r - .12, h - .34), (0, h - .34)], "Chrome", n=14)
-            b.torus((s * x, top - .08, zc), r + .26, .13, "Tube", maj=14, mnr=5)
-            b.rbox((s * x, 8.0, zc + r - .02), (.54, .46, .12), "Mouth", r=.04)
-            b.lathe(base + V((0, 1.9, 0)), EY, [(0, 0), (r + .08, 0), (r + .08, .34), (0, .34)], "Dark", n=14)
+            b.lathe(base, EY, [(0, 0), (r, 0), (r, h - .5), (r + .14, h - .28), (r + .26, h - .08), (r + .26, h), (r - .12, h), (r - .12, h - .3), (0, h - .3)], "Chrome", n=14)
+            b.torus((s * x, top - .07, zc), r + .22, .12, "Tube", maj=14, mnr=5)
+            b.rbox((s * x, 7.5, zc + r - .02), (.56, .44, .12), "Mouth", r=.04)
 
 
 # ------------------------------------------------------------------ L20
 def thunder_wing(b):
-    # the spoiler sprouts one clean lightning bolt each side: one kink, nothing else
-    bolt = [(-.7, 1.2), (3.6, 1.6), (2.9, .35), (8.0, .35), (3.9, -1.5), (4.5, -.25), (-.7, -1.2)]
-    rise = math.radians(46)
-    bev = .22 if b.lod < 2 else 0.01
+    # small on purpose: the shark is the hero. One clean one-kink bolt on each endplate, under the fin in the chase view
+    bolt = [(-.4, .72), (2.0, .95), (1.6, .2), (4.4, .2), (2.15, -.85), (2.5, -.15), (-.4, -.72)]
+    rise = math.radians(30)
+    bev = .14 if b.lod < 2 else 0.01
     for s in SIDES:
-        at = V((s * 5.7, SPOILER_Y - .2, 12.3))
+        at = V((s * 5.9, SPOILER_Y - .15, 12.35))
         pos = lambda u, v: (s * (u * math.cos(rise) - v * math.sin(rise)), u * math.sin(rise) + v * math.cos(rise))
-        b.extrude([pos(u, v) for u, v in bolt], 1.25, bev, bev, "Yellow", T=face_z(at))
-        for u, v in ((.8, 0), (1.8, .1), (2.8, .3), (4.2, .55 - .35), (5.2, .25)):
+        b.extrude([pos(u, v) for u, v in bolt], .72, bev, bev, "Yellow", T=face_z(at))
+        for u, v in ((.5, 0), (1.5, .05)):
             x, y = pos(u, v)
-            stud_on(b, at + V((x, y, 1.25)), EZ, "Yellow")
+            stud_on(b, at + V((x, y, .72)), EZ, "Yellow")
 
 
 PIECES = [(12, "MegaOutboard", mega_outboard), (13, "ArchSpoiler", arch_spoiler), (14, "NeonFins", neon_fins), (15, "FatTubes", fat_tubes),
