@@ -8,7 +8,7 @@ from mathutils import Matrix, Vector
 
 import palette as PAL
 
-STUD_P, STUD_R, STUD_H = 0.5, 0.17, 0.15
+STUD_P, STUD_R, STUD_H = 0.8, 0.27, 0.2     # AD round 2: chunkier than the concept's 0.5 / 0.17 / 0.15, so studs read on a phone
 Y_UP = Vector((0, 1, 0))
 
 
@@ -116,7 +116,7 @@ class B:
 
     def studs(self, c, size, cell, T=None, xs=None, mask=None):
         """Studs at 0.5 pitch on the +Y face of a box at c, like the concept's brick()."""
-        if self.lod:
+        if self.lod == 2:
             return
         w, h, d = size
         nx, nz = max(1, int(w / STUD_P + 1e-6)), max(1, int(d / STUD_P + 1e-6))
@@ -128,11 +128,11 @@ class B:
                     self.stud((c[0] + lx, c[1] + h / 2, c[2] + lz), cell, T)
 
     def stud(self, at, cell, T=None):
-        if self.lod:
+        if self.lod == 2:
             return
         L = Matrix.Translation(at)
-        prof = [(0, STUD_H), (STUD_R - 0.03, STUD_H), (STUD_R, STUD_H - 0.03), (STUD_R, -0.02)]
-        self.revolve(prof, cell, 8, (T @ L) if T else L, open_end=True)
+        prof = [(0, STUD_H), (STUD_R - 0.04, STUD_H), (STUD_R, STUD_H - 0.04), (STUD_R, -0.02)] if self.lod == 0 else [(0, STUD_H), (STUD_R, STUD_H), (STUD_R, -0.02)]
+        self.revolve(prof, cell, 10 if self.lod == 0 else 6, (T @ L) if T else L, open_end=True)
 
     # ------------------------------------------------------------ round parts
     def revolve(self, prof, cell, n, T=None, open_end=False):

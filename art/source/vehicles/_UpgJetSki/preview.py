@@ -107,7 +107,7 @@ def render(out_dir):
         centre = Vector([(lo[i] + hi[i]) / 2 for i in range(3)])
         radius = max((p - centre).length for p in pts)
         water.hide_render = True
-        cd.lens = 60
+        cd.sensor_fit, cd.lens = "AUTO", 60
         sc.render.resolution_x = sc.render.resolution_y = 512
         for view, (az, el) in VIEWS.items():
             a, e = math.radians(az), math.radians(el)
@@ -118,7 +118,7 @@ def render(out_dir):
             bpy.ops.render.render(write_still=True)
         # phone chase camera, as in the concept: look (0, 1, 2), 17 back, 30 degrees down
         water.hide_render = False
-        cd.lens = 20
+        cd.sensor_fit, cd.sensor_height, cd.lens = "VERTICAL", 24, 12 / math.tan(math.radians(35))    # the concept's phone camera: 70 degrees vertical
         sc.render.resolution_x, sc.render.resolution_y = PHONE[0] * 2, PHONE[1] * 2
         look = Vector((0, 2 + build.HULL_OFF, 1.0))
         aim(look + Vector((0, 17 * math.cos(math.radians(30)), 17 * math.sin(math.radians(30)))), look)
@@ -141,7 +141,8 @@ def zfight_with_hull():
     kit = [o for o in bpy.data.objects if o.name.startswith("PV_") and o.type == "MESH" and o.name not in ("PV_Rider", "PV_Water")]
     rows = Z.analyse(Z.collect(bpy, kit + hull))
     vis = [r for r in rows if r["visible"]]
-    return len(kit), len(hull), len(rows), len(vis)
+    mine = [r for r in vis if r["a"].startswith("PV_") or r["b"].startswith("PV_")]     # the rest are the shipped hull's own decals
+    return {"kit": len(kit), "hull": len(hull), "visible": len(vis), "visible_with_a_piece": len(mine)}
 
 
 def sheet(out_dir, out_png):

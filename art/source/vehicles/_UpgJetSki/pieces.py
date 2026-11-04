@@ -102,12 +102,25 @@ def _face_edges():
     return lambda u: interp(lower, u), lambda u: interp(upper, u)
 
 
+def clip_y(poly, y0, above):
+    """The part of an outline above or below y0 (Sutherland-Hodgman; the fin stays one piece at the cut)."""
+    inside = (lambda p: p[1] >= y0) if above else (lambda p: p[1] <= y0)
+    out = []
+    for p, q in zip(poly, poly[1:] + poly[:1]):
+        if inside(p):
+            out.append(p)
+        if inside(p) != inside(q):
+            k = (y0 - p[1]) / (q[1] - p[1])
+            out.append((p[0] + (q[0] - p[0]) * k, y0))
+    return out
+
+
 def shark_fin(b):
     z0, z1 = -4.6, -3.1
     h0, h1 = P.top_z(0, z0), P.top_z(0, z1)
     rig = Tr((0, (h0 + h1) / 2 + .2, (z0 + z1) / 2)) @ Rx(-math.atan2(h1 - h0, z1 - z0))
     brick(b, (0, -.36, 0), (.9, .45, 1.5), "FinGrey", r=.1, T=rig, studs=False)
-    brick(b, (0, 0, 0), (1.3, .4, 1.6), "FinGrey", r=.12, T=rig, xs=[-.47, .47])
+    brick(b, (0, 0, 0), (1.8, .4, 1.7), "FinGrey", r=.12, T=rig, xs=[-.66, .66])
     steps = {0: 10, 1: 6, 2: 3}[b.lod]
     c = [(-.75, 0), (-.38, .85), (.25, 1.36), (.88, 1.42)]
     poly = []
@@ -115,7 +128,9 @@ def shark_fin(b):
         t = k / steps
         poly.append(tuple((1 - t) ** 3 * c[0][i] + 3 * (1 - t) ** 2 * t * c[1][i] + 3 * (1 - t) * t * t * c[2][i] + t ** 3 * c[3][i] for i in (0, 1)))
     poly += PAL._quad((.88, 1.42), (.3, .92), (.72, 0), max(steps // 2, 2))
-    b.extrude(poly, .23, .12, .1, "FinGrey", T=rig @ Tr((0, .2, 0)))
+    Fin = rig @ Tr((0, .2, 0))
+    b.extrude(clip_y(poly, .92, False), .23, .12, .1, "FinGrey", T=Fin)
+    b.extrude(clip_y(poly, .92, True), .23, .12, .1, "ToothWhite", T=Fin)     # white tip: the accent that ties it to the kit
 
     # printed grin, raised teeth, eyes: lifted 0.075 so it clears the hull's livery panels (0.025 + 0.007)
     Y0, Y1, T0, T1 = -5.0, -2.95, .05, .95
@@ -164,9 +179,13 @@ def shark_fin(b):
 
 
 # ------------------------------------------------------------------ L3
+# AD round 2: the stern is 3 studs shorter (engines on a deck straight behind the sled, banana tucked in between the legs)
+SLED_Z, DECK_Y = 6.35, 1.9
+
+
 def rescue_tile(b, sx):
     """White side tile, its outer face printed: one surface, nothing lies on top of it."""
-    X0, X1, Y0, Y1, Z0, Z1 = 1.62, 1.70, 1.02, 1.46, 5.75, 8.45
+    X0, X1, Y0, Y1, Z0, Z1 = 1.70, 1.78, 1.02, 1.46, 5.4, 7.3
     ring = [(Y0, Z0), (Y0, Z1), (Y1, Z1), (Y1, Z0)]
     for (y0, z0), (y1, z1), n in ((ring[0], ring[1], (0, -1, 0)), (ring[1], ring[2], (0, 0, 1)),
                                   (ring[2], ring[3], (0, 1, 0)), (ring[3], ring[0], (0, 0, -1))):
@@ -175,7 +194,7 @@ def rescue_tile(b, sx):
         b.emit(vs, [n] * 4, [(0, 1, 2, 3)], "BrickWhite")
         b.want[f] = n
     ua, va, ub, vb = PAL.RESCUE_UV
-    w = 2.7 / .44 * 128 / 1024                 # keep the text's aspect on the strip
+    w = (Z1 - Z0) / (Y1 - Y0) * 128 / 1024     # keep the text's aspect on the strip
     u0, u1 = .5 - w / 2, .5 + w / 2
     n = (sx, 0, 0)
     # viewed from outside, the text runs bow-ward on starboard and aft-ward on port
@@ -186,139 +205,129 @@ def rescue_tile(b, sx):
 
 
 def rescue_sled(b):
-    zc = 6.9
-    rc = 7.35
-    under = lambda x, z: not (z + zc < 6.3) and not .45 < math.hypot(x, z + zc - rc) < .98    # hidden under the plate and the ring
-    brick(b, (0, 1.12, zc), (3.24, .28, 3.5), "BrickOrange", studs=False)
-    brick(b, (0, 1.4, zc), (3.0, .28, 3.3), "BrickOrange", mask=under)
-    brick(b, (0, 1.76, 5.45), (3.0, .45, 1.6), "BrickOrange")
+    rc = 6.88
+    clear = lambda x, z: z + SLED_Z > 6.3 and not .15 < math.hypot(x, z + SLED_Z - rc) < .8    # hidden under the plate and the ring
+    brick(b, (0, 1.12, SLED_Z), (3.4, .28, 2.4), "BrickOrange", studs=False)
+    brick(b, (0, 1.4, SLED_Z), (3.2, .28, 2.2), "BrickOrange", mask=clear)
+    brick(b, (0, 1.76, 5.45), (3.4, .45, 1.6), "BrickOrange")
     for sx in SIDES:
         rescue_tile(b, sx)
-    b.torus((0, 1.78, rc), .7, .22, None, maj=24, mnr=8, cells=lambda k: "BrickWhite" if k % 2 else "BrickOrange")
+    b.torus((0, 1.78, rc), .48, .2, None, maj=24, mnr=8, cells=lambda k: "BrickWhite" if k % 2 else "BrickOrange")
 
 
 # ------------------------------------------------------------------ L4
 def twin_engines(b):
-    brick(b, (0, 1.79, 8.7), (3.4, .5, .9), "BrickNavy", r=.14)
+    # one wide brick deck carries the stack: cowls sit on it, thick legs drop from it
+    b.rbox((0, 1.63, 8.45), (4.4, .54, 2.2), "BrickNavy", r=.14)
+    for x in (-1.6, -.8, 0, .8, 1.6):
+        b.stud((x, DECK_Y, 7.72), "BrickNavy")
     for sx in SIDES:
-        x = sx * 1.0
-        brick(b, (x, 1.95, 9.28), (1.0, .8, .5), "BrickNavy")
-        brick(b, (x, 2.55, 9.95), (1.5, 1.5, 1.6), "BrickNavy", r=.2, studs=False)
-        brick(b, (x, 3.5, 9.95), (1.3, .44, 1.4), "BrickNavy", r=.18)
-        brick(b, (x, 1.07, 9.95), (.56, 1.5, .66), "BrickDark", studs=False)
-        b.lathe(Vector((x, .35, 9.37)), (0, 0, 1), [(0, 0), (.2, .08), (.28, .28), (.28, .98), (.2, 1.18), (0, 1.26)], "BrickDark", 12)
-        b.lathe(Vector((x, .35, 10.62)), (0, 0, 1), [(0, 0), (.2, 0), (.19, .18), (.09, .3), (0, .33)], "Chrome", 10)
+        x = sx * 1.25
+        b.rbox((x, DECK_Y + .75, 8.775), (1.6, 1.5, 1.55), "BrickNavy", r=.22)
+        brick(b, (x, 3.62, 8.775), (1.4, .44, 1.4), "BrickNavy", r=.18)
+        b.rbox((x, .85, 8.7), (1.0, 1.1, 1.1), "BrickDark", r=.14)
+        b.lathe(Vector((x, .3, 7.85)), (0, 0, 1), [(0, 0), (.3, .1), (.42, .35), (.42, 1.55), (.3, 1.8), (0, 1.9)], "BrickDark", 12)
+        b.lathe(Vector((x, .3, 9.7)), (0, 0, 1), [(0, 0), (.26, 0), (.24, .2), (.11, .36), (0, .4)], "Chrome", 10)
         if b.lod < 2:
             for k in range(3):
-                T = Tr((x, .35, 10.62)) @ Rz(k * 2 * math.pi / 3 + sx * .4) @ Tr((0, .3, .1)) @ Ry(.5)
-                b.rbox((0, 0, 0), (.36, .46, .08), "Chrome", r=.03, T=T)
+                T = Tr((x, .3, 9.72)) @ Rz(k * 2 * math.pi / 3 + sx * .4) @ Tr((0, .42, .14)) @ Ry(.5)
+                b.rbox((0, 0, 0), (.5, .6, .1), "Chrome", r=.04, T=T)
 
 
 # ------------------------------------------------------------------ L5
 def flame_pipes(b):
     d = Vector((0, .22, 1)).normalized()
     for sx in SIDES:
-        x = sx * 1.0
-        b.tube([(x, 2.9, 10.55), (x, 2.98, 10.85), (x, 3.05, 11.0)], .27, "Chrome", rs=12, f=.15, fseg=3)
-        b.lathe(Vector((x, 3.04, 10.98)), d, [(.27, 0), (.33, .05), (.37, .12), (.33, .18), (.25, .16), (0, .16)], "Chrome", 14)
-        base = Vector((x, 3.08, 11.12))
-        for r, h, y, cell in ((.46, .5, 0, "FlameRed"), (.36, .44, .3, "FlameOrange"), (.24, .4, .58, "FlameYellow")):
+        x = sx * 1.25
+        b.tube([(x, 2.9, 9.3), (x, 2.98, 9.6), (x, 3.05, 9.75)], .3, "Chrome", rs=12, f=.15, fseg=3)
+        b.lathe(Vector((x, 3.04, 9.73)), d, [(.3, 0), (.37, .05), (.42, .12), (.37, .18), (.28, .16), (0, .16)], "Chrome", 14)
+        base = Vector((x, 3.08, 9.87))
+        for r, h, y, cell in ((.6, .65, 0, "FlameRed"), (.46, .57, .39, "FlameOrange"), (.31, .52, .75, "FlameYellow")):
             prof = [(0, 0), (r * .9, 0), (r, h * .12), (r * .86, h * .45), (r * .45, h * .82), (r * .12, h), (0, h)]
             b.lathe(base + d * y, d, prof, cell, 14)
 
 
 # ------------------------------------------------------------------ L6
 def banana_boat(b):
-    c = Curve([(0, 1.75, 11.4), (0, 1.22, 11.85), (0, .9, 12.6), (0, .86, 13.6), (0, .9, 14.6), (0, 1.22, 15.3), (0, 1.62, 15.65)])
+    # AD round 2: built on, not towed: the nose docks under the engine deck between the legs, on a short coupler
+    c = Curve([(0, 1.4, 9.2), (0, 1.05, 9.6), (0, .86, 10.2), (0, .82, 11.0), (0, .86, 11.8), (0, 1.1, 12.4), (0, 1.55, 12.75)])
 
     def rad(s):
         e = min(s, 1 - s)
-        return .16 + e * 2 if e < .04 else .64 * math.sin(math.pi * max(0, min(1, (s - .02) / .96))) ** .3
-    mid = {0: 18, 1: 10, 2: 5}[b.lod]
+        return .2 + e * 2.4 if e < .04 else .68 * math.sin(math.pi * max(0, min(1, (s - .02) / .96))) ** .3
+    mid = {0: 14, 1: 9, 2: 5}[b.lod]
     ss = [0, .02, .05] + [.05 + .9 * k / mid for k in range(1, mid)] + [.95, .98, 1]
     cells = ["BananaTip" if (s0 + s1) / 2 < .05 or (s0 + s1) / 2 > .95 else "BananaYellow" for s0, s1 in zip(ss, ss[1:])]
     b.sweep([c.at(s) for s in ss], [rad(s) for s in ss], None, {0: 14, 1: 10, 2: 6}[b.lod], cells=cells)
-    for z in (12.55, 13.6, 14.65):
-        brick(b, (0, 1.62, z), (.86, .36, .8), "BrickRed", r=.16)
-    p = c.at(.06)
-    for dx in (-.26, .26):
-        T = Tr((dx, p.y + .28, p.z - .02)) @ Rx(.9)
-        b.sphere((0, 0, 0), .18, "ToothWhite", n=10, T=T)
+    for z in (10.35, 11.15, 11.95):
+        brick(b, (0, 1.62, z), (.9, .42, .72), "BrickRed", r=.16)
+    b.rbox((0, 1.25, 9.4), (.8, .3, .6), "BrickDark", r=.08)
+    p = c.at(.14)
+    for dx in (-.3, .3):
+        T = Tr((dx, p.y + .5, p.z)) @ Rx(.9)
+        b.sphere((0, 0, 0), .24, "ToothWhite", n=10, T=T)
         if b.lod < 2:
-            b.sphere((0, .06, -.12), .09, "HullCharcoal", n=8, T=T)
-    b.tube([(-.16, 1.6, 9.12), (-.16, 1.6, 9.36), (.16, 1.6, 9.36), (.16, 1.6, 9.12)], .06, "Chrome", rs=6, f=.1, fseg=2)
-    b.tube([(0, 1.6, 9.36), (0, 1.32, 10.4), (0, 1.62, 11.45)], .11, "Rope", rs=8, f=.6, fseg=8)
+            b.sphere((0, .09, -.15), .12, "HullCharcoal", n=8, T=T)
 
 
 # ------------------------------------------------------------------ L7
 def huge_spoiler(b):
     for sx in SIDES:
-        brick(b, (sx * 1.05, 2.99, 5.45), (1.0, 2.02, 1.0), "BrickRed", r=.14, studs=False)
-    W = Tr((0, 4.18, 5.45)) @ Rx(math.radians(-8))
-    brick(b, (0, 0, 0), (5.6, .36, 1.5), "BrickRed", r=.16, T=W, mask=lambda x, z: z < .2)
-    b.rbox((0, .2, .42), (5.5, .08, .4), "BrickWhite", r=.03, T=W)
+        b.rbox((sx * .95, 2.965, 5.45), (1.3, 1.97, 1.4), "BrickRed", r=.16)
+    W = Tr((0, 4.2, 5.6)) @ Rx(math.radians(-8))
+    brick(b, (0, 0, 0), (8.4, .7, 2.6), "BrickRed", r=.24, T=W, mask=lambda x, z: z < -.4)
+    b.rbox((0, .38, .75), (8.2, .1, .7), "BrickWhite", r=.04, T=W)
     for sx in SIDES:
-        brick(b, (sx * 2.96, -.08, .05), (.36, 1.1, 1.7), "BrickRed", r=.14, T=W)
+        brick(b, (sx * 4.35, -.15, .1), (.7, 1.9, 3.0), "BrickRed", r=.24, T=W)
 
 
 # ------------------------------------------------------------------ L8
 def bull_nose(b):
-    b.rbox((0, 2.0, -5.65), (2.2, 1.3, 1.3), "BullGrey", r=.42, soft=True)
-    b.studs((0, 2.0, -5.65), (2.2, 1.3, 1.3), "BullGrey", mask=lambda x, z: abs(x) < .6)
+    # AD round 2: one big blue shape with two big horns; the thin chrome bar and bead-chain horns are gone
+    S, Z = (3.7, 2.3, 2.4), (0, 2.35, -6.0)
+    b.rbox(Z, S, "BullBlue", r=.8, soft=True)
+    b.studs(Z, S, "BullBlue", mask=lambda x, z: abs(x) < 1.0 and abs(z) < .5)
     for sx in SIDES:
-        b.lathe(Vector((sx * .45, 2.05, -6.29)), (0, 0, -1), [(0, 0), (.22, 0), (.22, .05), (.16, .09), (0, .09)], "HullCharcoal", 12)
-    b.torus((0, 0, 0), .38, .11, "Chrome", maj=20, mnr=8, T=Tr((0, 1.5, -6.34)) @ Rx(math.pi / 2))
+        b.lathe(Vector((sx * .75, 2.3, -7.16)), (0, 0, -1), [(0, 0), (.36, 0), (.36, .06), (.28, .12), (0, .12)], "HullCharcoal", 14)
+    b.torus((0, 0, 0), .6, .16, "Gold", maj=20, mnr=8, T=Tr((0, 1.68, -7.2)) @ Rx(math.pi / 2))
     for sx in SIDES:
-        c = Curve([(sx * 1.0, 2.3, -5.6), (sx * 1.7, 2.5, -5.75), (sx * 2.15, 3.0, -5.9), (sx * 2.3, 3.6, -6.0)])
-        for k in range(4):
-            s = (k + .5) / 4
-            r, h = .52 - .28 * s, c.length / 4 * 1.04
-            e = r * .42
-            prof = [(0, -h / 2), (r - e, -h / 2), (r - e * .3, -h / 2 + e * .3), (r, -h / 2 + e), (r, h / 2 - e), (r - e * .3, h / 2 - e * .3), (r - e, h / 2), (0, h / 2)]
-            if b.lod == 2:
-                prof = [(0, -h / 2), (r, -h / 2), (r, h / 2), (0, h / 2)]
-            b.lathe(c.at(s), c.tangent(s), prof, "HornTip" if k == 3 else "HornCream", 12)
-    b.tube([(-1.0, 1.9, -4.0), (-1.22, 1.25, -5.6), (1.22, 1.25, -5.6), (1.0, 1.9, -4.0)], .15, "Chrome", rs=10, f=.45, fseg=4)
+        c = Curve([(sx * 1.5, 2.9, -6.2), (sx * 2.5, 3.05, -6.3), (sx * 3.15, 3.75, -6.45), (sx * 3.2, 4.7, -6.6)])
+        n = {0: 8, 1: 5, 2: 3}[b.lod]
+        ss = [k / n for k in range(n + 1)]
+        b.sweep([c.at(s) for s in ss], [.62 + (.14 - .62) * s for s in ss], "HornCream", {0: 10, 1: 8, 2: 5}[b.lod])
 
 
 # ------------------------------------------------------------------ L9
 def horn_stack(b):
-    brick(b, (0, 2.85, -5.6), (1.5, .4, 1.0), "BrickGrey")
-    L, R0, R = 1.25, .22, .6
-    steps = {0: 8, 1: 5, 2: 3}[b.lod]
+    brick(b, (0, 3.65, -6.0), (2.0, .5, 1.4), "BrickRed", r=.14)
+    L, R0, R = 1.6, .3, .85
+    steps = {0: 7, 1: 5, 2: 3}[b.lod]
     for sx in SIDES:
-        M = kitgeo.orient(Vector((sx * .4, 3.07, -5.45)), (sx * .3, .36, -1))
+        M = kitgeo.orient(Vector((sx * .6, 3.92, -5.9)), (sx * .3, .6, -1))
         prof = [(0, -.12), (R0 + .06, -.12), (R0 + .08, -.04)] + [(R0 + (R - R0) * (k / steps) ** 2.4, L * k / steps) for k in range(steps + 1)]
-        prof += [(R + .1, L + .02), (R + .06, L + .1), (R - .06, L + .08), (R * .55, L - .3), (0, L - .3)]   # closed throat: Roblox culls back faces
+        prof += [(R + .12, L + .02), (R + .08, L + .12), (R - .08, L + .1), (R * .55, L - .35), (0, L - .35)]   # closed throat: Roblox culls back faces
         b.revolve(prof, "Chrome", b.seg(16), M)
-        if b.lod < 2:
-            b.torus((0, L + .04, 0), R + .06, .1, "Chrome", maj=20, mnr=6, T=M)
     for sx in SIDES:
-        b.sphere((sx * .45, 3.35, -5.22), .38, "BulbRed", n=12, scale=(1, .9, 1))
+        b.sphere((sx * .75, 4.25, -5.3), .55, "BulbRed", n=12, scale=(1, .9, 1))
 
 
 # ------------------------------------------------------------------ L10
 def turbo_crown(b):
-    brick(b, (0, 3.72, -1.45), (1.0, .9, 1.0), "BrickYellow", r=.14)
-    C = Tr((0, 4.17, -1.5))
-    b.revolve([(0, 0), (1.06, 0), (1.12, .05), (1.12, .2), (1.06, .25), (0, .25)], "Gold", b.seg(24), C)
-    for k in range(10):
-        a = k * math.pi / 5 + math.pi / 10
-        b.stud((math.sin(a) * .9, .25, math.cos(a) * .9), "Gold", C)
-    b.revolve([(1.0, .25), (1.15, 1.0), (1.09, 1.0), (.94, .25), (1.0, .25)], "Gold", b.seg(28), C, open_end=True)
-    for y, r in ((.27, 1.0), (1.0, 1.15)):
-        b.torus((0, y, 0), r, .13, "Gold", maj=28, mnr=6, T=C)
+    # AD round 2: 1.6x, on a dark tower so it stands clear above the helmet from the chase camera (helmet line y 4.8 here)
+    Zc = -2.1
+    b.rbox((0, 3.45, Zc), (1.6, 1.5, 1.6), "BrickNavy", r=.16)
+    b.rbox((0, 4.95, Zc), (1.3, 1.3, 1.3), "BrickNavy", r=.16)
+    C = Tr((0, 5.6, Zc))
+    b.revolve([(0, 0), (1.7, 0), (1.8, .08), (1.8, .32), (1.7, .4), (0, .4)], "Gold", b.seg(24), C)
+    b.revolve([(1.6, .4), (1.85, 1.6), (1.75, 1.6), (1.5, .4), (1.6, .4)], "Gold", b.seg(28), C, open_end=True)
+    for y, r in ((.43, 1.6), (1.6, 1.85)):
+        b.torus((0, y, 0), r, .2, "Gold", maj=28, mnr=6, T=C)
     for k in range(5):
         a = k * 2 * math.pi / 5 + math.pi
-        px, pz = math.sin(a) * 1.07, math.cos(a) * 1.07
-        b.revolve([(0, 0), (.38, 0), (.36, .25), (.24, .6), (.11, .84), (0, .88)], "Gold", b.seg(12), C @ Tr((px, 1.02, pz)))
-        b.sphere((px, 1.98, pz), .23, "GemRed", n=10, T=C)
-    b.torus((0, 1.0, 0), .66, .16, "Chrome", maj=22, mnr=6, T=C)
-    if b.lod < 2:
-        for k in range(8):
-            T = C @ Tr((0, 1.0, 0)) @ Ry(k * math.pi / 4) @ Tr((.32, 0, 0)) @ Rx(.5)
-            b.rbox((0, 0, 0), (.54, .06, .22), "Chrome", r=.025, T=T)
-    b.revolve([(0, 0), (.3, 0), (.26, .15), (.13, .36), (0, .44)], "BrickOrange", b.seg(12), C @ Tr((0, 1.02, 0)))
+        px, pz = math.sin(a) * 1.72, math.cos(a) * 1.72
+        b.revolve([(0, 0), (.6, 0), (.57, .4), (.38, .95), (.17, 1.32), (0, 1.4)], "Gold", b.seg(12), C @ Tr((px, 1.63, pz)))
+        b.sphere((px, 3.15, pz), .38, "GemRed", n=10, T=C)
+    b.revolve([(0, 0), (1.0, 0), (.9, .5), (.45, 1.05), (0, 1.2)], "BrickOrange", b.seg(14), C @ Tr((0, .4, 0)))
 
 
 PIECES = [(2, "SharkFin", shark_fin), (3, "RescueSled", rescue_sled), (4, "TwinEngines", twin_engines), (5, "FlamePipes", flame_pipes),

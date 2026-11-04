@@ -10,17 +10,18 @@ RGH_ABS = 0.3
 
 # name: (hex, roughness, metal)
 COLOURS = {
-    "FinGrey": ("8E989F", RGH_ABS, 0), "ToothWhite": ("FBF9F2", RGH_ABS, 0), "HullCharcoal": ("26282C", 0.36, 0),
+    "FinGrey": ("7E93A8", RGH_ABS, 0), "ToothWhite": ("FBF9F2", RGH_ABS, 0), "HullCharcoal": ("26282C", 0.36, 0),
     "BrickOrange": ("DD6B2C", RGH_ABS, 0), "BrickWhite": ("F1F0EA", RGH_ABS, 0), "BrickNavy": ("25395C", RGH_ABS, 0),
     "BrickDark": ("4A5158", RGH_ABS, 0), "Chrome": ("E8ECEF", 0.08, 1), "FlameRed": ("E2261A", 0.16, 0),
     "FlameOrange": ("FF7A12", 0.16, 0), "FlameYellow": ("FFD21E", 0.16, 0), "BananaYellow": ("F7CC2E", RGH_ABS, 0),
     "BananaTip": ("5C4720", RGH_ABS, 0), "BrickRed": ("D0302A", RGH_ABS, 0), "Rope": ("E9DFC4", 0.9, 0),
     "BullGrey": ("454C54", RGH_ABS, 0), "HornCream": ("EEE1BE", RGH_ABS, 0), "HornTip": ("3B3430", RGH_ABS, 0),
     "BrickGrey": ("A3ABB1", RGH_ABS, 0), "BulbRed": ("C8352E", 0.42, 0), "GemRed": ("D2302A", 0.08, 0),
-    "Gold": ("E2AC36", 0.18, 1), "BrickYellow": ("F4C01E", RGH_ABS, 0),
+    "Gold": ("FFB400", 0.22, 0.5), "BrickYellow": ("F4C01E", RGH_ABS, 0),
     # preview-only stand-in rider (never exported)
     "VestYellow": ("FFE11F", RGH_ABS, 0), "SuitNavy": ("2C3A4A", RGH_ABS, 0), "Skin": ("EDC096", RGH_ABS, 0),
     "Visor": ("1E2428", 0.05, 0),
+    "BullBlue": ("1F66D1", RGH_ABS, 0),    # AD round 2: one bold colour, the complement of the hull's orange
 }
 CELL = {name: i for i, name in enumerate(COLOURS)}
 
@@ -63,7 +64,7 @@ def _face():
     from PIL import Image, ImageDraw
     k = 4
     W, H = 512 * k, 256 * k
-    im = Image.new("RGB", (W, H), _rgb("8E989F"))    # grey to the edge: the mesh is cut to the outline, no alpha
+    im = Image.new("RGB", (W, H), _rgb(COLOURS["FinGrey"][0]))    # grey to the edge: the mesh is cut to the outline, no alpha
     d = ImageDraw.Draw(im)
     P = lambda u, v: (u * W, (1 - v) * H)
     d.polygon([P(*p) for p in _quad((.02, .38), (.4, 0), (.98, .12)) + [(.98, .03), (.25, .03)]], fill=_rgb("E9ECEC"))
@@ -92,7 +93,7 @@ def write_maps(out_dir, name="UpgJetSki", set_name="Brick"):
     from PIL import Image
     os.makedirs(out_dir, exist_ok=True)
     cell = SIZE // GRID
-    alb = Image.new("RGB", (SIZE, SIZE), _rgb("8E989F"))
+    alb = Image.new("RGB", (SIZE, SIZE), _rgb(COLOURS["FinGrey"][0]))
     rgh = Image.new("RGB", (SIZE, SIZE), (int(RGH_ABS * 255),) * 3)
     met = Image.new("RGB", (SIZE, SIZE), (0, 0, 0))
     for nm, (hx, r, m) in COLOURS.items():
