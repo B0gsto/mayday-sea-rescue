@@ -11,7 +11,7 @@ import pieces
 
 GAME = hk.GAME
 OUT = os.path.join(GAME, "build/status/2026-11-04/art/hydrofoil_cells")
-ANGLES = {"three": (1.0, 0.55, -1.15), "side": (-1, 0.1, 0), "rear": (-1.0, 0.5, 1.1)}
+ANGLES = {"three": (1.0, 0.45, -1.15), "side": (-1, 0.06, 0), "rear": (-0.45, 0.4, 1.1)}
 
 
 def game_scale(level):
@@ -40,6 +40,22 @@ def plane(name, z, size, mat):
     return o
 
 
+def foam(sea, level):
+    """Sheet only: wake and spray where the strut tips cut the sea, so the lift-off gap reads. The game's VFX does this at ATT_Splash*."""
+    import bmesh
+    dz = pieces.LIFT_Z if level >= 34 else 0
+    tips = [(sx * pieces.MAIN_X, pieces.strut_z(pieces.MAIN_Z, 0.3) * -1 + dz) for sx in (-1, 1)] + [(0, pieces.strut_z(pieces.RUDDER_Z, 0.3) * -1 + dz)]
+    me = bpy.data.meshes.new("Foam")
+    bm = bmesh.new()
+    for x, z in tips:
+        bm.faces.new([bm.verts.new(bl((x + dx, sea + 0.04, z + dz_))) for dx, dz_ in ((-0.28, -0.7), (0.28, -0.7), (1.5, 12), (-1.5, 12))])
+    bm.to_mesh(me)
+    bm.free()
+    me.materials.append(flat_mat("StageFoam", (0.72, 0.84, 0.94), 0.8))
+    o = bpy.data.objects.new("Foam", me)
+    bpy.context.scene.collection.objects.link(o)
+
+
 def driver(s):
     """Seated toy figure, 5.5 studs when standing in the world, so 5.5 / s in the hull frame."""
     k = hk.Kit()
@@ -54,7 +70,7 @@ def driver(s):
         k.cyl(0.8, 1.1, (0, 3.0, 0), hk.YELLOW, n=12)
         k.sphere(0.95, (0, 3.5, 0), hk.WHITE, half=True, n=12, lat=3)
     from mathutils import Matrix
-    k.stack.append(k.stack[-1] @ Matrix.Translation((0, y, z)) @ Matrix.Diagonal((f * 1.25, f * 1.25, f * 1.25, 1)))
+    k.stack.append(k.stack[-1] @ Matrix.Translation((pieces.SEAT_X, y, z)) @ Matrix.Diagonal((f * 1.25, f * 1.25, f * 1.25, 1)))
     fig()
     return k.to_object("Driver", hk.material())
 
@@ -126,7 +142,7 @@ def scene(level):
     a, b, _ = pieces.hull_objects()
     sea = hk.WATER_ASSET
     if level >= 34:             # Sky Stilts: the foil set moves, the sea sits lower in the hull frame
-        b.location = bl((0, -pieces.LIFT, 0))
+        b.location = bl((0, -pieces.LIFT, pieces.LIFT_Z))
         sea -= pieces.LIFT
     objs = [a, b]
     for short, (lv, _) in pieces.PIECES.items():
@@ -143,9 +159,9 @@ def scene(level):
 def shoot_phone(level, name=None):
     objs, sea = scene(level)
     plane("Sea", sea, 3000, flat_mat("StageSea", (0.022, 0.21, 0.45), 0.75))
+    foam(sea, level)
     world((0.5, 0.74, 0.95), 1.0)
-    back = 1.0 if level < 34 else 1.15 if level < 39 else 1.3     # taller and longer boat, the game's chase cam backs off with the hull
-    pos, target = Vector((4, 24 * back + sea, 40 * back)), Vector((0, 13 * back + sea, -2))
+    pos, target = Vector((1, 20 + sea, 38)), Vector((0, 7 + sea, -2))     # the chase cam is centred in play
     camera(bl(pos), bl(target), 18 / (math.tan(math.radians(35)) * 1.8))
     os.makedirs(OUT, exist_ok=True)
     path = os.path.join(OUT, name or "L%d_phone.png" % level)
@@ -155,14 +171,13 @@ def shoot_phone(level, name=None):
 
 def shoot(level):
     objs, sea = scene(level)
-    floor = min((o.matrix_world @ Vector(c)).z for o in objs for c in o.bound_box) - 0.05
-    fl = plane("Floor", floor, 4000, flat_mat("StageFloor", (0.66, 0.63, 0.6), 0.6))
-    world((0.78, 0.76, 0.74), 0.85)
+    sp = plane("Sea", sea, 3000, flat_mat("StageSea", (0.022, 0.21, 0.45), 0.75))
+    foam(sea, level)
+    world((0.5, 0.74, 0.95), 1.0)
     os.makedirs(OUT, exist_ok=True)
     for name, d in ANGLES.items():
         t, pos = fit(objs, bl(d), 45, 682 / 480)
         cam = camera(pos, t, 45)
         render(os.path.join(OUT, "L%d_%s.png" % (level, name)), 682, 480)
         bpy.data.objects.remove(cam)
-    bpy.data.objects.remove(fl)
     return shoot_phone(level)
