@@ -70,7 +70,8 @@ def hull_y(x, z):
 
 
 def rot_m(rot):
-    return Matrix.Identity(4) if not rot else Euler((rot[0] * R, rot[1] * R, rot[2] * R), "XYZ").to_matrix().to_4x4()
+    # mathutils order "ZYX" is Rx @ Ry @ Rz: the same result as three.js and the concept's "XYZ"
+    return Matrix.Identity(4) if not rot else Euler((rot[0] * R, rot[1] * R, rot[2] * R), "ZYX").to_matrix().to_4x4()
 
 
 class Kit:
@@ -102,7 +103,7 @@ class Kit:
         return m
 
     # ---------------------------------------------------------------- boxes
-    def box(self, s, pos, cell, rot=None, r=None, studs=None, stud_cell=None):
+    def box(self, s, pos, cell, rot=None, r=None, studs=None, stud_cell=None, big=False):
         """Chamfered box (flat facets, no bevel at all under 0.05). studs: True, 'border' or a list of local spots."""
         hx, hy, hz = s[0] / 2, s[1] / 2, s[2] / 2
         b = min(0.14, min(s) * 0.25) if r is None else min(r, min(s) * 0.4)
@@ -142,16 +143,18 @@ class Kit:
             spots = studs if isinstance(studs, list) else stud_grid(s, studs)
             for i, p in enumerate(spots):
                 c = stud_cell[i % len(stud_cell)] if isinstance(stud_cell, list) else (cell if stud_cell is None else stud_cell)
-                self.stud(m, p, c)
+                self.stud(m, p, c, big=big or studs in ("big", "bigborder"))
 
-    def brick(self, s, pos, cell, rot=None, studs=True, r=None, stud_cell=None):
-        self.box(s, pos, cell, rot, r, studs, stud_cell)
+    def brick(self, s, pos, cell, rot=None, studs=True, r=None, stud_cell=None, big=False):
+        self.box(s, pos, cell, rot, r, studs, stud_cell, big)
 
-    def stud(self, m, p, cell, n=8):
-        """Concept stud: 0.72 across, 0.28 tall. No bottom cap, starts inside the brick top."""
+    def stud(self, m, p, cell, n=8, big=False):
+        """Concept stud 0.72 across, 0.28 tall; big: 1.3 across, 0.45 tall, so it reads on a phone. No bottom cap, starts inside the brick top."""
         x, y, z = p
-        ring = [(x + 0.36 * math.cos(2 * math.pi * i / n), y, z + 0.36 * math.sin(2 * math.pi * i / n)) for i in range(n)]
-        top = [(a, y + 0.28, c) for a, _, c in ring]
+        r, h = (0.65, 0.45) if big else (0.36, 0.28)
+        n = 10 if big else n
+        ring = [(x + r * math.cos(2 * math.pi * i / n), y, z + r * math.sin(2 * math.pi * i / n)) for i in range(n)]
+        top = [(a, y + h, c) for a, _, c in ring]
         faces = [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)] + [tuple(range(n, 2 * n))]
         self._emit(m, ring + top, faces, cell)
 
@@ -311,14 +314,15 @@ class Kit:
 
 
 def stud_grid(s, mode):
-    """Local stud spots on a brick top, 1 stud pitch: every spot, or only the border ring."""
-    nx, nz = max(1, int(s[0] + 1e-6)), max(1, int(s[2] + 1e-6))
+    """Local stud spots on a brick top: every spot or the border ring, at 1 stud pitch; big or bigborder at 2.4 pitch."""
+    pitch = 2.4 if mode in ("big", "bigborder") else 1.0
+    nx, nz = max(1, int(s[0] / pitch + 1e-6)), max(1, int(s[2] / pitch + 1e-6))
     out = []
     for i in range(nx):
         for j in range(nz):
-            if mode == "border" and not (i in (0, nx - 1) or j in (0, nz - 1)):
+            if mode in ("border", "bigborder") and not (i in (0, nx - 1) or j in (0, nz - 1)):
                 continue
-            out.append((i - (nx - 1) / 2, s[1] / 2 - 0.02, j - (nz - 1) / 2))
+            out.append(((i - (nx - 1) / 2) * pitch, s[1] / 2 - 0.02, (j - (nz - 1) / 2) * pitch))
     return out
 
 

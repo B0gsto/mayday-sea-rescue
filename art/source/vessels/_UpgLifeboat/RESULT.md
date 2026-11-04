@@ -1,6 +1,6 @@
 # Lifeboat stage upgrade pieces (L22-L30): result
 
-Round 2 (art director round 1: 6.5/10). Earlier uploads are superseded: use only the ids below.
+Round 3, the last (art director round 1: 6.5, round 2: 6.8). Earlier uploads are superseded: use only the ids below.
 
 Concept: artifact cdf29056 (Lifeboat Stage L21-L30). Geometry: `pieces.py` + `kit.py`, one thin `build.py` per piece in `art/source/vessels/M_Upg_Lifeboat_*`. Rebuild: `maketex.py` (system python3), then `pipeline.run_all()` in the Blender MCP session.
 
@@ -12,40 +12,54 @@ Every piece is authored in the hull frame, so its **Model pivot is the hull orig
 
 | Lv | Asset | LOD0 | LOD1 | LOD2 | Offset | Size | Tris LOD0 / 1 / 2 |
 |---|---|---|---|---|---|---|---|
-| 22 | `M_Upg_Lifeboat_ArmourSpikes` | 133164090127949 | 114330785980157 | 121231757896755 | (0, 0, 0) | 34.5 x 6.7 x 45.1 | 3936 / 1968 / 984 |
-| 23 | `M_Upg_Lifeboat_HugeLamps` | 122474226274027 | 98964886352809 | 75013523330703 | (0, 0, 0) | 22.8 x 9.3 x 9.0 | 4152 / 2076 / 1038 |
-| 24 | `M_Upg_Lifeboat_IcePlough` | 109492128290297 | 117293282926229 | 113357296528944 | (0, 0, 0) | 16.9 x 10.8 x 14.3 | 2928 / 1463 / 731 |
-| 25 | `M_Upg_Lifeboat_RoofRockets` | 120497757007102 | 72167353518251 | 93367318370611 | (0, 0, 0) | 24.8 x 5.7 x 12.6 | 4128 / 2064 / 1032 |
-| 26 | `M_Upg_Lifeboat_CrewDeck` | 75197320314889 | 126567618142194 | 86167308317301 | (0, 0, 0) | 14.7 x 10.1 x 14.2 | 4748 / 2374 / 1186 |
-| 27 | `M_Upg_Lifeboat_LampTower` | 126192327568523 | 79697891930731 | 86727100366243 | (0, 0, 0) | 8.6 x 41.0 x 8.6 | 5152 / 2576 / 1287 |
-| 28 | `M_Upg_Lifeboat_FoilLift` | 132726935816721 | 119863301031155 | 82997528729563 | (0, 0, 0) | 23.6 x 7.4 x 47.5 | 2568 / 1284 / 642 |
-| 29 | `M_Upg_Lifeboat_RearRockets` | 91036606228980 | 136153216298036 | 77982688319839 | (0, 0, 0) | 22.9 x 10.6 x 21.9 | 5152 / 2575 / 1288 |
-| 30 | `M_Upg_Lifeboat_BattleBridge` | 86622053201289 | 108501137050309 | 122107978990948 | (0, 0, 0) | 15.1 x 14.3 x 22.4 | 6586 / 3293 / 1645 |
+| 22 | `M_Upg_Lifeboat_ArmourSpikes` | 112869722359701 | 137875265342819 | 115478240901078 | (0, 0, 0) | 22.0 x 5.0 x 32.8 | 2688 / 1344 / 672 |
+| 23 | `M_Upg_Lifeboat_HugeLamps` | 132796952947238 | 86298350592596 | 97853221518398 | (0, 0, 0) | 22.8 x 9.3 x 9.0 | 3608 / 1804 / 901 |
+| 24 | `M_Upg_Lifeboat_IcePlough` | 133011600636144 | 70628583672584 | 138003845296622 | (0, 0, 0) | 14.0 x 8.3 x 11.8 | 484 / 241 / 119 |
+| 25 | `M_Upg_Lifeboat_RoofRockets` | 127510354581017 | 97193315743130 | 94659366580549 | (0, 0, 0) | 23.2 x 5.7 x 13.4 | 3248 / 1623 / 811 |
+| 26 | `M_Upg_Lifeboat_CrewDeck` | 108175690128509 | 102864375929530 | 103827266836753 | (0, 0, 0) | 14.3 x 8.6 x 12.8 | 2336 / 1168 / 584 |
+| 27 | `M_Upg_Lifeboat_LampTower` | 78395993993927 | 83282160499949 | 88968642835599 | (0, 0, 0) | 11.0 x 38.6 x 9.0 | 2528 / 1263 / 631 |
+| 28 | `M_Upg_Lifeboat_FoilLift` | 121211729729671 | 131319050050328 | 96860785930283 | (0, 0, 0) | 19.6 x 7.4 x 47.5 | 2328 / 1163 / 581 |
+| 29 | `M_Upg_Lifeboat_RearRockets` | 77773571750268 | 112907773832304 | 91651318235631 | (0, 0, 0) | 27.2 x 10.0 x 22.4 | 4392 / 2196 / 1098 |
+| 30 | `M_Upg_Lifeboat_BattleBridge` | 106128335315585 | 102367920176621 | 70516478531009 | (0, 0, 0) | 13.2 x 7.6 x 18.4 | 1364 / 681 / 340 |
 
 Shared palette set (one SurfaceAppearance for all nine), `T_UpgLifeboat_Palette_*`, 256 px: ALB 89572818827627, NOR 94365844917813, RGH 128252020870174, MET 134651320857380. Moderation states at upload: Approved.
 
 Attachments (hull frame, in each `build/prod/<asset>/fbx/<asset>/<asset>.attachments.json`):
 - M_Upg_Lifeboat_HugeLamps: ATT_Lens_P, ATT_Lens_S
 - M_Upg_Lifeboat_RoofRockets: ATT_Flame_P, ATT_Flame_S
-- M_Upg_Lifeboat_LampTower: ATT_Lens_Fwd00, ATT_Lens_Fwd01, ATT_Lens_Aft0, ATT_Lens_Fwd10, ATT_Lens_Fwd11, ATT_Lens_Aft1, ATT_Beacon
+- M_Upg_Lifeboat_LampTower: ATT_Lens_Fwd, ATT_Lens_Aft, ATT_Beacon
 - M_Upg_Lifeboat_RearRockets: ATT_Flame_P, ATT_Flame_S
-- M_Upg_Lifeboat_BattleBridge: ATT_Lens_SearchP, ATT_Lens_SearchS
 
 ## Checks
 
-validate PASS for all nine (waived where they fail: `_COL proxy`, `LOD UV layout`, `UV faces`; reasons in `pieces.py`). zfight: 27 exported FBX, 0 visible pairs. All nine plus the real hull at L30, piece against piece and piece against hull: 0 visible pairs. All nine LOD0 together: 39350 tris. Not seen in Studio.
+validate PASS for all nine (waived where they fail: `_COL proxy`, `LOD UV layout`, `UV faces`, `LOD0 floor` on the plough; reasons in `pieces.py`). zfight: 27 exported FBX, 0 visible pairs. All nine plus the real hull at L30, piece against piece and piece against hull: 0 visible pairs. All nine LOD0 together: 22976 tris. Not seen in Studio.
 
-## Round 2 changes (these go past the concept on the art director's order)
+## Bay fit: the boat does not fit, and the pieces cannot fix that
 
-- **Lamp Tower:** twice the height (top y about 50), a fat stacked orange and white brick column, a big yellow lamp head.
-- **Huge Lamps:** radius 1.9 to 3.8, at x +-5.6, z -15. They overhang the cabin sides.
-- **Rear Rockets:** radius 3.4, as thick as the hull is deep.
-- **Roof Rockets:** radius 1.35 to 1.8.
-- **Crew Deck and Battle Bridge:** rails, posts and stilts replaced by two-course brick walls and fat columns. The ladder moved to the centre line with chunky rungs. The bridge is wider and its roof top is now y 15.8.
-- **Foil Lift:** two wide yellow water-skis (x +-9, 5.6 wide, y -7 to -5.8) on thick struts, with a cross bar under the keel. The concept's swept foils are gone.
-- **Ice Plough:** a wedge that steps up block by block to the nose, with white saw teeth and a rounded white nose.
-- **Armour Spikes:** white, cone radius 2.2, 9 long, tilted up 20 degrees from y 0.6. Their roots stay under the orange band.
-- **Colour:** lamps are yellow. Rockets are red with white bands, a white dome and a rounded flame, so they read as fireworks.
+The lifeboat's look scale is capped at **x1.387** (`BoatLevels.scaleFor`: `MAX_LENGTH` 72 / hull 51.9). Upgrade Station bay: 24 wide (22.7 between fenders), 30 long, clear height 16.9 over the middle 10 and 13.15 across the full 24.
+
+| In the game, at x1.387 | Half-width or reach | Height above hull origin | Against the bay |
+|---|---|---|---|
+| Bare hull | beam +-12.3, 72 long | mast 25 | Already over: wider, 42 too long, taller than the hoist rail |
+| Armour Spikes, was +-18 hull frame (+-25), now +-11.0 | +-15.3 | low | 3.3 past the bay edge |
+| Foil Lift skis, was +-11.8, now +-9.8 | +-13.6 | low | 1.6 past the bay edge |
+| Ice Plough, was z -34, now z -31.1 | z -43 | 8 | Points out to open sea (`ATT_BoatLanding` looks -Z), so no clash |
+| Huge Lamps, Rear Rockets | +-15.8, +-18.9 | above the piers | Clear of the low piers; over the clear height |
+| Lamp Tower | | 67 | Far over the hoist rail |
+
+Pieces have CanCollide off, so this is visual clipping only. **Open decision for the integration:** reduce the look scale at the station, land L21+ further out, or widen the bay. Spikes and skis were shrunk as far as they can go and still read.
+
+## Round 3 changes
+
+- **Hero masses:** Lamp Tower, Rear Rockets and Huge Lamps. Cut as small clutter: searchlights, horns, flags, bridge wings, roof parapets and walkway walls (Battle Bridge); ladder and life rafts (Crew Deck); six small tower lamps (now one big drum).
+- **Battle Bridge:** one brick mass, joined by a solid block to the tower's plinth.
+- **Lamp Tower:** three-step plinth, a 6.2-wide base, five broad bands, top y 48.
+- **Rear Rockets:** moved out to x +-8 and splayed 11 degrees, with a clear gap at the centre. Light nozzles and white clamps. Flames are 30% longer and orange. The stern view was checked on the phone render.
+- **Ice Plough:** one chunky orange toy bumper in three courses, with one dark rubber strip and big studs.
+- **Colour:** red only on the rockets (solid on the rear pair, one band on the white roof pair). Yellow only on the Huge Lamps. Skis are now orange on white struts, overriding round 1's yellow.
+- **Studs:** big studs (1.3 across) on the walls, plinth, skis, plough and roofs.
+- **Spikes:** three a side, white, swept 62 degrees aft along the hull.
+- **Bug fixed:** a wrong Euler order meant the concept's yawed spikes never yawed; `kit.rot_m` now matches three.js.
 
 ## What the game code must do
 
@@ -60,7 +74,6 @@ validate PASS for all nine (waived where they fail: `_COL proxy`, `LOD UV layout
 ## Open
 
 - The concept's L21 "Big Lifeboat" dress (forepeak block, gunwale plates, rub rails, fenders, bow bumper) and the crew figures are not built: they were not in the nine. The bare hull stands for L21 on the sheet.
-- Crew Deck columns (x +-4.4, radius 1.3) stand in the survivor slots at x +-3.4 (z 7.5+). Move the slots or check in play.
-- The Spikes reach x about +-18 and the Plough z about -34: check the bay fit against `BoatLevels.MAX_LENGTH` and the Go back landing.
+- Crew Deck columns moved to x +-5.6 (radius 1.3); survivors at x +-3.4 may still brush them. Check in play.
 - `BoatLevels` PIECES still lists the old names for L21-L30.
-- Sheet: `build/status/2026-11-04/art/lifeboat.png`, round 2, no art director score yet.
+- Sheet: `build/status/2026-11-04/art/lifeboat.png`, round 3, no art director score yet.
