@@ -263,4 +263,11 @@ return function(t)
 		t.expect(SpinRules.ownedOf("Mythic", SpinRules.ownedIds(galaxy, pets, true))).toBe(2)
 		t.expect(SpinRules.ownedOf("Mythic", SpinRules.ownedIds(galaxy, pets, false))).toBe(1)
 	end)
+
+	t.test("wonBoatLooks reads the flag list", function()
+		t.expect(#SpinRules.wonBoatLooks("StormRunner,RiptideX")).toBe(2)
+		t.expect(#SpinRules.wonBoatLooks("StormRunner")).toBe(1)
+		t.expect(#SpinRules.wonBoatLooks(nil)).toBe(0)
+		t.expect(#SpinRules.wonBoatLooks("")).toBe(0)
+	end)
 end

@@ -23,8 +23,9 @@ One boat, one straight ladder. Cash only. Exaggerate everything.
 boat lands in, so the station needs no walk. Upgrading happens only here. Its big in-world board always shows:
 - **Lv 7 / 50** and a full progress bar with the five hull stages marked, so how much is left is plain.
 - The next level's look and its jump, such as speed 285 -> 340, room 3 -> 4, with icons.
-- Price, your Cash and how much is missing, then one big green **Upgrade** button (tap, key, gamepad). One option, so not
-  a choice menu.
+- Price, your Cash and how much is missing, then one big **Upgrade** button (tap, key, gamepad). One option, so not a
+  choice menu. Green only when affordable. Short of Cash it is grey with the missing Cash on the board, and a press does
+  nothing but one shake of that number.
 Also readable and usable on foot. Placeholder Parts first; concept and AD before Blender.
 
 **Every level changes all of:** speed, how it looks, and a level-up moment. The moment: the boat lifts out of the
@@ -63,7 +64,7 @@ Unchanged for now, owner to review: Cash packs and 2x Cash (they speed up levels
 ## 4. Island and tutorial
 - The island stays optional: workers, flex, spin. Boat levels stop depending on buildings. Which buildings to cut is a
   later owner review. Helicopter and submarine stay as they are for now.
-- Tutorial: free Hut -> first rescue (docs/29 A) -> Go back -> station: Upgrade to L2 -> out again, feeling the speed. The Workshop
+- Tutorial: free Hut -> first rescue (docs/29 A) -> Go back -> station: Upgrade to L2 -> out again, feeling the speed (one arrow out to sea while still home; no pirates until the tutorial ends). The Workshop
   beat and the jet ski hold (CraftHeld) leave the tutorial.
   Built 2026-11-03: the free spin comes after L2 and a first trip home (its beacon only while home; one more trip ends the
   beat, the spin stays banked), then the Next chip leads with the boat level. Funnel steps 8 and 9 are FirstUpgrade and BackOut.

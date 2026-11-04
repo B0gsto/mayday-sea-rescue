@@ -4,8 +4,8 @@
 --   docs/25 J: the guide arrow and pin go to the build stand -> the HQ card pulses -> the free Rescue Hut
 --   site (the beacon over it, the camera stays free) ->
 --   cold open (jet ski, first survivor; GoBackController's one arrow on Go back, then home, still seated) -> the green
---   arrow on the Upgrade Station's button (the first delivery paid exactly L2) -> the level-up -> out again, nothing
---   leads: the bow faces the sea and the cold open's other swimmers -> a trip home hands over the free spin and the
+--   arrow on the Upgrade Station's button (the first delivery paid exactly L2) -> the level-up -> out again: the bow
+--   faces the sea and one arrow pops out over the water while you are home -> a trip home hands over the free spin and the
 --   beacon points at your island's prize wheel while you are home -> the permanent Next chip (UI/NextChip).
 --   No chip row of beats at the top (owner 2026-10-29: "it does not make sense to have it there").
 -- It reads only replicated facts: the Ops signals, the PlayerDataChanged snapshot, player and plot
@@ -74,6 +74,10 @@ local guide: string? = nil
 local lastTabletPulse: string? = nil
 local glanceSerial = 0
 local upgradeArrow: BillboardGui? = nil
+local seaArrow: BillboardGui? = nil
+local outAgainAt: number? = nil -- when the OutAgain beat began: its arrow waits out the level-up
+local SEA_ARROW_OUT = 120 -- studs past the landing -- tune
+local SEA_ARROW_UP = 24 -- studs over the berth's height -- tune
 local tickAt = 0
 
 local function rootPosition(): Vector3?
@@ -185,8 +189,50 @@ local function glance(at: Vector3?, hold: number?, eye: Vector3?): boolean
 	return true
 end
 
--- The steady green build arrow over the station's Upgrade button (the art of UI/TabletCue): one pop and a sound, never a
--- pulse. The button may not have streamed in yet: update() asks again.
+-- The steady green build arrow (the art of UI/TabletCue): one pop and a sound, never a pulse.
+local function popArrow(name: string, adornee: Instance, up: number): BillboardGui
+	local bb = Instance.new("BillboardGui")
+	bb.Name = name
+	bb.Adornee = adornee
+	bb.StudsOffsetWorldSpace = Vector3.new(0, up, 0)
+	bb.Size = UDim2.fromOffset(84, 84)
+	bb.LightInfluence = 0
+	bb.AlwaysOnTop = true
+	bb.ResetOnSpawn = false
+	local art = Instance.new("ImageLabel")
+	art.BackgroundTransparency = 1
+	art.Image = UiImages.Markers.BuildArrow
+	art.ScaleType = Enum.ScaleType.Fit
+	art.Size = UDim2.fromScale(1, 1)
+	art.Parent = bb
+	bb.Parent = playerGui
+	Style.pop(art, true)
+	AudioController.play("UI_Prompt")
+	return bb
+end
+
+-- OutAgain, home: the arrow over the water straight out of the bay (the berth's seaward is -Z), gone once you leave.
+local function setSeaArrow(on: boolean)
+	if not on then
+		if seaArrow then
+			(seaArrow.Adornee :: Instance):Destroy()
+			seaArrow:Destroy()
+			seaArrow = nil
+		end
+		return
+	end
+	local bay = player:GetAttribute("BayCFrame")
+	if seaArrow or typeof(bay) ~= "CFrame" then
+		return
+	end
+	local spot = Instance.new("Attachment")
+	spot.Name = "OutToSea"
+	spot.Parent = Workspace.Terrain
+	spot.WorldPosition = (bay * CFrame.new(0, 0, -(UpgradeStation.LANDING_OUT + SEA_ARROW_OUT))).Position
+	seaArrow = popArrow("SeaArrow", spot, SEA_ARROW_UP)
+end
+
+-- Over the station's Upgrade button. It may not have streamed in yet: update() asks again.
 local function setUpgradeArrow(on: boolean)
 	if not on then
 		if upgradeArrow then
@@ -201,24 +247,7 @@ local function setUpgradeArrow(on: boolean)
 	if upgradeArrow or not button then
 		return
 	end
-	local bb = Instance.new("BillboardGui")
-	bb.Name = "UpgradeArrow"
-	bb.Adornee = button
-	bb.StudsOffsetWorldSpace = Vector3.new(0, 7, 0)
-	bb.Size = UDim2.fromOffset(84, 84)
-	bb.LightInfluence = 0
-	bb.AlwaysOnTop = true
-	bb.ResetOnSpawn = false
-	local art = Instance.new("ImageLabel")
-	art.BackgroundTransparency = 1
-	art.Image = UiImages.Markers.BuildArrow
-	art.ScaleType = Enum.ScaleType.Fit
-	art.Size = UDim2.fromScale(1, 1)
-	art.Parent = bb
-	bb.Parent = playerGui
-	upgradeArrow = bb
-	Style.pop(art, true)
-	AudioController.play("UI_Prompt")
+	upgradeArrow = popArrow("UpgradeArrow", button, 7)
 end
 
 -- Owner 2026-10-31 (first login on a phone: the tablet filled the screen, no sea, no island): a Hut-less spawn
@@ -673,11 +702,17 @@ local function wheelNear(): boolean
 		)
 end
 
+local function atHome(): boolean
+	local root = rootPosition()
+	return root ~= nil and GoBack.isHome(root, player:GetAttribute("BayCFrame"))
+end
+
 local function update()
 	if rewardPending and os.clock() >= rewardAt then
 		showReward()
 	end
 	beat = currentBeat()
+	outAgainAt = if beat == "OutAgain" then outAgainAt or os.clock() else nil
 	-- the Day 1 card waits for the first trip home: a new player's first screen is the game (owner 2026-11-03)
 	player:SetAttribute(
 		"TutorialHoldReward",
@@ -703,6 +738,11 @@ local function update()
 				cash
 			) then "upgrade"
 			elseif beat == "Spin" and wheelNear() then "spin"
+			elseif
+				outAgainAt
+				and os.clock() - outAgainAt >= UpgradeStation.MOMENT
+				and atHome()
+			then "sea"
 			else nil
 		setGuide(kind)
 	end
@@ -712,6 +752,7 @@ local function update()
 	-- at the stand the tablet's own cue (green arrow + Build) is the one marker on it
 	local cued = DockController.TabletGoal(guide == "station" and not cleared)
 	setUpgradeArrow(guide == "upgrade")
+	setSeaArrow(guide == "sea")
 	if beacon then
 		-- the Upgrade button's own arrow is the marker on it; the pointer and trail still lead from the jetty
 		beacon.mute(

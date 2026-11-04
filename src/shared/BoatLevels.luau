@@ -35,6 +35,7 @@ BoatLevels.REACH_TIME = 0.18 -- s of top speed the reach covers, so a 0.25 s sca
 BoatLevels.MAX_LENGTH = 72 -- studs: looks stop growing here (a x2.5 lifeboat would not fit the bay) -- tune
 -- Mechanics, skills and the Nitro multiply this top speed; never past the tested limit (tests/BoatLevels.spec).
 BoatLevels.SPEED_LIMIT = 1100
+BoatLevels.FLOOR_SLACK = 1 -- studs/s: the stock jet ski's 80.2 is L1's 80, not a faster boat that needs L2
 
 BoatLevels.Stages = {
 	{ hull = "JetSki", first = 1, last = 10, name = "Jet ski" },
@@ -155,7 +156,7 @@ end
 -- Save migration: the lowest level that holds this old boat's speed and room, so nobody ever goes down.
 function BoatLevels.floorFor(speed: number, room: number): number
 	for level, row in ROWS do
-		if row.speed >= speed and row.room >= room then
+		if row.speed >= speed - BoatLevels.FLOOR_SLACK and row.room >= room then
 			return level
 		end
 	end

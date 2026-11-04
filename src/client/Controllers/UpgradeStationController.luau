@@ -1,8 +1,8 @@
 --!strict
 -- UpgradeStationController (docs/30 section 2): the Upgrade Station's board and the level-up moment. Every station's
 -- board shows YOUR boat: Lv N / 50, a full bar with the five hull stages marked, the next level's jump, its price, your
--- Cash and what is missing. The button is the green Part's prompt (PromptCueController's kit pill: tap, key, gamepad),
--- in range from the bay and on foot. The moment plays on your boat, locally anchored: up, a spin, the VFXKit blast at
+-- Cash and what is missing. The button is the Part's prompt (PromptCueController's kit pill: tap, key, gamepad), in range
+-- from the bay and on foot. Green only when affordable; short of Cash it is grey and a press only shakes what is missing. The moment plays on your boat, locally anchored: up, a spin, the VFXKit blast at
 -- the top while the server swaps in the new boat, the slam. Reduced motion: a small lift, no spin, no shake.
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
@@ -30,6 +30,8 @@ local PPS = 25 -- SurfaceGui pixels a stud: the 44 x 28 board is 1100 x 700
 local LIFT = 16 -- studs at x1 scale -- tune
 local RED = Color3.fromRGB(255, 96, 86)
 local GREEN = Color3.fromRGB(120, 240, 130)
+local BUTTON_GREY = Color3.fromRGB(128, 134, 142)
+local MISSING_AT = UDim2.fromOffset(40, 586)
 
 type Board = {
 	level: TextLabel,
@@ -40,8 +42,9 @@ type Board = {
 	price: TextLabel,
 	cash: TextLabel,
 	missing: TextLabel,
-	scale: UIScale,
 	prompt: ProximityPrompt?,
+	button: BasePart?,
+	green: Color3?, -- the button as the server built it
 	action: TextLabel,
 }
 
@@ -135,9 +138,7 @@ local function buildBoard(part: BasePart, button: BasePart?, prompt: ProximityPr
 		text(root, UDim2.fromOffset(150, 488), UDim2.fromOffset(330, 92), Enum.TextXAlignment.Left)
 	local cash =
 		text(root, UDim2.fromOffset(500, 488), UDim2.fromOffset(560, 92), Enum.TextXAlignment.Right)
-	local missing = text(root, UDim2.fromOffset(40, 586), UDim2.fromOffset(1020, 96))
-	local scale = Instance.new("UIScale")
-	scale.Parent = missing
+	local missing = text(root, MISSING_AT, UDim2.fromOffset(1020, 96))
 	-- the green button's own label
 	local action = Instance.new("TextLabel")
 	if button then
@@ -167,8 +168,9 @@ local function buildBoard(part: BasePart, button: BasePart?, prompt: ProximityPr
 		price = price,
 		cash = cash,
 		missing = missing,
-		scale = scale,
 		prompt = prompt,
+		button = button,
+		green = if button then button.Color else nil,
 		action = action,
 	}
 end
@@ -185,8 +187,13 @@ local function refresh()
 		b.level.Text = `Lv {row.level} / {BoatLevels.MAX}`
 		b.fill.Size = UDim2.fromScale(math.max(BoatLevels.progress(row.level), 0.04), 1)
 		b.cash.Text = `You {Theme.short(math.floor(money))}`
+		local affordable = BoatLevels.canBuy(row.level, money)
 		if b.prompt then
 			b.prompt.Enabled = nextRow ~= nil
+			b.prompt:SetAttribute("Grey", not affordable) -- local: PromptCueController greys the pill
+		end
+		if b.button then
+			b.button.Color = if affordable then b.green :: Color3 else BUTTON_GREY
 		end
 		if nextRow then
 			b.next.Text = if nextRow.hull ~= row.hull
@@ -213,12 +220,19 @@ local function refresh()
 	end
 end
 
--- One pop on what is missing when the Cash is short (no flash).
-local function popMissing()
+-- One shake of what is missing when the Cash is short, with its sound (reduced motion: the sound alone).
+local function shakeMissing()
+	AudioController.play("UI_Back")
+	if Comfort.reducedMotion() then
+		return
+	end
 	for _, b in boards do
-		b.scale.Scale = 1.18
-		TweenService:Create(b.scale, TweenInfo.new(0.3, Enum.EasingStyle.Back), { Scale = 1 })
-			:Play()
+		b.missing.Position = MISSING_AT
+		TweenService:Create(
+			b.missing,
+			TweenInfo.new(0.06, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, 3, true),
+			{ Position = MISSING_AT + UDim2.fromOffset(16, 0) }
+		):Play()
 	end
 end
 
@@ -329,10 +343,17 @@ function UpgradeStationController.Start()
 		if prompt.Name ~= "UpgradeBoat" or who ~= player then
 			return
 		end
+		local snap = snapshot
+		if snap then
+			local _, why = BoatLevels.canBuy(snap.boatLevel, tonumber(snap.cash) or 0)
+			if why == "Need Cash" then
+				shakeMissing() -- no call: the server refuses it anyway
+				return
+			end
+		end
 		local ok, reason = Net.func("Boat_LevelUp"):InvokeServer()
 		if not ok and reason == "Need Cash" then
-			popMissing()
-			AudioController.play("UI_Prompt")
+			shakeMissing()
 		end
 	end)
 	task.spawn(function()

@@ -1,10 +1,10 @@
 --!strict
--- PirateBoat (docs/29 D): the placeholder Lego pirate boat from art/source/concepts/sea-zones (pirateBoat in src/models.js):
+-- PirateBoat (docs/29 D): the placeholder Lego pirate boat:
 -- striped sail, black flag, shark-jaw ram, no guns. Code-built Parts until the Blender art lands; bow along -Z, the
 -- pivot on the waterline, about 63 x 50 studs. All anchored and not solid: the server steers it, nothing collides.
 local PirateBoat = {}
 
-local S = 1.15 -- concept units -> studs
+local S = 1.15 -- layout units -> studs
 local DARK = Color3.fromHex("2E190E")
 local WOOD = Color3.fromHex("6B3C22")
 local WOOD_DARK = Color3.fromHex("4A2815")
@@ -18,7 +18,7 @@ local BLACK = Color3.fromHex("14121C")
 function PirateBoat.build(): Model
 	local model = Instance.new("Model")
 	model.Name = "PirateBoat"
-	-- x: stern to bow, y: up, z: beam, as in the concept
+	-- x: stern to bow, y: up, z: beam, in layout units
 	local function add(
 		class: string,
 		x0: number,

@@ -214,7 +214,8 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 			return
 		end
 		local d = data
-		local owned = d ~= nil and Rules.ownsVehicle(d, craft, ownsPass(craft))
+		local owned = d ~= nil
+			and Rules.ownsVehicle(d, craft, ownsPass(craft) or Rules.wonLook(d, craft))
 		local unlock = ProgressionConfig.Vehicles[craft]
 		local need = if d
 				and not owned

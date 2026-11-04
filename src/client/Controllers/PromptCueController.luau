@@ -91,7 +91,7 @@ local function show(prompt: ProximityPrompt, input: Enum.ProximityPromptInputTyp
 	pill.Position = UDim2.fromOffset(RIM, RIM)
 	pill.Size = UDim2.new(1, -RIM * 2, 1, -RIM * 2)
 	pill.Parent = button
-	local _, face = Style.block(pill, Style.grad("buy"), { radius = 18, lip = 6, border = 4 })
+	local block, face = Style.block(pill, Style.grad("buy"), { radius = 18, lip = 6, border = 4 })
 
 	local ringBox = Instance.new("Frame")
 	ringBox.BackgroundTransparency = 1
@@ -186,6 +186,16 @@ local function show(prompt: ProximityPrompt, input: Enum.ProximityPromptInputTyp
 			setRing(0)
 		end)
 	)
+
+	-- a prompt you can't afford yet (the Upgrade Station) wears grey, not the green price colour
+	local function tint()
+		local grad = Style.grad(if prompt:GetAttribute("Grey") == true then "disabled" else "buy")
+		Style.gradient(face, grad)
+		local lip = block:FindFirstChild("Lip") :: Frame
+		lip.BackgroundColor3 = Theme.shade(grad.bottom)
+	end
+	tint()
+	table.insert(conns, prompt:GetAttributeChangedSignal("Grey"):Connect(tint))
 
 	bb.Parent = Players.LocalPlayer:FindFirstChildOfClass("PlayerGui")
 	Style.pop(button, true) -- one pop, never a loop

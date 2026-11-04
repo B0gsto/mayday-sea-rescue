@@ -126,7 +126,7 @@ function Board.new(
 		end
 		local d = data
 		local unlock = ProgressionConfig.Vehicles[id]
-		local have = d ~= nil and (Rules.canUseVehicle(d, id, ownsPass(id)))
+		local have = d ~= nil and (Rules.canUseVehicle(d, id, ownsPass(id) or Rules.wonLook(d, id)))
 		local ladder = unlock ~= nil and unlock.level ~= nil -- docs/30: this hull comes with its boat level, Cash buys levels
 		local need = if d and not have and not ladder then Rules.vehicleLock(d, id) else nil
 		local cashOk = d ~= nil and not have and (Rules.canBuyVehicle(d, id, ownsPass(id)))
@@ -148,7 +148,7 @@ function Board.new(
 		local equipped = have
 			and d ~= nil
 			and BayLaunch.pick(last, VehicleConfig.Order, function(v)
-					return (Rules.canUseVehicle(d, v, ownsPass(v)))
+					return (Rules.canUseVehicle(d, v, ownsPass(v) or Rules.wonLook(d, v)))
 				end)
 				== id
 		local c = Card.new(panel.body, {

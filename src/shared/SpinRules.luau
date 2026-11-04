@@ -455,6 +455,11 @@ function SpinRules.ownedOf(rarity: string, owned: { string }): number
 	return n
 end
 
+-- Every boat look in the `spinBoat` flag: what the pivot's look system reads (docs/30 section 3).
+function SpinRules.wonBoatLooks(raw: any): { string }
+	return if type(raw) == "string" and raw ~= "" then string.split(raw, ",") else {}
+end
+
 -- Earned cosmetic keys (`earn = "spin:<prize id>"` in the Livery / Wake slot configs).
 function SpinRules.ownedKeys(ownedBits: number): { string }
 	local keys: { string } = {}

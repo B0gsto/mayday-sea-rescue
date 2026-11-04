@@ -12,6 +12,7 @@ return function(t)
 		coldOpenActive = false,
 		testRide = false,
 		surfaceBoat = true,
+		tutorial = false,
 	}
 	local function with(k: string, v: any)
 		local w = table.clone(who)
@@ -73,6 +74,7 @@ return function(t)
 			t.expect(R.eligible(with("coldOpenActive", true))).toBe(false)
 			t.expect(R.eligible(with("testRide", true))).toBe(false)
 			t.expect(R.eligible(with("surfaceBoat", false))).toBe(false)
+			t.expect(R.eligible(with("tutorial", true))).toBe(false)
 		end
 	)
 

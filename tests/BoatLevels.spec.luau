@@ -283,6 +283,9 @@ return function(t)
 		local again = Rules.migrate(saved)
 		t.expect(again.boatLevel).toBe(1)
 		t.expect(again.boatPassFloor).toBeNil()
+		-- the stock jet ski's 80.2 is L1's 80: a save with no level still meets the Upgrade beat
+		t.expect(Rules.migrate({}).boatLevel).toBe(1)
+		t.expect(Rules.migrate({ coldOpenDone = true, totalRescues = 1 }).boatLevel).toBe(1)
 		-- old owners
 		t.expect(Rules.migrate({ coldOpenDone = true, vehicles = { RIB = true } }).boatLevel >= 11)
 			.toBe(true)

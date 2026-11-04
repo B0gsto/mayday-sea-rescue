@@ -227,7 +227,7 @@ function ProgressionService.CanUseVehicle(player: Player, vehicleId: string): (b
 	return Rules.canUseVehicle(
 		data,
 		vehicleId,
-		ProgressionService.OwnsVehiclePass(player, vehicleId)
+		ProgressionService.OwnsVehiclePass(player, vehicleId) or Rules.wonLook(data, vehicleId)
 	)
 end
 

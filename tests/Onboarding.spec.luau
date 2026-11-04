@@ -116,6 +116,9 @@ return function(t)
 		t.expect(trip(false, true, false)).toEqual({ true, false })
 		t.expect(trip(true, false, false)).toEqual({ true, false }) -- stepped off at sea: still out
 		t.expect(trip(true, true, true)).toEqual({ false, true })
+		-- a cancelled Go back or a ram leaves you out at sea: the trip holds and the next way home still ends it
+		t.expect(trip(true, true, false)).toEqual({ true, false })
+		t.expect(trip(true, false, true)).toEqual({ false, true })
 		t.expect(trip(true, false, true)).toEqual({ false, true }) -- swam home
 	end)
 

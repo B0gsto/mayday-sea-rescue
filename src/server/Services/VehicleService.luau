@@ -1607,6 +1607,7 @@ local function onGoBack(player: Player)
 			testRide = player:GetAttribute("TestRide") ~= nil,
 			at = record.root.Position,
 			bay = player:GetAttribute("BayCFrame"),
+			spinning = player:GetAttribute("WheelSpinning") == true,
 		})
 	then
 		chargeGoBack(player, record, seat)

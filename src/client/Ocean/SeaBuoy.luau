@@ -1,5 +1,5 @@
 --!strict
--- SeaBuoy (docs/29 B): one zone-line buoy, code-built placeholder Parts until the concept art lands, plus the soft
+-- SeaBuoy (docs/29 B): one zone-line buoy, code-built placeholder Parts until real art lands, plus the soft
 -- glow curtain to the next buoy. The curtain is a horizontal FaceCamera Beam: from a boat its width stands up, and the
 -- texture's soft edges fade it out; its lower half is under the sea, so it reads as a glow rising off the water.
 -- No coplanar faces: every part overlaps the one below it (tests/ZFight.spec.luau).

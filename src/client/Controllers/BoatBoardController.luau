@@ -61,7 +61,8 @@ local function usable(id: string): boolean?
 	end
 	local key = Rules.vehiclePass(id)
 	local pass = key ~= nil and player:GetAttribute("Pass_" .. key) == true
-	return (Rules.canUseVehicle(Rules.fromSnapshot(snap), id, pass))
+	local data = Rules.fromSnapshot(snap)
+	return (Rules.canUseVehicle(data, id, pass or Rules.wonLook(data, id)))
 end
 
 -- a locked Robux-only boat you may ride now (the server checks again)

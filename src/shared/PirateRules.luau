@@ -50,6 +50,7 @@ export type Who = {
 	coldOpenActive: boolean,
 	testRide: boolean,
 	surfaceBoat: boolean, -- a hull on the water: no helis or subs
+	tutorial: boolean, -- docs/30 section 4 is still running
 }
 export type Chase = {
 	pos: Vector3,
@@ -91,6 +92,7 @@ function PirateRules.eligible(w: Who): boolean
 		and not w.coldOpenActive
 		and not w.testRide
 		and w.surfaceBoat
+		and not w.tutorial
 end
 
 -- Per roll: rises with the zone and with how full the boat is.

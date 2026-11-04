@@ -61,4 +61,4 @@ sees, and a ram needs it on the boat longer than the client's ping. A boost slow
 shakes it. A knocked survivor can't climb back for 4 s (auto-board would undo the ram).
 
 ## Art
-Design before Blender: concepts in `art/source/concepts/` (HTML), AD first, Blender only for approved ones.
+No art approved yet. The owner rejected the first code-drawn concepts (2026-11-03) and they were removed; none is cleared for Blender. Pirate boat, buoys, zone board and HUD stay gameplay placeholders. New concepts follow the design-before-Blender rule, from Claude Design, never vector shapes.

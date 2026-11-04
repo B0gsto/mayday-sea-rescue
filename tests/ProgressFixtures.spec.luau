@@ -567,9 +567,9 @@ return function(t)
 			beatHQSite = "HQSite",
 			beatColdOpen = "ColdOpen",
 			beatRescue = "Rescue",
-			-- pre-ladder saves on the old Workshop beat: migrate's jet ski floor is L2 (80.2 studs/s), so they sail on
-			beatBuildStation = "OutAgain",
-			beatBuildSite = "OutAgain",
+			-- pre-ladder saves on the old Workshop beat: no free L2 from the stock jet ski, they meet the Upgrade beat
+			beatBuildStation = "Upgrade",
+			beatBuildSite = "Upgrade",
 			beatUpgrade = "Upgrade",
 			beatUpgradeBroke = "Upgrade",
 			beatOutAgain = "OutAgain",

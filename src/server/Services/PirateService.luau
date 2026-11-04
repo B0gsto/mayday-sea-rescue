@@ -16,11 +16,13 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
 local CraftBoard = require(Shared:WaitForChild("Ops"):WaitForChild("CraftBoard"))
+local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local PirateBoat = require(Shared:WaitForChild("PirateBoat"))
 local PirateRules = require(Shared:WaitForChild("PirateRules"))
 local SeaZones = require(Shared:WaitForChild("Calls"):WaitForChild("SeaZones"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 
+local DataService = require(script.Parent.DataService)
 local RescueRunService = require(script.Parent.RescueRunService)
 local RescueService = require(script.Parent.RescueService)
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
@@ -196,6 +198,7 @@ local function tryRoll(player: Player)
 	end
 	local survivors = survivorsOn(model)
 	local zone = SeaZones.zoneAt(root.Position)
+	local data = DataService.Get(player)
 	if
 		PirateRules.eligible({
 			survivors = survivors,
@@ -205,6 +208,7 @@ local function tryRoll(player: Player)
 			coldOpenActive = player:GetAttribute("ColdOpenActive") == true,
 			testRide = player:GetAttribute("TestRide") ~= nil,
 			surfaceBoat = true, -- boatOf
+			tutorial = not data or Onboarding.beat(Onboarding.factsOf(data)) ~= "Done",
 		})
 		and rng:NextNumber()
 			< PirateRules.chance(zone, survivors, tonumber(model:GetAttribute("Capacity")) or 1)

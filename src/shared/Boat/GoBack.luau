@@ -42,12 +42,15 @@ export type State = {
 	testRide: boolean,
 	at: Vector3, -- the craft
 	bay: any, -- the driver's berth (player attribute BayCFrame)
+	spinning: boolean?, -- the prize wheel's sequence is running (server attribute WheelSpinning)
 }
 
 -- Why this press does nothing, or nil when it goes.
 function GoBack.refusal(s: State): string?
 	if not s.driving then
 		return "NotDriving"
+	elseif s.spinning then
+		return "Spinning"
 	elseif s.testRide then
 		return "TestRide"
 	elseif not s.coldOpenDone and s.survivors <= 0 then

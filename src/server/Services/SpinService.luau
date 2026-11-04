@@ -292,6 +292,7 @@ function SpinService.WheelSpin(player: Player): { [string]: any }
 	end
 	local prize = SpinRules.prize(result.prize)
 	wheelBusy[player] = true
+	player:SetAttribute("WheelSpinning", true) -- Go back refuses until the sequence ends (Boat/GoBack)
 	local remote = wheelRemote
 	if remote then
 		remote:FireAllClients({
@@ -313,6 +314,7 @@ function SpinService.WheelSpin(player: Player): { [string]: any }
 	end
 	task.delay(WHEEL_TIME, function()
 		wheelBusy[player] = nil
+		player:SetAttribute("WheelSpinning", nil)
 		-- only the rare wins are worth telling the whole server about
 		if prize and (prize.rarity == "Legendary" or prize.rarity == "Mythic") then
 			fireFlex(player, prize)

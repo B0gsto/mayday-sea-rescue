@@ -9,6 +9,7 @@ local DockConfig = require(script.Parent.Config.DockConfig)
 local MonetizationConfig = require(script.Parent.Config.MonetizationConfig)
 local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
 local SkillRules = require(script.Parent.SkillRules)
+local SpinRules = require(script.Parent.SpinRules)
 local UnlockTree = require(script.Parent.UnlockTree)
 local VehicleConfig = require(script.Parent.Config.VehicleConfig)
 local VehicleUpgrades = require(script.Parent.VehicleUpgrades)
@@ -128,6 +129,12 @@ function Rules.ownsVehicle(data: PlayerData, vehicleId: string, passOwned: boole
 		return data.vehicles[vehicleId] == true and data.flags.spinBoat == vehicleId
 	end
 	return (unlock.price <= 0 and not unlock.level) or data.vehicles[vehicleId] == true
+end
+
+-- A wheel boat won as a look: worn like a passed boat, with the level's stats (docs/30 section 3). Callers pass it as
+-- passOwned, so it never counts as a vehicle owned for a level floor.
+function Rules.wonLook(data: PlayerData, vehicleId: string): boolean
+	return table.find(SpinRules.wonBoatLooks(data.flags.spinBoat), vehicleId) ~= nil
 end
 
 -- ok, reason: may this player launch this vehicle? Owning it is enough: the building gate is on the buy

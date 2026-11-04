@@ -34,6 +34,11 @@ return function(t)
 		t.expect(GoBack.refusal(state({ coldOpenDone = false, survivors = 1 }))).toBe(nil)
 	end)
 
+	t.test("refused while the prize wheel's sequence runs", function()
+		t.expect(GoBack.refusal(state({ spinning = true }))).toBe("Spinning")
+		t.expect(GoBack.refusal(state({ spinning = false }))).toBeNil()
+	end)
+
 	t.test("nothing to do at home, and no home without a berth", function()
 		local near = Vector3.new(1000 - ColdOpen.DROP_RADIUS + 1, 0, 0)
 		t.expect(GoBack.refusal(state({ at = near }))).toBe("Home")

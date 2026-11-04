@@ -57,7 +57,7 @@ local arrowMark: Frame? = nil
 local arrowTurn: ImageLabel? = nil
 
 -- The edge arrow: the red waypoint pin with a black flag. shortcut: a reused sprite and Frames for the flag, upgrade when
--- the concept's HUD art is rendered and uploaded (tools/ui-art).
+-- real HUD art lands.
 local function arrow(): (Frame, ImageLabel)
 	if arrowMark and arrowTurn then
 		return arrowMark, arrowTurn

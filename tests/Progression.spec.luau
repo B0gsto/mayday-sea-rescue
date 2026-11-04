@@ -86,6 +86,17 @@ return function(t)
 		-- the spin wheel's grand prize: the profile flag owns exactly that one pass-only craft
 		local won = data(0, {}, { StormRunner = true })
 		t.expect(Rules.ownsVehicle(won, "StormRunner")).toBe(false)
+		-- wheel looks: worn once won, not before, and no level floor from them
+		local looks = data(0)
+		t.expect(Rules.wonLook(looks, "RiptideX")).toBe(false)
+		looks.flags.spinBoat = "StormRunner,RiptideX"
+		t.expect(Rules.wonLook(looks, "StormRunner")).toBe(true)
+		t.expect(Rules.wonLook(looks, "RiptideX")).toBe(true)
+		t.expect(Rules.wonLook(looks, "Tidewalker")).toBe(false)
+		t.expect((Rules.canUseVehicle(looks, "RiptideX", Rules.wonLook(looks, "RiptideX"))))
+			.toBe(true)
+		t.expect((Rules.canUseVehicle(looks, "Tidewalker", Rules.wonLook(looks, "Tidewalker"))))
+			.toBe(false)
 		won.flags.spinBoat = "StormRunner"
 		t.expect(Rules.ownsVehicle(won, "StormRunner")).toBe(true)
 		t.expect(Rules.ownsVehicle(won, "GildedGull")).toBe(false)
