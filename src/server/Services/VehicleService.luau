@@ -53,6 +53,7 @@ local Nitro = require(Shared:WaitForChild("Boat"):WaitForChild("Nitro"))
 local RescueRun = require(Shared:WaitForChild("RescueRun"))
 local RespawnPolicy = require(Shared:WaitForChild("Boat"):WaitForChild("RespawnPolicy"))
 local RingLayout = require(Shared:WaitForChild("Config"):WaitForChild("RingLayout"))
+local SeaEdge = require(Shared:WaitForChild("Boat"):WaitForChild("SeaEdge"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local UpgradeStation = require(Shared:WaitForChild("UpgradeStation"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
@@ -487,8 +488,10 @@ local function onDriverChanged(record: Record)
 		record.model:SetAttribute("EngineRunning", true)
 		Craft.clear(record.model)
 		record.mode = "Driven"
-		record.root.Anchored = false
-		setOwner(record.root, player)
+		if not record.resetting then -- a reset or level-up hold gives the helm back itself
+			record.root.Anchored = false
+			setOwner(record.root, player)
+		end
 		record.lastGood = record.root.CFrame
 		record.goodAge = 0
 		record.strikes = 0
@@ -694,7 +697,7 @@ local function policyState(record: Record): RespawnPolicy.State
 		current = byPlayer[record.owner] == record or seconds[record.owner] == record,
 		wrecked = record.model:GetAttribute("Wrecked") == true
 			or (record.spec.craft == nil and pos.Y < MIN_Y)
-			or Vector2.new(pos.X, pos.Z).Magnitude > GameConfig.MapRadius + 200,
+			or Vector2.new(pos.X, pos.Z).Magnitude > GameConfig.MapRadius + SeaEdge.MARGIN,
 		ownerDistance = if ownerPos then (ownerPos - pos).Magnitude else nil,
 		idleScale = Crowding.scale(#Players:GetPlayers()),
 	}
@@ -1225,7 +1228,8 @@ local function nearestOpenWater(
 ): (Vector3?, Vector3?)
 	local r, beam = math.max(hull.X, hull.Z) / 2 + 2, hull.X / 2 + 1
 	local dirs = bearings(away)
-	for ring = fromRing or BOAT_BACKOFF, OPEN_WATER_RANGE, BOAT_BACKOFF do
+	-- a big hull needs a wider gap, so the nearest one is further: L50 found none in Penwyn harbour and reset in place
+	for ring = fromRing or BOAT_BACKOFF, OPEN_WATER_RANGE + hull.Z * 5, BOAT_BACKOFF do
 		for i, d in dirs do
 			if ring == 0 and i > 1 then
 				break -- ring 0 is the one spot
@@ -1387,7 +1391,7 @@ local function checkVehicle(record: Record, dt: number)
 	local lost = VehicleRecovery.lost(
 		record.root.Position,
 		record.spec.craft ~= nil,
-		GameConfig.MapRadius + 200
+		GameConfig.MapRadius + SeaEdge.MARGIN
 	)
 	local driven = record.mode == "Driven"
 	if lost and not driven then
@@ -1740,6 +1744,7 @@ function VehicleService.CancelGoBack(player: Player): boolean
 end
 
 local BERTH_NEAR = 40 -- studs from the berth at which a craft counts as waiting there
+local STATION_NEAR = 120 -- studs from the Upgrade Station's landing, the same for the biggest hull
 
 -- K11 / docs/23: every spawn stands the player on their island (WP-19b: its spawn); a returning player (coldOpenDone) also gets
 -- their craft docked beside them. A new player's cold open
@@ -1772,13 +1777,23 @@ local function homeAtBay(player: Player, character: Model)
 	-- the character twice, so this reads where the craft is, not whether this pass docked it.
 	local craft = byPlayer[player]
 	local docked = craft ~= nil and (craft.seat.Position - bay.Position).Magnitude < BERTH_NEAR
-	local home = if docked then nil else DockService.GetSpawn(player)
+	-- Go back left it in the Upgrade Station's bay: on the walkway beside the button, in reach of the board
+	local plot = DockService.GetPlot(player)
+	local atStation = craft ~= nil
+		and plot ~= nil
+		and flatDistance(craft.root.Position, UpgradeStation.landing(plot).Position)
+			< STATION_NEAR
+	local home = if docked or atStation then nil else DockService.GetSpawn(player)
 	local pos = standOnGround(
 		character,
-		if home then home.Position else (bay.CFrame * BayLaunch.STAND).Position
+		if atStation
+			then UpgradeStation.standAt(plot :: number)
+			elseif home then home.Position
+			else (bay.CFrame * BayLaunch.STAND).Position
 	)
 	local face = if home
 		then pos + home.LookVector
+		elseif atStation then craft.root.Position
 		else Vector3.new(bay.Position.X, pos.Y, bay.Position.Z)
 	character:PivotTo(CFrame.lookAt(pos, Vector3.new(face.X, pos.Y, face.Z)))
 end
@@ -2167,27 +2182,61 @@ function VehicleService.RefreshUpgrades(player: Player, vehicleId: string)
 end
 
 local function boatRecord(player: Player): Record?
+	local first: Record? = nil
+	-- never the docked one beside you: the one you ride, else the current one
 	for _, record in { byPlayer[player], seconds[player] } :: { Record? } do
 		if record and not record.spec.craft then
-			return record
+			if record.driver == player then
+				return record
+			end
+			first = first or record
 		end
 	end
-	return nil
+	return first
+end
+
+local function holdHull(record: Record)
+	record.resetting = true
+	record.recovery.lastAt = os.clock()
+	record.root.Anchored = true
 end
 
 -- The boat a level-up plays on: the one out, else a new one in the bay of `index`. nil if neither can be had.
 function VehicleService.LevelUpBoat(player: Player, index: number): Model?
 	local record = boatRecord(player)
-	if record then
-		return record.model
+	if not record then
+		local id = bayCraft(player)
+		if id then
+			spawnVehicle(player, id, nil, true, true, "Bay", nil, UpgradeStation.landing(index))
+		end
+		record = boatRecord(player)
 	end
-	local id = bayCraft(player)
-	if not id then
+	if not record then
 		return nil
 	end
-	local ok, model =
-		spawnVehicle(player, id, nil, true, true, "Bay", nil, UpgradeStation.landing(index))
-	return if ok and typeof(model) == "Instance" then model :: Model else nil
+	-- the server holds it still through the moment: the owner's client poses it locally and stops simulating, so a
+	-- free hull fell under the sea and came back up with a shove (ReleaseBoat lets go)
+	holdHull(record)
+	return record.model
+end
+
+function VehicleService.ReleaseBoat(player: Player)
+	local record = boatRecord(player)
+	if not record or not record.resetting then
+		return
+	end
+	record.resetting = false
+	local root = record.root
+	if record.mode ~= "Dock" then
+		root.Anchored = false
+	end
+	root.AssemblyLinearVelocity = Vector3.zero
+	root.AssemblyAngularVelocity = Vector3.zero
+	if record.driver then
+		setOwner(root, record.driver)
+		record.lastGood = root.CFrame
+		record.goodAge = 0
+	end
 end
 
 -- docs/30: the new level goes on the boat now, in place, the driver back in the seat. `look`: the hull it wears next
@@ -2210,8 +2259,14 @@ function VehicleService.Refit(player: Player, look: string?): Model?
 	local driver = record.driver
 	local other = if byPlayer[player] == record then seconds[player] else byPlayer[player]
 	local keep = if DockService.Owns(player, "Pontoon") then other else nil
+	local at, held = record.root.CFrame, record.resetting
 	unseatFrom(player, record.model)
-	local model, seat = createVehicle(player, spec, record.root.CFrame, "Request", keep)
+	-- gone now, whatever its class: to clearOtherClasses a stage's old hull still reads occupied this frame, so it stayed
+	despawnModel(record.model, "Replaced")
+	local model, seat = createVehicle(player, spec, at, "Request", keep)
+	if held then
+		holdHull(records[model])
+	end
 	if driver == player then
 		sitDriver(player, seat)
 	end

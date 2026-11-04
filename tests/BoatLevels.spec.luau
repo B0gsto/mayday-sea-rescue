@@ -350,7 +350,50 @@ return function(t)
 		-- already leaving: nothing to do
 		t.expect((Glance.deflect(Vector3.new(50, 0, 10), n, Vector3.xAxis))).toBeNil()
 		-- the sweep covers two frames of travel at the top speed
-		t.expect(Glance.lookahead(1100, 1 / 60, 10) > 1100 / 60 * 2).toBe(true)
+		t.expect(Glance.lookahead(1100, 1 / 60) > 1100 / 60 * 2).toBe(true)
+		-- a corner's later contacts turn the hull and take nothing more: entry speed x KEEP_HEAD_ON at worst
+		local first = Glance.deflect(Vector3.new(-1000, 0, 0), Vector3.xAxis, Vector3.new(-1, 0, 0))
+		local second = Glance.deflect(first :: any, -(first :: any).Unit, (first :: any).Unit, true)
+		t.expect((second :: any).Magnitude >= 1000 * Glance.KEEP_HEAD_ON - 0.01).toBe(true)
+		-- a beach stops a fast hull too; a slow one rides it, and a flat seabed never counts
+		t.expect(Glance.isWall(0.9, 1100)).toBe(true)
+		t.expect(Glance.isWall(0.9, 60)).toBe(false)
+		t.expect(Glance.isWall(1, 1100)).toBe(false)
+		-- the live stops (1101 -> 76, 751 -> 67) read as slams; a hard brake or a slow bump doesn't
+		t.expect(Glance.slammed(1101, 76)).toBe(true)
+		t.expect(Glance.slammed(751, 67)).toBe(true)
+		t.expect(Glance.slammed(1101, 1050)).toBe(false)
+		t.expect(Glance.slammed(20, 1)).toBe(false)
+	end)
+
+	t.test("the sea's edge turns every level back before it counts as lost", function()
+		local Edge = t.load("src/shared/Boat/SeaEdge.luau")
+		local Recovery = t.load("src/shared/VehicleRecovery.luau")
+		local R = 7000
+		-- inside the line, or past it and headed home: the wheel is the player's
+		t.expect(
+			Edge.steer(CFrame.lookAt(Vector3.new(6000, 0, 0), Vector3.new(7000, 0, 0)), 0.3, R)
+		)
+			.toBe(0.3)
+		t.expect(Edge.steer(CFrame.lookAt(Vector3.new(7100, 0, 0), Vector3.zero), 0.3, R)).toBe(0.3)
+		-- steering the same way as the turn keeps it; a fight against it loses more the further out
+		local out = CFrame.lookAt(Vector3.new(7000 + Edge.BAND, 0, 0), Vector3.new(9000, 0, 500))
+		t.expect(math.abs(Edge.steer(out, -1, R))).toBe(1)
+		for _, level in { 1, 10, 30, 50 } do
+			local row = L.row(level)
+			local p, yaw, far = Vector3.new(6900, 0, 100), 0.3, 0 -- straight out, a little off dead centre
+			for _ = 1, 60 * 30 do
+				local dt = 1 / 60
+				local look = Vector3.new(math.cos(yaw), 0, math.sin(yaw))
+				-- flat out, the wheel hard the other way: the rate at full lock comes from the row's circle
+				local steer = Edge.steer(CFrame.lookAt(p, p + look), 1, R)
+				yaw += steer * (row.speed / row.turnRadius) * dt -- right is +yaw in this x-z sketch
+				p += look * row.speed * dt
+				far = math.max(far, p.Magnitude)
+			end
+			t.expect(far < R + Edge.MARGIN).toBe(true)
+			t.expect(Recovery.lost(p, false, R + Edge.MARGIN)).toBe(false)
+		end
 	end)
 
 	t.test("the station: a bay on every island, clear of the lane and the plates", function()

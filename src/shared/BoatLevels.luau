@@ -103,7 +103,7 @@ do
 			piece = PIECES[level][1],
 			kind = PIECES[level][2],
 			price = PRICE[level],
-			turnRadius = 100 + 0.25 * speed,
+			turnRadius = 108 + 0.15 * speed, -- L1 is the jet ski's circle; L50 was 375 and felt like ice (about 500 in play) -- tune
 			reach = math.max(14, math.floor(speed * BoatLevels.REACH_TIME + 0.5)),
 			callReach = if stageIndex == 1 then 2000 elseif stageIndex == 2 then 3500 else 5500,
 		}

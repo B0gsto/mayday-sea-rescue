@@ -5,19 +5,39 @@ local Glance = {}
 
 Glance.MIN_SPEED = 40 -- studs/s: slower hits stay ordinary physics (Unstick, stepping ashore) -- tune
 Glance.MAX_NORMAL_Y = 0.7 -- steeper faces are walls; a ramp or a gentle beach is not
+Glance.BEACH_SPEED = 120 -- studs/s: from here a beach stops a hull as dead as a wall -- tune
+Glance.MAX_NORMAL_Y_FAST = 0.995 -- so only a flat seabed doesn't count
+Glance.LOSS_WINDOW = 0.3 -- s after a glance when more contacts turn the hull but take no more speed: a blocky corner
+-- touches several faces in a row and each one's cut stacked (695 -> 419 -> 199 in 0.1 s) -- tune
+Glance.SLAM_RATIO = 0.5 -- this much of the speed gone in one frame: physics met a wall before the sweep did
 Glance.KEEP_HEAD_ON = 0.55 -- of the speed, straight into a wall -- tune
 Glance.KEEP_SHALLOW = 0.95 -- of the speed, skimming along one -- tune
 Glance.PEEL = 0.3 -- how much the new heading leans away from the wall -- tune
-Glance.COOLDOWN = 0.12 -- s between glances
+Glance.COOLDOWN = 0.03 -- s between glances: 0.12 let a corner's second contact stop the hull -- tune
 
--- How far ahead to sweep this frame: covers the bow and two frames of travel, so no thin wall is missed.
-function Glance.lookahead(speed: number, dt: number, hullLength: number): number
-	return speed * dt * 2 + hullLength / 2 + 1
+-- How far to sweep the hull's box this frame: two frames of travel, so no thin wall is missed.
+function Glance.lookahead(speed: number, dt: number): number
+	return speed * dt * 2 + 1
+end
+
+function Glance.isWall(normalY: number, speed: number): boolean
+	return math.abs(normalY)
+		< (if speed >= Glance.BEACH_SPEED then Glance.MAX_NORMAL_Y_FAST else Glance.MAX_NORMAL_Y)
+end
+
+-- The sweep missed and the speed died anyway (the hull was already touching, or a thin edge): glance late.
+function Glance.slammed(lastSpeed: number, speed: number): boolean
+	return lastSpeed >= Glance.MIN_SPEED and speed < lastSpeed * Glance.SLAM_RATIO
 end
 
 -- velocity and normal flat (Y = 0 is forced here). Returns the new velocity and the heading, or nil when already
--- moving away from the wall.
-function Glance.deflect(velocity: Vector3, normal: Vector3, forward: Vector3): (Vector3?, Vector3?)
+-- moving away from the wall. `free`: inside LOSS_WINDOW, so the speed stays.
+function Glance.deflect(
+	velocity: Vector3,
+	normal: Vector3,
+	forward: Vector3,
+	free: boolean?
+): (Vector3?, Vector3?)
 	local v = Vector3.new(velocity.X, 0, velocity.Z)
 	local n = Vector3.new(normal.X, 0, normal.Z)
 	if v.Magnitude < 1e-3 or n.Magnitude < 1e-3 then
@@ -36,7 +56,9 @@ function Glance.deflect(velocity: Vector3, normal: Vector3, forward: Vector3): (
 		along = side * (if forward:Dot(side) < 0 then -1 else 1)
 	end
 	local skim = math.clamp((v - n * into).Magnitude / speed, 0, 1)
-	local keep = Glance.KEEP_HEAD_ON + (Glance.KEEP_SHALLOW - Glance.KEEP_HEAD_ON) * skim
+	local keep = if free
+		then 1
+		else Glance.KEEP_HEAD_ON + (Glance.KEEP_SHALLOW - Glance.KEEP_HEAD_ON) * skim
 	local heading = (along.Unit + n * Glance.PEEL).Unit
 	return heading * speed * keep, heading
 end

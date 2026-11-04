@@ -1166,10 +1166,11 @@ return function(t)
 			local full = BuildTimer.rate(BuildTimer.BUILDERS) -- a full crew of commons
 			t.expect(full >= 1.6 and full <= 2.5).toBe(true)
 			-- the crew the sim really has at the last build, plus the tree's buildRate minors by then (docs/25 F;
-			-- the last level now lands after GoldenBricks and DoubleSite, so the ceiling is higher; the seeded crew's traits
-			-- move it a little with the wheel's rolls, and a new keep-out reseeds them: 4.36 and 5.11 both seen)
+			-- the last level now lands after GoldenBricks and DoubleSite, so the ceiling is higher. Not a pacing number to
+			-- pin close: the rate is the seeded crew's traits, and any change to the roll order reseeds them. Ten seeds on
+			-- one tree (2026-11-04): 3.45 to 5.52, mean 4.4; this seed 5.11. So the band is that spread, not a tuned target.
 			local late = solo.builds[#solo.builds].rate
-			t.expect(late >= 1.7 and late <= 5.5).toBe(true)
+			t.expect(late >= 3 and late <= 5.6).toBe(true)
 		end
 	)
 

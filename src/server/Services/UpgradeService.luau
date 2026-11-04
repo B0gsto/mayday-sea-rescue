@@ -93,6 +93,11 @@ local function playMoment(player: Player, data: any, level: number, index: numbe
 			)
 		end
 	end)
+	task.delay(UpgradeStation.MOMENT, function()
+		if player.Parent then
+			VehicleService.ReleaseBoat(player)
+		end
+	end)
 end
 
 local function buy(player: Player, index: number): (boolean, string)

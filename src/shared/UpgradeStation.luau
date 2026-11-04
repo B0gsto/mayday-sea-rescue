@@ -166,6 +166,16 @@ function UpgradeStation.buttonAt(index: number): Vector3
 	error("UpgradeStation: no Button")
 end
 
+-- Where someone on foot stands by the boat in the bay: the walkway beside the button (its long axis runs along it).
+function UpgradeStation.standAt(index: number): Vector3
+	for _, part in UpgradeStation.parts(index) do
+		if part.name == "Button" then
+			return (part.cframe * CFrame.new(20, 0, 0)).Position
+		end
+	end
+	error("UpgradeStation: no Button")
+end
+
 function UpgradeStation.nearest(position: Vector3): number
 	local best, bestDistance = 1, math.huge
 	for index in RingLayout.Islands do

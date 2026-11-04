@@ -53,10 +53,12 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
 local Buoyancy = require(Shared:WaitForChild("Boat"):WaitForChild("Buoyancy"))
 local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local Crowding = require(Shared:WaitForChild("Crowding"))
+local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local Glance = require(Shared:WaitForChild("Boat"):WaitForChild("Glance"))
 local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
 local Helm = require(Shared:WaitForChild("Boat"):WaitForChild("Helm"))
@@ -64,6 +66,7 @@ local NavLights = require(Shared:WaitForChild("Boat"):WaitForChild("NavLights"))
 local Nitro = require(Shared:WaitForChild("Boat"):WaitForChild("Nitro"))
 local PickupRingController = require(script.Parent.PickupRingController)
 local RiderPose = require(Shared:WaitForChild("Boat"):WaitForChild("RiderPose"))
+local SeaEdge = require(Shared:WaitForChild("Boat"):WaitForChild("SeaEdge"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local TouchDriveController = require(script.Parent.TouchDriveController)
@@ -252,45 +255,60 @@ local function dockContact(model: Model): (boolean, Vector3?, Vector3?)
 	return false, nil, nil
 end
 
--- docs/30: at speed a wall glances you off (Boat/Glance): sweep ahead of the bow and the two sides each frame, since a
--- fast hull moves further per physics step than most walls are thick.
+-- docs/30: at speed a wall glances you off (Boat/Glance): sweep HullRoot's own box (what really collides, keel to deck
+-- at any scale) ahead each frame, since a fast hull moves further per physics step than most walls are thick.
 local glanceAt: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
+local lastMove: { [Model]: { at: CFrame, flat: Vector3 } } = setmetatable({}, { __mode = "k" }) :: any
+local lostSpeedAt: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
 local function glanceBoat(model: Model, dt: number)
 	local root = model.PrimaryPart
 	if not root or root.Anchored then
+		if root then
+			lastMove[model] = nil
+		end
 		return
 	end
 	local v = root.AssemblyLinearVelocity
 	local flat = Vector3.new(v.X, 0, v.Z)
-	local speed = flat.Magnitude
 	local now = os.clock()
+	local was = lastMove[model]
+	lastMove[model] = { at = root.CFrame, flat = flat }
+	-- a reset or a landing moves the hull far as well as stopping it: not a slam
+	local slam = was ~= nil
+		and Glance.slammed(was.flat.Magnitude, flat.Magnitude)
+		and (root.Position - was.at.Position).Magnitude < was.flat.Magnitude * dt * 3
+	local sweep = if slam then (was :: any).flat else flat
+	local speed = sweep.Magnitude
 	if speed < Glance.MIN_SPEED or now < (glanceAt[model] or 0) then
 		return
 	end
+	local from: CFrame = if slam then (was :: any).at else root.CFrame
 	local params = wallParams(model)
 	params.CollisionGroup = root.CollisionGroup -- boats ghost through each other (Crowding)
-	local length = Glance.lookahead(speed, dt, root.Size.Z)
+	local hit =
+		Workspace:Blockcast(from, root.Size, sweep.Unit * Glance.lookahead(speed, dt), params)
+	local who = hit and hit.Instance:FindFirstAncestorOfClass("Model")
+	local wall = hit
+		and Glance.isWall(hit.Normal.Y, speed)
+		and not (who and who:FindFirstChildOfClass("Humanoid"))
+	if not wall and not slam then
+		return
+	end
 	local forward = Buoyancy.flatForward(root.CFrame.LookVector)
-	local right = root.CFrame.RightVector
-	for _, side in { 0, -0.45, 0.45 } do
-		local from = root.Position + right * side * root.Size.X
-		local hit = Workspace:Raycast(from, flat.Unit * length, params)
-		local who = hit and hit.Instance:FindFirstAncestorOfClass("Model")
-		if
-			hit
-			and math.abs(hit.Normal.Y) < Glance.MAX_NORMAL_Y
-			and not (who and who:FindFirstChildOfClass("Humanoid"))
-		then
-			local velocity, heading = Glance.deflect(flat, hit.Normal, forward)
-			if velocity and heading then
-				glanceAt[model] = now + Glance.COOLDOWN
-				local at = root.Position
-				root.CFrame = CFrame.lookAt(at, at + heading)
-				root.AssemblyLinearVelocity = velocity + Vector3.new(0, v.Y, 0)
-				root.AssemblyAngularVelocity = Vector3.zero
-				return
-			end
+	local free = now < (lostSpeedAt[model] or 0)
+	local velocity, heading =
+		Glance.deflect(sweep, if wall and hit then hit.Normal else -sweep.Unit, forward, free)
+	if velocity and heading then
+		glanceAt[model] = now + Glance.COOLDOWN
+		if not free then
+			lostSpeedAt[model] = now + Glance.LOSS_WINDOW
 		end
+		local at = from.Position
+		root.CFrame = CFrame.lookAt(at, at + heading)
+		-- after a slam v.Y is the wall's kick: it drove hulls down to y -16, under the plates
+		root.AssemblyLinearVelocity = velocity + Vector3.new(0, if slam then 0 else v.Y, 0)
+		root.AssemblyAngularVelocity = Vector3.zero
+		lastMove[model] = { at = root.CFrame, flat = velocity }
 	end
 end
 
@@ -564,6 +582,9 @@ local function step(dt: number)
 							steerIn
 						)
 					throttle, steer = Unstick.input(unstick[child], throttle, steer)
+					if child.PrimaryPart then
+						steer = SeaEdge.steer(child.PrimaryPart.CFrame, steer, GameConfig.MapRadius)
+					end
 					throttle = Helm.throttle(lastThrottle, throttle, dt) -- a tap creeps, the brake is instant
 					local root = child.PrimaryPart
 					local speed = if root then root.AssemblyLinearVelocity.Magnitude else 0
@@ -643,7 +664,9 @@ local function step(dt: number)
 						-- a quay corner deflects, never spins: no yaw past the helm's own top rate (and the
 						-- unstick swing is trimmed to it a frame later). Playtest 2026-10-26: a RIB spun 180 deg.
 						local w = root.AssemblyAngularVelocity
-						local cap = math.rad(spec.turnRate) * YAW_SLACK
+						-- the level's rate: the bare hull's (a Rocket Cutter's 64 deg/s) held L50 to a 700-stud circle
+						local fitted = BoatLevels.apply(spec, child:GetAttribute("BoatLevel"))
+						local cap = math.rad(fitted.turnRate) * YAW_SLACK
 						if math.abs(w.Y) > cap then
 							root.AssemblyAngularVelocity =
 								Vector3.new(w.X, math.sign(w.Y) * cap, w.Z)
