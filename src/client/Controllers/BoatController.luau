@@ -221,10 +221,10 @@ end
 -- A hull touching a wall (quay, breakwater, beach, a moored boat): four short horizontal rays from
 -- the root, each just past the hull's side, find the contact and return the normal pointing out
 -- of it. People and casualties don't count.
-local function dockContact(model: Model): (boolean, Vector3?)
+local function dockContact(model: Model): (boolean, Vector3?, Vector3?)
 	local root = model.PrimaryPart
 	if not root then
-		return false, nil
+		return false, nil, nil
 	end
 	local params = wallParams(model)
 	local size = root.Size
@@ -241,12 +241,15 @@ local function dockContact(model: Model): (boolean, Vector3?)
 		local dir = Vector3.new(ray[1].X, 0, ray[1].Z)
 		if dir.Magnitude > 1e-3 then
 			dir = dir.Unit
-			if Workspace:Raycast(root.Position, dir * (ray[2] * 0.5 + 2), params) then
-				return true, -dir
+			local hit = Workspace:Raycast(root.Position, dir * (ray[2] * 0.5 + 2), params)
+			if hit then
+				-- the wall's own normal: on a slanted shore the ray's reverse swung the bow into it
+				local flat = Vector3.new(hit.Normal.X, 0, hit.Normal.Z)
+				return true, -dir, if flat.Magnitude > 0.2 then flat.Unit else -dir
 			end
 		end
 	end
-	return false, nil
+	return false, nil, nil
 end
 
 -- docs/30: at speed a wall glances you off (Boat/Glance): sweep ahead of the bow and the two sides each frame, since a
@@ -300,8 +303,8 @@ local function unstickBoat(model: Model, throttle: number, steer: number, speed:
 	-- pinned while driving ahead, backing up or just turning on the helm (owner 2026-10-31: the slip)
 	local effort = math.max(math.abs(throttle), math.abs(steer))
 	if effort > 0.05 and math.abs(speed) < Unstick.SPEED then
-		local wedged, normal = dockContact(model)
-		if Unstick.step(state, dt, wedged, speed, effort) and normal then
+		local wedged, normal, wall = dockContact(model)
+		if Unstick.step(state, dt, wedged, speed, effort) and normal and wall then
 			-- nobody aboard and a jetty ahead: driving into it lands you on it (a beach or a wall: push off)
 			local empty = (tonumber(model:GetAttribute("SurvivorCount")) or 0) == 0
 			local root = if empty
@@ -311,14 +314,15 @@ local function unstickBoat(model: Model, throttle: number, steer: number, speed:
 				else model.PrimaryPart
 			if root then
 				Telemetry.send("StuckReset", "Boat") -- analytics H14: the wall push-off fired
-				root.AssemblyLinearVelocity += normal * Unstick.NUDGE
-				-- swing the bow off the wall too (head-on: toward the side being steered, else right)
-				local side = normal:Dot(root.CFrame.RightVector)
-				if math.abs(side) < 0.2 then
-					side = if steer ~= 0 then steer else 1 -- no steer: bear right
-				end
-				local turn = if side > 0 then -Unstick.TURN elseif side < 0 then Unstick.TURN else 0
-				root.AssemblyAngularVelocity += Vector3.new(0, turn, 0)
+				root.AssemblyLinearVelocity += wall * Unstick.NUDGE
+				local swing = Unstick.push( -- and swing the bow off the wall (+ = right: yaw down)
+					state,
+					wall,
+					Buoyancy.flatForward(root.CFrame.LookVector),
+					root.CFrame.RightVector,
+					steer
+				)
+				root.AssemblyAngularVelocity += Vector3.new(0, -swing * Unstick.TURN, 0)
 			end
 		end
 	else
@@ -559,6 +563,7 @@ local function step(dt: number)
 							coldOpenThrottle(child, throttleIn, now),
 							steerIn
 						)
+					throttle, steer = Unstick.input(unstick[child], throttle, steer)
 					throttle = Helm.throttle(lastThrottle, throttle, dt) -- a tap creeps, the brake is instant
 					local root = child.PrimaryPart
 					local speed = if root then root.AssemblyLinearVelocity.Magnitude else 0

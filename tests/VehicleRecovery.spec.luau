@@ -18,6 +18,52 @@ return function(t)
 		end
 	)
 
+	-- the same 0.5 s checks as VehicleService: where the hull is at each, and when lastGood may refresh
+	local function ride(limit, fine, step): boolean
+		local m, x, good = { strikes = 0, goodAge = 0 }, 0, 0
+		for i = 1, #step do
+			x += step[i]
+			local moved = x - good
+			if R.moveCheck(m, 0.5, moved, 0, limit) then
+				return true
+			end
+			if m.strikes == 0 and fine[i] ~= false then
+				good = x
+				if moved > 0.01 then
+					m.goodAge = 0
+				end
+			end
+		end
+		return false
+	end
+
+	t.test(
+		"anti-teleport: a replication stall or one tipped sample never pulls a fair hull back",
+		function()
+			for _, top in { 80.2, 285, 1100 } do
+				local limit = top * 1.3 + 8
+				local d = top * 0.5 -- a check at full speed
+				t.expect(ride(limit, {}, { d, d, d, d })).toBe(false)
+				t.expect(ride(limit, {}, { d, 0, 2 * d, d, d })).toBe(false) -- one check stalled, then its catch-up
+				t.expect(ride(limit, {}, { d, 0, 0, 3 * d, d, d })).toBe(false) -- a longer stall
+				t.expect(ride(limit, { [2] = false }, { d, d, d, d, d })).toBe(false) -- tipped for one sample
+				t.expect(ride(limit, { [2] = false, [3] = false }, { d, d, d, d, d })).toBe(false)
+			end
+		end
+	)
+
+	t.test("anti-teleport: a real jump is still pulled back, at any top speed", function()
+		for _, top in { 80.2, 285, 1100 } do
+			local limit = top * 1.3 + 8
+			local d = top * 0.5
+			t.expect(ride(limit, {}, { d, d + 2000, d, d })).toBe(true)
+			t.expect(ride(limit, {}, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, limit * 4, 0 })).toBe(true) -- parked, can't bank it
+		end
+		local m = { strikes = 0, goodAge = 0 }
+		t.expect(R.moveCheck(m, 0.5, 0, 200, 100)).toBe(false) -- over the speed limit: strike one
+		t.expect(R.moveCheck(m, 0.5, 0, 200, 100)).toBe(true)
+	end)
+
 	t.test("on its side for FLIP_TIME: one Flipped, then the cooldown holds", function()
 		local s = R.new()
 		t.expect(R.step(s, 1, 1, onSide)).toBe(nil)

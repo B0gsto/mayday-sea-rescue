@@ -309,12 +309,14 @@ function TelemetryService.Vehicle(player: Player, step: string, vehicleId: strin
 end
 
 -- Auto-recovery ran (VehicleService reset). The raw reason never goes out: the
--- speed check's carries numbers.
+-- speed check's carries numbers. Runaway = the anti-teleport distance check, Overspeed = its speed check.
 function TelemetryService.VehicleRecovered(player: Player, reason: string, vehicleId: string)
 	local why = if reason == "Flipped"
 			or reason == "Stuck"
 			or reason == "Sunk"
+			or reason == "TestRideEdge"
 		then reason
+		elseif string.find(reason, "overspeed", 1, true) then "Overspeed"
 		elseif reason == "out of bounds" then "OutOfBounds"
 		elseif string.find(reason, "flooded", 1, true) then "Flooded"
 		else "Runaway"
