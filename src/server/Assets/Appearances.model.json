@@ -3425,7 +3425,7 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://82036918491208",
+        "ColorMap": "rbxassetid://90625295362268",
         "RoughnessMap": "rbxassetid://138028895836822",
         "MetalnessMap": "rbxassetid://77201546496505"
        }
