@@ -1,0 +1,65 @@
+{
+ "asset": "M_Upg_Lifeboat_RearRockets",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Flame_P",
+   "parent": null,
+   "blender": [
+    8.8449,
+    26.2466,
+    7.4
+   ],
+   "roblox_from_origin": [
+    -8.8449,
+    7.4,
+    26.2466
+   ],
+   "roblox_from_bbox_centre": [
+    -8.8449,
+    0.4095,
+    -0.9469
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Flame_S",
+   "parent": null,
+   "blender": [
+    -8.8449,
+    26.2466,
+    7.4
+   ],
+   "roblox_from_origin": [
+    8.8449,
+    7.4,
+    26.2466
+   ],
+   "roblox_from_bbox_centre": [
+    8.8449,
+    0.4095,
+    -0.9469
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

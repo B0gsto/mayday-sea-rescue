@@ -1,0 +1,65 @@
+{
+ "asset": "M_Upg_Lifeboat_RoofRockets",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Flame_P",
+   "parent": null,
+   "blender": [
+    8.9,
+    -3.76,
+    11.3
+   ],
+   "roblox_from_origin": [
+    -8.9,
+    11.3,
+    -3.76
+   ],
+   "roblox_from_bbox_centre": [
+    -8.9,
+    0.2516,
+    -0.23
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Flame_S",
+   "parent": null,
+   "blender": [
+    -8.9,
+    -3.76,
+    11.3
+   ],
+   "roblox_from_origin": [
+    8.9,
+    11.3,
+    -3.76
+   ],
+   "roblox_from_bbox_centre": [
+    8.9,
+    0.2516,
+    -0.23
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

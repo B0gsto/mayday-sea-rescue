@@ -190,7 +190,15 @@ return function(t)
 					local moor = (a.Parent :: BasePart).CFrame
 						* a.CFrame
 						* CFrame.Angles(0, math.pi, 0)
-					check(isl, "Barge", footprint(isl, moor, Vector3.new(BARGE.X, 4, BARGE.Y)))
+					local barge = footprint(isl, moor, Vector3.new(BARGE.X, 4, BARGE.Y))
+					check(isl, "Barge", barge)
+					local station = L.STATION_RECT -- its deck stands clear of the moored barge
+					t.expect(
+						barge[2] <= station[1]
+							or barge[1] >= station[2]
+							or barge[4] <= station[3]
+							or barge[3] >= station[4]
+					).toBe(true)
 				end
 			end
 		end

@@ -1362,6 +1362,18 @@ Presets.ALL.boat_levelup = preset({
 	punch = { fov = 4, shake = 0.4, time = 0.35 },
 })
 
+-- feedback: the level's new piece pops on at the slam (UpgradeStationController): bricks snap off round it and a small
+-- ring; a snap under the moment's one big boom (radius = the piece)
+Presets.ALL.boat_piece_pop = preset({
+	job = "feedback",
+	layers = {
+		with(plates({ WHITE, YELLOW, RED }, 12), { size = { 2.2 }, speed = { 14, 20 } }),
+		confetti(12, { 14, 22 }, 40, { WHITE, YELLOW, SEA }),
+		groundRing("shockwave_ring", WHITE, curve(3, 8, outCubic), 0.35),
+	},
+	sounds = { { clip = "FX_Snap", volume = 0.8, pitch = 0.9 } :: FxSound },
+})
+
 -- feedback: a decor piece or a pet bought: a dust ring, plates hop, a few bricks above; till + pop
 Presets.ALL.buy_pop = preset({
 	job = "feedback",

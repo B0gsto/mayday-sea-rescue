@@ -9,8 +9,14 @@
 -- Cold open: when the casualty climbs aboard, the arm swings round once to frame home (your berth) past the
 -- rider, holds, then swings back (live 2026-11-01: phone riders boarded at speed bow-out, home dead astern,
 -- and drove on away from it). A cut under Reduce motion.
+-- Landing (docs/30): a boat lands bow to the open sea with the Upgrade board behind it, so the camera eases to a shot of
+-- both (Chase.frameStation). It takes no control and ends at the first throttle, steer or look. A cut under Reduce motion.
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
+
+local UpgradeStation = require(
+	game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("UpgradeStation")
+)
 
 local CameraMath = require(script.Parent.CameraMath)
 local Comfort = require(script.Parent.Comfort)
@@ -40,7 +46,13 @@ local state = {
 	fresh = true,
 	aboard = false,
 	lookUntil = 0, -- state.clock until which the arm frames home
+	frameIsland = nil :: number?, -- the station framed since landing, until the player acts
+	frameShown = 1, -- the island of the last frame, for the ease out
+	frameWeight = 0,
 }
+local FRAME_EASE = 0.35 -- s -- tune
+local FRAME_SPEED = 6 -- studs/s: a boat on the throttle (the idle creep is about 4); touch drives no seat floats
+local FRAME_LEFT = 100 -- studs from the landing: it left some other way
 
 local baseDistance = 24
 local focusHeight = 4
@@ -81,6 +93,7 @@ function Chase.enter(model: Model, root: BasePart, touch: boolean?)
 		elseif rider then math.rad(10)
 		elseif small then math.rad(8)
 		else math.rad(13)
+	baseDistance *= tonumber(model:GetAttribute("ChasePull")) or 1 -- a tall level's pieces stay in frame
 	if phone then
 		baseDistance *= 0.88
 	end
@@ -93,6 +106,14 @@ function Chase.enter(model: Model, root: BasePart, touch: boolean?)
 	state.fresh = true
 	state.aboard, state.lookUntil = false, 0
 	Workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
+end
+
+-- Just landed in this island's bay: ease to the boat and the board.
+function Chase.frameStation(island: number)
+	state.frameIsland, state.frameShown = island, island
+	if Comfort.reducedMotion() then
+		state.frameWeight = 1
+	end
 end
 
 -- The hull jumped (Go back): behind it at once, no swing across the map.
@@ -231,7 +252,36 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 		state.clock,
 		math.noise
 	)
-	local cf = CFrame.lookAt(pos, focus) * CFrame.Angles(s.X, s.Y, s.Z)
+	local cf = CFrame.lookAt(pos, focus)
+
+	-- the landing shot over the arm: any input hands the view straight back
+	local island = state.frameIsland
+	if island then
+		local seat = ctx.model:FindFirstChild("DriverSeat")
+		local landing = UpgradeStation.landing(island).Position
+		if lookDelta.Magnitude > 1e-5 then
+			state.frameIsland = nil
+			local _, board = UpgradeStation.shot(island, 0)
+			state.yaw = CameraMath.yawToward(state.heading, root.Position, board) -- the orbit carries on from this side
+		elseif
+			flatSpeed > FRAME_SPEED
+			or steering
+			or (seat and seat:IsA("VehicleSeat") and (seat.ThrottleFloat ~= 0 or seat.SteerFloat ~= 0))
+			or (root.Position - landing).Magnitude > FRAME_LEFT
+		then
+			state.frameIsland = nil
+		end
+	end
+	local reduced = Comfort.reducedMotion()
+	local wanted = if state.frameIsland then 1 else 0
+	state.frameWeight = if reduced then wanted else CameraMath.damp(state.frameWeight, wanted, FRAME_EASE, dt)
+	if state.frameWeight > 0.002 then
+		local _, size = ctx.model:GetBoundingBox()
+		local shotAt, shotFocus = UpgradeStation.shot(state.frameShown, math.max(size.X, size.Z))
+		cf = cf:Lerp(CFrame.lookAt(shotAt, shotFocus), state.frameWeight)
+	end
+
+	cf *= CFrame.Angles(s.X, s.Y, s.Z)
 	camera.CFrame = cf
 	local fov = Comfort.get("fov") - 5
 	if Comfort.get("speedFov") and not Comfort.reducedMotion() then

@@ -1,8 +1,20 @@
 --!strict
--- PirateBoat (docs/29 D): the placeholder Lego pirate boat:
--- striped sail, black flag, shark-jaw ram, no guns. Code-built Parts until the Blender art lands; bow along -Z, the
--- pivot on the waterline, about 63 x 50 studs. All anchored and not solid: the server steers it, nothing collides.
+-- PirateBoat (docs/29 D): the pirate boat's data and its Lego placeholder: striped sail, black flag, shark-jaw ram, no
+-- guns. PirateService clones M_Veh_PirateBoat (the shared module can't reach the server's AssetLoader); `build` is the
+-- fallback when it can't be loaded. Bow along -Z, the pivot on the waterline, about 63 x 50 studs. All anchored and not
+-- solid: the server steers it, nothing collides.
 local PirateBoat = {}
+
+PirateBoat.ASSET = "M_Veh_PirateBoat"
+PirateBoat.MESH_LENGTH = 27.5 -- studs at x1
+PirateBoat.SCALE = 2.3 -- the mesh to the placeholder's 63 long, a threat beside a 72-long boat (tests/BoatLevels.spec)
+PirateBoat.LENGTH = PirateBoat.MESH_LENGTH * PirateBoat.SCALE
+-- asset -> offset from the boat's pivot, at x1 (each pivot at the feet, facing -Z; art/source/vessels/M_Veh_PirateBoat)
+PirateBoat.CREW = {
+	M_Chr_PirateCaptain = Vector3.new(-1.312, 7.35, 6.475),
+	M_Chr_PirateDeckhand = Vector3.new(0, 7.7, -7),
+	M_Chr_PirateLookout = Vector3.new(-1.4, 5.6, 2.45),
+} :: { [string]: Vector3 }
 
 local S = 1.15 -- layout units -> studs
 local DARK = Color3.fromHex("2E190E")

@@ -173,6 +173,9 @@ AssetLoader.SHARED_SETS = {
 	M_Hbr_NetPile = "M_Hbr_PropAtlas",
 	M_Hbr_Rope_ = "M_Hbr_PropAtlas",
 	M_Hbr_LifebuoyStation = "M_Hbr_PropAtlas",
+	M_Upg_JetSki_ = "_UpgJetSki",
+	M_Upg_Lifeboat_ = "_UpgLifeboat",
+	M_Chr_Pirate = "M_Veh_PirateBoat",
 } :: { [string]: string }
 
 local function appearanceFolder(asset: string): Instance?

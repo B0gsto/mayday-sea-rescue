@@ -26,8 +26,10 @@ local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VF
 local UpgradeStationController = {}
 local player = Players.LocalPlayer
 
-local PPS = 25 -- SurfaceGui pixels a stud: the 44 x 28 board is 1100 x 700
+local PPS = 25 -- SurfaceGui pixels a stud on the button's label
+local CANVAS = Vector2.new(1100, 700) -- the board's layout, whatever the station's scale
 local LIFT = 16 -- studs at x1 scale -- tune
+local POP_FROM, POP_TIME = 0.35, 0.3 -- the new piece's size at the slam, and s to full size -- tune
 local RED = Color3.fromRGB(255, 96, 86)
 local GREEN = Color3.fromRGB(120, 240, 130)
 local BUTTON_GREY = Color3.fromRGB(128, 134, 142)
@@ -83,8 +85,8 @@ local function buildBoard(part: BasePart, button: BasePart?, prompt: ProximityPr
 	local gui = Instance.new("SurfaceGui")
 	gui.Name = "BoatBoard"
 	gui.Face = Enum.NormalId.Front
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = PPS
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.FixedSize
+	gui.CanvasSize = CANVAS
 	gui.LightInfluence = 0
 	gui.MaxDistance = 900
 	gui.Parent = part
@@ -237,7 +239,14 @@ local function shakeMissing()
 end
 
 -- The moment, on the owner's own screen. The server's "Swap" retargets it to the new boat mid-air.
-type Moment = { model: Model?, started: number, level: number, rest: { [Model]: CFrame } }
+type Moment = {
+	model: Model?,
+	started: number,
+	level: number,
+	rest: { [Model]: CFrame },
+	hidden: { BasePart }, -- the new piece, kept off until the slam
+	popped: boolean,
+}
 local running: Moment? = nil
 
 local function pose(run: Moment, model: Model, t: number)
@@ -261,7 +270,55 @@ local function pose(run: Moment, model: Model, t: number)
 	)
 end
 
+-- The Parts of this level's piece on the boat: VehicleService names its mesh and Parts Lv<n>.
+local function pieceParts(model: Model, level: number): { BasePart }
+	local out = {}
+	for _, child in model:GetChildren() do
+		if tonumber(string.match(child.Name, "^Lv(%d+)")) == level then
+			if child:IsA("BasePart") then
+				table.insert(out, child)
+			end
+			for _, d in child:GetDescendants() do
+				if d:IsA("BasePart") then
+					table.insert(out, d)
+				end
+			end
+		end
+	end
+	return out
+end
+
+-- At the slam: the piece appears with one quick overshoot (Reduce motion: it just appears), by name through VFXKit.
+local function popPiece(run: Moment, model: Model)
+	run.popped = true
+	local parts = run.hidden
+	run.hidden = {}
+	if #parts == 0 then
+		return
+	end
+	local middle, count = Vector3.zero, 0
+	for _, part in parts do
+		part.LocalTransparencyModifier = 0
+		middle += part.Position
+		count += 1
+	end
+	VFXKit.play("boat_piece_pop", CFrame.new(middle / count), { radius = 6 })
+	if Comfort.reducedMotion() then
+		return
+	end
+	local info = TweenInfo.new(POP_TIME, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+	for _, part in parts do
+		local size = part.Size
+		part.Size = size * POP_FROM
+		TweenService:Create(part, info, { Size = size }):Play()
+	end
+end
+
 local function finish(run: Moment)
+	for _, part in run.hidden do
+		part.LocalTransparencyModifier = 0
+	end
+	run.hidden = {}
 	for model, rest in run.rest do
 		local root = model.PrimaryPart
 		if root and model.Parent then
@@ -277,7 +334,8 @@ local function finish(run: Moment)
 end
 
 local function start(model: Model?, level: number)
-	local run: Moment = { model = model, started = os.clock(), level = level, rest = {} }
+	local run: Moment =
+		{ model = model, started = os.clock(), level = level, rest = {}, hidden = {}, popped = false }
 	running = run
 	local blasted = false
 	local connection: RBXScriptConnection
@@ -299,6 +357,9 @@ local function start(model: Model?, level: number)
 					{ radius = 10 * BoatLevels.row(level).scale }
 				)
 			end
+			if not run.popped and t >= UpgradeStation.SLAM_AT then
+				popPiece(run, m)
+			end
 		end
 	end)
 end
@@ -314,6 +375,10 @@ local function onMoment(kind: string, ownerId: number, model: Model?, level: num
 		start(model, level)
 	elseif running and model then
 		running.model = model
+		running.hidden = pieceParts(model, level)
+		for _, part in running.hidden do
+			part.LocalTransparencyModifier = 1
+		end
 	end
 end
 

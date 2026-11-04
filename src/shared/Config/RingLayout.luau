@@ -87,10 +87,15 @@ RingLayout.SeaPlates = {
 } :: { [string]: { rect: { number } } }
 RingLayout.SEA_PLATE_DECK = 1 -- deck thickness (top at Y); the pillars show 2 courses above the water
 RingLayout.RAMP = { at = Vector2.new(-75, 460), yaw = 30, length = 32, width = 14, lip = 6 } -- island frame
+-- The Upgrade Station (shared/UpgradeStation, docs/30): its model's origin in the island frame, and its deck. It stands
+-- past SeaPlate2, starboard of the exit lane: its bay has a closed back, so it can't sit across the lane.
+RingLayout.STATION_ORIGIN = { scale = 2.5, right = 132.5, fwd = 521 } -- past the barge moored off SeaPlate2 (fwd 441.5)
+RingLayout.STATION_RECT = { 52.5, 212.5, 446, 557.75 } -- deck x +-32, z -14.7 (the gate's tools) to 30, x scale
 RingLayout.SEA_KEEP_OUT = {
 	RingLayout.SeaPlates.SeaPlate1.rect,
 	RingLayout.SeaPlates.SeaPlate2.rect,
 	{ -95, -55, 436, 484 }, -- the ramp's footprint (RAMP, turned)
+	RingLayout.STATION_RECT,
 }
 -- The berth's exit lane (live v33: 49 Unstick push-offs in 6 h, half of them by a home island): island-frame rects
 -- { r0, r1, f0, f1 } no collidable piece may enter (tests/ExitLane.spec.luau). The slot ahead of the berth between

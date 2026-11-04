@@ -4,7 +4,7 @@ Each *_problem(name) returns None when the name is good, else a short reason.
 """
 import re
 
-CATEGORIES = ("Veh", "Bld", "Hbr", "Road", "Veg", "Rock", "Sea", "Kit", "Chr", "Ani", "Prop")
+CATEGORIES = ("Veh", "Bld", "Hbr", "Road", "Veg", "Rock", "Sea", "Kit", "Chr", "Ani", "Prop", "Upg")
 MESH_SUFFIXES = ("HP", "LOD0", "LOD1", "LOD2", "COL")
 MAP_SUFFIXES = ("ALB", "NOR", "RGH", "MET")
 

@@ -91,6 +91,11 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://70981253321625",
 		LOD2 = "rbxassetid://76677393857795",
 	},
+	M_Bld_UpgradeStation = {
+		LOD0 = "rbxassetid://130722240623800",
+		LOD1 = "rbxassetid://79190196494999",
+		LOD2 = "rbxassetid://77541869675498",
+	},
 	M_Bld_WorkshopAddons = {
 		LOD0 = "rbxassetid://113055104607876",
 		LOD1 = "rbxassetid://120275413380347",
@@ -105,6 +110,18 @@ AssetIds.Models = {
 		LOD0 = "rbxassetid://90865912056923",
 		LOD1 = "rbxassetid://128380412455028",
 		LOD2 = "rbxassetid://119777443289178",
+	},
+	M_Chr_PirateCaptain = {
+		LOD0 = "rbxassetid://73019630667094",
+		LOD1 = "rbxassetid://75264763873474",
+	},
+	M_Chr_PirateDeckhand = {
+		LOD0 = "rbxassetid://79038505642741",
+		LOD1 = "rbxassetid://108242503789947",
+	},
+	M_Chr_PirateLookout = {
+		LOD0 = "rbxassetid://137477835537186",
+		LOD1 = "rbxassetid://130143926615466",
 	},
 	M_Hbr_Bollard_01 = {
 		LOD0 = "rbxassetid://130451736470147",
@@ -218,15 +235,15 @@ AssetIds.Models = {
 		LOD0 = "rbxassetid://116545210869864",
 		LOD1 = "rbxassetid://120420678094169",
 	},
-	M_Prop_BuildSiteKit = {
-		LOD0 = "rbxassetid://83598223677081",
-		LOD1 = "rbxassetid://132983174625303",
-		LOD2 = "rbxassetid://97455737881261",
-	},
 	M_Prop_BoardKit = {
 		LOD0 = "rbxassetid://114404971301410",
 		LOD1 = "rbxassetid://76453127495122",
 		LOD2 = "rbxassetid://134133978588718",
+	},
+	M_Prop_BuildSiteKit = {
+		LOD0 = "rbxassetid://83598223677081",
+		LOD1 = "rbxassetid://132983174625303",
+		LOD2 = "rbxassetid://97455737881261",
 	},
 	M_Prop_BuildStation = {
 		LOD0 = "rbxassetid://118176380187881",
@@ -375,6 +392,96 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://95704917731847",
 		LOD2 = "rbxassetid://137119799224377",
 	},
+	M_Upg_JetSki_BananaBoat = {
+		LOD0 = "rbxassetid://88729526606715",
+		LOD1 = "rbxassetid://107782778027397",
+		LOD2 = "rbxassetid://116272580245952",
+	},
+	M_Upg_JetSki_BullNose = {
+		LOD0 = "rbxassetid://79574888573578",
+		LOD1 = "rbxassetid://133634224577330",
+		LOD2 = "rbxassetid://138274608484908",
+	},
+	M_Upg_JetSki_FlamePipes = {
+		LOD0 = "rbxassetid://104145567662833",
+		LOD1 = "rbxassetid://71274745607661",
+		LOD2 = "rbxassetid://99642071428432",
+	},
+	M_Upg_JetSki_HornStack = {
+		LOD0 = "rbxassetid://119756776932316",
+		LOD1 = "rbxassetid://80816688960742",
+		LOD2 = "rbxassetid://137744251423796",
+	},
+	M_Upg_JetSki_HugeSpoiler = {
+		LOD0 = "rbxassetid://116063672328978",
+		LOD1 = "rbxassetid://123430915890969",
+		LOD2 = "rbxassetid://133230004747334",
+	},
+	M_Upg_JetSki_RescueSled = {
+		LOD0 = "rbxassetid://140104156373329",
+		LOD1 = "rbxassetid://125104302855746",
+		LOD2 = "rbxassetid://116147832255778",
+	},
+	M_Upg_JetSki_SharkFin = {
+		LOD0 = "rbxassetid://86465182695980",
+		LOD1 = "rbxassetid://134241892768069",
+		LOD2 = "rbxassetid://112727638403061",
+	},
+	M_Upg_JetSki_TurboCrown = {
+		LOD0 = "rbxassetid://132262536386007",
+		LOD1 = "rbxassetid://120869815945534",
+		LOD2 = "rbxassetid://78549653640317",
+	},
+	M_Upg_JetSki_TwinEngines = {
+		LOD0 = "rbxassetid://109746114632041",
+		LOD1 = "rbxassetid://92875863722533",
+		LOD2 = "rbxassetid://96657775688362",
+	},
+	M_Upg_Lifeboat_ArmourSpikes = {
+		LOD0 = "rbxassetid://112869722359701",
+		LOD1 = "rbxassetid://137875265342819",
+		LOD2 = "rbxassetid://115478240901078",
+	},
+	M_Upg_Lifeboat_BattleBridge = {
+		LOD0 = "rbxassetid://106128335315585",
+		LOD1 = "rbxassetid://102367920176621",
+		LOD2 = "rbxassetid://70516478531009",
+	},
+	M_Upg_Lifeboat_CrewDeck = {
+		LOD0 = "rbxassetid://108175690128509",
+		LOD1 = "rbxassetid://102864375929530",
+		LOD2 = "rbxassetid://103827266836753",
+	},
+	M_Upg_Lifeboat_FoilLift = {
+		LOD0 = "rbxassetid://121211729729671",
+		LOD1 = "rbxassetid://131319050050328",
+		LOD2 = "rbxassetid://96860785930283",
+	},
+	M_Upg_Lifeboat_HugeLamps = {
+		LOD0 = "rbxassetid://132796952947238",
+		LOD1 = "rbxassetid://86298350592596",
+		LOD2 = "rbxassetid://97853221518398",
+	},
+	M_Upg_Lifeboat_IcePlough = {
+		LOD0 = "rbxassetid://133011600636144",
+		LOD1 = "rbxassetid://70628583672584",
+		LOD2 = "rbxassetid://138003845296622",
+	},
+	M_Upg_Lifeboat_LampTower = {
+		LOD0 = "rbxassetid://78395993993927",
+		LOD1 = "rbxassetid://83282160499949",
+		LOD2 = "rbxassetid://88968642835599",
+	},
+	M_Upg_Lifeboat_RearRockets = {
+		LOD0 = "rbxassetid://82795582429853",
+		LOD1 = "rbxassetid://109358409832307",
+		LOD2 = "rbxassetid://136992668424250",
+	},
+	M_Upg_Lifeboat_RoofRockets = {
+		LOD0 = "rbxassetid://121941315525269",
+		LOD1 = "rbxassetid://78100804322744",
+		LOD2 = "rbxassetid://79144608623602",
+	},
 	M_Veg_Bracken_01 = {
 		LOD0 = "rbxassetid://136398955303344",
 		LOD1 = "rbxassetid://113163488855775",
@@ -515,6 +622,11 @@ AssetIds.Models = {
 		LOD0 = "rbxassetid://91018428054266",
 		LOD1 = "rbxassetid://116347528135297",
 		LOD2 = "rbxassetid://133903517923257",
+	},
+	M_Veh_PirateBoat = {
+		LOD0 = "rbxassetid://110238927237734",
+		LOD1 = "rbxassetid://128714989439062",
+		LOD2 = "rbxassetid://131033047854669",
 	},
 	M_Veh_RIB = {
 		LOD0 = "rbxassetid://76170085511322",
@@ -665,6 +777,21 @@ AssetIds.Attachments = {
 		ATT_Plinth_13 = Vector3.new(-18.2, 4.28, -11.75),
 		ATT_Plinth_14 = Vector3.new(-22.3, 4.28, -11.75),
 	},
+	M_Bld_UpgradeStation = {
+		ATT_BoatLanding = Vector3.new(0, -1.5, 12),
+		ATT_BayMouth = Vector3.new(0, -1.5, -5),
+		ATT_QuayLadderTop = Vector3.new(11.75, 0.4, 14),
+		ATT_NavLight_Port = Vector3.new(-17, 23.5, -3.5),
+		ATT_NavLight_Stbd = Vector3.new(17, 23.5, -3.5),
+		ATT_ToolsHub = Vector3.new(0, 22.5, -7.4),
+		ATT_HoistHook = Vector3.new(-6.6, 11.7, -6.8),
+		ATT_WorkshopDoor = Vector3.new(-21, 0.4, 3.75),
+		ATT_WorkbenchTop = Vector3.new(-26, 3.4, 5.7),
+		ATT_SparePile = Vector3.new(-28.5, 0.4, -4.5),
+		ATT_BoardScreen = Vector3.new(0, 11.08, 25.365),
+		ATT_BoardButton = Vector3.new(0, 5.36, 23.87),
+		ATT_PlayerSpawn = Vector3.new(14.3, 0.4, 20.6),
+	},
 	M_Bld_WorkshopAddons = {
 		ATT_Work_Bench2 = Vector3.new(15.25, 0.96, 3.6),
 		ATT_Work_Bench3 = Vector3.new(15.25, 0.96, 9.9),
@@ -678,6 +805,9 @@ AssetIds.Attachments = {
 		ATT_TailRoot = Vector3.new(0.0038, 1.6161, 1.1063),
 	},
 	M_Chr_Bosun_LP = {},
+	M_Chr_PirateCaptain = {},
+	M_Chr_PirateDeckhand = {},
+	M_Chr_PirateLookout = {},
 	M_Hbr_Bollard_01 = {
 		ATT_RopeNeck = Vector3.new(0, 1.11, 0),
 	},
@@ -800,6 +930,18 @@ AssetIds.Attachments = {
 	M_Hbr_Rope_Coil = {
 		ATT_End = Vector3.new(-1.5063, 0.0298, -0.5325),
 	},
+	M_Prop_BoardKit = {
+		ATT_Board = Vector3.new(0, 0, 0),
+		ATT_Soon = Vector3.new(22, 0, 0),
+		ATT_Sign = Vector3.new(50, 0, 0),
+		ATT_Beacon = Vector3.new(76, 0, 0),
+		ATT_BoardFaceF = Vector3.new(0, 7, -0.46),
+		ATT_BoardFaceB = Vector3.new(0, 7, 0.46),
+		ATT_SoonFace = Vector3.new(22, 7.7, -0.25),
+		ATT_NamePlate = Vector3.new(50, 13.2, 0),
+		ATT_BeaconIcon = Vector3.new(76, 4.7, -2.075),
+		ATT_BeaconLight = Vector3.new(76, 26.7, 0),
+	},
 	M_Prop_BuildSiteKit = {
 		ATT_Fence = Vector3.new(0, 0, 0),
 		ATT_Gate = Vector3.new(11, 0, 0),
@@ -815,17 +957,8 @@ AssetIds.Attachments = {
 		ATT_CranePivot = Vector3.new(40, 20.6, 0),
 		ATT_SignUI = Vector3.new(63, 6.6, 0),
 	},
-	M_Prop_BoardKit = {
-		ATT_Board = Vector3.new(0, 0, 0),
-		ATT_Soon = Vector3.new(22, 0, 0),
-		ATT_Sign = Vector3.new(50, 0, 0),
-		ATT_Beacon = Vector3.new(76, 0, 0),
-		ATT_BoardFaceF = Vector3.new(0, 7, -0.46),
-		ATT_BoardFaceB = Vector3.new(0, 7, 0.46),
-		ATT_SoonFace = Vector3.new(22, 7.7, -0.25),
-		ATT_NamePlate = Vector3.new(50, 13.2, 0),
-		ATT_BeaconIcon = Vector3.new(76, 4.7, -2.075),
-		ATT_BeaconLight = Vector3.new(76, 26.7, 0),
+	M_Prop_BuildStation = {
+		ATT_Screen = Vector3.new(0, 6.2, 3.6),
 	},
 	M_Prop_CommonsKit = {
 		ATT_Canteen = Vector3.new(0, 0, 0),
@@ -872,9 +1005,6 @@ AssetIds.Attachments = {
 		ATT_LampRow_Lamp_02 = Vector3.new(103, 9.5, 0),
 		ATT_LampRow_Lamp_03 = Vector3.new(106, 9.5, 0),
 	},
-	M_Prop_BuildStation = {
-		ATT_Screen = Vector3.new(0, 6.2, 3.6),
-	},
 	M_Prop_HQInterior = {},
 	M_Prop_HubKit = {
 		ATT_Atoll = Vector3.new(0, 0, 0),
@@ -891,7 +1021,6 @@ AssetIds.Attachments = {
 		ATT_Lamp_JibTip = Vector3.new(0, 22.25, -39.3),
 		ATT_Lamp_Cab = Vector3.new(3.475, 25.6, -2.9),
 	},
-	M_Prop_PrizeWheel = {},
 	M_Prop_LagoonKit = {
 		ATT_Statue = Vector3.new(0, 0, 0),
 		ATT_Jetty = Vector3.new(100, 0, 0),
@@ -1029,6 +1158,37 @@ AssetIds.Attachments = {
 		ATT_Anchor = Vector3.new(-14.3291, 5.3874, -35.8144),
 	},
 	M_Sea_SandRipples = {},
+	M_Upg_JetSki_BananaBoat = {},
+	M_Upg_JetSki_BullNose = {},
+	M_Upg_JetSki_FlamePipes = {},
+	M_Upg_JetSki_HornStack = {},
+	M_Upg_JetSki_HugeSpoiler = {},
+	M_Upg_JetSki_RescueSled = {},
+	M_Upg_JetSki_SharkFin = {},
+	M_Upg_JetSki_TurboCrown = {},
+	M_Upg_JetSki_TwinEngines = {},
+	M_Upg_Lifeboat_ArmourSpikes = {},
+	M_Upg_Lifeboat_BattleBridge = {},
+	M_Upg_Lifeboat_CrewDeck = {},
+	M_Upg_Lifeboat_FoilLift = {},
+	M_Upg_Lifeboat_HugeLamps = {
+		ATT_Lens_P = Vector3.new(-5.6, 13.325, -18.54),
+		ATT_Lens_S = Vector3.new(5.6, 13.325, -18.54),
+	},
+	M_Upg_Lifeboat_IcePlough = {},
+	M_Upg_Lifeboat_LampTower = {
+		ATT_Lens_Fwd = Vector3.new(0, 43, 5.95),
+		ATT_Lens_Aft = Vector3.new(0, 43, 12.55),
+		ATT_Beacon = Vector3.new(0, 47.4, 9.25),
+	},
+	M_Upg_Lifeboat_RearRockets = {
+		ATT_Flame_P = Vector3.new(-8.8449, 7.4, 26.2466),
+		ATT_Flame_S = Vector3.new(8.8449, 7.4, 26.2466),
+	},
+	M_Upg_Lifeboat_RoofRockets = {
+		ATT_Flame_P = Vector3.new(-8.9, 11.3, -3.76),
+		ATT_Flame_S = Vector3.new(8.9, 11.3, -3.76),
+	},
 	M_Veg_Bracken_01 = {},
 	M_Veg_Bracken_02 = {},
 	M_Veg_Gorse_01 = {},
@@ -1163,6 +1323,11 @@ AssetIds.Attachments = {
 		ATT_Moor_Stern = Vector3.new(0, 4.95, 21.75),
 		ATT_Boarding_Port = Vector3.new(-6.6, 5.55, 3),
 		ATT_Boarding_Stbd = Vector3.new(6.6, 5.55, 3),
+	},
+	M_Veh_PirateBoat = {
+		ATT_Captain = Vector3.new(-1.3125, 7.35, 6.475),
+		ATT_Deckhand = Vector3.new(0, 7.7, -7),
+		ATT_Lookout = Vector3.new(-1.4, 5.6, 2.45),
 	},
 	M_Veh_RIB = {
 		ATT_DriverSeat = Vector3.new(0, 4.35, 1.6761),

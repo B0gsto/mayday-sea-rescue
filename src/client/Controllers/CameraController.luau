@@ -542,6 +542,11 @@ function CameraController.SnapBehind()
 	Chase.snap()
 end
 
+-- docs/30: after a Go back landing, frame the boat and this island's Upgrade board until the player acts.
+function CameraController.FrameStation(island: number)
+	Chase.frameStation(island)
+end
+
 function CameraController.Shake(amount: number)
 	Chase.addTrauma(amount)
 end

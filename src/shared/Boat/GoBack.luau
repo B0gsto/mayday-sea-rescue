@@ -12,12 +12,12 @@ GoBack.COOLDOWN = 2 -- s between presses: longer than CHARGE + LAND_HOLD
 GoBack.CHARGE_FOV = 30 -- degrees the camera widens over the charge -- tune
 GoBack.BAY_RADIUS = 60 -- studs round the Upgrade Station's landing: already there, no button -- tune
 
--- Is `at` in the bay Go back lands in? It lies straight out from the berth (`bay`: its CFrame, seaward along -Z).
+-- Is `at` in the bay Go back lands in? UpgradeStation places it from the berth (`bay`: its CFrame, seaward along -Z).
 local function inBay(at: Vector3, bay: any): boolean
 	if typeof(bay) ~= "CFrame" then
 		return false
 	end
-	local p = (bay * CFrame.new(0, 0, -UpgradeStation.LANDING_OUT)).Position
+	local p = UpgradeStation.fromBerth(bay).Position
 	return Vector3.new(at.X - p.X, 0, at.Z - p.Z).Magnitude <= GoBack.BAY_RADIUS
 end
 

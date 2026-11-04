@@ -58,7 +58,7 @@ ColdOpen.SPAWN_FACING = RingLayout.Islands[1].facing
 -- studs dead ahead: past the cove mouth, outside NUDGE_NEAR, so they drive in to board (docs/16 B0); and outside
 -- PiwWays.LOST_RANGE (110): from 100 the swimmer swam to the jet ski still at the berth, which counted as landed,
 -- and the cold open finished itself (playtest 2) -- tune
-ColdOpen.DISTANCE = { 225, 245 } -- the bay (UpgradeStation.LANDING_OUT 120 + GoBack.BAY_RADIUS 60) stays clear: Go back lands there
+ColdOpen.DISTANCE = { 225, 245 } -- the bay (UpgradeStation.fromBerth, GoBack.BAY_RADIUS 60) stays clear: Go back lands there
 ColdOpen.NUDGE_AFTER = 10 -- s without headway before the world helps (docs/14 10 s rule)
 ColdOpen.NUDGE_PROGRESS = 6 -- studs closer that count as headway
 ColdOpen.NUDGE_NEAR = 45 -- studs: close enough that the casualty comes (PiwWays.COME_RANGE)

@@ -24,6 +24,7 @@ local UpgradeStation = require(Shared:WaitForChild("UpgradeStation"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
+local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local BadgeService = require(script.Parent.BadgeService)
 local DataService = require(script.Parent.DataService)
 local DockService = require(script.Parent.DockService)
@@ -39,6 +40,7 @@ UpgradeService.Priority = 93
 -- one moment at a time: it runs UpgradeStation.MOMENT s; a held key can't stack them
 local COOLDOWN = UpgradeStation.MOMENT + 0.2
 local PASS_WAIT = 30 -- s for the join's pass check
+local MESH = "M_Bld_UpgradeStation"
 
 local lastUse: { [Player]: number } = {}
 local buttons: { BasePart } = {}
@@ -194,6 +196,58 @@ local function stepTrip(player: Player)
 	end
 end
 
+local function buildPart(spec: UpgradeStation.StationPart, parent: Instance): Part
+	local part = Instance.new("Part")
+	part.Name = spec.name
+	part.Size = spec.size
+	part.CFrame = spec.cframe
+	part.Color = spec.color
+	part.Material = spec.material
+	part.Anchored = true
+	part.TopSurface = Enum.SurfaceType.Smooth
+	part.BottomSurface = Enum.SurfaceType.Smooth
+	part.Parent = parent
+	return part
+end
+
+-- The mesh in place of the fallback Parts: the whole model scaled so the biggest boat fits the bay. No mesh: quay Parts.
+local GLOW = { -- the mesh's lamps: flat palette cells, lit here
+	_GlowBulb = Color3.fromRGB(255, 226, 170),
+	_GlowPort = Color3.fromRGB(226, 52, 44),
+	_GlowStbd = Color3.fromRGB(60, 214, 96),
+}
+local function dressStation(model: Model, index: number)
+	local mesh = AssetLoader.cloneStatic(MESH, "LOD0")
+	if not mesh then
+		for _, spec in UpgradeStation.fallback(index) do
+			buildPart(spec, model)
+		end
+		return
+	end
+	mesh:ScaleTo(UpgradeStation.SCALE)
+	mesh:PivotTo(UpgradeStation.frame(index))
+	for _, d in mesh:GetDescendants() do
+		if d:IsA("MeshPart") then
+			for suffix, color in GLOW do
+				if string.find(d.Name, suffix, 1, true) then
+					local look = d:FindFirstChildOfClass("SurfaceAppearance")
+					if look then
+						look:Destroy() -- Neon can't glow through a SurfaceAppearance
+					end
+					d.Material = Enum.Material.Neon
+					d.Color = color
+				end
+			end
+		end
+	end
+	mesh.Parent = model
+	local board = model:FindFirstChild("Board")
+	if board and board:IsA("BasePart") then
+		board.Transparency = 1 -- the mesh has its own screen behind the SurfaceGui
+		board.CanCollide = false
+	end
+end
+
 local function buildStations()
 	local folder = Instance.new("Folder")
 	folder.Name = "UpgradeStations"
@@ -202,17 +256,9 @@ local function buildStations()
 		model.Name = `Station{index}`
 		model:SetAttribute("Island", index)
 		for _, spec in UpgradeStation.parts(index) do
-			local part = Instance.new("Part")
-			part.Name = spec.name
-			part.Size = spec.size
-			part.CFrame = spec.cframe
-			part.Color = spec.color
-			part.Material = spec.material
-			part.Anchored = true
-			part.TopSurface = Enum.SurfaceType.Smooth
-			part.BottomSurface = Enum.SurfaceType.Smooth
-			part.Parent = model
+			local part = buildPart(spec, model)
 			if spec.name == "Button" then
+				part.CanCollide = false
 				local prompt = Instance.new("ProximityPrompt")
 				prompt.Name = "UpgradeBoat"
 				prompt.ActionText = "Upgrade"
@@ -224,6 +270,7 @@ local function buildStations()
 			end
 		end
 		model.Parent = folder
+		task.spawn(dressStation, model, index) -- the first load yields; the board works meanwhile
 	end
 	folder.Parent = Workspace
 end

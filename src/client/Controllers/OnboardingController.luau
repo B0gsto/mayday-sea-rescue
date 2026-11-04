@@ -228,7 +228,7 @@ local function setSeaArrow(on: boolean)
 	local spot = Instance.new("Attachment")
 	spot.Name = "OutToSea"
 	spot.Parent = Workspace.Terrain
-	spot.WorldPosition = (bay * CFrame.new(0, 0, -(UpgradeStation.LANDING_OUT + SEA_ARROW_OUT))).Position
+	spot.WorldPosition = (UpgradeStation.fromBerth(bay) * CFrame.new(0, 0, -SEA_ARROW_OUT)).Position
 	seaArrow = popArrow("SeaArrow", spot, SEA_ARROW_UP)
 end
 

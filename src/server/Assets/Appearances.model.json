@@ -737,6 +737,28 @@
    ]
   },
   {
+   "Name": "M_Bld_UpgradeStation",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://71426657340889",
+        "NormalMap": "rbxassetid://86703344289683",
+        "RoughnessMap": "rbxassetid://124418267059037",
+        "MetalnessMap": "rbxassetid://87820449258254"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Bld_WorkshopAddons",
    "ClassName": "Folder",
    "Children": [
@@ -2839,6 +2861,27 @@
    ]
   },
   {
+   "Name": "M_Veh_PirateBoat",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://71919712908913",
+        "RoughnessMap": "rbxassetid://93864434417126",
+        "MetalnessMap": "rbxassetid://93990378549016"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Veh_RIB",
    "ClassName": "Folder",
    "Children": [
@@ -3300,6 +3343,49 @@
         "NormalMap": "rbxassetid://70518369805591",
         "RoughnessMap": "rbxassetid://96507427762201",
         "MetalnessMap": "rbxassetid://73103384782670"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "_UpgJetSki",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Brick",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://138465572041285",
+        "RoughnessMap": "rbxassetid://101311551756925",
+        "MetalnessMap": "rbxassetid://133041942279003"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "_UpgLifeboat",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Palette",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://89572818827627",
+        "NormalMap": "rbxassetid://94365844917813",
+        "RoughnessMap": "rbxassetid://128252020870174",
+        "MetalnessMap": "rbxassetid://134651320857380"
        }
       }
      ]

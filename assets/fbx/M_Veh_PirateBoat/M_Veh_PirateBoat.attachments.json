@@ -1,0 +1,94 @@
+{
+ "asset": "M_Veh_PirateBoat",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Captain",
+   "parent": null,
+   "blender": [
+    1.3125,
+    6.475,
+    7.35
+   ],
+   "roblox_from_origin": [
+    -1.3125,
+    7.35,
+    6.475
+   ],
+   "roblox_from_bbox_centre": [
+    -1.3125,
+    -9.24,
+    8.2359
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Deckhand",
+   "parent": null,
+   "blender": [
+    0.0,
+    -7.0,
+    7.7
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    7.7,
+    -7.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -8.89,
+    -5.2391
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lookout",
+   "parent": null,
+   "blender": [
+    1.4,
+    2.45,
+    5.6
+   ],
+   "roblox_from_origin": [
+    -1.4,
+    5.6,
+    2.45
+   ],
+   "roblox_from_bbox_centre": [
+    -1.4,
+    -10.99,
+    4.2109
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

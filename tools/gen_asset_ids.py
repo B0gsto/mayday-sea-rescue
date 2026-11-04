@@ -42,6 +42,8 @@ FX_RE = re.compile(r"^assets/textures/FX/(FX_\w+)\.png$")  # FX1 / FX2 flipbooks
 DEEP_SPIN_RE = re.compile(r"^build/spinart/T_DeepSpin_(\w+)\.png$")  # Deep Spin sprites (art/source/ui/spin/render.py)
 FX_SPIN_RE = re.compile(r"^build/prod/spincine/(FX_Spin\w+)\.png$")  # spin cinematic (art/source/fx/SPINCINE_RESULT.md)
 TEX_RE = re.compile(r"^assets/textures/(M_\w+?)/T_\w+?_([A-Za-z][A-Za-z0-9]*(?:_\d+)?)_(ALB|NOR|RGH|MET)(_Wet)?\.png$")
+# the boat pivot's art uploads from build/prod: one asset's maps, or a shared palette (_Upg<Stage>, AssetLoader.SHARED_SETS)
+PROD_TEX_RE = re.compile(r"^build/prod/(_Upg\w+|M_\w+)/textures/(?:M_\w+/)?T_\w+?_([A-Za-z][A-Za-z0-9]*)_(ALB|NOR|RGH|MET)(_Wet)?\.png$")
 
 # WP-16 asset diet (docs/23 (j)): assets nothing in src/ or map/ loads (cut cars, town, kits, spikes; scan before
 # adding one back) are left out of both outputs; their uploads stay in the manifest
@@ -150,7 +152,7 @@ def main():
             d = DEEP_SPIN_RE.match(src)
             if d and e.get("imageId"):
                 deep_spin[d[1]] = e["imageId"]
-            r = TEX_RE.match(src)
+            r = TEX_RE.match(src) or PROD_TEX_RE.match(src)
             if r and e.get("imageId") and r[1] not in DROP:
                 s = textures.setdefault(r[1], {}).setdefault(r[2], {})
                 (s.setdefault("Wet", {}) if r[4] else s)[r[3]] = e["imageId"]

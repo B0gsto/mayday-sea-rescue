@@ -213,7 +213,7 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   `createVehicle` and `Boat/Simulator`; model attributes `BoatLevel`, `TopSpeed`, `Capacity`, `Draft`; client readers use
   `TopSpeed`); heli and sub ignore it. Paid boats and the RIB/Lifeboat passes are owned looks with no stats. Stage hulls
   (`ProgressionConfig.Vehicles[id].level`) come free with the level; `Hydrofoil` and `RocketCutter` are placeholder variants
-  on RIB and Lifeboat hulls with `BoatLevels.pieceParts`. Past the visible seats survivors ride hidden (`AddSurvivor`).
+  on RIB and Lifeboat hulls with `BoatLevels.levelParts`, or the level's mesh from `BoatLevels.HullArt` (per hull: `pieces` level -> asset, hull tweaks; a new piece is one table entry). Past the visible seats survivors ride hidden (`AddSurvivor`).
   Save floors: `Rules.migrate` (owned boats, stat floor, RIB L11, Lifeboat L21), `data.boatPassFloor` until the join's pass
   check (`UpgradeService.applyPassFloor`). `data.vehicleUpgrades` and `VehicleUpgrades` stay only to read old saves; nothing
   sells or applies them now. Player attribute `BoatReach` adds to the pick-up reach (`Ops/Board`), call reach follows the row.

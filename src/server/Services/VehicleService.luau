@@ -239,21 +239,109 @@ local function upgradePart(
 	return part
 end
 
-local function dressLevel(model: Model, spec: VehicleSpec, level: number)
+-- One level's mesh on the hull: authored in the hull's frame, so it only needs the hull's pivot and scale. Named Lv<n>
+-- like the Parts, so the level-up finds what is new. false: not loaded, the Parts stand in.
+local function meshPiece(
+	model: Model,
+	root: BasePart,
+	art: any,
+	asset: string,
+	level: number,
+	scale: number
+): boolean
+	local piece = AssetLoader.clone(asset)
+	if not piece then
+		return false
+	end
+	piece.Name = `Lv{level}_{asset}`
+	piece:ScaleTo(scale)
+	piece:PivotTo(root.CFrame * CFrame.new(art.origin * scale))
+	for _, d in piece:GetDescendants() do
+		if d:IsA("BasePart") then
+			local weld = Instance.new("WeldConstraint")
+			weld.Name = "UpgradeWeld"
+			weld.Part0 = root
+			weld.Part1 = d
+			weld.Parent = d
+		elseif d:IsA("Attachment") and art.glow then
+			for prefix, color in art.glow do
+				if string.sub(d.Name, 1, #prefix) == prefix then
+					local light = Instance.new("PointLight")
+					light.Color = color
+					light.Range = 16 * scale
+					light.Brightness = 1.5
+					light.Parent = d
+				end
+			end
+		end
+	end
+	piece.Parent = model
+	return true
+end
+
+local function hasPrefix(name: string, prefixes: { string }): boolean
+	for _, prefix in prefixes do
+		if string.sub(name, 1, #prefix) == prefix then
+			return true
+		end
+	end
+	return false
+end
+
+-- What the level's art asks of the hull itself (BoatLevels.HullArt). Runs before the model enters the world.
+local function fitHull(model: Model, root: BasePart, art: any, level: number, scale: number)
+	for _, d in model:GetDescendants() do
+		if d:IsA("BasePart") then
+			for _, hide in art.hide or {} do
+				if level >= hide.from and hasPrefix(d.Name, hide.prefixes) then
+					d.Transparency = 1
+				end
+			end
+			local raise = art.raise
+			if raise and level >= raise.from and hasPrefix(d.Name, raise.prefixes) then
+				d.CFrame += Vector3.new(0, raise.y * scale, 0)
+			end
+		end
+	end
+	local rise = art.rise
+	if rise and level >= rise.from then
+		for _, a in root:GetChildren() do
+			if a:IsA("Attachment") and string.match(a.Name, "^Float%d+$") then
+				a.Position -= Vector3.new(0, rise.y * scale, 0)
+			end
+		end
+	end
+	local pull = art.chasePull
+	if pull and level >= pull.from then
+		model:SetAttribute("ChasePull", pull.x)
+	end
+end
+
+local function dressLevel(model: Model, spec: VehicleSpec, level: number, scale: number)
 	local root = model.PrimaryPart
 	if not root then
 		return
 	end
-	for _, piece in BoatLevels.pieceParts(level, spec.hullSize) do
-		upgradePart(
-			model,
-			root,
-			piece.name,
-			piece.size,
-			piece.offset,
-			piece.color,
-			if piece.neon then Enum.Material.Neon else Enum.Material.SmoothPlastic
-		)
+	local art = BoatLevels.HullArt[spec.id]
+	if art then
+		fitHull(model, root, art, level, scale)
+	end
+	local row = BoatLevels.row(level)
+	for lv = BoatLevels.Stages[row.stage].first, row.level do
+		local asset = art and art.pieces[lv]
+		if not (asset and meshPiece(model, root, art, asset, lv, scale)) then
+			for _, piece in BoatLevels.levelParts(lv, spec.hullSize) do
+				upgradePart(
+					model,
+					root,
+					piece.name,
+					piece.size,
+					piece.offset,
+					piece.color,
+					if piece.neon then Enum.Material.Neon else Enum.Material.SmoothPlastic
+				)
+			end
+		end
 	end
 end
 
@@ -802,7 +890,7 @@ local function createVehicle(
 		model:SetAttribute("TopSpeed", fitted.topSpeed)
 		model:SetAttribute("Capacity", fitted.survivorCapacity)
 		model:SetAttribute("Draft", fitted.draft)
-		dressLevel(model, fitted, level)
+		dressLevel(model, fitted, level, BoatLevels.scaleFor(spec, level))
 	end
 	if visuals then
 		model:GetAttributeChangedSignal("Wet"):Connect(function()
@@ -1835,6 +1923,8 @@ function VehicleService.Start()
 			table.insert(preload, spec.model)
 		end
 	end
+	local pieces = BoatLevels.meshAssets()
+	table.move(pieces, 1, #pieces, #preload + 1, preload)
 	AssetLoader.preload(preload)
 	task.spawn(publishPreviews)
 	BoatBoard.start(VehicleService.DockLaunch)

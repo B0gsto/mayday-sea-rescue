@@ -68,15 +68,16 @@ local PRICE = {
 	159000, 184000, 192000, 199000, 207000, 214000, 221000, 228000, 235000, 245000,
 }
 
--- level -> { name, kind }. Exaggerated, one clearly visible piece each (docs/30 table).
+-- level -> { name, kind }. Exaggerated, one clearly visible piece each (docs/30 table). A new hull is its stage's first
+-- piece, so kind "none" is fine there.
 -- stylua: ignore
 local PIECES = {
-	{ "Bare jet ski", "none" }, { "Racing fins", "fin" }, { "Twin engines", "engine" }, { "Exhaust flames", "flame" }, { "Rescue sled", "sled" },
-	{ "Big spoiler", "spoiler" }, { "Nose cone", "nose" }, { "Side pods", "tube" }, { "Turbo stack", "stack" }, { "Flame jets", "rocket" },
+	{ "Bare jet ski", "none" }, { "Shark fin", "fin" }, { "Rescue sled", "sled" }, { "Twin engines", "engine" }, { "Flame pipes", "flame" },
+	{ "Banana boat", "tube" }, { "Huge spoiler", "spoiler" }, { "Bull nose", "nose" }, { "Horn stack", "stack" }, { "Turbo crown", "rocket" },
 	{ "Fat tubes", "tube" }, { "Big outboards", "engine" }, { "Race spoiler", "spoiler" }, { "Twin fins", "fin" }, { "Roll bar", "arch" },
 	{ "Neon strips", "neon" }, { "Turbo stack", "stack" }, { "Nose ram", "nose" }, { "Side rockets", "rocket" }, { "Monster engines", "wall" },
-	{ "Armour plates", "plate" }, { "Huge lamps", "lamp" }, { "Side rockets", "rocket" }, { "Foil wings", "wing" }, { "Big spoiler", "spoiler" },
-	{ "Ram bow", "nose" }, { "Roof rack", "arch" }, { "Neon keel", "neon" }, { "Twin stacks", "stack" }, { "Rocket wall", "wall" },
+	{ "Big lifeboat", "none" }, { "Armour spikes", "plate" }, { "Huge lamps", "lamp" }, { "Ice plough", "nose" }, { "Roof rockets", "rocket" },
+	{ "Crew deck", "arch" }, { "Lamp tower", "stack" }, { "Foil lift", "wing" }, { "Rear rockets", "wall" }, { "Battle bridge", "arch" },
 	{ "Main foils", "wing" }, { "Giant jets", "rocket" }, { "Tall fin", "fin" }, { "Foil struts", "strut" }, { "Neon wings", "neon" },
 	{ "Air scoops", "stack" }, { "Delta spoiler", "spoiler" }, { "Sharp nose", "nose" }, { "Thrust ring", "arch" }, { "Jet wall", "wall" },
 	{ "Boosters", "rocket" }, { "Gold plate", "gold" }, { "Solar sails", "wing" }, { "Twin boosters", "stack" }, { "Gold spoiler", "spoiler" },
@@ -177,6 +178,79 @@ function BoatLevels.legacyFloor(id: string, spec: any): number
 	return floor
 end
 
+-- The approved meshes, per hull id (art/source/*/_Upg*/RESULT.md). A later hull or piece is one more entry here (and
+-- its ids from tools/gen_asset_ids.py); a level with no mesh keeps its placeholder Parts, and any other hull a look
+-- wears keeps them all, since a mesh only fits the hull it was authored on.
+--   origin     where the meshes' pivot sits in the hull's root frame, at x1 (Builder.JETSKI_ORIGIN)
+--   pieces     level -> asset, cumulative through the stage
+--   hide       the hull's own parts (by name prefix) from a level on
+--   raise      the hull's own parts moved up (hull studs at x1) from a level on
+--   rise       the hull floats this much higher (hull studs at x1) from a level on
+--   chasePull  x the chase camera's arm from a level on
+--   glow       ATT_* marker prefix -> a steady PointLight's colour
+BoatLevels.HullArt = {
+	JetSki = {
+		origin = Vector3.new(0, -1.1, 2.3213),
+		pieces = {
+			[2] = "M_Upg_JetSki_SharkFin",
+			[3] = "M_Upg_JetSki_RescueSled",
+			[4] = "M_Upg_JetSki_TwinEngines",
+			[5] = "M_Upg_JetSki_FlamePipes",
+			[6] = "M_Upg_JetSki_BananaBoat",
+			[7] = "M_Upg_JetSki_HugeSpoiler",
+			[8] = "M_Upg_JetSki_BullNose",
+			[9] = "M_Upg_JetSki_HornStack",
+			[10] = "M_Upg_JetSki_TurboCrown",
+		},
+		hide = { { from = 3, prefixes = { "M_Veh_JetSki_Sled" } } },
+	},
+	Lifeboat = {
+		origin = Vector3.zero,
+		pieces = {
+			[22] = "M_Upg_Lifeboat_ArmourSpikes",
+			[23] = "M_Upg_Lifeboat_HugeLamps",
+			[24] = "M_Upg_Lifeboat_IcePlough",
+			[25] = "M_Upg_Lifeboat_RoofRockets",
+			[26] = "M_Upg_Lifeboat_CrewDeck",
+			[27] = "M_Upg_Lifeboat_LampTower",
+			[28] = "M_Upg_Lifeboat_FoilLift",
+			[29] = "M_Upg_Lifeboat_RearRockets",
+			[30] = "M_Upg_Lifeboat_BattleBridge",
+		},
+		hide = { { from = 23, prefixes = { "Stay" } } },
+		raise = {
+			from = 30,
+			y = 7.2,
+			prefixes = { "MastBase", "Mast", "Yard", "RadarPedestal", "Radar", "NavMasthead", "Antenna", "BeaconBase", "Beacon" },
+		},
+		rise = { from = 28, y = 8.1 },
+		chasePull = { from = 27, x = 1.45 },
+		glow = {
+			ATT_Lens = Color3.fromRGB(255, 244, 214),
+			ATT_Beacon = Color3.fromRGB(255, 244, 214),
+			ATT_Flame = Color3.fromRGB(255, 170, 90),
+		},
+	},
+} :: { [string]: any }
+
+-- Hull studs (at x1) this hull floats higher at this level.
+function BoatLevels.rise(hull: string, value: any): number
+	local art = BoatLevels.HullArt[hull]
+	local rise = art and art.rise
+	return if rise and BoatLevels.level(value) >= rise.from then rise.y else 0
+end
+
+-- Every mesh, for the server's preload.
+function BoatLevels.meshAssets(): { string }
+	local out = {}
+	for _, art in BoatLevels.HullArt do
+		for _, asset in art.pieces do
+			table.insert(out, asset)
+		end
+	end
+	return out
+end
+
 -- What the look is scaled by: the level's scale, held under MAX_LENGTH on the long hulls.
 function BoatLevels.scaleFor(spec: any, value: any): number
 	return math.min(
@@ -208,9 +282,10 @@ function BoatLevels.apply(spec: any, value: any): any
 	out.draft = spec.draft * s
 	out.massHint = spec.massHint * s * s * s
 	out.turnRadiusSlow = spec.turnRadiusSlow * s
+	local rise = Vector3.new(0, BoatLevels.rise(spec.id, value) * s, 0)
 	local points = {}
 	for i, p in spec.floatPoints do
-		points[i] = p * s
+		points[i] = p * s - rise
 	end
 	out.floatPoints = points
 	return out
@@ -235,7 +310,7 @@ function BoatLevels.wake(value: any): (number, Color3)
 end
 
 -- Placeholder Parts for every piece of this level's stage so far: hull-relative (fractions of hullSize, so they fit
--- any look at any scale), later levels bigger. Art replaces these after a concept and AD (design before Blender).
+-- any look at any scale), later levels bigger. BoatLevels.HullArt's meshes replace them on their own hull.
 local RED = Color3.fromRGB(214, 58, 48)
 local ORANGE = Color3.fromRGB(255, 142, 38)
 local GREY = Color3.fromRGB(72, 80, 88)
@@ -266,25 +341,33 @@ local SHAPES: { [string]: { any } } = {
 	wall = { Vector3.new(0.47, 1.37, 0.27), Vector3.new(0.39, 0.71, 0.79), GOLD, false, true },
 }
 
+-- The Parts of one level's piece.
+function BoatLevels.levelParts(level: number, hullSize: Vector3): { PiecePart }
+	local piece = ROWS[level]
+	local out: { PiecePart } = {}
+	local shape = SHAPES[piece.kind]
+	if shape then
+		local size, at = shape[1] * hullSize, shape[2] * hullSize
+		local sides: { number } = if shape[5] then { -1, 1 } else { 1 }
+		for _, side in sides do
+			table.insert(out, {
+				name = `Lv{level}{piece.kind}{if side < 0 then "L" else "R"}`,
+				size = size,
+				offset = Vector3.new(at.X * side, at.Y, at.Z),
+				color = shape[3],
+				neon = shape[4],
+			})
+		end
+	end
+	return out
+end
+
 function BoatLevels.pieceParts(value: any, hullSize: Vector3): { PiecePart }
 	local row = BoatLevels.row(value)
 	local out: { PiecePart } = {}
 	for level = BoatLevels.Stages[row.stage].first, row.level do
-		local piece = ROWS[level]
-		local shape = SHAPES[piece.kind]
-		if shape then
-			local size, at = shape[1] * hullSize, shape[2] * hullSize
-			local sides: { number } = if shape[5] then { -1, 1 } else { 1 }
-			for _, side in sides do
-				table.insert(out, {
-					name = `Lv{level}{piece.kind}{if side < 0 then "L" else "R"}`,
-					size = size,
-					offset = Vector3.new(at.X * side, at.Y, at.Z),
-					color = shape[3],
-					neon = shape[4],
-				})
-			end
-		end
+		local parts = BoatLevels.levelParts(level, hullSize)
+		table.move(parts, 1, #parts, #out + 1, out)
 	end
 	return out
 end

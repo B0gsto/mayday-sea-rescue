@@ -48,9 +48,9 @@ return function(t)
 	t.test("in the Upgrade Station's bay it is home too, past the drop-off zone", function()
 		local Station = t.load("src/shared/UpgradeStation.luau")
 		t.expect(Station.LANDING_OUT > ColdOpen.DROP_RADIUS).toBe(true)
-		local landing = (bay * CFrame.new(0, 0, -Station.LANDING_OUT)).Position
+		local landing = Station.fromBerth(bay).Position
 		t.expect(GoBack.refusal(state({ at = landing }))).toBe("Home")
-		local past = (bay * CFrame.new(0, 0, -Station.LANDING_OUT - GoBack.BAY_RADIUS - 1)).Position
+		local past = (Station.fromBerth(bay) * CFrame.new(0, 0, -GoBack.BAY_RADIUS - 1)).Position
 		t.expect(GoBack.refusal(state({ at = past }))).toBe(nil)
 	end)
 
@@ -71,7 +71,7 @@ return function(t)
 		t.expect(top > 100).toBe(true)
 		for _, island in RingLayout.Islands do
 			local berth = island.berths.Boat
-			local landing = (berth * CFrame.new(0, 0, -UpgradeStation.LANDING_OUT)).Position
+			local landing = UpgradeStation.fromBerth(berth).Position
 			t.expect(GoBack.reachAt(landing, berth, top)).toBe(0)
 			t.expect(GoBack.reachAt(berth.Position, berth, top)).toBe(0)
 			local out = (berth * CFrame.new(0, 0, -(GoBack.REACH_HOME + 1))).Position

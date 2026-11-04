@@ -13,6 +13,7 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local UpgradeStation = require(Shared:WaitForChild("UpgradeStation"))
 local GoBack = require(Shared:WaitForChild("Boat"):WaitForChild("GoBack"))
 local Net = require(Shared:WaitForChild("Net"))
 local SubRig = require(Shared:WaitForChild("Sub"):WaitForChild("Rig"))
@@ -175,6 +176,9 @@ local function onLand()
 	end
 	HeliController.Landed()
 	CameraController.SnapBehind()
+	if model and model:GetAttribute("BoatLevel") ~= nil and model.PrimaryPart then -- boats only: craft have no level
+		CameraController.FrameStation(UpgradeStation.nearest(model.PrimaryPart.Position))
+	end
 	finish()
 	local rider = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 	if rider and rider:IsA("BasePart") then

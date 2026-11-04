@@ -22,6 +22,7 @@ local PirateRules = require(Shared:WaitForChild("PirateRules"))
 local SeaZones = require(Shared:WaitForChild("Calls"):WaitForChild("SeaZones"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 
+local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local DataService = require(script.Parent.DataService)
 local RescueRunService = require(script.Parent.RescueRunService)
 local RescueService = require(script.Parent.RescueService)
@@ -33,6 +34,7 @@ PirateService.Priority = 150 -- after the services it drives
 
 local STEP = 1 / 30 -- s, the steering
 local PUBLISH = 0.1 -- s, the attributes each client smooths between
+local LANTERN = Color3.fromRGB(255, 214, 130) -- the mesh's panes and lantern
 
 type Live = {
 	player: Player,
@@ -93,6 +95,44 @@ local function remove(live: Live)
 	end
 end
 
+-- The mesh and its crew, anchored and inert like the Parts; the Parts when it can't be loaded.
+local function inert(model: Model)
+	for _, d in model:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.Anchored = true
+			d.CanCollide, d.CanTouch, d.CanQuery = false, false, false
+			if string.find(d.Name, "_Lights", 1, true) then
+				local look = d:FindFirstChildOfClass("SurfaceAppearance")
+				if look then
+					look:Destroy() -- Neon can't glow through a SurfaceAppearance
+				end
+				d.Material = Enum.Material.Neon
+				d.Color = LANTERN
+			end
+		end
+	end
+end
+
+local function buildPirate(): Model
+	local boat = AssetLoader.clone(PirateBoat.ASSET)
+	if not boat then
+		return PirateBoat.build()
+	end
+	inert(boat)
+	boat:ScaleTo(PirateBoat.SCALE)
+	boat:PivotTo(CFrame.identity)
+	for asset, offset in PirateBoat.CREW do
+		local crew = AssetLoader.clone(asset)
+		if crew then
+			inert(crew)
+			crew:ScaleTo(PirateBoat.SCALE)
+			crew:PivotTo(CFrame.new(offset * PirateBoat.SCALE))
+			crew.Parent = boat
+		end
+	end
+	return boat
+end
+
 function PirateService.Spawn(player: Player, forced: boolean?): (boolean, string)
 	if lives[player] then
 		return false, "Already hunted"
@@ -123,7 +163,7 @@ function PirateService.Spawn(player: Player, forced: boolean?): (boolean, string
 		return false, "No water"
 	end
 	local chase = PirateRules.newChase(at, boat, root.AssemblyLinearVelocity, top)
-	local pirate = PirateBoat.build()
+	local pirate = buildPirate()
 	pirate.Name = `Pirate{player.UserId}`
 	-- seen from afar at any speed: its parts never stream out, and only the attributes change
 	pirate.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
@@ -263,6 +303,7 @@ function PirateService.Init()
 end
 
 function PirateService.Start()
+	AssetLoader.preload({ PirateBoat.ASSET, "M_Chr_PirateCaptain", "M_Chr_PirateDeckhand", "M_Chr_PirateLookout" })
 	local stepped, published, rolled = 0, 0, 0
 	RunService.Heartbeat:Connect(function(dt: number)
 		stepped += dt
