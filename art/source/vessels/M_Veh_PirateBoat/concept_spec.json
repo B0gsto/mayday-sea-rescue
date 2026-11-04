@@ -1,0 +1,14557 @@
+{
+"name": "Pirate Boat",
+"units": "studs",
+"stud": 1,
+"plateHeight": 0.4,
+"brickHeight": 1.2,
+"axes": "Y up, +X = bow, +Z = starboard, water at y = 0",
+"rotation": "Euler degrees, three.js order YXZ",
+"seams": {
+"xz": 0.05,
+"y": 0.04
+},
+"bounds": {
+"min": [
+-13.65,
+-1.18,
+-9.34
+],
+"max": [
+16.18,
+34.55,
+10.21
+],
+"size": [
+29.83,
+35.73,
+19.54
+]
+},
+"boundsWithJetSki": {
+"min": [
+-13.65,
+-1.18,
+-9.34
+],
+"max": [
+16.18,
+34.55,
+10.21
+],
+"size": [
+29.83,
+35.73,
+19.54
+]
+},
+"palette": {
+"hull": "#7A4A2A",
+"hullDark": "#5A3520",
+"stripe": "#3E2415",
+"deckA": "#B98A5A",
+"deckB": "#A57A4D",
+"deckC": "#C99C6A",
+"mast": "#4A2C17",
+"rail": "#D2AE76",
+"wood": "#8B5A2B",
+"sailRed": "#C8102E",
+"sailCream": "#F2E6C8",
+"gold": "#E3A82B",
+"shark": "#4F6F80",
+"sharkDark": "#2F4654",
+"belly": "#F2F5F7",
+"mouth": "#8E1428",
+"palate": "#B83A55",
+"tongue": "#F27C90",
+"tooth": "#FFFFFF",
+"black": "#1C1C20",
+"glow": "#FFC94A",
+"rope": "#D7C29A",
+"skin": "#F2C72E",
+"red": "#D0202A",
+"navy": "#1F2C4F",
+"blue": "#1E5BB8",
+"green": "#2E9A47",
+"iron": "#3A3D44",
+"steel": "#8D96A1",
+"orange": "#FF7A1A",
+"yellow": "#FFC72C",
+"white": "#F4F4F0",
+"brown": "#6B4226",
+"chest": "#7A3E1E",
+"glass": "#24435E",
+"denim": "#4A6FA5",
+"parrot": "#2FB24C",
+"gem": "#E0185A"
+},
+"parts": [
+{
+"name": "hull-L0-01",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-10.05,
+-0.6,
+0
+],
+"size": [
+0.9,
+1.2,
+5.723
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 6,
+"studs": false
+},
+{
+"name": "hull-L0-02",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-9.05,
+-0.6,
+0
+],
+"size": [
+1.1,
+1.2,
+6
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 6,
+"studs": false
+},
+{
+"name": "hull-L0-03",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-6.5,
+-0.6,
+0
+],
+"size": [
+4,
+1.2,
+6
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 6,
+"studs": false
+},
+{
+"name": "hull-L0-04",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-2.5,
+-0.6,
+0
+],
+"size": [
+4,
+1.2,
+6
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 6,
+"studs": false
+},
+{
+"name": "hull-L0-05",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+1.75,
+-0.6,
+0
+],
+"size": [
+4.5,
+1.2,
+6
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 6,
+"studs": false
+},
+{
+"name": "hull-L0-06",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+5.5,
+-0.6,
+0
+],
+"size": [
+3,
+1.2,
+6
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 3.8,
+"studs": false
+},
+{
+"name": "hull-L0-07",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+7.75,
+-0.6,
+0
+],
+"size": [
+1.5,
+1.2,
+3.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 2.4,
+"studs": false
+},
+{
+"name": "hull-L1-01",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-10.45,
+0.6,
+0
+],
+"size": [
+1.7,
+1.2,
+6.477
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 7,
+"studs": false
+},
+{
+"name": "hull-L1-02",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-8.45,
+0.6,
+0
+],
+"size": [
+2.3,
+1.2,
+7
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 7,
+"studs": false
+},
+{
+"name": "hull-L1-03",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-5.3,
+0.6,
+0
+],
+"size": [
+4,
+1.2,
+7
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 7,
+"studs": false
+},
+{
+"name": "hull-L1-04",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-1.3,
+0.6,
+0
+],
+"size": [
+4,
+1.2,
+7
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 7,
+"studs": false
+},
+{
+"name": "hull-L1-05",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+2.35,
+0.6,
+0
+],
+"size": [
+3.3,
+1.2,
+7
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 7,
+"studs": false
+},
+{
+"name": "hull-L1-06",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+5.5,
+0.6,
+0
+],
+"size": [
+3,
+1.2,
+7
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 4.8,
+"studs": false
+},
+{
+"name": "hull-L1-07",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+7.85,
+0.6,
+0
+],
+"size": [
+1.7,
+1.2,
+4.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 3.893,
+"studs": false
+},
+{
+"name": "hull-L1-08",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+9.35,
+0.6,
+0
+],
+"size": [
+1.3,
+1.2,
+3.893
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 3.2,
+"studs": false
+},
+{
+"name": "hull-L2-01",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-10.8,
+1.8,
+0
+],
+"size": [
+2.4,
+1.2,
+7.262
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 8,
+"studs": false
+},
+{
+"name": "hull-L2-02",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-7.8,
+1.8,
+0
+],
+"size": [
+3.6,
+1.2,
+8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 8,
+"studs": false
+},
+{
+"name": "hull-L2-03",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-4,
+1.8,
+0
+],
+"size": [
+4,
+1.2,
+8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 8,
+"studs": false
+},
+{
+"name": "hull-L2-04",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+0,
+1.8,
+0
+],
+"size": [
+4,
+1.2,
+8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 8,
+"studs": false
+},
+{
+"name": "hull-L2-05",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+3,
+1.8,
+0
+],
+"size": [
+2,
+1.2,
+8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 8,
+"studs": false
+},
+{
+"name": "hull-L2-06",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+5,
+1.8,
+0
+],
+"size": [
+2,
+1.2,
+8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 6.533,
+"studs": false
+},
+{
+"name": "hull-L2-07",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+6.5,
+1.8,
+0
+],
+"size": [
+1,
+1.2,
+6.533
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 5.8,
+"studs": false
+},
+{
+"name": "hull-L2-08",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+8.5,
+1.8,
+0
+],
+"size": [
+3,
+1.2,
+5.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 3.8,
+"studs": false
+},
+{
+"name": "hull-L3-01",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-10.8,
+3,
+0
+],
+"size": [
+2.4,
+1.2,
+8.262
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3E2415",
+"material": "abs",
+"d2": 9,
+"studs": false
+},
+{
+"name": "hull-L3-02",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-8.8,
+3,
+0
+],
+"size": [
+1.6,
+1.2,
+9
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3E2415",
+"material": "abs",
+"d2": 9,
+"studs": false
+},
+{
+"name": "hull-L3-03",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-6,
+3,
+0
+],
+"size": [
+4,
+1.2,
+9
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3E2415",
+"material": "abs",
+"d2": 9,
+"studs": false
+},
+{
+"name": "hull-L3-04",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-2,
+3,
+0
+],
+"size": [
+4,
+1.2,
+9
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3E2415",
+"material": "abs",
+"d2": 9,
+"studs": false
+},
+{
+"name": "hull-L3-05",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+2,
+3,
+0
+],
+"size": [
+4,
+1.2,
+9
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3E2415",
+"material": "abs",
+"d2": 9,
+"studs": false
+},
+{
+"name": "hull-L3-06",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+5.5,
+3,
+0
+],
+"size": [
+3,
+1.2,
+9
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3E2415",
+"material": "abs",
+"d2": 6.8,
+"studs": false
+},
+{
+"name": "hull-L3-07",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+7.5,
+3,
+0
+],
+"size": [
+1,
+1.2,
+6.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3E2415",
+"material": "abs",
+"d2": 5.933,
+"studs": false
+},
+{
+"name": "hull-L3-08",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+9,
+3,
+0
+],
+"size": [
+2,
+1.2,
+5.933
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3E2415",
+"material": "abs",
+"d2": 4.2,
+"studs": false
+},
+{
+"name": "hull-L4-01",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-10.8,
+4.2,
+0
+],
+"size": [
+2.4,
+1.2,
+9.262
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 10,
+"studs": true
+},
+{
+"name": "hull-L4-02",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-7.8,
+4.2,
+0
+],
+"size": [
+3.6,
+1.2,
+10
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 10,
+"studs": true
+},
+{
+"name": "hull-L4-03",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+-4,
+4.2,
+0
+],
+"size": [
+4,
+1.2,
+10
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 10,
+"studs": true
+},
+{
+"name": "hull-L4-04",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+0,
+4.2,
+0
+],
+"size": [
+4,
+1.2,
+10
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 10,
+"studs": true
+},
+{
+"name": "hull-L4-05",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+3,
+4.2,
+0
+],
+"size": [
+2,
+1.2,
+10
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 10,
+"studs": true
+},
+{
+"name": "hull-L4-06",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+5,
+4.2,
+0
+],
+"size": [
+2,
+1.2,
+10
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 8.533,
+"studs": true
+},
+{
+"name": "hull-L4-07",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+6.5,
+4.2,
+0
+],
+"size": [
+1,
+1.2,
+8.533
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 7.8,
+"studs": true
+},
+{
+"name": "hull-L4-08",
+"group": "hull",
+"shape": "wedge",
+"pos": [
+8.5,
+4.2,
+0
+],
+"size": [
+3,
+1.2,
+7.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 4.4,
+"studs": true
+},
+{
+"name": "rudder",
+"group": "hull",
+"shape": "box",
+"pos": [
+-12.25,
+1.3,
+0
+],
+"size": [
+0.7,
+4.2,
+0.6
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"studs": false
+},
+{
+"name": "rudder-hinge-01",
+"group": "hull",
+"shape": "box",
+"pos": [
+-11.95,
+2,
+0
+],
+"size": [
+0.4,
+0.24,
+0.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "rudder-hinge-02",
+"group": "hull",
+"shape": "box",
+"pos": [
+-11.95,
+3,
+0
+],
+"size": [
+0.4,
+0.24,
+0.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-01",
+"group": "hull",
+"shape": "box",
+"pos": [
+-10.803,
+2.4,
+-4.335
+],
+"size": [
+2.308,
+0.2,
+0.14
+],
+"rot": [
+0,
+8.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-02",
+"group": "hull",
+"shape": "box",
+"pos": [
+-10.803,
+2.4,
+4.335
+],
+"size": [
+2.308,
+0.2,
+0.14
+],
+"rot": [
+0,
+-8.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-03",
+"group": "hull",
+"shape": "box",
+"pos": [
+-10.803,
+3.6,
+-4.835
+],
+"size": [
+2.308,
+0.2,
+0.14
+],
+"rot": [
+0,
+8.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-04",
+"group": "hull",
+"shape": "box",
+"pos": [
+-10.803,
+3.6,
+4.835
+],
+"size": [
+2.308,
+0.2,
+0.14
+],
+"rot": [
+0,
+-8.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-05",
+"group": "hull",
+"shape": "box",
+"pos": [
+-6.8,
+2.4,
+-4.52
+],
+"size": [
+5.48,
+0.2,
+0.14
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-06",
+"group": "hull",
+"shape": "box",
+"pos": [
+-6.8,
+2.4,
+4.52
+],
+"size": [
+5.48,
+0.2,
+0.14
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-07",
+"group": "hull",
+"shape": "box",
+"pos": [
+-6.8,
+3.6,
+-5.02
+],
+"size": [
+5.48,
+0.2,
+0.14
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-08",
+"group": "hull",
+"shape": "box",
+"pos": [
+-6.8,
+3.6,
+5.02
+],
+"size": [
+5.48,
+0.2,
+0.14
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-09",
+"group": "hull",
+"shape": "box",
+"pos": [
+0,
+2.4,
+-4.52
+],
+"size": [
+7.88,
+0.2,
+0.14
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-10",
+"group": "hull",
+"shape": "box",
+"pos": [
+0,
+2.4,
+4.52
+],
+"size": [
+7.88,
+0.2,
+0.14
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-11",
+"group": "hull",
+"shape": "box",
+"pos": [
+0,
+3.6,
+-5.02
+],
+"size": [
+7.88,
+0.2,
+0.14
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-12",
+"group": "hull",
+"shape": "box",
+"pos": [
+0,
+3.6,
+5.02
+],
+"size": [
+7.88,
+0.2,
+0.14
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-13",
+"group": "hull",
+"shape": "box",
+"pos": [
+5.507,
+2.4,
+-3.969
+],
+"size": [
+3.075,
+0.2,
+0.14
+],
+"rot": [
+0,
+-20.136,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-14",
+"group": "hull",
+"shape": "box",
+"pos": [
+5.507,
+2.4,
+3.969
+],
+"size": [
+3.075,
+0.2,
+0.14
+],
+"rot": [
+0,
+20.136,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-15",
+"group": "hull",
+"shape": "box",
+"pos": [
+5.507,
+3.6,
+-4.469
+],
+"size": [
+3.075,
+0.2,
+0.14
+],
+"rot": [
+0,
+-20.136,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-16",
+"group": "hull",
+"shape": "box",
+"pos": [
+5.507,
+3.6,
+4.469
+],
+"size": [
+3.075,
+0.2,
+0.14
+],
+"rot": [
+0,
+20.136,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-17",
+"group": "hull",
+"shape": "box",
+"pos": [
+8.508,
+2.4,
+-2.768
+],
+"size": [
+3.15,
+0.2,
+0.14
+],
+"rot": [
+0,
+-23.429,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-18",
+"group": "hull",
+"shape": "box",
+"pos": [
+8.508,
+2.4,
+2.768
+],
+"size": [
+3.15,
+0.2,
+0.14
+],
+"rot": [
+0,
+23.429,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-19",
+"group": "hull",
+"shape": "box",
+"pos": [
+8.51,
+3.6,
+-3.067
+],
+"size": [
+3.328,
+0.2,
+0.14
+],
+"rot": [
+0,
+-29.539,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "trim-20",
+"group": "hull",
+"shape": "box",
+"pos": [
+8.51,
+3.6,
+3.067
+],
+"size": [
+3.328,
+0.2,
+0.14
+],
+"rot": [
+0,
+29.539,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "porthole-ring-01",
+"group": "hull",
+"shape": "torus",
+"pos": [
+-8.4,
+3,
+-4.5
+],
+"size": [
+1,
+1,
+0.18
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "porthole-glass-01",
+"group": "hull",
+"shape": "cyl",
+"pos": [
+-8.4,
+3,
+-4.49
+],
+"size": [
+0.75,
+0.1,
+0.75
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#24435E",
+"material": "glass"
+},
+{
+"name": "porthole-ring-02",
+"group": "hull",
+"shape": "torus",
+"pos": [
+-5,
+3,
+-4.5
+],
+"size": [
+1,
+1,
+0.18
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "porthole-glass-02",
+"group": "hull",
+"shape": "cyl",
+"pos": [
+-5,
+3,
+-4.49
+],
+"size": [
+0.75,
+0.1,
+0.75
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#24435E",
+"material": "glass"
+},
+{
+"name": "porthole-ring-03",
+"group": "hull",
+"shape": "torus",
+"pos": [
+-1.6,
+3,
+-4.5
+],
+"size": [
+1,
+1,
+0.18
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "porthole-glass-03",
+"group": "hull",
+"shape": "cyl",
+"pos": [
+-1.6,
+3,
+-4.49
+],
+"size": [
+0.75,
+0.1,
+0.75
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#24435E",
+"material": "glass"
+},
+{
+"name": "porthole-ring-04",
+"group": "hull",
+"shape": "torus",
+"pos": [
+1.4,
+3,
+-4.5
+],
+"size": [
+1,
+1,
+0.18
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "porthole-glass-04",
+"group": "hull",
+"shape": "cyl",
+"pos": [
+1.4,
+3,
+-4.49
+],
+"size": [
+0.75,
+0.1,
+0.75
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#24435E",
+"material": "glass"
+},
+{
+"name": "porthole-ring-05",
+"group": "hull",
+"shape": "torus",
+"pos": [
+-8.4,
+3,
+4.5
+],
+"size": [
+1,
+1,
+0.18
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "porthole-glass-05",
+"group": "hull",
+"shape": "cyl",
+"pos": [
+-8.4,
+3,
+4.49
+],
+"size": [
+0.75,
+0.1,
+0.75
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#24435E",
+"material": "glass"
+},
+{
+"name": "porthole-ring-06",
+"group": "hull",
+"shape": "torus",
+"pos": [
+-5,
+3,
+4.5
+],
+"size": [
+1,
+1,
+0.18
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "porthole-glass-06",
+"group": "hull",
+"shape": "cyl",
+"pos": [
+-5,
+3,
+4.49
+],
+"size": [
+0.75,
+0.1,
+0.75
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#24435E",
+"material": "glass"
+},
+{
+"name": "porthole-ring-07",
+"group": "hull",
+"shape": "torus",
+"pos": [
+-1.6,
+3,
+4.5
+],
+"size": [
+1,
+1,
+0.18
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "porthole-glass-07",
+"group": "hull",
+"shape": "cyl",
+"pos": [
+-1.6,
+3,
+4.49
+],
+"size": [
+0.75,
+0.1,
+0.75
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#24435E",
+"material": "glass"
+},
+{
+"name": "porthole-ring-08",
+"group": "hull",
+"shape": "torus",
+"pos": [
+1.4,
+3,
+4.5
+],
+"size": [
+1,
+1,
+0.18
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "porthole-glass-08",
+"group": "hull",
+"shape": "cyl",
+"pos": [
+1.4,
+3,
+4.49
+],
+"size": [
+0.75,
+0.1,
+0.75
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#24435E",
+"material": "glass"
+},
+{
+"name": "bulwark-01",
+"group": "deck",
+"shape": "box",
+"pos": [
+-2.5,
+5.4,
+-4.5
+],
+"size": [
+3,
+1.2,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "bulwark-02",
+"group": "deck",
+"shape": "box",
+"pos": [
+0.7,
+5.4,
+-4.5
+],
+"size": [
+3.4,
+1.2,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "bulwark-step-01",
+"group": "deck",
+"shape": "box",
+"pos": [
+-4.5,
+5.8,
+-4.5
+],
+"size": [
+1,
+2,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "bulwark-step-02",
+"group": "deck",
+"shape": "box",
+"pos": [
+3.2,
+5.8,
+-4.5
+],
+"size": [
+1.6,
+2,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "bulwark-03",
+"group": "deck",
+"shape": "box",
+"pos": [
+-2.5,
+5.4,
+4.5
+],
+"size": [
+3,
+1.2,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "bulwark-04",
+"group": "deck",
+"shape": "box",
+"pos": [
+0.7,
+5.4,
+4.5
+],
+"size": [
+3.4,
+1.2,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "bulwark-step-03",
+"group": "deck",
+"shape": "box",
+"pos": [
+-4.5,
+5.8,
+4.5
+],
+"size": [
+1,
+2,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "bulwark-step-04",
+"group": "deck",
+"shape": "box",
+"pos": [
+3.2,
+5.8,
+4.5
+],
+"size": [
+1.6,
+2,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-01",
+"group": "deck",
+"shape": "box",
+"pos": [
+-3.5,
+5,
+-3.5
+],
+"size": [
+3,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-02",
+"group": "deck",
+"shape": "box",
+"pos": [
+-0.25,
+5,
+-3.5
+],
+"size": [
+3.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-03",
+"group": "deck",
+"shape": "box",
+"pos": [
+2.75,
+5,
+-3.5
+],
+"size": [
+2.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-04",
+"group": "deck",
+"shape": "box",
+"pos": [
+-4.25,
+5,
+-2.5
+],
+"size": [
+1.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-05",
+"group": "deck",
+"shape": "box",
+"pos": [
+-1.75,
+5,
+-2.5
+],
+"size": [
+3.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-06",
+"group": "deck",
+"shape": "box",
+"pos": [
+2,
+5,
+-2.5
+],
+"size": [
+4,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-07",
+"group": "deck",
+"shape": "box",
+"pos": [
+-3,
+5,
+-1.5
+],
+"size": [
+4,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "deck-plank-08",
+"group": "deck",
+"shape": "box",
+"pos": [
+0.75,
+5,
+-1.5
+],
+"size": [
+3.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "deck-plank-09",
+"group": "deck",
+"shape": "box",
+"pos": [
+3.25,
+5,
+-1.5
+],
+"size": [
+1.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": false
+},
+{
+"name": "deck-plank-10",
+"group": "deck",
+"shape": "box",
+"pos": [
+-4,
+5,
+-0.5
+],
+"size": [
+2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "deck-plank-11",
+"group": "deck",
+"shape": "box",
+"pos": [
+-1.25,
+5,
+-0.5
+],
+"size": [
+3.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-12",
+"group": "deck",
+"shape": "box",
+"pos": [
+2.25,
+5,
+-0.5
+],
+"size": [
+3.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "deck-plank-13",
+"group": "deck",
+"shape": "box",
+"pos": [
+-3.25,
+5,
+0.5
+],
+"size": [
+3.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": false
+},
+{
+"name": "deck-plank-14",
+"group": "deck",
+"shape": "box",
+"pos": [
+0.25,
+5,
+0.5
+],
+"size": [
+3.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-15",
+"group": "deck",
+"shape": "box",
+"pos": [
+3,
+5,
+0.5
+],
+"size": [
+2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "deck-plank-16",
+"group": "deck",
+"shape": "box",
+"pos": [
+-4.5,
+5,
+1.5
+],
+"size": [
+1,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "deck-plank-17",
+"group": "deck",
+"shape": "box",
+"pos": [
+-2.25,
+5,
+1.5
+],
+"size": [
+3.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "deck-plank-18",
+"group": "deck",
+"shape": "box",
+"pos": [
+1.25,
+5,
+1.5
+],
+"size": [
+3.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": false
+},
+{
+"name": "deck-plank-19",
+"group": "deck",
+"shape": "box",
+"pos": [
+3.5,
+5,
+1.5
+],
+"size": [
+1,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "deck-plank-20",
+"group": "deck",
+"shape": "box",
+"pos": [
+-3,
+5,
+2.5
+],
+"size": [
+4,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-21",
+"group": "deck",
+"shape": "box",
+"pos": [
+0.75,
+5,
+2.5
+],
+"size": [
+3.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-22",
+"group": "deck",
+"shape": "box",
+"pos": [
+3.25,
+5,
+2.5
+],
+"size": [
+1.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-23",
+"group": "deck",
+"shape": "box",
+"pos": [
+-3.75,
+5,
+3.5
+],
+"size": [
+2.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-24",
+"group": "deck",
+"shape": "box",
+"pos": [
+-0.75,
+5,
+3.5
+],
+"size": [
+3.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "deck-plank-25",
+"group": "deck",
+"shape": "box",
+"pos": [
+2.5,
+5,
+3.5
+],
+"size": [
+3,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "stair-01",
+"group": "deck",
+"shape": "box",
+"pos": [
+-4,
+5.8,
+-3.3
+],
+"size": [
+2,
+1.2,
+1.4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "stair-02",
+"group": "deck",
+"shape": "box",
+"pos": [
+-4.5,
+7,
+-3.3
+],
+"size": [
+1,
+1.2,
+1.4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-stair-01",
+"group": "deck",
+"shape": "box",
+"pos": [
+3.1,
+5.8,
+2.1
+],
+"size": [
+1.8,
+1.2,
+1.4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-stair-02",
+"group": "deck",
+"shape": "box",
+"pos": [
+3.6,
+7,
+2.1
+],
+"size": [
+0.8,
+1.2,
+1.4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "forecastle-01",
+"group": "forecastle",
+"shape": "wedge",
+"pos": [
+4.75,
+5.4,
+0
+],
+"size": [
+1.5,
+1.2,
+10
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 8.9,
+"studs": false
+},
+{
+"name": "forecastle-02",
+"group": "forecastle",
+"shape": "wedge",
+"pos": [
+6.25,
+5.4,
+0
+],
+"size": [
+1.5,
+1.2,
+8.9
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 7.8,
+"studs": false
+},
+{
+"name": "forecastle-03",
+"group": "forecastle",
+"shape": "wedge",
+"pos": [
+7.75,
+5.4,
+0
+],
+"size": [
+1.5,
+1.2,
+7.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 6.1,
+"studs": false
+},
+{
+"name": "forecastle-04",
+"group": "forecastle",
+"shape": "wedge",
+"pos": [
+9.25,
+5.4,
+0
+],
+"size": [
+1.5,
+1.2,
+6.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 4.4,
+"studs": false
+},
+{
+"name": "forecastle-05",
+"group": "forecastle",
+"shape": "wedge",
+"pos": [
+5.5,
+6.6,
+0
+],
+"size": [
+3,
+1.2,
+10
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 7.8,
+"studs": false
+},
+{
+"name": "forecastle-06",
+"group": "forecastle",
+"shape": "wedge",
+"pos": [
+8.5,
+6.6,
+0
+],
+"size": [
+3,
+1.2,
+7.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 4.4,
+"studs": false
+},
+{
+"name": "fc-plank-01",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+4.6,
+7.4,
+-3.5
+],
+"size": [
+1.2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-plank-02",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+5.8,
+7.4,
+-2.5
+],
+"size": [
+3.6,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-plank-03",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+5.2,
+7.4,
+-1.5
+],
+"size": [
+2.4,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-plank-04",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+7.8,
+7.4,
+-1.5
+],
+"size": [
+2.8,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-plank-05",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+5.5,
+7.4,
+-0.5
+],
+"size": [
+3,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": false
+},
+{
+"name": "fc-plank-06",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+8,
+7.4,
+-0.5
+],
+"size": [
+2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "fc-plank-07",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+5.2,
+7.4,
+0.5
+],
+"size": [
+2.4,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "fc-plank-08",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+7.7,
+7.4,
+0.5
+],
+"size": [
+2.6,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "fc-plank-09",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+5.5,
+7.4,
+1.5
+],
+"size": [
+3,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-plank-10",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+8.1,
+7.4,
+1.5
+],
+"size": [
+2.2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-plank-11",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+5.8,
+7.4,
+2.5
+],
+"size": [
+3.6,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-plank-12",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+4.6,
+7.4,
+3.5
+],
+"size": [
+1.2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-wall-01",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+5.328,
+7.8,
+-3.981
+],
+"size": [
+3.075,
+1.2,
+1
+],
+"rot": [
+0,
+-20.136,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-wall-02",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+5.328,
+7.8,
+3.981
+],
+"size": [
+3.075,
+1.2,
+1
+],
+"rot": [
+0,
+20.136,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-wall-bow-01",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+8.253,
+8,
+-2.615
+],
+"size": [
+3.328,
+1.6,
+1
+],
+"rot": [
+0,
+-29.539,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-wall-bow-02",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+8.253,
+8,
+2.615
+],
+"size": [
+3.328,
+1.6,
+1
+],
+"rot": [
+0,
+29.539,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-bow-tip",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+9.5,
+8.2,
+0
+],
+"size": [
+1,
+2,
+2
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "rail-post-01",
+"group": "forecastle",
+"shape": "cyl",
+"pos": [
+4.4,
+8.1,
+-3.3
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-02",
+"group": "forecastle",
+"shape": "cyl",
+"pos": [
+4.4,
+8.1,
+-2.35
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-03",
+"group": "forecastle",
+"shape": "cyl",
+"pos": [
+4.4,
+8.1,
+-1.4
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-04",
+"group": "forecastle",
+"shape": "cyl",
+"pos": [
+4.4,
+8.1,
+-0.45
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-05",
+"group": "forecastle",
+"shape": "cyl",
+"pos": [
+4.4,
+8.1,
+0.5
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-06",
+"group": "forecastle",
+"shape": "cyl",
+"pos": [
+4.4,
+8.1,
+3.35
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-01",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+4.4,
+8.8,
+-1.15
+],
+"size": [
+1,
+0.4,
+4.7
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"studs": true
+},
+{
+"name": "fc-door",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+3.98,
+6.05,
+0
+],
+"size": [
+0.24,
+1.7,
+1.4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3E2415",
+"material": "abs",
+"studs": false
+},
+{
+"name": "fc-door-frame",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+3.97,
+7.01,
+0
+],
+"size": [
+0.3,
+0.22,
+1.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "fc-window-pane",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+4.01,
+6.2,
+-2.6
+],
+"size": [
+0.8,
+0.8,
+0.22
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "fc-window-frame-01",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+3.975,
+6.725,
+-2.6
+],
+"size": [
+1.3,
+0.25,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "fc-window-sill",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+3.925,
+5.66,
+-2.6
+],
+"size": [
+1.5,
+0.28,
+0.45
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "fc-window-frame-02",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+3.975,
+6.2,
+-3.125
+],
+"size": [
+0.25,
+0.8,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "fc-window-frame-03",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+3.975,
+6.2,
+-2.075
+],
+"size": [
+0.25,
+0.8,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "fc-window-bar-01",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+3.9,
+6.2,
+-2.6
+],
+"size": [
+0.1,
+0.72,
+0.12
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "fc-window-bar-02",
+"group": "forecastle",
+"shape": "box",
+"pos": [
+3.85,
+6.2,
+-2.6
+],
+"size": [
+0.72,
+0.1,
+0.14
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "castle-01",
+"group": "stern-castle",
+"shape": "wedge",
+"pos": [
+-10.9,
+5.4,
+0
+],
+"size": [
+2.6,
+1.2,
+9.2
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 10,
+"studs": false
+},
+{
+"name": "castle-02",
+"group": "stern-castle",
+"shape": "wedge",
+"pos": [
+-10.9,
+6.6,
+0
+],
+"size": [
+2.6,
+1.2,
+9.2
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 10,
+"studs": false
+},
+{
+"name": "castle-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.3,
+5.4,
+-3.5
+],
+"size": [
+2.6,
+1.2,
+3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.3,
+5.4,
+0
+],
+"size": [
+2.6,
+1.2,
+4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-05",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.3,
+5.4,
+3.5
+],
+"size": [
+2.6,
+1.2,
+3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-06",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6,
+5.4,
+-3.5
+],
+"size": [
+2,
+1.2,
+3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-07",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6,
+5.4,
+0
+],
+"size": [
+2,
+1.2,
+4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-08",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6,
+5.4,
+3.5
+],
+"size": [
+2,
+1.2,
+3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-09",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.8,
+6.6,
+-2.5
+],
+"size": [
+1.6,
+1.2,
+5
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-10",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.8,
+6.6,
+2.5
+],
+"size": [
+1.6,
+1.2,
+5
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-11",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.5,
+6.6,
+-2.5
+],
+"size": [
+3,
+1.2,
+5
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-12",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.5,
+6.6,
+2.5
+],
+"size": [
+3,
+1.2,
+5
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-upper-01",
+"group": "stern-castle",
+"shape": "wedge",
+"pos": [
+-11.85,
+7.8,
+0
+],
+"size": [
+1.5,
+1.2,
+8.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 9.2,
+"studs": false
+},
+{
+"name": "castle-upper-02",
+"group": "stern-castle",
+"shape": "wedge",
+"pos": [
+-10.35,
+7.8,
+0
+],
+"size": [
+1.5,
+1.2,
+9.2
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"d2": 9.6,
+"studs": false
+},
+{
+"name": "castle-upper-03",
+"group": "stern-castle",
+"shape": "wedge",
+"pos": [
+-11.1,
+9,
+0
+],
+"size": [
+3,
+1.2,
+8.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"d2": 9.6,
+"studs": false
+},
+{
+"name": "castle-plank-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.5,
+7.4,
+-4.5
+],
+"size": [
+2.2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "castle-plank-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.2,
+7.4,
+-4.5
+],
+"size": [
+2.4,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "castle-plank-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.3,
+7.4,
+-3.5
+],
+"size": [
+2.6,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "castle-plank-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6,
+7.4,
+-3.5
+],
+"size": [
+2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "castle-plank-05",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.5,
+7.4,
+-2.5
+],
+"size": [
+2.2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-plank-06",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.2,
+7.4,
+-2.5
+],
+"size": [
+2.4,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-plank-07",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.3,
+7.4,
+-1.5
+],
+"size": [
+2.6,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-plank-08",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6,
+7.4,
+-1.5
+],
+"size": [
+2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-plank-09",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.5,
+7.4,
+-0.5
+],
+"size": [
+2.2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-plank-10",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.2,
+7.4,
+-0.5
+],
+"size": [
+2.4,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-plank-11",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.3,
+7.4,
+0.5
+],
+"size": [
+2.6,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-plank-12",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6,
+7.4,
+0.5
+],
+"size": [
+2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-plank-13",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.5,
+7.4,
+1.5
+],
+"size": [
+2.2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-plank-14",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.2,
+7.4,
+1.5
+],
+"size": [
+2.4,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-plank-15",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.3,
+7.4,
+2.5
+],
+"size": [
+2.6,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-plank-16",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6,
+7.4,
+2.5
+],
+"size": [
+2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "castle-plank-17",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.5,
+7.4,
+3.5
+],
+"size": [
+2.2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "castle-plank-18",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.2,
+7.4,
+3.5
+],
+"size": [
+2.4,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "castle-plank-19",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-8.3,
+7.4,
+4.5
+],
+"size": [
+2.6,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "castle-plank-20",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6,
+7.4,
+4.5
+],
+"size": [
+2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "poop-plank-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12,
+9.8,
+-3.5
+],
+"size": [
+1.2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "poop-plank-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.5,
+9.8,
+-3.5
+],
+"size": [
+1.8,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "poop-plank-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.85,
+9.8,
+-2.5
+],
+"size": [
+1.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "poop-plank-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.35,
+9.8,
+-2.5
+],
+"size": [
+1.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": false
+},
+{
+"name": "poop-plank-05",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12,
+9.8,
+-1.5
+],
+"size": [
+1.2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": false
+},
+{
+"name": "poop-plank-06",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.5,
+9.8,
+-1.5
+],
+"size": [
+1.8,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "poop-plank-07",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.85,
+9.8,
+-0.5
+],
+"size": [
+1.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "poop-plank-08",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.35,
+9.8,
+-0.5
+],
+"size": [
+1.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "poop-plank-09",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12,
+9.8,
+0.5
+],
+"size": [
+1.2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "poop-plank-10",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.5,
+9.8,
+0.5
+],
+"size": [
+1.8,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": false
+},
+{
+"name": "poop-plank-11",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.85,
+9.8,
+1.5
+],
+"size": [
+1.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": false
+},
+{
+"name": "poop-plank-12",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.35,
+9.8,
+1.5
+],
+"size": [
+1.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "poop-plank-13",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12,
+9.8,
+2.5
+],
+"size": [
+1.2,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#C99C6A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "poop-plank-14",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.5,
+9.8,
+2.5
+],
+"size": [
+1.8,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "poop-plank-15",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.85,
+9.8,
+3.5
+],
+"size": [
+1.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B98A5A",
+"material": "abs",
+"studs": true
+},
+{
+"name": "poop-plank-16",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.35,
+9.8,
+3.5
+],
+"size": [
+1.5,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#A57A4D",
+"material": "abs",
+"studs": true
+},
+{
+"name": "rail-post-07",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-9.2,
+8.1,
+-4.55
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-08",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-8.4,
+8.1,
+-4.55
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-09",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-7.6,
+8.1,
+-4.55
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-10",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-6.8,
+8.1,
+-4.55
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-11",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-6,
+8.1,
+-4.55
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-12",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-12.2,
+10.325,
+-3.953
+],
+"size": [
+0.32,
+1.35,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-13",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-11.4,
+10.325,
+-4.06
+],
+"size": [
+0.32,
+1.35,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-14",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-10.6,
+10.325,
+-4.167
+],
+"size": [
+0.32,
+1.35,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-15",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-9.95,
+10.325,
+-4.253
+],
+"size": [
+0.32,
+1.35,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-7.15,
+8.8,
+-4.55
+],
+"size": [
+4.8,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"studs": true
+},
+{
+"name": "rail-post-16",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-9.2,
+8.1,
+4.55
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-17",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-8.4,
+8.1,
+4.55
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-18",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-7.6,
+8.1,
+4.55
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-19",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-6.8,
+8.1,
+4.55
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-20",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-6,
+8.1,
+4.55
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-21",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-12.2,
+10.325,
+3.953
+],
+"size": [
+0.32,
+1.35,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-22",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-11.4,
+10.325,
+4.06
+],
+"size": [
+0.32,
+1.35,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-23",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-10.6,
+10.325,
+4.167
+],
+"size": [
+0.32,
+1.35,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-24",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-9.95,
+10.325,
+4.253
+],
+"size": [
+0.32,
+1.35,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-7.15,
+8.8,
+4.55
+],
+"size": [
+4.8,
+0.4,
+1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"studs": true
+},
+{
+"name": "rail-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.034,
+11.2,
+-4.104
+],
+"size": [
+2.907,
+0.4,
+1
+],
+"rot": [
+0,
+7.595,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"studs": true
+},
+{
+"name": "rail-05",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.034,
+11.2,
+4.104
+],
+"size": [
+2.907,
+0.4,
+1
+],
+"rot": [
+0,
+-7.595,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"studs": true
+},
+{
+"name": "rail-post-25",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-5.25,
+8.1,
+-2.4
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-26",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-5.25,
+8.1,
+-1.4
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-27",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-5.25,
+8.1,
+-0.4
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-28",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-5.25,
+8.1,
+0.6
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-29",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-5.25,
+8.1,
+1.6
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-30",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-5.25,
+8.1,
+2.6
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-31",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-5.25,
+8.1,
+3.6
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-32",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-12.1,
+10.5,
+-3
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-33",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-12.1,
+10.5,
+-2
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-34",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-12.1,
+10.5,
+-1
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-35",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-12.1,
+10.5,
+0
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-36",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-12.1,
+10.5,
+1
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-37",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-12.1,
+10.5,
+2
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-38",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-12.1,
+10.5,
+3
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-39",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-10.1,
+10.5,
+-3.3
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-40",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-10.1,
+10.5,
+-2.3
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-41",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-10.1,
+10.5,
+-1.3
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-42",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-10.1,
+10.5,
+-0.3
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-post-43",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-10.1,
+10.5,
+0.7
+],
+"size": [
+0.32,
+1,
+0.32
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#D2AE76",
+"material": "abs"
+},
+{
+"name": "rail-06",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-5.25,
+8.8,
+0.55
+],
+"size": [
+1,
+0.4,
+6.9
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"studs": true
+},
+{
+"name": "rail-07",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.1,
+11.2,
+0
+],
+"size": [
+1,
+0.4,
+6.6
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"studs": true
+},
+{
+"name": "rail-08",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.1,
+11.2,
+-0.825
+],
+"size": [
+1,
+0.4,
+5.45
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"studs": true
+},
+{
+"name": "ladder-side-01",
+"group": "stern-castle",
+"shape": "rod",
+"pos": [
+-9.45,
+9.05,
+2.4
+],
+"size": [
+0.14,
+2.9,
+0.14
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "ladder-side-02",
+"group": "stern-castle",
+"shape": "rod",
+"pos": [
+-9.45,
+9.05,
+3.6
+],
+"size": [
+0.14,
+2.9,
+0.14
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "ladder-step-01",
+"group": "stern-castle",
+"shape": "rod",
+"pos": [
+-9.45,
+8.2,
+3
+],
+"size": [
+0.12,
+1.2,
+0.12
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "ladder-step-02",
+"group": "stern-castle",
+"shape": "rod",
+"pos": [
+-9.45,
+8.8,
+3
+],
+"size": [
+0.12,
+1.2,
+0.12
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "ladder-step-03",
+"group": "stern-castle",
+"shape": "rod",
+"pos": [
+-9.45,
+9.4,
+3
+],
+"size": [
+0.12,
+1.2,
+0.12
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "ladder-step-04",
+"group": "stern-castle",
+"shape": "rod",
+"pos": [
+-9.45,
+10,
+3
+],
+"size": [
+0.12,
+1.2,
+0.12
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "door",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-5,
+6.1,
+0
+],
+"size": [
+0.24,
+1.8,
+1.6
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3E2415",
+"material": "abs",
+"studs": false
+},
+{
+"name": "door-frame",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-5.01,
+7.09,
+0
+],
+"size": [
+0.3,
+0.18,
+2
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "door-knob",
+"group": "stern-castle",
+"shape": "sphere",
+"pos": [
+-4.8,
+6,
+0.5
+],
+"size": [
+0.22,
+0.22,
+0.22
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "stern-window-pane-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.19,
+6,
+-3
+],
+"size": [
+1.3,
+1.6,
+0.22
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "stern-window-frame-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.225,
+6.925,
+-3
+],
+"size": [
+1.8,
+0.25,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-sill-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.275,
+5.06,
+-3
+],
+"size": [
+2,
+0.28,
+0.45
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-frame-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.225,
+6,
+-3.775
+],
+"size": [
+0.25,
+1.6,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-frame-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.225,
+6,
+-2.225
+],
+"size": [
+0.25,
+1.6,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-bar-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.3,
+6,
+-3
+],
+"size": [
+0.1,
+1.52,
+0.12
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-bar-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.35,
+6,
+-3
+],
+"size": [
+1.22,
+0.1,
+0.14
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-pane-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.19,
+6,
+0
+],
+"size": [
+1.3,
+1.6,
+0.22
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "stern-window-frame-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.225,
+6.925,
+0
+],
+"size": [
+1.8,
+0.25,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-sill-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.275,
+5.06,
+0
+],
+"size": [
+2,
+0.28,
+0.45
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-frame-05",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.225,
+6,
+-0.775
+],
+"size": [
+0.25,
+1.6,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-frame-06",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.225,
+6,
+0.775
+],
+"size": [
+0.25,
+1.6,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-bar-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.3,
+6,
+0
+],
+"size": [
+0.1,
+1.52,
+0.12
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-bar-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.35,
+6,
+0
+],
+"size": [
+1.22,
+0.1,
+0.14
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-pane-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.19,
+6,
+3
+],
+"size": [
+1.3,
+1.6,
+0.22
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "stern-window-frame-07",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.225,
+6.925,
+3
+],
+"size": [
+1.8,
+0.25,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-sill-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.275,
+5.06,
+3
+],
+"size": [
+2,
+0.28,
+0.45
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-frame-08",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.225,
+6,
+2.225
+],
+"size": [
+0.25,
+1.6,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-frame-09",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.225,
+6,
+3.775
+],
+"size": [
+0.25,
+1.6,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-bar-05",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.3,
+6,
+3
+],
+"size": [
+0.1,
+1.52,
+0.12
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-bar-06",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.35,
+6,
+3
+],
+"size": [
+1.22,
+0.1,
+0.14
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-pane-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.59,
+8.5,
+-2.8
+],
+"size": [
+1.2,
+1.3,
+0.22
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "stern-window-upper-frame-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.625,
+9.275,
+-2.8
+],
+"size": [
+1.7,
+0.25,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-sill-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.675,
+7.71,
+-2.8
+],
+"size": [
+1.9,
+0.28,
+0.45
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-frame-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.625,
+8.5,
+-3.525
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-frame-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.625,
+8.5,
+-2.075
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-bar-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.7,
+8.5,
+-2.8
+],
+"size": [
+0.1,
+1.22,
+0.12
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-bar-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.75,
+8.5,
+-2.8
+],
+"size": [
+1.12,
+0.1,
+0.14
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-pane-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.59,
+8.5,
+0
+],
+"size": [
+1.2,
+1.3,
+0.22
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "stern-window-upper-frame-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.625,
+9.275,
+0
+],
+"size": [
+1.7,
+0.25,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-sill-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.675,
+7.71,
+0
+],
+"size": [
+1.9,
+0.28,
+0.45
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-frame-05",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.625,
+8.5,
+-0.725
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-frame-06",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.625,
+8.5,
+0.725
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-bar-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.7,
+8.5,
+0
+],
+"size": [
+0.1,
+1.22,
+0.12
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-bar-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.75,
+8.5,
+0
+],
+"size": [
+1.12,
+0.1,
+0.14
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-pane-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.59,
+8.5,
+2.8
+],
+"size": [
+1.2,
+1.3,
+0.22
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "stern-window-upper-frame-07",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.625,
+9.275,
+2.8
+],
+"size": [
+1.7,
+0.25,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-sill-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.675,
+7.71,
+2.8
+],
+"size": [
+1.9,
+0.28,
+0.45
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-frame-08",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.625,
+8.5,
+2.075
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-frame-09",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.625,
+8.5,
+3.525
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-bar-05",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.7,
+8.5,
+2.8
+],
+"size": [
+0.1,
+1.22,
+0.12
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "stern-window-upper-bar-06",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-12.75,
+8.5,
+2.8
+],
+"size": [
+1.12,
+0.1,
+0.14
+],
+"rot": [
+0,
+-90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-pane-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.898,
+6,
+-4.79
+],
+"size": [
+1,
+1.3,
+0.22
+],
+"rot": [
+0,
+188.746,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "side-window-frame-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.904,
+6.775,
+-4.825
+],
+"size": [
+1.5,
+0.25,
+0.35
+],
+"rot": [
+0,
+188.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-sill-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.911,
+5.21,
+-4.874
+],
+"size": [
+1.7,
+0.28,
+0.45
+],
+"rot": [
+0,
+188.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-frame-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.286,
+6,
+-4.92
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+188.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-frame-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.522,
+6,
+-4.73
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+188.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-bar-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.915,
+6,
+-4.899
+],
+"size": [
+0.1,
+1.22,
+0.12
+],
+"rot": [
+0,
+188.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-bar-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.923,
+6,
+-4.948
+],
+"size": [
+0.92,
+0.1,
+0.14
+],
+"rot": [
+0,
+188.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-pane-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.6,
+6,
+-4.99
+],
+"size": [
+1,
+1.3,
+0.22
+],
+"rot": [
+0,
+180,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "side-window-frame-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.6,
+6.775,
+-5.025
+],
+"size": [
+1.5,
+0.25,
+0.35
+],
+"rot": [
+0,
+180,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-sill-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.6,
+5.21,
+-5.075
+],
+"size": [
+1.7,
+0.28,
+0.45
+],
+"rot": [
+0,
+180,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-frame-05",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-5.975,
+6,
+-5.025
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+180,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-frame-06",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-7.225,
+6,
+-5.025
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+180,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-bar-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.6,
+6,
+-5.1
+],
+"size": [
+0.1,
+1.22,
+0.12
+],
+"rot": [
+0,
+180,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-bar-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.6,
+6,
+-5.15
+],
+"size": [
+0.92,
+0.1,
+0.14
+],
+"rot": [
+0,
+180,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-upper-pane-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.099,
+8.5,
+-4.59
+],
+"size": [
+1,
+1.1,
+0.22
+],
+"rot": [
+0,
+187.595,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "side-window-upper-frame-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.103,
+9.175,
+-4.625
+],
+"size": [
+1.5,
+0.25,
+0.35
+],
+"rot": [
+0,
+187.595,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-upper-sill-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.11,
+7.81,
+-4.674
+],
+"size": [
+1.7,
+0.28,
+0.45
+],
+"rot": [
+0,
+187.595,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-upper-frame-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.484,
+8.5,
+-4.707
+],
+"size": [
+0.25,
+1.1,
+0.35
+],
+"rot": [
+0,
+187.595,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-upper-frame-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.723,
+8.5,
+-4.542
+],
+"size": [
+0.25,
+1.1,
+0.35
+],
+"rot": [
+0,
+187.595,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-upper-bar-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.113,
+8.5,
+-4.699
+],
+"size": [
+0.1,
+1.02,
+0.12
+],
+"rot": [
+0,
+187.595,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-upper-bar-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.12,
+8.5,
+-4.749
+],
+"size": [
+0.92,
+0.1,
+0.14
+],
+"rot": [
+0,
+187.595,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-pane-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.898,
+6,
+4.79
+],
+"size": [
+1,
+1.3,
+0.22
+],
+"rot": [
+0,
+-8.746,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "side-window-frame-07",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.904,
+6.775,
+4.825
+],
+"size": [
+1.5,
+0.25,
+0.35
+],
+"rot": [
+0,
+-8.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-sill-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.911,
+5.21,
+4.874
+],
+"size": [
+1.7,
+0.28,
+0.45
+],
+"rot": [
+0,
+-8.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-frame-08",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.522,
+6,
+4.73
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+-8.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-frame-09",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.286,
+6,
+4.92
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+-8.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-bar-05",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.915,
+6,
+4.899
+],
+"size": [
+0.1,
+1.22,
+0.12
+],
+"rot": [
+0,
+-8.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-bar-06",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.923,
+6,
+4.948
+],
+"size": [
+0.92,
+0.1,
+0.14
+],
+"rot": [
+0,
+-8.746,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-pane-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.6,
+6,
+4.99
+],
+"size": [
+1,
+1.3,
+0.22
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "side-window-frame-10",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.6,
+6.775,
+5.025
+],
+"size": [
+1.5,
+0.25,
+0.35
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-sill-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.6,
+5.21,
+5.075
+],
+"size": [
+1.7,
+0.28,
+0.45
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-frame-11",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-7.225,
+6,
+5.025
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-frame-12",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-5.975,
+6,
+5.025
+],
+"size": [
+0.25,
+1.3,
+0.35
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-bar-07",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.6,
+6,
+5.1
+],
+"size": [
+0.1,
+1.22,
+0.12
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-bar-08",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.6,
+6,
+5.15
+],
+"size": [
+0.92,
+0.1,
+0.14
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-upper-pane-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.099,
+8.5,
+4.59
+],
+"size": [
+1,
+1.1,
+0.22
+],
+"rot": [
+0,
+-7.595,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "side-window-upper-frame-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.103,
+9.175,
+4.625
+],
+"size": [
+1.5,
+0.25,
+0.35
+],
+"rot": [
+0,
+-7.595,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-upper-sill-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.11,
+7.81,
+4.674
+],
+"size": [
+1.7,
+0.28,
+0.45
+],
+"rot": [
+0,
+-7.595,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-upper-frame-05",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.723,
+8.5,
+4.542
+],
+"size": [
+0.25,
+1.1,
+0.35
+],
+"rot": [
+0,
+-7.595,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-upper-frame-06",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-10.484,
+8.5,
+4.707
+],
+"size": [
+0.25,
+1.1,
+0.35
+],
+"rot": [
+0,
+-7.595,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-upper-bar-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.113,
+8.5,
+4.699
+],
+"size": [
+0.1,
+1.02,
+0.12
+],
+"rot": [
+0,
+-7.595,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "side-window-upper-bar-04",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-11.12,
+8.5,
+4.749
+],
+"size": [
+0.92,
+0.1,
+0.14
+],
+"rot": [
+0,
+-7.595,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "front-window-pane",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-5.01,
+6.25,
+3
+],
+"size": [
+1,
+1.2,
+0.22
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 1
+},
+{
+"name": "front-window-frame-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-4.975,
+6.975,
+3
+],
+"size": [
+1.5,
+0.25,
+0.35
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "front-window-sill",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-4.925,
+5.51,
+3
+],
+"size": [
+1.7,
+0.28,
+0.45
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "front-window-frame-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-4.975,
+6.25,
+3.625
+],
+"size": [
+0.25,
+1.2,
+0.35
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "front-window-frame-03",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-4.975,
+6.25,
+2.375
+],
+"size": [
+0.25,
+1.2,
+0.35
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "front-window-bar-01",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-4.9,
+6.25,
+3
+],
+"size": [
+0.1,
+1.12,
+0.12
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "front-window-bar-02",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-4.85,
+6.25,
+3
+],
+"size": [
+0.92,
+0.1,
+0.14
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "wheel-post",
+"group": "stern-castle",
+"shape": "box",
+"pos": [
+-6.6,
+8.95,
+0
+],
+"size": [
+0.8,
+2.7,
+0.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"studs": false
+},
+{
+"name": "wheel-hub",
+"group": "stern-castle",
+"shape": "cyl",
+"pos": [
+-7.2,
+10.48,
+0
+],
+"size": [
+0.5,
+0.5,
+0.5
+],
+"rot": [
+0,
+0,
+90
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "wheel-rim",
+"group": "stern-castle",
+"shape": "torus",
+"pos": [
+-7.45,
+10.48,
+0
+],
+"size": [
+2.1,
+2.1,
+0.2
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "wheel-spoke-01",
+"group": "stern-castle",
+"shape": "rod",
+"pos": [
+-7.45,
+10.48,
+0
+],
+"size": [
+0.14,
+2.76,
+0.14
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "wheel-handle-01",
+"group": "stern-castle",
+"shape": "sphere",
+"pos": [
+-7.45,
+9.1,
+0
+],
+"size": [
+0.26,
+0.26,
+0.26
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "wheel-handle-02",
+"group": "stern-castle",
+"shape": "sphere",
+"pos": [
+-7.45,
+11.86,
+0
+],
+"size": [
+0.26,
+0.26,
+0.26
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "wheel-spoke-02",
+"group": "stern-castle",
+"shape": "rod",
+"pos": [
+-7.45,
+10.48,
+0
+],
+"size": [
+0.14,
+2.76,
+0.14
+],
+"rot": [
+45,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "wheel-handle-03",
+"group": "stern-castle",
+"shape": "sphere",
+"pos": [
+-7.45,
+9.504,
+-0.976
+],
+"size": [
+0.26,
+0.26,
+0.26
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "wheel-handle-04",
+"group": "stern-castle",
+"shape": "sphere",
+"pos": [
+-7.45,
+11.456,
+0.976
+],
+"size": [
+0.26,
+0.26,
+0.26
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "wheel-spoke-03",
+"group": "stern-castle",
+"shape": "rod",
+"pos": [
+-7.45,
+10.48,
+0
+],
+"size": [
+0.14,
+2.76,
+0.14
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "wheel-handle-05",
+"group": "stern-castle",
+"shape": "sphere",
+"pos": [
+-7.45,
+10.48,
+-1.38
+],
+"size": [
+0.26,
+0.26,
+0.26
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "wheel-handle-06",
+"group": "stern-castle",
+"shape": "sphere",
+"pos": [
+-7.45,
+10.48,
+1.38
+],
+"size": [
+0.26,
+0.26,
+0.26
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "wheel-spoke-04",
+"group": "stern-castle",
+"shape": "rod",
+"pos": [
+-7.45,
+10.48,
+0
+],
+"size": [
+0.14,
+2.76,
+0.14
+],
+"rot": [
+45,
+180,
+180
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "wheel-handle-07",
+"group": "stern-castle",
+"shape": "sphere",
+"pos": [
+-7.45,
+11.456,
+-0.976
+],
+"size": [
+0.26,
+0.26,
+0.26
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "wheel-handle-08",
+"group": "stern-castle",
+"shape": "sphere",
+"pos": [
+-7.45,
+9.504,
+0.976
+],
+"size": [
+0.26,
+0.26,
+0.26
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "shark-jaw-lower",
+"group": "bow-ram",
+"shape": "wedge",
+"pos": [
+12.4,
+0.15,
+0
+],
+"size": [
+4.8,
+1.5,
+4.2
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#F2F5F7",
+"material": "abs",
+"d2": 2.2,
+"studs": false
+},
+{
+"name": "shark-cheek",
+"group": "bow-ram",
+"shape": "wedge",
+"pos": [
+10.9,
+2.25,
+0
+],
+"size": [
+1.8,
+2.7,
+4.4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4F6F80",
+"material": "abs",
+"d2": 4,
+"studs": false
+},
+{
+"name": "shark-snout",
+"group": "bow-ram",
+"shape": "wedge",
+"pos": [
+13.1,
+4.2,
+0
+],
+"size": [
+6.2,
+1.2,
+4.4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4F6F80",
+"material": "abs",
+"d2": 2.4,
+"studs": false
+},
+{
+"name": "shark-head",
+"group": "bow-ram",
+"shape": "wedge",
+"pos": [
+12.4,
+5.4,
+0
+],
+"size": [
+4.8,
+1.2,
+4.4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4F6F80",
+"material": "abs",
+"d2": 3,
+"studs": false
+},
+{
+"name": "shark-crown",
+"group": "bow-ram",
+"shape": "wedge",
+"pos": [
+11.6,
+6.7,
+0
+],
+"size": [
+3.2,
+1.4,
+4.4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4F6F80",
+"material": "abs",
+"d2": 3.5,
+"studs": true
+},
+{
+"name": "shark-nose",
+"group": "bow-ram",
+"shape": "poly",
+"pos": [
+15.5,
+5.4,
+0
+],
+"size": [
+1.4,
+1.2,
+2.4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4F6F80",
+"material": "abs",
+"pts": [
+[
+-0.5,
+-0.5
+],
+[
+0.5,
+-0.5
+],
+[
+0.5,
+-0.25
+],
+[
+-0.2,
+0.5
+],
+[
+-0.5,
+0.5
+]
+]
+},
+{
+"name": "shark-brow-slope",
+"group": "bow-ram",
+"shape": "poly",
+"pos": [
+13.8,
+6.7,
+0
+],
+"size": [
+1.2,
+1.4,
+3.2
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4F6F80",
+"material": "abs",
+"pts": [
+[
+-0.5,
+-0.5
+],
+[
+0.5,
+-0.5
+],
+[
+0.5,
+-0.25
+],
+[
+-0.2,
+0.5
+],
+[
+-0.5,
+0.5
+]
+]
+},
+{
+"name": "shark-palate",
+"group": "bow-ram",
+"shape": "wedge",
+"pos": [
+13.7,
+3.525,
+0
+],
+"size": [
+4.2,
+0.25,
+3.184
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#B83A55",
+"material": "abs",
+"d2": 1.829,
+"studs": false
+},
+{
+"name": "shark-throat",
+"group": "bow-ram",
+"shape": "box",
+"pos": [
+11.85,
+2.25,
+0
+],
+"size": [
+0.5,
+2.6,
+2.6
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#8E1428",
+"material": "abs",
+"studs": false
+},
+{
+"name": "shark-tongue",
+"group": "bow-ram",
+"shape": "box",
+"pos": [
+13,
+1.085,
+0
+],
+"size": [
+2,
+0.33,
+1.6
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#F27C90",
+"material": "abs",
+"studs": false
+},
+{
+"name": "shark-tooth-01",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+15.85,
+3.2,
+-0.75
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+90,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-02",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+15.85,
+3.2,
+-0.25
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+90,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-03",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+15.85,
+3.2,
+0.25
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+90,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-04",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+15.85,
+3.2,
+0.75
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+90,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-05",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+12.5,
+3.2,
+-1.497
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+-9.162,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-06",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+12.5,
+3.2,
+1.497
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+9.162,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-07",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+13.2,
+3.2,
+-1.384
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+-9.162,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-08",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+13.2,
+3.2,
+1.384
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+9.162,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-09",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+13.9,
+3.2,
+-1.271
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+-9.162,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-10",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+13.9,
+3.2,
+1.271
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+9.162,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-11",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+14.6,
+3.2,
+-1.158
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+-9.162,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-12",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+14.6,
+3.2,
+1.158
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+9.162,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-13",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+15.3,
+3.2,
+-1.045
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+-9.162,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-14",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+15.3,
+3.2,
+1.045
+],
+"size": [
+0.5,
+1,
+0.28
+],
+"rot": [
+180,
+9.162,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-15",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+14.45,
+1.225,
+-0.7
+],
+"size": [
+0.45,
+0.85,
+0.26
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-16",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+14.45,
+1.225,
+-0.23
+],
+"size": [
+0.45,
+0.85,
+0.26
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-17",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+14.45,
+1.225,
+0.23
+],
+"size": [
+0.45,
+0.85,
+0.26
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-18",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+14.45,
+1.225,
+0.7
+],
+"size": [
+0.45,
+0.85,
+0.26
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-19",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+12.5,
+1.225,
+-1.279
+],
+"size": [
+0.45,
+0.85,
+0.26
+],
+"rot": [
+0,
+-11.768,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-20",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+12.5,
+1.225,
+1.279
+],
+"size": [
+0.45,
+0.85,
+0.26
+],
+"rot": [
+0,
+11.768,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-21",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+13.2,
+1.225,
+-1.133
+],
+"size": [
+0.45,
+0.85,
+0.26
+],
+"rot": [
+0,
+-11.768,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-22",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+13.2,
+1.225,
+1.133
+],
+"size": [
+0.45,
+0.85,
+0.26
+],
+"rot": [
+0,
+11.768,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-23",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+13.8,
+1.225,
+-1.008
+],
+"size": [
+0.45,
+0.85,
+0.26
+],
+"rot": [
+0,
+-11.768,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-tooth-24",
+"group": "bow-ram",
+"shape": "cone",
+"pos": [
+13.8,
+1.225,
+1.008
+],
+"size": [
+0.45,
+0.85,
+0.26
+],
+"rot": [
+0,
+11.768,
+0
+],
+"color": "#FFFFFF",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "shark-eye-01",
+"group": "bow-ram",
+"shape": "cyl",
+"pos": [
+12.617,
+6.05,
+-1.953
+],
+"size": [
+1.8,
+0.3,
+1.8
+],
+"rot": [
+90,
+-8,
+0
+],
+"color": "#F4F4F0",
+"material": "abs"
+},
+{
+"name": "shark-pupil-01",
+"group": "bow-ram",
+"shape": "cyl",
+"pos": [
+12.892,
+6.1,
+-2.116
+],
+"size": [
+0.9,
+0.12,
+0.9
+],
+"rot": [
+90,
+-8,
+0
+],
+"color": "#1C1C20",
+"material": "abs"
+},
+{
+"name": "shark-eye-glint-01",
+"group": "bow-ram",
+"shape": "cyl",
+"pos": [
+13.07,
+6.35,
+-2.162
+],
+"size": [
+0.32,
+0.1,
+0.32
+],
+"rot": [
+90,
+-8,
+0
+],
+"color": "#F4F4F0",
+"material": "abs"
+},
+{
+"name": "shark-brow-01",
+"group": "bow-ram",
+"shape": "box",
+"pos": [
+12.625,
+7.1,
+-2.013
+],
+"size": [
+1.8,
+0.32,
+0.32
+],
+"rot": [
+0,
+-8,
+-16
+],
+"color": "#2F4654",
+"material": "abs",
+"studs": false
+},
+{
+"name": "shark-gill-01",
+"group": "bow-ram",
+"shape": "box",
+"pos": [
+10.45,
+5,
+-2.174
+],
+"size": [
+0.16,
+1.4,
+0.14
+],
+"rot": [
+0,
+-8.3,
+0
+],
+"color": "#2F4654",
+"material": "abs",
+"studs": false
+},
+{
+"name": "shark-gill-02",
+"group": "bow-ram",
+"shape": "box",
+"pos": [
+10.9,
+5,
+-2.109
+],
+"size": [
+0.16,
+1.4,
+0.14
+],
+"rot": [
+0,
+-8.3,
+0
+],
+"color": "#2F4654",
+"material": "abs",
+"studs": false
+},
+{
+"name": "shark-gill-03",
+"group": "bow-ram",
+"shape": "box",
+"pos": [
+11.35,
+5,
+-2.043
+],
+"size": [
+0.16,
+1.4,
+0.14
+],
+"rot": [
+0,
+-8.3,
+0
+],
+"color": "#2F4654",
+"material": "abs",
+"studs": false
+},
+{
+"name": "shark-eye-02",
+"group": "bow-ram",
+"shape": "cyl",
+"pos": [
+12.617,
+6.05,
+1.953
+],
+"size": [
+1.8,
+0.3,
+1.8
+],
+"rot": [
+90,
+8,
+0
+],
+"color": "#F4F4F0",
+"material": "abs"
+},
+{
+"name": "shark-pupil-02",
+"group": "bow-ram",
+"shape": "cyl",
+"pos": [
+12.892,
+6.1,
+2.116
+],
+"size": [
+0.9,
+0.12,
+0.9
+],
+"rot": [
+90,
+8,
+0
+],
+"color": "#1C1C20",
+"material": "abs"
+},
+{
+"name": "shark-eye-glint-02",
+"group": "bow-ram",
+"shape": "cyl",
+"pos": [
+13.07,
+6.35,
+2.162
+],
+"size": [
+0.32,
+0.1,
+0.32
+],
+"rot": [
+90,
+8,
+0
+],
+"color": "#F4F4F0",
+"material": "abs"
+},
+{
+"name": "shark-brow-02",
+"group": "bow-ram",
+"shape": "box",
+"pos": [
+12.625,
+7.1,
+2.013
+],
+"size": [
+1.8,
+0.32,
+0.32
+],
+"rot": [
+0,
+8,
+-16
+],
+"color": "#2F4654",
+"material": "abs",
+"studs": false
+},
+{
+"name": "shark-gill-04",
+"group": "bow-ram",
+"shape": "box",
+"pos": [
+10.45,
+5,
+2.174
+],
+"size": [
+0.16,
+1.4,
+0.14
+],
+"rot": [
+0,
+8.3,
+0
+],
+"color": "#2F4654",
+"material": "abs",
+"studs": false
+},
+{
+"name": "shark-gill-05",
+"group": "bow-ram",
+"shape": "box",
+"pos": [
+10.9,
+5,
+2.109
+],
+"size": [
+0.16,
+1.4,
+0.14
+],
+"rot": [
+0,
+8.3,
+0
+],
+"color": "#2F4654",
+"material": "abs",
+"studs": false
+},
+{
+"name": "shark-gill-06",
+"group": "bow-ram",
+"shape": "box",
+"pos": [
+11.35,
+5,
+2.043
+],
+"size": [
+0.16,
+1.4,
+0.14
+],
+"rot": [
+0,
+8.3,
+0
+],
+"color": "#2F4654",
+"material": "abs",
+"studs": false
+},
+{
+"name": "shark-fin",
+"group": "bow-ram",
+"shape": "poly",
+"pos": [
+11.6,
+8.35,
+0
+],
+"size": [
+2,
+2,
+0.45
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4F6F80",
+"material": "abs",
+"pts": [
+[
+-0.5,
+-0.5
+],
+[
+0.5,
+-0.5
+],
+[
+0.15,
+-0.05
+],
+[
+-0.2,
+0.3
+],
+[
+-0.5,
+0.5
+],
+[
+-0.38,
+0
+]
+]
+},
+{
+"name": "mast-step",
+"group": "mast",
+"shape": "cyl",
+"pos": [
+1,
+5.4,
+0
+],
+"size": [
+2.4,
+0.4,
+2.4
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs"
+},
+{
+"name": "mast-01",
+"group": "mast",
+"shape": "cyl",
+"pos": [
+1,
+7.4,
+0
+],
+"size": [
+1.1,
+3.6,
+1.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4A2C17",
+"material": "abs"
+},
+{
+"name": "mast-02",
+"group": "mast",
+"shape": "cyl",
+"pos": [
+1,
+11,
+0
+],
+"size": [
+1.1,
+3.6,
+1.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4A2C17",
+"material": "abs"
+},
+{
+"name": "mast-03",
+"group": "mast",
+"shape": "cyl",
+"pos": [
+1,
+14.6,
+0
+],
+"size": [
+1.1,
+3.6,
+1.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4A2C17",
+"material": "abs"
+},
+{
+"name": "mast-04",
+"group": "mast",
+"shape": "cyl",
+"pos": [
+1,
+18.2,
+0
+],
+"size": [
+1.1,
+3.6,
+1.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4A2C17",
+"material": "abs"
+},
+{
+"name": "mast-05",
+"group": "mast",
+"shape": "cyl",
+"pos": [
+1,
+21.8,
+0
+],
+"size": [
+1.1,
+3.6,
+1.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4A2C17",
+"material": "abs"
+},
+{
+"name": "mast-06",
+"group": "mast",
+"shape": "cyl",
+"pos": [
+1,
+25.4,
+0
+],
+"size": [
+1.1,
+3.6,
+1.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4A2C17",
+"material": "abs"
+},
+{
+"name": "mast-07",
+"group": "mast",
+"shape": "cyl",
+"pos": [
+1,
+29,
+0
+],
+"size": [
+1.1,
+3.6,
+1.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4A2C17",
+"material": "abs"
+},
+{
+"name": "mast-08",
+"group": "mast",
+"shape": "cyl",
+"pos": [
+1,
+32.3,
+0
+],
+"size": [
+1.1,
+3,
+1.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#4A2C17",
+"material": "abs"
+},
+{
+"name": "mast-collar-01",
+"group": "mast",
+"shape": "torus",
+"pos": [
+1,
+12.8,
+0
+],
+"size": [
+1.4,
+1.4,
+0.28
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "mast-collar-02",
+"group": "mast",
+"shape": "torus",
+"pos": [
+1,
+16.4,
+0
+],
+"size": [
+1.4,
+1.4,
+0.28
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "mast-collar-03",
+"group": "mast",
+"shape": "torus",
+"pos": [
+1,
+27.2,
+0
+],
+"size": [
+1.4,
+1.4,
+0.28
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "mast-cap",
+"group": "mast",
+"shape": "sphere",
+"pos": [
+1,
+34.1,
+0
+],
+"size": [
+0.9,
+0.9,
+0.9
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "yard",
+"group": "sail",
+"shape": "cyl",
+"pos": [
+1,
+19.75,
+0
+],
+"size": [
+0.6,
+22,
+0.6
+],
+"rot": [
+90,
+-35,
+0
+],
+"color": "#4A2C17",
+"material": "abs"
+},
+{
+"name": "yard-top",
+"group": "sail",
+"shape": "cyl",
+"pos": [
+1,
+29.85,
+0
+],
+"size": [
+0.5,
+15,
+0.5
+],
+"rot": [
+90,
+-35,
+0
+],
+"color": "#4A2C17",
+"material": "abs"
+},
+{
+"name": "yard-cap-01",
+"group": "sail",
+"shape": "sphere",
+"pos": [
+7.309,
+19.75,
+-9.011
+],
+"size": [
+0.65,
+0.65,
+0.65
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "yard-cap-02",
+"group": "sail",
+"shape": "sphere",
+"pos": [
+5.302,
+29.85,
+-6.144
+],
+"size": [
+0.55,
+0.55,
+0.55
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "yard-cap-03",
+"group": "sail",
+"shape": "sphere",
+"pos": [
+-5.309,
+19.75,
+9.011
+],
+"size": [
+0.65,
+0.65,
+0.65
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "yard-cap-04",
+"group": "sail",
+"shape": "sphere",
+"pos": [
+-3.302,
+29.85,
+6.144
+],
+"size": [
+0.55,
+0.55,
+0.55
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "sail",
+"group": "sail",
+"shape": "sail",
+"pos": [
+1,
+14.5,
+0
+],
+"size": [
+2.8,
+10,
+21
+],
+"rot": [
+0,
+-35,
+0
+],
+"color": "#C8102E",
+"material": "cloth",
+"tex": "sail"
+},
+{
+"name": "topsail",
+"group": "sail",
+"shape": "sail",
+"pos": [
+1,
+26.8,
+0
+],
+"size": [
+1.8,
+5.6,
+14
+],
+"rot": [
+0,
+-35,
+0
+],
+"color": "#C8102E",
+"material": "cloth",
+"tex": "topsail"
+},
+{
+"name": "nest-base",
+"group": "crows-nest",
+"shape": "cyl",
+"pos": [
+1,
+20.3,
+0
+],
+"size": [
+4.8,
+0.5,
+4.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs",
+"bot": 0.25
+},
+{
+"name": "nest-floor",
+"group": "crows-nest",
+"shape": "cyl",
+"pos": [
+1,
+20.8,
+0
+],
+"size": [
+5.1,
+0.5,
+5.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs"
+},
+{
+"name": "nest-wall-01",
+"group": "crows-nest",
+"shape": "ringarc",
+"pos": [
+1,
+21.95,
+0
+],
+"size": [
+5.1,
+1.8,
+5.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"inner": 1.98,
+"arc": [
+0,
+90
+]
+},
+{
+"name": "nest-rim-01",
+"group": "crows-nest",
+"shape": "ringarc",
+"pos": [
+1,
+23.1,
+0
+],
+"size": [
+5.3,
+0.5,
+5.3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"inner": 1.95,
+"arc": [
+45,
+90
+]
+},
+{
+"name": "nest-wall-02",
+"group": "crows-nest",
+"shape": "ringarc",
+"pos": [
+1,
+21.95,
+0
+],
+"size": [
+5.1,
+1.8,
+5.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"inner": 1.98,
+"arc": [
+90,
+90
+]
+},
+{
+"name": "nest-rim-02",
+"group": "crows-nest",
+"shape": "ringarc",
+"pos": [
+1,
+23.1,
+0
+],
+"size": [
+5.3,
+0.5,
+5.3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"inner": 1.95,
+"arc": [
+135,
+90
+]
+},
+{
+"name": "nest-wall-03",
+"group": "crows-nest",
+"shape": "ringarc",
+"pos": [
+1,
+21.95,
+0
+],
+"size": [
+5.1,
+1.8,
+5.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"inner": 1.98,
+"arc": [
+180,
+90
+]
+},
+{
+"name": "nest-rim-03",
+"group": "crows-nest",
+"shape": "ringarc",
+"pos": [
+1,
+23.1,
+0
+],
+"size": [
+5.3,
+0.5,
+5.3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"inner": 1.95,
+"arc": [
+225,
+90
+]
+},
+{
+"name": "nest-wall-04",
+"group": "crows-nest",
+"shape": "ringarc",
+"pos": [
+1,
+21.95,
+0
+],
+"size": [
+5.1,
+1.8,
+5.1
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#7A4A2A",
+"material": "abs",
+"inner": 1.98,
+"arc": [
+270,
+90
+]
+},
+{
+"name": "nest-rim-04",
+"group": "crows-nest",
+"shape": "ringarc",
+"pos": [
+1,
+23.1,
+0
+],
+"size": [
+5.3,
+0.5,
+5.3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"inner": 1.95,
+"arc": [
+315,
+90
+]
+},
+{
+"name": "flag",
+"group": "flag",
+"shape": "flag",
+"pos": [
+4.25,
+32,
+0
+],
+"size": [
+5.4,
+3.6,
+0.45
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#1C1C20",
+"material": "cloth",
+"tex": "flag"
+},
+{
+"name": "forestay",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+5.25,
+21.3,
+0
+],
+"size": [
+0.11,
+25.649,
+0.11
+],
+"rot": [
+0,
+0,
+-160.647
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "backstay-01",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-5.55,
+22.4,
+-1.5
+],
+"size": [
+0.11,
+25.78,
+0.11
+],
+"rot": [
+-6.683,
+-23.957,
+149.228
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "brace-01",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+1.03,
+14.275,
+-6.78
+],
+"size": [
+0.09,
+17.249,
+0.09
+],
+"rot": [
+14.987,
+32.259,
+131.084
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "brace-top-01",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+6.306,
+24.8,
+-7.577
+],
+"size": [
+0.08,
+10.689,
+0.08
+],
+"rot": [
+-15.558,
+108.459,
+-168.758
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "sheet-01",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+6.511,
+8.95,
+-6.201
+],
+"size": [
+0.09,
+5.031,
+0.09
+],
+"rot": [
+72.629,
+123.731,
+137.09
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "sheet-top-01",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+5.015,
+21.875,
+-5.734
+],
+"size": [
+0.08,
+4.25,
+0.08
+],
+"rot": [
+0,
+0,
+180
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rope-01",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.55,
+13.275,
+-2.7
+],
+"size": [
+0.13,
+15.196,
+0.13
+],
+"rot": [
+13.704,
+-1.174,
+-9.749
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rope-02",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.55,
+13.275,
+-2.9
+],
+"size": [
+0.13,
+14.994,
+0.13
+],
+"rot": [
+12.322,
+-0.72,
+-6.664
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-01",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.956,
+7,
+-4.266
+],
+"size": [
+0.09,
+1.345,
+0.09
+],
+"rot": [
+-1.171,
+1.171,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-02",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.811,
+8,
+-4.033
+],
+"size": [
+0.09,
+1.291,
+0.09
+],
+"rot": [
+-2.441,
+2.441,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-03",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.667,
+9,
+-3.799
+],
+"size": [
+0.09,
+1.238,
+0.09
+],
+"rot": [
+-3.82,
+3.82,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-04",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.523,
+10,
+-3.565
+],
+"size": [
+0.09,
+1.185,
+0.09
+],
+"rot": [
+-5.324,
+5.324,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-05",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.378,
+11,
+-3.332
+],
+"size": [
+0.09,
+1.133,
+0.09
+],
+"rot": [
+-6.966,
+6.966,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-06",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.234,
+12,
+-3.098
+],
+"size": [
+0.09,
+1.083,
+0.09
+],
+"rot": [
+-8.763,
+8.763,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-07",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.09,
+13,
+-2.864
+],
+"size": [
+0.09,
+1.033,
+0.09
+],
+"rot": [
+-10.734,
+10.734,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-08",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.945,
+14,
+-2.631
+],
+"size": [
+0.09,
+0.985,
+0.09
+],
+"rot": [
+-12.902,
+12.902,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-09",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.801,
+15,
+-2.397
+],
+"size": [
+0.09,
+0.938,
+0.09
+],
+"rot": [
+-15.288,
+15.288,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-10",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.657,
+16,
+-2.163
+],
+"size": [
+0.09,
+0.894,
+0.09
+],
+"rot": [
+-17.919,
+17.919,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-11",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.512,
+17,
+-1.93
+],
+"size": [
+0.09,
+0.851,
+0.09
+],
+"rot": [
+-20.822,
+20.822,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-12",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.368,
+18,
+-1.696
+],
+"size": [
+0.09,
+0.81,
+0.09
+],
+"rot": [
+-24.022,
+24.022,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-13",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.224,
+19,
+-1.462
+],
+"size": [
+0.09,
+0.773,
+0.09
+],
+"rot": [
+-27.545,
+27.545,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-14",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.079,
+20,
+-1.229
+],
+"size": [
+0.09,
+0.738,
+0.09
+],
+"rot": [
+-31.412,
+31.412,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "deadeye-01",
+"group": "rigging",
+"shape": "cyl",
+"pos": [
+-3.8,
+6.15,
+-4.5
+],
+"size": [
+0.46,
+0.3,
+0.46
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "deadeye-02",
+"group": "rigging",
+"shape": "cyl",
+"pos": [
+-2.4,
+6.15,
+-4.5
+],
+"size": [
+0.46,
+0.3,
+0.46
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "backstay-02",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-5.55,
+22.4,
+1.5
+],
+"size": [
+0.11,
+25.78,
+0.11
+],
+"rot": [
+6.683,
+23.957,
+149.228
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "brace-02",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-7.655,
+15.475,
+6.655
+],
+"size": [
+0.09,
+10.83,
+0.09
+],
+"rot": [
+-25.782,
+-83.53,
+151.25
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "brace-top-02",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-4.306,
+24.8,
+7.577
+],
+"size": [
+0.08,
+10.689,
+0.08
+],
+"rot": [
+15.558,
+108.459,
+168.758
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "sheet-02",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-4.761,
+8.15,
+6.551
+],
+"size": [
+0.09,
+4.938,
+0.09
+],
+"rot": [
+-56.155,
+159.621,
+-169.047
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "sheet-top-02",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-3.015,
+21.875,
+5.734
+],
+"size": [
+0.08,
+4.25,
+0.08
+],
+"rot": [
+0,
+0,
+180
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rope-03",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.55,
+13.275,
+2.7
+],
+"size": [
+0.13,
+15.196,
+0.13
+],
+"rot": [
+-13.704,
+1.174,
+-9.749
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rope-04",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.55,
+13.275,
+2.9
+],
+"size": [
+0.13,
+14.994,
+0.13
+],
+"rot": [
+-12.322,
+0.72,
+-6.664
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-15",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.956,
+7,
+4.266
+],
+"size": [
+0.09,
+1.345,
+0.09
+],
+"rot": [
+1.171,
+-1.171,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-16",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.811,
+8,
+4.033
+],
+"size": [
+0.09,
+1.291,
+0.09
+],
+"rot": [
+2.441,
+-2.441,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-17",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.667,
+9,
+3.799
+],
+"size": [
+0.09,
+1.238,
+0.09
+],
+"rot": [
+3.82,
+-3.82,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-18",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.523,
+10,
+3.565
+],
+"size": [
+0.09,
+1.185,
+0.09
+],
+"rot": [
+5.324,
+-5.324,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-19",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.378,
+11,
+3.332
+],
+"size": [
+0.09,
+1.133,
+0.09
+],
+"rot": [
+6.966,
+-6.966,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-20",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.234,
+12,
+3.098
+],
+"size": [
+0.09,
+1.083,
+0.09
+],
+"rot": [
+8.763,
+-8.763,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-21",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-2.09,
+13,
+2.864
+],
+"size": [
+0.09,
+1.033,
+0.09
+],
+"rot": [
+10.734,
+-10.734,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-22",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.945,
+14,
+2.631
+],
+"size": [
+0.09,
+0.985,
+0.09
+],
+"rot": [
+12.902,
+-12.902,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-23",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.801,
+15,
+2.397
+],
+"size": [
+0.09,
+0.938,
+0.09
+],
+"rot": [
+15.288,
+-15.288,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-24",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.657,
+16,
+2.163
+],
+"size": [
+0.09,
+0.894,
+0.09
+],
+"rot": [
+17.919,
+-17.919,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-25",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.512,
+17,
+1.93
+],
+"size": [
+0.09,
+0.851,
+0.09
+],
+"rot": [
+20.822,
+-20.822,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-26",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.368,
+18,
+1.696
+],
+"size": [
+0.09,
+0.81,
+0.09
+],
+"rot": [
+24.022,
+-24.022,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-27",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.224,
+19,
+1.462
+],
+"size": [
+0.09,
+0.773,
+0.09
+],
+"rot": [
+27.545,
+-27.545,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "ladder-rung-28",
+"group": "rigging",
+"shape": "rod",
+"pos": [
+-1.079,
+20,
+1.229
+],
+"size": [
+0.09,
+0.738,
+0.09
+],
+"rot": [
+31.412,
+-31.412,
+-90
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "deadeye-03",
+"group": "rigging",
+"shape": "cyl",
+"pos": [
+-3.8,
+6.15,
+4.5
+],
+"size": [
+0.46,
+0.3,
+0.46
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "deadeye-04",
+"group": "rigging",
+"shape": "cyl",
+"pos": [
+-2.4,
+6.15,
+4.5
+],
+"size": [
+0.46,
+0.3,
+0.46
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#8B5A2B",
+"material": "abs"
+},
+{
+"name": "captain-boot-01",
+"group": "crew",
+"shape": "box",
+"pos": [
+-8.67,
+7.9,
+0.48
+],
+"size": [
+0.888,
+0.6,
+1.14
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#1C1C20",
+"material": "abs",
+"studs": false
+},
+{
+"name": "captain-leg-01",
+"group": "crew",
+"shape": "box",
+"pos": [
+-8.7,
+8.68,
+0.48
+],
+"size": [
+0.888,
+0.96,
+1.08
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#1F2C4F",
+"material": "abs",
+"studs": false
+},
+{
+"name": "captain-boot-02",
+"group": "crew",
+"shape": "box",
+"pos": [
+-8.67,
+7.9,
+-0.48
+],
+"size": [
+0.888,
+0.6,
+1.14
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#1C1C20",
+"material": "abs",
+"studs": false
+},
+{
+"name": "captain-leg-02",
+"group": "crew",
+"shape": "box",
+"pos": [
+-8.7,
+8.68,
+-0.48
+],
+"size": [
+0.888,
+0.96,
+1.08
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#1F2C4F",
+"material": "abs",
+"studs": false
+},
+{
+"name": "captain-hips",
+"group": "crew",
+"shape": "box",
+"pos": [
+-8.7,
+9.37,
+0
+],
+"size": [
+1.92,
+0.42,
+1.08
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#1F2C4F",
+"material": "abs",
+"studs": false
+},
+{
+"name": "captain-torso",
+"group": "crew",
+"shape": "taper",
+"pos": [
+-8.7,
+10.33,
+0
+],
+"size": [
+1.92,
+1.5,
+1.02
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#B3202A",
+"material": "print",
+"top": 0.78,
+"print": "coat"
+},
+{
+"name": "captain-arm-01",
+"group": "crew",
+"shape": "box",
+"pos": [
+-8.221,
+10.708,
+1.032
+],
+"size": [
+0.504,
+1.176,
+0.6
+],
+"rot": [
+-72,
+90,
+0
+],
+"color": "#B3202A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "captain-hand-01",
+"group": "crew",
+"shape": "cyl",
+"pos": [
+-7.536,
+10.486,
+1.032
+],
+"size": [
+0.432,
+0.36,
+0.432
+],
+"rot": [
+-72,
+90,
+0
+],
+"color": "#F2C72E",
+"material": "abs"
+},
+{
+"name": "captain-arm-02",
+"group": "crew",
+"shape": "box",
+"pos": [
+-8.221,
+10.708,
+-1.032
+],
+"size": [
+0.504,
+1.176,
+0.6
+],
+"rot": [
+-72,
+90,
+0
+],
+"color": "#B3202A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "captain-hand-02",
+"group": "crew",
+"shape": "cyl",
+"pos": [
+-7.536,
+10.486,
+-1.032
+],
+"size": [
+0.432,
+0.36,
+0.432
+],
+"rot": [
+-72,
+90,
+0
+],
+"color": "#F2C72E",
+"material": "abs"
+},
+{
+"name": "captain-neck",
+"group": "crew",
+"shape": "cyl",
+"pos": [
+-8.7,
+11.176,
+0
+],
+"size": [
+0.6,
+0.192,
+0.6
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#F2C72E",
+"material": "abs"
+},
+{
+"name": "captain-head",
+"group": "crew",
+"shape": "head",
+"pos": [
+-8.7,
+11.824,
+0
+],
+"size": [
+1.2,
+1.14,
+1.2
+],
+"rot": [
+0,
+270,
+0
+],
+"color": "#F2C72E",
+"material": "print",
+"face": "captain"
+},
+{
+"name": "captain-hat-trim",
+"group": "crew",
+"shape": "cyl",
+"pos": [
+-8.7,
+12.22,
+0
+],
+"size": [
+2.664,
+0.096,
+2.664
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"seg": 3
+},
+{
+"name": "captain-hat",
+"group": "crew",
+"shape": "cyl",
+"pos": [
+-8.7,
+12.424,
+0
+],
+"size": [
+2.52,
+0.312,
+2.52
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#1C1C20",
+"material": "abs",
+"seg": 3
+},
+{
+"name": "captain-hat-crown",
+"group": "crew",
+"shape": "cyl",
+"pos": [
+-8.7,
+12.82,
+0
+],
+"size": [
+1.32,
+0.6,
+1.32
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#1C1C20",
+"material": "abs"
+},
+{
+"name": "captain-hat-skull",
+"group": "crew",
+"shape": "sphere",
+"pos": [
+-8.052,
+12.88,
+0
+],
+"size": [
+0.36,
+0.36,
+0.168
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#F4F4F0",
+"material": "abs"
+},
+{
+"name": "captain-epaulette-01",
+"group": "crew",
+"shape": "box",
+"pos": [
+-8.7,
+11.116,
+0.744
+],
+"size": [
+0.624,
+0.168,
+0.624
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "captain-epaulette-02",
+"group": "crew",
+"shape": "box",
+"pos": [
+-8.7,
+11.116,
+-0.744
+],
+"size": [
+0.624,
+0.168,
+0.624
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "parrot-body",
+"group": "crew",
+"shape": "sphere",
+"pos": [
+-8.7,
+11.56,
+-1.032
+],
+"size": [
+0.504,
+0.768,
+0.528
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#2FB24C",
+"material": "abs"
+},
+{
+"name": "parrot-head",
+"group": "crew",
+"shape": "sphere",
+"pos": [
+-8.64,
+12.064,
+-1.032
+],
+"size": [
+0.504,
+0.504,
+0.504
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#2FB24C",
+"material": "abs"
+},
+{
+"name": "parrot-beak",
+"group": "crew",
+"shape": "cone",
+"pos": [
+-8.34,
+12.016,
+-1.032
+],
+"size": [
+0.204,
+0.336,
+0.204
+],
+"rot": [
+90,
+90,
+0
+],
+"color": "#FF7A1A",
+"material": "abs",
+"seg": 4
+},
+{
+"name": "parrot-eye-01",
+"group": "crew",
+"shape": "sphere",
+"pos": [
+-8.532,
+12.136,
+-0.84
+],
+"size": [
+0.12,
+0.12,
+0.12
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#1C1C20",
+"material": "abs"
+},
+{
+"name": "parrot-wing-01",
+"group": "crew",
+"shape": "sphere",
+"pos": [
+-8.736,
+11.536,
+-0.792
+],
+"size": [
+0.144,
+0.6,
+0.384
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#1E5BB8",
+"material": "abs"
+},
+{
+"name": "parrot-eye-02",
+"group": "crew",
+"shape": "sphere",
+"pos": [
+-8.532,
+12.136,
+-1.224
+],
+"size": [
+0.12,
+0.12,
+0.12
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#1C1C20",
+"material": "abs"
+},
+{
+"name": "parrot-wing-02",
+"group": "crew",
+"shape": "sphere",
+"pos": [
+-8.736,
+11.536,
+-1.272
+],
+"size": [
+0.144,
+0.6,
+0.384
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#1E5BB8",
+"material": "abs"
+},
+{
+"name": "parrot-tail",
+"group": "crew",
+"shape": "box",
+"pos": [
+-9.036,
+11.2,
+-1.032
+],
+"size": [
+0.264,
+0.6,
+0.12
+],
+"rot": [
+-35,
+90,
+0
+],
+"color": "#D0202A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "bosun-leg-01",
+"group": "crew",
+"shape": "box",
+"pos": [
+6.06,
+8.38,
+0.816
+],
+"size": [
+0.888,
+1.56,
+1.08
+],
+"rot": [
+0,
+60,
+0
+],
+"color": "#6B4226",
+"material": "abs",
+"studs": false
+},
+{
+"name": "bosun-leg-02",
+"group": "crew",
+"shape": "box",
+"pos": [
+6.54,
+8.38,
+-0.016
+],
+"size": [
+0.888,
+1.56,
+1.08
+],
+"rot": [
+0,
+60,
+0
+],
+"color": "#6B4226",
+"material": "abs",
+"studs": false
+},
+{
+"name": "bosun-hips",
+"group": "crew",
+"shape": "box",
+"pos": [
+6.3,
+9.37,
+0.4
+],
+"size": [
+1.92,
+0.42,
+1.08
+],
+"rot": [
+0,
+60,
+0
+],
+"color": "#6B4226",
+"material": "abs",
+"studs": false
+},
+{
+"name": "bosun-torso",
+"group": "crew",
+"shape": "taper",
+"pos": [
+6.3,
+10.33,
+0.4
+],
+"size": [
+1.92,
+1.5,
+1.02
+],
+"rot": [
+0,
+60,
+0
+],
+"color": "#F4F4F0",
+"material": "print",
+"top": 0.78,
+"print": "stripes"
+},
+{
+"name": "bosun-arm-01",
+"group": "crew",
+"shape": "box",
+"pos": [
+5.814,
+11.327,
+1.491
+],
+"size": [
+0.504,
+1.176,
+0.6
+],
+"rot": [
+-165,
+60,
+-18
+],
+"color": "#F4F4F0",
+"material": "abs",
+"studs": false
+},
+{
+"name": "bosun-hand-01",
+"group": "crew",
+"shape": "cyl",
+"pos": [
+5.856,
+11.988,
+1.772
+],
+"size": [
+0.432,
+0.36,
+0.432
+],
+"rot": [
+-165,
+60,
+-18
+],
+"color": "#F2C72E",
+"material": "abs"
+},
+{
+"name": "bosun-arm-02",
+"group": "crew",
+"shape": "box",
+"pos": [
+7.007,
+10.398,
+-0.485
+],
+"size": [
+0.504,
+1.176,
+0.6
+],
+"rot": [
+-20,
+60,
+10
+],
+"color": "#F4F4F0",
+"material": "abs",
+"studs": false
+},
+{
+"name": "bosun-hand-02",
+"group": "crew",
+"shape": "cyl",
+"pos": [
+7.279,
+9.731,
+-0.472
+],
+"size": [
+0.432,
+0.36,
+0.432
+],
+"rot": [
+-20,
+60,
+10
+],
+"color": "#F2C72E",
+"material": "abs"
+},
+{
+"name": "bosun-neck",
+"group": "crew",
+"shape": "cyl",
+"pos": [
+6.3,
+11.176,
+0.4
+],
+"size": [
+0.6,
+0.192,
+0.6
+],
+"rot": [
+0,
+60,
+0
+],
+"color": "#F2C72E",
+"material": "abs"
+},
+{
+"name": "bosun-head",
+"group": "crew",
+"shape": "head",
+"pos": [
+6.3,
+11.824,
+0.4
+],
+"size": [
+1.2,
+1.14,
+1.2
+],
+"rot": [
+0,
+240,
+0
+],
+"color": "#F2C72E",
+"material": "print",
+"face": "patch"
+},
+{
+"name": "bosun-bandana",
+"group": "crew",
+"shape": "dome",
+"pos": [
+6.3,
+12.376,
+0.4
+],
+"size": [
+1.296,
+0.6,
+1.296
+],
+"rot": [
+0,
+60,
+0
+],
+"color": "#D0202A",
+"material": "abs"
+},
+{
+"name": "bosun-bandana-knot",
+"group": "crew",
+"shape": "box",
+"pos": [
+5.697,
+12.124,
+0.052
+],
+"size": [
+0.288,
+0.36,
+0.192
+],
+"rot": [
+20,
+60,
+0
+],
+"color": "#D0202A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "lookout-leg-01",
+"group": "crew",
+"shape": "box",
+"pos": [
+-1.8,
+5.98,
+-1.52
+],
+"size": [
+0.888,
+1.56,
+1.08
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#4A6FA5",
+"material": "abs",
+"studs": false
+},
+{
+"name": "lookout-leg-02",
+"group": "crew",
+"shape": "box",
+"pos": [
+-1.8,
+5.98,
+-2.48
+],
+"size": [
+0.888,
+1.56,
+1.08
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#4A6FA5",
+"material": "abs",
+"studs": false
+},
+{
+"name": "lookout-hips",
+"group": "crew",
+"shape": "box",
+"pos": [
+-1.8,
+6.97,
+-2
+],
+"size": [
+1.92,
+0.42,
+1.08
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#4A6FA5",
+"material": "abs",
+"studs": false
+},
+{
+"name": "lookout-torso",
+"group": "crew",
+"shape": "taper",
+"pos": [
+-1.8,
+7.93,
+-2
+],
+"size": [
+1.92,
+1.5,
+1.02
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#F2E6C8",
+"material": "print",
+"top": 0.78,
+"print": "vest"
+},
+{
+"name": "lookout-arm-01",
+"group": "crew",
+"shape": "box",
+"pos": [
+-1.371,
+8.664,
+-1.14
+],
+"size": [
+0.504,
+1.176,
+0.6
+],
+"rot": [
+-115,
+90,
+20
+],
+"color": "#F2E6C8",
+"material": "abs",
+"studs": false
+},
+{
+"name": "lookout-hand-01",
+"group": "crew",
+"shape": "cyl",
+"pos": [
+-0.758,
+8.95,
+-1.387
+],
+"size": [
+0.432,
+0.36,
+0.432
+],
+"rot": [
+-115,
+90,
+20
+],
+"color": "#F2C72E",
+"material": "abs"
+},
+{
+"name": "lookout-arm-02",
+"group": "crew",
+"shape": "box",
+"pos": [
+-1.549,
+8.03,
+-3.085
+],
+"size": [
+0.504,
+1.176,
+0.6
+],
+"rot": [
+-30,
+90,
+6
+],
+"color": "#F2E6C8",
+"material": "abs",
+"studs": false
+},
+{
+"name": "lookout-hand-02",
+"group": "crew",
+"shape": "cyl",
+"pos": [
+-1.191,
+7.41,
+-3.16
+],
+"size": [
+0.432,
+0.36,
+0.432
+],
+"rot": [
+-30,
+90,
+6
+],
+"color": "#F2C72E",
+"material": "abs"
+},
+{
+"name": "lookout-neck",
+"group": "crew",
+"shape": "cyl",
+"pos": [
+-1.8,
+8.776,
+-2
+],
+"size": [
+0.6,
+0.192,
+0.6
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#F2C72E",
+"material": "abs"
+},
+{
+"name": "lookout-head",
+"group": "crew",
+"shape": "head",
+"pos": [
+-1.8,
+9.424,
+-2
+],
+"size": [
+1.2,
+1.14,
+1.2
+],
+"rot": [
+0,
+270,
+0
+],
+"color": "#F2C72E",
+"material": "print",
+"face": "grin"
+},
+{
+"name": "lookout-bandana",
+"group": "crew",
+"shape": "dome",
+"pos": [
+-1.8,
+9.976,
+-2
+],
+"size": [
+1.296,
+0.6,
+1.296
+],
+"rot": [
+0,
+90,
+0
+],
+"color": "#2E9A47",
+"material": "abs"
+},
+{
+"name": "lookout-bandana-knot",
+"group": "crew",
+"shape": "box",
+"pos": [
+-2.496,
+9.724,
+-2
+],
+"size": [
+0.288,
+0.36,
+0.192
+],
+"rot": [
+20,
+90,
+0
+],
+"color": "#2E9A47",
+"material": "abs",
+"studs": false
+},
+{
+"name": "telescope-01",
+"group": "crew",
+"shape": "rod",
+"pos": [
+-0.644,
+8.99,
+-1.387
+],
+"size": [
+0.408,
+1.08,
+0.408
+],
+"rot": [
+0,
+0,
+-70.71
+],
+"color": "#6B4226",
+"material": "abs"
+},
+{
+"name": "telescope-02",
+"group": "crew",
+"shape": "rod",
+"pos": [
+0.29,
+9.317,
+-1.387
+],
+"size": [
+0.312,
+0.9,
+0.312
+],
+"rot": [
+0,
+0,
+-70.71
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "barrel-01",
+"group": "props",
+"shape": "barrel",
+"pos": [
+-3.6,
+6,
+3.2
+],
+"size": [
+1.3,
+1.6,
+1.3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#9A6334",
+"material": "abs"
+},
+{
+"name": "barrel-band-01",
+"group": "props",
+"shape": "torus",
+"pos": [
+-3.6,
+5.5,
+3.2
+],
+"size": [
+1.34,
+1.34,
+0.1
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal"
+},
+{
+"name": "barrel-band-02",
+"group": "props",
+"shape": "torus",
+"pos": [
+-3.6,
+6.5,
+3.2
+],
+"size": [
+1.34,
+1.34,
+0.1
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal"
+},
+{
+"name": "barrel-02",
+"group": "props",
+"shape": "barrel",
+"pos": [
+-2.4,
+6,
+3.3
+],
+"size": [
+1.3,
+1.6,
+1.3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#9A6334",
+"material": "abs"
+},
+{
+"name": "barrel-band-03",
+"group": "props",
+"shape": "torus",
+"pos": [
+-2.4,
+5.5,
+3.3
+],
+"size": [
+1.34,
+1.34,
+0.1
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal"
+},
+{
+"name": "barrel-band-04",
+"group": "props",
+"shape": "torus",
+"pos": [
+-2.4,
+6.5,
+3.3
+],
+"size": [
+1.34,
+1.34,
+0.1
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal"
+},
+{
+"name": "barrel-03",
+"group": "props",
+"shape": "barrel",
+"pos": [
+-3.6,
+6,
+1.9
+],
+"size": [
+1.3,
+1.6,
+1.3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#9A6334",
+"material": "abs"
+},
+{
+"name": "barrel-band-05",
+"group": "props",
+"shape": "torus",
+"pos": [
+-3.6,
+5.5,
+1.9
+],
+"size": [
+1.34,
+1.34,
+0.1
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal"
+},
+{
+"name": "barrel-band-06",
+"group": "props",
+"shape": "torus",
+"pos": [
+-3.6,
+6.5,
+1.9
+],
+"size": [
+1.34,
+1.34,
+0.1
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal"
+},
+{
+"name": "chest",
+"group": "props",
+"shape": "box",
+"pos": [
+-0.6,
+5.7,
+1.6
+],
+"size": [
+1.8,
+1,
+1.2
+],
+"rot": [
+0,
+-25,
+0
+],
+"color": "#7A3E1E",
+"material": "abs",
+"studs": false
+},
+{
+"name": "chest-band-01",
+"group": "props",
+"shape": "box",
+"pos": [
+-1.071,
+5.72,
+1.38
+],
+"size": [
+0.2,
+1.04,
+1.28
+],
+"rot": [
+0,
+-25,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "chest-band-02",
+"group": "props",
+"shape": "box",
+"pos": [
+-0.129,
+5.72,
+1.82
+],
+"size": [
+0.2,
+1.04,
+1.28
+],
+"rot": [
+0,
+-25,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "chest-lock",
+"group": "props",
+"shape": "box",
+"pos": [
+-0.866,
+5.925,
+2.171
+],
+"size": [
+0.3,
+0.35,
+0.1
+],
+"rot": [
+0,
+-25,
+0
+],
+"color": "#E3A82B",
+"material": "gold",
+"studs": false
+},
+{
+"name": "chest-lid",
+"group": "props",
+"shape": "halfcyl",
+"pos": [
+-0.16,
+6.678,
+0.657
+],
+"size": [
+1.8,
+0.5,
+1.2
+],
+"rot": [
+-110,
+-25,
+0
+],
+"color": "#7A3E1E",
+"material": "abs"
+},
+{
+"name": "chest-gold",
+"group": "props",
+"shape": "dome",
+"pos": [
+-0.6,
+6.2,
+1.6
+],
+"size": [
+1.5,
+0.6,
+1
+],
+"rot": [
+0,
+-25,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "coin-01",
+"group": "props",
+"shape": "cyl",
+"pos": [
+-0.334,
+6.48,
+1.857
+],
+"size": [
+0.42,
+0.08,
+0.42
+],
+"rot": [
+20,
+-25,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "coin-02",
+"group": "props",
+"shape": "cyl",
+"pos": [
+-0.92,
+6.42,
+1.34
+],
+"size": [
+0.42,
+0.08,
+0.42
+],
+"rot": [
+-15,
+-25,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "coin-03",
+"group": "props",
+"shape": "cyl",
+"pos": [
+0.3,
+5.24,
+2.627
+],
+"size": [
+0.42,
+0.08,
+0.42
+],
+"rot": [
+0,
+-25,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "coin-04",
+"group": "props",
+"shape": "cyl",
+"pos": [
+-0.05,
+5.24,
+2.905
+],
+"size": [
+0.42,
+0.08,
+0.42
+],
+"rot": [
+0,
+-25,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "coin-05",
+"group": "props",
+"shape": "cyl",
+"pos": [
+-1.983,
+5.24,
+1.727
+],
+"size": [
+0.42,
+0.08,
+0.42
+],
+"rot": [
+0,
+-25,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "gem",
+"group": "props",
+"shape": "sphere",
+"pos": [
+-0.639,
+6.53,
+1.802
+],
+"size": [
+0.34,
+0.3,
+0.34
+],
+"rot": [
+0,
+-25,
+0
+],
+"color": "#E0185A",
+"material": "trans"
+},
+{
+"name": "rope-coil-01",
+"group": "props",
+"shape": "torus",
+"pos": [
+0.2,
+5.37,
+-3.2
+],
+"size": [
+1.3,
+1.3,
+0.32
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "rope-coil-02",
+"group": "props",
+"shape": "torus",
+"pos": [
+0.2,
+5.67,
+-3.2
+],
+"size": [
+1.2,
+1.2,
+0.32
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "rope-coil-03",
+"group": "props",
+"shape": "torus",
+"pos": [
+0.2,
+5.97,
+-3.2
+],
+"size": [
+1,
+1,
+0.32
+],
+"rot": [
+90,
+0,
+0
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "rope-end",
+"group": "props",
+"shape": "rod",
+"pos": [
+1.2,
+5.68,
+-2.9
+],
+"size": [
+0.14,
+1.437,
+0.14
+],
+"rot": [
+24.675,
+-50.288,
+-130.03
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "lantern-post",
+"group": "props",
+"shape": "cyl",
+"pos": [
+-11.2,
+11.7,
+0
+],
+"size": [
+0.35,
+3.4,
+0.35
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#5A3520",
+"material": "abs"
+},
+{
+"name": "lantern-arm",
+"group": "props",
+"shape": "rod",
+"pos": [
+-12.3,
+13.2,
+0
+],
+"size": [
+0.2,
+2.2,
+0.2
+],
+"rot": [
+0,
+0,
+90
+],
+"color": "#3A3D44",
+"material": "metal"
+},
+{
+"name": "lantern-hook",
+"group": "props",
+"shape": "rod",
+"pos": [
+-13.2,
+13.025,
+0
+],
+"size": [
+0.08,
+0.35,
+0.08
+],
+"rot": [
+0,
+0,
+180
+],
+"color": "#3A3D44",
+"material": "metal"
+},
+{
+"name": "lantern-cap",
+"group": "props",
+"shape": "cyl",
+"pos": [
+-13.2,
+12.72,
+0
+],
+"size": [
+0.95,
+0.35,
+0.95
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal",
+"top": 0.3
+},
+{
+"name": "lantern-glass",
+"group": "props",
+"shape": "box",
+"pos": [
+-13.2,
+12.1,
+0
+],
+"size": [
+0.7,
+0.9,
+0.7
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#FFC94A",
+"material": "glow",
+"studs": false,
+"halo": 2
+},
+{
+"name": "lantern-frame-01",
+"group": "props",
+"shape": "box",
+"pos": [
+-13.57,
+12.1,
+-0.37
+],
+"size": [
+0.12,
+1,
+0.12
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal",
+"studs": false
+},
+{
+"name": "lantern-frame-02",
+"group": "props",
+"shape": "box",
+"pos": [
+-13.57,
+12.1,
+0.37
+],
+"size": [
+0.12,
+1,
+0.12
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal",
+"studs": false
+},
+{
+"name": "lantern-frame-03",
+"group": "props",
+"shape": "box",
+"pos": [
+-12.83,
+12.1,
+-0.37
+],
+"size": [
+0.12,
+1,
+0.12
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal",
+"studs": false
+},
+{
+"name": "lantern-frame-04",
+"group": "props",
+"shape": "box",
+"pos": [
+-12.83,
+12.1,
+0.37
+],
+"size": [
+0.12,
+1,
+0.12
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal",
+"studs": false
+},
+{
+"name": "lantern-base",
+"group": "props",
+"shape": "cyl",
+"pos": [
+-13.2,
+11.5,
+0
+],
+"size": [
+0.95,
+0.2,
+0.95
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal"
+},
+{
+"name": "bell-bracket",
+"group": "props",
+"shape": "rod",
+"pos": [
+-4.625,
+7,
+-1.8
+],
+"size": [
+0.15,
+0.75,
+0.15
+],
+"rot": [
+0,
+0,
+-90
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "bell",
+"group": "props",
+"shape": "bell",
+"pos": [
+-4.35,
+6.45,
+-1.8
+],
+"size": [
+0.8,
+0.8,
+0.8
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "bell-clapper",
+"group": "props",
+"shape": "sphere",
+"pos": [
+-4.35,
+6.03,
+-1.8
+],
+"size": [
+0.2,
+0.2,
+0.2
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#3A3D44",
+"material": "metal"
+},
+{
+"name": "anchor-shank",
+"group": "props",
+"shape": "cyl",
+"pos": [
+2.8,
+3.4,
+5.2
+],
+"size": [
+0.3,
+3,
+0.3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#8D96A1",
+"material": "metal"
+},
+{
+"name": "anchor-ring",
+"group": "props",
+"shape": "torus",
+"pos": [
+2.8,
+5.15,
+5.2
+],
+"size": [
+0.7,
+0.7,
+0.16
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#8D96A1",
+"material": "metal"
+},
+{
+"name": "anchor-stock",
+"group": "props",
+"shape": "rod",
+"pos": [
+2.8,
+4.6,
+5.2
+],
+"size": [
+0.22,
+1.6,
+0.22
+],
+"rot": [
+0,
+0,
+-90
+],
+"color": "#8D96A1",
+"material": "metal"
+},
+{
+"name": "anchor-arms",
+"group": "props",
+"shape": "torus",
+"pos": [
+2.8,
+2.6,
+5.2
+],
+"size": [
+2.04,
+2.04,
+0.2
+],
+"rot": [
+0,
+0,
+180
+],
+"color": "#8D96A1",
+"material": "metal",
+"arc": 180
+},
+{
+"name": "anchor-fluke-01",
+"group": "props",
+"shape": "cone",
+"pos": [
+1.88,
+2.85,
+5.2
+],
+"size": [
+0.45,
+0.6,
+0.25
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#8D96A1",
+"material": "metal",
+"seg": 4
+},
+{
+"name": "anchor-fluke-02",
+"group": "props",
+"shape": "cone",
+"pos": [
+3.72,
+2.85,
+5.2
+],
+"size": [
+0.45,
+0.6,
+0.25
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#8D96A1",
+"material": "metal",
+"seg": 4
+},
+{
+"name": "anchor-line",
+"group": "props",
+"shape": "rod",
+"pos": [
+2.8,
+5.725,
+4.85
+],
+"size": [
+0.12,
+0.89,
+0.12
+],
+"rot": [
+-51.843,
+0,
+0
+],
+"color": "#D7C29A",
+"material": "rope"
+},
+{
+"name": "life-ring-01",
+"group": "props",
+"shape": "torus",
+"pos": [
+-8.3,
+6,
+5.25
+],
+"size": [
+1.4,
+1.4,
+0.4
+],
+"rot": [
+0,
+0,
+1
+],
+"color": "#D0202A",
+"material": "abs",
+"arc": 88
+},
+{
+"name": "life-ring-02",
+"group": "props",
+"shape": "torus",
+"pos": [
+-8.3,
+6,
+5.25
+],
+"size": [
+1.4,
+1.4,
+0.4
+],
+"rot": [
+0,
+0,
+91
+],
+"color": "#F4F4F0",
+"material": "abs",
+"arc": 88
+},
+{
+"name": "life-ring-03",
+"group": "props",
+"shape": "torus",
+"pos": [
+-8.3,
+6,
+5.25
+],
+"size": [
+1.4,
+1.4,
+0.4
+],
+"rot": [
+0,
+0,
+181
+],
+"color": "#D0202A",
+"material": "abs",
+"arc": 88
+},
+{
+"name": "life-ring-04",
+"group": "props",
+"shape": "torus",
+"pos": [
+-8.3,
+6,
+5.25
+],
+"size": [
+1.4,
+1.4,
+0.4
+],
+"rot": [
+0,
+0,
+271
+],
+"color": "#F4F4F0",
+"material": "abs",
+"arc": 88
+},
+{
+"name": "life-ring-peg",
+"group": "props",
+"shape": "sphere",
+"pos": [
+-8.3,
+6.75,
+5.1
+],
+"size": [
+0.22,
+0.22,
+0.3
+],
+"rot": [
+0,
+0,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "jetski-hull",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-9.739,
+-0.125,
+7.87
+],
+"size": [
+4.5,
+0.75,
+2.75
+],
+"rot": [
+0,
+-10,
+0
+],
+"color": "#FF7A1A",
+"material": "abs",
+"studs": false
+},
+{
+"name": "jetski-nose",
+"group": "jetski",
+"shape": "wedge",
+"pos": [
+-6.415,
+-0.125,
+8.456
+],
+"size": [
+2.25,
+0.75,
+2.75
+],
+"rot": [
+0,
+-10,
+0
+],
+"color": "#FF7A1A",
+"material": "abs",
+"d2": 0.625,
+"studs": false
+},
+{
+"name": "jetski-body",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-9.862,
+0.594,
+7.848
+],
+"size": [
+3.75,
+0.688,
+2.5
+],
+"rot": [
+0,
+-10,
+0
+],
+"color": "#FFC72C",
+"material": "abs",
+"studs": false
+},
+{
+"name": "jetski-bow",
+"group": "jetski",
+"shape": "wedge",
+"pos": [
+-6.846,
+0.594,
+8.38
+],
+"size": [
+2.375,
+0.688,
+2.5
+],
+"rot": [
+0,
+-10,
+0
+],
+"color": "#FFC72C",
+"material": "abs",
+"d2": 0.75,
+"studs": false
+},
+{
+"name": "jetski-hood",
+"group": "jetski",
+"shape": "poly",
+"pos": [
+-8.015,
+1.25,
+8.174
+],
+"size": [
+1.5,
+0.625,
+1.75
+],
+"rot": [
+0,
+-10,
+0
+],
+"color": "#FFC72C",
+"material": "abs",
+"pts": [
+[
+-0.5,
+-0.5
+],
+[
+0.5,
+-0.5
+],
+[
+0.5,
+-0.25
+],
+[
+-0.2,
+0.5
+],
+[
+-0.5,
+0.5
+]
+]
+},
+{
+"name": "jetski-bumper",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-9.892,
+0.263,
+7.843
+],
+"size": [
+4.313,
+0.225,
+2.9
+],
+"rot": [
+0,
+-10,
+0
+],
+"color": "#1C1C20",
+"material": "rubber",
+"studs": false
+},
+{
+"name": "jetski-stripe-01",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-9.583,
+0.575,
+6.628
+],
+"size": [
+3.125,
+0.25,
+0.15
+],
+"rot": [
+0,
+-10,
+0
+],
+"color": "#F4F4F0",
+"material": "abs",
+"studs": false
+},
+{
+"name": "jetski-stripe-02",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-10.017,
+0.575,
+9.09
+],
+"size": [
+3.125,
+0.25,
+0.15
+],
+"rot": [
+0,
+-10,
+0
+],
+"color": "#F4F4F0",
+"material": "abs",
+"studs": false
+},
+{
+"name": "jetski-seat",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-10.169,
+1.156,
+7.794
+],
+"size": [
+2.625,
+0.438,
+1.375
+],
+"rot": [
+0,
+-10,
+0
+],
+"color": "#1C1C20",
+"material": "rubber",
+"studs": false
+},
+{
+"name": "jetski-column",
+"group": "jetski",
+"shape": "rod",
+"pos": [
+-8.477,
+1.813,
+8.092
+],
+"size": [
+0.25,
+1.288,
+0.25
+],
+"rot": [
+-2.414,
+-0.293,
+13.831
+],
+"color": "#1C1C20",
+"material": "rubber"
+},
+{
+"name": "jetski-bar",
+"group": "jetski",
+"shape": "rod",
+"pos": [
+-8.631,
+2.5,
+8.065
+],
+"size": [
+0.2,
+2.125,
+0.2
+],
+"rot": [
+80,
+80,
+90
+],
+"color": "#1C1C20",
+"material": "rubber"
+},
+{
+"name": "jetski-grip-01",
+"group": "jetski",
+"shape": "sphere",
+"pos": [
+-8.435,
+2.5,
+6.957
+],
+"size": [
+0.3,
+0.3,
+0.3
+],
+"rot": [
+0,
+-10,
+0
+],
+"color": "#D0202A",
+"material": "abs"
+},
+{
+"name": "jetski-grip-02",
+"group": "jetski",
+"shape": "sphere",
+"pos": [
+-8.826,
+2.5,
+9.173
+],
+"size": [
+0.3,
+0.3,
+0.3
+],
+"rot": [
+0,
+-10,
+0
+],
+"color": "#D0202A",
+"material": "abs"
+},
+{
+"name": "jetski-nozzle",
+"group": "jetski",
+"shape": "cyl",
+"pos": [
+-12.139,
+-0.062,
+7.446
+],
+"size": [
+0.625,
+0.438,
+0.625
+],
+"rot": [
+0,
+-10,
+90
+],
+"color": "#8D96A1",
+"material": "metal"
+},
+{
+"name": "jetski-tow-eye",
+"group": "jetski",
+"shape": "torus",
+"pos": [
+-12.078,
+0.625,
+7.457
+],
+"size": [
+0.525,
+0.525,
+0.125
+],
+"rot": [
+0,
+80,
+0
+],
+"color": "#E3A82B",
+"material": "gold"
+},
+{
+"name": "rider-leg-01",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-9.702,
+1.813,
+8.384
+],
+"size": [
+0.925,
+0.625,
+1.625
+],
+"rot": [
+0,
+80,
+0
+],
+"color": "#1F2C4F",
+"material": "abs",
+"studs": false
+},
+{
+"name": "rider-shin-01",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-9.241,
+1.094,
+8.465
+],
+"size": [
+0.925,
+0.938,
+0.563
+],
+"rot": [
+0,
+80,
+0
+],
+"color": "#1F2C4F",
+"material": "abs",
+"studs": false
+},
+{
+"name": "rider-leg-02",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-9.529,
+1.813,
+7.399
+],
+"size": [
+0.925,
+0.625,
+1.625
+],
+"rot": [
+0,
+80,
+0
+],
+"color": "#1F2C4F",
+"material": "abs",
+"studs": false
+},
+{
+"name": "rider-shin-02",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-9.067,
+1.094,
+7.48
+],
+"size": [
+0.925,
+0.938,
+0.563
+],
+"rot": [
+0,
+80,
+0
+],
+"color": "#1F2C4F",
+"material": "abs",
+"studs": false
+},
+{
+"name": "rider-hips",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-10.046,
+1.656,
+7.815
+],
+"size": [
+2,
+0.437,
+1.125
+],
+"rot": [
+0,
+80,
+0
+],
+"color": "#1F2C4F",
+"material": "abs",
+"studs": false
+},
+{
+"name": "rider-torso",
+"group": "jetski",
+"shape": "taper",
+"pos": [
+-10.046,
+2.656,
+7.815
+],
+"size": [
+2,
+1.563,
+1.063
+],
+"rot": [
+0,
+80,
+0
+],
+"color": "#FF7A1A",
+"material": "print",
+"top": 0.78,
+"print": "lifevest"
+},
+{
+"name": "rider-arm-01",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-9.777,
+2.966,
+8.955
+],
+"size": [
+0.525,
+1.225,
+0.625
+],
+"rot": [
+-62,
+80,
+0
+],
+"color": "#1F2C4F",
+"material": "abs",
+"studs": false
+},
+{
+"name": "rider-hand-01",
+"group": "jetski",
+"shape": "cyl",
+"pos": [
+-9.124,
+2.614,
+9.07
+],
+"size": [
+0.45,
+0.375,
+0.45
+],
+"rot": [
+-62,
+80,
+0
+],
+"color": "#F2C72E",
+"material": "abs"
+},
+{
+"name": "rider-arm-02",
+"group": "jetski",
+"shape": "box",
+"pos": [
+-9.403,
+2.966,
+6.837
+],
+"size": [
+0.525,
+1.225,
+0.625
+],
+"rot": [
+-62,
+80,
+0
+],
+"color": "#1F2C4F",
+"material": "abs",
+"studs": false
+},
+{
+"name": "rider-hand-02",
+"group": "jetski",
+"shape": "cyl",
+"pos": [
+-8.751,
+2.614,
+6.952
+],
+"size": [
+0.45,
+0.375,
+0.45
+],
+"rot": [
+-62,
+80,
+0
+],
+"color": "#F2C72E",
+"material": "abs"
+},
+{
+"name": "rider-neck",
+"group": "jetski",
+"shape": "cyl",
+"pos": [
+-10.046,
+3.538,
+7.815
+],
+"size": [
+0.625,
+0.2,
+0.625
+],
+"rot": [
+0,
+80,
+0
+],
+"color": "#F2C72E",
+"material": "abs"
+},
+{
+"name": "rider-head",
+"group": "jetski",
+"shape": "head",
+"pos": [
+-10.046,
+4.213,
+7.815
+],
+"size": [
+1.25,
+1.188,
+1.25
+],
+"rot": [
+0,
+260,
+0
+],
+"color": "#F2C72E",
+"material": "print",
+"face": "shades"
+},
+{
+"name": "rider-helmet",
+"group": "jetski",
+"shape": "dome",
+"pos": [
+-10.046,
+4.813,
+7.815
+],
+"size": [
+1.45,
+0.75,
+1.45
+],
+"rot": [
+0,
+80,
+0
+],
+"color": "#F4F4F0",
+"material": "abs"
+}
+],
+"attachments": [
+{
+"name": "water-line",
+"pos": [
+0,
+0,
+0
+],
+"purpose": "Water plane y = 0; hull L0 sits below it"
+},
+{
+"name": "keel",
+"pos": [
+0,
+-1.2,
+0
+],
+"purpose": "Bottom of hull L0"
+},
+{
+"name": "deck-level",
+"pos": [
+0,
+5.2,
+0
+],
+"purpose": "Main deck top (plank tops)"
+},
+{
+"name": "forecastle-deck",
+"pos": [
+7,
+7.6,
+0
+],
+"purpose": "Raised bow deck top"
+},
+{
+"name": "wheel",
+"pos": [
+-7.45,
+10.48,
+0
+],
+"purpose": "Ship's wheel centre, axle along X"
+},
+{
+"name": "quarterdeck",
+"pos": [
+-7.3,
+7.6,
+0
+],
+"purpose": "Stern castle tier 1 deck top"
+},
+{
+"name": "poop-deck",
+"pos": [
+-11.1,
+10,
+0
+],
+"purpose": "Stern castle tier 2 deck top"
+},
+{
+"name": "bow-ram-tip",
+"pos": [
+16.2,
+4.2,
+0
+],
+"purpose": "Front of the shark snout (ram contact point)"
+},
+{
+"name": "mast-step",
+"pos": [
+1,
+5.6,
+0
+],
+"purpose": "Mast foot on the main deck"
+},
+{
+"name": "sail-yard",
+"pos": [
+1,
+19.75,
+0
+],
+"purpose": "Main yard pivot; both yards braced -35 deg about Y"
+},
+{
+"name": "topsail-yard",
+"pos": [
+1,
+29.85,
+0
+],
+"purpose": "Topsail yard pivot"
+},
+{
+"name": "crows-nest",
+"pos": [
+1,
+21.05,
+0
+],
+"purpose": "Crow's nest floor top"
+},
+{
+"name": "flag-top",
+"pos": [
+1,
+33.8,
+0
+],
+"purpose": "Masthead; flag luff along the mast from y 30.2"
+},
+{
+"name": "captain-stand",
+"pos": [
+-8.7,
+7.6,
+0
+],
+"purpose": "Captain feet, facing +X at the wheel"
+},
+{
+"name": "crew-bow-stand",
+"pos": [
+6.3,
+7.6,
+0.4
+],
+"purpose": "Crew stand on the forecastle"
+},
+{
+"name": "crew-mid-stand",
+"pos": [
+-1.8,
+5.2,
+-2
+],
+"purpose": "Deck crew stand by the mast"
+},
+{
+"name": "stern-lantern",
+"pos": [
+-13.2,
+12.1,
+0
+],
+"purpose": "Lantern light centre (warm point light)"
+},
+{
+"name": "anchor-hawse",
+"pos": [
+2.8,
+5.15,
+5.2
+],
+"purpose": "Anchor ring, starboard side"
+},
+{
+"name": "jetski-tow",
+"pos": [
+-12.201,
+0.625,
+7.436
+],
+"purpose": "Jet ski tow eye (rescue line)"
+},
+{
+"name": "jetski-seat",
+"pos": [
+-10.046,
+1.375,
+7.815
+],
+"purpose": "Rider seat top"
+}
+]
+}
