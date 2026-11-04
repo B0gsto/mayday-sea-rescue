@@ -8,7 +8,7 @@ import kit
 
 P = kit.P
 RB = kit.RB
-SCALE = 1.25      # art director round 2: 1.4x, they must read against the hull on a phone
+SCALE = 1.85      # art director rounds 2 and 3: they must read against the hull on a phone
 
 DEF = {
     "captain": dict(leg=1.55, hip=0.36, torso=1.6, top=1.6, bot=2.3, depth=1.05, r=0.82, head=1.36, arm=1.0,
@@ -132,7 +132,7 @@ def tricorn(b, z0):
         deg = -90 + i * 30
         a = math.radians(deg)
         c = corner(deg)
-        R = 1.85 + 0.95 * c ** 1.3                  # huge: the captain's read at phone size
+        R = 2.1 + 1.1 * c ** 1.3                  # huge: the captain's read at phone size
         rise = 0.75 * (1 - c)
         for r, z in ((0.7, z0 + 0.08), (R, z0 + 0.04 + rise), (R + 0.03, z0 - 0.1 + rise), (0.7, z0 - 0.04)):
             verts.append((r * math.cos(a), r * math.sin(a), z))
@@ -212,11 +212,11 @@ def captain_props(b):
             ca, sa = math.cos(a), math.sin(a)
             b.beam((0.1 * ca, -0.05, 0.1 * sa), (1.02 * ca, -0.05, 1.02 * sa), 0.15, 0.1, P.WHEEL)
             b.rod((1.08 * ca, -0.05, 1.08 * sa), (1.42 * ca, -0.05, 1.42 * sa), 0.16, P.POST, n=6)
-    # macaw on the top handle: pure red and yellow, double size so it reads on a phone
+    # macaw on the top handle: pure red and yellow, big enough to read on a phone
     import mathutils as mu
     x, y, z = c[0], c[1], c[2] + 1.45
     R_, Y_ = P.cell(P.MACAW_R, "abs"), P.cell(P.MACAW_Y, "abs")
-    with b.at(trans(x, y, z) @ mu.Matrix.Scale(2.0, 4)):
+    with b.at(trans(x, y, z) @ mu.Matrix.Scale(2.7, 4)):
         b.lathe(0, 0, [(0, 0), (0.28, 0.14), (0.34, 0.45), (0.25, 0.8), (0, 0.92)], [R_, Y_, R_, R_], n=8)
         b.lathe(0, -0.03, [(0, 0.78), (0.24, 0.9), (0.25, 1.1), (0, 1.26)], R_, n=8)
         b.lathe(0, -0.25, [(0.13, 1.0), (0.11, 1.08), (0, 1.12)], Y_, n=6)

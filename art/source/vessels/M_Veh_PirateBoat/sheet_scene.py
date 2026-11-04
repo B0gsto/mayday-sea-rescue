@@ -98,13 +98,13 @@ def main():
         sc.render.engine = "BLENDER_EEVEE_NEXT"
     except TypeError:
         sc.render.engine = "BLENDER_EEVEE"
-    t = (0, -1, 13.5)
-    shoot(cam, "front34", t, (-0.75, -1.0, 0.42), 62, (768, 768))
-    shoot(cam, "side", t, (1, 0, 0.1), 62, (768, 768))
-    shoot(cam, "rear34", t, (0.75, 1.0, 0.3), 62, (768, 768))
-    shoot(cam, "crew", (0, 0.5, 8.5), (0.8, -0.8, 0.12), 38, (768, 768))
+    t = (0, -1, 15.5)
+    shoot(cam, "front34", t, (-0.75, -1.0, 0.42), 70, (768, 768))
+    shoot(cam, "side", t, (1, 0, 0.1), 70, (768, 768))
+    shoot(cam, "rear34", t, (0.75, 1.0, 0.3), 70, (768, 768))
+    shoot(cam, "crew", (0, 0.5, 10.5), (0.8, -0.8, 0.12), 48, (768, 768))
     shoot(cam, "ram", (0, -13, 4), (-0.55, -0.85, 0.22), 24, (768, 768))
-    shoot(cam, "phone", (0, 0, 8), (-0.6, -0.8, 0.55), 70, (360, 200), lens=32)
+    shoot(cam, "phone", (0, 0, 10), (-0.6, -0.8, 0.5), 78, (360, 200), lens=32)
     print("sheet renders in", OUT)
 
 

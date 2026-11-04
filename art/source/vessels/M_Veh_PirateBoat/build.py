@@ -29,7 +29,7 @@ SCALE = 0.875
 SEAM, SEAM_Y = 0.05, 0.04
 SKIP_GROUPS = ("crew", "jetski")
 # crew feet in concept coordinates, raised on the plinths from adjust() so they clear the bulwark and read against sky and sail
-CREW = {"ATT_Captain": (-7.4, 8.4, -0.85), "ATT_Deckhand": (6.9, 8.6, 0.0), "ATT_Lookout": (-2.8, 6.4, -1.6)}
+CREW = {"ATT_Captain": (-7.4, 8.4, -1.5), "ATT_Deckhand": (8.0, 8.8, 0.0), "ATT_Lookout": (-2.8, 6.4, -1.6)}
 
 
 def wanted(p):
@@ -166,18 +166,19 @@ def halfcyl(b, p):
 def sail(b, p):
     """Horizontal red and cream bands, one patch; full billow, arched foot, waisted leeches (round 2: never a flat plane)."""
     t, n, s = p["size"]
-    t = t * 1.45
+    t = t * 1.9
     lod = getattr(b, "lod", 0)
     bands = 9 if s > 15 else 5
     rows = bands * (2 if lod == 0 else 1)
     cols = 10 - 3 * lod
     red, cream = P.cell("#C8102E", "cloth"), P.CREAM
+    red_d, cream_d = P.cell(P.RED_DARK, "cloth"), P.cell(P.CREAM_DARK, "cloth")
 
     def pt(i, j, off):
         l, h = i / cols, 1 - j / rows            # j = 0 at the head
         u = 1 - (2 * l - 1) ** 2
-        wide = s * (1 - 0.07 * math.sin(math.pi * h))
-        arch = 0.09 * n * u * (1 - h) ** 2
+        wide = s * (1 - 0.08 * math.sin(math.pi * h))
+        arch = 0.15 * n * u * (1 - h) ** 1.2      # stripes bow upward in the middle: reads as a full sail even on a phone
         return (t * u ** 0.8 * math.sin(0.65 * math.pi * (1 - h)) + off, (l - 0.5) * wide, (h - 0.5) * n + arch)
 
     vid = lambda i, j, side: (j * (cols + 1) + i) * 2 + side
@@ -188,7 +189,8 @@ def sail(b, p):
     band = lambda j: j * bands // rows
     for j in range(rows):
         for i in range(cols):
-            c = red if band(j) % 2 == 0 else cream
+            edge = i == 0 or i == cols - 1          # leeches a shade darker: a painted-in curve
+            c = (red_d if edge else red) if band(j) % 2 == 0 else (cream_d if edge else cream)
             if bands == 9 and band(j) == 5 and i == cols - 3:
                 c = P.TAN                          # the sewn patch
             faces += [(vid(i, j, 0), vid(i + 1, j, 0), vid(i + 1, j + 1, 0), vid(i, j + 1, 0)),
@@ -208,7 +210,7 @@ def sail(b, p):
 
 def flag(b, p):
     t, n, s = p["size"]
-    m = 8
+    m = 8 - 2 * getattr(b, "lod", 0)
     verts = []
     for i in range(m + 1):
         c = i / m
@@ -295,11 +297,29 @@ def part(name, shape, pos, size, color, group="bow-ram", rot=(0, 0, 0), **kw):
 SLOPE = [[-0.5, -0.5], [0.5, -0.5], [0.5, -0.25], [-0.2, 0.5], [-0.5, 0.5]]
 
 
+def hull_half(x, y):
+    """The hull's half-width at x for the course holding height y (concept plan): where the cheeks must start."""
+    if y >= 4.8:
+        pts = [(4, 5), (5.5, 4.45), (7, 3.9), (8.5, 3.05), (10, 2.2)]
+        off = 0
+    else:
+        pts = [(4, 5), (6, 4.265), (7, 3.9), (10, 2.2)]
+        off = 0.5 * (4 - int(max(0, y + 1.2) // 1.2))
+    if x <= pts[0][0]:
+        return pts[0][1] - off
+    for (x0, h0), (x1, h1) in zip(pts, pts[1:]):
+        if x <= x1:
+            return h0 + (h1 - h0) * (x - x0) / (x1 - x0) - off
+    return pts[-1][1] - off
+
+
 def shark():
-    """Art director round 2: about 1.5x the concept's head, hull-wide gaping jaw, big blunt teeth, angry eyes. Bow tip at x 17.6."""
-    S, D = P.SLATE, P.SLATE_DARK
+    """Rounds 2 and 3: steel-grey head, white belly and jaw, gaping mouth, big blunt teeth, angry eyes, big dorsal fin. Bow tip x 17.6.
+
+    The cheek courses sweep back along the planks from the head, the longest at the waterline, so the hull tapers into it."""
+    S, D, W = P.STEEL, P.STEEL_DARK, P.BELLY_W
     out = [
-        part("shark-jaw-lower", "wedge", (13, 0.55, 0), (9, 1.7, 8.6), S, d2=4.2),
+        part("shark-jaw-lower", "wedge", (13, 0.55, 0), (9, 1.7, 8.6), W, d2=4.2),
         part("shark-mouth", "wedge", (12.7, 1.45, 0), (7.6, 0.24, 7.2), P.MOUTH, d2=3.3),
         part("shark-tongue", "box", (13.2, 1.75, 0), (3.8, 0.42, 2.8), P.TONGUE),
         part("shark-cheek", "wedge", (9.6, 3, 0), (2.4, 3.6, 8.8), S, d2=8),
@@ -307,11 +327,15 @@ def shark():
         part("shark-palate", "wedge", (13.6, 4.45, 0), (7.2, 0.25, 7.2), P.PALATE, d2=3.5),
         part("shark-snout", "wedge", (13, 5.2, 0), (9.2, 1.3, 8.8), S, d2=4),
         part("shark-head", "wedge", (12, 6.75, 0), (7.2, 1.8, 8.8), S, d2=5),
-        part("shark-crown", "wedge", (10.8, 8.6, 0), (4.8, 2, 8.4), S, d2=5.4, studs=True),
+        part("shark-crown", "wedge", (10.8, 8.2, 0), (4.8, 1.2, 8.4), S, d2=5.4, studs=True),
         part("shark-nose", "poly", (16.4, 6.45, 0), (2.4, 1.8, 3.6), S, pts=SLOPE),
-        part("shark-brow-slope", "poly", (14, 8.6, 0), (1.6, 2, 5.2), S, pts=SLOPE),
-        part("shark-fin", "poly", (10, 11, 0), (3, 3, 0.7), S, pts=[[-0.5, -0.5], [0.5, -0.5], [0.15, -0.05], [-0.2, 0.3], [-0.5, 0.5], [-0.38, 0]]),
+        part("shark-brow-slope", "poly", (14, 8.2, 0), (1.6, 1.2, 5.2), S, pts=SLOPE),
+        part("shark-fin", "poly", (12.3, 11.5, 0), (5, 5.6, 0.8), S, pts=[[-0.5, -0.5], [0.5, -0.5], [0.15, -0.1], [-0.25, 0.5], [-0.42, 0.35], [-0.38, -0.1]]),
     ]
+    front_x, front_w = 9.0, 8.7
+    for i, (y0, y1, xb, c) in enumerate(((-0.6, 1.2, 3.6, W), (1.2, 2.4, 4.6, S), (2.4, 3.6, 5.2, S), (3.6, 4.8, 5.6, S), (4.8, 6, 6.0, S), (6, 7.2, 6.6, S))):
+        back = 2 * (hull_half(xb, (y0 + y1) / 2) + 0.06)
+        out.append(part("shark-sweep-%d" % i, "wedge", ((xb + front_x) / 2, (y0 + y1) / 2, 0), (front_x - xb, y1 - y0, back), c, d2=front_w))
     for s in (1, -1):
         yaw, ox, oz = s * 18, 0.31, s * 0.95       # proud of the head, turned a little forward so it reads from the bow too
         cx, cy, cz = 12.9, 7.5, s * 3.32
@@ -324,9 +348,10 @@ def shark():
             part("shark-eye-glint-" + k, "cyl", at(0.28, 0.7, 0.05), (0.42, 0.1, 0.42), "#F4F4F0", rot=rot),
             part("shark-brow-" + k, "box", at(0.42, 0.1, 1.1), (3.7, 0.75, 0.8), D, rot=(0, yaw, -28)),
         ]
-        for i, x in enumerate((9.4, 10.1, 10.8)):
-            hw = 4.4 - 1.9 * (x - 8.4) / 7.2
-            out.append(part("shark-gill-%s%d" % (k, i), "box", (x, 6.3, s * hw), (0.24, 2, 0.2), D, rot=(0, s * 13, 0)))
+        for i, x in enumerate((6.9, 7.6, 8.3, 9.0)):       # big gills on the cheek
+            hb = hull_half(5.6, 4.2) + 0.06
+            hw = hb + (front_w / 2 - hb) * (x - 5.6) / (front_x - 5.6)
+            out.append(part("shark-gill-%s%d" % (k, i), "box", (x, 4.6, s * (hw - 0.08)), (0.36, 2.8, 0.5), D))
     for s in (1, -1):                              # big, blunt, few: 5 a side up, 4 a side down, staggered
         for i, x in enumerate((11.5, 13.2, 14.9, 16.6)):
             hw = 4.4 - 2.4 * (x - 8.4) / 9.2 - 0.42
@@ -368,11 +393,15 @@ def adjust(parts):
             continue
         if p["name"].startswith("hull-L4"):
             p = dict(p, studs=False)               # no studs along the hull's top edge: a clean line under the cap
+        if p["shape"] == "flag":
+            p = dict(p, pos=[6.6, 34.9, 0], size=[10.8, 7.2, 0.9])   # double size on a taller staff, clear of the topsail
         out.append(p)
     out += shark() + gunwale()
+    out.append(part("flag-staff", "rod", (1, 36.3, 0), (0.36, 4.7, 0.36), "#4A2C17", group="mast"))
+    out.append(part("flag-staff-cap", "sphere", (1, 38.7, 0), (0.8, 0.8, 0.8), "#E3A82B", group="mast", material="gold"))
     # plinths: the crew stand clear of the bulwark
     out.append(part("helm-dais", "box", (-7.4, 8, -0.3), (4, 0.8, 7), P.DAIS, group="stern-castle", studs=True))
-    out.append(part("bow-crate", "box", (6.9, 8.1, 0), (2.8, 1, 3), "#7A4A2A", group="forecastle", studs=True))
+    out.append(part("bow-crate", "box", (7.3, 8.2, 0), (2.6, 1.2, 3), "#7A4A2A", group="forecastle", studs=True))
     out.append(part("deck-hatch", "box", (-2.8, 5.8, -1.6), (2.8, 1.2, 2.4), "#7A4A2A", group="deck", studs=True))
     return out
 
@@ -387,7 +416,7 @@ def keep(p, lod):
         return True
     if p["name"].startswith(("shark-eye", "shark-pupil", "shark-brow")):
         return lod < 2 or "glint" not in p["name"]
-    if lod == 2 and p["name"].startswith("hull-L0"):
+    if lod == 2 and p["name"].startswith(("hull-L0", "shark-tooth-uf", "shark-tooth-lf", "shark-tooth-l02", "shark-tooth-l12")):
         return False                               # below the waterline
     if p["material"] == "glow" or "tooth" in p["name"] or p["group"] in ("sail", "flag", "mast"):
         return lod == 1 or big > 3.0 or p["material"] == "glow" and big > 0.8 or "tooth" in p["name"] and big >= 0.5
