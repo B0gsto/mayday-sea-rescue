@@ -87,6 +87,11 @@ function Chase.enter(model: Model, root: BasePart, touch: boolean?)
 	else
 		baseDistance = math.clamp(length * 1.6 + 8, 16, 70)
 		focusHeight = math.clamp(size.Y * 0.6, 2.5, 12) + 1.5
+		-- a raised helm (Hydrofoil on its struts): look at the deck the rider is on, not the root far below it
+		local seat, hull = model:FindFirstChild("DriverSeat"), model.PrimaryPart
+		if seat and seat:IsA("BasePart") and hull then
+			focusHeight = math.max(focusHeight, hull.CFrame:ToObjectSpace(seat.CFrame).Y + 3)
+		end
 	end
 	restPitch = if model:GetAttribute("ColdOpen") == true
 		then math.rad(5)
