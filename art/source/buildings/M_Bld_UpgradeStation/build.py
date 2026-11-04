@@ -563,10 +563,12 @@ def spares():
 
 def board():
     Ctx.group = "Board"
-    BG = grp((-21, PH, -13), (0, 60, 0), I, BOARD_SCALE)
-    for i, x0 in enumerate((-5.5, 3.5)):
-        wall("board_leg_%d" % i, "x", x0, x0 + 2, -1, 1, 0, 9, "red", L=2, studs=True, stagger=False, parent=BG, bot=False)
-        col((x0, 0, -1), (x0 + 2, 10.8, 1), BG)
+    # owner must-fix: centred behind the bay's back edge, square to the sea, raised; console on the back kerb, front just short of the bay
+    Y0 = 1.72
+    BG = grp((0, Y0, -27.77), (0, 0, 0), I, BOARD_SCALE)
+    for i, x0 in enumerate((-7.1, 5.1)):                # under the frame's ends, so people can walk behind the board
+        wall("board_leg_%d" % i, "x", x0, x0 + 2, 1, 2.6, -Y0 / BOARD_SCALE, 3, "red", L=2, h=(2.8 + Y0 / BOARD_SCALE) / 3, stagger=False, parent=BG, bot=False)
+        col((x0, -Y0 / BOARD_SCALE, 1), (x0 + 2, 2.8, 2.6), BG)
     brick("board_panel", (-6.5, 2.8, 1), (6.5, 11.6, 1.8), "red", parent=BG, studs=True, bot=True)
     brick("board_backplate", (-3.5, 0, 1), (3.5, 2.8, 1.8), "red", parent=BG)
     # a chunky bright frame and a red crest; a red panel with a big arrow on its back, no dead navy
@@ -588,8 +590,8 @@ def board():
     brick("board_upgrade_button", (-4.3, 2.1, 2.75), (4.3, 3.4, 4.2), "btn", parent=BG, studs=True, g="Button", bev=.14)
     col((-7.1, 2.8, 1), (7.1, 13.6, 2.6), BG)
     col((-5, 0, 1), (5, 3.4, 4.4), BG)
-    attach("ATT_BoardScreen", tuple(BG @ Vector((0, 7.2, 1.85))), 60)
-    attach("ATT_BoardButton", tuple(BG @ Vector((0, 2.8, 3))), 60)
+    attach("ATT_BoardScreen", tuple(BG @ Vector((0, 7.2, 1.85))))
+    attach("ATT_BoardButton", tuple(BG @ Vector((0, 2.8, 3))))
     attach("ATT_PlayerSpawn", (-14.3, PH, -20.6), 60)
 
 
@@ -613,7 +615,7 @@ def greens():
         part(n + "_crown", "leaf", (1.3, 1.3, 1.3), k="sphere", seg=8, parent=cr)
         for k_ in range(7):
             part("%s_frond_%d" % (n, k_), "green" if k_ % 2 else "leaf", (1.3, .3, 4.2), (0, -.5, 2.2), (22, 0, 0), parent=cr @ R((0, k_ * 360 / 7, 0)), bev=.05)
-    cone_tree("tree_cone_a", -8, -28)
+    cone_tree("tree_cone_a", -18, -28)      # moved from x -8: it blocked the walk behind the board
     cone_tree("tree_cone_b", 24, -28)
     palm("tree_palm_a", -31, -6, 1)
     palm("tree_palm_b", 31, -21, -1)
