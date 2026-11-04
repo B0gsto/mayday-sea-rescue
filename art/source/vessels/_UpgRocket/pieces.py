@@ -1,21 +1,35 @@
 """The Rocket Cutter hull (L41), its pilot and nine upgrade pieces (L42-L50), from the owner-cleared concept (artifact b8ff43b0).
 
-Concept numbers (see kit.py), with the rocket 1.4x the concept's: it is the boat's top line and the joke. Round 2 (art director 6.5/10):
-only the rocket and the sun stay big, the sun is small and warm behind the nozzle, every piece sits on a visible studded bracket,
-the poppers have wide mouths with streamers spilling out. See RESULT.md for the other departures.
+Concept numbers (see kit.py). Round 3 (art director 6.5/10 twice) goes well past the concept on purpose: a chubby oval cartoon rocket, a
+rider in a cockpit, stubby popper pods, wave skirts grown out of the hull. The read at L50 is rocket, rider, poppers; the trophy, eagle and
+throne are small accents off the silhouette, and the sun is a plain round face on the rocket's tail. See RESULT.md.
 """
 import math
 
 import kit as K
 from kit import (AQUA, CHROME, DEEP, FLAME_O, FLAME_W, FLAME_Y, GLASS, GOLD, NAVY, RED, RUBBER, SEAT, SKIN, SUN, TAN, VEST, WHITE)
+from mathutils import Matrix, Vector
 
-RT, RR = 9.8, 4.9       # rocket axis height and radius
-BY, BZ, BR = 8.3, 7.8, 2.6      # side boosters
-PX, SADDLE = 10.0, 15.85        # the rider's x, and the cushion top he sits on
-NOSE0, NOSE = 21.0, 10.0
+RT, RY, RZ = 11.9, 7.0, 9.8     # rocket axis height, half height, half width (at its fattest)
+XC, HL = 3.0, 28.0              # the egg profile: fattest at XC, reaching the nose tip at XC + HL
+TAIL, TIP = -15.0, 31.0
+PY, PZ, PR = 7.0, 8.6, 3.0      # popper pods: height, side, drum radius
+PX, SADDLE = 3.0, 16.6         # the rider's x, and the (hidden) seat he sits on inside the cockpit
 SIDES = ((1, "S"), (-1, "P"))
 SEAT_X = (-17.8, -15.2, -12.6, -5.6, -3.0, -0.4)
 SEAT_Z = 3.4
+
+
+def f(x):
+    return math.sqrt(max(0.0, 1 - abs((x - XC) / HL) ** 3))
+
+
+def top_y(x, z=0.0):
+    return RT + RY * f(x) * math.sqrt(max(0.0, 1 - (z / (RZ * f(x))) ** 2))
+
+
+def under_y(x, z=0.0):
+    return 2 * RT - top_y(x, z)
 
 
 def plan(k, poly, y0, y1, cell, bevel=0.1):
@@ -29,17 +43,37 @@ def section(k, poly, x0, x1, cell, bevel=0.1):
 
 
 def seat(k, x, s):
-    k.box((1.6, 0.4, 1.4), (x, 3.02, s * SEAT_Z), SEAT, r=0)
-    k.box((0.5, 1.3, 1.4), (x - 0.58, 3.82, s * SEAT_Z), SEAT, r=0)
+    k.box((1.6, 0.4, 1.4), (x, 3.02, s * SEAT_Z), NAVY, r=0)
+    k.box((0.5, 1.3, 1.4), (x - 0.58, 3.82, s * SEAT_Z), NAVY, r=0)
 
 
-def nose_r(u):
-    return RR * max(0.0, 1 - (u / NOSE) ** 2) ** 0.62
+SQUASH = (RY / RZ, 1, 1)        # local x of a lathe along +X is world -Y
 
 
-def strap(k, x, w=1.2, cell=NAVY):
-    """A fat band round the rocket: what visibly holds a piece on."""
-    k.ring(x - w / 2, w, RR - 0.1, RR + 0.24, cell, RT, 0, n=24)
+def rocket_ring(k, x, w, grow, cell, n=28):
+    """A band hugging the egg at x, grow proud of it."""
+    x0, x1 = x - w / 2, x + w / 2
+    rz = lambda a: RZ * f(a)
+    pts = [(rz(x0) - 0.4, 0), (rz(x0) + grow, 0), (rz(x) + grow, w / 2), (rz(x1) + grow, w), (rz(x1) - 0.4, w), (rz(x0) - 0.4, 0)]
+    k.lathe(pts, n, cell, (x0, RT, 0), (0, 0, -90), SQUASH)
+
+
+def on_skin(k, x, z, fn, lift=0.0):
+    """Runs fn in a frame whose local +Z is the rocket's outward normal at (x, top_y(x, z), z)."""
+    e = 0.05
+    n = Vector((-(top_y(x + e, z) - top_y(x - e, z)) / (2 * e), 1, -(top_y(x, z + e) - top_y(x, z - e)) / (2 * e))).normalized()
+    m = Matrix.Translation(Vector((x, top_y(x, z), z)) + n * lift) @ Vector((0, 0, 1)).rotation_difference(n).to_matrix().to_4x4()
+    k.stack.append(k.stack[-1] @ m)
+    fn()
+    k.stack.pop()
+
+
+def porthole(k, x, z, r):
+    def body():
+        k.torus(r, max(0.3, r * 0.26), (0, 0, 0), NAVY, n=14, m_=5)
+        k.cyl(r, 0.5, (0, 0, -0.1), GLASS, (90, 0, 0), n=14)
+        k.sphere(r * 0.3, (r * 0.35, r * 0.4, 0.1), WHITE, n=8, lat=3)
+    on_skin(k, x, z, body)
 
 
 def hull(k):
@@ -82,43 +116,52 @@ def hull(k):
         for z in (-hw, hw):
             k.stud(top, (x, 3.58, z), WHITE, big=True)
     plan(k, [(18, -2.4), (38, 0), (18, 2.4)], 3.6, 4.8, RED)
-    for x in (25.5, 28.5, 31.5):
-        k.stud(top, (x, 4.78, 0), RED, big=True)
+    k.stud(top, (31.5, 4.78, 0), RED, big=True)
     t = lambda y: 24 + (y + 0.6) / 0.343
     k.prism([(t(-2.4) - 1.2, -2.4), (t(-2.4) + 0.9, -2.4), (t(4.9) + 0.9, 4.9), (t(4.9) - 1.2, 4.9)], -0.28, 0.28, CHROME, lambda a, b, d: (a, b, d), 0.08)
     # ---- stern
     k.brick((1.4, 0.6, 7.2), (-20.7, 0.3, 0), NAVY, studs="big")
-    # ---- cradle: fat saddles cut to the rocket, the front one on the taper where she overhangs the knife
-    for x, hw in ((-9, 4.2), (5, 4.2), (15.5, 2.9)):
-        prof = [(hw, 3.2)] + [(hw - i * 2 * hw / 14, RT - math.sqrt((RR + 0.06) ** 2 - (hw - i * 2 * hw / 14) ** 2)) for i in range(15)] + [(-hw, 3.2)]
-        k.box((4.4, 0.5, 2 * hw + 0.7), (x, 3.45, 0), NAVY)
-        section(k, prof, x - 1.6, x + 1.6, NAVY, 0)
-        k.ring(x - 0.55, 1.1, RR - 0.1, RR + 0.26, RUBBER, RT, 0, n=20)
-        k.box((1.3, 0.34, 1.3), (x, RT + RR + 0.32, 0), CHROME, r=0.08)
-    # ---- the rocket, far too big: three red bands, round nose, cartoon windows
-    for x0, x1, c in ((-15, -12, RED), (-12, -9.5, NAVY), (-9.5, -1, WHITE), (-1, 2, RED), (2, 14, WHITE), (14, 16, NAVY), (16, 19, RED), (19, 21, WHITE)):
-        k.along(x0, x1, RR, c, RT, n=24)
-    nose = [(0, 0), (RR - 0.04, 0)] + [(nose_r(NOSE * i / 8), NOSE * i / 8) for i in range(9)]
-    nose[-1] = (0, NOSE)
-    k.lathe(nose, 24, RED, (NOSE0, RT, 0), (0, 0, -90))
-    k.sphere(1.15, (NOSE0 + NOSE - 0.5, RT, 0), WHITE, n=14, lat=5)        # a toy ball on the nose: never a warhead
-    k.along(-16, -15, 3.9, NAVY, RT)
-    bell = [(0, 0), (2.66, 0)] + [(2.66 + 1.68 * (i / 6) ** 1.5, 4.9 * i / 6) for i in range(1, 7)] + [(4.04, 4.9), (2.3, 0.7), (0, 0.7)]
-    k.lathe(bell, 18, CHROME, (-16, RT, 0), (0, 0, 90))
-    k.ring(-19.6, 0.8, 3.2, 4.2, NAVY, RT, 0)
-    k.flame(-16.9, RT, 0, 2.2, 10.0)
-    k.att("Flame_Main", (-21.0, RT, 0))
+    # ---- cradle: fat saddles cut to the egg
+    for x, hw in ((-9, 4.8), (5, 4.8), (15.5, 2.9)):
+        zs = [hw - i * 2 * hw / 14 for i in range(15)]
+        k.box((4.4, 0.5, 2 * hw + 0.6), (x, 3.45, 0), NAVY)
+        section(k, [(hw, 3.2)] + [(z, under_y(x, z) + 0.12) for z in zs] + [(-hw, 3.2)], x - 1.6, x + 1.6, NAVY, 0)
+    # ---- the rocket: one chubby egg, far too big for the boat
+    sts = [TAIL, -13, -11, -9, -6, -3, -1, 2, 6, 10, 14, 17, 19, 22, 25, 27, 28.5, 29.8, 30.6, TIP]
+    cell = lambda a, b: RED if b <= -11 else NAVY if b <= -9 else WHITE if b <= -1 else RED if b <= 2 else WHITE if b <= 17 else NAVY if b <= 19 else RED if b <= 29.8 else WHITE
+    pts = [(0, 0)] + [(RZ * f(x), x - TAIL) for x in sts]
+    pts[-1] = (0, TIP - TAIL)
+    k.lathe(pts, 28, [RED] + [cell(a, b) for a, b in zip(sts, sts[1:])], (TAIL, RT, 0), (0, 0, -90), SQUASH)
+    # a wide stubby nozzle, in plain view from behind
+    k.along(-16, TAIL, 2.6, NAVY, RT)
+    bell = [(0, 0), (1.9, 0)] + [(1.9 + 0.8 * (i / 5) ** 1.3, 3.0 * i / 5) for i in range(1, 6)] + [(2.35, 3.0), (1.5, 0.5), (0, 0.5)]
+    k.lathe(bell, 20, CHROME, (-16, RT, 0), (0, 0, 90))
+    k.flame(-16.8, RT, 0, 1.7, 6.5)
+    k.att("Flame_Main", (-19.1, RT, 0))
+    # stubby side fins, so she reads as a cartoon ride from the first level
+    for s, tag in SIDES:
+        plan(k, [(-5, s * 5), (-15, s * 5), (-19, s * 11), (-15.5, s * 11)], RT - 1.6, RT, RED, 0.2)
+    # the porthole face on the nose, and big windows along her sides
     for s, _ in SIDES:
-        for x in (-5.5, 6.0):
-            k.rim_window(x, RT, s, 1.4, RR - 0.04)
-    # ---- saddle and handlebar
-    k.box((2.6, 1.0, 2.6), (PX, 14.9, 0), NAVY, r=0.14)
-    k.box((2.2, 0.45, 2.2), (PX, SADDLE - 0.225, 0), RUBBER, r=0.14)
-    k.box((1.1, 0.5, 1.6), (PX + 1.75, 14.75, 0), NAVY, r=0.1)
-    k.rod((PX + 1.75, 14.9, 0), (PX + 1.75, 17.6, 0), 0.34, NAVY, n=10)
-    k.rod((PX + 1.75, 17.6, -1.75), (PX + 1.75, 17.6, 1.75), 0.24, CHROME, n=10)
+        porthole(k, 25.6, s * 3.1, 1.7)
+        porthole(k, -4, s * 6.6, 1.7)
+        porthole(k, 7.5, s * 6.6, 1.7)
+    smile = []
+    for i in range(11):
+        a = math.radians(205 + 130 * i / 10)
+        sec = []
+        for dx, g in ((-0.42, 0.98), (0.42, 0.98), (0.42, 1.04), (-0.42, 1.04)):
+            x = 28.6 + dx
+            sec.append((x, RT + RY * f(x) * g * math.sin(a), RZ * f(x) * g * math.cos(a)))
+        smile.append(sec)
+    k.loft(smile, NAVY)
+    # ---- the cockpit: a fat rim and a handlebar; the rider's legs are inside her
+    k.torus(2.6, 0.5, (PX, top_y(PX) + 0.05, 0), NAVY, (90, 0, 0), n=18, m_=6)
+    bar = PX + 2.3
+    k.rod((bar, top_y(bar) - 0.3, 0), (bar, 20.5, 0), 0.34, NAVY, n=10)
+    k.rod((bar, 20.5, -1.75), (bar, 20.5, 1.75), 0.24, CHROME, n=10)
     for s, _ in SIDES:
-        k.rod((PX + 1.75, 17.6, s * 1.05), (PX + 1.75, 17.6, s * 1.95), 0.36, RUBBER, n=10)
+        k.rod((bar, 20.5, s * 1.05), (bar, 20.5, s * 1.95), 0.36, RUBBER, n=10)
     # ---- twelve yellow seats
     for x in SEAT_X:
         for s, _ in SIDES:
@@ -126,7 +169,7 @@ def hull(k):
 
 
 def hull_marks(k):
-    """The Tidewalker's ATT_ set (Boat/Builder buildTidewalkerAsset reads these), in model space. The rider's seat is the saddle."""
+    """The Tidewalker's ATT_ set (Boat/Builder buildTidewalkerAsset reads these), in model space. The rider's seat is in the cockpit."""
     def hr(name, x, y, z):      # numbers in HullRoot space
         k.atts["ATT_" + name] = (x - K.ORIGIN[0], y - K.ORIGIN[1], z - K.ORIGIN[2])
     k.att("DriverSeat", (PX, SADDLE + 0.3, 0))
@@ -138,10 +181,10 @@ def hull_marks(k):
     hr("DriveAttachment", 0, 0, 0)
     k.att("NavPort", (6.5, 4.1, -4.9))
     k.att("NavStarboard", (6.5, 4.1, 4.9))
-    k.att("NavMasthead", (PX, 15.4, 1.9))
+    k.att("NavMasthead", (PX - 3, top_y(PX - 3) + 0.2, 0))
     k.att("NavStern", (-20.1, 3.8, 0))
-    k.att("Beacon", (-5, RT + RR + 0.4, 0))
-    k.att("Searchlight", (NOSE0 + NOSE, RT + 1.0, 0))
+    k.att("Beacon", (-5, top_y(-5) + 0.4, 0))
+    k.att("Searchlight", (TIP, RT, 0))
     for i, s in enumerate((-1, 1)):
         k.att("Prop%d" % (i + 1), (-20.6, -1.4, s * 3))
     slots = [(x, s) for x in reversed(SEAT_X) for s in (-1, 1)] + [(2.0, -1), (2.0, 1)]
@@ -153,15 +196,12 @@ def hull_marks(k):
 
 def pilot(k):
     def body():
-        h = 0.9             # concept numbers about the saddle, hips at y 0.9
-        k.box((1.3, 0.8, 2.0), (0, h, 0), NAVY, r=0.14)
+        k.box((1.3, 0.8, 2.0), (0, 0.9, 0), NAVY, r=0.14)                                   # no legs: they are inside the rocket
         for s, _ in SIDES:
-            k.box((1.2, 0.75, 1.2), (0.5, 0.45, 1.3 * s), NAVY, (22 * s, 0, 0), r=0.12)     # legs splayed, can't reach
-            k.box((1.4, 0.85, 0.95), (0.95, -0.05, 2.1 * s), RUBBER, (40 * s, 0, 0), r=0.14)
-            k.rod((0.1, 2.8, 1.22 * s), (1.45, 1.55, 1.25 * s), 0.34, VEST, n=8)            # arms to the bar
-            k.box((0.62, 0.62, 0.62), (1.45, 1.5, 1.25 * s), WHITE, r=0.12)
+            k.rod((0.1, 2.8, 1.22 * s), (1.92, 3.25, 1.25 * s), 0.36, VEST, n=8)            # arms up to the bar
+            k.box((0.62, 0.62, 0.62), (1.92, 3.25, 1.25 * s), WHITE, r=0.12)
         k.box((1.3, 1.9, 2.15), (0, 2.25, 0), VEST, r=0.16)                                 # the orange vest is the read
-        for y in (1.75, 2.75):
+        for y in (2.0, 2.85):
             k.box((0.14, 0.26, 2.05), (0.67, y, 0), WHITE, r=0.04)
         k.cyl(0.45, 0.4, (0, 3.3, 0), SKIN, n=12)
         k.cyl(0.8, 1.45, (0, 4.05, 0), SKIN, n=18)
@@ -178,25 +218,19 @@ def pilot(k):
 
 
 def side_boosters(k):
+    # stubby toy drums hugging the belly: blunt white cap in front, a wide flared mouth behind. No tube, no point
     for s, tag in SIDES:
-        z = BZ * s
-        for x0, x1, c in ((-12, -3, NAVY), (-3, -0.5, WHITE), (-0.5, 4, NAVY)):
-            k.along(x0, x1, BR, c, BY, z, n=22)
-        prof = [(0, 0), (BR - 0.04, 0)] + [(BR * (1 - (i / 9) ** 2) ** 0.62, 4.5 * i / 9) for i in range(10)]
-        prof[-1] = (0, 4.5)
-        k.lathe(prof, 22, RED, (4, BY, z), (0, 0, -90))
-        k.sphere(0.7, (8.2, BY, z), WHITE, n=12, lat=4)
-        k.along(-12.8, -12, 2.2, NAVY, BY, z, n=20)
-        bell = [(0, 0), (1.5, 0)] + [(1.5 + 1.0 * (i / 5) ** 1.5, 2.8 * i / 5) for i in range(1, 6)] + [(2.3, 2.8), (1.2, 0.4), (0, 0.4)]
-        k.lathe(bell, 20, CHROME, (-12.8, BY, z), (0, 0, 90))
-        k.flame(-13.4, BY, z, 1.65, 12.5)
-        k.att("Flame_" + tag, (-15.6, BY, z))
-        # brackets: a studded plate on the gunwale, a wedge pylon up to the booster, chrome bands round the tube
-        for x in (-7.0, 1.2):
-            k.brick((3.4, 0.7, 3.2), (x, 4.2, s * 4.6), NAVY, studs=[(-1.1, 0.33, 0.9), (-1.1, 0.33, -0.9), (1.1, 0.33, 0.9), (1.1, 0.33, -0.9)], big=True)
-            section(k, [(s * 3.6, 4.5), (s * 6.0, 4.5), (s * 8.6, 6.2), (s * 8.2, 7.2), (s * 5.4, 7.4)], x - 1.2, x + 1.2, NAVY, 0.1)
-            k.ring(x - 0.55, 1.1, BR - 0.1, BR + 0.22, CHROME, BY, z, n=22)
-        k.at((0, BY, z), (90 * s, 0, 0), lambda: k.prism([(-8, 2.4), (-10.6, 5.0), (-13.4, 5.0), (-11.6, 2.4)], -0.5, 0.5, NAVY, lambda a, b, d: (a, b, d), 0.1))
+        z = PZ * s
+        k.along(-9.5, -3, PR, NAVY, PY, z, n=20)
+        cap = [(PR - 0.1, 0), (PR, 0.6), (PR * 0.8, 1.7), (PR * 0.4, 2.4), (0, 2.6)]
+        k.lathe(cap, 20, WHITE, (-3, PY, z), (0, 0, -90))
+        mouth = [(0, 0), (PR - 0.1, 0), (PR - 0.1 + 0.8 * 0.35, 1.5), (PR + 0.7, 3.2), (PR + 0.75, 3.6), (PR + 0.2, 3.6), (2.4, 2.4), (0, 2.4)]
+        k.lathe(mouth, 20, [RED, RED, WHITE, WHITE, WHITE, NAVY, NAVY], (-9.5, PY, z), (0, 0, 90))
+        k.flame(-11.8, PY, z, 1.7, 6.5, n=12)
+        k.att("Flame_" + tag, (-13.2, PY, z))
+        # bracket: a studded plate on the gunwale and a wedge pylon up to the drum
+        k.brick((3.4, 0.7, 3.2), (-6.3, 4.2, s * 4.6), NAVY, studs=[(-1.1, 0.33, 0.9), (-1.1, 0.33, -0.9), (1.1, 0.33, 0.9), (1.1, 0.33, -0.9)], big=True)
+        section(k, [(s * 3.6, 4.5), (s * 6.0, 4.5), (s * 8.8, 4.6), (s * 7.6, 6.6), (s * 5.4, 6.6)], -7.5, -5.1, NAVY, 0.1)
 
 
 def gold_plating(k):
@@ -204,180 +238,147 @@ def gold_plating(k):
         for x0, x1 in ((-15.6, -9), (-9, -2.5), (-2.5, 4)):                 # one heavy belt on the red band
             k.box((x1 - x0 - 0.06, 0.86, 0.14), ((x0 + x1) / 2, 0.6, s * 5.05), GOLD, r=0.05)
         for x0, x1 in ((-20, -8), (-8, 6)):                                 # gunwale caps, chunky, own studs
-            k.brick((x1 - x0 - 0.06, 0.56, 1.1), ((x0 + x1) / 2, 3.88, s * 4.5), GOLD, studs="big")
-        k.brick((1.1, 0.56, 3.94), (-19.5, 3.88, s * 2.0), GOLD, studs="big")
+            k.box((x1 - x0 - 0.06, 0.7, 1.1), ((x0 + x1) / 2, 3.95, s * 4.5), GOLD)
+        k.box((1.1, 0.7, 3.94), (-19.5, 3.95, s * 2.0), GOLD)
         g = math.degrees(math.atan2(5, 21.5))                               # a sculpted gold wedge on each bow, on the red band
         k.box((16.4, 0.86, 0.14), (14.0, 0.6, s * 3.2), GOLD, (0, g * s, 0), r=0.05)
-    for x in (-13.5, 0.5, 17.5):                                            # narrow rings: the rocket's red and white still show either side
-        k.ring(x - 0.6, 1.2, RR - 0.1, RR + 0.16, GOLD, RT, 0, n=24)
-    # a gold cap on the round nose, a collar under it: toy, not a spike
-    u0 = 7.2
-    prof = [(0, 0), (nose_r(u0) + 0.17, 0)] + [(nose_r(u0 + (9.4 - u0) * i / 6) + 0.17, (9.4 - u0) * i / 6) for i in range(1, 7)] + [(0, 2.25)]
-    k.lathe(prof, 24, GOLD, (NOSE0 + u0, RT, 0), (0, 0, -90))
-    k.ring(NOSE0 + u0 - 0.5, 0.55, nose_r(u0) - 0.3, nose_r(u0 - 0.5) + 0.3, NAVY, RT, 0, n=24)
-    k.ring(-20.97, 0.4, 3.7, 4.55, GOLD, RT, 0)
+    for x in (-13.0, 0.5, 19.8):                                            # narrow rings: the rocket's red and white still show either side
+        rocket_ring(k, x, 1.1, 0.14, GOLD)
+    # a gold tip on the round nose: toy, not a spike
+    x0 = 29.75
+    prof = [(0, 0), (RZ * f(x0) + 0.16, 0)] + [(RZ * f(x0 + (30.9 - x0) * i / 5) + 0.16, (30.9 - x0) * i / 5) for i in range(1, 6)] + [(0, 1.35)]
+    k.lathe(prof, 18, GOLD, (x0, RT, 0), (0, 0, -90), SQUASH)
+    k.ring(-19.08, 0.4, 2.2, 2.95, GOLD, RT, 0, n=20)
     k.cyl(2.3, 0.2, (-21.5, 1.2, 0), GOLD, (0, 0, 90), n=18)                # transom badge on the swim platform's side
     k.cyl(1.05, 0.14, (-21.66, 1.2, 0), NAVY, (0, 0, 90), n=14)
     k.box((0.7, 1.9, 2.4), (-21.2, 0.0, 0), GOLD, r=0.1)
 
 
 def wave_wall(k):
-    # two curling walls peeled off the hull sides under the boosters, rising only once they clear the booster flames; centre lane open
+    # one body with the boat: the inner edge is the hull's side from amidships, the top sweeps out and up to a curling crest,
+    # and past the stern it peels open into a V so the end is a curl, not a slab
     n = 10
     for s, tag in SIDES:
         secs, foam = [], []
         for i in range(n + 1):
             t = i / n
-            x = -2 - 32 * t
-            z = 5.0 + 11.0 * t
-            top = 1.5 + 8.0 * t ** 2.2
-            w = 1.3 + 2.4 * t                        # wall thickness
-            lean = 1.8 * t                           # the crest curls outward over the wall's foot
-            pts = [(z, -1.0), (z + w * 0.9, -1.0), (z + w * 1.05, top * 0.45), (z + w + lean, top), (z + lean * 0.8, top),
-                   (z - 0.15 * t, top * 0.45)]
+            x = 5 - 31 * t
+            zo = 6.4 + 8.6 * t ** 0.8
+            top = 2.8 + 5.7 * t ** 1.5
+            lean = 1.3 * t
+            peel = max(0.0, (t - 0.72) / 0.28) ** 1.4
+            z_in = 4.96 + (zo - 2.2 - 4.96) * peel
+            mid = 2.7 + 0.5 * t + (top - 2.7 - 0.5 * t) * 0.55 * peel
+            z_mid = z_in + (zo - z_in) * 0.62
+            pts = [(z_in, -1.0), (zo + 0.8, -1.0), (zo + 1.0 + lean, top), (zo - 0.9, top), (z_mid, mid), (z_in, 2.5 + (top - 2.5) * 0.5 * peel)]
             secs.append([(x, y, s * a) for a, y in pts])
-            cap = 0.9 + 0.8 * t
-            fs = [(z + lean * 0.8 - 0.4, top - 0.15), (z + w + lean + 0.4, top - 0.15), (z + w + lean + 0.25, top + cap), (z + lean * 0.8 - 0.2, top + cap)]
+            cap = 0.9 + 0.7 * t
+            fs = [(zo - 1.3, top - 0.2), (zo + 1.35 + lean, top - 0.2), (zo + 1.2 + lean, top + cap), (zo - 1.05, top + cap)]
             foam.append([(x - 0.07, y, s * a) for a, y in fs])
-            if i >= 2:
-                k.stud(k.stack[-1], (x, top + cap - 0.02, s * (z + lean * 0.8 + (w + 0.1) / 2)), WHITE, big=True)
-        secs[0] = [(x, -1.0 + (y + 1.0) * 0.5, z_) for x, y, z_ in secs[0]]
-        k.loft(secs, [DEEP, DEEP, AQUA, WHITE, AQUA, DEEP])
+            if i in (4, 6, 8):
+                k.stud(k.stack[-1], (x, top + cap - 0.02, s * (zo + lean / 2)), WHITE, big=True)
+        k.loft(secs, [DEEP, DEEP, AQUA, AQUA, AQUA, AQUA])
         k.loft(foam, WHITE)
-        for t, r in ((0.7, 1.3), (0.86, 1.7), (1.0, 2.2)):                  # fat foam curls on the crest
-            x, z, top = -2 - 32 * t, 5.0 + 11.0 * t, 1.5 + 8.0 * t ** 2.2
-            k.sphere(r, (x + 0.2, top + 1.2 + 0.7 * t, s * (z + 2.4 * t + 1.0)), WHITE, n=12, lat=4)
-        k.att("Crest_" + tag, (-34, 11, s * 19))
+        k.sphere(1.8, (-25.4, 8.5 + 1.7, s * 15.9), WHITE, n=12, lat=4)     # one fat curl at the end of the crest
+        k.att("Crest_" + tag, (-26, 11, s * 16))
 
 
 def gold_eagle(k):
-    # small and on the very tip, a hood ornament on a studded plate
-    k.brick((3.0, 0.45, 1.9), (34.4, 5.0, 0), NAVY, studs=[(-0.75, 0.2, 0.5), (-0.75, 0.2, -0.5)], big=True)
-    k.box((2.0, 0.9, 0.9), (34.7, 4.45, 0), NAVY, r=0.12)
+    # small, a hood ornament on the very tip of the prow, under the nose line
+    k.brick((2.4, 0.4, 1.3), (36.8, 4.98, 0), NAVY, studs=[(-0.6, 0.18, 0)], big=True)
+    k.box((1.4, 0.7, 0.8), (37.0, 4.55, 0), NAVY, r=0.1)
 
     def bird():
-        k.cyl(0.95, 0.7, (0, 0.2, 0), NAVY, r2=0.75, n=14)
+        k.cyl(0.95, 0.7, (0, 0.2, 0), NAVY, r2=0.75, n=12)
         k.box((1.5, 2.0, 1.4), (-0.05, 1.5, 0), GOLD, (0, 0, -12), r=0.3)
-        k.sphere(0.85, (0.42, 1.65, 0), GOLD, n=14, lat=4)
-        k.cyl(0.46, 1.0, (0.55, 2.7, 0), GOLD, (0, 0, -25), n=12)
-        k.sphere(0.72, (0.85, 3.3, 0), GOLD, n=14, lat=4)
-        k.cone(0.34, 1.0, (1.75, 3.2, 0), VEST, (0, 0, -100), tip=0.1, n=10)
+        k.sphere(0.85, (0.42, 1.65, 0), GOLD, n=12, lat=4)
+        k.cyl(0.46, 1.0, (0.55, 2.7, 0), GOLD, (0, 0, -25), n=10)
+        k.sphere(0.72, (0.85, 3.3, 0), GOLD, n=12, lat=4)
+        k.cone(0.34, 1.0, (1.75, 3.2, 0), VEST, (0, 0, -100), tip=0.1, n=8)
         for s, _ in SIDES:
             k.sphere(0.15, (1.3, 3.5, 0.36 * s), NAVY, n=8, lat=3)
-            k.box((0.5, 0.16, 0.34), (1.22, 3.72, 0.32 * s), GOLD, (0, 0, -20), r=0.04)
-            k.box((0.55, 0.34, 0.34), (0.5, 0.65, 0.36 * s), VEST, r=0.06)
 
             def wing(s=s):
-                for i, ln in enumerate((5.0, 3.8, 2.6)):                    # three fat feathers, each shorter and further aft
-                    k.box((1.5, 0.5, ln), (-1.2 * i, 0.12 * i, s * ln / 2), GOLD, r=0.16)
-                k.box((2.7, 0.62, 2.0), (-1.1, 0.34, s * 1.1), GOLD, r=0.18)
+                for i, ln in enumerate((4.6, 3.3)):                         # two fat feathers
+                    k.box((1.7, 0.55, ln), (-1.3 * i, 0.12 * i, s * ln / 2), GOLD, r=0.16)
             k.at((-0.1, 2.5, 0.6 * s), (-30 * s, -14 * s, 0), wing)
-        k.box((2.3, 0.4, 1.9), (-1.5, 1.1, 0), GOLD, (0, 0, 18), r=0.14)
-    k.scaled((35.2, 5.2, 0), 0.95, bird)
+    k.scaled((37.2, 5.2, 0), 0.72, bird)
 
 
 def rocket_fins(k):
-    def fin():
-        k.prism([(-10.8, 4.4), (-14.2, 8.2), (-18.6, 8.2), (-16.2, 4.4)], -0.72, 0.72, RED, lambda a, b, d: (a, b, d), 0.14)
-        k.prism([(-12.6, 6.4), (-13.8, 7.75), (-18.0, 7.75), (-17.2, 6.4)], -0.8, 0.8, WHITE, lambda a, b, d: (a, b, d), 0.05)
-        k.brick((5.2, 0.6, 1.8), (-16.4, 8.4, 0), NAVY, studs=[(-1.5, 0.28, 0), (1.5, 0.28, 0)], big=True)
-        k.box((6.0, 0.9, 2.6), (-13.5, 4.7, 0), NAVY, r=0.14)              # a bolted foot on the rocket's skin
-    for a in (0, 135, -135):
-        k.at((0, RT, 0), (a, 0, 0), fin)
+    # one big dorsal fin, edge-on from behind so it never hides the rider, and white tips on her side fins
+    k.prism([(-5.5, 17.2), (-10.5, 21.4), (-16.0, 21.4), (-13.5, 16.4)], -0.85, 0.85, RED, lambda a, b, d: (a, b, d), 0.16)
+    k.prism([(-8.3, 19.5), (-10.75, 21.0), (-15.5, 21.0), (-14.9, 19.5)], -0.93, 0.93, WHITE, lambda a, b, d: (a, b, d), 0.05)
+    on_skin(k, -9.5, 0, lambda: k.box((9.0, 3.0, 0.7), (0, 0, 0.1), NAVY, r=0.14))     # a bolted foot on her skin
+    for s, _ in SIDES:
+        plan(k, [(-13.6, s * 8.6), (-17.4, s * 8.6), (-19.4, s * 11.3), (-15.4, s * 11.3)], RT - 1.72, RT + 0.12, WHITE, 0.1)
 
 
 def gold_throne(k):
-    # shrunk: a low studded seat strapped on the rocket's back, nothing above the rider's shoulders but three small crown points
-    strap(k, PX, 3.6)
-    k.brick((4.4, 1.0, 3.6), (PX, 15.0, 0), GOLD, studs=[(1.4, 0.48, 1.3), (1.4, 0.48, -1.3), (-1.4, 0.48, 1.3), (-1.4, 0.48, -1.3)], big=True)
-    k.box((3.0, 0.3, 2.6), (PX, 15.62, 0), GOLD, r=0.08)
-    k.box((2.5, 0.2, 2.3), (PX, 15.86, 0), RED, r=0.05)
-    k.box((0.9, 3.0, 4.4), (PX - 2.1, 17.0, 0), GOLD, r=0.16)
-    k.box((0.14, 2.2, 3.2), (PX - 1.6, 17.1, 0), RED, r=0.04)
-    k.box((0.14, 2.2, 3.2), (PX - 2.6, 17.1, 0), NAVY, r=0.04)              # the view from behind is a navy panel, a break in the gold
-    for s, _ in SIDES:
-        k.box((2.6, 0.6, 0.8), (PX - 0.7, 17.0, 2.1 * s), GOLD, r=0.12)
-        k.box((0.8, 1.2, 0.8), (PX - 1.4, 16.3, 2.1 * s), GOLD, r=0.12)
-    k.box((1.0, 0.4, 4.6), (PX - 2.1, 18.7, 0), GOLD, r=0.1)
-    for z, h in ((-1.55, 0.9), (0, 1.3), (1.55, 0.9)):
-        k.cone(0.5, h, (PX - 2.1, 18.85 + h / 2, z), GOLD, tip=0.1, n=8)
+    # an accent: a gold collar on the cockpit and a low back, nothing above the rider's chin
+    k.torus(3.0, 0.42, (PX, top_y(PX) + 0.2, 0), GOLD, (90, 0, 0), n=20, m_=6)
+    k.box((0.8, 2.3, 3.4), (PX - 2.05, top_y(PX) + 1.05, 0), GOLD, r=0.16)
+    k.box((0.14, 1.5, 2.4), (PX - 1.6, top_y(PX) + 1.1, 0), RED, r=0.04)
+    k.box((0.14, 1.5, 2.4), (PX - 2.5, top_y(PX) + 1.1, 0), NAVY, r=0.04)   # a navy break from behind
+    for z, h in ((-1.15, 0.6), (0, 0.9), (1.15, 0.6)):
+        k.cone(0.42, h, (PX - 2.05, top_y(PX) + 2.2 + h / 2, z), GOLD, tip=0.1, n=8)
 
 
 def _popper(k, s, tag):
     k.cyl(1.5, 0.7, (0, 0.15, 0), GOLD, n=14)
-    for i, c in enumerate((WHITE, RED, WHITE, RED)):                        # short striped paper cone, flaring wide: party, not barrel
-        r0, r1 = 0.9 + 3.5 * (i / 4) ** 1.5, 0.9 + 3.5 * ((i + 1) / 4) ** 1.5
-        k.lathe([(0, 0), (r0, 0), (r1, 1.15), (0, 1.15)], 20, c, (0, 0.4 + 1.15 * i, 0))
-    k.lathe([(3.6, 0), (4.75, 0), (4.75, 0.4), (3.6, 0.4), (3.6, 0)], 20, WHITE, (0, 5.0, 0))
-    k.cyl(3.7, 0.2, (0, 5.05, 0), NAVY, n=20)                               # the dark open mouth
-    k.att("Confetti_" + tag, (0, 5.8, 0))
-    # a burst packed into the mouth, so nothing floats: paper puffs, big squares, three fat flat streamers spilling out over the lip
-    for a, r, cell, ring_r in ((0, 1.5, GOLD, 1.9), (120, 1.4, RED, 1.9), (240, 1.45, WHITE, 1.9)):
-        k.sphere(r, (ring_r * math.cos(math.radians(a)), 5.6, ring_r * math.sin(math.radians(a))), cell, n=10, lat=3)
-    bits = ((0.3, 7.5, 0.2, GOLD), (2.4, 7.2, 0.9, RED), (-2.2, 7.3, 1.1, WHITE), (1.0, 7.9, -2.2, SEAT))
-    for i, (x, y, z, c) in enumerate(bits):
-        k.box((1.5, 0.4, 1.5), (x, y, z), c, (20 + 37 * i, 40 * i, 15 + 29 * i), r=0.08)
-    for a0, c in ((0.5, SEAT), (2.6, WHITE), (4.7, RED)):
-        pts = []
-        for j in range(9):
-            t = j / 8
-            r = 2.2 + 4.2 * t
-            a = a0 + 0.35 * math.sin(t * 4.0)
-            pts.append((r * math.cos(a), 5.3 + 2.6 * math.sin(t * math.pi * 0.8) - 2.8 * t, r * math.sin(a)))
-        w, h = 0.8, 0.24
-        k.loft([[(x - w, y - h, z - w), (x + w, y - h, z - w), (x + w, y + h, z + w), (x - w, y + h, z + w)] for x, y, z in pts], c)
+    for i, c in enumerate((WHITE, RED, WHITE, RED)):                        # a short striped paper cone, flaring wide: party, not barrel
+        r0, r1 = 0.9 + 3.3 * (i / 4) ** 1.5, 0.9 + 3.3 * ((i + 1) / 4) ** 1.5
+        k.lathe([(0, 0), (r0, 0), (r1, 1.1), (0, 1.1)], 20, c, (0, 0.4 + 1.1 * i, 0))
+    k.lathe([(3.4, 0), (4.55, 0), (4.55, 0.4), (3.4, 0.4), (3.4, 0)], 20, WHITE, (0, 4.8, 0))
+    k.cyl(3.5, 0.2, (0, 4.85, 0), NAVY, n=20)                               # the dark open mouth
+    k.att("Confetti_" + tag, (0, 5.6, 0))
+    # a burst packed in the centre of the mouth, so the dark mouth and rim stay readable: three puffs, three big squares, one fat streamer
+    for a, r, cell in ((0, 1.25, GOLD), (120, 1.15, RED), (240, 1.2, WHITE)):
+        k.sphere(r, (1.05 * math.cos(math.radians(a)), 5.45, 1.05 * math.sin(math.radians(a))), cell, n=10, lat=3)
+    for i, (x, y, z, c) in enumerate(((0.2, 7.3, 0.2, SEAT), (1.5, 6.9, -0.9, RED), (-1.4, 7.0, 0.9, GOLD))):
+        k.box((1.5, 0.45, 1.5), (x, y, z), c, (20 + 37 * i, 40 * i, 15 + 29 * i), r=0.08)
+    pts = []
+    for j in range(8):
+        t = j / 7
+        r = 1.6 + 5.0 * t
+        pts.append((r * math.cos(0.5 * s + 0.3 * math.sin(t * 4.0)), 5.5 + 1.6 * math.sin(t * math.pi * 0.8) - 2.2 * t, s * r * math.sin(1.1 + 0.3 * math.sin(t * 4.0))))
+    w, h = 0.8, 0.26
+    k.loft([[(x - w, y - h, z - w), (x + w, y - h, z - w), (x + w, y + h, z + w), (x - w, y + h, z + w)] for x, y, z in pts], SEAT)
 
 
 def party_cannons(k):
     for s, tag in SIDES:
-        k.ring(-5.1, 1.2, BR - 0.1, BR + 0.22, CHROME, BY, BZ * s, n=22)
-        k.brick((3.2, 0.6, 3.2), (-4.5, BY + BR + 0.1, BZ * s), NAVY)
-        k.at((-4.5, BY + BR + 0.3, (BZ + 0.3) * s), (38 * s, 0, 32), lambda s=s, tag=tag: _popper(k, s, tag))     # mouths up, out and aft: the chase camera looks into them
+        x, z = -6.2, (PZ + 0.5) * s
+        k.brick((3.6, 0.6, 3.2), (x, PY + PR + 0.1, z), NAVY)               # a bracket on the drum
+        k.scaled((x, PY + PR + 0.3, z), 1.25, lambda s=s, tag=tag: _popper(k, s, tag), (26 * s, 0, 14))    # big, mouths up, out and aft, at the chase camera
 
 
 def mega_trophy(k):
-    # shrunk: strapped on the rocket's back ahead of the rider, under his head height
-    x = 17.5
-    strap(k, x, 1.5)
-    k.brick((3.0, 1.0, 3.0), (x, 15.0, 0), NAVY, studs=[(1.0, 0.48, 1.0), (1.0, 0.48, -1.0), (-1.0, 0.48, 1.0), (-1.0, 0.48, -1.0)], big=True)
-    k.box((1.7, 0.3, 1.7), (x, 15.62, 0), GOLD, r=0.08)
-    i = 0.75
+    # an accent: a small cup on the prow in front of her nose, below the nose line, on a studded plate
+    x = 33.4
+    k.brick((2.6, 0.45, 1.8), (x, 5.0, 0), NAVY, studs=[(-0.8, 0.2, 0.0)], big=True)
+    k.box((1.5, 0.7, 1.0), (x, 4.5, 0), NAVY, r=0.1)
+    i = 0.58
     prof = [(0, 0), (1, 0), (1, 0.25), (0.5, 0.45), (0.42, 1.1), (0.78, 1.35), (0.78, 1.6), (0.42, 1.85), (0.5, 2.3), (1.3, 2.5), (2.0, 3.0), (2.4, 3.8),
             (2.55, 4.8), (2.6, 5.6), (2.72, 5.82), (2.52, 5.88), (2.3, 5.0), (2.1, 4.1), (1.5, 3.3), (0, 3.1)]
-    k.lathe([(r * i, y * i) for r, y in prof], 24, GOLD, (x, 15.75, 0))
-    y = 15.75 + 3.65 * i
-    k.lathe([(2.42 * i - 0.1, -0.35), (2.42 * i + 0.14, -0.35), (2.42 * i + 0.18, 0.35), (2.42 * i - 0.1, 0.35), (2.42 * i - 0.1, -0.35)], 24, RED, (x, y, 0))
+    k.lathe([(r * i, y * i) for r, y in prof], 18, GOLD, (x, 5.2, 0))
     for s, _ in SIDES:
-        k.torus(0.95, 0.34, (x, 15.75 + 4.55 * i, s * 2.75), GOLD, n=12, m_=6)
-    k.att("Gleam", (x, 15.75 + 5.9 * i, 0))
+        k.torus(0.72, 0.28, (x, 5.2 + 4.55 * i, s * 2.0), GOLD, n=10, m_=5)
+    k.att("Gleam", (x, 5.2 + 5.9 * i, 0))
 
 
 def sun_booster(k):
-    # 40% smaller, on a fat navy shaft behind the nozzle: the rocket and the rider stay in view above it
-    fx = -28.0
-    k.along(-20.3, fx + 0.3, 2.65, NAVY, RT, n=20)
-    k.along(-24.8, -23.4, 2.85, WHITE, RT, n=20)
-    k.ring(fx + 0.3, 0.6, 2.4, 3.4, FLAME_Y, RT, 0, n=20)
-    k.prism([(-19.9, 3.4), (-19.9, 7.2), (-26.4, 8.4), (-26.4, 6.8)], -1.5, 1.5, NAVY, lambda a, b, d: (a, b, d), 0.12)     # a braced wedge off the transom
-    for x in (-21.2, -23.2):
-        for z in (-0.8, 0.8):
-            y = 7.2 + (x + 19.9) / -6.5 * 1.2
-            k.stud(k.stack[-1], (x, y - 0.06, z), NAVY, big=True)
-    k.along(fx - 0.4, fx + 0.4, 4.3, SUN, RT, n=28)
-    k.ring(fx - 0.3, 0.6, 4.2, 4.9, FLAME_O, RT, 0, n=28)
-    for i in range(8):                                                     # eight fat wedge rays
-        ln, cell, w = (1.5, SUN, 1.05) if i % 2 == 0 else (1.1, FLAME_O, 0.9)
-        k.at((fx, RT, 0), (i * 45, 0, 0), lambda ln=ln, cell=cell, w=w: k.prism([(-w, 4.8), (w, 4.8), (0, 4.8 + ln)], -0.35, 0.35, cell, lambda p, q, d: (d, q, p), 0.06))
-    # the face, looking aft at the player
-    f = fx - 0.4
+    # an accent, flush on the rocket's tail: a plain round sun with no spikes. The nozzle stays in view as its nose, and the flame grows
+    fx = -15.85
+    k.along(fx, TAIL + 0.1, 5.0, SUN, RT, n=28)
+    k.ring(fx + 0.1, 0.7, 4.9, 5.45, FLAME_O, RT, 0, n=28)
     for s, _ in SIDES:
-        k.cyl(0.85, 0.24, (f - 0.05, RT + 1.6, s * 1.75), NAVY, (0, 0, 90), n=14)
-        k.cyl(0.28, 0.12, (f - 0.2, RT + 1.92, s * 1.53), WHITE, (0, 0, 90), n=10)
-        k.cyl(0.62, 0.16, (f - 0.02, RT - 0.35, s * 3.05), RED, (0, 0, 90), n=12)
-    mouth = [(-2.4, -0.8)] + [(2.4 * math.cos(math.pi * i / 10), -0.8 - 2.3 * math.sin(math.pi * i / 10)) for i in range(11)][::-1][1:]
-    k.prism([(a, b) for a, b in reversed(mouth)], f - 0.18, f + 0.08, NAVY, lambda a, b, d: (d, RT + b, a), 0)
-    k.flame(f - 0.1, RT - 2.0, 0, 1.45, 8.0, n=14)                         # the long flame: the sun blows it out of its grin
-    k.att("Flame_Sun", (f - 1.0, RT - 2.0, 0))
+        k.cyl(0.8, 0.24, (fx - 0.05, RT + 3.3, s * 1.9), NAVY, (0, 0, 90), n=14)
+        k.cyl(0.26, 0.12, (fx - 0.2, RT + 3.58, s * 1.68), WHITE, (0, 0, 90), n=10)
+    arc = [(r * math.cos(math.radians(a)), r * math.sin(math.radians(a))) for r, seq in ((4.5, range(205, 340, 15)), (3.3, range(325, 190, -15))) for a in seq]
+    k.prism(arc, fx - 0.2, fx + 0.08, NAVY, lambda a, b, d: (d, RT + b, a), 0)
+    k.flame(-17.6, RT, 0, 2.15, 8.5, n=16)
+    k.att("Flame_Sun", (-20.5, RT, 0))
     for s, _ in SIDES:
         seat(k, 2.0, s)
 

@@ -7,19 +7,19 @@
    "name": "ATT_Crest_S",
    "parent": null,
    "blender": [
-    -19.0,
-    44.0,
+    -16.0,
+    36.0,
     12.5
    ],
    "roblox_from_origin": [
-    19.0,
+    16.0,
     12.5,
-    44.0
+    36.0
    ],
    "roblox_from_bbox_centre": [
-    19.0,
-    4.7,
-    15.0
+    16.0,
+    5.5,
+    14.9
    ],
    "look": [
     0.0,
@@ -36,19 +36,19 @@
    "name": "ATT_Crest_P",
    "parent": null,
    "blender": [
-    19.0,
-    44.0,
+    16.0,
+    36.0,
     12.5
    ],
    "roblox_from_origin": [
-    -19.0,
+    -16.0,
     12.5,
-    44.0
+    36.0
    ],
    "roblox_from_bbox_centre": [
-    -19.0,
-    4.7,
-    15.0
+    -16.0,
+    5.5,
+    14.9
    ],
    "look": [
     0.0,
