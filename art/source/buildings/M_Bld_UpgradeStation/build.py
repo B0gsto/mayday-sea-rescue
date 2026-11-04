@@ -1,7 +1,7 @@
 """M_Bld_UpgradeStation: the bay landmark on every island (docs/30 section 2), from the owner-cleared concept artifact
 4547704c-8ab7-4a0f-8006-83fc9bd11cb9. A close port of its part list: same names, sizes, colours and positions.
-Art director round 1 changes on top (marked "round 2"): matte steel, thicker tools with a big jaw; larger workshop moved forward with an open
-double door and tool sign; chunky kerbs and pier heads; bright board; one spare-parts tray.
+Art director rounds moved it on from the concept (owner-cleared shape kept: gate, tools, bay, workshop, board): a massive red arch, a flatter X
+of a yellow wrench and dark hammer, a thick stone bay edge, an open-front workshop beside the port pillar, fewer loose props.
 
 Concept axes: +X port (workshop), -X starboard (board), +Y up, +Z open sea. Blender = (x, -z, y), so the open sea is Blender -Y =
 Roblox -Z (the Model's forward). Origin = concept origin: Z 0 is the baseplate top, the quay top is 0.4, the water is at -1.5.
@@ -286,15 +286,15 @@ def wall(n, ax, a0, a1, c0, c1, y0, courses, color, L=4, h=BH, studs=False, stag
             s, si = e, si + 1
 
 
-def plates(n, x0, x1, z0, z1, y, c, step=8, patch=None, **o):
+def plates(n, x0, x1, z0, z1, y, c, step=8, patch=None, h=PH, **o):
     if Ctx.lod == 2:
-        return brick(n, (x0, y, z0), (x1, y + PH, z1), c, **o)
+        return brick(n, (x0, y, z0), (x1, y + h, z1), c, **o)
     x = x0
     i = 0
     while x < x1 - 1e-6:
         z = z0
         while z < z1 - 1e-6:
-            brick("%s_%d" % (n, i), (x, y, z), (min(x + step, x1), y + PH, min(z + step, z1)), c, patch=patch, **o)
+            brick("%s_%d" % (n, i), (x, y, z), (min(x + step, x1), y + h, min(z + step, z1)), c, patch=patch, **o)
             i, z = i + 1, z + step
         x += step
 
@@ -312,136 +312,108 @@ def col(a, b, m=I):
 
 # ------------------------------------------------------------------ the station (the concept's order)
 def island():
+    """Round 3: a thick stone edge round the bay and the front, from the waterline up, instead of strips."""
     Ctx.group = "Island"
-    def band(n, ax, a0, a1, c0, c1, top="wall"):
+
+    def band(n, ax, a0, a1, c0, c1, top=True):
         wall(n, ax, a0, a1, c0, c1, -4, 2, "deep", L=8, bev=0)                  # under the water: plain
-        wall(n, ax, a0, a1, c0, c1, -1.6, 1, top, L=8)
+        if top:
+            wall(n, ax, a0, a1, c0, c1, -1.6, 1, "wall", L=8)
     band("isl_back", "x", -32, 32, -30, -28)
     band("isl_side_S", "z", -28, 8, -32, -30)
-    band("isl_side_P", "z", -28, 8, 30, 32)
-    band("isl_front_S", "x", -30, -12, 6, 8, top="white")
-    band("isl_front_P", "x", 12, 30, 6, 8, top="white")
-    band("bay_wall_S", "z", -22, 6, -14, -12, top="white")
-    band("bay_wall_P", "z", -22, 6, 12, 14, top="white")
-    band("bay_back", "x", -14, 14, -24, -22, top="white")
-    brick("isl_core_S", (-30, -4, -28), (-14, -.4, 6), "deep")
-    brick("isl_core_P", (14, -4, -28), (30, -.4, 6), "deep")
-    brick("isl_core_back", (-14, -4, -28), (14, -.4, -24), "deep")
+    band("isl_side_P", "z", -28, 6.4, 30, 32)
+    band("isl_front_S", "x", -30, -12, 6, 8, False)
+    band("isl_front_P", "x", 12, 32, 6, 8, False)
+    band("bay_wall_S", "z", -22, 6, -14, -12, False)
+    band("bay_wall_P", "z", -22, 6, 12, 14, False)
+    band("bay_back", "x", -14, 14, -24, -22, False)
+    brick("isl_core_S", (-30, -4, -28), (-14, -.4, 6), "deep", bev=0)
+    brick("isl_core_P", (14, -4, -28), (30, -.4, 6), "deep", bev=0)
+    brick("isl_core_back", (-14, -4, -28), (14, -.4, -24), "deep", bev=0)
     Ctx.group = "Deck"
-    plates("baseplate_S", -32, -12, -30, 8, -.4, "green", patch="green")
-    plates("baseplate_P", 12, 32, -30, 8, -.4, "green", patch="green")
-    plates("baseplate_back", -12, 12, -30, -22, -.4, "green", patch="green")
-    plates("quay_S", -30, -12, -26, 8, 0, "quay", patch="quay")
-    plates("quay_P", 12, 30, -26, 8, 0, "quay", patch="quay")
-    plates("quay_back", -12, 12, -26, -22, 0, "quay", patch="quay")
+    plates("baseplate_S", -32, -14, -30, 5, -.4, "green", patch="green")
+    plates("baseplate_S2", -32, -30, 5, 8, -.4, "green", patch="green")
+    plates("baseplate_P", 14, 32, -30, 6.4, -.4, "green", patch="green")
+    plates("baseplate_back", -14, 14, -30, -24, -.4, "green", patch="green")
+    plates("quay_S", -30, -14, -26, 5, 0, "quay", patch="quay")
+    plates("quay_P", 14, 30, -26, 6.4, 0, "quay", patch="quay")
+    plates("quay_ws", 30, 31, -7, 6.4, .02, "quay", patch="quay", h=.38)
+    plates("quay_back", -14, 14, -26, -24, 0, "quay", patch="quay")
     col((-32, -4, -30), (-12, PH, 8))
     col((12, -4, -30), (32, PH, 8))
     col((-12, -4, -30), (12, PH, -22))
-
-    def pier(n, x0, x1, c):                # round 2: chunky pier heads, port red, starboard green, frame the mouth from the sea
-        brick(n + "_foot", (x0, -4, 8), (x1, -1.6, 11), "deep", bev=0)
-        brick(n + "_c0", (x0, -1.6, 8), (x1, -.4, 11), c, bev=.12)
-        brick(n + "_c1", (x0, -.4, 8), (x1, .8, 11), "white", bev=.12)
-        brick(n + "_c2", (x0, .8, 8), (x1, 2, 11), c, bev=.12, studs=True)
-        col((x0, -4, 8), (x1, 2, 11))
-    pier("pier_P", 12, 15, "red")
-    pier("pier_S", -15, -12, "btn")
     attach("ATT_BoatLanding", (0, WATER, -12))
     attach("ATT_BayMouth", (0, WATER, 5))
 
 
 def quay():
     Ctx.group = "QuayProps"
-    kerb = lambda ci, si: "white" if si % 2 else "yellow"
-    wall("kerb_S", "z", -22, 2, -14, -12, PH, 1, kerb, studs=True, bev=.12, holes=[dict(a0=-17, a1=-13, c0=0, c1=0)])     # gap: ladder + board console
-    wall("kerb_P", "z", -22, 2, 12, 14, PH, 1, kerb, studs=True, bev=.12)
-    wall("kerb_back", "x", -14, 14, -24, -22, PH, 1, kerb, studs=True, bev=.12)
-    wall("kerb_front_S", "x", -30, -18, 6, 8, PH, 1, kerb, studs=True, bev=.12)
-    wall("kerb_front_P", "x", 18, 25.6, 6, 8, PH, 1, kerb, studs=True, bev=.12)
-    for a_, b_ in (((-14, PH, -22), (-12, 1.6, -17)), ((-14, PH, -13), (-12, 1.6, 2)), ((12, PH, -22), (14, 1.6, 2)), ((-14, PH, -24), (14, 1.6, -22)),
-                   ((-30, PH, 6), (-18, 1.6, 8)), ((18, PH, 6), (25.6, 1.6, 8))):
-        col(a_, b_)
-    for i, (x, z) in enumerate(((-13, -23), (-13, -11), (13, -20), (13, -12), (13, -5))):      # on the kerb: the walkway behind stays clear
-        part("bollard_%d" % i, "black", (.9, 1.05, .9), (x, 1.6 + .48, z), k="cyl", seg=10)
-        part("bollard_cap_%d" % i, "black", (1.15, .3, 1.15), (x, 1.6 + 1.12, z), k="cyl", seg=10, studs=True, bot=True)
-        col((x - .6, 1.6, z - .6), (x + .6, 2.9, z + .6))
-    for i, z in enumerate((-18, -12, -6, 0)):
-        for sx in (-1, 1):
-            part("fender_%d_%d" % (sx, i), "rubber", (1.7, 1.7, .64), (sx * 11.66, -.6, z), (0, 90, 0), k="torus", tube=.32, seg=12)
-    for i, x in enumerate((-26, -19, 19, 26)):
-        part("fender_front_%d" % i, "rubber", (1.7, 1.7, .64), (x, -.6, 8.34), k="torus", tube=.32, seg=12)
+
+    def edge(n, ax, a0, a1, c0, c1, holes=()):
+        wall(n + "_low", ax, a0, a1, c0, c1, -1.6, 1, "wall", L=8, h=2, bev=.16)
+        wall(n + "_up", ax, a0, a1, c0, c1, PH, 1, "wall", L=8, h=1.6, bev=.16, holes=[dict(c0=0, c1=0, **h) for h in holes])
+        spans, u = [], a0
+        for h in holes:
+            spans.append((u, h["a0"]))
+            u = h["a1"]
+        spans.append((u, a1))
+        for i, (u, v) in enumerate(spans):
+            x0, x1, z0, z1 = (u, v, c0, c1) if ax == "x" else (c0, c1, u, v)
+            plates("%s_cap_%d" % (n, i), x0, x1, z0, z1, 2.0, "yellow", patch="yellow", bev=.08)
+            col((x0, PH, z0), (x1, 2.4, z1))
+    edge("edge_S", "z", -22, -1, -14, -12, holes=[dict(a0=-17, a1=-13)])     # gap: ladder + board console
+    edge("edge_P", "z", -22, -1, 12, 14)
+    edge("edge_back", "x", -14, 14, -24, -22)
+    edge("edge_front_S", "x", -30, -21, 5, 8)
+    edge("edge_front_P", "x", 21, 32, 6.4, 8)
     for i, z in enumerate((-14.6, -13.4)):
         part("ladder_rail_%d" % i, "yellow", (.2, 4.6, .2), (-11.75, -.9, z), k="cyl", seg=6, bot=True)
     for i in range(6):
         part("ladder_rung_%d" % i, "yellow", (.14, 1.2, .14), (-11.75, -2.8 + i * .6, -14), (90, 0, 0), k="cyl", seg=6)
     attach("ATT_QuayLadderTop", (-11.75, PH, -14))
-    wall("lifebuoy_post", "z", -.5, .5, -16, -15, PH, 3, lambda ci, si: "white" if ci % 2 else "red", L=1, studs=True, stagger=False)
-    col((-16, PH, -.5), (-15, PH + 3.6, .5))
-    ring = grp((-14.6, 3.2, 0), (0, 90, 0))
-    for k_ in range(4):
-        part("lifebuoy_%d" % k_, "orange" if k_ % 2 == 0 else "white", (1.8, 1.8, .6), r=(0, 0, k_ * 90), k="torus", tube=.3, arc=math.pi / 2, parent=ring)
-
-    def lamp(n, x, z, y0=PH):
-        part(n + "_base", "black", (1.2, .5, 1.2), (x, y0 + .2, z), k="cyl", seg=10)
-        part(n + "_post", "navy", (.4, 6, .4), (x, y0 + 3.4, z), k="cyl", seg=8)
-        part(n + "_arm", "navy", (1.6, .3, .3), (x, y0 + 6.2, z), bev=.04, bot=True)
-        part(n + "_cap", "navy", (1.2, .6, 1.2), (x, y0 + 6.75, z), k="cyl", top=.25, seg=10, bot=True)
-        part(n + "_lantern", "bulb", (.9, .9, .9), (x, y0 + 6.1, z), k="sphere", seg=8, g="GlowBulb")
-        col((x - .6, y0, z - .6), (x + .6, y0 + 7, z + .6))
-    lamp("lamp_S", -24, -20)
-    lamp("lamp_P", 13, -8.5, 1.6)      # round 2: on the kerb, clear of the way round the workshop corner
 
 
 def towers():
+    """Round 3: a massive red arch. Pillars 9 x 9 in big courses down to the water, one yellow capital, no white stripes."""
     Ctx.group = "Towers"
+    H, N, Y0 = 17.6 / 7, 7, -1.6
 
     def tower(n, x0, z0):
+        cc = lambda ci: "yellow" if ci == N - 1 else "redDk" if ci == 0 else "red"
         if Ctx.lod == 2:
-            runs = ((0, 3, "red"), (3, 4, "white"), (4, 7, "red"), (7, 8, "white"), (8, 11, "red"), (11, 12, "white"), (12, 13, "red"))
-            for a, b, c in runs:
-                brick("%s_%d" % (n, a), (x0, PH + a * BH, z0), (x0 + 6, PH + b * BH, z0 + 6), c)
+            for a, b, c in ((0, 1, "redDk"), (1, N - 1, "red"), (N - 1, N, "yellow")):
+                brick("%s_%d" % (n, a), (x0, Y0 + a * H, z0), (x0 + 9, Y0 + b * H, z0 + 9), c)
             return
-        for ci in range(13):
-            y, c = PH + ci * BH, "white" if ci in (3, 7, 11) else "red"
+        for ci in range(N):
+            y = Y0 + ci * H
             for k_ in range(3):
-                a, b = ((x0 + 2 * k_, y, z0), (x0 + 2 * k_ + 2, y + BH, z0 + 6)) if ci % 2 else ((x0, y, z0 + 2 * k_), (x0 + 6, y + BH, z0 + 2 * k_ + 2))
-                brick("%s_c%d_%d" % (n, ci, k_), a, b, c, studs=ci == 12, bev=.1)
-    tower("tower_P", 12, 2)
-    tower("tower_S", -18, 2)
-    col((12, PH, 2), (18, 16, 8))
-    col((-18, PH, 2), (-12, 16, 8))
+                a, b = ((x0 + 3 * k_, y, z0), (x0 + 3 * k_ + 3, y + H, z0 + 9)) if ci % 2 else ((x0, y, z0 + 3 * k_), (x0 + 9, y + H, z0 + 3 * k_ + 3))
+                brick("%s_c%d_%d" % (n, ci, k_), a, b, cc(ci), bev=.2)
+    tower("tower_P", 12, -1)
+    tower("tower_S", -21, -1)
+    col((12, Y0, -1), (21, 16, 8))
+    col((-21, Y0, -1), (-12, 16, 8))
     Ctx.group = "Beam"
-    wall("beam", "x", -18, 18, 3, 7, 16, 3, "yellow", L=6, studs=True, bot=True, bev=.1)
-    col((-18, 16, 3), (18, 19.6, 7))
+    wall("beam", "x", -21, 21, 0, 7, 16, 2, "red", L=10, h=2.8, bot=True, bev=.2)
+    plates("beam_top", -21, 21, .2, 6.8, 21.6, "red", patch="red", bev=.06)
+    col((-21, 16, 0), (21, 22, 7))
     for sx in (-1, 1):
         s = "P" if sx > 0 else "S"
-        brick("beam_corbel_%s1" % s, (9 if sx > 0 else -12, 14.8, 3), (12 if sx > 0 else -9, 16, 7), "yellow", bot=True)
-        brick("beam_corbel_%s2" % s, (11 if sx > 0 else -12, 13.6, 3), (12 if sx > 0 else -11, 14.8, 7), "yellow", bot=True)
-        col((9 if sx > 0 else -12, 13.6, 3), (12 if sx > 0 else -9, 16, 7))
-    brick("beam_badge", (-2.1, 16.2, 7), (2.1, 18.8, 7.3), "white", bot=True)
+        brick("beam_corbel_%s1" % s, (8 if sx > 0 else -12, 14.4, 1), (12 if sx > 0 else -8, 16, 7), "redDk", bot=True, bev=.14)
+        brick("beam_corbel_%s2" % s, (10 if sx > 0 else -12, 12.8, 1), (12 if sx > 0 else -10, 14.4, 7), "redDk", bot=True, bev=.14)
+        col((8 if sx > 0 else -12, 14.4, 1), (12 if sx > 0 else -8, 16, 7))
+    brick("beam_badge", (-3, 16.4, 7), (3, 20.8, 7.3), "yellow", bot=True, bev=.08)
     if Ctx.lod < 2:
-        badge()
+        arrow = [(0, 20.3), (2.3, 18.2), (1, 18.2), (1, 16.9), (-1, 16.9), (-1, 18.2), (-2.3, 18.2)]
+        decal(I, arrow, "red", 7.34)
     for sx, cc, s, gl, nm in ((1, "portLt", "P", "GlowPort", "Port"), (-1, "stbdLt", "S", "GlowStbd", "Stbd")):
-        part("nav_light_base_" + s, "black", (1.3, .5, 1.3), (sx * 15, 19.8, 5), k="cyl", seg=10)
-        part("nav_light_" + s, cc, (1.1, .55, 1.1), (sx * 15, 20.03, 5), k="sphere", half=True, seg=10, g=gl)
-        attach("ATT_NavLight_" + nm, (sx * 15, 20.6, 5))
-
-
-def badge():
-    """Up-arrow badge: canvas 512 x 260 mapped to 3.9 x 2.3 at z 7.325 (print on the white brick)."""
-    def pts(raw):
-        return [((x - 256) / 512 * 3.9, 17.5 + (130 - y) / 260 * 2.3) for x, y in raw]
-    big = pts(((256, 22), (400, 150), (316, 150), (316, 240), (196, 240), (196, 150), (112, 150)))
-    decal(I, offset2d(big if area2d(big) > 0 else big[::-1], .07), "ink", 7.33)
-    decal(I, big, "red", 7.38)
-    for x in (60, 452):
-        sm = pts(((x, 70), (x + 40, 110), (x + 20, 110), (x + 20, 200), (x - 20, 200), (x - 20, 110), (x - 40, 110)))
-        decal(I, offset2d(sm if area2d(sm) > 0 else sm[::-1], .05), "ink", 7.33)
-        decal(I, sm, "yellow", 7.38)
+        part("nav_light_base_" + s, "black", (2.2, .6, 2.2), (sx * 17, 22.2, 3.5), k="cyl", seg=10)
+        part("nav_light_" + s, cc, (1.9, .95, 1.9), (sx * 17, 22.5, 3.5), k="sphere", half=True, seg=10, g=gl)
+        attach("ATT_NavLight_" + nm, (sx * 17, 23.5, 3.5))
 
 
 def jaw_shape(N):
-    R_, w = 4.6, 1.8                                     # round 2: open jaw much bigger (was 3, 1.15)
+    R_, w = 6.4, 2.7                                     # round 3: the jaw is the wrench's read at phone size
     y = math.sqrt(R_ * R_ - w * w)
     a = math.atan2(y, w)
     span = (a - (math.pi - a)) % (2 * math.pi)          # clockwise, round the bottom
@@ -453,12 +425,12 @@ def jaw_shape(N):
     return pts
 
 
-def wrench(p, pre, c="steel", full=True):
-    part(pre + "_handle", c, (3.3, 13, 3.5), parent=p, bev=.32 if full else .05)     # round 2: thicker, matte light steel
+def wrench(p, pre, c="yellow", full=True):
+    part(pre + "_handle", c, (4.2, 14, 3), parent=p, bev=.3 if full else .05)
     N = 22 if Ctx.lod == 0 else 12 if Ctx.lod == 1 else 8
-    extrude(p @ T((0, 9.0, 0)), c, jaw_shape(N), d=3.0)
+    extrude(p @ T((0, 10, 0)), c, jaw_shape(N), d=2, bt=.5, bs=.4)
     n = 24 if Ctx.lod == 0 else 12 if Ctx.lod == 1 else 6
-    R_, H = 3.4, 1.6
+    R_, H = 4.4, 2.0
     outer = [(R_ * math.cos(2 * math.pi * i / n), R_ * math.sin(2 * math.pi * i / n)) for i in range(n)]
     hexv = [(H * math.cos(i * math.pi / 3 + math.pi / 6), H * math.sin(i * math.pi / 3 + math.pi / 6)) for i in range(6)]
     per = n // 6
@@ -469,206 +441,123 @@ def wrench(p, pre, c="steel", full=True):
     # match the hole's start angle to the outer ring so the annulus quads do not twist
     shift = -round(30 / (360 / n))
     inner = inner[shift:] + inner[:shift]
-    extrude(p @ T((0, -8.2, 0)), c, outer, d=3.0, hole=inner)
+    extrude(p @ T((0, -7.5, 0)), c, outer, d=2, bt=.5, bs=.4, hole=inner)
 
 
 def hammer(p, pre):
-    part(pre + "_handle", "handle", (3.5, 16, 3.5), (0, -1, 0), k="cyl", seg=16, parent=p)     # round 2: 35% thicker
-    part(pre + "_grip", "rubber", (4, 4.6, 4), (0, -6.8, 0), k="cyl", seg=16, parent=p)
-    part(pre + "_knob", "rubber", (4.6, .9, 4.6), (0, -9.4, 0), k="cyl", seg=16, parent=p, bot=True)
-    part(pre + "_collar", "red", (4, .7, 4), (0, 5.9, 0), k="cyl", seg=16, parent=p, bot=True)
-    part(pre + "_head", "iron", (9.4, 5.1, 5.1), (0, 9, 0), parent=p, bev=.35, bot=True)
+    part(pre + "_handle", "red", (3.6, 9, 3.6), (0, 3.5, 0), k="cyl", seg=16, parent=p, bot=True)
+    part(pre + "_grip", "black", (4.2, 8, 4.2), (0, -4.5, 0), k="cyl", seg=16, parent=p, bot=True)
+    part(pre + "_knob", "black", (5, 1.2, 5), (0, -8.8, 0), k="cyl", seg=16, parent=p, bot=True)
+    part(pre + "_head", "iron", (14, 6.8, 6.8), (0, 10.4, 0), parent=p, bev=.45, bot=True)
     for sx in (-1, 1):
-        part(pre + "_face_%d" % sx, "ironLt", (5.6, .8, 5.6), (sx * 5.1, 9, 0), (0, 0, 90), k="cyl", seg=16, parent=p, bot=True)
+        part(pre + "_face_%d" % sx, "ironLt", (7.2, .8, 7.2), (sx * 7.3, 10.4, 0), (0, 0, 90), k="cyl", seg=16, parent=p, bot=True)
 
 
 def landmark():
+    """Round 3: the X stands nearly flat to the approach, jaw to camera. Yellow wrench in front, dark hammer behind, on the red beam."""
     Ctx.group = "Tools"
-    X = grp((0, 22.5, 7.4), (-45, 0, 0))
-    wrench(grp((0, 0, -2.2), (0, 0, -45), X), "wrench")
-    hammer(grp((0, 0, 2.4), (0, 0, 45), X), "hammer")
-    part("tools_hub", "red", (4.6, 10, 4.6), r=(90, 0, 0), k="cyl", seg=16, parent=X, bot=True)
-    for s in (-1, 1):
-        part("tools_hub_cap_%d" % s, "yellow", (3.2, .5, 3.2), (0, 0, s * 5.2), (90, 0, 0), k="cyl", seg=6, parent=X, bot=True)
+    X = grp((0, 22.5, 7.4), (-14, 0, 0))
+    wrench(grp((0, 0, 3.6), (0, 0, -45), X), "wrench")
+    hammer(grp((0, 0, .4), (0, 0, 45), X), "hammer")
+    part("tools_hub", "red", (5, 6.4, 5), (0, 0, 2.2), (90, 0, 0), k="cyl", seg=16, parent=X, bot=True)
+    part("tools_hub_cap", "iron", (3.2, .6, 3.2), (0, 0, 5.5), (90, 0, 0), k="cyl", seg=6, parent=X, bot=True)
     attach("ATT_ToolsHub", tuple(X.translation))
 
 
 def hoist():
     Ctx.group = "Hoist"
-    brick("hoist_rail", (-9, 15.4, 6.4), (9, 16, 7.6), "iron", bot=True)
-    for s in (-1, 1):
-        brick("hoist_stop_%d" % s, (-9 if s < 0 else 8.6, 14.9, 6.2), (-8.6 if s < 0 else 9, 15.4, 7.8), "red", bot=True)
+    brick("hoist_rail", (-8, 15.4, 6.4), (8, 16, 7.6), "iron", bot=True)
     brick("hoist_trolley", (5.3, 14.6, 5.4), (7.9, 15.36, 8.2), "yellow", bot=True)
-    for i, (a, b) in enumerate(((5.4, 5.7), (7.9, 8.2))):
-        brick("hoist_trolley_plate_%d" % i, (5.5, 15.36, a), (7.7, 15.94, b), "yellow")
-    for i, x in enumerate((5.9, 7.3)):
-        for j, z in enumerate((6.15, 7.85)):
-            part("hoist_wheel_%d%d" % (i, j), "black", (.5, .26, .5), (x, 15.65, z), (90, 0, 0), k="cyl", seg=8, bot=True)
-    part("hoist_chain_0", "iron", (.5, .5, .18), (6.6, 14.38, 6.8), (0, 0, 90), k="torus", tube=.09, seg=8)
-    brick("hoist_hook_block", (5.7, 13.2, 6), (7.5, 14.14, 7.6), "orange", bot=True)
-    part("hoist_sheave", "yellow", (1, .2, 1), (6.6, 13.67, 7.66), (90, 0, 0), k="cyl", seg=10, bot=True)
+    brick("hoist_hook_block", (5.7, 13.2, 6), (7.5, 14.6, 7.6), "redDk", bot=True)
     part("hoist_hook_shank", "chrome", (.36, .5, .36), (6.6, 13, 6.8), k="cyl", seg=8, bot=True)
     part("hoist_hook", "chrome", (1.3, 1.3, .44), (6.6, 12.3, 6.8), (0, 0, 129), k="torus", tube=.22, arc=math.pi * 1.45, seg=12)
     attach("ATT_HoistHook", (6.6, 11.7, 6.8))
 
 
 def workshop():
-    """Round 2: bigger (12 x 15, was 10 x 10), forward and out from behind the port pillar, wide open double door to the sea."""
+    """Round 3: right beside the port pillar, flush with the mouth, whole front open: bright yellow back wall, big bench, big tools.
+    Walk in by the side door from the inner quay; the front is a lip over the sea."""
     Ctx.group = "Workshop"
-    wall("ws_wall_bay", "z", -17, -2, 18, 19, PH, 9, "blue", holes=[dict(a0=-11, a1=-6, c0=1, c1=3)])
-    wall("ws_wall_back", "x", 19, 29, -17, -16, PH, 9, "blue")
-    wall("ws_wall_front", "x", 19, 29, -3, -2, PH, 9, "blue", holes=[dict(a0=21.5, a1=27.5, c0=0, c1=6)])
-    wall("ws_wall_out", "z", -17, -2, 29, 30, PH, 9, "blue")
-    brick("ws_door_frame_L", (21, PH, -2), (21.5, 8.8, -1.6), "white")
-    brick("ws_door_frame_R", (27.5, PH, -2), (28, 8.8, -1.6), "white")
-    brick("ws_door_frame_top", (21, 8.8, -2), (28, 9.6, -1.6), "white", bot=True)
-    for nm, x, yaw in (("L", 21.05, -12), ("R", 27.95, 12)):                    # the leaves stand wide open
-        m = part("ws_door_" + nm, "red", (.4, 8.2, 3), (x, PH + 4.1, -.45), (0, yaw, 0), bev=.06, bot=True)
-        part("ws_door_glass_" + nm, "glass", (.5, 2.4, 1.8), (0, 2, 0), parent=m, bev=0, g="Glass")
-    for nm, a, b in (("top", (-11.4, 5.2), (-5.6, 5.6)), ("sill", (-11.4, 1.2), (-5.6, 1.6)), ("l", (-11.4, 1.6), (-11, 5.2)), ("r", (-6, 1.6), (-5.6, 5.2))):
-        brick("ws_win_" + nm, (17.6, a[1], a[0]), (18, b[1], b[0]), "white", bot=True)
-    brick("ws_win_glass", (18.3, 1.6, -11), (18.7, 5.2, -6), "glass", g="Glass", bot=True)
-    brick("ws_win_bar_h", (18.25, 3.2, -10.9), (18.75, 3.6, -6.1), "white", bot=True)
-    brick("ws_win_bar_v", (18.2, 1.7, -8.7), (18.8, 5.1, -8.3), "white")
-    for k_ in range(6):
-        brick("ws_roof_step_%d" % k_, (17 + k_, 11.2 + k_ * .8, -18), (31 - k_, 12 + k_ * .8, -1), "yellow", studs=True, bot=True, bev=.1)
-    part("ws_roof_ridge", "red", (.9, 17, .9), (24, 16.45, -9.5), (90, 0, 0), k="cyl", seg=10, bot=True)
-    brick("ws_sign", (19.2, 11.6, -1), (28.8, 14.4, -.7), "white", bot=True)
+    wall("ws_wall_bay", "z", -8, 6.4, 21, 22, PH, 4, "cream", L=6, h=2.4, bev=.14, holes=[dict(a0=-6, a1=-1.5, c0=0, c1=2)])
+    wall("ws_wall_out", "z", -8, 6.4, 31, 32, PH, 4, "cream", L=6, h=2.4, bev=.14)
+    wall("ws_wall_back", "x", 22, 31, -8, -7, PH, 4, "cream", L=6, h=2.4, bev=.14)
+    brick("ws_rim_S", (21, 10, -8), (22, 13, 4.6), "cream", bot=True)
+    brick("ws_rim_P", (31, 10, -8), (32, 13, 4.6), "cream", bot=True)
+    brick("ws_rim_back", (22, 10, -8), (31, 13, -7), "cream")
+    brick("ws_trim_L", (21, PH, 6.4), (22.4, 10, 6.8), "red", bev=.08)
+    brick("ws_trim_R", (30.6, PH, 6.4), (32, 10, 6.8), "red", bev=.08)
+    brick("ws_header", (21, 10, 4.6), (32, 13, 6.8), "red", bot=True, bev=.14)
+    brick("ws_sign", (22.2, 10.4, 6.8), (30.8, 12.6, 7.05), "yellow", bot=True, bev=.04)
     if Ctx.lod < 2:
         sign()
-    attach("ATT_WorkshopDoor", (24.5, PH, -2))
-    attach("ATT_WorkbenchTop", (24, 3.2, -15))
-    col((18, PH, -17), (19, 11.2, -2))
-    col((19, PH, -17), (29, 11.2, -16))
-    col((29, PH, -17), (30, 11.2, -2))
-    col((19, PH, -3), (21.5, 11.2, -2))
-    col((27.5, PH, -3), (29, 11.2, -2))
-    col((21.5, 8.8, -3), (27.5, 11.2, -2))
-    col((20.8, PH, -2), (21.4, 8.6, 1))
-    col((27.6, PH, -2), (28.2, 8.6, 1))
-    col((17, 11.2, -18), (31, 12.8, -1))
-    col((19, 12.8, -18), (29, 14.4, -1))
-    col((21, 14.4, -18), (27, 16, -1))
+    for k_, (a, b) in enumerate(((21.05, 32), (23.5, 29.5), (25.5, 27.5))):
+        plates("ws_roof_%d" % k_, a, b, -8.6, 7, 13 + k_ * 1.6, "red", patch="red", h=1.6, bot=True, bev=.12)
+    brick("ws_back_panel", (22.2, .6, -7), (30.8, 9.8, -6.8), "yellow", bev=0)
+    brick("ws_door_frame_L", (20.6, PH, -6.5), (21, 8.2, -6), "red", bev=.04)
+    brick("ws_door_frame_R", (20.6, PH, -1.5), (21, 8.2, -1), "red", bev=.04)
+    brick("ws_door_frame_top", (20.6, 7.6, -6), (21, 8.2, -1.5), "red", bot=True, bev=.04)
+    brick("ws_bench_top", (23, 2.8, -7), (29.4, 3.4, -4.4), "wood", bot=True)
+    for i, x in enumerate((23.3, 28.1)):
+        brick("ws_bench_leg_%d" % i, (x, PH, -6.6), (x + 1, 2.8, -4.8), "iron", bev=.04)
+    brick("ws_pegboard", (23, 4.2, -6.8), (29.4, 9.4, -6.5), "cream", bev=.04)
+    wrench(grp((24.9, 6.8, -6.1), (0, 0, 15), I, .22), "ws_peg_wrench", c="red", full=False)
+    hm = grp((27.6, 6.4, -5.9), (0, 0, -12), I, .22)
+    part("ws_peg_hammer_handle", "red", (3, 16, 3), (0, -1, 0), k="cyl", seg=8, parent=hm, bot=True)
+    part("ws_peg_hammer_head", "iron", (11, 5.4, 5.4), (0, 8.6, 0), parent=hm, bev=.2, bot=True)
+    brick("ws_tool_chest", (22.1, PH, .4), (25, 5.4, 3.6), "redDk", studs=True, bev=.1)
+    for i, y in enumerate((1.5, 3, 4.5)):
+        brick("ws_tool_chest_drawer_%d" % i, (25, y, .8), (25.2, y + .5, 3.2), "cream", bev=0)
+    part("ws_lamp_cord", "black", (.14, 3.6, .14), (26, 11.2, -1), k="cyl", seg=6)
+    part("ws_lamp_shade", "yellow", (3, 1.2, 3), (26, 8.8, -1), k="cyl", top=.5, seg=12, bot=True)
+    part("ws_lamp_bulb", "bulb", (.9, .9, .9), (26, 8.1, -1), k="sphere", seg=8, g="GlowBulb")
     Ctx.group = "Interior"
-    W = T((2, 0, 1))                        # the concept's fit-out, moved with the back and side walls
-    brick("ws_bench_top", (19.5, 2.8, -17), (24.5, 3.2, -15), "brown", studs=True, bot=True, parent=W)
-    for i, (x, z) in enumerate(((19.5, -16), (23.5, -16))):
-        brick("ws_bench_leg_%d" % i, (x, PH, z), (x + 1, 2.8, z + 1), "iron", bev=.04, parent=W)
-    brick("ws_vise", (19.9, 3.2, -16.6), (21.3, 4, -15.6), "iron", bev=.05, parent=W)
-    brick("ws_vise_jaw_a", (19.9, 4, -16.6), (20.3, 4.6, -15.6), "ironLt", bev=.03, parent=W)
-    brick("ws_vise_jaw_b", (20.9, 4, -16.6), (21.3, 4.6, -15.6), "ironLt", bev=.03, parent=W)
-    part("ws_vise_bar", "chrome", (.16, 1.8, .16), (20.6, 3.6, -15.3), (0, 0, 90), k="cyl", seg=6, bot=True, parent=W)
-    brick("ws_toolbox", (22.4, 3.2, -16.7), (24.2, 4.4, -15.5), "red", studs=True, parent=W)
-    brick("ws_pegboard", (19.5, 3.6, -17), (24.8, 7, -16.8), "wood", bev=.04, parent=W)
-    wrench(grp((20.4, 5.4, -16.5), (0, 0, 12), W, .17), "ws_peg_wrench", full=False)
-    hm = grp((22, 5.4, -16.3), (0, 0, -10), W, .15)
-    part("ws_peg_hammer_handle", "handle", (2.6, 16, 2.6), (0, -1, 0), k="cyl", seg=6, parent=hm, bot=True)
-    part("ws_peg_hammer_head", "iron", (7.8, 3.8, 3.8), (0, 8.6, 0), parent=hm, bev=.1, bot=True)
-    part("ws_peg_driver_grip", "red", (.5, 1.1, .5), (23.3, 6, -16.5), k="cyl", seg=8, bot=True, parent=W)
-    part("ws_peg_driver_shaft", "chrome", (.16, 1.6, .16), (23.3, 4.7, -16.5), k="cyl", seg=6, parent=W)
-    part("ws_peg_saw", "chrome", (1.6, .8, .12), (24, 6.4, -16.6), (0, 0, -8), bev=0, parent=W)
-    brick("ws_shelf", (17, 4.8, -13), (18, 5, -9), "white", bot=True, bev=.03, parent=W)
-    for i, (c, z) in enumerate((("red", -12.3), ("blue", -11.1), ("yellow", -9.9))):
-        part("ws_paint_%d" % i, c, (.7, .9, .7), (17.5, 5.45, z), k="cyl", seg=8, studs=True, parent=W)
-    brick("ws_tool_chest", (17, PH, -17), (19.2, 3.2, -14.6), "red", studs=True, parent=W)
-    for i, y in enumerate((1.2, 2.1)):
-        brick("ws_tool_chest_drawer_%d" % i, (19.2, y, -16.8), (19.4, y + .25, -14.8), "white", bev=0, parent=W)
-    part("ws_lamp_cord", "black", (.1, 3.4, .1), (24, 9.5, -8), k="cyl", seg=6)
-    part("ws_lamp_shade", "yellow", (1.6, .8, 1.6), (24, 7.45, -8), k="cyl", top=.25, seg=12, bot=True)
-    part("ws_lamp_bulb", "bulb", (.5, .5, .5), (24, 7.05, -8), k="sphere", seg=8, g="GlowBulb")
-    col((21.5, PH, -16), (26.5, 3.2, -14))
-    col((19, PH, -16), (21.2, 3.2, -13.6))
+    brick("ws_vise", (23.4, 3.4, -6.4), (24.8, 4.2, -5.4), "iron", bev=.05)
+    brick("ws_toolbox", (26.6, 3.4, -6.5), (28.6, 4.6, -5.2), "red", studs=True)
+    Ctx.group = "Workshop"
+    attach("ATT_WorkshopDoor", (21, PH, -3.75), -90)
+    attach("ATT_WorkbenchTop", (26, 3.4, -5.7))
+    for a, b in (((21, PH, -8), (22, 13, -6)), ((21, PH, -1.5), (22, 13, 6.8)), ((21, 7.6, -6), (22, 13, -1.5)), ((31, PH, -8), (32, 13, 6.8)), ((22, PH, -8), (31, 13, -7)),
+                 ((22, 10, 4.6), (31, 13, 6.8)), ((21, 13, -8.6), (32, 14.6, 7)), ((23.5, 14.6, -8.6), (29.5, 16.2, 7)), ((25.5, 16.2, -8.6), (27.5, 17.8, 7)),
+                 ((23, PH, -7), (29.4, 3.4, -4.4)), ((22.1, PH, .4), (25.2, 5.4, 3.6))):
+        col(a, b)
 
 
 def sign():
-    """The tool sign over the door: navy plate, yellow gear, white wrench (the concept's print, enlarged, as geometry)."""
-    k, ic = 9.6 / 768, 1.7
-
-    def at(px, py):
-        return (24 + (px - 384) * k, 13 + (85 - py) * k)
-    decal(I, [(19.4, 11.8), (28.6, 11.8), (28.6, 14.2), (19.4, 14.2)], "navy", -.68)
-    gear = [at(270 + math.cos(i * math.pi / 8) * (36 if i % 2 else 48) * ic, 85 + math.sin(i * math.pi / 8) * (36 if i % 2 else 48) * ic) for i in range(16)]
-    decal(I, gear, "yellow", -.63)
-    decal(I, [at(270 + 15 * ic * math.cos(i * math.pi / 5), 85 + 15 * ic * math.sin(i * math.pi / 5)) for i in range(10)], "navy", -.58)
-    r, cx, cy = -.7, 500, 85
+    """The tool sign: dark gear and wrench on the yellow plate, big enough for a phone."""
+    Z, cy = 7.08, 11.5
+    gx, wx = 24.5, 28.5
+    decal(I, [(gx + (.82 if i % 2 else 1.02) * math.cos(i * math.pi / 8), cy + (.82 if i % 2 else 1.02) * math.sin(i * math.pi / 8)) for i in range(16)], "ink", Z)
+    decal(I, [(gx + .34 * math.cos(i * math.pi / 4), cy + .34 * math.sin(i * math.pi / 4)) for i in range(8)], "yellow", Z + .05)
+    r = .75
 
     def rot(x, y):
-        return at(cx + ic * (x * math.cos(r) - y * math.sin(r)), cy + ic * (x * math.sin(r) + y * math.cos(r)))
-    decal(I, [rot(-11, -38), rot(11, -38), rot(11, 44), rot(-11, 44)], "white", -.63)
-    decal(I, [rot(24 * math.cos(i * math.pi / 5), -40 + 24 * math.sin(i * math.pi / 5)) for i in range(10)], "white", -.62)
-    decal(I, [rot(-9, -66), rot(9, -66), rot(9, -38), rot(-9, -38)], "navy", -.58)
+        return (wx + x * math.cos(r) - y * math.sin(r), cy + x * math.sin(r) + y * math.cos(r))
+    decal(I, [rot(-.22, -1.05), rot(.22, -1.05), rot(.22, .6), rot(-.22, .6)], "ink", Z)
+    decal(I, [rot(.5 * math.cos(i * math.pi / 5), .72 + .5 * math.sin(i * math.pi / 5)) for i in range(10)], "ink", Z + .01)
+    decal(I, [rot(-.17, .62), rot(.17, .62), rot(.17, 1.3), rot(-.17, 1.3)], "yellow", Z + .05)
 
 
 def tyre(n, p, r, d=4.4):
     t = grp(p, r)
     part(n, "rubber", (d, d, 1.5), k="torus", tube=.75, parent=t)
-    part(n + "_hub", "ironLt", (d * .45, 1.1, d * .45), r=(90, 0, 0), k="cyl", seg=10, parent=t, bot=True)
-
-
-def crate(n, p, a, ry):
-    m = part(n, "crate", (a, a, a), p, (0, ry, 0), bev=.03, bot=False)
-    if Ctx.lod:
-        return
-    h, t = a / 2 - .02, a * .1                     # frames proud of the sides, the concept's crate print as geometry
-    for sx, sz in ((1, 1), (1, -1), (-1, -1), (-1, 1)):
-        part(n + "_post", "crateDk", (t, a - .02, t), (sx * (h - t / 2 + .05), 0, sz * (h - t / 2 + .05)), parent=m, bev=0)
-    for s in (-1, 1):
-        for y in (-h + t / 2, h - t / 2 + .05):
-            part(n + "_railx", "crateDk", (a - 2 * t, t, t * .6), (0, y, s * (h - t * .3 + .04)), parent=m, bev=0)
-            part(n + "_railz", "crateDk", (t * .6, t, a - 2 * t), (s * (h - t * .3 + .04), y, 0), parent=m, bev=0)
-    d = h - t
-    decal(m @ T((0, 0, h + .03)), [(-d, -d + t), (-d + t, -d), (d, d - t), (d - t, d)], "crateDk", 0, group="Spares")
-    decal(m @ R((0, 90, 0)) @ T((0, 0, h + .03)), [(-d, -d + t), (-d + t, -d), (d, d - t), (d - t, d)], "crateDk", 0, group="Spares")
-
-
-def prop_(n, p, r, sc=1):
-    g = grp(p, r, I, sc)
-    part(n + "_hub", "brass", (1, 1.1, 1), r=(90, 0, 0), k="cyl", seg=12, parent=g, bot=True)
-    part(n + "_cone", "brass", (1, .8, 1), (0, 0, .95), (90, 0, 0), k="cyl", top=.1, seg=12, parent=g, bot=True)
-    for k_ in range(3):
-        b = g @ R((0, 0, k_ * 120))
-        part("%s_blade_%d" % (n, k_), "brass", (1.3, 2.2, .32), (0, 1.5, 0), (0, 28, 0), parent=b, bev=.04)
+    part(n + "_hub", "yellow", (d * .45, 1.1, d * .45), r=(90, 0, 0), k="cyl", seg=10, parent=t, bot=True)
 
 
 def spares():
-    """Round 2: everything on one wooden tray in the outer front corner, clear of the door: tyres, prop, crate + spring, engine, anchor."""
+    """Round 3: fewer, bigger: tyres and the anchor, in the workshop's open front."""
     Ctx.group = "Spares"
-    PT = .8
-    brick("spare_tray", (25.6, 0, 1.2), (31.8, PT, 8), "wood", studs=True, bev=.1)
-    for i in range(3):
-        tyre("spare_tyre_stack_%d" % i, (28.2 + (.2 if i % 2 else -.15), PT + .75 + i * 1.5, 3.4), (90, i * 25, 0))
-    prop_("spare_prop_big", (28.2, PT + 5.1, 3.4), (78, 0, 10), 1.6)
-    crate("spare_crate_a", (29.7, PT + 1.2, 6.7), 2.4, 8)
-    e = grp((27.25, PT, 6.6), (0, -8, 0))
-    brick("spare_engine_block", (-1.6, 0, -1.2), (1.6, 2, 1.2), "iron", parent=e, bev=.08)
-    brick("spare_engine_head", (-1.5, 2, -1), (1.5, 2.4, 1), "red", parent=e, studs=True)
-    for i, x in enumerate((-1, 0, 1)):
-        part("spare_engine_piston_%d" % i, "chrome", (.8, .9, .8), (x, 2.82, 0), k="cyl", seg=8, parent=e)
-    part("spare_engine_exhaust", "ironLt", (.5, 2.2, .5), (0, 1.1, 1.45), (0, 0, 90), k="cyl", seg=8, parent=e, bot=True)
-    a = grp((31.1, PT, 3.4), (0, 90, 0))
-    part("spare_anchor_shank", "navy", (1, 6.4, 1), (0, 4.2, 0), k="cyl", seg=10, parent=a, bot=True)
-    part("spare_anchor_ring", "navy", (1.8, 1.8, .6), (0, 8.1, 0), k="torus", tube=.3, parent=a)
-    part("spare_anchor_stock", "navy", (.7, 2.4, .7), (0, 6.8, 0), (90, 0, 0), k="cyl", seg=8, parent=a, bot=True)
+    for i in range(2):
+        tyre("spare_tyre_stack_%d" % i, (27.6, PH + .75 + i * 1.5, 3.6), (90, i * 25, 0), d=5)
+    a = grp((29.1, PH, -2.2), (0, 90, 0))
+    part("spare_anchor_shank", "iron", (1, 6.4, 1), (0, 4.2, 0), k="cyl", seg=10, parent=a, bot=True)
+    part("spare_anchor_ring", "iron", (1.8, 1.8, .6), (0, 8.1, 0), k="torus", tube=.3, parent=a)
+    part("spare_anchor_stock", "iron", (.7, 2.4, .7), (0, 6.8, 0), (90, 0, 0), k="cyl", seg=8, parent=a, bot=True)
+    part("spare_anchor_arms", "iron", (6, 6, 1), (0, 3.5, 0), (0, 0, 180), k="torus", tube=.5, arc=math.pi, parent=a)
+    part("spare_anchor_crown", "iron", (1.4, 1.4, 1.4), (0, 1.1, 0), k="sphere", seg=10, parent=a)
     for s_ in (-1, 1):
-        part("spare_anchor_ball_%d" % s_, "navy", (1.1, 1.1, 1.1), (0, 6.8, s_ * 1.2), k="sphere", seg=8, parent=a)
-    part("spare_anchor_arms", "navy", (6, 6, 1), (0, 3.5, 0), (0, 0, 180), k="torus", tube=.5, arc=math.pi, parent=a)
-    part("spare_anchor_crown", "navy", (1.4, 1.4, 1.4), (0, 1.1, 0), k="sphere", seg=10, parent=a)
-    for s_ in (-1, 1):
-        part("spare_anchor_fluke_%d" % s_, "navy", (1.6, 1.8, 1.6), (s_ * 2.5, 4.2, 0), (0, 0, -s_ * 20), k="cyl", top=0, seg=4, parent=a)
-    if Ctx.lod < 2:                                # chrome spring on the crate; the concept's 260 x 10 tube is cut to 96 x 6
-        turns, per, rad = 6, 16 if Ctx.lod == 0 else 8, 6 if Ctx.lod == 0 else 4
-        m = T((29.7, PT + 2.4 - .3, 6.7))
-        rings = []
-        for i in range(turns * per + 1):
-            t = i / (turns * per)
-            aa = t * turns * 2 * math.pi
-            c = Vector((1.1 * math.cos(aa), .35 + t * 4.2, 1.1 * math.sin(aa)))
-            n1 = Vector((math.cos(aa), 0, math.sin(aa)))
-            n2 = Vector((0, 1, 0))
-            rings.append([tuple(c + .28 * (math.cos(2 * math.pi * j / rad) * n1 + math.sin(2 * math.pi * j / rad) * n2)) for j in range(rad)])
-        v, f = sweep_geo(rings, False)
-        emit(m, v, f, "chrome", smooth=True)
-    col((25.6, PH, 1.2), (31.8, 6, 8))
+        part("spare_anchor_fluke_%d" % s_, "iron", (1.6, 1.8, 1.6), (s_ * 2.5, 4.2, 0), (0, 0, -s_ * 20), k="cyl", top=0, seg=4, parent=a)
+    col((25.1, PH, 1.1), (30, 3.4, 6.1))
+    col((28.5, PH, -5.4), (29.7, 9.2, 1))
     attach("ATT_SparePile", (28.5, PH, 4.5))
 
 
@@ -676,11 +565,11 @@ def board():
     Ctx.group = "Board"
     BG = grp((-21, PH, -13), (0, 60, 0), I, BOARD_SCALE)
     for i, x0 in enumerate((-5.5, 3.5)):
-        wall("board_leg_%d" % i, "x", x0, x0 + 2, -1, 1, 0, 9, lambda ci, si: "white" if ci % 3 == 2 else "red", L=2, studs=True, stagger=False, parent=BG, bot=False)
+        wall("board_leg_%d" % i, "x", x0, x0 + 2, -1, 1, 0, 9, "red", L=2, studs=True, stagger=False, parent=BG, bot=False)
         col((x0, 0, -1), (x0 + 2, 10.8, 1), BG)
-    brick("board_panel", (-6.5, 2.8, 1), (6.5, 11.6, 1.8), "blue", parent=BG, studs=True, bot=True)
-    brick("board_backplate", (-3.5, 0, 1), (3.5, 2.8, 1.8), "blue", parent=BG)
-    # round 2: a chunky bright frame and a red crest; the panel is bright blue with a big arrow on its back, no dead navy
+    brick("board_panel", (-6.5, 2.8, 1), (6.5, 11.6, 1.8), "red", parent=BG, studs=True, bot=True)
+    brick("board_backplate", (-3.5, 0, 1), (3.5, 2.8, 1.8), "red", parent=BG)
+    # a chunky bright frame and a red crest; a red panel with a big arrow on its back, no dead navy
     for nm, a, b in (("top", (-7.1, 10.8), (7.1, 12.2)), ("bottom", (-7.1, 2.8), (7.1, 3.6)), ("left", (-7.1, 3.6), (-5.7, 10.8)), ("right", (5.7, 3.6), (7.1, 10.8))):
         brick("board_frame_" + nm, (a[0], a[1], 1.8), (b[0], b[1], 2.6), "yellow", parent=BG, bot=True, bev=.12, studs=nm == "top")
     brick("board_crest", (-3.2, 12.2, 1.8), (3.2, 13.6, 2.6), "red", parent=BG, bev=.12, studs=True)
@@ -693,8 +582,8 @@ def board():
     # the blank screen: lit by the game's SurfaceGui, one flat quad 11.4 x 7.2 (x 1.3) inside the frame
     decal(BG, [(-5.7, 3.6), (5.7, 3.6), (5.7, 10.8), (-5.7, 10.8)], "screen", 1.85, group="Screen")
     # the console's sea corner pokes into a gap in the starboard kerb; x * .5 + z * .866 under 6.85 keeps it off the bay (x +-12)
-    brick("board_console_foot", (-4.4, 0, 1.8), (4.4, .8, 4), "yellow", parent=BG, bev=.1)
-    brick("board_console", (-5, .8, 1.8), (5, 1.8, 4.4), "white", parent=BG, bot=True, bev=.12)
+    brick("board_console_foot", (-4.4, 0, 1.8), (4.4, .8, 4), "iron", parent=BG, bev=.1)
+    brick("board_console", (-5, .8, 1.8), (5, 1.8, 4.4), "console", parent=BG, bot=True, bev=.12)
     brick("board_button_collar", (-4.6, 1.8, 2.65), (4.6, 2.1, 4.3), "ink", parent=BG, g="Button", bev=.04)
     brick("board_upgrade_button", (-4.3, 2.1, 2.75), (4.3, 3.4, 4.2), "btn", parent=BG, studs=True, g="Button", bev=.14)
     col((-7.1, 2.8, 1), (7.1, 13.6, 2.6), BG)
@@ -711,37 +600,23 @@ def greens():
         wall(n + "_trunk", "x", x - 1, x + 1, z - 1, z + 1, 0, 2, "brown", L=2, stagger=False)
         col((x - 1, 0, z - 1), (x + 1, 2.4, z + 1))
 
-    def round_tree(n, x, z):
-        trunk(n, x, z)
-        for i, (d, y) in enumerate(((5, 3), (4, 4.2), (2.6, 5.4), (1, 6.6))):
-            part("%s_leaf_%d" % (n, i), "green" if i % 2 else "leaf", (d, 1.2, d), (x, y, z), k="cyl", studs=True, seg=14 if d > 2 else 10, bot=i == 0)
-
     def cone_tree(n, x, z):
         trunk(n, x, z)
         for i, d in enumerate((4.6, 4, 3.4, 2.8, 2.2, 1.6, 1)):
-            part("%s_leaf_%d" % (n, i), "fir1" if i % 2 else "fir2", (d, 1.2, d), (x, 3 + i * 1.2, z), k="cyl", studs=True, seg=14 if d > 2 else 10, bot=i == 0)
+            part("%s_leaf_%d" % (n, i), "fir1" if i % 2 else "fir2", (d, 1.2, d), (x, 3 + i * 1.2, z), k="cyl", seg=14 if d > 2 else 10, bot=i == 0)
 
     def palm(n, x, z, lean):
         for i in range(6):
-            part("%s_trunk_%d" % (n, i), "palm" if i % 2 else "brown", (1, 1.2, 1), (x + lean * i * i * .05, .6 + i * 1.2, z), k="cyl", seg=8, studs=i == 5)
+            part("%s_trunk_%d" % (n, i), "palm" if i % 2 else "brown", (1, 1.2, 1), (x + lean * i * i * .05, .6 + i * 1.2, z), k="cyl", seg=8)
         col((x - .6, 0, z - .6), (x + .6, 7, z + .6))
         cr = T((x + lean * 1.25, 7.4, z))
         part(n + "_crown", "leaf", (1.3, 1.3, 1.3), k="sphere", seg=8, parent=cr)
         for k_ in range(7):
             part("%s_frond_%d" % (n, k_), "green" if k_ % 2 else "leaf", (1.3, .3, 4.2), (0, -.5, 2.2), (22, 0, 0), parent=cr @ R((0, k_ * 360 / 7, 0)), bev=.05)
-        for i, a in enumerate((0, 120, 240)):
-            part("%s_coconut_%d" % (n, i), "brown", (.6, .6, .6), (math.cos(a * DEG) * .6, -.7, math.sin(a * DEG) * .6), k="sphere", seg=6, parent=cr)
-    round_tree("tree_round_a", -24, -28)
     cone_tree("tree_cone_a", -8, -28)
-    round_tree("tree_round_b", 8, -28)
     cone_tree("tree_cone_b", 24, -28)
-    palm("tree_palm_a", -31, 5, 1)
+    palm("tree_palm_a", -31, -6, 1)
     palm("tree_palm_b", 31, -21, -1)
-    for i, (x, z, c) in enumerate(((-30.5, -12.5, "red"), (-31.5, -20.5, "yellow"), (-30.5, -2.5, "white"), (30.5, -4.5, "red"), (31.5, -14.5, "yellow"), (30.5, -9.5, "white"),
-                                   (-3.5, -28.5, "red"), (3.5, -27.5, "yellow"), (-12.5, -28.5, "white"), (12.5, -29.5, "red"), (-19.5, -29.5, "yellow"), (19.5, -27.5, "white"))):
-        part("flower_%d" % i, c, (.9, .4, .9), (x, .2, z), k="cyl", seg=8, studs=True)
-    for i, (x, z) in enumerate(((-16, -28), (16, -28), (-31, -25))):
-        part("bush_%d" % i, "leaf", (2, 1.2, 2), (x, .6, z), k="cyl", seg=12, studs=True)
 
 
 def studs():
@@ -883,7 +758,7 @@ def walk_check():
         if c in free and c not in seen:
             seen.add(c)
             todo += [(c[0] + 1, c[1]), (c[0] - 1, c[1]), (c[0], c[1] + 1), (c[0], c[1] - 1)]
-    inside, outside = (24, -8) in seen, (23, 2) in seen
+    inside, outside = (26, -2) in seen, (18, -4) in seen
     assert inside and outside, "walk check: outside door %s, workshop inside %s" % (outside, inside)
     print("[station] walk check OK: spawn reaches the door and the workshop inside (%d of %d cells)" % (len(seen), len(free)))
 

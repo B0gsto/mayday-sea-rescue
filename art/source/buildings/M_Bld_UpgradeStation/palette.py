@@ -1,5 +1,5 @@
 """One 1024 px atlas for M_Bld_UpgradeStation. Bottom half: 16 x 8 flat cells of 64 px (name: hex, roughness, metalness).
-Top half: two 512 px stud patches (quay grey, baseplate green), each 8 x 8 studs plus a 16 px gutter, so the big decks show
+Top half: four 256 px stud patches (quay grey, baseplate green, red, yellow), each 8 x 8 studs plus an 8 px gutter, so the big tops show
 true 1-stud-pitch studs from the normal map for no triangles. Roblox ignores FBX material colours, so colour lives here.
 
     python3 art/source/buildings/M_Bld_UpgradeStation/palette.py <out_dir>     writes T_UpgradeStation_Brick_{ALB,NOR,RGH,MET}.png
@@ -13,12 +13,12 @@ COLOURS = {
     "brass": ("#E0A526", .3, .55), "glass": ("#A8DBF5", .06, 0), "portLt": ("#FF3B30", .3, 0), "stbdLt": ("#27E05A", .3, 0),
     "bulb": ("#FFE9A8", .3, 0), "btn": ("#2BD94F", .35, 0), "fir1": ("#3E9E48", .45, 0), "fir2": ("#256F34", .45, 0),
     "palm": ("#A0703F", .5, 0), "crate": ("#D39A5E", .5, 0), "crateDk": ("#8E5A2E", .55, 0), "screen": ("#2F7FE0", .4, 0),
-    "ink": ("#1B2430", .4, 0), "steel": ("#DCE1E6", .62, 0),
+    "ink": ("#1B2430", .4, 0), "redDk": ("#A8231E", .35, 0), "cream": ("#EFE3CB", .5, 0),
 }
 CELL = {k: i for i, k in enumerate(COLOURS)}
 GRID, ROWS, SIZE = 16, 8, 1024
-PATCH = {"quay": 0, "green": 1}      # patch index, left to right in the top half
-PATCH_STUDS, PATCH_GUTTER = 8, 16
+PATCH = {"quay": 0, "green": 1, "red": 2, "yellow": 3}      # patch index, left to right from v = 0.5
+PATCH_STUDS, PATCH_GUTTER, PATCH_PX = 8, 8, 256
 assert len(COLOURS) <= GRID * ROWS
 
 
@@ -29,9 +29,9 @@ def cell_uv(c, inset=.1):
 
 def patch_uv(name, sx, sz):
     """UV of the point sx, sz studs from a plate's corner (0..PATCH_STUDS), in the patch of colour `name`."""
-    span = (.5 * SIZE - 2 * PATCH_GUTTER) / SIZE
+    span = (PATCH_PX - 2 * PATCH_GUTTER) / SIZE
     g = PATCH_GUTTER / SIZE
-    return PATCH[name] * .5 + g + sx / PATCH_STUDS * span, .5 + g + sz / PATCH_STUDS * span
+    return PATCH[name] * PATCH_PX / SIZE + g + sx / PATCH_STUDS * span, .5 + g + sz / PATCH_STUDS * span
 
 
 def _rgb(hx):
@@ -53,24 +53,26 @@ def write_maps(out_dir, name="UpgradeStation", set_name="Brick"):
         alb[y:y + cell, x:x + cell] = _rgb(hx)
         rgh[y:y + cell, x:x + cell] = round(r * 255)
         met[y:y + cell, x:x + cell] = round(m * 255)
-    px = (S // 2 - 2 * PATCH_GUTTER) / PATCH_STUDS                  # pixels per stud
-    for key, p in PATCH.items():
-        x0 = p * S // 2
-        yy, xx = np.mgrid[0:S // 2, 0:S // 2]
+    n_ = PATCH_PX
+    px = (n_ - 2 * PATCH_GUTTER) / PATCH_STUDS                      # pixels per stud
+    y0 = S // 2 - n_                                                # image row of the patches' top: v .75 down to v .5
+    for key, i in PATCH.items():
+        x0 = i * n_
+        yy, xx = np.mgrid[0:n_, 0:n_]
         u = (xx + .5 - PATCH_GUTTER) / px
-        v = (S // 2 - yy - .5 - PATCH_GUTTER) / px                  # v up
+        v = (n_ - yy - .5 - PATCH_GUTTER) / px                      # v up
         d = np.hypot((u % 1) - .5, (v % 1) - .5)                    # distance to the nearest stud centre, in studs
-        h = np.clip((.31 - d) / .04, 0, 1) * .2                     # stud: 0.6 wide, 0.2 tall, soft 0.04 shoulder
+        h = np.clip((.31 - d) / .05, 0, 1) * .2                     # stud: 0.6 wide, 0.2 tall, soft shoulder
         gy, gx = np.gradient(h * px)
         n = np.dstack((-gx, gy, np.ones_like(h)))                   # OpenGL: +G up in v, and image rows run down
         n /= np.linalg.norm(n, axis=2, keepdims=True)
-        nor[0:S // 2, x0:x0 + S // 2] = n
+        nor[y0:y0 + n_, x0:x0 + n_] = n
         base = np.array(_rgb(COLOURS[key][0]), np.float32)
         contact = np.clip((.45 - d) / .14, 0, 1) * (d >= .31)       # soft contact shade round each stud
-        top = np.clip((.31 - d) / .04, 0, 1)                        # stud tops a touch lighter
-        shade = 1 - .22 * contact + .06 * top
-        alb[0:S // 2, x0:x0 + S // 2] = np.clip(base[None, None] * shade[..., None], 0, 255).astype(np.uint8)
-        rgh[0:S // 2, x0:x0 + S // 2] = round(COLOURS[key][1] * 255)
+        top = np.clip((.31 - d) / .05, 0, 1)                        # stud tops a touch lighter
+        shade = 1 - .2 * contact + .06 * top
+        alb[y0:y0 + n_, x0:x0 + n_] = np.clip(base[None, None] * shade[..., None], 0, 255).astype(np.uint8)
+        rgh[y0:y0 + n_, x0:x0 + n_] = round(COLOURS[key][1] * 255)
     os.makedirs(out_dir, exist_ok=True)
     stem = os.path.join(out_dir, "T_%s_%s_" % (name, set_name))
     Image.fromarray(alb).save(stem + "ALB.png")
