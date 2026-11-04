@@ -215,7 +215,7 @@ local GLOW = { -- the mesh's lamps: flat palette cells, lit here
 	_GlowBulb = Color3.fromRGB(255, 226, 170),
 	_GlowPort = Color3.fromRGB(226, 52, 44),
 	_GlowStbd = Color3.fromRGB(60, 214, 96),
-}
+} :: { [string]: Color3 }
 local function dressStation(model: Model, index: number)
 	local mesh = AssetLoader.cloneStatic(MESH, "LOD0")
 	if not mesh then

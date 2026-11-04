@@ -289,7 +289,7 @@ local function pieceParts(model: Model, level: number): { BasePart }
 end
 
 -- At the slam: the piece appears with one quick overshoot (Reduce motion: it just appears), by name through VFXKit.
-local function popPiece(run: Moment, model: Model)
+local function popPiece(run: Moment)
 	run.popped = true
 	local parts = run.hidden
 	run.hidden = {}
@@ -364,7 +364,7 @@ local function start(model: Model?, level: number)
 				)
 			end
 			if not run.popped and t >= UpgradeStation.SLAM_AT then
-				popPiece(run, m)
+				popPiece(run)
 			end
 		end
 	end)

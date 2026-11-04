@@ -30,7 +30,7 @@ SeaLife.Boats = {
 	},
 	{
 		asset = "M_Veh_MooredBoat_03",
-		loop = { centre = Vector3.zero, r = 1480, speed = 7, dir = -1, phase = 1 },
+		loop = { centre = Vector3.zero, r = 1505, speed = 7, dir = -1, phase = 1 },
 	},
 } :: { { asset: string, loop: Loop } }
 
