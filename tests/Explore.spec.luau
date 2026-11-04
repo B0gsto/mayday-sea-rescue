@@ -14,6 +14,17 @@ return function(t)
 	end)
 
 	t.test(
+		"a swimmer's move is level at the same stick strength, whatever the camera pitch",
+		function()
+			local flat = Snorkel.flatMove(Vector3.new(0, -0.6, -0.8))
+			t.expect(flat.Y).toBe(0)
+			t.expect(flat.Z).toBeCloseTo(-1, 1e-6)
+			t.expect(Snorkel.flatMove(Vector3.new(0.3, 0.4, 0)).X).toBeCloseTo(0.5, 1e-6) -- half stick
+			t.expect(Snorkel.flatMove(Vector3.new(0, -1, 0)).Magnitude).toBe(0) -- straight down: no heading
+		end
+	)
+
+	t.test(
 		"the float spring holds the eye at the surface and dips the mask when looking down",
 		function()
 			t.expect(Snorkel.verticalVelocity(Snorkel.SURFACE_EYE, 0, 0)).toBeCloseTo(0, 1e-9)

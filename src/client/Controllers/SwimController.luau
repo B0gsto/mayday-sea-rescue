@@ -5,8 +5,8 @@
 --   * the Humanoid is held in Swimming (Running / Freefall / Landed / Jumping off) and a
 --     LinearVelocity on the root drives it: the move input horizontally, Snorkel's float spring
 --     vertically; the eye floats at the surface, face down (mask under) when looking down
---   * Jump (Space, gamepad A, touch jump) is taken off the Humanoid before physics (Stepped):
---     the engine's own jump / swim handling outside Terrain water must never move the swimmer.
+--   * Jump (Space, gamepad A, touch jump) and the move's camera pitch are taken off the Humanoid before
+--     physics (Stepped): the engine's own jump / swim handling outside Terrain water must never move the swimmer.
 -- Feel: a splash on a jump in (VFXKit pickup_splash + Splash_Entry), a stroke rhythm (speed surges on each
 -- pull, the head lifts with it, sprint strokes faster), water drag on the speed, and a short climb onto
 -- quays / pontoons (push into the edge, or Jump). The foot camera stays above the waves while the head does.
@@ -133,7 +133,9 @@ local function enterSwim(humanoid: Humanoid, root: BasePart)
 	v.Attachment0 = att
 	v.RelativeTo = Enum.ActuatorRelativeTo.World
 	v.VelocityConstraintMode = Enum.VelocityConstraintMode.Vector
-	v.MaxForce = root.AssemblyMass * (Workspace.Gravity + 80)
+	-- no force cap: from about 27 degrees of camera pitch the engine's swim beat a capped force and walked the
+	-- player along the seabed, under the plates too (live trails v33-v37)
+	v.ForceLimitsEnabled = false
 	v.VectorVelocity = root.AssemblyLinearVelocity * Vector3.new(1, 0.2, 1)
 	v.Parent = root
 	lv = v
@@ -352,9 +354,6 @@ local function step(dt: number)
 	-- the rip off Puffin Isle (docs/09 section 8.4): stroke plus the current, so swimming
 	-- straight back against it barely moves and going across it leaves the channel
 	local flow = RipCurrent.velocityAt(RipCurrent.Beach, Vector3.new(pos.X, 0, pos.Z))
-	-- mass changes after entry (VehicleService makes a rider massless and restores it once off the
-	-- seat): a force sized at entry could not hold the swimmer up and they sank to the seabed
-	lv.MaxForce = root.AssemblyMass * (Workspace.Gravity + 80)
 	lv.VectorVelocity = Vector3.new(horizontal.X + flow.X, vy, horizontal.Z + flow.Z)
 	ensureAnimation(character, humanoid, moving)
 	if stroke then
@@ -377,13 +376,20 @@ function SwimController.Init()
 	end)
 end
 
--- Stepped runs after the ControlModule sets Humanoid.Jump (render step) and before physics, so the
--- Humanoid never acts on a jump while swimming (F-4: Space sank the swimmer to the seabed).
-local function eatJump()
+-- Stepped runs after the ControlModule sets Humanoid.Jump and the move (render step) and before physics, so the
+-- Humanoid never acts on a jump while swimming (F-4: Space sank the swimmer to the seabed) and keeps its move level:
+-- the ControlModule aims a Swimming Humanoid along the camera, which stood the body on its head at the surface.
+local function eatEngineSwim()
 	local humanoid = swimHumanoid
-	if swimming and humanoid and humanoid.Jump then
+	if not swimming or not humanoid then
+		return
+	end
+	if humanoid.Jump then
 		humanoid.Jump = false
 		jumpAt = os.clock()
+	end
+	if humanoid.MoveDirection.Y ~= 0 then
+		humanoid:Move(Snorkel.flatMove(humanoid.MoveDirection), false)
 	end
 end
 
@@ -434,7 +440,7 @@ local function undoDryLift()
 end
 
 function SwimController.Start()
-	RunService.Stepped:Connect(eatJump)
+	RunService.Stepped:Connect(eatEngineSwim)
 	RunService:BindToRenderStep(
 		"SwimCameraUndry",
 		Enum.RenderPriority.Camera.Value - 1,
