@@ -1,5 +1,5 @@
 """Flat palette atlas for M_Upg_RIB: 8 x 8 cells, 1024 px, per-cell roughness and metal. Base is the hull's orange and charcoal;
-L20 accents are one yellow and one blue (AD rule), with white, dark and chrome as neutrals. Concept's green, red, pink and rainbow are out.
+L20 accents are one blue (with a brighter blue for Neon Fins) and a little yellow (AD rules), with white, dark and chrome as neutrals. Concept's green, red, pink and rainbow are out.
 
     python3 art/source/vehicles/_UpgRIB/palette.py build/prod/_UpgRIB/textures
 """
@@ -8,7 +8,7 @@ ABS = 0.3
 
 # name: (hex, roughness, metal)
 COLOURS = {
-    "Yellow": ("FFCB14", ABS, 0), "Blue": ("1C5FC4", ABS, 0), "Neon": ("F4FF2E", 0.16, 0), "White": ("F4F4EE", ABS, 0),
+    "Yellow": ("FFCB14", ABS, 0), "Blue": ("1C5FC4", ABS, 0), "Neon": ("18C8FF", 0.16, 0), "White": ("F4F4EE", ABS, 0),
     "Dark": ("2B2F34", 0.36, 0), "Tube": ("C8522C", 0.5, 0), "Chrome": ("C4CDD6", 0.12, 1), "Mouth": ("151A2C", 0.5, 0),
     "BlueDeep": ("143F86", ABS, 0), "Skin": ("E9B88C", 0.4, 0),
     # preview-only stand-in driver (never exported)

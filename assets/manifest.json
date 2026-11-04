@@ -37743,5 +37743,194 @@
   "sha": "fc56ce8afae613fb663896b258da5d91c2ecbe457cb6827cfda0f2ff4c2b3eaf",
   "source": "build/prod/M_Upg_RIB_ArchSpoiler/fbx/M_Upg_RIB_ArchSpoiler/M_Upg_RIB_ArchSpoiler_LOD2.fbx",
   "type": "Model"
+ },
+ "Image:1e9393d0e59405855a860f1b2fa27a886e0c88b3453af53b6dcab1e17dd4deb6": {
+  "assetId": "101967041086669",
+  "imageId": "101967041086669",
+  "moderation": "Reviewing",
+  "name": "T_UpgRocket_Palette_ALB",
+  "sha": "1e9393d0e59405855a860f1b2fa27a886e0c88b3453af53b6dcab1e17dd4deb6",
+  "source": "build/prod/_UpgRocket/textures/T_UpgRocket_Palette_ALB.png",
+  "type": "Image"
+ },
+ "Model:29fc844d981c25212ee90c20cc46152bbb9ac1b3e7e69b89f80233e5050fdcc5": {
+  "assetId": "106932148401910",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ThunderWing_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_ThunderWing_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "29fc844d981c25212ee90c20cc46152bbb9ac1b3e7e69b89f80233e5050fdcc5",
+  "source": "build/prod/M_Upg_RIB_ThunderWing/fbx/M_Upg_RIB_ThunderWing/M_Upg_RIB_ThunderWing_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:554b7cc4c7884f43e36ded7e71f42579f40fdd2c9a1d7a0c1199f5658a2f2011": {
+  "assetId": "109320639614548",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_PaddleWheel",
+  "rbxm": "assets/models/M_Upg_RIB_PaddleWheel.rbxm",
+  "route": "delivery",
+  "sha": "554b7cc4c7884f43e36ded7e71f42579f40fdd2c9a1d7a0c1199f5658a2f2011",
+  "source": "build/prod/M_Upg_RIB_PaddleWheel/fbx/M_Upg_RIB_PaddleWheel/M_Upg_RIB_PaddleWheel_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:560b5df2eb54d45770cdc9e215ac456beb34c008fd24899d899773e9e2ed1066": {
+  "assetId": "103797818273246",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_FatTubes_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_FatTubes_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "560b5df2eb54d45770cdc9e215ac456beb34c008fd24899d899773e9e2ed1066",
+  "source": "build/prod/M_Upg_RIB_FatTubes/fbx/M_Upg_RIB_FatTubes/M_Upg_RIB_FatTubes_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:5e6073dd8f8380773a3fdff775734c81826a488acae4e2743ecc9e5022646add": {
+  "assetId": "117595243418650",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_Grandstand",
+  "rbxm": "assets/models/M_Upg_RIB_Grandstand.rbxm",
+  "route": "delivery",
+  "sha": "5e6073dd8f8380773a3fdff775734c81826a488acae4e2743ecc9e5022646add",
+  "source": "build/prod/M_Upg_RIB_Grandstand/fbx/M_Upg_RIB_Grandstand/M_Upg_RIB_Grandstand_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:6280f5d4a43c94e57b64f0c5b20e88aaf37366b57f218ce453a2a77fbbbbf2d5": {
+  "assetId": "109157104963269",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ThunderWing_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_ThunderWing_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "6280f5d4a43c94e57b64f0c5b20e88aaf37366b57f218ce453a2a77fbbbbf2d5",
+  "source": "build/prod/M_Upg_RIB_ThunderWing/fbx/M_Upg_RIB_ThunderWing/M_Upg_RIB_ThunderWing_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:6b471183af9d8e4420ad259f07b08c3fd76dab80389c84d0f8f50db0d4e4e87b": {
+  "assetId": "92368658020360",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_SharkJaws_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_SharkJaws_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "6b471183af9d8e4420ad259f07b08c3fd76dab80389c84d0f8f50db0d4e4e87b",
+  "source": "build/prod/M_Upg_RIB_SharkJaws/fbx/M_Upg_RIB_SharkJaws/M_Upg_RIB_SharkJaws_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:7884a9bbe0310008287bd85b2b6716c67ea13a03e1e9c345012a75d89c9fcdfc": {
+  "assetId": "132796902749912",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_PaddleWheel_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_PaddleWheel_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "7884a9bbe0310008287bd85b2b6716c67ea13a03e1e9c345012a75d89c9fcdfc",
+  "source": "build/prod/M_Upg_RIB_PaddleWheel/fbx/M_Upg_RIB_PaddleWheel/M_Upg_RIB_PaddleWheel_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:8aca2f75f60cc4dfc2261cc54c32858b72bf7ed9a9e2f91c2772d458fe36ab50": {
+  "assetId": "86697296702116",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_FatTubes",
+  "rbxm": "assets/models/M_Upg_RIB_FatTubes.rbxm",
+  "route": "delivery",
+  "sha": "8aca2f75f60cc4dfc2261cc54c32858b72bf7ed9a9e2f91c2772d458fe36ab50",
+  "source": "build/prod/M_Upg_RIB_FatTubes/fbx/M_Upg_RIB_FatTubes/M_Upg_RIB_FatTubes_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:9ac42be53331f517e0d5be0671b9729951602fb3d97901e5ab8670402ab09ddd": {
+  "assetId": "134490912634144",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_Grandstand_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_Grandstand_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9ac42be53331f517e0d5be0671b9729951602fb3d97901e5ab8670402ab09ddd",
+  "source": "build/prod/M_Upg_RIB_Grandstand/fbx/M_Upg_RIB_Grandstand/M_Upg_RIB_Grandstand_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:9f476e70674bfc9f5dc24b8b4ace117f57447da782c0a4eaca0c937fa119ca02": {
+  "assetId": "128653515821273",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ExhaustOrgan",
+  "rbxm": "assets/models/M_Upg_RIB_ExhaustOrgan.rbxm",
+  "route": "delivery",
+  "sha": "9f476e70674bfc9f5dc24b8b4ace117f57447da782c0a4eaca0c937fa119ca02",
+  "source": "build/prod/M_Upg_RIB_ExhaustOrgan/fbx/M_Upg_RIB_ExhaustOrgan/M_Upg_RIB_ExhaustOrgan_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:a578810135cbacb8a1bf8892771f6a5e79825ff714cd9b381f6339e378a0bb00": {
+  "assetId": "84571332158836",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ExhaustOrgan_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_ExhaustOrgan_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "a578810135cbacb8a1bf8892771f6a5e79825ff714cd9b381f6339e378a0bb00",
+  "source": "build/prod/M_Upg_RIB_ExhaustOrgan/fbx/M_Upg_RIB_ExhaustOrgan/M_Upg_RIB_ExhaustOrgan_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:ba6f69598b28318558e30304c7110854462849a33d49d9c20dd56ecf0ca683cb": {
+  "assetId": "76217202482056",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_SharkJaws_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_SharkJaws_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "ba6f69598b28318558e30304c7110854462849a33d49d9c20dd56ecf0ca683cb",
+  "source": "build/prod/M_Upg_RIB_SharkJaws/fbx/M_Upg_RIB_SharkJaws/M_Upg_RIB_SharkJaws_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:c498a68f121fb1fe406a7a7937a36851f068bbe52fb3c9e34adf9f46a55bfb6e": {
+  "assetId": "70432418561412",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_Grandstand_LOD2",
+  "rbxm": "assets/models/M_Upg_RIB_Grandstand_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "c498a68f121fb1fe406a7a7937a36851f068bbe52fb3c9e34adf9f46a55bfb6e",
+  "source": "build/prod/M_Upg_RIB_Grandstand/fbx/M_Upg_RIB_Grandstand/M_Upg_RIB_Grandstand_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:cc4969daad589e0bbdbbbca9ef363bc6329c2da33a902c2717730a0e9fd629ef": {
+  "assetId": "128101179605400",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ThunderWing",
+  "rbxm": "assets/models/M_Upg_RIB_ThunderWing.rbxm",
+  "route": "delivery",
+  "sha": "cc4969daad589e0bbdbbbca9ef363bc6329c2da33a902c2717730a0e9fd629ef",
+  "source": "build/prod/M_Upg_RIB_ThunderWing/fbx/M_Upg_RIB_ThunderWing/M_Upg_RIB_ThunderWing_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:da5b285dc035ae953fc9f7b0a714bda0fa5ba5637fde23d940e2c65b02575069": {
+  "assetId": "136929174244204",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_SharkJaws",
+  "rbxm": "assets/models/M_Upg_RIB_SharkJaws.rbxm",
+  "route": "delivery",
+  "sha": "da5b285dc035ae953fc9f7b0a714bda0fa5ba5637fde23d940e2c65b02575069",
+  "source": "build/prod/M_Upg_RIB_SharkJaws/fbx/M_Upg_RIB_SharkJaws/M_Upg_RIB_SharkJaws_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:eb156b62c71f1c54779b260975b9159deb2c7e15a7d3437dbab82b6ea161f17c": {
+  "assetId": "93432947657491",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_FatTubes_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_FatTubes_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "eb156b62c71f1c54779b260975b9159deb2c7e15a7d3437dbab82b6ea161f17c",
+  "source": "build/prod/M_Upg_RIB_FatTubes/fbx/M_Upg_RIB_FatTubes/M_Upg_RIB_FatTubes_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:ed621aa5be758b713b23c2be9863052978408ec850acee3258aad430a20ce7b3": {
+  "assetId": "106619047072083",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_PaddleWheel_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_PaddleWheel_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ed621aa5be758b713b23c2be9863052978408ec850acee3258aad430a20ce7b3",
+  "source": "build/prod/M_Upg_RIB_PaddleWheel/fbx/M_Upg_RIB_PaddleWheel/M_Upg_RIB_PaddleWheel_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:f8724c14ebf76ba1bf1f9eaeaca4b67e02539eed8b8a2c8bf88befbf9f49b256": {
+  "assetId": "85194605282436",
+  "moderation": "Approved",
+  "name": "M_Upg_RIB_ExhaustOrgan_LOD1",
+  "rbxm": "assets/models/M_Upg_RIB_ExhaustOrgan_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "f8724c14ebf76ba1bf1f9eaeaca4b67e02539eed8b8a2c8bf88befbf9f49b256",
+  "source": "build/prod/M_Upg_RIB_ExhaustOrgan/fbx/M_Upg_RIB_ExhaustOrgan/M_Upg_RIB_ExhaustOrgan_LOD1.fbx",
+  "type": "Model"
  }
 }
