@@ -24606,6 +24606,16 @@
   "source": "assets/fbx/M_Bld_FishMarketAddons/M_Bld_FishMarketAddons_LOD0.fbx",
   "type": "Model"
  },
+ "Model:141cf4b175ee647ee7e28605a56148476ba92f4dcb18a8310c3fa67c1f4eebfc": {
+  "assetId": "79144608623602",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_RoofRockets_LOD2",
+  "rbxm": "assets/models/M_Upg_Lifeboat_RoofRockets_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "141cf4b175ee647ee7e28605a56148476ba92f4dcb18a8310c3fa67c1f4eebfc",
+  "source": "build/prod/M_Upg_Lifeboat_RoofRockets/fbx/M_Upg_Lifeboat_RoofRockets/M_Upg_Lifeboat_RoofRockets_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:14231f3e8e4c88b0d414acfa9cf412b4f443c510fe7305be722ba8e9c12931c5": {
   "assetId": "86608711148103",
   "moderation": "Approved",
@@ -27926,6 +27936,16 @@
   "source": "assets/fbx/M_Veh_StormRunner/M_Veh_StormRunner_LOD2.fbx",
   "type": "Model"
  },
+ "Model:508e418338cbe7c97873d4150330a8a1d43fb159594de7b5f8e727656b172a27": {
+  "assetId": "82795582429853",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_RearRockets",
+  "rbxm": "assets/models/M_Upg_Lifeboat_RearRockets.rbxm",
+  "route": "delivery",
+  "sha": "508e418338cbe7c97873d4150330a8a1d43fb159594de7b5f8e727656b172a27",
+  "source": "build/prod/M_Upg_Lifeboat_RearRockets/fbx/M_Upg_Lifeboat_RearRockets/M_Upg_Lifeboat_RearRockets_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:50a5f12850c8b258f011cbd62fe706c4cc690e17e5b70c99f2ce3ba26d116086": {
   "assetId": "101785187668637",
   "moderation": "Approved",
@@ -28274,6 +28294,16 @@
   "route": "delivery",
   "sha": "58e35b08b087a4d17c072367bb4d9348d349a526a769bfa5e54be632e9c668b8",
   "source": "assets/fbx/M_Road_ParkedCar_01/M_Road_ParkedCar_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:5941d8689724590f22365865ae3e3e4aa364e61c87ef585659fb89fe5ab9864c": {
+  "assetId": "136992668424250",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_RearRockets_LOD2",
+  "rbxm": "assets/models/M_Upg_Lifeboat_RearRockets_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "5941d8689724590f22365865ae3e3e4aa364e61c87ef585659fb89fe5ab9864c",
+  "source": "build/prod/M_Upg_Lifeboat_RearRockets/fbx/M_Upg_Lifeboat_RearRockets/M_Upg_Lifeboat_RearRockets_LOD2.fbx",
   "type": "Model"
  },
  "Model:596541cfb2d744b08fc4a047136b1973d3d32b215b8ed527b0910f1b37d9db71": {
@@ -30926,6 +30956,16 @@
   "source": "assets/fbx/M_Rock_Cliff_02/M_Rock_Cliff_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:90598e500238947a88494f088d12c0bff939046daa1f56e0bd58354333659feb": {
+  "assetId": "77541869675498",
+  "moderation": "Approved",
+  "name": "M_Bld_UpgradeStation_LOD2",
+  "rbxm": "assets/models/M_Bld_UpgradeStation_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "90598e500238947a88494f088d12c0bff939046daa1f56e0bd58354333659feb",
+  "source": "assets/fbx/M_Bld_UpgradeStation/M_Bld_UpgradeStation_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:908c52398cc93268664d4f70a0a997a7dd80ff70cad68dfc5408db46ee72415d": {
   "assetId": "128886213781885",
   "moderation": "Approved",
@@ -31854,6 +31894,16 @@
   "route": "delivery",
   "sha": "a3e0784519d414cb5b7d9040a4d094d22bf97e502bf38b7b9977292e1eef6165",
   "source": "assets/fbx/M_Rock_Boulder_04/M_Rock_Boulder_04_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:a47037c193369715e8e47bf4281e7bf1b704c457576073c4357d94b44c0b957e": {
+  "assetId": "79190196494999",
+  "moderation": "Approved",
+  "name": "M_Bld_UpgradeStation_LOD1",
+  "rbxm": "assets/models/M_Bld_UpgradeStation_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a47037c193369715e8e47bf4281e7bf1b704c457576073c4357d94b44c0b957e",
+  "source": "assets/fbx/M_Bld_UpgradeStation/M_Bld_UpgradeStation_LOD1.fbx",
   "type": "Model"
  },
  "Model:a49726e7c6d19dab4c647b0408bda224b6d2fd27de1249a2bb9240b9edb62562": {
@@ -33016,6 +33066,16 @@
   "source": "assets/fbx/M_Hbr_Fender_Tyre/M_Hbr_Fender_Tyre_LOD0.fbx",
   "type": "Model"
  },
+ "Model:bb77451fe6b5547a0b5a9734d8d24b902b90b03478b2a816531cc28357b3c473": {
+  "assetId": "130722240623800",
+  "moderation": "Approved",
+  "name": "M_Bld_UpgradeStation",
+  "rbxm": "assets/models/M_Bld_UpgradeStation.rbxm",
+  "route": "delivery",
+  "sha": "bb77451fe6b5547a0b5a9734d8d24b902b90b03478b2a816531cc28357b3c473",
+  "source": "assets/fbx/M_Bld_UpgradeStation/M_Bld_UpgradeStation_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:bbd4e3df495faeee39fce8bb47dee1c2e5a0539e8605182d5fc00f05e9a2ecaf": {
   "assetId": "78885329327572",
   "moderation": "Approved",
@@ -33774,6 +33834,16 @@
   "route": "delivery",
   "sha": "caab62626f1905f4246d22438dc98de2b9c6c7d10a85c5ebf0abaa3ee33f85e4",
   "source": "assets/fbx/M_Rock_Boulder_05/M_Rock_Boulder_05_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:cabb952caaef6890ddc2c229b05ee74ae2ba5d669642ea49b248d8d85f01b31b": {
+  "assetId": "78100804322744",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_RoofRockets_LOD1",
+  "rbxm": "assets/models/M_Upg_Lifeboat_RoofRockets_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "cabb952caaef6890ddc2c229b05ee74ae2ba5d669642ea49b248d8d85f01b31b",
+  "source": "build/prod/M_Upg_Lifeboat_RoofRockets/fbx/M_Upg_Lifeboat_RoofRockets/M_Upg_Lifeboat_RoofRockets_LOD1.fbx",
   "type": "Model"
  },
  "Model:cb333b59556c7a80beb7013eebcf544d56f05dc343a4f343df668146ad95b711": {
@@ -36036,6 +36106,16 @@
   "source": "assets/fbx/M_Veg_Gorse_03/M_Veg_Gorse_03_LOD0.fbx",
   "type": "Model"
  },
+ "Model:fa08000c34e2a7ca983349dcde104eb47c2bb4e6e8cec703d9d27e259cdd9973": {
+  "assetId": "109358409832307",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_RearRockets_LOD1",
+  "rbxm": "assets/models/M_Upg_Lifeboat_RearRockets_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "fa08000c34e2a7ca983349dcde104eb47c2bb4e6e8cec703d9d27e259cdd9973",
+  "source": "build/prod/M_Upg_Lifeboat_RearRockets/fbx/M_Upg_Lifeboat_RearRockets/M_Upg_Lifeboat_RearRockets_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:fa14c769022ad6aa4e7f3b34e1487411df381159e0ba544ed424bf67861b3143": {
   "assetId": "127846056803031",
   "moderation": "Approved",
@@ -36396,6 +36476,16 @@
   "route": "delivery",
   "sha": "ff72bda161daf5bf94ea42f1027a85be643fed957d38d0e06369be10ae3eb700",
   "source": "assets/fbx/M_Prop_SeaChest/M_Prop_SeaChest_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:ffca03241a1ae582f18286d5b3c3a784be85e979bbbe85a4c136d48de82db1a6": {
+  "assetId": "121941315525269",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_RoofRockets",
+  "rbxm": "assets/models/M_Upg_Lifeboat_RoofRockets.rbxm",
+  "route": "delivery",
+  "sha": "ffca03241a1ae582f18286d5b3c3a784be85e979bbbe85a4c136d48de82db1a6",
+  "source": "build/prod/M_Upg_Lifeboat_RoofRockets/fbx/M_Upg_Lifeboat_RoofRockets/M_Upg_Lifeboat_RoofRockets_LOD0.fbx",
   "type": "Model"
  }
 }

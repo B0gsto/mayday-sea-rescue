@@ -7,7 +7,7 @@ sizes, walls, skis and colours past the concept on purpose: see RESULT.md.
 import math
 
 import kit as K
-from kit import AMBER, CHROME, DARK, DECK, GLASS, LENS, NAVY, ORANGE, RED, STEEL, WHITE, YELLOW, hull_x, hull_y
+from kit import AMBER, CHROME, DARK, DECK, GLASS, LENS, NAVY, ORANGE, STEEL, WHITE, YELLOW, hull_x, hull_y
 
 
 def lamp(k, pre, pos, r, n=20):
@@ -42,18 +42,20 @@ def wall(k, x0, x1, z0, z1, y0, low=ORANGE, cap=WHITE, h0=0.95, h1=0.75):
     k.brick((sx + 0.1, h1, sz + 0.1), (cx, y0 + h0 + h1 / 2, cz), cap, studs=spots, big=True)
 
 
-def rocket(k, pre, pos, r, ln, rot=None, n=18, can=RED, band=WHITE, mid_band=True):
-    """Firework can: stubby tube, white dome, light nozzle (never a dark hole from the stern), a big rounded orange plume."""
+def rocket(k, pre, pos, r, ln, rot=None, n=18):
+    """Owner must-fix: a fat stubby jet, never a missile. An open round intake with a fan at the front (no nose), a barrel body with no fins
+    and no red, a round steel nozzle, a rounded flame."""
     def body():
-        k.cyl(r, ln, (0, 0, 0), can, (90, 0, 0), n=n)
-        for f in ((0.2, 0.62) if mid_band else (0.42,)):
-            k.cyl(r + 0.06, ln * 0.18, (0, 0, -ln / 2 + ln * f), band, (90, 0, 0), n=n)
-        k.sphere(r * 0.98, (0, 0, -ln / 2), WHITE, (1, 1, 0.72), n=n, lat=4)
-        for a in (0, 120, 240):
-            k.at((0, 0, 0), (0, 0, a), lambda: k.box((max(0.42, r * 0.28), r * 0.8, ln * 0.34), (0, r * 1.32, ln / 2 - ln * 0.17), can, r=0.18))
-        k.cyl(r * 0.78, r * 0.7, (0, 0, ln / 2 + r * 0.35), STEEL, (90, 0, 0), r2=r, n=n)
-        k.torus(r, max(0.18, r * 0.1), (0, 0, ln / 2 + r * 0.7), WHITE, n=n, m_=4)
-        fz, fl = ln / 2 + r * 0.7, r * 3.0
+        h = ln / 2
+        k.lathe([(0, -h + r * 0.35), (r * 0.7, -h + r * 0.35), (r * 0.76, -h), (r * 0.88, -h - r * 0.14), (r, -h + r * 0.12),
+                 (r * 1.06, -h * 0.2), (r * 1.02, h * 0.6), (r * 0.84, h), (0, h)],
+                n, [STEEL, DARK, WHITE, WHITE, WHITE, WHITE, WHITE, DARK], (0, 0, 0), (90, 0, 0))
+        k.at((0, 0, -h + r * 0.35), (-90, 0, 0), lambda: k.sphere(r * 0.24, (0, 0, 0), WHITE, (1, 0.7, 1), True, 10, 3))
+        for z in (-h + r * 0.35 + r * 0.26, h * 0.5):   # two orange straps, the pods' only colour; behind the fan, so the intake stays open
+            k.cyl(r * 1.09, r * 0.24, (0, 0, z), ORANGE, (90, 0, 0), n=n)
+        k.cyl(r * 0.74, r * 0.45, (0, 0, h + r * 0.2), STEEL, (90, 0, 0), n=n)
+        k.torus(r * 0.74, max(0.2, r * 0.11), (0, 0, h + r * 0.43), WHITE, n=n, m_=5)
+        fz, fl = h + r * 0.42, r * 3.0
         tongue = lambda x, y, w, ln_, c: k.at((x, y, fz + ln_ / 2 - 0.1), (90, 0, 0), lambda: k.sphere(w, (0, 0, 0), c, (1, ln_ / 2 / w, 1), n=8, lat=3))
         for i in range(6):                      # three layers of rounded tongues: fire, never a warhead
             a = math.radians(30 + i * 60)
@@ -114,12 +116,11 @@ def ice_plough(k):
 
 # ---------------------------------------------------------------- L25
 def roof_rockets(k):
-    for sx, s in ((-1, "P"), (1, "S")):         # tight to the cabin, white with one red band: the red hero is the rear pair
+    for sx, s in ((-1, "P"), (1, "S")):         # tight to the cabin
         x = sx * 8.9
         for z in (-8.0, -5.2):
             k.brick((3.8, 0.9, 2.0), (sx * 7.6, 9.1, z), WHITE, studs=[(a, 0.43, 0) for a in (-1.0, 1.0)], big=True)
-            k.cyl(1.9, 0.6, (x, 11.3, z), NAVY, (90, 0, 0), n=18)
-        rocket(k, s, (x, 11.3, -6.6), 1.8, 5.6, can=WHITE, band=RED, mid_band=False)
+        rocket(k, s, (x, 11.3, -6.6), 2.0, 3.6)
 
 
 # ---------------------------------------------------------------- L26
@@ -186,12 +187,11 @@ def foil_lift(k):
 
 # ---------------------------------------------------------------- L29
 def rear_rockets(k):
-    for sx, s in ((-1, "P"), (1, "S")):         # AD r2: spread wide with a clear gap, splayed out, the one red hero
+    for sx, s in ((-1, "P"), (1, "S")):         # spread wide with a clear gap, splayed out
         x = sx * 8.0
         for z in (19.5, 24.3):
             k.brick((7.0, 1.45, 2.6), (sx * 6.9, 3.6, z), ORANGE, studs=[(a, 0.7, 0) for a in (-2.2, 0, 2.2)], big=True)
-            k.cyl(3.26, 0.7, (x, 7.4, z), WHITE, (90, 0, 0), n=24)
-        rocket(k, s, (x, 7.4, 21.9), 3.2, 8.4, (0, sx * 11, 0), n=24)
+        rocket(k, s, (x, 7.4, 21.9), 3.4, 5.6, (0, sx * 11, 0), n=24)
 
 
 # ---------------------------------------------------------------- L30
