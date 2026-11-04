@@ -1,8 +1,8 @@
 """Hydrofoil stage (L31-L40): the hull and nine pieces, from the owner-cleared concept (artifact f23406cb), in its numbers (hk.py).
 
-Past the concept on purpose, for the phone read from the chase cam: fatter legs, jets and needle; a twin-fin tail, so the sight line
-to the driver stays open and the Top Jet sits in the tail with no code move; no flag, spray, vents or red; yellow and white accents
-on the orange, cyan only in the nozzles and screen. See RESULT.md.
+Past the concept on purpose (art director round 1, 5.5): twice the stance on straight struts, thin swept foils, a splayed V tail,
+one smooth ring, a fat bumper nose, cone flames; no flag, spray, vents or red. Yellow and white accents on the orange, cyan only in the
+nozzles and screen. See RESULT.md.
 """
 import math
 
@@ -12,18 +12,29 @@ import hk
 from hk import DARK, FLAME, FLAME2, GLOW, GREY, ORANGE, SCREEN, WHITE, YELLOW
 
 R = math.pi / 180
-T, N = 6.0, 11.8                 # hull bottom and stern top in the concept at L31
-RAKE, ANHED = 28.0, 8.0
-HINGE = T - 0.3
-FOIL_Y, POD_Y = 2.5, 0.65
-LIFT = 2.5                       # Sky Stilts: the foil set drops this far in the hull frame and the boat rises as much
-LIFT_Z = LIFT * math.tan(RAKE * R)   # ...and slides aft along the rake (concept -z, asset +z)
-LEGS = [dict(tag="Front", z=5.5, x=1.7, w=2.6, c=3.6, span=9.2, chord=2.6, tip=4.0), dict(tag="Rear", z=-5.5, x=3.0, w=3.0, c=4.0, span=11.2, chord=3.0, tip=4.6)]
-LEG_LEN = (HINGE - POD_Y) / math.cos(RAKE * R)
-STILT_END = (HINGE + LIFT - POD_Y) / math.cos(RAKE * R)
+T, N = 12.0, 17.8                # hull bottom and stern top at L31: twice the concept's stance (art director round 1: it walked, now it flies)
+ANHED = 3.0
+FOIL_Y, STRUT_END = 1.7, -0.2    # the foils fly just over the sea, only the strut tips cut it (sea at y 0.3)
+LIFT = 4.0                       # Sky Stilts: the foil set drops straight down this far in the hull frame and the boat rises as much
+# Keel-fin struts, one forward and two aft: a hydrofoil's stance, not four legs. Each is (x, top z0, top z1, end z0, end z1); the leading edge rakes back.
+FRONT = dict(tag="Front", struts=[(0.0, 2.4, 7.4, 2.1, 4.5)], span=9.0, chord=2.3, sweep=3.6, tipc=0.9)
+REAR = dict(tag="Rear", struts=[(3.2, -9.6, -4.6, -9.6, -6.8), (-3.2, -9.6, -4.6, -9.6, -6.8)], span=12.5, chord=2.7, sweep=4.4, tipc=1.0)
+LEGS = [FRONT, REAR]
 JET = dict(x=7.4, y=T + 1.6, z=-8.4, r=3.0, ln=5.2)
-TOPJET = dict(y=N + 5.3, z=-4.4, r=1.7, ln=4.6)
-FIN_X = 2.8                      # the twin fins' centres: the top jet and its flame run between them
+FIN_X, FIN_Y, SPLAY = 2.2, N - 1.0, 26.0    # the fins' feet and how far they lean out: an open V, no crossbar
+FIN_H, FIN_T = 11.0, 1.5
+RING_R, RING_T, RING_TILT = 5.4, 0.85, -12.0
+
+
+def fin_point(sx, xl, yl):
+    """A point in a fin's own frame (xl across it, yl up it) in hull numbers."""
+    c, s = math.cos(SPLAY * R), math.sin(SPLAY * R)
+    return sx * (FIN_X + xl * c + yl * s), FIN_Y - xl * s + yl * c
+
+
+RING_YL = (RING_R + 0.1 - fin_point(1, -FIN_T / 2, 0)[0]) / math.sin(SPLAY * R)     # where the fin's inner face meets the ring
+RING_Y = fin_point(1, -FIN_T / 2, RING_YL)[1]
+TOPJET = dict(y=N + 4.8, z=-7.6, r=2.2, ln=4.6)
 PLAN = [(-11, 4.0), (1, 4.0), (7, 2.2), (12.8, 0.6), (14, 0.12)]
 SEAT_TOP = T + 4.5
 CAP_SLOPE = 9.7                  # degrees: the stern deck falls towards the cockpit
@@ -41,18 +52,13 @@ def plan(z):
     return PLAN[-1][1]
 
 
-def leg_at(leg, s):
-    return (T - 0.3 - s * math.cos(RAKE * R), leg["z"] - s * math.sin(RAKE * R))
-
-
-def stack(k, x, leg, s0, s1, w, c, cell, n=3):
-    """A raked stack of fat bricks from s0 to s1 along the leg line: seams show, big stud on no open top."""
-    step = (s1 - s0) / n
-    y, z = leg_at(leg, (s0 + s1) / 2)
-    k.box((w - 0.5, s1 - s0 - 0.4, c - 0.5), (x, y, z), DARK, (RAKE, 0, 0), r=0.05)
-    for i in range(n):
-        y, z = leg_at(leg, s0 + (i + 0.5) * step)
-        k.box((w, step - 0.1, c), (x, y, z), cell, (RAKE, 0, 0), r=0.2)
+def blade(k, x, y0, y1, w0, z00, z01, w1, z10, z11, cell):
+    """One straight tapered keel-fin strut from y0 down to y1, no knuckles."""
+    def ring(y, w, z0, z1):
+        b = 0.3
+        return [(x - w / 2, y, z0 + b), (x - w / 2, y, z1 - b), (x - w / 2 + b, y, z1), (x + w / 2 - b, y, z1),
+                (x + w / 2, y, z1 - b), (x + w / 2, y, z0 + b), (x + w / 2 - b, y, z0), (x - w / 2 + b, y, z0)]
+    k.rings([ring(y0, w0, z00, z01), ring(y1, w1, z10, z11)], cell)
 
 
 def body(k):
@@ -96,12 +102,10 @@ def body(k):
     k.box((2.5, 1.3, 0.6), (0, SEAT_TOP + 0.45, -3.3), DARK)
     # bow deck studs
     k.bigstuds([(-1.2, 4.2), (1.2, 4.2)], t + 2.75, ORANGE)
-    # thick raked legs
+    # straight struts, grouped with the foils by colour
     for leg in LEGS:
-        for sx, _ in SIDES:
-            x = sx * leg["x"]
-            k.cyl(1.0, leg["w"] + 0.6, (x, HINGE, leg["z"]), DARK, (0, 0, 90), n=14)
-            stack(k, x, leg, 0.1, LEG_LEN, leg["w"], leg["c"], ORANGE)
+        for x, a0, a1, b0, b1 in leg["struts"]:
+            blade(k, x, T + 0.5, STRUT_END, 2.0, a0, a1, 1.3, b0, b1, YELLOW)
     add_atts(k)
 
 
@@ -132,32 +136,22 @@ def add_atts(k):
     for i, sx in enumerate((1, -1), 1):
         k.att("Prop%d" % i, (sx * 3.0, 0.3, -11.0))
     for leg in LEGS:
-        for sx, _ in SIDES:
-            k.att("Splash%s%s_Pod" % (leg["tag"], "P" if sx > 0 else "S"), (sx * leg["x"], 0.3, foil_z(leg, POD_Y)))
-
-
-def foil_z(leg, y):
-    return leg["z"] - (HINGE - y) * math.tan(RAKE * R)
+        for x, _, _, b0, b1 in leg["struts"]:
+            k.att("Splash%s%s" % (leg["tag"], "" if x == 0 else "P" if x > 0 else "S"), (x, 0.3, (b0 + b1) / 2))
 
 
 def foils(k):
-    """The foil set, one MeshPart: pods, huge yellow T-foils, orange end plates. Sky Stilts moves it as one (RESULT.md)."""
+    """The foil set, one MeshPart: two thin, swept, nearly flat yellow foils. Sky Stilts moves it as one (RESULT.md)."""
     for leg in LEGS:
-        z, q, c, x0 = foil_z(leg, FOIL_Y), leg["span"], leg["chord"], leg["x"]
-        for sx, side in SIDES:
-            pz = foil_z(leg, POD_Y)
-            k.cyl(1.25, 3.4, (sx * x0, POD_Y, pz), DARK, (90, 0, 0), n=14)
-            k.sphere(1.24, (sx * x0, POD_Y, pz + 1.7), WHITE, (1, 1.2, 1), n=14, lat=4)
+        _, _, _, b0, b1 = leg["struts"][0]
+        z, q, c = (b0 + b1) / 2, leg["span"], leg["chord"]
 
-            def wing(s=sx, q=q, c=c):
-                sec = lambda x, z0, z1, h: [(s * x, -h, z0 + 0.4), (s * x, -h, z1 - 0.4), (s * x, -h + 0.35, z1), (s * x, h - 0.35, z1), (s * x, h, z1 - 0.4), (s * x, h, z0 + 0.4), (s * x, h - 0.35, z0), (s * x, -h + 0.35, z0)]
-                k.rings([sec(-0.4, -c, c, 0.72), sec(q - 1.6, -c, c, 0.62), sec(q, -c, c * 0.35, 0.5)], YELLOW)
-                k.bigstuds([(s * x, zs) for x in (x0 + 2.4, x0 + 4.8, x0 + 7.2) if x < q - 0.8 for zs in (-c * 0.45, c * 0.45)], 0.62, YELLOW)
-                k.box((1.3, 2.5, leg["tip"]), (s * (q + 0.5), -0.3, 0), ORANGE, r=0.2)
-                k.bigstuds([(s * (q + 0.5), 0)], 0.95, ORANGE)
-            k.at((0, FOIL_Y, z), (0, 0, -sx * ANHED), wing)
-            k.att("Splash%s%s_Tip" % (leg["tag"], "P" if sx > 0 else "S"), (sx * (q + 0.5) * math.cos(ANHED * R), 0.3, z))
-        k.box((2.4, 1.6, 2 * c + 0.2), (0, FOIL_Y, z), YELLOW, r=0.2)
+        def sec(x, zc, half, h):
+            y = FOIL_Y - abs(x) * math.tan(ANHED * R)
+            b = min(h * 0.8, half * 0.3)
+            return [(x, y - h, zc - half + b), (x, y - h, zc + half - b), (x, y - h + b, zc + half), (x, y + h - b, zc + half),
+                    (x, y + h, zc + half - b), (x, y + h, zc - half + b), (x, y + h - b, zc - half), (x, y - h + b, zc - half)]
+        k.rings([sec(-q, z - leg["sweep"], leg["tipc"], 0.16), sec(0, z, c, 0.3), sec(q, z - leg["sweep"], leg["tipc"], 0.16)], YELLOW)
 
 
 def turbofan(k, x, y, z, r, ln, n=20):
@@ -177,11 +171,8 @@ def turbofan(k, x, y, z, r, ln, n=20):
 
 
 def flame(k, x, y, z, r, ln):
-    """A fat round fireball plume: big blunt orange lobes of mixed length round a round yellow heart, no point anywhere."""
-    for i in range(6):
-        a = (30 + i * 60) * R
-        k.tongue(x + r * 0.5 * math.cos(a), y + r * 0.5 * math.sin(a), z, r * 0.72, ln * (1.0 if i % 2 else 0.7), FLAME)
-    k.tongue(x, y, z - 0.2, r * 0.8, ln * 1.12, FLAME2)
+    """One simple cone flying aft: yellow at the nozzle, orange to the tip."""
+    k.at((x, y, z), (-90, 0, 0), lambda: k.lathe([(0, 0), (r, 0), (r * 0.92, ln * 0.22), (r * 0.62, ln * 0.5), (r * 0.3, ln * 0.78), (0, ln)], 18, [FLAME2, FLAME2, FLAME, FLAME, FLAME]))
 
 
 def giant_jets(k):
@@ -194,98 +185,92 @@ def giant_jets(k):
 
 
 def t_tail(k):
-    """Two fat swept fins with a wide studded tailplane on top. The driver shows between them, the Top Jet later fills the gap."""
-    base, top = N - 1.4, N + 7.9
-    fin = [(-10.2, base), (-5.4, base), (-9.4, top), (-13.0, top)]
+    """Two fat swept fins splayed out in a V with yellow caps, no crossbar: the driver shows between them, the Top Jet and halo sit in the V."""
     for sx, _ in SIDES:
-        k.prism(fin, sx * FIN_X - 0.75, sx * FIN_X + 0.75, ORANGE, lambda a, c, d: (d, c, a), bevel=0.14)
-        k.at((sx * FIN_X, 0, 0), None, lambda: k.loft_z([(-10.8, 1.2, N - 1.9, N + 0.75), (-5.2, 1.2, N - 1.9, N - 0.25)], ORANGE, b=0.2))   # a fat root out of the deck
-    k.plate([(-7, -14.4), (7, -14.4), (7, -12), (5.2, -8.8), (-5.2, -8.8), (-7, -12)], top - 0.05, top + 1.05, ORANGE, bevel=0.18)
-    k.bigstuds([(x, z) for x in (-4.6, 4.6, -2.3, 2.3) for z in (-13.0, -10.6)], top + 1.05, ORANGE)
-    for sx, _ in SIDES:
-        k.box((1.5, 2.0, 3.6), (sx * 7.5, top + 0.5, -12.4), YELLOW, r=0.2)
-        k.bigstuds([(sx * 7.5, -12.4)], top + 1.5, YELLOW)
-    # the crown fin: the halo's fin at L40, the tail's cap until then
-    crown = [(-13.2, top + 1.0), (-9.6, top + 1.0), (-12.0, top + 4.2), (-14.6, top + 4.2)]
-    k.prism(crown, -0.8, 0.8, YELLOW, lambda a, c, d: (d, c, a), bevel=0.14)
+        fin = [(-10.2, 0), (-5.4, 0), (-9.9, FIN_H), (-13.6, FIN_H)]
+
+        def blade_(fin=fin):
+            k.prism(fin, -FIN_T / 2, FIN_T / 2, ORANGE, lambda a, c, d: (d, c, a), bevel=0.16)
+            k.box((FIN_T + 0.2, 1.3, 4.0), (0, FIN_H, -11.75), YELLOW, r=0.2)
+        k.at((sx * FIN_X, FIN_Y, 0), (0, 0, -sx * SPLAY), blade_)
+        k.at((sx * FIN_X, 0, 0), None, lambda: k.loft_z([(-10.8, 1.3, N - 1.9, N + 0.75), (-5.2, 1.3, N - 1.9, N - 0.25)], ORANGE, b=0.2))   # a fat root out of the deck
 
 
 def sky_stilts(k):
-    """Yellow stilts carry on down the leg lines to where the foil set now sits (RESULT.md: move it, raise the boat)."""
+    """White sleeves telescope straight down out of the struts' ends to where the foil set now sits (RESULT.md: move it, raise the boat)."""
     for leg in LEGS:
-        for sx, _ in SIDES:
-            x = sx * leg["x"]
-            stack(k, x, leg, LEG_LEN - 0.3, STILT_END + 0.2, leg["w"] - 0.3, leg["c"] - 0.3, YELLOW, n=2)
-            y, z = leg_at(leg, LEG_LEN - 0.2)
-            k.box((leg["w"] + 0.6, 0.8, leg["c"] + 0.6), (x, y, z), DARK, (RAKE, 0, 0), r=0.2)
+        for x, _, _, b0, b1 in leg["struts"]:
+            blade(k, x, STRUT_END + 1.2, STRUT_END - LIFT, 1.75, b0 - 0.25, b1 + 0.25, 1.5, b0 - 0.05, b1 + 0.05, WHITE)
 
 
 def needle_nose(k):
-    """A fat stepped race nose out of a sheath over the prow; the tip is round."""
+    """The wedge runs on as a fat orange snout and ends in one big rounded white bumper: a toy ram, not a dart."""
     t = T
-    k.loft_z([(8.6, plan(8.6) + 0.08, t + 0.05, t + 2.42), (13.0, 1.36, t + 0.2, t + 1.98), (15.2, 1.32, t + 0.35, t + 1.85)], WHITE)
-    y = t + 1.1
-    for z0, ln, r, c in ((15.0, 3.2, 1.28, ORANGE), (18.1, 2.9, 1.08, WHITE), (20.9, 2.5, 0.88, ORANGE)):
-        k.cyl(r, ln, (0, y, z0 + ln / 2), c, (90, 0, 0), r2=r * 0.97, n=16)
-    k.cone(0.72, 2.6, (0, y, 24.6), YELLOW, (90, 0, 0), tip=0.42, n=14)
-    k.att("Nose", (0, y, 25.9))
+    k.loft_z([(8.6, plan(8.6) + 0.08, t + 0.05, t + 2.42), (12.2, 1.9, t - 0.35, t + 2.7), (15.0, 1.92, t - 0.6, t + 2.9)], ORANGE, b=0.4)
+    y = t + 1.15
+    k.cyl(1.9, 1.6, (0, y, 15.5), ORANGE, (90, 0, 0), n=20)
+    k.sphere(1.98, (0, y, 16.3), WHITE, (1, 1, 0.82), n=20, lat=7)
+    k.att("Nose", (0, y, 17.9))
 
 
 def sky_wings(k):
-    t = T
+    """Big raised yellow wings: the tips stand clear above the giant jets, so they read from the chase cam."""
+    t, up = T, math.tan(25 * R)
+    y_at = lambda x: t + 1.6 + (x - 3.4) * up
     for sx, side in SIDES:
-        poly = [(sx * 3.6, 0.0), (sx * 2.4, 6.0), (sx * 6.2, 5.6), (sx * 11.2, 3.3), (sx * 11.2, 1.4), (sx * 7.2, 0.0)]
-        k.plate(poly, t + 0.5, t + 1.7, YELLOW, bevel=0.2)
-        k.bigstuds([(sx * x, z) for x, z in ((5.6, 1.5), (8.0, 2.0), (5.6, 3.9))], t + 1.7, YELLOW)
-        k.box((1.8, 2.4, 3.2), (sx * 11.8, t + 1.1, 2.35), ORANGE, r=0.2)
-        k.bigstuds([(sx * 11.8, 2.35)], t + 2.3, ORANGE)
+        def sec(x, z0, z1, h):
+            y, b = y_at(x), h * 0.5
+            return [(sx * x, y - h, z0 + b), (sx * x, y - h, z1 - b), (sx * x, y - h + b, z1), (sx * x, y + h - b, z1),
+                    (sx * x, y + h, z1 - b), (sx * x, y + h, z0 + b), (sx * x, y + h - b, z0), (sx * x, y - h + b, z0)]
+        k.rings([sec(3.2, -2.2, 6.2, 0.62), sec(12.0, -3.8, 0.4, 0.4)], YELLOW)
+        for x, z in ((5.6, 2.9), (5.6, 0.1), (8.2, 1.2), (8.2, -1.2)):
+            k.at((sx * x, y_at(x), z), (0, 0, sx * 25), lambda: k.bigstuds([(0, 0)], 0.5, YELLOW))
+        k.at((sx * 12.0, y_at(12.0), -1.7), (0, 0, sx * 25), lambda: k.box((1.3, 1.6, 4.6), (0, 0, 0), ORANGE, r=0.25))
 
 
 def afterburners(k):
+    """A yellow burner can on each nozzle and one simple cone of flame."""
     j = JET
     aft = j["z"] - j["ln"] - j["r"] * 0.55
     for sx, side in SIDES:
         x = sx * j["x"]
-        k.cyl(j["r"] * 0.8, 0.8, (x, j["y"], aft - 0.3), YELLOW, (90, 0, 0), n=20)       # a burner can bolted on the nozzle
-        flame(k, x, j["y"], aft - 0.6, j["r"] * 0.85, 6.5)
-        k.att("Flame_" + side, (x, j["y"], aft - 0.7))
+        k.cyl(j["r"] * 0.8, 0.9, (x, j["y"], aft - 0.3), YELLOW, (90, 0, 0), n=20)
+        flame(k, x, j["y"], aft - 0.7, j["r"] * 0.74, 4.8)
+        k.att("Flame_" + side, (x, j["y"], aft - 0.8))
 
 
 def radar_dish(k):
-    t, x, z = T, 3.5, -1.6
-    k.cyl(1.0, 0.6, (x, t + 4.4, z), DARK, n=14)
-    k.cyl(0.6, 3.0, (x, t + 6.0, z), GREY, n=12)
-    y = t + 7.5
+    """A big white dish high on a fat mast beside the cockpit, its lower edge above the driver's head."""
+    t, x, z = T, 4.0, -1.6
+    k.cyl(1.2, 0.7, (x, t + 4.45, z), DARK, n=14)
+    k.cyl(0.72, 5.2, (x, t + 7.2, z), GREY, n=12)
+    y = t + 9.6
 
     def dish():
-        k.lathe([(0, -0.75), (1.1, -0.62), (2.2, -0.2), (2.9, 0.45), (2.7, 0.62), (1.7, 0.1), (0.8, -0.2), (0, -0.28)], 20, WHITE)
-        k.cyl(0.6, 0.5, (0, -0.1, 0), YELLOW, n=12)
-        k.cyl(0.22, 1.6, (0, 0.8, 0), GREY, n=8)
-        k.sphere(0.55, (0, 1.75, 0), YELLOW, n=10, lat=3)
+        k.lathe([(0, -1.0), (1.5, -0.86), (3.0, -0.3), (4.2, 0.65), (3.9, 0.9), (2.4, 0.15), (1.1, -0.3), (0, -0.4)], 24, WHITE)
+        k.cyl(0.85, 0.7, (0, -0.15, 0), YELLOW, n=12)
+        k.cyl(0.3, 1.9, (0, 1.0, 0), GREY, n=8)
+        k.sphere(0.72, (0, 2.1, 0), YELLOW, n=12, lat=4)
     k.at((x, y, z), (35, 0, 0), dish)
     k.att("Spin", (x, y, z))
 
 
 def top_jet(k):
+    """A fat engine in the V's throat, above the sight line to the driver, on two short stubs into the fins."""
     j = TOPJET
     aft = turbofan(k, 0, j["y"], j["z"], j["r"], j["ln"])
+    inner = fin_point(1, -FIN_T / 2, (j["y"] - FIN_Y) / math.cos(SPLAY * R))[0]
     for sx, _ in SIDES:
-        k.box((2.0, 1.6, 3.2), (sx * 1.65, j["y"], j["z"] - 2.9), ORANGE, r=0.2)     # stubs into the twin fins
-    flame(k, 0, j["y"], aft - 0.05, j["r"] * 0.85, 3.8)
+        k.box((inner - j["r"] + 0.5, 1.8, 3.0), (sx * (inner + j["r"]) / 2, j["y"], j["z"] - 2.3), ORANGE, r=0.2)
+    flame(k, 0, j["y"], aft - 0.05, j["r"] * 0.72, 2.6)
     k.att("Flame_Top", (0, j["y"], aft - 0.1))
     k.att("Glow_Top", (0, j["y"], aft - 0.1))
 
 
 def turbo_halo(k):
-    """Ten gold bricks round the crown fin, tilted, no mounts: the one joke. Set the whole piece spinning round ATT_HaloAxis."""
-    top = N + 7.9
-    c = (0, top + 3.1, -11.8)
-
-    def ring():
-        k.at((0, 0, 0), (90, 0, 0), lambda: k.torus(4.1, 0.6, (0, 0, 0), WHITE, n=24, m_=6))
-        for i in range(10):
-            k.at((0, 0, 0), (0, 36 * i, 0), lambda: (k.brick((1.9, 1.5, 2.42), (4.1, 0, 0), YELLOW, studs=None, r=0.2), k.bigstuds([(4.1, 0)], 0.75, YELLOW)))
-    k.at(c, (-18, 0, 0), ring)
+    """One clean smooth gold ring cradled in the V's fins, tilted to the chase cam: the one joke. Spin the whole piece round ATT_HaloAxis."""
+    c = (0, RING_Y, -11.05)
+    k.at(c, (RING_TILT + 90, 0, 0), lambda: k.torus(RING_R, RING_T, (0, 0, 0), YELLOW, n=40, m_=10))
     k.att("HaloAxis", c)
 
 

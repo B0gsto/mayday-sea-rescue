@@ -126,7 +126,7 @@ def scene(level):
     a, b, _ = pieces.hull_objects()
     sea = hk.WATER_ASSET
     if level >= 34:             # Sky Stilts: the foil set moves, the sea sits lower in the hull frame
-        b.location = bl((0, -pieces.LIFT, pieces.LIFT_Z))
+        b.location = bl((0, -pieces.LIFT, 0))
         sea -= pieces.LIFT
     objs = [a, b]
     for short, (lv, _) in pieces.PIECES.items():
@@ -145,7 +145,7 @@ def shoot_phone(level, name=None):
     plane("Sea", sea, 3000, flat_mat("StageSea", (0.022, 0.21, 0.45), 0.75))
     world((0.5, 0.74, 0.95), 1.0)
     back = 1.0 if level < 34 else 1.15 if level < 39 else 1.3     # taller and longer boat, the game's chase cam backs off with the hull
-    pos, target = Vector((4, 17 * back + sea, 36 * back)), Vector((0, 8 * back + sea, -2))
+    pos, target = Vector((4, 24 * back + sea, 40 * back)), Vector((0, 13 * back + sea, -2))
     camera(bl(pos), bl(target), 18 / (math.tan(math.radians(35)) * 1.8))
     os.makedirs(OUT, exist_ok=True)
     path = os.path.join(OUT, name or "L%d_phone.png" % level)
