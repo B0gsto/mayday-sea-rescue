@@ -28,8 +28,8 @@ NAME = "M_Veh_PirateBoat"
 SCALE = 0.875
 SEAM, SEAM_Y = 0.05, 0.04
 SKIP_GROUPS = ("crew", "jetski")
-# crew feet in concept coordinates (concept stands; the captain steps aside so his own wheel sits on the centreline)
-CREW = {"ATT_Captain": (-7.6, 7.6, -0.85), "ATT_Deckhand": (6.3, 7.6, 0.4), "ATT_Lookout": (-1.8, 5.2, -2.0)}
+# crew feet in concept coordinates, raised on the plinths from adjust() so they clear the bulwark and read against sky and sail
+CREW = {"ATT_Captain": (-7.4, 8.4, -0.85), "ATT_Deckhand": (6.9, 8.6, 0.0), "ATT_Lookout": (-2.8, 6.4, -1.6)}
 
 
 def wanted(p):
@@ -164,36 +164,42 @@ def halfcyl(b, p):
 
 
 def sail(b, p):
-    """Horizontal red and cream bands, the concept's forward billow; closed thin shell, one patch."""
+    """Horizontal red and cream bands, one patch; full billow, arched foot, waisted leeches (round 2: never a flat plane)."""
     t, n, s = p["size"]
+    t = t * 1.45
+    lod = getattr(b, "lod", 0)
     bands = 9 if s > 15 else 5
-    cols = 8 - 2 * getattr(b, "lod", 0)
+    rows = bands * (2 if lod == 0 else 1)
+    cols = 10 - 3 * lod
     red, cream = P.cell("#C8102E", "cloth"), P.CREAM
 
     def pt(i, j, off):
-        l, h = i / cols, 1 - j / bands            # j = 0 at the head
+        l, h = i / cols, 1 - j / rows            # j = 0 at the head
         u = 1 - (2 * l - 1) ** 2
-        return (t * u ** 0.8 * math.sin(0.65 * math.pi * (1 - h)) + off, (l - 0.5) * s, (h - 0.5) * n)
+        wide = s * (1 - 0.07 * math.sin(math.pi * h))
+        arch = 0.09 * n * u * (1 - h) ** 2
+        return (t * u ** 0.8 * math.sin(0.65 * math.pi * (1 - h)) + off, (l - 0.5) * wide, (h - 0.5) * n + arch)
 
     vid = lambda i, j, side: (j * (cols + 1) + i) * 2 + side
     verts, faces, cc = [], [], []
-    for j in range(bands + 1):
+    for j in range(rows + 1):
         for i in range(cols + 1):
             verts += [pt(i, j, 0.05), pt(i, j, -0.05)]
-    for j in range(bands):
+    band = lambda j: j * bands // rows
+    for j in range(rows):
         for i in range(cols):
-            c = red if j % 2 == 0 else cream
-            if bands == 9 and j == 5 and i == cols - 3:
+            c = red if band(j) % 2 == 0 else cream
+            if bands == 9 and band(j) == 5 and i == cols - 3:
                 c = P.TAN                          # the sewn patch
             faces += [(vid(i, j, 0), vid(i + 1, j, 0), vid(i + 1, j + 1, 0), vid(i, j + 1, 0)),
                       (vid(i, j, 1), vid(i, j + 1, 1), vid(i + 1, j + 1, 1), vid(i + 1, j, 1))]
             cc += [c, c]
     for i in range(cols):
-        for j, c in ((0, red), (bands, red)):
+        for j in (0, rows):
             faces.append((vid(i, j, 0), vid(i + 1, j, 0), vid(i + 1, j, 1), vid(i, j, 1)))
-            cc.append(c)
-    for j in range(bands):
-        c = red if j % 2 == 0 else cream
+            cc.append(red)
+    for j in range(rows):
+        c = red if band(j) % 2 == 0 else cream
         for i in (0, cols):
             faces.append((vid(i, j, 0), vid(i, j + 1, 0), vid(i, j + 1, 1), vid(i, j, 1)))
             cc.append(c)
@@ -282,6 +288,95 @@ def studs(b, p, boxes, me):
     return cnt
 
 
+def part(name, shape, pos, size, color, group="bow-ram", rot=(0, 0, 0), **kw):
+    return dict(name=name, shape=shape, group=group, pos=list(pos), size=list(size), rot=list(rot), color=color, material=kw.pop("material", "abs"), **kw)
+
+
+SLOPE = [[-0.5, -0.5], [0.5, -0.5], [0.5, -0.25], [-0.2, 0.5], [-0.5, 0.5]]
+
+
+def shark():
+    """Art director round 2: about 1.5x the concept's head, hull-wide gaping jaw, big blunt teeth, angry eyes. Bow tip at x 17.6."""
+    S, D = P.SLATE, P.SLATE_DARK
+    out = [
+        part("shark-jaw-lower", "wedge", (13, 0.55, 0), (9, 1.7, 8.6), S, d2=4.2),
+        part("shark-mouth", "wedge", (12.7, 1.45, 0), (7.6, 0.24, 7.2), P.MOUTH, d2=3.3),
+        part("shark-tongue", "box", (13.2, 1.75, 0), (3.8, 0.42, 2.8), P.TONGUE),
+        part("shark-cheek", "wedge", (9.6, 3, 0), (2.4, 3.6, 8.8), S, d2=8),
+        part("shark-throat", "box", (11, 3, 0), (0.5, 3.2, 6.2), P.THROAT),
+        part("shark-palate", "wedge", (13.6, 4.45, 0), (7.2, 0.25, 7.2), P.PALATE, d2=3.5),
+        part("shark-snout", "wedge", (13, 5.2, 0), (9.2, 1.3, 8.8), S, d2=4),
+        part("shark-head", "wedge", (12, 6.75, 0), (7.2, 1.8, 8.8), S, d2=5),
+        part("shark-crown", "wedge", (10.8, 8.6, 0), (4.8, 2, 8.4), S, d2=5.4, studs=True),
+        part("shark-nose", "poly", (16.4, 6.45, 0), (2.4, 1.8, 3.6), S, pts=SLOPE),
+        part("shark-brow-slope", "poly", (14, 8.6, 0), (1.6, 2, 5.2), S, pts=SLOPE),
+        part("shark-fin", "poly", (10, 11, 0), (3, 3, 0.7), S, pts=[[-0.5, -0.5], [0.5, -0.5], [0.15, -0.05], [-0.2, 0.3], [-0.5, 0.5], [-0.38, 0]]),
+    ]
+    for s in (1, -1):
+        yaw, ox, oz = s * 18, 0.31, s * 0.95       # proud of the head, turned a little forward so it reads from the bow too
+        cx, cy, cz = 12.9, 7.5, s * 3.32
+        at = lambda out_, along, up: (cx + ox * out_ + 0.95 * along, cy + up, cz + oz * out_ - s * 0.31 * along)
+        rot = (90, yaw, 0)
+        k = "01" if s < 0 else "02"
+        out += [
+            part("shark-eye-" + k, "cyl", at(0, 0, 0), (3, 0.3, 3), "#F4F4F0", rot=rot),
+            part("shark-pupil-" + k, "cyl", at(0.18, 0.45, -0.25), (1.5, 0.16, 1.5), "#1C1C20", rot=rot),
+            part("shark-eye-glint-" + k, "cyl", at(0.28, 0.7, 0.05), (0.42, 0.1, 0.42), "#F4F4F0", rot=rot),
+            part("shark-brow-" + k, "box", at(0.42, 0.1, 1.1), (3.7, 0.75, 0.8), D, rot=(0, yaw, -28)),
+        ]
+        for i, x in enumerate((9.4, 10.1, 10.8)):
+            hw = 4.4 - 1.9 * (x - 8.4) / 7.2
+            out.append(part("shark-gill-%s%d" % (k, i), "box", (x, 6.3, s * hw), (0.24, 2, 0.2), D, rot=(0, s * 13, 0)))
+    for s in (1, -1):                              # big, blunt, few: 5 a side up, 4 a side down, staggered
+        for i, x in enumerate((11.5, 13.2, 14.9, 16.6)):
+            hw = 4.4 - 2.4 * (x - 8.4) / 9.2 - 0.42
+            out.append(part("shark-tooth-u%d%d" % (s > 0, i), "cone", (x, 3.7, s * hw), (1.05, 1.7, 0.8), "#FFFFFF", rot=(180, 45, 0), seg=4))
+        out.append(part("shark-tooth-uf%d" % (s > 0), "cone", (17.25, 3.7, s * 0.95), (1, 1.7, 0.8), "#FFFFFF", rot=(180, 45, 0), seg=4))
+        for i, x in enumerate((12.3, 14, 15.7)):
+            hw = 4.3 - 2.2 * (x - 8.5) / 9 - 0.42
+            out.append(part("shark-tooth-l%d%d" % (s > 0, i), "cone", (x, 2.2, s * hw), (1, 1.6, 0.8), "#FFFFFF", rot=(0, 45, 0), seg=4))
+        out.append(part("shark-tooth-lf%d" % (s > 0), "cone", (16.9, 2.2, s * 0.9), (0.95, 1.6, 0.8), "#FFFFFF", rot=(0, 45, 0), seg=4))
+    return out
+
+
+def gunwale():
+    """Clean sheer: one continuous bulwark with a tan cap, rising to the forecastle; replaces the concept's stepped blocks."""
+    hull, cap, g = "#7A4A2A", "#D2AE76", "deck"
+    out = []
+    for s in (1, -1):
+        k = "01" if s < 0 else "02"
+        out += [
+            part("bulwark-" + k, "box", (-1, 5.5, s * 4.5), (8, 1.4, 1), hull, group=g),
+            part("bulwark-cap-" + k, "box", (-1, 6.35, s * 4.5), (8.2, 0.3, 1.16), cap, group=g),
+            part("bulwark-rise-" + k, "poly", (3.8, 6.4, s * 4.5), (1.6, 3.2, 1), hull, group=g,
+                 pts=[[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, -0.06]]),
+            part("bulwark-rise-cap-" + k, "box", (3.8, 7.2, s * 4.5), (2.3, 0.3, 1.16), cap, group=g, rot=(0, 0, 46)),
+            part("fc-wall-" + k, "box", (5.33, 7.8, s * 3.98), (3.08, 1.2, 1), hull, group="forecastle", rot=(0, s * 20, 0)),
+            part("fc-wall-cap-" + k, "box", (5.33, 8.55, s * 3.98), (3.2, 0.3, 1.16), cap, group="forecastle", rot=(0, s * 20, 0)),
+            part("fc-wall-bow-" + k, "box", (8.25, 7.8, s * 2.62), (3.33, 1.2, 1), hull, group="forecastle", rot=(0, s * 29, 0)),
+            part("fc-wall-bow-cap-" + k, "box", (8.25, 8.55, s * 2.62), (3.45, 0.3, 1.16), cap, group="forecastle", rot=(0, s * 29, 0)),
+        ]
+    return out
+
+
+def adjust(parts):
+    """Art director round 1 fixes over the concept spec."""
+    drop = ("bulwark", "fc-wall", "fc-bow-tip")
+    out = []
+    for p in parts:
+        if p["group"] == "bow-ram" or p["name"].startswith(drop):
+            continue
+        if p["name"].startswith("hull-L4"):
+            p = dict(p, studs=False)               # no studs along the hull's top edge: a clean line under the cap
+        out.append(p)
+    out += shark() + gunwale()
+    # plinths: the crew stand clear of the bulwark
+    out.append(part("helm-dais", "box", (-7.4, 8, -0.3), (4, 0.8, 7), P.DAIS, group="stern-castle", studs=True))
+    out.append(part("bow-crate", "box", (6.9, 8.1, 0), (2.8, 1, 3), "#7A4A2A", group="forecastle", studs=True))
+    out.append(part("deck-hatch", "box", (-2.8, 5.8, -1.6), (2.8, 1.2, 2.4), "#7A4A2A", group="deck", studs=True))
+    return out
+
+
 LAYER = {"stern-castle": "Castle", "mast": "Rig", "crows-nest": "Rig", "sail": "Rig", "flag": "Rig", "rigging": "Rig"}
 
 
@@ -290,11 +385,15 @@ def keep(p, lod):
     big = max(p["size"])
     if lod == 0:
         return True
+    if p["name"].startswith(("shark-eye", "shark-pupil", "shark-brow")):
+        return lod < 2 or "glint" not in p["name"]
+    if lod == 2 and p["name"].startswith("hull-L0"):
+        return False                               # below the waterline
     if p["material"] == "glow" or "tooth" in p["name"] or p["group"] in ("sail", "flag", "mast"):
         return lod == 1 or big > 3.0 or p["material"] == "glow" and big > 0.8 or "tooth" in p["name"] and big >= 0.5
     if lod == 1:
         return big >= 0.5 and not (p["shape"] == "rod" and big < 3)
-    return big >= 3.6 and p["shape"] != "rod" and "nest-rim" not in p["name"]
+    return big >= 4.3 and p["shape"] != "rod" and "nest-rim" not in p["name"]
 
 
 def build_lod(lod, parts, spec, W, mat, boxes):
@@ -334,7 +433,7 @@ def build():
     import mathutils
     with open(os.path.join(HERE, "concept_spec.json")) as f:
         spec = json.load(f)
-    parts = [p for p in spec["parts"] if wanted(p)]
+    parts = adjust([p for p in spec["parts"] if wanted(p)])
     W = to_blender()
     mat = kit.lego.material("MI_PirateBoat_Brick", kit.ALB)
     blockers = [aabb(p, part_matrix(p)) if p["shape"] not in ("rod", "sail", "flag") else ([9e9] * 3, [-9e9] * 3) for p in parts]
@@ -360,7 +459,7 @@ def build():
         },
         "meshes": meshes, "attachments": atts,
         "closeups": [
-            {"name": "ram", "target": [0, -11.5, 4], "dist": 14, "az": -40, "el": 12},
+            {"name": "ram", "target": [0, -13, 4], "dist": 16, "az": -40, "el": 12},
             {"name": "stern", "target": [0, 11, 8], "dist": 18, "az": 170, "el": 10},
             {"name": "nest", "target": [0, -1, 20], "dist": 16, "az": -30, "el": 5},
         ],

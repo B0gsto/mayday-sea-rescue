@@ -2,12 +2,14 @@
 import importlib.util
 import math
 import os
+import sys
 
 import bpy
 import mathutils
 
 G = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../.."))
 OUT = os.path.join(G, "build/status/2026-11-04/art/pirates_src")
+sys.path.insert(0, os.path.join(G, "tools/blender"))   # build.py imports zfight_check
 
 
 def load_build(path):
@@ -100,8 +102,8 @@ def main():
     shoot(cam, "front34", t, (-0.75, -1.0, 0.42), 62, (768, 768))
     shoot(cam, "side", t, (1, 0, 0.1), 62, (768, 768))
     shoot(cam, "rear34", t, (0.75, 1.0, 0.3), 62, (768, 768))
-    shoot(cam, "crew", (0, 0.5, 7.0), (0.8, -0.8, 0.1), 34, (768, 768))
-    shoot(cam, "ram", (0, -12, 3.6), (-0.55, -0.85, 0.28), 19, (768, 768))
+    shoot(cam, "crew", (0, 0.5, 8.5), (0.8, -0.8, 0.12), 38, (768, 768))
+    shoot(cam, "ram", (0, -13, 4), (-0.55, -0.85, 0.22), 24, (768, 768))
     shoot(cam, "phone", (0, 0, 8), (-0.6, -0.8, 0.55), 70, (360, 200), lens=32)
     print("sheet renders in", OUT)
 

@@ -43,7 +43,21 @@ def _load_spec():
                     GLOSS[_SPEC[key]] = _MAT.get(p["material"], (0.42, 0.0))
 
 
+# round 2 (art director): darker shark, bright mouth, pure red and yellow macaw
+SLATE, SLATE_DARK, MOUTH, THROAT, PALATE, TONGUE, MACAW_R, MACAW_Y, DAIS = "#203A5E", "#0E1C30", "#F01A1E", "#8A0A14", "#FF4A5A", "#FF8CA0", "#F0141E", "#FFD21E", "#C99C6A"
+
+
+def _extra():
+    for hexv, mat in ((SLATE, "abs"), (SLATE_DARK, "abs"), (MOUTH, "abs"), (THROAT, "abs"), (PALATE, "abs"), (TONGUE, "abs"),
+                      (MACAW_R, "abs"), (MACAW_Y, "abs"), (DAIS, "abs")):
+        key = (hexv.upper(), mat)
+        if key not in _SPEC:
+            _SPEC[key] = len(_HEX)
+            _HEX.append(hexv.lstrip("#").upper())
+
+
 _load_spec()
+_extra()
 
 
 def cell(color, material):

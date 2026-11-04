@@ -12355,6 +12355,15 @@
   "source": "assets/textures/M_Hbr_NavMark_South/T_NavMarkSouth_Buoy_ALB.png",
   "type": "Image"
  },
+ "Image:82e4d6438b99bf75d49be005d4459a66ad13e18974fba39b40cc822fb1387502": {
+  "assetId": "128458871332767",
+  "imageId": "128458871332767",
+  "moderation": "Reviewing",
+  "name": "T_PirateBoat_Brick_ALB",
+  "sha": "82e4d6438b99bf75d49be005d4459a66ad13e18974fba39b40cc822fb1387502",
+  "source": "build/prod/M_Veh_PirateBoat/textures/M_Veh_PirateBoat/T_PirateBoat_Brick_ALB.png",
+  "type": "Image"
+ },
  "Image:8311efc302e806f370418419704edef08a33e898d3a5975c0efd6e67c647f161": {
   "assetId": "133200381001340",
   "imageId": "133200381001340",
@@ -19689,6 +19698,15 @@
   "source": "assets/ui/album/stamp_puffin.png",
   "type": "Image"
  },
+ "Image:d3f777027b5da54235f99a7dc36527acc589f498c2662f674bdf34985a53cdf1": {
+  "assetId": "129355603351811",
+  "imageId": "129355603351811",
+  "moderation": "Reviewing",
+  "name": "T_PirateBoat_Brick_RGH",
+  "sha": "d3f777027b5da54235f99a7dc36527acc589f498c2662f674bdf34985a53cdf1",
+  "source": "build/prod/M_Veh_PirateBoat/textures/M_Veh_PirateBoat/T_PirateBoat_Brick_RGH.png",
+  "type": "Image"
+ },
  "Image:d3fd7aee9cebfff3bdea8cbb78e39787f08b3c4cc0e030a0e2076a30c9f718fd": {
   "assetId": "106282100105892",
   "imageId": "106282100105892",
@@ -23827,6 +23845,16 @@
   "source": "assets/fbx/M_Hbr_Fender_Ball/M_Hbr_Fender_Ball_LOD1.fbx",
   "type": "Model"
  },
+ "Model:04c7b96fd9f542c3437b427b49a2189d9492ba72e0a9084870b48c0cf0e97870": {
+  "assetId": "74819528064743",
+  "moderation": "Approved",
+  "name": "M_Chr_PirateDeckhand_LOD0",
+  "rbxm": "assets/models/M_Chr_PirateDeckhand_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "04c7b96fd9f542c3437b427b49a2189d9492ba72e0a9084870b48c0cf0e97870",
+  "source": "build/prod/M_Chr_PirateDeckhand/fbx/M_Chr_PirateDeckhand/M_Chr_PirateDeckhand_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:052356acd967fa34ae798ec07b052f4f5acadeb01f2d18501d70a878a3df6b05": {
   "assetId": "76909681238053",
   "moderation": "Approved",
@@ -23965,6 +23993,16 @@
   "route": "delivery",
   "sha": "09671a1060d31458881fe0c4ff04a712265de8a64a3b51f2b880b348bbf20821",
   "source": "assets/fbx/M_Road_ParkedCar_01/M_Road_ParkedCar_01_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:096a897dde25c1f6d0e06a5e9eea203ebef1fa14b2b944288b9d2f80336a77b7": {
+  "assetId": "126863374924021",
+  "moderation": "Approved",
+  "name": "M_Chr_PirateLookout_LOD0",
+  "rbxm": "assets/models/M_Chr_PirateLookout_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "096a897dde25c1f6d0e06a5e9eea203ebef1fa14b2b944288b9d2f80336a77b7",
+  "source": "build/prod/M_Chr_PirateLookout/fbx/M_Chr_PirateLookout/M_Chr_PirateLookout_LOD0.fbx",
   "type": "Model"
  },
  "Model:0a253de9a17059dca93c68ac92fc80789ba0b356c49e6a04f41574e8976c313d": {
@@ -26055,6 +26093,16 @@
   "route": "delivery",
   "sha": "356695c942b3c5a6f7b12778005d3d3f73d908b968cf0a76494bc91afd385def",
   "source": "assets/fbx/M_Veh_SupplyBarge/M_Veh_SupplyBarge_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:356bd2df48cb2f4e0609a610f3e3d536bac98de19fabed9602d221a1a9c6c09e": {
+  "assetId": "82501313513489",
+  "moderation": "Approved",
+  "name": "M_Chr_PirateCaptain_LOD1",
+  "rbxm": "assets/models/M_Chr_PirateCaptain_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "356bd2df48cb2f4e0609a610f3e3d536bac98de19fabed9602d221a1a9c6c09e",
+  "source": "build/prod/M_Chr_PirateCaptain/fbx/M_Chr_PirateCaptain/M_Chr_PirateCaptain_LOD1.fbx",
   "type": "Model"
  },
  "Model:3593defeb76b65b06cefb0601aebc60b0eaa428d01cc85e995d6ea565b80b163": {
@@ -28817,6 +28865,16 @@
   "source": "assets/fbx/M_Hbr_Bollard_03/M_Hbr_Bollard_03_LOD0.fbx",
   "type": "Model"
  },
+ "Model:7318cb5458cee1d804e0ef232ce4f5c4622a58f32a361426995297038f590b15": {
+  "assetId": "133997756691629",
+  "moderation": "Approved",
+  "name": "M_Chr_PirateLookout_LOD1",
+  "rbxm": "assets/models/M_Chr_PirateLookout_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "7318cb5458cee1d804e0ef232ce4f5c4622a58f32a361426995297038f590b15",
+  "source": "build/prod/M_Chr_PirateLookout/fbx/M_Chr_PirateLookout/M_Chr_PirateLookout_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:733b6404e3d02fe33fbfa0a26d5884a25cea912370d72aa5a8e17aca973fe71d": {
   "assetId": "134133978588718",
   "moderation": "Approved",
@@ -29555,6 +29613,16 @@
   "route": "delivery",
   "sha": "832f0580f1f1287dc4a7eb1b69ddd91e96cbbedcdf0fc659694867513ad9f63f",
   "source": "assets/fbx/M_Bld_TrophyHallAddons/M_Bld_TrophyHallAddons_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:83381970f7cbc0c8948f496f651f96cb3ba23e9263ab9b44dcb264305b8d0d3b": {
+  "assetId": "94817428483428",
+  "moderation": "Approved",
+  "name": "M_Chr_PirateCaptain_LOD0",
+  "rbxm": "assets/models/M_Chr_PirateCaptain_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "83381970f7cbc0c8948f496f651f96cb3ba23e9263ab9b44dcb264305b8d0d3b",
+  "source": "build/prod/M_Chr_PirateCaptain/fbx/M_Chr_PirateCaptain/M_Chr_PirateCaptain_LOD0.fbx",
   "type": "Model"
  },
  "Model:8389f0b301c5e44f180e2f544f81665cafa2fd176f94231986ea50531f120281": {
@@ -32337,6 +32405,16 @@
   "source": "assets/fbx/M_Kit_VHFHandset/M_Kit_VHFHandset_LOD2.fbx",
   "type": "Model"
  },
+ "Model:bed60b881501f50a2c0f4af5113d71d52378b746f78fa06c027d46a89eaa1510": {
+  "assetId": "80467557821622",
+  "moderation": "Approved",
+  "name": "M_Veh_PirateBoat_LOD2",
+  "rbxm": "assets/models/M_Veh_PirateBoat_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "bed60b881501f50a2c0f4af5113d71d52378b746f78fa06c027d46a89eaa1510",
+  "source": "build/prod/M_Veh_PirateBoat/fbx/M_Veh_PirateBoat/M_Veh_PirateBoat_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:bf3c25f01e4513936790a9ecd423f8bb6bc3be81a6b63af2d50499f2137ee402": {
   "assetId": "84446441261378",
   "moderation": "Approved",
@@ -33247,6 +33325,16 @@
   "source": "assets/fbx/M_Bld_Cottage_06/M_Bld_Cottage_06_LOD2.fbx",
   "type": "Model"
  },
+ "Model:d5452557cf322c03d7d24a5f86e8b36fd5276044fa2a6ae04de4a16382ae3d7f": {
+  "assetId": "104221753560704",
+  "moderation": "Approved",
+  "name": "M_Veh_PirateBoat_LOD0",
+  "rbxm": "assets/models/M_Veh_PirateBoat_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "d5452557cf322c03d7d24a5f86e8b36fd5276044fa2a6ae04de4a16382ae3d7f",
+  "source": "build/prod/M_Veh_PirateBoat/fbx/M_Veh_PirateBoat/M_Veh_PirateBoat_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:d66241ea5ec719fbeeb0badf821f1be43b216081ff93aa9143cfc67f19bdccb5": {
   "assetId": "79423301477730",
   "moderation": "Approved",
@@ -33655,6 +33743,16 @@
   "route": "delivery",
   "sha": "df0ccfb0545be7634bc45c4b6f982b41a020954073e7fcd47845de4ff171de6e",
   "source": "assets/fbx/M_Veh_JetSki_RiptideX/M_Veh_JetSki_RiptideX_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:df91561082eb84639897e068c3596d6e1041ae389c8772e49a0cbb3d6a747383": {
+  "assetId": "114622243767557",
+  "moderation": "Approved",
+  "name": "M_Veh_PirateBoat_LOD1",
+  "rbxm": "assets/models/M_Veh_PirateBoat_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "df91561082eb84639897e068c3596d6e1041ae389c8772e49a0cbb3d6a747383",
+  "source": "build/prod/M_Veh_PirateBoat/fbx/M_Veh_PirateBoat/M_Veh_PirateBoat_LOD1.fbx",
   "type": "Model"
  },
  "Model:dfabd71b58b4369c1d90d392c2127000c855ae859dc25a94afc219100f928e28": {
@@ -35065,6 +35163,16 @@
   "route": "delivery",
   "sha": "fd60c953886786b5f3be14f658b9a616e25cfb4cde39e8b794f27173c329f09c",
   "source": "assets/fbx/M_Bld_Cottage_01/M_Bld_Cottage_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:fd8ecacaffa8bd2bf1969e075cad1012c8fae7dfeb71d8db6e55814d4160805c": {
+  "assetId": "111945172792009",
+  "moderation": "Approved",
+  "name": "M_Chr_PirateDeckhand_LOD1",
+  "rbxm": "assets/models/M_Chr_PirateDeckhand_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "fd8ecacaffa8bd2bf1969e075cad1012c8fae7dfeb71d8db6e55814d4160805c",
+  "source": "build/prod/M_Chr_PirateDeckhand/fbx/M_Chr_PirateDeckhand/M_Chr_PirateDeckhand_LOD1.fbx",
   "type": "Model"
  },
  "Model:fdec08926371cfd1386f03da2f87425840be07f4f7642cf2b59d03fe6c5a75b6": {

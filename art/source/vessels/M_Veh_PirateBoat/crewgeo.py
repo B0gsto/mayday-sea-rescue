@@ -8,7 +8,7 @@ import kit
 
 P = kit.P
 RB = kit.RB
-SCALE = 0.9       # beside the boat scaled to 26 studs
+SCALE = 1.25      # art director round 2: 1.4x, they must read against the hull on a phone
 
 DEF = {
     "captain": dict(leg=1.55, hip=0.36, torso=1.6, top=1.6, bot=2.3, depth=1.05, r=0.82, head=1.36, arm=1.0,
@@ -132,9 +132,9 @@ def tricorn(b, z0):
         deg = -90 + i * 30
         a = math.radians(deg)
         c = corner(deg)
-        R = 1.18 + 0.62 * c ** 1.3
-        rise = 0.52 * (1 - c)
-        for r, z in ((0.7, z0 + 0.08), (R, z0 + 0.04 + rise), (R + 0.03, z0 - 0.08 + rise), (0.7, z0 - 0.04)):
+        R = 1.85 + 0.95 * c ** 1.3                  # huge: the captain's read at phone size
+        rise = 0.75 * (1 - c)
+        for r, z in ((0.7, z0 + 0.08), (R, z0 + 0.04 + rise), (R + 0.03, z0 - 0.1 + rise), (0.7, z0 - 0.04)):
             verts.append((r * math.cos(a), r * math.sin(a), z))
     faces, cols = [], []
     for i in range(n):
@@ -144,10 +144,10 @@ def tricorn(b, z0):
             faces.append((A + j, B + j, B + m, A + m))
             cols.append(c)
     b._emit(verts, faces, cols)
-    b.lathe(0, 0, [(0.74, z0), (0.72, z0 + 0.5), (0.58, z0 + 0.72), (0, z0 + 0.74)], P.FELT, n=12)
-    b.lathe(0, 0, [(0.28, z0 + 0.72), (0.28, z0 + 0.86), (0, z0 + 0.9)], P.FELT, n=8)
+    b.lathe(0, 0, [(0.95, z0), (0.92, z0 + 0.8), (0.72, z0 + 1.12), (0, z0 + 1.16)], P.FELT, n=12)
+    b.lathe(0, 0, [(0.3, z0 + 1.14), (0.3, z0 + 1.28), (0, z0 + 1.32)], P.FELT, n=8)
     # skull badge at the front point, printed tile on a small plate
-    x, y0, y1, zb, zt = 0.34, -0.8, -0.68, z0 + 0.04, z0 + 0.66
+    x, y0, y1, zb, zt = 0.52, -1.0, -0.86, z0 + 0.06, z0 + 1.04
     verts = [(-x, y0, zb), (x, y0, zb), (x, y0, zt), (-x, y0, zt), (-x, y1, zb), (x, y1, zb), (x, y1, zt), (-x, y1, zt)]
     start = len(b.f)
     b._emit(verts, [(0, 1, 2, 3), (5, 4, 7, 6), (1, 5, 6, 2), (4, 0, 3, 7), (3, 2, 6, 7), (4, 5, 1, 0)], P.FELT)
@@ -212,20 +212,21 @@ def captain_props(b):
             ca, sa = math.cos(a), math.sin(a)
             b.beam((0.1 * ca, -0.05, 0.1 * sa), (1.02 * ca, -0.05, 1.02 * sa), 0.15, 0.1, P.WHEEL)
             b.rod((1.08 * ca, -0.05, 1.08 * sa), (1.42 * ca, -0.05, 1.42 * sa), 0.16, P.POST, n=6)
-    # macaw on the top handle
+    # macaw on the top handle: pure red and yellow, double size so it reads on a phone
+    import mathutils as mu
     x, y, z = c[0], c[1], c[2] + 1.45
-    with b.at(trans(x, y, z)):
-        b.lathe(0, 0, [(0, 0), (0.28, 0.14), (0.34, 0.45), (0.25, 0.8), (0, 0.92)], [P.PARROT, P.PBELLY, P.PARROT, P.PARROT], n=8)
-        b.lathe(0, -0.03, [(0, 0.78), (0.24, 0.9), (0.25, 1.1), (0, 1.26)], P.PARROT, n=8)
-        b.lathe(0, -0.25, [(0.13, 1.0), (0.11, 1.08), (0, 1.12)], P.BEAK, n=6)
+    R_, Y_ = P.cell(P.MACAW_R, "abs"), P.cell(P.MACAW_Y, "abs")
+    with b.at(trans(x, y, z) @ mu.Matrix.Scale(2.0, 4)):
+        b.lathe(0, 0, [(0, 0), (0.28, 0.14), (0.34, 0.45), (0.25, 0.8), (0, 0.92)], [R_, Y_, R_, R_], n=8)
+        b.lathe(0, -0.03, [(0, 0.78), (0.24, 0.9), (0.25, 1.1), (0, 1.26)], R_, n=8)
+        b.lathe(0, -0.25, [(0.13, 1.0), (0.11, 1.08), (0, 1.12)], Y_, n=6)
         for s in (1, -1):
-            b.box((s * 0.3 - 0.07, -0.16, 0.2), (s * 0.3 + 0.07, 0.2, 0.74), P.WING, bevel=0.03)
-            b.box((s * 0.3 - 0.06, -0.08, 0.02), (s * 0.3 + 0.06, 0.2, 0.22), P.WTIP, bevel=0.02)
-            b.cyl(s * 0.13, -0.2, 0.98, 1.0, 0.07, P.BLACK, n=6) if False else None
+            b.box((s * 0.3 - 0.07, -0.16, 0.2), (s * 0.3 + 0.07, 0.2, 0.74), Y_, bevel=0.03)
+            b.box((s * 0.3 - 0.06, -0.08, 0.02), (s * 0.3 + 0.06, 0.2, 0.22), R_, bevel=0.02)
             with b.at(kit.along((s * 0.5, -1, 0), (s * 0.12, -0.25, 1.06))):
                 b.lathe(0, 0, [(0.06, 0), (0.06, 0.04), (0, 0.05)], P.BLACK, n=6)
-        b.box((-0.1, 0.12, -0.5), (0.1, 0.24, 0.1), P.PARROT, bevel=0.03)
-        b.box((-0.1, 0.12, -0.74), (0.1, 0.24, -0.5), P.WTIP, bevel=0.03)
+        b.box((-0.1, 0.12, -0.5), (0.1, 0.24, 0.1), R_, bevel=0.03)
+        b.box((-0.1, 0.12, -0.74), (0.1, 0.24, -0.5), Y_, bevel=0.03)
 
 
 def oar(b, hand):
