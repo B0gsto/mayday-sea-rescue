@@ -143,7 +143,7 @@ def phone_scene(level):
     world((0.5, 0.74, 0.95), 1.0)
     sun((math.radians(50), 0, math.radians(35)), 3.2)
     back = 1.15      # the concept's 3/4 chase, pulled back for the fat rocket (RESULT.md)
-    pos, target = Vector((11 * back, 20 * back + WATER, 53 * back)), Vector((0, 8 + WATER, 2))
+    pos, target = Vector((11 * back, 20 * back + WATER, 53 * back)), Vector((0, 9 + WATER, 2))
     camera(bl(pos), bl(target), 18 / (math.tan(math.radians(35)) * 1.8))
 
 
