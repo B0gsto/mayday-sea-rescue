@@ -2,9 +2,9 @@
  "MegaOutboard": {
   "level": 12,
   "tris_authored": [
-   1518,
-   876,
-   486
+   2410,
+   1360,
+   618
   ],
   "meshpart_centre_roblox": [
    0.011,
@@ -20,145 +20,145 @@
  "ArchSpoiler": {
   "level": 13,
   "tris_authored": [
-   980,
-   458,
-   168
+   2928,
+   1318,
+   340
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   9.449,
-   12.613
+   9.569,
+   12.478
   ],
   "size_roblox": [
-   13.52,
-   12.998,
-   6.275
+   13.84,
+   13.238,
+   6.605
   ]
  },
  "NeonFins": {
   "level": 14,
   "tris_authored": [
-   384,
-   384,
-   256
+   560,
+   560,
+   304
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   6.009,
-   2.358
+   5.997,
+   2.355
   ],
   "size_roblox": [
-   15.14,
-   6.85,
-   20.982
+   15.176,
+   6.901,
+   21.012
   ]
  },
  "FatTubes": {
   "level": 15,
   "tris_authored": [
-   3196,
-   1220,
-   500
+   6004,
+   2684,
+   748
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   4.2,
+   4.364,
    -0.681
   ],
   "size_roblox": [
-   15.04,
-   4.4,
+   15.49,
+   5.048,
    28.285
   ]
  },
  "Grandstand": {
   "level": 16,
   "tris_authored": [
-   2784,
-   2232,
+   3072,
+   2328,
    864
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   6.747,
-   -6.215
+   6.74,
+   -6.213
   ],
   "size_roblox": [
-   6.0,
-   9.808,
-   6.43
+   6.2,
+   9.822,
+   6.463
   ]
  },
  "PaddleWheel": {
   "level": 17,
   "tris_authored": [
-   3912,
-   2392,
-   1044
+   5216,
+   2952,
+   1036
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   6.165,
-   3.676
+   4.935,
+   1.576
   ],
   "size_roblox": [
-   24.0,
-   10.537,
-   11.261
+   20.195,
+   8.189,
+   8.719
   ]
  },
  "SharkJaws": {
   "level": 18,
   "tris_authored": [
-   5124,
-   2352,
-   684
+   6676,
+   2888,
+   824
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   7.598,
-   -12.66
+   8.782,
+   -12.749
   ],
   "size_roblox": [
-   9.593,
-   12.873,
-   8.244
+   18.596,
+   16.036,
+   12.238
   ]
  },
  "ExhaustOrgan": {
   "level": 19,
   "tris_authored": [
-   2872,
-   1636,
-   604
+   3056,
+   1804,
+   640
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   9.776,
-   5.776
+   7.342,
+   7.076
   ],
   "size_roblox": [
-   11.84,
-   15.352,
-   3.4
+   14.32,
+   11.004,
+   2.2
   ]
  },
  "ThunderWing": {
   "level": 20,
   "tris_authored": [
-   104,
-   104,
+   584,
+   264,
    104
   ],
   "meshpart_centre_roblox": [
    -0.0,
-   16.533,
+   17.114,
    12.376
   ],
   "size_roblox": [
-   28.449,
-   7.453,
-   3.9
+   22.243,
+   7.741,
+   2.94
   ]
  }
 }

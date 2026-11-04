@@ -1,6 +1,6 @@
 """AD contact sheet for M_Upg_RIB (not exported): L11, L15, L20 from three angles plus the concept's phone chase view.
 
-In Blender, after the pipeline (never save the .blend after this):  import preview; preview.render(out_dir); preview.zfight_with_hull()
+In Blender, after the pipeline (never save the .blend after this):  import preview; preview.zfight_with_hull(); preview.render(out_dir)
 Then, system python3 (Pillow):  python3 preview.py sheet <out_dir> <out.png>
 """
 import math
@@ -128,7 +128,7 @@ def render(out_dir):
 
 
 def zfight_with_hull():
-    """All nine pieces (LOD0, as render() left them) against the shipped hull's LOD0, Engines out: they show together in game."""
+    """All nine exported LOD0s against the shipped hull's LOD0, Engines out: they show together in game."""
     import bpy
     import pieces as build
     import zfight_check as Z
@@ -138,11 +138,19 @@ def zfight_with_hull():
     hull = [o for o in t.objects if o]
     for o in hull:
         bpy.context.scene.collection.objects.link(o)
-    kit = [o for o in bpy.data.objects if o.name.startswith("PV_") and o.type == "MESH" and o.name not in ("PV_Rider", "PV_Water")]
+    # the exported LOD0s: run.py's nudges live there, not on the fresh PV_ meshes render() built
+    kit = []
+    win = bpy.context.window_manager.windows[0]
+    for _, short, _f in build.PIECES:
+        a = build.PREFIX + short
+        before = set(bpy.data.objects)
+        with bpy.context.temp_override(window=win, screen=win.screen):
+            bpy.ops.import_scene.fbx(filepath=os.path.join(build.G, "build/prod", a, "fbx", a, a + "_LOD0.fbx"))
+        kit += [o for o in bpy.data.objects if o not in before and o.type == "MESH"]
     rows = Z.analyse(Z.collect(bpy, kit + hull))
     vis = [r for r in rows if r["visible"]]
-    mine = [r for r in vis if r["a"].startswith("PV_") or r["b"].startswith("PV_")]     # the rest are the shipped hull's own decals
-    return {"kit": len(kit), "hull": len(hull), "visible": len(vis), "visible_with_a_piece": len(mine), "pairs": [(r["a"], r["b"]) for r in mine[:12]]}
+    mine = [r for r in vis if "_Upg_" in r["a"] or "_Upg_" in r["b"]]     # the rest are the shipped hull's own decals
+    return {"kit": len(kit), "hull": len(hull), "visible": len(vis), "visible_with_a_piece": len(mine), "pairs": sorted({(r["a"], r["b"]) for r in mine})}
 
 
 def sheet(out_dir, out_png):
