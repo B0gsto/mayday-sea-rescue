@@ -219,6 +219,19 @@ function Events.lengthBucket(seconds: number): string
 	)
 end
 
+-- seconds from join to the world on screen -> "<5s" ... "40s+" ("NotReady": left before it)
+function Events.readyBucket(seconds: number?): string
+	if seconds == nil then
+		return "NotReady"
+	end
+	return bucket(seconds, { 5, 10, 20, 40 }, { "<5s", "5-10s", "10-20s", "20-40s", "40s+" })
+end
+
+-- the client's average frame rate -> "<20", "20-30", "30-45", "45+"
+function Events.fpsBucket(fps: number): string
+	return bucket(fps, { 20, 30, 45 }, { "<20", "20-30", "30-45", "45+" })
+end
+
 -- Award / grant reason -> (Enum.AnalyticsEconomyTransactionType name, item SKU)
 --   "Purchase:<key>"           Cash packs and the Starter Kit (CashEffects)   IAP
 --   "Streak:*", "Group:*"      the daily crate and its group bonus            TimedReward

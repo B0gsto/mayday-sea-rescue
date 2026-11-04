@@ -40,6 +40,7 @@ TelemetryNames.Custom = table.freeze({
 	"InputDead", -- input held with no response (client-detected): device, where
 	"SessionStart", -- value = days since the first session: day bucket, gap bucket, New / Returning
 	"SessionEnd", -- value = seconds played: length bucket, device, day bucket
+	"SessionPerf", -- value = seconds from join to the world on screen (0 = never): ready bucket, fps bucket, device
 	"PlateBuilt", -- docs/27: a sea plate stood (value = minutes this session): plate, length bucket, day bucket
 	"TestRide", -- a lent Robux boat (value = seconds ridden): vehicle, Started / Time / SteppedOff
 	"Pirate", -- a pirate chase (value = sea zone): Spawn + vehicle / End + why (Hit, Timeout, Shallows, Shaken, Lost) / Escaped

@@ -416,7 +416,8 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   `Count`, `Once`), `LeaderboardRules`, `LeaderboardService` (`Board(face)`: DockService stands one on each plaza with the HQ).
 - Analytics: `TelemetryNames` (fixed name lists), `Telemetry/Events` (pure mapping), `TelemetryService` (the only
   `AnalyticsService` caller), client `src/client/Telemetry.luau` (`once`, `send`, `shop`, `stalled` over
-  `Telemetry_Client`; values checked server-side).
+  `Telemetry_Client`; values checked server-side). `SessionPerf` (one per session, at leave): join-to-world seconds
+  (server clock, `NotReady` if the player left first), fps bucket, device.
 - Settings: `SettingsRules` (pure), `Camera/Comfort` (saved in `flags.cameraSettings`), `SettingsPanel`,
   `A11yPalette`. Camera: `CameraController` (third person only; `SetOverride`, `PlayCinematic`), `Camera/Cinematic`,
   `Camera/CameraMath`. Audio: `AudioConfig`, `AudioController`, `Audio/AudioMix`. Swimming: `SwimController` +
