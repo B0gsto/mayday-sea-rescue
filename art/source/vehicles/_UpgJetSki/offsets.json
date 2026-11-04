@@ -1,0 +1,164 @@
+{
+ "SharkFin": {
+  "level": 2,
+  "tris_authored": [
+   1190,
+   538,
+   156
+  ],
+  "meshpart_centre_roblox": [
+   -0.0,
+   2.892,
+   -6.336
+  ],
+  "size_roblox": [
+   2.869,
+   3.481,
+   2.082
+  ]
+ },
+ "RescueSled": {
+  "level": 3,
+  "tris_authored": [
+   1828,
+   344,
+   184
+  ],
+  "meshpart_centre_roblox": [
+   -0.0,
+   1.558,
+   4.329
+  ],
+  "size_roblox": [
+   3.4,
+   1.155,
+   4.0
+  ]
+ },
+ "TwinEngines": {
+  "level": 4,
+  "tris_authored": [
+   1652,
+   824,
+   168
+  ],
+  "meshpart_centre_roblox": [
+   -0.0,
+   1.857,
+   7.279
+  ],
+  "size_roblox": [
+   3.5,
+   4.025,
+   2.7
+  ]
+ },
+ "FlamePipes": {
+  "level": 5,
+  "tris_authored": [
+   1368,
+   736,
+   268
+  ],
+  "meshpart_centre_roblox": [
+   -0.0,
+   3.091,
+   8.961
+  ],
+  "size_roblox": [
+   2.897,
+   0.903,
+   1.603
+  ]
+ },
+ "BananaBoat": {
+  "level": 6,
+  "tris_authored": [
+   1406,
+   816,
+   328
+  ],
+  "meshpart_centre_roblox": [
+   -0.0,
+   1.119,
+   10.126
+  ],
+  "size_roblox": [
+   1.248,
+   1.799,
+   6.655
+  ]
+ },
+ "HugeSpoiler": {
+  "level": 7,
+  "tris_authored": [
+   1328,
+   264,
+   72
+  ],
+  "meshpart_centre_roblox": [
+   -0.0,
+   3.435,
+   3.189
+  ],
+  "size_roblox": [
+   6.28,
+   2.91,
+   1.798
+  ]
+ },
+ "BullNose": {
+  "level": 8,
+  "tris_authored": [
+   2552,
+   1216,
+   272
+  ],
+  "meshpart_centre_roblox": [
+   -0.0,
+   2.328,
+   -7.518
+  ],
+  "size_roblox": [
+   5.099,
+   2.635,
+   2.506
+  ]
+ },
+ "HornStack": {
+  "level": 9,
+  "tris_authored": [
+   1944,
+   708,
+   140
+  ],
+  "meshpart_centre_roblox": [
+   -0.0,
+   3.429,
+   -8.239
+  ],
+  "size_roblox": [
+   2.953,
+   1.559,
+   2.155
+  ]
+ },
+ "TurboCrown": {
+  "level": 10,
+  "tris_authored": [
+   3216,
+   1452,
+   460
+  ],
+  "meshpart_centre_roblox": [
+   -0.0,
+   4.825,
+   -3.906
+  ],
+  "size_roblox": [
+   2.795,
+   3.11,
+   2.73
+  ]
+ }
+}

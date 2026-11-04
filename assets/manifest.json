@@ -26287,6 +26287,14 @@
   "source": "assets/fbx/M_Kit_ThrowBag/M_Kit_ThrowBag_LOD0.fbx",
   "type": "Model"
  },
+ "Model:3a46bf45935fce15a103be4fe666740d9d534853ecb98bfba58be0a75ce4d554": {
+  "assetId": "98964886352809",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_HugeLamps_LOD1",
+  "sha": "3a46bf45935fce15a103be4fe666740d9d534853ecb98bfba58be0a75ce4d554",
+  "source": "build/prod/M_Upg_Lifeboat_HugeLamps/fbx/M_Upg_Lifeboat_HugeLamps/M_Upg_Lifeboat_HugeLamps_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:3a75b169c30203ad9c166969b4be09db2868881d8c7c0d97b2effbf3622913f1": {
   "assetId": "140036093138257",
   "moderation": "Approved",
@@ -28865,6 +28873,16 @@
   "route": "delivery",
   "sha": "76440649fa00f651c344d259309f025ec1d30f644c1ca732ddf6f2db49b17434",
   "source": "assets/fbx/M_Road_ParkedCar_01/M_Road_ParkedCar_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:7644fa23c15c21fce595a7443c29108350b37c882691510cce797a8a4c97225b": {
+  "assetId": "121231757896755",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_ArmourSpikes_LOD2",
+  "rbxm": "assets/models/M_Upg_Lifeboat_ArmourSpikes_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "7644fa23c15c21fce595a7443c29108350b37c882691510cce797a8a4c97225b",
+  "source": "build/prod/M_Upg_Lifeboat_ArmourSpikes/fbx/M_Upg_Lifeboat_ArmourSpikes/M_Upg_Lifeboat_ArmourSpikes_LOD2.fbx",
   "type": "Model"
  },
  "Model:774792122b319420beee46c32c8ce9ed873f16e411593f1106f48e11f2079f4f": {
@@ -34385,6 +34403,16 @@
   "route": "delivery",
   "sha": "f2028a13a9cda8f6c9d488ccbff4e9ae5ed3ef14f97bb75561e8527da24ec8ea",
   "source": "assets/fbx/M_Veg_Bracken_02/M_Veg_Bracken_02_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:f38d609734c6395ace9cff8995dcd10f4f85409b4c45b87a3beb733f2ea0dd5b": {
+  "assetId": "122474226274027",
+  "moderation": "Approved",
+  "name": "M_Upg_Lifeboat_HugeLamps",
+  "rbxm": "assets/models/M_Upg_Lifeboat_HugeLamps.rbxm",
+  "route": "delivery",
+  "sha": "f38d609734c6395ace9cff8995dcd10f4f85409b4c45b87a3beb733f2ea0dd5b",
+  "source": "build/prod/M_Upg_Lifeboat_HugeLamps/fbx/M_Upg_Lifeboat_HugeLamps/M_Upg_Lifeboat_HugeLamps_LOD0.fbx",
   "type": "Model"
  },
  "Model:f39934844cfeb131ef65ac73bcc993f011b101cd729f378dac12eef2b8f98c3e": {
