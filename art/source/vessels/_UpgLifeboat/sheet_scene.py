@@ -13,7 +13,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 GAME = os.path.abspath(os.path.join(HERE, "../../../.."))
 OUT = os.path.join(GAME, "build/status/2026-11-04/art/lifeboat_cells")
 WATER = 1.5           # hull y of the sea in the game (float points y -3, draft 4.5)
-LIFT_WATER = -3.55    # hull y of the sea once the foils lift her (concept: wing tips on the datum at L28+)
+LIFT_WATER = -6.6     # hull y of the sea once the skis lift her: they ride on the water at L28+
 ANGLES = {"three": (1.0, 0.55, -1.15), "side": (-1, 0.1, 0), "rear": (-1.0, 0.5, 1.1)}
 
 
@@ -151,7 +151,8 @@ def shoot(level):
     wy = LIFT_WATER if level >= 28 else WATER
     plane("Sea", wy, 3000, flat_mat("StageSea", (0.022, 0.21, 0.45), 0.75))
     world((0.5, 0.74, 0.95), 1.0)
-    extra = (3.55 if level >= 28 else 0)
-    pos, target = Vector((6, 21 + extra * 0.6 + wy, 54)), Vector((0, 3.5 + extra * 0.7 + wy, -2))
+    extra = (5.0 if level >= 28 else 0)
+    back = 1.45 if level >= 27 else 1.0      # the doubled lamp tower needs the camera further off, as a scaled-up boat gets
+    pos, target = Vector((6, (21 + extra * 0.6) * back + wy, 54 * back)), Vector((0, (3.5 + extra * 0.7) * back + wy, -2))
     camera(bl(pos), bl(target), 18 / (math.tan(math.radians(35)) * 1.8))  # the concept: 70 deg vertical, 1.8 aspect
     render(os.path.join(OUT, "L%d_phone.png" % level), 720, 400)

@@ -7,7 +7,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-# the mast group rides 6.5 higher on the battle bridge at L30, the stays come off (concept buildHull; code must do the same)
+# the mast group rides 7.2 higher on the battle bridge at L30, the stays come off from L23 (they would cut the huge lamps); code must do the same
 MAST = {"MastBase", "Mast", "MastTop", "Yard", "RadarPedestal", "Radar", "NavMasthead", "Antenna-1", "Antenna1", "BeaconBase", "Beacon"}
 
 
@@ -31,9 +31,9 @@ def build(level=21, name="HullRef"):
     verts, faces, mats, face_mat = [], [], [], []
     keys = {}
     for p in parts:
-        if level >= 30 and p["n"].startswith("Stay"):
+        if level >= 23 and p["n"].startswith("Stay"):
             continue
-        up = 6.5 if level >= 30 and p["n"] in MAST else 0.0
+        up = 7.2 if level >= 30 and p["n"] in MAST else 0.0
         c = p["cf"]
         m = Matrix(((c[3], c[4], c[5], c[0]), (c[6], c[7], c[8], c[1] + up), (c[9], c[10], c[11], c[2]), (0, 0, 0, 1)))
         vs, fs = _shape(p)
