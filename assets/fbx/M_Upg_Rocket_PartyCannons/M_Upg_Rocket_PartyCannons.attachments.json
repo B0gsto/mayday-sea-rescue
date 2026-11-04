@@ -1,0 +1,65 @@
+{
+ "asset": "M_Upg_Rocket_PartyCannons",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Confetti_S",
+   "parent": null,
+   "blender": [
+    -13.1934,
+    15.2944,
+    14.7134
+   ],
+   "roblox_from_origin": [
+    13.1934,
+    14.7134,
+    15.2944
+   ],
+   "roblox_from_bbox_centre": [
+    13.4506,
+    0.5292,
+    0.0287
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Confetti_P",
+   "parent": null,
+   "blender": [
+    13.1934,
+    15.2944,
+    14.7134
+   ],
+   "roblox_from_origin": [
+    -13.1934,
+    14.7134,
+    15.2944
+   ],
+   "roblox_from_bbox_centre": [
+    -12.9362,
+    0.5292,
+    0.0287
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}
