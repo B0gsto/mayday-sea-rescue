@@ -588,7 +588,6 @@ return function(t)
 			local Builder = t.load("src/shared/Boat/Builder.luau")
 			t.expect(L.HullArt.JetSki.origin).toBe(Builder.JETSKI_ORIGIN)
 			t.expect(L.HullArt.RIB.origin).toBe(Builder.RIB_ORIGIN)
-			t.expect(Ids.Models[L.HullArt.RocketCutter.pilot] ~= nil).toBe(true)
 		end
 	)
 

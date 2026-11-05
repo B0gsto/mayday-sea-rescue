@@ -263,49 +263,7 @@ BoatLevels.HullArt = {
 			ATT_Flame = Color3.fromRGB(255, 170, 90),
 		},
 	},
-	Hydrofoil = {
-		origin = Vector3.new(0, -2.1, -0.0761),
-		width = 25.4,
-		pieces = {
-			[32] = "M_Upg_Hydrofoil_GiantJets",
-			[33] = "M_Upg_Hydrofoil_TTail",
-			[34] = "M_Upg_Hydrofoil_SkyStilts",
-			[35] = "M_Upg_Hydrofoil_NeedleNose",
-			[36] = "M_Upg_Hydrofoil_SkyWings",
-			[37] = "M_Upg_Hydrofoil_Afterburners",
-			[38] = "M_Upg_Hydrofoil_RadarDish",
-			[39] = "M_Upg_Hydrofoil_TopJet",
-			[40] = "M_Upg_Hydrofoil_TurboHalo",
-		},
-		-- the foils land on the stilts
-		move = {
-			{ from = 34, by = Vector3.new(0, -2.5, 1.329), prefixes = { "M_Veh_Hydrofoil_Foils" } },
-		},
-		rise = { from = 34, y = 2.5 },
-		chase = { { from = 34, x = 1.15 }, { from = 39, x = 1.3 } },
-		glow = {
-			ATT_Glow = Color3.fromRGB(150, 220, 255),
-			ATT_Flame = Color3.fromRGB(255, 170, 90),
-		},
-	},
-	RocketCutter = {
-		origin = Vector3.zero,
-		width = 43.8,
-		pieces = {
-			[42] = "M_Upg_Rocket_SideBoosters",
-			[43] = "M_Upg_Rocket_GoldPlating",
-			[44] = "M_Upg_Rocket_WaveWall",
-			[45] = "M_Upg_Rocket_GoldEagle",
-			[46] = "M_Upg_Rocket_RocketFins",
-			[47] = "M_Upg_Rocket_GoldThrone",
-			[48] = "M_Upg_Rocket_PartyCannons",
-			[49] = "M_Upg_Rocket_MegaTrophy",
-			[50] = "M_Upg_Rocket_SunBooster",
-		},
-		chase = { { from = 44, x = 1.25 } },
-		glow = { ATT_Flame = Color3.fromRGB(255, 170, 90) },
-		pilot = "M_Upg_Rocket_Pilot",
-	},
+	-- Hydrofoil and RocketCutter: Parts until new concepts pass (owner 2026-11-05; both meshes read as weapons).
 } :: { [string]: any }
 
 -- Hull studs (at x1) this hull floats higher at this level.

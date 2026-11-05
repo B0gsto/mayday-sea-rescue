@@ -223,16 +223,12 @@ end
 VehicleConfig.Hydrofoil = variant("RIB", {
 	id = "Hydrofoil",
 	displayName = "Hydrofoil",
-	model = "M_Veh_Hydrofoil", -- on the RIB frame, with its own ATT_ markers
 	planingLift = 0.8,
 	runningTrim = 5,
 })
 VehicleConfig.RocketCutter = variant("Lifeboat", {
 	id = "RocketCutter",
 	displayName = "Rocket Cutter",
-	model = "M_Veh_RocketCutter", -- on the Lifeboat asset frame
-	hullSize = Vector3.new(10, 7.5, 60),
-	survivorCapacity = 14, -- every ATT_SurvivorSlot (room 12 at L41, 14 at L50)
 	planingLift = 0.7,
 	runningTrim = 5,
 })
