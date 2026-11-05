@@ -9,7 +9,10 @@ Glance.BEACH_SPEED = 120 -- studs/s: from here a beach stops a hull as dead as a
 Glance.MAX_NORMAL_Y_FAST = 0.995 -- so only a flat seabed doesn't count
 Glance.LOSS_WINDOW = 0.3 -- s after a glance when more contacts turn the hull but take no more speed: a blocky corner
 -- touches several faces in a row and each one's cut stacked (695 -> 419 -> 199 in 0.1 s) -- tune
-Glance.SLAM_RATIO = 0.5 -- this much of the speed gone in one frame: physics met a wall before the sweep did
+Glance.SLAM_RATIO = 0.5 -- this much of the recent speed gone: physics met land the sweep never saw
+Glance.SLAM_WINDOW = 0.2 -- s the recent top speed is kept: a beach grinds over several frames (602 -> 34 in 0.2 s,
+-- never half in one frame) -- tune
+Glance.SLAM_MIN_LOSS = 80 -- studs/s lost inside the window: a full L50 brake (270 studs/s^2) loses 54 -- tune
 Glance.KEEP_HEAD_ON = 0.55 -- of the speed, straight into a wall -- tune
 Glance.KEEP_SHALLOW = 0.95 -- of the speed, skimming along one -- tune
 Glance.PEEL = 0.3 -- how much the new heading leans away from the wall -- tune
@@ -25,9 +28,31 @@ function Glance.isWall(normalY: number, speed: number): boolean
 		< (if speed >= Glance.BEACH_SPEED then Glance.MAX_NORMAL_Y_FAST else Glance.MAX_NORMAL_Y)
 end
 
--- The sweep missed and the speed died anyway (the hull was already touching, or a thin edge): glance late.
-function Glance.slammed(lastSpeed: number, speed: number): boolean
-	return lastSpeed >= Glance.MIN_SPEED and speed < lastSpeed * Glance.SLAM_RATIO
+-- Adds this frame's flat velocity to `history` (oldest first, trimmed to SLAM_WINDOW) and returns the fastest in it.
+function Glance.remember(
+	history: { { at: number, v: Vector3 } },
+	now: number,
+	flat: Vector3
+): Vector3
+	table.insert(history, { at = now, v = flat })
+	while history[1].at < now - Glance.SLAM_WINDOW do
+		table.remove(history, 1)
+	end
+	local top = flat
+	for _, h in history do
+		if h.v.Magnitude > top.Magnitude then
+			top = h.v
+		end
+	end
+	return top
+end
+
+-- The sweep missed and the speed died anyway (already touching, terrain, a thin edge): glance late. `recent`: the
+-- top speed of the last SLAM_WINDOW.
+function Glance.slammed(recent: number, speed: number): boolean
+	return recent >= Glance.MIN_SPEED
+		and speed < recent * Glance.SLAM_RATIO
+		and recent - speed >= Glance.SLAM_MIN_LOSS
 end
 
 -- velocity and normal flat (Y = 0 is forced here). Returns the new velocity and the heading, or nil when already

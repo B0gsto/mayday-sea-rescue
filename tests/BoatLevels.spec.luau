@@ -364,6 +364,22 @@ return function(t)
 		t.expect(Glance.slammed(751, 67)).toBe(true)
 		t.expect(Glance.slammed(1101, 1050)).toBe(false)
 		t.expect(Glance.slammed(20, 1)).toBe(false)
+		-- a beach grind (602 -> 34 in 0.2 s, never half in one frame) builds up to a slam; a full brake never does
+		local function grind(from: number, to: number, secs: number): boolean
+			local history, frames = {}, math.floor(secs * 60)
+			for i = 0, frames do
+				local speed = from + (to - from) * i / frames
+				local top = Glance.remember(history, i / 60, Vector3.new(speed, 0, 0))
+				if Glance.slammed(top.Magnitude, speed) then
+					return true
+				end
+			end
+			return false
+		end
+		t.expect(grind(602, 34, 0.2)).toBe(true)
+		t.expect(grind(876, 118, 0.3)).toBe(true)
+		t.expect(grind(1230, 328, 0.3)).toBe(true)
+		t.expect(grind(1200, 0, 1200 / 300)).toBe(false) -- 300 studs/s^2, past any brake
 	end)
 
 	t.test("the sea's edge turns every level back before it counts as lost", function()

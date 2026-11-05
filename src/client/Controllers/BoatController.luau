@@ -258,7 +258,11 @@ end
 -- docs/30: at speed a wall glances you off (Boat/Glance): sweep HullRoot's own box (what really collides, keel to deck
 -- at any scale) ahead each frame, since a fast hull moves further per physics step than most walls are thick.
 local glanceAt: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
-local lastMove: { [Model]: { at: CFrame, flat: Vector3 } } = setmetatable({}, { __mode = "k" }) :: any
+-- history: Glance.remember's last SLAM_WINDOW of flat velocities
+local lastMove: { [Model]: { at: CFrame, flat: Vector3, history: { any } } } = setmetatable(
+	{},
+	{ __mode = "k" }
+) :: any
 local lostSpeedAt: { [Model]: number } = setmetatable({}, { __mode = "k" }) :: any
 local function glanceBoat(model: Model, dt: number)
 	local root = model.PrimaryPart
@@ -272,12 +276,15 @@ local function glanceBoat(model: Model, dt: number)
 	local flat = Vector3.new(v.X, 0, v.Z)
 	local now = os.clock()
 	local was = lastMove[model]
-	lastMove[model] = { at = root.CFrame, flat = flat }
+	local history = if was then was.history else {}
+	local top = Glance.remember(history, now, flat)
+	lastMove[model] = { at = root.CFrame, flat = flat, history = history }
 	-- a reset or a landing moves the hull far as well as stopping it: not a slam
 	local slam = was ~= nil
-		and Glance.slammed(was.flat.Magnitude, flat.Magnitude)
-		and (root.Position - was.at.Position).Magnitude < was.flat.Magnitude * dt * 3
-	local sweep = if slam then (was :: any).flat else flat
+		and Glance.slammed(top.Magnitude, flat.Magnitude)
+		and (root.Position - was.at.Position).Magnitude < was.flat.Magnitude * dt * 3 + 1
+	-- a grind over several frames (beach, terrain the sweep can't see from inside it): glance at the speed it had
+	local sweep = if slam then top else flat
 	local speed = sweep.Magnitude
 	if speed < Glance.MIN_SPEED or now < (glanceAt[model] or 0) then
 		return
@@ -308,7 +315,8 @@ local function glanceBoat(model: Model, dt: number)
 		-- after a slam v.Y is the wall's kick: it drove hulls down to y -16, under the plates
 		root.AssemblyLinearVelocity = velocity + Vector3.new(0, if slam then 0 else v.Y, 0)
 		root.AssemblyAngularVelocity = Vector3.zero
-		lastMove[model] = { at = root.CFrame, flat = velocity }
+		lastMove[model] =
+			{ at = root.CFrame, flat = velocity, history = { { at = now, v = velocity } } }
 	end
 end
 
