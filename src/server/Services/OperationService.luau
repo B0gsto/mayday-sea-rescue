@@ -243,7 +243,7 @@ end
 
 -- Which flat tutorial pay this call gets (Grading.Payout.Tutorial), or nil: by the saved total, so a returning
 -- player's first calls of a session pay in full (the session count is the fallback while the save loads).
-local function tutorialIndex(player: Player, st: PlayerState): number?
+local function tutorialPayIndex(player: Player, st: PlayerState): number?
 	local done = tonumber(player:GetAttribute("OpsCompletedTotal")) or st.completed
 	return if done < #Grading.Payout.Tutorial then done else nil
 end
@@ -959,7 +959,7 @@ finish = function(op: any, reason: string)
 				paidAs = "Op:CapsizedFerry"
 				run = runMultiplier(p)
 			else
-				local tut = tutorialIndex(p, st)
+				local tut = tutorialPayIndex(p, st)
 				reward = Grading.payout(op.weight, op.grade, humans, tut)
 				paidAs = `Op:{op.kind}`
 				if not tut then
@@ -1431,7 +1431,7 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	end
 	table.insert(op.offeredTo, player)
 	st.offerOpId = op.id
-	local tut = tutorialIndex(player, st)
+	local tut = tutorialPayIndex(player, st)
 	fire("Ops_Offered", player, offerPayload(op, tut))
 	try("TelemetryService", "Call", player, op.id, "Offered", op.kind) -- analytics H1
 	return op
