@@ -293,7 +293,8 @@ local function buildStations()
 				prompt.ActionText = "Upgrade"
 				prompt.MaxActivationDistance = UpgradeStation.USE_RANGE
 				prompt.RequiresLineOfSight = false
-				prompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
+				-- one E per key: on foot the boat's seat prompt is also E, and AlwaysShow fired both (a free seat, a paid level)
+				prompt.Exclusivity = Enum.ProximityPromptExclusivity.OnePerButton
 				prompt.Parent = part
 				buttons[index] = part
 			end
