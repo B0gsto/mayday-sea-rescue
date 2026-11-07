@@ -30,7 +30,7 @@
 --   BoatLevelMoment    S->C  ("Start" | "Swap", ownerUserId, boat model?, new level): the level-up moment
 --   TestRide           C->S  function: ride a locked Robux boat 60 s (board name, vehicleId) -> (ok, reason)
 --   GoHome             C->S  function: far from your island (DockConfig.HOME_FAR), stand on its spawn -> (ok, reason)
---   GoBack             C->S  press Go back (no payload); S->C to everyone aboard: "Charge" | "Cancel" | "Land" (VehicleService)
+--   GoBack             C->S  press Go back (no payload); S->C to everyone aboard: "Ride", route | "Cancel" | "Land" (VehicleService)
 --   Spin_Flex          S->C  a Legendary / Mythic wheel win: banner + confetti for everyone
 --   Skill_State        S->C  the player's bought skill nodes and Medals (on join and after a buy)
 --   Skill_Buy          C->S  function: buy a skill node (id) -> ok, reason

@@ -10,11 +10,13 @@ survivors. This wins over docs/00 sections 3-7 wherever they differ; docs/00 get
 ## 1. Go back (no parking, ever)
 - A big **Go back** button low on the screen (home icon + 2 words; keyboard key, gamepad button, touch), shown while
   driving away from home. Works on every craft, with or without survivors.
-- Press: a charge of about 1.5 s with a fast camera whoosh, then you, your boat and everyone aboard are home.
-  Survivors hop off by themselves, pay lands, workers walk off.
+- Press (owner 2026-11-07): the boat turns itself toward home (0.8 s), then drives itself home very fast with you
+  seated, along a route clear of islands, and swings round into the bay; stopped about 5 s after the press however far
+  (the speed scales). A boxed-in start hides its middle under a short veil. Survivors hop off by themselves, pay lands,
+  workers walk off.
 - **You land in the Upgrade Station's bay, still on the boat, bow to the open sea, throttle ready.** No docking, parking,
   stepping off, walking or Launch prompt in the loop. Getting off to walk your island is optional.
-- A pirate ram during the charge cancels it (docs/29 D). Server validates everything. Driving home by hand still works.
+- A pirate ram during the turn cancels it (docs/29 D). Server validates everything. Driving home by hand still works.
 
 ## 2. Fifty levels, every one massive
 One boat, one straight ladder. Cash only. Exaggerate everything.

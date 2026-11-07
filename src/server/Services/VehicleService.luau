@@ -1617,41 +1617,83 @@ local function clearLanding(record: Record, to: CFrame)
 	end
 end
 
-local function tellAboard(players: { Player }, phase: string)
+local function tellAboard(players: { Player }, phase: string, route: GoBack.Route?)
 	for _, p in players do
 		if p.Parent then
-			Net.event("GoBack"):FireClient(p, phase)
+			Net.event("GoBack"):FireClient(p, phase, route)
 		end
 	end
 end
 
--- Hull, rider, crew and survivors (all welded) go in one move. Anchored first: then no client owns the assembly, a
--- client-owned rider undid a bare server PivotTo (docs/NEXT ONB-SHORE). Survivors hop off in RescueService's next
--- delivery tick. lastGood is home, so a client that still snapped back trips checkVehicle's reset to here.
-local function landAt(record: Record, to: CFrame)
-	local root = record.root
-	clearLanding(record, to)
-	record.model:SetAttribute("LandedHome", true) -- RescueService and OperationService isHome: home for the hold
-	record.resetting = true -- the sanity checks leave it alone
+-- Takes the helm for a scripted move: anchored, so no client owns the assembly (a client-owned rider undid a bare
+-- server PivotTo, docs/NEXT ONB-SHORE), and the sanity checks (teleport, Stuck, OutOfBounds) leave it alone.
+local function hold(record: Record)
+	record.resetting = true
 	record.strikes = 0
 	record.recovery.lastAt = os.clock()
-	setOwner(root, nil)
-	root.Anchored = true
-	record.model:PivotTo(to)
-	record.lastGood = to
+	setOwner(record.root, nil)
+	record.root.Anchored = true
+end
+
+-- Gives the helm back where the hull is, throttle ready: lastGood is here, so a client that still snapped back trips
+-- checkVehicle's reset to here. Stowed meanwhile: then it stays docked.
+local function release(record: Record)
+	local root = record.root
+	record.lastGood = root.CFrame
 	record.goodAge = 0
-	task.wait(GoBack.LAND_HOLD)
-	record.model:SetAttribute("LandedHome", nil)
 	record.resetting = false
-	-- stowed meanwhile: then it stays docked
 	if records[record.model] == record and record.mode == "Driven" then
 		root.Anchored = false
 		root.AssemblyLinearVelocity = Vector3.zero
 		root.AssemblyAngularVelocity = Vector3.zero
-		setOwner(root, record.driver) -- throttle ready
+		setOwner(root, record.driver)
 	end
 end
 
+-- Hull, rider, crew and survivors (all welded) go in one move. Survivors hop off in RescueService's next delivery tick.
+local function landAt(record: Record, to: CFrame)
+	clearLanding(record, to)
+	record.model:SetAttribute("LandedHome", true) -- RescueService and OperationService isHome: home for the hold
+	hold(record)
+	record.model:PivotTo(to)
+	task.wait(GoBack.LAND_HOLD)
+	record.model:SetAttribute("LandedHome", nil)
+	release(record)
+end
+
+local BLOCK_HEIGHT = 3 -- studs: the swept box rides this far over the hull's pivot, under bridge decks, over the seabed
+
+-- Can this hull run straight from a to b? A box its beam wide swept just over the water hits nothing solid (land,
+-- quays, the station, piers; never the sea, vehicles or people). Blockcast stops at 1024 studs and misses what its
+-- start box already touches, so long legs go in overlapping 1000-stud steps.
+local function clearRun(record: Record): (Vector3, Vector3) -> boolean
+	local params = solidParams()
+	local size = Vector3.new(record.spec.hullSize.X + 2, 2, 2)
+	return function(a: Vector3, b: Vector3): boolean
+		local up = Vector3.new(0, BLOCK_HEIGHT, 0)
+		local v = Vector3.new(b.X - a.X, b.Y - a.Y, b.Z - a.Z)
+		local length = v.Magnitude
+		if length < 1 then
+			return true
+		end
+		local dir = v / length
+		for from = 0, length, 950 do
+			local o = a + up + dir * from
+			local step = math.min(1000, length - from)
+			if
+				step > 0.5
+				and Workspace:Blockcast(CFrame.lookAt(o, o + dir), size, dir * step, params)
+			then
+				return false
+			end
+		end
+		return true
+	end
+end
+
+-- Go back (owner 2026-11-07): the hull turns toward home and drives itself there along GoBack.plan's clear route, the
+-- server posing it every frame (GoBack.pose) while the riders' clients pose the same route smoothly ("Ride"). A ram or
+-- leaving the seat in the turn cancels; leaving the seat later stops it where it is.
 local function chargeGoBack(player: Player, record: Record, seat: BasePart, quiet: boolean?)
 	local run = { why = nil :: string? }
 	goBacks[player] = run
@@ -1665,38 +1707,49 @@ local function chargeGoBack(player: Player, record: Record, seat: BasePart, quie
 		end
 	end
 	log(survivors(), "Started")
-	tellAboard(VehicleService.GetOccupants(model), "Charge")
+	local spot = VehicleService.LandingSpot(player, record.spec)
+	if not spot then
+		goBacks[player] = nil
+		log(survivors(), "Cancelled", "NoSpot")
+		return
+	end
+	local finish = restAt(model, record.spec, spot)
+	local route = GoBack.plan(model:GetPivot(), finish, clearRun(record))
+	hold(record)
+	tellAboard(VehicleService.GetOccupants(model), "Ride", route)
 	task.spawn(function()
-		local bay = bayFor(player)
-		if bay and Workspace.StreamingEnabled then
-			pcall(player.RequestStreamAroundAsync, player, bay.Position, GoBack.CHARGE)
+		if Workspace.StreamingEnabled then
+			pcall(player.RequestStreamAroundAsync, player, finish.Position, GoBack.ARRIVE)
 		end
 	end)
 	local started = os.clock()
-	while os.clock() - started < GoBack.CHARGE and not run.why do
+	while true do
 		RunService.Heartbeat:Wait()
+		local t = os.clock() - started
 		local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-		if
-			records[model] ~= record
-			or record.driver ~= player
-			or not humanoid
-			or humanoid.SeatPart ~= seat
-		then
+		if records[model] ~= record or record.mode ~= "Driven" then
+			run.why = "Gone" -- stowed or despawned: it is someone else's now
+		elseif record.driver ~= player or not humanoid or humanoid.SeatPart ~= seat then
 			run.why = "LeftSeat"
-		elseif record.resetting then
-			run.why = "Reset" -- a recovery glide has the hull
 		end
+		if run.why or t >= GoBack.ARRIVE then
+			break
+		end
+		if t >= GoBack.TURN then
+			goBacks[player] = nil -- launched: past here a ram is too late and CancelGoBack answers false
+		end
+		model:PivotTo(GoBack.pose(route, t))
 	end
-	goBacks[player] = nil -- past here the charge has landed: CancelGoBack answers false
-	local spot = if run.why then nil else VehicleService.LandingSpot(player, record.spec)
+	goBacks[player] = nil
 	local aboard = VehicleService.GetOccupants(model)
-	if not spot then
+	if run.why then
+		release(record)
 		tellAboard(aboard, "Cancel")
-		log(survivors(), "Cancelled", run.why or "NoSpot")
+		log(survivors(), "Cancelled", run.why)
 		return
 	end
 	local carried = survivors() -- the delivery tick empties the craft during the landing
-	landAt(record, restAt(model, record.spec, spot))
+	landAt(record, finish)
 	tellAboard(aboard, "Land")
 	log(carried, "Landed")
 end
