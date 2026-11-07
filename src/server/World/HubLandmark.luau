@@ -32,7 +32,7 @@ HubLandmark.SLOTS = {
 	L07_Raft = "Raft",
 } :: { [string]: string }
 
-type Row = { module: string, x: number, y: number, z: number, yaw: number, scale: number }
+export type Row = { module: string, x: number, y: number, z: number, yaw: number, scale: number }
 
 local function fixed(module: string, y: number): Row
 	return { module = module, x = 0, y = y, z = 0, yaw = 0, scale = 1 }
@@ -43,6 +43,8 @@ local function polar(module: string, r: number, bearing: number, yaw: number, sc
 	local x, z = math.round(r * math.cos(a) * 10) / 10, math.round(r * math.sin(a) * 10) / 10
 	return { module = module, x = x, y = 0, z = z, yaw = yaw, scale = scale }
 end
+
+HubLandmark.BEACON_ROWS = 6 -- LAYOUT's first rows: the atoll, its dressing and the beacon
 
 -- build.py's LAYOUT, row for row: rock yaw = bearing, raft yaw = 90 - bearing.
 HubLandmark.LAYOUT = {
@@ -87,7 +89,7 @@ local BEACON_BOXES = {
 	{ -7, 117.5, -7, 7, 135.7, 7 }, -- day mark
 }
 
-local function solid(parent: Instance, size: Vector3, cf: CFrame)
+function HubLandmark.solid(parent: Instance, size: Vector3, cf: CFrame)
 	local p = Instance.new("Part")
 	p.Name = "Col"
 	p.Size = size
@@ -109,7 +111,7 @@ local function box(
 	z1: number
 )
 	local lo, hi = Vector3.new(x0, y0, z0), Vector3.new(x1, y1, z1)
-	solid(parent, hi - lo, CFrame.new((lo + hi) / 2))
+	HubLandmark.solid(parent, hi - lo, CFrame.new((lo + hi) / 2))
 end
 
 -- One atoll tier: a box per grid row of the cells whose centre is inside `radius` (build.py disc), down to the kit's -8.
@@ -138,7 +140,7 @@ end
 -- A strip of the ramp at x: its walking surface runs from y0 at the sea end (z -74) to y1 at the beach edge (z -40).
 local function rampStrip(parent: Instance, x: number, halfWidth: number, y0: number, y1: number)
 	local a, b = Vector3.new(x, y0, -74), Vector3.new(x, y1, -40)
-	solid(
+	HubLandmark.solid(
 		parent,
 		Vector3.new(2 * halfWidth, 2, (b - a).Magnitude),
 		CFrame.lookAt((a + b) / 2, b) * CFrame.new(0, -1, 0)
@@ -181,23 +183,22 @@ local function finish(p: BasePart, module: string)
 	end
 end
 
-function HubLandmark.build(base: Instance, kit: Model?)
-	if not kit then
-		warn(`[HubLandmark] {ASSET} did not load: the lagoon stays open water`)
-		return
-	end
+-- `layout`'s kit pieces as one Persistent model round the origin, or nil if the kit lacks a module. Colliders: the
+-- atoll and beacon's (when the atoll is in the layout) only. server/World/SectorSpots reuses it for its dressing.
+function HubLandmark.assemble(kit: Model, layout: { Row }, name: string): Model?
 	local atts = (AssetIds :: any).Attachments[ASSET]
 	local m = Instance.new("Model")
-	m.Name = "HubLandmark"
+	m.Name = name
 	-- Persistent like the plates, bridges and day marks: seen from every plate (310-630 studs, target radius 512), and the
 	-- boats' physics run on the client, so the colliders must be there too
 	m.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
-	for _, row in HubLandmark.LAYOUT do
+	local atoll = false
+	for _, row in layout do
 		local src = kit:FindFirstChild(row.module, true)
 		if not (src and src:IsA("BasePart")) then
-			warn(`[HubLandmark] {ASSET} has no {row.module}: the lagoon stays open water`)
+			warn(`[HubLandmark] {ASSET} has no {row.module}: {name} is not placed`)
 			m:Destroy()
-			return
+			return nil
 		end
 		local origin = kit.WorldPivot * CFrame.new(atts[`ATT_{HubLandmark.SLOTS[row.module]}`])
 		local rel = origin:ToObjectSpace(src.CFrame)
@@ -210,9 +211,23 @@ function HubLandmark.build(base: Instance, kit: Model?)
 		p.CanCollide, p.CanQuery, p.CanTouch = false, false, false
 		finish(p, row.module)
 		p.Parent = m
+		atoll = atoll or row.module == "L01_Atoll"
 	end
-	collision(m)
-	m.Parent = base
+	if atoll then
+		collision(m)
+	end
+	return m
+end
+
+function HubLandmark.build(base: Instance, kit: Model?)
+	if not kit then
+		warn(`[HubLandmark] {ASSET} did not load: the lagoon stays open water`)
+		return
+	end
+	local m = HubLandmark.assemble(kit, HubLandmark.LAYOUT, "HubLandmark")
+	if m then
+		m.Parent = base
+	end
 end
 
 function HubLandmark.place(base: Instance)

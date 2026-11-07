@@ -9,7 +9,7 @@
 -- server (9 with one player, 24 with six), a lone swimmer, a cluster of 2-3 or a capsized dinghy of two, and
 -- IN_SIGHT scenes kept within SIGHT of every player driving at sea (spawned SIGHT_MIN+ out, ahead of the bow).
 -- Timed spawns go to a sea zone (docs/29 B: AmbientMix.zonePoint, every zone has some) or, FAR of the time, off an
--- outer island. Nothing spawns in the lagoon or
+-- outer island or a sector spot, an even share per 60-deg sector (docs/31 B.3: AmbientMix.farZone). Nothing spawns in the lagoon or
 -- within HOME_CLEAR of a berth (the coves are the missions'). K13 (docs/16): MOUTH_WANT are always in view off each
 -- player's cove mouth. At the cap the oldest scene nobody is near makes way. A cold-open player gets no spawns
 -- near them and boards nobody free-roam but the two swimmers fanned round their own (docs/29 A: SpawnColdOpenFlank; the
@@ -29,7 +29,6 @@ local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes")
 local CraftBoard = require(Shared:WaitForChild("Ops"):WaitForChild("CraftBoard"))
 local GoBack = require(Shared:WaitForChild("Boat"):WaitForChild("GoBack"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
-local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
 
 local ProgressionService = require(script.Parent.ProgressionService) :: any
 local RescueRunService = require(script.Parent.RescueRunService)
@@ -57,10 +56,6 @@ type Scene = { [string]: any }
 local scenes: { Scene } = {}
 local nextId = 0
 local rng = Random.new()
-local FAR_ZONES: { string } = {}
-for _, island in WorldConfig.Islands do
-	table.insert(FAR_ZONES, island.id)
-end
 
 -- The boat the player sits in (seated only: a parked craft never picks anyone up).
 local function seatedVehicle(player: Player): Model?
@@ -220,7 +215,7 @@ end
 local function spawnOne(): Scene?
 	for _ = 1, 8 do
 		local pos = if roll() < AmbientMix.FAR
-			then CallLogic.pickSpawnPoint(FAR_ZONES[rng:NextInteger(1, #FAR_ZONES)], roll)
+			then CallLogic.pickSpawnPoint(AmbientMix.farZone(roll), roll)
 			else AmbientMix.zonePoint(roll)
 		if pos and clearSpot(pos) then
 			return spawnAt(pos)

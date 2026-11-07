@@ -130,6 +130,37 @@ local marks: { Mark } = {
 		light = "Fl(2) W 5s",
 		map = "SeamarkDanger",
 	},
+	-- docs/31 B.2: one per Shared.Calls.SectorSpots spot, 200 studs in from its centre toward the ring (tests/SectorSpots)
+	{
+		id = "GullStacksMark",
+		asset = "M_Hbr_NavMark_IsolatedDanger",
+		name = "Gull Stacks",
+		x = -1696,
+		z = -1060,
+		yaw = 30,
+		light = "Fl(2) W 5s",
+		map = "SeamarkDanger",
+	},
+	{
+		id = "WreckShoalMark",
+		asset = "M_Hbr_NavMark_IsolatedDanger",
+		name = "Wreck Shoal",
+		x = 0,
+		z = -3200,
+		yaw = 90,
+		light = "Fl(2) W 5s",
+		map = "SeamarkDanger",
+	},
+	{
+		id = "StormLightMark",
+		asset = "M_Hbr_NavMark_IsolatedDanger",
+		name = "Storm Light",
+		x = 3811,
+		z = -2200,
+		yaw = 150,
+		light = "Fl(2) W 5s",
+		map = "SeamarkDanger",
+	},
 }
 
 SeamarkRules.Marks = marks
