@@ -25,6 +25,7 @@ local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic")
 local OpsHud = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("OpsHud"))
 local Remotes = require(Shared:WaitForChild("Ops"):WaitForChild("Remotes"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
+local VehicleExitController = require(script.Parent:WaitForChild("VehicleExitController"))
 
 type Mechanic = {
 	start: (ctx: { [string]: any }, finish: (result: { [string]: any }) -> ()) -> (() -> ())?,
@@ -264,7 +265,8 @@ function OpsController.Init()
 	-- Space jumps a seated character out of the seat (Roblox default): hop off and swim, the seat takes
 	-- you back when you swim into it. Not in the cold open, and never with a survivor riding behind you
 	-- (they'd be left at sea): then Space stays in the seat and buzzes, so it never reads as broken
-	-- (playtest 2026-10-24). A mechanic's own Space taps come through CAS first.
+	-- (playtest 2026-10-24), nor at sea (VehicleExitController.CanExit). A mechanic's own Space taps come through
+	-- CAS first.
 	local lastBuzz = 0
 	RunService.Stepped:Connect(function()
 		local character = player.Character
@@ -277,7 +279,12 @@ function OpsController.Init()
 		local carrying = craft ~= nil and (tonumber(craft:GetAttribute("SurvivorCount")) or 0) > 0
 		-- Airborne: a flying heli (local attribute, docs/23 h): land first
 		local flying = craft ~= nil and craft:GetAttribute("Airborne") == true
-		if carrying or flying or player:GetAttribute("ColdOpenDone") ~= true then
+		if
+			carrying
+			or flying
+			or player:GetAttribute("ColdOpenDone") ~= true
+			or not VehicleExitController.CanExit() -- at sea (owner 2026-11-07)
+		then
 			humanoid.Jump = false
 			if os.clock() - lastBuzz > 1 then
 				lastBuzz = os.clock()

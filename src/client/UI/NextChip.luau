@@ -1,6 +1,7 @@
 --!strict
 -- NextChip: the permanent "what next" chip (docs/24 E/F) in the HudLayout "chips" slot, leading with the boat's next
--- level (docs/30; tapping buys it at the Upgrade Station, elsewhere points there), then buildings.
+-- level (docs/30; tapping buys it at the Upgrade Station, opens the Upgrade panel at your boat's helm, on foot points
+-- at the station), then buildings.
 -- The UI kit look (owner 2026-10-28: the slate bar read as a dev HUD): a blue block card, the next building's
 -- Lego icon on a white tile over its left edge, its 1-3 word name, a Cash bar to its price and coin + price.
 -- At the price the price turns into a green pill with one pop (never a looping pulse: owner 2026-10-28);
@@ -168,6 +169,12 @@ local function activate()
 						:WaitForChild("Controllers")
 						:WaitForChild("UpgradeStationController")
 				).Buy()
+			elseif
+				require(script.Parent:WaitForChild("Panels"):WaitForChild("Upgrade")).atHelm()
+			then
+				-- at the helm anywhere else: the Upgrade panel (owner 2026-11-07); the key again closes it
+				clearPointing()
+				require(script.Parent:WaitForChild("Menu")).toggle("Upgrade")
 			else
 				pointAt(button)
 			end

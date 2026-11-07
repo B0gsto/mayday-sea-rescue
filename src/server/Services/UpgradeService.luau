@@ -1,6 +1,6 @@
 --!strict
 -- UpgradeService (docs/30 section 2): the boat ladder's server. Owns data.boatLevel, sells the next level for Cash at an
--- Upgrade Station (never for Robux), builds the stations on every island and plays the level-up on the boat.
+-- Upgrade Station or at the helm of your boat anywhere (never for Robux), builds the stations on every island and plays the level-up on the boat.
 -- Old data.vehicleUpgrades masks stay in the save, unread. Save floors: ProgressionRules.migrate (owned boats) and
 -- applyPassFloor here (pass ownership is not in the save, so data.boatPassFloor marks a pre-ladder save until read).
 -- Also the tutorial's trip (docs/30 section 4): after L2 a trip out and home earns the free spin; one more ends the beat.
@@ -70,6 +70,28 @@ local function stationNear(player: Player): number?
 		end
 	end
 	return nil
+end
+
+-- At the helm of your own boat anywhere (owner 2026-11-07: upgrade while on the boat): your island's index, for
+-- LevelUpBoat's no-boat fallback it never takes then. nil off the helm or in a heli / sub.
+local function atHelm(player: Player): number?
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local seat = humanoid and humanoid.SeatPart
+	local model = VehicleService.GetVehicle(player)
+	local id = model and model:GetAttribute("VehicleId")
+	local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
+	if
+		not (seat and seat.Name == "DriverSeat" and model and seat:IsDescendantOf(model))
+		or VehicleService.GetDriver(model) ~= player
+		or model:GetAttribute("Owner") ~= player.UserId
+		or not spec
+		or spec.craft
+	then
+		return nil
+	end
+	local plot = player:GetAttribute("DockPlot")
+	return if type(plot) == "number" then plot else UpgradeStation.nearest(seat.Position)
 end
 
 -- The level goes on the boat at the top of the lift, with the stage's new hull if it was wearing the old one.
@@ -288,7 +310,7 @@ function UpgradeService.Init()
 		if lastUse[player] and now - lastUse[player] < COOLDOWN then
 			return false, "Too fast"
 		end
-		local index = stationNear(player)
+		local index = stationNear(player) or atHelm(player)
 		if not index then
 			return false, "Too far"
 		end

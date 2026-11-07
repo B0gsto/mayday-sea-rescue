@@ -201,7 +201,8 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   lifeboat 8). Pure, tested: `Boat/Buoyancy`, `Boat/Simulator`, `Boat/Unstick`, `Boat/Helm`, `Boat/RespawnPolicy`,
   `Boat/BayLaunch`, `Boat/Wake`, `Heli/Flight`, `Heli/Winch`, `Sub/Dive`. `Services/Vehicle/Craft` builds and
   idles the heli and sub; clients: `BoatController`, `HeliController`, `SubController`, `VehicleExitController`,
-  `BeaconController`, `Camera/Chase`. Touch (`Layout.device() == "Touch"`): `TouchDriveController` hides the stock
+  `BeaconController`, `Camera/Chase`. `Boat/SeaExit`: no stepping off at sea (only by land, at home, in a station bay or
+  the shallows), checked by `VehicleExitController` and OpsController's seat-jump guard. Touch (`Layout.device() == "Touch"`): `TouchDriveController` hides the stock
   thumbstick + jump button while you drive and shows the drive pad (HudLayout `steer` / `drive`); the three craft
   controllers add its `throttle()` / `steer()` / `lift()` to the seat / key input.
 - `src/shared/Crowding.luau`: player boats ghost through each other (collision group `PlayerBoat`); idle timers
@@ -219,8 +220,10 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   sells or applies them now. Player attribute `BoatReach` adds to the pick-up reach (`Ops/Board`), call reach follows the row.
 - **Upgrade Station:** `src/shared/UpgradeStation.luau` (layout on every island, `landing(island) -> CFrame`: the bay's
   landing spot, bow to the sea, for Go back; `UpgradeService.Landing(player)`; `pose`), built by `UpgradeService` under
-  `Workspace.UpgradeStations`; the Button's `UpgradeBoat` prompt calls `Boat_LevelUp` (server: Cash, range, cooldown).
-  `UpgradeStationController` draws the board and plays the moment on `BoatLevelMoment` (VFX `boat_levelup`).
+  `Workspace.UpgradeStations`; the Button's `UpgradeBoat` prompt calls `Boat_LevelUp` (server: Cash, at a station or
+  at the helm of your own boat anywhere, cooldown). `UpgradeStationController` draws the board and plays the moment on
+  `BoatLevelMoment` (VFX `boat_levelup`) wherever the boat is; `UI/Panels/Upgrade` (Menu panel `Upgrade`, opened by the
+  Next chip at the helm) buys through `UpgradeStationController.Buy()`.
   `VehicleService.LevelUpBoat`, `VehicleService.Refit(player, look?)`. Studio: `ServerStorage.UpgradeDev` `set` / `buy`.
 - `Boat/Glance`: at 40+ studs/s `BoatController` sweeps ahead and a wall glances the boat off, keeping 55-95% of the speed.
 

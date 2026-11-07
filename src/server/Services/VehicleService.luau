@@ -2278,11 +2278,12 @@ function VehicleService.Refit(player: Player, look: string?): Model?
 	local driver = record.driver
 	local other = if byPlayer[player] == record then seconds[player] else byPlayer[player]
 	local keep = if DockService.Owns(player, "Pontoon") then other else nil
-	local at, held = record.root.CFrame, record.resetting
+	local at, held, home = record.root.CFrame, record.resetting, record.home
 	unseatFrom(player, record.model)
 	-- gone now, whatever its class: to clearOtherClasses a stage's old hull still reads occupied this frame, so it stayed
 	despawnModel(record.model, "Replaced")
 	local model, seat = createVehicle(player, spec, at, "Request", keep)
+	records[model].home = home -- a refit at sea: the boat still goes home to its berth, not to the sea spot
 	if held then
 		holdHull(records[model])
 	end

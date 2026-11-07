@@ -85,7 +85,9 @@ end
 local function tap(key: string)
 	local model = craft
 	if key == "exit" then
-		VehicleExitController.StepOff()
+		if not VehicleExitController.StepOff() then
+			VehicleExitController.FlashLock(buttons.exit) -- at sea: kept aboard
+		end
 	elseif key == "slow" and model then
 		-- local attribute: this client simulates the hull, so the governor runs here (BoatController's Z)
 		model:SetAttribute("ApproachMode", not (model:GetAttribute("ApproachMode") == true))
