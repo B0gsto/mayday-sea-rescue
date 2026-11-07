@@ -5,8 +5,8 @@ The game's effects follow the global VFX rules (user CLAUDE.md "VFX (all games)"
 ## Owner bans
 
 - Nothing sparkles on a building, ever (no glitter, shimmer or sparkle particles on buildings or sites).
-- No flashing or pulsing orange to present anything (CLAUDE.md "Show, don't tell"). Attention cues: one pop, a steady
-  outline, a slow small breath at most, an arrow or a camera focus.
+- No flashing or pulsing orange to present anything (CLAUDE.md "Show, don't tell"). Attention cues: one pop, a slow
+  small breath at most, an arrow or a camera focus. No outline rings round HUD buttons (owner 2026-11-01).
 - Steady night lights are fine (lit windows, lamps, beacons); they are lights, not sparkle.
 
 ## Look
@@ -27,7 +27,10 @@ The game's effects follow the global VFX rules (user CLAUDE.md "VFX (all games)"
 | Survivor picked up | feedback | a white splash crown + droplets where they leave the water |
 | Pick-up boost (docs/29 C) | feedback + state | `pickup_boost`: a spray fan off the stern, a small `nitro_ring`, whoosh + hiss; `pickup_wake`: stern streaks for the 3 s (off under Reduce motion) |
 | Survivor delivered / rescue done | spectacle (small) | a ring of lifebuoy-coloured plates and a coin burst into the wallet (CashBurst) |
-| Go back landed | feedback | a foam crown, drops, a ring on the water and a few red and white plates under the hull (charge: FOV widen + whoosh + a sea-blue veil over the jump; no FOV or shake under Reduce motion) |
+| Go back ride (docs/30 1) | feedback | the ~5 s auto-drive: a swoosh as it turns, `nitro_burst` at the launch, a rooster tail at speed, carve spray into the bay, the chase shot widening with speed (a third of it under Reduce motion); a sea-blue veil only over a boxed-in route's jump |
+| Go back landed | feedback | `go_back_land`: a foam crown, drops, a ring on the water and a few red and white plates under the hull |
+| Boat level up (docs/30 2) | spectacle | `boat_levelup` on the boat wherever it is: up, a spin, the blast while the new boat swaps in, then the slam with `boat_piece_pop` on the new piece; Reduce motion: a small lift, no spin, no shake |
+| Fuel low / empty / refill (docs/31 C) | state + feedback | at 20 % one pop of the can, one beep, one Go back bounce; empty: `fuel_sputter` at the boat; refuel: the bar fills in ~0.4 s with `fuel_fill`; Reduce motion keeps sounds and colours only |
 | Golden call | state + spectacle | a steady gold ring on the pin (slow breath), a gold burst on accept, the survivor's steady glow |
 | Cash / Medal gain | feedback | coins / medal flip into the counter (UI) |
 | Join reward Collect | spectacle | UI/CoinShower: wallet coins pop in across the screen, bob, then stream on curves into the wallet (rising ticks, the counter rolls in step), a till and one soft gold ring at the wallet (~2 s) |

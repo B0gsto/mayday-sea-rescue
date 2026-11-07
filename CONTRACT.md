@@ -1,7 +1,8 @@
 # Build contract
 
-Who owns what, and the APIs between modules, for the game as it is now (`docs/00-design.md` is the design
-source of truth; `docs/23-dock-and-core-loop.md` is the change log). Use another module's API; don't edit its
+Who owns what, and the APIs between modules, for the game as it is now: a boat-upgrade rescue game (one boat, 50
+levels, Go back, sea zones, fuel, pirates, Deep Spin; `docs/00-design.md`, `docs/30-boat-pivot.md`,
+`docs/31-layout-and-fuel.md`). Open work: `docs/NEXT.md`. Use another module's API; don't edit its
 files without a reason. Cut systems (Port Haven, cars, the phone, the dispatch radio, ranks and Rep, the hub
 island, the crew lineup, the seaplane, land calls, first person, photo mode) live in git tag `pre-hub-cut` and in
 history, not here.
@@ -37,15 +38,19 @@ history, not here.
 | `RequestVehicle` | C->S fn | VehicleService: `(vehicleId, docked?, near?) -> (ok, reasonOrVehicle)`; `near` = Boat to me (id ignored) |
 | `BuyGear` | C->S fn | ProgressionService: buys a craft (`vehicleId`); the name is historical |
 | `TestRide` | C->S fn | server/Dock/BoatBoard: `(boardName, vehicleId) -> (ok, reason)`; lends a locked Robux-only boat for 60 s (shared/TestRide; attributes `TestRide`, `TestRideEnds`, `TestRideAt`) |
-| `GoBack` | both | VehicleService: C->S press Go back (no payload, rate limited); S->C to everyone aboard: `"Charge"`, `"Cancel"`, `"Land"` (GoBackController) |
+| `GoBack` | both | VehicleService: C->S press Go back (no payload, rate limited); S->C to everyone aboard: `"Ride", route`, `"Cancel"`, `"Land"` (GoBackController) |
+| `GoHome` | C->S fn | VehicleService: menu Home, far from your island (`DockConfig.HOME_FAR`): off the helm, onto your spawn `-> (ok, reason)` |
+| `Boat_LevelUp` | C->S fn | UpgradeService: buy the next boat level (at a station or at your own helm) `-> (ok, reason)` |
+| `BoatLevelMoment` | S->C | UpgradeService: `("Start" \| "Swap", ownerUserId, boat?, level)` the level-up moment |
+| `BoardLaunch` | C->S | server/Dock/BoatBoard: `(boardName, vehicleId)` launch from your craft board |
+| `Dock_Finish` | C->S | DockService: finish the running build now (prompts a FinishNow tier by time left) |
 | `Spin_Wheel` | S->C | SpinService: one spin `{ userId, plot, segment, startTime, duration, prize, name, rarity, kind, icon, pet?, option?, vehicle?, duplicate, duplicateCash? }` (`segment` = the wedge paid, `SpinRules.WEDGES` order); the island's wheel animates on every client |
 | `Spin_Flex` | S->C | SpinService: a Legendary / Mythic win `{ userId, name, prize, rarity, icon }` (banner + confetti) |
 | `Skill_Buy` | C->S fn | SkillService: buys a skill node with Medals `(id) -> (ok, reason)` |
 | `Skill_Reset` | C->S fn | SkillService: free reset, refunds every Medal `-> (ok, refunded)` |
 | `Skill_State` | S->C | SkillService: `{ owned, medals }` on join and after every buy/reset/grant |
 
-Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService), `Upgrade_Buy` (UpgradeService),
-`PIW_Rescue` (Ops/PiwRescue), `Dock_Upgrade` / `Dock_Build` / `Dock_Finish` (DockService), `Quest_Talk` (QuestService),
+Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService), `PIW_Rescue` (Ops/PiwRescue), `Dock_Upgrade` / `Dock_Build` (DockService), `Quest_Talk` (QuestService),
 `Streak_State` / `Streak_Get` / `Streak_Collect`, `Pet_State` / `Pet_Get` / `Pet_Equip` / `Pet_Variant`, `Cosmetics_Equip` /
 `Cosmetics_Action` / `Cosmetics_Event`, `Monetization_GetCatalogue` / `Monetization_Purchased` (Shop repaint + PurchaseFxController payoff),
 `Discovery_State` / `Discovery_Found` / `Discovery_Get`, `PlatformPrompt_Ask` / `_Offer` / `_OptIn`,
@@ -76,6 +81,9 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   pods, a breaching whale, Lego sandbars + danger buoys, Morwenna wreck buoys, flotsam).
 
 ## Your island (DockService)
+
+Since the boat pivot (docs/30) the island is optional: the free Hut stands at load, nothing gates the boat loop on a
+building. The tree, timed builds and workers below still run.
 
 - `src/shared/Marina.luau` (pure, `tests/Marina.spec.luau`): `berth`, `spawn`, `assign` (lowest free island),
   `harbourMaster`, `lock`, `flagColor`. A joining player claims an island when the profile loads (freed on leave);
@@ -188,17 +196,23 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   is set.
 - Go back (docs/30 section 1; rules: `Boat/GoBack`, `tests/GoBack.spec.luau`; client: `GoBackController`, HudLayout
   `goback`, R / gamepad right stick click / touch): the craft's driver, away from home, not on a test ride, in the
-  cold open only with a survivor aboard. A `CHARGE` of 1.5 s, then hull, driver, crew and survivors land seated at
+  cold open only with a survivor aboard. The ride is an auto-drive of about 5 s (`GoBack.TURN` 0.8 s swing, `RUN` 4 s
+  along `GoBack.plan`'s clear route; server and riders pose it with `GoBack.pose`), then hull, driver, crew and survivors land seated at
   `VehicleService.LandingSpot(player, spec) -> CFrame?` (`UpgradeStation.landing(plot)`, the driver's bay, bow to sea; an
   empty craft of theirs floating there goes to the berth first), anchored `LAND_HOLD` s, then throttle ready. The bay is
   past the drop-off zone, so the hull carries the server attribute `LandedHome` for the hold: RescueService's delivery tick
   and OperationService `isHome` count it as home. `VehicleService.CancelGoBack(player) -> boolean` stops a charge (pirates: docs/30 section 5). Telemetry:
   custom `GoBack` (value survivors aboard: vehicle, Started / Landed / Cancelled, why). VFX: `go_back_land`.
+  Also `VehicleService.LandAtStation(player) -> boolean` (OperationService) and `TurnBack(player, at, home)`.
 - Fuel (docs/31 C; rules `Boat/Fuel`, `tests/Fuel.spec.luau`): `FuelService` owns one tank per player (boat, heli and
   sub share the boat level's tank and rating). Player attributes `Fuel`, `FuelMax` (s of full throttle), `FuelBurn`
   (zone factor 0/1/5/25). Empty at sea: model attribute `FuelLimp` (share of top speed, read by the boat sim, heli and
   sub controllers) for `Fuel.LIMP_S`, then `VehicleService.FuelHome(player)` runs the Go back ride locked (no cancel).
   Refuel: home (`GoBack.isHome`, `LandedHome`) and respawn. Telemetry: custom `Fuel` (value level: Empty, zone name).
+  `Boat/Fuel` (pure): `tank(level)`, `rating(level)`, `factor(zone, level)`, `burn(dt, speedFrac, zone, level)`,
+  `step(fuel, max, tick)`, `reach(level, fromR)`, `LIMP_SPEED`, `LIMP_S`. HUD: `UI/FuelGauge.mount(region, driving)`
+  (GoBackController mounts it over Go back: a can and bar, no numbers, burn chevrons x5 / x25, VFX `fuel_sputter`,
+  `fuel_fill`); the Upgrade panel and station board show the tank.
 - Boat to me: `RequestVehicle(nil, false, true)` brings your current or last craft to the open water nearest
   you; free calls wait `MonetizationEffects.boatToMeWait` (player attribute `BoatToMeAt`, scaled by
   `WorkerBoatScale`); the Quick Launch pass or day pass skips the wait.
@@ -230,6 +244,8 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   `BoatLevelMoment` (VFX `boat_levelup`) wherever the boat is; `UI/Panels/Upgrade` (Menu panel `Upgrade`, opened by the
   Next chip at the helm) buys through `UpgradeStationController.Buy()`.
   `VehicleService.LevelUpBoat`, `VehicleService.Refit(player, look?)`. Studio: `ServerStorage.UpgradeDev` `set` / `buy`.
+- `Boat/SeaEdge.steer(cf, steer, mapRadius)`: past `GameConfig.MapRadius` the helm eases the bow back in (BoatController);
+  `VehicleRecovery.lost` fires only `SeaEdge.MARGIN` (1500) past it.
 - `Boat/Glance`: at 40+ studs/s `BoatController` sweeps ahead and a wall glances the boat off, keeping 55-95% of the speed.
 
 ## Operations (calls)
@@ -262,11 +278,17 @@ fail: a slow one grades Bronze (`Condition.overdue`; the big call ends on its ca
   24 with six; lone swimmers, clusters of 2-3, capsized dinghies), one in view off each player's cove and 3 within
   500 studs of every player driving at sea (these pay the lower tier, CASH x Bronze); boarded with `Ops/Board`,
   paid on delivery (`AmbientMix.payAt`: x the sea zone's pay; timed spawns cover every zone, `AmbientMix.zonePoint`).
-- Sea zones (docs/29 B): `Calls/SeaZones` (pure: `Zones`, `zoneAt`, `step`, `weightsAt`, `ease`, buoy slots).
+- Sea zones (docs/29 B): `Calls/SeaZones` (pure: `Zones`, `zoneAt`, `step`, `weightsAt`, `ease`, `lookAt(pos)` (two zones'
+  looks blended over `BLEND` 300 studs either side of a line: fog and water, no wall), `onLand`, buoy slots `slotCount`,
+  `lineNear`, `slotPoint`).
   `RescueService` passes `weights = SeaZones.weightsAt(pos)` to `WorkerRules.roll` (`Onboarding.failsafeCall` calls keep
   the plain table). Client: `SeaZoneController` sets the local player attribute `SeaZone` (1..5), runs the pooled
   buoy line (`Ocean/SeaBuoy`) and the crossing banner; `WeatherController` eases tint, haze, fog and Overcast to it,
   untinted while `ColdOpenActive`; `MapController` draws the circles; `UI/SurvivorTag` the Legendary+ column.
+- Sector spots (docs/31 B.2): `Calls/SectorSpots` (pure data: one far destination per empty 60-degree sector, `bearing`
+  and `radius`); CallTypes makes each a spawn zone, `CallLogic.isWater` keeps spawns off it, AmbientMix sends far
+  survivors there, `SeamarkRules` lights a danger mark. `server/World/SectorSpots` (`build(base, kit?)`, `place(base)`,
+  called once by WorldDressingService) dresses them with `M_Prop_HubKit` pieces; `tests/SectorSpots.spec.luau`.
 - Rescue run (docs/29 C): rules `shared/RescueRun` (tiers, 75 s window, `boostAt`). `RescueRunService`: `Multiplier(player)`
   (delivery pay: `AmbientRescueService` onDelivered, `OperationService` finish; tutorial pay and a no-step share stay flat),
   `OnPickup(player, vehicle)`, `OnDelivered(player, people)` (`RescueService`, after pay), `End(player)` (the pirates' hit,
@@ -307,8 +329,7 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
   fanned off their cove (`Boat/ColdOpen.fan`; the flanks are `AmbientRescueService.SpawnColdOpenFlank` scenes, and
   `OperationService.ColdOpenFlank` swaps the first one reached into the op); `Boat/ColdOpen` (ease, drop-off), `Boat/ColdOpenFlow`, `UI/ColdOpenCue`, `UI/OnboardingReward`.
   Profile `coldOpenDone`.
-- Tutorial (docs/25 J, docs/30 section 4): `Onboarding.beat` (`factsOf(data)`) runs `BuildHQ` -> `HQSite` -> `ColdOpen` ->
-  `Rescue` -> `Upgrade` -> `OutAgain` -> `Spin` -> `Done`; the player stays seated throughout. `GoBackController`: one arrow on
+- Tutorial (docs/25 J, docs/30 section 4): `Onboarding.beat` (`factsOf(data)`) runs `ColdOpen` -> `Rescue` -> `Upgrade` -> `OutAgain` -> `Spin` -> `Done`; the player stays seated throughout. `GoBackController`: one arrow on
   Go back for the first survivor ever aboard. Upgrade: `OnboardingController` puts a green arrow on the station's button
   (`UpgradeStation.buttonAt`) when L2 is affordable, and OperationService offers no call then. `UpgradeService` polls the trip
   (`Onboarding.trip`, `GoBack.isHome`): the first trip home after L2 calls `SpinService.Tutorial(player, true)` (step 3, one
@@ -377,9 +398,11 @@ marker, and a beep (no pager card, no radio); driving at it takes it. Voices are
 ## Menu, HUD and map
 
 - `src/client/UI/Menu.luau` (mounted by `HudController`): the left grid of kit icon buttons (HudLayout region
-  `menu`): Shop, Quests, Album, Pet, Crew, Settings, Map, Boat (Boat to me). Panels (`UI/Kit/*`):
-  `UI/Panels/Shop` (`ProductShelves.storeItems`), `Panels/Quests`, `Panels/Album`, `Panels/Companion` (Bosun or
-  one pet; `Pet_Equip`), `Panels/Crew`, `SettingsPanel.newPanel`; `UI/BoatCard` via `Menu.openBoat(id)`. API
+  `menu`): Shop, Quests, Album, Pet, Crew, Skills, Settings, Map, Boat (Boat to me), Home (`GoHome`, far from your
+  island only). Panels (`UI/Kit/*`): `UI/Panels/Shop` (`ProductShelves.storeItems`), `Panels/Quests`, `Panels/Album`,
+  `Panels/Companion` (Bosun or one pet; `Pet_Equip`), `Panels/Crew`, `Panels/Skills`, `Panels/Board` (a craft board's
+  list, `Menu.openBoard`), `Panels/Upgrade` (`Upgrade.new(canvas, onClose)`, `Upgrade.atHelm()`; the next level from
+  the helm), `SettingsPanel.newPanel`; `UI/BoatCard` via `Menu.openBoat(id)`. API
   `open`, `close`, `toggle`, `openBoat`, `isOpen`; player attribute `MenuOpen`. The quest tracker chip (region
   `quest`: island art, place, distance to `QuestTarget`; tap opens Quests) shows while a quest is active.
 - `src/shared/HudLayout.luau` (pure, `tests/HudLayout.spec.luau`) places the regions (menu, wallet, objective,
