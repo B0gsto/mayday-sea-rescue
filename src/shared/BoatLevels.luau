@@ -57,11 +57,13 @@ local SPEED = { -- docs/30: huge early % jumps, huge late numbers -- tune
 -- stylua: ignore
 local ROOM_FROM = { [1] = 1, [3] = 2, [6] = 3, [11] = 4, [16] = 5, [21] = 8, [26] = 9, [31] = 10, [41] = 12, [50] = 14 }
 
--- L2 is exactly the first rescue's pay; the rest come from the trip model in tests/Pacing.spec: zones, then the run's x2
--- (a Go back trip is shorter than its window), so past L8 they are about x3 a flat-pay ladder -- tune
+-- L2-L5 take exactly the first four rescues' pay (500, 600, 600, 700: 550 and 650 carry the 50 over), one trip each
+-- (playtest 2026-11-07: L4-L5 took two trips while a 1,900 Cash building looked closer); the rest come from the trip model in tests/Pacing.spec: zones, then the
+-- run's x2 (a Go back trip is shorter than its window), so past L8 they are about x3 a flat-pay ladder -- tune
+local TUT = Grading.Payout.Tutorial
 -- stylua: ignore
 local PRICE = {
-	0, Grading.Payout.Tutorial[1].cash, 600, 800, 1200, 1300, 1500, 2200, 2800, 4300,
+	0, TUT[1].cash, 550, 650, TUT[4].cash, 1300, 1500, 2200, 2800, 4300,
 	6000, 9300, 11500, 15000, 18000, 21000, 25000, 28500, 31500, 35000,
 	38500, 56500, 60500, 64500, 69000, 72500, 82000, 85500, 92500, 96000,
 	100000, 113000, 117000, 124000, 128000, 132000, 136000, 143000, 148000, 152000,
