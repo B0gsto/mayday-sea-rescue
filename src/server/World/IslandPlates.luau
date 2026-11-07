@@ -8,6 +8,7 @@
 -- WorldDressingService calls place(base).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local DockPieces = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("DockPieces"))
 local RingLayout = require(
 	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("RingLayout")
 )
@@ -22,12 +23,15 @@ local LAWN = Color3.fromRGB(100, 176, 84) -- WP-25 r7: the inner rects a lighter
 local LAWN_TINT = Color3.fromRGB(84, 152, 70)
 local INNER = 3 -- rects 1..INNER are the plate's middle (RingLayout.IslandPlate.rects)
 local BEACH_W = 6 -- WP-25 r7: the tan beach step round the plate, outside the trim
-local BEACH_TOP, BEACH_FOOT = 2, -1.5 -- world Y: a step half way down from the plate (top 4) to the sea
+local BEACH_TOP = 2 -- world Y: a step half way down from the plate (top 4) to the sea
 local ROCK = Color3.fromRGB(163, 162, 165)
 local ROCK_DARK = Color3.fromRGB(99, 95, 98)
 local BUSH = Color3.fromRGB(40, 127, 70)
 local TRIM_W = 2 -- the edge trim's width, outside the slab's footprint
-local SKIRT_DOWN = 1 -- the trim's bottom, studs under sea level so waves never expose the plate's underside
+-- the trim's, body's and beach's bottom, studs under sea level. At 1 a swimmer in a trough floated half under the
+-- lip, where SwimController's haul-out has no headroom (fresh-player playtest 2026-11-07: "could hardly climb out")
+local SKIRT_DOWN = -DockPieces.SWIM_WALL_Y
+local BEACH_FOOT = -SKIRT_DOWN
 local STRIP_W = 1.2 -- the sand-yellow berth strip's width
 
 local IslandPlates = {}
@@ -200,6 +204,7 @@ local function build(isl: RingLayout.Island, parent: Instance)
 	model.ModelStreamingMode = Enum.ModelStreamingMode.Persistent -- the whole island is seen from afar; streaming dropped slabs
 	slab(model, isl)
 	edges(model, isl)
+	DockPieces.swimSkirts(isl.berths.Boat).Parent = model -- DockService's jetty decks, every island
 	model.Parent = parent
 end
 

@@ -218,8 +218,9 @@ local function haulOut(humanoid: Humanoid, root: BasePart, surfaceY: number, dt:
 	end
 	local dir = move.Unit
 	local over = wall.Position + dir * 1.5
+	-- reach from calm sea level (Waves.SEA_LEVEL 0) at least: in a trough the quay top fell out of reach
 	local ledge = Workspace:Raycast(
-		Vector3.new(over.X, surfaceY + HAUL_MAX + 0.5, over.Z),
+		Vector3.new(over.X, math.max(surfaceY, 0) + HAUL_MAX + 0.5, over.Z),
 		Vector3.new(0, -(HAUL_MAX + 4), 0),
 		rayParams
 	)
