@@ -15,6 +15,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
 local GroupReward = require(Shared:WaitForChild("GroupReward"))
 local Net = require(Shared:WaitForChild("Net"))
 local Rules = require(Shared:WaitForChild("StreakRules"))
@@ -58,6 +59,13 @@ local function groupBonus(player: Player, cash: number): number
 	return GroupReward.bonus(groupState, cash, SocialConfig.BonusPercent, SocialConfig.GroupId)
 end
 
+-- The next boat level's price (nil at L50): the daily Cash is sized to it (StreakRules.dayCash).
+local function nextPrice(player: Player): number?
+	local data = ProgressionService.GetData(player)
+	local row = data and BoatLevels.nextRow(data.boatLevel)
+	return row and row.price
+end
+
 local function viewOf(player: Player, state: Rules.State, now: number): { [string]: any }
 	local view: { [string]: any } = {
 		day = Rules.dayIndex(now),
@@ -66,7 +74,7 @@ local function viewOf(player: Player, state: Rules.State, now: number): { [strin
 		available = Rules.available(state, now),
 	}
 	if view.available then
-		local preview: any = Rules.preview(state, now)
+		local preview: any = Rules.preview(state, now, nextPrice(player))
 		if preview then
 			preview.bonus = groupBonus(player, preview.cash)
 		end
@@ -118,7 +126,7 @@ local function collect(player: Player): any
 	if not data then
 		return nil
 	end
-	local claim = Rules.claim(stateOf(data), os.time())
+	local claim = Rules.claim(stateOf(data), os.time(), nextPrice(player))
 	if not claim then
 		return nil
 	end

@@ -1293,7 +1293,10 @@ return function(t)
 				local row = BoatLevels.Rows[level]
 				local tut = if done < 5 then done else nil
 				local reward = Grading.payout(1, "Silver", 1, tut)
-				local out = row.callReach * (reachShare or DISTANCE_SHARE)
+				local ramp = CallTypes.RAMP[done] -- the first calls after the cold open stay close (CallLogic.rampZone)
+				local out = if ramp and not reachShare
+					then (ramp[1] + ramp[2]) / 2
+					else row.callReach * (reachShare or DISTANCE_SHARE)
 				local trip = TRIP_FIXED
 					+ row.room * PER_SURVIVOR
 					+ out / (row.speed * CallTypes.CRUISE_FACTOR)
@@ -1335,7 +1338,10 @@ return function(t)
 		)
 		print(
 			string.format(
-				"Boat ladder: %d trips, L10 %.1f h, L20 %.1f h, L30 %.1f h, L40 %.1f h, L50 %.1f h; trips to L2-L8: %d %d %d %d %d %d %d",
+				"Boat ladder: L2 %.1f min, L5 %.1f min, L11 %.0f min; %d trips, L10 %.1f h, L20 %.1f h, L30 %.1f h, L40 %.1f h, L50 %.1f h; trips to L2-L8: %d %d %d %d %d %d %d",
+				at[2] / 60,
+				at[5] / 60,
+				at[11] / 60,
 				total,
 				at[10] / 3600,
 				at[20] / 3600,
@@ -1354,8 +1360,11 @@ return function(t)
 		-- the first rescue pays exactly L2
 		t.expect(BoatLevels.Rows[2].price).toBe(Grading.payout(1, "Silver", 1, 0).cash)
 		t.expect(trips[2]).toBe(1)
-		-- the next few take one or two trips
-		for level = 3, 7 do
+		-- L3-L5 one early call each, the next few one or two trips
+		for level = 3, 5 do
+			t.expect(trips[level]).toBe(1)
+		end
+		for level = 6, 7 do
 			t.expect(trips[level] <= 2).toBe(true)
 		end
 		-- the whole ladder: about 15 h of free play

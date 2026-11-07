@@ -35,6 +35,10 @@ BoatLevels.REACH_TIME = 0.18 -- s of top speed the reach covers, so a 0.25 s sca
 BoatLevels.MAX_LENGTH = 72 -- studs: looks stop growing here (a x2.5 lifeboat would not fit the bay) -- tune
 -- Mechanics, skills and the Nitro multiply this top speed; never past the tested limit (tests/BoatLevels.spec).
 BoatLevels.SPEED_LIMIT = 1100
+-- deg/s yaw cap for L1-L3 below the jet ski's 110 (playtest 2026-11-07: an L2 jet ski turned hard and overshot calls;
+-- the level's own circle at top speed still wins when it needs more) -- tune
+BoatLevels.EARLY_TURN_RATE = 80
+BoatLevels.EARLY_TURN_LEVELS = 3
 BoatLevels.FLOOR_SLACK = 1 -- studs/s: the stock jet ski's 80.2 is L1's 80, not a faster boat that needs L2
 
 BoatLevels.Stages = {
@@ -57,11 +61,13 @@ local SPEED = { -- docs/30: huge early % jumps, huge late numbers -- tune
 -- stylua: ignore
 local ROOM_FROM = { [1] = 1, [3] = 2, [6] = 3, [11] = 4, [16] = 5, [21] = 8, [26] = 9, [31] = 10, [41] = 12, [50] = 14 }
 
--- L2 is exactly the first rescue's pay; the rest come from the trip model in tests/Pacing.spec: zones, then the run's x2
--- (a Go back trip is shorter than its window), so past L8 they are about x3 a flat-pay ladder -- tune
+-- L2-L5 take exactly the first four rescues' pay (500, 600, 600, 700: 550 and 650 carry the 50 over), one trip each
+-- (playtest 2026-11-07: L4-L5 took two trips while a 1,900 Cash building looked closer); the rest come from the trip model in tests/Pacing.spec: zones, then the
+-- run's x2 (a Go back trip is shorter than its window), so past L8 they are about x3 a flat-pay ladder -- tune
+local TUT = Grading.Payout.Tutorial
 -- stylua: ignore
 local PRICE = {
-	0, Grading.Payout.Tutorial[1].cash, 600, 800, 1200, 1300, 1500, 2200, 2800, 4300,
+	0, TUT[1].cash, 550, 650, TUT[4].cash, 1300, 1500, 2200, 2800, 4300,
 	6000, 9300, 11500, 15000, 18000, 21000, 25000, 28500, 31500, 35000,
 	38500, 56500, 60500, 64500, 69000, 72500, 82000, 85500, 92500, 96000,
 	100000, 113000, 117000, 124000, 128000, 132000, 136000, 143000, 148000, 152000,
@@ -311,7 +317,10 @@ function BoatLevels.apply(spec: any, value: any): any
 	-- the circle at top speed comes from the row, so a fast boat never feels like ice
 	out.maxLateralG = v * v / (row.turnRadius * 29.43)
 	local yaw = v / row.turnRadius
-	out.turnRate = math.max(spec.turnRate, math.deg(yaw) * 1.15)
+	local cap = if row.level <= BoatLevels.EARLY_TURN_LEVELS
+		then math.min(spec.turnRate, BoatLevels.EARLY_TURN_RATE)
+		else spec.turnRate
+	out.turnRate = math.max(cap, math.deg(yaw) * 1.15)
 	out.lateralGrip = math.max(spec.lateralGrip, yaw / 2.8) -- at most about 25 degrees of slip in a hard turn
 	out.survivorCapacity = row.room
 	out.hullSize = spec.hullSize * s

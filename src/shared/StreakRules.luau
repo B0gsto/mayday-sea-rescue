@@ -80,7 +80,13 @@ local function nextDay(state: State, now: number): (number, boolean, boolean)
 	return math.max(1, state.streak - 3), gap >= 4, false
 end
 
-function StreakRules.preview(state: State, now: number): Preview?
+-- The day's Cash: DayCash, or a share of `nextPrice` (the next boat level's price, nil at L50) when that is more.
+function StreakRules.dayCash(tier: number, nextPrice: number?): number
+	local boat = math.min((nextPrice or 0) * Config.BoatShare[tier], Config.BoatCashMax)
+	return math.max(Config.DayCash[tier], math.floor(boat / 50 + 0.5) * 50)
+end
+
+function StreakRules.preview(state: State, now: number, nextPrice: number?): Preview?
 	if not StreakRules.available(state, now) then
 		return nil
 	end
@@ -88,14 +94,14 @@ function StreakRules.preview(state: State, now: number): Preview?
 	return {
 		day = StreakRules.dayIndex(now),
 		streak = tier,
-		cash = Config.DayCash[tier] + (if welcome then Config.WelcomeCash else 0),
+		cash = StreakRules.dayCash(tier, nextPrice) + (if welcome then Config.WelcomeCash else 0),
 		welcome = welcome,
 		calm = calm,
 	}
 end
 
-function StreakRules.claim(state: State, now: number): Claim?
-	local preview = StreakRules.preview(state, now)
+function StreakRules.claim(state: State, now: number, nextPrice: number?): Claim?
+	local preview = StreakRules.preview(state, now, nextPrice)
 	if not preview then
 		return nil
 	end

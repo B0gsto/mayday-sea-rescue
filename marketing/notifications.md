@@ -19,7 +19,7 @@ notification per player per 24 h. **No keys in the repo, no sending from a Roblo
    | Identifier | Text |
    | --- | --- |
    | `storm_soon` | `{experienceName}: Great Storm in 10 min` |
-   | `crate_ready` | `Your daily crate is ready` |
+   | `crate_ready` | `Your daily boat Cash is ready` |
 
    Copy each string's asset id (`message_id`) into `marketing/notifications.json`, replacing each
    `TODO`:

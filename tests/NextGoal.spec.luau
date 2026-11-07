@@ -26,6 +26,12 @@ return function(t)
 			.toBe("Site")
 	end)
 
+	t.test("the island stays quiet until boat level 5", function()
+		t.expect(N.treeQuiet(nil)).toBe(true)
+		t.expect(N.treeQuiet(4)).toBe(true)
+		t.expect(N.treeQuiet(5)).toBe(false)
+	end)
+
 	t.test("a fresh island builds the free HQ first, and it reads affordable", function()
 		local g = N.next(facts())
 		t.expect(g.kind).toBe("Build")

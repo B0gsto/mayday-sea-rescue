@@ -239,6 +239,13 @@ local function coldOpenDone(player: Player): boolean?
 	return ok and type(data) == "table" and data.coldOpenDone == true
 end
 
+-- Which flat tutorial pay this call gets (Grading.Payout.Tutorial), or nil: by the saved total, so a returning
+-- player's first calls of a session pay in full (the session count is the fallback while the save loads).
+local function tutorialPayIndex(player: Player, st: PlayerState): number?
+	local done = tonumber(player:GetAttribute("OpsCompletedTotal")) or st.completed
+	return if done < #Grading.Payout.Tutorial then done else nil
+end
+
 -- One of a new player's first three station calls (the saved total, so a returning player's first
 -- calls of a session are not): no time cap and a calm swimmer in a lifejacket (docs/15 section 3).
 local function onboardingCall(player: Player?): boolean
@@ -954,7 +961,7 @@ finish = function(op: any, reason: string)
 				paidAs = "Op:CapsizedFerry"
 				run = runMultiplier(p)
 			else
-				local tut = if st.completed < #Grading.Payout.Tutorial then st.completed else nil
+				local tut = tutorialPayIndex(p, st)
 				reward = Grading.payout(op.weight, op.grade, humans, tut)
 				paidAs = `Op:{op.kind}`
 				if not tut then
@@ -1377,6 +1384,7 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	)
 	local kind = Operations.FromCallKind[choice.kind]
 	local sceneKind, zone, victims = choice.kind, choice.zone, choice.victims
+	zone = CallLogic.rampZone(tonumber(player:GetAttribute("OpsCompletedTotal")), zone)
 	if forcedKind == "EasyCall" then
 		kind, sceneKind, zone, victims = "PersonInWater", "Swimmer", "CalmBay", nil
 	elseif forcedKind then
@@ -1425,7 +1433,7 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	end
 	table.insert(op.offeredTo, player)
 	st.offerOpId = op.id
-	local tut = if st.completed < #Grading.Payout.Tutorial then st.completed else nil
+	local tut = tutorialPayIndex(player, st)
 	fire("Ops_Offered", player, offerPayload(op, tut))
 	try("TelemetryService", "Call", player, op.id, "Offered", op.kind) -- analytics H1
 	return op

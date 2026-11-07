@@ -316,6 +316,29 @@ for id, ring in RINGS do
 		fromHome = true,
 	}
 end
+-- Early pacing (playtest 2026-11-07: the call after the cold open sat 1,400 studs out for a twitchy L2 jet ski): a
+-- player's first distance-tier calls stay in their cove cone and grow out one step per saved call (CallLogic.rampZone).
+-- Index = saved calls so far, the cold open included; past the table, the tiers above. Studs from the berth. -- tune
+CallTypes.RAMP = {
+	{ 240, 450 },
+	{ 300, 550 },
+	{ 400, 700 },
+	{ 500, 900 },
+	{ 650, 1100 },
+	{ 800, 1350 },
+	{ 950, 1600 },
+}
+for i, ring in CallTypes.RAMP do
+	CallTypes.SpawnZones["Ramp" .. i] = {
+		id = "Ramp" .. i,
+		displayName = "Open Water",
+		center = CallTypes.STATION,
+		minRadius = ring[1],
+		maxRadius = ring[2],
+		area = "Open",
+		cove = true,
+	}
+end
 -- Every outer island (WorldConfig.Islands): a ring of open water just off it.
 for _, island in WorldConfig.Islands do
 	CallTypes.SpawnZones[island.id] = {

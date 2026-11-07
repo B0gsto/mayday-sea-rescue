@@ -274,6 +274,17 @@ function CallLogic.distanceZone(reach: number?, rng: Rng?, home: Vector3?): stri
 	return pool[math.floor(roll() * #pool) + 1] or "Offshore"
 end
 
+-- Early pacing: a distance-tier or outer-island call keeps to the CallTypes.RAMP step for `savedCalls` (the
+-- OpsCompletedTotal attribute, nil while loading). Fixed places (cove, rip, ferry) stay where they are.
+function CallLogic.rampZone(savedCalls: number?, zoneId: string): string
+	local zone = CallTypes.SpawnZones[zoneId]
+	local ramp = `Ramp{savedCalls or 0}`
+	if zone and (zone.reach or zone.island) and CallTypes.SpawnZones[ramp] then
+		return ramp
+	end
+	return zoneId
+end
+
 -- A wreck dive site (docs/23 (h)) within `reach` of `home` (nil: any) and, if given, on island `where`
 -- (or with that site id). nil when none fits.
 function CallLogic.diveSite(

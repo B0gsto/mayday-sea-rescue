@@ -36,6 +36,7 @@ local DockBuild = require(Shared:WaitForChild("DockBuild"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
+local NextGoal = require(Shared:WaitForChild("NextGoal"))
 local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 
 local UI = script.Parent.Parent:WaitForChild("UI")
@@ -1518,7 +1519,7 @@ end
 
 local function refreshArrows()
 	local want: { [string]: Vector3 } = {}
-	if not siteState().key then
+	if not siteState().key and not NextGoal.treeQuiet(snapshot.boatLevel) then
 		local levels = levelsMap()
 		local cash = tonumber(snapshot.cash) or 0
 		local prepaid = if type(snapshot.dockPrepaid) == "table" then snapshot.dockPrepaid else {}

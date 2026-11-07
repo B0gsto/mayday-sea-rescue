@@ -21,6 +21,16 @@ return function(t)
 		end
 	end)
 
+	t.test("the daily Cash is sized to the next boat level, clamped, DayCash the floor", function()
+		t.expect(Rules.dayCash(2, nil)).toBe(Config.DayCash[2]) -- L50: no next level
+		t.expect(Rules.dayCash(2, 500)).toBe(Config.DayCash[2]) -- a tiny share loses to the floor
+		t.expect(Rules.dayCash(2, 6000)).toBe(1500) -- L11: a quarter of the jump
+		t.expect(Rules.dayCash(7, 1e6)).toBe(Config.BoatCashMax)
+		t.expect(#Config.BoatShare).toBe(Config.WeekDays)
+		local state = Rules.claim(Rules.newState(), NOW, 6000).state
+		t.expect(Rules.claim(state, NOW + DAY, 6000).cash).toBe(1500)
+	end)
+
 	t.test("a new player gets day 1, never a welcome-back crate", function()
 		local s = Rules.newState()
 		t.expect(Rules.available(s, NOW)).toBe(true)

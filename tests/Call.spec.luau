@@ -43,6 +43,18 @@ return function(t)
 		end
 	end)
 
+	t.test("early calls ramp out from the cove, then the distance tiers take over", function()
+		t.expect(CallLogic.rampZone(2, "Offshore")).toBe("Ramp2")
+		t.expect(CallLogic.rampZone(1, "FarSea")).toBe("Ramp1")
+		t.expect(CallLogic.rampZone(#CallTypes.RAMP + 1, "Offshore")).toBe("Offshore")
+		t.expect(CallLogic.rampZone(nil, "Offshore")).toBe("Offshore") -- save still loading
+		t.expect(CallLogic.rampZone(2, "CalmBay")).toBe("CalmBay") -- fixed places stay
+		t.expect(CallLogic.rampZone(2, "BeachRip")).toBe("BeachRip")
+		for i = 2, #CallTypes.RAMP do
+			t.expect(CallTypes.RAMP[i][2] > CallTypes.RAMP[i - 1][2]).toBe(true)
+		end
+	end)
+
 	t.test(
 		"open water: never in the lagoon, on an island, under a bridge or past the map",
 		function()

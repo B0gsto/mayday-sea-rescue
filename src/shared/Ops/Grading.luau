@@ -24,6 +24,7 @@ Grading.Payout = table.freeze({
 		table.freeze({ cash = 500 }),
 		table.freeze({ cash = 600 }),
 		table.freeze({ cash = 600 }),
+		table.freeze({ cash = 700 }), -- each pays about the next boat level, L2-L5 (BoatLevels)
 	}),
 	BigCasualtyShare = 0.3, -- x zone base, to the player who hands the casualty over
 	BigBonusCash = 2.5, -- completion bonus x zone base, scaled by share saved
