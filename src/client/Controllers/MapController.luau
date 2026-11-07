@@ -561,6 +561,19 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			objective, objectiveLabel = waypoint, "Waypoint"
 		end
 	end
+	-- on foot with nothing else to do: the way back to your boat, an edge pin only (Waypoint "Boat"). Playtest 2026-11-07:
+	-- on foot by the basin after an upgrade, no boat in sight, 60 s lost.
+	if
+		not objective
+		and select(2, seatModel()) == "foot"
+		and player:GetAttribute("ColdOpenDone") == true
+		and player:GetAttribute("BuildHidesMenu") ~= true
+	then
+		local craft = ownCraft()
+		if craft then
+			objective, objectiveLabel = craft:GetPivot().Position, "Boat"
+		end
+	end
 	-- by boat, round the islands (playtest 2026-10-26: straight at the berth beached you on the plate): the pin and
 	-- the line point at the next sea leg, the cove mouth before the berth; a heli (high) flies straight
 	objectiveRoute = nil

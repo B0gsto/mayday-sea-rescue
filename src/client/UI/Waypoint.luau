@@ -11,6 +11,7 @@
 --   Drop-off  survivors aboard: home.
 --   Mayday    an offered call, only while you are on a craft (at sea); on foot on the islands, no pin.
 --   Quest     the quest you took.
+--   Boat      on foot with no other goal: your boat, only as an edge pin while it is off screen (playtest 2026-11-07).
 --   Any kind  hides within REACHED (you are there), and the call kinds wait while the tutorial's
 --             island beats lead (TutorialHoldCall); the onboarding beacon only marks island spots
 --             (site, station, wheel), never these targets. Hidden under a panel or the full map, and in cinematics (OpsUiHidden). Mounted by OpsHud.
@@ -78,6 +79,7 @@ local SHOWN: { [string]: boolean } = {
 	["Drop-off"] = true,
 	Craft = true,
 	Quest = true,
+	Boat = true,
 }
 local CALL: { [string]: boolean } = { Mayday = true, Casualty = true, Vessel = true }
 
@@ -242,7 +244,7 @@ function Waypoint.start(
 	local function style(label: string): (string, Color3)
 		if label == "Drop-off" then
 			return "home", GREEN
-		elseif label == "Craft" then
+		elseif label == "Craft" or label == "Boat" then
 			return "boat", CRAFT
 		elseif label == "Quest" then
 			return "quest", QUEST
@@ -341,6 +343,10 @@ function Waypoint.start(
 		local edge = math.max(48, DISC * 1.2 * fit.Scale) -- px: the pinned tip's reach, clear of notches
 		local at: Vector2
 		if not behind and x >= edge and x <= vp.X - edge and y >= edge and y <= vp.Y - edge then
+			if label == "Boat" then -- in view it reads itself: no pin over your own island (owner 2026-10-29)
+				mark.Visible = false
+				return
+			end
 			at = Layout.clearOfHud(Vector2.new(x, y), clear, hang)
 			turn.Rotation = 0
 			chip.AnchorPoint, chip.Position = Vector2.new(0.5, 0), UDim2.new(0.5, 0, 1, 25) -- under the tip

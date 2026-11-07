@@ -31,6 +31,8 @@ local ICON: { [string]: string } = {
 
 local OpsStepCard = {}
 
+local LOST_HIDE = 1 -- s with no goal on the marker before the strip clears
+
 function OpsStepCard.iconFor(id: string?): string
 	return ICON[id or ""] or "check"
 end
@@ -119,6 +121,7 @@ function OpsStepCard.new(gui: GuiBase2d): StepCard
 	end
 
 	local state: { [string]: any }? = nil -- the running op (nil once it ends)
+	local lostAt: number? = nil -- when the marker last lost its goal
 	local function show(glyph: string, color: Color3, text: string)
 		if not body.Visible then
 			body.Visible = true
@@ -158,8 +161,17 @@ function OpsStepCard.new(gui: GuiBase2d): StepCard
 			local w = WORD[label or ""]
 			local s = state
 			if not (s and w and glyph and color) then
-				return -- no call, or between goals: keep the last look
+				-- between goals keep the last look a moment; a goal that stays gone (home, the run closed) clears it
+				-- (playtest 2026-11-07: "0/1 90 m" stayed up at home)
+				local since = lostAt or os.clock()
+				lostAt = since
+				if body.Visible and os.clock() - since > LOST_HIDE then
+					body.Visible = false
+					shown.glyph, shown.text = "", ""
+				end
+				return
 			end
+			lostAt = nil
 			show(glyph, color, if w == "count" then count(s) else w)
 			distance(dist)
 		end,

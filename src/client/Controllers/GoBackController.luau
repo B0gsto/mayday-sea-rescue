@@ -3,8 +3,9 @@
 -- touch), shown by Boat/GoBack's rule while driving away from home. The press goes to the server (Net GoBack), which
 -- answers everyone aboard: "Charge" widens the camera with a whoosh and wipes the button over 1.5 s; a sea-blue veil
 -- covers the jump; "Land" drops the veil on the craft at home, "Cancel" just lets go. Reduce motion: no FOV and no
--- shake (Camera/Shake itself goes quiet), the veil stays since a bare jump cut is worse. The first survivor ever aboard
--- gets one steady green arrow on the button (docs/30 section 4), gone at the first press.
+-- shake (Camera/Shake itself goes quiet), the veil stays since a bare jump cut is worse. The first time anyone is aboard
+-- (once per profile: Comfort's saved "GoBackTaught" flag) the button bounces once and a steady green arrow sits on it
+-- (docs/30 section 4) until the press or until nobody is aboard; live v40 had 0 Go back presses in 6 sessions.
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -50,6 +51,8 @@ local veil: Frame
 local arrow: ImageLabel
 local arrowShown = false
 local arrowDone = false
+local SEEN = "GoBackTaught"
+local seenLoaded = false -- Comfort's saved flags are in: before that hasSeen reads false for everyone
 local fov, fovApplied = 0, 0
 
 -- The craft whose DriverSeat we sit in.
@@ -77,8 +80,22 @@ local function setArrow(on: boolean)
 	end
 	arrowShown = on
 	Style.pop(arrow, on)
-	if on then
-		AudioController.play("UI_Prompt")
+	if not on then
+		arrowDone = true -- one lesson per session even before the save lands
+		return
+	end
+	Comfort.markSeen(SEEN)
+	AudioController.play("UI_Prompt")
+	local sc = face:FindFirstChildOfClass("UIScale") -- Style.press's; one bounce after the button's own pop
+	if sc and not Comfort.reducedMotion() then
+		task.delay(0.3, function()
+			sc.Scale = 1.3
+			TweenService:Create(
+				sc,
+				TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+				{ Scale = 1 }
+			):Play()
+		end)
 	end
 end
 
@@ -105,7 +122,8 @@ local function refresh()
 			and not (charging or arrowDone)
 			and model ~= nil
 			and (tonumber(model:GetAttribute("SurvivorCount")) or 0) > 0
-			and (tonumber(player:GetAttribute("Rescued")) or 0) == 0
+			and seenLoaded
+			and (arrowShown or not Comfort.hasSeen(SEEN))
 	)
 	if want == shown then
 		return
@@ -187,6 +205,9 @@ local function onLand()
 end
 
 function GoBackController.Start()
+	Comfort.whenReady(function()
+		seenLoaded = true
+	end)
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "GoBack"
 	gui.ResetOnSpawn = false

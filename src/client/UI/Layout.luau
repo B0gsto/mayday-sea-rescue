@@ -32,6 +32,7 @@
 -- Layout.onColdOpen(fn) calls fn(active) now and on every change.
 -- Layout.promptBusy() is true while any "prompt" region holds a visible panel (polled every 0.25 s).
 -- Layout.newPlayer() is true on a new-profile HUD: the cold open and the first 3 calls after it.
+-- Layout.quietHud() is true until the boat's first level-up (the side menus and Robux chips wait).
 --
 -- Phone check (tests/HudLayout.spec.luau: phones and tablets, landscape and portrait, scale 0.7+):
 -- every region ends above the thumbstick zone at 55% of the safe height and clear of the jump zone.
@@ -437,6 +438,16 @@ end
 
 function Layout.newPlayer(): boolean
 	return newPlayerActive
+end
+
+-- Quiet HUD (fresh-player audit 2026-11-07): until the first boat level-up only the boat loop's buttons show (Menu hides
+-- Album, Pet, Crew, Skills and the Starter sale tag; BoatCard the Quick Launch chip). An old save with 5+ rescues is never quiet.
+function Layout.quietHud(): boolean
+	local p = Players.LocalPlayer
+	local level = p and p:GetAttribute("BoatLevel")
+	return type(level) == "number"
+		and level < Onboarding.UPGRADE_LEVEL
+		and (tonumber(p:GetAttribute("Rescued")) or 0) < Onboarding.SKIP_RESCUES
 end
 
 if RunService:IsClient() and Players.LocalPlayer then
