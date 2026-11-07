@@ -1,6 +1,6 @@
 --!strict
 -- NextChip: the permanent "what next" chip (docs/24 E/F) in the HudLayout "chips" slot, leading with the boat's next
--- level (docs/30; tapping points at the Upgrade Station), then buildings.
+-- level (docs/30; tapping buys it at the Upgrade Station, elsewhere points there), then buildings.
 -- The UI kit look (owner 2026-10-28: the slate bar read as a dev HUD): a blue block card, the next building's
 -- Lego icon on a white tile over its left edge, its 1-3 word name, a Cash bar to its price and coin + price.
 -- At the price the price turns into a green pill with one pop (never a looping pulse: owner 2026-10-28);
@@ -145,7 +145,7 @@ local function nearby(pos: Vector3): boolean
 	return Vector3.new(d.X, 0, d.Z).Magnitude <= NEAR_STATION
 end
 
--- The chip's one action: the boat's level points at the Upgrade Station; a building opens the tablet at the station,
+-- The chip's one action: the boat's level buys at the Upgrade Station, else points at it; a building opens the tablet at the station,
 -- else leads there.
 -- On foot anywhere: the build tablet opens on the shown goal's card (owner 2026-10-28: the station pointer alone read as
 -- "does nothing"). At the helm it points at the station instead: build mode would freeze you at sea.
@@ -153,7 +153,24 @@ local function activate()
 	if shownKey == "Boat" then
 		local i = player:GetAttribute("DockPlot")
 		if type(i) == "number" then
-			pointAt(UpgradeStation.buttonAt(i))
+			local button = UpgradeStation.buttonAt(i)
+			local rootPart = player.Character
+				and player.Character:FindFirstChild("HumanoidRootPart")
+			-- at the station (seated in the bay or on foot) the key is the station button: one press buys
+			if
+				rootPart
+				and rootPart:IsA("BasePart")
+				and (rootPart.Position - button).Magnitude <= UpgradeStation.USE_RANGE
+			then
+				clearPointing()
+				require(
+					script.Parent.Parent
+						:WaitForChild("Controllers")
+						:WaitForChild("UpgradeStationController")
+				).Buy()
+			else
+				pointAt(button)
+			end
 		end
 		return
 	end

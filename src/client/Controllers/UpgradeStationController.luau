@@ -52,6 +52,15 @@ type Board = {
 
 local boards: { Board } = {}
 local snapshot: { [string]: any }? = nil
+-- Seated in the bay the button sits behind the chase camera, and Roblox shows no prompt whose part is off screen
+-- (playtest 2026-11-07: E did nothing). So while seated in range the button's prompt rides on your seat instead:
+-- a local copy, since the server swaps the boat (and all under it) at a level-up.
+local seatPrompt = Instance.new("ProximityPrompt")
+seatPrompt.Name = "UpgradeBoat"
+seatPrompt.ActionText = "Upgrade"
+seatPrompt.RequiresLineOfSight = false
+seatPrompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
+local seatBoard: Board? = nil -- the station whose prompt is on the seat
 
 local function text(
 	parent: Instance,
@@ -190,9 +199,14 @@ local function refresh()
 		b.fill.Size = UDim2.fromScale(math.max(BoatLevels.progress(row.level), 0.04), 1)
 		b.cash.Text = `You {Theme.short(math.floor(money))}`
 		local affordable = BoatLevels.canBuy(row.level, money)
+		local prompts: { ProximityPrompt } = if b == seatBoard then { seatPrompt } else {}
 		if b.prompt then
-			b.prompt.Enabled = nextRow ~= nil
-			b.prompt:SetAttribute("Grey", not affordable) -- local: PromptCueController greys the pill
+			table.insert(prompts, b.prompt)
+		end
+		for _, prompt in prompts do
+			-- seated in range only the seat's copy shows
+			prompt.Enabled = nextRow ~= nil and (prompt == seatPrompt or b ~= seatBoard)
+			prompt:SetAttribute("Grey", not affordable) -- local: PromptCueController greys the pill
 		end
 		if b.button then
 			b.button.Color = if affordable then b.green :: Color3 else BUTTON_GREY
@@ -402,6 +416,55 @@ local function hook(stationModel: Instance)
 	refresh()
 end
 
+-- Puts the button's prompt on your seat while you sit within its range, back on the button otherwise.
+local function followSeat()
+	local character = player.Character
+	local hum = character and character:FindFirstChildOfClass("Humanoid")
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	local seat = hum and hum.SeatPart
+	local near: Board? = nil
+	if seat and root and root:IsA("BasePart") then
+		for _, b in boards do
+			local button = b.button
+			if
+				button
+				and (button.Position - root.Position).Magnitude <= UpgradeStation.USE_RANGE
+			then
+				near = b
+			end
+		end
+	end
+	local at: Instance? = if near and seat then seat:FindFirstChild("UpgradeCue") else nil
+	if near and seat and not at then
+		local attachment = Instance.new("Attachment")
+		attachment.Name = "UpgradeCue"
+		attachment.Position = Vector3.new(0, 4, 0)
+		attachment.Parent = seat
+		at = attachment
+	end
+	if near ~= seatBoard or seatPrompt.Parent ~= at then
+		seatBoard = near
+		seatPrompt.Parent = at
+		refresh()
+	end
+end
+
+-- The station button's press (its prompt, or the Next chip's key at the station): buy the next level, or shake what is missing.
+function UpgradeStationController.Buy()
+	local snap = snapshot
+	if snap then
+		local _, why = BoatLevels.canBuy(snap.boatLevel, tonumber(snap.cash) or 0)
+		if why == "Need Cash" then
+			shakeMissing() -- no call: the server refuses it anyway
+			return
+		end
+	end
+	local ok, reason = Net.func("Boat_LevelUp"):InvokeServer()
+	if not ok and reason == "Need Cash" then
+		shakeMissing()
+	end
+end
+
 function UpgradeStationController.Start()
 	Net.event("BoatLevelMoment").OnClientEvent:Connect(onMoment)
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(function(raw: any)
@@ -411,20 +474,8 @@ function UpgradeStationController.Start()
 		end
 	end)
 	ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt, who: Player)
-		if prompt.Name ~= "UpgradeBoat" or who ~= player then
-			return
-		end
-		local snap = snapshot
-		if snap then
-			local _, why = BoatLevels.canBuy(snap.boatLevel, tonumber(snap.cash) or 0)
-			if why == "Need Cash" then
-				shakeMissing() -- no call: the server refuses it anyway
-				return
-			end
-		end
-		local ok, reason = Net.func("Boat_LevelUp"):InvokeServer()
-		if not ok and reason == "Need Cash" then
-			shakeMissing()
+		if prompt.Name == "UpgradeBoat" and who == player then
+			UpgradeStationController.Buy()
 		end
 	end)
 	task.spawn(function()
@@ -437,6 +488,12 @@ function UpgradeStationController.Start()
 				snapshot = raw
 				refresh()
 			end
+		end
+	end)
+	task.spawn(function()
+		while true do
+			followSeat()
+			task.wait(0.25)
 		end
 	end)
 	local folder = Workspace:WaitForChild("UpgradeStations", 60)
