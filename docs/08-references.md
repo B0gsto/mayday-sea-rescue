@@ -1,6 +1,6 @@
 # 08 · References
 
-Curated references for the current game: Roblox games to study, blocky/Lego and simulator-UI look references,
+Curated references for the boat-upgrade rescue game: Roblox games to study, blocky/Lego and simulator-UI look references,
 real rescue material, and official tech docs. The design is [`00-design.md`](00-design.md); the look is
 [`05-art-direction.md`](05-art-direction.md).
 
@@ -19,15 +19,16 @@ the Port Haven design; use its links, not its conclusions.
 | Pilot Training Rescue Squadron | [roblox.com](https://www.roblox.com/games/470170393) [R] | Mixed air/sea rescue from islands |
 | SharkBite 2 | [rowatcher](https://rowatcher.com/games/3365661357/upd-sharkbite-2) [R] | Readable threat on water; avoid PvP danger |
 | Build a Boat for Treasure | [rowatcher](https://rowatcher.com/games/210851291/build-a-boat-for-treasure) [R] | Ownership of a personal boat; avoid building as the main loop |
+| Roblox upgrade simulators (genre) | - | One thing upgraded many times with big visible jumps, a clear next price, a fast loop back out: the model for the 50 boat levels |
 
-The sea-rescue niche is small and fragmented. The opportunity is a polished, readable rescue game, not a
-roleplay server.
+The sea-rescue niche is small and fragmented. The opportunity is a polished, readable rescue game with an upgrade
+loop, not a roleplay server. Ranks and roleplay are cut (no ranks, no Rep).
 
 ## 2. Look and UI references
 
 | Reference | Use |
 |---|---|
-| Lego | Chunky bricks, plates, studs, bright colours, big flat tops; new hub/outpost/island art |
+| Lego | Chunky bricks, plates, studs, bright colours, big flat tops; boat pieces, islands, new props |
 | Roblox simulator shops | Bright gradient cards, thick dark borders, chunky rounded display font with black outline, red X, big green price buttons, coloured square icon buttons with short labels |
 | Roblox blocky/low-poly games | Readable silhouettes, low part counts, strong colour blocking |
 | Sea of Thieves (Rare) | Water motion and boat ride only; not its stylized look ([seaofthieves.com](https://www.seaofthieves.com)) [O] |
@@ -128,5 +129,8 @@ No real accident is recreated. No real logo, flag or insignia is used.
 | ambientCG | [ambientcg.com](https://ambientcg.com) [O] | CC0; confirm |
 | Sketchfab | [sketchfab.com](https://sketchfab.com) [O] | CC0 or CC-BY only; never NC/ND; check Roblox terms |
 | Freesound | [freesound.org](https://freesound.org) [O] | CC0 only; confirm each clip |
+| Roblox Creator Store | [create.roblox.com/store](https://create.roblox.com/store) [O] | Owner OK (2026-10-28) for free public assets and VFX: strip scripts, AD-score, Lego look still wins |
+
+No Mixamo (owner 2026-11-01): Roblox packs and emotes, CMU / Quaternius mocap as reference, hand-keyed Blender poses.
 
 Never use a real coastguard livery, flag, badge or logo. The Gale Isles Coastguard is invented.

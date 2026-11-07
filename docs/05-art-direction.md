@@ -1,122 +1,78 @@
 # 05 · Art direction
 
-How Mayday: Sea Rescue looks and moves. The current design is in [`00-design.md`](00-design.md); this file sets
-the look for it. The rule that settles most arguments: **new things are Lego-style; finished things keep their
-look.** We are not rebuilding the boats, station, helicopter or submarine that already exist.
+How Mayday: Sea Rescue looks. The game is one boat you upgrade 50 times and drive out to sea to rescue people
+(`00-design.md`, `30-boat-pivot.md`). Two rules settle most arguments: **new things are Lego-style toys; finished
+things keep their look.**
 
-## 1. The look in one paragraph
+## 1. The look
 
-A bright, toy-like coastguard rescue game on a wild green hub island, six flat Lego baseplate islands, long
-suspension bridges and a ring of rocky outer islands. The sea is the real stage: readable swells, white spray,
-orange rescue gear and clear silhouettes at speed. The hub is overgrown and a little mysterious; the player
-islands are clean, bright and built up over time. UI is Roblox simulator style: chunky, rounded, high-contrast
-and readable on a phone.
+A bright, toy-like rescue game at sea. Your boat is the hero: it starts as a small jet ski and ends as a huge,
+silly Rocket Cutter, every level bolting on one big visible piece. The sea gets darker and stranger the farther
+out you go. A tight ring of six Lego-baseplate islands sits round a lagoon with a small beacon atoll in the middle.
+UI is Roblox simulator style: chunky, rounded, high-contrast, readable on a phone.
 
-## 2. Two lanes
+## 2. The boat
 
-### 2.1 Existing finished art
+- Five stages (`BoatLevels.Stages`): Jet ski L1-10, RIB L11-20, Lifeboat L21-30, Hydrofoil L31-40, Rocket Cutter
+  L41-50. Each level adds one exaggerated piece (`BoatLevels` piece table; meshes in `BoatLevels.HullArt`).
+- Pieces are big, readable from the chase camera and on a phone, and fun, never weapons: no rocket, missile,
+  spike or gun reads (owner 2026-11-05, why the first Hydrofoil and Rocket Cutter meshes were pulled).
+- Height budget: the tallest level fits the station gate (concepts stay under 38 game studs).
+- Robux boats (Storm Runner, Tidewalker, Riptide X, Gilded Gull, RIB, Lifeboat) are looks at your level's stats.
+- Pirate boat and crew: friendly toy pirates, kid-safe, no weapons in hand.
 
-These keep their current look and proportions. Do not restyle, re-topology or re-texture them for this pass:
+## 3. The sea and zones
 
-- Jet ski, RIB, lifeboat and their premium variants.
-- Rescue helicopter and submarine.
-- Station rig, harbour pieces, buoys, quay kit and rescue props.
-- Existing wildlife, trees, rocks and terrain materials.
-- Existing PBR `SurfaceAppearance` assets and their texture packs.
+Five rings out from the lagoon (`Calls/SeaZones`): Shallows (turquoise), Kelp Banks (green), Coral Drift (blue),
+Storm Reach (grey-blue), Wreck Abyss (deep navy). A crossing reads through water colour, fog and light blended over
+300 studs either side of the line (`SeaZones.lookAt`), plus a buoy line; no wall or curtain. Far sector spots
+(sea stacks, a wreck aground, a lighthouse rock) give each empty direction a landmark.
 
-The asset diet (WP-16) may merge near-duplicate materials and drop unused ids. That is cleanup, not a redesign.
+- One wave function drives the visible ocean and every hull.
+- Spray, wake, foam and bow wave are the speed cues; bold from the chase camera.
+- Default weather is sunny; the zone look sets the mood.
 
-### 2.2 New art
+## 4. Palette and readability
 
-New buildings, outposts, props and island pieces are **blocky and Lego-like**:
+- **Rescue orange** marks survivors, rings, flares and rescue gear. Orange and red mean rescue or danger, not decor.
+- **Rarity colours** (gems, survivor tags) come from `Rarity` and the kit theme.
+- **Islands**: classic Lego greens, greys and bright primary accents; each player's flag colour is their own.
+- Never colour alone: shape, icon and a 1-3 word label too.
 
-- Chunky bricks, plates and studs; big flat tops; modest part counts.
-- Bright, saturated colours; clean edges; a few large shapes rather than many small details.
-- Wood, canvas, rope, lanterns and painted metal for the frontier camps.
-- Lego build animation when a building is bought: pieces drop in bottom to top, small bounce, snap, dust puff.
+## 5. Two lanes
 
-Player islands are **plain flat Lego baseplates**: green stud plates with a berth notch, no terrain and no
-scatter. The hub forest and outer islands stay natural terrain.
+- **Finished art keeps its look:** jet ski, RIB, lifeboat and their pieces, premium boats, helicopter, the Upgrade
+  Station, pirate boat and crew, island buildings, wildlife, pets, hub kit, rocks, trees. Cleanups may merge
+  materials or drop ids, never change the look.
+- **New art is Lego-style:** chunky bricks, plates and studs, big flat tops, few large shapes, bright saturated
+  colours. A bought building builds itself in with a Lego drop-bounce-snap.
 
-## 3. Palette and readability
+## 6. Materials and budgets
 
-- **Rescue orange** (`#F26A1B`-class) is the signal colour for survivors, rings, flares, lifeboats and the
-  player's own craft highlights.
-- **Sea** runs deep blue-green to turquoise shallows, with white foam and a bright horizon.
-- **Hub** is moss green, bark brown, canvas cream and lantern warm yellow.
-- **Player islands** use classic Lego greens, greys and bright primary accents; each player's flag colour is
-  the one strong personal colour.
-- **UI** uses bright gradients, thick dark borders and a black outline on the display font.
-- Never rely on colour alone: use shape, icons and labels as well. Orange/red are reserved for rescue and
-  danger, not decoration.
+- Existing PBR assets keep their `SurfaceAppearance` maps.
+- New pieces use flat colours or shared simple textures; no unique 4K set per asset.
+- Avoid `Slate`, `WoodPlanks`, `Brick`, `Concrete` on Parts (MaterialService remaps them to terrain textures).
+- LODs for every mesh (`tools/blender/budgets.py`); no coplanar faces (lift or inset 0.04-0.05 studs).
 
-## 4. Scale and form
+## 7. Characters
 
-- **1 metre = 3 studs.** Boats, bridges and buildings use that scale.
-- Hub is about 800 studs across; player islands sit about 1,100 studs out, each with a 160-stud-radius plateau.
-- Suspension bridges are 14 studs wide, with a 50-stud apex so every boat and the helicopter pass under.
-- Boats read as chunky toys: wide hulls, big outboards, visible seats, orange grab rails.
-- New buildings are assembled from large bricks: a boathouse is a box with a pitched roof, a roll-up door and
-  a sign; a lookout is a hut on legs with a ladder and a lamp. Detail comes from silhouette and colour, not
-  from tiny trim.
-- Terrain is smooth and readable, with cliffs and rocks as separate meshes where sharp edges matter.
+- Players and NPCs are simple R15 characters. Survivors wear orange life jackets, wave and splash.
+- Bosun is the low-poly dog; one companion (Bosun or one pet) at a time.
+- Third person only.
 
-## 5. Materials and budgets
+## 8. UI
 
-- Existing PBR assets keep `SurfaceAppearance` maps and their current texel density.
-- New Lego-style pieces use flat `Material` colours or simple textures; no unique PBR set per building.
-- One material per colour family per kit; reuse brick, plate, stud, canvas and wood materials.
-- New props: keep part counts low enough to place dozens in the hub without hurting a phone. Prefer one mesh
-  per colour group over many small parts.
-- No new 4K texture sets. New UI icons are transparent PNGs, not 3D renders.
-- The asset diet (WP-16) is the place to measure and cut; do not add texture packs casually.
+Screen sprites are Claude-designed vector art (`art/source/ui/*.svg`, rendered by `tools/ui-art/render.py`): white
+sticker rim, hard dark outline, bold gradient and lip, at least ~32 pt on a phone, labels 14 pt+. No text glyphs, no
+outline rings round HUD buttons, never flashing or pulsing orange (one pop, an arrow or a camera focus instead).
+Details: `18-ui-art-requests.md`.
 
-## 6. Lighting and weather
-
-- **Day:** bright sun, blue sky, crisp shadows, saturated sea. This is the default read.
-- **Golden hour:** warm low sun for thumbnails and the hub's first arrival.
-- **Storm:** grey-green light, larger swells, rain, spray and reduced visibility. Rescue orange must still
-  read against the sea.
-- **Night:** deep blue, warm outpost lanterns, lighthouse and dock beacons. Beacons are readable from the water.
-- **Hub fog:** the forest starts fogged and clears as the player walks it. Fog is a discovery tool, not a
-  permanent weather effect.
-- Keep the horizon clean. The ocean must cover the view from a player camera; no square water edge.
-
-## 7. Ocean and VFX
-
-- One shared wave function drives the visible ocean and every hull. What the player sees is what the boat feels.
-- Spray, wake, foam and bow wave are the main speed cues. Make them bold and readable from the chase camera.
-- Pick-up ring: a clear orange ring on the water, visible at speed and in a storm.
-- Storm VFX: rain, wind streaks, whitecaps, spindrift; no photoreal simulation rebuild.
-- Helicopter downwash, submarine bubbles and seabed silt are simple, chunky effects.
-- Lego build VFX: brick drop, bounce, snap flash, dust puff. Keep it short (about 5 seconds).
-
-## 8. Characters and animation
-
-- Players and NPCs are simple Roblox R15 characters. No custom human meshes.
-- Quest givers are readable silhouettes: coat, hat, boots, one prop (clipboard, lamp, rope, crate).
-- Survivors wear orange lifejackets and read at distance; in the water they wave and splash.
-- Bosun is the existing low-poly dog. One companion at a time.
-- Animation is toy-like and readable: big waves, clear sit/stand, exaggerated climb aboard, short build beat.
-- Third person only. No first-person viewmodel, hands or photo mode.
-
-## 9. UI
-
-The UI is a core part of the look, not a skin on old phone screens. See [`18-ui-art-requests.md`](18-ui-art-requests.md).
-
-- Roblox simulator style: chunky rounded display font with a black outline, bright gradient cards, thick
-  dark borders, red square X, big green price buttons, coloured square icon buttons with a 1–3 word label.
-- A subtle Lego stud texture on title bars and price buttons.
-- Left column of big square buttons; centred panels; full map on M.
-- Icons are generated 2D art, not code-drawn glyphs, once they land. Placeholders are fine until then.
-- No phone frame, no iOS squircle tiles, no wallpaper, no home grid.
-
-## 10. Production rules
+## 9. Production rules
 
 - Placeholders first; gameplay never waits on art.
-- New Blender work goes to DeepSeek V4.1 Flash through T3 `delegate_task`, following `art/bench/PROD_BRIEF.md`.
-- Code builders are DeepSeek V4 Pro; Opus reviews. Do not redesign finished assets.
-- Use the build → render → critique loop for visual work; at most three rounds, then ask.
-- No real logos, liveries or insignia. The Gale Isles Coastguard is invented.
-- Reference photos stay in `art/reference/` and are never uploaded.
-- If an asset is not on [`12-asset-list.md`](12-asset-list.md), add it there before building it.
+- Every new model starts as a concept page (Claude Artifacts: top, front, back, sides, 3/4, phone read, spec.json,
+  BLENDER.md). The art director scores it; only an approved concept goes to Blender.
+- Blender work goes through the Blender MCP; the pipeline is in `06-tools-and-pipeline.md` and
+  `art/bench/PROD_BRIEF.md`. Art director rounds: ship above 8/10, at most 3 rounds.
+- No real logos or insignia; the Gale Isles Coastguard is invented. Thumbnails and key art are the owner's.
+- Add an asset to `12-asset-list.md` before building it.

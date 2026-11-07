@@ -1,189 +1,94 @@
 # 06 · Tools and pipeline
 
-How code, art and the world get built, checked and published. The design is [`00-design.md`](00-design.md).
-This file owns the general tech; [`10-world-and-map.md`](10-world-and-map.md) owns the map layout and
-[`05-art-direction.md`](05-art-direction.md) owns the look.
+How code and art get built, checked and published. Module ownership and APIs: [`CONTRACT.md`](../CONTRACT.md). The
+look: [`05-art-direction.md`](05-art-direction.md).
 
-## 1. Code toolchain
+## 1. Code
 
-Pinned in `rokit.toml`. Run `rokit install` once.
+Tools pinned in `rokit.toml` (`rokit install`): Rojo, Luau LSP, Selene, StyLua, Lune. Python 3 for publish, uploads,
+world generation and telemetry.
 
-| Tool | Use |
-|---|---|
-| Rojo | Sync `src/`, `map/` and assets into Studio; build the place |
-| Luau LSP | Type analysis with Roblox definitions |
-| Selene | Lint `src/`, `map/`, `tests/` |
-| StyLua | Format |
-| Lune | Unit specs in `tests/` |
-| Roblox Studio | Play, smoke tests, publish |
-| Python 3 | Publish, asset upload, world generation, screenshots |
-
-### 1.1 Checks
-
-```sh
-~/RobloxProjects/tools/check.sh .
-```
-
-It runs:
-
-1. `rojo sourcemap`
-2. `luau-lsp analyze`
-3. `selene`
-4. `stylua --check`
-5. `lune` specs
-
-All five must pass. Run it before every commit.
-
-### 1.2 Build and smoke
-
-```sh
-~/RobloxProjects/tools/build.sh .        # writes build/MaydaySeaRescue.rbxl
-python3 tools/studio/smoke.py            # real Studio smoke run
-python3 tools/studio/soak.py             # longer soak
-```
-
-Smoke scripts are the real-client check: they drive the place in Studio, not just the unit specs. Use them
-after a gameplay change that touches input, camera, vehicles or UI.
+- **Check (before every commit):** `~/RobloxProjects/tools/check.sh .` runs the sourcemap, `luau-lsp analyze`,
+  selene, `stylua --check` and every Lune spec in `tests/` (including `tests/ZFight.spec.luau`, the coplanar-face
+  scan of every island piece). All must pass.
+- **Build:** `~/RobloxProjects/tools/build.sh .` writes `build/MaydaySeaRescue.rbxl`.
+- **Studio driver:** `python3 tools/studio/smoke.py run` (smoke, with `zfight_scan`), `smoke.py ops`,
+  `smoke.py lua Server <file>`; `tools/studio/soak.py`, `perf*.luau`, `walkin_audit.luau`.
+- **Playtests (Opus only):** `python3 tools/studio/play.py <cmd>` for fast player-only checks in Studio;
+  `tools/roblox/rbx.py` for the real client (needs `tools/roblox/keyd.sh` running).
+- **Dev tools in game:** the DEV board (`DevConfig` access), chat `/vfx <name|all>`, `/spin <wedge>`, `ServerStorage.*Dev`
+  hooks. They stay on the launch place for live ops.
+- **Code builders:** Opus 5.5 agents (owner 2026-10-31: Opus only); Opus reviews. One final sign-off per feature.
 
 ## 2. Publish
 
+Every change that passes `check.sh` and its playtest is published to test, then launch, without asking:
+
 ```sh
-python3 tools/publish.py
+git merge origin/main                               # publish from fresh main
+python3 tools/studio/publish_studio.py              # private test place (deploy/target.json, state.json)
+python3 tools/studio/publish_studio.py --launch     # launch place (deploy/launch-target.json, state-launch.json)
 ```
 
-`publish.py` calls `tools/studio/publish_studio.py` and publishes to the private test experience in
-`deploy/target.json`. It publishes **from Studio**, not an Open Cloud place upload: only a Studio publish
-creates the texture packs `SurfaceAppearance` / `MaterialVariant` need.
-
-- Normal publish is about **2 minutes**.
-- The publisher retries only the texture packs that failed, not all ~455. It honours `429` reset times and
-  publishes when failures are at most 1%.
-- Do not publish while a map bake or a Blender batch is writing the same assets.
-- After publish, check the client log for `fetchTexturePackTextures` or "PBR textures may not be visible".
+- It publishes from Studio, not an Open Cloud upload: only Studio makes the PBR texture packs. It retries only the
+  failed packs and refuses to publish on too many failures.
+- Commit `Published vN + launch vM (...)` afterwards; batch changes that land close together.
+- After a launch publish: `python3 tools/trail.py --hours 24` (session trails, funnel, per-device `SessionPerf`);
+  notes in `build/liveops/LOG.md`.
 
 ## 3. Art pipeline
 
-### 3.1 Existing finished art
+1. **Concept first.** A Claude Artifacts page per asset (top, front, back, left, right, 3/4, phone-size read, game
+   colours) plus `spec.json`, scaled ortho references and `BLENDER.md` (`art/concepts/<asset>/`). An Opus art
+   director scores it; only an approved concept goes on. The owner sees the first of a new style.
+2. **Blender MCP.** Model in a live Blender GUI through the `blender` MCP server (`blender2`, `blender3` for more
+   GUIs: `~/RobloxProjects/tools/blender-mcp-open.sh`), checking with multi-angle `look`. Telemetry and asset
+   integrations stay off.
+3. **Finish** by `art/bench/PROD_BRIEF.md`: save the `.blend` in `art/source/<kind>/<name>/`, keep a `build.py` that
+   rebuilds it, then `tools/blender/validate.py`, LODs (`budgets.py`), `zfight_check.py`, `export.py`, upload.
+4. **Wire:** `tools/gen_asset_ids.py` writes `src/shared/Config/AssetIds.luau` (a worktree has no FBX: pin existing
+   ids). Boat pieces are one entry in `BoatLevels.HullArt`.
+5. **Art director:** Opus 5.5, scored out of 10 on a contact sheet; ship above 8; at most 3 rounds (a 4th only if truly
+   needed), then ask the owner.
 
-Keep it. Existing vehicles, station, harbour kit, wildlife, terrain materials and PBR sets are integrated as
-they are. Do not re-topology, re-texture or restyle them for the hub pass.
+Rules: never redesign finished assets; placeholders (Parts) until art lands; binaries (PNG/FBX/WAV) stay local, never
+on GitHub; up to four heavy apps (Studio, Blender GUIs) at once.
 
-### 3.2 New Blender art
+## 4. UI art and VFX
 
-New models (Lego buildings, outposts, props) go through T3 `delegate_task`:
+- **UI sprites:** hand-authored SVG/HTML in `art/source/ui/`, rendered by
+  `python3 tools/ui-art/render.py in.svg out.png [--size W H] [--scale 2]`, uploaded with
+  `~/RobloxProjects/tools/assets.py upload . <png> --type Image`, ids in `src/shared/Config/UiImages.luau`.
+  Batch generators: `tools/ui-art/kit_icons*.py`, `gems.py`, `critters.py`, `stickers.py`, `pin_variants.py`.
+- **Item icons:** `tools/make-item-icons.py` / `item_icons_blender.py`, `tools/upload-item-icons.py`.
+- **VFX flipbooks:** `tools/blender/flipbook.py`; texture ids in `shared/Config/VFXTextures`; rules in `26-vfx.md`.
 
-- Provider `opencode`, model `opencode-go/deepseek-v4.1-flash`, variant `max`.
-- Follow `art/bench/PROD_BRIEF.md`.
-- At most **3** tasks at a time (OpenCode Go rolling limit) and **2** Blender jobs (16 GB machine).
-- Queue and status: `art/bench/QUEUE.md`.
-- Opus reviews the result; at most three build → render → critique rounds, then ask.
-
-The old photoreal Blender pipeline still applies to existing PBR assets. New Lego pieces can be code-built
-Parts or simple Blender models; prefer Parts when the shape is boxes and studs.
-
-### 3.3 New code and placeholder art
-
-Code builders are DeepSeek V4 Pro (`opencode-go/deepseek-v4-pro`, variant `max`) via T3 `delegate_task`,
-several in parallel. Opus reviews. Placeholder Parts first; gameplay never waits on art.
-
-### 3.4 Asset ids and UI
-
-- Models/textures: `src/shared/Config/AssetIds.luau`.
-- UI sprites: `src/shared/Config/UiImages.luau`.
-- New UI icons: `marketing/ui/icons/`, wired by the UI kit.
-- Asset diet (WP-16): drop unused ids, merge near-duplicate PBR surfaces, measure phone memory and load.
-
-## 4. Repo layout
+## 5. Repo layout
 
 | Path | What lives there |
 |---|---|
-| `src/server/Services/` | Services (`Init`/`Start`, optional `Priority`) |
-| `src/server/Ops/` | Rescue operation server logic |
-| `src/server/Dock/` | Dock/island build pieces and service helpers |
-| `src/server/World/` | Hub, islands, harbour, world dressing |
-| `src/server/Npc/` | Quest givers, crew, ambient NPCs |
+| `src/server/Services/` | Services (`Init` / `Start`, optional `Priority`) |
+| `src/server/World/` | Islands, plates, bridges, sector spots, hub landmark, dressing |
+| `src/server/Ops/`, `src/shared/Ops/` | Calls: scenes, boarding, grading |
 | `src/client/Controllers/` | Client controllers |
-| `src/client/UI/` | Panels; kit planned (WP-23b) |
-| `src/client/Mechanics/` | Boarding, care, pick-up |
-| `src/client/Ocean/` | Mesh ocean |
-| `src/shared/Config/` | World, vehicles, dock, discovery, monetization |
-| `src/shared/Ops/` | Boarding, rescue rules, shared operation data |
-| `src/shared/Calls/` | Call types, distance, reach |
-| `src/shared/Quests/` | Quest data and rules |
-| `src/shared/Heli/`, `Sub/`, `Boat/` | Craft controllers and pure maths |
+| `src/client/UI/` | HUD, menu, panels (`Panels/`), kit (`Kit/`) |
+| `src/client/Ocean/`, `VFX/`, `Camera/` | Mesh ocean, VFXKit, cameras |
+| `src/shared/Boat/` | Boat maths: buoyancy, sim, Go back, fuel, sea exit, sea edge, glance |
+| `src/shared/Calls/` | Call positions, sea zones, sector spots, pacing |
+| `src/shared/Config/` | Game, ring layout, vehicles, monetization, assets, UI images |
 | `map/` | `Build.luau`, terrain, zones |
-| `tools/world/` | Terrain and layout generation |
-| `tools/studio/` | Smoke, soak, publish, screenshots |
 | `tests/` | Lune specs |
-| `art/` | Source, reference, bench, lookdev |
-| `marketing/` | Store art, thumbnails, UI icons |
+| `tools/` | Studio, publish, Blender, UI art, world, telemetry |
+| `art/` | Concepts, sources, bench briefs |
+| `marketing/` | Store text, product list, badges, item icons |
 | `docs/` | Design docs; `docs/archive/` is history |
 
-Module ownership and APIs are in [`CONTRACT.md`](../CONTRACT.md).
+## 6. Tech notes
 
-## 5. Technical approach
-
-### 5.1 Ocean
-
-One shared wave function drives the visible mesh and every hull. The client builds the ocean mesh; the server
-never simulates the whole sea. `Waves.heightAt` is the source of truth. The ocean follows the camera and must
-cover the horizon from a player camera.
-
-### 5.2 Boats
-
-- One controller for jet ski, RIB and lifeboat; premium craft are tuning variants.
-- Buoyancy from sampled wave height at hull points; weight and momentum matter.
-- Slow-speed control is the core skill: approach, hold steady, pick-up ring.
-- Full craft shows seat pips; survivors climb aboard in view.
-- No fuel, no damage; a craft can be un-stuck.
-
-### 5.3 Helicopter and submarine
-
-- Helicopter: hover, winch, seats 2; steady hover inside the ring lifts the survivor.
-- Submarine: surface and dive; picks up divers on the seabed; 40 surfaced / 22 submerged (tune).
-- Both are pure shared modules with Lune specs and a client controller for keyboard, touch and gamepad.
-
-### 5.4 Weather
-
-`Weather.luau` is shared. It exposes state, intensity, wave parameters, height and a changed signal. Storms
-raise amplitude, reduce visibility and add rain/spray. The default is sunny; Storm Summon and live events are
-products/events, not the base loop.
-
-### 5.5 Camera and input
-
-Third person only. Chase camera with lag; optional higher/lower framing. No first-person viewmodel, no photo
-mode. Every action works on keyboard, touch and gamepad. The UI kit draws a selection ring for gamepad.
-
-### 5.6 UI
-
-`src/client/UI/Kit/` is the planned new kit (WP-23b); it does not exist yet. It will hold Panel, IconButton,
-Card, PriceButton, Tabs, Toast and counters, be simulator-style and work on all three inputs. When WP-23c
-lands, the phone is deleted, not skinned. See [`18-ui-art-requests.md`](18-ui-art-requests.md).
-
-### 5.7 World streaming
-
-`StreamingEnabled` with min `384` and target `1024`. Map and zones are `Persistent`; dock pieces are
-`Persistent`. Re-measure after the hub and islands land. The old town mobile numbers are retired.
-
-## 6. Studio settings
-
-Set once per place:
-
-- `Workspace.StreamingEnabled = true`.
-- `Workspace.Gravity` at the project value (about 29.4 studs/s²) and retune anything that depends on it.
-- `Lighting.Technology = Future` if the current place uses it; keep the existing look.
-- `Workspace.ModelStreamingMode = Persistent` for map and zones.
-- Collision groups for players, vehicles and casualties.
-- No Terrain water; the mesh ocean is the sea.
-
-## 7. Risks
-
-| Risk | Watch |
-|---|---|
-| Map scale | Hub 800 / ring 1,100 / bridges 50 apex; check the ocean covers the view |
-| Streaming | Dock pieces and quest camps must not pop; re-measure on a phone |
-| Publish time | Texture packs are the slow part; retry only failures |
-| UI kit | Every old screen must move; do not leave phone panels |
-| Asset diet | Unused ids and duplicate PBR sets inflate memory and publish time |
-| DeepSeek limits | 3 tasks / 2 Blender jobs; queue, do not pile up |
-| Stale docs | `docs/00` wins; archive old chapters, do not let them drift back |
+- **Ocean:** one wave function (`Waves.heightAt`) drives the client mesh and every hull.
+- **Boats:** one boat per player; `BoatLevels.apply` sets speed, turning, room and scale from the level.
+  `Boat/Simulator` + `Boat/Buoyancy`; `Boat/Glance` bounces off walls at speed; `Boat/SeaEdge` turns you back past
+  `MapRadius` (7000); `Boat/Fuel` limits range.
+- **Streaming:** `StreamingEnabled`, min radius 256, target 512 (`map/Build.luau`); map and zones Persistent.
+- **Camera and input:** third person only; every action on keyboard, touch and gamepad.
+- **Analytics:** `TelemetryService` is the only `AnalyticsService` caller; funnel names in `TelemetryNames`.
