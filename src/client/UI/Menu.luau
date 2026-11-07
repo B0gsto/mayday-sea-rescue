@@ -132,6 +132,7 @@ local function paintSale()
 		and current == nil
 		and player:GetAttribute("MapOpen") ~= true
 		and player:GetAttribute("BuildHidesMenu") ~= true
+		and not Layout.quietHud() -- the Shop still sells it; the tag pops once the boat reaches Lv2
 		and SaleRules.visible(ends, now, player:GetAttribute("Pass_" .. SALE_KEY) == true)
 	if on and saleClock then
 		saleClock.Text = SaleRules.countdown(ends - now)
@@ -144,8 +145,17 @@ local function paintSale()
 	end
 end
 
+local QUIET: { [string]: boolean } = { Album = true, Companion = true, Crew = true, Skills = true } -- wait for boat Lv2 (Layout.quietHud)
+
 local function chrome()
 	paintSale()
+	local quiet = Layout.quietHud()
+	for name in QUIET do
+		local b = buttons[name]
+		if b then
+			b.root.Visible = not quiet
+		end
+	end
 	if bar then
 		bar.Visible = shown()
 			and current == nil
@@ -755,6 +765,8 @@ function Menu.mount()
 	player.AttributeChanged:Connect(function(name)
 		if string.sub(name, 1, 5) == "Quest" then
 			questBadge()
+		elseif name == "BoatLevel" or name == "Rescued" then
+			chrome()
 		end
 	end)
 	task.spawn(function() -- givers moor and sail off with no attribute of yours changing

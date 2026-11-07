@@ -7,7 +7,7 @@
 -- during a construction it shows the site's progress and a clock + time left instead. Tapping / clicking
 -- (or F / gamepad Y, shown as a light keycap) opens the build tablet when you stand at the station,
 -- else puts the guide arrow and the minimap pin on the station for a few seconds.
--- The tutorial's chip row (OnboardingController) owns this slot until the tutorial is done.
+-- It shows from the first delivery on (the tutorial has no chip row of its own any more).
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -191,7 +191,9 @@ local function refresh()
 	local r = root
 	local s = snapshot
 	local now = s and beat()
-	local done = now == "Done" or now == "Spin" -- the spin waits at the optional wheel; the boat leads meanwhile
+	-- from the first delivery on the boat bar is the next goal (fresh-player audit 2026-11-07: hidden till Spin, nobody
+	-- knew what came next); the Upgrade beat's arrow and this chip both point at the Upgrade Station
+	local done = now == "Done" or now == "Spin" or now == "Upgrade" or now == "OutAgain"
 	if not done then
 		doneAt = nil
 	end

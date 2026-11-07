@@ -20,6 +20,7 @@ local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 
 local BoatReveal = require(script.Parent:WaitForChild("BoatReveal"))
 local Kit = script.Parent:WaitForChild("Kit")
+local Layout = require(script.Parent:WaitForChild("Layout"))
 local Panel = require(Kit:WaitForChild("Panel"))
 local PriceButton = require(Kit:WaitForChild("PriceButton"))
 local Style = require(Kit:WaitForChild("Style"))
@@ -252,7 +253,13 @@ function BoatCard.new(canvas: Frame, onClose: () -> ())
 		tag.Size = UDim2.new(1, -170, 0, 32)
 		tag.TextXAlignment = Enum.TextXAlignment.Left
 		local quickItem = MonetizationConfig.GamePasses[QUICK]
-		if quickItem and quickItem.ready and quickItem.id > 0 and not ownsQuick() then
+		if
+			quickItem
+			and quickItem.ready
+			and quickItem.id > 0
+			and not ownsQuick()
+			and not Layout.quietHud()
+		then
 			local chip = Style.button(face, UDim2.fromOffset(190, 38)) :: any
 			chip.Name = "QuickLaunchChip"
 			chip.AnchorPoint = Vector2.new(0, 1)
