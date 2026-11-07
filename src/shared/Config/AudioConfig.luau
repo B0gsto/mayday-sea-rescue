@@ -150,6 +150,16 @@ AudioConfig.Clips = {
 	UI_Step = rl(9116729822, 0.22, "Metallic Beeps Quick Tones 1 (SFX)", "step complete"),
 	UI_Success = rl(9113399926, 0.3, "Beeps Simple Multiple Variations 5 (SFX)"),
 	UI_Fail = rl(9113085665, 0.26, "Alarm Buzzer 3 (SFX)"),
+	-- docs/31 C fuel gauge (UI/FuelGauge): one low-fuel beep at 20 %; the glug and sputter ride the fuel_fill and
+	-- fuel_sputter VFX presets
+	Fuel_Low = rl(9113400139, 0.28, "Beeps Simple Multiple Variations 8 (SFX)", "low fuel, once"),
+	Fuel_Glug = rl(9117645587, 0.5, "Plastic Water Jug Glugs 4 (SFX)", "refuel at home"),
+	Fuel_Sputter = rl(
+		9125346934,
+		0.6,
+		"1988 Chevy Pickup Truck Rough Start Turn Off (SFX)",
+		"empty tank"
+	),
 
 	-- RP-M5 stream E2 (Captain's Locker whistle emote): verified public (audio-search.py verify),
 	-- candidates.csv SFX_Casualty_Whistle. 3D at the player's head, rolled off by 140 studs.

@@ -41,6 +41,7 @@ type Board = {
 	next: TextLabel,
 	speed: TextLabel,
 	room: TextLabel,
+	tank: TextLabel,
 	price: TextLabel,
 	cash: TextLabel,
 	missing: TextLabel,
@@ -137,12 +138,18 @@ local function buildBoard(part: BasePart, button: BasePart?, prompt: ProximityPr
 	end
 	-- the next level: the piece, then its jumps with icons
 	local nextLabel = text(root, UDim2.fromOffset(40, 276), UDim2.fromOffset(1020, 72))
-	icon(root, "boost", UDim2.fromOffset(70, 356), 110)
-	local speed =
-		text(root, UDim2.fromOffset(190, 362), UDim2.fromOffset(350, 100), Enum.TextXAlignment.Left)
-	icon(root, "crew", UDim2.fromOffset(580, 356), 110)
-	local room =
-		text(root, UDim2.fromOffset(700, 362), UDim2.fromOffset(350, 100), Enum.TextXAlignment.Left)
+	local function jump(name: string, x: number): TextLabel
+		icon(root, name, UDim2.fromOffset(x, 356), 110)
+		return text(
+			root,
+			UDim2.fromOffset(x + 116, 362),
+			UDim2.fromOffset(230, 100),
+			Enum.TextXAlignment.Left
+		)
+	end
+	local speed = jump("boost", 40)
+	local room = jump("crew", 390)
+	local tank = jump("fuel", 740) -- docs/31 C: the tank, in seconds of full throttle
 	-- price, your Cash, what is missing
 	icon(root, "cash", UDim2.fromOffset(40, 484), 100)
 	local price =
@@ -176,6 +183,7 @@ local function buildBoard(part: BasePart, button: BasePart?, prompt: ProximityPr
 		next = nextLabel,
 		speed = speed,
 		room = room,
+		tank = tank,
 		price = price,
 		cash = cash,
 		missing = missing,
@@ -184,6 +192,11 @@ local function buildBoard(part: BasePart, button: BasePart?, prompt: ProximityPr
 		green = if button then button.Color else nil,
 		action = action,
 	}
+end
+
+-- 27.6, 28: one decimal, none when whole
+local function tankText(seconds: number): string
+	return (string.gsub(string.format("%.1f", seconds), "%.0$", ""))
 end
 
 local function refresh()
@@ -217,6 +230,7 @@ local function refresh()
 				else nextRow.piece
 			b.speed.Text = `{row.speed} -> {nextRow.speed}`
 			b.room.Text = `{row.room} -> {nextRow.room}`
+			b.tank.Text = `{tankText(row.tank)} -> {tankText(nextRow.tank)}`
 			b.price.Text = Theme.short(nextRow.price)
 			local short = nextRow.price - money
 			b.missing.Text = if short > 0
@@ -228,6 +242,7 @@ local function refresh()
 			b.next.Text = "Top of the ladder"
 			b.speed.Text = `{row.speed}`
 			b.room.Text = `{row.room}`
+			b.tank.Text = tankText(row.tank)
 			b.price.Text = "-"
 			b.missing.Text = "Max!"
 			b.missing.TextColor3 = GREEN

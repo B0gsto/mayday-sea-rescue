@@ -27,6 +27,7 @@ local CameraController = require(script.Parent.CameraController)
 local HeliController = require(script.Parent.HeliController)
 local ClientRoot = script.Parent.Parent
 local Comfort = require(ClientRoot:WaitForChild("Camera"):WaitForChild("Comfort"))
+local FuelGauge = require(ClientRoot:WaitForChild("UI"):WaitForChild("FuelGauge"))
 local InputGlyph = require(ClientRoot:WaitForChild("UI"):WaitForChild("InputGlyph"))
 local Layout = require(ClientRoot:WaitForChild("UI"):WaitForChild("Layout"))
 local Style = require(ClientRoot:WaitForChild("UI"):WaitForChild("Kit"):WaitForChild("Style"))
@@ -86,6 +87,19 @@ local function press()
 	end
 end
 
+-- One bounce of the button (after its own pop; the low-fuel cue too). Reduce motion: none.
+local function bounce()
+	local sc = face:FindFirstChildOfClass("UIScale") -- Style.press's
+	if sc and not Comfort.reducedMotion() then
+		sc.Scale = 1.3
+		TweenService:Create(
+			sc,
+			TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+			{ Scale = 1 }
+		):Play()
+	end
+end
+
 -- One pop, one sound, no looping: paired feedback for "someone is aboard, this goes home".
 local function setArrow(on: boolean)
 	if on == arrowShown then
@@ -99,17 +113,7 @@ local function setArrow(on: boolean)
 	end
 	Comfort.markSeen(SEEN)
 	AudioController.play("UI_Prompt")
-	local sc = face:FindFirstChildOfClass("UIScale") -- Style.press's; one bounce after the button's own pop
-	if sc and not Comfort.reducedMotion() then
-		task.delay(0.3, function()
-			sc.Scale = 1.3
-			TweenService:Create(
-				sc,
-				TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-				{ Scale = 1 }
-			):Play()
-		end)
-	end
+	task.delay(0.3, bounce)
 end
 
 local function refresh()
@@ -367,6 +371,7 @@ function GoBackController.Start()
 	arrow.Size = UDim2.fromScale(1.1, 1.1)
 	arrow.Visible = false
 	arrow.Parent = root
+	FuelGauge.mount(Layout.region(gui, "goback"), driven, bounce) -- over the button, while you drive (docs/31 C)
 	gui.Parent = player:WaitForChild("PlayerGui")
 
 	local veilGui = Instance.new("ScreenGui")
