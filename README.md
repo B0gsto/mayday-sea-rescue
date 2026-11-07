@@ -24,8 +24,7 @@ is the change log that got here (a)–(n). Old designs live in git tag `pre-hub-
 | 10 | [World and map](docs/10-world-and-map.md) | Hub, six islands, bridges, outer ring, seabed, streaming |
 | 12 | [Asset list](docs/12-asset-list.md) | What exists, what is new, what is cut |
 | 13 | [Release plan](docs/13-release-plan.md) | What landed, what is left, launch checklist |
-| 18 | [UI art requests](docs/18-ui-art-requests.md) | Simulator-style icons and kit art |
-| 19 | [World sign art](docs/19-world-sign-art.md) | Hub, island, bridge and hazard signs |
+| 18 | [UI art](docs/18-ui-art-requests.md) | Claude SVG sprites: how to make one, UiImages tables |
 
 Older chapters, kept for history and superseded by 00: [01](docs/01-game-canon.md), [02](docs/02-core-loop-and-mechanics.md),
 [03](docs/03-progression.md), [04](docs/04-monetization.md), [07](docs/07-store-page-thumbnails-and-trailer.md),

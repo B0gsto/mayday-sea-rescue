@@ -3,6 +3,7 @@
 Research for `docs/26-vfx.md` (owner, 2026-10-28: Creator Store and web OK for use or inspiration). Rulebook still
 wins: Lego toy look, ocean palette, nothing sparkles on buildings, no flashing orange. Store art is a **stopgap or
 reference**. Custom Lego flipbooks (studded puffs, brick confetti, coins) remain the target.
+Snapshot of 2026-10-28; what is live is in `client/VFX/Presets` and `shared/Config/VFXTextures`.
 
 ## How these were checked (2026-10-28)
 
