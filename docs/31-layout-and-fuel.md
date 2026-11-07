@@ -1,147 +1,87 @@
-# 31 · Map spread and the fuel gauge (owner 2026-11-07)
+# 31 · The map, sea zones and fuel
 
-Owner: "you may change the map layout as all the players kinda go in the same path + if you think it would be better,
-we can put plots on the same land. Also to be able to progress I think it would be better to have a gas meter of how
-much a player can go so that a new player cannot go as far as an experienced player."
+Owner 2026-11-03 (zones: "go further = new biomes and better survivors") and 2026-11-07 (spread the map, a fuel gauge
+"so that a new player cannot go as far as an experienced player"). Overview: [00-design.md](00-design.md). Boat loop:
+[30](30-boat-pivot.md). Numbers marked `-- tune` in the code can move; the code wins over this file.
 
-Design only; no code yet. Rules that still hold: no choice UI, show don't tell, nothing flashes or pulses orange, no
-outline rings, nobody is stranded or dies, every action on keyboard, touch and gamepad, Robux boats are looks only
-(docs/30 section 3), existing finished assets are never redesigned. Numbers are `-- tune`.
+## 1. Layout
 
-## A. Why everyone takes the same path
+All distances from `RingLayout.Center` (the lagoon's centre). Map radius 7,000 studs (`WorldConfig.MapRadius`; past it
+`Boat/SeaEdge` turns the boat back).
 
-Three causes, all in data, none in the sea itself:
+| Place | Where | Notes |
+|---|---|---|
+| Hub beacon atoll | centre lagoon | A landmark, not an island. |
+| 6 player plots | ring at 860, plates 640 studs | Lego baseplates, walkable bridges between neighbours, boats pass under. Each has an Upgrade Station bay and an exit lane along its own bearing. |
+| Outer islands | zones 2-5, mostly z >= -300 | Skerry Isle, Puffin Isle, Gannet Rock, Mermaid Lagoon, Wreck Reef, The Arches, Penwyn. |
+| Gull Stacks | bearing 212, r 2,200 (Kelp Banks) | Sea stacks. |
+| Wreck Shoal | bearing 270, r 3,400 (Coral Drift) | A wreck aground between rocks. |
+| Storm Light | bearing 330, r 4,600 (Storm Reach) | A lighthouse rock, the tallest thing out there. |
 
-1. **Plot 1 every time.** `Marina.assign` hands out the first free plot. Live servers hold one or two players, so
-   nearly every session starts on Plot1 (bearing 0, +X) and the second on Plot2 (60 deg). Live trails
-   (build/liveops/trail-*.txt, positions bucketed by bearing round the ring centre): 584 of 2,762 home-water fixes in the
-   0-30 deg wedge plus 720 in 330-360, i.e. Plot1's cove; bearings 180-300 have 232.
-2. **Every destination is on one side.** All seven outer islands, the three dive sites, the ferry site (0, 1550) and
-   the rip beach sit at z >= -300: Skerry Isle (44 deg), Gannet Rock, Mermaid Lagoon, Puffin Isle, Wreck Reef, plus
-   Penwyn and The Arches on the axis. The -Z half (behind Plots 5 and 6) is empty water. `AmbientMix.FAR` puts 30 % of
-   timed survivors off an outer island, so the survivors lean that way too. Past the Shallows line, 34 % of all live
-   fixes are in the 30-60 deg wedge: the straight line from Plots 1-2 to Skerry Isle.
-3. **Zones give no direction.** The five sea zones are circles round the lagoon (docs/29 B), so every heading looks the
-   same and the only pull is the landmarks of cause 2.
+The three hotspots (`shared/Calls/SectorSpots`, dressed by `server/World/SectorSpots` with finished hub-kit pieces) fill
+the empty -Z half, so every 60 deg sector has a destination. `AmbientMix` spreads far survivors evenly over the outer
+islands and the hotspots by sector.
 
-The exit lanes are fine: each plot's lane points straight out along its own bearing, six different ways.
+**Plot spread** (`Marina.assign`): the first player in an empty server gets a random plot; each later player gets the
+free plot farthest by bearing from the taken ones (ties: lowest index). Two players sit opposite, three 120 deg apart.
+Live trails before this showed nearly every session on Plot 1, all heading the same way.
 
-## B. Layout options
+## 2. Sea zones
 
-| Option | Fixes 1 | Fixes 2 | Cost | Assets |
-|---|---|---|---|---|
-| **1. Keep the ring, spread plots, fill the empty half** | yes | yes | small: one function, one data module, placed props | all kept, nothing moves |
-| 2. One shared home island, plots side by side, berths facing six sectors | yes | no (still one side) | huge: RingLayout, IslandPlates, bridges, stations, Go back landings, every lot, ~10 specs | finished buildings keep their look but all move; bridges cut |
-| 3. Pie-slice zones (a biome per sector) | no | partly | medium: SeaZones, tint, buoy line, map, banner | kept, but docs/29's circles (owner asked for circles) go |
+`shared/Calls/SeaZones` (pure, tests/SeaZones). Five rings; a survivor's rarity rolls from the zone they spawn in, and
+free-roam pay scales by zone. Call pay keeps its own distance rule.
 
-**Pick option 1.** A shared island looks social, but the ring already puts neighbours 860 studs apart with bridges, and
-with one or two players per server the berths would still all face the side where the islands are. Option 1 is a
-few small edits and keeps docs/29's circles. The sim pattern in the LihFolk vault (World Composition, Zone and Biome Art
-Direction) also fits: one hero landmark per zone, framed from the spawn, so each direction has its own goal.
-
-What changes:
-
-1. **Spread the plots** (`Marina.assign`): the first player in an empty server gets a random plot; each later player
-   gets the free plot farthest by bearing from the taken ones (ties: lowest index). Two players sit opposite (180 deg
-   apart), three sit 120 deg apart. `CallLogic.homeOf(nil)` (the server-wide call's Plot1 home) stays as is.
-2. **One destination per empty sector, from existing assets.** A new data module (`shared/Calls/SectorSpots.luau`) lists
-   a hotspot in each 60 deg sector that has none, in zones 2-4: about bearing 210 (Kelp Banks, r 2200), 270 (Coral
-   Drift, r 3400) and 330 (Storm Reach, r 4600). Each is dressed only with finished assets already in the game (navmark
-   cardinals and lights from SeamarkRules, a wreck kit like Morwenna's, the hub beacon's buoy). No new model, so no
-   concept round. If the owner later wants new Lego landmarks there, those go through design-before-Blender.
-3. **Survivors follow every direction.** `AmbientMix.FAR` picks a spot round-robin over the outer islands **and** the
-   SectorSpots, weighted so each of the six sectors gets an even share. `ZONE_SHARE` and `zonePoint` stay.
-4. Nothing moves: islands, lots, bridges, stations, exit lanes, terrain windows and zone radii are unchanged.
-
-## C. Fuel gauge
-
-**Idea:** a tank you can see. Your own zones burn slowly; each zone past your boat's rating burns 5x faster, the
-next 25x. A new player can dash one zone past their rating but not two; a maxed boat can stay in the Wreck Abyss.
-Measuring fuel in seconds of top speed (not studs) keeps it fair at 80 or 1,100 studs/s.
-
-### Rules
-- **Tank** (seconds of full throttle): `tank = 24 + 0.4 x (level - 1)`, so L1 24, L10 27.6, L11 28, L20 31.6, L30 35.6,
-  L50 43.6. New `BoatLevels` row field `tank`.
-- **Rating** (the farthest zone you cruise at x1) jumps with each new hull, the "massive step": L1-10 zone 2 (Kelp
-  Banks), L11-20 zone 3 (Coral Drift), L21-30 zone 4 (Storm Reach), L31-50 zone 5 (Wreck Abyss). It matches the
-  existing `BoatLevels.callReach` steps (2000 / 3500 / 5500 from home).
-- **Burn per second** = `min(speed / topSpeed, 1) x factor(zone)`: Shallows 0, at or inside rating 1, rating + 1 is
-  5, rating + 2 or more is 25. Idle, drifting or parked burns nothing. The pick-up boost and Nitro are capped at 1, so a
-  boost never costs extra.
-- **Refuel:** full and instant, free, whenever you are home: a Go back landing, driving into your own cove or exit lane
-  (`RingLayout.laneFacing`), the station bay, a respawn. No refuel at sea.
-- **Go back:** the ride costs nothing and fills the tank. Driving home by hand burns as normal (the Shallows are free).
-- **Empty, so nobody is stranded:** the engine sputters (sound + a puff of smoke), the boat coasts at 15 % speed for
-  3 s, then an automatic Go back runs. Survivors aboard pay as normal and the run keeps its x. Pirates cannot cancel
-  this one. No other penalty: the gate is that you never got farther out.
-
-### What each level can reach (straight dash from the berth, r ~1,115; the Shallows line is 485 studs out and free)
-
-| Level | Speed | Tank | Rating | Reach on a full tank | Roam in own zones |
+| # | Zone | Radius | Water | Rarity % Common..Mythic | Free-roam pay |
 |---|---|---|---|---|---|
-| L1 | 80 | 24 | Kelp | Coral line + 140 studs | 24 s |
-| L5 | 285 | 25.6 | Kelp | Storm line, then empty | 25.6 s |
-| L10 | 430 | 27.6 | Kelp | 190 into Storm | 27.6 s |
-| L11 | 450 | 28 | Coral | 170 into Abyss | 28 s |
-| L20 | 620 | 31.6 | Coral | 450 into Abyss | 31.6 s |
-| L21 | 640 | 32 | Storm | Abyss to the map edge (5 s of it) | 32 s |
-| L31+ | 815+ | 36+ | Abyss | anywhere, 36-44 s | 36-44 s |
+| 1 | Shallows | 0-1,600 | bright teal | 78/18/4/0/0/0 | x1 |
+| 2 | Kelp Banks | 1,600-2,800 | green teal | 55/28/13/4/0/0 | x1.25 |
+| 3 | Coral Drift | 2,800-4,000 | violet blue | 32/33/22/10/3/0 | x2 |
+| 4 | Storm Reach | 4,000-5,200 | steel blue, overcast | 15/28/30/19/7/1 | x3 |
+| 5 | Wreck Abyss | 5,200+ | near-black indigo | 5/15/30/30/16/4 | x4 |
 
-So the Wreck Abyss (Mythic 4 %) is a dash from L21 and a home from L31; a new player sees the Storm line at most.
-Roaming your own zones lasts 24-44 s at top speed, about one trip (tests/Pacing averages ~63 s a trip with stops).
+How you see them, no wall (the glow curtain was cut 2026-11-07):
+1. Water colour, fog, exposure, saturation and overcast blend by distance over 300 studs either side of a line
+   (`SeaZones.lookAt`).
+2. A client-pooled line of tall buoys in the zone colour near the player (pool 24).
+3. Coloured circles on the full map and minimap.
+4. Crossing a line: one banner pop (zone name, best rarity gem, a sound), once per crossing.
 
-### Other systems
-- **Every craft uses the same tank.** Fuel belongs to the player, not the craft: the helicopter and sub (which ignore
-  levels) use the boat level's tank and rating, or the heli would skip the gate. *Owner decision.*
-- **Pirates:** unchanged. Evading burns fuel like any driving, which adds to the "one more, or go back?" tension.
-- **The Deep:** fuel is frozen during the Deep Spin dive; if it surfaces you at home, you refuel there.
-- **Calls:** a call offered beyond what your tank can reach is never offered: cap its distance at the level's
-  `callReach`, which already matches the ratings. Cold open and tutorial calls are inside the Shallows/Kelp: the gauge
-  never runs dry in the tutorial (L1-L5 roam 24+ s in Kelp, their calls take a few seconds).
-- **Robux:** no fuel product. Free refuel at home makes one pointless, and selling reach is selling progress
-  (docs/30 section 3: levels are never sold). Paid boats are looks, so they use the level's tank. Cash packs and 2x
-  Cash are unchanged (owner review per docs/30). *Owner confirms.*
+Legendary+ survivors far out show a tall rarity-coloured light column.
 
-### HUD and board (icon first, no text)
-- **Boat card** (`client/UI/BoatCard`): a fuel-can icon and a bar. Green, then yellow below 50 %, then red below
-  20 %. The bar's drain speed shows the burn: past your rating it visibly races, and 1-3 small chevrons beside the
-  icon show x1 / x5 / x25. No numbers.
-- **Low fuel (20 %):** one pop of the icon, one low-fuel sound, one bounce of the Go back button. No pulse, no flash,
-  no outline.
-- **Crossing a line past your rating:** one shake of the icon with the zone banner (docs/29 B), so cause and effect
-  read together.
-- **Refuel:** the bar fills in about 0.4 s with a glug sound (paired with a small `fuel_fill` VFX at the boat).
-- **Upgrade Station board:** a third jump row next to speed and room: fuel-can icon, 27.6 -> 28 drawn as two bar
-  lengths. On a new hull, the rating jump as a zone-colour gem (the docs/29 zone gems).
-- Sprites are Claude SVG (`art/source/ui/fuel_can.svg`, chevron), rendered by `tools/ui-art/render.py`, AD 8.5+.
+## 3. Fuel
 
-### Telemetry
-`Fuel` events: `Empty` (zone, level), `AutoHome`, `FirstPastRating` (zone). Funnel check: do players at L11/L21 cross
-into the newly rated zone within 2 trips?
+`shared/Boat/Fuel` (pure, tests/Fuel), `FuelService` (server), `client/UI/FuelGauge`. Fuel is counted in seconds of
+full throttle, so it is fair at 80 or 1,100 studs/s. It belongs to the player: the boat, helicopter and sub all use the
+boat level's tank and rating.
 
-## D. Build plan (disjoint files, in order; each one builder plus a check.sh run)
+| Rule | Value |
+|---|---|
+| Tank | 24 + 0.4 x (level - 1) s: L1 24, L10 27.6, L11 28, L20 31.6, L30 35.6, L50 43.6 |
+| Rating (zone burning x1) | stage + 1: L1-10 Kelp Banks, L11-20 Coral Drift, L21-30 Storm Reach, L31-50 Wreck Abyss |
+| Burn per second | speed share (0..1) x zone factor: Shallows 0, up to rating 1, one zone past 5, two or more 25 |
+| Free | idling, a Go back ride, the Deep Spin; boost and Nitro cost no extra (speed share capped at 1) |
+| Refuel | full, instant, free at home: a Go back landing, the drop-off zone, the station bay (`GoBack.isHome`), respawn. Never at sea. |
+| Empty | the boat coasts at 15% speed for 3 s, then rides home by itself (`VehicleService.FuelHome`): no pirate ram cancels it, survivors aboard pay as normal. No other penalty. |
 
-1. **Plot spread** (S, ~1 h): `src/shared/Marina.luau` (`assign(taken, rng)`: random first, then farthest by
-   bearing), `src/server/Services/DockService.luau` (pass the rng at its one call), `tests/Marina.spec.luau`. Check:
-   nothing else assumes the first player is Plot1 (grep `Plot1`, `DockPlot`).
-2. **Fuel rules, pure** (S-M, ~2 h): `src/shared/Boat/Fuel.luau` (`tank(level)`, `rating(level)`,
-   `factor(zone, level)`, `burn(dt, speedFrac, zone, level)`), the `tank` field in `src/shared/BoatLevels.luau`,
-   `tests/Fuel.spec.luau` (the reach table in section C as asserts), and `tests/Pacing.spec.luau` (trips capped by the
-   tank; the ~15 h ladder must still hold). Runs in parallel with 1 and 3.
-3. **Sector spots** (M, ~3 h): `src/shared/Calls/SectorSpots.luau` (data), `src/shared/Calls/AmbientMix.luau` (FAR
-   share over islands + spots by sector), `src/server/World/SectorSpots.luau` (places the existing assets),
-   `tests/AmbientMix.spec.luau` (every sector gets 1/6 +- 5 % of FAR spawns), then `tools/studio/zfight_scan.luau` in
-   Studio. Parallel with 1 and 2.
-4. **Fuel server** (M, ~3 h, after 2): `src/server/Services/FuelService.luau` (per-player tank, burn on Heartbeat from
-   the craft's speed and `SeaZones.zoneAt`, refuel on landing/home/respawn, empty -> limp 3 s -> Go back; player
-   attributes `Fuel`, `FuelMax`, `FuelBurn` (1/5/25)), a small hook in `src/server/Services/VehicleService.luau` (an
-   auto Go back flag that pirate rams can't cancel), telemetry. Call distance cap via `callReach` stays where it is.
-5. **Fuel HUD + board** (M, ~3 h, after 2, parallel with 4: it only reads the three attributes): `src/client/UI/BoatCard.luau`,
-   `src/shared/UpgradeStation.luau` (board row), `art/source/ui/fuel_can.svg` + chevron, sounds via AudioConfig,
-   `fuel_fill` and sputter through VFXKit with the DEV `vfx` bench. Then one Opus Studio playtest of 1-5 together (L1,
-   L11, L21 dashes, empty -> auto home with survivors aboard, two-player plot spread), then publish.
+**Reach on a full tank**, straight out from the berth (r ~1,115; tests/Fuel asserts these):
 
-## Owner decisions
-1. Helicopter and sub share the boat's tank and rating (recommended), or stay outside fuel?
-2. No Robux fuel product (recommended)?
-3. Empty tank: free auto Go back with full pay (recommended), or a small Cash tow fee?
+| Level | Reach |
+|---|---|
+| L1 | Coral line + 140 |
+| L5 | Storm line, then empty |
+| L10 | 190 into Storm Reach |
+| L11 | 170 into Wreck Abyss |
+| L20 | 450 into Wreck Abyss |
+| L21+ | the map edge |
+
+So a new player sees the Storm line at most; the Wreck Abyss (4% Mythic) is a dash from L21 and home water from L31.
+
+**Calls** never go past the level's `callReach` (2,000 / 3,500 / 5,500 from home), which matches the ratings, so the
+tutorial never runs dry. No Robux fuel product: refuel is free and reach is progress.
+
+**HUD** (`FuelGauge`, just over Go back while you drive): a fuel can and a bar, no numbers. Green, yellow under 50%,
+red under 20%. The drain speed shows the burn, 1-2 chevrons show x5 / x25. At 20%: one pop of the can, one beep, one
+Go back bounce. Burn steps up: one shake of the can. Empty: `fuel_sputter` VFX. Refuel: the bar fills in ~0.4 s with
+`fuel_fill`. Reduce motion: no pop, shake or bounce. The Upgrade Station board and panel show the tank jump.
+
+Player attributes: `Fuel`, `FuelMax`, `FuelBurn` (0/1/5/25). Telemetry: `Fuel` `Empty` (boat level, zone name).
