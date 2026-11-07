@@ -44,8 +44,6 @@ local function polar(module: string, r: number, bearing: number, yaw: number, sc
 	return { module = module, x = x, y = 0, z = z, yaw = yaw, scale = scale }
 end
 
-HubLandmark.BEACON_ROWS = 6 -- LAYOUT's first rows: the atoll, its dressing and the beacon
-
 -- build.py's LAYOUT, row for row: rock yaw = bearing, raft yaw = 90 - bearing.
 HubLandmark.LAYOUT = {
 	fixed("L01_Atoll", 0),

@@ -39,6 +39,8 @@ SectorSpots.LAYOUTS = {
 		at(RAFT, 110, 50, 60, 1),
 	},
 	StormLight = {
+		-- one tall spire, not the hub beacon: a copy of the beacon read as "home" from afar (Studio check 2026-11-07)
+		at(STACK, 0, 0, 0, 3.6),
 		at(STACK, 110, 30, 30, 2.2),
 		at(ROCK, -90, 75, 150, 2),
 		at(ROCK, -40, -120, 300, 1.3),
@@ -46,11 +48,6 @@ SectorSpots.LAYOUTS = {
 		at(BUOY, -140, -20, 0, 1.3),
 	},
 } :: { [string]: { HubLandmark.Row } }
-
--- StormLight also stands the hub's atoll and beacon at its centre (scale 1: HubLandmark's colliders assume it).
-for i = HubLandmark.BEACON_ROWS, 1, -1 do
-	table.insert(SectorSpots.LAYOUTS.StormLight, 1, HubLandmark.LAYOUT[i])
-end
 
 local SOLID = { [ROCK] = true, [STACK] = true, [WRECK] = true }
 

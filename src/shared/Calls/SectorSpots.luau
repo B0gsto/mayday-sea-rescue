@@ -34,7 +34,7 @@ SectorSpots.Spots = {
 		center = Vector3.new(0, 0, -3400),
 		radius = 150,
 	},
-	-- bearing 330, r 4,600: a lighthouse rock (the hub's atoll and beacon), the tallest thing out there
+	-- bearing 330, r 4,600: one huge rock spire with a lit danger mark, the tallest thing out there
 	{
 		id = "StormLight",
 		name = "Storm Light",
