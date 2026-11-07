@@ -2,7 +2,7 @@
 -- SectorSpots (docs/31 B.2): dresses each Shared.Calls.SectorSpots spot with finished M_Prop_HubKit pieces (no new
 -- model), scaled up so the silhouette reads from the next zone in: sea stacks, a wreck aground, a lighthouse rock (the
 -- hub's atoll and beacon). Each spot's local -Z (the atoll's ramp) faces the ring centre. Rocks and the wreck get an
--- invisible box collider; the atoll and beacon keep HubLandmark's. LOD1 (no studs): these are mostly seen from far.
+-- invisible box collider; the atoll and beacon keep HubLandmark's. LOD0, as HubLandmark (LOD1 names do not match).
 -- WorldDressingService calls place(base) once at server start; tests/SectorSpots.spec.luau runs build with a fake kit.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -84,7 +84,7 @@ function SectorSpots.place(base: Instance)
 	-- required here: AssetLoader doesn't load in Lune
 	local AssetLoader =
 		require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
-	SectorSpots.build(base, AssetLoader.getTemplate("M_Prop_HubKit", "LOD1"))
+	SectorSpots.build(base, AssetLoader.getTemplate("M_Prop_HubKit", "LOD0")) -- LOD1 pieces are named <module>_LOD1, so assemble found none
 end
 
 return SectorSpots
