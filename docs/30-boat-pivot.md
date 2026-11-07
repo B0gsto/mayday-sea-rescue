@@ -64,7 +64,7 @@ Unchanged for now, owner to review: Cash packs and 2x Cash (they speed up levels
 ## 4. Island and tutorial
 - The island stays optional: workers, flex, spin. Boat levels stop depending on buildings. Which buildings to cut is a
   later owner review. Helicopter and submarine stay as they are for now.
-- Tutorial: free Hut -> first rescue (docs/29 A) -> Go back -> station: Upgrade to L2 -> out again, feeling the speed (one arrow out to sea while still home; no pirates until the tutorial ends). The Workshop
+- Tutorial (boat first, 2026-11-07: the free Hut is granted on load, no tablet step; the first delivery lands in the station bay; funnel Joined, AtSea .. FirstSpin, BoatL3, BoatL5, BoatL11): first rescue (docs/29 A) -> Go back -> station: Upgrade to L2 -> out again, feeling the speed (one arrow out to sea while still home; no pirates until the tutorial ends). The Workshop
   beat and the jet ski hold (CraftHeld) leave the tutorial.
   Built 2026-11-03: the free spin comes after L2 and a first trip home (its beacon only while home; one more trip ends the
   beat, the spin stays banked), then the Next chip leads with the boat level. Funnel steps 8 and 9 are FirstUpgrade and BackOut.

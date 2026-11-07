@@ -10,7 +10,7 @@
 -- The first calls are fail-safe: condition is held above Critical for the cold open and the next
 -- three calls, so a child who just holds the throttle cannot lose anyone.
 --
--- docs/30 section 4, docs/25 J: the free Rescue Hut, then the saved beat (data.tutorialStep) walks from the cold open to
+-- docs/30 section 4, docs/25 J: the free Rescue Hut stands from the start (DockService grants it on load), then the saved beat (data.tutorialStep) walks from the cold open to
 -- L2 at the Upgrade Station, a first trip back out and the free spin. `beat` is pure and reads only saved facts, so a
 -- returning player resumes where the save left them; a save that already has a building or 5+ rescues (made before this
 -- tutorial existed) skips to the permanent Next chip. The start set (the jetty, the Hut) never counts. The server clients
@@ -31,7 +31,7 @@ Onboarding.SKIP_RESCUES = 5 -- an old save with this many rescues never starts t
 Onboarding.WORKSHOP = "Workshop" -- an old STEP_SITE save's finished Workshop still hands out its spin (SpinService)
 Onboarding.HQ = "HQ" -- the free first build (docs/25 J)
 Onboarding.UPGRADE_LEVEL = 2 -- the first delivery pays exactly this boat level
-local START = { Harbour = true, HQ = true } -- every new island has the jetty and builds the Hut first
+local START = { Harbour = true, HQ = true } -- every island starts with the jetty and the free Hut
 
 -- Any building beyond the start set (the Workshop on): an established save.
 function Onboarding.established(owned: { [string]: boolean }?): boolean
@@ -45,15 +45,7 @@ function Onboarding.established(owned: { [string]: boolean }?): boolean
 end
 
 export type Goal = "Rescue"
-export type Beat =
-	"BuildHQ"
-	| "HQSite"
-	| "ColdOpen"
-	| "Rescue"
-	| "Upgrade"
-	| "OutAgain"
-	| "Spin"
-	| "Done"
+export type Beat = "ColdOpen" | "Rescue" | "Upgrade" | "OutAgain" | "Spin" | "Done"
 
 export type BeatFacts = {
 	coldOpenDone: boolean,
@@ -137,17 +129,15 @@ function Onboarding.factsOf(data: { [string]: any }, constructionKey: string?): 
 	}
 end
 
--- The one beat to show now (docs/30 section 4): the build stand -> the Hut site -> the cold open -> Upgrade (L2 at the
--- station) -> OutAgain (a trip out and home) -> Spin -> done. No Workshop beat: an old save on it continues at Upgrade.
+-- The one beat to show now (docs/30 section 4): the cold open -> Upgrade (L2 at the station) -> OutAgain (a trip out and
+-- home) -> Spin -> done. No Workshop beat: an old save on it continues at Upgrade. No Hut beat (boat-first FTUE,
+-- 2026-11-07): DockService grants the free Rescue Hut on load, so a save that stood at the tablet starts on the jet ski.
 function Onboarding.beat(f: BeatFacts): Beat
 	if f.step and f.step >= Onboarding.STEP_DONE then
 		return "Done"
 	end
 	if Onboarding.skip(f) then
 		return "Done"
-	end
-	if (f.owned or {})[Onboarding.HQ] ~= true then
-		return if f.constructionKey == Onboarding.HQ then "HQSite" else "BuildHQ"
 	end
 	if not f.coldOpenDone then
 		return "ColdOpen"

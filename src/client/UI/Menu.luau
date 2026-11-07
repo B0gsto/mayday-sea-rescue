@@ -295,12 +295,9 @@ local function boatWait(): (number, number)
 	return left, cooldown
 end
 
--- Seated in a craft (the server answers "Occupied"), or no Rescue Hut (the server answers "NoHut"): the Boat
--- tile rests grey and wordless, no error.
+-- Seated in a craft (the server answers "Occupied"): the Boat tile rests grey and wordless, no error. With no boat
+-- out the server clears BoatToMeAt, so the tile is always live for a player on foot without one.
 local function resting(): boolean
-	if player:GetAttribute("DockLevelHQ") == 0 then
-		return true
-	end
 	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 	local seat = hum and hum.SeatPart
 	local craft = seat and seat:FindFirstAncestorWhichIsA("Model")

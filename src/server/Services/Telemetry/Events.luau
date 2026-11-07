@@ -36,26 +36,21 @@ Events.SHOP_IDLE = 120 -- seconds: a shop step after this long starts a new shop
 Events.CLIENT_BURST = 8 -- client-reported events per player, then one per CLIENT_REFILL seconds
 Events.CLIENT_REFILL = 2
 
--- The onboarding funnel in the order a new player meets it (docs/24 E, docs/25 J; PT5 2026-10-28).
--- Roblox treats a skipped step as completed, so the numbers MUST follow the real order. Rebuilt
--- 2026-10-29, before launch; after launch keep every number's place. Every step is server-side but TabletOpened.
--- docs/30 (2026-11-03): 8 and 9 were WorkshopPlaced / WorkshopBuilt. Same place, the two beats after the delivery, so the
--- dashboard line stays comparable across the pivot's publish date; trail lines carry the name, so old rows still read
--- (tools/trail.py). Go back is not a step: driving home by hand skips it (custom GoBack, Started / Landed, measures it).
+-- The onboarding funnel in the order a new player meets it (TelemetryNames.Funnel). Roblox treats a skipped step as
+-- completed, so the numbers MUST follow the real order. Renumbered 2026-11-07 for the boat-first FTUE (join -> jet
+-- ski): trail lines carry the name, so rows from before still read (tools/trail.py). Every step is server-side. Go back
+-- is not a step: driving home by hand skips it (custom GoBack, Started / Landed, measures it).
 Events.Funnel = {
 	{ step = 1, name = "Joined" }, -- PlayerAdded
-	{ step = 2, name = "TabletOpened" }, -- the build tablet opened (client reports it)
-	{ step = 3, name = "HutPlaced" }, -- the free Rescue Hut (HQ Lv1) site started
-	{ step = 4, name = "HutBuilt" }, -- the Hut stands; the cold open waits for it
-	{ step = 5, name = "AtSea" }, -- the cold open put them on the jet ski at sea
-	{ step = 6, name = "FirstBoard" }, -- the first survivor climbed aboard
-	{ step = 7, name = "FirstDelivery" }, -- the first call delivered (the cold open)
-	{ step = 8, name = "FirstUpgrade" }, -- boat L2 bought at the Upgrade Station
-	{ step = 9, name = "BackOut" }, -- at the helm past home again after L2
-	{ step = 10, name = "FirstSpin" }, -- the tutorial spin used
-	{ step = 11, name = "NextBuild" }, -- the first build after the tutorial (the Next chip's)
-	{ step = 12, name = "HQ2Placed" }, -- the Rescue Post (HQ Lv2) site started
-	{ step = 13, name = "FirstVehicle" }, -- the first vehicle bought with Cash (the RIB: Boathouse, HQ Lv2)
+	{ step = 2, name = "AtSea" }, -- the cold open put them on the jet ski at sea
+	{ step = 3, name = "FirstBoard" }, -- the first survivor climbed aboard
+	{ step = 4, name = "FirstDelivery" }, -- the first call delivered (the cold open)
+	{ step = 5, name = "FirstUpgrade" }, -- boat L2 bought at the Upgrade Station
+	{ step = 6, name = "BackOut" }, -- at the helm past home again after L2
+	{ step = 7, name = "FirstSpin" }, -- the tutorial spin used
+	{ step = 8, name = "BoatL3" }, -- boat levels bought at the Upgrade Station (UpgradeService)
+	{ step = 9, name = "BoatL5" },
+	{ step = 10, name = "BoatL11" }, -- the RIB hull
 } :: { FunnelStep }
 
 -- cold open step id (OperationService.ColdOpenPlan) -> onboarding step name
@@ -81,20 +76,10 @@ function Events.funnelStep(name: string): FunnelStep?
 	return nil
 end
 
--- Onboarding steps a construction start (or finish) completes: the free Hut, then, once the tutorial
--- is done, the first build (any) and the Rescue Post (HQ Lv2).
-function Events.buildSteps(
-	key: string,
-	level: number,
-	finished: boolean,
-	tutorialDone: boolean
-): { string }
-	if key == "HQ" and level == 1 then
-		return { if finished then "HutBuilt" else "HutPlaced" }
-	elseif finished or not tutorialDone then
-		return {}
-	end
-	return if key == "HQ" and level == 2 then { "NextBuild", "HQ2Placed" } else { "NextBuild" }
+-- The onboarding step a bought boat level completes (L2 is FirstUpgrade, then L3, L5, L11), else nil.
+function Events.levelStep(level: number): string?
+	local name = if level == 2 then "FirstUpgrade" else `BoatL{level}`
+	return if Events.funnelStep(name) then name else nil
 end
 
 -- step number of `name` in a recurring funnel's step list (TelemetryNames.Funnels.X), nil if unknown

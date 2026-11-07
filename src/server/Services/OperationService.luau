@@ -149,8 +149,6 @@ local stationOnSpawn: { [Player]: boolean } = {} -- died in the cold open: next 
 local coldOpenBegunAt: { [Player]: number } = {} -- StartColdOpen may yield (SpawnColdOpen)
 local lastActiveAt: { [Player]: number } = {} -- last tick on an operation: the idle nudge's clock
 local COLD_OPEN_START_GRACE = 10 -- s before a cold open that never got its op counts as lost
-local hutUpAt: { [Player]: number } = {} -- first tick that saw the Rescue Hut standing
-local HUT_BEAT = 2.5 -- s the Hut's last bricks, confetti and HQ beat get before the cold open takes over
 local nextId = 0
 local bigOp: any = nil
 local bigLastEnd = 0 -- the last big call's end (Start: the server start), for OfferPacing.nextBigCallAt
@@ -355,12 +353,16 @@ local function endColdOpen(player: Player, reason: string)
 	-- Handover first: OnboardingController reads it when ColdOpenEnded fires
 	player:SetAttribute("ColdOpenHandover", how)
 	player:SetAttribute("ColdOpenEnded", reason) -- Studio tests
-	-- docs/20 M4/M5, docs/30: the cold open ends on the delivery beat, never a teleport. Seated ("Ride") they
-	-- keep the jet ski, throttle ready; on foot ("Station") they stay where they are and the jet ski stays put too,
+	-- docs/20 M4/M5, docs/30: the cold open ends on the delivery beat. Seated ("Ride") they keep the jet ski,
+	-- throttle ready, landed in the station bay; on foot ("Station") they stay where they are and the jet ski stays put too,
 	-- so the craft pin shows the way back. Only a death respawns them at the station.
 	if how == "Respawn" then
 		try("VehicleService", "Stow", player) -- nobody left to ride it: it waits at the bay
 		stationOnSpawn[player] = true
+	elseif how == "Ride" and ColdOpenFlow.rescued(reason) then
+		-- boat-first FTUE: driven home by hand, the first delivery still ends in the Upgrade Station's bay (a Go back
+		-- landing, veil and all), so the L2 board and its E prompt are right there; a Go back landing is there already
+		try("VehicleService", "LandAtStation", player)
 	end
 end
 
@@ -1909,12 +1911,10 @@ local function tick()
 					and st.completed == 0
 				then ColdOpenFlow.decide(e, true, 0, coldOpenDone(player))
 				else ColdOpenFlow.decide(e, OperationService.ColdOpenAuto, st.completed, true)
-			-- docs/25 J: a new island builds the free Rescue Hut first; the jet ski waits until it stands
-			local hq = player:GetAttribute("DockLevelHQ") -- nil until DockService's first sync
-			if hq ~= nil and hq ~= 0 and not hutUpAt[player] then
-				hutUpAt[player] = t
-			end
-			if decision == "Start" and hutUpAt[player] and t - hutUpAt[player] >= HUT_BEAT then
+			-- the island is claimed (DockService's first sync; the free Hut is granted on load): the jet ski launches from
+			-- its berth right away (boat-first FTUE)
+			local claimed = player:GetAttribute("DockLevelHQ") ~= nil
+			if decision == "Start" and claimed then
 				OperationService.StartColdOpen(player)
 			elseif decision == "Abandon" then
 				-- its op is gone (a start error, closed without finish): hand over, never replay
@@ -1923,7 +1923,7 @@ local function tick()
 				end
 			elseif
 				decision == "Offer"
-				and hutUpAt[player] ~= nil -- no calls before the Rescue Hut stands (a save from before it skipped the cold open)
+				and claimed
 				and not inWater(player)
 				and not busy(player)
 				and not upgradeBeat(player)
@@ -2258,7 +2258,6 @@ local function onPlayerRemoving(player: Player)
 	stationOnSpawn[player] = nil
 	coldOpenBegunAt[player] = nil
 	lastActiveAt[player] = nil
-	hutUpAt[player] = nil
 	for _, op in table.clone(ops) do
 		local j = table.find(op.offeredTo, player)
 		if j then

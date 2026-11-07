@@ -426,10 +426,6 @@ end
 
 -- No Rescue Hut yet: the bay's Launch and Boat to me answer no (live v23: the jet ski pulled new players away from the
 -- build tablet). The cold open seats before any Hut in tests, so boarding does not ask.
-local function noHut(player: Player): boolean
-	return DockService.Level(player, "HQ") < 1
-end
-
 local function dock(record: Record)
 	record.mode = "Dock"
 	local root = record.root
@@ -653,6 +649,7 @@ local function despawnModel(model: Model, reason: string?)
 	records[model] = nil
 	if byPlayer[record.owner] == record then
 		byPlayer[record.owner] = nil
+		record.owner:SetAttribute("BoatToMeAt", nil) -- no boat out: the Boat button brings one at once, never a wait
 	end
 	if seconds[record.owner] == record then
 		seconds[record.owner] = nil
@@ -1501,9 +1498,7 @@ local function addPrompts()
 			end
 			local id = bayCraft(player)
 			local ok, reason: any = false, "NoCraft"
-			if noHut(player) then
-				return -- BoatController hides this prompt meanwhile; live v23 trail A launched before the Hut
-			elseif id then
+			if id then
 				ok, reason = spawnVehicle(player, id, bay, nil, nil, "Bay")
 			end
 			if not ok then
@@ -1657,14 +1652,19 @@ local function landAt(record: Record, to: CFrame)
 	end
 end
 
-local function chargeGoBack(player: Player, record: Record, seat: BasePart)
+local function chargeGoBack(player: Player, record: Record, seat: BasePart, quiet: boolean?)
 	local run = { why = nil :: string? }
 	goBacks[player] = run
 	local model, id = record.model, record.spec.id
 	local function survivors(): number
 		return tonumber(model:GetAttribute("SurvivorCount")) or 0
 	end
-	Telemetry.Custom(player, "GoBack", survivors(), id, "Started")
+	local function log(value: number, phase: string, why: string?)
+		if not quiet then -- the first delivery's landing is not a press
+			Telemetry.Custom(player, "GoBack", value, id, phase, why)
+		end
+	end
+	log(survivors(), "Started")
 	tellAboard(VehicleService.GetOccupants(model), "Charge")
 	task.spawn(function()
 		local bay = bayFor(player)
@@ -1692,13 +1692,13 @@ local function chargeGoBack(player: Player, record: Record, seat: BasePart)
 	local aboard = VehicleService.GetOccupants(model)
 	if not spot then
 		tellAboard(aboard, "Cancel")
-		Telemetry.Custom(player, "GoBack", survivors(), id, "Cancelled", run.why or "NoSpot")
+		log(survivors(), "Cancelled", run.why or "NoSpot")
 		return
 	end
 	local carried = survivors() -- the delivery tick empties the craft during the landing
 	landAt(record, restAt(model, record.spec, spot))
 	tellAboard(aboard, "Land")
-	Telemetry.Custom(player, "GoBack", carried, id, "Landed")
+	log(carried, "Landed")
 end
 
 -- A press (Net GoBack). Everything the client said is ignored but the press itself.
@@ -1732,6 +1732,31 @@ local function onGoBack(player: Player)
 	then
 		chargeGoBack(player, record, seat)
 	end
+end
+
+-- The first delivery (the cold open, driven home by hand) ends in the Upgrade Station's bay like a Go back, so its board
+-- and E prompt are right there (OperationService.endColdOpen). False when not at the helm or already landing.
+function VehicleService.LandAtStation(player: Player): boolean
+	local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	local seat = humanoid and humanoid.SeatPart
+	local model = VehicleService.GetVehicle(player)
+	local record = model and records[model]
+	if
+		not (
+			seat
+			and record
+			and record.mode == "Driven"
+			and seat == record.seat
+			and record.driver == player
+		)
+		or record.resetting
+		or goBacks[player]
+		or record.model:GetAttribute("LandedHome") == true
+	then
+		return false
+	end
+	task.spawn(chargeGoBack, player, record, seat, true)
+	return true
 end
 
 -- Stop `player`'s charge, if any (a pirate ram, docs/30 section 5). True when one was stopped. Too late once it has landed.
@@ -1875,9 +1900,6 @@ function VehicleService.Init()
 			then
 				return false, "Cooldown"
 			end
-			if noHut(player) then
-				return false, "NoHut" -- the free Rescue Hut and then the Workshop come first (the Boat tile rests grey)
-			end
 			local current, bay = byPlayer[player], bayFor(player)
 			local id = if current and current.model.Parent
 				then current.spec.id
@@ -1894,9 +1916,6 @@ function VehicleService.Init()
 		end
 		if type(vehicleId) ~= "string" then
 			return false, "BadRequest"
-		end
-		if docked ~= true and noHut(player) then
-			return false, "NoHut"
 		end
 		return spawnVehicle(player, vehicleId, nil, nil, docked == true, "Menu")
 	end

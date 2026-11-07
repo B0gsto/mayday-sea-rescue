@@ -51,7 +51,8 @@ return function(t)
 	F.defaults = function()
 		return Rules.defaultData()
 	end
-	-- the tutorial beats (Onboarding.beat): stand, Hut site, cold open, first rescue, L2, out again, spin; plus the two
+	-- the tutorial beats (Onboarding.beat): two old saves at the stand and the Hut site (both now start the cold open),
+	-- cold open, first rescue, L2, out again, spin; plus the two
 	-- old saves left on the Workshop beat (live before docs/30)
 	F.beatBuildHQ = function()
 		return { version = 2, cash = 0, dock = { levels = { Harbour = 1 } } }
@@ -472,11 +473,7 @@ return function(t)
 			constructionKey = site and site.key,
 			boatLevel = d.boatLevel,
 		})
-		if beat == "BuildHQ" then
-			check((UnlockTree.canBuild("HQ", 1, d.dock.levels, 0)), "the free Hut")
-		elseif beat == "HQSite" then
-			check(site ~= nil, "site")
-		elseif beat == "OutAgain" then
+		if beat == "OutAgain" then
 			check(d.boatLevel >= Onboarding.UPGRADE_LEVEL, "the boat is past the upgrade beat")
 		elseif beat == "Upgrade" then
 			-- the button's there, or the jet ski (checked above) earns what is short; nothing is held
@@ -562,9 +559,10 @@ return function(t)
 
 	t.test("the tutorial fixtures land on their beat", function()
 		local want = {
-			brandNew = "BuildHQ",
-			beatBuildHQ = "BuildHQ",
-			beatHQSite = "HQSite",
+			-- boat first (2026-11-07): a fresh save and the old Hut-beat saves start on the cold open (DockService grants the Hut)
+			brandNew = "ColdOpen",
+			beatBuildHQ = "ColdOpen",
+			beatHQSite = "ColdOpen",
 			beatColdOpen = "ColdOpen",
 			beatRescue = "Rescue",
 			-- pre-ladder saves on the old Workshop beat: no free L2 from the stock jet ski, they meet the Upgrade beat

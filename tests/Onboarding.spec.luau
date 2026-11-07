@@ -193,13 +193,24 @@ return function(t)
 		t.expect(O.factsOf({}).totalRescues).toBe(0)
 	end)
 
-	t.test("the free Hut comes first: stand, site, then the cold open (docs/25 J)", function()
-		t.expect(O.beat(beat({ owned = { Harbour = true } }))).toBe("BuildHQ")
-		t.expect(O.beat(beat({ owned = { Harbour = true }, constructionKey = "HQ" })))
-			.toBe("HQSite")
-		t.expect(O.beat(beat())).toBe("ColdOpen")
-		t.expect(O.skip(beat({ owned = { Harbour = true } }))).toBe(false)
-	end)
+	t.test(
+		"boat first: a fresh save starts on the cold open, never at the tablet or the Hut site",
+		function()
+			t.expect(O.beat(beat({ owned = {} }))).toBe("ColdOpen")
+			t.expect(O.beat(beat({ owned = { Harbour = true } }))).toBe("ColdOpen")
+			-- an old save that stood at the Hut site (the server grants the Hut on load) goes on the jet ski too
+			t.expect(O.beat(beat({ owned = { Harbour = true }, constructionKey = "HQ" })))
+				.toBe("ColdOpen")
+			t.expect(O.beat(beat())).toBe("ColdOpen")
+			t.expect(O.skip(beat({ owned = { Harbour = true } }))).toBe(false)
+			-- the full order after it
+			t.expect(O.beat(beat({ coldOpenDone = true, totalRescues = 1 }))).toBe("Upgrade")
+			t.expect(O.beat(beat({ coldOpenDone = true, totalRescues = 1, boatLevel = 2 })))
+				.toBe("OutAgain")
+			t.expect(O.beat(beat({ coldOpenDone = true, step = O.STEP_SPIN }))).toBe("Spin")
+			t.expect(O.beat(beat({ coldOpenDone = true, step = O.STEP_DONE }))).toBe("Done")
+		end
+	)
 
 	t.test("a saved step never repeats an earlier beat", function()
 		t.expect(O.beat(beat({ coldOpenDone = true, step = O.STEP_RESCUE }))).toBe("Upgrade")

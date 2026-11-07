@@ -14,7 +14,6 @@
 -- green home cue (docs/20 4, 8). No sea-blue cover any more: a new player starts on their island.
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
-local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -35,7 +34,6 @@ local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local DockController = require(script.Parent:WaitForChild("DockController"))
 local MapController = require(script.Parent:WaitForChild("MapController"))
-local Telemetry = require(Client:WaitForChild("Telemetry"))
 local UI = Client:WaitForChild("UI")
 local ColdOpenCue = require(UI:WaitForChild("ColdOpenCue"))
 local Layout = require(UI:WaitForChild("Layout"))
@@ -360,101 +358,6 @@ local function buildTabletOpen(): boolean
 	return gui ~= nil and gui:IsA("ScreenGui") and gui.Enabled
 end
 
--- FTUE lead (live 2026-11-01: 28 of 121 new players never opened the build tablet; most left inside a minute, some
--- swam for minutes). Before the first open Bosun waits at the stand (DogService) under the steady green arrow
--- (UI/TabletCue). 40+ studs off it for 20 s: the edge pointer joins and the camera swings once to frame the stand.
-local LEAD_FAR = 40 -- studs
-local LEAD_WAIT = 20 -- s
-local SWING = 1.2 -- s
-local LEAD_SETTLE = 1 -- s the view stays clear before Bosun runs: the join card can pop right after the shot
-local clearSince: number? = nil
-local farSince: number? = nil
-local nudged = false -- once per session
-local tabletOpened = false
-
--- Orbit offset `d0` to `d1` around the focus (yaw the short way, height and radius straight): a lerp of the camera
--- position would cut through the avatar on a half turn.
-local function orbit(d0: Vector3, d1: Vector3, a: number): Vector3
-	local y0, y1 = math.atan2(d0.X, d0.Z), math.atan2(d1.X, d1.Z)
-	local yaw = y0 + ((y1 - y0 + math.pi) % (2 * math.pi) - math.pi) * a
-	local r0, r1 = Vector2.new(d0.X, d0.Z).Magnitude, Vector2.new(d1.X, d1.Z).Magnitude
-	local r = r0 + (r1 - r0) * a
-	return Vector3.new(math.sin(yaw) * r, d0.Y + (d1.Y - d0.Y) * a, math.cos(yaw) * r)
-end
-
-local function swingToStation()
-	local at = stationPoint()
-	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-	local root = rootPosition()
-	if
-		not (at and hum and root)
-		or hum.SeatPart
-		or CameraController.Comfort.reducedMotion()
-		or Layout.coldOpen()
-		or player:GetAttribute("MenuOpen") == true
-		or player:GetAttribute("CinematicPlaying") == true
-	then
-		return -- reduced motion (or busy): the edge pointer alone leads
-	end
-	AudioController.play("UI_Step", nil, 0.6, 1.1)
-	local cam = Workspace.CurrentCamera
-	local d0 = cam.CFrame.Position - (root + Vector3.new(0, 3, 0))
-	local t0 = os.clock()
-	local target: CFrame? = nil
-	while true do
-		local now = rootPosition()
-		if not now or buildTabletOpen() then
-			break
-		end
-		local focus = now + Vector3.new(0, 3, 0)
-		local flat = (at - focus) * Vector3.new(1, 0, 1)
-		local settle = behind(focus, if flat.Magnitude > 1 then flat.Unit else Vector3.zAxis)
-		target = settle
-		local a = math.min((os.clock() - t0) / SWING, 1)
-		if a >= 1 then
-			break
-		end
-		local e = TweenService:GetValue(a, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-		CameraController.SetOverride(
-			CFrame.lookAt(focus + orbit(d0, settle.Position - focus, e), focus)
-		)
-		RunService.RenderStepped:Wait()
-	end
-	CameraController.ClearOverride()
-	if target and not buildTabletOpen() then
-		RunService.RenderStepped:Wait() -- the Foot camera takes over, then lands on the framing
-		cam.CFrame = target
-	end
-end
-
-local function leadTick(leading: boolean)
-	if buildTabletOpen() then
-		tabletOpened = true
-	end
-	if leading then
-		-- the run must be seen: not under the loading screen, the establishing shot or the join card (prompts off)
-		local clear = ProximityPromptService.Enabled
-			and player:GetAttribute("LoadingScreenActive") ~= true
-			and player:GetAttribute("Establishing") ~= true
-			and player:GetAttribute("CinematicPlaying") ~= true
-		clearSince = if clear then clearSince or os.clock() else nil
-		if clearSince and os.clock() - clearSince >= LEAD_SETTLE then
-			Telemetry.once("TabletLeadGo")
-		end
-	end
-	if leading and not nudged then
-		local at, root = stationPoint(), rootPosition()
-		local far = at ~= nil
-			and root ~= nil
-			and ((root - at) * Vector3.new(1, 0, 1)).Magnitude > LEAD_FAR
-		farSince = if far then farSince or os.clock() else nil
-		if farSince and os.clock() - farSince >= LEAD_WAIT then
-			nudged = true
-			task.spawn(swingToStation)
-		end
-	end
-end
-
 -- The one world guide for the beat. The call marker stays UI/Waypoint's job; this handles the build station arrow +
 -- minimap pin, the Upgrade button's arrow + pin, and the arrow + pin to your island's prize wheel.
 local function setGuide(kind: string?)
@@ -728,15 +631,11 @@ local function update()
 	elseif dataReady or guide == "craft" then
 		local kind = if not dataReady
 			then nil
-			elseif beat == "BuildHQ" then "station"
 			elseif
-				beat == "HQSite"
-			then "hqsite" -- after the reward burst; with the Cash short (an old save spent it) nothing to press yet
-
-			elseif beat == "Upgrade" and player:GetAttribute("OnboardingRewardBusy") ~= true and BoatLevels.canBuy(
-				boatLevel,
-				cash
-			) then "upgrade"
+				beat == "Upgrade"
+				and player:GetAttribute("OnboardingRewardBusy") ~= true
+				and BoatLevels.canBuy(boatLevel, cash)
+			then "upgrade"
 			elseif beat == "Spin" and wheelNear() then "spin"
 			elseif
 				outAgainAt
@@ -746,19 +645,14 @@ local function update()
 			else nil
 		setGuide(kind)
 	end
-	local hutBeat = guide == "station" and beat == "BuildHQ"
-	leadTick(hutBeat and not tabletOpened)
-	local cleared = hutBeat and tabletOpened -- opened once: the arrow, pointer and diamond stay off until the Hut is placed
 	-- at the stand the tablet's own cue (green arrow + Build) is the one marker on it
-	local cued = DockController.TabletGoal(guide == "station" and not cleared)
+	local cued = DockController.TabletGoal(guide == "station")
 	setUpgradeArrow(guide == "upgrade")
 	setSeaArrow(guide == "sea")
 	if beacon then
 		-- the Upgrade button's own arrow is the marker on it; the pointer and trail still lead from the jetty
-		beacon.mute(
-			guide == "station" and (cued or cleared) or guide == "craft" or guide == "upgrade"
-		)
-		beacon.edge(not hutBeat or (nudged and not tabletOpened))
+		beacon.mute(guide == "station" and cued or guide == "craft" or guide == "upgrade")
+		beacon.edge(true)
 	end
 	-- the tablet's HQ card pulses while the tutorial points at the station
 	if os.clock() >= tickAt then

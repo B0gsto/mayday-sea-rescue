@@ -1291,7 +1291,7 @@ local function openBuild()
 	end
 	displayed = true
 	plotFrame = b
-	Telemetry.once("TabletOpened") -- onboarding funnel step 2
+	Telemetry.once("TabletOpened") -- DogService stops leading to the stand
 	local rootPart = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 	openedAt = if rootPart and rootPart:IsA("BasePart")
 		then rootPart.Position

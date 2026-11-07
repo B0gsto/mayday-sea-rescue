@@ -106,9 +106,11 @@ def selftest():
     text = funnel_summary({
         "1": ["0 onboarding 7 FirstDelivery", "5 onboarding 8 WorkshopPlaced", "9 custom GoBack 0 JetSki Started"],
         "2": ["3 custom GoBack 1 JetSki Started", "4 onboarding 7 FirstDelivery", "9 onboarding 8 FirstUpgrade"],
+        "3": ["0 onboarding 2 AtSea", "6 onboarding 4 FirstDelivery", "99 onboarding 10 BoatL11"],  # boat-first numbering
     })
     assert "7 FirstDelivery   2" in text, text
     assert "8 FirstUpgrade    1" in text and "8 WorkshopPlaced  1" in text, text
+    assert "4 FirstDelivery   1" in text and "10 BoatL11         1" in text, text
     assert text.endswith("first delivery: 1"), text
     print("ok")
 

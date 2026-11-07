@@ -1304,13 +1304,6 @@ local function startConstruction(player: Player, data: any, key: string, level: 
 		DataService.MarkDirty(player)
 		ProgressionService.Refresh(player) -- the buy's own Refresh ran before this step moved
 	end
-	Telemetry.Build(
-		player,
-		key,
-		buildLevel or 1,
-		false,
-		(data.tutorialStep or 0) >= Onboarding.STEP_DONE
-	)
 	if RingLayout.SeaPlates[key] then
 		Telemetry.Expand(player, key, "Bought")
 	end
@@ -1485,7 +1478,6 @@ local function finishConstruction(plot: Plot, player: Player, data: any)
 		return
 	end
 	lastBuild[player] = { key = c.key, cash = cashOf(c.key, c.level) }
-	Telemetry.Build(player, c.key, c.level or 1, true, false)
 	if RingLayout.SeaPlates[c.key] then
 		Telemetry.Expand(player, c.key, "Built")
 		if c.key == "SeaPlate2" then -- Used: the second barge's first mooring (DepotController draws it)
@@ -1783,8 +1775,27 @@ function DockService.Init()
 	end
 end
 
+-- Boat-first FTUE (2026-11-07): the free Rescue Hut stands from the start, so a new player goes straight to the cold
+-- open (no tablet, no site) and nothing waits on it; an old save left at the stand gets it on its next join. A Hut site
+-- still running (5 s, docs/25 J) finishes on its own.
+local function grantHut(player: Player, data: any)
+	deriveDock(data)
+	local site = data.construction
+	if
+		UnlockTree.levelOf(data.dock.levels, Onboarding.HQ) >= 1
+		or (type(site) == "table" and site.key == Onboarding.HQ)
+	then
+		return
+	end
+	data.dock.levels[Onboarding.HQ] = 1
+	deriveDock(data)
+	DataService.MarkDirty(player)
+	SkillService.grantMedals(player, SkillRules.HQ_MEDALS, "HQ") -- what the built Hut gave (docs/25 K3); refreshes
+end
+
 function DockService.Start()
 	DataService.OnLoaded(function(player: Player, data: any)
+		grantHut(player, data) -- before claim: the island's first sync already shows DockLevelHQ 1
 		claim(player)
 		applyOffline(player, data) -- a build finished while away stands on rejoin
 		show(player, false)

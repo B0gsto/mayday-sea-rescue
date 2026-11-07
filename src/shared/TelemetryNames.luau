@@ -48,24 +48,21 @@ TelemetryNames.Custom = table.freeze({
 } :: { string })
 
 -- LogOnboardingFunnelStepEvent step names, in step order. Roblox treats a skipped step as
--- completed, so the order must match what a player does. Rebuilt 2026-10-29 (before launch) for the
--- docs/25 J tutorial; docs/30 (2026-11-03): tablet -> free Hut -> cold open -> L2 -> back out -> spin -> Next chip.
--- No Day2Return: a return mid-tutorial would mark the skipped steps done (Retention shows D1).
--- After launch every number keeps its place (Events.Funnel: why 8 and 9 changed names).
+-- completed, so the order must match what a player does. Rebuilt 2026-11-07 for the boat-first FTUE: join -> cold open
+-- -> L2 -> back out -> spin -> boat L3, L5, L11. No tablet or Hut steps (the Hut is granted on load) and no island
+-- steps (NextBuild, HQ2Placed, FirstVehicle): the island is optional (docs/30), and a build before L3 would mark the
+-- boat steps done. No Day2Return: a return mid-tutorial would mark the skipped steps done (Retention shows D1).
 TelemetryNames.Funnel = table.freeze({
 	"Joined",
-	"TabletOpened",
-	"HutPlaced",
-	"HutBuilt",
 	"AtSea",
 	"FirstBoard",
 	"FirstDelivery",
 	"FirstUpgrade",
 	"BackOut",
 	"FirstSpin",
-	"NextBuild",
-	"HQ2Placed",
-	"FirstVehicle",
+	"BoatL3",
+	"BoatL5",
+	"BoatL11",
 } :: { string })
 
 -- LogFunnelStepEvent (recurring) funnels: name -> step names in order. One session id per call, shop

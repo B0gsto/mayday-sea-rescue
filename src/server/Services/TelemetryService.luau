@@ -26,7 +26,7 @@
 --   TelemetryService.ColdOpenStarted(player) / ColdOpenStep(player, stepId) / ColdOpenEnded(player, reason)
 --   TelemetryService.OpFinished(player, op, reason)                    op: OperationService's live op table
 --   TelemetryService.Recent -> { string }                              last events (Studio: ServerStorage.TelemetryDev)
--- Client (Telemetry_Client, rate limited, every value checked against a fixed set): TabletOpened (also sets the
+-- Client (Telemetry_Client, rate limited, every value checked against a fixed set): TabletOpened (sets the
 -- player attribute TabletOpened: DogService stops leading to the stand),
 -- Device(type), WorldReady, Fps(number), Shop(step, app, item?, currency?), InputDead(context),
 -- StuckReset(context).
@@ -150,19 +150,6 @@ function TelemetryService.Funnel(player: Player, stepName: string)
 	send("Onboarding", function()
 		AnalyticsService:LogOnboardingFunnelStepEvent(player, s.step, s.name)
 	end)
-end
-
--- A construction started (or finished): the onboarding steps it completes (Events.buildSteps).
-function TelemetryService.Build(
-	player: Player,
-	key: string,
-	level: number,
-	finished: boolean,
-	tutorialDone: boolean
-)
-	for _, step in Events.buildSteps(key, level, finished, tutorialDone) do
-		TelemetryService.Funnel(player, step)
-	end
 end
 
 -- Any recurring funnel step (LogFunnelStepEvent). Each step is sent once per session id: Roblox
@@ -578,8 +565,7 @@ end
 -- dashboard's field cardinality) and the remote is rate limited (Events.allow).
 local function clientStep(player: Player, name: string, a: any, b: any, c: any, d: any)
 	if name == "TabletOpened" then
-		player:SetAttribute("TabletOpened", true)
-		TelemetryService.Funnel(player, "TabletOpened")
+		player:SetAttribute("TabletOpened", true) -- no longer a funnel step (boat-first FTUE)
 	elseif name == "TabletLeadGo" then
 		player:SetAttribute("TabletLeadGo", true) -- OnboardingController: the view is clear, Bosun runs to the stand
 	elseif name == "Expand" then

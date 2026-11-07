@@ -30,21 +30,18 @@ return function(t)
 			seen[s.name] = true
 			t.expect(Events.funnelStep(s.name).step).toBe(i)
 		end
-		-- the real first session (docs/25 J, docs/30; PT5 2026-10-28), in this exact order
+		-- the real first session (boat-first FTUE 2026-11-07, docs/30), in this exact order
 		local order = {
 			"Joined",
-			"TabletOpened",
-			"HutPlaced",
-			"HutBuilt",
 			"AtSea",
 			"FirstBoard",
 			"FirstDelivery",
 			"FirstUpgrade",
 			"BackOut",
 			"FirstSpin",
-			"NextBuild",
-			"HQ2Placed",
-			"FirstVehicle",
+			"BoatL3",
+			"BoatL5",
+			"BoatL11",
 		}
 		t.expect(#Events.Funnel).toBe(#order)
 		for i, name in order do
@@ -123,25 +120,13 @@ return function(t)
 		t.expect(Events.utcDay(86400 * 3 + 10)).toBe(3)
 	end)
 
-	t.test("builds map onto the tutorial's onboarding steps", function()
-		local function steps(key, level, finished, done)
-			return table.concat(Events.buildSteps(key, level, finished, done), ",")
-		end
-		t.expect(steps("HQ", 1, false, false)).toBe("HutPlaced")
-		t.expect(steps("HQ", 1, true, false)).toBe("HutBuilt")
-		-- the island is optional: no build counts before the tutorial is done, the Workshop included
-		t.expect(steps("Workshop", 1, false, false)).toBe("")
-		t.expect(steps("Workshop", 1, false, true)).toBe("NextBuild")
-		t.expect(steps("Depot", 1, false, false)).toBe("")
-		t.expect(steps("HQ", 2, false, false)).toBe("")
-		t.expect(steps("Depot", 1, false, true)).toBe("NextBuild")
-		t.expect(steps("HQ", 2, false, true)).toBe("NextBuild,HQ2Placed")
-		t.expect(steps("Depot", 1, true, true)).toBe("")
-		for _, key in { "HQ", "Workshop", "Depot" } do
-			for _, name in Events.buildSteps(key, 2, false, true) do
-				t.expect(Events.funnelStep(name) ~= nil).toBe(true)
-			end
-		end
+	t.test("bought boat levels map onto the onboarding steps", function()
+		t.expect(Events.levelStep(2)).toBe("FirstUpgrade")
+		t.expect(Events.levelStep(3)).toBe("BoatL3")
+		t.expect(Events.levelStep(5)).toBe("BoatL5")
+		t.expect(Events.levelStep(11)).toBe("BoatL11")
+		t.expect(Events.levelStep(4)).toBe(nil)
+		t.expect(Events.levelStep(12)).toBe(nil)
 	end)
 
 	t.test("session buckets cover day N, the gap and the session length", function()

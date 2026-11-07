@@ -28,6 +28,7 @@ local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForC
 local BadgeService = require(script.Parent.BadgeService)
 local DataService = require(script.Parent.DataService)
 local DockService = require(script.Parent.DockService)
+local Events = require(script.Parent:WaitForChild("Telemetry"):WaitForChild("Events"))
 local MonetizationService = require(script.Parent.MonetizationService)
 local ProgressionService = require(script.Parent.ProgressionService)
 local SpinService = require(script.Parent.SpinService)
@@ -113,8 +114,9 @@ local function buy(player: Player, index: number): (boolean, string)
 	data.boatLevel += 1
 	Telemetry.CashSpent(player, price, data.cash, "Upgrade", "BoatLevel")
 	Telemetry.Shop(player, "Bought", nil, "BoatLevel", "Cash")
-	if data.boatLevel == Onboarding.UPGRADE_LEVEL then
-		Telemetry.Funnel(player, "FirstUpgrade")
+	local step = Events.levelStep(data.boatLevel) -- FirstUpgrade (L2), BoatL3, BoatL5, BoatL11
+	if step then
+		Telemetry.Funnel(player, step)
 	end
 	if data.boatLevel == ProgressionConfig.Vehicles.Lifeboat.level then
 		BadgeService.Count(player, "LifeboatBought") -- the hull comes with the ladder now (docs/30)
