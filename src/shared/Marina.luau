@@ -33,14 +33,34 @@ function Marina.spawn(i: number): CFrame
 	return RingLayout.Islands[i].spawn
 end
 
--- The lowest free plot (taken[i] truthy = in use), nil when all are taken.
-function Marina.assign(taken: { [number]: any }): number?
+-- Bearing gap between plots i and j round the ring centre, 0..180 degrees.
+local function gap(i: number, j: number): number
+	local d = math.abs(RingLayout.Islands[i].bearing - RingLayout.Islands[j].bearing) % 360
+	return math.min(d, 360 - d)
+end
+
+-- docs/31 A/D1: spread players round the ring. An empty server gives a random plot; later players get the free
+-- plot farthest by bearing from the taken ones (ties: lowest index). taken[i] truthy = in use; nil when full.
+function Marina.assign(taken: { [number]: any }, rng: Random): number?
+	local free, best, bestGap = {}, nil, -1
 	for i = 1, Marina.COUNT do
 		if not taken[i] then
-			return i
+			table.insert(free, i)
+			local near = math.huge
+			for j = 1, Marina.COUNT do
+				if taken[j] then
+					near = math.min(near, gap(i, j))
+				end
+			end
+			if near > bestGap then
+				best, bestGap = i, near
+			end
 		end
 	end
-	return nil
+	if #free == Marina.COUNT then
+		return free[rng:NextInteger(1, #free)]
+	end
+	return best
 end
 
 -- The Harbour Master: the most people rescued among islands with a Station (docs/23 (q)); a tie keeps
