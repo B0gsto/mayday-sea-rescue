@@ -3,7 +3,8 @@
 -- Next chip (live 2026-11-01: after the Workshop most players never saw a goal to save toward). Its face: the
 -- building's icon, a Cash bar and "240/400", live. When the bar fills: one pop (VFXKit buy_pop, its FX_Pop), the
 -- bar stays green (no outline, no pulse: owner 2026-11-03). Only on your own island, only after the
--- tutorial's Workshop, never over water (sea plates) or a running site. Client-only, no text beyond the number.
+-- tutorial's Workshop and boat level 5 (NextGoal.treeQuiet), never over water (sea plates) or a running site.
+-- Client-only, no text beyond the number.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -165,7 +166,7 @@ local function refresh()
 		clear()
 		return
 	end
-	local g = if (tonumber(levels.Workshop) or 0) >= 1
+	local g = if (tonumber(levels.Workshop) or 0) >= 1 and not NextGoal.treeQuiet(s.boatLevel)
 		then NextGoal.next({ cash = tonumber(s.cash) or 0, levels = levels })
 		else nil -- the tutorial's own beats lead until its Workshop stands
 	if not g or g.kind ~= "Build" or g.level ~= 1 or DockConfig.SEA_PLATE_CASH[g.key] then

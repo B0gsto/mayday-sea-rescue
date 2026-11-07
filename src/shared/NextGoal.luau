@@ -31,6 +31,14 @@ export type Goal = {
 
 local NextGoal = {}
 
+-- Below this boat level the island's pulls stay quiet (goal board, upgrade arrows): the boat is the obvious spend
+-- (playtest 2026-11-07: a returning player put 1,900 Cash into the Depot and a sea plate, never the boat). -- tune
+NextGoal.TREE_FROM_BOAT = 5
+
+function NextGoal.treeQuiet(boatLevel: any): boolean
+	return BoatLevels.level(boatLevel) < NextGoal.TREE_FROM_BOAT
+end
+
 local function build(key: string, n: number, cash: number): Goal
 	local b = DockConfig.Buildings[key]
 	local price = b.levels[n].cash
