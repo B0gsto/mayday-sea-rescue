@@ -114,7 +114,8 @@ local function step(dt: number)
 	local pad = TouchDriveController -- the touch drive pad, 0 off touch
 	local state = Rig.step(
 		model,
-		math.clamp(seat.ThrottleFloat + pad.throttle(), -1, 1),
+		math.clamp(seat.ThrottleFloat + pad.throttle(), -1, 1)
+			* (tonumber(model:GetAttribute("FuelLimp")) or 1), -- empty tank
 		math.clamp(seat.SteerFloat + pad.steer(), -1, 1),
 		math.clamp(dive + pad.lift(), -1, 1),
 		dt,

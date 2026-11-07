@@ -225,7 +225,8 @@ local function fly(model: Model, spec: Flight.Spec, dt: number)
 	local airborne = root.Position.Y > floor + AIRBORNE_GAP
 	model:SetAttribute("Airborne", airborne)
 	local input: Flight.Input = {
-		forward = math.clamp(-move.Z + TouchDriveController.throttle(), -1, 1),
+		forward = math.clamp(-move.Z + TouchDriveController.throttle(), -1, 1)
+			* (tonumber(model:GetAttribute("FuelLimp")) or 1), -- an empty tank limps (FuelService)
 		strafe = held.HeliRight - held.HeliLeft,
 		yaw = math.clamp(move.X + TouchDriveController.steer(), -1, 1),
 		lift = math.clamp(held.HeliUp - held.HeliDown + TouchDriveController.lift(), -1, 1),

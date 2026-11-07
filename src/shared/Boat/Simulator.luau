@@ -205,7 +205,7 @@ end
 
 -- One simulation step. throttle and steer are -1..1 (0 for an empty or towed boat).
 -- Model attributes read here: SpeedMultiplier (gear bonus), PickupBoostUntil (docs/29 C), ApproachMode (bool, slow-speed governor),
--- EngineRunning (false = kill cord pulled: no thrust, no idle creep).
+-- EngineRunning (false = kill cord pulled: no thrust, no idle creep), FuelLimp (an empty tank's share of top speed).
 function Simulator.step(model: Model, throttle: number, steer: number, now: number?): Telemetry?
 	local rig = Simulator.getRig(model)
 	if not rig then
@@ -228,7 +228,9 @@ function Simulator.step(model: Model, throttle: number, steer: number, now: numb
 	local speedMult = BoatLevels.capMultiplier(
 		h.topSpeed,
 		math.clamp((if type(mult) == "number" then mult else 1) * (speedBoost[model] or 1), 0.5, 3)
-	) * RescueRun.boostAt(model:GetAttribute("PickupBoostUntil"), t)
+	) * RescueRun.boostAt(model:GetAttribute("PickupBoostUntil"), t) * (tonumber(
+		model:GetAttribute("FuelLimp")
+	) or 1) -- empty tank (FuelService)
 	local approach = model:GetAttribute("ApproachMode") == true
 	local engine = model:GetAttribute("EngineRunning") ~= false
 

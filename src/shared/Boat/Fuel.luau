@@ -11,6 +11,8 @@
 --                                      to 0..1 so the pick-up boost and Nitro cost no extra and idling costs nothing
 --   Fuel.reach(level, fromR) -> number studs from RingLayout.Center a full tank reaches, driving straight out from fromR
 --   Fuel.LIMP_SPEED, Fuel.LIMP_S       empty tank: coast at this share of top speed for this long, then auto Go back
+--   Fuel.step(fuel, max, s) -> (number, boolean)   one FuelService tick: full at home, burns only while s.driving;
+--                                      the boolean is true on the tick the tank runs dry
 -- Refuel is full and free at home (FuelService). Fuel per stud is factor / top speed at any throttle, so reach does not
 -- depend on how hard you drive.
 local BoatLevels = require(script.Parent.Parent.BoatLevels)
@@ -40,6 +42,27 @@ end
 
 function Fuel.burn(dt: number, speedFrac: number, zone: number, level: any): number
 	return dt * math.clamp(speedFrac, 0, 1) * Fuel.factor(zone, level)
+end
+
+export type Tick = {
+	home: boolean,
+	driving: boolean,
+	dt: number,
+	speedFrac: number,
+	zone: number,
+	level: any,
+}
+
+function Fuel.step(fuel: number, max: number, s: Tick): (number, boolean)
+	if s.home then
+		return max, false
+	end
+	local now = math.min(fuel, max)
+	if not s.driving then
+		return now, false
+	end
+	local left = math.max(now - Fuel.burn(s.dt, s.speedFrac, s.zone, s.level), 0)
+	return left, left <= 0 and now > 0
 end
 
 function Fuel.reach(level: any, fromR: number): number

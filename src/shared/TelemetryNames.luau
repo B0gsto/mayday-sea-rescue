@@ -45,6 +45,7 @@ TelemetryNames.Custom = table.freeze({
 	"TestRide", -- a lent Robux boat (value = seconds ridden): vehicle, Started / Time / SteppedOff
 	"Pirate", -- a pirate chase (value = sea zone): Spawn + vehicle / End + why (Hit, Timeout, Shallows, Shaken, Lost) / Escaped
 	"GoBack", -- the Go back button (value = survivors aboard): vehicle, Started / Landed / Cancelled, why cancelled
+	"Fuel", -- docs/31 C (value = boat level): Empty, sea zone name
 } :: { string })
 
 -- LogOnboardingFunnelStepEvent step names, in step order. Roblox treats a skipped step as
