@@ -23,9 +23,9 @@ asset here before building it.
 
 **Hydrofoil and Rocket Cutter redo.** The first meshes (`M_Veh_Hydrofoil`, `M_Veh_RocketCutter`, their `M_Upg_*`
 pieces) read as weapons and were pulled (owner 2026-11-05); their ids stay in AssetIds, unused. New concepts with no
-rocket or missile shapes and one chubby body: round 4 scored Hydrofoil 7.5 and Rocket Cutter 7.6 (bar 8), status in
-`art/concepts/STATUS.md` on branch `claude/late-boats-blender`. Next: owner approves or asks for more rounds, then
-Blender MCP, then `BoatLevels.HullArt` entries.
+rocket or missile shapes and one chubby body: concepts round 4 (Hydrofoil 7.5, Rocket Cutter 7.6) approved by the
+owner 2026-11-07, then built in Blender on branch `claude/late-boats-blender`: Rocket Cutter mesh passed at 8.2 and is
+being wired (`BoatLevels.HullArt`); Hydrofoil mesh 7.8 after 3 rounds, waiting on the owner (ship or a 4th round).
 
 ## 2. Other craft
 
