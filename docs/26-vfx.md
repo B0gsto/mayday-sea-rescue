@@ -38,7 +38,7 @@ The game's effects follow the global VFX rules (user CLAUDE.md "VFX (all games)"
 | Deep Spin (your own spin) | feedback + spectacle | `deep_ground_burst`, `deep_water_burst`, `deep_rush`, `deep_release`, `deep_slam`, `deep_grip`, `deep_coins`, `deep_bubbles` + pooled studded plates (DeepSpin/Set); reveal uses `wheel_win` / `fx1_wheel_jackpot` sized by `SpinCurve.BURST` |
 | Chimneys (smokehouse, cottages) | ambience | a slow puff every few seconds, round studded smoke, near the player only |
 | Dolphin leap (sea1) | ambience | `dolphin_leap`: a small crown + drops where a Lego dolphin of a passing pod dives back in, a soft splash; near the camera only |
-| Sea zone line (docs/29 B) | state | `SeaZoneController`: pooled buoys + a soft steady glow curtain in the colour of the water beyond, near the player only, silent |
+| Sea zone line (docs/29 B) | state | `SeaZoneController`: pooled buoys in the colour of the water beyond, near the player only, silent; the crossing itself is fog + water colour blended by distance (WeatherController), no curtain |
 | Sea zone crossing (docs/29 B) | feedback | one Toast pop: zone name + best rarity gem, `FX_Chime`; still under Reduce motion |
 | Legendary+ survivor (docs/29 B) | state | `SurvivorTag`: a steady 800-stud rarity-coloured column while in the water, silent |
 | Pirate appears (docs/29 D) | feedback | `pirate_spawn` where it starts: crown, drops, foam ring (reads to 7,000 studs); one 2D horn and one edge arrow pop for the hunted, nothing flashes |

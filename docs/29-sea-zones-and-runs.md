@@ -32,9 +32,11 @@ unchanged). Call pay keeps its own distance rule. Free-roam spawns must cover ev
 trip, and a tiny number of Legendary+ scenes can be seen from far by a tall rarity-coloured light column.
 
 Clearly visible, in order of importance:
-1. **World line:** a client-pooled line of tall Lego buoys in the zone colour with a soft vertical glow curtain between
-   them, only near the player (pool about 24). Vertical, so no coplanar sea faces.
-2. **Water:** sea tint and fog ease to the zone colours over about 2 s when you cross.
+1. **Water and air:** the sea colour, fog (Atmosphere density, haze, colour), exposure, saturation and an Overcast
+   share blend by distance over 300 studs either side of a line (`SeaZones.lookAt`): bright turquoise Shallows to a
+   dark navy, heavy-fog Wreck Abyss. No wall: the old glow curtain was cut (owner 2026-11-07, "weird").
+2. **Buoys:** a client-pooled line of tall Lego buoys in the zone colour as a soft marker, only near the player
+   (pool about 24).
 3. **Map:** coloured circles on the full map and minimap.
 4. **Crossing:** one banner pop: zone name + best rarity gem + a sound. Once per crossing, respects reduce motion.
 

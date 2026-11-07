@@ -1,8 +1,9 @@
 --!strict
 -- SeaZones (docs/29 B): five circles round the lagoon, measured flat from RingLayout.Center. Further = better
 -- survivors and better free-roam pay. Pure data and maths, Lune-tested (tests/SeaZones.spec.luau). Used by
--- RescueService (rarity), AmbientMix (spawns, pay), WeatherController (tint, fog), MapController (circles) and
--- SeaZoneController (buoy line, banner).
+-- RescueService (rarity), AmbientMix (spawns, pay), WeatherController (water, fog, light), MapController (circles) and
+-- SeaZoneController (buoy line, banner). A crossing reads through the air and the water (owner 2026-11-07: no wall):
+-- SeaZones.lookAt blends two zones' looks over BLEND studs either side of a line, by distance.
 local Config = script.Parent.Parent:WaitForChild("Config") -- required on the client too
 local RingLayout = require(Config:WaitForChild("RingLayout"))
 local WorldConfig = require(Config:WaitForChild("WorldConfig"))
@@ -13,13 +14,16 @@ export type Zone = {
 	outer: number, -- studs from the centre where it ends
 	weights: { number }, -- % Common..Mythic (WorkerRules opts.weights), sums to 100
 	pay: number, -- x AmbientMix.CASH
-	color: Color3, -- the line: buoys, curtain, map circle
+	color: Color3, -- the line: buoys, map circle
 	kit: string, -- the banner's Kit gradient
 	gem: string, -- the banner's Kit icon: the zone's best rarity
 	water: Color3, -- OceanWaterColor by day
 	haze: Color3, -- Atmosphere colour
 	hazeMix: number, -- how far the haze goes to `haze`
 	density: number, -- added Atmosphere density (fog)
+	hazeAdd: number, -- added Atmosphere haze (how milky the distance is)
+	exposure: number, -- added ExposureCompensation (darker further out)
+	saturation: number, -- added ColorCorrection saturation
 	overcast: number, -- share of the Overcast preset
 }
 -- What the sea looks like right now: eased toward a zone by SeaZones.ease.
@@ -29,13 +33,17 @@ export type Look = {
 	haze: Color3,
 	hazeMix: number,
 	density: number,
+	hazeAdd: number,
+	exposure: number,
+	saturation: number,
 	overcast: number,
 }
 
 local SeaZones = {}
 
 SeaZones.HYSTERESIS = 60 -- studs past a line before a crossing counts: no banner spam along a line -- tune
-SeaZones.EASE = 0.6 -- s, the look's time constant: about 2 s to settle -- tune
+SeaZones.EASE = 0.6 -- s, the look's time constant: about 2 s to settle (smooths teleports) -- tune
+SeaZones.BLEND = 300 -- studs either side of a line over which the look blends: 600 of each 1,200 band is pure -- tune
 SeaZones.LINE_SHOW = 560 -- studs from a line where its buoys appear: bands are 1,200 wide, so one line at most -- tune
 SeaZones.POOL = 24 -- buoys in the pool
 SeaZones.SPACING = 90 -- studs between buoys, about -- tune
@@ -50,10 +58,13 @@ SeaZones.Zones = {
 		color = Color3.fromHex("2FE0D0"),
 		kit = "teal",
 		gem = "gem_rare",
-		water = Color3.fromHex("1C8A94"),
+		water = Color3.fromHex("1E9FB0"),
 		haze = Color3.fromHex("D6E6F0"),
 		hazeMix = 0,
 		density = 0,
+		hazeAdd = 0,
+		exposure = 0,
+		saturation = 0.05,
 		overcast = 0,
 	},
 	{
@@ -65,10 +76,13 @@ SeaZones.Zones = {
 		color = Color3.fromHex("4FE07A"),
 		kit = "green",
 		gem = "gem_epic",
-		water = Color3.fromHex("1D7F62"),
-		haze = Color3.fromHex("CFE8D6"),
-		hazeMix = 0.7,
-		density = 0.02,
+		water = Color3.fromHex("177F6E"),
+		haze = Color3.fromHex("C9E6D2"),
+		hazeMix = 0.6,
+		density = 0.06,
+		hazeAdd = 0.3,
+		exposure = 0,
+		saturation = 0,
 		overcast = 0,
 	},
 	{
@@ -80,10 +94,13 @@ SeaZones.Zones = {
 		color = Color3.fromHex("A77BFF"),
 		kit = "purple",
 		gem = "gem_legendary",
-		water = Color3.fromHex("3F4BAE"),
-		haze = Color3.fromHex("D8CFF4"),
-		hazeMix = 0.8,
-		density = 0.04,
+		water = Color3.fromHex("2E4FA8"),
+		haze = Color3.fromHex("D2C6F2"),
+		hazeMix = 0.75,
+		density = 0.12,
+		hazeAdd = 0.7,
+		exposure = -0.05,
+		saturation = 0,
 		overcast = 0,
 	},
 	{
@@ -95,10 +112,13 @@ SeaZones.Zones = {
 		color = Color3.fromHex("7FB6E8"),
 		kit = "blue",
 		gem = "gem_mythic",
-		water = Color3.fromHex("35587C"),
-		haze = Color3.fromHex("93A4B6"),
+		water = Color3.fromHex("284A6A"),
+		haze = Color3.fromHex("8C9AAB"),
 		hazeMix = 0.9,
-		density = 0.1,
+		density = 0.14,
+		hazeAdd = 1,
+		exposure = -0.2,
+		saturation = -0.15,
 		overcast = 0.85,
 	},
 	{
@@ -110,11 +130,14 @@ SeaZones.Zones = {
 		color = Color3.fromHex("6A5CFF"),
 		kit = "pink",
 		gem = "gem_mythic",
-		water = Color3.fromHex("14163C"),
-		haze = Color3.fromHex("34346A"),
+		water = Color3.fromHex("0F1838"),
+		haze = Color3.fromHex("3A3F66"),
 		hazeMix = 1,
-		density = 0.16,
-		overcast = 0.6,
+		density = 0.28,
+		hazeAdd = 1.6,
+		exposure = -0.35,
+		saturation = -0.25,
+		overcast = 1,
 	},
 } :: { Zone }
 
@@ -125,8 +148,13 @@ SeaZones.NEUTRAL = table.freeze({
 	haze = SeaZones.Zones[1].haze,
 	hazeMix = 0,
 	density = 0,
+	hazeAdd = 0,
+	exposure = 0,
+	saturation = 0,
 	overcast = 0,
 }) :: Look
+
+local NUMBERS = { "hazeMix", "density", "hazeAdd", "exposure", "saturation", "overcast" }
 
 local function fromCentre(x: number, z: number): number
 	local c = RingLayout.Center
@@ -172,9 +200,31 @@ function SeaZones.ease(look: Look, target: any, dt: number)
 	look.water = look.water:Lerp(target.water, k)
 	look.waterMix += ((target.waterMix or 1) - look.waterMix) * k
 	look.haze = look.haze:Lerp(target.haze, k)
-	look.hazeMix += (target.hazeMix - look.hazeMix) * k
-	look.density += (target.density - look.density) * k
-	look.overcast += (target.overcast - look.overcast) * k
+	for _, key in NUMBERS do
+		look[key] += (target[key] - look[key]) * k
+	end
+end
+
+-- The look at a world position: one zone's mid-band, two zones blended (smoothstep) within BLEND of a line.
+function SeaZones.lookAt(pos: Vector3): Look
+	local r = fromCentre(pos.X, pos.Z)
+	local i = SeaZones.zoneAt(pos)
+	local a, b, t = SeaZones.Zones[i], SeaZones.Zones[i], 0
+	if i > 1 and r < SeaZones.Zones[i - 1].outer + SeaZones.BLEND then
+		a, t = SeaZones.Zones[i - 1], 0.5 + (r - SeaZones.Zones[i - 1].outer) / (2 * SeaZones.BLEND)
+	elseif i < #SeaZones.Zones and r > a.outer - SeaZones.BLEND then
+		b, t = SeaZones.Zones[i + 1], 0.5 - (a.outer - r) / (2 * SeaZones.BLEND)
+	end
+	t = t * t * (3 - 2 * t)
+	local look = {
+		water = a.water:Lerp(b.water, t),
+		waterMix = 1,
+		haze = a.haze:Lerp(b.haze, t),
+	} :: any
+	for _, key in NUMBERS do
+		look[key] = (a :: any)[key] + ((b :: any)[key] - (a :: any)[key]) * t
+	end
+	return look
 end
 
 -- Slots round a line: a multiple of POOL, so slot k always takes buoy k % POOL + 1 and a moving window only moves

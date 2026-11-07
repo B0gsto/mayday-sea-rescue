@@ -1,14 +1,12 @@
 --!strict
--- SeaBuoy (docs/29 B): one zone-line buoy, code-built placeholder Parts until real art lands, plus the soft
--- glow curtain to the next buoy. The curtain is a horizontal FaceCamera Beam: from a boat its width stands up, and the
--- texture's soft edges fade it out; its lower half is under the sea, so it reads as a glow rising off the water.
+-- SeaBuoy (docs/29 B): one zone-line buoy, code-built placeholder Parts until real art lands. A soft marker only:
+-- the glow curtain between buoys is gone (owner 2026-11-07, "weird"); the crossing reads through fog and water.
 -- No coplanar faces: every part overlaps the one below it (tests/ZFight.spec.luau).
 local SeaBuoy = {}
 
-export type Buoy = { model: Model, tinted: { BasePart }, anchor: Attachment, beam: Beam }
+export type Buoy = { model: Model, tinted: { BasePart } }
 
 local WHITE = Color3.fromHex("F4F7FA")
-local CURTAIN_Y, CURTAIN_H = 24, 100 -- studs: centre and full height (the bottom half is under the sea) -- tune
 
 local function part(
 	model: Model,
@@ -33,7 +31,7 @@ local function part(
 	return p
 end
 
-function SeaBuoy.new(parent: Instance, curtainTexture: string): Buoy
+function SeaBuoy.new(parent: Instance): Buoy
 	local model = Instance.new("Model")
 	model.Name = "SeaBuoy"
 	local float = part(model, "Float", Enum.PartType.Cylinder, Vector3.new(5, 12, 12), 1.2)
@@ -43,32 +41,14 @@ function SeaBuoy.new(parent: Instance, curtainTexture: string): Buoy
 	local lamp = part(model, "Lamp", Enum.PartType.Ball, Vector3.new(6, 6, 6), 28.5)
 	lamp.Material = Enum.Material.Neon -- a steady light, never flashes
 	model.PrimaryPart = float
-	local anchor = Instance.new("Attachment")
-	anchor.Name = "Curtain"
-	anchor.Position = float.CFrame:PointToObjectSpace(Vector3.new(0, CURTAIN_Y, 0))
-	anchor.Parent = float
-	local beam = Instance.new("Beam")
-	beam.Name = "Curtain"
-	beam.Attachment0 = anchor
-	beam.Width0, beam.Width1 = CURTAIN_H, CURTAIN_H
-	beam.Segments = 1
-	beam.FaceCamera = true
-	beam.Texture = curtainTexture
-	beam.TextureMode = Enum.TextureMode.Stretch
-	beam.Transparency = NumberSequence.new(0.4)
-	beam.LightEmission = 0.8
-	beam.LightInfluence = 0
-	beam.Enabled = false
-	beam.Parent = float
 	model.Parent = parent
-	return { model = model, tinted = { float, mast, lamp }, anchor = anchor, beam = beam }
+	return { model = model, tinted = { float, mast, lamp } }
 end
 
 function SeaBuoy.tint(buoy: Buoy, color: Color3)
 	for _, p in buoy.tinted do
 		p.Color = color
 	end
-	buoy.beam.Color = ColorSequence.new(color)
 end
 
 return SeaBuoy
