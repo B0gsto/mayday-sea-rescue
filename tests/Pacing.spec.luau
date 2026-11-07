@@ -1275,6 +1275,7 @@ return function(t)
 	-- docs/30: the boat ladder on free play. One trip: out to a call inside the level's reach, the room filled from the
 	-- free-roam survivors on the way, then Go back. Real payouts; only the trip's fixed seconds are assumed.
 	local BoatLevels = t.load("src/shared/BoatLevels.luau")
+	local Fuel = t.load("src/shared/Boat/Fuel.luau")
 	local TRIP_FIXED = 30 -- s: leave the bay, find them, press Go back, the charge, the Upgrade -- tune
 	local PER_SURVIVOR = 3 -- s to pick each one up -- tune
 	local DISTANCE_SHARE = 0.35 -- of the call reach: the average call's distance
@@ -1297,6 +1298,7 @@ return function(t)
 				local out = if ramp and not reachShare
 					then (ramp[1] + ramp[2]) / 2
 					else row.callReach * (reachShare or DISTANCE_SHARE)
+				out = math.min(out, Fuel.reach(level, HOME_RADIUS) - HOME_RADIUS) -- docs/31 C: no farther than the tank
 				local trip = TRIP_FIXED
 					+ row.room * PER_SURVIVOR
 					+ out / (row.speed * CallTypes.CRUISE_FACTOR)
@@ -1366,6 +1368,13 @@ return function(t)
 		end
 		for level = 6, 7 do
 			t.expect(trips[level] <= 2).toBe(true)
+		end
+		-- docs/31 C: from L2 up a call at the far edge of the level's reach is inside a full tank (L1 is the cold open)
+		for level = 2, BoatLevels.MAX do
+			t.expect(
+				Fuel.reach(level, HOME_RADIUS) - HOME_RADIUS >= BoatLevels.Rows[level].callReach
+			)
+				.toBe(true)
 		end
 		-- the whole ladder: about 15 h of free play
 		t.expect(math.abs(at[50] / 3600 - 15) <= 1.5).toBe(true)

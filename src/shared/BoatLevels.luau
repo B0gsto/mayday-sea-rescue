@@ -18,6 +18,7 @@ export type Row = {
 	turnRadius: number, -- studs: the turning circle at top speed
 	reach: number, -- studs from the hull side: fast boats take survivors from further off
 	callReach: number, -- studs from home: how far out this boat's calls go
+	tank: number, -- s of full throttle (docs/31 C, Boat/Fuel)
 }
 export type PiecePart = {
 	name: string,
@@ -112,6 +113,7 @@ do
 			turnRadius = 108 + 0.15 * speed, -- L1 is the jet ski's circle; L50 was 375 and felt like ice (about 500 in play) -- tune
 			reach = math.max(14, math.floor(speed * BoatLevels.REACH_TIME + 0.5)),
 			callReach = if stageIndex == 1 then 2000 elseif stageIndex == 2 then 3500 else 5500,
+			tank = 24 + 0.4 * (level - 1), -- tune
 		}
 	end
 end
