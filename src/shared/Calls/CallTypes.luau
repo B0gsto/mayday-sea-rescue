@@ -52,6 +52,7 @@ export type SpawnZone = {
 
 local RingLayout = require(script.Parent.Parent.Config.RingLayout)
 local RipCurrent = require(script.Parent.Parent.RipCurrent)
+local SectorSpots = require(script.Parent.SectorSpots)
 local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
 local CallTypes = {}
@@ -349,6 +350,17 @@ for _, island in WorldConfig.Islands do
 		maxRadius = island.radius + 400,
 		area = "Outer",
 		island = true,
+	}
+end
+-- docs/31 B.2: the same ring round each sector spot (AmbientMix FAR spawns; never a distance-tier call).
+for _, spot in SectorSpots.Spots do
+	CallTypes.SpawnZones[spot.id] = {
+		id = spot.id,
+		displayName = spot.name,
+		center = spot.center,
+		minRadius = spot.radius + 60,
+		maxRadius = spot.radius + 400,
+		area = "Outer",
 	}
 end
 

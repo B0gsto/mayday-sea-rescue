@@ -4,6 +4,7 @@
 local CallTypes = require(script.Parent.CallTypes)
 local GameConfig = require(script.Parent.Parent.Config.GameConfig)
 local RingLayout = require(script.Parent.Parent.Config.RingLayout)
+local SectorSpots = require(script.Parent.SectorSpots)
 local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
 export type Rng = () -> number -- uniform in [0, 1)
@@ -81,6 +82,11 @@ function CallLogic.isWater(pos: Vector3, area: string): boolean
 	end
 	for _, island in WorldConfig.Islands do
 		if flatDistance(pos, island.center) < island.radius then
+			return false
+		end
+	end
+	for _, spot in SectorSpots.Spots do -- docs/31: never inside a spot's rocks
+		if flatDistance(pos, spot.center) < spot.radius then
 			return false
 		end
 	end

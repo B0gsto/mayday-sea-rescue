@@ -43,6 +43,28 @@ return function(t)
 		end
 	end)
 
+	t.test("FAR spawns go every way: each 60-deg sector gets 1/6 +- 5 % (docs/31 B.3)", function()
+		local CallTypes = t.load("src/shared/Calls/CallTypes.luau")
+		local seen = { 0, 0, 0, 0, 0, 0 }
+		local state = 1
+		local function rng(): number
+			state = (state * 48271 + 11) % 2147483647
+			return state / 2147483647
+		end
+		local N = 20000
+		for _ = 1, N do
+			local zone = CallTypes.SpawnZones[AmbientMix.farZone(rng)]
+			local i = AmbientMix.sector(zone.center)
+			seen[i] += 1
+		end
+		for _, n in seen do
+			t.expect(math.abs(n / N - 1 / 6) < 0.05 / 6).toBe(true)
+		end
+		t.expect(AmbientMix.sector(Vector3.new(100, 0, 1))).toBe(1)
+		t.expect(AmbientMix.sector(Vector3.new(100, 0, -1))).toBe(6)
+		t.expect(AmbientMix.sector(Vector3.new(-100, 0, -1))).toBe(4)
+	end)
+
 	t.test("pay grows with the zone, sight spawns at the Bronze share", function()
 		local last = 0
 		for _, r in { 1400, 2200, 3400, 4600, 6000 } do

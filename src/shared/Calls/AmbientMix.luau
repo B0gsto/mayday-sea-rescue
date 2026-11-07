@@ -7,6 +7,8 @@ local CallTypes = require(script.Parent.CallTypes)
 local GameConfig = require(script.Parent.Parent.Config.GameConfig)
 local RingLayout = require(script.Parent.Parent.Config.RingLayout)
 local SeaZones = require(script.Parent.SeaZones)
+local SectorSpots = require(script.Parent.SectorSpots)
+local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
 local AmbientMix = {}
 
@@ -18,7 +20,7 @@ AmbientMix.SIGHT = 500 -- studs: in view from a boat at the game camera -- tune
 AmbientMix.SIGHT_MIN = 220 -- studs: sight spawns appear this far out (never beside you) -- tune
 AmbientMix.HOME_CLEAR = 320 -- studs from every berth: the coves stay the missions' (Near / CalmBay) -- tune
 AmbientMix.CASH = 120 -- per survivor delivered home (a Silver call pays 550); sight spawns pay x Bronze -- tune
-AmbientMix.FAR = 0.3 -- share of timed spawns off an outer island (the rest by ZONE_SHARE) -- tune
+AmbientMix.FAR = 0.3 -- share of timed spawns off an outer island or a sector spot (the rest by ZONE_SHARE) -- tune
 AmbientMix.ZONE_SHARE = { 0.3, 0.25, 0.2, 0.15, 0.1 } -- timed spawns per sea zone: every zone has some -- tune
 
 export type Spawn = { kind: "Swimmer" | "DriftingCraft", total: number }
@@ -59,6 +61,27 @@ function AmbientMix.zonePoint(rng: () -> number): Vector3?
 	local outer = math.min(SeaZones.Zones[index].outer, GameConfig.MapRadius - A.MapMargin)
 	local p = CallLogic.ringPoint(RingLayout.Center, inner, outer, rng)
 	return if CallLogic.isWater(p, "Outer") then p else nil
+end
+
+-- Which 60-deg sector (1-6) round the ring centre `pos` is in: bearing atan2(z, x), sector 1 = 0-60 deg.
+function AmbientMix.sector(pos: Vector3): number
+	local d = pos - RingLayout.Center
+	return math.floor((math.deg(math.atan2(d.Z, d.X)) % 360) / 60) % 6 + 1
+end
+
+-- docs/31 B.3: the FAR spawn zones (outer islands and sector spots) by sector; every sector has at least one.
+local farZones: { { string } } = { {}, {}, {}, {}, {}, {} }
+for _, place in { WorldConfig.Islands, SectorSpots.Spots } :: { { any } } do
+	for _, p in place do
+		table.insert(farZones[AmbientMix.sector(p.center)], p.id)
+	end
+end
+AmbientMix.FAR_ZONES = farZones
+
+-- A FAR spawn zone id from `rng`: a sector uniformly, then one of its places, so each direction gets 1/6.
+function AmbientMix.farZone(rng: () -> number): string
+	local list = farZones[math.floor(rng() * 6) + 1]
+	return list[math.floor(rng() * #list) + 1]
 end
 
 -- What one free-roam survivor pays at `pos` (extra: a sight spawn, sea1's added density, at the Bronze share).

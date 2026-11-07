@@ -250,6 +250,7 @@ function WorldDressingService.Start()
 			"Conveyors", -- convey1: the moving walkway ring over the bridges and bridge roads, a spur per island
 			"IslandPlates", -- WP-24: the six player islands are flat Lego baseplates, not terrain
 			"HubLandmark", -- PERF-BL12: the beacon atoll in the ring centre
+			"SectorSpots", -- docs/31 B.2: a far landmark in each empty sector, from the hub kit
 		}
 	do
 		local mod = script.Parent.Parent.World:FindFirstChild(name)
