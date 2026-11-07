@@ -328,7 +328,10 @@ local function unstickBoat(model: Model, throttle: number, steer: number, speed:
 	end
 	-- pinned while driving ahead, backing up or just turning on the helm (owner 2026-10-31: the slip)
 	local effort = math.max(math.abs(throttle), math.abs(steer))
-	if effort > 0.05 and math.abs(speed) < Unstick.SPEED then
+	-- an anchored hull is held (the level-up moment, a reset), not pinned: W held through the Upgrade Station's lift
+	-- read as driving into its bay walls and Ashore stepped the rider off onto the station (playtest 2026-11-07)
+	local held = model.PrimaryPart ~= nil and (model.PrimaryPart :: BasePart).Anchored
+	if effort > 0.05 and math.abs(speed) < Unstick.SPEED and not held then
 		local wedged, normal, wall = dockContact(model)
 		if Unstick.step(state, dt, wedged, speed, effort) and normal and wall then
 			-- nobody aboard and a jetty ahead: driving into it lands you on it (a beach or a wall: push off)

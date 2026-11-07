@@ -3349,6 +3349,40 @@ local function tree(m: Model, at: CFrame, s: number)
 	end
 end
 
+-- Invisible walls under DockService's 1-stud pile decks (the jetty run on to the quay, its finger, the head deck
+-- under the build stand; their boxes as DockService builds them in berth frame `b`), from the underside down to
+-- SWIM_WALL_Y. With only pilings below, a swimmer found no wall for SwimController's haul-out and drifted under the
+-- deck, where the swell pinned them (fresh-player playtest 2026-11-07: stuck under the jetty). Hulls meet them too,
+-- as the sea plates' Skirt. Each is 0.05 inside its deck's sides.
+DockPieces.SWIM_WALL_Y = -4 -- world Y (sea 0): under a swimmer's root in a calm trough (Waves calm swell 1.25)
+function DockPieces.swimSkirts(b: CFrame): Model
+	local m = Instance.new("Model")
+	m.Name = "SwimSkirts"
+	local top = Marina.DECK_TOP - 1
+	local h = top - DockPieces.SWIM_WALL_Y
+	local J, jcf = Marina.LOTS.Jetty, b * Marina.LOTS.Jetty.cf
+	local j, H = Marina.JETTY, DockConfig.JETTY_HEAD
+	for _, box in
+		{
+			{ jcf * CFrame.new(0, 0, 2), J.size.X, J.size.Y + 4 },
+			{ b * CFrame.new((j.x0 + j.x1) / 2, 0, (j.z1 + j.out) / 2), j.x1 - j.x0, j.z1 - j.out },
+			{ jcf * CFrame.new(H.offset.X, 0, H.offset.Y), H.size.X, H.size.Y },
+		} :: { { any } }
+	do
+		local cf: CFrame = box[1]
+		local s = part(
+			m,
+			"SwimSkirt",
+			Vector3.new(box[2] - 0.1, h, box[3] - 0.1),
+			CFrame.new(cf.X, top - h / 2, cf.Z) * cf.Rotation,
+			RBROWN,
+			M.SmoothPlastic
+		)
+		s.Transparency, s.CastShadow = 1, false
+	end
+	return m
+end
+
 -- The bare plate's edge: the cove's side walls, a stud-capped dark grey quay edge, yellow bollards on it, black tyre
 -- fenders below. Nothing else stands on the land until the first build.
 function DockPieces.base(b: CFrame): Model
