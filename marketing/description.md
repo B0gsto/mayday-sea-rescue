@@ -12,18 +12,19 @@ Lists only what is live in the current build. Canon: `docs/00-design.md`. Store 
 ## Description
 
 ```
-Answer mayday calls and build your own rescue island.
+Upgrade your rescue boat 50 times and save everyone at sea!
 
-Race out by jet ski, RIB, lifeboat, helicopter or submarine. Pull survivors aboard, bring them home, and spend your pay on a bigger dock, a hangar, a sub pen and a lighthouse.
+Start on a little jet ski. Every rescue pays out, and every level makes your boat bigger, faster and crazier: RIB, lifeboat, hydrofoil, and finally the giant Rocket Cutter.
 
-- Six brick-built islands to make your own, joined by bridges
-- Calls get farther as you rank up from Recruit to Admiral
-- Quests from six islanders, with a new one each day
-- Bosun the rescue dog rides with you
-- Crew up with friends and answer the big ferry call together
-- Free to play: every rank, island and free boat is earnable
+- 50 boat levels, each with a new piece bolted on
+- Survivors get rarer the farther out you go
+- Hit Go back to zoom home with everyone aboard
+- Outrun pirate boats that chase you down
+- Spin the Deep wheel for a dive to the sea floor
+- Build up your own island between trips
+- Play with friends: 6 per server
 
-6 players per server.
+Free to play: every boat level is earnable.
 ```
 
 ## Social links
