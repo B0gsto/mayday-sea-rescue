@@ -52,13 +52,11 @@ local function landSpot(
 	seat: BasePart,
 	vehicle: Model,
 	character: Model,
-	dirs: { Vector3 },
-	skip: Instance?,
-	decksOnly: boolean?
+	dirs: { Vector3 }
 ): CFrame?
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
-	params.FilterDescendantsInstances = { vehicle, character, skip :: Instance }
+	params.FilterDescendantsInstances = { vehicle, character }
 	params.RespectCanCollide = true
 	-- walk out from the hull: a jet ski's berth leaves ~12 studs of water to the jetty finger (PT5: the
 	-- one probe at half a beam + 3 found only water, you swam under the jetty)
@@ -68,15 +66,6 @@ local function landSpot(
 			local p = seat.Position + dir * out
 			local hit = workspace:Raycast(p + Vector3.new(0, 12, 0), Vector3.new(0, -24, 0), params)
 			if hit and hit.Material ~= Enum.Material.Water then
-				if
-					decksOnly
-					and (
-						hit.Instance:IsA("Terrain")
-						or hit.Instance:FindFirstAncestor("IslandPlates")
-					)
-				then
-					return nil -- a beach or island ground, not a deck
-				end
 				-- 2 studs further onto the deck when it goes on: the first hit can be its very edge
 				local p2 = p + dir * 2
 				local deeper =
@@ -167,31 +156,6 @@ local function onCharacter(character: Model)
 			onSeated(true, humanoid.SeatPart)
 		end
 	end
-end
-
--- Driven into a jetty or deck with nobody aboard (BoatController's wedge): step off onto it toward `dir`, like Space.
--- False when there is only water, a beach or island ground that way (the push-off slides the hull back to water
--- instead; playtest 2026-10-31: touching the sand stepped new riders off onto the beach). Space still lands anywhere.
-function VehicleExitController.Ashore(dir: Vector3): boolean
-	local character = player.Character
-	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-	local seat = humanoid and humanoid.SeatPart
-	local vehicle = vehicleOf(seat)
-	if
-		not (character and humanoid and seat and vehicle)
-		or player:GetAttribute("ColdOpenDone") ~= true
-	then
-		return false
-	end
-	-- the wedge counts moored hulls too: never step onto one
-	local at =
-		landSpot(seat, vehicle, character, { dir }, workspace:FindFirstChild("Vehicles"), true)
-	if not at then
-		return false
-	end
-	stepOff(humanoid, seat)
-	character:PivotTo(at * CFrame.lookAlong(Vector3.zero, dir))
-	return true
 end
 
 -- The drive pad's step-off button: Space's path.

@@ -73,7 +73,6 @@ local TouchDriveController = require(script.Parent.TouchDriveController)
 local Unstick = require(Shared:WaitForChild("Boat"):WaitForChild("Unstick"))
 local VFXKit = require(script.Parent.Parent:WaitForChild("VFX"):WaitForChild("VFXKit"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
-local VehicleExitController = require(script.Parent.VehicleExitController)
 
 local MAX_VISUAL_OFFSET = 1.5 -- studs; larger errors are left to replication -- tune
 local VISUAL_SMOOTHING = 10 -- 1/s -- tune
@@ -334,13 +333,9 @@ local function unstickBoat(model: Model, throttle: number, steer: number, speed:
 	if effort > 0.05 and math.abs(speed) < Unstick.SPEED and not held then
 		local wedged, normal, wall = dockContact(model)
 		if Unstick.step(state, dt, wedged, speed, effort) and normal and wall then
-			-- nobody aboard and a jetty ahead: driving into it lands you on it (a beach or a wall: push off)
-			local empty = (tonumber(model:GetAttribute("SurvivorCount")) or 0) == 0
-			local root = if empty
-					and throttle > 0.05
-					and VehicleExitController.Ashore(-normal)
-				then nil
-				else model.PrimaryPart
+			-- never step the rider off here: they are holding the helm to drive (playtest 2026-11-07: Ashore
+			-- stepped them onto a cove wall top and into the sea); Space steps off
+			local root = model.PrimaryPart
 			if root then
 				Telemetry.send("StuckReset", "Boat") -- analytics H14: the wall push-off fired
 				root.AssemblyLinearVelocity += wall * Unstick.NUDGE
