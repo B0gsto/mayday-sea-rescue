@@ -52,6 +52,7 @@ local Shop = require(Panels:WaitForChild("Shop"))
 local Skills = require(Panels:WaitForChild("Skills"))
 local Style = require(Kit:WaitForChild("Style"))
 local Theme = require(Kit:WaitForChild("Theme"))
+local Upgrade = require(Panels:WaitForChild("Upgrade"))
 local Waypoint = require(UI:WaitForChild("Waypoint"))
 
 local player = Players.LocalPlayer
@@ -722,6 +723,7 @@ function Menu.mount()
 		Crew = Crew.new(c, noteClosed),
 		Skills = Skills.new(c, noteClosed),
 		Settings = SettingsPanel.newPanel(c, noteClosed),
+		Upgrade = Upgrade.new(c, noteClosed),
 	}
 	local boards: { [string]: string } =
 		{ BoatBoard = "Boats", HangarBoard = "Helicopter", SubBoard = "Submarine" }

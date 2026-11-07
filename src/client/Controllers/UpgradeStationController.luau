@@ -1,7 +1,7 @@
 --!strict
 -- UpgradeStationController (docs/30 section 2): the Upgrade Station's board and the level-up moment. Every station's
 -- board shows YOUR boat: Lv N / 50, a full bar with the five hull stages marked, the next level's jump, its price, your
--- Cash and what is missing. The button is the Part's prompt (PromptCueController's kit pill: tap, key, gamepad), in range
+-- Cash and what is missing (at the helm anywhere, UI/Panels/Upgrade shows the same and buys through Buy). The button is the Part's prompt (PromptCueController's kit pill: tap, key, gamepad), in range
 -- from the bay and on foot. Green only when affordable; short of Cash it is grey and a press only shakes what is missing. The moment plays on your boat, locally anchored: up, a spin, the VFXKit blast at
 -- the top while the server swaps in the new boat, the slam. Reduced motion: a small lift, no spin, no shake.
 local Players = game:GetService("Players")
@@ -449,20 +449,27 @@ local function followSeat()
 	end
 end
 
--- The station button's press (its prompt, or the Next chip's key at the station): buy the next level, or shake what is missing.
-function UpgradeStationController.Buy()
+-- The station button's press (its prompt, the Next chip's key at the station, or the helm's Upgrade panel): buy the
+-- next level, or shake what is missing. True when it bought.
+function UpgradeStationController.Buy(): boolean
 	local snap = snapshot
 	if snap then
 		local _, why = BoatLevels.canBuy(snap.boatLevel, tonumber(snap.cash) or 0)
 		if why == "Need Cash" then
 			shakeMissing() -- no call: the server refuses it anyway
-			return
+			return false
 		end
 	end
 	local ok, reason = Net.func("Boat_LevelUp"):InvokeServer()
 	if not ok and reason == "Need Cash" then
 		shakeMissing()
 	end
+	return ok == true
+end
+
+-- The last PlayerDataChanged (or Progression_GetData) table, nil before the first.
+function UpgradeStationController.Snapshot(): { [string]: any }?
+	return snapshot
 end
 
 function UpgradeStationController.Start()

@@ -4,11 +4,20 @@
 -- player out of any vehicle seat (boats, jet skis, heli, sub), like a default Roblox seat. Bound only
 -- while seated in a model with a VehicleId. It unseats directly, so OpsController's jump guard (which eats the default
 -- seat jump during operation steps) does not trap the player; the cold open still keeps them aboard.
+-- At sea it keeps them aboard too (owner 2026-11-07, Boat/SeaExit): only by land, at home, in a station bay or the
+-- shallows; a refused press buzzes and pops a lock on the touch button.
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
+local SeaExit =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Boat"):WaitForChild("SeaExit"))
+local Style =
+	require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Kit"):WaitForChild("Style"))
 
 local EXIT_IMAGE = require(
 	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
@@ -80,6 +89,33 @@ local function landSpot(
 	return nil
 end
 
+-- May the rider step off this seat here, and where to (a deck or shore beside the hull, or nil: water).
+local function exitFrom(seat: BasePart, character: Model): (boolean, CFrame?)
+	local vehicle = vehicleOf(seat)
+	if not vehicle then
+		return true, nil
+	end
+	local right, ahead = seat.CFrame.RightVector, seat.CFrame.LookVector
+	local land = landSpot(seat, vehicle, character, { right, -right, ahead, -ahead })
+	if land then
+		return true, land
+	end
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { vehicle, character }
+	params.IgnoreWater = true
+	local floor = workspace:Raycast(seat.Position, Vector3.new(0, -60, 0), params)
+	return SeaExit.allowed({
+		at = seat.Position,
+		bay = player:GetAttribute("BayCFrame"),
+		landBeside = false,
+		floorY = if floor then floor.Position.Y else nil,
+	}),
+		nil
+end
+
+local kept = false -- the last press kept the rider aboard (StepOff's answer)
+
 local function onExit(
 	_: string,
 	state: Enum.UserInputState,
@@ -98,6 +134,17 @@ local function onExit(
 	if craft and craft:GetAttribute("Airborne") == true then
 		return Enum.ContextActionResult.Sink -- flying heli (local attribute): land first
 	end
+	local body = character :: Model
+	local ok, land = exitFrom(seat, body)
+	if not ok then
+		kept = true
+		AudioController.play("UI_Fail", nil, 0.5)
+		local button = ContextActionService:GetButton(ACTION)
+		if button then
+			VehicleExitController.FlashLock(button)
+		end
+		return Enum.ContextActionResult.Sink
+	end
 	stepOff(humanoid, seat)
 	-- step off over the side: on a deck craft (Lifeboat) the jump left you standing on the seat, and
 	-- it (or the passenger seat behind) took you back within seconds; land half a beam + 3 out, on the side
@@ -105,14 +152,8 @@ local function onExit(
 	-- 2026-10-28), else in the water on the right
 	local vehicle = vehicleOf(seat)
 	if vehicle then
-		local body = character :: Model
 		local side = seat.Position + seat.CFrame.RightVector * reach(vehicle)
-		local at = landSpot(
-			seat,
-			vehicle,
-			body,
-			{ seat.CFrame.RightVector, -seat.CFrame.RightVector }
-		) or CFrame.new(side.X, seat.Position.Y + 2, side.Z)
+		local at = land or CFrame.new(side.X, seat.Position.Y + 2, side.Z)
 		body:PivotTo(at * seat.CFrame.Rotation)
 	end
 	return Enum.ContextActionResult.Sink
@@ -158,9 +199,55 @@ local function onCharacter(character: Model)
 	end
 end
 
--- The drive pad's step-off button: Space's path.
-function VehicleExitController.StepOff()
+-- The drive pad's step-off button: Space's path. False when it kept the rider aboard (at sea).
+function VehicleExitController.StepOff(): boolean
+	kept = false
 	onExit(ACTION, Enum.UserInputState.Begin, nil :: any)
+	return not kept
+end
+
+-- OpsController's seat-jump guard: false while seated in a vehicle at sea.
+function VehicleExitController.CanExit(): boolean
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local seat = humanoid and humanoid.SeatPart
+	return not (character and seat) or (exitFrom(seat, character))
+end
+
+-- One lock pops on the exit button and fades (never a flash; Reduce motion: no pop).
+function VehicleExitController.FlashLock(button: GuiObject)
+	if button:FindFirstChild("SeaLock") then
+		return
+	end
+	local box = Instance.new("Frame")
+	box.Name = "SeaLock"
+	box.BackgroundTransparency = 1
+	box.AnchorPoint = Vector2.new(0.5, 0.5)
+	box.Position = UDim2.fromScale(0.5, 0.5)
+	box.Size = UDim2.fromScale(0.7, 0.7)
+	box.ZIndex = button.ZIndex + 2
+	box.Parent = button
+	Style.icon(box, "lock")
+	local scale = Instance.new("UIScale")
+	scale.Parent = box
+	if not Comfort.reducedMotion() then
+		scale.Scale = 0.5
+		TweenService:Create(
+			scale,
+			TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+			{ Scale = 1 }
+		):Play()
+	end
+	task.delay(0.6, function()
+		local fade = TweenInfo.new(0.3)
+		for _, d in box:GetDescendants() do
+			if d:IsA("ImageLabel") then
+				TweenService:Create(d, fade, { ImageTransparency = 1 }):Play()
+			end
+		end
+		task.wait(0.3)
+		box:Destroy()
+	end)
 end
 
 function VehicleExitController.Init() end
