@@ -146,9 +146,9 @@ function Chase.cast(
 	dir: Vector3,
 	params: RaycastParams
 ): RaycastResult?
-	-- shortcut: Spherecast errors past 1024 studs, so a longer arm (L50 at speed) only checks its first 1024
-	if dir.Magnitude > 1024 then
-		dir = dir.Unit * 1024
+	-- shortcut: Spherecast errors past 1024 studs, so a longer arm (L50 at speed) only checks its first 1000 (1024 itself rounds over)
+	if dir.Magnitude > 1000 then
+		dir = dir.Unit * 1000
 	end
 	for _ = 1, 6 do
 		local hit = Workspace:Spherecast(origin, radius, dir, params)
