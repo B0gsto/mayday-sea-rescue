@@ -1558,11 +1558,13 @@ local function tickConstruction(plot: Plot, player: Player, data: any)
 	end
 end
 
+local plotRng = Random.new()
+
 local function claim(player: Player)
 	if byPlayer[player] or player.Parent ~= Players or not plots[1] then -- no plots before Init
 		return
 	end
-	local i = Marina.assign(owners)
+	local i = Marina.assign(owners, plotRng)
 	if not i then
 		warn(`[DockService] no free island for {player.Name}`) -- shortcut: 6 islands = server size; a 7th player has no dock
 		return

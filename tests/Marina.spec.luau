@@ -48,14 +48,28 @@ return function(t)
 		end
 	)
 
-	t.test("assign gives the lowest free island, nil when full", function()
-		t.expect(M.assign({})).toBe(1)
-		t.expect(M.assign({ [1] = true, [2] = true, [4] = true })).toBe(3)
+	t.test("assign: random first plot, then the farthest by bearing, nil when full", function()
+		local picks = {}
+		local rng = {
+			NextInteger = function(_, a: number, _b: number)
+				return picks.n or a
+			end,
+		} :: any
+		t.expect(M.assign({}, rng)).toBe(1)
+		picks.n = 4
+		t.expect(M.assign({}, rng)).toBe(4) -- the rng's pick
+		t.expect(M.assign({ [1] = true }, rng)).toBe(4) -- opposite (180 deg)
+		t.expect(M.assign({ [4] = true }, rng)).toBe(1)
+		t.expect(M.assign({ [1] = true, [4] = true }, rng)).toBe(2) -- 60 deg either way: lowest index
+		t.expect(M.assign({ [2] = true, [5] = true }, rng)).toBe(1)
+		t.expect(M.assign({ [1] = true, [2] = true }, rng)).toBe(4) -- 4 and 5 both 120 deg clear: lowest index
 		local full = {}
 		for i = 1, M.COUNT do
 			full[i] = true
 		end
-		t.expect(M.assign(full)).toBeNil()
+		t.expect(M.assign(full, rng)).toBeNil()
+		t.expect(M.assign({ [1] = true, [2] = true, [3] = true, [4] = true, [6] = true }, rng))
+			.toBe(5)
 	end)
 
 	t.test(
