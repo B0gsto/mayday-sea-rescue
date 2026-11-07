@@ -1354,19 +1354,12 @@ local function clearSpawnFrom(home: Vector3): (Vector3) -> boolean
 	end
 end
 
--- docs/23 e.2: how far out this player's calls go, from the best craft they can launch.
+-- docs/23 e.2: how far out this player's calls go. docs/30: the boat's level sets it (paid looks add nothing); docs/31
+-- C: the heli and sub run on the boat level's tank, so their own tier no longer widens it past what the tank reaches.
 local function callReach(player: Player): number
-	-- docs/30: the boat's level sets it (paid looks add nothing); the heli and sub keep their own tier
-	local owned = {}
-	for _, id in { "Submarine", "RescueHelicopter" } do
-		local ok, can = try("ProgressionService", "CanUseVehicle", player, id)
-		if ok and can == true then
-			table.insert(owned, id)
-		end
-	end
 	local okData, data = try("ProgressionService", "GetData", player)
 	local level = if okData and type(data) == "table" then data.boatLevel else nil
-	return math.max(CallLogic.craftReach(owned), BoatLevels.row(level).callReach)
+	return BoatLevels.row(level).callReach
 end
 
 -- forcedKind: an operation id, or "EasyCall" (the idle nudge: a swimmer close in, in calm water).

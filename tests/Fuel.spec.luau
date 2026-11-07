@@ -75,4 +75,20 @@ return function(t)
 			t.expect(BoatLevels.Rows[level].tank > BoatLevels.Rows[level - 1].tank).toBe(true)
 		end
 	end)
+
+	t.test("step: full at home, burns only while driving, empty once", function()
+		local function tick(home: boolean, driving: boolean, zone: number)
+			return { home = home, driving = driving, dt = 1, speedFrac = 1, zone = zone, level = 1 }
+		end
+		t.expect((Fuel.step(3, 24, tick(true, true, 4)))).toBe(24) -- home fills, wherever the zone says
+		t.expect((Fuel.step(3, 24, tick(false, false, 4)))).toBe(3) -- anchored in the ride, idle or on foot
+		t.expect((Fuel.step(30, 24, tick(false, false, 2)))).toBe(24) -- a smaller tank (paid looks) clips it
+		t.expect((Fuel.step(10, 24, tick(false, true, 2)))).toBe(9)
+		t.expect((Fuel.step(10, 24, tick(false, true, 1)))).toBe(10) -- the Shallows are free
+		local left, empty = Fuel.step(4, 24, tick(false, true, 3)) -- x5 past the rating
+		t.expect(left).toBe(0)
+		t.expect(empty).toBe(true)
+		local _, again = Fuel.step(0, 24, tick(false, true, 3))
+		t.expect(again).toBe(false) -- the Empty event fires once per tank
+	end)
 end

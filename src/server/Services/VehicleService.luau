@@ -44,6 +44,7 @@ local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
 local ClimbPath = require(Shared:WaitForChild("Ops"):WaitForChild("ClimbPath"))
 local Crowding = require(Shared:WaitForChild("Crowding"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
+local Fuel = require(Shared:WaitForChild("Boat"):WaitForChild("Fuel"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local GoBack = require(Shared:WaitForChild("Boat"):WaitForChild("GoBack"))
 local Marina = require(Shared:WaitForChild("Marina"))
@@ -1693,10 +1694,19 @@ end
 
 -- Go back (owner 2026-11-07): the hull turns toward home and drives itself there along GoBack.plan's clear route, the
 -- server posing it every frame (GoBack.pose) while the riders' clients pose the same route smoothly ("Ride"). A ram or
--- leaving the seat in the turn cancels; leaving the seat later stops it where it is.
-local function chargeGoBack(player: Player, record: Record, seat: BasePart, quiet: boolean?)
+-- leaving the seat in the turn cancels; leaving the seat later stops it where it is. A locked ride (an empty tank,
+-- FuelHome) is never in goBacks, so CancelGoBack can't reach it, and it rides on with an empty seat.
+local function chargeGoBack(
+	player: Player,
+	record: Record,
+	seat: BasePart,
+	quiet: boolean?,
+	locked: boolean?
+)
 	local run = { why = nil :: string? }
-	goBacks[player] = run
+	if not locked then
+		goBacks[player] = run
+	end
 	local model, id = record.model, record.spec.id
 	local function survivors(): number
 		return tonumber(model:GetAttribute("SurvivorCount")) or 0
@@ -1729,7 +1739,9 @@ local function chargeGoBack(player: Player, record: Record, seat: BasePart, quie
 		local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 		if records[model] ~= record or record.mode ~= "Driven" then
 			run.why = "Gone" -- stowed or despawned: it is someone else's now
-		elseif record.driver ~= player or not humanoid or humanoid.SeatPart ~= seat then
+		elseif
+			not locked and (record.driver ~= player or not humanoid or humanoid.SeatPart ~= seat)
+		then
 			run.why = "LeftSeat"
 		end
 		if run.why or t >= GoBack.ARRIVE then
@@ -1773,6 +1785,7 @@ local function onGoBack(player: Player)
 		and record
 		and record.mode == "Driven"
 		and not record.resetting
+		and record.model:GetAttribute("FuelLimp") == nil -- an empty tank's own ride follows the limp
 		and not GoBack.refusal({
 			driving = seat == record.seat and record.driver == player,
 			coldOpenDone = player:GetAttribute("ColdOpenDone") == true,
@@ -1819,6 +1832,37 @@ function VehicleService.CancelGoBack(player: Player): boolean
 		run.why = run.why or "Cancelled"
 	end
 	return run ~= nil
+end
+
+-- Empty tank (docs/31 C, FuelService): the craft limps at Fuel.LIMP_SPEED for Fuel.LIMP_S (its sim reads FuelLimp),
+-- then rides home like Go back, but nothing cancels the ride. False when not at the helm or a ride already runs.
+function VehicleService.FuelHome(player: Player): boolean
+	local model = VehicleService.GetVehicle(player)
+	local record = if model then records[model] else nil
+	if not record then
+		return false
+	end
+	local function atHelm(): boolean
+		local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+		return records[record.model] == record
+			and record.mode == "Driven"
+			and record.driver == player
+			and humanoid ~= nil
+			and humanoid.SeatPart == record.seat
+			and not record.resetting
+			and not goBacks[player]
+	end
+	if not atHelm() then
+		return false
+	end
+	record.model:SetAttribute("FuelLimp", Fuel.LIMP_SPEED)
+	task.wait(Fuel.LIMP_S)
+	record.model:SetAttribute("FuelLimp", nil)
+	if not atHelm() then
+		return false
+	end
+	chargeGoBack(player, record, record.seat, true, true)
+	return true
 end
 
 local BERTH_NEAR = 40 -- studs from the berth at which a craft counts as waiting there

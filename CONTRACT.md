@@ -194,6 +194,11 @@ Service-owned: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService)
   past the drop-off zone, so the hull carries the server attribute `LandedHome` for the hold: RescueService's delivery tick
   and OperationService `isHome` count it as home. `VehicleService.CancelGoBack(player) -> boolean` stops a charge (pirates: docs/30 section 5). Telemetry:
   custom `GoBack` (value survivors aboard: vehicle, Started / Landed / Cancelled, why). VFX: `go_back_land`.
+- Fuel (docs/31 C; rules `Boat/Fuel`, `tests/Fuel.spec.luau`): `FuelService` owns one tank per player (boat, heli and
+  sub share the boat level's tank and rating). Player attributes `Fuel`, `FuelMax` (s of full throttle), `FuelBurn`
+  (zone factor 0/1/5/25). Empty at sea: model attribute `FuelLimp` (share of top speed, read by the boat sim, heli and
+  sub controllers) for `Fuel.LIMP_S`, then `VehicleService.FuelHome(player)` runs the Go back ride locked (no cancel).
+  Refuel: home (`GoBack.isHome`, `LandedHome`) and respawn. Telemetry: custom `Fuel` (value level: Empty, zone name).
 - Boat to me: `RequestVehicle(nil, false, true)` brings your current or last craft to the open water nearest
   you; free calls wait `MonetizationEffects.boatToMeWait` (player attribute `BoatToMeAt`, scaled by
   `WorkerBoatScale`); the Quick Launch pass or day pass skips the wait.
