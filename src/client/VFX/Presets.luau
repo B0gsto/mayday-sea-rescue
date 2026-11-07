@@ -1480,6 +1480,47 @@ Presets.ALL.go_back_land = preset({
 	punch = { fov = -4, shake = 0.12, time = 0.3 },
 })
 
+-- feedback: the tank refills at home (UI/FuelGauge, docs/31 C): a green stud ring round the boat and a few green and
+-- yellow plates hop up out of the hull with a glug; small, it rides on go_back_land
+Presets.ALL.fuel_fill = preset({
+	job = "feedback",
+	layers = {
+		studRing(GREEN, 14, 0.7, 0.05),
+		with(
+			plates({ GREEN, YELLOW }, 8),
+			{ size = { 1.8 }, speed = { 10, 14 }, spread = { 14, 14 } }
+		),
+	},
+	sounds = { { clip = "Fuel_Glug", volume = 1 } :: FxSound },
+})
+
+-- feedback: the tank runs dry (UI/FuelGauge): dark coughs of smoke out of the boat, a drop of dark studs and the
+-- engine sputtering out
+Presets.ALL.fuel_sputter = preset({
+	job = "feedback",
+	layers = {
+		with(
+			plates({ NAVY, Color3.fromRGB(60, 60, 66) }, 6),
+			{ size = { 1.4 }, speed = { 8, 12 } }
+		), -- a Layer first: the literal below then types as one
+		{
+			tex = "puff_smoke",
+			count = 3,
+			colors = { Color3.fromRGB(78, 78, 84) },
+			size = { 3, 6 },
+			transparency = { 0.1, 0.2, 1 },
+			lifetime = { 0.9, 1.3 },
+			speed = { 6, 9 },
+			spread = { 25, 25 },
+			accel = Vector3.new(0, 4, 0),
+			drag = 2,
+			rotation = { 0, 360 },
+			spin = { -40, 40 },
+		},
+	},
+	sounds = { { clip = "Fuel_Sputter", volume = 1 } :: FxSound },
+})
+
 -- feedback: layered on pickup_splash (CasualtyController) as the survivor is pulled out: a tall crown snaps up, a
 -- column of white drops shoots after them, teal drops fan out, a white ring kicks across the water; a splash, a
 -- quick rising whoosh (the yank) and a soft pop; a small zoom kick

@@ -13,6 +13,7 @@ return {
 		GoBack = "rbxassetid://78154552336505", -- go_back.svg: the pill and house; the words are a label on it
 		MinimapRing = "rbxassetid://105528379718715", -- hud_minimap_ring.svg: hole 72%
 		Panel = "rbxassetid://73068937715458", -- hud_panel.svg, 512x256, slice 32 px
+		FuelChevron = "rbxassetid://125842575126980", -- fuel_chevron.svg (docs/31 C): one per burn step past x1
 	},
 	-- World markers (CLAUDE.md "UI art", des1 2026-10-28): Claude SVG in art/source/ui, rendered by tools/ui-art.
 	-- Pin: UI/Waypoint's pin per colour (tools/ui-art/pin_variants.py), its box centred on the head.
@@ -84,6 +85,7 @@ return {
 		gem_epic = "rbxassetid://108922180696474", -- art/source/ui/gem_epic.svg (tools/ui-art/gems.py)
 		gem_legendary = "rbxassetid://89137333634023", -- art/source/ui/gem_legendary.svg (tools/ui-art/gems.py)
 		gem_mythic = "rbxassetid://82687207346877", -- art/source/ui/gem_mythic.svg (tools/ui-art/gems.py)
+		fuel = "rbxassetid://93326114173679", -- art/source/ui/fuel_can.svg (docs/31 C): the fuel gauge and tank rows
 		Studs = "rbxassetid://108987158998866",
 		album = "rbxassetid://136020752731579",
 		boat_to_me = "rbxassetid://109082931565496",

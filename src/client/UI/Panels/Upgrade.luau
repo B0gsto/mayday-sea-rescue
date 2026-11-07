@@ -1,7 +1,7 @@
 --!strict
 -- Upgrade panel (owner 2026-11-07: "upgrade while you are on your boat"): the next boat level from the helm, anywhere.
 -- Opened by the Next chip (tap, F, gamepad Y) while you drive your own boat away from the Upgrade Station. The boat's
--- 3D portrait, Lv N, the piece it bolts on, speed / room / reach with their gains, and one big green Cash button that
+-- 3D portrait, Lv N, the piece it bolts on, speed / room / reach / fuel tank (docs/31 C) with their gains, and one big green Cash button that
 -- buys through UpgradeStationController.Buy (Boat_LevelUp). Short of Cash it is grey, reads what is missing and a press
 -- shakes it. A buy closes the panel so the level-up moment plays on the boat where it is.
 local Players = game:GetService("Players")
@@ -44,7 +44,7 @@ end
 local function stat(parent: Instance, iconName: string, order: number): TextLabel
 	local cell = Instance.new("Frame")
 	cell.BackgroundTransparency = 1
-	cell.Size = UDim2.new(1 / 3, -8, 1, 0)
+	cell.Size = UDim2.new(1 / 4, -9, 1, 0)
 	cell.LayoutOrder = order
 	cell.Parent = parent
 	local _, face = Style.block(cell, Style.grad("blue"), { radius = S.cornerSmall })
@@ -67,17 +67,22 @@ local function stat(parent: Instance, iconName: string, order: number): TextLabe
 	return label
 end
 
+-- 27.6, 28: one decimal, none when whole (the tank grows 0.4 s a level)
+local function num(n: number): string
+	return (string.gsub(string.format("%.1f", n), "%.0$", ""))
+end
+
 local function gain(now: number, nextValue: number): string
 	return if nextValue > now
-		then `{nextValue} <font color="{GAIN}">+{nextValue - now}</font>`
-		else `{nextValue}`
+		then `{num(nextValue)} <font color="{GAIN}">+{num(nextValue - now)}</font>`
+		else num(nextValue)
 end
 
 function Upgrade.new(canvas: Frame, onClose: () -> ())
 	local panel = Panel.new(canvas, {
 		title = "Upgrade",
 		icon = "build",
-		size = Vector2.new(640, 540),
+		size = Vector2.new(800, 540),
 		onClose = onClose,
 	})
 	local snap: { [string]: any }? = UpgradeStationController.Snapshot()
@@ -102,6 +107,7 @@ function Upgrade.new(canvas: Frame, onClose: () -> ())
 	local speed = stat(stats, "speed", 1)
 	local room = stat(stats, "crew", 2)
 	local reach = stat(stats, "lifebuoy", 3)
+	local tank = stat(stats, "fuel", 4)
 
 	local buyRow = row(panel.body, BUTTON.Y + 16, 3)
 	local short = false
@@ -154,6 +160,7 @@ function Upgrade.new(canvas: Frame, onClose: () -> ())
 			level.Text = `Lv {now.level}`
 			piece.Text = "Max!"
 			speed.Text, room.Text, reach.Text = `{now.speed}`, `{now.room}`, `{now.reach}`
+			tank.Text = num(now.tank)
 			short = false
 			price.setState("owned")
 			price.setText("Max")
@@ -164,6 +171,7 @@ function Upgrade.new(canvas: Frame, onClose: () -> ())
 		speed.Text = gain(now.speed, nextRow.speed)
 		room.Text = gain(now.room, nextRow.room)
 		reach.Text = gain(now.reach, nextRow.reach)
+		tank.Text = gain(now.tank, nextRow.tank)
 		local missing = nextRow.price - money
 		short = missing > 0
 		price.setPrice(nextRow.price)

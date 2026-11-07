@@ -219,3 +219,6 @@ SFX_Amb_Island,RL,9119383479,Sonoma Morning Birds California Chirping 1 (SFX),10
 SFX_Eng_Heli_Low,RL,9125390086,Bell Huey Helicopter Short Maneuver Overhead (SFX),29.0,Roblox licensed (PSE),Verified public 2026-11-01. Rotor stand-in; flyover swells on loop
 SFX_Eng_Heli_High,RL,9125390124,Bell Huey Helicopter Short Maneuver Overhead (SFX),26.0,Roblox licensed (PSE),Verified public 2026-11-01. Rotor stand-in take B
 Heli_Rotor,RL,9113417360,Bell Huey Helicopter Hover Hovering Fly By 1 (SFX),46.0,Roblox licensed (PSE),Verified public. Heli rotor loop (pitch/volume follow the spool)
+Fuel_Low,RL,9113400139,Beeps Simple Multiple Variations 8 (SFX),1.0,Roblox licensed (PSE),Verified public 2026-11-07. Low fuel beep (docs/31)
+Fuel_Glug,RL,9117645587,Plastic Water Jug Glugs 4 (SFX),2.0,Roblox licensed (PSE),Verified public 2026-11-07. Refuel glug (fuel_fill)
+Fuel_Sputter,RL,9125346934,1988 Chevy Pickup Truck Rough Start Turn Off (SFX),4.0,Roblox licensed (PSE),Verified public 2026-11-07. Empty-tank sputter (fuel_sputter)
