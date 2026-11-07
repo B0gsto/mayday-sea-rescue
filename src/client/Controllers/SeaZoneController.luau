@@ -1,8 +1,8 @@
 --!strict
 -- SeaZoneController (docs/29 B, Shared.Calls.SeaZones): which sea you are in, read a few times a second.
---   * the player attribute SeaZone (1..5): WeatherController eases the water tint and fog to it
---   * VFX job, state: the pooled buoy line + glow curtain, only the stretch near you (24 buoys, built once, moved
---     only when they fall off the window; slot k is always buoy k % POOL + 1, so the curtains stay wired)
+--   * the player attribute SeaZone (1..5); the water, fog and light blend by distance in WeatherController
+--   * VFX job, state: the pooled buoy line as a soft marker, only the stretch near you (24 buoys, built once, moved
+--     only when they fall off the window; slot k is always buoy k % POOL + 1). No curtain (owner 2026-11-07).
 --   * VFX job, feedback: one banner pop per crossing (zone name, best rarity gem, a chime); Toast respects Reduce motion
 -- The cold open keeps its own look: no line, banner or tint while it runs.
 local Players = game:GetService("Players")
@@ -15,7 +15,6 @@ local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local SeaBuoy = require(Client:WaitForChild("Ocean"):WaitForChild("SeaBuoy"))
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local SeaZones = require(Shared:WaitForChild("Calls"):WaitForChild("SeaZones"))
-local VFXTextures = require(Shared:WaitForChild("Config"):WaitForChild("VFXTextures"))
 local Kit = Client:WaitForChild("UI"):WaitForChild("Kit")
 local Style = require(Kit:WaitForChild("Style"))
 local Toast = require(Kit:WaitForChild("Toast"))
@@ -37,10 +36,7 @@ local function buildPool(): Folder
 	local f = Instance.new("Folder")
 	f.Name = "SeaZoneLine"
 	for i = 1, SeaZones.POOL do
-		buoys[i] = SeaBuoy.new(f, VFXTextures.light_beam.id)
-	end
-	for i, buoy in buoys do
-		buoy.beam.Attachment1 = buoys[i % SeaZones.POOL + 1].anchor
+		buoys[i] = SeaBuoy.new(f)
 	end
 	folder = f
 	return f
@@ -68,16 +64,11 @@ local function showLine(line: number, centre: number)
 		local k = (centre + i) % count
 		local index = k % SeaZones.POOL + 1
 		local buoy = buoys[index]
-		local at = SeaZones.slotPoint(line, k)
-		local land = SeaZones.onLand(at)
 		if slots[index] ~= k then
 			slots[index] = k
-			buoy.model:PivotTo(if land then HIDDEN else CFrame.new(at))
+			local at = SeaZones.slotPoint(line, k)
+			buoy.model:PivotTo(if SeaZones.onLand(at) then HIDDEN else CFrame.new(at))
 		end
-		-- the window's last buoy has no neighbour yet: its curtain would span the whole pool
-		buoy.beam.Enabled = i < half - 1
-			and not land
-			and not SeaZones.onLand(SeaZones.slotPoint(line, (k + 1) % count))
 	end
 end
 

@@ -68,13 +68,49 @@ return function(t)
 		for _ = 1, 20 do
 			SeaZones.ease(look, SeaZones.Zones[5], 0.1)
 		end
-		t.expect(math.abs(look.density - SeaZones.Zones[5].density) < 0.01).toBe(true)
+		t.expect(
+			math.abs(look.density - SeaZones.Zones[5].density) < 0.05 * SeaZones.Zones[5].density
+		)
+			.toBe(true)
 		t.expect(look.waterMix > 0.95).toBe(true)
 		for _ = 1, 40 do
 			SeaZones.ease(look, SeaZones.NEUTRAL, 0.1)
 		end
 		t.expect(look.waterMix < 0.01 and look.overcast < 0.01).toBe(true)
 	end)
+
+	t.test(
+		"the look blends by distance across a line: no pop, pure mid-band, further is foggier and darker",
+		function()
+			local b = SeaZones.BLEND
+			for i = 1, 4 do
+				local line = SeaZones.Zones[i].outer
+				t.expect(SeaZones.lookAt(at(line - b)).density)
+					.toBeCloseTo(SeaZones.Zones[i].density, 1e-9)
+				t.expect(SeaZones.lookAt(at(line + b)).density)
+					.toBeCloseTo(SeaZones.Zones[i + 1].density, 1e-9)
+				local mid = (SeaZones.Zones[i].density + SeaZones.Zones[i + 1].density) / 2
+				t.expect(SeaZones.lookAt(at(line - 1e-3)).density).toBeCloseTo(mid, 1e-4)
+				t.expect(SeaZones.lookAt(at(line + 1e-3)).density).toBeCloseTo(mid, 1e-4)
+				-- 10-stud steps never jump: at most 10 / (2 BLEND) * 1.5 (smoothstep's peak slope) of the gap
+				local prev = SeaZones.lookAt(at(line - b - 20)).hazeAdd
+				for r = line - b - 10, line + b + 20, 10 do
+					local now = SeaZones.lookAt(at(r)).hazeAdd
+					t.expect(
+						math.abs(now - prev)
+							<= 1e-9
+								+ 10 / (2 * b) * 1.5 * math.abs(
+									SeaZones.Zones[i + 1].hazeAdd - SeaZones.Zones[i].hazeAdd
+								)
+					).toBe(true)
+					prev = now
+				end
+				t.expect(SeaZones.Zones[i + 1].density > SeaZones.Zones[i].density).toBe(true)
+				t.expect(SeaZones.Zones[i + 1].exposure <= SeaZones.Zones[i].exposure).toBe(true)
+			end
+			t.expect(SeaZones.lookAt(at(6000)).waterMix).toBe(1)
+		end
+	)
 
 	t.test("buoy slots: a multiple of the pool, about SPACING apart, on the line", function()
 		for line = 1, 4 do

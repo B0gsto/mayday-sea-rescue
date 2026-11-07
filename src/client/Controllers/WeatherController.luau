@@ -10,8 +10,9 @@
 --     above intensity 0.5, Calm at dusk / dawn, else the base, also at night) - Roblox can't blend skies.
 --   * Publishes the blended water and haze colours to the ocean as Lighting attributes
 --     OceanWaterColor / OceanHazeColor.
---   * docs/29 B: the player attribute SeaZone (SeaZoneController) eases the water, haze, fog and an Overcast share
---     to that sea zone (SeaZones.Zones), less at night and in a storm. The cold open stays untinted.
+--   * docs/29 B: the sea zone look (SeaZones.lookAt at the player, blended by distance across a line) eases the
+--     water, haze, fog, exposure, saturation and an Overcast share, less at night and in a storm. The cold open stays
+--     untinted.
 --   * Dev override (Studio shots, separate module cache): the Lighting attribute WeatherBase
 --     ("Clear" | "Calm" | "Overcast") replaces the base preset while it is set.
 --   * Rain: a camera-following ParticleEmitter, rate scaled by intensity and graphics quality,
@@ -368,6 +369,9 @@ local function computeBlend(intensity: number): Preset
 	p.WaterColor = p.WaterColor:Lerp(zoneLook.water, zoneLook.waterMix * tinted)
 	p.AtmosphereColor = p.AtmosphereColor:Lerp(zoneLook.haze, zoneLook.hazeMix * tinted)
 	p.AtmosphereDensity += zoneLook.density * tinted
+	p.AtmosphereHaze += zoneLook.hazeAdd * tinted
+	p.ExposureCompensation += zoneLook.exposure * tinted
+	p.Saturation += zoneLook.saturation * tinted
 	if buildMix > 0 then
 		p.AtmosphereDensity *= 1 - (1 - BUILD_HAZE) * buildMix
 		p.AtmosphereGlare *= 1 - buildMix
@@ -781,14 +785,13 @@ function WeatherController.Start()
 			local step = sinceBlend / BUILD_EASE
 			local view = if Players.LocalPlayer:GetAttribute("BuildView") then 1 else 0
 			buildMix += math.clamp(view - buildMix, -step, step)
-			local zone = SeaZones.Zones[Players.LocalPlayer:GetAttribute("SeaZone") :: number]
-			SeaZones.ease(
-				zoneLook,
-				if zone and Players.LocalPlayer:GetAttribute("ColdOpenActive") ~= true
-					then zone
-					else SeaZones.NEUTRAL,
-				sinceBlend
-			)
+			local char = Players.LocalPlayer.Character
+			local root = char and char:FindFirstChild("HumanoidRootPart")
+			if Players.LocalPlayer:GetAttribute("ColdOpenActive") == true then
+				SeaZones.ease(zoneLook, SeaZones.NEUTRAL, sinceBlend)
+			elseif root and root:IsA("BasePart") then
+				SeaZones.ease(zoneLook, SeaZones.lookAt(root.Position), sinceBlend)
+			end
 			sinceBlend = 0
 			intensity = OnboardingWeather.localIntensity(Weather.getIntensity(now), calmLevel)
 			current = computeBlend(intensity)
