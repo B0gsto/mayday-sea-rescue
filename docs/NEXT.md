@@ -20,6 +20,7 @@ means its builder stopped mid-task: finish it there (review the diff first), the
 
 | Work | Branch | Worktree | Builder |
 |---|---|---|---|
+| Go back drives home (owner 2026-11-07: turn, then fast home in ~5 s; `GoBack.plan` / `GoBack.pose`, VehicleService ride, GoBackController chase shot). Not seen in Studio | t3/goback-drive | goback-drive | Opus |
 
 
 

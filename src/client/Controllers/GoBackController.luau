@@ -1,9 +1,11 @@
 --!strict
 -- GoBackController (docs/30 section 1): the big Go back button (HudLayout "goback"; R, gamepad right stick click,
 -- touch), shown by Boat/GoBack's rule while driving away from home. The press goes to the server (Net GoBack), which
--- answers everyone aboard: "Charge" widens the camera with a whoosh and wipes the button over 1.5 s; a sea-blue veil
--- covers the jump; "Land" drops the veil on the craft at home, "Cancel" just lets go. Reduce motion: no FOV and no
--- shake (Camera/Shake itself goes quiet), the veil stays since a bare jump cut is worse. The first time anyone is aboard
+-- answers everyone aboard: "Ride" with the route home: this client poses the hull along it every frame (GoBack.pose, the
+-- same as the server, but smooth) under a chase shot that widens with speed: a swoosh as it turns, a nitro burst at the
+-- launch, a rooster tail at speed, carve spray as it swings into the bay; a sea-blue veil only over a boxed-in route's
+-- jump. "Land" hands the camera to the station shot, "Cancel" just lets go. Reduce motion: a third of the widening, no
+-- spray trail. The first time anyone is aboard
 -- (once per profile: Comfort's saved "GoBackTaught" flag) the button bounces once and a steady green arrow sits on it
 -- (docs/30 section 4) until the press or until nobody is aboard; live v40 had 0 Go back presses in 6 sessions.
 local ContextActionService = game:GetService("ContextActionService")
@@ -27,22 +29,34 @@ local ClientRoot = script.Parent.Parent
 local Comfort = require(ClientRoot:WaitForChild("Camera"):WaitForChild("Comfort"))
 local InputGlyph = require(ClientRoot:WaitForChild("UI"):WaitForChild("InputGlyph"))
 local Layout = require(ClientRoot:WaitForChild("UI"):WaitForChild("Layout"))
-local Shake = require(ClientRoot:WaitForChild("Camera"):WaitForChild("Shake"))
 local Style = require(ClientRoot:WaitForChild("UI"):WaitForChild("Kit"):WaitForChild("Style"))
 local VFXKit = require(ClientRoot:WaitForChild("VFX"):WaitForChild("VFXKit"))
 
 local ACTION = "GoBack"
-local VEIL_IN = 0.2 -- s before the landing -- tune
+local VEIL_IN = 0.2 -- s before a boxed-in route's jump -- tune
 local VEIL_OUT = 0.3
 local DIM = Color3.fromRGB(150, 150, 165) -- the button under the charge wipe
 local VEIL_COLOR = Color3.fromRGB(0, 160, 175)
+local RIDE_FOV = 25 -- degrees the ride shot widens at top speed -- tune
 
 local GoBackController = {}
 
 local player = Players.LocalPlayer
 local charging = false
 local run = 0 -- the current charge: its delayed steps check they still belong to it
-local chargedAt = 0
+local ride: {
+	route: GoBack.Route,
+	at: number,
+	model: Model,
+	length: number,
+	from: CFrame, -- the camera when the ride took it
+	fov: number,
+	yaw: number, -- the shot's heading: the route's, lagged; the hull swings under it into the bay
+	last: Vector3,
+	launched: boolean,
+	spray: number,
+}? =
+	nil
 local shown = false
 local root: Frame
 local face: ImageButton
@@ -53,7 +67,6 @@ local arrowShown = false
 local arrowDone = false
 local SEEN = "GoBackTaught"
 local seenLoaded = false -- Comfort's saved flags are in: before that hasSeen reads false for everyone
-local fov, fovApplied = 0, 0
 
 -- The craft whose DriverSeat we sit in.
 local function driven(): Model?
@@ -153,38 +166,132 @@ end
 local function finish()
 	charging = false
 	run += 1
+	if ride then
+		CameraController.ClearOverride()
+		Workspace.CurrentCamera.FieldOfView = ride.fov
+		ride = nil
+	end
 	fade(1, VEIL_OUT)
 	face.ImageColor3 = Color3.new(1, 1, 1)
 	TweenService:Create(wipe, TweenInfo.new(0.15), { Offset = Vector2.new(-0.5, 0) }):Play()
 end
 
-local function onCharge()
+local function yawOf(v: Vector3): number
+	return math.atan2(-v.X, -v.Z)
+end
+
+local function onRide(route: GoBack.Route)
 	arrowDone = true
 	setArrow(false)
 	charging = true
 	run += 1
 	local mine = run
-	chargedAt = os.clock()
 	face.ImageColor3 = DIM
 	wipe.Offset = Vector2.new(-0.5, 0)
 	TweenService:Create(
 		wipe,
-		TweenInfo.new(GoBack.CHARGE, Enum.EasingStyle.Linear),
+		TweenInfo.new(GoBack.ARRIVE, Enum.EasingStyle.Linear),
 		{ Offset = Vector2.new(0.5, 0) }
 	):Play()
-	AudioController.play("FX_Whoosh", nil, nil, 0.8)
-	Shake.add({ magnitude = 0.6, roughness = 14, fadeIn = GoBack.CHARGE - 0.3, time = 0.3 })
-	task.delay(GoBack.CHARGE - VEIL_IN, function()
-		if run == mine then
-			fade(0, VEIL_IN)
-		end
-	end)
-	-- never left under the veil: every charge ends in a Cancel or a Land, unless this client stopped being told
-	task.delay(GoBack.CHARGE + GoBack.LAND_HOLD + 1, function()
+	AudioController.play("FX_Swoosh", nil, nil, 0.9)
+	local model = driven()
+	local camera = Workspace.CurrentCamera
+	if model then
+		local _, size = model:GetBoundingBox()
+		ride = {
+			route = route,
+			at = os.clock(),
+			model = model,
+			length = math.max(size.X, size.Z),
+			from = camera.CFrame,
+			fov = camera.FieldOfView,
+			yaw = yawOf(camera.CFrame.LookVector),
+			last = route.start.Position,
+			launched = false,
+			spray = 0,
+		}
+	end
+	local jump = GoBack.jumpTime(route)
+	if jump then
+		task.delay(math.max(jump - VEIL_IN, 0), function()
+			if run == mine then
+				fade(0, VEIL_IN)
+			end
+		end)
+		task.delay(jump + 0.05, function()
+			if run == mine then
+				fade(1, VEIL_OUT)
+			end
+		end)
+	end
+	-- never left riding: every ride ends in a Cancel or a Land, unless this client stopped being told
+	task.delay(GoBack.ARRIVE + GoBack.LAND_HOLD + 1, function()
 		if run == mine then
 			finish()
 		end
 	end)
+end
+
+-- Every frame of the ride, before the camera: the hull on the route, the chase shot, the spray.
+local function stepRide(dt: number)
+	local r = ride
+	if not r or not r.model.Parent then
+		return
+	end
+	local t = os.clock() - r.at
+	local pose = GoBack.pose(r.route, t)
+	r.model:PivotTo(pose)
+	local moved = Vector3.new(pose.X - r.last.X, 0, pose.Z - r.last.Z)
+	r.last = pose.Position
+	local speed = moved.Magnitude / math.max(dt, 1 / 240)
+	local frac = math.clamp(speed / math.max(GoBack.topSpeed(r.route), 1), 0, 1)
+	-- the shot follows where the hull goes (in the turn: where it points), so the swing into the bay reads under it
+	local want = if speed > 5
+		then yawOf(moved)
+		elseif t < GoBack.TURN then yawOf(pose.LookVector)
+		else r.yaw
+	local d = want - r.yaw
+	r.yaw += math.atan2(math.sin(d), math.cos(d)) * (1 - math.exp(-dt / 0.25))
+	local back = CFrame.Angles(0, r.yaw, 0).LookVector
+	local dist = math.clamp(r.length * 1.6 + 8, 16, 70) * (1 + 0.35 * frac)
+	local focus = pose.Position + Vector3.new(0, math.clamp(r.length * 0.25, 3, 12), 0)
+	local shot =
+		CFrame.lookAt(focus - back * dist + Vector3.new(0, dist * 0.38, 0), focus + back * 10)
+	local reduced = Comfort.reducedMotion()
+	local widen = RIDE_FOV * frac * (if reduced then 0.35 else 1)
+	CameraController.SetOverride(r.from:Lerp(shot, math.clamp(t / 0.35, 0, 1)), r.fov + widen)
+	-- spray off the stern, back over the wake (as BoatController's Nitro)
+	local stern = pose.Position - pose.LookVector * r.length * 0.45
+	local up = (-pose.LookVector + Vector3.yAxis * 0.4).Unit
+	if not r.launched and t >= GoBack.TURN then
+		r.launched = true
+		VFXKit.play("nitro_burst", CFrame.fromMatrix(stern, pose.RightVector, up))
+		VFXKit.play("nitro_ring", CFrame.new(stern.X, pose.Y - 0.5, stern.Z))
+	elseif t - r.spray > 0.1 and t < GoBack.ARRIVE and not reduced then
+		r.spray = t
+		local turning = t < GoBack.TURN
+			or (speed > 5 and math.abs(yawOf(moved) - yawOf(pose.LookVector)) > 0.3)
+		if turning then -- the hull slides sideways: spray off its outside (banked left: a left turn, the starboard side)
+			local out = pose.RightVector * (if pose.RightVector.Y > 0 then 1 else -1)
+			out = Vector3.new(out.X, 0, out.Z).Unit
+			local dir = (out + Vector3.yAxis * 0.7 - pose.LookVector * 0.4).Unit
+			local at = pose.Position + out * r.length * 0.25
+			VFXKit.play(
+				"ski_carve",
+				CFrame.fromMatrix(at, dir:Cross(Vector3.yAxis).Unit, dir),
+				{ scale = 1 }
+			)
+		elseif frac > 0.3 then
+			VFXKit.play(
+				"nitro_trail",
+				CFrame.fromMatrix(
+					stern,
+					pose.RightVector,
+					(-pose.LookVector + Vector3.yAxis * 1.3).Unit
+				)
+			)
+		end
+	end
 end
 
 local function onLand()
@@ -275,9 +382,9 @@ function GoBackController.Start()
 	veil.Parent = veilGui
 	veilGui.Parent = player:WaitForChild("PlayerGui")
 
-	Net.event("GoBack").OnClientEvent:Connect(function(phase: string)
-		if phase == "Charge" then
-			onCharge()
+	Net.event("GoBack").OnClientEvent:Connect(function(phase: string, route: any)
+		if phase == "Ride" and typeof(route) == "table" then
+			onRide(route)
 		elseif phase == "Land" then
 			onLand()
 		elseif charging then
@@ -286,31 +393,8 @@ function GoBackController.Start()
 		end
 	end)
 
-	-- the FOV goes on after the camera scripts and comes off before them, so they never ease from it (as Camera/Shake)
-	RunService:BindToRenderStep("GoBackFovUndo", Enum.RenderPriority.First.Value, function()
-		local camera = Workspace.CurrentCamera
-		if camera and fovApplied ~= 0 then
-			camera.FieldOfView -= fovApplied
-		end
-		fovApplied = 0
-	end)
-	RunService:BindToRenderStep(
-		"GoBackFovApply",
-		Enum.RenderPriority.Camera.Value + 1,
-		function(dt: number)
-			local camera = Workspace.CurrentCamera
-			if charging then
-				local k = math.clamp((os.clock() - chargedAt) / GoBack.CHARGE, 0, 1)
-				fov = GoBack.CHARGE_FOV * k * k
-			else
-				fov = if fov < 0.1 then 0 else fov * math.exp(-8 * dt)
-			end
-			if camera and fov ~= 0 and not Comfort.reducedMotion() then
-				fovApplied = fov
-				camera.FieldOfView += fovApplied
-			end
-		end
-	)
+	-- before MaydayCamera (Camera + 1), so the shot is this frame's
+	RunService:BindToRenderStep("GoBackRide", Enum.RenderPriority.Camera.Value, stepRide)
 
 	while true do
 		refresh()
