@@ -134,6 +134,16 @@ function BoatLevels.nextRow(value: any): Row?
 	return ROWS[BoatLevels.level(value) + 1]
 end
 
+BoatLevels.EARLY_FLOOR_BELOW = 5 -- under this level any rescue pays at least the next level, so L2-L5 take one trip each
+
+-- The least a rescue pays at this boat level (free-roam ones pay little early on), 0 from EARLY_FLOOR_BELOW up.
+function BoatLevels.earlyPayFloor(value: any): number
+	local nextRow = BoatLevels.nextRow(value)
+	return if nextRow and BoatLevels.level(value) < BoatLevels.EARLY_FLOOR_BELOW
+		then nextRow.price
+		else 0
+end
+
 -- ok, reason, price for buying the next level: Cash only.
 function BoatLevels.canBuy(value: any, cash: number): (boolean, string, number)
 	local nextRow = BoatLevels.nextRow(value)

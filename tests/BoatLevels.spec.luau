@@ -134,6 +134,13 @@ return function(t)
 
 	-- docs/30: every level's hull, calm and storm. Held = it reaches its top, stays on the water in a calm sea, never
 	-- tips past a boat's lean, and stays turnable from flat out. This is what set SPEED_LIMIT.
+	t.test("early rescues pay at least the next level until L5", function()
+		t.expect(L.earlyPayFloor(1)).toBe(L.nextRow(1).price)
+		t.expect(L.earlyPayFloor(4)).toBe(L.nextRow(4).price)
+		t.expect(L.earlyPayFloor(5)).toBe(0)
+		t.expect(L.earlyPayFloor(L.MAX)).toBe(0)
+	end)
+
 	t.test("the physics holds the whole table", function()
 		print(
 			"\nBoatLevels: lvl speed | calm t95 top air% tilt | storm top air% tilt | hard turn R, speed held"

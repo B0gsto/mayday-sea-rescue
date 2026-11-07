@@ -23,6 +23,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AmbientMix = require(Shared:WaitForChild("Calls"):WaitForChild("AmbientMix"))
 local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
+local BoatLevels = require(Shared:WaitForChild("BoatLevels"))
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local CraftBoard = require(Shared:WaitForChild("Ops"):WaitForChild("CraftBoard"))
@@ -94,6 +95,7 @@ end
 local function onDelivered(scene: Scene, n: number, driver: Player?)
 	if driver then
 		local pay = scene.pay * n * RescueRunService.Multiplier(driver)
+		pay = math.max(pay, BoatLevels.earlyPayFloor(driver:GetAttribute("BoatLevel")))
 		pcall(ProgressionService.Award, driver, pay, "AmbientRescue")
 	end
 	if count(scene, "Water") + count(scene, "Aboard") == 0 then
